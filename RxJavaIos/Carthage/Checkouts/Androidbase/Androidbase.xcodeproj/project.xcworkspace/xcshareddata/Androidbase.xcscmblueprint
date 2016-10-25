@@ -1,0 +1,30 @@
+{
+  "DVTSourceControlWorkspaceBlueprintPrimaryRemoteRepositoryKey" : "56420B1170D009BA67AA9F78CC937A8CA5BE62EE",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyRepositoryLocationsKey" : {
+
+  },
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyStatesKey" : {
+    "56420B1170D009BA67AA9F78CC937A8CA5BE62EE" : 9223372036854775807,
+    "44D221F7591175A4A445187FEA95357B21A925E5" : 9223372036854775807
+  },
+  "DVTSourceControlWorkspaceBlueprintIdentifierKey" : "0F0E0ACA-8D07-4BDA-9310-24FDC0E96A64",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyPathsKey" : {
+    "56420B1170D009BA67AA9F78CC937A8CA5BE62EE" : "core-doppl\/",
+    "44D221F7591175A4A445187FEA95357B21A925E5" : "..\/devel\/j2objc"
+  },
+  "DVTSourceControlWorkspaceBlueprintNameKey" : "Androidbase",
+  "DVTSourceControlWorkspaceBlueprintVersion" : 204,
+  "DVTSourceControlWorkspaceBlueprintRelativePathToProjectKey" : "androidbase\/Androidbase\/Androidbase.xcodeproj",
+  "DVTSourceControlWorkspaceBlueprintRemoteRepositoriesKey" : [
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "github.com:google\/j2objc.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "44D221F7591175A4A445187FEA95357B21A925E5"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/doppllib\/core-doppl.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "56420B1170D009BA67AA9F78CC937A8CA5BE62EE"
+    }
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "DVTSourceControlWorkspaceBlueprintPrimaryRemoteRepositoryKey" : "4AD705D3CE5942CE606BAC505F8EF7D07A1B5E7B",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyRepositoryLocationsKey" : {
+
+  },
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyStatesKey" : {
+    "44D221F7591175A4A445187FEA95357B21A925E5" : 9223372036854775807,
+    "4AD705D3CE5942CE606BAC505F8EF7D07A1B5E7B" : 9223372036854775807
+  },
+  "DVTSourceControlWorkspaceBlueprintIdentifierKey" : "E0BB4218-5F92-4D12-9226-342264A48972",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyPathsKey" : {
+    "44D221F7591175A4A445187FEA95357B21A925E5" : "..\/devel\/j2objc",
+    "4AD705D3CE5942CE606BAC505F8EF7D07A1B5E7B" : "RxJava\/"
+  },
+  "DVTSourceControlWorkspaceBlueprintNameKey" : "RxJavaIos",
+  "DVTSourceControlWorkspaceBlueprintVersion" : 204,
+  "DVTSourceControlWorkspaceBlueprintRelativePathToProjectKey" : "RxJavaIos\/RxJavaIos.xcodeproj",
+  "DVTSourceControlWorkspaceBlueprintRemoteRepositoriesKey" : [
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "github.com:google\/j2objc.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "44D221F7591175A4A445187FEA95357B21A925E5"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/doppllib\/RxJava.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "4AD705D3CE5942CE606BAC505F8EF7D07A1B5E7B"
+    }
+  ]
+}

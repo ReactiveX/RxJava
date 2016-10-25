@@ -1,0 +1,681 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		634D239B1DBED81800AD08DE /* AndroidbaseTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 634D23911DBED81800AD08DE /* AndroidbaseTest.framework */; };
+		634D23A01DBED81800AD08DE /* AndroidbaseTestTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 634D239F1DBED81800AD08DE /* AndroidbaseTestTests.m */; };
+		634D23A21DBED81800AD08DE /* AndroidbaseTest.h in Headers */ = {isa = PBXBuildFile; fileRef = 634D23941DBED81800AD08DE /* AndroidbaseTest.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		634D23E51DBED92800AD08DE /* CoTouchlabDoppelTestingDoppelHacks.h in Headers */ = {isa = PBXBuildFile; fileRef = 634D23AB1DBED92800AD08DE /* CoTouchlabDoppelTestingDoppelHacks.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		634D23E61DBED92800AD08DE /* CoTouchlabDoppelTestingDoppelHacks.m in Sources */ = {isa = PBXBuildFile; fileRef = 634D23AC1DBED92800AD08DE /* CoTouchlabDoppelTestingDoppelHacks.m */; };
+		634D23E71DBED92800AD08DE /* CoTouchlabDoppelTestingDoppelParameterizedRobolectricTestRunner.h in Headers */ = {isa = PBXBuildFile; fileRef = 634D23AD1DBED92800AD08DE /* CoTouchlabDoppelTestingDoppelParameterizedRobolectricTestRunner.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		634D23E81DBED92800AD08DE /* CoTouchlabDoppelTestingDoppelParameterizedRobolectricTestRunner.m in Sources */ = {isa = PBXBuildFile; fileRef = 634D23AE1DBED92800AD08DE /* CoTouchlabDoppelTestingDoppelParameterizedRobolectricTestRunner.m */; };
+		634D23E91DBED92800AD08DE /* CoTouchlabDoppelTestingDoppelRobolectricTestRunner.h in Headers */ = {isa = PBXBuildFile; fileRef = 634D23AF1DBED92800AD08DE /* CoTouchlabDoppelTestingDoppelRobolectricTestRunner.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		634D23EA1DBED92800AD08DE /* CoTouchlabDoppelTestingDoppelRobolectricTestRunner.m in Sources */ = {isa = PBXBuildFile; fileRef = 634D23B01DBED92800AD08DE /* CoTouchlabDoppelTestingDoppelRobolectricTestRunner.m */; };
+		634D23EB1DBED92800AD08DE /* CoTouchlabDoppelTestingDoppelTest.h in Headers */ = {isa = PBXBuildFile; fileRef = 634D23B11DBED92800AD08DE /* CoTouchlabDoppelTestingDoppelTest.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		634D23EC1DBED92800AD08DE /* CoTouchlabDoppelTestingDoppelTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 634D23B21DBED92800AD08DE /* CoTouchlabDoppelTestingDoppelTest.m */; };
+		634D23ED1DBED92800AD08DE /* CoTouchlabDoppelTestingDopplJunitTestRunner.h in Headers */ = {isa = PBXBuildFile; fileRef = 634D23B31DBED92800AD08DE /* CoTouchlabDoppelTestingDopplJunitTestRunner.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		634D23EE1DBED92800AD08DE /* CoTouchlabDoppelTestingDopplJunitTestRunner.m in Sources */ = {isa = PBXBuildFile; fileRef = 634D23B41DBED92800AD08DE /* CoTouchlabDoppelTestingDopplJunitTestRunner.m */; };
+		634D23EF1DBED92800AD08DE /* CoTouchlabDoppelTestingElementTreeDebug.h in Headers */ = {isa = PBXBuildFile; fileRef = 634D23B51DBED92800AD08DE /* CoTouchlabDoppelTestingElementTreeDebug.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		634D23F01DBED92800AD08DE /* CoTouchlabDoppelTestingElementTreeDebug.m in Sources */ = {isa = PBXBuildFile; fileRef = 634D23B61DBED92800AD08DE /* CoTouchlabDoppelTestingElementTreeDebug.m */; };
+		634D23F11DBED92800AD08DE /* CoTouchlabDoppelTestingMockGen.h in Headers */ = {isa = PBXBuildFile; fileRef = 634D23B71DBED92800AD08DE /* CoTouchlabDoppelTestingMockGen.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		634D23F21DBED92800AD08DE /* CoTouchlabDoppelTestingMockGen.m in Sources */ = {isa = PBXBuildFile; fileRef = 634D23B81DBED92800AD08DE /* CoTouchlabDoppelTestingMockGen.m */; };
+		634D23F31DBED92800AD08DE /* CoTouchlabDoppelTestingPlatformUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = 634D23B91DBED92800AD08DE /* CoTouchlabDoppelTestingPlatformUtils.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		634D23F41DBED92800AD08DE /* CoTouchlabDoppelTestingPlatformUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 634D23BA1DBED92800AD08DE /* CoTouchlabDoppelTestingPlatformUtils.m */; };
+		634D23F51DBED92800AD08DE /* CoTouchlabDoppelTestingRuntimeEnvironment.h in Headers */ = {isa = PBXBuildFile; fileRef = 634D23BB1DBED92800AD08DE /* CoTouchlabDoppelTestingRuntimeEnvironment.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		634D23F61DBED92800AD08DE /* CoTouchlabDoppelTestingRuntimeEnvironment.m in Sources */ = {isa = PBXBuildFile; fileRef = 634D23BC1DBED92800AD08DE /* CoTouchlabDoppelTestingRuntimeEnvironment.m */; };
+		634D23F71DBED92800AD08DE /* CoTouchlabDoppelTestingTestingContext.h in Headers */ = {isa = PBXBuildFile; fileRef = 634D23BD1DBED92800AD08DE /* CoTouchlabDoppelTestingTestingContext.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		634D23F81DBED92800AD08DE /* CoTouchlabDoppelTestingTestingContext.m in Sources */ = {isa = PBXBuildFile; fileRef = 634D23BE1DBED92800AD08DE /* CoTouchlabDoppelTestingTestingContext.m */; };
+		634D23F91DBED92800AD08DE /* CoTouchlabDoppelTestingVisualJunitRunner.h in Headers */ = {isa = PBXBuildFile; fileRef = 634D23BF1DBED92800AD08DE /* CoTouchlabDoppelTestingVisualJunitRunner.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		634D23FA1DBED92800AD08DE /* CoTouchlabDoppelTestingVisualJunitRunner.m in Sources */ = {isa = PBXBuildFile; fileRef = 634D23C01DBED92800AD08DE /* CoTouchlabDoppelTestingVisualJunitRunner.m */; };
+		634D23FB1DBED92800AD08DE /* OrgSkyscreamerJsonassertArrayValueMatcher.h in Headers */ = {isa = PBXBuildFile; fileRef = 634D23C11DBED92800AD08DE /* OrgSkyscreamerJsonassertArrayValueMatcher.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		634D23FC1DBED92800AD08DE /* OrgSkyscreamerJsonassertArrayValueMatcher.m in Sources */ = {isa = PBXBuildFile; fileRef = 634D23C21DBED92800AD08DE /* OrgSkyscreamerJsonassertArrayValueMatcher.m */; };
+		634D23FD1DBED92800AD08DE /* OrgSkyscreamerJsonassertComparatorAbstractComparator.h in Headers */ = {isa = PBXBuildFile; fileRef = 634D23C31DBED92800AD08DE /* OrgSkyscreamerJsonassertComparatorAbstractComparator.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		634D23FE1DBED92800AD08DE /* OrgSkyscreamerJsonassertComparatorAbstractComparator.m in Sources */ = {isa = PBXBuildFile; fileRef = 634D23C41DBED92800AD08DE /* OrgSkyscreamerJsonassertComparatorAbstractComparator.m */; };
+		634D23FF1DBED92800AD08DE /* OrgSkyscreamerJsonassertComparatorArraySizeComparator.h in Headers */ = {isa = PBXBuildFile; fileRef = 634D23C51DBED92800AD08DE /* OrgSkyscreamerJsonassertComparatorArraySizeComparator.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		634D24001DBED92800AD08DE /* OrgSkyscreamerJsonassertComparatorArraySizeComparator.m in Sources */ = {isa = PBXBuildFile; fileRef = 634D23C61DBED92800AD08DE /* OrgSkyscreamerJsonassertComparatorArraySizeComparator.m */; };
+		634D24011DBED92800AD08DE /* OrgSkyscreamerJsonassertComparatorCustomComparator.h in Headers */ = {isa = PBXBuildFile; fileRef = 634D23C71DBED92800AD08DE /* OrgSkyscreamerJsonassertComparatorCustomComparator.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		634D24021DBED92800AD08DE /* OrgSkyscreamerJsonassertComparatorCustomComparator.m in Sources */ = {isa = PBXBuildFile; fileRef = 634D23C81DBED92800AD08DE /* OrgSkyscreamerJsonassertComparatorCustomComparator.m */; };
+		634D24031DBED92800AD08DE /* OrgSkyscreamerJsonassertComparatorDefaultComparator.h in Headers */ = {isa = PBXBuildFile; fileRef = 634D23C91DBED92800AD08DE /* OrgSkyscreamerJsonassertComparatorDefaultComparator.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		634D24041DBED92800AD08DE /* OrgSkyscreamerJsonassertComparatorDefaultComparator.m in Sources */ = {isa = PBXBuildFile; fileRef = 634D23CA1DBED92800AD08DE /* OrgSkyscreamerJsonassertComparatorDefaultComparator.m */; };
+		634D24051DBED92800AD08DE /* OrgSkyscreamerJsonassertComparatorJSONComparator.h in Headers */ = {isa = PBXBuildFile; fileRef = 634D23CB1DBED92800AD08DE /* OrgSkyscreamerJsonassertComparatorJSONComparator.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		634D24061DBED92800AD08DE /* OrgSkyscreamerJsonassertComparatorJSONComparator.m in Sources */ = {isa = PBXBuildFile; fileRef = 634D23CC1DBED92800AD08DE /* OrgSkyscreamerJsonassertComparatorJSONComparator.m */; };
+		634D24071DBED92800AD08DE /* OrgSkyscreamerJsonassertComparatorJSONCompareUtil.h in Headers */ = {isa = PBXBuildFile; fileRef = 634D23CD1DBED92800AD08DE /* OrgSkyscreamerJsonassertComparatorJSONCompareUtil.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		634D24081DBED92800AD08DE /* OrgSkyscreamerJsonassertComparatorJSONCompareUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 634D23CE1DBED92800AD08DE /* OrgSkyscreamerJsonassertComparatorJSONCompareUtil.m */; };
+		634D24091DBED92800AD08DE /* OrgSkyscreamerJsonassertCustomization.h in Headers */ = {isa = PBXBuildFile; fileRef = 634D23CF1DBED92800AD08DE /* OrgSkyscreamerJsonassertCustomization.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		634D240A1DBED92800AD08DE /* OrgSkyscreamerJsonassertCustomization.m in Sources */ = {isa = PBXBuildFile; fileRef = 634D23D01DBED92800AD08DE /* OrgSkyscreamerJsonassertCustomization.m */; };
+		634D240B1DBED92800AD08DE /* OrgSkyscreamerJsonassertFieldComparisonFailure.h in Headers */ = {isa = PBXBuildFile; fileRef = 634D23D11DBED92800AD08DE /* OrgSkyscreamerJsonassertFieldComparisonFailure.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		634D240C1DBED92800AD08DE /* OrgSkyscreamerJsonassertFieldComparisonFailure.m in Sources */ = {isa = PBXBuildFile; fileRef = 634D23D21DBED92800AD08DE /* OrgSkyscreamerJsonassertFieldComparisonFailure.m */; };
+		634D240D1DBED92800AD08DE /* OrgSkyscreamerJsonassertJSONAssert.h in Headers */ = {isa = PBXBuildFile; fileRef = 634D23D31DBED92800AD08DE /* OrgSkyscreamerJsonassertJSONAssert.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		634D240E1DBED92800AD08DE /* OrgSkyscreamerJsonassertJSONAssert.m in Sources */ = {isa = PBXBuildFile; fileRef = 634D23D41DBED92800AD08DE /* OrgSkyscreamerJsonassertJSONAssert.m */; };
+		634D240F1DBED92800AD08DE /* OrgSkyscreamerJsonassertJSONCompare.h in Headers */ = {isa = PBXBuildFile; fileRef = 634D23D51DBED92800AD08DE /* OrgSkyscreamerJsonassertJSONCompare.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		634D24101DBED92800AD08DE /* OrgSkyscreamerJsonassertJSONCompare.m in Sources */ = {isa = PBXBuildFile; fileRef = 634D23D61DBED92800AD08DE /* OrgSkyscreamerJsonassertJSONCompare.m */; };
+		634D24111DBED92800AD08DE /* OrgSkyscreamerJsonassertJSONCompareMode.h in Headers */ = {isa = PBXBuildFile; fileRef = 634D23D71DBED92800AD08DE /* OrgSkyscreamerJsonassertJSONCompareMode.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		634D24121DBED92800AD08DE /* OrgSkyscreamerJsonassertJSONCompareMode.m in Sources */ = {isa = PBXBuildFile; fileRef = 634D23D81DBED92800AD08DE /* OrgSkyscreamerJsonassertJSONCompareMode.m */; };
+		634D24131DBED92800AD08DE /* OrgSkyscreamerJsonassertJSONCompareResult.h in Headers */ = {isa = PBXBuildFile; fileRef = 634D23D91DBED92800AD08DE /* OrgSkyscreamerJsonassertJSONCompareResult.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		634D24141DBED92800AD08DE /* OrgSkyscreamerJsonassertJSONCompareResult.m in Sources */ = {isa = PBXBuildFile; fileRef = 634D23DA1DBED92800AD08DE /* OrgSkyscreamerJsonassertJSONCompareResult.m */; };
+		634D24151DBED92800AD08DE /* OrgSkyscreamerJsonassertJSONParser.h in Headers */ = {isa = PBXBuildFile; fileRef = 634D23DB1DBED92800AD08DE /* OrgSkyscreamerJsonassertJSONParser.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		634D24161DBED92800AD08DE /* OrgSkyscreamerJsonassertJSONParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 634D23DC1DBED92800AD08DE /* OrgSkyscreamerJsonassertJSONParser.m */; };
+		634D24171DBED92800AD08DE /* OrgSkyscreamerJsonassertLocationAwareValueMatcher.h in Headers */ = {isa = PBXBuildFile; fileRef = 634D23DD1DBED92800AD08DE /* OrgSkyscreamerJsonassertLocationAwareValueMatcher.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		634D24181DBED92800AD08DE /* OrgSkyscreamerJsonassertLocationAwareValueMatcher.m in Sources */ = {isa = PBXBuildFile; fileRef = 634D23DE1DBED92800AD08DE /* OrgSkyscreamerJsonassertLocationAwareValueMatcher.m */; };
+		634D24191DBED92800AD08DE /* OrgSkyscreamerJsonassertRegularExpressionValueMatcher.h in Headers */ = {isa = PBXBuildFile; fileRef = 634D23DF1DBED92800AD08DE /* OrgSkyscreamerJsonassertRegularExpressionValueMatcher.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		634D241A1DBED92800AD08DE /* OrgSkyscreamerJsonassertRegularExpressionValueMatcher.m in Sources */ = {isa = PBXBuildFile; fileRef = 634D23E01DBED92800AD08DE /* OrgSkyscreamerJsonassertRegularExpressionValueMatcher.m */; };
+		634D241B1DBED92800AD08DE /* OrgSkyscreamerJsonassertValueMatcher.h in Headers */ = {isa = PBXBuildFile; fileRef = 634D23E11DBED92800AD08DE /* OrgSkyscreamerJsonassertValueMatcher.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		634D241C1DBED92800AD08DE /* OrgSkyscreamerJsonassertValueMatcher.m in Sources */ = {isa = PBXBuildFile; fileRef = 634D23E21DBED92800AD08DE /* OrgSkyscreamerJsonassertValueMatcher.m */; };
+		634D241D1DBED92800AD08DE /* OrgSkyscreamerJsonassertValueMatcherException.h in Headers */ = {isa = PBXBuildFile; fileRef = 634D23E31DBED92800AD08DE /* OrgSkyscreamerJsonassertValueMatcherException.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		634D241E1DBED92800AD08DE /* OrgSkyscreamerJsonassertValueMatcherException.m in Sources */ = {isa = PBXBuildFile; fileRef = 634D23E41DBED92800AD08DE /* OrgSkyscreamerJsonassertValueMatcherException.m */; };
+		634D24211DBEDB9F00AD08DE /* Androidbase.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 634D24201DBEDB9F00AD08DE /* Androidbase.framework */; };
+		634D24231DBEDBDC00AD08DE /* JRE.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 634D24221DBEDBDC00AD08DE /* JRE.framework */; };
+		634D24261DBEDCAD00AD08DE /* JUnit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 634D24241DBEDCAD00AD08DE /* JUnit.framework */; };
+		634D24271DBEDCAD00AD08DE /* Mockito.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 634D24251DBEDCAD00AD08DE /* Mockito.framework */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		634D239C1DBED81800AD08DE /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 634D23881DBED81800AD08DE /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 634D23901DBED81800AD08DE;
+			remoteInfo = AndroidbaseTest;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		634D23911DBED81800AD08DE /* AndroidbaseTest.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = AndroidbaseTest.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		634D23941DBED81800AD08DE /* AndroidbaseTest.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AndroidbaseTest.h; sourceTree = "<group>"; };
+		634D23951DBED81800AD08DE /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		634D239A1DBED81800AD08DE /* AndroidbaseTestTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AndroidbaseTestTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		634D239F1DBED81800AD08DE /* AndroidbaseTestTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AndroidbaseTestTests.m; sourceTree = "<group>"; };
+		634D23A11DBED81800AD08DE /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		634D23AB1DBED92800AD08DE /* CoTouchlabDoppelTestingDoppelHacks.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CoTouchlabDoppelTestingDoppelHacks.h; sourceTree = "<group>"; };
+		634D23AC1DBED92800AD08DE /* CoTouchlabDoppelTestingDoppelHacks.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CoTouchlabDoppelTestingDoppelHacks.m; sourceTree = "<group>"; };
+		634D23AD1DBED92800AD08DE /* CoTouchlabDoppelTestingDoppelParameterizedRobolectricTestRunner.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CoTouchlabDoppelTestingDoppelParameterizedRobolectricTestRunner.h; sourceTree = "<group>"; };
+		634D23AE1DBED92800AD08DE /* CoTouchlabDoppelTestingDoppelParameterizedRobolectricTestRunner.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CoTouchlabDoppelTestingDoppelParameterizedRobolectricTestRunner.m; sourceTree = "<group>"; };
+		634D23AF1DBED92800AD08DE /* CoTouchlabDoppelTestingDoppelRobolectricTestRunner.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CoTouchlabDoppelTestingDoppelRobolectricTestRunner.h; sourceTree = "<group>"; };
+		634D23B01DBED92800AD08DE /* CoTouchlabDoppelTestingDoppelRobolectricTestRunner.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CoTouchlabDoppelTestingDoppelRobolectricTestRunner.m; sourceTree = "<group>"; };
+		634D23B11DBED92800AD08DE /* CoTouchlabDoppelTestingDoppelTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CoTouchlabDoppelTestingDoppelTest.h; sourceTree = "<group>"; };
+		634D23B21DBED92800AD08DE /* CoTouchlabDoppelTestingDoppelTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CoTouchlabDoppelTestingDoppelTest.m; sourceTree = "<group>"; };
+		634D23B31DBED92800AD08DE /* CoTouchlabDoppelTestingDopplJunitTestRunner.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CoTouchlabDoppelTestingDopplJunitTestRunner.h; sourceTree = "<group>"; };
+		634D23B41DBED92800AD08DE /* CoTouchlabDoppelTestingDopplJunitTestRunner.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CoTouchlabDoppelTestingDopplJunitTestRunner.m; sourceTree = "<group>"; };
+		634D23B51DBED92800AD08DE /* CoTouchlabDoppelTestingElementTreeDebug.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CoTouchlabDoppelTestingElementTreeDebug.h; sourceTree = "<group>"; };
+		634D23B61DBED92800AD08DE /* CoTouchlabDoppelTestingElementTreeDebug.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CoTouchlabDoppelTestingElementTreeDebug.m; sourceTree = "<group>"; };
+		634D23B71DBED92800AD08DE /* CoTouchlabDoppelTestingMockGen.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CoTouchlabDoppelTestingMockGen.h; sourceTree = "<group>"; };
+		634D23B81DBED92800AD08DE /* CoTouchlabDoppelTestingMockGen.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CoTouchlabDoppelTestingMockGen.m; sourceTree = "<group>"; };
+		634D23B91DBED92800AD08DE /* CoTouchlabDoppelTestingPlatformUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CoTouchlabDoppelTestingPlatformUtils.h; sourceTree = "<group>"; };
+		634D23BA1DBED92800AD08DE /* CoTouchlabDoppelTestingPlatformUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CoTouchlabDoppelTestingPlatformUtils.m; sourceTree = "<group>"; };
+		634D23BB1DBED92800AD08DE /* CoTouchlabDoppelTestingRuntimeEnvironment.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CoTouchlabDoppelTestingRuntimeEnvironment.h; sourceTree = "<group>"; };
+		634D23BC1DBED92800AD08DE /* CoTouchlabDoppelTestingRuntimeEnvironment.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CoTouchlabDoppelTestingRuntimeEnvironment.m; sourceTree = "<group>"; };
+		634D23BD1DBED92800AD08DE /* CoTouchlabDoppelTestingTestingContext.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CoTouchlabDoppelTestingTestingContext.h; sourceTree = "<group>"; };
+		634D23BE1DBED92800AD08DE /* CoTouchlabDoppelTestingTestingContext.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CoTouchlabDoppelTestingTestingContext.m; sourceTree = "<group>"; };
+		634D23BF1DBED92800AD08DE /* CoTouchlabDoppelTestingVisualJunitRunner.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CoTouchlabDoppelTestingVisualJunitRunner.h; sourceTree = "<group>"; };
+		634D23C01DBED92800AD08DE /* CoTouchlabDoppelTestingVisualJunitRunner.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CoTouchlabDoppelTestingVisualJunitRunner.m; sourceTree = "<group>"; };
+		634D23C11DBED92800AD08DE /* OrgSkyscreamerJsonassertArrayValueMatcher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OrgSkyscreamerJsonassertArrayValueMatcher.h; sourceTree = "<group>"; };
+		634D23C21DBED92800AD08DE /* OrgSkyscreamerJsonassertArrayValueMatcher.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OrgSkyscreamerJsonassertArrayValueMatcher.m; sourceTree = "<group>"; };
+		634D23C31DBED92800AD08DE /* OrgSkyscreamerJsonassertComparatorAbstractComparator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OrgSkyscreamerJsonassertComparatorAbstractComparator.h; sourceTree = "<group>"; };
+		634D23C41DBED92800AD08DE /* OrgSkyscreamerJsonassertComparatorAbstractComparator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OrgSkyscreamerJsonassertComparatorAbstractComparator.m; sourceTree = "<group>"; };
+		634D23C51DBED92800AD08DE /* OrgSkyscreamerJsonassertComparatorArraySizeComparator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OrgSkyscreamerJsonassertComparatorArraySizeComparator.h; sourceTree = "<group>"; };
+		634D23C61DBED92800AD08DE /* OrgSkyscreamerJsonassertComparatorArraySizeComparator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OrgSkyscreamerJsonassertComparatorArraySizeComparator.m; sourceTree = "<group>"; };
+		634D23C71DBED92800AD08DE /* OrgSkyscreamerJsonassertComparatorCustomComparator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OrgSkyscreamerJsonassertComparatorCustomComparator.h; sourceTree = "<group>"; };
+		634D23C81DBED92800AD08DE /* OrgSkyscreamerJsonassertComparatorCustomComparator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OrgSkyscreamerJsonassertComparatorCustomComparator.m; sourceTree = "<group>"; };
+		634D23C91DBED92800AD08DE /* OrgSkyscreamerJsonassertComparatorDefaultComparator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OrgSkyscreamerJsonassertComparatorDefaultComparator.h; sourceTree = "<group>"; };
+		634D23CA1DBED92800AD08DE /* OrgSkyscreamerJsonassertComparatorDefaultComparator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OrgSkyscreamerJsonassertComparatorDefaultComparator.m; sourceTree = "<group>"; };
+		634D23CB1DBED92800AD08DE /* OrgSkyscreamerJsonassertComparatorJSONComparator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OrgSkyscreamerJsonassertComparatorJSONComparator.h; sourceTree = "<group>"; };
+		634D23CC1DBED92800AD08DE /* OrgSkyscreamerJsonassertComparatorJSONComparator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OrgSkyscreamerJsonassertComparatorJSONComparator.m; sourceTree = "<group>"; };
+		634D23CD1DBED92800AD08DE /* OrgSkyscreamerJsonassertComparatorJSONCompareUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OrgSkyscreamerJsonassertComparatorJSONCompareUtil.h; sourceTree = "<group>"; };
+		634D23CE1DBED92800AD08DE /* OrgSkyscreamerJsonassertComparatorJSONCompareUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OrgSkyscreamerJsonassertComparatorJSONCompareUtil.m; sourceTree = "<group>"; };
+		634D23CF1DBED92800AD08DE /* OrgSkyscreamerJsonassertCustomization.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OrgSkyscreamerJsonassertCustomization.h; sourceTree = "<group>"; };
+		634D23D01DBED92800AD08DE /* OrgSkyscreamerJsonassertCustomization.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OrgSkyscreamerJsonassertCustomization.m; sourceTree = "<group>"; };
+		634D23D11DBED92800AD08DE /* OrgSkyscreamerJsonassertFieldComparisonFailure.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OrgSkyscreamerJsonassertFieldComparisonFailure.h; sourceTree = "<group>"; };
+		634D23D21DBED92800AD08DE /* OrgSkyscreamerJsonassertFieldComparisonFailure.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OrgSkyscreamerJsonassertFieldComparisonFailure.m; sourceTree = "<group>"; };
+		634D23D31DBED92800AD08DE /* OrgSkyscreamerJsonassertJSONAssert.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OrgSkyscreamerJsonassertJSONAssert.h; sourceTree = "<group>"; };
+		634D23D41DBED92800AD08DE /* OrgSkyscreamerJsonassertJSONAssert.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OrgSkyscreamerJsonassertJSONAssert.m; sourceTree = "<group>"; };
+		634D23D51DBED92800AD08DE /* OrgSkyscreamerJsonassertJSONCompare.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OrgSkyscreamerJsonassertJSONCompare.h; sourceTree = "<group>"; };
+		634D23D61DBED92800AD08DE /* OrgSkyscreamerJsonassertJSONCompare.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OrgSkyscreamerJsonassertJSONCompare.m; sourceTree = "<group>"; };
+		634D23D71DBED92800AD08DE /* OrgSkyscreamerJsonassertJSONCompareMode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OrgSkyscreamerJsonassertJSONCompareMode.h; sourceTree = "<group>"; };
+		634D23D81DBED92800AD08DE /* OrgSkyscreamerJsonassertJSONCompareMode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OrgSkyscreamerJsonassertJSONCompareMode.m; sourceTree = "<group>"; };
+		634D23D91DBED92800AD08DE /* OrgSkyscreamerJsonassertJSONCompareResult.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OrgSkyscreamerJsonassertJSONCompareResult.h; sourceTree = "<group>"; };
+		634D23DA1DBED92800AD08DE /* OrgSkyscreamerJsonassertJSONCompareResult.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OrgSkyscreamerJsonassertJSONCompareResult.m; sourceTree = "<group>"; };
+		634D23DB1DBED92800AD08DE /* OrgSkyscreamerJsonassertJSONParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OrgSkyscreamerJsonassertJSONParser.h; sourceTree = "<group>"; };
+		634D23DC1DBED92800AD08DE /* OrgSkyscreamerJsonassertJSONParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OrgSkyscreamerJsonassertJSONParser.m; sourceTree = "<group>"; };
+		634D23DD1DBED92800AD08DE /* OrgSkyscreamerJsonassertLocationAwareValueMatcher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OrgSkyscreamerJsonassertLocationAwareValueMatcher.h; sourceTree = "<group>"; };
+		634D23DE1DBED92800AD08DE /* OrgSkyscreamerJsonassertLocationAwareValueMatcher.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OrgSkyscreamerJsonassertLocationAwareValueMatcher.m; sourceTree = "<group>"; };
+		634D23DF1DBED92800AD08DE /* OrgSkyscreamerJsonassertRegularExpressionValueMatcher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OrgSkyscreamerJsonassertRegularExpressionValueMatcher.h; sourceTree = "<group>"; };
+		634D23E01DBED92800AD08DE /* OrgSkyscreamerJsonassertRegularExpressionValueMatcher.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OrgSkyscreamerJsonassertRegularExpressionValueMatcher.m; sourceTree = "<group>"; };
+		634D23E11DBED92800AD08DE /* OrgSkyscreamerJsonassertValueMatcher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OrgSkyscreamerJsonassertValueMatcher.h; sourceTree = "<group>"; };
+		634D23E21DBED92800AD08DE /* OrgSkyscreamerJsonassertValueMatcher.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OrgSkyscreamerJsonassertValueMatcher.m; sourceTree = "<group>"; };
+		634D23E31DBED92800AD08DE /* OrgSkyscreamerJsonassertValueMatcherException.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OrgSkyscreamerJsonassertValueMatcherException.h; sourceTree = "<group>"; };
+		634D23E41DBED92800AD08DE /* OrgSkyscreamerJsonassertValueMatcherException.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OrgSkyscreamerJsonassertValueMatcherException.m; sourceTree = "<group>"; };
+		634D24201DBEDB9F00AD08DE /* Androidbase.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Androidbase.framework; path = Carthage/Build/iOS/Androidbase.framework; sourceTree = "<group>"; };
+		634D24221DBEDBDC00AD08DE /* JRE.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JRE.framework; path = ../../devel/j2objc/dist/frameworks/JRE.framework; sourceTree = "<group>"; };
+		634D24241DBEDCAD00AD08DE /* JUnit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JUnit.framework; path = ../../devel/j2objc/dist/frameworks/JUnit.framework; sourceTree = "<group>"; };
+		634D24251DBEDCAD00AD08DE /* Mockito.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Mockito.framework; path = ../../devel/j2objc/dist/frameworks/Mockito.framework; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		634D238D1DBED81800AD08DE /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				634D24211DBEDB9F00AD08DE /* Androidbase.framework in Frameworks */,
+				634D24231DBEDBDC00AD08DE /* JRE.framework in Frameworks */,
+				634D24261DBEDCAD00AD08DE /* JUnit.framework in Frameworks */,
+				634D24271DBEDCAD00AD08DE /* Mockito.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		634D23971DBED81800AD08DE /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				634D239B1DBED81800AD08DE /* AndroidbaseTest.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		634D23871DBED81800AD08DE = {
+			isa = PBXGroup;
+			children = (
+				634D23931DBED81800AD08DE /* AndroidbaseTest */,
+				634D239E1DBED81800AD08DE /* AndroidbaseTestTests */,
+				634D23921DBED81800AD08DE /* Products */,
+				634D241F1DBEDB9F00AD08DE /* Frameworks */,
+			);
+			sourceTree = "<group>";
+		};
+		634D23921DBED81800AD08DE /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				634D23911DBED81800AD08DE /* AndroidbaseTest.framework */,
+				634D239A1DBED81800AD08DE /* AndroidbaseTestTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		634D23931DBED81800AD08DE /* AndroidbaseTest */ = {
+			isa = PBXGroup;
+			children = (
+				634D23AB1DBED92800AD08DE /* CoTouchlabDoppelTestingDoppelHacks.h */,
+				634D23AC1DBED92800AD08DE /* CoTouchlabDoppelTestingDoppelHacks.m */,
+				634D23AD1DBED92800AD08DE /* CoTouchlabDoppelTestingDoppelParameterizedRobolectricTestRunner.h */,
+				634D23AE1DBED92800AD08DE /* CoTouchlabDoppelTestingDoppelParameterizedRobolectricTestRunner.m */,
+				634D23AF1DBED92800AD08DE /* CoTouchlabDoppelTestingDoppelRobolectricTestRunner.h */,
+				634D23B01DBED92800AD08DE /* CoTouchlabDoppelTestingDoppelRobolectricTestRunner.m */,
+				634D23B11DBED92800AD08DE /* CoTouchlabDoppelTestingDoppelTest.h */,
+				634D23B21DBED92800AD08DE /* CoTouchlabDoppelTestingDoppelTest.m */,
+				634D23B31DBED92800AD08DE /* CoTouchlabDoppelTestingDopplJunitTestRunner.h */,
+				634D23B41DBED92800AD08DE /* CoTouchlabDoppelTestingDopplJunitTestRunner.m */,
+				634D23B51DBED92800AD08DE /* CoTouchlabDoppelTestingElementTreeDebug.h */,
+				634D23B61DBED92800AD08DE /* CoTouchlabDoppelTestingElementTreeDebug.m */,
+				634D23B71DBED92800AD08DE /* CoTouchlabDoppelTestingMockGen.h */,
+				634D23B81DBED92800AD08DE /* CoTouchlabDoppelTestingMockGen.m */,
+				634D23B91DBED92800AD08DE /* CoTouchlabDoppelTestingPlatformUtils.h */,
+				634D23BA1DBED92800AD08DE /* CoTouchlabDoppelTestingPlatformUtils.m */,
+				634D23BB1DBED92800AD08DE /* CoTouchlabDoppelTestingRuntimeEnvironment.h */,
+				634D23BC1DBED92800AD08DE /* CoTouchlabDoppelTestingRuntimeEnvironment.m */,
+				634D23BD1DBED92800AD08DE /* CoTouchlabDoppelTestingTestingContext.h */,
+				634D23BE1DBED92800AD08DE /* CoTouchlabDoppelTestingTestingContext.m */,
+				634D23BF1DBED92800AD08DE /* CoTouchlabDoppelTestingVisualJunitRunner.h */,
+				634D23C01DBED92800AD08DE /* CoTouchlabDoppelTestingVisualJunitRunner.m */,
+				634D23C11DBED92800AD08DE /* OrgSkyscreamerJsonassertArrayValueMatcher.h */,
+				634D23C21DBED92800AD08DE /* OrgSkyscreamerJsonassertArrayValueMatcher.m */,
+				634D23C31DBED92800AD08DE /* OrgSkyscreamerJsonassertComparatorAbstractComparator.h */,
+				634D23C41DBED92800AD08DE /* OrgSkyscreamerJsonassertComparatorAbstractComparator.m */,
+				634D23C51DBED92800AD08DE /* OrgSkyscreamerJsonassertComparatorArraySizeComparator.h */,
+				634D23C61DBED92800AD08DE /* OrgSkyscreamerJsonassertComparatorArraySizeComparator.m */,
+				634D23C71DBED92800AD08DE /* OrgSkyscreamerJsonassertComparatorCustomComparator.h */,
+				634D23C81DBED92800AD08DE /* OrgSkyscreamerJsonassertComparatorCustomComparator.m */,
+				634D23C91DBED92800AD08DE /* OrgSkyscreamerJsonassertComparatorDefaultComparator.h */,
+				634D23CA1DBED92800AD08DE /* OrgSkyscreamerJsonassertComparatorDefaultComparator.m */,
+				634D23CB1DBED92800AD08DE /* OrgSkyscreamerJsonassertComparatorJSONComparator.h */,
+				634D23CC1DBED92800AD08DE /* OrgSkyscreamerJsonassertComparatorJSONComparator.m */,
+				634D23CD1DBED92800AD08DE /* OrgSkyscreamerJsonassertComparatorJSONCompareUtil.h */,
+				634D23CE1DBED92800AD08DE /* OrgSkyscreamerJsonassertComparatorJSONCompareUtil.m */,
+				634D23CF1DBED92800AD08DE /* OrgSkyscreamerJsonassertCustomization.h */,
+				634D23D01DBED92800AD08DE /* OrgSkyscreamerJsonassertCustomization.m */,
+				634D23D11DBED92800AD08DE /* OrgSkyscreamerJsonassertFieldComparisonFailure.h */,
+				634D23D21DBED92800AD08DE /* OrgSkyscreamerJsonassertFieldComparisonFailure.m */,
+				634D23D31DBED92800AD08DE /* OrgSkyscreamerJsonassertJSONAssert.h */,
+				634D23D41DBED92800AD08DE /* OrgSkyscreamerJsonassertJSONAssert.m */,
+				634D23D51DBED92800AD08DE /* OrgSkyscreamerJsonassertJSONCompare.h */,
+				634D23D61DBED92800AD08DE /* OrgSkyscreamerJsonassertJSONCompare.m */,
+				634D23D71DBED92800AD08DE /* OrgSkyscreamerJsonassertJSONCompareMode.h */,
+				634D23D81DBED92800AD08DE /* OrgSkyscreamerJsonassertJSONCompareMode.m */,
+				634D23D91DBED92800AD08DE /* OrgSkyscreamerJsonassertJSONCompareResult.h */,
+				634D23DA1DBED92800AD08DE /* OrgSkyscreamerJsonassertJSONCompareResult.m */,
+				634D23DB1DBED92800AD08DE /* OrgSkyscreamerJsonassertJSONParser.h */,
+				634D23DC1DBED92800AD08DE /* OrgSkyscreamerJsonassertJSONParser.m */,
+				634D23DD1DBED92800AD08DE /* OrgSkyscreamerJsonassertLocationAwareValueMatcher.h */,
+				634D23DE1DBED92800AD08DE /* OrgSkyscreamerJsonassertLocationAwareValueMatcher.m */,
+				634D23DF1DBED92800AD08DE /* OrgSkyscreamerJsonassertRegularExpressionValueMatcher.h */,
+				634D23E01DBED92800AD08DE /* OrgSkyscreamerJsonassertRegularExpressionValueMatcher.m */,
+				634D23E11DBED92800AD08DE /* OrgSkyscreamerJsonassertValueMatcher.h */,
+				634D23E21DBED92800AD08DE /* OrgSkyscreamerJsonassertValueMatcher.m */,
+				634D23E31DBED92800AD08DE /* OrgSkyscreamerJsonassertValueMatcherException.h */,
+				634D23E41DBED92800AD08DE /* OrgSkyscreamerJsonassertValueMatcherException.m */,
+				634D23941DBED81800AD08DE /* AndroidbaseTest.h */,
+				634D23951DBED81800AD08DE /* Info.plist */,
+			);
+			path = AndroidbaseTest;
+			sourceTree = "<group>";
+		};
+		634D239E1DBED81800AD08DE /* AndroidbaseTestTests */ = {
+			isa = PBXGroup;
+			children = (
+				634D239F1DBED81800AD08DE /* AndroidbaseTestTests.m */,
+				634D23A11DBED81800AD08DE /* Info.plist */,
+			);
+			path = AndroidbaseTestTests;
+			sourceTree = "<group>";
+		};
+		634D241F1DBEDB9F00AD08DE /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				634D24241DBEDCAD00AD08DE /* JUnit.framework */,
+				634D24251DBEDCAD00AD08DE /* Mockito.framework */,
+				634D24221DBEDBDC00AD08DE /* JRE.framework */,
+				634D24201DBEDB9F00AD08DE /* Androidbase.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		634D238E1DBED81800AD08DE /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				634D23F11DBED92800AD08DE /* CoTouchlabDoppelTestingMockGen.h in Headers */,
+				634D23F31DBED92800AD08DE /* CoTouchlabDoppelTestingPlatformUtils.h in Headers */,
+				634D24131DBED92800AD08DE /* OrgSkyscreamerJsonassertJSONCompareResult.h in Headers */,
+				634D24171DBED92800AD08DE /* OrgSkyscreamerJsonassertLocationAwareValueMatcher.h in Headers */,
+				634D24011DBED92800AD08DE /* OrgSkyscreamerJsonassertComparatorCustomComparator.h in Headers */,
+				634D23FF1DBED92800AD08DE /* OrgSkyscreamerJsonassertComparatorArraySizeComparator.h in Headers */,
+				634D241D1DBED92800AD08DE /* OrgSkyscreamerJsonassertValueMatcherException.h in Headers */,
+				634D241B1DBED92800AD08DE /* OrgSkyscreamerJsonassertValueMatcher.h in Headers */,
+				634D23F91DBED92800AD08DE /* CoTouchlabDoppelTestingVisualJunitRunner.h in Headers */,
+				634D23F51DBED92800AD08DE /* CoTouchlabDoppelTestingRuntimeEnvironment.h in Headers */,
+				634D23FB1DBED92800AD08DE /* OrgSkyscreamerJsonassertArrayValueMatcher.h in Headers */,
+				634D240D1DBED92800AD08DE /* OrgSkyscreamerJsonassertJSONAssert.h in Headers */,
+				634D24051DBED92800AD08DE /* OrgSkyscreamerJsonassertComparatorJSONComparator.h in Headers */,
+				634D23E71DBED92800AD08DE /* CoTouchlabDoppelTestingDoppelParameterizedRobolectricTestRunner.h in Headers */,
+				634D23F71DBED92800AD08DE /* CoTouchlabDoppelTestingTestingContext.h in Headers */,
+				634D23FD1DBED92800AD08DE /* OrgSkyscreamerJsonassertComparatorAbstractComparator.h in Headers */,
+				634D240B1DBED92800AD08DE /* OrgSkyscreamerJsonassertFieldComparisonFailure.h in Headers */,
+				634D23EB1DBED92800AD08DE /* CoTouchlabDoppelTestingDoppelTest.h in Headers */,
+				634D23E51DBED92800AD08DE /* CoTouchlabDoppelTestingDoppelHacks.h in Headers */,
+				634D23E91DBED92800AD08DE /* CoTouchlabDoppelTestingDoppelRobolectricTestRunner.h in Headers */,
+				634D23ED1DBED92800AD08DE /* CoTouchlabDoppelTestingDopplJunitTestRunner.h in Headers */,
+				634D24151DBED92800AD08DE /* OrgSkyscreamerJsonassertJSONParser.h in Headers */,
+				634D24091DBED92800AD08DE /* OrgSkyscreamerJsonassertCustomization.h in Headers */,
+				634D24191DBED92800AD08DE /* OrgSkyscreamerJsonassertRegularExpressionValueMatcher.h in Headers */,
+				634D24111DBED92800AD08DE /* OrgSkyscreamerJsonassertJSONCompareMode.h in Headers */,
+				634D24031DBED92800AD08DE /* OrgSkyscreamerJsonassertComparatorDefaultComparator.h in Headers */,
+				634D240F1DBED92800AD08DE /* OrgSkyscreamerJsonassertJSONCompare.h in Headers */,
+				634D23EF1DBED92800AD08DE /* CoTouchlabDoppelTestingElementTreeDebug.h in Headers */,
+				634D24071DBED92800AD08DE /* OrgSkyscreamerJsonassertComparatorJSONCompareUtil.h in Headers */,
+				634D23A21DBED81800AD08DE /* AndroidbaseTest.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		634D23901DBED81800AD08DE /* AndroidbaseTest */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 634D23A51DBED81800AD08DE /* Build configuration list for PBXNativeTarget "AndroidbaseTest" */;
+			buildPhases = (
+				634D238C1DBED81800AD08DE /* Sources */,
+				634D238D1DBED81800AD08DE /* Frameworks */,
+				634D238E1DBED81800AD08DE /* Headers */,
+				634D238F1DBED81800AD08DE /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = AndroidbaseTest;
+			productName = AndroidbaseTest;
+			productReference = 634D23911DBED81800AD08DE /* AndroidbaseTest.framework */;
+			productType = "com.apple.product-type.framework";
+		};
+		634D23991DBED81800AD08DE /* AndroidbaseTestTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 634D23A81DBED81800AD08DE /* Build configuration list for PBXNativeTarget "AndroidbaseTestTests" */;
+			buildPhases = (
+				634D23961DBED81800AD08DE /* Sources */,
+				634D23971DBED81800AD08DE /* Frameworks */,
+				634D23981DBED81800AD08DE /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				634D239D1DBED81800AD08DE /* PBXTargetDependency */,
+			);
+			name = AndroidbaseTestTests;
+			productName = AndroidbaseTestTests;
+			productReference = 634D239A1DBED81800AD08DE /* AndroidbaseTestTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		634D23881DBED81800AD08DE /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0800;
+				ORGANIZATIONNAME = "Kevin Galligan";
+				TargetAttributes = {
+					634D23901DBED81800AD08DE = {
+						CreatedOnToolsVersion = 8.0;
+						ProvisioningStyle = Automatic;
+					};
+					634D23991DBED81800AD08DE = {
+						CreatedOnToolsVersion = 8.0;
+						ProvisioningStyle = Automatic;
+					};
+				};
+			};
+			buildConfigurationList = 634D238B1DBED81800AD08DE /* Build configuration list for PBXProject "AndroidbaseTest" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = 634D23871DBED81800AD08DE;
+			productRefGroup = 634D23921DBED81800AD08DE /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				634D23901DBED81800AD08DE /* AndroidbaseTest */,
+				634D23991DBED81800AD08DE /* AndroidbaseTestTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		634D238F1DBED81800AD08DE /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		634D23981DBED81800AD08DE /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		634D238C1DBED81800AD08DE /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				634D23FA1DBED92800AD08DE /* CoTouchlabDoppelTestingVisualJunitRunner.m in Sources */,
+				634D23F21DBED92800AD08DE /* CoTouchlabDoppelTestingMockGen.m in Sources */,
+				634D24041DBED92800AD08DE /* OrgSkyscreamerJsonassertComparatorDefaultComparator.m in Sources */,
+				634D23EC1DBED92800AD08DE /* CoTouchlabDoppelTestingDoppelTest.m in Sources */,
+				634D24001DBED92800AD08DE /* OrgSkyscreamerJsonassertComparatorArraySizeComparator.m in Sources */,
+				634D24061DBED92800AD08DE /* OrgSkyscreamerJsonassertComparatorJSONComparator.m in Sources */,
+				634D24101DBED92800AD08DE /* OrgSkyscreamerJsonassertJSONCompare.m in Sources */,
+				634D240E1DBED92800AD08DE /* OrgSkyscreamerJsonassertJSONAssert.m in Sources */,
+				634D24081DBED92800AD08DE /* OrgSkyscreamerJsonassertComparatorJSONCompareUtil.m in Sources */,
+				634D241A1DBED92800AD08DE /* OrgSkyscreamerJsonassertRegularExpressionValueMatcher.m in Sources */,
+				634D24181DBED92800AD08DE /* OrgSkyscreamerJsonassertLocationAwareValueMatcher.m in Sources */,
+				634D240C1DBED92800AD08DE /* OrgSkyscreamerJsonassertFieldComparisonFailure.m in Sources */,
+				634D23E61DBED92800AD08DE /* CoTouchlabDoppelTestingDoppelHacks.m in Sources */,
+				634D23F81DBED92800AD08DE /* CoTouchlabDoppelTestingTestingContext.m in Sources */,
+				634D24021DBED92800AD08DE /* OrgSkyscreamerJsonassertComparatorCustomComparator.m in Sources */,
+				634D240A1DBED92800AD08DE /* OrgSkyscreamerJsonassertCustomization.m in Sources */,
+				634D24161DBED92800AD08DE /* OrgSkyscreamerJsonassertJSONParser.m in Sources */,
+				634D23E81DBED92800AD08DE /* CoTouchlabDoppelTestingDoppelParameterizedRobolectricTestRunner.m in Sources */,
+				634D23F61DBED92800AD08DE /* CoTouchlabDoppelTestingRuntimeEnvironment.m in Sources */,
+				634D241C1DBED92800AD08DE /* OrgSkyscreamerJsonassertValueMatcher.m in Sources */,
+				634D24121DBED92800AD08DE /* OrgSkyscreamerJsonassertJSONCompareMode.m in Sources */,
+				634D23FC1DBED92800AD08DE /* OrgSkyscreamerJsonassertArrayValueMatcher.m in Sources */,
+				634D23F01DBED92800AD08DE /* CoTouchlabDoppelTestingElementTreeDebug.m in Sources */,
+				634D24141DBED92800AD08DE /* OrgSkyscreamerJsonassertJSONCompareResult.m in Sources */,
+				634D241E1DBED92800AD08DE /* OrgSkyscreamerJsonassertValueMatcherException.m in Sources */,
+				634D23F41DBED92800AD08DE /* CoTouchlabDoppelTestingPlatformUtils.m in Sources */,
+				634D23FE1DBED92800AD08DE /* OrgSkyscreamerJsonassertComparatorAbstractComparator.m in Sources */,
+				634D23EA1DBED92800AD08DE /* CoTouchlabDoppelTestingDoppelRobolectricTestRunner.m in Sources */,
+				634D23EE1DBED92800AD08DE /* CoTouchlabDoppelTestingDopplJunitTestRunner.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		634D23961DBED81800AD08DE /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				634D23A01DBED81800AD08DE /* AndroidbaseTestTests.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		634D239D1DBED81800AD08DE /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 634D23901DBED81800AD08DE /* AndroidbaseTest */;
+			targetProxy = 634D239C1DBED81800AD08DE /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		634D23A31DBED81800AD08DE /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVES = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Debug;
+		};
+		634D23A41DBED81800AD08DE /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVES = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Release;
+		};
+		634D23A61DBED81800AD08DE /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_ARC = NO;
+				CODE_SIGN_IDENTITY = "";
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Carthage/Build/iOS",
+					"$(J2OBJC_LOCAL_PATH)/frameworks",
+				);
+				HEADER_SEARCH_PATHS = (
+					"$(J2OBJC_LOCAL_PATH)/frameworks/JRE.framework/Headers",
+					"$(J2OBJC_LOCAL_PATH)/frameworks/JUnit.framework/Headers",
+					"$(J2OBJC_LOCAL_PATH)/frameworks/Mockito.framework/Headers",
+					"$(PROJECT_DIR)/Carthage/Build/iOS/Androidbase.framework/Headers",
+				);
+				INFOPLIST_FILE = AndroidbaseTest/Info.plist;
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = co.touchlab.AndroidbaseTest;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+			};
+			name = Debug;
+		};
+		634D23A71DBED81800AD08DE /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_ARC = NO;
+				CODE_SIGN_IDENTITY = "";
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Carthage/Build/iOS",
+					"$(J2OBJC_LOCAL_PATH)/frameworks",
+				);
+				HEADER_SEARCH_PATHS = (
+					"$(J2OBJC_LOCAL_PATH)/frameworks/JRE.framework/Headers",
+					"$(J2OBJC_LOCAL_PATH)/frameworks/JUnit.framework/Headers",
+					"$(J2OBJC_LOCAL_PATH)/frameworks/Mockito.framework/Headers",
+					"$(PROJECT_DIR)/Carthage/Build/iOS/Androidbase.framework/Headers",
+				);
+				INFOPLIST_FILE = AndroidbaseTest/Info.plist;
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = co.touchlab.AndroidbaseTest;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+			};
+			name = Release;
+		};
+		634D23A91DBED81800AD08DE /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				INFOPLIST_FILE = AndroidbaseTestTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = co.touchlab.AndroidbaseTestTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		634D23AA1DBED81800AD08DE /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				INFOPLIST_FILE = AndroidbaseTestTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = co.touchlab.AndroidbaseTestTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		634D238B1DBED81800AD08DE /* Build configuration list for PBXProject "AndroidbaseTest" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				634D23A31DBED81800AD08DE /* Debug */,
+				634D23A41DBED81800AD08DE /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		634D23A51DBED81800AD08DE /* Build configuration list for PBXNativeTarget "AndroidbaseTest" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				634D23A61DBED81800AD08DE /* Debug */,
+				634D23A71DBED81800AD08DE /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+		634D23A81DBED81800AD08DE /* Build configuration list for PBXNativeTarget "AndroidbaseTestTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				634D23A91DBED81800AD08DE /* Debug */,
+				634D23AA1DBED81800AD08DE /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 634D23881DBED81800AD08DE /* Project object */;
+}
