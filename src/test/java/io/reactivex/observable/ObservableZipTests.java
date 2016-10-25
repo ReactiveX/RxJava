@@ -28,7 +28,7 @@ import io.reactivex.observables.GroupedObservable;
 public class ObservableZipTests {
 
     @Test
-    public void testZipObservableOfObservables() {
+    public void testZipObservableOfObservables() throws Exception {
         ObservableEventStream.getEventStream("HTTP-ClusterB", 20)
                 .groupBy(new Function<Event, String>() {
                     @Override
@@ -63,6 +63,8 @@ public class ObservableZipTests {
                 });
 
         System.out.println("**** finished");
+
+        Thread.sleep(200); // make sure the event streams receive their interrupt
     }
 
     /**

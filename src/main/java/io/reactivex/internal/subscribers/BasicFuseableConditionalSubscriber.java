@@ -90,29 +90,6 @@ public abstract class BasicFuseableConditionalSubscriber<T, R> implements Condit
     // Convenience and state-aware methods
     // -----------------------------------
 
-    /**
-     * Emits the value to the actual subscriber if {@link #done} is false.
-     * @param value the value to signal
-     */
-    protected final void next(R value) {
-        if (done) {
-            return;
-        }
-        actual.onNext(value);
-    }
-
-    /**
-     * Tries to emit the value to the actual subscriber if {@link #done} is false
-     * and returns the response from the {@link ConditionalSubscriber#tryOnNext(Object)}
-     * call.
-     * @param value the value to signal
-     * @return the response from the actual subscriber: true indicates accepted value,
-     * false indicates dropped value
-     */
-    protected final boolean tryNext(R value) {
-        return !done && actual.tryOnNext(value);
-    }
-
     @Override
     public void onError(Throwable t) {
         if (done) {
@@ -140,27 +117,6 @@ public abstract class BasicFuseableConditionalSubscriber<T, R> implements Condit
         }
         done = true;
         actual.onComplete();
-    }
-
-    /**
-     * Calls the upstream's QueueSubscription.requestFusion with the mode and
-     * saves the established mode in {@link #sourceMode}.
-     * <p>
-     * If the upstream doesn't support fusion ({@link #qs} is null), the method
-     * returns {@link QueueSubscription#NONE}.
-     * @param mode the fusion mode requested
-     * @return the established fusion mode
-     */
-    protected final int transitiveFusion(int mode) {
-        QueueSubscription<T> qs = this.qs;
-        if (qs != null) {
-            int m = qs.requestFusion(mode);
-            if (m != NONE) {
-                sourceMode = m;
-            }
-            return m;
-        }
-        return NONE;
     }
 
     /**

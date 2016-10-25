@@ -18,6 +18,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.*;
 import org.reactivestreams.*;
@@ -28,6 +29,7 @@ import io.reactivex.functions.*;
 import io.reactivex.internal.fuseable.HasUpstreamPublisher;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.plugins.RxJavaPlugins;
+import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.TestSubscriber;
 
 public class FlowableReduceTest {
@@ -383,5 +385,89 @@ public class FlowableReduceTest {
         })
         .test()
         .assertFailure(TestException.class);
+    }
+
+    /**
+     * https://gist.github.com/jurna/353a2bd8ff83f0b24f0b5bc772077d61
+     */
+    @Test
+    public void shouldReduceTo10Events() {
+        final AtomicInteger count = new AtomicInteger();
+
+        Flowable.range(0, 10).flatMap(new Function<Integer, Publisher<String>>() {
+            @Override
+            public Publisher<String> apply(final Integer x) throws Exception {
+                return Flowable.range(0, 2)
+                    .map(new Function<Integer, String>() {
+                    @Override
+                    public String apply(Integer y) throws Exception {
+                        return blockingOp(x, y);
+                    }
+                }).subscribeOn(Schedulers.io())
+                .reduce(new BiFunction<String, String, String>() {
+                    @Override
+                    public String apply(String l, String r) throws Exception {
+                        return l + "_" + r;
+                    }
+                })
+                .doOnSuccess(new Consumer<String>() {
+                    @Override
+                    public void accept(String s) throws Exception {
+                        count.incrementAndGet();
+                        System.out.println("Completed with " + s);}
+                })
+                .toFlowable();
+            }
+        }
+        ).blockingLast();
+
+        assertEquals(10, count.get());
+    }
+
+    /**
+     * https://gist.github.com/jurna/353a2bd8ff83f0b24f0b5bc772077d61
+     */
+    @Test
+    public void shouldReduceTo10EventsFlowable() {
+        final AtomicInteger count = new AtomicInteger();
+
+        Flowable.range(0, 10).flatMap(new Function<Integer, Publisher<String>>() {
+            @Override
+            public Publisher<String> apply(final Integer x) throws Exception {
+                return Flowable.range(0, 2)
+                    .map(new Function<Integer, String>() {
+                    @Override
+                    public String apply(Integer y) throws Exception {
+                        return blockingOp(x, y);
+                    }
+                }).subscribeOn(Schedulers.io())
+                .reduce(new BiFunction<String, String, String>() {
+                    @Override
+                    public String apply(String l, String r) throws Exception {
+                        return l + "_" + r;
+                    }
+                })
+                .toFlowable()
+                .doOnNext(new Consumer<String>() {
+                    @Override
+                    public void accept(String s) throws Exception {
+                        count.incrementAndGet();
+                        System.out.println("Completed with " + s);}
+                })
+                ;
+            }
+        }
+        ).blockingLast();
+
+        assertEquals(10, count.get());
+    }
+
+    static String blockingOp(Integer x, Integer y) {
+        try {
+            Thread.sleep(100);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        return "x" + x + "y" + y;
     }
 }

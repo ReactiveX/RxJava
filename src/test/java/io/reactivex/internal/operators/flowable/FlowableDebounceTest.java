@@ -25,7 +25,7 @@ import org.reactivestreams.*;
 
 import io.reactivex.*;
 import io.reactivex.disposables.*;
-import io.reactivex.exceptions.TestException;
+import io.reactivex.exceptions.*;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.functions.Functions;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
@@ -388,5 +388,23 @@ public class FlowableDebounceTest {
         Flowable.just(1).debounce(Functions.justFunction(Flowable.empty()))
         .test()
         .assertResult(1);
+    }
+
+    @Test
+    public void backpressureNoRequest() {
+        Flowable.just(1)
+        .debounce(Functions.justFunction(Flowable.timer(1, TimeUnit.MILLISECONDS)))
+        .test(0L)
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertFailure(MissingBackpressureException.class);
+    }
+
+    @Test
+    public void backpressureNoRequestTimed() {
+        Flowable.just(1)
+        .debounce(1, TimeUnit.MILLISECONDS)
+        .test(0L)
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertFailure(MissingBackpressureException.class);
     }
 }

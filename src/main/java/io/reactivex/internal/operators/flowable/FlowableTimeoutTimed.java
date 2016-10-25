@@ -131,13 +131,10 @@ public final class FlowableTimeoutTimed<T> extends AbstractFlowableWithUpstream<
                             done = true;
                             s.cancel();
                             DisposableHelper.dispose(timer);
-                            worker.dispose();
 
-                            if (other == null) {
-                                actual.onError(new TimeoutException());
-                            } else {
-                                subscribeNext();
-                            }
+                            subscribeNext();
+
+                            worker.dispose();
                         }
                     }
                 }, timeout, unit);

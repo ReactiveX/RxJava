@@ -291,4 +291,22 @@ public class FlowableOnBackpressureBufferTest {
         .assertNoErrors()
         .assertComplete();
     }
+
+    @Test
+    public void emptyDelayError() {
+        Flowable.empty()
+        .onBackpressureBuffer(true)
+        .test()
+        .assertResult();
+    }
+
+    @Test
+    public void fusionRejected() {
+        TestSubscriber<Integer> ts = SubscriberFusion.newTest(QueueSubscription.SYNC);
+
+        Flowable.<Integer>never().onBackpressureBuffer().subscribe(ts);
+
+        SubscriberFusion.assertFusion(ts, QueueSubscription.NONE)
+        .assertEmpty();
+    }
 }

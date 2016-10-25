@@ -1732,4 +1732,114 @@ public class FlowableGroupByTest {
         .assertResult(1);
     }
 
+    @Test
+    public void mainFusionRejected() {
+        TestSubscriber<Flowable<Integer>> ts = SubscriberFusion.newTest(QueueSubscription.SYNC);
+
+        Flowable.just(1)
+        .groupBy(Functions.justFunction(1))
+        .subscribe(ts);
+
+        SubscriberFusion.assertFusion(ts, QueueSubscription.NONE)
+        .assertValueCount(1)
+        .assertComplete()
+        .assertNoErrors();
+    }
+
+    @Test
+    public void badSource() {
+        TestHelper.checkBadSourceFlowable(new Function<Flowable<Object>, Object>() {
+            @Override
+            public Object apply(Flowable<Object> f) throws Exception {
+                return f.groupBy(Functions.justFunction(1));
+            }
+        }, false, 1, 1, (Object[])null);
+    }
+
+    @Test
+    public void badRequest() {
+        TestHelper.assertBadRequestReported(Flowable.just(1)
+                .groupBy(Functions.justFunction(1)));
+    }
+
+    @Test
+    public void doubleOnSubscribe() {
+        TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Publisher<GroupedFlowable<Integer, Object>>>() {
+            @Override
+            public Publisher<GroupedFlowable<Integer, Object>> apply(Flowable<Object> f) throws Exception {
+                return f.groupBy(Functions.justFunction(1));
+            }
+        });
+    }
+
+    @Test
+    public void nullKeyTakeInner() {
+        Flowable.just(1)
+        .groupBy(new Function<Integer, Object>() {
+            @Override
+            public Object apply(Integer v) throws Exception {
+                return null;
+            }
+        })
+        .flatMap(new Function<GroupedFlowable<Object, Integer>, Publisher<Integer>>() {
+            @Override
+            public Publisher<Integer> apply(GroupedFlowable<Object, Integer> g) throws Exception {
+                return g.take(1);
+            }
+        })
+        .test()
+        .assertResult(1);
+    }
+
+    @Test
+    public void errorFused() {
+        TestSubscriber<Object> ts = SubscriberFusion.newTest(QueueSubscription.ANY);
+
+        Flowable.error(new TestException())
+        .groupBy(Functions.justFunction(1))
+        .subscribe(ts);
+
+        SubscriberFusion.assertFusion(ts, QueueSubscription.ASYNC)
+        .assertFailure(TestException.class);
+    }
+
+    @Test
+    public void errorFusedDelayed() {
+        TestSubscriber<Object> ts = SubscriberFusion.newTest(QueueSubscription.ANY);
+
+        Flowable.error(new TestException())
+        .groupBy(Functions.justFunction(1), true)
+        .subscribe(ts);
+
+        SubscriberFusion.assertFusion(ts, QueueSubscription.ASYNC)
+        .assertFailure(TestException.class);
+    }
+
+    @Test
+    public void groupError() {
+        Flowable.just(1).concatWith(Flowable.<Integer>error(new TestException()))
+        .groupBy(Functions.justFunction(1), true)
+        .flatMap(new Function<GroupedFlowable<Integer, Integer>, Publisher<Integer>>() {
+            @Override
+            public Publisher<Integer> apply(GroupedFlowable<Integer, Integer> g) throws Exception {
+                return g.hide();
+            }
+        })
+        .test()
+        .assertFailure(TestException.class, 1);
+    }
+
+    @Test
+    public void groupComplete() {
+        Flowable.just(1)
+        .groupBy(Functions.justFunction(1), true)
+        .flatMap(new Function<GroupedFlowable<Integer, Integer>, Publisher<Integer>>() {
+            @Override
+            public Publisher<Integer> apply(GroupedFlowable<Integer, Integer> g) throws Exception {
+                return g.hide();
+            }
+        })
+        .test()
+        .assertResult(1);
+    }
 }

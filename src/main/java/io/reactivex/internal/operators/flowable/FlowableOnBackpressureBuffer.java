@@ -13,13 +13,13 @@
 
 package io.reactivex.internal.operators.flowable;
 
-import java.util.concurrent.atomic.*;
+import java.util.concurrent.atomic.AtomicLong;
 
 import org.reactivestreams.*;
 
 import io.reactivex.exceptions.*;
 import io.reactivex.functions.Action;
-import io.reactivex.internal.fuseable.SimpleQueue;
+import io.reactivex.internal.fuseable.*;
 import io.reactivex.internal.queue.*;
 import io.reactivex.internal.subscriptions.*;
 import io.reactivex.internal.util.BackpressureHelper;
@@ -49,7 +49,7 @@ public final class FlowableOnBackpressureBuffer<T> extends AbstractFlowableWithU
         private static final long serialVersionUID = -2514538129242366402L;
 
         final Subscriber<? super T> actual;
-        final SimpleQueue<T> queue;
+        final SimplePlainQueue<T> queue;
         final boolean delayError;
         final Action onOverflow;
 
@@ -70,7 +70,7 @@ public final class FlowableOnBackpressureBuffer<T> extends AbstractFlowableWithU
             this.onOverflow = onOverflow;
             this.delayError = delayError;
 
-            SimpleQueue<T> q;
+            SimplePlainQueue<T> q;
 
             if (unbounded) {
                 q = new SpscLinkedArrayQueue<T>(bufferSize);
@@ -157,7 +157,7 @@ public final class FlowableOnBackpressureBuffer<T> extends AbstractFlowableWithU
         void drain() {
             if (getAndIncrement() == 0) {
                 int missed = 1;
-                final SimpleQueue<T> q = queue;
+                final SimplePlainQueue<T> q = queue;
                 final Subscriber<? super T> a = actual;
                 for (;;) {
 
@@ -171,16 +171,7 @@ public final class FlowableOnBackpressureBuffer<T> extends AbstractFlowableWithU
 
                     while (e != r) {
                         boolean d = done;
-                        T v;
-
-                        try {
-                            v = q.poll();
-                        } catch (Throwable ex) {
-                            Exceptions.throwIfFatal(ex);
-                            s.cancel();
-                            a.onError(ex);
-                            return;
-                        }
+                        T v = q.poll();
                         boolean empty = v == null;
 
                         if (checkTerminated(d, empty, a)) {

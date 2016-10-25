@@ -21,12 +21,13 @@ import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 
 import org.junit.*;
-import org.reactivestreams.Publisher;
+import org.reactivestreams.*;
 
 import io.reactivex.*;
 import io.reactivex.exceptions.*;
 import io.reactivex.functions.*;
 import io.reactivex.internal.functions.Functions;
+import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.processors.*;
 import io.reactivex.schedulers.Schedulers;
@@ -1061,4 +1062,117 @@ public class FlowableConcatMapEagerTest {
         });
     }
 
+    @Test
+    public void doubleOnError() {
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            @SuppressWarnings("rawtypes")
+            final Subscriber[] sub = { null };
+
+            new Flowable<Integer>() {
+                @Override
+                protected void subscribeActual(Subscriber<? super Integer> s) {
+                    sub[0] = s;
+                    s.onSubscribe(new BooleanSubscription());
+                    s.onNext(1);
+                    s.onError(new TestException("First"));
+                }
+            }
+            .concatMapEager(Functions.justFunction(Flowable.just(1)))
+            .test()
+            .assertFailureAndMessage(TestException.class, "First", 1);
+
+            sub[0].onError(new TestException("Second"));
+
+            TestHelper.assertError(errors, 0, TestException.class, "Second");
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
+
+    @Test
+    public void innerOverflow() {
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            Flowable.just(1)
+            .concatMapEager(new Function<Integer, Publisher<Integer>>() {
+                @Override
+                public Publisher<Integer> apply(Integer v) throws Exception {
+                    return new Flowable<Integer>() {
+                        @Override
+                        protected void subscribeActual(Subscriber<? super Integer> s) {
+                            s.onSubscribe(new BooleanSubscription());
+                            s.onNext(1);
+                            s.onNext(2);
+                            s.onError(new TestException());
+                        }
+                    };
+                }
+            }, 1, 1)
+            .test(0L)
+            .assertFailure(MissingBackpressureException.class);
+
+            TestHelper.assertError(errors, 0, TestException.class);
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
+
+    @Test
+    public void unboundedIn() {
+        int n = Flowable.bufferSize() * 2;
+        Flowable.range(1, n)
+        .concatMapEager(new Function<Integer, Publisher<Integer>>() {
+            @Override
+            public Publisher<Integer> apply(Integer v) throws Exception {
+                return Flowable.just(1);
+            }
+        }, Integer.MAX_VALUE, 16)
+        .test()
+        .assertValueCount(n)
+        .assertComplete()
+        .assertNoErrors();
+    }
+
+    @Test
+    public void drainCancelRaceOnEmpty() {
+        for (int i = 0; i < 500; i++) {
+            final PublishProcessor<Integer> pp = PublishProcessor.create();
+
+            final TestSubscriber<Integer> ts = new TestSubscriber<Integer>(0L);
+
+            Flowable.just(1)
+            .concatMapEager(Functions.justFunction(pp))
+            .subscribe(ts);
+
+            Runnable r1 = new Runnable() {
+                @Override
+                public void run() {
+                    pp.onComplete();
+                }
+            };
+
+            Runnable r2 = new Runnable() {
+                @Override
+                public void run() {
+                    ts.cancel();
+                }
+            };
+
+            TestHelper.race(r1, r2);
+        }
+    }
+
+    @Test
+    public void innerLong() {
+        int n = Flowable.bufferSize() * 2;
+
+        Flowable.just(1).hide()
+        .concatMapEager(Functions.justFunction(Flowable.range(1, n).hide()))
+        .rebatchRequests(1)
+        .test()
+        .assertValueCount(n)
+        .assertComplete()
+        .assertNoErrors();
+    }
 }

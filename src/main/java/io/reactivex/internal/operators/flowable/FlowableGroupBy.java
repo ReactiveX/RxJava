@@ -167,15 +167,14 @@ public final class FlowableGroupBy<T, K, V> extends AbstractFlowableWithUpstream
 
         @Override
         public void onComplete() {
-            if (done) {
-                return;
+            if (!done) {
+                for (GroupedUnicast<K, V> g : groups.values()) {
+                    g.onComplete();
+                }
+                groups.clear();
+                done = true;
+                drain();
             }
-            for (GroupedUnicast<K, V> g : groups.values()) {
-                g.onComplete();
-            }
-            groups.clear();
-            done = true;
-            drain();
         }
 
         @Override
@@ -435,11 +434,10 @@ public final class FlowableGroupBy<T, K, V> extends AbstractFlowableWithUpstream
 
         @Override
         public void request(long n) {
-            if (!SubscriptionHelper.validate(n)) {
-                return;
+            if (SubscriptionHelper.validate(n)) {
+                BackpressureHelper.add(requested, n);
+                drain();
             }
-            BackpressureHelper.add(requested, n);
-            drain();
         }
 
         @Override
@@ -461,12 +459,7 @@ public final class FlowableGroupBy<T, K, V> extends AbstractFlowableWithUpstream
         }
 
         public void onNext(T t) {
-            if (t == null) {
-                error = new NullPointerException("onNext called with null. Null values are generally not allowed in 2.x operators and sources.");
-                done = true;
-            } else {
-                queue.offer(t);
-            }
+            queue.offer(t);
             drain();
         }
 

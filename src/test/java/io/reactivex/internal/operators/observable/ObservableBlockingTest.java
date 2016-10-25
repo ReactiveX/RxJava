@@ -13,7 +13,7 @@
 
 package io.reactivex.internal.operators.observable;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 import java.util.*;
 import java.util.concurrent.TimeUnit;
@@ -27,6 +27,7 @@ import io.reactivex.disposables.*;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.*;
 import io.reactivex.internal.functions.Functions;
+import io.reactivex.internal.observers.BlockingFirstObserver;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.schedulers.Schedulers;
 
@@ -282,5 +283,39 @@ public class ObservableBlockingTest {
         .blockingSubscribe(to);
 
         to.assertResult();
+    }
+
+    @Test
+    public void blockingCancelUpfront() {
+        BlockingFirstObserver<Integer> o = new BlockingFirstObserver<Integer>();
+
+        assertFalse(o.isDisposed());
+        o.dispose();
+        assertTrue(o.isDisposed());
+
+        Disposable d = Disposables.empty();
+
+        o.onSubscribe(d);
+
+        assertTrue(d.isDisposed());
+
+        Thread.currentThread().interrupt();
+        try {
+            o.blockingGet();
+            fail("Should have thrown");
+        } catch (RuntimeException ex) {
+            assertTrue(ex.toString(), ex.getCause() instanceof InterruptedException);
+        }
+
+        Thread.interrupted();
+
+        o.onError(new TestException());
+
+        try {
+            o.blockingGet();
+            fail("Should have thrown");
+        } catch (TestException ex) {
+            // expected
+        }
     }
 }

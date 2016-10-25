@@ -13,7 +13,7 @@
 
 package io.reactivex.internal.operators.flowable;
 
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.atomic.*;
 
 import org.reactivestreams.*;
 
@@ -24,7 +24,6 @@ import io.reactivex.functions.Function;
 import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.internal.fuseable.FuseToFlowable;
-import io.reactivex.internal.observers.BasicIntQueueDisposable;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.internal.util.AtomicThrowable;
 import io.reactivex.plugins.RxJavaPlugins;
@@ -62,8 +61,8 @@ public final class FlowableFlatMapCompletableCompletable<T> extends Completable 
         return RxJavaPlugins.onAssembly(new FlowableFlatMapCompletable<T>(source, mapper, delayErrors, maxConcurrency));
     }
 
-    static final class FlatMapCompletableMainSubscriber<T> extends BasicIntQueueDisposable<T>
-    implements Subscriber<T> {
+    static final class FlatMapCompletableMainSubscriber<T> extends AtomicInteger
+    implements Subscriber<T>, Disposable {
         private static final long serialVersionUID = 8443155186132538303L;
 
         final CompletableObserver actual;
@@ -181,26 +180,6 @@ public final class FlowableFlatMapCompletableCompletable<T> extends Completable 
         @Override
         public boolean isDisposed() {
             return set.isDisposed();
-        }
-
-        @Override
-        public T poll() throws Exception {
-            return null; // always empty
-        }
-
-        @Override
-        public boolean isEmpty() {
-            return true; // always empty
-        }
-
-        @Override
-        public void clear() {
-            // nothing to clear
-        }
-
-        @Override
-        public int requestFusion(int mode) {
-            return mode & ASYNC;
         }
 
         void innerComplete(InnerObserver inner) {

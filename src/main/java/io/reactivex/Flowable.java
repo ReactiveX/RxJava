@@ -11329,6 +11329,8 @@ public abstract class Flowable<T> implements Publisher<T> {
      *     Publisher.defer(() -> o.scan(new ArrayList&lt;>(), (list, item) -> list.add(item)))
      * );
      * </code></pre>
+     * <p>
+     * Unlike 1.x, this operator doesn't emit the seed value unless the upstream signals an event.
      * <dl>
      *  <dt><b>Backpressure:</b><dt>
      *  <dd>The operator honors downstream backpressure and expects the source {@code Publisher} to honor backpressure as well.

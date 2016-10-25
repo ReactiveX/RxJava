@@ -18,7 +18,7 @@ import static org.junit.Assert.*;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import org.junit.*;
+import org.junit.Test;
 import org.reactivestreams.*;
 
 import io.reactivex.*;
@@ -340,7 +340,7 @@ public class FlowableFlatMapCompletableTest {
 
     @Test
     public void fused() {
-        TestObserver<Integer> to = ObserverFusion.newTest(QueueDisposable.ANY);
+        TestSubscriber<Integer> ts = SubscriberFusion.newTest(QueueDisposable.ANY);
 
         Flowable.range(1, 10)
         .flatMapCompletable(new Function<Integer, CompletableSource>() {
@@ -349,11 +349,12 @@ public class FlowableFlatMapCompletableTest {
                 return Completable.complete();
             }
         })
-        .subscribe(to);
+        .<Integer>toFlowable()
+        .subscribe(ts);
 
-        to
-        .assertOf(ObserverFusion.<Integer>assertFuseable())
-        .assertOf(ObserverFusion.<Integer>assertFusionMode(QueueDisposable.ASYNC))
+        ts
+        .assertOf(SubscriberFusion.<Integer>assertFuseable())
+        .assertOf(SubscriberFusion.<Integer>assertFusionMode(QueueDisposable.ASYNC))
         .assertResult();
     }
 
@@ -505,5 +506,21 @@ public class FlowableFlatMapCompletableTest {
             }
         })
         .test();
+    }
+
+    @Test
+    public void delayErrorMaxConcurrency() {
+        Flowable.range(1, 3)
+        .flatMapCompletable(new Function<Integer, CompletableSource>() {
+            @Override
+            public CompletableSource apply(Integer v) throws Exception {
+                if (v == 2) {
+                    return Completable.error(new TestException());
+                }
+                return Completable.complete();
+            }
+        }, true, 1)
+        .test()
+        .assertFailure(TestException.class);
     }
 }

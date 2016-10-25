@@ -142,9 +142,7 @@ public final class FlowableDebounce<T, U> extends AbstractFlowableWithUpstream<T
                 long r = get();
                 if (r != 0L) {
                     actual.onNext(value);
-                    if (r != Long.MAX_VALUE) {
-                        decrementAndGet();
-                    }
+                    BackpressureHelper.produced(this, 1);
                 } else {
                     cancel();
                     actual.onError(new MissingBackpressureException("Could not deliver value due to lack of requests"));
