@@ -314,7 +314,7 @@ public class FlowableCreateTest {
     }
 
     @Test
-    public void createNullValueNone() {
+    public void createNullValueMissing() {
         final Throwable[] error = { null };
 
         Flowable.create(new FlowableOnSubscribe<Integer>() {
@@ -329,7 +329,7 @@ public class FlowableCreateTest {
                     error[0] = ex;
                 }
             }
-        }, BackpressureStrategy.NONE)
+        }, BackpressureStrategy.MISSING)
         .test()
         .assertFailure(NullPointerException.class);
 
@@ -433,7 +433,7 @@ public class FlowableCreateTest {
     }
 
     @Test
-    public void createNullValueNoneSerialized() {
+    public void createNullValueMissingSerialized() {
         final Throwable[] error = { null };
 
         Flowable.create(new FlowableOnSubscribe<Integer>() {
@@ -449,7 +449,7 @@ public class FlowableCreateTest {
                     error[0] = ex;
                 }
             }
-        }, BackpressureStrategy.NONE)
+        }, BackpressureStrategy.MISSING)
         .test()
         .assertFailure(NullPointerException.class);
 
@@ -653,7 +653,7 @@ public class FlowableCreateTest {
 
     @Test(expected = NullPointerException.class)
     public void nullArgument() {
-        Flowable.create(null, BackpressureStrategy.NONE);
+        Flowable.create(null, BackpressureStrategy.MISSING);
     }
 
     @Test

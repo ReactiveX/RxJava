@@ -22,7 +22,7 @@ public enum BackpressureStrategy {
      * Downstream has to deal with any overflow.
      * <p>Useful when one applies one of the custom-parameter onBackpressureXXX operators.
      */
-    NONE,
+    MISSING,
     /**
      * Signals a MissingBackpressureException in case the downstream can't keep up.
      */

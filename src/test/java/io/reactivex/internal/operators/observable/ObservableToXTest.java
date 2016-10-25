@@ -69,7 +69,7 @@ public class ObservableToXTest {
     @Test
     public void toFlowableMissing() {
         TestSubscriber<Integer> ts = Observable.range(1, 5)
-                .toFlowable(BackpressureStrategy.NONE)
+                .toFlowable(BackpressureStrategy.MISSING)
                 .test(0);
 
         ts.request(2);
