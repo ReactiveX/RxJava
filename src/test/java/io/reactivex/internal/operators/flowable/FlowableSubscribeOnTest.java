@@ -24,6 +24,7 @@ import org.reactivestreams.*;
 import io.reactivex.*;
 import io.reactivex.Scheduler.Worker;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.internal.functions.Functions;
 import io.reactivex.internal.operators.flowable.FlowableSubscribeOn.SubscribeOnSubscriber;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.schedulers.*;
@@ -295,7 +296,7 @@ public class FlowableSubscribeOnTest {
 
             Worker w = Schedulers.computation().createWorker();
 
-            final SubscribeOnSubscriber<Integer> so = new SubscribeOnSubscriber<Integer>(ts, w, Flowable.<Integer>never());
+            final SubscribeOnSubscriber<Integer> so = new SubscribeOnSubscriber<Integer>(ts, w, Flowable.<Integer>never(), true);
             ts.onSubscribe(so);
 
             final BooleanSubscription bs = new BooleanSubscription();
@@ -320,5 +321,51 @@ public class FlowableSubscribeOnTest {
                 w.dispose();
             }
         }
+    }
+
+    @Test
+    public void nonScheduledRequests() {
+        TestSubscriber<Object> ts = Flowable.create(new FlowableOnSubscribe<Object>() {
+            @Override
+            public void subscribe(FlowableEmitter<Object> s) throws Exception {
+                for (int i = 1; i < 1001; i++) {
+                    s.onNext(i);
+                    Thread.sleep(1);
+                }
+                s.onComplete();
+            }
+        }, BackpressureStrategy.DROP)
+        .subscribeOn(Schedulers.single())
+        .observeOn(Schedulers.computation())
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertNoErrors()
+        .assertComplete();
+
+        int c = ts.valueCount();
+
+        assertTrue("" + c, c > Flowable.bufferSize());
+    }
+
+    @Test
+    public void scheduledRequests() {
+        Flowable.create(new FlowableOnSubscribe<Object>() {
+            @Override
+            public void subscribe(FlowableEmitter<Object> s) throws Exception {
+                for (int i = 1; i < 1001; i++) {
+                    s.onNext(i);
+                    Thread.sleep(1);
+                }
+                s.onComplete();
+            }
+        }, BackpressureStrategy.DROP)
+        .map(Functions.identity())
+        .subscribeOn(Schedulers.single())
+        .observeOn(Schedulers.computation())
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertValueCount(Flowable.bufferSize())
+        .assertNoErrors()
+        .assertComplete();
     }
 }

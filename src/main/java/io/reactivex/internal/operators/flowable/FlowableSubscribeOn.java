@@ -21,18 +21,28 @@ import io.reactivex.*;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.internal.util.BackpressureHelper;
 
+/**
+ * Subscribes to the source Flowable on the specified Scheduler and makes
+ * sure downstream requests are scheduled there as well.
+ *
+ * @param <T> the value type emitted
+ */
 public final class FlowableSubscribeOn<T> extends AbstractFlowableWithUpstream<T , T> {
+
     final Scheduler scheduler;
 
-    public FlowableSubscribeOn(Publisher<T> source, Scheduler scheduler) {
+    final boolean nonScheduledRequests;
+
+    public FlowableSubscribeOn(Publisher<T> source, Scheduler scheduler, boolean nonScheduledRequests) {
         super(source);
         this.scheduler = scheduler;
+        this.nonScheduledRequests = nonScheduledRequests;
     }
 
     @Override
     public void subscribeActual(final Subscriber<? super T> s) {
         Scheduler.Worker w = scheduler.createWorker();
-        final SubscribeOnSubscriber<T> sos = new SubscribeOnSubscriber<T>(s, w, source);
+        final SubscribeOnSubscriber<T> sos = new SubscribeOnSubscriber<T>(s, w, source, nonScheduledRequests);
         s.onSubscribe(sos);
 
         w.schedule(sos);
@@ -42,21 +52,26 @@ public final class FlowableSubscribeOn<T> extends AbstractFlowableWithUpstream<T
     implements Subscriber<T>, Subscription, Runnable {
 
         private static final long serialVersionUID = 8094547886072529208L;
+
         final Subscriber<? super T> actual;
+
         final Scheduler.Worker worker;
 
         final AtomicReference<Subscription> s;
 
         final AtomicLong requested;
 
+        final boolean nonScheduledRequests;
+
         Publisher<T> source;
 
-        SubscribeOnSubscriber(Subscriber<? super T> actual, Scheduler.Worker worker, Publisher<T> source) {
+        SubscribeOnSubscriber(Subscriber<? super T> actual, Scheduler.Worker worker, Publisher<T> source, boolean nonScheduledRequests) {
             this.actual = actual;
             this.worker = worker;
             this.source = source;
             this.s = new AtomicReference<Subscription>();
             this.requested = new AtomicLong();
+            this.nonScheduledRequests = nonScheduledRequests;
         }
 
         @Override
@@ -114,7 +129,7 @@ public final class FlowableSubscribeOn<T> extends AbstractFlowableWithUpstream<T
         }
 
         void requestUpstream(final long n, final Subscription s) {
-            if (Thread.currentThread() == get()) {
+            if (nonScheduledRequests || Thread.currentThread() == get()) {
                 s.request(n);
             } else {
                 worker.schedule(new Runnable() {
