@@ -24,6 +24,9 @@ import rx.internal.util.SubscriptionList;
  * {@code Single} calls the SingleSubscriber's {@link #onSuccess} and {@link #onError} methods to provide
  * notifications. A well-behaved {@code Single} will call a SingleSubscriber's {@link #onSuccess} method exactly
  * once or the SingleSubscriber's {@link #onError} method exactly once.
+ * <p>
+ * Note, that if you want {@link #isUnsubscribed} to return {@code true} after {@link #onSuccess} or {@link #onError}
+ * invocation, you need to invoke {@link #unsubscribe} in these methods.
  *
  * @see <a href="http://reactivex.io/documentation/observable.html">ReactiveX documentation: Observable</a>
  * @param <T>
