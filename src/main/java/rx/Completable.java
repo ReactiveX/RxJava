@@ -23,6 +23,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import rx.annotations.*;
 import rx.exceptions.*;
 import rx.functions.*;
+import rx.internal.observers.AssertableSubscriberObservable;
 import rx.internal.operators.*;
 import rx.internal.util.*;
 import rx.observers.*;
@@ -2363,5 +2364,27 @@ public class Completable {
                 });
             }
         });
+    }
+    
+    // -------------------------------------------------------------------------
+    // Fluent test support, super handy and reduces test preparation boilerplate
+    // -------------------------------------------------------------------------
+    /**
+     * Creates an AssertableSubscriber that requests {@code Long.MAX_VALUE} and subscribes
+     * it to this Observable.
+     * <dl>
+     *  <dt><b>Backpressure:</b><dt>
+     *  <dd>The returned AssertableSubscriber consumes this Observable in an unbounded fashion.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code test} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @return the new AssertableSubscriber instance
+     * @since 1.2.3
+     */
+    @Experimental
+    public final AssertableSubscriber<Void> test() {
+        AssertableSubscriberObservable<Void> ts = AssertableSubscriberObservable.create(Long.MAX_VALUE);
+        subscribe(ts);
+        return ts;
     }
 }

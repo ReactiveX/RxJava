@@ -18,10 +18,12 @@ import java.util.concurrent.*;
 import rx.annotations.*;
 import rx.exceptions.*;
 import rx.functions.*;
+import rx.internal.observers.AssertableSubscriberObservable;
 import rx.internal.operators.*;
 import rx.internal.util.*;
 import rx.observables.*;
 import rx.observers.SafeSubscriber;
+import rx.observers.AssertableSubscriber;
 import rx.plugins.*;
 import rx.schedulers.*;
 import rx.subscriptions.Subscriptions;
@@ -12639,5 +12641,46 @@ public class Observable<T> {
     @SuppressWarnings("cast")
     public final <T2, R> Observable<R> zipWith(Observable<? extends T2> other, Func2<? super T, ? super T2, ? extends R> zipFunction) {
         return (Observable<R>)zip(this, other, zipFunction);
+    }
+    
+    // -------------------------------------------------------------------------
+    // Fluent test support, super handy and reduces test preparation boilerplate
+    // -------------------------------------------------------------------------
+    /**
+     * Creates a AssertableSubscriber that requests {@code Long.MAX_VALUE} and subscribes
+     * it to this Observable.
+     * <dl>
+     *  <dt><b>Backpressure:</b><dt>
+     *  <dd>The returned AssertableSubscriber consumes this Observable in an unbounded fashion.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code test} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @return the new AssertableSubscriber instance
+     * @since 1.2.3
+     */
+    @Experimental
+    public final AssertableSubscriber<T> test() {
+        AssertableSubscriber<T> ts = AssertableSubscriberObservable.create(Long.MAX_VALUE);
+        subscribe(ts);
+        return ts;
+    }
+    
+    /**
+     * Creates an AssertableSubscriber with the initial request amount and subscribes
+     * it to this Observable.
+     * <dl>
+     *  <dt><b>Backpressure:</b><dt>
+     *  <dd>The returned AssertableSubscriber requests the given {@code initialRequest} amount upfront.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code test} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @return the new AssertableSubscriber instance
+     * @since 1.2.3
+     */
+    @Experimental
+    public final AssertableSubscriber<T> test(long initialRequestAmount) {
+        AssertableSubscriber<T> ts = AssertableSubscriberObservable.create(initialRequestAmount);
+        subscribe(ts);
+        return ts;
     }
 }
