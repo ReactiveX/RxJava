@@ -2,6 +2,52 @@
 
 Version 1.x can be found at https://github.com/ReactiveX/RxJava/blob/1.x/CHANGES.md
 
+### Version 2.0.0 - October 29, 2016 ([Maven](http://search.maven.org/#artifactdetails%7Cio.reactivex.rxjava2%7Crxjava%7C2.0.0%7C))
+
+This is it, general availability of RxJava 2! Rewritten from scratch to offer better performance, lower overhead, more features, a modern underlying technology and interoperation with the Reactive-Streams ecosystem. Big thanks goes to the several dozen people who gave feedback, fixes, enhancements and reviewed pull requests in the past, very intensive, 4 months.
+
+Users are encouraged to read the wiki articles [What's different in 2.0](https://github.com/ReactiveX/RxJava/wiki/What's-different-in-2.0) and [Writing operators for 2.0](https://github.com/ReactiveX/RxJava/wiki/Writing-operators-for-2.0) to get a overview about changes and differences between working with RxJava 1 and 2. If you find something missing or under-explained, don't worry and open an [issue](https://github.com/ReactiveX/RxJava/issues) about it!
+
+Some other common libraries such as [RxAndroid](https://github.com/ReactiveX/RxAndroid/tree/2.x) and [Retrofit 2 Adapter](https://github.com/JakeWharton/retrofit2-rxjava2-adapter) were already following the 2.x development and you can expect them to release versions supporting the 2.0.0 GA shortly. In addition, there is an ongoing effort to port companion libraries of RxJava itself to support the 2.x line. For now, several ported features are available as part of the [RxJava2Extensions](https://github.com/akarnokd/RxJava2Extensions) project. RxJava 1 and 2 can live side by side in the same project and the [RxJava2Interop](https://github.com/akarnokd/RxJava2Interop) library allows dataflow conversions between the two versions.
+
+The sections below contain the changes since 2.0.0-RC5 beyond the general quality and test coverage improvements of the codebase.
+
+**API enhancements**
+
+  - [Pull 4760](https://github.com/ReactiveX/RxJava/pull/4760): Add `Single.fromObservable(ObservableSource)`
+  - [Pull 4767](https://github.com/ReactiveX/RxJava/pull/4767): Rename `BackpressureStrategy.NONE` to `MISSING`
+
+**Documentation enhancements**
+
+  - [Pull 4744](https://github.com/ReactiveX/RxJava/pull/4744): Fixed Javadoc for `Disposables.fromFuture`
+  - [Pull 4749](https://github.com/ReactiveX/RxJava/pull/4749): New 2.x marble diagrams
+  - [Pull 4752](https://github.com/ReactiveX/RxJava/pull/4752): Add more new marble diagrams & update old ones
+
+**Performance enhancements**
+
+  - [Pull 4742](https://github.com/ReactiveX/RxJava/pull/4742): 
+    - cleanup `Flowable.publish()` and enable operator fusion on its input
+    - compact `Flowable.blockingSubscribe()`, `Observable.blockingSubscribe()` and `Flowable.subscribeOn()`
+  - [Pull 4761](https://github.com/ReactiveX/RxJava/pull/4761):
+    - Unify `MapNotification`, `Materialize`, `OnErrorReturn` last element backpressure under the same helper class.
+    - Reuse parts of `FlowableSequenceEqual` in `FlowableSequenceEqualSingle`.
+  - [Pull 4766](https://github.com/ReactiveX/RxJava/pull/4766): `Flowable.scan(T, BiFunction)` now emits the initial value only when the upstream signals an event. 
+
+**Bugfixes**
+
+  - [Pull 4742](https://github.com/ReactiveX/RxJava/pull/4742):
+    - Fix `Flowable.materialize()` terminal signal emission in face of backpressure.
+    - Fix `Flowable.onErrorReturn()` terminal signal emission in face of backpressure.
+    - fix `Flowable.flatMapSingle() `and `Flowable.flatMapMaybe()` termination detection
+  - [Pull 4747](https://github.com/ReactiveX/RxJava/pull/4747): `distinctUntilChanged` to store the selected key instead of the value
+  - [Pull 4751](https://github.com/ReactiveX/RxJava/pull/4751): fix `Flowable.concatMapEager` hang due to bad request management.
+  - [Pull 4761](https://github.com/ReactiveX/RxJava/pull/4761): Fix cancellation bugs in `Flowable` operators.
+  - [Pull 4763](https://github.com/ReactiveX/RxJava/pull/4763): rewrite of `takeUntil` to avoid `onSubscribe()` races.
+  - [Pull 4766](https://github.com/ReactiveX/RxJava/pull/4766):
+    - Fix `Flowable.skipUntil` lifecycle and concurrency properties.
+    - Fix `Flowable.concatMapEager` error management.
+  - [Pull 4770](https://github.com/ReactiveX/RxJava/pull/4770): allow `subscribeOn` to work with blocking create.
+
 ### Version 2.0.0-RC5 - October 21, 2016 ([Maven](http://search.maven.org/#artifactdetails%7Cio.reactivex.rxjava2%7Crxjava%7C2.0.0-RC5%7C))
 
 This release contains API fixes, further cleanups to code and javadoc, better test coverage and bugfixes. Thanks to the respective contributors and @JakeWharton for the reviews.

@@ -23,17 +23,6 @@ Version 2.x and 1.x will live side-by-side for several years. They will have dif
 
 See the differences between version 1.x and 2.x in the wiki article [What's different in 2.0](https://github.com/ReactiveX/RxJava/wiki/What's-different-in-2.0). Learn more about RxJava in general on the <a href="https://github.com/ReactiveX/RxJava/wiki">Wiki Home</a>.
 
-##### Releases
-
-The release plan for 2.x is as [follows](https://github.com/ReactiveX/RxJava/issues/4016):
-
-  - **25/08/2016: Release Candidate 1: stabilized API and feature set**
-  - **05/09/2016: Release Candidate 2: addressing feedback from RC 1**
-  - **23/09/2016: Release Candidate 3: addressing feedback from RC 2**
-  - **07/10/2016: Release Candidate 4: addressing feedback from RC 3**
-  - **21/10/2016: Release Candidate 5: addressing feedback from RC 4**
-  - 29/10/2016: Stable Release: General availability
-
 ## Communication
 
 - Google Group: [RxJava](http://groups.google.com/d/forum/rxjava)
@@ -42,9 +31,7 @@ The release plan for 2.x is as [follows](https://github.com/ReactiveX/RxJava/iss
 
 ## Versioning
 
-Version 2.x has reached Release Candidate 5. 
-
-Version 1.x is now a stable API and will be supported for several years.
+Version 2.x is now considered stable and final. Version 1.x will be supported for several years along with 2.x. Enhancements and bugfixes will be synchronized between the two in a timely manner.
 
 Minor 2.x increments (such as 2.1, 2.2, etc) will occur when non-trivial new functionality is added or significant enhancements or bug fixes occur that may have behavioral changes that may affect some edge cases (such as dependence on behavior resulting from a bug). An example of an enhancement that would classify as this is adding reactive pull backpressure support to an operator that previously did not support it. This should be backwards compatible but does behave differently.
 
