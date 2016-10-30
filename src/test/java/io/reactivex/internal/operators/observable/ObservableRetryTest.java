@@ -908,4 +908,26 @@ public class ObservableRetryTest {
         }
     }
 
+    @Test
+    public void shouldDisposeInnerObservable() {
+      final PublishSubject<Object> subject = PublishSubject.create();
+      final Disposable disposable = Observable.error(new RuntimeException("Leak"))
+          .retryWhen(new Function<Observable<Throwable>, ObservableSource<Object>>() {
+            @Override
+            public ObservableSource<Object> apply(Observable<Throwable> errors) throws Exception {
+                return errors.switchMap(new Function<Throwable, ObservableSource<Object>>() {
+                    @Override
+                    public ObservableSource<Object> apply(Throwable ignore) throws Exception {
+                        return subject;
+                    }
+                });
+            }
+        })
+          .subscribe();
+
+      assertTrue(subject.hasObservers());
+      disposable.dispose();
+      assertFalse(subject.hasObservers());
+    }
+
 }

@@ -19,7 +19,7 @@ import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.*;
-import io.reactivex.internal.disposables.SequentialDisposable;
+import io.reactivex.internal.disposables.*;
 import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.internal.observers.ToNotificationObserver;
 import io.reactivex.subjects.*;
@@ -40,7 +40,14 @@ public final class ObservableRedo<T> extends AbstractObservableWithUpstream<T, T
 
         final RedoObserver<T> parent = new RedoObserver<T>(s, subject, source);
 
-        s.onSubscribe(parent.arbiter);
+        ToNotificationObserver<Object> actionObserver = new ToNotificationObserver<Object>(new Consumer<Notification<Object>>() {
+            @Override
+            public void accept(Notification<Object> o) {
+                parent.handle(o);
+            }
+        });
+        ListCompositeDisposable cd = new ListCompositeDisposable(parent.arbiter, actionObserver);
+        s.onSubscribe(cd);
 
         ObservableSource<?> action;
 
@@ -52,12 +59,7 @@ public final class ObservableRedo<T> extends AbstractObservableWithUpstream<T, T
             return;
         }
 
-        action.subscribe(new ToNotificationObserver<Object>(new Consumer<Notification<Object>>() {
-            @Override
-            public void accept(Notification<Object> o) {
-                parent.handle(o);
-            }
-        }));
+        action.subscribe(actionObserver);
 
         // trigger first subscription
         parent.handle(Notification.<Object>createOnNext(0));

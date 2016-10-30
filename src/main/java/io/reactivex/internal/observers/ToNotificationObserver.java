@@ -13,6 +13,8 @@
 
 package io.reactivex.internal.observers;
 
+import java.util.concurrent.atomic.AtomicReference;
+
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.*;
@@ -20,10 +22,12 @@ import io.reactivex.functions.Consumer;
 import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.plugins.RxJavaPlugins;
 
-public final class ToNotificationObserver<T> implements Observer<T> {
-    final Consumer<? super Notification<Object>> consumer;
+public final class ToNotificationObserver<T>
+extends AtomicReference<Disposable>
+implements Observer<T>, Disposable {
+    private static final long serialVersionUID = -7420197867343208289L;
 
-    Disposable s;
+    final Consumer<? super Notification<Object>> consumer;
 
     public ToNotificationObserver(Consumer<? super Notification<Object>> consumer) {
         this.consumer = consumer;
@@ -31,22 +35,20 @@ public final class ToNotificationObserver<T> implements Observer<T> {
 
     @Override
     public void onSubscribe(Disposable s) {
-        if (DisposableHelper.validate(this.s, s)) {
-            this.s = s;
-        }
+        DisposableHelper.setOnce(this, s);
     }
 
     @Override
     public void onNext(T t) {
         if (t == null) {
-            s.dispose();
+            get().dispose();
             onError(new NullPointerException("onNext called with null. Null values are generally not allowed in 2.x operators and sources."));
         } else {
             try {
                 consumer.accept(Notification.<Object>createOnNext(t));
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
-                s.dispose();
+                get().dispose();
                 onError(ex);
             }
         }
@@ -70,5 +72,15 @@ public final class ToNotificationObserver<T> implements Observer<T> {
             Exceptions.throwIfFatal(ex);
             RxJavaPlugins.onError(ex);
         }
+    }
+
+    @Override
+    public void dispose() {
+        DisposableHelper.dispose(this);
+    }
+
+    @Override
+    public boolean isDisposed() {
+        return DisposableHelper.isDisposed(get());
     }
 }

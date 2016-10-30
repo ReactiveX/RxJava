@@ -14,6 +14,7 @@
 package io.reactivex.internal.operators.observable;
 
 import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import java.util.*;
@@ -25,11 +26,12 @@ import org.junit.Test;
 import io.reactivex.*;
 import io.reactivex.Observable;
 import io.reactivex.Observer;
-import io.reactivex.disposables.Disposables;
+import io.reactivex.disposables.*;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.*;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.schedulers.Schedulers;
+import io.reactivex.subjects.PublishSubject;
 
 public class ObservableRepeatTest {
 
@@ -257,4 +259,25 @@ public class ObservableRepeatTest {
         .assertFailure(TestException.class, 1);
     }
 
+    @Test
+    public void shouldDisposeInnerObservable() {
+      final PublishSubject<Object> subject = PublishSubject.create();
+      final Disposable disposable = Observable.just("Leak")
+          .repeatWhen(new Function<Observable<Object>, ObservableSource<Object>>() {
+            @Override
+            public ObservableSource<Object> apply(Observable<Object> completions) throws Exception {
+                return completions.switchMap(new Function<Object, ObservableSource<Object>>() {
+                    @Override
+                    public ObservableSource<Object> apply(Object ignore) throws Exception {
+                        return subject;
+                    }
+                });
+            }
+        })
+          .subscribe();
+
+      assertTrue(subject.hasObservers());
+      disposable.dispose();
+      assertFalse(subject.hasObservers());
+    }
 }
