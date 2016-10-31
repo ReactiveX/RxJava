@@ -14,6 +14,7 @@
 package io.reactivex.internal.operators.flowable;
 
 import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 import java.util.*;
@@ -996,5 +997,28 @@ public class FlowableRetryTest {
         .take(5)
         .test()
         .assertResult(1, 1, 1, 1, 1);
+    }
+
+
+    @Test
+    public void shouldDisposeInnerObservable() {
+      final PublishProcessor<Object> subject = PublishProcessor.create();
+      final Disposable disposable = Flowable.error(new RuntimeException("Leak"))
+          .retryWhen(new Function<Flowable<Throwable>, Flowable<Object>>() {
+            @Override
+            public Flowable<Object> apply(Flowable<Throwable> errors) throws Exception {
+                return errors.switchMap(new Function<Throwable, Flowable<Object>>() {
+                    @Override
+                    public Flowable<Object> apply(Throwable ignore) throws Exception {
+                        return subject;
+                    }
+                });
+            }
+        })
+          .subscribe();
+
+      assertTrue(subject.hasSubscribers());
+      disposable.dispose();
+      assertFalse(subject.hasSubscribers());
     }
 }

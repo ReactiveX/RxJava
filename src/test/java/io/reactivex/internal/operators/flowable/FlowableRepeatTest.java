@@ -25,9 +25,11 @@ import org.junit.Test;
 import org.reactivestreams.*;
 
 import io.reactivex.*;
+import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.*;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
+import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.TestSubscriber;
 
@@ -306,4 +308,25 @@ public class FlowableRepeatTest {
         .assertFailure(TestException.class, 1);
     }
 
+    @Test
+    public void shouldDisposeInnerObservable() {
+      final PublishProcessor<Object> subject = PublishProcessor.create();
+      final Disposable disposable = Flowable.just("Leak")
+          .repeatWhen(new Function<Flowable<Object>, Flowable<Object>>() {
+            @Override
+            public Flowable<Object> apply(Flowable<Object> completions) throws Exception {
+                return completions.switchMap(new Function<Object, Flowable<Object>>() {
+                    @Override
+                    public Flowable<Object> apply(Object ignore) throws Exception {
+                        return subject;
+                    }
+                });
+            }
+        })
+          .subscribe();
+
+      assertTrue(subject.hasSubscribers());
+      disposable.dispose();
+      assertFalse(subject.hasSubscribers());
+    }
 }
