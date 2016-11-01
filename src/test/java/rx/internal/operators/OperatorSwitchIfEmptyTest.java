@@ -207,4 +207,9 @@ public class OperatorSwitchIfEmptyTest {
         ts.assertValueCount(2);
         ts.unsubscribe();
     }
+
+    @Test(expected = NullPointerException.class)
+    public void testAlternateNull() {
+        Observable.just(1).switchIfEmpty(null);
+    }
 }

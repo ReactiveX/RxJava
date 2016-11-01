@@ -5403,9 +5403,14 @@ public class Observable<T> {
      *              the alternate Observable to subscribe to if the source does not emit any items
      * @return  an Observable that emits the items emitted by the source Observable or the items of an
      *          alternate Observable if the source Observable is empty.
+     * @throws NullPointerException
+     *              if {@code alternate} is null
      * @since 1.1.0
      */
     public final Observable<T> switchIfEmpty(Observable<? extends T> alternate) {
+        if (alternate == null) {
+            throw new NullPointerException("alternate is null");
+        }
         return lift(new OperatorSwitchIfEmpty<T>(alternate));
     }
 
