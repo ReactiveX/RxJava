@@ -2444,7 +2444,7 @@ public abstract class Single<T> implements SingleSource<T> {
      *            (whichever is not null)
      * @return a {@link Disposable} reference can request the {@link Single} stop work.
      * @see <a href="http://reactivex.io/documentation/operators/subscribe.html">ReactiveX operators documentation: Subscribe</a>
-     * @throws IllegalArgumentException
+     * @throws NullPointerException
      *             if {@code onCallback} is null
      */
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -2490,7 +2490,7 @@ public abstract class Single<T> implements SingleSource<T> {
      *            Single
      * @return a {@link Disposable} reference can request the {@link Single} stop work.
      * @see <a href="http://reactivex.io/documentation/operators/subscribe.html">ReactiveX operators documentation: Subscribe</a>
-     * @throws IllegalArgumentException
+     * @throws NullPointerException
      *             if {@code onSuccess} is null, or
      *             if {@code onError} is null
      */
