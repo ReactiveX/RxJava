@@ -3445,7 +3445,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * @return a {@link Disposable} reference with which the caller can stop receiving items before
      *         the Maybe has finished sending them
      * @see <a href="http://reactivex.io/documentation/operators/subscribe.html">ReactiveX operators documentation: Subscribe</a>
-     * @throws IllegalArgumentException
+     * @throws NullPointerException
      *             if {@code onSuccess} is null, or
      *             if {@code onError} is null
      */
@@ -3472,7 +3472,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      *             Maybe
      * @return a {@link Disposable} reference with which the caller can stop receiving items before
      *         the Maybe has finished sending them
-     * @throws IllegalArgumentException
+     * @throws NullPointerException
      *             if {@code onSuccess} is null, or
      *             if {@code onError} is null, or
      *             if {@code onComplete} is null
