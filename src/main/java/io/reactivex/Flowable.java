@@ -8598,7 +8598,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *            {@link Consumer} to execute for each item.
      * @return
      *            a Disposable that allows cancelling an asynchronous sequence
-     * @throws IllegalArgumentException
+     * @throws NullPointerException
      *             if {@code onNext} is null
      * @throws RuntimeException
      *             if the Publisher calls {@code onError}
@@ -12070,7 +12070,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @return a {@link Disposable} reference with which the caller can stop receiving items before
      *         the Publisher has finished sending them
      * @see <a href="http://reactivex.io/documentation/operators/subscribe.html">ReactiveX operators documentation: Subscribe</a>
-     * @throws IllegalArgumentException
+     * @throws NullPointerException
      *             if {@code onNext} is null, or
      *             if {@code onError} is null
      */
@@ -12101,7 +12101,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *             Publisher
      * @return a {@link Disposable} reference with which the caller can stop receiving items before
      *         the Publisher has finished sending them
-     * @throws IllegalArgumentException
+     * @throws NullPointerException
      *             if {@code onNext} is null, or
      *             if {@code onError} is null, or
      *             if {@code onComplete} is null
@@ -12137,7 +12137,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *             the {@code Consumer} that receives the upstream's Subscription
      * @return a {@link Disposable} reference with which the caller can stop receiving items before
      *         the Publisher has finished sending them
-     * @throws IllegalArgumentException
+     * @throws NullPointerException
      *             if {@code onNext} is null, or
      *             if {@code onError} is null, or
      *             if {@code onComplete} is null
