@@ -1,5 +1,47 @@
 # RxJava Releases #
 
+### Version 1.2.2 - November 3, 2016 ([Maven](http://search.maven.org/#artifactdetails%7Cio.reactivex%7Crxjava%7C1.2.2%7C))
+
+Note that the interface `Cancellable` has been moved to `rx.functions` affecting `CompletableEmitter` and  the experimental `Observable.fromEmitter(Action1<AsyncEmitter<T>> emitter, AsyncEmitter.BackpressureMode backpressure)` has been removed.
+
+Another important clarification was added to the javadoc about using `SingleSubscriber`: due to the internal enhancements of `Single`, a `SingleSubscriber` is no longer wrapped into a `Subscriber`+`SafeSubscriber` which setup used to call `unsubscribe` on the `SingleSubscriber` yielding `isUnsubscribed() == true` when the source terminated. Therefore, when one extends the class `SingleSubscriber`, the `unsubscribe()` should be called manually to yield the given expecation mentioned before:
+
+``` java
+Subscritpion s = Single.just(1).subscribe(new SingleSubscriber<Integer>() {
+    @Override public void onSuccess(Integer t) {
+        System.out.println("Success");
+        unsubscribe();
+    }
+
+    @Override public void onError(Throwable e) {
+        e.printStackTrace();
+        unsubscribe();
+    }
+});
+
+assertTrue(s.isUnsubscribed());
+```
+#### Documentation enhancements
+
+- [Pull 4693](https://github.com/ReactiveX/RxJava/pull/4693): improve `timer` javadoc
+- [Pull 4769](https://github.com/ReactiveX/RxJava/pull/4769): Add note to `SingleSubscriber` doc about unsubscribe invocation in `onSuccess` and `onError`.
+
+#### API enhancements
+
+- [Pull 4725](https://github.com/ReactiveX/RxJava/pull/4725): remove `AsyncEmitter` deprecations
+- [Pull 4757](https://github.com/ReactiveX/RxJava/pull/4757): Add `cache()` to `Single`
+
+#### Performance enhancements
+
+- [Pull 4676](https://github.com/ReactiveX/RxJava/pull/4676): Make identity function a singleton.
+- [Pull 4764](https://github.com/ReactiveX/RxJava/pull/4764): `zip` - check local boolean before volatile in boolean and
+
+#### Bugfixes
+
+- [Pull 4716](https://github.com/ReactiveX/RxJava/pull/4716): fix`subscribe(Action1 [, Action1])` to report `isUnsubscribed` true after the callbacks were invoked
+- [Pull 4740](https://github.com/ReactiveX/RxJava/pull/4740): Error when tracking exception with unknown cause
+- [Pull 4791](https://github.com/ReactiveX/RxJava/pull/4791): Add null check to `Observable.switchIfEmpty`
+
 ### Version 1.2.1 - October 5, 2016 ([Maven](http://search.maven.org/#artifactdetails%7Cio.reactivex%7Crxjava%7C1.2.1%7C))
 
 #### API enhancements

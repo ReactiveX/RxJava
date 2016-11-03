@@ -21,12 +21,10 @@ import java.lang.Thread.UncaughtExceptionHandler;
 import java.lang.reflect.Method;
 import java.util.*;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.*;
 
-import java.util.concurrent.atomic.AtomicReference;
 import org.junit.Test;
 
-import org.mockito.Mockito;
 import rx.*;
 import rx.Observable;
 import rx.Scheduler.Worker;
@@ -42,6 +40,8 @@ import rx.subscriptions.Subscriptions;
 public class RxJavaHooksTest {
 
     public static class TestExceptionWithUnknownCause extends RuntimeException {
+        private static final long serialVersionUID = 6771158999860253299L;
+
         TestExceptionWithUnknownCause() {
             super((Throwable) null);
         }
