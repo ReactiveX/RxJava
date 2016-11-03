@@ -11737,7 +11737,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     }
 
     /**
-     * Converts the current Observable into an Observable by applying the specified backpressure strategy.
+     * Converts the current Observable into an Flowable by applying the specified backpressure strategy.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator applies the chosen backpressure strategy of {@link BackpressureStrategy} enum.</dd>
@@ -11746,7 +11746,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * </dl>
      *
      * @param strategy the backpressure strategy to apply
-     * @return the new Observable instance
+     * @return the new Flowable instance
      */
     @BackpressureSupport(BackpressureKind.SPECIAL)
     @SchedulerSupport(SchedulerSupport.NONE)
