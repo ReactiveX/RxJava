@@ -51,7 +51,7 @@ public interface ObservableEmitter<T> extends Emitter<T> {
 
     /**
      * Ensures that calls to onNext, onError and onComplete are properly serialized.
-     * @return the serialized FlowableEmitter
+     * @return the serialized ObservableEmitter
      */
     ObservableEmitter<T> serialize();
 }
