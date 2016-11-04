@@ -1398,7 +1398,7 @@ public abstract class Completable implements CompletableSource {
 
     /**
      * Returns a Completable which given a Publisher and when this Completable emits an error, delivers
-     * that error through a Flowable and the Publisher should return a value indicating a retry in response
+     * that error through a Flowable and the Publisher should signal a value indicating a retry in response
      * or a terminal event indicating a termination.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
