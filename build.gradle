@@ -45,7 +45,13 @@ targetCompatibility = 1.7
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile 'junit:junit:4.11'
+
+    provided 'co.touchlab.doppel:androidbase:0.4.0-SNAPSHOT'
     testCompile 'co.touchlab.doppel:androidbasetest:0.4.0-SNAPSHOT'
+
+    doppel 'co.touchlab.doppel:androidbase:0.4.0-SNAPSHOT@dop'
+    doppel 'co.touchlab.doppel:androidbasetest:0.4.0-SNAPSHOT@dop'
+
     testCompile 'org.mockito:mockito-core:1.9.5'
     testApt 'co.touchlab.doppel:testapt:0.4.0-SNAPSHOT'
 }
@@ -58,6 +64,8 @@ publishing {
         mavenJava(MavenPublication) {
             artifactId 'rxjava'
             from components.java
+
+            artifact doppelArchive
         }
     }
     repositories {
@@ -73,6 +81,12 @@ test{
 }
 
 j2objcConfig {
+//    frameworkName="RxJava"
+
+    copyMainOutput="RxAgain/rxframework/main"
+    copyTestOutput="RxAgain/rxframework/test"
+    copyDependencies true
+
     /*translateArgs '--prefix', 'rx.annotations=RXAN'
     translateArgs '--prefix', 'rx.exceptions=RXEX'
     translateArgs '--prefix', 'rx.functions=RXFN'

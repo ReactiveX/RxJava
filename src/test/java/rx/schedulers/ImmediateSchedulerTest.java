@@ -31,51 +31,6 @@ public class ImmediateSchedulerTest extends AbstractSchedulerTests {
         return Schedulers.immediate();
     }
 
-    @Override
-    @Test
-    public final void testNestedActions() {
-        // ordering of nested actions will not match other schedulers
-        // because there is no reordering or concurrency with ImmediateScheduler
-    }
-
-    @Override
-    @Test
-    public final void testSequenceOfDelayedActions() {
-        // ordering of nested actions will not match other schedulers
-        // because there is no reordering or concurrency with ImmediateScheduler
-    }
-
-    @Override
-    @Test
-    public final void testMixOfDelayedAndNonDelayedActions() {
-        // ordering of nested actions will not match other schedulers
-        // because there is no reordering or concurrency with ImmediateScheduler
-    }
-
-    @Test
-    public final void testMergeWithoutScheduler() {
-
-        final String currentThreadName = Thread.currentThread().getName();
-
-        Observable<Integer> o1 = Observable.<Integer> just(1, 2, 3, 4, 5);
-        Observable<Integer> o2 = Observable.<Integer> just(6, 7, 8, 9, 10);
-        Observable<String> o = Observable.<Integer> merge(o1, o2).map(new Func1<Integer, String>() {
-
-            @Override
-            public String call(Integer t) {
-                assertTrue(Thread.currentThread().getName().equals(currentThreadName));
-                return "Value_" + t + "_Thread_" + Thread.currentThread().getName();
-            }
-        });
-
-        o.toBlocking().forEach(new Action1<String>() {
-
-            @Override
-            public void call(String t) {
-                System.out.println("t: " + t);
-            }
-        });
-    }
 
     @Test
     public final void testMergeWithImmediateScheduler1() {

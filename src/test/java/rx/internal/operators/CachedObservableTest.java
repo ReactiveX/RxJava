@@ -15,6 +15,8 @@
  */
 package rx.internal.operators;
 
+import com.google.j2objc.annotations.AutoreleasePool;
+
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
@@ -223,7 +225,7 @@ public class CachedObservableTest {
         Observable<Integer> firehose = Observable.create(new OnSubscribe<Integer>() {
             @Override
             public void call(Subscriber<? super Integer> t) {
-                for (int i = 0; i < m; i++) {
+                for (@AutoreleasePool int i = 0; i < m; i++) {
                     t.onNext(i);
                 }
                 t.onCompleted();

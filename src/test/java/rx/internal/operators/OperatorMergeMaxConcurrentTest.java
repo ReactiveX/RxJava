@@ -15,6 +15,9 @@
  */
 package rx.internal.operators;
 
+import com.google.j2objc.annotations.AutoreleasePool;
+
+
 import static org.junit.Assert.*;
 
 import java.util.*;
@@ -43,7 +46,7 @@ public class OperatorMergeMaxConcurrentTest {
 
     @Test
     public void testWhenMaxConcurrentIsOne() {
-        for (int i = 0; i < 100; i++) {
+        for (@AutoreleasePool int i = 0; i < 100; i++) {
             List<Observable<String>> os = new ArrayList<Observable<String>>();
             os.add(Observable.just("one", "two", "three", "four", "five").subscribeOn(Schedulers.newThread()));
             os.add(Observable.just("one", "two", "three", "four", "five").subscribeOn(Schedulers.newThread()));
@@ -61,7 +64,7 @@ public class OperatorMergeMaxConcurrentTest {
 
     @Test
     public void testMaxConcurrent() {
-        for (int times = 0; times < 100; times++) {
+        for (@AutoreleasePool int times = 0; times < 100; times++) {
             int observableCount = 100;
             // Test maxConcurrent from 2 to 12
             int maxConcurrent = 2 + (times % 10);
@@ -157,7 +160,7 @@ public class OperatorMergeMaxConcurrentTest {
 
     @Test
     public void testSimple() {
-        for (int i = 1; i < 100; i++) {
+        for (@AutoreleasePool int i = 1; i < 100; i++) {
             TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
             List<Observable<Integer>> sourceList = new ArrayList<Observable<Integer>>(i);
             List<Integer> result = new ArrayList<Integer>(i);
@@ -175,7 +178,7 @@ public class OperatorMergeMaxConcurrentTest {
     }
     @Test
     public void testSimpleOneLess() {
-        for (int i = 2; i < 100; i++) {
+        for (@AutoreleasePool int i = 2; i < 100; i++) {
             TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
             List<Observable<Integer>> sourceList = new ArrayList<Observable<Integer>>(i);
             List<Integer> result = new ArrayList<Integer>(i);
@@ -193,13 +196,13 @@ public class OperatorMergeMaxConcurrentTest {
     }
     @Test(timeout = 20000)
     public void testSimpleAsyncLoop() {
-        for (int i = 0; i < 200; i++) {
+        for (@AutoreleasePool int i = 0; i < 200; i++) {
             testSimpleAsync();
         }
     }
     @Test(timeout = 10000)
     public void testSimpleAsync() {
-        for (int i = 1; i < 50; i++) {
+        for (@AutoreleasePool int i = 1; i < 50; i++) {
             TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
             List<Observable<Integer>> sourceList = new ArrayList<Observable<Integer>>(i);
             Set<Integer> expected = new HashSet<Integer>(i);
@@ -223,14 +226,14 @@ public class OperatorMergeMaxConcurrentTest {
         if (PlatformDependent.isAndroid()) {
             max = 50;
         }
-        for (int i = 0; i < max; i++) {
+        for (@AutoreleasePool int i = 0; i < max; i++) {
             testSimpleOneLessAsync();
         }
     }
     @Test(timeout = 10000)
     public void testSimpleOneLessAsync() {
         long t = System.currentTimeMillis();
-        for (int i = 2; i < 50; i++) {
+        for (@AutoreleasePool int i = 2; i < 50; i++) {
             if (System.currentTimeMillis() - t > TimeUnit.SECONDS.toMillis(9)) {
                 break;
             }

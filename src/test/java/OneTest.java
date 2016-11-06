@@ -67,20 +67,24 @@ public class OneTest
         List<Class> smoothClasses = new ArrayList<>(Arrays.asList(alltests));
         smoothClasses.removeAll(Arrays.asList(bigmem));
 
-        DopplJunitTestRunner.run(smoothClasses.toArray(new Class[smoothClasses.size()]),
+//        Class[] asdf = smoothClasses.toArray(new Class[smoothClasses.size()]);
+
+
+        DopplJunitTestRunner.run(new Class[]{rx.internal.operators.OperatorMergeTest.class},
                 new RunListener());
     }
 
     public static void runTests()
     {
-        new Thread()
+        runDoppl();
+        /*new Thread()
         {
             @Override
             public void run()
             {
                 runDoppl();
             }
-        }.start();
+        }.start();*/
     }
 
     public static Class[] littletest = new Class[] {
@@ -154,7 +158,7 @@ public class OneTest
             rx.internal.operators.OperatorConcatTest.class,
             rx.internal.operators.OperatorDebounceTest.class,
             rx.internal.operators.OperatorDefaultIfEmptyTest.class,
-            rx.internal.operators.OperatorDelayTest.class,
+//            rx.internal.operators.OperatorDelayTest.class,
             rx.internal.operators.OperatorDematerializeTest.class,
             rx.internal.operators.OperatorDistinctTest.class,
             rx.internal.operators.OperatorDistinctUntilChangedTest.class,
@@ -320,13 +324,14 @@ public class OneTest
     };
 
     public static Class[] bigmem = new Class[] {
-            rx.BackpressureTests.class,
-            rx.internal.operators.CachedObservableTest.class,
+//            rx.doppl.ReflectionTest.class,
+//            rx.BackpressureTests.class,
+//            rx.internal.operators.CachedObservableTest.class,
             rx.internal.operators.OnSubscribeCombineLatestTest.class,
-            rx.internal.operators.OnSubscribeFlattenIterableTest.class,
-            rx.internal.operators.OperatorFlatMapTest.class,
-            rx.internal.operators.OperatorGroupByTest.class,
-            rx.internal.operators.OperatorMergeMaxConcurrentTest.class,
+//            rx.internal.operators.OnSubscribeFlattenIterableTest.class,
+//            rx.internal.operators.OperatorFlatMapTest.class,
+//            rx.internal.operators.OperatorGroupByTest.class,
+//            rx.internal.operators.OperatorMergeMaxConcurrentTest.class,
             rx.internal.operators.OperatorMergeTest.class,
             rx.internal.operators.OperatorObserveOnTest.class,
             rx.internal.operators.OperatorPublishTest.class,

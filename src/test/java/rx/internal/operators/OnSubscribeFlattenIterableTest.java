@@ -16,11 +16,14 @@
 
 package rx.internal.operators;
 
+import com.google.j2objc.annotations.AutoreleasePool;
+
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.*;
 
+import co.touchlab.doppel.testing.DoppelHacks;
 import rx.Observable;
 import rx.exceptions.TestException;
 import rx.functions.*;
@@ -91,10 +94,11 @@ public class OnSubscribeFlattenIterableTest {
     }
 
     @Test
+    @DoppelHacks//Just made smaller
     public void longRunning() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
 
-        int n = 1000 * 1000;
+        int n = 100 * 100;
 
         Observable.range(1, n).concatMapIterable(mapper)
         .subscribe(ts);
@@ -105,10 +109,11 @@ public class OnSubscribeFlattenIterableTest {
     }
 
     @Test
+    @DoppelHacks//Just made smaller
     public void asIntermediate() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
 
-        int n = 1000 * 1000;
+        int n = 100 * 100;
 
         Observable.range(1, n).concatMapIterable(mapper).concatMap(new Func1<Integer, Observable<Integer>>() {
             @Override

@@ -15,6 +15,9 @@
  */
 package rx.internal.operators;
 
+import com.google.j2objc.annotations.AutoreleasePool;
+
+
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 import static org.junit.Assert.*;
@@ -25,6 +28,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.*;
 
+import co.touchlab.doppel.testing.DoppelHacks;
 import rx.Observable;
 import rx.Observer;
 import rx.exceptions.TestException;
@@ -389,7 +393,7 @@ public class OperatorFlatMapTest {
 
     @Test
     public void testFlatMapTransformsMaxConcurrentNormalLoop() {
-        for (int i = 0; i < 1000; i++) {
+        for (@AutoreleasePool int i = 0; i < 1000; i++) {
             if (i % 100 == 0) {
                 System.out.println("testFlatMapTransformsMaxConcurrentNormalLoop => " + i);
             }
@@ -433,7 +437,7 @@ public class OperatorFlatMapTest {
     @Ignore("Don't care for any reordering")
     @Test(timeout = 10000)
     public void flatMapRangeAsyncLoop() {
-        for (int i = 0; i < 2000; i++) {
+        for (@AutoreleasePool int i = 0; i < 2000; i++) {
             if (i % 10 == 0) {
                 System.out.println("flatMapRangeAsyncLoop > " + i);
             }
@@ -468,9 +472,10 @@ public class OperatorFlatMapTest {
             }
         }
     }
-    @Test(timeout = 30000)
+    @DoppelHacks //Extended timeout
+    @Test(timeout = 60000)
     public void flatMapRangeMixedAsyncLoop() {
-        for (int i = 0; i < 2000; i++) {
+        for (@AutoreleasePool int i = 0; i < 2000; i++) {
             if (i % 10 == 0) {
                 System.out.println("flatMapRangeAsyncLoop > " + i);
             }
@@ -511,7 +516,7 @@ public class OperatorFlatMapTest {
 
     @Test
     public void flatMapIntPassthruAsync() {
-        for (int i = 0;i < 1000; i++) {
+        for (@AutoreleasePool int i = 0;i < 1000; i++) {
             TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
 
             Observable.range(1, 1000).flatMap(new Func1<Integer, Observable<Integer>>() {

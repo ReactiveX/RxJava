@@ -15,6 +15,8 @@
  */
 package rx.observers;
 
+import com.google.j2objc.WeakProxy;
+
 import java.util.Arrays;
 
 import rx.Subscriber;
@@ -63,7 +65,7 @@ public class SafeSubscriber<T> extends Subscriber<T> {
 
     public SafeSubscriber(Subscriber<? super T> actual) {
         super(actual);
-        this.actual = actual;
+        this.actual = WeakProxy.forObject(actual);
     }
 
     /**

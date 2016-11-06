@@ -27,15 +27,18 @@ import org.mockito.InOrder;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
+import co.touchlab.doppel.testing.MockGen;
 import rx.*;
 import rx.Observable;
 import rx.Observable.OnSubscribe;
 import rx.Scheduler.Worker;
+import rx.doppl.mock.MAction0;
 import rx.functions.*;
 
 /**
  * Base tests for all schedulers including Immediate/Current.
  */
+@MockGen(classes = {"rx.doppl.mock.MAction0"})
 public abstract class AbstractSchedulerTests {
 
     /**
@@ -50,38 +53,44 @@ public abstract class AbstractSchedulerTests {
         try {
             final CountDownLatch latch = new CountDownLatch(1);
 
-            final Action0 firstStepStart = mock(Action0.class);
-            final Action0 firstStepEnd = mock(Action0.class);
+            final Action0 firstStepStart = mock(MAction0.class);
+            final Action0 firstStepEnd = mock(MAction0.class);
 
-            final Action0 secondStepStart = mock(Action0.class);
-            final Action0 secondStepEnd = mock(Action0.class);
+            final Action0 secondStepStart = mock(MAction0.class);
+            final Action0 secondStepEnd = mock(MAction0.class);
 
-            final Action0 thirdStepStart = mock(Action0.class);
-            final Action0 thirdStepEnd = mock(Action0.class);
+            final Action0 thirdStepStart = mock(MAction0.class);
+            final Action0 thirdStepEnd = mock(MAction0.class);
 
             final Action0 firstAction = new Action0() {
                 @Override
                 public void call() {
+                    System.out.println("firstAction start");
                     firstStepStart.call();
                     firstStepEnd.call();
                     latch.countDown();
+                    System.out.println("firstAction end");
                 }
             };
             final Action0 secondAction = new Action0() {
                 @Override
                 public void call() {
+                    System.out.println("secondAction start");
                     secondStepStart.call();
                     inner.schedule(firstAction);
                     secondStepEnd.call();
+                    System.out.println("secondAction end");
 
                 }
             };
             final Action0 thirdAction = new Action0() {
                 @Override
                 public void call() {
+                    System.out.println("thirdAction start");
                     thirdStepStart.call();
                     inner.schedule(secondAction);
                     thirdStepEnd.call();
+                    System.out.println("thirdAction end");
                 }
             };
 

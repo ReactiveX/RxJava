@@ -15,6 +15,8 @@
  */
 package rx;
 
+import com.google.j2objc.WeakProxy;
+
 import rx.internal.util.SubscriptionList;
 
 /**
@@ -192,7 +194,7 @@ public abstract class Subscriber<T> implements Observer<T>, Subscription {
         boolean passToSubscriber = false;
         synchronized (this) {
             toRequest = requested;
-            producer = p;
+            producer = WeakProxy.forObject(p);
             if (subscriber != null) {
                 // middle operator ... we pass through unless a request has been made
                 if (toRequest == NOT_SET) {

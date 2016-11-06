@@ -15,6 +15,9 @@
  */
 package rx.internal.operators;
 
+import com.google.j2objc.annotations.AutoreleasePool;
+
+
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
@@ -1492,7 +1495,7 @@ public class OperatorGroupByTest {
      */
     @Test
     public void testBackpressureObserveOnOuter() {
-        for (int j = 0; j < 1000; j++) {
+        for (@AutoreleasePool int j = 0; j < 1000; j++) {
             Observable.merge(
                     Observable.range(0, 500)
                     .groupBy(new Func1<Integer, Object>() {

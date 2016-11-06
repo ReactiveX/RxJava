@@ -191,7 +191,8 @@ public class NewThreadWorker extends Scheduler.Worker implements Subscription {
     static Method findSetRemoveOnCancelPolicyMethod(ScheduledExecutorService executor) {
         // The reason for the loop is to avoid NoSuchMethodException being thrown on JDK 6
         // which is more costly than looping through ~70 methods.
-        for (final Method method : executor.getClass().getMethods()) {
+        Class executorClass = executor.getClass();
+        for (final Method method : executorClass.getMethods()) {
             if (method.getName().equals("setRemoveOnCancelPolicy")) {
                 final Class<?>[] parameterTypes = method.getParameterTypes();
 

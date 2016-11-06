@@ -15,6 +15,7 @@
  */
 package rx;
 
+import com.google.j2objc.annotations.AutoreleasePool;
 import com.google.j2objc.annotations.Weak;
 
 
@@ -27,6 +28,8 @@ import java.util.concurrent.atomic.*;
 import org.junit.*;
 
 import org.junit.rules.TestName;
+
+import co.touchlab.doppel.testing.DoppelHacks;
 import rx.Observable.OnSubscribe;
 import rx.exceptions.MissingBackpressureException;
 import rx.functions.*;
@@ -128,7 +131,7 @@ public class BackpressureTests {
 
     @Test
     public void testMergeAsyncThenObserveOnLoop() {
-        for (int i = 0; i < 500; i++) {
+        for (@AutoreleasePool int i = 0; i < 500; i++) {
             if (i % 10 == 0) {
                 System.out.println("testMergeAsyncThenObserveOnLoop >> " + i);
             }
@@ -275,7 +278,7 @@ public class BackpressureTests {
     @Test
     public void testSubscribeOnScheduling() {
         // in a loop for repeating the concurrency in this to increase chance of failure
-        for (int i = 0; i < 100; i++) {
+        for (@AutoreleasePool int i = 0; i < 100; i++) {
             int NUM = (int) (RxRingBuffer.SIZE * 2.1);
             AtomicInteger c = new AtomicInteger();
             ConcurrentLinkedQueue<Thread> threads = new ConcurrentLinkedQueue<Thread>();
@@ -447,7 +450,7 @@ public class BackpressureTests {
     @Test(timeout = 10000)
     public void testOnBackpressureDrop() {
         long t = System.currentTimeMillis();
-        for (int i = 0; i < 100; i++) {
+        for (@AutoreleasePool int i = 0; i < 100; i++) {
             // stop the test if we are getting close to the timeout because slow machines
             // may not get through 100 iterations
             if (System.currentTimeMillis() - t > TimeUnit.SECONDS.toMillis(9)) {
@@ -473,9 +476,10 @@ public class BackpressureTests {
         }
     }
 
-    @Test(timeout = 10000)
+    @DoppelHacks//Extended timeout
+    @Test(timeout = 20000)
     public void testOnBackpressureDropWithAction() {
-        for (int i = 0; i < 100; i++) {
+        for (@AutoreleasePool int i = 0; i < 100; i++) {
             final AtomicInteger emitCount = new AtomicInteger();
             final AtomicInteger dropCount = new AtomicInteger();
             final AtomicInteger passCount = new AtomicInteger();
@@ -513,7 +517,7 @@ public class BackpressureTests {
 
     @Test(timeout = 10000)
     public void testOnBackpressureDropSynchronous() {
-        for (int i = 0; i < 100; i++) {
+        for (@AutoreleasePool int i = 0; i < 100; i++) {
             int NUM = (int) (RxRingBuffer.SIZE * 1.1); // > 1 so that take doesn't prevent buffer overflow
             AtomicInteger c = new AtomicInteger();
             TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
@@ -535,7 +539,7 @@ public class BackpressureTests {
 
     @Test(timeout = 10000)
     public void testOnBackpressureDropSynchronousWithAction() {
-        for (int i = 0; i < 100; i++) {
+        for (@AutoreleasePool int i = 0; i < 100; i++) {
             final AtomicInteger dropCount = new AtomicInteger();
             int NUM = (int) (RxRingBuffer.SIZE * 1.1); // > 1 so that take doesn't prevent buffer overflow
             AtomicInteger c = new AtomicInteger();
