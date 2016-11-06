@@ -2919,7 +2919,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
 
     /**
      * Converts this Maybe into a Single instance composing cancellation
-     * through and turing an empty Maybe into a signal of NoSuchElementException.
+     * through and turning an empty Maybe into a signal of NoSuchElementException.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code toSingle} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -2935,7 +2935,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
 
     /**
      * Converts this Maybe into a Single instance composing cancellation
-     * through and turing an empty Maybe into a signal of NoSuchElementException.
+     * through and turning an empty Maybe into a signal of NoSuchElementException.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code toSingle} does not operate by default on a particular {@link Scheduler}.</dd>
