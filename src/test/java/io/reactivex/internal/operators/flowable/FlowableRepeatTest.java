@@ -329,4 +329,18 @@ public class FlowableRepeatTest {
       disposable.dispose();
       assertFalse(subject.hasSubscribers());
     }
+
+    @Test
+    public void testRepeatWhen() {
+        Flowable.error(new TestException())
+        .repeatWhen(new Function<Flowable<Object>, Flowable<Object>>() {
+            @Override
+            public Flowable<Object> apply(Flowable<Object> v) throws Exception {
+                return v.delay(10, TimeUnit.SECONDS);
+            }
+        })
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertFailure(TestException.class);
+    }
 }
