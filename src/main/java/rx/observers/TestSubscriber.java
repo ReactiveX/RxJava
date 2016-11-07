@@ -15,11 +15,16 @@
  */
 package rx.observers;
 
-import java.util.*;
-import java.util.concurrent.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
-import rx.*;
+import rx.Notification;
 import rx.Observer;
+import rx.Subscriber;
 import rx.annotations.Experimental;
 import rx.exceptions.CompositeException;
 

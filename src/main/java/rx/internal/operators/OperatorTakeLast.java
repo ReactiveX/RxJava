@@ -18,8 +18,9 @@ package rx.internal.operators;
 import java.util.ArrayDeque;
 import java.util.concurrent.atomic.AtomicLong;
 
-import rx.*;
 import rx.Observable.Operator;
+import rx.Producer;
+import rx.Subscriber;
 import rx.functions.Func1;
 
 /**

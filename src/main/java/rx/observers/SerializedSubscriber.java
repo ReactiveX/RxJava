@@ -15,7 +15,8 @@
  */
 package rx.observers;
 
-import rx.*;
+import rx.Observer;
+import rx.Subscriber;
 
 /**
  * Enforces single-threaded, serialized, ordered execution of {@link #onNext}, {@link #onCompleted}, and

@@ -16,7 +16,8 @@
 package rx.internal.util;
 
 import rx.Observer;
-import rx.functions.*;
+import rx.functions.Action0;
+import rx.functions.Action1;
 
 /**
  * An Observer that forwards the onXXX method calls to callbacks.

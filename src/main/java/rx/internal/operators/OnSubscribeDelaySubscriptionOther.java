@@ -16,11 +16,13 @@
 
 package rx.internal.operators;
 
-import rx.*;
+import rx.Observable;
 import rx.Observable.OnSubscribe;
+import rx.Subscriber;
 import rx.observers.Subscribers;
 import rx.plugins.RxJavaHooks;
-import rx.subscriptions.*;
+import rx.subscriptions.SerialSubscription;
+import rx.subscriptions.Subscriptions;
 
 /**
  * Delays the subscription to the main source until the other

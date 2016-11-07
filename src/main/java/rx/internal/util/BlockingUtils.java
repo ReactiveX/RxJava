@@ -16,10 +16,10 @@
 
 package rx.internal.util;
 
+import java.util.concurrent.CountDownLatch;
+
 import rx.Subscription;
 import rx.annotations.Experimental;
-
-import java.util.concurrent.CountDownLatch;
 
 /**
  * Utility functions relating to blocking types.

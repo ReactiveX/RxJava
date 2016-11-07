@@ -12,18 +12,57 @@
  */
 package rx;
 
-import java.util.*;
-import java.util.concurrent.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.concurrent.Callable;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
-import rx.annotations.*;
-import rx.exceptions.*;
-import rx.functions.*;
+import rx.annotations.Beta;
+import rx.annotations.Experimental;
+import rx.exceptions.Exceptions;
+import rx.exceptions.OnErrorFailedException;
+import rx.exceptions.OnErrorNotImplementedException;
+import rx.functions.Action0;
+import rx.functions.Action1;
+import rx.functions.Action2;
+import rx.functions.Action3;
+import rx.functions.Actions;
+import rx.functions.Func0;
+import rx.functions.Func1;
+import rx.functions.Func2;
+import rx.functions.Func3;
+import rx.functions.Func4;
+import rx.functions.Func5;
+import rx.functions.Func6;
+import rx.functions.Func7;
+import rx.functions.Func8;
+import rx.functions.Func9;
+import rx.functions.FuncN;
+import rx.functions.Functions;
 import rx.internal.operators.*;
-import rx.internal.util.*;
-import rx.observables.*;
+import rx.internal.util.ActionNotificationObserver;
+import rx.internal.util.ActionObserver;
+import rx.internal.util.ActionSubscriber;
+import rx.internal.util.InternalObservableUtils;
+import rx.internal.util.ObserverSubscriber;
+import rx.internal.util.RxRingBuffer;
+import rx.internal.util.ScalarSynchronousObservable;
+import rx.internal.util.UtilityFunctions;
+import rx.observables.AsyncOnSubscribe;
+import rx.observables.BlockingObservable;
+import rx.observables.ConnectableObservable;
+import rx.observables.GroupedObservable;
+import rx.observables.SyncOnSubscribe;
 import rx.observers.SafeSubscriber;
-import rx.plugins.*;
-import rx.schedulers.*;
+import rx.plugins.RxJavaHooks;
+import rx.schedulers.Schedulers;
+import rx.schedulers.TimeInterval;
+import rx.schedulers.Timestamped;
 import rx.subscriptions.Subscriptions;
 
 /**

@@ -17,11 +17,13 @@ package rx.internal.producers;
 
 import com.google.j2objc.annotations.Weak;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
-import rx.*;
 import rx.Observer;
-import rx.exceptions.*;
+import rx.Producer;
+import rx.Subscriber;
+import rx.exceptions.Exceptions;
 import rx.internal.operators.BackpressureUtils;
 
 /**

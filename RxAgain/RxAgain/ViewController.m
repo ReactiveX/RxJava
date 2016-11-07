@@ -18,6 +18,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     [OneTest runTests];
+//    [OneTest runSingleClassWithNSString:@"rx.internal.operators.OperatorTakeLastTimedTest"];
 }
 
 

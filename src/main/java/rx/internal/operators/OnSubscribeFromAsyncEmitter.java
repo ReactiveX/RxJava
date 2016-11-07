@@ -16,15 +16,22 @@
 package rx.internal.operators;
 
 import java.util.Queue;
-import java.util.concurrent.atomic.*;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicReference;
 
-import rx.*;
+import rx.AsyncEmitter;
 import rx.Observable.OnSubscribe;
-import rx.exceptions.*;
+import rx.Producer;
+import rx.Subscriber;
+import rx.Subscription;
+import rx.exceptions.Exceptions;
+import rx.exceptions.MissingBackpressureException;
 import rx.functions.Action1;
 import rx.internal.util.RxRingBuffer;
 import rx.internal.util.atomic.SpscUnboundedAtomicArrayQueue;
-import rx.internal.util.unsafe.*;
+import rx.internal.util.unsafe.SpscUnboundedArrayQueue;
+import rx.internal.util.unsafe.UnsafeAccess;
 import rx.plugins.RxJavaHooks;
 import rx.subscriptions.SerialSubscription;
 

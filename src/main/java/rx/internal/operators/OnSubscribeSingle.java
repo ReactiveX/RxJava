@@ -17,7 +17,10 @@ package rx.internal.operators;
 
 import java.util.NoSuchElementException;
 
-import rx.*;
+import rx.Observable;
+import rx.Single;
+import rx.SingleSubscriber;
+import rx.Subscriber;
 
 /**
  * Allows conversion of an Observable to a Single ensuring that exactly one item is emitted - no more and no less.

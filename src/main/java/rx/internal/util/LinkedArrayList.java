@@ -15,7 +15,8 @@
  */
 package rx.internal.util;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A list implementation which combines an ArrayList with a LinkedList to

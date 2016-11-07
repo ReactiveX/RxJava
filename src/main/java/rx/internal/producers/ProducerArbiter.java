@@ -15,7 +15,7 @@
  */
 package rx.internal.producers;
 
-import rx.*;
+import rx.Producer;
 
 /**
  * Producer that allows changing an underlying producer atomically and correctly resume with the accumulated

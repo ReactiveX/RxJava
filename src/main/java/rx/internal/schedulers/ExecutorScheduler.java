@@ -15,13 +15,21 @@
  */
 package rx.internal.schedulers;
 
-import java.util.concurrent.*;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Future;
+import java.util.concurrent.RejectedExecutionException;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import rx.*;
+import rx.Scheduler;
+import rx.Subscription;
 import rx.functions.Action0;
 import rx.plugins.RxJavaHooks;
-import rx.subscriptions.*;
+import rx.subscriptions.CompositeSubscription;
+import rx.subscriptions.MultipleAssignmentSubscription;
+import rx.subscriptions.Subscriptions;
 
 /**
  * Scheduler that wraps an Executor instance and establishes the Scheduler contract upon it.

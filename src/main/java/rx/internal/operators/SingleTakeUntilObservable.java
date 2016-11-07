@@ -19,8 +19,11 @@ package rx.internal.operators;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import rx.*;
+import rx.Observable;
+import rx.Single;
 import rx.Single.OnSubscribe;
+import rx.SingleSubscriber;
+import rx.Subscriber;
 import rx.plugins.RxJavaHooks;
 
 /**

@@ -38,7 +38,7 @@ public class ReplaySubjectConcurrencyTest {
 
     public static void main(String args[]) {
         try {
-            for (int i = 0; i < 100; i++) {
+            for (@AutoreleasePool int i = 0; i < 100; i++) {
                 new ReplaySubjectConcurrencyTest().testSubscribeCompletionRaceCondition();
                 new ReplaySubjectConcurrencyTest().testReplaySubjectConcurrentSubscriptions();
                 new ReplaySubjectConcurrencyTest().testReplaySubjectConcurrentSubscribersDoingReplayDontBlockEachOther();

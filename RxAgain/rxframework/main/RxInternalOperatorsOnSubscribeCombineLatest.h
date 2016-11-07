@@ -181,7 +181,7 @@ J2OBJC_TYPE_LITERAL_HEADER(RxInternalOperatorsOnSubscribeCombineLatest_LatestCoo
 
 @interface RxInternalOperatorsOnSubscribeCombineLatest_CombinerSubscriber : RxSubscriber {
  @public
-  RxInternalOperatorsOnSubscribeCombineLatest_LatestCoordinator *parent_;
+  __unsafe_unretained RxInternalOperatorsOnSubscribeCombineLatest_LatestCoordinator *parent_;
   jint index_;
   jboolean done_;
 }
@@ -202,8 +202,6 @@ J2OBJC_TYPE_LITERAL_HEADER(RxInternalOperatorsOnSubscribeCombineLatest_LatestCoo
 @end
 
 J2OBJC_EMPTY_STATIC_INIT(RxInternalOperatorsOnSubscribeCombineLatest_CombinerSubscriber)
-
-J2OBJC_FIELD_SETTER(RxInternalOperatorsOnSubscribeCombineLatest_CombinerSubscriber, parent_, RxInternalOperatorsOnSubscribeCombineLatest_LatestCoordinator *)
 
 FOUNDATION_EXPORT void RxInternalOperatorsOnSubscribeCombineLatest_CombinerSubscriber_initWithRxInternalOperatorsOnSubscribeCombineLatest_LatestCoordinator_withInt_(RxInternalOperatorsOnSubscribeCombineLatest_CombinerSubscriber *self, RxInternalOperatorsOnSubscribeCombineLatest_LatestCoordinator *parent, jint index);
 

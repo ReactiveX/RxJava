@@ -91,7 +91,7 @@ J2OBJC_TYPE_LITERAL_HEADER(RxInternalProducersProducersTest)
 
 @interface RxInternalProducersProducersTest_TestProducer : NSObject < RxProducer > {
  @public
-  id<RxObserver> child_;
+  __unsafe_unretained id<RxObserver> child_;
 }
 
 #pragma mark Public
@@ -103,8 +103,6 @@ J2OBJC_TYPE_LITERAL_HEADER(RxInternalProducersProducersTest)
 @end
 
 J2OBJC_EMPTY_STATIC_INIT(RxInternalProducersProducersTest_TestProducer)
-
-J2OBJC_FIELD_SETTER(RxInternalProducersProducersTest_TestProducer, child_, id<RxObserver>)
 
 FOUNDATION_EXPORT void RxInternalProducersProducersTest_TestProducer_initWithRxObserver_(RxInternalProducersProducersTest_TestProducer *self, id<RxObserver> child);
 

@@ -17,8 +17,10 @@ package rx.internal.operators;
 
 import java.util.concurrent.atomic.AtomicLong;
 
-import rx.*;
+import rx.Notification;
 import rx.Observable.Operator;
+import rx.Producer;
+import rx.Subscriber;
 import rx.plugins.RxJavaHooks;
 
 /**

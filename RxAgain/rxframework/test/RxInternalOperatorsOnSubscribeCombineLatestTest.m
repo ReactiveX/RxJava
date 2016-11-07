@@ -1140,17 +1140,20 @@ J2OBJC_INITIALIZED_DEFN(RxInternalOperatorsOnSubscribeCombineLatestTest)
 }
 
 - (void)testBackpressure {
-  id<RxFunctionsFunc2> combineLatestFunction = RxInternalOperatorsOnSubscribeCombineLatestTest_getConcatStringIntegerCombineLatestFunction(self);
-  jint NUM = JreLoadStatic(RxInternalUtilRxRingBuffer, SIZE) * 4;
-  RxObserversTestSubscriber *ts = create_RxObserversTestSubscriber_init();
-  [((RxObservable *) nil_chk([((RxObservable *) nil_chk(RxObservable_combineLatestWithRxObservable_withRxObservable_withRxFunctionsFunc2_(RxObservable_justWithId_withId_(@"one", @"two"), RxObservable_rangeWithInt_withInt_(2, NUM), combineLatestFunction))) observeOnWithRxScheduler:RxSchedulersSchedulers_computation()])) subscribeWithRxSubscriber:ts];
-  [ts awaitTerminalEvent];
-  [ts assertNoErrors];
-  id<JavaUtilList> events = [ts getOnNextEvents];
-  OrgJunitAssert_assertEqualsWithId_withId_(@"two2", [((id<JavaUtilList>) nil_chk(events)) getWithInt:0]);
-  OrgJunitAssert_assertEqualsWithId_withId_(@"two3", [events getWithInt:1]);
-  OrgJunitAssert_assertEqualsWithId_withId_(@"two4", [events getWithInt:2]);
-  OrgJunitAssert_assertEqualsWithLong_withLong_(NUM, [events size]);
+  @autoreleasepool {
+    id<RxFunctionsFunc2> combineLatestFunction = RxInternalOperatorsOnSubscribeCombineLatestTest_getConcatStringIntegerCombineLatestFunction(self);
+    jint NUM = JreLoadStatic(RxInternalUtilRxRingBuffer, SIZE) * 4;
+    RxObserversTestSubscriber *ts = create_RxObserversTestSubscriber_init();
+    [((RxObservable *) nil_chk([((RxObservable *) nil_chk(RxObservable_combineLatestWithRxObservable_withRxObservable_withRxFunctionsFunc2_(RxObservable_justWithId_withId_(@"one", @"two"), RxObservable_rangeWithInt_withInt_(2, NUM), combineLatestFunction))) observeOnWithRxScheduler:RxSchedulersSchedulers_computation()])) subscribeWithRxSubscriber:ts];
+    [ts awaitTerminalEvent];
+    [ts assertNoErrors];
+    [ts unsubscribe];
+    id<JavaUtilList> events = [ts getOnNextEvents];
+    OrgJunitAssert_assertEqualsWithId_withId_(@"two2", [((id<JavaUtilList>) nil_chk(events)) getWithInt:0]);
+    OrgJunitAssert_assertEqualsWithId_withId_(@"two3", [events getWithInt:1]);
+    OrgJunitAssert_assertEqualsWithId_withId_(@"two4", [events getWithInt:2]);
+    OrgJunitAssert_assertEqualsWithLong_withLong_(NUM, [events size]);
+  }
 }
 
 - (void)testWithCombineLatestIssue1717 {

@@ -15,6 +15,9 @@
  */
 package rx.subjects;
 
+import com.google.j2objc.annotations.AutoreleasePool;
+
+
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.inOrder;
@@ -396,7 +399,7 @@ public class BehaviorSubjectTest {
         Scheduler s = Schedulers.io();
         Scheduler.Worker worker = Schedulers.io().createWorker();
         try {
-            for (int i = 0; i < 50000; i++) {
+            for (@AutoreleasePool int i = 0; i < 50000; i++) {
                 if (i % 1000 == 0) {
                     System.out.println(i);
                 }

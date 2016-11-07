@@ -18,7 +18,8 @@ package rx;
 import java.util.concurrent.TimeUnit;
 
 import rx.annotations.Experimental;
-import rx.functions.*;
+import rx.functions.Action0;
+import rx.functions.Func1;
 import rx.internal.schedulers.SchedulerWhen;
 import rx.internal.subscriptions.SequentialSubscription;
 import rx.schedulers.Schedulers;

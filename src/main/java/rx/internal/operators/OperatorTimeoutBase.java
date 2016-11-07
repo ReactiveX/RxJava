@@ -17,9 +17,14 @@ package rx.internal.operators;
 
 import java.util.concurrent.TimeoutException;
 
-import rx.*;
+import rx.Observable;
 import rx.Observable.Operator;
-import rx.functions.*;
+import rx.Producer;
+import rx.Scheduler;
+import rx.Subscriber;
+import rx.Subscription;
+import rx.functions.Func3;
+import rx.functions.Func4;
 import rx.internal.producers.ProducerArbiter;
 import rx.observers.SerializedSubscriber;
 import rx.subscriptions.SerialSubscription;

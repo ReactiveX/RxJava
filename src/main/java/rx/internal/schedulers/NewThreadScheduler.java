@@ -16,6 +16,7 @@
 package rx.internal.schedulers;
 
 import java.util.concurrent.ThreadFactory;
+
 import rx.Scheduler;
 
 /**

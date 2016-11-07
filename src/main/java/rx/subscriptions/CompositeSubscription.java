@@ -15,15 +15,15 @@
  */
 package rx.subscriptions;
 
-import rx.Subscription;
-import rx.exceptions.Exceptions;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import rx.Subscription;
+import rx.exceptions.Exceptions;
 
 /**
  * Subscription that represents a group of Subscriptions that are unsubscribed together.

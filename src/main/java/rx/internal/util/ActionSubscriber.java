@@ -16,7 +16,8 @@
 package rx.internal.util;
 
 import rx.Subscriber;
-import rx.functions.*;
+import rx.functions.Action0;
+import rx.functions.Action1;
 
 /**
  * A Subscriber that forwards the onXXX method calls to callbacks.

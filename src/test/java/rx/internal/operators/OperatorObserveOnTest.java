@@ -15,6 +15,9 @@
  */
 package rx.internal.operators;
 
+import com.google.j2objc.annotations.AutoreleasePool;
+
+
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
@@ -238,6 +241,7 @@ public class OperatorObserveOnTest {
      * Confirm that running on a ThreadPoolScheduler allows multiple threads but is still ordered.
      */
     @Test
+    @AutoreleasePool
     public void testObserveOnWithComputationScheduler() {
         final AtomicInteger count = new AtomicInteger();
         final int _multiple = 99;
@@ -921,7 +925,7 @@ public class OperatorObserveOnTest {
 
     @Test
     public void bufferSizesWork() {
-        for (int i = 1; i <= 1024; i = i * 2) {
+        for (@AutoreleasePool int i = 1; i <= 1024; i = i * 2) {
             TestSubscriber<Integer> ts = TestSubscriber.create();
 
             Observable.range(1, 1000 * 1000).observeOn(Schedulers.computation(), i)
@@ -931,6 +935,7 @@ public class OperatorObserveOnTest {
             ts.assertValueCount(1000 * 1000);
             ts.assertCompleted();
             ts.assertNoErrors();
+            ts.unsubscribe();
         }
     }
 

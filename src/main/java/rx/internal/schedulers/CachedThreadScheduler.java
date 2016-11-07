@@ -15,13 +15,21 @@
  */
 package rx.internal.schedulers;
 
-import java.util.concurrent.*;
-import java.util.concurrent.atomic.*;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 
-import rx.*;
+import rx.Scheduler;
+import rx.Subscription;
 import rx.functions.Action0;
 import rx.internal.util.RxThreadFactory;
-import rx.subscriptions.*;
+import rx.subscriptions.CompositeSubscription;
+import rx.subscriptions.Subscriptions;
 
 public final class CachedThreadScheduler extends Scheduler implements SchedulerLifecycle {
     private static final long KEEP_ALIVE_TIME = 60;

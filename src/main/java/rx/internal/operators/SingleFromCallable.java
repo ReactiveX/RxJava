@@ -18,7 +18,8 @@ package rx.internal.operators;
 
 import java.util.concurrent.Callable;
 
-import rx.*;
+import rx.Single;
+import rx.SingleSubscriber;
 import rx.exceptions.Exceptions;
 
 /**

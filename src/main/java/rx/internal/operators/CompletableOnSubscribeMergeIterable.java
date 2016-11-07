@@ -17,10 +17,13 @@
 package rx.internal.operators;
 
 import java.util.Iterator;
-import java.util.concurrent.atomic.*;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
-import rx.*;
+import rx.Completable;
 import rx.Completable.OnSubscribe;
+import rx.CompletableSubscriber;
+import rx.Subscription;
 import rx.plugins.RxJavaHooks;
 import rx.subscriptions.CompositeSubscription;
 

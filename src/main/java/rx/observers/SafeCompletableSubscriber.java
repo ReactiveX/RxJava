@@ -18,7 +18,10 @@ package rx.observers;
 import rx.CompletableSubscriber;
 import rx.Subscription;
 import rx.annotations.Experimental;
-import rx.exceptions.*;
+import rx.exceptions.CompositeException;
+import rx.exceptions.Exceptions;
+import rx.exceptions.OnCompletedFailedException;
+import rx.exceptions.OnErrorFailedException;
 import rx.plugins.RxJavaHooks;
 
 /**

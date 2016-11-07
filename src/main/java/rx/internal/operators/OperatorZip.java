@@ -19,10 +19,23 @@ import com.google.j2objc.annotations.Weak;
 
 import java.util.concurrent.atomic.AtomicLong;
 
-import rx.*;
+import rx.Observable;
 import rx.Observable.Operator;
-import rx.exceptions.*;
-import rx.functions.*;
+import rx.Observer;
+import rx.Producer;
+import rx.Subscriber;
+import rx.exceptions.Exceptions;
+import rx.exceptions.MissingBackpressureException;
+import rx.functions.Func2;
+import rx.functions.Func3;
+import rx.functions.Func4;
+import rx.functions.Func5;
+import rx.functions.Func6;
+import rx.functions.Func7;
+import rx.functions.Func8;
+import rx.functions.Func9;
+import rx.functions.FuncN;
+import rx.functions.Functions;
 import rx.internal.util.RxRingBuffer;
 import rx.subscriptions.CompositeSubscription;
 

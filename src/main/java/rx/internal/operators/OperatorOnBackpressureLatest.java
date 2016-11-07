@@ -15,10 +15,14 @@
  */
 package rx.internal.operators;
 
-import java.util.concurrent.atomic.*;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicReference;
 
-import rx.*;
 import rx.Observable.Operator;
+import rx.Observer;
+import rx.Producer;
+import rx.Subscriber;
+import rx.Subscription;
 
 /**
  * An operator which drops all but the last received value in case the downstream

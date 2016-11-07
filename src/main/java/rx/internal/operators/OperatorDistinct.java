@@ -15,7 +15,8 @@
  */
 package rx.internal.operators;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.Set;
 
 import rx.Observable.Operator;
 import rx.Subscriber;

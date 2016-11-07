@@ -15,16 +15,31 @@
  */
 package rx.internal.operators;
 
-import java.util.*;
-import java.util.concurrent.*;
-import java.util.concurrent.atomic.*;
+import com.google.j2objc.annotations.Weak;
 
-import rx.*;
-import rx.Observable.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicReference;
+
+import rx.Observable.OnSubscribe;
+import rx.Observable.Operator;
+import rx.Producer;
+import rx.Subscriber;
+import rx.Subscription;
 import rx.exceptions.Exceptions;
-import rx.functions.*;
+import rx.functions.Action0;
+import rx.functions.Action1;
+import rx.functions.Func1;
 import rx.internal.producers.ProducerArbiter;
-import rx.internal.util.*;
+import rx.internal.util.RxRingBuffer;
+import rx.internal.util.UtilityFunctions;
 import rx.observables.GroupedObservable;
 import rx.observers.Subscribers;
 import rx.plugins.RxJavaHooks;
@@ -425,6 +440,8 @@ public final class OperatorGroupBy<T, K, V> implements Operator<GroupedObservabl
 
         final K key;
         final Queue<Object> queue;
+
+        @Weak
         final GroupBySubscriber<?, K, T> parent;
         final boolean delayError;
 

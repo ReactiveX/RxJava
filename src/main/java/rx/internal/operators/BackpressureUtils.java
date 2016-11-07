@@ -16,7 +16,7 @@
 package rx.internal.operators;
 
 import java.util.Queue;
-import java.util.concurrent.atomic.*;
+import java.util.concurrent.atomic.AtomicLong;
 
 import rx.Subscriber;
 import rx.functions.Func1;

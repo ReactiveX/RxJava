@@ -511,9 +511,13 @@ J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxInternalOperatorsOnSubscribeCombineLatest_Lat
   [self requestWithLong:n];
 }
 
+- (void)__javaClone:(RxInternalOperatorsOnSubscribeCombineLatest_CombinerSubscriber *)original {
+  [super __javaClone:original];
+  [parent_ release];
+}
+
 - (void)dealloc {
   JreCheckFinalize(self, [RxInternalOperatorsOnSubscribeCombineLatest_CombinerSubscriber class]);
-  RELEASE_(parent_);
   [super dealloc];
 }
 
@@ -547,7 +551,7 @@ J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxInternalOperatorsOnSubscribeCombineLatest_Lat
 
 void RxInternalOperatorsOnSubscribeCombineLatest_CombinerSubscriber_initWithRxInternalOperatorsOnSubscribeCombineLatest_LatestCoordinator_withInt_(RxInternalOperatorsOnSubscribeCombineLatest_CombinerSubscriber *self, RxInternalOperatorsOnSubscribeCombineLatest_LatestCoordinator *parent, jint index) {
   RxSubscriber_init(self);
-  JreStrongAssign(&self->parent_, parent);
+  self->parent_ = parent;
   self->index_ = index;
   [self requestWithLong:((RxInternalOperatorsOnSubscribeCombineLatest_LatestCoordinator *) nil_chk(parent))->bufferSize_];
 }

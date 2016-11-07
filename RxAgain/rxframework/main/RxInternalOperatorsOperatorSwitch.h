@@ -137,7 +137,7 @@ J2OBJC_TYPE_LITERAL_HEADER(RxInternalOperatorsOperatorSwitch_HolderDelayError)
   jboolean emitting_;
   jboolean missed_;
   jlong requested_SwitchSubscriber_;
-  id<RxProducer> producer_SwitchSubscriber_;
+  id<RxProducer> producer_;
   volatile_jboolean mainDone_;
   NSException *error_;
   jboolean innerActive_;
@@ -196,7 +196,7 @@ J2OBJC_FIELD_SETTER(RxInternalOperatorsOperatorSwitch_SwitchSubscriber, child_, 
 J2OBJC_FIELD_SETTER(RxInternalOperatorsOperatorSwitch_SwitchSubscriber, serial_, RxSubscriptionsSerialSubscription *)
 J2OBJC_FIELD_SETTER(RxInternalOperatorsOperatorSwitch_SwitchSubscriber, index_, JavaUtilConcurrentAtomicAtomicLong *)
 J2OBJC_FIELD_SETTER(RxInternalOperatorsOperatorSwitch_SwitchSubscriber, queue_, RxInternalUtilAtomicSpscLinkedArrayQueue *)
-J2OBJC_FIELD_SETTER(RxInternalOperatorsOperatorSwitch_SwitchSubscriber, producer_SwitchSubscriber_, id<RxProducer>)
+J2OBJC_FIELD_SETTER(RxInternalOperatorsOperatorSwitch_SwitchSubscriber, producer_, id<RxProducer>)
 J2OBJC_FIELD_SETTER(RxInternalOperatorsOperatorSwitch_SwitchSubscriber, error_, NSException *)
 
 inline NSException *RxInternalOperatorsOperatorSwitch_SwitchSubscriber_get_TERMINAL_ERROR();

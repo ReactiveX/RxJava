@@ -15,6 +15,9 @@
  */
 package rx.internal.operators;
 
+import com.google.j2objc.annotations.AutoreleasePool;
+
+
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
@@ -26,6 +29,7 @@ import java.util.concurrent.atomic.*;
 import org.junit.Test;
 import org.mockito.*;
 
+import co.touchlab.doppel.testing.DoppelHacks;
 import rx.*;
 import rx.Observable;
 import rx.Observer;
@@ -775,6 +779,8 @@ public class OnSubscribeCombineLatestTest {
     }
 
     @Test
+    @AutoreleasePool
+    @DoppelHacks//Added unsubscribe
     public void testBackpressure() {
         Func2<String, Integer, String> combineLatestFunction = getConcatStringIntegerCombineLatestFunction();
 
@@ -786,6 +792,7 @@ public class OnSubscribeCombineLatestTest {
 
         ts.awaitTerminalEvent();
         ts.assertNoErrors();
+        ts.unsubscribe();
         List<String> events = ts.getOnNextEvents();
         assertEquals("two2", events.get(0));
         assertEquals("two3", events.get(1));

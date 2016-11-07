@@ -851,9 +851,11 @@ __attribute__((unused)) static RxInternalOperatorsOperatorObserveOnTest_$27 *cre
 }
 
 - (void)testObserveOnWithComputationScheduler {
-  JavaUtilConcurrentAtomicAtomicInteger *count = create_JavaUtilConcurrentAtomicAtomicInteger_init();
-  jint _multiple = 99;
-  [((RxObservablesBlockingObservable *) nil_chk([((RxObservable *) nil_chk([((RxObservable *) nil_chk([((RxObservable *) nil_chk(RxObservable_rangeWithInt_withInt_(1, 100000))) mapWithRxFunctionsFunc1:create_RxInternalOperatorsOperatorObserveOnTest_$6_init()])) observeOnWithRxScheduler:RxSchedulersSchedulers_computation()])) toBlocking])) forEachWithRxFunctionsAction1:create_RxInternalOperatorsOperatorObserveOnTest_$7_initWithJavaUtilConcurrentAtomicAtomicInteger_(count)];
+  @autoreleasepool {
+    JavaUtilConcurrentAtomicAtomicInteger *count = create_JavaUtilConcurrentAtomicAtomicInteger_init();
+    jint _multiple = 99;
+    [((RxObservablesBlockingObservable *) nil_chk([((RxObservable *) nil_chk([((RxObservable *) nil_chk([((RxObservable *) nil_chk(RxObservable_rangeWithInt_withInt_(1, 100000))) mapWithRxFunctionsFunc1:create_RxInternalOperatorsOperatorObserveOnTest_$6_init()])) observeOnWithRxScheduler:RxSchedulersSchedulers_computation()])) toBlocking])) forEachWithRxFunctionsAction1:create_RxInternalOperatorsOperatorObserveOnTest_$7_initWithJavaUtilConcurrentAtomicAtomicInteger_(count)];
+  }
 }
 
 - (void)testObserveOnOrderingConcurrency {
@@ -1110,12 +1112,15 @@ __attribute__((unused)) static RxInternalOperatorsOperatorObserveOnTest_$27 *cre
 
 - (void)bufferSizesWork {
   for (jint i = 1; i <= 1024; i = i * 2) {
-    RxObserversTestSubscriber *ts = RxObserversTestSubscriber_create();
-    [((RxObservable *) nil_chk([((RxObservable *) nil_chk(RxObservable_rangeWithInt_withInt_(1, 1000 * 1000))) observeOnWithRxScheduler:RxSchedulersSchedulers_computation() withInt:i])) subscribeWithRxSubscriber:ts];
-    [((RxObserversTestSubscriber *) nil_chk(ts)) awaitTerminalEvent];
-    [ts assertValueCountWithInt:1000 * 1000];
-    [ts assertCompleted];
-    [ts assertNoErrors];
+    @autoreleasepool {
+      RxObserversTestSubscriber *ts = RxObserversTestSubscriber_create();
+      [((RxObservable *) nil_chk([((RxObservable *) nil_chk(RxObservable_rangeWithInt_withInt_(1, 1000 * 1000))) observeOnWithRxScheduler:RxSchedulersSchedulers_computation() withInt:i])) subscribeWithRxSubscriber:ts];
+      [((RxObserversTestSubscriber *) nil_chk(ts)) awaitTerminalEvent];
+      [ts assertValueCountWithInt:1000 * 1000];
+      [ts assertCompleted];
+      [ts assertNoErrors];
+      [ts unsubscribe];
+    }
   }
 }
 

@@ -15,7 +15,9 @@
  */
 package rx.plugins;
 
-import rx.*;
+import rx.Completable;
+import rx.Subscriber;
+import rx.Subscription;
 import rx.annotations.Experimental;
 import rx.functions.Func1;
 

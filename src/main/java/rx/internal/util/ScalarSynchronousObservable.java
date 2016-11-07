@@ -17,13 +17,18 @@ package rx.internal.util;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import rx.*;
+import rx.Observable;
+import rx.Producer;
+import rx.Scheduler;
+import rx.Subscriber;
+import rx.Subscription;
 import rx.exceptions.Exceptions;
-import rx.functions.*;
+import rx.functions.Action0;
+import rx.functions.Func1;
 import rx.internal.producers.SingleProducer;
 import rx.internal.schedulers.EventLoopsScheduler;
 import rx.observers.Subscribers;
-import rx.plugins.*;
+import rx.plugins.RxJavaHooks;
 
 /**
  * An Observable that emits a single constant scalar value to Subscribers.

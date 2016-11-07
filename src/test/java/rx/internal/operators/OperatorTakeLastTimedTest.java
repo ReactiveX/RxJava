@@ -15,6 +15,9 @@
  */
 package rx.internal.operators;
 
+import com.google.j2objc.annotations.AutoreleasePool;
+
+
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
@@ -29,6 +32,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.junit.*;
 import org.mockito.InOrder;
 
+import co.touchlab.doppel.testing.DoppelHacks;
 import rx.*;
 import rx.Scheduler.Worker;
 import rx.exceptions.TestException;
@@ -38,6 +42,7 @@ import rx.plugins.RxJavaHooks;
 import rx.schedulers.*;
 import rx.subjects.PublishSubject;
 
+@DoppelHacks//Added unsubscribes
 public class OperatorTakeLastTimedTest {
 
     @Test(expected = IndexOutOfBoundsException.class)
@@ -219,7 +224,7 @@ public class OperatorTakeLastTimedTest {
         Worker w = Schedulers.computation().createWorker();
         try {
             final int n = 1000;
-            for (int i = 0; i < 25000; i++) {
+            for (@AutoreleasePool int i = 0; i < 25000; i++) {
                 if (i % 1000 == 0) {
                     System.out.println("completionRequestRace >> " + i);
                 }
@@ -255,6 +260,8 @@ public class OperatorTakeLastTimedTest {
                 for (int j = 0; j < n; j++) {
                     Assert.assertEquals(j, list.get(j).intValue());
                 }
+
+                ts.unsubscribe();
             }
         } finally {
             w.unsubscribe();

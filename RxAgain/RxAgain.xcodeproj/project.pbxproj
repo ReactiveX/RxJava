@@ -37,6 +37,8 @@
 		63111F7F1DCC042000DE6670 /* RxInternalSchedulersNewThreadWorkerTest__ScheduledExecutorServiceWithSetRemoveOnCancelPolicy$Moxy.m in Sources */ = {isa = PBXBuildFile; fileRef = 63111F611DCC042000DE6670 /* RxInternalSchedulersNewThreadWorkerTest__ScheduledExecutorServiceWithSetRemoveOnCancelPolicy$Moxy.m */; };
 		63111F801DCC042000DE6670 /* ScheduledThreadPoolExecutor$Moxy.h in Headers */ = {isa = PBXBuildFile; fileRef = 63111F621DCC042000DE6670 /* ScheduledThreadPoolExecutor$Moxy.h */; };
 		63111F811DCC042000DE6670 /* ScheduledThreadPoolExecutor$Moxy.m in Sources */ = {isa = PBXBuildFile; fileRef = 63111F631DCC042000DE6670 /* ScheduledThreadPoolExecutor$Moxy.m */; };
+		63331ADC1DCF8A7A00CA641D /* TestResources.h in Headers */ = {isa = PBXBuildFile; fileRef = 63331ADA1DCF8A7A00CA641D /* TestResources.h */; };
+		63331ADD1DCF8A7A00CA641D /* TestResources.m in Sources */ = {isa = PBXBuildFile; fileRef = 63331ADB1DCF8A7A00CA641D /* TestResources.m */; };
 		635B166A1DCAD3E900BB0E12 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 635B16691DCAD3E900BB0E12 /* main.m */; };
 		635B166D1DCAD3E900BB0E12 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 635B166C1DCAD3E900BB0E12 /* AppDelegate.m */; };
 		635B16701DCAD3E900BB0E12 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 635B166F1DCAD3E900BB0E12 /* ViewController.m */; };
@@ -1585,6 +1587,8 @@
 		63111F611DCC042000DE6670 /* RxInternalSchedulersNewThreadWorkerTest__ScheduledExecutorServiceWithSetRemoveOnCancelPolicy$Moxy.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RxInternalSchedulersNewThreadWorkerTest__ScheduledExecutorServiceWithSetRemoveOnCancelPolicy$Moxy.m; sourceTree = "<group>"; };
 		63111F621DCC042000DE6670 /* ScheduledThreadPoolExecutor$Moxy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ScheduledThreadPoolExecutor$Moxy.h; sourceTree = "<group>"; };
 		63111F631DCC042000DE6670 /* ScheduledThreadPoolExecutor$Moxy.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ScheduledThreadPoolExecutor$Moxy.m; sourceTree = "<group>"; };
+		63331ADA1DCF8A7A00CA641D /* TestResources.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TestResources.h; sourceTree = "<group>"; };
+		63331ADB1DCF8A7A00CA641D /* TestResources.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TestResources.m; sourceTree = "<group>"; };
 		635B16651DCAD3E900BB0E12 /* RxAgain.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RxAgain.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		635B16691DCAD3E900BB0E12 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		635B166B1DCAD3E900BB0E12 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -4663,6 +4667,8 @@
 		635B238D1DCADB6200BB0E12 /* test */ = {
 			isa = PBXGroup;
 			children = (
+				63331ADA1DCF8A7A00CA641D /* TestResources.h */,
+				63331ADB1DCF8A7A00CA641D /* TestResources.m */,
 				63111F461DCC042000DE6670 /* RxCompletableTestFunc1a$Moxy.h */,
 				63111F471DCC042000DE6670 /* RxCompletableTestFunc1a$Moxy.m */,
 				63111F481DCC042000DE6670 /* RxCompletableTestFunc1b$Moxy.h */,
@@ -5849,6 +5855,7 @@
 				635B28CB1DCADB6500BB0E12 /* RxInternalUtilUnsafeSpscLinkedQueue.h in Headers */,
 				635B29791DCADB6600BB0E12 /* RxDopplMockSingletestFuncStart.h in Headers */,
 				635B2ABF1DCADB6700BB0E12 /* RxInternalUtilUnsafeUnsafeAccessTest.h in Headers */,
+				63331ADC1DCF8A7A00CA641D /* TestResources.h in Headers */,
 				635B2A8F1DCADB6700BB0E12 /* RxInternalProducersProducerArbiterTest.h in Headers */,
 				635B29E71DCADB6600BB0E12 /* RxInternalOperatorsOperatorBufferTest.h in Headers */,
 				635B263F1DCADB6400BB0E12 /* AndroidTelephonyJapanesePhoneNumberFormatter.h in Headers */,
@@ -6844,6 +6851,7 @@
 				635B2A4A1DCADB6700BB0E12 /* RxInternalOperatorsOperatorSkipTest.m in Sources */,
 				635B28241DCADB6500BB0E12 /* RxInternalOperatorsOperatorZipIterable.m in Sources */,
 				635B2B361DCADB6800BB0E12 /* RxSubscriptionsSubscriptionsTest.m in Sources */,
+				63331ADD1DCF8A7A00CA641D /* TestResources.m in Sources */,
 				635B25F21DCADB6400BB0E12 /* AndroidDatabaseSqliteSQLiteDatabaseConfiguration.m in Sources */,
 				635B26721DCADB6400BB0E12 /* SQLiteErrors.m in Sources */,
 				635B27681DCADB6500BB0E12 /* RxInternalOperatorsOnSubscribeMap.m in Sources */,

@@ -15,17 +15,25 @@
  */
 package rx.internal.operators;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-import rx.*;
 import rx.Observable;
 import rx.Observable.OnSubscribe;
 import rx.Observer;
+import rx.Subscriber;
+import rx.Subscription;
 import rx.exceptions.Exceptions;
-import rx.functions.*;
-import rx.observers.*;
-import rx.subjects.*;
-import rx.subscriptions.*;
+import rx.functions.Func1;
+import rx.functions.Func2;
+import rx.observers.SerializedObserver;
+import rx.observers.SerializedSubscriber;
+import rx.subjects.PublishSubject;
+import rx.subjects.Subject;
+import rx.subscriptions.CompositeSubscription;
+import rx.subscriptions.RefCountSubscription;
 
 /**
  * Correlates two sequences when they overlap and groups the results.

@@ -15,7 +15,9 @@
  */
 package rx.internal.operators;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 
 import rx.Observable.Operator;
 import rx.Subscriber;

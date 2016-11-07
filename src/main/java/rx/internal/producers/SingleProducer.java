@@ -19,8 +19,9 @@ import com.google.j2objc.annotations.Weak;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import rx.*;
-import rx.exceptions.*;
+import rx.Producer;
+import rx.Subscriber;
+import rx.exceptions.Exceptions;
 
 /**
  * A producer which emits a single value and completes the child on the first positive request.

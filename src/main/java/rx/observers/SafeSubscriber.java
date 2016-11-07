@@ -20,8 +20,14 @@ import com.google.j2objc.WeakProxy;
 import java.util.Arrays;
 
 import rx.Subscriber;
-import rx.exceptions.*;
-import rx.plugins.*;
+import rx.exceptions.CompositeException;
+import rx.exceptions.Exceptions;
+import rx.exceptions.OnCompletedFailedException;
+import rx.exceptions.OnErrorFailedException;
+import rx.exceptions.OnErrorNotImplementedException;
+import rx.exceptions.UnsubscribeFailedException;
+import rx.plugins.RxJavaHooks;
+import rx.plugins.RxJavaPlugins;
 
 /**
  * {@code SafeSubscriber} is a wrapper around {@code Subscriber} that ensures that the {@code Subscriber}

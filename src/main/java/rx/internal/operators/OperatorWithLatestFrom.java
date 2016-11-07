@@ -17,8 +17,9 @@ package rx.internal.operators;
 
 import java.util.concurrent.atomic.AtomicReference;
 
-import rx.*;
+import rx.Observable;
 import rx.Observable.Operator;
+import rx.Subscriber;
 import rx.exceptions.Exceptions;
 import rx.functions.Func2;
 import rx.observers.SerializedSubscriber;

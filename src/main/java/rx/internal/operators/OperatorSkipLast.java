@@ -15,7 +15,8 @@
  */
 package rx.internal.operators;
 
-import java.util.*;
+import java.util.ArrayDeque;
+import java.util.Deque;
 
 import rx.Observable.Operator;
 import rx.Subscriber;

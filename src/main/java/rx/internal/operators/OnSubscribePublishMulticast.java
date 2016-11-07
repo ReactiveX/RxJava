@@ -17,12 +17,19 @@
 package rx.internal.operators;
 
 import java.util.Queue;
-import java.util.concurrent.atomic.*;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
-import rx.*;
+import rx.Observable;
+import rx.Observer;
+import rx.Producer;
+import rx.Subscriber;
+import rx.Subscription;
 import rx.exceptions.MissingBackpressureException;
 import rx.internal.util.atomic.SpscAtomicArrayQueue;
-import rx.internal.util.unsafe.*;
+import rx.internal.util.unsafe.SpscArrayQueue;
+import rx.internal.util.unsafe.UnsafeAccess;
 
 /**
  * Multicasts notifications coming through its input Subscriber view to its

@@ -16,10 +16,11 @@
  */
 package rx.internal.util.unsafe;
 
-import static rx.internal.util.unsafe.UnsafeAccess.UNSAFE;
-
 import rx.internal.util.SuppressAnimalSniffer;
 import rx.internal.util.atomic.LinkedQueueNode;
+
+
+import static rx.internal.util.unsafe.UnsafeAccess.UNSAFE;
 /**
  * This is a direct Java port of the MPSC algorithm as presented <a
  * href="http://www.1024cores.net/home/lock-free-algorithms/queues/non-intrusive-mpsc-node-based-queue"> on 1024

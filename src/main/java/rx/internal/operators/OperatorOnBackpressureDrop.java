@@ -17,8 +17,9 @@ package rx.internal.operators;
 
 import java.util.concurrent.atomic.AtomicLong;
 
-import rx.*;
 import rx.Observable.Operator;
+import rx.Producer;
+import rx.Subscriber;
 import rx.exceptions.Exceptions;
 import rx.functions.Action1;
 import rx.plugins.RxJavaHooks;

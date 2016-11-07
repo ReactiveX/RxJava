@@ -15,19 +15,28 @@
  */
 package rx.internal.operators;
 
-import com.google.j2objc.annotations.Weak;
-
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicLong;
 
-import rx.*;
 import rx.Observable;
 import rx.Observable.Operator;
-import rx.exceptions.*;
-import rx.internal.util.*;
-import rx.internal.util.atomic.*;
-import rx.internal.util.unsafe.*;
+import rx.Producer;
+import rx.Subscriber;
+import rx.exceptions.CompositeException;
+import rx.exceptions.Exceptions;
+import rx.exceptions.MissingBackpressureException;
+import rx.exceptions.OnErrorThrowable;
+import rx.internal.util.RxRingBuffer;
+import rx.internal.util.ScalarSynchronousObservable;
+import rx.internal.util.atomic.SpscAtomicArrayQueue;
+import rx.internal.util.atomic.SpscExactAtomicArrayQueue;
+import rx.internal.util.atomic.SpscUnboundedAtomicArrayQueue;
+import rx.internal.util.unsafe.Pow2;
+import rx.internal.util.unsafe.SpscArrayQueue;
+import rx.internal.util.unsafe.UnsafeAccess;
 import rx.subscriptions.CompositeSubscription;
 
 /**

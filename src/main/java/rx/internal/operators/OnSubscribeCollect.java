@@ -16,10 +16,12 @@
 
 package rx.internal.operators;
 
-import rx.*;
+import rx.Observable;
 import rx.Observable.OnSubscribe;
+import rx.Subscriber;
 import rx.exceptions.Exceptions;
-import rx.functions.*;
+import rx.functions.Action2;
+import rx.functions.Func0;
 
 public final class OnSubscribeCollect<T, R> implements OnSubscribe<R> {
 

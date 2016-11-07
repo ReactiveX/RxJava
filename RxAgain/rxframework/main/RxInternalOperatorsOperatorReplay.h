@@ -142,7 +142,7 @@ J2OBJC_TYPE_LITERAL_HEADER(RxInternalOperatorsOperatorReplay)
   jboolean missed_;
   jlong maxChildRequested_;
   jlong maxUpstreamRequested_;
-  volatile_id producer_ReplaySubscriber_;
+  volatile_id producer_;
   id<JavaUtilList> coordinationQueue_;
   jboolean coordinateAll_;
 }
@@ -184,7 +184,7 @@ J2OBJC_FIELD_SETTER(RxInternalOperatorsOperatorReplay_ReplaySubscriber, buffer_,
 J2OBJC_FIELD_SETTER(RxInternalOperatorsOperatorReplay_ReplaySubscriber, producers_, RxInternalUtilOpenHashSet *)
 J2OBJC_FIELD_SETTER(RxInternalOperatorsOperatorReplay_ReplaySubscriber, producersCache_, IOSObjectArray *)
 J2OBJC_FIELD_SETTER(RxInternalOperatorsOperatorReplay_ReplaySubscriber, shouldConnect_, JavaUtilConcurrentAtomicAtomicBoolean *)
-J2OBJC_VOLATILE_FIELD_SETTER(RxInternalOperatorsOperatorReplay_ReplaySubscriber, producer_ReplaySubscriber_, id<RxProducer>)
+J2OBJC_VOLATILE_FIELD_SETTER(RxInternalOperatorsOperatorReplay_ReplaySubscriber, producer_, id<RxProducer>)
 J2OBJC_FIELD_SETTER(RxInternalOperatorsOperatorReplay_ReplaySubscriber, coordinationQueue_, id<JavaUtilList>)
 
 inline IOSObjectArray *RxInternalOperatorsOperatorReplay_ReplaySubscriber_get_EMPTY();

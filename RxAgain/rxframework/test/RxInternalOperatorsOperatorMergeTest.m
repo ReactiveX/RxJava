@@ -5,43 +5,93 @@
 
 #include "IOSClass.h"
 #include "IOSObjectArray.h"
+#include "IOSPrimitiveArray.h"
 #include "J2ObjC_source.h"
+#include "RxFunctionsAction0.h"
+#include "RxFunctionsAction1.h"
 #include "RxFunctionsFunc1.h"
+#include "RxInternalOperatorsBackpressureUtils.h"
+#include "RxInternalOperatorsOperatorMerge.h"
 #include "RxInternalOperatorsOperatorMergeTest.h"
 #include "RxInternalUtilRxRingBuffer.h"
+#include "RxInternalUtilUtilityFunctions.h"
 #include "RxObservable.h"
+#include "RxObservablesBlockingObservable.h"
 #include "RxObserver.h"
 #include "RxObserversTestSubscriber.h"
 #include "RxScheduler.h"
 #include "RxSchedulersSchedulers.h"
+#include "RxSchedulersTestScheduler.h"
+#include "RxSubjectsPublishSubject.h"
+#include "RxSubscriber.h"
 #include "RxSubscription.h"
+#include "RxSubscriptionsSubscriptions.h"
 #include "java/io/PrintStream.h"
+#include "java/lang/Exception.h"
+#include "java/lang/IllegalArgumentException.h"
 #include "java/lang/Integer.h"
+#include "java/lang/InterruptedException.h"
 #include "java/lang/Iterable.h"
+#include "java/lang/Long.h"
+#include "java/lang/NullPointerException.h"
+#include "java/lang/Runnable.h"
+#include "java/lang/RuntimeException.h"
 #include "java/lang/System.h"
+#include "java/lang/Thread.h"
 #include "java/lang/annotation/Annotation.h"
+#include "java/lang/reflect/Method.h"
+#include "java/util/ArrayList.h"
+#include "java/util/Arrays.h"
+#include "java/util/Collections.h"
 #include "java/util/Iterator.h"
 #include "java/util/List.h"
 #include "java/util/Spliterator.h"
+#include "java/util/concurrent/ConcurrentLinkedQueue.h"
+#include "java/util/concurrent/CountDownLatch.h"
+#include "java/util/concurrent/TimeUnit.h"
+#include "java/util/concurrent/atomic/AtomicBoolean.h"
 #include "java/util/concurrent/atomic/AtomicInteger.h"
 #include "java/util/function/Consumer.h"
 #include "org/junit/Assert.h"
 #include "org/junit/Before.h"
 #include "org/junit/Test.h"
 #include "org/mockito/Answers.h"
+#include "org/mockito/Matchers.h"
 #include "org/mockito/Mock.h"
+#include "org/mockito/Mockito.h"
 #include "org/mockito/MockitoAnnotations.h"
+#include "org/mockito/verification/VerificationMode.h"
 
 @interface RxInternalOperatorsOperatorMergeTest ()
+
+- (RxObservable *)createObservableOf5IntervalsOf1SecondIncrementsWithSubscriptionHookWithRxScheduler:(RxScheduler *)scheduler
+                                                           withJavaUtilConcurrentAtomicAtomicBoolean:(JavaUtilConcurrentAtomicAtomicBoolean *)unsubscribed;
+
+- (RxObservable *)mergeNAsyncStreamsOfNWithInt:(jint)outerSize
+                                       withInt:(jint)innerSize;
 
 - (RxObservable *)mergeNSyncStreamsOfNWithInt:(jint)outerSize
                                       withInt:(jint)innerSize;
 
 - (RxObservable *)createInfiniteObservableWithJavaUtilConcurrentAtomicAtomicInteger:(JavaUtilConcurrentAtomicAtomicInteger *)generated;
 
++ (id<RxFunctionsAction1>)printCount;
+
++ (id<RxFunctionsAction1>)pauseForMsWithLong:(jlong)time;
+
 @end
 
+__attribute__((unused)) static RxObservable *RxInternalOperatorsOperatorMergeTest_createObservableOf5IntervalsOf1SecondIncrementsWithSubscriptionHookWithRxScheduler_withJavaUtilConcurrentAtomicAtomicBoolean_(RxInternalOperatorsOperatorMergeTest *self, RxScheduler *scheduler, JavaUtilConcurrentAtomicAtomicBoolean *unsubscribed);
+
+__attribute__((unused)) static RxObservable *RxInternalOperatorsOperatorMergeTest_mergeNAsyncStreamsOfNWithInt_withInt_(RxInternalOperatorsOperatorMergeTest *self, jint outerSize, jint innerSize);
+
+__attribute__((unused)) static RxObservable *RxInternalOperatorsOperatorMergeTest_mergeNSyncStreamsOfNWithInt_withInt_(RxInternalOperatorsOperatorMergeTest *self, jint outerSize, jint innerSize);
+
 __attribute__((unused)) static RxObservable *RxInternalOperatorsOperatorMergeTest_createInfiniteObservableWithJavaUtilConcurrentAtomicAtomicInteger_(RxInternalOperatorsOperatorMergeTest *self, JavaUtilConcurrentAtomicAtomicInteger *generated);
+
+__attribute__((unused)) static id<RxFunctionsAction1> RxInternalOperatorsOperatorMergeTest_printCount();
+
+__attribute__((unused)) static id<RxFunctionsAction1> RxInternalOperatorsOperatorMergeTest_pauseForMsWithLong_(jlong time);
 
 __attribute__((unused)) static IOSObjectArray *RxInternalOperatorsOperatorMergeTest__Annotations$0();
 
@@ -49,9 +99,912 @@ __attribute__((unused)) static IOSObjectArray *RxInternalOperatorsOperatorMergeT
 
 __attribute__((unused)) static IOSObjectArray *RxInternalOperatorsOperatorMergeTest__Annotations$2();
 
-@interface RxInternalOperatorsOperatorMergeTest_$1 : RxObserversTestSubscriber
+__attribute__((unused)) static IOSObjectArray *RxInternalOperatorsOperatorMergeTest__Annotations$3();
+
+__attribute__((unused)) static IOSObjectArray *RxInternalOperatorsOperatorMergeTest__Annotations$4();
+
+__attribute__((unused)) static IOSObjectArray *RxInternalOperatorsOperatorMergeTest__Annotations$5();
+
+__attribute__((unused)) static IOSObjectArray *RxInternalOperatorsOperatorMergeTest__Annotations$6();
+
+__attribute__((unused)) static IOSObjectArray *RxInternalOperatorsOperatorMergeTest__Annotations$7();
+
+__attribute__((unused)) static IOSObjectArray *RxInternalOperatorsOperatorMergeTest__Annotations$8();
+
+__attribute__((unused)) static IOSObjectArray *RxInternalOperatorsOperatorMergeTest__Annotations$9();
+
+__attribute__((unused)) static IOSObjectArray *RxInternalOperatorsOperatorMergeTest__Annotations$10();
+
+__attribute__((unused)) static IOSObjectArray *RxInternalOperatorsOperatorMergeTest__Annotations$11();
+
+__attribute__((unused)) static IOSObjectArray *RxInternalOperatorsOperatorMergeTest__Annotations$12();
+
+__attribute__((unused)) static IOSObjectArray *RxInternalOperatorsOperatorMergeTest__Annotations$13();
+
+__attribute__((unused)) static IOSObjectArray *RxInternalOperatorsOperatorMergeTest__Annotations$14();
+
+__attribute__((unused)) static IOSObjectArray *RxInternalOperatorsOperatorMergeTest__Annotations$15();
+
+__attribute__((unused)) static IOSObjectArray *RxInternalOperatorsOperatorMergeTest__Annotations$16();
+
+__attribute__((unused)) static IOSObjectArray *RxInternalOperatorsOperatorMergeTest__Annotations$17();
+
+__attribute__((unused)) static IOSObjectArray *RxInternalOperatorsOperatorMergeTest__Annotations$18();
+
+__attribute__((unused)) static IOSObjectArray *RxInternalOperatorsOperatorMergeTest__Annotations$19();
+
+__attribute__((unused)) static IOSObjectArray *RxInternalOperatorsOperatorMergeTest__Annotations$20();
+
+__attribute__((unused)) static IOSObjectArray *RxInternalOperatorsOperatorMergeTest__Annotations$21();
+
+__attribute__((unused)) static IOSObjectArray *RxInternalOperatorsOperatorMergeTest__Annotations$22();
+
+__attribute__((unused)) static IOSObjectArray *RxInternalOperatorsOperatorMergeTest__Annotations$23();
+
+__attribute__((unused)) static IOSObjectArray *RxInternalOperatorsOperatorMergeTest__Annotations$24();
+
+__attribute__((unused)) static IOSObjectArray *RxInternalOperatorsOperatorMergeTest__Annotations$25();
+
+__attribute__((unused)) static IOSObjectArray *RxInternalOperatorsOperatorMergeTest__Annotations$26();
+
+__attribute__((unused)) static IOSObjectArray *RxInternalOperatorsOperatorMergeTest__Annotations$27();
+
+__attribute__((unused)) static IOSObjectArray *RxInternalOperatorsOperatorMergeTest__Annotations$28();
+
+__attribute__((unused)) static IOSObjectArray *RxInternalOperatorsOperatorMergeTest__Annotations$29();
+
+__attribute__((unused)) static IOSObjectArray *RxInternalOperatorsOperatorMergeTest__Annotations$30();
+
+__attribute__((unused)) static IOSObjectArray *RxInternalOperatorsOperatorMergeTest__Annotations$31();
+
+__attribute__((unused)) static IOSObjectArray *RxInternalOperatorsOperatorMergeTest__Annotations$32();
+
+__attribute__((unused)) static IOSObjectArray *RxInternalOperatorsOperatorMergeTest__Annotations$33();
+
+__attribute__((unused)) static IOSObjectArray *RxInternalOperatorsOperatorMergeTest__Annotations$34();
+
+__attribute__((unused)) static IOSObjectArray *RxInternalOperatorsOperatorMergeTest__Annotations$35();
+
+__attribute__((unused)) static IOSObjectArray *RxInternalOperatorsOperatorMergeTest__Annotations$36();
+
+__attribute__((unused)) static IOSObjectArray *RxInternalOperatorsOperatorMergeTest__Annotations$37();
+
+__attribute__((unused)) static IOSObjectArray *RxInternalOperatorsOperatorMergeTest__Annotations$38();
+
+__attribute__((unused)) static IOSObjectArray *RxInternalOperatorsOperatorMergeTest__Annotations$39();
+
+__attribute__((unused)) static IOSObjectArray *RxInternalOperatorsOperatorMergeTest__Annotations$40();
+
+__attribute__((unused)) static IOSObjectArray *RxInternalOperatorsOperatorMergeTest__Annotations$41();
+
+__attribute__((unused)) static IOSObjectArray *RxInternalOperatorsOperatorMergeTest__Annotations$42();
+
+__attribute__((unused)) static IOSObjectArray *RxInternalOperatorsOperatorMergeTest__Annotations$43();
+
+__attribute__((unused)) static IOSObjectArray *RxInternalOperatorsOperatorMergeTest__Annotations$44();
+
+__attribute__((unused)) static IOSObjectArray *RxInternalOperatorsOperatorMergeTest__Annotations$45();
+
+__attribute__((unused)) static IOSObjectArray *RxInternalOperatorsOperatorMergeTest__Annotations$46();
+
+__attribute__((unused)) static IOSObjectArray *RxInternalOperatorsOperatorMergeTest__Annotations$47();
+
+__attribute__((unused)) static IOSObjectArray *RxInternalOperatorsOperatorMergeTest__Annotations$48();
+
+__attribute__((unused)) static IOSObjectArray *RxInternalOperatorsOperatorMergeTest__Annotations$49();
+
+__attribute__((unused)) static IOSObjectArray *RxInternalOperatorsOperatorMergeTest__Annotations$50();
+
+__attribute__((unused)) static IOSObjectArray *RxInternalOperatorsOperatorMergeTest__Annotations$51();
+
+__attribute__((unused)) static IOSObjectArray *RxInternalOperatorsOperatorMergeTest__Annotations$52();
+
+__attribute__((unused)) static IOSObjectArray *RxInternalOperatorsOperatorMergeTest__Annotations$53();
+
+__attribute__((unused)) static IOSObjectArray *RxInternalOperatorsOperatorMergeTest__Annotations$54();
+
+__attribute__((unused)) static IOSObjectArray *RxInternalOperatorsOperatorMergeTest__Annotations$55();
+
+__attribute__((unused)) static IOSObjectArray *RxInternalOperatorsOperatorMergeTest__Annotations$56();
+
+__attribute__((unused)) static IOSObjectArray *RxInternalOperatorsOperatorMergeTest__Annotations$57();
+
+__attribute__((unused)) static IOSObjectArray *RxInternalOperatorsOperatorMergeTest__Annotations$58();
+
+__attribute__((unused)) static IOSObjectArray *RxInternalOperatorsOperatorMergeTest__Annotations$59();
+
+__attribute__((unused)) static IOSObjectArray *RxInternalOperatorsOperatorMergeTest__Annotations$60();
+
+__attribute__((unused)) static IOSObjectArray *RxInternalOperatorsOperatorMergeTest__Annotations$61();
+
+__attribute__((unused)) static IOSObjectArray *RxInternalOperatorsOperatorMergeTest__Annotations$62();
+
+__attribute__((unused)) static IOSObjectArray *RxInternalOperatorsOperatorMergeTest__Annotations$63();
+
+__attribute__((unused)) static IOSObjectArray *RxInternalOperatorsOperatorMergeTest__Annotations$64();
+
+__attribute__((unused)) static IOSObjectArray *RxInternalOperatorsOperatorMergeTest__Annotations$65();
+
+@interface RxInternalOperatorsOperatorMergeTest_TestSynchronousObservable : NSObject < RxObservable_OnSubscribe >
+
+- (void)callWithId:(RxSubscriber *)observer;
+
+- (instancetype)init;
+
+@end
+
+J2OBJC_EMPTY_STATIC_INIT(RxInternalOperatorsOperatorMergeTest_TestSynchronousObservable)
+
+__attribute__((unused)) static void RxInternalOperatorsOperatorMergeTest_TestSynchronousObservable_init(RxInternalOperatorsOperatorMergeTest_TestSynchronousObservable *self);
+
+__attribute__((unused)) static RxInternalOperatorsOperatorMergeTest_TestSynchronousObservable *new_RxInternalOperatorsOperatorMergeTest_TestSynchronousObservable_init() NS_RETURNS_RETAINED;
+
+__attribute__((unused)) static RxInternalOperatorsOperatorMergeTest_TestSynchronousObservable *create_RxInternalOperatorsOperatorMergeTest_TestSynchronousObservable_init();
+
+J2OBJC_TYPE_LITERAL_HEADER(RxInternalOperatorsOperatorMergeTest_TestSynchronousObservable)
+
+@interface RxInternalOperatorsOperatorMergeTest_TestASynchronousObservable : NSObject < RxObservable_OnSubscribe > {
+ @public
+  JavaLangThread *t_;
+  JavaUtilConcurrentCountDownLatch *onNextBeingSent_;
+}
+
+- (void)callWithId:(RxSubscriber *)observer;
+
+- (instancetype)init;
+
+@end
+
+J2OBJC_EMPTY_STATIC_INIT(RxInternalOperatorsOperatorMergeTest_TestASynchronousObservable)
+
+J2OBJC_FIELD_SETTER(RxInternalOperatorsOperatorMergeTest_TestASynchronousObservable, t_, JavaLangThread *)
+J2OBJC_FIELD_SETTER(RxInternalOperatorsOperatorMergeTest_TestASynchronousObservable, onNextBeingSent_, JavaUtilConcurrentCountDownLatch *)
+
+__attribute__((unused)) static void RxInternalOperatorsOperatorMergeTest_TestASynchronousObservable_init(RxInternalOperatorsOperatorMergeTest_TestASynchronousObservable *self);
+
+__attribute__((unused)) static RxInternalOperatorsOperatorMergeTest_TestASynchronousObservable *new_RxInternalOperatorsOperatorMergeTest_TestASynchronousObservable_init() NS_RETURNS_RETAINED;
+
+__attribute__((unused)) static RxInternalOperatorsOperatorMergeTest_TestASynchronousObservable *create_RxInternalOperatorsOperatorMergeTest_TestASynchronousObservable_init();
+
+J2OBJC_TYPE_LITERAL_HEADER(RxInternalOperatorsOperatorMergeTest_TestASynchronousObservable)
+
+@interface RxInternalOperatorsOperatorMergeTest_TestASynchronousObservable_$1 : NSObject < JavaLangRunnable > {
+ @public
+  RxInternalOperatorsOperatorMergeTest_TestASynchronousObservable *this$0_;
+  RxSubscriber *val$observer_;
+}
+
+- (void)run;
+
+- (instancetype)initWithRxInternalOperatorsOperatorMergeTest_TestASynchronousObservable:(RxInternalOperatorsOperatorMergeTest_TestASynchronousObservable *)outer$
+                                                                       withRxSubscriber:(RxSubscriber *)capture$0;
+
+@end
+
+J2OBJC_EMPTY_STATIC_INIT(RxInternalOperatorsOperatorMergeTest_TestASynchronousObservable_$1)
+
+J2OBJC_FIELD_SETTER(RxInternalOperatorsOperatorMergeTest_TestASynchronousObservable_$1, this$0_, RxInternalOperatorsOperatorMergeTest_TestASynchronousObservable *)
+J2OBJC_FIELD_SETTER(RxInternalOperatorsOperatorMergeTest_TestASynchronousObservable_$1, val$observer_, RxSubscriber *)
+
+__attribute__((unused)) static void RxInternalOperatorsOperatorMergeTest_TestASynchronousObservable_$1_initWithRxInternalOperatorsOperatorMergeTest_TestASynchronousObservable_withRxSubscriber_(RxInternalOperatorsOperatorMergeTest_TestASynchronousObservable_$1 *self, RxInternalOperatorsOperatorMergeTest_TestASynchronousObservable *outer$, RxSubscriber *capture$0);
+
+__attribute__((unused)) static RxInternalOperatorsOperatorMergeTest_TestASynchronousObservable_$1 *new_RxInternalOperatorsOperatorMergeTest_TestASynchronousObservable_$1_initWithRxInternalOperatorsOperatorMergeTest_TestASynchronousObservable_withRxSubscriber_(RxInternalOperatorsOperatorMergeTest_TestASynchronousObservable *outer$, RxSubscriber *capture$0) NS_RETURNS_RETAINED;
+
+__attribute__((unused)) static RxInternalOperatorsOperatorMergeTest_TestASynchronousObservable_$1 *create_RxInternalOperatorsOperatorMergeTest_TestASynchronousObservable_$1_initWithRxInternalOperatorsOperatorMergeTest_TestASynchronousObservable_withRxSubscriber_(RxInternalOperatorsOperatorMergeTest_TestASynchronousObservable *outer$, RxSubscriber *capture$0);
+
+@interface RxInternalOperatorsOperatorMergeTest_TestErrorObservable : NSObject < RxObservable_OnSubscribe > {
+ @public
+  IOSObjectArray *valuesToReturn_;
+}
+
+- (instancetype)initWithNSStringArray:(IOSObjectArray *)values;
+
+- (void)callWithId:(RxSubscriber *)observer;
+
+@end
+
+J2OBJC_EMPTY_STATIC_INIT(RxInternalOperatorsOperatorMergeTest_TestErrorObservable)
+
+J2OBJC_FIELD_SETTER(RxInternalOperatorsOperatorMergeTest_TestErrorObservable, valuesToReturn_, IOSObjectArray *)
+
+__attribute__((unused)) static void RxInternalOperatorsOperatorMergeTest_TestErrorObservable_initWithNSStringArray_(RxInternalOperatorsOperatorMergeTest_TestErrorObservable *self, IOSObjectArray *values);
+
+__attribute__((unused)) static RxInternalOperatorsOperatorMergeTest_TestErrorObservable *new_RxInternalOperatorsOperatorMergeTest_TestErrorObservable_initWithNSStringArray_(IOSObjectArray *values) NS_RETURNS_RETAINED;
+
+__attribute__((unused)) static RxInternalOperatorsOperatorMergeTest_TestErrorObservable *create_RxInternalOperatorsOperatorMergeTest_TestErrorObservable_initWithNSStringArray_(IOSObjectArray *values);
+
+J2OBJC_TYPE_LITERAL_HEADER(RxInternalOperatorsOperatorMergeTest_TestErrorObservable)
+
+@interface RxInternalOperatorsOperatorMergeTest_$3 : NSObject < RxObservable_OnSubscribe > {
+ @public
+  RxObservable *val$o1_;
+  RxObservable *val$o2_;
+}
+
+- (void)callWithId:(RxSubscriber *)observer;
+
+- (instancetype)initWithRxObservable:(RxObservable *)capture$0
+                    withRxObservable:(RxObservable *)capture$1;
+
+@end
+
+J2OBJC_EMPTY_STATIC_INIT(RxInternalOperatorsOperatorMergeTest_$3)
+
+J2OBJC_FIELD_SETTER(RxInternalOperatorsOperatorMergeTest_$3, val$o1_, RxObservable *)
+J2OBJC_FIELD_SETTER(RxInternalOperatorsOperatorMergeTest_$3, val$o2_, RxObservable *)
+
+__attribute__((unused)) static void RxInternalOperatorsOperatorMergeTest_$3_initWithRxObservable_withRxObservable_(RxInternalOperatorsOperatorMergeTest_$3 *self, RxObservable *capture$0, RxObservable *capture$1);
+
+__attribute__((unused)) static RxInternalOperatorsOperatorMergeTest_$3 *new_RxInternalOperatorsOperatorMergeTest_$3_initWithRxObservable_withRxObservable_(RxObservable *capture$0, RxObservable *capture$1) NS_RETURNS_RETAINED;
+
+__attribute__((unused)) static RxInternalOperatorsOperatorMergeTest_$3 *create_RxInternalOperatorsOperatorMergeTest_$3_initWithRxObservable_withRxObservable_(RxObservable *capture$0, RxObservable *capture$1);
+
+@interface RxInternalOperatorsOperatorMergeTest_$4 : NSObject < RxObservable_OnSubscribe > {
+ @public
+  JavaUtilConcurrentAtomicAtomicBoolean *val$unsubscribed_;
+  JavaUtilConcurrentCountDownLatch *val$latch_;
+}
+
+- (void)callWithId:(RxSubscriber *)observer;
+
+- (instancetype)initWithJavaUtilConcurrentAtomicAtomicBoolean:(JavaUtilConcurrentAtomicAtomicBoolean *)capture$0
+                         withJavaUtilConcurrentCountDownLatch:(JavaUtilConcurrentCountDownLatch *)capture$1;
+
+@end
+
+J2OBJC_EMPTY_STATIC_INIT(RxInternalOperatorsOperatorMergeTest_$4)
+
+J2OBJC_FIELD_SETTER(RxInternalOperatorsOperatorMergeTest_$4, val$unsubscribed_, JavaUtilConcurrentAtomicAtomicBoolean *)
+J2OBJC_FIELD_SETTER(RxInternalOperatorsOperatorMergeTest_$4, val$latch_, JavaUtilConcurrentCountDownLatch *)
+
+__attribute__((unused)) static void RxInternalOperatorsOperatorMergeTest_$4_initWithJavaUtilConcurrentAtomicAtomicBoolean_withJavaUtilConcurrentCountDownLatch_(RxInternalOperatorsOperatorMergeTest_$4 *self, JavaUtilConcurrentAtomicAtomicBoolean *capture$0, JavaUtilConcurrentCountDownLatch *capture$1);
+
+__attribute__((unused)) static RxInternalOperatorsOperatorMergeTest_$4 *new_RxInternalOperatorsOperatorMergeTest_$4_initWithJavaUtilConcurrentAtomicAtomicBoolean_withJavaUtilConcurrentCountDownLatch_(JavaUtilConcurrentAtomicAtomicBoolean *capture$0, JavaUtilConcurrentCountDownLatch *capture$1) NS_RETURNS_RETAINED;
+
+__attribute__((unused)) static RxInternalOperatorsOperatorMergeTest_$4 *create_RxInternalOperatorsOperatorMergeTest_$4_initWithJavaUtilConcurrentAtomicAtomicBoolean_withJavaUtilConcurrentCountDownLatch_(JavaUtilConcurrentAtomicAtomicBoolean *capture$0, JavaUtilConcurrentCountDownLatch *capture$1);
+
+@interface RxInternalOperatorsOperatorMergeTest_$4_$1 : NSObject < RxFunctionsAction0 > {
+ @public
+  RxInternalOperatorsOperatorMergeTest_$4 *this$0_;
+}
+
+- (void)call;
+
+- (instancetype)initWithRxInternalOperatorsOperatorMergeTest_$4:(RxInternalOperatorsOperatorMergeTest_$4 *)outer$;
+
+@end
+
+J2OBJC_EMPTY_STATIC_INIT(RxInternalOperatorsOperatorMergeTest_$4_$1)
+
+J2OBJC_FIELD_SETTER(RxInternalOperatorsOperatorMergeTest_$4_$1, this$0_, RxInternalOperatorsOperatorMergeTest_$4 *)
+
+__attribute__((unused)) static void RxInternalOperatorsOperatorMergeTest_$4_$1_initWithRxInternalOperatorsOperatorMergeTest_$4_(RxInternalOperatorsOperatorMergeTest_$4_$1 *self, RxInternalOperatorsOperatorMergeTest_$4 *outer$);
+
+__attribute__((unused)) static RxInternalOperatorsOperatorMergeTest_$4_$1 *new_RxInternalOperatorsOperatorMergeTest_$4_$1_initWithRxInternalOperatorsOperatorMergeTest_$4_(RxInternalOperatorsOperatorMergeTest_$4 *outer$) NS_RETURNS_RETAINED;
+
+__attribute__((unused)) static RxInternalOperatorsOperatorMergeTest_$4_$1 *create_RxInternalOperatorsOperatorMergeTest_$4_$1_initWithRxInternalOperatorsOperatorMergeTest_$4_(RxInternalOperatorsOperatorMergeTest_$4 *outer$);
+
+@interface RxInternalOperatorsOperatorMergeTest_$4_$2 : NSObject < JavaLangRunnable > {
+ @public
+  RxInternalOperatorsOperatorMergeTest_$4 *this$0_;
+  RxSubscriber *val$observer_;
+}
+
+- (void)run;
+
+- (instancetype)initWithRxInternalOperatorsOperatorMergeTest_$4:(RxInternalOperatorsOperatorMergeTest_$4 *)outer$
+                                               withRxSubscriber:(RxSubscriber *)capture$0;
+
+@end
+
+J2OBJC_EMPTY_STATIC_INIT(RxInternalOperatorsOperatorMergeTest_$4_$2)
+
+J2OBJC_FIELD_SETTER(RxInternalOperatorsOperatorMergeTest_$4_$2, this$0_, RxInternalOperatorsOperatorMergeTest_$4 *)
+J2OBJC_FIELD_SETTER(RxInternalOperatorsOperatorMergeTest_$4_$2, val$observer_, RxSubscriber *)
+
+__attribute__((unused)) static void RxInternalOperatorsOperatorMergeTest_$4_$2_initWithRxInternalOperatorsOperatorMergeTest_$4_withRxSubscriber_(RxInternalOperatorsOperatorMergeTest_$4_$2 *self, RxInternalOperatorsOperatorMergeTest_$4 *outer$, RxSubscriber *capture$0);
+
+__attribute__((unused)) static RxInternalOperatorsOperatorMergeTest_$4_$2 *new_RxInternalOperatorsOperatorMergeTest_$4_$2_initWithRxInternalOperatorsOperatorMergeTest_$4_withRxSubscriber_(RxInternalOperatorsOperatorMergeTest_$4 *outer$, RxSubscriber *capture$0) NS_RETURNS_RETAINED;
+
+__attribute__((unused)) static RxInternalOperatorsOperatorMergeTest_$4_$2 *create_RxInternalOperatorsOperatorMergeTest_$4_$2_initWithRxInternalOperatorsOperatorMergeTest_$4_withRxSubscriber_(RxInternalOperatorsOperatorMergeTest_$4 *outer$, RxSubscriber *capture$0);
+
+@interface RxInternalOperatorsOperatorMergeTest_$5 : NSObject < RxFunctionsAction1 > {
+ @public
+  JavaUtilConcurrentAtomicAtomicInteger *val$count_;
+}
+
+- (void)callWithId:(JavaLangLong *)v;
+
+- (instancetype)initWithJavaUtilConcurrentAtomicAtomicInteger:(JavaUtilConcurrentAtomicAtomicInteger *)capture$0;
+
+@end
+
+J2OBJC_EMPTY_STATIC_INIT(RxInternalOperatorsOperatorMergeTest_$5)
+
+J2OBJC_FIELD_SETTER(RxInternalOperatorsOperatorMergeTest_$5, val$count_, JavaUtilConcurrentAtomicAtomicInteger *)
+
+__attribute__((unused)) static void RxInternalOperatorsOperatorMergeTest_$5_initWithJavaUtilConcurrentAtomicAtomicInteger_(RxInternalOperatorsOperatorMergeTest_$5 *self, JavaUtilConcurrentAtomicAtomicInteger *capture$0);
+
+__attribute__((unused)) static RxInternalOperatorsOperatorMergeTest_$5 *new_RxInternalOperatorsOperatorMergeTest_$5_initWithJavaUtilConcurrentAtomicAtomicInteger_(JavaUtilConcurrentAtomicAtomicInteger *capture$0) NS_RETURNS_RETAINED;
+
+__attribute__((unused)) static RxInternalOperatorsOperatorMergeTest_$5 *create_RxInternalOperatorsOperatorMergeTest_$5_initWithJavaUtilConcurrentAtomicAtomicInteger_(JavaUtilConcurrentAtomicAtomicInteger *capture$0);
+
+@interface RxInternalOperatorsOperatorMergeTest_$6 : RxSubscriber {
+ @public
+  JavaUtilConcurrentAtomicAtomicInteger *val$totalCounter_;
+  JavaUtilConcurrentAtomicAtomicInteger *val$concurrentCounter_;
+  JavaUtilConcurrentCountDownLatch *val$endLatch_;
+}
+
+- (void)onCompleted;
+
+- (void)onErrorWithNSException:(NSException *)e;
+
+- (void)onNextWithId:(NSString *)v;
+
+- (instancetype)initWithJavaUtilConcurrentAtomicAtomicInteger:(JavaUtilConcurrentAtomicAtomicInteger *)capture$0
+                    withJavaUtilConcurrentAtomicAtomicInteger:(JavaUtilConcurrentAtomicAtomicInteger *)capture$1
+                         withJavaUtilConcurrentCountDownLatch:(JavaUtilConcurrentCountDownLatch *)capture$2;
+
+@end
+
+J2OBJC_EMPTY_STATIC_INIT(RxInternalOperatorsOperatorMergeTest_$6)
+
+J2OBJC_FIELD_SETTER(RxInternalOperatorsOperatorMergeTest_$6, val$totalCounter_, JavaUtilConcurrentAtomicAtomicInteger *)
+J2OBJC_FIELD_SETTER(RxInternalOperatorsOperatorMergeTest_$6, val$concurrentCounter_, JavaUtilConcurrentAtomicAtomicInteger *)
+J2OBJC_FIELD_SETTER(RxInternalOperatorsOperatorMergeTest_$6, val$endLatch_, JavaUtilConcurrentCountDownLatch *)
+
+__attribute__((unused)) static void RxInternalOperatorsOperatorMergeTest_$6_initWithJavaUtilConcurrentAtomicAtomicInteger_withJavaUtilConcurrentAtomicAtomicInteger_withJavaUtilConcurrentCountDownLatch_(RxInternalOperatorsOperatorMergeTest_$6 *self, JavaUtilConcurrentAtomicAtomicInteger *capture$0, JavaUtilConcurrentAtomicAtomicInteger *capture$1, JavaUtilConcurrentCountDownLatch *capture$2);
+
+__attribute__((unused)) static RxInternalOperatorsOperatorMergeTest_$6 *new_RxInternalOperatorsOperatorMergeTest_$6_initWithJavaUtilConcurrentAtomicAtomicInteger_withJavaUtilConcurrentAtomicAtomicInteger_withJavaUtilConcurrentCountDownLatch_(JavaUtilConcurrentAtomicAtomicInteger *capture$0, JavaUtilConcurrentAtomicAtomicInteger *capture$1, JavaUtilConcurrentCountDownLatch *capture$2) NS_RETURNS_RETAINED;
+
+__attribute__((unused)) static RxInternalOperatorsOperatorMergeTest_$6 *create_RxInternalOperatorsOperatorMergeTest_$6_initWithJavaUtilConcurrentAtomicAtomicInteger_withJavaUtilConcurrentAtomicAtomicInteger_withJavaUtilConcurrentCountDownLatch_(JavaUtilConcurrentAtomicAtomicInteger *capture$0, JavaUtilConcurrentAtomicAtomicInteger *capture$1, JavaUtilConcurrentCountDownLatch *capture$2);
+
+@interface RxInternalOperatorsOperatorMergeTest_$7 : NSObject < RxObservable_OnSubscribe >
+
+- (void)callWithId:(RxSubscriber *)s;
+
+- (instancetype)init;
+
+@end
+
+J2OBJC_EMPTY_STATIC_INIT(RxInternalOperatorsOperatorMergeTest_$7)
+
+__attribute__((unused)) static void RxInternalOperatorsOperatorMergeTest_$7_init(RxInternalOperatorsOperatorMergeTest_$7 *self);
+
+__attribute__((unused)) static RxInternalOperatorsOperatorMergeTest_$7 *new_RxInternalOperatorsOperatorMergeTest_$7_init() NS_RETURNS_RETAINED;
+
+__attribute__((unused)) static RxInternalOperatorsOperatorMergeTest_$7 *create_RxInternalOperatorsOperatorMergeTest_$7_init();
+
+@interface RxInternalOperatorsOperatorMergeTest_$8 : NSObject < RxObservable_OnSubscribe > {
+ @public
+  JavaUtilConcurrentAtomicAtomicBoolean *val$unsubscribed_;
+  RxScheduler *val$scheduler_;
+}
+
+- (void)callWithId:(RxSubscriber *)s;
+
+- (instancetype)initWithJavaUtilConcurrentAtomicAtomicBoolean:(JavaUtilConcurrentAtomicAtomicBoolean *)capture$0
+                                              withRxScheduler:(RxScheduler *)capture$1;
+
+@end
+
+J2OBJC_EMPTY_STATIC_INIT(RxInternalOperatorsOperatorMergeTest_$8)
+
+J2OBJC_FIELD_SETTER(RxInternalOperatorsOperatorMergeTest_$8, val$unsubscribed_, JavaUtilConcurrentAtomicAtomicBoolean *)
+J2OBJC_FIELD_SETTER(RxInternalOperatorsOperatorMergeTest_$8, val$scheduler_, RxScheduler *)
+
+__attribute__((unused)) static void RxInternalOperatorsOperatorMergeTest_$8_initWithJavaUtilConcurrentAtomicAtomicBoolean_withRxScheduler_(RxInternalOperatorsOperatorMergeTest_$8 *self, JavaUtilConcurrentAtomicAtomicBoolean *capture$0, RxScheduler *capture$1);
+
+__attribute__((unused)) static RxInternalOperatorsOperatorMergeTest_$8 *new_RxInternalOperatorsOperatorMergeTest_$8_initWithJavaUtilConcurrentAtomicAtomicBoolean_withRxScheduler_(JavaUtilConcurrentAtomicAtomicBoolean *capture$0, RxScheduler *capture$1) NS_RETURNS_RETAINED;
+
+__attribute__((unused)) static RxInternalOperatorsOperatorMergeTest_$8 *create_RxInternalOperatorsOperatorMergeTest_$8_initWithJavaUtilConcurrentAtomicAtomicBoolean_withRxScheduler_(JavaUtilConcurrentAtomicAtomicBoolean *capture$0, RxScheduler *capture$1);
+
+@interface RxInternalOperatorsOperatorMergeTest_$8_$1 : NSObject < RxFunctionsAction0 > {
+ @public
+  RxInternalOperatorsOperatorMergeTest_$8 *this$0_;
+}
+
+- (void)call;
+
+- (instancetype)initWithRxInternalOperatorsOperatorMergeTest_$8:(RxInternalOperatorsOperatorMergeTest_$8 *)outer$;
+
+@end
+
+J2OBJC_EMPTY_STATIC_INIT(RxInternalOperatorsOperatorMergeTest_$8_$1)
+
+J2OBJC_FIELD_SETTER(RxInternalOperatorsOperatorMergeTest_$8_$1, this$0_, RxInternalOperatorsOperatorMergeTest_$8 *)
+
+__attribute__((unused)) static void RxInternalOperatorsOperatorMergeTest_$8_$1_initWithRxInternalOperatorsOperatorMergeTest_$8_(RxInternalOperatorsOperatorMergeTest_$8_$1 *self, RxInternalOperatorsOperatorMergeTest_$8 *outer$);
+
+__attribute__((unused)) static RxInternalOperatorsOperatorMergeTest_$8_$1 *new_RxInternalOperatorsOperatorMergeTest_$8_$1_initWithRxInternalOperatorsOperatorMergeTest_$8_(RxInternalOperatorsOperatorMergeTest_$8 *outer$) NS_RETURNS_RETAINED;
+
+__attribute__((unused)) static RxInternalOperatorsOperatorMergeTest_$8_$1 *create_RxInternalOperatorsOperatorMergeTest_$8_$1_initWithRxInternalOperatorsOperatorMergeTest_$8_(RxInternalOperatorsOperatorMergeTest_$8 *outer$);
+
+@interface RxInternalOperatorsOperatorMergeTest_$9 : NSObject < RxObservable_OnSubscribe >
+
+- (void)callWithId:(RxSubscriber *)s;
+
+- (instancetype)init;
+
+@end
+
+J2OBJC_EMPTY_STATIC_INIT(RxInternalOperatorsOperatorMergeTest_$9)
+
+__attribute__((unused)) static void RxInternalOperatorsOperatorMergeTest_$9_init(RxInternalOperatorsOperatorMergeTest_$9 *self);
+
+__attribute__((unused)) static RxInternalOperatorsOperatorMergeTest_$9 *new_RxInternalOperatorsOperatorMergeTest_$9_init() NS_RETURNS_RETAINED;
+
+__attribute__((unused)) static RxInternalOperatorsOperatorMergeTest_$9 *create_RxInternalOperatorsOperatorMergeTest_$9_init();
+
+@interface RxInternalOperatorsOperatorMergeTest_$9_$1 : NSObject < RxFunctionsAction0 > {
+ @public
+  RxSubscriber *val$s_;
+}
+
+- (void)call;
+
+- (instancetype)initWithRxSubscriber:(RxSubscriber *)capture$0;
+
+@end
+
+J2OBJC_EMPTY_STATIC_INIT(RxInternalOperatorsOperatorMergeTest_$9_$1)
+
+J2OBJC_FIELD_SETTER(RxInternalOperatorsOperatorMergeTest_$9_$1, val$s_, RxSubscriber *)
+
+__attribute__((unused)) static void RxInternalOperatorsOperatorMergeTest_$9_$1_initWithRxSubscriber_(RxInternalOperatorsOperatorMergeTest_$9_$1 *self, RxSubscriber *capture$0);
+
+__attribute__((unused)) static RxInternalOperatorsOperatorMergeTest_$9_$1 *new_RxInternalOperatorsOperatorMergeTest_$9_$1_initWithRxSubscriber_(RxSubscriber *capture$0) NS_RETURNS_RETAINED;
+
+__attribute__((unused)) static RxInternalOperatorsOperatorMergeTest_$9_$1 *create_RxInternalOperatorsOperatorMergeTest_$9_$1_initWithRxSubscriber_(RxSubscriber *capture$0);
+
+@interface RxInternalOperatorsOperatorMergeTest_$10 : NSObject < RxObservable_OnSubscribe >
+
+- (void)callWithId:(RxSubscriber *)s;
+
+- (instancetype)init;
+
+@end
+
+J2OBJC_EMPTY_STATIC_INIT(RxInternalOperatorsOperatorMergeTest_$10)
+
+__attribute__((unused)) static void RxInternalOperatorsOperatorMergeTest_$10_init(RxInternalOperatorsOperatorMergeTest_$10 *self);
+
+__attribute__((unused)) static RxInternalOperatorsOperatorMergeTest_$10 *new_RxInternalOperatorsOperatorMergeTest_$10_init() NS_RETURNS_RETAINED;
+
+__attribute__((unused)) static RxInternalOperatorsOperatorMergeTest_$10 *create_RxInternalOperatorsOperatorMergeTest_$10_init();
+
+@interface RxInternalOperatorsOperatorMergeTest_$10_$1 : NSObject < RxFunctionsAction0 > {
+ @public
+  RxSubscriber *val$s_;
+}
+
+- (void)call;
+
+- (instancetype)initWithRxSubscriber:(RxSubscriber *)capture$0;
+
+@end
+
+J2OBJC_EMPTY_STATIC_INIT(RxInternalOperatorsOperatorMergeTest_$10_$1)
+
+J2OBJC_FIELD_SETTER(RxInternalOperatorsOperatorMergeTest_$10_$1, val$s_, RxSubscriber *)
+
+__attribute__((unused)) static void RxInternalOperatorsOperatorMergeTest_$10_$1_initWithRxSubscriber_(RxInternalOperatorsOperatorMergeTest_$10_$1 *self, RxSubscriber *capture$0);
+
+__attribute__((unused)) static RxInternalOperatorsOperatorMergeTest_$10_$1 *new_RxInternalOperatorsOperatorMergeTest_$10_$1_initWithRxSubscriber_(RxSubscriber *capture$0) NS_RETURNS_RETAINED;
+
+__attribute__((unused)) static RxInternalOperatorsOperatorMergeTest_$10_$1 *create_RxInternalOperatorsOperatorMergeTest_$10_$1_initWithRxSubscriber_(RxSubscriber *capture$0);
+
+@interface RxInternalOperatorsOperatorMergeTest_$11 : RxObserversTestSubscriber
 
 - (void)onNextWithId:(JavaLangInteger *)t;
+
+- (instancetype)init;
+
+@end
+
+J2OBJC_EMPTY_STATIC_INIT(RxInternalOperatorsOperatorMergeTest_$11)
+
+__attribute__((unused)) static void RxInternalOperatorsOperatorMergeTest_$11_init(RxInternalOperatorsOperatorMergeTest_$11 *self);
+
+__attribute__((unused)) static RxInternalOperatorsOperatorMergeTest_$11 *new_RxInternalOperatorsOperatorMergeTest_$11_init() NS_RETURNS_RETAINED;
+
+__attribute__((unused)) static RxInternalOperatorsOperatorMergeTest_$11 *create_RxInternalOperatorsOperatorMergeTest_$11_init();
+
+@interface RxInternalOperatorsOperatorMergeTest_$12 : RxObserversTestSubscriber
+
+- (void)onNextWithId:(JavaLangInteger *)t;
+
+- (instancetype)init;
+
+@end
+
+J2OBJC_EMPTY_STATIC_INIT(RxInternalOperatorsOperatorMergeTest_$12)
+
+__attribute__((unused)) static void RxInternalOperatorsOperatorMergeTest_$12_init(RxInternalOperatorsOperatorMergeTest_$12 *self);
+
+__attribute__((unused)) static RxInternalOperatorsOperatorMergeTest_$12 *new_RxInternalOperatorsOperatorMergeTest_$12_init() NS_RETURNS_RETAINED;
+
+__attribute__((unused)) static RxInternalOperatorsOperatorMergeTest_$12 *create_RxInternalOperatorsOperatorMergeTest_$12_init();
+
+@interface RxInternalOperatorsOperatorMergeTest_$13 : RxObserversTestSubscriber
+
+- (void)onNextWithId:(JavaLangInteger *)t;
+
+- (instancetype)init;
+
+@end
+
+J2OBJC_EMPTY_STATIC_INIT(RxInternalOperatorsOperatorMergeTest_$13)
+
+__attribute__((unused)) static void RxInternalOperatorsOperatorMergeTest_$13_init(RxInternalOperatorsOperatorMergeTest_$13 *self);
+
+__attribute__((unused)) static RxInternalOperatorsOperatorMergeTest_$13 *new_RxInternalOperatorsOperatorMergeTest_$13_init() NS_RETURNS_RETAINED;
+
+__attribute__((unused)) static RxInternalOperatorsOperatorMergeTest_$13 *create_RxInternalOperatorsOperatorMergeTest_$13_init();
+
+@interface RxInternalOperatorsOperatorMergeTest_$14 : NSObject < RxFunctionsFunc1 >
+
+- (RxObservable *)callWithId:(JavaLangInteger *)t1;
+
+- (instancetype)init;
+
+@end
+
+J2OBJC_EMPTY_STATIC_INIT(RxInternalOperatorsOperatorMergeTest_$14)
+
+__attribute__((unused)) static void RxInternalOperatorsOperatorMergeTest_$14_init(RxInternalOperatorsOperatorMergeTest_$14 *self);
+
+__attribute__((unused)) static RxInternalOperatorsOperatorMergeTest_$14 *new_RxInternalOperatorsOperatorMergeTest_$14_init() NS_RETURNS_RETAINED;
+
+__attribute__((unused)) static RxInternalOperatorsOperatorMergeTest_$14 *create_RxInternalOperatorsOperatorMergeTest_$14_init();
+
+@interface RxInternalOperatorsOperatorMergeTest_$15 : RxObserversTestSubscriber
+
+- (void)onNextWithId:(JavaLangInteger *)t;
+
+- (instancetype)init;
+
+@end
+
+J2OBJC_EMPTY_STATIC_INIT(RxInternalOperatorsOperatorMergeTest_$15)
+
+__attribute__((unused)) static void RxInternalOperatorsOperatorMergeTest_$15_init(RxInternalOperatorsOperatorMergeTest_$15 *self);
+
+__attribute__((unused)) static RxInternalOperatorsOperatorMergeTest_$15 *new_RxInternalOperatorsOperatorMergeTest_$15_init() NS_RETURNS_RETAINED;
+
+__attribute__((unused)) static RxInternalOperatorsOperatorMergeTest_$15 *create_RxInternalOperatorsOperatorMergeTest_$15_init();
+
+@interface RxInternalOperatorsOperatorMergeTest_$16 : NSObject < RxFunctionsFunc1 >
+
+- (RxObservable *)callWithId:(JavaLangInteger *)t1;
+
+- (instancetype)init;
+
+@end
+
+J2OBJC_EMPTY_STATIC_INIT(RxInternalOperatorsOperatorMergeTest_$16)
+
+__attribute__((unused)) static void RxInternalOperatorsOperatorMergeTest_$16_init(RxInternalOperatorsOperatorMergeTest_$16 *self);
+
+__attribute__((unused)) static RxInternalOperatorsOperatorMergeTest_$16 *new_RxInternalOperatorsOperatorMergeTest_$16_init() NS_RETURNS_RETAINED;
+
+__attribute__((unused)) static RxInternalOperatorsOperatorMergeTest_$16 *create_RxInternalOperatorsOperatorMergeTest_$16_init();
+
+@interface RxInternalOperatorsOperatorMergeTest_$17 : RxObserversTestSubscriber {
+ @public
+  jint i_;
+}
+
+- (void)onNextWithId:(JavaLangInteger *)t;
+
+- (instancetype)init;
+
+@end
+
+J2OBJC_EMPTY_STATIC_INIT(RxInternalOperatorsOperatorMergeTest_$17)
+
+__attribute__((unused)) static void RxInternalOperatorsOperatorMergeTest_$17_init(RxInternalOperatorsOperatorMergeTest_$17 *self);
+
+__attribute__((unused)) static RxInternalOperatorsOperatorMergeTest_$17 *new_RxInternalOperatorsOperatorMergeTest_$17_init() NS_RETURNS_RETAINED;
+
+__attribute__((unused)) static RxInternalOperatorsOperatorMergeTest_$17 *create_RxInternalOperatorsOperatorMergeTest_$17_init();
+
+@interface RxInternalOperatorsOperatorMergeTest_$18 : NSObject < RxObservable_OnSubscribe >
+
+- (void)callWithId:(RxSubscriber *)s;
+
+- (instancetype)init;
+
+@end
+
+J2OBJC_EMPTY_STATIC_INIT(RxInternalOperatorsOperatorMergeTest_$18)
+
+__attribute__((unused)) static void RxInternalOperatorsOperatorMergeTest_$18_init(RxInternalOperatorsOperatorMergeTest_$18 *self);
+
+__attribute__((unused)) static RxInternalOperatorsOperatorMergeTest_$18 *new_RxInternalOperatorsOperatorMergeTest_$18_init() NS_RETURNS_RETAINED;
+
+__attribute__((unused)) static RxInternalOperatorsOperatorMergeTest_$18 *create_RxInternalOperatorsOperatorMergeTest_$18_init();
+
+@interface RxInternalOperatorsOperatorMergeTest_$19 : NSObject < RxFunctionsFunc1 > {
+ @public
+  jint val$innerSize_;
+}
+
+- (RxObservable *)callWithId:(JavaLangInteger *)i;
+
+- (instancetype)initWithInt:(jint)capture$0;
+
+@end
+
+J2OBJC_EMPTY_STATIC_INIT(RxInternalOperatorsOperatorMergeTest_$19)
+
+__attribute__((unused)) static void RxInternalOperatorsOperatorMergeTest_$19_initWithInt_(RxInternalOperatorsOperatorMergeTest_$19 *self, jint capture$0);
+
+__attribute__((unused)) static RxInternalOperatorsOperatorMergeTest_$19 *new_RxInternalOperatorsOperatorMergeTest_$19_initWithInt_(jint capture$0) NS_RETURNS_RETAINED;
+
+__attribute__((unused)) static RxInternalOperatorsOperatorMergeTest_$19 *create_RxInternalOperatorsOperatorMergeTest_$19_initWithInt_(jint capture$0);
+
+@interface RxInternalOperatorsOperatorMergeTest_$20 : NSObject < RxFunctionsFunc1 > {
+ @public
+  jint val$innerSize_;
+}
+
+- (RxObservable *)callWithId:(JavaLangInteger *)i;
+
+- (instancetype)initWithInt:(jint)capture$0;
+
+@end
+
+J2OBJC_EMPTY_STATIC_INIT(RxInternalOperatorsOperatorMergeTest_$20)
+
+__attribute__((unused)) static void RxInternalOperatorsOperatorMergeTest_$20_initWithInt_(RxInternalOperatorsOperatorMergeTest_$20 *self, jint capture$0);
+
+__attribute__((unused)) static RxInternalOperatorsOperatorMergeTest_$20 *new_RxInternalOperatorsOperatorMergeTest_$20_initWithInt_(jint capture$0) NS_RETURNS_RETAINED;
+
+__attribute__((unused)) static RxInternalOperatorsOperatorMergeTest_$20 *create_RxInternalOperatorsOperatorMergeTest_$20_initWithInt_(jint capture$0);
+
+@interface RxInternalOperatorsOperatorMergeTest_$21 : NSObject < JavaLangIterable > {
+ @public
+  JavaUtilConcurrentAtomicAtomicInteger *val$generated_;
+}
+
+- (id<JavaUtilIterator>)iterator;
+
+- (instancetype)initWithJavaUtilConcurrentAtomicAtomicInteger:(JavaUtilConcurrentAtomicAtomicInteger *)capture$0;
+
+@end
+
+J2OBJC_EMPTY_STATIC_INIT(RxInternalOperatorsOperatorMergeTest_$21)
+
+J2OBJC_FIELD_SETTER(RxInternalOperatorsOperatorMergeTest_$21, val$generated_, JavaUtilConcurrentAtomicAtomicInteger *)
+
+__attribute__((unused)) static void RxInternalOperatorsOperatorMergeTest_$21_initWithJavaUtilConcurrentAtomicAtomicInteger_(RxInternalOperatorsOperatorMergeTest_$21 *self, JavaUtilConcurrentAtomicAtomicInteger *capture$0);
+
+__attribute__((unused)) static RxInternalOperatorsOperatorMergeTest_$21 *new_RxInternalOperatorsOperatorMergeTest_$21_initWithJavaUtilConcurrentAtomicAtomicInteger_(JavaUtilConcurrentAtomicAtomicInteger *capture$0) NS_RETURNS_RETAINED;
+
+__attribute__((unused)) static RxInternalOperatorsOperatorMergeTest_$21 *create_RxInternalOperatorsOperatorMergeTest_$21_initWithJavaUtilConcurrentAtomicAtomicInteger_(JavaUtilConcurrentAtomicAtomicInteger *capture$0);
+
+@interface RxInternalOperatorsOperatorMergeTest_$21_$1 : NSObject < JavaUtilIterator > {
+ @public
+  RxInternalOperatorsOperatorMergeTest_$21 *this$0_;
+}
+
+- (void)remove;
+
+- (JavaLangInteger *)next;
+
+- (jboolean)hasNext;
+
+- (instancetype)initWithRxInternalOperatorsOperatorMergeTest_$21:(RxInternalOperatorsOperatorMergeTest_$21 *)outer$;
+
+@end
+
+J2OBJC_EMPTY_STATIC_INIT(RxInternalOperatorsOperatorMergeTest_$21_$1)
+
+J2OBJC_FIELD_SETTER(RxInternalOperatorsOperatorMergeTest_$21_$1, this$0_, RxInternalOperatorsOperatorMergeTest_$21 *)
+
+__attribute__((unused)) static void RxInternalOperatorsOperatorMergeTest_$21_$1_initWithRxInternalOperatorsOperatorMergeTest_$21_(RxInternalOperatorsOperatorMergeTest_$21_$1 *self, RxInternalOperatorsOperatorMergeTest_$21 *outer$);
+
+__attribute__((unused)) static RxInternalOperatorsOperatorMergeTest_$21_$1 *new_RxInternalOperatorsOperatorMergeTest_$21_$1_initWithRxInternalOperatorsOperatorMergeTest_$21_(RxInternalOperatorsOperatorMergeTest_$21 *outer$) NS_RETURNS_RETAINED;
+
+__attribute__((unused)) static RxInternalOperatorsOperatorMergeTest_$21_$1 *create_RxInternalOperatorsOperatorMergeTest_$21_$1_initWithRxInternalOperatorsOperatorMergeTest_$21_(RxInternalOperatorsOperatorMergeTest_$21 *outer$);
+
+@interface RxInternalOperatorsOperatorMergeTest_$22 : NSObject < RxFunctionsFunc1 >
+
+- (RxObservable *)callWithId:(JavaLangInteger *)i;
+
+- (instancetype)init;
+
+@end
+
+J2OBJC_EMPTY_STATIC_INIT(RxInternalOperatorsOperatorMergeTest_$22)
+
+__attribute__((unused)) static void RxInternalOperatorsOperatorMergeTest_$22_init(RxInternalOperatorsOperatorMergeTest_$22 *self);
+
+__attribute__((unused)) static RxInternalOperatorsOperatorMergeTest_$22 *new_RxInternalOperatorsOperatorMergeTest_$22_init() NS_RETURNS_RETAINED;
+
+__attribute__((unused)) static RxInternalOperatorsOperatorMergeTest_$22 *create_RxInternalOperatorsOperatorMergeTest_$22_init();
+
+@interface RxInternalOperatorsOperatorMergeTest_$22_$1 : NSObject < RxObservable_OnSubscribe > {
+ @public
+  JavaLangInteger *val$i_;
+}
+
+- (void)callWithId:(RxSubscriber *)s;
+
+- (instancetype)initWithJavaLangInteger:(JavaLangInteger *)capture$0;
+
+@end
+
+J2OBJC_EMPTY_STATIC_INIT(RxInternalOperatorsOperatorMergeTest_$22_$1)
+
+J2OBJC_FIELD_SETTER(RxInternalOperatorsOperatorMergeTest_$22_$1, val$i_, JavaLangInteger *)
+
+__attribute__((unused)) static void RxInternalOperatorsOperatorMergeTest_$22_$1_initWithJavaLangInteger_(RxInternalOperatorsOperatorMergeTest_$22_$1 *self, JavaLangInteger *capture$0);
+
+__attribute__((unused)) static RxInternalOperatorsOperatorMergeTest_$22_$1 *new_RxInternalOperatorsOperatorMergeTest_$22_$1_initWithJavaLangInteger_(JavaLangInteger *capture$0) NS_RETURNS_RETAINED;
+
+__attribute__((unused)) static RxInternalOperatorsOperatorMergeTest_$22_$1 *create_RxInternalOperatorsOperatorMergeTest_$22_$1_initWithJavaLangInteger_(JavaLangInteger *capture$0);
+
+@interface RxInternalOperatorsOperatorMergeTest_$23 : NSObject < RxFunctionsFunc1 > {
+ @public
+  JavaUtilConcurrentConcurrentLinkedQueue *val$messages_;
+}
+
+- (RxObservable *)callWithId:(JavaLangInteger *)number;
+
+- (instancetype)initWithJavaUtilConcurrentConcurrentLinkedQueue:(JavaUtilConcurrentConcurrentLinkedQueue *)capture$0;
+
+@end
+
+J2OBJC_EMPTY_STATIC_INIT(RxInternalOperatorsOperatorMergeTest_$23)
+
+J2OBJC_FIELD_SETTER(RxInternalOperatorsOperatorMergeTest_$23, val$messages_, JavaUtilConcurrentConcurrentLinkedQueue *)
+
+__attribute__((unused)) static void RxInternalOperatorsOperatorMergeTest_$23_initWithJavaUtilConcurrentConcurrentLinkedQueue_(RxInternalOperatorsOperatorMergeTest_$23 *self, JavaUtilConcurrentConcurrentLinkedQueue *capture$0);
+
+__attribute__((unused)) static RxInternalOperatorsOperatorMergeTest_$23 *new_RxInternalOperatorsOperatorMergeTest_$23_initWithJavaUtilConcurrentConcurrentLinkedQueue_(JavaUtilConcurrentConcurrentLinkedQueue *capture$0) NS_RETURNS_RETAINED;
+
+__attribute__((unused)) static RxInternalOperatorsOperatorMergeTest_$23 *create_RxInternalOperatorsOperatorMergeTest_$23_initWithJavaUtilConcurrentConcurrentLinkedQueue_(JavaUtilConcurrentConcurrentLinkedQueue *capture$0);
+
+@interface RxInternalOperatorsOperatorMergeTest_$23_$1 : NSObject < RxFunctionsAction1 > {
+ @public
+  RxInternalOperatorsOperatorMergeTest_$23 *this$0_;
+  JavaLangInteger *val$number_;
+}
+
+- (void)callWithId:(JavaLangLong *)n;
+
+- (instancetype)initWithRxInternalOperatorsOperatorMergeTest_$23:(RxInternalOperatorsOperatorMergeTest_$23 *)outer$
+                                             withJavaLangInteger:(JavaLangInteger *)capture$0;
+
+@end
+
+J2OBJC_EMPTY_STATIC_INIT(RxInternalOperatorsOperatorMergeTest_$23_$1)
+
+J2OBJC_FIELD_SETTER(RxInternalOperatorsOperatorMergeTest_$23_$1, this$0_, RxInternalOperatorsOperatorMergeTest_$23 *)
+J2OBJC_FIELD_SETTER(RxInternalOperatorsOperatorMergeTest_$23_$1, val$number_, JavaLangInteger *)
+
+__attribute__((unused)) static void RxInternalOperatorsOperatorMergeTest_$23_$1_initWithRxInternalOperatorsOperatorMergeTest_$23_withJavaLangInteger_(RxInternalOperatorsOperatorMergeTest_$23_$1 *self, RxInternalOperatorsOperatorMergeTest_$23 *outer$, JavaLangInteger *capture$0);
+
+__attribute__((unused)) static RxInternalOperatorsOperatorMergeTest_$23_$1 *new_RxInternalOperatorsOperatorMergeTest_$23_$1_initWithRxInternalOperatorsOperatorMergeTest_$23_withJavaLangInteger_(RxInternalOperatorsOperatorMergeTest_$23 *outer$, JavaLangInteger *capture$0) NS_RETURNS_RETAINED;
+
+__attribute__((unused)) static RxInternalOperatorsOperatorMergeTest_$23_$1 *create_RxInternalOperatorsOperatorMergeTest_$23_$1_initWithRxInternalOperatorsOperatorMergeTest_$23_withJavaLangInteger_(RxInternalOperatorsOperatorMergeTest_$23 *outer$, JavaLangInteger *capture$0);
+
+@interface RxInternalOperatorsOperatorMergeTest_$23_$2 : NSObject < RxFunctionsAction1 > {
+ @public
+  RxInternalOperatorsOperatorMergeTest_$23 *this$0_;
+  JavaLangInteger *val$number_;
+}
+
+- (void)callWithId:(JavaLangLong *)n;
+
+- (instancetype)initWithRxInternalOperatorsOperatorMergeTest_$23:(RxInternalOperatorsOperatorMergeTest_$23 *)outer$
+                                             withJavaLangInteger:(JavaLangInteger *)capture$0;
+
+@end
+
+J2OBJC_EMPTY_STATIC_INIT(RxInternalOperatorsOperatorMergeTest_$23_$2)
+
+J2OBJC_FIELD_SETTER(RxInternalOperatorsOperatorMergeTest_$23_$2, this$0_, RxInternalOperatorsOperatorMergeTest_$23 *)
+J2OBJC_FIELD_SETTER(RxInternalOperatorsOperatorMergeTest_$23_$2, val$number_, JavaLangInteger *)
+
+__attribute__((unused)) static void RxInternalOperatorsOperatorMergeTest_$23_$2_initWithRxInternalOperatorsOperatorMergeTest_$23_withJavaLangInteger_(RxInternalOperatorsOperatorMergeTest_$23_$2 *self, RxInternalOperatorsOperatorMergeTest_$23 *outer$, JavaLangInteger *capture$0);
+
+__attribute__((unused)) static RxInternalOperatorsOperatorMergeTest_$23_$2 *new_RxInternalOperatorsOperatorMergeTest_$23_$2_initWithRxInternalOperatorsOperatorMergeTest_$23_withJavaLangInteger_(RxInternalOperatorsOperatorMergeTest_$23 *outer$, JavaLangInteger *capture$0) NS_RETURNS_RETAINED;
+
+__attribute__((unused)) static RxInternalOperatorsOperatorMergeTest_$23_$2 *create_RxInternalOperatorsOperatorMergeTest_$23_$2_initWithRxInternalOperatorsOperatorMergeTest_$23_withJavaLangInteger_(RxInternalOperatorsOperatorMergeTest_$23 *outer$, JavaLangInteger *capture$0);
+
+@interface RxInternalOperatorsOperatorMergeTest_$24 : NSObject < RxFunctionsAction0 > {
+ @public
+  JavaUtilConcurrentCountDownLatch *val$latch_;
+}
+
+- (void)call;
+
+- (instancetype)initWithJavaUtilConcurrentCountDownLatch:(JavaUtilConcurrentCountDownLatch *)capture$0;
+
+@end
+
+J2OBJC_EMPTY_STATIC_INIT(RxInternalOperatorsOperatorMergeTest_$24)
+
+J2OBJC_FIELD_SETTER(RxInternalOperatorsOperatorMergeTest_$24, val$latch_, JavaUtilConcurrentCountDownLatch *)
+
+__attribute__((unused)) static void RxInternalOperatorsOperatorMergeTest_$24_initWithJavaUtilConcurrentCountDownLatch_(RxInternalOperatorsOperatorMergeTest_$24 *self, JavaUtilConcurrentCountDownLatch *capture$0);
+
+__attribute__((unused)) static RxInternalOperatorsOperatorMergeTest_$24 *new_RxInternalOperatorsOperatorMergeTest_$24_initWithJavaUtilConcurrentCountDownLatch_(JavaUtilConcurrentCountDownLatch *capture$0) NS_RETURNS_RETAINED;
+
+__attribute__((unused)) static RxInternalOperatorsOperatorMergeTest_$24 *create_RxInternalOperatorsOperatorMergeTest_$24_initWithJavaUtilConcurrentCountDownLatch_(JavaUtilConcurrentCountDownLatch *capture$0);
+
+@interface RxInternalOperatorsOperatorMergeTest_$25 : RxSubscriber {
+ @public
+  JavaUtilConcurrentCountDownLatch *val$latch_;
+}
+
+- (void)onStart;
+
+- (void)onCompleted;
+
+- (void)onErrorWithNSException:(NSException *)e;
+
+- (void)onNextWithId:(JavaLangInteger *)t;
+
+- (instancetype)initWithJavaUtilConcurrentCountDownLatch:(JavaUtilConcurrentCountDownLatch *)capture$0;
+
+@end
+
+J2OBJC_EMPTY_STATIC_INIT(RxInternalOperatorsOperatorMergeTest_$25)
+
+J2OBJC_FIELD_SETTER(RxInternalOperatorsOperatorMergeTest_$25, val$latch_, JavaUtilConcurrentCountDownLatch *)
+
+__attribute__((unused)) static void RxInternalOperatorsOperatorMergeTest_$25_initWithJavaUtilConcurrentCountDownLatch_(RxInternalOperatorsOperatorMergeTest_$25 *self, JavaUtilConcurrentCountDownLatch *capture$0);
+
+__attribute__((unused)) static RxInternalOperatorsOperatorMergeTest_$25 *new_RxInternalOperatorsOperatorMergeTest_$25_initWithJavaUtilConcurrentCountDownLatch_(JavaUtilConcurrentCountDownLatch *capture$0) NS_RETURNS_RETAINED;
+
+__attribute__((unused)) static RxInternalOperatorsOperatorMergeTest_$25 *create_RxInternalOperatorsOperatorMergeTest_$25_initWithJavaUtilConcurrentCountDownLatch_(JavaUtilConcurrentCountDownLatch *capture$0);
+
+@interface RxInternalOperatorsOperatorMergeTest_$26 : NSObject < RxFunctionsAction1 > {
+ @public
+  jlong count_;
+}
+
+- (void)callWithId:(JavaLangInteger *)t1;
+
+- (instancetype)init;
+
+@end
+
+J2OBJC_EMPTY_STATIC_INIT(RxInternalOperatorsOperatorMergeTest_$26)
+
+__attribute__((unused)) static void RxInternalOperatorsOperatorMergeTest_$26_init(RxInternalOperatorsOperatorMergeTest_$26 *self);
+
+__attribute__((unused)) static RxInternalOperatorsOperatorMergeTest_$26 *new_RxInternalOperatorsOperatorMergeTest_$26_init() NS_RETURNS_RETAINED;
+
+__attribute__((unused)) static RxInternalOperatorsOperatorMergeTest_$26 *create_RxInternalOperatorsOperatorMergeTest_$26_init();
+
+@interface RxInternalOperatorsOperatorMergeTest_$27 : NSObject < RxFunctionsAction1 > {
+ @public
+  jlong val$time_;
+}
+
+- (void)callWithId:(JavaLangInteger *)s;
+
+- (instancetype)initWithLong:(jlong)capture$0;
+
+@end
+
+J2OBJC_EMPTY_STATIC_INIT(RxInternalOperatorsOperatorMergeTest_$27)
+
+__attribute__((unused)) static void RxInternalOperatorsOperatorMergeTest_$27_initWithLong_(RxInternalOperatorsOperatorMergeTest_$27 *self, jlong capture$0);
+
+__attribute__((unused)) static RxInternalOperatorsOperatorMergeTest_$27 *new_RxInternalOperatorsOperatorMergeTest_$27_initWithLong_(jlong capture$0) NS_RETURNS_RETAINED;
+
+__attribute__((unused)) static RxInternalOperatorsOperatorMergeTest_$27 *create_RxInternalOperatorsOperatorMergeTest_$27_initWithLong_(jlong capture$0);
+
+@interface RxInternalOperatorsOperatorMergeTest_$1 : NSObject < RxFunctionsFunc1 >
+
+- (RxObservable *)callWithId:(JavaLangInteger *)t;
 
 - (instancetype)init;
 
@@ -65,70 +1018,81 @@ __attribute__((unused)) static RxInternalOperatorsOperatorMergeTest_$1 *new_RxIn
 
 __attribute__((unused)) static RxInternalOperatorsOperatorMergeTest_$1 *create_RxInternalOperatorsOperatorMergeTest_$1_init();
 
-@interface RxInternalOperatorsOperatorMergeTest_$2 : NSObject < RxFunctionsFunc1 > {
- @public
-  jint val$innerSize_;
-}
+@interface RxInternalOperatorsOperatorMergeTest_$2 : NSObject < RxFunctionsFunc1 >
 
-- (RxObservable *)callWithId:(JavaLangInteger *)i;
+- (RxObservable *)callWithId:(JavaLangInteger *)t;
 
-- (instancetype)initWithInt:(jint)capture$0;
+- (instancetype)init;
 
 @end
 
 J2OBJC_EMPTY_STATIC_INIT(RxInternalOperatorsOperatorMergeTest_$2)
 
-__attribute__((unused)) static void RxInternalOperatorsOperatorMergeTest_$2_initWithInt_(RxInternalOperatorsOperatorMergeTest_$2 *self, jint capture$0);
+__attribute__((unused)) static void RxInternalOperatorsOperatorMergeTest_$2_init(RxInternalOperatorsOperatorMergeTest_$2 *self);
 
-__attribute__((unused)) static RxInternalOperatorsOperatorMergeTest_$2 *new_RxInternalOperatorsOperatorMergeTest_$2_initWithInt_(jint capture$0) NS_RETURNS_RETAINED;
+__attribute__((unused)) static RxInternalOperatorsOperatorMergeTest_$2 *new_RxInternalOperatorsOperatorMergeTest_$2_init() NS_RETURNS_RETAINED;
 
-__attribute__((unused)) static RxInternalOperatorsOperatorMergeTest_$2 *create_RxInternalOperatorsOperatorMergeTest_$2_initWithInt_(jint capture$0);
+__attribute__((unused)) static RxInternalOperatorsOperatorMergeTest_$2 *create_RxInternalOperatorsOperatorMergeTest_$2_init();
 
-@interface RxInternalOperatorsOperatorMergeTest_$3 : NSObject < JavaLangIterable > {
+@interface RxInternalOperatorsOperatorMergeTest_$28 : RxObserversTestSubscriber {
  @public
-  JavaUtilConcurrentAtomicAtomicInteger *val$generated_;
+  jint remaining_;
+  jint val$req_;
 }
 
-- (id<JavaUtilIterator>)iterator;
+- (void)onStart;
 
-- (instancetype)initWithJavaUtilConcurrentAtomicAtomicInteger:(JavaUtilConcurrentAtomicAtomicInteger *)capture$0;
+- (void)onNextWithId:(JavaLangInteger *)t;
+
+- (instancetype)initWithInt:(jint)capture$0;
 
 @end
 
-J2OBJC_EMPTY_STATIC_INIT(RxInternalOperatorsOperatorMergeTest_$3)
+J2OBJC_EMPTY_STATIC_INIT(RxInternalOperatorsOperatorMergeTest_$28)
 
-J2OBJC_FIELD_SETTER(RxInternalOperatorsOperatorMergeTest_$3, val$generated_, JavaUtilConcurrentAtomicAtomicInteger *)
+__attribute__((unused)) static void RxInternalOperatorsOperatorMergeTest_$28_initWithInt_(RxInternalOperatorsOperatorMergeTest_$28 *self, jint capture$0);
 
-__attribute__((unused)) static void RxInternalOperatorsOperatorMergeTest_$3_initWithJavaUtilConcurrentAtomicAtomicInteger_(RxInternalOperatorsOperatorMergeTest_$3 *self, JavaUtilConcurrentAtomicAtomicInteger *capture$0);
+__attribute__((unused)) static RxInternalOperatorsOperatorMergeTest_$28 *new_RxInternalOperatorsOperatorMergeTest_$28_initWithInt_(jint capture$0) NS_RETURNS_RETAINED;
 
-__attribute__((unused)) static RxInternalOperatorsOperatorMergeTest_$3 *new_RxInternalOperatorsOperatorMergeTest_$3_initWithJavaUtilConcurrentAtomicAtomicInteger_(JavaUtilConcurrentAtomicAtomicInteger *capture$0) NS_RETURNS_RETAINED;
+__attribute__((unused)) static RxInternalOperatorsOperatorMergeTest_$28 *create_RxInternalOperatorsOperatorMergeTest_$28_initWithInt_(jint capture$0);
 
-__attribute__((unused)) static RxInternalOperatorsOperatorMergeTest_$3 *create_RxInternalOperatorsOperatorMergeTest_$3_initWithJavaUtilConcurrentAtomicAtomicInteger_(JavaUtilConcurrentAtomicAtomicInteger *capture$0);
-
-@interface RxInternalOperatorsOperatorMergeTest_$3_$1 : NSObject < JavaUtilIterator > {
+@interface RxInternalOperatorsOperatorMergeTest_$29 : RxObserversTestSubscriber {
  @public
-  RxInternalOperatorsOperatorMergeTest_$3 *this$0_;
+  jint remaining_;
+  jint val$req_;
 }
 
-- (void)remove;
+- (void)onStart;
 
-- (JavaLangInteger *)next;
+- (void)onNextWithId:(JavaLangInteger *)t;
 
-- (jboolean)hasNext;
-
-- (instancetype)initWithRxInternalOperatorsOperatorMergeTest_$3:(RxInternalOperatorsOperatorMergeTest_$3 *)outer$;
+- (instancetype)initWithInt:(jint)capture$0;
 
 @end
 
-J2OBJC_EMPTY_STATIC_INIT(RxInternalOperatorsOperatorMergeTest_$3_$1)
+J2OBJC_EMPTY_STATIC_INIT(RxInternalOperatorsOperatorMergeTest_$29)
 
-J2OBJC_FIELD_SETTER(RxInternalOperatorsOperatorMergeTest_$3_$1, this$0_, RxInternalOperatorsOperatorMergeTest_$3 *)
+__attribute__((unused)) static void RxInternalOperatorsOperatorMergeTest_$29_initWithInt_(RxInternalOperatorsOperatorMergeTest_$29 *self, jint capture$0);
 
-__attribute__((unused)) static void RxInternalOperatorsOperatorMergeTest_$3_$1_initWithRxInternalOperatorsOperatorMergeTest_$3_(RxInternalOperatorsOperatorMergeTest_$3_$1 *self, RxInternalOperatorsOperatorMergeTest_$3 *outer$);
+__attribute__((unused)) static RxInternalOperatorsOperatorMergeTest_$29 *new_RxInternalOperatorsOperatorMergeTest_$29_initWithInt_(jint capture$0) NS_RETURNS_RETAINED;
 
-__attribute__((unused)) static RxInternalOperatorsOperatorMergeTest_$3_$1 *new_RxInternalOperatorsOperatorMergeTest_$3_$1_initWithRxInternalOperatorsOperatorMergeTest_$3_(RxInternalOperatorsOperatorMergeTest_$3 *outer$) NS_RETURNS_RETAINED;
+__attribute__((unused)) static RxInternalOperatorsOperatorMergeTest_$29 *create_RxInternalOperatorsOperatorMergeTest_$29_initWithInt_(jint capture$0);
 
-__attribute__((unused)) static RxInternalOperatorsOperatorMergeTest_$3_$1 *create_RxInternalOperatorsOperatorMergeTest_$3_$1_initWithRxInternalOperatorsOperatorMergeTest_$3_(RxInternalOperatorsOperatorMergeTest_$3 *outer$);
+@interface RxInternalOperatorsOperatorMergeTest_$30 : NSObject < RxFunctionsFunc1 >
+
+- (RxObservable *)callWithId:(JavaLangInteger *)t;
+
+- (instancetype)init;
+
+@end
+
+J2OBJC_EMPTY_STATIC_INIT(RxInternalOperatorsOperatorMergeTest_$30)
+
+__attribute__((unused)) static void RxInternalOperatorsOperatorMergeTest_$30_init(RxInternalOperatorsOperatorMergeTest_$30 *self);
+
+__attribute__((unused)) static RxInternalOperatorsOperatorMergeTest_$30 *new_RxInternalOperatorsOperatorMergeTest_$30_init() NS_RETURNS_RETAINED;
+
+__attribute__((unused)) static RxInternalOperatorsOperatorMergeTest_$30 *create_RxInternalOperatorsOperatorMergeTest_$30_init();
 
 @implementation RxInternalOperatorsOperatorMergeTest
 
@@ -136,10 +1100,280 @@ __attribute__((unused)) static RxInternalOperatorsOperatorMergeTest_$3_$1 *creat
   OrgMockitoMockitoAnnotations_initMocksWithId_(self);
 }
 
+- (void)testMergeObservableOfObservables {
+  RxObservable *o1 = RxObservable_createWithRxObservable_OnSubscribe_(create_RxInternalOperatorsOperatorMergeTest_TestSynchronousObservable_init());
+  RxObservable *o2 = RxObservable_createWithRxObservable_OnSubscribe_(create_RxInternalOperatorsOperatorMergeTest_TestSynchronousObservable_init());
+  RxObservable *observableOfObservables = RxObservable_createWithRxObservable_OnSubscribe_(create_RxInternalOperatorsOperatorMergeTest_$3_initWithRxObservable_withRxObservable_(o1, o2));
+  RxObservable *m = RxObservable_mergeWithRxObservable_(observableOfObservables);
+  [((RxObservable *) nil_chk(m)) subscribeWithRxObserver:stringObserver_];
+  [((id<RxObserver>) nil_chk(OrgMockitoMockito_verifyWithId_withOrgMockitoVerificationVerificationMode_(stringObserver_, OrgMockitoMockito_never()))) onErrorWithNSException:OrgMockitoMatchers_anyWithIOSClass_(NSException_class_())];
+  [((id<RxObserver>) nil_chk(OrgMockitoMockito_verifyWithId_withOrgMockitoVerificationVerificationMode_(stringObserver_, OrgMockitoMockito_timesWithInt_(1)))) onCompleted];
+  [((id<RxObserver>) nil_chk(OrgMockitoMockito_verifyWithId_withOrgMockitoVerificationVerificationMode_(stringObserver_, OrgMockitoMockito_timesWithInt_(2)))) onNextWithId:@"hello"];
+}
+
+- (void)testMergeArray {
+  RxObservable *o1 = RxObservable_createWithRxObservable_OnSubscribe_(create_RxInternalOperatorsOperatorMergeTest_TestSynchronousObservable_init());
+  RxObservable *o2 = RxObservable_createWithRxObservable_OnSubscribe_(create_RxInternalOperatorsOperatorMergeTest_TestSynchronousObservable_init());
+  RxObservable *m = RxObservable_mergeWithRxObservable_withRxObservable_(o1, o2);
+  [((RxObservable *) nil_chk(m)) subscribeWithRxObserver:stringObserver_];
+  [((id<RxObserver>) nil_chk(OrgMockitoMockito_verifyWithId_withOrgMockitoVerificationVerificationMode_(stringObserver_, OrgMockitoMockito_never()))) onErrorWithNSException:OrgMockitoMatchers_anyWithIOSClass_(NSException_class_())];
+  [((id<RxObserver>) nil_chk(OrgMockitoMockito_verifyWithId_withOrgMockitoVerificationVerificationMode_(stringObserver_, OrgMockitoMockito_timesWithInt_(2)))) onNextWithId:@"hello"];
+  [((id<RxObserver>) nil_chk(OrgMockitoMockito_verifyWithId_withOrgMockitoVerificationVerificationMode_(stringObserver_, OrgMockitoMockito_timesWithInt_(1)))) onCompleted];
+}
+
+- (void)testMergeList {
+  RxObservable *o1 = RxObservable_createWithRxObservable_OnSubscribe_(create_RxInternalOperatorsOperatorMergeTest_TestSynchronousObservable_init());
+  RxObservable *o2 = RxObservable_createWithRxObservable_OnSubscribe_(create_RxInternalOperatorsOperatorMergeTest_TestSynchronousObservable_init());
+  id<JavaUtilList> listOfObservables = create_JavaUtilArrayList_init();
+  [listOfObservables addWithId:o1];
+  [listOfObservables addWithId:o2];
+  RxObservable *m = RxObservable_mergeWithJavaLangIterable_(listOfObservables);
+  [((RxObservable *) nil_chk(m)) subscribeWithRxObserver:stringObserver_];
+  [((id<RxObserver>) nil_chk(OrgMockitoMockito_verifyWithId_withOrgMockitoVerificationVerificationMode_(stringObserver_, OrgMockitoMockito_never()))) onErrorWithNSException:OrgMockitoMatchers_anyWithIOSClass_(NSException_class_())];
+  [((id<RxObserver>) nil_chk(OrgMockitoMockito_verifyWithId_withOrgMockitoVerificationVerificationMode_(stringObserver_, OrgMockitoMockito_timesWithInt_(1)))) onCompleted];
+  [((id<RxObserver>) nil_chk(OrgMockitoMockito_verifyWithId_withOrgMockitoVerificationVerificationMode_(stringObserver_, OrgMockitoMockito_timesWithInt_(2)))) onNextWithId:@"hello"];
+}
+
+- (void)testUnSubscribeObservableOfObservables {
+  JavaUtilConcurrentAtomicAtomicBoolean *unsubscribed = create_JavaUtilConcurrentAtomicAtomicBoolean_init();
+  JavaUtilConcurrentCountDownLatch *latch = create_JavaUtilConcurrentCountDownLatch_initWithInt_(1);
+  RxObservable *source = RxObservable_createWithRxObservable_OnSubscribe_(create_RxInternalOperatorsOperatorMergeTest_$4_initWithJavaUtilConcurrentAtomicAtomicBoolean_withJavaUtilConcurrentCountDownLatch_(unsubscribed, latch));
+  JavaUtilConcurrentAtomicAtomicInteger *count = create_JavaUtilConcurrentAtomicAtomicInteger_init();
+  [((RxObservablesBlockingObservable *) nil_chk([((RxObservable *) nil_chk([((RxObservable *) nil_chk(RxObservable_mergeWithRxObservable_(source))) takeWithInt:6])) toBlocking])) forEachWithRxFunctionsAction1:create_RxInternalOperatorsOperatorMergeTest_$5_initWithJavaUtilConcurrentAtomicAtomicInteger_(count)];
+  [latch awaitWithLong:1000 withJavaUtilConcurrentTimeUnit:JreLoadEnum(JavaUtilConcurrentTimeUnit, MILLISECONDS)];
+  [((JavaIoPrintStream *) nil_chk(JreLoadStatic(JavaLangSystem, out))) printlnWithNSString:JreStrcat("$Z", @"unsubscribed: ", [unsubscribed get])];
+  OrgJunitAssert_assertTrueWithBoolean_([unsubscribed get]);
+}
+
+- (void)testMergeArrayWithThreading {
+  RxInternalOperatorsOperatorMergeTest_TestASynchronousObservable *o1 = create_RxInternalOperatorsOperatorMergeTest_TestASynchronousObservable_init();
+  RxInternalOperatorsOperatorMergeTest_TestASynchronousObservable *o2 = create_RxInternalOperatorsOperatorMergeTest_TestASynchronousObservable_init();
+  RxObservable *m = RxObservable_mergeWithRxObservable_withRxObservable_(RxObservable_createWithRxObservable_OnSubscribe_(o1), RxObservable_createWithRxObservable_OnSubscribe_(o2));
+  RxObserversTestSubscriber *ts = create_RxObserversTestSubscriber_initWithRxObserver_(stringObserver_);
+  [((RxObservable *) nil_chk(m)) subscribeWithRxSubscriber:ts];
+  [ts awaitTerminalEvent];
+  [ts assertNoErrors];
+  [((id<RxObserver>) nil_chk(OrgMockitoMockito_verifyWithId_withOrgMockitoVerificationVerificationMode_(stringObserver_, OrgMockitoMockito_never()))) onErrorWithNSException:OrgMockitoMatchers_anyWithIOSClass_(NSException_class_())];
+  [((id<RxObserver>) nil_chk(OrgMockitoMockito_verifyWithId_withOrgMockitoVerificationVerificationMode_(stringObserver_, OrgMockitoMockito_timesWithInt_(2)))) onNextWithId:@"hello"];
+  [((id<RxObserver>) nil_chk(OrgMockitoMockito_verifyWithId_withOrgMockitoVerificationVerificationMode_(stringObserver_, OrgMockitoMockito_timesWithInt_(1)))) onCompleted];
+}
+
+- (void)testSynchronizationOfMultipleSequences {
+  RxInternalOperatorsOperatorMergeTest_TestASynchronousObservable *o1 = create_RxInternalOperatorsOperatorMergeTest_TestASynchronousObservable_init();
+  RxInternalOperatorsOperatorMergeTest_TestASynchronousObservable *o2 = create_RxInternalOperatorsOperatorMergeTest_TestASynchronousObservable_init();
+  JavaUtilConcurrentCountDownLatch *endLatch = create_JavaUtilConcurrentCountDownLatch_initWithInt_(1);
+  JavaUtilConcurrentAtomicAtomicInteger *concurrentCounter = create_JavaUtilConcurrentAtomicAtomicInteger_init();
+  JavaUtilConcurrentAtomicAtomicInteger *totalCounter = create_JavaUtilConcurrentAtomicAtomicInteger_init();
+  RxObservable *m = RxObservable_mergeWithRxObservable_withRxObservable_(RxObservable_createWithRxObservable_OnSubscribe_(o1), RxObservable_createWithRxObservable_OnSubscribe_(o2));
+  [((RxObservable *) nil_chk(m)) subscribeWithRxSubscriber:create_RxInternalOperatorsOperatorMergeTest_$6_initWithJavaUtilConcurrentAtomicAtomicInteger_withJavaUtilConcurrentAtomicAtomicInteger_withJavaUtilConcurrentCountDownLatch_(totalCounter, concurrentCounter, endLatch)];
+  [((JavaUtilConcurrentCountDownLatch *) nil_chk(o1->onNextBeingSent_)) await];
+  [o2->onNextBeingSent_ await];
+  JavaLangThread_sleepWithLong_(300);
+  @try {
+    OrgJunitAssert_assertEqualsWithLong_withLong_(1, [concurrentCounter get]);
+  }
+  @finally {
+    [endLatch countDown];
+  }
+  @try {
+    [((JavaLangThread *) nil_chk(o1->t_)) join];
+    [((JavaLangThread *) nil_chk(o2->t_)) join];
+  }
+  @catch (JavaLangInterruptedException *e) {
+    @throw create_JavaLangRuntimeException_initWithNSException_(e);
+  }
+  OrgJunitAssert_assertEqualsWithLong_withLong_(2, [totalCounter get]);
+  OrgJunitAssert_assertEqualsWithLong_withLong_(0, [concurrentCounter get]);
+}
+
+- (void)testError1 {
+  RxObservable *o1 = RxObservable_createWithRxObservable_OnSubscribe_(create_RxInternalOperatorsOperatorMergeTest_TestErrorObservable_initWithNSStringArray_([IOSObjectArray arrayWithObjects:(id[]){ @"four", nil, @"six" } count:3 type:NSString_class_()]));
+  RxObservable *o2 = RxObservable_createWithRxObservable_OnSubscribe_(create_RxInternalOperatorsOperatorMergeTest_TestErrorObservable_initWithNSStringArray_([IOSObjectArray arrayWithObjects:(id[]){ @"one", @"two", @"three" } count:3 type:NSString_class_()]));
+  RxObservable *m = RxObservable_mergeWithRxObservable_withRxObservable_(o1, o2);
+  [((RxObservable *) nil_chk(m)) subscribeWithRxObserver:stringObserver_];
+  [((id<RxObserver>) nil_chk(OrgMockitoMockito_verifyWithId_withOrgMockitoVerificationVerificationMode_(stringObserver_, OrgMockitoMockito_timesWithInt_(1)))) onErrorWithNSException:OrgMockitoMatchers_anyWithIOSClass_(JavaLangNullPointerException_class_())];
+  [((id<RxObserver>) nil_chk(OrgMockitoMockito_verifyWithId_withOrgMockitoVerificationVerificationMode_(stringObserver_, OrgMockitoMockito_never()))) onCompleted];
+  [((id<RxObserver>) nil_chk(OrgMockitoMockito_verifyWithId_withOrgMockitoVerificationVerificationMode_(stringObserver_, OrgMockitoMockito_timesWithInt_(0)))) onNextWithId:@"one"];
+  [((id<RxObserver>) nil_chk(OrgMockitoMockito_verifyWithId_withOrgMockitoVerificationVerificationMode_(stringObserver_, OrgMockitoMockito_timesWithInt_(0)))) onNextWithId:@"two"];
+  [((id<RxObserver>) nil_chk(OrgMockitoMockito_verifyWithId_withOrgMockitoVerificationVerificationMode_(stringObserver_, OrgMockitoMockito_timesWithInt_(0)))) onNextWithId:@"three"];
+  [((id<RxObserver>) nil_chk(OrgMockitoMockito_verifyWithId_withOrgMockitoVerificationVerificationMode_(stringObserver_, OrgMockitoMockito_timesWithInt_(1)))) onNextWithId:@"four"];
+  [((id<RxObserver>) nil_chk(OrgMockitoMockito_verifyWithId_withOrgMockitoVerificationVerificationMode_(stringObserver_, OrgMockitoMockito_timesWithInt_(0)))) onNextWithId:@"five"];
+  [((id<RxObserver>) nil_chk(OrgMockitoMockito_verifyWithId_withOrgMockitoVerificationVerificationMode_(stringObserver_, OrgMockitoMockito_timesWithInt_(0)))) onNextWithId:@"six"];
+}
+
+- (void)testError2 {
+  RxObservable *o1 = RxObservable_createWithRxObservable_OnSubscribe_(create_RxInternalOperatorsOperatorMergeTest_TestErrorObservable_initWithNSStringArray_([IOSObjectArray arrayWithObjects:(id[]){ @"one", @"two", @"three" } count:3 type:NSString_class_()]));
+  RxObservable *o2 = RxObservable_createWithRxObservable_OnSubscribe_(create_RxInternalOperatorsOperatorMergeTest_TestErrorObservable_initWithNSStringArray_([IOSObjectArray arrayWithObjects:(id[]){ @"four", nil, @"six" } count:3 type:NSString_class_()]));
+  RxObservable *o3 = RxObservable_createWithRxObservable_OnSubscribe_(create_RxInternalOperatorsOperatorMergeTest_TestErrorObservable_initWithNSStringArray_([IOSObjectArray arrayWithObjects:(id[]){ @"seven", @"eight", nil } count:3 type:NSString_class_()]));
+  RxObservable *o4 = RxObservable_createWithRxObservable_OnSubscribe_(create_RxInternalOperatorsOperatorMergeTest_TestErrorObservable_initWithNSStringArray_([IOSObjectArray arrayWithObjects:(id[]){ @"nine" } count:1 type:NSString_class_()]));
+  RxObservable *m = RxObservable_mergeWithRxObservable_withRxObservable_withRxObservable_withRxObservable_(o1, o2, o3, o4);
+  [((RxObservable *) nil_chk(m)) subscribeWithRxObserver:stringObserver_];
+  [((id<RxObserver>) nil_chk(OrgMockitoMockito_verifyWithId_withOrgMockitoVerificationVerificationMode_(stringObserver_, OrgMockitoMockito_timesWithInt_(1)))) onErrorWithNSException:OrgMockitoMatchers_anyWithIOSClass_(JavaLangNullPointerException_class_())];
+  [((id<RxObserver>) nil_chk(OrgMockitoMockito_verifyWithId_withOrgMockitoVerificationVerificationMode_(stringObserver_, OrgMockitoMockito_never()))) onCompleted];
+  [((id<RxObserver>) nil_chk(OrgMockitoMockito_verifyWithId_withOrgMockitoVerificationVerificationMode_(stringObserver_, OrgMockitoMockito_timesWithInt_(1)))) onNextWithId:@"one"];
+  [((id<RxObserver>) nil_chk(OrgMockitoMockito_verifyWithId_withOrgMockitoVerificationVerificationMode_(stringObserver_, OrgMockitoMockito_timesWithInt_(1)))) onNextWithId:@"two"];
+  [((id<RxObserver>) nil_chk(OrgMockitoMockito_verifyWithId_withOrgMockitoVerificationVerificationMode_(stringObserver_, OrgMockitoMockito_timesWithInt_(1)))) onNextWithId:@"three"];
+  [((id<RxObserver>) nil_chk(OrgMockitoMockito_verifyWithId_withOrgMockitoVerificationVerificationMode_(stringObserver_, OrgMockitoMockito_timesWithInt_(1)))) onNextWithId:@"four"];
+  [((id<RxObserver>) nil_chk(OrgMockitoMockito_verifyWithId_withOrgMockitoVerificationVerificationMode_(stringObserver_, OrgMockitoMockito_timesWithInt_(0)))) onNextWithId:@"five"];
+  [((id<RxObserver>) nil_chk(OrgMockitoMockito_verifyWithId_withOrgMockitoVerificationVerificationMode_(stringObserver_, OrgMockitoMockito_timesWithInt_(0)))) onNextWithId:@"six"];
+  [((id<RxObserver>) nil_chk(OrgMockitoMockito_verifyWithId_withOrgMockitoVerificationVerificationMode_(stringObserver_, OrgMockitoMockito_timesWithInt_(0)))) onNextWithId:@"seven"];
+  [((id<RxObserver>) nil_chk(OrgMockitoMockito_verifyWithId_withOrgMockitoVerificationVerificationMode_(stringObserver_, OrgMockitoMockito_timesWithInt_(0)))) onNextWithId:@"eight"];
+  [((id<RxObserver>) nil_chk(OrgMockitoMockito_verifyWithId_withOrgMockitoVerificationVerificationMode_(stringObserver_, OrgMockitoMockito_timesWithInt_(0)))) onNextWithId:@"nine"];
+}
+
+- (void)testThrownErrorHandling {
+  RxObserversTestSubscriber *ts = create_RxObserversTestSubscriber_init();
+  RxObservable *o1 = RxObservable_createWithRxObservable_OnSubscribe_(create_RxInternalOperatorsOperatorMergeTest_$7_init());
+  [((RxObservable *) nil_chk(RxObservable_mergeWithRxObservable_withRxObservable_(o1, o1))) subscribeWithRxSubscriber:ts];
+  [ts awaitTerminalEventWithLong:1000 withJavaUtilConcurrentTimeUnit:JreLoadEnum(JavaUtilConcurrentTimeUnit, MILLISECONDS)];
+  [ts assertTerminalEvent];
+  [((JavaIoPrintStream *) nil_chk(JreLoadStatic(JavaLangSystem, out))) printlnWithNSString:JreStrcat("$@", @"Error: ", [ts getOnErrorEvents])];
+}
+
+- (void)testUnsubscribeAsObservablesComplete {
+  RxSchedulersTestScheduler *scheduler1 = RxSchedulersSchedulers_test();
+  JavaUtilConcurrentAtomicAtomicBoolean *os1 = create_JavaUtilConcurrentAtomicAtomicBoolean_initWithBoolean_(false);
+  RxObservable *o1 = RxInternalOperatorsOperatorMergeTest_createObservableOf5IntervalsOf1SecondIncrementsWithSubscriptionHookWithRxScheduler_withJavaUtilConcurrentAtomicAtomicBoolean_(self, scheduler1, os1);
+  RxSchedulersTestScheduler *scheduler2 = RxSchedulersSchedulers_test();
+  JavaUtilConcurrentAtomicAtomicBoolean *os2 = create_JavaUtilConcurrentAtomicAtomicBoolean_initWithBoolean_(false);
+  RxObservable *o2 = RxInternalOperatorsOperatorMergeTest_createObservableOf5IntervalsOf1SecondIncrementsWithSubscriptionHookWithRxScheduler_withJavaUtilConcurrentAtomicAtomicBoolean_(self, scheduler2, os2);
+  RxObserversTestSubscriber *ts = create_RxObserversTestSubscriber_init();
+  [((RxObservable *) nil_chk(RxObservable_mergeWithRxObservable_withRxObservable_(o1, o2))) subscribeWithRxSubscriber:ts];
+  [ts assertReceivedOnNextWithJavaUtilList:JavaUtilCollections_emptyList()];
+  [((RxSchedulersTestScheduler *) nil_chk(scheduler1)) advanceTimeByWithLong:3 withJavaUtilConcurrentTimeUnit:JreLoadEnum(JavaUtilConcurrentTimeUnit, SECONDS)];
+  [((RxSchedulersTestScheduler *) nil_chk(scheduler2)) advanceTimeByWithLong:2 withJavaUtilConcurrentTimeUnit:JreLoadEnum(JavaUtilConcurrentTimeUnit, SECONDS)];
+  [ts assertReceivedOnNextWithJavaUtilList:JavaUtilArrays_asListWithNSObjectArray_([IOSObjectArray arrayWithObjects:(id[]){ JavaLangLong_valueOfWithLong_(0LL), JavaLangLong_valueOfWithLong_(1LL), JavaLangLong_valueOfWithLong_(2LL), JavaLangLong_valueOfWithLong_(0LL), JavaLangLong_valueOfWithLong_(1LL) } count:5 type:JavaLangLong_class_()])];
+  OrgJunitAssert_assertFalseWithBoolean_([os1 get]);
+  OrgJunitAssert_assertFalseWithBoolean_([os2 get]);
+  [scheduler1 advanceTimeByWithLong:3 withJavaUtilConcurrentTimeUnit:JreLoadEnum(JavaUtilConcurrentTimeUnit, SECONDS)];
+  [ts assertReceivedOnNextWithJavaUtilList:JavaUtilArrays_asListWithNSObjectArray_([IOSObjectArray arrayWithObjects:(id[]){ JavaLangLong_valueOfWithLong_(0LL), JavaLangLong_valueOfWithLong_(1LL), JavaLangLong_valueOfWithLong_(2LL), JavaLangLong_valueOfWithLong_(0LL), JavaLangLong_valueOfWithLong_(1LL), JavaLangLong_valueOfWithLong_(3LL), JavaLangLong_valueOfWithLong_(4LL) } count:7 type:JavaLangLong_class_()])];
+  OrgJunitAssert_assertTrueWithBoolean_([os1 get]);
+  OrgJunitAssert_assertFalseWithBoolean_([os2 get]);
+  [scheduler2 advanceTimeByWithLong:3 withJavaUtilConcurrentTimeUnit:JreLoadEnum(JavaUtilConcurrentTimeUnit, SECONDS)];
+  [ts assertReceivedOnNextWithJavaUtilList:JavaUtilArrays_asListWithNSObjectArray_([IOSObjectArray arrayWithObjects:(id[]){ JavaLangLong_valueOfWithLong_(0LL), JavaLangLong_valueOfWithLong_(1LL), JavaLangLong_valueOfWithLong_(2LL), JavaLangLong_valueOfWithLong_(0LL), JavaLangLong_valueOfWithLong_(1LL), JavaLangLong_valueOfWithLong_(3LL), JavaLangLong_valueOfWithLong_(4LL), JavaLangLong_valueOfWithLong_(2LL), JavaLangLong_valueOfWithLong_(3LL), JavaLangLong_valueOfWithLong_(4LL) } count:10 type:JavaLangLong_class_()])];
+  OrgJunitAssert_assertTrueWithBoolean_([os1 get]);
+  OrgJunitAssert_assertTrueWithBoolean_([os2 get]);
+  [ts assertTerminalEvent];
+}
+
+- (void)testEarlyUnsubscribe {
+  for (jint i = 0; i < 10; i++) {
+    @autoreleasepool {
+      RxSchedulersTestScheduler *scheduler1 = RxSchedulersSchedulers_test();
+      JavaUtilConcurrentAtomicAtomicBoolean *os1 = create_JavaUtilConcurrentAtomicAtomicBoolean_initWithBoolean_(false);
+      RxObservable *o1 = RxInternalOperatorsOperatorMergeTest_createObservableOf5IntervalsOf1SecondIncrementsWithSubscriptionHookWithRxScheduler_withJavaUtilConcurrentAtomicAtomicBoolean_(self, scheduler1, os1);
+      RxSchedulersTestScheduler *scheduler2 = RxSchedulersSchedulers_test();
+      JavaUtilConcurrentAtomicAtomicBoolean *os2 = create_JavaUtilConcurrentAtomicAtomicBoolean_initWithBoolean_(false);
+      RxObservable *o2 = RxInternalOperatorsOperatorMergeTest_createObservableOf5IntervalsOf1SecondIncrementsWithSubscriptionHookWithRxScheduler_withJavaUtilConcurrentAtomicAtomicBoolean_(self, scheduler2, os2);
+      RxObserversTestSubscriber *ts = create_RxObserversTestSubscriber_init();
+      id<RxSubscription> s = [((RxObservable *) nil_chk(RxObservable_mergeWithRxObservable_withRxObservable_(o1, o2))) subscribeWithRxSubscriber:ts];
+      [ts assertReceivedOnNextWithJavaUtilList:JavaUtilCollections_emptyList()];
+      [((RxSchedulersTestScheduler *) nil_chk(scheduler1)) advanceTimeByWithLong:3 withJavaUtilConcurrentTimeUnit:JreLoadEnum(JavaUtilConcurrentTimeUnit, SECONDS)];
+      [((RxSchedulersTestScheduler *) nil_chk(scheduler2)) advanceTimeByWithLong:2 withJavaUtilConcurrentTimeUnit:JreLoadEnum(JavaUtilConcurrentTimeUnit, SECONDS)];
+      [ts assertReceivedOnNextWithJavaUtilList:JavaUtilArrays_asListWithNSObjectArray_([IOSObjectArray arrayWithObjects:(id[]){ JavaLangLong_valueOfWithLong_(0LL), JavaLangLong_valueOfWithLong_(1LL), JavaLangLong_valueOfWithLong_(2LL), JavaLangLong_valueOfWithLong_(0LL), JavaLangLong_valueOfWithLong_(1LL) } count:5 type:JavaLangLong_class_()])];
+      OrgJunitAssert_assertFalseWithBoolean_([os1 get]);
+      OrgJunitAssert_assertFalseWithBoolean_([os2 get]);
+      [((id<RxSubscription>) nil_chk(s)) unsubscribe];
+      OrgJunitAssert_assertTrueWithBoolean_([os1 get]);
+      OrgJunitAssert_assertTrueWithBoolean_([os2 get]);
+      [ts assertReceivedOnNextWithJavaUtilList:JavaUtilArrays_asListWithNSObjectArray_([IOSObjectArray arrayWithObjects:(id[]){ JavaLangLong_valueOfWithLong_(0LL), JavaLangLong_valueOfWithLong_(1LL), JavaLangLong_valueOfWithLong_(2LL), JavaLangLong_valueOfWithLong_(0LL), JavaLangLong_valueOfWithLong_(1LL) } count:5 type:JavaLangLong_class_()])];
+      [ts assertUnsubscribed];
+    }
+  }
+}
+
+- (RxObservable *)createObservableOf5IntervalsOf1SecondIncrementsWithSubscriptionHookWithRxScheduler:(RxScheduler *)scheduler
+                                                           withJavaUtilConcurrentAtomicAtomicBoolean:(JavaUtilConcurrentAtomicAtomicBoolean *)unsubscribed {
+  return RxInternalOperatorsOperatorMergeTest_createObservableOf5IntervalsOf1SecondIncrementsWithSubscriptionHookWithRxScheduler_withJavaUtilConcurrentAtomicAtomicBoolean_(self, scheduler, unsubscribed);
+}
+
+- (void)testConcurrency {
+  RxObservable *o = [((RxObservable *) nil_chk(RxObservable_rangeWithInt_withInt_(1, 10000))) subscribeOnWithRxScheduler:RxSchedulersSchedulers_newThread()];
+  for (jint i = 0; i < 10; i++) {
+    @autoreleasepool {
+      RxObservable *merge = RxObservable_mergeWithRxObservable_withRxObservable_withRxObservable_([((RxObservable *) nil_chk(o)) onBackpressureBuffer], [o onBackpressureBuffer], [o onBackpressureBuffer]);
+      RxObserversTestSubscriber *ts = create_RxObserversTestSubscriber_init();
+      [((RxObservable *) nil_chk(merge)) subscribeWithRxSubscriber:ts];
+      [ts awaitTerminalEventWithLong:3 withJavaUtilConcurrentTimeUnit:JreLoadEnum(JavaUtilConcurrentTimeUnit, SECONDS)];
+      [ts assertTerminalEvent];
+      [ts assertNoErrors];
+      OrgJunitAssert_assertEqualsWithLong_withLong_(1, [ts getCompletions]);
+      id<JavaUtilList> onNextEvents = [ts getOnNextEvents];
+      OrgJunitAssert_assertEqualsWithLong_withLong_(30000, [((id<JavaUtilList>) nil_chk(onNextEvents)) size]);
+      [ts unsubscribe];
+    }
+  }
+}
+
+- (void)testConcurrencyWithSleeping {
+  RxObservable *o = RxObservable_createWithRxObservable_OnSubscribe_(create_RxInternalOperatorsOperatorMergeTest_$9_init());
+  for (jint i = 0; i < 10; i++) {
+    @autoreleasepool {
+      RxObservable *merge = RxObservable_mergeWithRxObservable_withRxObservable_withRxObservable_(o, o, o);
+      RxObserversTestSubscriber *ts = create_RxObserversTestSubscriber_init();
+      [((RxObservable *) nil_chk(merge)) subscribeWithRxSubscriber:ts];
+      [ts awaitTerminalEvent];
+      OrgJunitAssert_assertEqualsWithLong_withLong_(1, [ts getCompletions]);
+      id<JavaUtilList> onNextEvents = [ts getOnNextEvents];
+      OrgJunitAssert_assertEqualsWithLong_withLong_(300, [((id<JavaUtilList>) nil_chk(onNextEvents)) size]);
+      [ts unsubscribe];
+    }
+  }
+}
+
+- (void)testConcurrencyWithBrokenOnCompleteContract {
+  @autoreleasepool {
+    RxObservable *o = RxObservable_createWithRxObservable_OnSubscribe_(create_RxInternalOperatorsOperatorMergeTest_$10_init());
+    for (jint i = 0; i < 10; i++) {
+      @autoreleasepool {
+        RxObservable *merge = RxObservable_mergeWithRxObservable_withRxObservable_withRxObservable_([((RxObservable *) nil_chk(o)) onBackpressureBuffer], [o onBackpressureBuffer], [o onBackpressureBuffer]);
+        RxObserversTestSubscriber *ts = create_RxObserversTestSubscriber_init();
+        [((RxObservable *) nil_chk(merge)) subscribeWithRxSubscriber:ts];
+        [ts awaitTerminalEvent];
+        [ts assertNoErrors];
+        OrgJunitAssert_assertEqualsWithLong_withLong_(1, [ts getCompletions]);
+        id<JavaUtilList> onNextEvents = [ts getOnNextEvents];
+        OrgJunitAssert_assertEqualsWithLong_withLong_(30000, [((id<JavaUtilList>) nil_chk(onNextEvents)) size]);
+        [ts unsubscribe];
+      }
+    }
+  }
+}
+
+- (void)testBackpressureUpstream {
+  JavaUtilConcurrentAtomicAtomicInteger *generated1 = create_JavaUtilConcurrentAtomicAtomicInteger_init();
+  RxObservable *o1 = [((RxObservable *) nil_chk(RxInternalOperatorsOperatorMergeTest_createInfiniteObservableWithJavaUtilConcurrentAtomicAtomicInteger_(self, generated1))) subscribeOnWithRxScheduler:RxSchedulersSchedulers_computation()];
+  JavaUtilConcurrentAtomicAtomicInteger *generated2 = create_JavaUtilConcurrentAtomicAtomicInteger_init();
+  RxObservable *o2 = [((RxObservable *) nil_chk(RxInternalOperatorsOperatorMergeTest_createInfiniteObservableWithJavaUtilConcurrentAtomicAtomicInteger_(self, generated2))) subscribeOnWithRxScheduler:RxSchedulersSchedulers_computation()];
+  RxObserversTestSubscriber *testSubscriber = create_RxInternalOperatorsOperatorMergeTest_$11_init();
+  [((RxObservable *) nil_chk(RxObservable_mergeWithRxObservable_withRxObservable_([((RxObservable *) nil_chk(o1)) takeWithInt:JreLoadStatic(RxInternalUtilRxRingBuffer, SIZE) * 2], [((RxObservable *) nil_chk(o2)) takeWithInt:JreLoadStatic(RxInternalUtilRxRingBuffer, SIZE) * 2]))) subscribeWithRxSubscriber:testSubscriber];
+  [testSubscriber awaitTerminalEvent];
+  if ([((id<JavaUtilList>) nil_chk([testSubscriber getOnErrorEvents])) size] > 0) {
+    [((NSException *) nil_chk([((id<JavaUtilList>) nil_chk([testSubscriber getOnErrorEvents])) getWithInt:0])) printStackTrace];
+  }
+  [testSubscriber assertNoErrors];
+  [((JavaIoPrintStream *) nil_chk(JreLoadStatic(JavaLangSystem, err))) printlnWithId:[testSubscriber getOnNextEvents]];
+  OrgJunitAssert_assertEqualsWithLong_withLong_(JreLoadStatic(RxInternalUtilRxRingBuffer, SIZE) * 4, [((id<JavaUtilList>) nil_chk([testSubscriber getOnNextEvents])) size]);
+  [((JavaIoPrintStream *) nil_chk(JreLoadStatic(JavaLangSystem, out))) printlnWithNSString:JreStrcat("$I", @"Generated 1: ", [generated1 get])];
+  [JreLoadStatic(JavaLangSystem, out) printlnWithNSString:JreStrcat("$I", @"Generated 2: ", [generated2 get])];
+  OrgJunitAssert_assertTrueWithBoolean_([generated1 get] >= JreLoadStatic(RxInternalUtilRxRingBuffer, SIZE) * 2 && [generated1 get] <= JreLoadStatic(RxInternalUtilRxRingBuffer, SIZE) * 4);
+}
+
+- (void)testBackpressureUpstream2InLoop {
+  for (jint i = 0; i < 1000; i++) {
+    @autoreleasepool {
+      [((JavaIoPrintStream *) nil_chk(JreLoadStatic(JavaLangSystem, err))) flush];
+      [((JavaIoPrintStream *) nil_chk(JreLoadStatic(JavaLangSystem, out))) printlnWithNSString:@"---"];
+      [JreLoadStatic(JavaLangSystem, out) flush];
+      [self testBackpressureUpstream2];
+    }
+  }
+}
+
 - (void)testBackpressureUpstream2 {
   JavaUtilConcurrentAtomicAtomicInteger *generated1 = create_JavaUtilConcurrentAtomicAtomicInteger_init();
   RxObservable *o1 = [((RxObservable *) nil_chk(RxInternalOperatorsOperatorMergeTest_createInfiniteObservableWithJavaUtilConcurrentAtomicAtomicInteger_(self, generated1))) subscribeOnWithRxScheduler:RxSchedulersSchedulers_computation()];
-  RxObserversTestSubscriber *testSubscriber = create_RxInternalOperatorsOperatorMergeTest_$1_init();
+  RxObserversTestSubscriber *testSubscriber = create_RxInternalOperatorsOperatorMergeTest_$12_init();
   [((RxObservable *) nil_chk(RxObservable_mergeWithRxObservable_withRxObservable_([((RxObservable *) nil_chk(o1)) takeWithInt:JreLoadStatic(RxInternalUtilRxRingBuffer, SIZE) * 2], RxObservable_justWithId_(JavaLangInteger_valueOfWithInt_(-99))))) subscribeWithRxSubscriber:testSubscriber];
   [testSubscriber awaitTerminalEvent];
   id<JavaUtilList> onNextEvents = [testSubscriber getOnNextEvents];
@@ -151,16 +1385,572 @@ __attribute__((unused)) static RxInternalOperatorsOperatorMergeTest_$3_$1 *creat
   [testSubscriber assertNoErrors];
   OrgJunitAssert_assertEqualsWithLong_withLong_(JreLoadStatic(RxInternalUtilRxRingBuffer, SIZE) * 2 + 1, [onNextEvents size]);
   OrgJunitAssert_assertTrueWithBoolean_([generated1 get] >= JreLoadStatic(RxInternalUtilRxRingBuffer, SIZE) * 2 && [generated1 get] <= JreLoadStatic(RxInternalUtilRxRingBuffer, SIZE) * 3);
+  [testSubscriber unsubscribe];
+}
+
+- (void)testBackpressureDownstreamWithConcurrentStreams {
+  JavaUtilConcurrentAtomicAtomicInteger *generated1 = create_JavaUtilConcurrentAtomicAtomicInteger_init();
+  RxObservable *o1 = [((RxObservable *) nil_chk(RxInternalOperatorsOperatorMergeTest_createInfiniteObservableWithJavaUtilConcurrentAtomicAtomicInteger_(self, generated1))) subscribeOnWithRxScheduler:RxSchedulersSchedulers_computation()];
+  JavaUtilConcurrentAtomicAtomicInteger *generated2 = create_JavaUtilConcurrentAtomicAtomicInteger_init();
+  RxObservable *o2 = [((RxObservable *) nil_chk(RxInternalOperatorsOperatorMergeTest_createInfiniteObservableWithJavaUtilConcurrentAtomicAtomicInteger_(self, generated2))) subscribeOnWithRxScheduler:RxSchedulersSchedulers_computation()];
+  RxObserversTestSubscriber *testSubscriber = create_RxInternalOperatorsOperatorMergeTest_$13_init();
+  [((RxObservable *) nil_chk([((RxObservable *) nil_chk(RxObservable_mergeWithRxObservable_withRxObservable_([((RxObservable *) nil_chk(o1)) takeWithInt:JreLoadStatic(RxInternalUtilRxRingBuffer, SIZE) * 2], [((RxObservable *) nil_chk(o2)) takeWithInt:JreLoadStatic(RxInternalUtilRxRingBuffer, SIZE) * 2]))) observeOnWithRxScheduler:RxSchedulersSchedulers_computation()])) subscribeWithRxSubscriber:testSubscriber];
+  [testSubscriber awaitTerminalEvent];
+  if ([((id<JavaUtilList>) nil_chk([testSubscriber getOnErrorEvents])) size] > 0) {
+    [((NSException *) nil_chk([((id<JavaUtilList>) nil_chk([testSubscriber getOnErrorEvents])) getWithInt:0])) printStackTrace];
+  }
+  [testSubscriber assertNoErrors];
+  [((JavaIoPrintStream *) nil_chk(JreLoadStatic(JavaLangSystem, err))) printlnWithId:[testSubscriber getOnNextEvents]];
+  OrgJunitAssert_assertEqualsWithLong_withLong_(JreLoadStatic(RxInternalUtilRxRingBuffer, SIZE) * 4, [((id<JavaUtilList>) nil_chk([testSubscriber getOnNextEvents])) size]);
+  [((JavaIoPrintStream *) nil_chk(JreLoadStatic(JavaLangSystem, out))) printlnWithNSString:JreStrcat("$I", @"Generated 1: ", [generated1 get])];
+  [JreLoadStatic(JavaLangSystem, out) printlnWithNSString:JreStrcat("$I", @"Generated 2: ", [generated2 get])];
+  OrgJunitAssert_assertTrueWithBoolean_([generated1 get] >= JreLoadStatic(RxInternalUtilRxRingBuffer, SIZE) * 2 && [generated1 get] <= JreLoadStatic(RxInternalUtilRxRingBuffer, SIZE) * 4);
+}
+
+- (void)testBackpressureBothUpstreamAndDownstreamWithSynchronousScalarObservables {
+  JavaUtilConcurrentAtomicAtomicInteger *generated1 = create_JavaUtilConcurrentAtomicAtomicInteger_init();
+  RxObservable *o1 = [((RxObservable *) nil_chk(RxInternalOperatorsOperatorMergeTest_createInfiniteObservableWithJavaUtilConcurrentAtomicAtomicInteger_(self, generated1))) mapWithRxFunctionsFunc1:create_RxInternalOperatorsOperatorMergeTest_$14_init()];
+  RxObserversTestSubscriber *testSubscriber = create_RxInternalOperatorsOperatorMergeTest_$15_init();
+  jint limit = JreLoadStatic(RxInternalUtilRxRingBuffer, SIZE);
+  [((RxObservable *) nil_chk([((RxObservable *) nil_chk([((RxObservable *) nil_chk(RxObservable_mergeWithRxObservable_withInt_(o1, limit))) observeOnWithRxScheduler:RxSchedulersSchedulers_computation()])) takeWithInt:JreLoadStatic(RxInternalUtilRxRingBuffer, SIZE) * 2])) subscribeWithRxSubscriber:testSubscriber];
+  [testSubscriber awaitTerminalEvent];
+  if ([((id<JavaUtilList>) nil_chk([testSubscriber getOnErrorEvents])) size] > 0) {
+    [((NSException *) nil_chk([((id<JavaUtilList>) nil_chk([testSubscriber getOnErrorEvents])) getWithInt:0])) printStackTrace];
+  }
+  [testSubscriber assertNoErrors];
+  [((JavaIoPrintStream *) nil_chk(JreLoadStatic(JavaLangSystem, out))) printlnWithNSString:JreStrcat("$I", @"Generated 1: ", [generated1 get])];
+  [((JavaIoPrintStream *) nil_chk(JreLoadStatic(JavaLangSystem, err))) printlnWithId:[testSubscriber getOnNextEvents]];
+  OrgJunitAssert_assertEqualsWithLong_withLong_(JreLoadStatic(RxInternalUtilRxRingBuffer, SIZE) * 2, [((id<JavaUtilList>) nil_chk([testSubscriber getOnNextEvents])) size]);
+  OrgJunitAssert_assertTrueWithBoolean_([generated1 get] >= JreLoadStatic(RxInternalUtilRxRingBuffer, SIZE) * 2 && [generated1 get] <= JreLoadStatic(RxInternalUtilRxRingBuffer, SIZE) * 4);
+}
+
+- (void)testBackpressureBothUpstreamAndDownstreamWithRegularObservables {
+  @autoreleasepool {
+    JavaUtilConcurrentAtomicAtomicInteger *generated1 = create_JavaUtilConcurrentAtomicAtomicInteger_init();
+    RxObservable *o1 = [((RxObservable *) nil_chk(RxInternalOperatorsOperatorMergeTest_createInfiniteObservableWithJavaUtilConcurrentAtomicAtomicInteger_(self, generated1))) mapWithRxFunctionsFunc1:create_RxInternalOperatorsOperatorMergeTest_$16_init()];
+    RxObserversTestSubscriber *testSubscriber = create_RxInternalOperatorsOperatorMergeTest_$17_init();
+    [((RxObservable *) nil_chk([((RxObservable *) nil_chk([((RxObservable *) nil_chk(RxObservable_mergeWithRxObservable_(o1))) observeOnWithRxScheduler:RxSchedulersSchedulers_computation()])) takeWithInt:JreLoadStatic(RxInternalUtilRxRingBuffer, SIZE) * 2])) subscribeWithRxSubscriber:testSubscriber];
+    [testSubscriber awaitTerminalEvent];
+    if ([((id<JavaUtilList>) nil_chk([testSubscriber getOnErrorEvents])) size] > 0) {
+      [((NSException *) nil_chk([((id<JavaUtilList>) nil_chk([testSubscriber getOnErrorEvents])) getWithInt:0])) printStackTrace];
+    }
+    [testSubscriber assertNoErrors];
+    [((JavaIoPrintStream *) nil_chk(JreLoadStatic(JavaLangSystem, out))) printlnWithNSString:JreStrcat("$I", @"Generated 1: ", [generated1 get])];
+    [((JavaIoPrintStream *) nil_chk(JreLoadStatic(JavaLangSystem, err))) printlnWithId:[testSubscriber getOnNextEvents]];
+    [JreLoadStatic(JavaLangSystem, out) printlnWithNSString:@"done1 testBackpressureBothUpstreamAndDownstreamWithRegularObservables "];
+    OrgJunitAssert_assertEqualsWithLong_withLong_(JreLoadStatic(RxInternalUtilRxRingBuffer, SIZE) * 2, [((id<JavaUtilList>) nil_chk([testSubscriber getOnNextEvents])) size]);
+    [JreLoadStatic(JavaLangSystem, out) printlnWithNSString:@"done2 testBackpressureBothUpstreamAndDownstreamWithRegularObservables "];
+    [testSubscriber unsubscribe];
+  }
+}
+
+- (void)mergeWithNullValues {
+  [((JavaIoPrintStream *) nil_chk(JreLoadStatic(JavaLangSystem, out))) printlnWithNSString:@"mergeWithNullValues"];
+  RxObserversTestSubscriber *ts = create_RxObserversTestSubscriber_init();
+  [((RxObservable *) nil_chk(RxObservable_mergeWithRxObservable_withRxObservable_(RxObservable_justWithId_withId_(nil, @"one"), RxObservable_justWithId_withId_(@"two", nil)))) subscribeWithRxSubscriber:ts];
+  [ts assertTerminalEvent];
+  [ts assertNoErrors];
+  [ts assertReceivedOnNextWithJavaUtilList:JavaUtilArrays_asListWithNSObjectArray_([IOSObjectArray arrayWithObjects:(id[]){ nil, @"one", @"two", nil } count:4 type:NSString_class_()])];
+  [ts unsubscribe];
+}
+
+- (void)mergeWithTerminalEventAfterUnsubscribe {
+  [((JavaIoPrintStream *) nil_chk(JreLoadStatic(JavaLangSystem, out))) printlnWithNSString:@"mergeWithTerminalEventAfterUnsubscribe"];
+  RxObserversTestSubscriber *ts = create_RxObserversTestSubscriber_init();
+  RxObservable *bad = RxObservable_createWithRxObservable_OnSubscribe_(create_RxInternalOperatorsOperatorMergeTest_$18_init());
+  [((RxObservable *) nil_chk(RxObservable_mergeWithRxObservable_withRxObservable_(RxObservable_justWithId_withId_(nil, @"one"), bad))) subscribeWithRxSubscriber:ts];
+  [ts assertNoErrors];
+  [ts assertReceivedOnNextWithJavaUtilList:JavaUtilArrays_asListWithNSObjectArray_([IOSObjectArray arrayWithObjects:(id[]){ nil, @"one", @"two" } count:3 type:NSString_class_()])];
+  [ts unsubscribe];
+}
+
+- (void)mergingNullObservable {
+  RxObserversTestSubscriber *ts = create_RxObserversTestSubscriber_init();
+  [((RxObservable *) nil_chk(RxObservable_mergeWithRxObservable_withRxObservable_(RxObservable_justWithId_(@"one"), nil))) subscribeWithRxSubscriber:ts];
+  [ts assertNoErrors];
+  [ts assertReceivedOnNextWithJavaUtilList:JavaUtilArrays_asListWithNSObjectArray_([IOSObjectArray arrayWithObjects:(id[]){ @"one" } count:1 type:NSString_class_()])];
+  [ts unsubscribe];
+}
+
+- (void)merge1AsyncStreamOf1 {
+  RxObserversTestSubscriber *ts = create_RxObserversTestSubscriber_init();
+  [((RxObservable *) nil_chk(RxInternalOperatorsOperatorMergeTest_mergeNAsyncStreamsOfNWithInt_withInt_(self, 1, 1))) subscribeWithRxSubscriber:ts];
+  [ts awaitTerminalEvent];
+  [ts assertNoErrors];
+  OrgJunitAssert_assertEqualsWithLong_withLong_(1, [((id<JavaUtilList>) nil_chk([ts getOnNextEvents])) size]);
+  [ts unsubscribe];
+}
+
+- (void)merge1AsyncStreamOf1000 {
+  RxObserversTestSubscriber *ts = create_RxObserversTestSubscriber_init();
+  [((RxObservable *) nil_chk(RxInternalOperatorsOperatorMergeTest_mergeNAsyncStreamsOfNWithInt_withInt_(self, 1, 1000))) subscribeWithRxSubscriber:ts];
+  [ts awaitTerminalEvent];
+  [ts assertNoErrors];
+  OrgJunitAssert_assertEqualsWithLong_withLong_(1000, [((id<JavaUtilList>) nil_chk([ts getOnNextEvents])) size]);
+  [ts unsubscribe];
+}
+
+- (void)merge10AsyncStreamOf1000 {
+  RxObserversTestSubscriber *ts = create_RxObserversTestSubscriber_init();
+  [((RxObservable *) nil_chk(RxInternalOperatorsOperatorMergeTest_mergeNAsyncStreamsOfNWithInt_withInt_(self, 10, 1000))) subscribeWithRxSubscriber:ts];
+  [ts awaitTerminalEvent];
+  [ts assertNoErrors];
+  OrgJunitAssert_assertEqualsWithLong_withLong_(10000, [((id<JavaUtilList>) nil_chk([ts getOnNextEvents])) size]);
+  [ts unsubscribe];
+}
+
+- (void)merge1000AsyncStreamOf1000 {
+  @autoreleasepool {
+    RxObserversTestSubscriber *ts = create_RxObserversTestSubscriber_init();
+    [((RxObservable *) nil_chk(RxInternalOperatorsOperatorMergeTest_mergeNAsyncStreamsOfNWithInt_withInt_(self, 1000, 1000))) subscribeWithRxSubscriber:ts];
+    [ts awaitTerminalEvent];
+    [ts assertNoErrors];
+    OrgJunitAssert_assertEqualsWithLong_withLong_(1000000, [((id<JavaUtilList>) nil_chk([ts getOnNextEvents])) size]);
+    [ts unsubscribe];
+  }
+}
+
+- (void)merge2000AsyncStreamOf100 {
+  @autoreleasepool {
+    RxObserversTestSubscriber *ts = create_RxObserversTestSubscriber_init();
+    [((RxObservable *) nil_chk(RxInternalOperatorsOperatorMergeTest_mergeNAsyncStreamsOfNWithInt_withInt_(self, 2000, 100))) subscribeWithRxSubscriber:ts];
+    [ts awaitTerminalEvent];
+    [ts assertNoErrors];
+    OrgJunitAssert_assertEqualsWithLong_withLong_(200000, [((id<JavaUtilList>) nil_chk([ts getOnNextEvents])) size]);
+    [ts unsubscribe];
+  }
+}
+
+- (void)merge100AsyncStreamOf1 {
+  @autoreleasepool {
+    RxObserversTestSubscriber *ts = create_RxObserversTestSubscriber_init();
+    [((RxObservable *) nil_chk(RxInternalOperatorsOperatorMergeTest_mergeNAsyncStreamsOfNWithInt_withInt_(self, 100, 1))) subscribeWithRxSubscriber:ts];
+    [ts awaitTerminalEvent];
+    [ts assertNoErrors];
+    OrgJunitAssert_assertEqualsWithLong_withLong_(100, [((id<JavaUtilList>) nil_chk([ts getOnNextEvents])) size]);
+    [ts unsubscribe];
+  }
+}
+
+- (RxObservable *)mergeNAsyncStreamsOfNWithInt:(jint)outerSize
+                                       withInt:(jint)innerSize {
+  return RxInternalOperatorsOperatorMergeTest_mergeNAsyncStreamsOfNWithInt_withInt_(self, outerSize, innerSize);
+}
+
+- (void)merge1SyncStreamOf1 {
+  RxObserversTestSubscriber *ts = create_RxObserversTestSubscriber_init();
+  [((RxObservable *) nil_chk(RxInternalOperatorsOperatorMergeTest_mergeNSyncStreamsOfNWithInt_withInt_(self, 1, 1))) subscribeWithRxSubscriber:ts];
+  [ts awaitTerminalEvent];
+  [ts assertNoErrors];
+  OrgJunitAssert_assertEqualsWithLong_withLong_(1, [((id<JavaUtilList>) nil_chk([ts getOnNextEvents])) size]);
+  [ts unsubscribe];
+}
+
+- (void)merge1SyncStreamOf1000000 {
+  @autoreleasepool {
+    RxObserversTestSubscriber *ts = create_RxObserversTestSubscriber_init();
+    [((RxObservable *) nil_chk(RxInternalOperatorsOperatorMergeTest_mergeNSyncStreamsOfNWithInt_withInt_(self, 1, 1000000))) subscribeWithRxSubscriber:ts];
+    [ts awaitTerminalEvent];
+    [ts assertNoErrors];
+    OrgJunitAssert_assertEqualsWithLong_withLong_(1000000, [((id<JavaUtilList>) nil_chk([ts getOnNextEvents])) size]);
+    [ts unsubscribe];
+  }
+}
+
+- (void)merge1000SyncStreamOf1000 {
+  @autoreleasepool {
+    RxObserversTestSubscriber *ts = create_RxObserversTestSubscriber_init();
+    [((RxObservable *) nil_chk(RxInternalOperatorsOperatorMergeTest_mergeNSyncStreamsOfNWithInt_withInt_(self, 1000, 1000))) subscribeWithRxSubscriber:ts];
+    [ts awaitTerminalEvent];
+    [ts assertNoErrors];
+    OrgJunitAssert_assertEqualsWithLong_withLong_(1000000, [((id<JavaUtilList>) nil_chk([ts getOnNextEvents])) size]);
+    [ts unsubscribe];
+  }
+}
+
+- (void)merge10000SyncStreamOf10 {
+  @autoreleasepool {
+    RxObserversTestSubscriber *ts = create_RxObserversTestSubscriber_init();
+    [((RxObservable *) nil_chk(RxInternalOperatorsOperatorMergeTest_mergeNSyncStreamsOfNWithInt_withInt_(self, 10000, 10))) subscribeWithRxSubscriber:ts];
+    [ts awaitTerminalEvent];
+    [ts assertNoErrors];
+    OrgJunitAssert_assertEqualsWithLong_withLong_(100000, [((id<JavaUtilList>) nil_chk([ts getOnNextEvents])) size]);
+    [ts unsubscribe];
+  }
+}
+
+- (void)merge1000000SyncStreamOf1 {
+  @autoreleasepool {
+    RxObserversTestSubscriber *ts = create_RxObserversTestSubscriber_init();
+    [((RxObservable *) nil_chk(RxInternalOperatorsOperatorMergeTest_mergeNSyncStreamsOfNWithInt_withInt_(self, 1000000, 1))) subscribeWithRxSubscriber:ts];
+    [ts awaitTerminalEvent];
+    [ts assertNoErrors];
+    OrgJunitAssert_assertEqualsWithLong_withLong_(1000000, [((id<JavaUtilList>) nil_chk([ts getOnNextEvents])) size]);
+    [ts unsubscribe];
+  }
 }
 
 - (RxObservable *)mergeNSyncStreamsOfNWithInt:(jint)outerSize
                                       withInt:(jint)innerSize {
-  RxObservable *os = [((RxObservable *) nil_chk(RxObservable_rangeWithInt_withInt_(1, outerSize))) mapWithRxFunctionsFunc1:create_RxInternalOperatorsOperatorMergeTest_$2_initWithInt_(innerSize)];
-  return RxObservable_mergeWithRxObservable_(os);
+  return RxInternalOperatorsOperatorMergeTest_mergeNSyncStreamsOfNWithInt_withInt_(self, outerSize, innerSize);
 }
 
 - (RxObservable *)createInfiniteObservableWithJavaUtilConcurrentAtomicAtomicInteger:(JavaUtilConcurrentAtomicAtomicInteger *)generated {
   return RxInternalOperatorsOperatorMergeTest_createInfiniteObservableWithJavaUtilConcurrentAtomicAtomicInteger_(self, generated);
+}
+
+- (void)mergeManyAsyncSingle {
+  @autoreleasepool {
+    RxObserversTestSubscriber *ts = create_RxObserversTestSubscriber_init();
+    RxObservable *os = [((RxObservable *) nil_chk(RxObservable_rangeWithInt_withInt_(1, 10000))) mapWithRxFunctionsFunc1:create_RxInternalOperatorsOperatorMergeTest_$22_init()];
+    [((RxObservable *) nil_chk(RxObservable_mergeWithRxObservable_(os))) subscribeWithRxSubscriber:ts];
+    [ts awaitTerminalEvent];
+    [ts assertNoErrors];
+    OrgJunitAssert_assertEqualsWithLong_withLong_(10000, [((id<JavaUtilList>) nil_chk([ts getOnNextEvents])) size]);
+    [ts unsubscribe];
+  }
+}
+
+- (void)shouldCompleteAfterApplyingBackpressure_NormalPath {
+  RxObservable *source = RxObservable_mergeDelayErrorWithRxObservable_(RxObservable_justWithId_(RxObservable_rangeWithInt_withInt_(1, 2)));
+  RxObserversTestSubscriber *subscriber = create_RxObserversTestSubscriber_init();
+  [subscriber requestMoreWithLong:0];
+  [((RxObservable *) nil_chk(source)) subscribeWithRxSubscriber:subscriber];
+  [subscriber requestMoreWithLong:3];
+  [subscriber assertReceivedOnNextWithJavaUtilList:JavaUtilArrays_asListWithNSObjectArray_([IOSObjectArray arrayWithObjects:(id[]){ JavaLangInteger_valueOfWithInt_(1), JavaLangInteger_valueOfWithInt_(2) } count:2 type:JavaLangInteger_class_()])];
+  [subscriber assertTerminalEvent];
+  [subscriber unsubscribe];
+}
+
+- (void)shouldCompleteAfterApplyingBackpressure_FastPath {
+  RxObservable *source = RxObservable_mergeDelayErrorWithRxObservable_(RxObservable_justWithId_(RxObservable_justWithId_(JavaLangInteger_valueOfWithInt_(1))));
+  RxObserversTestSubscriber *subscriber = create_RxObserversTestSubscriber_init();
+  [subscriber requestMoreWithLong:0];
+  [((RxObservable *) nil_chk(source)) subscribeWithRxSubscriber:subscriber];
+  [subscriber requestMoreWithLong:2];
+  [subscriber assertReceivedOnNextWithJavaUtilList:JavaUtilArrays_asListWithNSObjectArray_([IOSObjectArray arrayWithObjects:(id[]){ JavaLangInteger_valueOfWithInt_(1) } count:1 type:JavaLangInteger_class_()])];
+  [subscriber assertTerminalEvent];
+  [subscriber unsubscribe];
+}
+
+- (void)shouldNotCompleteIfThereArePendingScalarSynchronousEmissionsWhenTheLastInnerSubscriberCompletes {
+  RxSchedulersTestScheduler *scheduler = RxSchedulersSchedulers_test();
+  RxObservable *source = RxObservable_mergeDelayErrorWithRxObservable_withRxObservable_(RxObservable_justWithId_(JavaLangLong_valueOfWithLong_(1LL)), [((RxObservable *) nil_chk(RxObservable_timerWithLong_withJavaUtilConcurrentTimeUnit_withRxScheduler_(1, JreLoadEnum(JavaUtilConcurrentTimeUnit, SECONDS), scheduler))) skipWithInt:1]);
+  RxObserversTestSubscriber *subscriber = create_RxObserversTestSubscriber_init();
+  [subscriber requestMoreWithLong:0];
+  [((RxObservable *) nil_chk(source)) subscribeWithRxSubscriber:subscriber];
+  [((RxSchedulersTestScheduler *) nil_chk(scheduler)) advanceTimeByWithLong:1 withJavaUtilConcurrentTimeUnit:JreLoadEnum(JavaUtilConcurrentTimeUnit, SECONDS)];
+  [subscriber assertReceivedOnNextWithJavaUtilList:JavaUtilCollections_emptyList()];
+  OrgJunitAssert_assertEqualsWithLong_withLong_(0, [subscriber getCompletions]);
+  [subscriber requestMoreWithLong:1];
+  [subscriber assertReceivedOnNextWithJavaUtilList:JavaUtilArrays_asListWithNSObjectArray_([IOSObjectArray arrayWithObjects:(id[]){ JavaLangLong_valueOfWithLong_(1LL) } count:1 type:JavaLangLong_class_()])];
+  [subscriber assertTerminalEvent];
+}
+
+- (void)delayedErrorsShouldBeEmittedWhenCompleteAfterApplyingBackpressure_NormalPath {
+  NSException *exception = create_NSException_init();
+  RxObservable *source = RxObservable_mergeDelayErrorWithRxObservable_withRxObservable_(RxObservable_rangeWithInt_withInt_(1, 2), RxObservable_errorWithNSException_(exception));
+  RxObserversTestSubscriber *subscriber = create_RxObserversTestSubscriber_init();
+  [subscriber requestMoreWithLong:0];
+  [((RxObservable *) nil_chk(source)) subscribeWithRxSubscriber:subscriber];
+  [subscriber requestMoreWithLong:3];
+  [subscriber assertReceivedOnNextWithJavaUtilList:JavaUtilArrays_asListWithNSObjectArray_([IOSObjectArray arrayWithObjects:(id[]){ JavaLangInteger_valueOfWithInt_(1), JavaLangInteger_valueOfWithInt_(2) } count:2 type:JavaLangInteger_class_()])];
+  [subscriber assertTerminalEvent];
+  OrgJunitAssert_assertEqualsWithId_withId_(JavaUtilArrays_asListWithNSObjectArray_([IOSObjectArray arrayWithObjects:(id[]){ exception } count:1 type:NSException_class_()]), [subscriber getOnErrorEvents]);
+}
+
+- (void)delayedErrorsShouldBeEmittedWhenCompleteAfterApplyingBackpressure_FastPath {
+  NSException *exception = create_NSException_init();
+  RxObservable *source = RxObservable_mergeDelayErrorWithRxObservable_withRxObservable_(RxObservable_justWithId_(JavaLangInteger_valueOfWithInt_(1)), RxObservable_errorWithNSException_(exception));
+  RxObserversTestSubscriber *subscriber = create_RxObserversTestSubscriber_init();
+  [subscriber requestMoreWithLong:0];
+  [((RxObservable *) nil_chk(source)) subscribeWithRxSubscriber:subscriber];
+  [subscriber requestMoreWithLong:2];
+  [subscriber assertReceivedOnNextWithJavaUtilList:JavaUtilArrays_asListWithNSObjectArray_([IOSObjectArray arrayWithObjects:(id[]){ JavaLangInteger_valueOfWithInt_(1) } count:1 type:JavaLangInteger_class_()])];
+  [subscriber assertTerminalEvent];
+  OrgJunitAssert_assertEqualsWithId_withId_(JavaUtilArrays_asListWithNSObjectArray_([IOSObjectArray arrayWithObjects:(id[]){ exception } count:1 type:NSException_class_()]), [subscriber getOnErrorEvents]);
+}
+
+- (void)shouldNotCompleteWhileThereAreStillScalarSynchronousEmissionsInTheQueue {
+  RxObservable *source = RxObservable_mergeWithRxObservable_withRxObservable_(RxObservable_justWithId_(JavaLangInteger_valueOfWithInt_(1)), RxObservable_justWithId_(JavaLangInteger_valueOfWithInt_(2)));
+  RxObserversTestSubscriber *subscriber = create_RxObserversTestSubscriber_init();
+  [subscriber requestMoreWithLong:1];
+  [((RxObservable *) nil_chk(source)) subscribeWithRxSubscriber:subscriber];
+  [subscriber assertReceivedOnNextWithJavaUtilList:JavaUtilArrays_asListWithNSObjectArray_([IOSObjectArray arrayWithObjects:(id[]){ JavaLangInteger_valueOfWithInt_(1) } count:1 type:JavaLangInteger_class_()])];
+  [subscriber requestMoreWithLong:1];
+  [subscriber assertReceivedOnNextWithJavaUtilList:JavaUtilArrays_asListWithNSObjectArray_([IOSObjectArray arrayWithObjects:(id[]){ JavaLangInteger_valueOfWithInt_(1), JavaLangInteger_valueOfWithInt_(2) } count:2 type:JavaLangInteger_class_()])];
+}
+
+- (void)shouldNotReceivedDelayedErrorWhileThereAreStillScalarSynchronousEmissionsInTheQueue {
+  NSException *exception = create_NSException_init();
+  RxObservable *source = RxObservable_mergeDelayErrorWithRxObservable_withRxObservable_withRxObservable_(RxObservable_justWithId_(JavaLangInteger_valueOfWithInt_(1)), RxObservable_justWithId_(JavaLangInteger_valueOfWithInt_(2)), RxObservable_errorWithNSException_(exception));
+  RxObserversTestSubscriber *subscriber = create_RxObserversTestSubscriber_init();
+  [subscriber requestMoreWithLong:1];
+  [((RxObservable *) nil_chk(source)) subscribeWithRxSubscriber:subscriber];
+  [subscriber assertReceivedOnNextWithJavaUtilList:JavaUtilArrays_asListWithNSObjectArray_([IOSObjectArray arrayWithObjects:(id[]){ JavaLangInteger_valueOfWithInt_(1) } count:1 type:JavaLangInteger_class_()])];
+  OrgJunitAssert_assertEqualsWithId_withId_(JavaUtilCollections_emptyList(), [subscriber getOnErrorEvents]);
+  [subscriber requestMoreWithLong:1];
+  [subscriber assertReceivedOnNextWithJavaUtilList:JavaUtilArrays_asListWithNSObjectArray_([IOSObjectArray arrayWithObjects:(id[]){ JavaLangInteger_valueOfWithInt_(1), JavaLangInteger_valueOfWithInt_(2) } count:2 type:JavaLangInteger_class_()])];
+  OrgJunitAssert_assertEqualsWithId_withId_(JavaUtilArrays_asListWithNSObjectArray_([IOSObjectArray arrayWithObjects:(id[]){ exception } count:1 type:NSException_class_()]), [subscriber getOnErrorEvents]);
+}
+
+- (void)shouldNotReceivedDelayedErrorWhileThereAreStillNormalEmissionsInTheQueue {
+  NSException *exception = create_NSException_init();
+  RxObservable *source = RxObservable_mergeDelayErrorWithRxObservable_withRxObservable_withRxObservable_(RxObservable_rangeWithInt_withInt_(1, 2), RxObservable_rangeWithInt_withInt_(3, 2), RxObservable_errorWithNSException_(exception));
+  RxObserversTestSubscriber *subscriber = create_RxObserversTestSubscriber_init();
+  [subscriber requestMoreWithLong:3];
+  [((RxObservable *) nil_chk(source)) subscribeWithRxSubscriber:subscriber];
+  [subscriber assertReceivedOnNextWithJavaUtilList:JavaUtilArrays_asListWithNSObjectArray_([IOSObjectArray arrayWithObjects:(id[]){ JavaLangInteger_valueOfWithInt_(1), JavaLangInteger_valueOfWithInt_(2), JavaLangInteger_valueOfWithInt_(3) } count:3 type:JavaLangInteger_class_()])];
+  OrgJunitAssert_assertEqualsWithId_withId_(JavaUtilCollections_emptyList(), [subscriber getOnErrorEvents]);
+  [subscriber requestMoreWithLong:2];
+  [subscriber assertReceivedOnNextWithJavaUtilList:JavaUtilArrays_asListWithNSObjectArray_([IOSObjectArray arrayWithObjects:(id[]){ JavaLangInteger_valueOfWithInt_(1), JavaLangInteger_valueOfWithInt_(2), JavaLangInteger_valueOfWithInt_(3), JavaLangInteger_valueOfWithInt_(4) } count:4 type:JavaLangInteger_class_()])];
+  OrgJunitAssert_assertEqualsWithId_withId_(JavaUtilArrays_asListWithNSObjectArray_([IOSObjectArray arrayWithObjects:(id[]){ exception } count:1 type:NSException_class_()]), [subscriber getOnErrorEvents]);
+}
+
+- (void)testMergeKeepsRequesting {
+  JavaUtilConcurrentCountDownLatch *latch = create_JavaUtilConcurrentCountDownLatch_initWithInt_(1);
+  JavaUtilConcurrentConcurrentLinkedQueue *messages = create_JavaUtilConcurrentConcurrentLinkedQueue_init();
+  [((RxObservable *) nil_chk([((RxObservable *) nil_chk([((RxObservable *) nil_chk([((RxObservable *) nil_chk([((RxObservable *) nil_chk(RxObservable_rangeWithInt_withInt_(1, 2))) flatMapWithRxFunctionsFunc1:create_RxInternalOperatorsOperatorMergeTest_$23_initWithJavaUtilConcurrentConcurrentLinkedQueue_(messages)])) takeWithInt:JreLoadStatic(RxInternalUtilRxRingBuffer, SIZE) * 2 + 1])) doOnNextWithRxFunctionsAction1:RxInternalOperatorsOperatorMergeTest_printCount()])) doOnCompletedWithRxFunctionsAction0:create_RxInternalOperatorsOperatorMergeTest_$24_initWithJavaUtilConcurrentCountDownLatch_(latch)])) subscribe];
+  jboolean a = [latch awaitWithLong:2 withJavaUtilConcurrentTimeUnit:JreLoadEnum(JavaUtilConcurrentTimeUnit, SECONDS)];
+  if (!a) {
+    for (NSString * __strong s in messages) {
+      [((JavaIoPrintStream *) nil_chk(JreLoadStatic(JavaLangSystem, out))) printlnWithNSString:JreStrcat("$$", @"DEBUG => ", s)];
+    }
+  }
+  OrgJunitAssert_assertTrueWithBoolean_(a);
+}
+
+- (void)testMergeRequestOverflow {
+  RxObservable *o = [((RxObservable *) nil_chk(RxObservable_fromWithJavaLangIterable_(JavaUtilArrays_asListWithNSObjectArray_([IOSObjectArray arrayWithObjects:(id[]){ JavaLangInteger_valueOfWithInt_(1), JavaLangInteger_valueOfWithInt_(2) } count:2 type:JavaLangInteger_class_()])))) mergeWithWithRxObservable:RxObservable_fromWithJavaLangIterable_(JavaUtilArrays_asListWithNSObjectArray_([IOSObjectArray arrayWithObjects:(id[]){ JavaLangInteger_valueOfWithInt_(3), JavaLangInteger_valueOfWithInt_(4) } count:2 type:JavaLangInteger_class_()]))];
+  jint expectedCount = 4;
+  JavaUtilConcurrentCountDownLatch *latch = create_JavaUtilConcurrentCountDownLatch_initWithInt_(expectedCount);
+  [((RxObservable *) nil_chk([((RxObservable *) nil_chk(o)) subscribeOnWithRxScheduler:RxSchedulersSchedulers_computation()])) subscribeWithRxSubscriber:create_RxInternalOperatorsOperatorMergeTest_$25_initWithJavaUtilConcurrentCountDownLatch_(latch)];
+  OrgJunitAssert_assertTrueWithBoolean_([latch awaitWithLong:10 withJavaUtilConcurrentTimeUnit:JreLoadEnum(JavaUtilConcurrentTimeUnit, SECONDS)]);
+}
+
++ (id<RxFunctionsAction1>)printCount {
+  return RxInternalOperatorsOperatorMergeTest_printCount();
+}
+
++ (id<RxFunctionsAction1>)pauseForMsWithLong:(jlong)time {
+  return RxInternalOperatorsOperatorMergeTest_pauseForMsWithLong_(time);
+}
+
+- (void)runMergeWithRxFunctionsFunc1:(id<RxFunctionsFunc1>)func
+       withRxObserversTestSubscriber:(RxObserversTestSubscriber *)ts {
+  id<JavaUtilList> list = create_JavaUtilArrayList_init();
+  for (jint i = 0; i < 1000; i++) {
+    [list addWithId:JavaLangInteger_valueOfWithInt_(i)];
+  }
+  RxObservable *source = RxObservable_fromWithJavaLangIterable_(list);
+  [((RxObservable *) nil_chk([((RxObservable *) nil_chk(source)) flatMapWithRxFunctionsFunc1:func])) subscribeWithRxSubscriber:ts];
+  if ([((id<JavaUtilList>) nil_chk([((RxObserversTestSubscriber *) nil_chk(ts)) getOnNextEvents])) size] != 1000) {
+    [((JavaIoPrintStream *) nil_chk(JreLoadStatic(JavaLangSystem, out))) printlnWithId:[ts getOnNextEvents]];
+  }
+  [ts assertTerminalEvent];
+  [ts assertNoErrors];
+  [ts assertReceivedOnNextWithJavaUtilList:list];
+}
+
+- (void)testFastMergeFullScalar {
+  [self runMergeWithRxFunctionsFunc1:toScalar_ withRxObserversTestSubscriber:create_RxObserversTestSubscriber_init()];
+}
+
+- (void)testFastMergeHiddenScalar {
+  [self runMergeWithRxFunctionsFunc1:toHiddenScalar_ withRxObserversTestSubscriber:create_RxObserversTestSubscriber_init()];
+}
+
+- (void)testSlowMergeFullScalar {
+  {
+    IOSIntArray *a__ = [IOSIntArray arrayWithInts:(jint[]){ 16, 32, 64, 128, 256 } count:5];
+    jint const *b__ = a__->buffer_;
+    jint const *e__ = b__ + a__->size_;
+    while (b__ < e__) {
+      jint req = *b__++;
+      RxObserversTestSubscriber *ts = create_RxInternalOperatorsOperatorMergeTest_$28_initWithInt_(req);
+      [self runMergeWithRxFunctionsFunc1:toScalar_ withRxObserversTestSubscriber:ts];
+    }
+  }
+}
+
+- (void)testSlowMergeHiddenScalar {
+  {
+    IOSIntArray *a__ = [IOSIntArray arrayWithInts:(jint[]){ 16, 32, 64, 128, 256 } count:5];
+    jint const *b__ = a__->buffer_;
+    jint const *e__ = b__ + a__->size_;
+    while (b__ < e__) {
+      jint req = *b__++;
+      RxObserversTestSubscriber *ts = create_RxInternalOperatorsOperatorMergeTest_$29_initWithInt_(req);
+      [self runMergeWithRxFunctionsFunc1:toHiddenScalar_ withRxObserversTestSubscriber:ts];
+    }
+  }
+}
+
+- (void)testUnboundedDefaultConcurrency {
+  id<JavaUtilList> os = create_JavaUtilArrayList_init();
+  for (jint i = 0; i < 2000; i++) {
+    [os addWithId:RxObservable_never()];
+  }
+  [os addWithId:RxObservable_rangeWithInt_withInt_(0, 100)];
+  RxObserversTestSubscriber *ts = RxObserversTestSubscriber_create();
+  [((RxObservable *) nil_chk([((RxObservable *) nil_chk(RxObservable_mergeWithJavaLangIterable_(os))) takeWithInt:1])) subscribeWithRxSubscriber:ts];
+  [((RxObserversTestSubscriber *) nil_chk(ts)) awaitTerminalEventWithLong:5000 withJavaUtilConcurrentTimeUnit:JreLoadEnum(JavaUtilConcurrentTimeUnit, MILLISECONDS)];
+  [ts assertValueWithId:JavaLangInteger_valueOfWithInt_(0)];
+  [ts assertCompleted];
+}
+
+- (void)testConcurrencyLimit {
+  @autoreleasepool {
+    id<JavaUtilList> os = create_JavaUtilArrayList_init();
+    for (jint i = 0; i < 2000; i++) {
+      [os addWithId:RxObservable_never()];
+    }
+    [os addWithId:RxObservable_rangeWithInt_withInt_(0, 100)];
+    RxObserversTestSubscriber *ts = RxObserversTestSubscriber_create();
+    [((RxObservable *) nil_chk([((RxObservable *) nil_chk(RxObservable_mergeWithJavaLangIterable_withInt_(os, JavaLangInteger_MAX_VALUE))) takeWithInt:1])) subscribeWithRxSubscriber:ts];
+    [((RxObserversTestSubscriber *) nil_chk(ts)) awaitTerminalEventWithLong:5000 withJavaUtilConcurrentTimeUnit:JreLoadEnum(JavaUtilConcurrentTimeUnit, MILLISECONDS)];
+    [ts assertValueWithId:JavaLangInteger_valueOfWithInt_(0)];
+    [ts assertCompleted];
+    [ts unsubscribe];
+  }
+}
+
+- (void)negativeMaxConcurrent {
+  @try {
+    RxObservable_mergeWithJavaLangIterable_withInt_(JavaUtilArrays_asListWithNSObjectArray_([IOSObjectArray arrayWithObjects:(id[]){ RxObservable_justWithId_(JavaLangInteger_valueOfWithInt_(1)), RxObservable_justWithId_(JavaLangInteger_valueOfWithInt_(2)) } count:2 type:RxObservable_class_()]), -1);
+    OrgJunitAssert_failWithNSString_(@"Expected IllegalArgumentException");
+  }
+  @catch (JavaLangIllegalArgumentException *e) {
+    OrgJunitAssert_assertEqualsWithId_withId_(@"maxConcurrent > 0 required but it was -1", [((JavaLangIllegalArgumentException *) nil_chk(e)) getMessage]);
+  }
+}
+
+- (void)zeroMaxConcurrent {
+  @try {
+    RxObservable_mergeWithJavaLangIterable_withInt_(JavaUtilArrays_asListWithNSObjectArray_([IOSObjectArray arrayWithObjects:(id[]){ RxObservable_justWithId_(JavaLangInteger_valueOfWithInt_(1)), RxObservable_justWithId_(JavaLangInteger_valueOfWithInt_(2)) } count:2 type:RxObservable_class_()]), 0);
+    OrgJunitAssert_failWithNSString_(@"Expected IllegalArgumentException");
+  }
+  @catch (JavaLangIllegalArgumentException *e) {
+    OrgJunitAssert_assertEqualsWithId_withId_(@"maxConcurrent > 0 required but it was 0", [((JavaLangIllegalArgumentException *) nil_chk(e)) getMessage]);
+  }
+}
+
+- (void)mergeJustNull {
+  RxObserversTestSubscriber *ts = create_RxObserversTestSubscriber_initWithLong_(0);
+  [((RxObservable *) nil_chk([((RxObservable *) nil_chk(RxObservable_rangeWithInt_withInt_(1, 2))) flatMapWithRxFunctionsFunc1:create_RxInternalOperatorsOperatorMergeTest_$30_init()])) subscribeWithRxSubscriber:ts];
+  [ts requestMoreWithLong:2];
+  [ts assertValuesWithNSObjectArray:[IOSObjectArray arrayWithObjects:(id[]){ nil, nil } count:2 type:JavaLangInteger_class_()]];
+  [ts assertNoErrors];
+  [ts assertCompleted];
+}
+
+- (void)mergeConcurrentJustJust {
+  RxObserversTestSubscriber *ts = RxObserversTestSubscriber_create();
+  [((RxObservable *) nil_chk(RxObservable_mergeWithRxObservable_withInt_(RxObservable_justWithId_(RxObservable_justWithId_(JavaLangInteger_valueOfWithInt_(1))), 5))) subscribeWithRxSubscriber:ts];
+  [((RxObserversTestSubscriber *) nil_chk(ts)) assertValueWithId:JavaLangInteger_valueOfWithInt_(1)];
+  [ts assertNoErrors];
+  [ts assertCompleted];
+}
+
+- (void)mergeConcurrentJustRange {
+  RxObserversTestSubscriber *ts = RxObserversTestSubscriber_create();
+  [((RxObservable *) nil_chk(RxObservable_mergeWithRxObservable_withInt_(RxObservable_justWithId_(RxObservable_rangeWithInt_withInt_(1, 5)), 5))) subscribeWithRxSubscriber:ts];
+  [((RxObserversTestSubscriber *) nil_chk(ts)) assertValuesWithNSObjectArray:[IOSObjectArray arrayWithObjects:(id[]){ JavaLangInteger_valueOfWithInt_(1), JavaLangInteger_valueOfWithInt_(2), JavaLangInteger_valueOfWithInt_(3), JavaLangInteger_valueOfWithInt_(4), JavaLangInteger_valueOfWithInt_(5) } count:5 type:JavaLangInteger_class_()]];
+  [ts assertNoErrors];
+  [ts assertCompleted];
+}
+
+- (void)mergeMany {
+  for (jint i = 2; i < 10; i++) {
+    IOSObjectArray *clazz = [IOSObjectArray arrayWithLength:i type:IOSClass_class_()];
+    JavaUtilArrays_fillWithNSObjectArray_withId_(clazz, RxObservable_class_());
+    IOSObjectArray *obs = [IOSObjectArray arrayWithLength:i type:RxObservable_class_()];
+    JavaUtilArrays_fillWithNSObjectArray_withId_(obs, RxObservable_justWithId_(JavaLangInteger_valueOfWithInt_(1)));
+    IOSObjectArray *expected = [IOSObjectArray arrayWithLength:i type:JavaLangInteger_class_()];
+    JavaUtilArrays_fillWithNSObjectArray_withId_(expected, JavaLangInteger_valueOfWithInt_(1));
+    JavaLangReflectMethod *m = [RxObservable_class_() getMethod:@"merge" parameterTypes:clazz];
+    RxObserversTestSubscriber *ts = RxObserversTestSubscriber_create();
+    [((RxObservable *) nil_chk(((RxObservable *) cast_chk([((JavaLangReflectMethod *) nil_chk(m)) invokeWithId:nil withNSObjectArray:obs], [RxObservable class])))) subscribeWithRxSubscriber:ts];
+    [((RxObserversTestSubscriber *) nil_chk(ts)) assertValuesWithNSObjectArray:expected];
+    [ts assertNoErrors];
+    [ts assertCompleted];
+  }
+}
+
+- (void)mergeArrayMaxConcurrent {
+  RxObserversTestSubscriber *ts = RxObserversTestSubscriber_create();
+  RxSubjectsPublishSubject *ps1 = RxSubjectsPublishSubject_create();
+  RxSubjectsPublishSubject *ps2 = RxSubjectsPublishSubject_create();
+  [((RxObservable *) nil_chk(RxObservable_mergeWithRxObservableArray_withInt_([IOSObjectArray arrayWithObjects:(id[]){ ps1, ps2 } count:2 type:RxObservable_class_()], 1))) subscribeWithRxSubscriber:ts];
+  OrgJunitAssert_assertTrueWithNSString_withBoolean_(@"ps1 has no subscribers?!", [((RxSubjectsPublishSubject *) nil_chk(ps1)) hasObservers]);
+  OrgJunitAssert_assertFalseWithNSString_withBoolean_(@"ps2 has subscribers?!", [((RxSubjectsPublishSubject *) nil_chk(ps2)) hasObservers]);
+  [ps1 onNextWithId:JavaLangInteger_valueOfWithInt_(1)];
+  [ps1 onCompleted];
+  OrgJunitAssert_assertFalseWithNSString_withBoolean_(@"ps1 has subscribers?!", [ps1 hasObservers]);
+  OrgJunitAssert_assertTrueWithNSString_withBoolean_(@"ps2 has no subscribers?!", [ps2 hasObservers]);
+  [ps2 onNextWithId:JavaLangInteger_valueOfWithInt_(2)];
+  [ps2 onCompleted];
+  [((RxObserversTestSubscriber *) nil_chk(ts)) assertValuesWithNSObjectArray:[IOSObjectArray arrayWithObjects:(id[]){ JavaLangInteger_valueOfWithInt_(1), JavaLangInteger_valueOfWithInt_(2) } count:2 type:JavaLangInteger_class_()]];
+  [ts assertNoErrors];
+  [ts assertCompleted];
+}
+
+- (void)flatMapJustJust {
+  RxObserversTestSubscriber *ts = RxObserversTestSubscriber_create();
+  [((RxObservable *) nil_chk([((RxObservable *) nil_chk(RxObservable_justWithId_(RxObservable_justWithId_(JavaLangInteger_valueOfWithInt_(1))))) flatMapWithRxFunctionsFunc1:RxInternalUtilUtilityFunctions_identity()])) subscribeWithRxSubscriber:ts];
+  [((RxObserversTestSubscriber *) nil_chk(ts)) assertValueWithId:JavaLangInteger_valueOfWithInt_(1)];
+  [ts assertNoErrors];
+  [ts assertCompleted];
+}
+
+- (void)flatMapJustRange {
+  RxObserversTestSubscriber *ts = RxObserversTestSubscriber_create();
+  [((RxObservable *) nil_chk([((RxObservable *) nil_chk(RxObservable_justWithId_(RxObservable_rangeWithInt_withInt_(1, 5)))) flatMapWithRxFunctionsFunc1:RxInternalUtilUtilityFunctions_identity()])) subscribeWithRxSubscriber:ts];
+  [((RxObserversTestSubscriber *) nil_chk(ts)) assertValuesWithNSObjectArray:[IOSObjectArray arrayWithObjects:(id[]){ JavaLangInteger_valueOfWithInt_(1), JavaLangInteger_valueOfWithInt_(2), JavaLangInteger_valueOfWithInt_(3), JavaLangInteger_valueOfWithInt_(4), JavaLangInteger_valueOfWithInt_(5) } count:5 type:JavaLangInteger_class_()]];
+  [ts assertNoErrors];
+  [ts assertCompleted];
+}
+
+- (void)flatMapMaxConcurrentJustJust {
+  RxObserversTestSubscriber *ts = RxObserversTestSubscriber_create();
+  [((RxObservable *) nil_chk([((RxObservable *) nil_chk(RxObservable_justWithId_(RxObservable_justWithId_(JavaLangInteger_valueOfWithInt_(1))))) flatMapWithRxFunctionsFunc1:RxInternalUtilUtilityFunctions_identity() withInt:5])) subscribeWithRxSubscriber:ts];
+  [((RxObserversTestSubscriber *) nil_chk(ts)) assertValueWithId:JavaLangInteger_valueOfWithInt_(1)];
+  [ts assertNoErrors];
+  [ts assertCompleted];
+}
+
+- (void)flatMapMaxConcurrentJustRange {
+  RxObserversTestSubscriber *ts = RxObserversTestSubscriber_create();
+  [((RxObservable *) nil_chk([((RxObservable *) nil_chk(RxObservable_justWithId_(RxObservable_rangeWithInt_withInt_(1, 5)))) flatMapWithRxFunctionsFunc1:RxInternalUtilUtilityFunctions_identity() withInt:5])) subscribeWithRxSubscriber:ts];
+  [((RxObserversTestSubscriber *) nil_chk(ts)) assertValuesWithNSObjectArray:[IOSObjectArray arrayWithObjects:(id[]){ JavaLangInteger_valueOfWithInt_(1), JavaLangInteger_valueOfWithInt_(2), JavaLangInteger_valueOfWithInt_(3), JavaLangInteger_valueOfWithInt_(4), JavaLangInteger_valueOfWithInt_(5) } count:5 type:JavaLangInteger_class_()]];
+  [ts assertNoErrors];
+  [ts assertCompleted];
+}
+
+- (void)noInnerReordering {
+  RxObserversTestSubscriber *ts = RxObserversTestSubscriber_createWithLong_(0);
+  RxInternalOperatorsOperatorMerge_MergeSubscriber *ms = create_RxInternalOperatorsOperatorMerge_MergeSubscriber_initWithRxSubscriber_withBoolean_withInt_(ts, false, 128);
+  JreStrongAssignAndConsume(&ms->producer_, new_RxInternalOperatorsOperatorMerge_MergeProducer_initWithRxInternalOperatorsOperatorMerge_MergeSubscriber_(ms));
+  [((RxObserversTestSubscriber *) nil_chk(ts)) setProducerWithRxProducer:ms->producer_];
+  RxSubjectsPublishSubject *ps = RxSubjectsPublishSubject_create();
+  [ms onNextWithId:ps];
+  [((RxSubjectsPublishSubject *) nil_chk(ps)) onNextWithId:JavaLangInteger_valueOfWithInt_(1)];
+  RxInternalOperatorsBackpressureUtils_getAndAddRequestWithJavaUtilConcurrentAtomicAtomicLong_withLong_(ms->producer_, 2);
+  [ps onNextWithId:JavaLangInteger_valueOfWithInt_(2)];
+  [ms emit];
+  [ts assertValuesWithNSObjectArray:[IOSObjectArray arrayWithObjects:(id[]){ JavaLangInteger_valueOfWithInt_(1), JavaLangInteger_valueOfWithInt_(2) } count:2 type:JavaLangInteger_class_()]];
+}
+
+- (void)noOuterScalarReordering {
+  RxObserversTestSubscriber *ts = RxObserversTestSubscriber_createWithLong_(0);
+  RxInternalOperatorsOperatorMerge_MergeSubscriber *ms = create_RxInternalOperatorsOperatorMerge_MergeSubscriber_initWithRxSubscriber_withBoolean_withInt_(ts, false, 128);
+  JreStrongAssignAndConsume(&ms->producer_, new_RxInternalOperatorsOperatorMerge_MergeProducer_initWithRxInternalOperatorsOperatorMerge_MergeSubscriber_(ms));
+  [((RxObserversTestSubscriber *) nil_chk(ts)) setProducerWithRxProducer:ms->producer_];
+  [ms onNextWithId:RxObservable_justWithId_(JavaLangInteger_valueOfWithInt_(1))];
+  RxInternalOperatorsBackpressureUtils_getAndAddRequestWithJavaUtilConcurrentAtomicAtomicLong_withLong_(ms->producer_, 2);
+  [ms onNextWithId:RxObservable_justWithId_(JavaLangInteger_valueOfWithInt_(2))];
+  [ms emit];
+  [ts assertValuesWithNSObjectArray:[IOSObjectArray arrayWithObjects:(id[]){ JavaLangInteger_valueOfWithInt_(1), JavaLangInteger_valueOfWithInt_(2) } count:2 type:JavaLangInteger_class_()]];
 }
 
 J2OBJC_IGNORE_DESIGNATED_BEGIN
@@ -172,41 +1962,207 @@ J2OBJC_IGNORE_DESIGNATED_END
 
 - (void)dealloc {
   RELEASE_(stringObserver_);
+  RELEASE_(toScalar_);
+  RELEASE_(toHiddenScalar_);
   [super dealloc];
 }
 
 + (const J2ObjcClassInfo *)__metadata {
   static J2ObjcMethodInfo methods[] = {
     { NULL, "V", 0x1, -1, -1, -1, -1, 0, -1 },
-    { NULL, "V", 0x1, -1, -1, 1, -1, 2, -1 },
-    { NULL, "LRxObservable;", 0x2, 3, 4, -1, 5, -1, -1 },
-    { NULL, "LRxObservable;", 0x2, 6, 7, -1, 8, -1, -1 },
+    { NULL, "V", 0x1, -1, -1, -1, -1, 1, -1 },
+    { NULL, "V", 0x1, -1, -1, -1, -1, 2, -1 },
+    { NULL, "V", 0x1, -1, -1, -1, -1, 3, -1 },
+    { NULL, "V", 0x1, -1, -1, 4, -1, 5, -1 },
+    { NULL, "V", 0x1, -1, -1, -1, -1, 6, -1 },
+    { NULL, "V", 0x1, -1, -1, 7, -1, 8, -1 },
+    { NULL, "V", 0x1, -1, -1, -1, -1, 9, -1 },
+    { NULL, "V", 0x1, -1, -1, -1, -1, 10, -1 },
+    { NULL, "V", 0x1, -1, -1, -1, -1, 11, -1 },
+    { NULL, "V", 0x1, -1, -1, -1, -1, 12, -1 },
+    { NULL, "V", 0x1, -1, -1, -1, -1, 13, -1 },
+    { NULL, "LRxObservable;", 0x2, 14, 15, -1, 16, -1, -1 },
+    { NULL, "V", 0x1, -1, -1, -1, -1, 17, -1 },
+    { NULL, "V", 0x1, -1, -1, -1, -1, 18, -1 },
+    { NULL, "V", 0x1, -1, -1, -1, -1, 19, -1 },
+    { NULL, "V", 0x1, -1, -1, 4, -1, 20, -1 },
+    { NULL, "V", 0x1, -1, -1, 4, -1, 21, -1 },
+    { NULL, "V", 0x1, -1, -1, 4, -1, 22, -1 },
+    { NULL, "V", 0x1, -1, -1, 4, -1, 23, -1 },
+    { NULL, "V", 0x1, -1, -1, 4, -1, 24, -1 },
+    { NULL, "V", 0x1, -1, -1, 4, -1, 25, -1 },
+    { NULL, "V", 0x1, -1, -1, -1, -1, 26, -1 },
+    { NULL, "V", 0x1, -1, -1, -1, -1, 27, -1 },
+    { NULL, "V", 0x1, -1, -1, -1, -1, 28, -1 },
+    { NULL, "V", 0x1, -1, -1, -1, -1, 29, -1 },
+    { NULL, "V", 0x1, -1, -1, -1, -1, 30, -1 },
+    { NULL, "V", 0x1, -1, -1, -1, -1, 31, -1 },
+    { NULL, "V", 0x1, -1, -1, -1, -1, 32, -1 },
+    { NULL, "V", 0x1, -1, -1, -1, -1, 33, -1 },
+    { NULL, "V", 0x1, -1, -1, -1, -1, 34, -1 },
+    { NULL, "LRxObservable;", 0x2, 35, 36, -1, 37, -1, -1 },
+    { NULL, "V", 0x1, -1, -1, -1, -1, 38, -1 },
+    { NULL, "V", 0x1, -1, -1, -1, -1, 39, -1 },
+    { NULL, "V", 0x1, -1, -1, -1, -1, 40, -1 },
+    { NULL, "V", 0x1, -1, -1, -1, -1, 41, -1 },
+    { NULL, "V", 0x1, -1, -1, -1, -1, 42, -1 },
+    { NULL, "LRxObservable;", 0x2, 43, 36, -1, 37, -1, -1 },
+    { NULL, "LRxObservable;", 0x2, 44, 45, -1, 46, -1, -1 },
+    { NULL, "V", 0x1, -1, -1, -1, -1, 47, -1 },
+    { NULL, "V", 0x1, -1, -1, -1, -1, 48, -1 },
+    { NULL, "V", 0x1, -1, -1, -1, -1, 49, -1 },
+    { NULL, "V", 0x1, -1, -1, -1, -1, 50, -1 },
+    { NULL, "V", 0x1, -1, -1, -1, -1, 51, -1 },
+    { NULL, "V", 0x1, -1, -1, -1, -1, 52, -1 },
+    { NULL, "V", 0x1, -1, -1, -1, -1, 53, -1 },
+    { NULL, "V", 0x1, -1, -1, -1, -1, 54, -1 },
+    { NULL, "V", 0x1, -1, -1, -1, -1, 55, -1 },
+    { NULL, "V", 0x1, -1, -1, 4, -1, 56, -1 },
+    { NULL, "V", 0x1, -1, -1, 4, -1, 57, -1 },
+    { NULL, "LRxFunctionsAction1;", 0xa, -1, -1, -1, 58, -1, -1 },
+    { NULL, "LRxFunctionsAction1;", 0xa, 59, 60, -1, 61, -1, -1 },
+    { NULL, "V", 0x0, 62, 63, -1, 64, -1, -1 },
+    { NULL, "V", 0x1, -1, -1, -1, -1, 65, -1 },
+    { NULL, "V", 0x1, -1, -1, -1, -1, 66, -1 },
+    { NULL, "V", 0x1, -1, -1, -1, -1, 67, -1 },
+    { NULL, "V", 0x1, -1, -1, -1, -1, 68, -1 },
+    { NULL, "V", 0x1, -1, -1, -1, -1, 69, -1 },
+    { NULL, "V", 0x1, -1, -1, -1, -1, 70, -1 },
+    { NULL, "V", 0x1, -1, -1, -1, -1, 71, -1 },
+    { NULL, "V", 0x1, -1, -1, -1, -1, 72, -1 },
+    { NULL, "V", 0x1, -1, -1, -1, -1, 73, -1 },
+    { NULL, "V", 0x1, -1, -1, -1, -1, 74, -1 },
+    { NULL, "V", 0x1, -1, -1, -1, -1, 75, -1 },
+    { NULL, "V", 0x1, -1, -1, 76, -1, 77, -1 },
+    { NULL, "V", 0x1, -1, -1, -1, -1, 78, -1 },
+    { NULL, "V", 0x1, -1, -1, -1, -1, 79, -1 },
+    { NULL, "V", 0x1, -1, -1, -1, -1, 80, -1 },
+    { NULL, "V", 0x1, -1, -1, -1, -1, 81, -1 },
+    { NULL, "V", 0x1, -1, -1, -1, -1, 82, -1 },
+    { NULL, "V", 0x1, -1, -1, -1, -1, 83, -1 },
+    { NULL, "V", 0x1, -1, -1, -1, -1, 84, -1 },
     { NULL, NULL, 0x1, -1, -1, -1, -1, -1, -1 },
   };
   #pragma clang diagnostic push
   #pragma clang diagnostic ignored "-Wobjc-multiple-method-names"
   methods[0].selector = @selector(before);
-  methods[1].selector = @selector(testBackpressureUpstream2);
-  methods[2].selector = @selector(mergeNSyncStreamsOfNWithInt:withInt:);
-  methods[3].selector = @selector(createInfiniteObservableWithJavaUtilConcurrentAtomicAtomicInteger:);
-  methods[4].selector = @selector(init);
+  methods[1].selector = @selector(testMergeObservableOfObservables);
+  methods[2].selector = @selector(testMergeArray);
+  methods[3].selector = @selector(testMergeList);
+  methods[4].selector = @selector(testUnSubscribeObservableOfObservables);
+  methods[5].selector = @selector(testMergeArrayWithThreading);
+  methods[6].selector = @selector(testSynchronizationOfMultipleSequences);
+  methods[7].selector = @selector(testError1);
+  methods[8].selector = @selector(testError2);
+  methods[9].selector = @selector(testThrownErrorHandling);
+  methods[10].selector = @selector(testUnsubscribeAsObservablesComplete);
+  methods[11].selector = @selector(testEarlyUnsubscribe);
+  methods[12].selector = @selector(createObservableOf5IntervalsOf1SecondIncrementsWithSubscriptionHookWithRxScheduler:withJavaUtilConcurrentAtomicAtomicBoolean:);
+  methods[13].selector = @selector(testConcurrency);
+  methods[14].selector = @selector(testConcurrencyWithSleeping);
+  methods[15].selector = @selector(testConcurrencyWithBrokenOnCompleteContract);
+  methods[16].selector = @selector(testBackpressureUpstream);
+  methods[17].selector = @selector(testBackpressureUpstream2InLoop);
+  methods[18].selector = @selector(testBackpressureUpstream2);
+  methods[19].selector = @selector(testBackpressureDownstreamWithConcurrentStreams);
+  methods[20].selector = @selector(testBackpressureBothUpstreamAndDownstreamWithSynchronousScalarObservables);
+  methods[21].selector = @selector(testBackpressureBothUpstreamAndDownstreamWithRegularObservables);
+  methods[22].selector = @selector(mergeWithNullValues);
+  methods[23].selector = @selector(mergeWithTerminalEventAfterUnsubscribe);
+  methods[24].selector = @selector(mergingNullObservable);
+  methods[25].selector = @selector(merge1AsyncStreamOf1);
+  methods[26].selector = @selector(merge1AsyncStreamOf1000);
+  methods[27].selector = @selector(merge10AsyncStreamOf1000);
+  methods[28].selector = @selector(merge1000AsyncStreamOf1000);
+  methods[29].selector = @selector(merge2000AsyncStreamOf100);
+  methods[30].selector = @selector(merge100AsyncStreamOf1);
+  methods[31].selector = @selector(mergeNAsyncStreamsOfNWithInt:withInt:);
+  methods[32].selector = @selector(merge1SyncStreamOf1);
+  methods[33].selector = @selector(merge1SyncStreamOf1000000);
+  methods[34].selector = @selector(merge1000SyncStreamOf1000);
+  methods[35].selector = @selector(merge10000SyncStreamOf10);
+  methods[36].selector = @selector(merge1000000SyncStreamOf1);
+  methods[37].selector = @selector(mergeNSyncStreamsOfNWithInt:withInt:);
+  methods[38].selector = @selector(createInfiniteObservableWithJavaUtilConcurrentAtomicAtomicInteger:);
+  methods[39].selector = @selector(mergeManyAsyncSingle);
+  methods[40].selector = @selector(shouldCompleteAfterApplyingBackpressure_NormalPath);
+  methods[41].selector = @selector(shouldCompleteAfterApplyingBackpressure_FastPath);
+  methods[42].selector = @selector(shouldNotCompleteIfThereArePendingScalarSynchronousEmissionsWhenTheLastInnerSubscriberCompletes);
+  methods[43].selector = @selector(delayedErrorsShouldBeEmittedWhenCompleteAfterApplyingBackpressure_NormalPath);
+  methods[44].selector = @selector(delayedErrorsShouldBeEmittedWhenCompleteAfterApplyingBackpressure_FastPath);
+  methods[45].selector = @selector(shouldNotCompleteWhileThereAreStillScalarSynchronousEmissionsInTheQueue);
+  methods[46].selector = @selector(shouldNotReceivedDelayedErrorWhileThereAreStillScalarSynchronousEmissionsInTheQueue);
+  methods[47].selector = @selector(shouldNotReceivedDelayedErrorWhileThereAreStillNormalEmissionsInTheQueue);
+  methods[48].selector = @selector(testMergeKeepsRequesting);
+  methods[49].selector = @selector(testMergeRequestOverflow);
+  methods[50].selector = @selector(printCount);
+  methods[51].selector = @selector(pauseForMsWithLong:);
+  methods[52].selector = @selector(runMergeWithRxFunctionsFunc1:withRxObserversTestSubscriber:);
+  methods[53].selector = @selector(testFastMergeFullScalar);
+  methods[54].selector = @selector(testFastMergeHiddenScalar);
+  methods[55].selector = @selector(testSlowMergeFullScalar);
+  methods[56].selector = @selector(testSlowMergeHiddenScalar);
+  methods[57].selector = @selector(testUnboundedDefaultConcurrency);
+  methods[58].selector = @selector(testConcurrencyLimit);
+  methods[59].selector = @selector(negativeMaxConcurrent);
+  methods[60].selector = @selector(zeroMaxConcurrent);
+  methods[61].selector = @selector(mergeJustNull);
+  methods[62].selector = @selector(mergeConcurrentJustJust);
+  methods[63].selector = @selector(mergeConcurrentJustRange);
+  methods[64].selector = @selector(mergeMany);
+  methods[65].selector = @selector(mergeArrayMaxConcurrent);
+  methods[66].selector = @selector(flatMapJustJust);
+  methods[67].selector = @selector(flatMapJustRange);
+  methods[68].selector = @selector(flatMapMaxConcurrentJustJust);
+  methods[69].selector = @selector(flatMapMaxConcurrentJustRange);
+  methods[70].selector = @selector(noInnerReordering);
+  methods[71].selector = @selector(noOuterScalarReordering);
+  methods[72].selector = @selector(init);
   #pragma clang diagnostic pop
   static const J2ObjcFieldInfo fields[] = {
-    { "stringObserver_", "LRxObserver;", .constantValue.asLong = 0, 0x0, -1, -1, 9, 10 },
+    { "stringObserver_", "LRxObserver;", .constantValue.asLong = 0, 0x0, -1, -1, 85, 86 },
+    { "toScalar_", "LRxFunctionsFunc1;", .constantValue.asLong = 0, 0x0, -1, -1, 87, -1 },
+    { "toHiddenScalar_", "LRxFunctionsFunc1;", .constantValue.asLong = 0, 0x0, -1, -1, 87, -1 },
   };
-  static const void *ptrTable[] = { (void *)&RxInternalOperatorsOperatorMergeTest__Annotations$0, "LJavaLangInterruptedException;", (void *)&RxInternalOperatorsOperatorMergeTest__Annotations$1, "mergeNSyncStreamsOfN", "II", "(II)Lrx/Observable<Ljava/lang/Integer;>;", "createInfiniteObservable", "LJavaUtilConcurrentAtomicAtomicInteger;", "(Ljava/util/concurrent/atomic/AtomicInteger;)Lrx/Observable<Ljava/lang/Integer;>;", "Lrx/Observer<Ljava/lang/String;>;", (void *)&RxInternalOperatorsOperatorMergeTest__Annotations$2 };
-  static const J2ObjcClassInfo _RxInternalOperatorsOperatorMergeTest = { "OperatorMergeTest", "rx.internal.operators", ptrTable, methods, fields, 7, 0x1, 5, 1, -1, -1, -1, -1, -1 };
+  static const void *ptrTable[] = { (void *)&RxInternalOperatorsOperatorMergeTest__Annotations$0, (void *)&RxInternalOperatorsOperatorMergeTest__Annotations$1, (void *)&RxInternalOperatorsOperatorMergeTest__Annotations$2, (void *)&RxInternalOperatorsOperatorMergeTest__Annotations$3, "LJavaLangInterruptedException;", (void *)&RxInternalOperatorsOperatorMergeTest__Annotations$4, (void *)&RxInternalOperatorsOperatorMergeTest__Annotations$5, "LNSException;", (void *)&RxInternalOperatorsOperatorMergeTest__Annotations$6, (void *)&RxInternalOperatorsOperatorMergeTest__Annotations$7, (void *)&RxInternalOperatorsOperatorMergeTest__Annotations$8, (void *)&RxInternalOperatorsOperatorMergeTest__Annotations$9, (void *)&RxInternalOperatorsOperatorMergeTest__Annotations$10, (void *)&RxInternalOperatorsOperatorMergeTest__Annotations$11, "createObservableOf5IntervalsOf1SecondIncrementsWithSubscriptionHook", "LRxScheduler;LJavaUtilConcurrentAtomicAtomicBoolean;", "(Lrx/Scheduler;Ljava/util/concurrent/atomic/AtomicBoolean;)Lrx/Observable<Ljava/lang/Long;>;", (void *)&RxInternalOperatorsOperatorMergeTest__Annotations$12, (void *)&RxInternalOperatorsOperatorMergeTest__Annotations$13, (void *)&RxInternalOperatorsOperatorMergeTest__Annotations$14, (void *)&RxInternalOperatorsOperatorMergeTest__Annotations$15, (void *)&RxInternalOperatorsOperatorMergeTest__Annotations$16, (void *)&RxInternalOperatorsOperatorMergeTest__Annotations$17, (void *)&RxInternalOperatorsOperatorMergeTest__Annotations$18, (void *)&RxInternalOperatorsOperatorMergeTest__Annotations$19, (void *)&RxInternalOperatorsOperatorMergeTest__Annotations$20, (void *)&RxInternalOperatorsOperatorMergeTest__Annotations$21, (void *)&RxInternalOperatorsOperatorMergeTest__Annotations$22, (void *)&RxInternalOperatorsOperatorMergeTest__Annotations$23, (void *)&RxInternalOperatorsOperatorMergeTest__Annotations$24, (void *)&RxInternalOperatorsOperatorMergeTest__Annotations$25, (void *)&RxInternalOperatorsOperatorMergeTest__Annotations$26, (void *)&RxInternalOperatorsOperatorMergeTest__Annotations$27, (void *)&RxInternalOperatorsOperatorMergeTest__Annotations$28, (void *)&RxInternalOperatorsOperatorMergeTest__Annotations$29, "mergeNAsyncStreamsOfN", "II", "(II)Lrx/Observable<Ljava/lang/Integer;>;", (void *)&RxInternalOperatorsOperatorMergeTest__Annotations$30, (void *)&RxInternalOperatorsOperatorMergeTest__Annotations$31, (void *)&RxInternalOperatorsOperatorMergeTest__Annotations$32, (void *)&RxInternalOperatorsOperatorMergeTest__Annotations$33, (void *)&RxInternalOperatorsOperatorMergeTest__Annotations$34, "mergeNSyncStreamsOfN", "createInfiniteObservable", "LJavaUtilConcurrentAtomicAtomicInteger;", "(Ljava/util/concurrent/atomic/AtomicInteger;)Lrx/Observable<Ljava/lang/Integer;>;", (void *)&RxInternalOperatorsOperatorMergeTest__Annotations$35, (void *)&RxInternalOperatorsOperatorMergeTest__Annotations$36, (void *)&RxInternalOperatorsOperatorMergeTest__Annotations$37, (void *)&RxInternalOperatorsOperatorMergeTest__Annotations$38, (void *)&RxInternalOperatorsOperatorMergeTest__Annotations$39, (void *)&RxInternalOperatorsOperatorMergeTest__Annotations$40, (void *)&RxInternalOperatorsOperatorMergeTest__Annotations$41, (void *)&RxInternalOperatorsOperatorMergeTest__Annotations$42, (void *)&RxInternalOperatorsOperatorMergeTest__Annotations$43, (void *)&RxInternalOperatorsOperatorMergeTest__Annotations$44, (void *)&RxInternalOperatorsOperatorMergeTest__Annotations$45, "()Lrx/functions/Action1<Ljava/lang/Integer;>;", "pauseForMs", "J", "(J)Lrx/functions/Action1<Ljava/lang/Integer;>;", "runMerge", "LRxFunctionsFunc1;LRxObserversTestSubscriber;", "(Lrx/functions/Func1<Ljava/lang/Integer;Lrx/Observable<Ljava/lang/Integer;>;>;Lrx/observers/TestSubscriber<Ljava/lang/Integer;>;)V", (void *)&RxInternalOperatorsOperatorMergeTest__Annotations$46, (void *)&RxInternalOperatorsOperatorMergeTest__Annotations$47, (void *)&RxInternalOperatorsOperatorMergeTest__Annotations$48, (void *)&RxInternalOperatorsOperatorMergeTest__Annotations$49, (void *)&RxInternalOperatorsOperatorMergeTest__Annotations$50, (void *)&RxInternalOperatorsOperatorMergeTest__Annotations$51, (void *)&RxInternalOperatorsOperatorMergeTest__Annotations$52, (void *)&RxInternalOperatorsOperatorMergeTest__Annotations$53, (void *)&RxInternalOperatorsOperatorMergeTest__Annotations$54, (void *)&RxInternalOperatorsOperatorMergeTest__Annotations$55, (void *)&RxInternalOperatorsOperatorMergeTest__Annotations$56, "LJavaLangException;", (void *)&RxInternalOperatorsOperatorMergeTest__Annotations$57, (void *)&RxInternalOperatorsOperatorMergeTest__Annotations$58, (void *)&RxInternalOperatorsOperatorMergeTest__Annotations$59, (void *)&RxInternalOperatorsOperatorMergeTest__Annotations$60, (void *)&RxInternalOperatorsOperatorMergeTest__Annotations$61, (void *)&RxInternalOperatorsOperatorMergeTest__Annotations$62, (void *)&RxInternalOperatorsOperatorMergeTest__Annotations$63, (void *)&RxInternalOperatorsOperatorMergeTest__Annotations$64, "Lrx/Observer<Ljava/lang/String;>;", (void *)&RxInternalOperatorsOperatorMergeTest__Annotations$65, "Lrx/functions/Func1<Ljava/lang/Integer;Lrx/Observable<Ljava/lang/Integer;>;>;", "LRxInternalOperatorsOperatorMergeTest_TestSynchronousObservable;LRxInternalOperatorsOperatorMergeTest_TestASynchronousObservable;LRxInternalOperatorsOperatorMergeTest_TestErrorObservable;" };
+  static const J2ObjcClassInfo _RxInternalOperatorsOperatorMergeTest = { "OperatorMergeTest", "rx.internal.operators", ptrTable, methods, fields, 7, 0x1, 73, 3, -1, 88, -1, -1, -1 };
   return &_RxInternalOperatorsOperatorMergeTest;
 }
 
 @end
 
+RxObservable *RxInternalOperatorsOperatorMergeTest_createObservableOf5IntervalsOf1SecondIncrementsWithSubscriptionHookWithRxScheduler_withJavaUtilConcurrentAtomicAtomicBoolean_(RxInternalOperatorsOperatorMergeTest *self, RxScheduler *scheduler, JavaUtilConcurrentAtomicAtomicBoolean *unsubscribed) {
+  return RxObservable_createWithRxObservable_OnSubscribe_(create_RxInternalOperatorsOperatorMergeTest_$8_initWithJavaUtilConcurrentAtomicAtomicBoolean_withRxScheduler_(unsubscribed, scheduler));
+}
+
+RxObservable *RxInternalOperatorsOperatorMergeTest_mergeNAsyncStreamsOfNWithInt_withInt_(RxInternalOperatorsOperatorMergeTest *self, jint outerSize, jint innerSize) {
+  RxObservable *os = [((RxObservable *) nil_chk(RxObservable_rangeWithInt_withInt_(1, outerSize))) mapWithRxFunctionsFunc1:create_RxInternalOperatorsOperatorMergeTest_$19_initWithInt_(innerSize)];
+  return RxObservable_mergeWithRxObservable_(os);
+}
+
+RxObservable *RxInternalOperatorsOperatorMergeTest_mergeNSyncStreamsOfNWithInt_withInt_(RxInternalOperatorsOperatorMergeTest *self, jint outerSize, jint innerSize) {
+  RxObservable *os = [((RxObservable *) nil_chk(RxObservable_rangeWithInt_withInt_(1, outerSize))) mapWithRxFunctionsFunc1:create_RxInternalOperatorsOperatorMergeTest_$20_initWithInt_(innerSize)];
+  return RxObservable_mergeWithRxObservable_(os);
+}
+
 RxObservable *RxInternalOperatorsOperatorMergeTest_createInfiniteObservableWithJavaUtilConcurrentAtomicAtomicInteger_(RxInternalOperatorsOperatorMergeTest *self, JavaUtilConcurrentAtomicAtomicInteger *generated) {
-  return RxObservable_fromWithJavaLangIterable_(create_RxInternalOperatorsOperatorMergeTest_$3_initWithJavaUtilConcurrentAtomicAtomicInteger_(generated));
+  return RxObservable_fromWithJavaLangIterable_(create_RxInternalOperatorsOperatorMergeTest_$21_initWithJavaUtilConcurrentAtomicAtomicInteger_(generated));
+}
+
+id<RxFunctionsAction1> RxInternalOperatorsOperatorMergeTest_printCount() {
+  RxInternalOperatorsOperatorMergeTest_initialize();
+  return create_RxInternalOperatorsOperatorMergeTest_$26_init();
+}
+
+id<RxFunctionsAction1> RxInternalOperatorsOperatorMergeTest_pauseForMsWithLong_(jlong time) {
+  RxInternalOperatorsOperatorMergeTest_initialize();
+  return create_RxInternalOperatorsOperatorMergeTest_$27_initWithLong_(time);
 }
 
 void RxInternalOperatorsOperatorMergeTest_init(RxInternalOperatorsOperatorMergeTest *self) {
   NSObject_init(self);
+  JreStrongAssignAndConsume(&self->toScalar_, new_RxInternalOperatorsOperatorMergeTest_$1_init());
+  JreStrongAssignAndConsume(&self->toHiddenScalar_, new_RxInternalOperatorsOperatorMergeTest_$2_init());
 }
 
 RxInternalOperatorsOperatorMergeTest *new_RxInternalOperatorsOperatorMergeTest_init() {
@@ -226,12 +2182,1245 @@ IOSObjectArray *RxInternalOperatorsOperatorMergeTest__Annotations$1() {
 }
 
 IOSObjectArray *RxInternalOperatorsOperatorMergeTest__Annotations$2() {
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+}
+
+IOSObjectArray *RxInternalOperatorsOperatorMergeTest__Annotations$3() {
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+}
+
+IOSObjectArray *RxInternalOperatorsOperatorMergeTest__Annotations$4() {
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 1000) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+}
+
+IOSObjectArray *RxInternalOperatorsOperatorMergeTest__Annotations$5() {
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+}
+
+IOSObjectArray *RxInternalOperatorsOperatorMergeTest__Annotations$6() {
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+}
+
+IOSObjectArray *RxInternalOperatorsOperatorMergeTest__Annotations$7() {
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+}
+
+IOSObjectArray *RxInternalOperatorsOperatorMergeTest__Annotations$8() {
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+}
+
+IOSObjectArray *RxInternalOperatorsOperatorMergeTest__Annotations$9() {
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+}
+
+IOSObjectArray *RxInternalOperatorsOperatorMergeTest__Annotations$10() {
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+}
+
+IOSObjectArray *RxInternalOperatorsOperatorMergeTest__Annotations$11() {
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+}
+
+IOSObjectArray *RxInternalOperatorsOperatorMergeTest__Annotations$12() {
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+}
+
+IOSObjectArray *RxInternalOperatorsOperatorMergeTest__Annotations$13() {
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+}
+
+IOSObjectArray *RxInternalOperatorsOperatorMergeTest__Annotations$14() {
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+}
+
+IOSObjectArray *RxInternalOperatorsOperatorMergeTest__Annotations$15() {
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+}
+
+IOSObjectArray *RxInternalOperatorsOperatorMergeTest__Annotations$16() {
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+}
+
+IOSObjectArray *RxInternalOperatorsOperatorMergeTest__Annotations$17() {
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+}
+
+IOSObjectArray *RxInternalOperatorsOperatorMergeTest__Annotations$18() {
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 10000) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+}
+
+IOSObjectArray *RxInternalOperatorsOperatorMergeTest__Annotations$19() {
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+}
+
+IOSObjectArray *RxInternalOperatorsOperatorMergeTest__Annotations$20() {
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 5000) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+}
+
+IOSObjectArray *RxInternalOperatorsOperatorMergeTest__Annotations$21() {
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+}
+
+IOSObjectArray *RxInternalOperatorsOperatorMergeTest__Annotations$22() {
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+}
+
+IOSObjectArray *RxInternalOperatorsOperatorMergeTest__Annotations$23() {
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+}
+
+IOSObjectArray *RxInternalOperatorsOperatorMergeTest__Annotations$24() {
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+}
+
+IOSObjectArray *RxInternalOperatorsOperatorMergeTest__Annotations$25() {
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+}
+
+IOSObjectArray *RxInternalOperatorsOperatorMergeTest__Annotations$26() {
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+}
+
+IOSObjectArray *RxInternalOperatorsOperatorMergeTest__Annotations$27() {
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+}
+
+IOSObjectArray *RxInternalOperatorsOperatorMergeTest__Annotations$28() {
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+}
+
+IOSObjectArray *RxInternalOperatorsOperatorMergeTest__Annotations$29() {
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+}
+
+IOSObjectArray *RxInternalOperatorsOperatorMergeTest__Annotations$30() {
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+}
+
+IOSObjectArray *RxInternalOperatorsOperatorMergeTest__Annotations$31() {
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+}
+
+IOSObjectArray *RxInternalOperatorsOperatorMergeTest__Annotations$32() {
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+}
+
+IOSObjectArray *RxInternalOperatorsOperatorMergeTest__Annotations$33() {
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+}
+
+IOSObjectArray *RxInternalOperatorsOperatorMergeTest__Annotations$34() {
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+}
+
+IOSObjectArray *RxInternalOperatorsOperatorMergeTest__Annotations$35() {
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+}
+
+IOSObjectArray *RxInternalOperatorsOperatorMergeTest__Annotations$36() {
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+}
+
+IOSObjectArray *RxInternalOperatorsOperatorMergeTest__Annotations$37() {
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+}
+
+IOSObjectArray *RxInternalOperatorsOperatorMergeTest__Annotations$38() {
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+}
+
+IOSObjectArray *RxInternalOperatorsOperatorMergeTest__Annotations$39() {
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+}
+
+IOSObjectArray *RxInternalOperatorsOperatorMergeTest__Annotations$40() {
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+}
+
+IOSObjectArray *RxInternalOperatorsOperatorMergeTest__Annotations$41() {
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+}
+
+IOSObjectArray *RxInternalOperatorsOperatorMergeTest__Annotations$42() {
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+}
+
+IOSObjectArray *RxInternalOperatorsOperatorMergeTest__Annotations$43() {
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+}
+
+IOSObjectArray *RxInternalOperatorsOperatorMergeTest__Annotations$44() {
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+}
+
+IOSObjectArray *RxInternalOperatorsOperatorMergeTest__Annotations$45() {
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+}
+
+IOSObjectArray *RxInternalOperatorsOperatorMergeTest__Annotations$46() {
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+}
+
+IOSObjectArray *RxInternalOperatorsOperatorMergeTest__Annotations$47() {
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+}
+
+IOSObjectArray *RxInternalOperatorsOperatorMergeTest__Annotations$48() {
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+}
+
+IOSObjectArray *RxInternalOperatorsOperatorMergeTest__Annotations$49() {
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+}
+
+IOSObjectArray *RxInternalOperatorsOperatorMergeTest__Annotations$50() {
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+}
+
+IOSObjectArray *RxInternalOperatorsOperatorMergeTest__Annotations$51() {
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+}
+
+IOSObjectArray *RxInternalOperatorsOperatorMergeTest__Annotations$52() {
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+}
+
+IOSObjectArray *RxInternalOperatorsOperatorMergeTest__Annotations$53() {
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+}
+
+IOSObjectArray *RxInternalOperatorsOperatorMergeTest__Annotations$54() {
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+}
+
+IOSObjectArray *RxInternalOperatorsOperatorMergeTest__Annotations$55() {
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+}
+
+IOSObjectArray *RxInternalOperatorsOperatorMergeTest__Annotations$56() {
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+}
+
+IOSObjectArray *RxInternalOperatorsOperatorMergeTest__Annotations$57() {
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+}
+
+IOSObjectArray *RxInternalOperatorsOperatorMergeTest__Annotations$58() {
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+}
+
+IOSObjectArray *RxInternalOperatorsOperatorMergeTest__Annotations$59() {
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+}
+
+IOSObjectArray *RxInternalOperatorsOperatorMergeTest__Annotations$60() {
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+}
+
+IOSObjectArray *RxInternalOperatorsOperatorMergeTest__Annotations$61() {
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+}
+
+IOSObjectArray *RxInternalOperatorsOperatorMergeTest__Annotations$62() {
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+}
+
+IOSObjectArray *RxInternalOperatorsOperatorMergeTest__Annotations$63() {
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+}
+
+IOSObjectArray *RxInternalOperatorsOperatorMergeTest__Annotations$64() {
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+}
+
+IOSObjectArray *RxInternalOperatorsOperatorMergeTest__Annotations$65() {
   return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgMockitoMock(JreLoadEnum(OrgMockitoAnswers, RETURNS_DEFAULTS), [IOSObjectArray arrayWithObjects:(id[]){  } count:0 type:NSObject_class_()], @"") } count:1 type:JavaLangAnnotationAnnotation_class_()];
 }
 
 J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxInternalOperatorsOperatorMergeTest)
 
-@implementation RxInternalOperatorsOperatorMergeTest_$1
+@implementation RxInternalOperatorsOperatorMergeTest_TestSynchronousObservable
+
+- (void)callWithId:(RxSubscriber *)observer {
+  [((RxSubscriber *) nil_chk(observer)) onNextWithId:@"hello"];
+  [observer onCompleted];
+}
+
+J2OBJC_IGNORE_DESIGNATED_BEGIN
+- (instancetype)init {
+  RxInternalOperatorsOperatorMergeTest_TestSynchronousObservable_init(self);
+  return self;
+}
+J2OBJC_IGNORE_DESIGNATED_END
+
++ (const J2ObjcClassInfo *)__metadata {
+  static J2ObjcMethodInfo methods[] = {
+    { NULL, "V", 0x1, 0, 1, -1, 2, -1, -1 },
+    { NULL, NULL, 0x2, -1, -1, -1, -1, -1, -1 },
+  };
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Wobjc-multiple-method-names"
+  methods[0].selector = @selector(callWithId:);
+  methods[1].selector = @selector(init);
+  #pragma clang diagnostic pop
+  static const void *ptrTable[] = { "call", "LRxSubscriber;", "(Lrx/Subscriber<-Ljava/lang/String;>;)V", "LRxInternalOperatorsOperatorMergeTest;", "Ljava/lang/Object;Lrx/Observable$OnSubscribe<Ljava/lang/String;>;" };
+  static const J2ObjcClassInfo _RxInternalOperatorsOperatorMergeTest_TestSynchronousObservable = { "TestSynchronousObservable", "rx.internal.operators", ptrTable, methods, NULL, 7, 0xa, 2, 0, 3, -1, -1, 4, -1 };
+  return &_RxInternalOperatorsOperatorMergeTest_TestSynchronousObservable;
+}
+
+@end
+
+void RxInternalOperatorsOperatorMergeTest_TestSynchronousObservable_init(RxInternalOperatorsOperatorMergeTest_TestSynchronousObservable *self) {
+  NSObject_init(self);
+}
+
+RxInternalOperatorsOperatorMergeTest_TestSynchronousObservable *new_RxInternalOperatorsOperatorMergeTest_TestSynchronousObservable_init() {
+  J2OBJC_NEW_IMPL(RxInternalOperatorsOperatorMergeTest_TestSynchronousObservable, init)
+}
+
+RxInternalOperatorsOperatorMergeTest_TestSynchronousObservable *create_RxInternalOperatorsOperatorMergeTest_TestSynchronousObservable_init() {
+  J2OBJC_CREATE_IMPL(RxInternalOperatorsOperatorMergeTest_TestSynchronousObservable, init)
+}
+
+J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxInternalOperatorsOperatorMergeTest_TestSynchronousObservable)
+
+@implementation RxInternalOperatorsOperatorMergeTest_TestASynchronousObservable
+
+- (void)callWithId:(RxSubscriber *)observer {
+  JreStrongAssignAndConsume(&t_, new_JavaLangThread_initWithJavaLangRunnable_(create_RxInternalOperatorsOperatorMergeTest_TestASynchronousObservable_$1_initWithRxInternalOperatorsOperatorMergeTest_TestASynchronousObservable_withRxSubscriber_(self, observer)));
+  [t_ start];
+}
+
+J2OBJC_IGNORE_DESIGNATED_BEGIN
+- (instancetype)init {
+  RxInternalOperatorsOperatorMergeTest_TestASynchronousObservable_init(self);
+  return self;
+}
+J2OBJC_IGNORE_DESIGNATED_END
+
+- (void)dealloc {
+  RELEASE_(t_);
+  RELEASE_(onNextBeingSent_);
+  [super dealloc];
+}
+
++ (const J2ObjcClassInfo *)__metadata {
+  static J2ObjcMethodInfo methods[] = {
+    { NULL, "V", 0x1, 0, 1, -1, 2, -1, -1 },
+    { NULL, NULL, 0x2, -1, -1, -1, -1, -1, -1 },
+  };
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Wobjc-multiple-method-names"
+  methods[0].selector = @selector(callWithId:);
+  methods[1].selector = @selector(init);
+  #pragma clang diagnostic pop
+  static const J2ObjcFieldInfo fields[] = {
+    { "t_", "LJavaLangThread;", .constantValue.asLong = 0, 0x0, -1, -1, -1, -1 },
+    { "onNextBeingSent_", "LJavaUtilConcurrentCountDownLatch;", .constantValue.asLong = 0, 0x10, -1, -1, -1, -1 },
+  };
+  static const void *ptrTable[] = { "call", "LRxSubscriber;", "(Lrx/Subscriber<-Ljava/lang/String;>;)V", "LRxInternalOperatorsOperatorMergeTest;", "Ljava/lang/Object;Lrx/Observable$OnSubscribe<Ljava/lang/String;>;" };
+  static const J2ObjcClassInfo _RxInternalOperatorsOperatorMergeTest_TestASynchronousObservable = { "TestASynchronousObservable", "rx.internal.operators", ptrTable, methods, fields, 7, 0xa, 2, 2, 3, -1, -1, 4, -1 };
+  return &_RxInternalOperatorsOperatorMergeTest_TestASynchronousObservable;
+}
+
+@end
+
+void RxInternalOperatorsOperatorMergeTest_TestASynchronousObservable_init(RxInternalOperatorsOperatorMergeTest_TestASynchronousObservable *self) {
+  NSObject_init(self);
+  JreStrongAssignAndConsume(&self->onNextBeingSent_, new_JavaUtilConcurrentCountDownLatch_initWithInt_(1));
+}
+
+RxInternalOperatorsOperatorMergeTest_TestASynchronousObservable *new_RxInternalOperatorsOperatorMergeTest_TestASynchronousObservable_init() {
+  J2OBJC_NEW_IMPL(RxInternalOperatorsOperatorMergeTest_TestASynchronousObservable, init)
+}
+
+RxInternalOperatorsOperatorMergeTest_TestASynchronousObservable *create_RxInternalOperatorsOperatorMergeTest_TestASynchronousObservable_init() {
+  J2OBJC_CREATE_IMPL(RxInternalOperatorsOperatorMergeTest_TestASynchronousObservable, init)
+}
+
+J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxInternalOperatorsOperatorMergeTest_TestASynchronousObservable)
+
+@implementation RxInternalOperatorsOperatorMergeTest_TestASynchronousObservable_$1
+
+- (void)run {
+  [((JavaUtilConcurrentCountDownLatch *) nil_chk(this$0_->onNextBeingSent_)) countDown];
+  @try {
+    [((RxSubscriber *) nil_chk(val$observer_)) onNextWithId:@"hello"];
+    [val$observer_ onCompleted];
+  }
+  @catch (JavaLangException *e) {
+    [val$observer_ onErrorWithNSException:e];
+  }
+}
+
+- (instancetype)initWithRxInternalOperatorsOperatorMergeTest_TestASynchronousObservable:(RxInternalOperatorsOperatorMergeTest_TestASynchronousObservable *)outer$
+                                                                       withRxSubscriber:(RxSubscriber *)capture$0 {
+  RxInternalOperatorsOperatorMergeTest_TestASynchronousObservable_$1_initWithRxInternalOperatorsOperatorMergeTest_TestASynchronousObservable_withRxSubscriber_(self, outer$, capture$0);
+  return self;
+}
+
+- (void)dealloc {
+  RELEASE_(this$0_);
+  RELEASE_(val$observer_);
+  [super dealloc];
+}
+
++ (const J2ObjcClassInfo *)__metadata {
+  static J2ObjcMethodInfo methods[] = {
+    { NULL, "V", 0x1, -1, -1, -1, -1, -1, -1 },
+    { NULL, NULL, 0x0, -1, 0, -1, 1, -1, -1 },
+  };
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Wobjc-multiple-method-names"
+  methods[0].selector = @selector(run);
+  methods[1].selector = @selector(initWithRxInternalOperatorsOperatorMergeTest_TestASynchronousObservable:withRxSubscriber:);
+  #pragma clang diagnostic pop
+  static const J2ObjcFieldInfo fields[] = {
+    { "this$0_", "LRxInternalOperatorsOperatorMergeTest_TestASynchronousObservable;", .constantValue.asLong = 0, 0x1012, -1, -1, -1, -1 },
+    { "val$observer_", "LRxSubscriber;", .constantValue.asLong = 0, 0x1012, -1, -1, 2, -1 },
+  };
+  static const void *ptrTable[] = { "LRxInternalOperatorsOperatorMergeTest_TestASynchronousObservable;LRxSubscriber;", "(Lrx/internal/operators/OperatorMergeTest$TestASynchronousObservable;Lrx/Subscriber<-Ljava/lang/String;>;)V", "Lrx/Subscriber<-Ljava/lang/String;>;", "LRxInternalOperatorsOperatorMergeTest_TestASynchronousObservable;", "callWithId:" };
+  static const J2ObjcClassInfo _RxInternalOperatorsOperatorMergeTest_TestASynchronousObservable_$1 = { "", "rx.internal.operators", ptrTable, methods, fields, 7, 0x8008, 2, 2, 3, -1, 4, -1, -1 };
+  return &_RxInternalOperatorsOperatorMergeTest_TestASynchronousObservable_$1;
+}
+
+@end
+
+void RxInternalOperatorsOperatorMergeTest_TestASynchronousObservable_$1_initWithRxInternalOperatorsOperatorMergeTest_TestASynchronousObservable_withRxSubscriber_(RxInternalOperatorsOperatorMergeTest_TestASynchronousObservable_$1 *self, RxInternalOperatorsOperatorMergeTest_TestASynchronousObservable *outer$, RxSubscriber *capture$0) {
+  JreStrongAssign(&self->this$0_, outer$);
+  JreStrongAssign(&self->val$observer_, capture$0);
+  NSObject_init(self);
+}
+
+RxInternalOperatorsOperatorMergeTest_TestASynchronousObservable_$1 *new_RxInternalOperatorsOperatorMergeTest_TestASynchronousObservable_$1_initWithRxInternalOperatorsOperatorMergeTest_TestASynchronousObservable_withRxSubscriber_(RxInternalOperatorsOperatorMergeTest_TestASynchronousObservable *outer$, RxSubscriber *capture$0) {
+  J2OBJC_NEW_IMPL(RxInternalOperatorsOperatorMergeTest_TestASynchronousObservable_$1, initWithRxInternalOperatorsOperatorMergeTest_TestASynchronousObservable_withRxSubscriber_, outer$, capture$0)
+}
+
+RxInternalOperatorsOperatorMergeTest_TestASynchronousObservable_$1 *create_RxInternalOperatorsOperatorMergeTest_TestASynchronousObservable_$1_initWithRxInternalOperatorsOperatorMergeTest_TestASynchronousObservable_withRxSubscriber_(RxInternalOperatorsOperatorMergeTest_TestASynchronousObservable *outer$, RxSubscriber *capture$0) {
+  J2OBJC_CREATE_IMPL(RxInternalOperatorsOperatorMergeTest_TestASynchronousObservable_$1, initWithRxInternalOperatorsOperatorMergeTest_TestASynchronousObservable_withRxSubscriber_, outer$, capture$0)
+}
+
+@implementation RxInternalOperatorsOperatorMergeTest_TestErrorObservable
+
+- (instancetype)initWithNSStringArray:(IOSObjectArray *)values {
+  RxInternalOperatorsOperatorMergeTest_TestErrorObservable_initWithNSStringArray_(self, values);
+  return self;
+}
+
+- (void)callWithId:(RxSubscriber *)observer {
+  {
+    IOSObjectArray *a__ = valuesToReturn_;
+    NSString * const *b__ = ((IOSObjectArray *) nil_chk(a__))->buffer_;
+    NSString * const *e__ = b__ + a__->size_;
+    while (b__ < e__) {
+      NSString *s = *b__++;
+      if (s == nil) {
+        [((JavaIoPrintStream *) nil_chk(JreLoadStatic(JavaLangSystem, out))) printlnWithNSString:@"throwing exception"];
+        [((RxSubscriber *) nil_chk(observer)) onErrorWithNSException:create_JavaLangNullPointerException_init()];
+      }
+      else {
+        [((RxSubscriber *) nil_chk(observer)) onNextWithId:s];
+      }
+    }
+  }
+  [((RxSubscriber *) nil_chk(observer)) onCompleted];
+}
+
+- (void)dealloc {
+  RELEASE_(valuesToReturn_);
+  [super dealloc];
+}
+
++ (const J2ObjcClassInfo *)__metadata {
+  static J2ObjcMethodInfo methods[] = {
+    { NULL, NULL, 0x80, -1, 0, -1, -1, -1, -1 },
+    { NULL, "V", 0x1, 1, 2, -1, 3, -1, -1 },
+  };
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Wobjc-multiple-method-names"
+  methods[0].selector = @selector(initWithNSStringArray:);
+  methods[1].selector = @selector(callWithId:);
+  #pragma clang diagnostic pop
+  static const J2ObjcFieldInfo fields[] = {
+    { "valuesToReturn_", "[LNSString;", .constantValue.asLong = 0, 0x0, -1, -1, -1, -1 },
+  };
+  static const void *ptrTable[] = { "[LNSString;", "call", "LRxSubscriber;", "(Lrx/Subscriber<-Ljava/lang/String;>;)V", "LRxInternalOperatorsOperatorMergeTest;", "Ljava/lang/Object;Lrx/Observable$OnSubscribe<Ljava/lang/String;>;" };
+  static const J2ObjcClassInfo _RxInternalOperatorsOperatorMergeTest_TestErrorObservable = { "TestErrorObservable", "rx.internal.operators", ptrTable, methods, fields, 7, 0xa, 2, 1, 4, -1, -1, 5, -1 };
+  return &_RxInternalOperatorsOperatorMergeTest_TestErrorObservable;
+}
+
+@end
+
+void RxInternalOperatorsOperatorMergeTest_TestErrorObservable_initWithNSStringArray_(RxInternalOperatorsOperatorMergeTest_TestErrorObservable *self, IOSObjectArray *values) {
+  NSObject_init(self);
+  JreStrongAssign(&self->valuesToReturn_, values);
+}
+
+RxInternalOperatorsOperatorMergeTest_TestErrorObservable *new_RxInternalOperatorsOperatorMergeTest_TestErrorObservable_initWithNSStringArray_(IOSObjectArray *values) {
+  J2OBJC_NEW_IMPL(RxInternalOperatorsOperatorMergeTest_TestErrorObservable, initWithNSStringArray_, values)
+}
+
+RxInternalOperatorsOperatorMergeTest_TestErrorObservable *create_RxInternalOperatorsOperatorMergeTest_TestErrorObservable_initWithNSStringArray_(IOSObjectArray *values) {
+  J2OBJC_CREATE_IMPL(RxInternalOperatorsOperatorMergeTest_TestErrorObservable, initWithNSStringArray_, values)
+}
+
+J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxInternalOperatorsOperatorMergeTest_TestErrorObservable)
+
+@implementation RxInternalOperatorsOperatorMergeTest_$3
+
+- (void)callWithId:(RxSubscriber *)observer {
+  [((RxSubscriber *) nil_chk(observer)) onNextWithId:val$o1_];
+  [observer onNextWithId:val$o2_];
+  [observer onCompleted];
+}
+
+- (instancetype)initWithRxObservable:(RxObservable *)capture$0
+                    withRxObservable:(RxObservable *)capture$1 {
+  RxInternalOperatorsOperatorMergeTest_$3_initWithRxObservable_withRxObservable_(self, capture$0, capture$1);
+  return self;
+}
+
+- (void)dealloc {
+  RELEASE_(val$o1_);
+  RELEASE_(val$o2_);
+  [super dealloc];
+}
+
++ (const J2ObjcClassInfo *)__metadata {
+  static J2ObjcMethodInfo methods[] = {
+    { NULL, "V", 0x1, 0, 1, -1, 2, -1, -1 },
+    { NULL, NULL, 0x0, -1, 3, -1, 4, -1, -1 },
+  };
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Wobjc-multiple-method-names"
+  methods[0].selector = @selector(callWithId:);
+  methods[1].selector = @selector(initWithRxObservable:withRxObservable:);
+  #pragma clang diagnostic pop
+  static const J2ObjcFieldInfo fields[] = {
+    { "val$o1_", "LRxObservable;", .constantValue.asLong = 0, 0x1012, -1, -1, 5, -1 },
+    { "val$o2_", "LRxObservable;", .constantValue.asLong = 0, 0x1012, -1, -1, 5, -1 },
+  };
+  static const void *ptrTable[] = { "call", "LRxSubscriber;", "(Lrx/Subscriber<-Lrx/Observable<Ljava/lang/String;>;>;)V", "LRxObservable;LRxObservable;", "(Lrx/Observable<Ljava/lang/String;>;Lrx/Observable<Ljava/lang/String;>;)V", "Lrx/Observable<Ljava/lang/String;>;", "LRxInternalOperatorsOperatorMergeTest;", "testMergeObservableOfObservables", "Ljava/lang/Object;Lrx/Observable$OnSubscribe<Lrx/Observable<Ljava/lang/String;>;>;" };
+  static const J2ObjcClassInfo _RxInternalOperatorsOperatorMergeTest_$3 = { "", "rx.internal.operators", ptrTable, methods, fields, 7, 0x8008, 2, 2, 6, -1, 7, 8, -1 };
+  return &_RxInternalOperatorsOperatorMergeTest_$3;
+}
+
+@end
+
+void RxInternalOperatorsOperatorMergeTest_$3_initWithRxObservable_withRxObservable_(RxInternalOperatorsOperatorMergeTest_$3 *self, RxObservable *capture$0, RxObservable *capture$1) {
+  JreStrongAssign(&self->val$o1_, capture$0);
+  JreStrongAssign(&self->val$o2_, capture$1);
+  NSObject_init(self);
+}
+
+RxInternalOperatorsOperatorMergeTest_$3 *new_RxInternalOperatorsOperatorMergeTest_$3_initWithRxObservable_withRxObservable_(RxObservable *capture$0, RxObservable *capture$1) {
+  J2OBJC_NEW_IMPL(RxInternalOperatorsOperatorMergeTest_$3, initWithRxObservable_withRxObservable_, capture$0, capture$1)
+}
+
+RxInternalOperatorsOperatorMergeTest_$3 *create_RxInternalOperatorsOperatorMergeTest_$3_initWithRxObservable_withRxObservable_(RxObservable *capture$0, RxObservable *capture$1) {
+  J2OBJC_CREATE_IMPL(RxInternalOperatorsOperatorMergeTest_$3, initWithRxObservable_withRxObservable_, capture$0, capture$1)
+}
+
+@implementation RxInternalOperatorsOperatorMergeTest_$4
+
+- (void)callWithId:(RxSubscriber *)observer {
+  id<RxSubscription> s = RxSubscriptionsSubscriptions_createWithRxFunctionsAction0_(create_RxInternalOperatorsOperatorMergeTest_$4_$1_initWithRxInternalOperatorsOperatorMergeTest_$4_(self));
+  [((RxSubscriber *) nil_chk(observer)) addWithRxSubscription:s];
+  [create_JavaLangThread_initWithJavaLangRunnable_(create_RxInternalOperatorsOperatorMergeTest_$4_$2_initWithRxInternalOperatorsOperatorMergeTest_$4_withRxSubscriber_(self, observer)) start];
+}
+
+- (instancetype)initWithJavaUtilConcurrentAtomicAtomicBoolean:(JavaUtilConcurrentAtomicAtomicBoolean *)capture$0
+                         withJavaUtilConcurrentCountDownLatch:(JavaUtilConcurrentCountDownLatch *)capture$1 {
+  RxInternalOperatorsOperatorMergeTest_$4_initWithJavaUtilConcurrentAtomicAtomicBoolean_withJavaUtilConcurrentCountDownLatch_(self, capture$0, capture$1);
+  return self;
+}
+
+- (void)dealloc {
+  RELEASE_(val$unsubscribed_);
+  RELEASE_(val$latch_);
+  [super dealloc];
+}
+
++ (const J2ObjcClassInfo *)__metadata {
+  static J2ObjcMethodInfo methods[] = {
+    { NULL, "V", 0x1, 0, 1, -1, 2, -1, -1 },
+    { NULL, NULL, 0x0, -1, 3, -1, -1, -1, -1 },
+  };
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Wobjc-multiple-method-names"
+  methods[0].selector = @selector(callWithId:);
+  methods[1].selector = @selector(initWithJavaUtilConcurrentAtomicAtomicBoolean:withJavaUtilConcurrentCountDownLatch:);
+  #pragma clang diagnostic pop
+  static const J2ObjcFieldInfo fields[] = {
+    { "val$unsubscribed_", "LJavaUtilConcurrentAtomicAtomicBoolean;", .constantValue.asLong = 0, 0x1012, -1, -1, -1, -1 },
+    { "val$latch_", "LJavaUtilConcurrentCountDownLatch;", .constantValue.asLong = 0, 0x1012, -1, -1, -1, -1 },
+  };
+  static const void *ptrTable[] = { "call", "LRxSubscriber;", "(Lrx/Subscriber<-Lrx/Observable<Ljava/lang/Long;>;>;)V", "LJavaUtilConcurrentAtomicAtomicBoolean;LJavaUtilConcurrentCountDownLatch;", "LRxInternalOperatorsOperatorMergeTest;", "testUnSubscribeObservableOfObservables", "Ljava/lang/Object;Lrx/Observable$OnSubscribe<Lrx/Observable<Ljava/lang/Long;>;>;" };
+  static const J2ObjcClassInfo _RxInternalOperatorsOperatorMergeTest_$4 = { "", "rx.internal.operators", ptrTable, methods, fields, 7, 0x8008, 2, 2, 4, -1, 5, 6, -1 };
+  return &_RxInternalOperatorsOperatorMergeTest_$4;
+}
+
+@end
+
+void RxInternalOperatorsOperatorMergeTest_$4_initWithJavaUtilConcurrentAtomicAtomicBoolean_withJavaUtilConcurrentCountDownLatch_(RxInternalOperatorsOperatorMergeTest_$4 *self, JavaUtilConcurrentAtomicAtomicBoolean *capture$0, JavaUtilConcurrentCountDownLatch *capture$1) {
+  JreStrongAssign(&self->val$unsubscribed_, capture$0);
+  JreStrongAssign(&self->val$latch_, capture$1);
+  NSObject_init(self);
+}
+
+RxInternalOperatorsOperatorMergeTest_$4 *new_RxInternalOperatorsOperatorMergeTest_$4_initWithJavaUtilConcurrentAtomicAtomicBoolean_withJavaUtilConcurrentCountDownLatch_(JavaUtilConcurrentAtomicAtomicBoolean *capture$0, JavaUtilConcurrentCountDownLatch *capture$1) {
+  J2OBJC_NEW_IMPL(RxInternalOperatorsOperatorMergeTest_$4, initWithJavaUtilConcurrentAtomicAtomicBoolean_withJavaUtilConcurrentCountDownLatch_, capture$0, capture$1)
+}
+
+RxInternalOperatorsOperatorMergeTest_$4 *create_RxInternalOperatorsOperatorMergeTest_$4_initWithJavaUtilConcurrentAtomicAtomicBoolean_withJavaUtilConcurrentCountDownLatch_(JavaUtilConcurrentAtomicAtomicBoolean *capture$0, JavaUtilConcurrentCountDownLatch *capture$1) {
+  J2OBJC_CREATE_IMPL(RxInternalOperatorsOperatorMergeTest_$4, initWithJavaUtilConcurrentAtomicAtomicBoolean_withJavaUtilConcurrentCountDownLatch_, capture$0, capture$1)
+}
+
+@implementation RxInternalOperatorsOperatorMergeTest_$4_$1
+
+- (void)call {
+  [((JavaIoPrintStream *) nil_chk(JreLoadStatic(JavaLangSystem, out))) printlnWithNSString:@"*** unsubscribed"];
+  [((JavaUtilConcurrentAtomicAtomicBoolean *) nil_chk(this$0_->val$unsubscribed_)) setWithBoolean:true];
+}
+
+- (instancetype)initWithRxInternalOperatorsOperatorMergeTest_$4:(RxInternalOperatorsOperatorMergeTest_$4 *)outer$ {
+  RxInternalOperatorsOperatorMergeTest_$4_$1_initWithRxInternalOperatorsOperatorMergeTest_$4_(self, outer$);
+  return self;
+}
+
+- (void)dealloc {
+  RELEASE_(this$0_);
+  [super dealloc];
+}
+
++ (const J2ObjcClassInfo *)__metadata {
+  static J2ObjcMethodInfo methods[] = {
+    { NULL, "V", 0x1, -1, -1, -1, -1, -1, -1 },
+    { NULL, NULL, 0x0, -1, 0, -1, -1, -1, -1 },
+  };
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Wobjc-multiple-method-names"
+  methods[0].selector = @selector(call);
+  methods[1].selector = @selector(initWithRxInternalOperatorsOperatorMergeTest_$4:);
+  #pragma clang diagnostic pop
+  static const J2ObjcFieldInfo fields[] = {
+    { "this$0_", "LRxInternalOperatorsOperatorMergeTest_$4;", .constantValue.asLong = 0, 0x1012, -1, -1, -1, -1 },
+  };
+  static const void *ptrTable[] = { "LRxInternalOperatorsOperatorMergeTest_$4;", "callWithId:" };
+  static const J2ObjcClassInfo _RxInternalOperatorsOperatorMergeTest_$4_$1 = { "", "rx.internal.operators", ptrTable, methods, fields, 7, 0x8008, 2, 1, 0, -1, 1, -1, -1 };
+  return &_RxInternalOperatorsOperatorMergeTest_$4_$1;
+}
+
+@end
+
+void RxInternalOperatorsOperatorMergeTest_$4_$1_initWithRxInternalOperatorsOperatorMergeTest_$4_(RxInternalOperatorsOperatorMergeTest_$4_$1 *self, RxInternalOperatorsOperatorMergeTest_$4 *outer$) {
+  JreStrongAssign(&self->this$0_, outer$);
+  NSObject_init(self);
+}
+
+RxInternalOperatorsOperatorMergeTest_$4_$1 *new_RxInternalOperatorsOperatorMergeTest_$4_$1_initWithRxInternalOperatorsOperatorMergeTest_$4_(RxInternalOperatorsOperatorMergeTest_$4 *outer$) {
+  J2OBJC_NEW_IMPL(RxInternalOperatorsOperatorMergeTest_$4_$1, initWithRxInternalOperatorsOperatorMergeTest_$4_, outer$)
+}
+
+RxInternalOperatorsOperatorMergeTest_$4_$1 *create_RxInternalOperatorsOperatorMergeTest_$4_$1_initWithRxInternalOperatorsOperatorMergeTest_$4_(RxInternalOperatorsOperatorMergeTest_$4 *outer$) {
+  J2OBJC_CREATE_IMPL(RxInternalOperatorsOperatorMergeTest_$4_$1, initWithRxInternalOperatorsOperatorMergeTest_$4_, outer$)
+}
+
+@implementation RxInternalOperatorsOperatorMergeTest_$4_$2
+
+- (void)run {
+  while (![((JavaUtilConcurrentAtomicAtomicBoolean *) nil_chk(this$0_->val$unsubscribed_)) get]) {
+    [((RxSubscriber *) nil_chk(val$observer_)) onNextWithId:RxObservable_justWithId_withId_(JavaLangLong_valueOfWithLong_(1LL), JavaLangLong_valueOfWithLong_(2LL))];
+  }
+  [((JavaIoPrintStream *) nil_chk(JreLoadStatic(JavaLangSystem, out))) printlnWithNSString:JreStrcat("$Z", @"Done looping after unsubscribe: ", [this$0_->val$unsubscribed_ get])];
+  [((RxSubscriber *) nil_chk(val$observer_)) onCompleted];
+  [((JavaUtilConcurrentCountDownLatch *) nil_chk(this$0_->val$latch_)) countDown];
+}
+
+- (instancetype)initWithRxInternalOperatorsOperatorMergeTest_$4:(RxInternalOperatorsOperatorMergeTest_$4 *)outer$
+                                               withRxSubscriber:(RxSubscriber *)capture$0 {
+  RxInternalOperatorsOperatorMergeTest_$4_$2_initWithRxInternalOperatorsOperatorMergeTest_$4_withRxSubscriber_(self, outer$, capture$0);
+  return self;
+}
+
+- (void)dealloc {
+  RELEASE_(this$0_);
+  RELEASE_(val$observer_);
+  [super dealloc];
+}
+
++ (const J2ObjcClassInfo *)__metadata {
+  static J2ObjcMethodInfo methods[] = {
+    { NULL, "V", 0x1, -1, -1, -1, -1, -1, -1 },
+    { NULL, NULL, 0x0, -1, 0, -1, 1, -1, -1 },
+  };
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Wobjc-multiple-method-names"
+  methods[0].selector = @selector(run);
+  methods[1].selector = @selector(initWithRxInternalOperatorsOperatorMergeTest_$4:withRxSubscriber:);
+  #pragma clang diagnostic pop
+  static const J2ObjcFieldInfo fields[] = {
+    { "this$0_", "LRxInternalOperatorsOperatorMergeTest_$4;", .constantValue.asLong = 0, 0x1012, -1, -1, -1, -1 },
+    { "val$observer_", "LRxSubscriber;", .constantValue.asLong = 0, 0x1012, -1, -1, 2, -1 },
+  };
+  static const void *ptrTable[] = { "LRxInternalOperatorsOperatorMergeTest_$4;LRxSubscriber;", "(Lrx/internal/operators/OperatorMergeTest$4;Lrx/Subscriber<-Lrx/Observable<Ljava/lang/Long;>;>;)V", "Lrx/Subscriber<-Lrx/Observable<Ljava/lang/Long;>;>;", "LRxInternalOperatorsOperatorMergeTest_$4;", "callWithId:" };
+  static const J2ObjcClassInfo _RxInternalOperatorsOperatorMergeTest_$4_$2 = { "", "rx.internal.operators", ptrTable, methods, fields, 7, 0x8008, 2, 2, 3, -1, 4, -1, -1 };
+  return &_RxInternalOperatorsOperatorMergeTest_$4_$2;
+}
+
+@end
+
+void RxInternalOperatorsOperatorMergeTest_$4_$2_initWithRxInternalOperatorsOperatorMergeTest_$4_withRxSubscriber_(RxInternalOperatorsOperatorMergeTest_$4_$2 *self, RxInternalOperatorsOperatorMergeTest_$4 *outer$, RxSubscriber *capture$0) {
+  JreStrongAssign(&self->this$0_, outer$);
+  JreStrongAssign(&self->val$observer_, capture$0);
+  NSObject_init(self);
+}
+
+RxInternalOperatorsOperatorMergeTest_$4_$2 *new_RxInternalOperatorsOperatorMergeTest_$4_$2_initWithRxInternalOperatorsOperatorMergeTest_$4_withRxSubscriber_(RxInternalOperatorsOperatorMergeTest_$4 *outer$, RxSubscriber *capture$0) {
+  J2OBJC_NEW_IMPL(RxInternalOperatorsOperatorMergeTest_$4_$2, initWithRxInternalOperatorsOperatorMergeTest_$4_withRxSubscriber_, outer$, capture$0)
+}
+
+RxInternalOperatorsOperatorMergeTest_$4_$2 *create_RxInternalOperatorsOperatorMergeTest_$4_$2_initWithRxInternalOperatorsOperatorMergeTest_$4_withRxSubscriber_(RxInternalOperatorsOperatorMergeTest_$4 *outer$, RxSubscriber *capture$0) {
+  J2OBJC_CREATE_IMPL(RxInternalOperatorsOperatorMergeTest_$4_$2, initWithRxInternalOperatorsOperatorMergeTest_$4_withRxSubscriber_, outer$, capture$0)
+}
+
+@implementation RxInternalOperatorsOperatorMergeTest_$5
+
+- (void)callWithId:(JavaLangLong *)v {
+  [((JavaIoPrintStream *) nil_chk(JreLoadStatic(JavaLangSystem, out))) printlnWithNSString:JreStrcat("$@", @"Value: ", v)];
+  jint c = [((JavaUtilConcurrentAtomicAtomicInteger *) nil_chk(val$count_)) incrementAndGet];
+  if (c > 6) {
+    OrgJunitAssert_failWithNSString_(@"Should be only 6");
+  }
+}
+
+- (instancetype)initWithJavaUtilConcurrentAtomicAtomicInteger:(JavaUtilConcurrentAtomicAtomicInteger *)capture$0 {
+  RxInternalOperatorsOperatorMergeTest_$5_initWithJavaUtilConcurrentAtomicAtomicInteger_(self, capture$0);
+  return self;
+}
+
+- (void)dealloc {
+  RELEASE_(val$count_);
+  [super dealloc];
+}
+
++ (const J2ObjcClassInfo *)__metadata {
+  static J2ObjcMethodInfo methods[] = {
+    { NULL, "V", 0x1, 0, 1, -1, -1, -1, -1 },
+    { NULL, NULL, 0x0, -1, 2, -1, -1, -1, -1 },
+  };
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Wobjc-multiple-method-names"
+  methods[0].selector = @selector(callWithId:);
+  methods[1].selector = @selector(initWithJavaUtilConcurrentAtomicAtomicInteger:);
+  #pragma clang diagnostic pop
+  static const J2ObjcFieldInfo fields[] = {
+    { "val$count_", "LJavaUtilConcurrentAtomicAtomicInteger;", .constantValue.asLong = 0, 0x1012, -1, -1, -1, -1 },
+  };
+  static const void *ptrTable[] = { "call", "LJavaLangLong;", "LJavaUtilConcurrentAtomicAtomicInteger;", "LRxInternalOperatorsOperatorMergeTest;", "testUnSubscribeObservableOfObservables", "Ljava/lang/Object;Lrx/functions/Action1<Ljava/lang/Long;>;" };
+  static const J2ObjcClassInfo _RxInternalOperatorsOperatorMergeTest_$5 = { "", "rx.internal.operators", ptrTable, methods, fields, 7, 0x8008, 2, 1, 3, -1, 4, 5, -1 };
+  return &_RxInternalOperatorsOperatorMergeTest_$5;
+}
+
+@end
+
+void RxInternalOperatorsOperatorMergeTest_$5_initWithJavaUtilConcurrentAtomicAtomicInteger_(RxInternalOperatorsOperatorMergeTest_$5 *self, JavaUtilConcurrentAtomicAtomicInteger *capture$0) {
+  JreStrongAssign(&self->val$count_, capture$0);
+  NSObject_init(self);
+}
+
+RxInternalOperatorsOperatorMergeTest_$5 *new_RxInternalOperatorsOperatorMergeTest_$5_initWithJavaUtilConcurrentAtomicAtomicInteger_(JavaUtilConcurrentAtomicAtomicInteger *capture$0) {
+  J2OBJC_NEW_IMPL(RxInternalOperatorsOperatorMergeTest_$5, initWithJavaUtilConcurrentAtomicAtomicInteger_, capture$0)
+}
+
+RxInternalOperatorsOperatorMergeTest_$5 *create_RxInternalOperatorsOperatorMergeTest_$5_initWithJavaUtilConcurrentAtomicAtomicInteger_(JavaUtilConcurrentAtomicAtomicInteger *capture$0) {
+  J2OBJC_CREATE_IMPL(RxInternalOperatorsOperatorMergeTest_$5, initWithJavaUtilConcurrentAtomicAtomicInteger_, capture$0)
+}
+
+@implementation RxInternalOperatorsOperatorMergeTest_$6
+
+- (void)onCompleted {
+}
+
+- (void)onErrorWithNSException:(NSException *)e {
+  @throw create_JavaLangRuntimeException_initWithNSString_withNSException_(@"failed", e);
+}
+
+- (void)onNextWithId:(NSString *)v {
+  [((JavaUtilConcurrentAtomicAtomicInteger *) nil_chk(val$totalCounter_)) incrementAndGet];
+  [((JavaUtilConcurrentAtomicAtomicInteger *) nil_chk(val$concurrentCounter_)) incrementAndGet];
+  @try {
+    [((JavaUtilConcurrentCountDownLatch *) nil_chk(val$endLatch_)) await];
+  }
+  @catch (JavaLangInterruptedException *e) {
+    [((JavaLangInterruptedException *) nil_chk(e)) printStackTrace];
+    @throw create_JavaLangRuntimeException_initWithNSString_withNSException_(@"failed", e);
+  }
+  @finally {
+    [val$concurrentCounter_ decrementAndGet];
+  }
+}
+
+- (instancetype)initWithJavaUtilConcurrentAtomicAtomicInteger:(JavaUtilConcurrentAtomicAtomicInteger *)capture$0
+                    withJavaUtilConcurrentAtomicAtomicInteger:(JavaUtilConcurrentAtomicAtomicInteger *)capture$1
+                         withJavaUtilConcurrentCountDownLatch:(JavaUtilConcurrentCountDownLatch *)capture$2 {
+  RxInternalOperatorsOperatorMergeTest_$6_initWithJavaUtilConcurrentAtomicAtomicInteger_withJavaUtilConcurrentAtomicAtomicInteger_withJavaUtilConcurrentCountDownLatch_(self, capture$0, capture$1, capture$2);
+  return self;
+}
+
+- (void)dealloc {
+  JreCheckFinalize(self, [RxInternalOperatorsOperatorMergeTest_$6 class]);
+  RELEASE_(val$totalCounter_);
+  RELEASE_(val$concurrentCounter_);
+  RELEASE_(val$endLatch_);
+  [super dealloc];
+}
+
++ (const J2ObjcClassInfo *)__metadata {
+  static J2ObjcMethodInfo methods[] = {
+    { NULL, "V", 0x1, -1, -1, -1, -1, -1, -1 },
+    { NULL, "V", 0x1, 0, 1, -1, -1, -1, -1 },
+    { NULL, "V", 0x1, 2, 3, -1, -1, -1, -1 },
+    { NULL, NULL, 0x0, -1, 4, -1, -1, -1, -1 },
+  };
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Wobjc-multiple-method-names"
+  methods[0].selector = @selector(onCompleted);
+  methods[1].selector = @selector(onErrorWithNSException:);
+  methods[2].selector = @selector(onNextWithId:);
+  methods[3].selector = @selector(initWithJavaUtilConcurrentAtomicAtomicInteger:withJavaUtilConcurrentAtomicAtomicInteger:withJavaUtilConcurrentCountDownLatch:);
+  #pragma clang diagnostic pop
+  static const J2ObjcFieldInfo fields[] = {
+    { "val$totalCounter_", "LJavaUtilConcurrentAtomicAtomicInteger;", .constantValue.asLong = 0, 0x1012, -1, -1, -1, -1 },
+    { "val$concurrentCounter_", "LJavaUtilConcurrentAtomicAtomicInteger;", .constantValue.asLong = 0, 0x1012, -1, -1, -1, -1 },
+    { "val$endLatch_", "LJavaUtilConcurrentCountDownLatch;", .constantValue.asLong = 0, 0x1012, -1, -1, -1, -1 },
+  };
+  static const void *ptrTable[] = { "onError", "LNSException;", "onNext", "LNSString;", "LJavaUtilConcurrentAtomicAtomicInteger;LJavaUtilConcurrentAtomicAtomicInteger;LJavaUtilConcurrentCountDownLatch;", "LRxInternalOperatorsOperatorMergeTest;", "testSynchronizationOfMultipleSequences", "Lrx/Subscriber<Ljava/lang/String;>;" };
+  static const J2ObjcClassInfo _RxInternalOperatorsOperatorMergeTest_$6 = { "", "rx.internal.operators", ptrTable, methods, fields, 7, 0x8008, 4, 3, 5, -1, 6, 7, -1 };
+  return &_RxInternalOperatorsOperatorMergeTest_$6;
+}
+
+@end
+
+void RxInternalOperatorsOperatorMergeTest_$6_initWithJavaUtilConcurrentAtomicAtomicInteger_withJavaUtilConcurrentAtomicAtomicInteger_withJavaUtilConcurrentCountDownLatch_(RxInternalOperatorsOperatorMergeTest_$6 *self, JavaUtilConcurrentAtomicAtomicInteger *capture$0, JavaUtilConcurrentAtomicAtomicInteger *capture$1, JavaUtilConcurrentCountDownLatch *capture$2) {
+  JreStrongAssign(&self->val$totalCounter_, capture$0);
+  JreStrongAssign(&self->val$concurrentCounter_, capture$1);
+  JreStrongAssign(&self->val$endLatch_, capture$2);
+  RxSubscriber_init(self);
+}
+
+RxInternalOperatorsOperatorMergeTest_$6 *new_RxInternalOperatorsOperatorMergeTest_$6_initWithJavaUtilConcurrentAtomicAtomicInteger_withJavaUtilConcurrentAtomicAtomicInteger_withJavaUtilConcurrentCountDownLatch_(JavaUtilConcurrentAtomicAtomicInteger *capture$0, JavaUtilConcurrentAtomicAtomicInteger *capture$1, JavaUtilConcurrentCountDownLatch *capture$2) {
+  J2OBJC_NEW_IMPL(RxInternalOperatorsOperatorMergeTest_$6, initWithJavaUtilConcurrentAtomicAtomicInteger_withJavaUtilConcurrentAtomicAtomicInteger_withJavaUtilConcurrentCountDownLatch_, capture$0, capture$1, capture$2)
+}
+
+RxInternalOperatorsOperatorMergeTest_$6 *create_RxInternalOperatorsOperatorMergeTest_$6_initWithJavaUtilConcurrentAtomicAtomicInteger_withJavaUtilConcurrentAtomicAtomicInteger_withJavaUtilConcurrentCountDownLatch_(JavaUtilConcurrentAtomicAtomicInteger *capture$0, JavaUtilConcurrentAtomicAtomicInteger *capture$1, JavaUtilConcurrentCountDownLatch *capture$2) {
+  J2OBJC_CREATE_IMPL(RxInternalOperatorsOperatorMergeTest_$6, initWithJavaUtilConcurrentAtomicAtomicInteger_withJavaUtilConcurrentAtomicAtomicInteger_withJavaUtilConcurrentCountDownLatch_, capture$0, capture$1, capture$2)
+}
+
+@implementation RxInternalOperatorsOperatorMergeTest_$7
+
+- (void)callWithId:(RxSubscriber *)s {
+  @throw create_JavaLangRuntimeException_initWithNSString_(@"fail");
+}
+
+J2OBJC_IGNORE_DESIGNATED_BEGIN
+- (instancetype)init {
+  RxInternalOperatorsOperatorMergeTest_$7_init(self);
+  return self;
+}
+J2OBJC_IGNORE_DESIGNATED_END
+
++ (const J2ObjcClassInfo *)__metadata {
+  static J2ObjcMethodInfo methods[] = {
+    { NULL, "V", 0x1, 0, 1, -1, 2, -1, -1 },
+    { NULL, NULL, 0x0, -1, -1, -1, -1, -1, -1 },
+  };
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Wobjc-multiple-method-names"
+  methods[0].selector = @selector(callWithId:);
+  methods[1].selector = @selector(init);
+  #pragma clang diagnostic pop
+  static const void *ptrTable[] = { "call", "LRxSubscriber;", "(Lrx/Subscriber<-Ljava/lang/String;>;)V", "LRxInternalOperatorsOperatorMergeTest;", "testThrownErrorHandling", "Ljava/lang/Object;Lrx/Observable$OnSubscribe<Ljava/lang/String;>;" };
+  static const J2ObjcClassInfo _RxInternalOperatorsOperatorMergeTest_$7 = { "", "rx.internal.operators", ptrTable, methods, NULL, 7, 0x8008, 2, 0, 3, -1, 4, 5, -1 };
+  return &_RxInternalOperatorsOperatorMergeTest_$7;
+}
+
+@end
+
+void RxInternalOperatorsOperatorMergeTest_$7_init(RxInternalOperatorsOperatorMergeTest_$7 *self) {
+  NSObject_init(self);
+}
+
+RxInternalOperatorsOperatorMergeTest_$7 *new_RxInternalOperatorsOperatorMergeTest_$7_init() {
+  J2OBJC_NEW_IMPL(RxInternalOperatorsOperatorMergeTest_$7, init)
+}
+
+RxInternalOperatorsOperatorMergeTest_$7 *create_RxInternalOperatorsOperatorMergeTest_$7_init() {
+  J2OBJC_CREATE_IMPL(RxInternalOperatorsOperatorMergeTest_$7, init)
+}
+
+@implementation RxInternalOperatorsOperatorMergeTest_$8
+
+- (void)callWithId:(RxSubscriber *)s {
+  [((RxSubscriber *) nil_chk(s)) addWithRxSubscription:RxSubscriptionsSubscriptions_createWithRxFunctionsAction0_(create_RxInternalOperatorsOperatorMergeTest_$8_$1_initWithRxInternalOperatorsOperatorMergeTest_$8_(self))];
+  [((RxObservable *) nil_chk([((RxObservable *) nil_chk(RxObservable_intervalWithLong_withJavaUtilConcurrentTimeUnit_withRxScheduler_(1, JreLoadEnum(JavaUtilConcurrentTimeUnit, SECONDS), val$scheduler_))) takeWithInt:5])) subscribeWithRxSubscriber:s];
+}
+
+- (instancetype)initWithJavaUtilConcurrentAtomicAtomicBoolean:(JavaUtilConcurrentAtomicAtomicBoolean *)capture$0
+                                              withRxScheduler:(RxScheduler *)capture$1 {
+  RxInternalOperatorsOperatorMergeTest_$8_initWithJavaUtilConcurrentAtomicAtomicBoolean_withRxScheduler_(self, capture$0, capture$1);
+  return self;
+}
+
+- (void)dealloc {
+  RELEASE_(val$unsubscribed_);
+  RELEASE_(val$scheduler_);
+  [super dealloc];
+}
+
++ (const J2ObjcClassInfo *)__metadata {
+  static J2ObjcMethodInfo methods[] = {
+    { NULL, "V", 0x1, 0, 1, -1, 2, -1, -1 },
+    { NULL, NULL, 0x0, -1, 3, -1, -1, -1, -1 },
+  };
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Wobjc-multiple-method-names"
+  methods[0].selector = @selector(callWithId:);
+  methods[1].selector = @selector(initWithJavaUtilConcurrentAtomicAtomicBoolean:withRxScheduler:);
+  #pragma clang diagnostic pop
+  static const J2ObjcFieldInfo fields[] = {
+    { "val$unsubscribed_", "LJavaUtilConcurrentAtomicAtomicBoolean;", .constantValue.asLong = 0, 0x1012, -1, -1, -1, -1 },
+    { "val$scheduler_", "LRxScheduler;", .constantValue.asLong = 0, 0x1012, -1, -1, -1, -1 },
+  };
+  static const void *ptrTable[] = { "call", "LRxSubscriber;", "(Lrx/Subscriber<-Ljava/lang/Long;>;)V", "LJavaUtilConcurrentAtomicAtomicBoolean;LRxScheduler;", "LRxInternalOperatorsOperatorMergeTest;", "createObservableOf5IntervalsOf1SecondIncrementsWithSubscriptionHookWithRxScheduler:withJavaUtilConcurrentAtomicAtomicBoolean:", "Ljava/lang/Object;Lrx/Observable$OnSubscribe<Ljava/lang/Long;>;" };
+  static const J2ObjcClassInfo _RxInternalOperatorsOperatorMergeTest_$8 = { "", "rx.internal.operators", ptrTable, methods, fields, 7, 0x8008, 2, 2, 4, -1, 5, 6, -1 };
+  return &_RxInternalOperatorsOperatorMergeTest_$8;
+}
+
+@end
+
+void RxInternalOperatorsOperatorMergeTest_$8_initWithJavaUtilConcurrentAtomicAtomicBoolean_withRxScheduler_(RxInternalOperatorsOperatorMergeTest_$8 *self, JavaUtilConcurrentAtomicAtomicBoolean *capture$0, RxScheduler *capture$1) {
+  JreStrongAssign(&self->val$unsubscribed_, capture$0);
+  JreStrongAssign(&self->val$scheduler_, capture$1);
+  NSObject_init(self);
+}
+
+RxInternalOperatorsOperatorMergeTest_$8 *new_RxInternalOperatorsOperatorMergeTest_$8_initWithJavaUtilConcurrentAtomicAtomicBoolean_withRxScheduler_(JavaUtilConcurrentAtomicAtomicBoolean *capture$0, RxScheduler *capture$1) {
+  J2OBJC_NEW_IMPL(RxInternalOperatorsOperatorMergeTest_$8, initWithJavaUtilConcurrentAtomicAtomicBoolean_withRxScheduler_, capture$0, capture$1)
+}
+
+RxInternalOperatorsOperatorMergeTest_$8 *create_RxInternalOperatorsOperatorMergeTest_$8_initWithJavaUtilConcurrentAtomicAtomicBoolean_withRxScheduler_(JavaUtilConcurrentAtomicAtomicBoolean *capture$0, RxScheduler *capture$1) {
+  J2OBJC_CREATE_IMPL(RxInternalOperatorsOperatorMergeTest_$8, initWithJavaUtilConcurrentAtomicAtomicBoolean_withRxScheduler_, capture$0, capture$1)
+}
+
+@implementation RxInternalOperatorsOperatorMergeTest_$8_$1
+
+- (void)call {
+  [((JavaUtilConcurrentAtomicAtomicBoolean *) nil_chk(this$0_->val$unsubscribed_)) setWithBoolean:true];
+}
+
+- (instancetype)initWithRxInternalOperatorsOperatorMergeTest_$8:(RxInternalOperatorsOperatorMergeTest_$8 *)outer$ {
+  RxInternalOperatorsOperatorMergeTest_$8_$1_initWithRxInternalOperatorsOperatorMergeTest_$8_(self, outer$);
+  return self;
+}
+
+- (void)dealloc {
+  RELEASE_(this$0_);
+  [super dealloc];
+}
+
++ (const J2ObjcClassInfo *)__metadata {
+  static J2ObjcMethodInfo methods[] = {
+    { NULL, "V", 0x1, -1, -1, -1, -1, -1, -1 },
+    { NULL, NULL, 0x0, -1, 0, -1, -1, -1, -1 },
+  };
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Wobjc-multiple-method-names"
+  methods[0].selector = @selector(call);
+  methods[1].selector = @selector(initWithRxInternalOperatorsOperatorMergeTest_$8:);
+  #pragma clang diagnostic pop
+  static const J2ObjcFieldInfo fields[] = {
+    { "this$0_", "LRxInternalOperatorsOperatorMergeTest_$8;", .constantValue.asLong = 0, 0x1012, -1, -1, -1, -1 },
+  };
+  static const void *ptrTable[] = { "LRxInternalOperatorsOperatorMergeTest_$8;", "callWithId:" };
+  static const J2ObjcClassInfo _RxInternalOperatorsOperatorMergeTest_$8_$1 = { "", "rx.internal.operators", ptrTable, methods, fields, 7, 0x8008, 2, 1, 0, -1, 1, -1, -1 };
+  return &_RxInternalOperatorsOperatorMergeTest_$8_$1;
+}
+
+@end
+
+void RxInternalOperatorsOperatorMergeTest_$8_$1_initWithRxInternalOperatorsOperatorMergeTest_$8_(RxInternalOperatorsOperatorMergeTest_$8_$1 *self, RxInternalOperatorsOperatorMergeTest_$8 *outer$) {
+  JreStrongAssign(&self->this$0_, outer$);
+  NSObject_init(self);
+}
+
+RxInternalOperatorsOperatorMergeTest_$8_$1 *new_RxInternalOperatorsOperatorMergeTest_$8_$1_initWithRxInternalOperatorsOperatorMergeTest_$8_(RxInternalOperatorsOperatorMergeTest_$8 *outer$) {
+  J2OBJC_NEW_IMPL(RxInternalOperatorsOperatorMergeTest_$8_$1, initWithRxInternalOperatorsOperatorMergeTest_$8_, outer$)
+}
+
+RxInternalOperatorsOperatorMergeTest_$8_$1 *create_RxInternalOperatorsOperatorMergeTest_$8_$1_initWithRxInternalOperatorsOperatorMergeTest_$8_(RxInternalOperatorsOperatorMergeTest_$8 *outer$) {
+  J2OBJC_CREATE_IMPL(RxInternalOperatorsOperatorMergeTest_$8_$1, initWithRxInternalOperatorsOperatorMergeTest_$8_, outer$)
+}
+
+@implementation RxInternalOperatorsOperatorMergeTest_$9
+
+- (void)callWithId:(RxSubscriber *)s {
+  RxScheduler_Worker *inner = [((RxScheduler *) nil_chk(RxSchedulersSchedulers_newThread())) createWorker];
+  [((RxSubscriber *) nil_chk(s)) addWithRxSubscription:inner];
+  [((RxScheduler_Worker *) nil_chk(inner)) scheduleWithRxFunctionsAction0:create_RxInternalOperatorsOperatorMergeTest_$9_$1_initWithRxSubscriber_(s)];
+}
+
+J2OBJC_IGNORE_DESIGNATED_BEGIN
+- (instancetype)init {
+  RxInternalOperatorsOperatorMergeTest_$9_init(self);
+  return self;
+}
+J2OBJC_IGNORE_DESIGNATED_END
+
++ (const J2ObjcClassInfo *)__metadata {
+  static J2ObjcMethodInfo methods[] = {
+    { NULL, "V", 0x1, 0, 1, -1, 2, -1, -1 },
+    { NULL, NULL, 0x0, -1, -1, -1, -1, -1, -1 },
+  };
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Wobjc-multiple-method-names"
+  methods[0].selector = @selector(callWithId:);
+  methods[1].selector = @selector(init);
+  #pragma clang diagnostic pop
+  static const void *ptrTable[] = { "call", "LRxSubscriber;", "(Lrx/Subscriber<-Ljava/lang/Integer;>;)V", "LRxInternalOperatorsOperatorMergeTest;", "testConcurrencyWithSleeping", "Ljava/lang/Object;Lrx/Observable$OnSubscribe<Ljava/lang/Integer;>;" };
+  static const J2ObjcClassInfo _RxInternalOperatorsOperatorMergeTest_$9 = { "", "rx.internal.operators", ptrTable, methods, NULL, 7, 0x8008, 2, 0, 3, -1, 4, 5, -1 };
+  return &_RxInternalOperatorsOperatorMergeTest_$9;
+}
+
+@end
+
+void RxInternalOperatorsOperatorMergeTest_$9_init(RxInternalOperatorsOperatorMergeTest_$9 *self) {
+  NSObject_init(self);
+}
+
+RxInternalOperatorsOperatorMergeTest_$9 *new_RxInternalOperatorsOperatorMergeTest_$9_init() {
+  J2OBJC_NEW_IMPL(RxInternalOperatorsOperatorMergeTest_$9, init)
+}
+
+RxInternalOperatorsOperatorMergeTest_$9 *create_RxInternalOperatorsOperatorMergeTest_$9_init() {
+  J2OBJC_CREATE_IMPL(RxInternalOperatorsOperatorMergeTest_$9, init)
+}
+
+@implementation RxInternalOperatorsOperatorMergeTest_$9_$1
+
+- (void)call {
+  @try {
+    for (jint i = 0; i < 100; i++) {
+      [((RxSubscriber *) nil_chk(val$s_)) onNextWithId:JavaLangInteger_valueOfWithInt_(1)];
+      @try {
+        JavaLangThread_sleepWithLong_(1);
+      }
+      @catch (JavaLangInterruptedException *e) {
+        [((JavaLangInterruptedException *) nil_chk(e)) printStackTrace];
+      }
+    }
+  }
+  @catch (JavaLangException *e) {
+    [((RxSubscriber *) nil_chk(val$s_)) onErrorWithNSException:e];
+  }
+  [((RxSubscriber *) nil_chk(val$s_)) onCompleted];
+}
+
+- (instancetype)initWithRxSubscriber:(RxSubscriber *)capture$0 {
+  RxInternalOperatorsOperatorMergeTest_$9_$1_initWithRxSubscriber_(self, capture$0);
+  return self;
+}
+
+- (void)dealloc {
+  RELEASE_(val$s_);
+  [super dealloc];
+}
+
++ (const J2ObjcClassInfo *)__metadata {
+  static J2ObjcMethodInfo methods[] = {
+    { NULL, "V", 0x1, -1, -1, -1, -1, -1, -1 },
+    { NULL, NULL, 0x0, -1, 0, -1, 1, -1, -1 },
+  };
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Wobjc-multiple-method-names"
+  methods[0].selector = @selector(call);
+  methods[1].selector = @selector(initWithRxSubscriber:);
+  #pragma clang diagnostic pop
+  static const J2ObjcFieldInfo fields[] = {
+    { "val$s_", "LRxSubscriber;", .constantValue.asLong = 0, 0x1012, -1, -1, 2, -1 },
+  };
+  static const void *ptrTable[] = { "LRxSubscriber;", "(Lrx/Subscriber<-Ljava/lang/Integer;>;)V", "Lrx/Subscriber<-Ljava/lang/Integer;>;", "LRxInternalOperatorsOperatorMergeTest_$9;", "callWithId:" };
+  static const J2ObjcClassInfo _RxInternalOperatorsOperatorMergeTest_$9_$1 = { "", "rx.internal.operators", ptrTable, methods, fields, 7, 0x8008, 2, 1, 3, -1, 4, -1, -1 };
+  return &_RxInternalOperatorsOperatorMergeTest_$9_$1;
+}
+
+@end
+
+void RxInternalOperatorsOperatorMergeTest_$9_$1_initWithRxSubscriber_(RxInternalOperatorsOperatorMergeTest_$9_$1 *self, RxSubscriber *capture$0) {
+  JreStrongAssign(&self->val$s_, capture$0);
+  NSObject_init(self);
+}
+
+RxInternalOperatorsOperatorMergeTest_$9_$1 *new_RxInternalOperatorsOperatorMergeTest_$9_$1_initWithRxSubscriber_(RxSubscriber *capture$0) {
+  J2OBJC_NEW_IMPL(RxInternalOperatorsOperatorMergeTest_$9_$1, initWithRxSubscriber_, capture$0)
+}
+
+RxInternalOperatorsOperatorMergeTest_$9_$1 *create_RxInternalOperatorsOperatorMergeTest_$9_$1_initWithRxSubscriber_(RxSubscriber *capture$0) {
+  J2OBJC_CREATE_IMPL(RxInternalOperatorsOperatorMergeTest_$9_$1, initWithRxSubscriber_, capture$0)
+}
+
+@implementation RxInternalOperatorsOperatorMergeTest_$10
+
+- (void)callWithId:(RxSubscriber *)s {
+  RxScheduler_Worker *inner = [((RxScheduler *) nil_chk(RxSchedulersSchedulers_newThread())) createWorker];
+  [((RxSubscriber *) nil_chk(s)) addWithRxSubscription:inner];
+  [((RxScheduler_Worker *) nil_chk(inner)) scheduleWithRxFunctionsAction0:create_RxInternalOperatorsOperatorMergeTest_$10_$1_initWithRxSubscriber_(s)];
+}
+
+J2OBJC_IGNORE_DESIGNATED_BEGIN
+- (instancetype)init {
+  RxInternalOperatorsOperatorMergeTest_$10_init(self);
+  return self;
+}
+J2OBJC_IGNORE_DESIGNATED_END
+
++ (const J2ObjcClassInfo *)__metadata {
+  static J2ObjcMethodInfo methods[] = {
+    { NULL, "V", 0x1, 0, 1, -1, 2, -1, -1 },
+    { NULL, NULL, 0x0, -1, -1, -1, -1, -1, -1 },
+  };
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Wobjc-multiple-method-names"
+  methods[0].selector = @selector(callWithId:);
+  methods[1].selector = @selector(init);
+  #pragma clang diagnostic pop
+  static const void *ptrTable[] = { "call", "LRxSubscriber;", "(Lrx/Subscriber<-Ljava/lang/Integer;>;)V", "LRxInternalOperatorsOperatorMergeTest;", "testConcurrencyWithBrokenOnCompleteContract", "Ljava/lang/Object;Lrx/Observable$OnSubscribe<Ljava/lang/Integer;>;" };
+  static const J2ObjcClassInfo _RxInternalOperatorsOperatorMergeTest_$10 = { "", "rx.internal.operators", ptrTable, methods, NULL, 7, 0x8008, 2, 0, 3, -1, 4, 5, -1 };
+  return &_RxInternalOperatorsOperatorMergeTest_$10;
+}
+
+@end
+
+void RxInternalOperatorsOperatorMergeTest_$10_init(RxInternalOperatorsOperatorMergeTest_$10 *self) {
+  NSObject_init(self);
+}
+
+RxInternalOperatorsOperatorMergeTest_$10 *new_RxInternalOperatorsOperatorMergeTest_$10_init() {
+  J2OBJC_NEW_IMPL(RxInternalOperatorsOperatorMergeTest_$10, init)
+}
+
+RxInternalOperatorsOperatorMergeTest_$10 *create_RxInternalOperatorsOperatorMergeTest_$10_init() {
+  J2OBJC_CREATE_IMPL(RxInternalOperatorsOperatorMergeTest_$10, init)
+}
+
+@implementation RxInternalOperatorsOperatorMergeTest_$10_$1
+
+- (void)call {
+  @try {
+    for (jint i = 0; i < 10000; i++) {
+      [((RxSubscriber *) nil_chk(val$s_)) onNextWithId:JavaLangInteger_valueOfWithInt_(i)];
+    }
+  }
+  @catch (JavaLangException *e) {
+    [((RxSubscriber *) nil_chk(val$s_)) onErrorWithNSException:e];
+  }
+  [((RxSubscriber *) nil_chk(val$s_)) onCompleted];
+  [val$s_ onCompleted];
+  [val$s_ onCompleted];
+}
+
+- (instancetype)initWithRxSubscriber:(RxSubscriber *)capture$0 {
+  RxInternalOperatorsOperatorMergeTest_$10_$1_initWithRxSubscriber_(self, capture$0);
+  return self;
+}
+
+- (void)dealloc {
+  RELEASE_(val$s_);
+  [super dealloc];
+}
+
++ (const J2ObjcClassInfo *)__metadata {
+  static J2ObjcMethodInfo methods[] = {
+    { NULL, "V", 0x1, -1, -1, -1, -1, -1, -1 },
+    { NULL, NULL, 0x0, -1, 0, -1, 1, -1, -1 },
+  };
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Wobjc-multiple-method-names"
+  methods[0].selector = @selector(call);
+  methods[1].selector = @selector(initWithRxSubscriber:);
+  #pragma clang diagnostic pop
+  static const J2ObjcFieldInfo fields[] = {
+    { "val$s_", "LRxSubscriber;", .constantValue.asLong = 0, 0x1012, -1, -1, 2, -1 },
+  };
+  static const void *ptrTable[] = { "LRxSubscriber;", "(Lrx/Subscriber<-Ljava/lang/Integer;>;)V", "Lrx/Subscriber<-Ljava/lang/Integer;>;", "LRxInternalOperatorsOperatorMergeTest_$10;", "callWithId:" };
+  static const J2ObjcClassInfo _RxInternalOperatorsOperatorMergeTest_$10_$1 = { "", "rx.internal.operators", ptrTable, methods, fields, 7, 0x8008, 2, 1, 3, -1, 4, -1, -1 };
+  return &_RxInternalOperatorsOperatorMergeTest_$10_$1;
+}
+
+@end
+
+void RxInternalOperatorsOperatorMergeTest_$10_$1_initWithRxSubscriber_(RxInternalOperatorsOperatorMergeTest_$10_$1 *self, RxSubscriber *capture$0) {
+  JreStrongAssign(&self->val$s_, capture$0);
+  NSObject_init(self);
+}
+
+RxInternalOperatorsOperatorMergeTest_$10_$1 *new_RxInternalOperatorsOperatorMergeTest_$10_$1_initWithRxSubscriber_(RxSubscriber *capture$0) {
+  J2OBJC_NEW_IMPL(RxInternalOperatorsOperatorMergeTest_$10_$1, initWithRxSubscriber_, capture$0)
+}
+
+RxInternalOperatorsOperatorMergeTest_$10_$1 *create_RxInternalOperatorsOperatorMergeTest_$10_$1_initWithRxSubscriber_(RxSubscriber *capture$0) {
+  J2OBJC_CREATE_IMPL(RxInternalOperatorsOperatorMergeTest_$10_$1, initWithRxSubscriber_, capture$0)
+}
+
+@implementation RxInternalOperatorsOperatorMergeTest_$11
+
+- (void)onNextWithId:(JavaLangInteger *)t {
+  [((JavaIoPrintStream *) nil_chk(JreLoadStatic(JavaLangSystem, err))) printlnWithNSString:JreStrcat("$@$@", @"testSubscriber received => ", t, @"  on thread ", JavaLangThread_currentThread())];
+  [super onNextWithId:t];
+}
+
+J2OBJC_IGNORE_DESIGNATED_BEGIN
+- (instancetype)init {
+  RxInternalOperatorsOperatorMergeTest_$11_init(self);
+  return self;
+}
+J2OBJC_IGNORE_DESIGNATED_END
+
+- (void)dealloc {
+  JreCheckFinalize(self, [RxInternalOperatorsOperatorMergeTest_$11 class]);
+  [super dealloc];
+}
+
++ (const J2ObjcClassInfo *)__metadata {
+  static J2ObjcMethodInfo methods[] = {
+    { NULL, "V", 0x1, 0, 1, -1, 2, -1, -1 },
+    { NULL, NULL, 0x0, -1, -1, -1, -1, -1, -1 },
+  };
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Wobjc-multiple-method-names"
+  methods[0].selector = @selector(onNextWithId:);
+  methods[1].selector = @selector(init);
+  #pragma clang diagnostic pop
+  static const void *ptrTable[] = { "onNext", "LJavaLangInteger;", "(Ljava/lang/Integer;)V", "LRxInternalOperatorsOperatorMergeTest;", "testBackpressureUpstream", "Lrx/observers/TestSubscriber<Ljava/lang/Integer;>;" };
+  static const J2ObjcClassInfo _RxInternalOperatorsOperatorMergeTest_$11 = { "", "rx.internal.operators", ptrTable, methods, NULL, 7, 0x8008, 2, 0, 3, -1, 4, 5, -1 };
+  return &_RxInternalOperatorsOperatorMergeTest_$11;
+}
+
+@end
+
+void RxInternalOperatorsOperatorMergeTest_$11_init(RxInternalOperatorsOperatorMergeTest_$11 *self) {
+  RxObserversTestSubscriber_init(self);
+}
+
+RxInternalOperatorsOperatorMergeTest_$11 *new_RxInternalOperatorsOperatorMergeTest_$11_init() {
+  J2OBJC_NEW_IMPL(RxInternalOperatorsOperatorMergeTest_$11, init)
+}
+
+RxInternalOperatorsOperatorMergeTest_$11 *create_RxInternalOperatorsOperatorMergeTest_$11_init() {
+  J2OBJC_CREATE_IMPL(RxInternalOperatorsOperatorMergeTest_$11, init)
+}
+
+@implementation RxInternalOperatorsOperatorMergeTest_$12
 
 - (void)onNextWithId:(JavaLangInteger *)t {
   [super onNextWithId:t];
@@ -239,13 +3428,13 @@ J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxInternalOperatorsOperatorMergeTest)
 
 J2OBJC_IGNORE_DESIGNATED_BEGIN
 - (instancetype)init {
-  RxInternalOperatorsOperatorMergeTest_$1_init(self);
+  RxInternalOperatorsOperatorMergeTest_$12_init(self);
   return self;
 }
 J2OBJC_IGNORE_DESIGNATED_END
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOperatorMergeTest_$1 class]);
+  JreCheckFinalize(self, [RxInternalOperatorsOperatorMergeTest_$12 class]);
   [super dealloc];
 }
 
@@ -260,32 +3449,367 @@ J2OBJC_IGNORE_DESIGNATED_END
   methods[1].selector = @selector(init);
   #pragma clang diagnostic pop
   static const void *ptrTable[] = { "onNext", "LJavaLangInteger;", "(Ljava/lang/Integer;)V", "LRxInternalOperatorsOperatorMergeTest;", "testBackpressureUpstream2", "Lrx/observers/TestSubscriber<Ljava/lang/Integer;>;" };
-  static const J2ObjcClassInfo _RxInternalOperatorsOperatorMergeTest_$1 = { "", "rx.internal.operators", ptrTable, methods, NULL, 7, 0x8008, 2, 0, 3, -1, 4, 5, -1 };
-  return &_RxInternalOperatorsOperatorMergeTest_$1;
+  static const J2ObjcClassInfo _RxInternalOperatorsOperatorMergeTest_$12 = { "", "rx.internal.operators", ptrTable, methods, NULL, 7, 0x8008, 2, 0, 3, -1, 4, 5, -1 };
+  return &_RxInternalOperatorsOperatorMergeTest_$12;
 }
 
 @end
 
-void RxInternalOperatorsOperatorMergeTest_$1_init(RxInternalOperatorsOperatorMergeTest_$1 *self) {
+void RxInternalOperatorsOperatorMergeTest_$12_init(RxInternalOperatorsOperatorMergeTest_$12 *self) {
   RxObserversTestSubscriber_init(self);
 }
 
-RxInternalOperatorsOperatorMergeTest_$1 *new_RxInternalOperatorsOperatorMergeTest_$1_init() {
-  J2OBJC_NEW_IMPL(RxInternalOperatorsOperatorMergeTest_$1, init)
+RxInternalOperatorsOperatorMergeTest_$12 *new_RxInternalOperatorsOperatorMergeTest_$12_init() {
+  J2OBJC_NEW_IMPL(RxInternalOperatorsOperatorMergeTest_$12, init)
 }
 
-RxInternalOperatorsOperatorMergeTest_$1 *create_RxInternalOperatorsOperatorMergeTest_$1_init() {
-  J2OBJC_CREATE_IMPL(RxInternalOperatorsOperatorMergeTest_$1, init)
+RxInternalOperatorsOperatorMergeTest_$12 *create_RxInternalOperatorsOperatorMergeTest_$12_init() {
+  J2OBJC_CREATE_IMPL(RxInternalOperatorsOperatorMergeTest_$12, init)
 }
 
-@implementation RxInternalOperatorsOperatorMergeTest_$2
+@implementation RxInternalOperatorsOperatorMergeTest_$13
+
+- (void)onNextWithId:(JavaLangInteger *)t {
+  if ([((JavaLangInteger *) nil_chk(t)) intValue] < 100) @try {
+    JavaLangThread_sleepWithLong_(1);
+  }
+  @catch (JavaLangInterruptedException *e) {
+    [((JavaLangInterruptedException *) nil_chk(e)) printStackTrace];
+  }
+  [super onNextWithId:t];
+}
+
+J2OBJC_IGNORE_DESIGNATED_BEGIN
+- (instancetype)init {
+  RxInternalOperatorsOperatorMergeTest_$13_init(self);
+  return self;
+}
+J2OBJC_IGNORE_DESIGNATED_END
+
+- (void)dealloc {
+  JreCheckFinalize(self, [RxInternalOperatorsOperatorMergeTest_$13 class]);
+  [super dealloc];
+}
+
++ (const J2ObjcClassInfo *)__metadata {
+  static J2ObjcMethodInfo methods[] = {
+    { NULL, "V", 0x1, 0, 1, -1, 2, -1, -1 },
+    { NULL, NULL, 0x0, -1, -1, -1, -1, -1, -1 },
+  };
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Wobjc-multiple-method-names"
+  methods[0].selector = @selector(onNextWithId:);
+  methods[1].selector = @selector(init);
+  #pragma clang diagnostic pop
+  static const void *ptrTable[] = { "onNext", "LJavaLangInteger;", "(Ljava/lang/Integer;)V", "LRxInternalOperatorsOperatorMergeTest;", "testBackpressureDownstreamWithConcurrentStreams", "Lrx/observers/TestSubscriber<Ljava/lang/Integer;>;" };
+  static const J2ObjcClassInfo _RxInternalOperatorsOperatorMergeTest_$13 = { "", "rx.internal.operators", ptrTable, methods, NULL, 7, 0x8008, 2, 0, 3, -1, 4, 5, -1 };
+  return &_RxInternalOperatorsOperatorMergeTest_$13;
+}
+
+@end
+
+void RxInternalOperatorsOperatorMergeTest_$13_init(RxInternalOperatorsOperatorMergeTest_$13 *self) {
+  RxObserversTestSubscriber_init(self);
+}
+
+RxInternalOperatorsOperatorMergeTest_$13 *new_RxInternalOperatorsOperatorMergeTest_$13_init() {
+  J2OBJC_NEW_IMPL(RxInternalOperatorsOperatorMergeTest_$13, init)
+}
+
+RxInternalOperatorsOperatorMergeTest_$13 *create_RxInternalOperatorsOperatorMergeTest_$13_init() {
+  J2OBJC_CREATE_IMPL(RxInternalOperatorsOperatorMergeTest_$13, init)
+}
+
+@implementation RxInternalOperatorsOperatorMergeTest_$14
+
+- (RxObservable *)callWithId:(JavaLangInteger *)t1 {
+  return RxObservable_justWithId_(t1);
+}
+
+J2OBJC_IGNORE_DESIGNATED_BEGIN
+- (instancetype)init {
+  RxInternalOperatorsOperatorMergeTest_$14_init(self);
+  return self;
+}
+J2OBJC_IGNORE_DESIGNATED_END
+
++ (const J2ObjcClassInfo *)__metadata {
+  static J2ObjcMethodInfo methods[] = {
+    { NULL, "LRxObservable;", 0x1, 0, 1, -1, 2, -1, -1 },
+    { NULL, NULL, 0x0, -1, -1, -1, -1, -1, -1 },
+  };
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Wobjc-multiple-method-names"
+  methods[0].selector = @selector(callWithId:);
+  methods[1].selector = @selector(init);
+  #pragma clang diagnostic pop
+  static const void *ptrTable[] = { "call", "LJavaLangInteger;", "(Ljava/lang/Integer;)Lrx/Observable<Ljava/lang/Integer;>;", "LRxInternalOperatorsOperatorMergeTest;", "testBackpressureBothUpstreamAndDownstreamWithSynchronousScalarObservables", "Ljava/lang/Object;Lrx/functions/Func1<Ljava/lang/Integer;Lrx/Observable<Ljava/lang/Integer;>;>;" };
+  static const J2ObjcClassInfo _RxInternalOperatorsOperatorMergeTest_$14 = { "", "rx.internal.operators", ptrTable, methods, NULL, 7, 0x8008, 2, 0, 3, -1, 4, 5, -1 };
+  return &_RxInternalOperatorsOperatorMergeTest_$14;
+}
+
+@end
+
+void RxInternalOperatorsOperatorMergeTest_$14_init(RxInternalOperatorsOperatorMergeTest_$14 *self) {
+  NSObject_init(self);
+}
+
+RxInternalOperatorsOperatorMergeTest_$14 *new_RxInternalOperatorsOperatorMergeTest_$14_init() {
+  J2OBJC_NEW_IMPL(RxInternalOperatorsOperatorMergeTest_$14, init)
+}
+
+RxInternalOperatorsOperatorMergeTest_$14 *create_RxInternalOperatorsOperatorMergeTest_$14_init() {
+  J2OBJC_CREATE_IMPL(RxInternalOperatorsOperatorMergeTest_$14, init)
+}
+
+@implementation RxInternalOperatorsOperatorMergeTest_$15
+
+- (void)onNextWithId:(JavaLangInteger *)t {
+  if ([((JavaLangInteger *) nil_chk(t)) intValue] < 100) @try {
+    JavaLangThread_sleepWithLong_(2);
+  }
+  @catch (JavaLangInterruptedException *e) {
+    [((JavaLangInterruptedException *) nil_chk(e)) printStackTrace];
+  }
+  [super onNextWithId:t];
+}
+
+J2OBJC_IGNORE_DESIGNATED_BEGIN
+- (instancetype)init {
+  RxInternalOperatorsOperatorMergeTest_$15_init(self);
+  return self;
+}
+J2OBJC_IGNORE_DESIGNATED_END
+
+- (void)dealloc {
+  JreCheckFinalize(self, [RxInternalOperatorsOperatorMergeTest_$15 class]);
+  [super dealloc];
+}
+
++ (const J2ObjcClassInfo *)__metadata {
+  static J2ObjcMethodInfo methods[] = {
+    { NULL, "V", 0x1, 0, 1, -1, 2, -1, -1 },
+    { NULL, NULL, 0x0, -1, -1, -1, -1, -1, -1 },
+  };
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Wobjc-multiple-method-names"
+  methods[0].selector = @selector(onNextWithId:);
+  methods[1].selector = @selector(init);
+  #pragma clang diagnostic pop
+  static const void *ptrTable[] = { "onNext", "LJavaLangInteger;", "(Ljava/lang/Integer;)V", "LRxInternalOperatorsOperatorMergeTest;", "testBackpressureBothUpstreamAndDownstreamWithSynchronousScalarObservables", "Lrx/observers/TestSubscriber<Ljava/lang/Integer;>;" };
+  static const J2ObjcClassInfo _RxInternalOperatorsOperatorMergeTest_$15 = { "", "rx.internal.operators", ptrTable, methods, NULL, 7, 0x8008, 2, 0, 3, -1, 4, 5, -1 };
+  return &_RxInternalOperatorsOperatorMergeTest_$15;
+}
+
+@end
+
+void RxInternalOperatorsOperatorMergeTest_$15_init(RxInternalOperatorsOperatorMergeTest_$15 *self) {
+  RxObserversTestSubscriber_init(self);
+}
+
+RxInternalOperatorsOperatorMergeTest_$15 *new_RxInternalOperatorsOperatorMergeTest_$15_init() {
+  J2OBJC_NEW_IMPL(RxInternalOperatorsOperatorMergeTest_$15, init)
+}
+
+RxInternalOperatorsOperatorMergeTest_$15 *create_RxInternalOperatorsOperatorMergeTest_$15_init() {
+  J2OBJC_CREATE_IMPL(RxInternalOperatorsOperatorMergeTest_$15, init)
+}
+
+@implementation RxInternalOperatorsOperatorMergeTest_$16
+
+- (RxObservable *)callWithId:(JavaLangInteger *)t1 {
+  return RxObservable_justWithId_withId_withId_(JavaLangInteger_valueOfWithInt_(1), JavaLangInteger_valueOfWithInt_(2), JavaLangInteger_valueOfWithInt_(3));
+}
+
+J2OBJC_IGNORE_DESIGNATED_BEGIN
+- (instancetype)init {
+  RxInternalOperatorsOperatorMergeTest_$16_init(self);
+  return self;
+}
+J2OBJC_IGNORE_DESIGNATED_END
+
++ (const J2ObjcClassInfo *)__metadata {
+  static J2ObjcMethodInfo methods[] = {
+    { NULL, "LRxObservable;", 0x1, 0, 1, -1, 2, -1, -1 },
+    { NULL, NULL, 0x0, -1, -1, -1, -1, -1, -1 },
+  };
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Wobjc-multiple-method-names"
+  methods[0].selector = @selector(callWithId:);
+  methods[1].selector = @selector(init);
+  #pragma clang diagnostic pop
+  static const void *ptrTable[] = { "call", "LJavaLangInteger;", "(Ljava/lang/Integer;)Lrx/Observable<Ljava/lang/Integer;>;", "LRxInternalOperatorsOperatorMergeTest;", "testBackpressureBothUpstreamAndDownstreamWithRegularObservables", "Ljava/lang/Object;Lrx/functions/Func1<Ljava/lang/Integer;Lrx/Observable<Ljava/lang/Integer;>;>;" };
+  static const J2ObjcClassInfo _RxInternalOperatorsOperatorMergeTest_$16 = { "", "rx.internal.operators", ptrTable, methods, NULL, 7, 0x8008, 2, 0, 3, -1, 4, 5, -1 };
+  return &_RxInternalOperatorsOperatorMergeTest_$16;
+}
+
+@end
+
+void RxInternalOperatorsOperatorMergeTest_$16_init(RxInternalOperatorsOperatorMergeTest_$16 *self) {
+  NSObject_init(self);
+}
+
+RxInternalOperatorsOperatorMergeTest_$16 *new_RxInternalOperatorsOperatorMergeTest_$16_init() {
+  J2OBJC_NEW_IMPL(RxInternalOperatorsOperatorMergeTest_$16, init)
+}
+
+RxInternalOperatorsOperatorMergeTest_$16 *create_RxInternalOperatorsOperatorMergeTest_$16_init() {
+  J2OBJC_CREATE_IMPL(RxInternalOperatorsOperatorMergeTest_$16, init)
+}
+
+@implementation RxInternalOperatorsOperatorMergeTest_$17
+
+- (void)onNextWithId:(JavaLangInteger *)t {
+  if (i_++ < 400) @try {
+    JavaLangThread_sleepWithLong_(1);
+  }
+  @catch (JavaLangInterruptedException *e) {
+    [((JavaLangInterruptedException *) nil_chk(e)) printStackTrace];
+  }
+  [super onNextWithId:t];
+}
+
+J2OBJC_IGNORE_DESIGNATED_BEGIN
+- (instancetype)init {
+  RxInternalOperatorsOperatorMergeTest_$17_init(self);
+  return self;
+}
+J2OBJC_IGNORE_DESIGNATED_END
+
+- (void)dealloc {
+  JreCheckFinalize(self, [RxInternalOperatorsOperatorMergeTest_$17 class]);
+  [super dealloc];
+}
+
++ (const J2ObjcClassInfo *)__metadata {
+  static J2ObjcMethodInfo methods[] = {
+    { NULL, "V", 0x1, 0, 1, -1, 2, -1, -1 },
+    { NULL, NULL, 0x0, -1, -1, -1, -1, -1, -1 },
+  };
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Wobjc-multiple-method-names"
+  methods[0].selector = @selector(onNextWithId:);
+  methods[1].selector = @selector(init);
+  #pragma clang diagnostic pop
+  static const J2ObjcFieldInfo fields[] = {
+    { "i_", "I", .constantValue.asLong = 0, 0x0, -1, -1, -1, -1 },
+  };
+  static const void *ptrTable[] = { "onNext", "LJavaLangInteger;", "(Ljava/lang/Integer;)V", "LRxInternalOperatorsOperatorMergeTest;", "testBackpressureBothUpstreamAndDownstreamWithRegularObservables", "Lrx/observers/TestSubscriber<Ljava/lang/Integer;>;" };
+  static const J2ObjcClassInfo _RxInternalOperatorsOperatorMergeTest_$17 = { "", "rx.internal.operators", ptrTable, methods, fields, 7, 0x8008, 2, 1, 3, -1, 4, 5, -1 };
+  return &_RxInternalOperatorsOperatorMergeTest_$17;
+}
+
+@end
+
+void RxInternalOperatorsOperatorMergeTest_$17_init(RxInternalOperatorsOperatorMergeTest_$17 *self) {
+  RxObserversTestSubscriber_init(self);
+  self->i_ = 0;
+}
+
+RxInternalOperatorsOperatorMergeTest_$17 *new_RxInternalOperatorsOperatorMergeTest_$17_init() {
+  J2OBJC_NEW_IMPL(RxInternalOperatorsOperatorMergeTest_$17, init)
+}
+
+RxInternalOperatorsOperatorMergeTest_$17 *create_RxInternalOperatorsOperatorMergeTest_$17_init() {
+  J2OBJC_CREATE_IMPL(RxInternalOperatorsOperatorMergeTest_$17, init)
+}
+
+@implementation RxInternalOperatorsOperatorMergeTest_$18
+
+- (void)callWithId:(RxSubscriber *)s {
+  [((RxSubscriber *) nil_chk(s)) onNextWithId:@"two"];
+  [s unsubscribe];
+  [s onCompleted];
+}
+
+J2OBJC_IGNORE_DESIGNATED_BEGIN
+- (instancetype)init {
+  RxInternalOperatorsOperatorMergeTest_$18_init(self);
+  return self;
+}
+J2OBJC_IGNORE_DESIGNATED_END
+
++ (const J2ObjcClassInfo *)__metadata {
+  static J2ObjcMethodInfo methods[] = {
+    { NULL, "V", 0x1, 0, 1, -1, 2, -1, -1 },
+    { NULL, NULL, 0x0, -1, -1, -1, -1, -1, -1 },
+  };
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Wobjc-multiple-method-names"
+  methods[0].selector = @selector(callWithId:);
+  methods[1].selector = @selector(init);
+  #pragma clang diagnostic pop
+  static const void *ptrTable[] = { "call", "LRxSubscriber;", "(Lrx/Subscriber<-Ljava/lang/String;>;)V", "LRxInternalOperatorsOperatorMergeTest;", "mergeWithTerminalEventAfterUnsubscribe", "Ljava/lang/Object;Lrx/Observable$OnSubscribe<Ljava/lang/String;>;" };
+  static const J2ObjcClassInfo _RxInternalOperatorsOperatorMergeTest_$18 = { "", "rx.internal.operators", ptrTable, methods, NULL, 7, 0x8008, 2, 0, 3, -1, 4, 5, -1 };
+  return &_RxInternalOperatorsOperatorMergeTest_$18;
+}
+
+@end
+
+void RxInternalOperatorsOperatorMergeTest_$18_init(RxInternalOperatorsOperatorMergeTest_$18 *self) {
+  NSObject_init(self);
+}
+
+RxInternalOperatorsOperatorMergeTest_$18 *new_RxInternalOperatorsOperatorMergeTest_$18_init() {
+  J2OBJC_NEW_IMPL(RxInternalOperatorsOperatorMergeTest_$18, init)
+}
+
+RxInternalOperatorsOperatorMergeTest_$18 *create_RxInternalOperatorsOperatorMergeTest_$18_init() {
+  J2OBJC_CREATE_IMPL(RxInternalOperatorsOperatorMergeTest_$18, init)
+}
+
+@implementation RxInternalOperatorsOperatorMergeTest_$19
+
+- (RxObservable *)callWithId:(JavaLangInteger *)i {
+  return [((RxObservable *) nil_chk(RxObservable_rangeWithInt_withInt_(1, val$innerSize_))) subscribeOnWithRxScheduler:RxSchedulersSchedulers_computation()];
+}
+
+- (instancetype)initWithInt:(jint)capture$0 {
+  RxInternalOperatorsOperatorMergeTest_$19_initWithInt_(self, capture$0);
+  return self;
+}
+
++ (const J2ObjcClassInfo *)__metadata {
+  static J2ObjcMethodInfo methods[] = {
+    { NULL, "LRxObservable;", 0x1, 0, 1, -1, 2, -1, -1 },
+    { NULL, NULL, 0x0, -1, 3, -1, -1, -1, -1 },
+  };
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Wobjc-multiple-method-names"
+  methods[0].selector = @selector(callWithId:);
+  methods[1].selector = @selector(initWithInt:);
+  #pragma clang diagnostic pop
+  static const J2ObjcFieldInfo fields[] = {
+    { "val$innerSize_", "I", .constantValue.asLong = 0, 0x1012, -1, -1, -1, -1 },
+  };
+  static const void *ptrTable[] = { "call", "LJavaLangInteger;", "(Ljava/lang/Integer;)Lrx/Observable<Ljava/lang/Integer;>;", "I", "LRxInternalOperatorsOperatorMergeTest;", "mergeNAsyncStreamsOfNWithInt:withInt:", "Ljava/lang/Object;Lrx/functions/Func1<Ljava/lang/Integer;Lrx/Observable<Ljava/lang/Integer;>;>;" };
+  static const J2ObjcClassInfo _RxInternalOperatorsOperatorMergeTest_$19 = { "", "rx.internal.operators", ptrTable, methods, fields, 7, 0x8008, 2, 1, 4, -1, 5, 6, -1 };
+  return &_RxInternalOperatorsOperatorMergeTest_$19;
+}
+
+@end
+
+void RxInternalOperatorsOperatorMergeTest_$19_initWithInt_(RxInternalOperatorsOperatorMergeTest_$19 *self, jint capture$0) {
+  self->val$innerSize_ = capture$0;
+  NSObject_init(self);
+}
+
+RxInternalOperatorsOperatorMergeTest_$19 *new_RxInternalOperatorsOperatorMergeTest_$19_initWithInt_(jint capture$0) {
+  J2OBJC_NEW_IMPL(RxInternalOperatorsOperatorMergeTest_$19, initWithInt_, capture$0)
+}
+
+RxInternalOperatorsOperatorMergeTest_$19 *create_RxInternalOperatorsOperatorMergeTest_$19_initWithInt_(jint capture$0) {
+  J2OBJC_CREATE_IMPL(RxInternalOperatorsOperatorMergeTest_$19, initWithInt_, capture$0)
+}
+
+@implementation RxInternalOperatorsOperatorMergeTest_$20
 
 - (RxObservable *)callWithId:(JavaLangInteger *)i {
   return RxObservable_rangeWithInt_withInt_(1, val$innerSize_);
 }
 
 - (instancetype)initWithInt:(jint)capture$0 {
-  RxInternalOperatorsOperatorMergeTest_$2_initWithInt_(self, capture$0);
+  RxInternalOperatorsOperatorMergeTest_$20_initWithInt_(self, capture$0);
   return self;
 }
 
@@ -303,33 +3827,33 @@ RxInternalOperatorsOperatorMergeTest_$1 *create_RxInternalOperatorsOperatorMerge
     { "val$innerSize_", "I", .constantValue.asLong = 0, 0x1012, -1, -1, -1, -1 },
   };
   static const void *ptrTable[] = { "call", "LJavaLangInteger;", "(Ljava/lang/Integer;)Lrx/Observable<Ljava/lang/Integer;>;", "I", "LRxInternalOperatorsOperatorMergeTest;", "mergeNSyncStreamsOfNWithInt:withInt:", "Ljava/lang/Object;Lrx/functions/Func1<Ljava/lang/Integer;Lrx/Observable<Ljava/lang/Integer;>;>;" };
-  static const J2ObjcClassInfo _RxInternalOperatorsOperatorMergeTest_$2 = { "", "rx.internal.operators", ptrTable, methods, fields, 7, 0x8008, 2, 1, 4, -1, 5, 6, -1 };
-  return &_RxInternalOperatorsOperatorMergeTest_$2;
+  static const J2ObjcClassInfo _RxInternalOperatorsOperatorMergeTest_$20 = { "", "rx.internal.operators", ptrTable, methods, fields, 7, 0x8008, 2, 1, 4, -1, 5, 6, -1 };
+  return &_RxInternalOperatorsOperatorMergeTest_$20;
 }
 
 @end
 
-void RxInternalOperatorsOperatorMergeTest_$2_initWithInt_(RxInternalOperatorsOperatorMergeTest_$2 *self, jint capture$0) {
+void RxInternalOperatorsOperatorMergeTest_$20_initWithInt_(RxInternalOperatorsOperatorMergeTest_$20 *self, jint capture$0) {
   self->val$innerSize_ = capture$0;
   NSObject_init(self);
 }
 
-RxInternalOperatorsOperatorMergeTest_$2 *new_RxInternalOperatorsOperatorMergeTest_$2_initWithInt_(jint capture$0) {
-  J2OBJC_NEW_IMPL(RxInternalOperatorsOperatorMergeTest_$2, initWithInt_, capture$0)
+RxInternalOperatorsOperatorMergeTest_$20 *new_RxInternalOperatorsOperatorMergeTest_$20_initWithInt_(jint capture$0) {
+  J2OBJC_NEW_IMPL(RxInternalOperatorsOperatorMergeTest_$20, initWithInt_, capture$0)
 }
 
-RxInternalOperatorsOperatorMergeTest_$2 *create_RxInternalOperatorsOperatorMergeTest_$2_initWithInt_(jint capture$0) {
-  J2OBJC_CREATE_IMPL(RxInternalOperatorsOperatorMergeTest_$2, initWithInt_, capture$0)
+RxInternalOperatorsOperatorMergeTest_$20 *create_RxInternalOperatorsOperatorMergeTest_$20_initWithInt_(jint capture$0) {
+  J2OBJC_CREATE_IMPL(RxInternalOperatorsOperatorMergeTest_$20, initWithInt_, capture$0)
 }
 
-@implementation RxInternalOperatorsOperatorMergeTest_$3
+@implementation RxInternalOperatorsOperatorMergeTest_$21
 
 - (id<JavaUtilIterator>)iterator {
-  return create_RxInternalOperatorsOperatorMergeTest_$3_$1_initWithRxInternalOperatorsOperatorMergeTest_$3_(self);
+  return create_RxInternalOperatorsOperatorMergeTest_$21_$1_initWithRxInternalOperatorsOperatorMergeTest_$21_(self);
 }
 
 - (instancetype)initWithJavaUtilConcurrentAtomicAtomicInteger:(JavaUtilConcurrentAtomicAtomicInteger *)capture$0 {
-  RxInternalOperatorsOperatorMergeTest_$3_initWithJavaUtilConcurrentAtomicAtomicInteger_(self, capture$0);
+  RxInternalOperatorsOperatorMergeTest_$21_initWithJavaUtilConcurrentAtomicAtomicInteger_(self, capture$0);
   return self;
 }
 
@@ -364,26 +3888,26 @@ RxInternalOperatorsOperatorMergeTest_$2 *create_RxInternalOperatorsOperatorMerge
     { "val$generated_", "LJavaUtilConcurrentAtomicAtomicInteger;", .constantValue.asLong = 0, 0x1012, -1, -1, -1, -1 },
   };
   static const void *ptrTable[] = { "()Ljava/util/Iterator<Ljava/lang/Integer;>;", "LJavaUtilConcurrentAtomicAtomicInteger;", "LRxInternalOperatorsOperatorMergeTest;", "createInfiniteObservableWithJavaUtilConcurrentAtomicAtomicInteger:", "Ljava/lang/Object;Ljava/lang/Iterable<Ljava/lang/Integer;>;" };
-  static const J2ObjcClassInfo _RxInternalOperatorsOperatorMergeTest_$3 = { "", "rx.internal.operators", ptrTable, methods, fields, 7, 0x8008, 2, 1, 2, -1, 3, 4, -1 };
-  return &_RxInternalOperatorsOperatorMergeTest_$3;
+  static const J2ObjcClassInfo _RxInternalOperatorsOperatorMergeTest_$21 = { "", "rx.internal.operators", ptrTable, methods, fields, 7, 0x8008, 2, 1, 2, -1, 3, 4, -1 };
+  return &_RxInternalOperatorsOperatorMergeTest_$21;
 }
 
 @end
 
-void RxInternalOperatorsOperatorMergeTest_$3_initWithJavaUtilConcurrentAtomicAtomicInteger_(RxInternalOperatorsOperatorMergeTest_$3 *self, JavaUtilConcurrentAtomicAtomicInteger *capture$0) {
+void RxInternalOperatorsOperatorMergeTest_$21_initWithJavaUtilConcurrentAtomicAtomicInteger_(RxInternalOperatorsOperatorMergeTest_$21 *self, JavaUtilConcurrentAtomicAtomicInteger *capture$0) {
   JreStrongAssign(&self->val$generated_, capture$0);
   NSObject_init(self);
 }
 
-RxInternalOperatorsOperatorMergeTest_$3 *new_RxInternalOperatorsOperatorMergeTest_$3_initWithJavaUtilConcurrentAtomicAtomicInteger_(JavaUtilConcurrentAtomicAtomicInteger *capture$0) {
-  J2OBJC_NEW_IMPL(RxInternalOperatorsOperatorMergeTest_$3, initWithJavaUtilConcurrentAtomicAtomicInteger_, capture$0)
+RxInternalOperatorsOperatorMergeTest_$21 *new_RxInternalOperatorsOperatorMergeTest_$21_initWithJavaUtilConcurrentAtomicAtomicInteger_(JavaUtilConcurrentAtomicAtomicInteger *capture$0) {
+  J2OBJC_NEW_IMPL(RxInternalOperatorsOperatorMergeTest_$21, initWithJavaUtilConcurrentAtomicAtomicInteger_, capture$0)
 }
 
-RxInternalOperatorsOperatorMergeTest_$3 *create_RxInternalOperatorsOperatorMergeTest_$3_initWithJavaUtilConcurrentAtomicAtomicInteger_(JavaUtilConcurrentAtomicAtomicInteger *capture$0) {
-  J2OBJC_CREATE_IMPL(RxInternalOperatorsOperatorMergeTest_$3, initWithJavaUtilConcurrentAtomicAtomicInteger_, capture$0)
+RxInternalOperatorsOperatorMergeTest_$21 *create_RxInternalOperatorsOperatorMergeTest_$21_initWithJavaUtilConcurrentAtomicAtomicInteger_(JavaUtilConcurrentAtomicAtomicInteger *capture$0) {
+  J2OBJC_CREATE_IMPL(RxInternalOperatorsOperatorMergeTest_$21, initWithJavaUtilConcurrentAtomicAtomicInteger_, capture$0)
 }
 
-@implementation RxInternalOperatorsOperatorMergeTest_$3_$1
+@implementation RxInternalOperatorsOperatorMergeTest_$21_$1
 
 - (void)remove {
 }
@@ -396,8 +3920,8 @@ RxInternalOperatorsOperatorMergeTest_$3 *create_RxInternalOperatorsOperatorMerge
   return true;
 }
 
-- (instancetype)initWithRxInternalOperatorsOperatorMergeTest_$3:(RxInternalOperatorsOperatorMergeTest_$3 *)outer$ {
-  RxInternalOperatorsOperatorMergeTest_$3_$1_initWithRxInternalOperatorsOperatorMergeTest_$3_(self, outer$);
+- (instancetype)initWithRxInternalOperatorsOperatorMergeTest_$21:(RxInternalOperatorsOperatorMergeTest_$21 *)outer$ {
+  RxInternalOperatorsOperatorMergeTest_$21_$1_initWithRxInternalOperatorsOperatorMergeTest_$21_(self, outer$);
   return self;
 }
 
@@ -422,27 +3946,743 @@ RxInternalOperatorsOperatorMergeTest_$3 *create_RxInternalOperatorsOperatorMerge
   methods[0].selector = @selector(remove);
   methods[1].selector = @selector(next);
   methods[2].selector = @selector(hasNext);
-  methods[3].selector = @selector(initWithRxInternalOperatorsOperatorMergeTest_$3:);
+  methods[3].selector = @selector(initWithRxInternalOperatorsOperatorMergeTest_$21:);
   #pragma clang diagnostic pop
   static const J2ObjcFieldInfo fields[] = {
-    { "this$0_", "LRxInternalOperatorsOperatorMergeTest_$3;", .constantValue.asLong = 0, 0x1012, -1, -1, -1, -1 },
+    { "this$0_", "LRxInternalOperatorsOperatorMergeTest_$21;", .constantValue.asLong = 0, 0x1012, -1, -1, -1, -1 },
   };
-  static const void *ptrTable[] = { "LRxInternalOperatorsOperatorMergeTest_$3;", "iterator", "Ljava/lang/Object;Ljava/util/Iterator<Ljava/lang/Integer;>;" };
-  static const J2ObjcClassInfo _RxInternalOperatorsOperatorMergeTest_$3_$1 = { "", "rx.internal.operators", ptrTable, methods, fields, 7, 0x8008, 4, 1, 0, -1, 1, 2, -1 };
-  return &_RxInternalOperatorsOperatorMergeTest_$3_$1;
+  static const void *ptrTable[] = { "LRxInternalOperatorsOperatorMergeTest_$21;", "iterator", "Ljava/lang/Object;Ljava/util/Iterator<Ljava/lang/Integer;>;" };
+  static const J2ObjcClassInfo _RxInternalOperatorsOperatorMergeTest_$21_$1 = { "", "rx.internal.operators", ptrTable, methods, fields, 7, 0x8008, 4, 1, 0, -1, 1, 2, -1 };
+  return &_RxInternalOperatorsOperatorMergeTest_$21_$1;
 }
 
 @end
 
-void RxInternalOperatorsOperatorMergeTest_$3_$1_initWithRxInternalOperatorsOperatorMergeTest_$3_(RxInternalOperatorsOperatorMergeTest_$3_$1 *self, RxInternalOperatorsOperatorMergeTest_$3 *outer$) {
+void RxInternalOperatorsOperatorMergeTest_$21_$1_initWithRxInternalOperatorsOperatorMergeTest_$21_(RxInternalOperatorsOperatorMergeTest_$21_$1 *self, RxInternalOperatorsOperatorMergeTest_$21 *outer$) {
   JreStrongAssign(&self->this$0_, outer$);
   NSObject_init(self);
 }
 
-RxInternalOperatorsOperatorMergeTest_$3_$1 *new_RxInternalOperatorsOperatorMergeTest_$3_$1_initWithRxInternalOperatorsOperatorMergeTest_$3_(RxInternalOperatorsOperatorMergeTest_$3 *outer$) {
-  J2OBJC_NEW_IMPL(RxInternalOperatorsOperatorMergeTest_$3_$1, initWithRxInternalOperatorsOperatorMergeTest_$3_, outer$)
+RxInternalOperatorsOperatorMergeTest_$21_$1 *new_RxInternalOperatorsOperatorMergeTest_$21_$1_initWithRxInternalOperatorsOperatorMergeTest_$21_(RxInternalOperatorsOperatorMergeTest_$21 *outer$) {
+  J2OBJC_NEW_IMPL(RxInternalOperatorsOperatorMergeTest_$21_$1, initWithRxInternalOperatorsOperatorMergeTest_$21_, outer$)
 }
 
-RxInternalOperatorsOperatorMergeTest_$3_$1 *create_RxInternalOperatorsOperatorMergeTest_$3_$1_initWithRxInternalOperatorsOperatorMergeTest_$3_(RxInternalOperatorsOperatorMergeTest_$3 *outer$) {
-  J2OBJC_CREATE_IMPL(RxInternalOperatorsOperatorMergeTest_$3_$1, initWithRxInternalOperatorsOperatorMergeTest_$3_, outer$)
+RxInternalOperatorsOperatorMergeTest_$21_$1 *create_RxInternalOperatorsOperatorMergeTest_$21_$1_initWithRxInternalOperatorsOperatorMergeTest_$21_(RxInternalOperatorsOperatorMergeTest_$21 *outer$) {
+  J2OBJC_CREATE_IMPL(RxInternalOperatorsOperatorMergeTest_$21_$1, initWithRxInternalOperatorsOperatorMergeTest_$21_, outer$)
+}
+
+@implementation RxInternalOperatorsOperatorMergeTest_$22
+
+- (RxObservable *)callWithId:(JavaLangInteger *)i {
+  return [((RxObservable *) nil_chk([((RxObservable *) nil_chk(RxObservable_createWithRxObservable_OnSubscribe_(create_RxInternalOperatorsOperatorMergeTest_$22_$1_initWithJavaLangInteger_(i)))) subscribeOnWithRxScheduler:RxSchedulersSchedulers_computation()])) cache];
+}
+
+J2OBJC_IGNORE_DESIGNATED_BEGIN
+- (instancetype)init {
+  RxInternalOperatorsOperatorMergeTest_$22_init(self);
+  return self;
+}
+J2OBJC_IGNORE_DESIGNATED_END
+
++ (const J2ObjcClassInfo *)__metadata {
+  static J2ObjcMethodInfo methods[] = {
+    { NULL, "LRxObservable;", 0x1, 0, 1, -1, 2, -1, -1 },
+    { NULL, NULL, 0x0, -1, -1, -1, -1, -1, -1 },
+  };
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Wobjc-multiple-method-names"
+  methods[0].selector = @selector(callWithId:);
+  methods[1].selector = @selector(init);
+  #pragma clang diagnostic pop
+  static const void *ptrTable[] = { "call", "LJavaLangInteger;", "(Ljava/lang/Integer;)Lrx/Observable<Ljava/lang/Integer;>;", "LRxInternalOperatorsOperatorMergeTest;", "mergeManyAsyncSingle", "Ljava/lang/Object;Lrx/functions/Func1<Ljava/lang/Integer;Lrx/Observable<Ljava/lang/Integer;>;>;" };
+  static const J2ObjcClassInfo _RxInternalOperatorsOperatorMergeTest_$22 = { "", "rx.internal.operators", ptrTable, methods, NULL, 7, 0x8008, 2, 0, 3, -1, 4, 5, -1 };
+  return &_RxInternalOperatorsOperatorMergeTest_$22;
+}
+
+@end
+
+void RxInternalOperatorsOperatorMergeTest_$22_init(RxInternalOperatorsOperatorMergeTest_$22 *self) {
+  NSObject_init(self);
+}
+
+RxInternalOperatorsOperatorMergeTest_$22 *new_RxInternalOperatorsOperatorMergeTest_$22_init() {
+  J2OBJC_NEW_IMPL(RxInternalOperatorsOperatorMergeTest_$22, init)
+}
+
+RxInternalOperatorsOperatorMergeTest_$22 *create_RxInternalOperatorsOperatorMergeTest_$22_init() {
+  J2OBJC_CREATE_IMPL(RxInternalOperatorsOperatorMergeTest_$22, init)
+}
+
+@implementation RxInternalOperatorsOperatorMergeTest_$22_$1
+
+- (void)callWithId:(RxSubscriber *)s {
+  if ([((JavaLangInteger *) nil_chk(val$i_)) intValue] < 500) {
+    @try {
+      JavaLangThread_sleepWithLong_(1);
+    }
+    @catch (JavaLangInterruptedException *e) {
+      [((JavaLangInterruptedException *) nil_chk(e)) printStackTrace];
+    }
+  }
+  [((RxSubscriber *) nil_chk(s)) onNextWithId:val$i_];
+  [s onCompleted];
+}
+
+- (instancetype)initWithJavaLangInteger:(JavaLangInteger *)capture$0 {
+  RxInternalOperatorsOperatorMergeTest_$22_$1_initWithJavaLangInteger_(self, capture$0);
+  return self;
+}
+
+- (void)dealloc {
+  RELEASE_(val$i_);
+  [super dealloc];
+}
+
++ (const J2ObjcClassInfo *)__metadata {
+  static J2ObjcMethodInfo methods[] = {
+    { NULL, "V", 0x1, 0, 1, -1, 2, -1, -1 },
+    { NULL, NULL, 0x0, -1, 3, -1, -1, -1, -1 },
+  };
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Wobjc-multiple-method-names"
+  methods[0].selector = @selector(callWithId:);
+  methods[1].selector = @selector(initWithJavaLangInteger:);
+  #pragma clang diagnostic pop
+  static const J2ObjcFieldInfo fields[] = {
+    { "val$i_", "LJavaLangInteger;", .constantValue.asLong = 0, 0x1012, -1, -1, -1, -1 },
+  };
+  static const void *ptrTable[] = { "call", "LRxSubscriber;", "(Lrx/Subscriber<-Ljava/lang/Integer;>;)V", "LJavaLangInteger;", "LRxInternalOperatorsOperatorMergeTest_$22;", "callWithId:", "Ljava/lang/Object;Lrx/Observable$OnSubscribe<Ljava/lang/Integer;>;" };
+  static const J2ObjcClassInfo _RxInternalOperatorsOperatorMergeTest_$22_$1 = { "", "rx.internal.operators", ptrTable, methods, fields, 7, 0x8008, 2, 1, 4, -1, 5, 6, -1 };
+  return &_RxInternalOperatorsOperatorMergeTest_$22_$1;
+}
+
+@end
+
+void RxInternalOperatorsOperatorMergeTest_$22_$1_initWithJavaLangInteger_(RxInternalOperatorsOperatorMergeTest_$22_$1 *self, JavaLangInteger *capture$0) {
+  JreStrongAssign(&self->val$i_, capture$0);
+  NSObject_init(self);
+}
+
+RxInternalOperatorsOperatorMergeTest_$22_$1 *new_RxInternalOperatorsOperatorMergeTest_$22_$1_initWithJavaLangInteger_(JavaLangInteger *capture$0) {
+  J2OBJC_NEW_IMPL(RxInternalOperatorsOperatorMergeTest_$22_$1, initWithJavaLangInteger_, capture$0)
+}
+
+RxInternalOperatorsOperatorMergeTest_$22_$1 *create_RxInternalOperatorsOperatorMergeTest_$22_$1_initWithJavaLangInteger_(JavaLangInteger *capture$0) {
+  J2OBJC_CREATE_IMPL(RxInternalOperatorsOperatorMergeTest_$22_$1, initWithJavaLangInteger_, capture$0)
+}
+
+@implementation RxInternalOperatorsOperatorMergeTest_$23
+
+- (RxObservable *)callWithId:(JavaLangInteger *)number {
+  return [((RxObservable *) nil_chk([((RxObservable *) nil_chk([((RxObservable *) nil_chk([((RxObservable *) nil_chk([((RxObservable *) nil_chk(RxObservable_rangeWithInt_withInt_(1, JavaLangInteger_MAX_VALUE))) doOnRequestWithRxFunctionsAction1:create_RxInternalOperatorsOperatorMergeTest_$23_$1_initWithRxInternalOperatorsOperatorMergeTest_$23_withJavaLangInteger_(self, number)])) doOnNextWithRxFunctionsAction1:RxInternalOperatorsOperatorMergeTest_pauseForMsWithLong_(3)])) onBackpressureBuffer])) subscribeOnWithRxScheduler:RxSchedulersSchedulers_computation()])) doOnRequestWithRxFunctionsAction1:create_RxInternalOperatorsOperatorMergeTest_$23_$2_initWithRxInternalOperatorsOperatorMergeTest_$23_withJavaLangInteger_(self, number)];
+}
+
+- (instancetype)initWithJavaUtilConcurrentConcurrentLinkedQueue:(JavaUtilConcurrentConcurrentLinkedQueue *)capture$0 {
+  RxInternalOperatorsOperatorMergeTest_$23_initWithJavaUtilConcurrentConcurrentLinkedQueue_(self, capture$0);
+  return self;
+}
+
+- (void)dealloc {
+  RELEASE_(val$messages_);
+  [super dealloc];
+}
+
++ (const J2ObjcClassInfo *)__metadata {
+  static J2ObjcMethodInfo methods[] = {
+    { NULL, "LRxObservable;", 0x1, 0, 1, -1, 2, -1, -1 },
+    { NULL, NULL, 0x0, -1, 3, -1, 4, -1, -1 },
+  };
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Wobjc-multiple-method-names"
+  methods[0].selector = @selector(callWithId:);
+  methods[1].selector = @selector(initWithJavaUtilConcurrentConcurrentLinkedQueue:);
+  #pragma clang diagnostic pop
+  static const J2ObjcFieldInfo fields[] = {
+    { "val$messages_", "LJavaUtilConcurrentConcurrentLinkedQueue;", .constantValue.asLong = 0, 0x1012, -1, -1, 5, -1 },
+  };
+  static const void *ptrTable[] = { "call", "LJavaLangInteger;", "(Ljava/lang/Integer;)Lrx/Observable<Ljava/lang/Integer;>;", "LJavaUtilConcurrentConcurrentLinkedQueue;", "(Ljava/util/concurrent/ConcurrentLinkedQueue<Ljava/lang/String;>;)V", "Ljava/util/concurrent/ConcurrentLinkedQueue<Ljava/lang/String;>;", "LRxInternalOperatorsOperatorMergeTest;", "testMergeKeepsRequesting", "Ljava/lang/Object;Lrx/functions/Func1<Ljava/lang/Integer;Lrx/Observable<Ljava/lang/Integer;>;>;" };
+  static const J2ObjcClassInfo _RxInternalOperatorsOperatorMergeTest_$23 = { "", "rx.internal.operators", ptrTable, methods, fields, 7, 0x8008, 2, 1, 6, -1, 7, 8, -1 };
+  return &_RxInternalOperatorsOperatorMergeTest_$23;
+}
+
+@end
+
+void RxInternalOperatorsOperatorMergeTest_$23_initWithJavaUtilConcurrentConcurrentLinkedQueue_(RxInternalOperatorsOperatorMergeTest_$23 *self, JavaUtilConcurrentConcurrentLinkedQueue *capture$0) {
+  JreStrongAssign(&self->val$messages_, capture$0);
+  NSObject_init(self);
+}
+
+RxInternalOperatorsOperatorMergeTest_$23 *new_RxInternalOperatorsOperatorMergeTest_$23_initWithJavaUtilConcurrentConcurrentLinkedQueue_(JavaUtilConcurrentConcurrentLinkedQueue *capture$0) {
+  J2OBJC_NEW_IMPL(RxInternalOperatorsOperatorMergeTest_$23, initWithJavaUtilConcurrentConcurrentLinkedQueue_, capture$0)
+}
+
+RxInternalOperatorsOperatorMergeTest_$23 *create_RxInternalOperatorsOperatorMergeTest_$23_initWithJavaUtilConcurrentConcurrentLinkedQueue_(JavaUtilConcurrentConcurrentLinkedQueue *capture$0) {
+  J2OBJC_CREATE_IMPL(RxInternalOperatorsOperatorMergeTest_$23, initWithJavaUtilConcurrentConcurrentLinkedQueue_, capture$0)
+}
+
+@implementation RxInternalOperatorsOperatorMergeTest_$23_$1
+
+- (void)callWithId:(JavaLangLong *)n {
+  [((JavaUtilConcurrentConcurrentLinkedQueue *) nil_chk(this$0_->val$messages_)) addWithId:JreStrcat("$@$@", @">>>>>>>> A requested[", val$number_, @"]: ", n)];
+}
+
+- (instancetype)initWithRxInternalOperatorsOperatorMergeTest_$23:(RxInternalOperatorsOperatorMergeTest_$23 *)outer$
+                                             withJavaLangInteger:(JavaLangInteger *)capture$0 {
+  RxInternalOperatorsOperatorMergeTest_$23_$1_initWithRxInternalOperatorsOperatorMergeTest_$23_withJavaLangInteger_(self, outer$, capture$0);
+  return self;
+}
+
+- (void)dealloc {
+  RELEASE_(this$0_);
+  RELEASE_(val$number_);
+  [super dealloc];
+}
+
++ (const J2ObjcClassInfo *)__metadata {
+  static J2ObjcMethodInfo methods[] = {
+    { NULL, "V", 0x1, 0, 1, -1, -1, -1, -1 },
+    { NULL, NULL, 0x0, -1, 2, -1, -1, -1, -1 },
+  };
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Wobjc-multiple-method-names"
+  methods[0].selector = @selector(callWithId:);
+  methods[1].selector = @selector(initWithRxInternalOperatorsOperatorMergeTest_$23:withJavaLangInteger:);
+  #pragma clang diagnostic pop
+  static const J2ObjcFieldInfo fields[] = {
+    { "this$0_", "LRxInternalOperatorsOperatorMergeTest_$23;", .constantValue.asLong = 0, 0x1012, -1, -1, -1, -1 },
+    { "val$number_", "LJavaLangInteger;", .constantValue.asLong = 0, 0x1012, -1, -1, -1, -1 },
+  };
+  static const void *ptrTable[] = { "call", "LJavaLangLong;", "LRxInternalOperatorsOperatorMergeTest_$23;LJavaLangInteger;", "LRxInternalOperatorsOperatorMergeTest_$23;", "callWithId:", "Ljava/lang/Object;Lrx/functions/Action1<Ljava/lang/Long;>;" };
+  static const J2ObjcClassInfo _RxInternalOperatorsOperatorMergeTest_$23_$1 = { "", "rx.internal.operators", ptrTable, methods, fields, 7, 0x8008, 2, 2, 3, -1, 4, 5, -1 };
+  return &_RxInternalOperatorsOperatorMergeTest_$23_$1;
+}
+
+@end
+
+void RxInternalOperatorsOperatorMergeTest_$23_$1_initWithRxInternalOperatorsOperatorMergeTest_$23_withJavaLangInteger_(RxInternalOperatorsOperatorMergeTest_$23_$1 *self, RxInternalOperatorsOperatorMergeTest_$23 *outer$, JavaLangInteger *capture$0) {
+  JreStrongAssign(&self->this$0_, outer$);
+  JreStrongAssign(&self->val$number_, capture$0);
+  NSObject_init(self);
+}
+
+RxInternalOperatorsOperatorMergeTest_$23_$1 *new_RxInternalOperatorsOperatorMergeTest_$23_$1_initWithRxInternalOperatorsOperatorMergeTest_$23_withJavaLangInteger_(RxInternalOperatorsOperatorMergeTest_$23 *outer$, JavaLangInteger *capture$0) {
+  J2OBJC_NEW_IMPL(RxInternalOperatorsOperatorMergeTest_$23_$1, initWithRxInternalOperatorsOperatorMergeTest_$23_withJavaLangInteger_, outer$, capture$0)
+}
+
+RxInternalOperatorsOperatorMergeTest_$23_$1 *create_RxInternalOperatorsOperatorMergeTest_$23_$1_initWithRxInternalOperatorsOperatorMergeTest_$23_withJavaLangInteger_(RxInternalOperatorsOperatorMergeTest_$23 *outer$, JavaLangInteger *capture$0) {
+  J2OBJC_CREATE_IMPL(RxInternalOperatorsOperatorMergeTest_$23_$1, initWithRxInternalOperatorsOperatorMergeTest_$23_withJavaLangInteger_, outer$, capture$0)
+}
+
+@implementation RxInternalOperatorsOperatorMergeTest_$23_$2
+
+- (void)callWithId:(JavaLangLong *)n {
+  [((JavaUtilConcurrentConcurrentLinkedQueue *) nil_chk(this$0_->val$messages_)) addWithId:JreStrcat("$@$@", @">>>>>>>> B requested[", val$number_, @"]: ", n)];
+}
+
+- (instancetype)initWithRxInternalOperatorsOperatorMergeTest_$23:(RxInternalOperatorsOperatorMergeTest_$23 *)outer$
+                                             withJavaLangInteger:(JavaLangInteger *)capture$0 {
+  RxInternalOperatorsOperatorMergeTest_$23_$2_initWithRxInternalOperatorsOperatorMergeTest_$23_withJavaLangInteger_(self, outer$, capture$0);
+  return self;
+}
+
+- (void)dealloc {
+  RELEASE_(this$0_);
+  RELEASE_(val$number_);
+  [super dealloc];
+}
+
++ (const J2ObjcClassInfo *)__metadata {
+  static J2ObjcMethodInfo methods[] = {
+    { NULL, "V", 0x1, 0, 1, -1, -1, -1, -1 },
+    { NULL, NULL, 0x0, -1, 2, -1, -1, -1, -1 },
+  };
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Wobjc-multiple-method-names"
+  methods[0].selector = @selector(callWithId:);
+  methods[1].selector = @selector(initWithRxInternalOperatorsOperatorMergeTest_$23:withJavaLangInteger:);
+  #pragma clang diagnostic pop
+  static const J2ObjcFieldInfo fields[] = {
+    { "this$0_", "LRxInternalOperatorsOperatorMergeTest_$23;", .constantValue.asLong = 0, 0x1012, -1, -1, -1, -1 },
+    { "val$number_", "LJavaLangInteger;", .constantValue.asLong = 0, 0x1012, -1, -1, -1, -1 },
+  };
+  static const void *ptrTable[] = { "call", "LJavaLangLong;", "LRxInternalOperatorsOperatorMergeTest_$23;LJavaLangInteger;", "LRxInternalOperatorsOperatorMergeTest_$23;", "callWithId:", "Ljava/lang/Object;Lrx/functions/Action1<Ljava/lang/Long;>;" };
+  static const J2ObjcClassInfo _RxInternalOperatorsOperatorMergeTest_$23_$2 = { "", "rx.internal.operators", ptrTable, methods, fields, 7, 0x8008, 2, 2, 3, -1, 4, 5, -1 };
+  return &_RxInternalOperatorsOperatorMergeTest_$23_$2;
+}
+
+@end
+
+void RxInternalOperatorsOperatorMergeTest_$23_$2_initWithRxInternalOperatorsOperatorMergeTest_$23_withJavaLangInteger_(RxInternalOperatorsOperatorMergeTest_$23_$2 *self, RxInternalOperatorsOperatorMergeTest_$23 *outer$, JavaLangInteger *capture$0) {
+  JreStrongAssign(&self->this$0_, outer$);
+  JreStrongAssign(&self->val$number_, capture$0);
+  NSObject_init(self);
+}
+
+RxInternalOperatorsOperatorMergeTest_$23_$2 *new_RxInternalOperatorsOperatorMergeTest_$23_$2_initWithRxInternalOperatorsOperatorMergeTest_$23_withJavaLangInteger_(RxInternalOperatorsOperatorMergeTest_$23 *outer$, JavaLangInteger *capture$0) {
+  J2OBJC_NEW_IMPL(RxInternalOperatorsOperatorMergeTest_$23_$2, initWithRxInternalOperatorsOperatorMergeTest_$23_withJavaLangInteger_, outer$, capture$0)
+}
+
+RxInternalOperatorsOperatorMergeTest_$23_$2 *create_RxInternalOperatorsOperatorMergeTest_$23_$2_initWithRxInternalOperatorsOperatorMergeTest_$23_withJavaLangInteger_(RxInternalOperatorsOperatorMergeTest_$23 *outer$, JavaLangInteger *capture$0) {
+  J2OBJC_CREATE_IMPL(RxInternalOperatorsOperatorMergeTest_$23_$2, initWithRxInternalOperatorsOperatorMergeTest_$23_withJavaLangInteger_, outer$, capture$0)
+}
+
+@implementation RxInternalOperatorsOperatorMergeTest_$24
+
+- (void)call {
+  [((JavaUtilConcurrentCountDownLatch *) nil_chk(val$latch_)) countDown];
+}
+
+- (instancetype)initWithJavaUtilConcurrentCountDownLatch:(JavaUtilConcurrentCountDownLatch *)capture$0 {
+  RxInternalOperatorsOperatorMergeTest_$24_initWithJavaUtilConcurrentCountDownLatch_(self, capture$0);
+  return self;
+}
+
+- (void)dealloc {
+  RELEASE_(val$latch_);
+  [super dealloc];
+}
+
++ (const J2ObjcClassInfo *)__metadata {
+  static J2ObjcMethodInfo methods[] = {
+    { NULL, "V", 0x1, -1, -1, -1, -1, -1, -1 },
+    { NULL, NULL, 0x0, -1, 0, -1, -1, -1, -1 },
+  };
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Wobjc-multiple-method-names"
+  methods[0].selector = @selector(call);
+  methods[1].selector = @selector(initWithJavaUtilConcurrentCountDownLatch:);
+  #pragma clang diagnostic pop
+  static const J2ObjcFieldInfo fields[] = {
+    { "val$latch_", "LJavaUtilConcurrentCountDownLatch;", .constantValue.asLong = 0, 0x1012, -1, -1, -1, -1 },
+  };
+  static const void *ptrTable[] = { "LJavaUtilConcurrentCountDownLatch;", "LRxInternalOperatorsOperatorMergeTest;", "testMergeKeepsRequesting" };
+  static const J2ObjcClassInfo _RxInternalOperatorsOperatorMergeTest_$24 = { "", "rx.internal.operators", ptrTable, methods, fields, 7, 0x8008, 2, 1, 1, -1, 2, -1, -1 };
+  return &_RxInternalOperatorsOperatorMergeTest_$24;
+}
+
+@end
+
+void RxInternalOperatorsOperatorMergeTest_$24_initWithJavaUtilConcurrentCountDownLatch_(RxInternalOperatorsOperatorMergeTest_$24 *self, JavaUtilConcurrentCountDownLatch *capture$0) {
+  JreStrongAssign(&self->val$latch_, capture$0);
+  NSObject_init(self);
+}
+
+RxInternalOperatorsOperatorMergeTest_$24 *new_RxInternalOperatorsOperatorMergeTest_$24_initWithJavaUtilConcurrentCountDownLatch_(JavaUtilConcurrentCountDownLatch *capture$0) {
+  J2OBJC_NEW_IMPL(RxInternalOperatorsOperatorMergeTest_$24, initWithJavaUtilConcurrentCountDownLatch_, capture$0)
+}
+
+RxInternalOperatorsOperatorMergeTest_$24 *create_RxInternalOperatorsOperatorMergeTest_$24_initWithJavaUtilConcurrentCountDownLatch_(JavaUtilConcurrentCountDownLatch *capture$0) {
+  J2OBJC_CREATE_IMPL(RxInternalOperatorsOperatorMergeTest_$24, initWithJavaUtilConcurrentCountDownLatch_, capture$0)
+}
+
+@implementation RxInternalOperatorsOperatorMergeTest_$25
+
+- (void)onStart {
+  [self requestWithLong:1];
+}
+
+- (void)onCompleted {
+}
+
+- (void)onErrorWithNSException:(NSException *)e {
+  @throw create_JavaLangRuntimeException_initWithNSException_(e);
+}
+
+- (void)onNextWithId:(JavaLangInteger *)t {
+  [((JavaUtilConcurrentCountDownLatch *) nil_chk(val$latch_)) countDown];
+  [self requestWithLong:2];
+  [self requestWithLong:JavaLangLong_MAX_VALUE - 1];
+}
+
+- (instancetype)initWithJavaUtilConcurrentCountDownLatch:(JavaUtilConcurrentCountDownLatch *)capture$0 {
+  RxInternalOperatorsOperatorMergeTest_$25_initWithJavaUtilConcurrentCountDownLatch_(self, capture$0);
+  return self;
+}
+
+- (void)dealloc {
+  JreCheckFinalize(self, [RxInternalOperatorsOperatorMergeTest_$25 class]);
+  RELEASE_(val$latch_);
+  [super dealloc];
+}
+
++ (const J2ObjcClassInfo *)__metadata {
+  static J2ObjcMethodInfo methods[] = {
+    { NULL, "V", 0x1, -1, -1, -1, -1, -1, -1 },
+    { NULL, "V", 0x1, -1, -1, -1, -1, -1, -1 },
+    { NULL, "V", 0x1, 0, 1, -1, -1, -1, -1 },
+    { NULL, "V", 0x1, 2, 3, -1, -1, -1, -1 },
+    { NULL, NULL, 0x0, -1, 4, -1, -1, -1, -1 },
+  };
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Wobjc-multiple-method-names"
+  methods[0].selector = @selector(onStart);
+  methods[1].selector = @selector(onCompleted);
+  methods[2].selector = @selector(onErrorWithNSException:);
+  methods[3].selector = @selector(onNextWithId:);
+  methods[4].selector = @selector(initWithJavaUtilConcurrentCountDownLatch:);
+  #pragma clang diagnostic pop
+  static const J2ObjcFieldInfo fields[] = {
+    { "val$latch_", "LJavaUtilConcurrentCountDownLatch;", .constantValue.asLong = 0, 0x1012, -1, -1, -1, -1 },
+  };
+  static const void *ptrTable[] = { "onError", "LNSException;", "onNext", "LJavaLangInteger;", "LJavaUtilConcurrentCountDownLatch;", "LRxInternalOperatorsOperatorMergeTest;", "testMergeRequestOverflow", "Lrx/Subscriber<Ljava/lang/Integer;>;" };
+  static const J2ObjcClassInfo _RxInternalOperatorsOperatorMergeTest_$25 = { "", "rx.internal.operators", ptrTable, methods, fields, 7, 0x8008, 5, 1, 5, -1, 6, 7, -1 };
+  return &_RxInternalOperatorsOperatorMergeTest_$25;
+}
+
+@end
+
+void RxInternalOperatorsOperatorMergeTest_$25_initWithJavaUtilConcurrentCountDownLatch_(RxInternalOperatorsOperatorMergeTest_$25 *self, JavaUtilConcurrentCountDownLatch *capture$0) {
+  JreStrongAssign(&self->val$latch_, capture$0);
+  RxSubscriber_init(self);
+}
+
+RxInternalOperatorsOperatorMergeTest_$25 *new_RxInternalOperatorsOperatorMergeTest_$25_initWithJavaUtilConcurrentCountDownLatch_(JavaUtilConcurrentCountDownLatch *capture$0) {
+  J2OBJC_NEW_IMPL(RxInternalOperatorsOperatorMergeTest_$25, initWithJavaUtilConcurrentCountDownLatch_, capture$0)
+}
+
+RxInternalOperatorsOperatorMergeTest_$25 *create_RxInternalOperatorsOperatorMergeTest_$25_initWithJavaUtilConcurrentCountDownLatch_(JavaUtilConcurrentCountDownLatch *capture$0) {
+  J2OBJC_CREATE_IMPL(RxInternalOperatorsOperatorMergeTest_$25, initWithJavaUtilConcurrentCountDownLatch_, capture$0)
+}
+
+@implementation RxInternalOperatorsOperatorMergeTest_$26
+
+- (void)callWithId:(JavaLangInteger *)t1 {
+  count_++;
+  [((JavaIoPrintStream *) nil_chk(JreLoadStatic(JavaLangSystem, out))) printlnWithNSString:JreStrcat("$J", @"count=", count_)];
+}
+
+J2OBJC_IGNORE_DESIGNATED_BEGIN
+- (instancetype)init {
+  RxInternalOperatorsOperatorMergeTest_$26_init(self);
+  return self;
+}
+J2OBJC_IGNORE_DESIGNATED_END
+
++ (const J2ObjcClassInfo *)__metadata {
+  static J2ObjcMethodInfo methods[] = {
+    { NULL, "V", 0x1, 0, 1, -1, -1, -1, -1 },
+    { NULL, NULL, 0x0, -1, -1, -1, -1, -1, -1 },
+  };
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Wobjc-multiple-method-names"
+  methods[0].selector = @selector(callWithId:);
+  methods[1].selector = @selector(init);
+  #pragma clang diagnostic pop
+  static const J2ObjcFieldInfo fields[] = {
+    { "count_", "J", .constantValue.asLong = 0, 0x0, -1, -1, -1, -1 },
+  };
+  static const void *ptrTable[] = { "call", "LJavaLangInteger;", "LRxInternalOperatorsOperatorMergeTest;", "printCount", "Ljava/lang/Object;Lrx/functions/Action1<Ljava/lang/Integer;>;" };
+  static const J2ObjcClassInfo _RxInternalOperatorsOperatorMergeTest_$26 = { "", "rx.internal.operators", ptrTable, methods, fields, 7, 0x8008, 2, 1, 2, -1, 3, 4, -1 };
+  return &_RxInternalOperatorsOperatorMergeTest_$26;
+}
+
+@end
+
+void RxInternalOperatorsOperatorMergeTest_$26_init(RxInternalOperatorsOperatorMergeTest_$26 *self) {
+  NSObject_init(self);
+}
+
+RxInternalOperatorsOperatorMergeTest_$26 *new_RxInternalOperatorsOperatorMergeTest_$26_init() {
+  J2OBJC_NEW_IMPL(RxInternalOperatorsOperatorMergeTest_$26, init)
+}
+
+RxInternalOperatorsOperatorMergeTest_$26 *create_RxInternalOperatorsOperatorMergeTest_$26_init() {
+  J2OBJC_CREATE_IMPL(RxInternalOperatorsOperatorMergeTest_$26, init)
+}
+
+@implementation RxInternalOperatorsOperatorMergeTest_$27
+
+- (void)callWithId:(JavaLangInteger *)s {
+  @try {
+    JavaLangThread_sleepWithLong_(val$time_);
+  }
+  @catch (JavaLangInterruptedException *e) {
+    @throw create_JavaLangRuntimeException_initWithNSException_(e);
+  }
+}
+
+- (instancetype)initWithLong:(jlong)capture$0 {
+  RxInternalOperatorsOperatorMergeTest_$27_initWithLong_(self, capture$0);
+  return self;
+}
+
++ (const J2ObjcClassInfo *)__metadata {
+  static J2ObjcMethodInfo methods[] = {
+    { NULL, "V", 0x1, 0, 1, -1, -1, -1, -1 },
+    { NULL, NULL, 0x0, -1, 2, -1, -1, -1, -1 },
+  };
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Wobjc-multiple-method-names"
+  methods[0].selector = @selector(callWithId:);
+  methods[1].selector = @selector(initWithLong:);
+  #pragma clang diagnostic pop
+  static const J2ObjcFieldInfo fields[] = {
+    { "val$time_", "J", .constantValue.asLong = 0, 0x1012, -1, -1, -1, -1 },
+  };
+  static const void *ptrTable[] = { "call", "LJavaLangInteger;", "J", "LRxInternalOperatorsOperatorMergeTest;", "pauseForMsWithLong:", "Ljava/lang/Object;Lrx/functions/Action1<Ljava/lang/Integer;>;" };
+  static const J2ObjcClassInfo _RxInternalOperatorsOperatorMergeTest_$27 = { "", "rx.internal.operators", ptrTable, methods, fields, 7, 0x8008, 2, 1, 3, -1, 4, 5, -1 };
+  return &_RxInternalOperatorsOperatorMergeTest_$27;
+}
+
+@end
+
+void RxInternalOperatorsOperatorMergeTest_$27_initWithLong_(RxInternalOperatorsOperatorMergeTest_$27 *self, jlong capture$0) {
+  self->val$time_ = capture$0;
+  NSObject_init(self);
+}
+
+RxInternalOperatorsOperatorMergeTest_$27 *new_RxInternalOperatorsOperatorMergeTest_$27_initWithLong_(jlong capture$0) {
+  J2OBJC_NEW_IMPL(RxInternalOperatorsOperatorMergeTest_$27, initWithLong_, capture$0)
+}
+
+RxInternalOperatorsOperatorMergeTest_$27 *create_RxInternalOperatorsOperatorMergeTest_$27_initWithLong_(jlong capture$0) {
+  J2OBJC_CREATE_IMPL(RxInternalOperatorsOperatorMergeTest_$27, initWithLong_, capture$0)
+}
+
+@implementation RxInternalOperatorsOperatorMergeTest_$1
+
+- (RxObservable *)callWithId:(JavaLangInteger *)t {
+  return RxObservable_justWithId_(t);
+}
+
+J2OBJC_IGNORE_DESIGNATED_BEGIN
+- (instancetype)init {
+  RxInternalOperatorsOperatorMergeTest_$1_init(self);
+  return self;
+}
+J2OBJC_IGNORE_DESIGNATED_END
+
++ (const J2ObjcClassInfo *)__metadata {
+  static J2ObjcMethodInfo methods[] = {
+    { NULL, "LRxObservable;", 0x1, 0, 1, -1, 2, -1, -1 },
+    { NULL, NULL, 0x0, -1, -1, -1, -1, -1, -1 },
+  };
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Wobjc-multiple-method-names"
+  methods[0].selector = @selector(callWithId:);
+  methods[1].selector = @selector(init);
+  #pragma clang diagnostic pop
+  static const void *ptrTable[] = { "call", "LJavaLangInteger;", "(Ljava/lang/Integer;)Lrx/Observable<Ljava/lang/Integer;>;", "LRxInternalOperatorsOperatorMergeTest;", "Ljava/lang/Object;Lrx/functions/Func1<Ljava/lang/Integer;Lrx/Observable<Ljava/lang/Integer;>;>;" };
+  static const J2ObjcClassInfo _RxInternalOperatorsOperatorMergeTest_$1 = { "", "rx.internal.operators", ptrTable, methods, NULL, 7, 0x8008, 2, 0, 3, -1, -1, 4, -1 };
+  return &_RxInternalOperatorsOperatorMergeTest_$1;
+}
+
+@end
+
+void RxInternalOperatorsOperatorMergeTest_$1_init(RxInternalOperatorsOperatorMergeTest_$1 *self) {
+  NSObject_init(self);
+}
+
+RxInternalOperatorsOperatorMergeTest_$1 *new_RxInternalOperatorsOperatorMergeTest_$1_init() {
+  J2OBJC_NEW_IMPL(RxInternalOperatorsOperatorMergeTest_$1, init)
+}
+
+RxInternalOperatorsOperatorMergeTest_$1 *create_RxInternalOperatorsOperatorMergeTest_$1_init() {
+  J2OBJC_CREATE_IMPL(RxInternalOperatorsOperatorMergeTest_$1, init)
+}
+
+@implementation RxInternalOperatorsOperatorMergeTest_$2
+
+- (RxObservable *)callWithId:(JavaLangInteger *)t {
+  return [((RxObservable *) nil_chk(RxObservable_justWithId_(t))) asObservable];
+}
+
+J2OBJC_IGNORE_DESIGNATED_BEGIN
+- (instancetype)init {
+  RxInternalOperatorsOperatorMergeTest_$2_init(self);
+  return self;
+}
+J2OBJC_IGNORE_DESIGNATED_END
+
++ (const J2ObjcClassInfo *)__metadata {
+  static J2ObjcMethodInfo methods[] = {
+    { NULL, "LRxObservable;", 0x1, 0, 1, -1, 2, -1, -1 },
+    { NULL, NULL, 0x0, -1, -1, -1, -1, -1, -1 },
+  };
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Wobjc-multiple-method-names"
+  methods[0].selector = @selector(callWithId:);
+  methods[1].selector = @selector(init);
+  #pragma clang diagnostic pop
+  static const void *ptrTable[] = { "call", "LJavaLangInteger;", "(Ljava/lang/Integer;)Lrx/Observable<Ljava/lang/Integer;>;", "LRxInternalOperatorsOperatorMergeTest;", "Ljava/lang/Object;Lrx/functions/Func1<Ljava/lang/Integer;Lrx/Observable<Ljava/lang/Integer;>;>;" };
+  static const J2ObjcClassInfo _RxInternalOperatorsOperatorMergeTest_$2 = { "", "rx.internal.operators", ptrTable, methods, NULL, 7, 0x8008, 2, 0, 3, -1, -1, 4, -1 };
+  return &_RxInternalOperatorsOperatorMergeTest_$2;
+}
+
+@end
+
+void RxInternalOperatorsOperatorMergeTest_$2_init(RxInternalOperatorsOperatorMergeTest_$2 *self) {
+  NSObject_init(self);
+}
+
+RxInternalOperatorsOperatorMergeTest_$2 *new_RxInternalOperatorsOperatorMergeTest_$2_init() {
+  J2OBJC_NEW_IMPL(RxInternalOperatorsOperatorMergeTest_$2, init)
+}
+
+RxInternalOperatorsOperatorMergeTest_$2 *create_RxInternalOperatorsOperatorMergeTest_$2_init() {
+  J2OBJC_CREATE_IMPL(RxInternalOperatorsOperatorMergeTest_$2, init)
+}
+
+@implementation RxInternalOperatorsOperatorMergeTest_$28
+
+- (void)onStart {
+  [self requestWithLong:val$req_];
+}
+
+- (void)onNextWithId:(JavaLangInteger *)t {
+  [super onNextWithId:t];
+  if (--remaining_ == 0) {
+    remaining_ = val$req_;
+    [self requestWithLong:val$req_];
+  }
+}
+
+- (instancetype)initWithInt:(jint)capture$0 {
+  RxInternalOperatorsOperatorMergeTest_$28_initWithInt_(self, capture$0);
+  return self;
+}
+
+- (void)dealloc {
+  JreCheckFinalize(self, [RxInternalOperatorsOperatorMergeTest_$28 class]);
+  [super dealloc];
+}
+
++ (const J2ObjcClassInfo *)__metadata {
+  static J2ObjcMethodInfo methods[] = {
+    { NULL, "V", 0x1, -1, -1, -1, -1, -1, -1 },
+    { NULL, "V", 0x1, 0, 1, -1, 2, -1, -1 },
+    { NULL, NULL, 0x0, -1, 3, -1, -1, -1, -1 },
+  };
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Wobjc-multiple-method-names"
+  methods[0].selector = @selector(onStart);
+  methods[1].selector = @selector(onNextWithId:);
+  methods[2].selector = @selector(initWithInt:);
+  #pragma clang diagnostic pop
+  static const J2ObjcFieldInfo fields[] = {
+    { "remaining_", "I", .constantValue.asLong = 0, 0x0, -1, -1, -1, -1 },
+    { "val$req_", "I", .constantValue.asLong = 0, 0x1012, -1, -1, -1, -1 },
+  };
+  static const void *ptrTable[] = { "onNext", "LJavaLangInteger;", "(Ljava/lang/Integer;)V", "I", "LRxInternalOperatorsOperatorMergeTest;", "testSlowMergeFullScalar", "Lrx/observers/TestSubscriber<Ljava/lang/Integer;>;" };
+  static const J2ObjcClassInfo _RxInternalOperatorsOperatorMergeTest_$28 = { "", "rx.internal.operators", ptrTable, methods, fields, 7, 0x8008, 3, 2, 4, -1, 5, 6, -1 };
+  return &_RxInternalOperatorsOperatorMergeTest_$28;
+}
+
+@end
+
+void RxInternalOperatorsOperatorMergeTest_$28_initWithInt_(RxInternalOperatorsOperatorMergeTest_$28 *self, jint capture$0) {
+  self->val$req_ = capture$0;
+  RxObserversTestSubscriber_init(self);
+  self->remaining_ = capture$0;
+}
+
+RxInternalOperatorsOperatorMergeTest_$28 *new_RxInternalOperatorsOperatorMergeTest_$28_initWithInt_(jint capture$0) {
+  J2OBJC_NEW_IMPL(RxInternalOperatorsOperatorMergeTest_$28, initWithInt_, capture$0)
+}
+
+RxInternalOperatorsOperatorMergeTest_$28 *create_RxInternalOperatorsOperatorMergeTest_$28_initWithInt_(jint capture$0) {
+  J2OBJC_CREATE_IMPL(RxInternalOperatorsOperatorMergeTest_$28, initWithInt_, capture$0)
+}
+
+@implementation RxInternalOperatorsOperatorMergeTest_$29
+
+- (void)onStart {
+  [self requestWithLong:val$req_];
+}
+
+- (void)onNextWithId:(JavaLangInteger *)t {
+  [super onNextWithId:t];
+  if (--remaining_ == 0) {
+    remaining_ = val$req_;
+    [self requestWithLong:val$req_];
+  }
+}
+
+- (instancetype)initWithInt:(jint)capture$0 {
+  RxInternalOperatorsOperatorMergeTest_$29_initWithInt_(self, capture$0);
+  return self;
+}
+
+- (void)dealloc {
+  JreCheckFinalize(self, [RxInternalOperatorsOperatorMergeTest_$29 class]);
+  [super dealloc];
+}
+
++ (const J2ObjcClassInfo *)__metadata {
+  static J2ObjcMethodInfo methods[] = {
+    { NULL, "V", 0x1, -1, -1, -1, -1, -1, -1 },
+    { NULL, "V", 0x1, 0, 1, -1, 2, -1, -1 },
+    { NULL, NULL, 0x0, -1, 3, -1, -1, -1, -1 },
+  };
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Wobjc-multiple-method-names"
+  methods[0].selector = @selector(onStart);
+  methods[1].selector = @selector(onNextWithId:);
+  methods[2].selector = @selector(initWithInt:);
+  #pragma clang diagnostic pop
+  static const J2ObjcFieldInfo fields[] = {
+    { "remaining_", "I", .constantValue.asLong = 0, 0x0, -1, -1, -1, -1 },
+    { "val$req_", "I", .constantValue.asLong = 0, 0x1012, -1, -1, -1, -1 },
+  };
+  static const void *ptrTable[] = { "onNext", "LJavaLangInteger;", "(Ljava/lang/Integer;)V", "I", "LRxInternalOperatorsOperatorMergeTest;", "testSlowMergeHiddenScalar", "Lrx/observers/TestSubscriber<Ljava/lang/Integer;>;" };
+  static const J2ObjcClassInfo _RxInternalOperatorsOperatorMergeTest_$29 = { "", "rx.internal.operators", ptrTable, methods, fields, 7, 0x8008, 3, 2, 4, -1, 5, 6, -1 };
+  return &_RxInternalOperatorsOperatorMergeTest_$29;
+}
+
+@end
+
+void RxInternalOperatorsOperatorMergeTest_$29_initWithInt_(RxInternalOperatorsOperatorMergeTest_$29 *self, jint capture$0) {
+  self->val$req_ = capture$0;
+  RxObserversTestSubscriber_init(self);
+  self->remaining_ = capture$0;
+}
+
+RxInternalOperatorsOperatorMergeTest_$29 *new_RxInternalOperatorsOperatorMergeTest_$29_initWithInt_(jint capture$0) {
+  J2OBJC_NEW_IMPL(RxInternalOperatorsOperatorMergeTest_$29, initWithInt_, capture$0)
+}
+
+RxInternalOperatorsOperatorMergeTest_$29 *create_RxInternalOperatorsOperatorMergeTest_$29_initWithInt_(jint capture$0) {
+  J2OBJC_CREATE_IMPL(RxInternalOperatorsOperatorMergeTest_$29, initWithInt_, capture$0)
+}
+
+@implementation RxInternalOperatorsOperatorMergeTest_$30
+
+- (RxObservable *)callWithId:(JavaLangInteger *)t {
+  return RxObservable_justWithId_(nil);
+}
+
+J2OBJC_IGNORE_DESIGNATED_BEGIN
+- (instancetype)init {
+  RxInternalOperatorsOperatorMergeTest_$30_init(self);
+  return self;
+}
+J2OBJC_IGNORE_DESIGNATED_END
+
++ (const J2ObjcClassInfo *)__metadata {
+  static J2ObjcMethodInfo methods[] = {
+    { NULL, "LRxObservable;", 0x1, 0, 1, -1, 2, -1, -1 },
+    { NULL, NULL, 0x0, -1, -1, -1, -1, -1, -1 },
+  };
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Wobjc-multiple-method-names"
+  methods[0].selector = @selector(callWithId:);
+  methods[1].selector = @selector(init);
+  #pragma clang diagnostic pop
+  static const void *ptrTable[] = { "call", "LJavaLangInteger;", "(Ljava/lang/Integer;)Lrx/Observable<Ljava/lang/Integer;>;", "LRxInternalOperatorsOperatorMergeTest;", "mergeJustNull", "Ljava/lang/Object;Lrx/functions/Func1<Ljava/lang/Integer;Lrx/Observable<Ljava/lang/Integer;>;>;" };
+  static const J2ObjcClassInfo _RxInternalOperatorsOperatorMergeTest_$30 = { "", "rx.internal.operators", ptrTable, methods, NULL, 7, 0x8008, 2, 0, 3, -1, 4, 5, -1 };
+  return &_RxInternalOperatorsOperatorMergeTest_$30;
+}
+
+@end
+
+void RxInternalOperatorsOperatorMergeTest_$30_init(RxInternalOperatorsOperatorMergeTest_$30 *self) {
+  NSObject_init(self);
+}
+
+RxInternalOperatorsOperatorMergeTest_$30 *new_RxInternalOperatorsOperatorMergeTest_$30_init() {
+  J2OBJC_NEW_IMPL(RxInternalOperatorsOperatorMergeTest_$30, init)
+}
+
+RxInternalOperatorsOperatorMergeTest_$30 *create_RxInternalOperatorsOperatorMergeTest_$30_init() {
+  J2OBJC_CREATE_IMPL(RxInternalOperatorsOperatorMergeTest_$30, init)
 }

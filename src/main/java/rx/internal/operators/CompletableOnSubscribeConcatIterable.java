@@ -19,9 +19,12 @@ package rx.internal.operators;
 import java.util.Iterator;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import rx.*;
+import rx.Completable;
 import rx.Completable.OnSubscribe;
-import rx.subscriptions.*;
+import rx.CompletableSubscriber;
+import rx.Subscription;
+import rx.subscriptions.SerialSubscription;
+import rx.subscriptions.Subscriptions;
 
 public final class CompletableOnSubscribeConcatIterable implements OnSubscribe {
     final Iterable<? extends Completable> sources;

@@ -16,9 +16,10 @@
  */
 package rx.internal.util.unsafe;
 
-import static rx.internal.util.unsafe.UnsafeAccess.UNSAFE;
-
 import rx.internal.util.SuppressAnimalSniffer;
+
+
+import static rx.internal.util.unsafe.UnsafeAccess.UNSAFE;
 
 abstract class SpmcArrayQueueL1Pad<E> extends ConcurrentCircularArrayQueue<E> {
     long p10, p11, p12, p13, p14, p15, p16;

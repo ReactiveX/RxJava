@@ -17,8 +17,11 @@ package rx.internal.operators;
 
 import java.util.NoSuchElementException;
 
-import rx.*;
+import rx.Observable;
 import rx.Observable.OnSubscribe;
+import rx.Single;
+import rx.SingleSubscriber;
+import rx.Subscriber;
 import rx.plugins.RxJavaHooks;
 
 /**

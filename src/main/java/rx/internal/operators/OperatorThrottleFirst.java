@@ -17,8 +17,9 @@ package rx.internal.operators;
 
 import java.util.concurrent.TimeUnit;
 
-import rx.*;
 import rx.Observable.Operator;
+import rx.Scheduler;
+import rx.Subscriber;
 
 /**
  * Throttle by windowing a stream and returning the first value in each window.

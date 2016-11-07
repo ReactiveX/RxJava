@@ -17,7 +17,8 @@ package rx.subjects;
 
 
 import java.lang.reflect.Array;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 import rx.Observer;
 import rx.exceptions.Exceptions;

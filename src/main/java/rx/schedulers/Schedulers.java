@@ -15,16 +15,18 @@
  */
 package rx.schedulers;
 
+import java.util.concurrent.Executor;
+import java.util.concurrent.atomic.AtomicReference;
+
 import rx.Scheduler;
 import rx.annotations.Experimental;
 import rx.internal.schedulers.ExecutorScheduler;
 import rx.internal.schedulers.GenericScheduledExecutorService;
 import rx.internal.schedulers.SchedulerLifecycle;
 import rx.internal.util.RxRingBuffer;
-import rx.plugins.*;
-
-import java.util.concurrent.Executor;
-import java.util.concurrent.atomic.AtomicReference;
+import rx.plugins.RxJavaHooks;
+import rx.plugins.RxJavaPlugins;
+import rx.plugins.RxJavaSchedulersHook;
 
 /**
  * Static factory methods for creating Schedulers.

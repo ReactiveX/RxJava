@@ -848,7 +848,7 @@ __attribute__((unused)) static RxInternalOperatorsOperatorConcatTest_$11 *create
   jint n = 5000;
   JavaUtilConcurrentAtomicAtomicInteger *counter = create_JavaUtilConcurrentAtomicAtomicInteger_init();
   [((RxObservable *) nil_chk([((RxObservable *) nil_chk(RxObservable_rangeWithInt_withInt_(1, n))) concatMapWithRxFunctionsFunc1:func])) subscribeWithRxSubscriber:create_RxInternalOperatorsOperatorConcatTest_$9_initWithJavaUtilConcurrentAtomicAtomicInteger_withJavaUtilConcurrentExecutorService_(counter, executor)];
-  [((id<JavaUtilConcurrentExecutorService>) nil_chk(executor)) awaitTerminationWithLong:20000 withJavaUtilConcurrentTimeUnit:JreLoadEnum(JavaUtilConcurrentTimeUnit, MILLISECONDS)];
+  [((id<JavaUtilConcurrentExecutorService>) nil_chk(executor)) awaitTerminationWithLong:40000 withJavaUtilConcurrentTimeUnit:JreLoadEnum(JavaUtilConcurrentTimeUnit, MILLISECONDS)];
   OrgJunitAssert_assertEqualsWithLong_withLong_(n, [counter get]);
 }
 

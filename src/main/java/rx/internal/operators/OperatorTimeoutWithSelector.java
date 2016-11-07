@@ -15,9 +15,13 @@
  */
 package rx.internal.operators;
 
-import rx.*;
+import rx.Observable;
+import rx.Scheduler;
+import rx.Subscriber;
+import rx.Subscription;
 import rx.exceptions.Exceptions;
-import rx.functions.*;
+import rx.functions.Func0;
+import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 import rx.subscriptions.Subscriptions;
 

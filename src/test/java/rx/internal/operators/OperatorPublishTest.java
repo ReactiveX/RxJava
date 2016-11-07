@@ -15,6 +15,9 @@
  */
 package rx.internal.operators;
 
+import com.google.j2objc.annotations.AutoreleasePool;
+
+
 import static org.junit.Assert.*;
 
 import java.util.*;
@@ -23,6 +26,7 @@ import java.util.concurrent.atomic.*;
 
 import org.junit.Test;
 
+import co.touchlab.doppel.testing.DoppelHacks;
 import rx.*;
 import rx.Observable.OnSubscribe;
 import rx.Observable;
@@ -227,7 +231,7 @@ public class OperatorPublishTest {
                 child1Unsubscribed.set(true);
             }
         }).take(5)
-        .subscribe(ts1);
+                .subscribe(ts1);
 
         ts1.awaitTerminalEvent();
         ts2.awaitTerminalEvent();
@@ -392,10 +396,12 @@ public class OperatorPublishTest {
         assertEquals(2, calls.get());
     }
     @Test
+    @DoppelHacks//Added unsubscribe from TestSubscriber to kill memory retention. Investigate
+    //doing this with weak references instead
     public void testObserveOn() {
         ConnectableObservable<Integer> co = Observable.range(0, 1000).publish();
         Observable<Integer> obs = co.observeOn(Schedulers.computation());
-        for (int i = 0; i < 1000; i++) {
+        for (@AutoreleasePool int i = 0; i < 1000; i++) {
             for (int j = 1; j < 6; j++) {
                 List<TestSubscriber<Integer>> tss = new ArrayList<TestSubscriber<Integer>>();
                 for (int k = 1; k < j; k++) {
@@ -411,6 +417,9 @@ public class OperatorPublishTest {
                     ts.assertTerminalEvent();
                     ts.assertNoErrors();
                     assertEquals(1000, ts.getOnNextEvents().size());
+
+                    //Added for memory issues in doppl
+                    ts.unsubscribe();
                 }
                 s.unsubscribe();
             }

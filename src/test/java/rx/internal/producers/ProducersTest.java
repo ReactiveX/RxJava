@@ -15,6 +15,9 @@
  */
 package rx.internal.producers;
 
+import com.google.j2objc.annotations.Weak;
+
+
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
@@ -237,6 +240,7 @@ public class ProducersTest {
     }
 
     static final class TestProducer implements Producer {
+        @Weak
         final Observer<Integer> child;
         public TestProducer(Observer<Integer> child) {
             this.child = child;

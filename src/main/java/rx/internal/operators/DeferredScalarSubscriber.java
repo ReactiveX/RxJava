@@ -20,7 +20,9 @@ import com.google.j2objc.annotations.Weak;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-import rx.*;
+import rx.Observable;
+import rx.Producer;
+import rx.Subscriber;
 
 /**
  * Base class for Subscribers that consume the entire upstream and signal

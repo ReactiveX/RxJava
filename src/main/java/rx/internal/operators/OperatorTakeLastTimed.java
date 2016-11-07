@@ -19,8 +19,10 @@ import java.util.ArrayDeque;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
-import rx.*;
 import rx.Observable.Operator;
+import rx.Producer;
+import rx.Scheduler;
+import rx.Subscriber;
 import rx.functions.Func1;
 
 /**

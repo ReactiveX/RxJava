@@ -15,15 +15,21 @@
  */
 package rx.internal.operators;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-import rx.*;
 import rx.Observable;
 import rx.Observable.OnSubscribe;
+import rx.Subscriber;
+import rx.Subscription;
 import rx.exceptions.Exceptions;
-import rx.functions.*;
+import rx.functions.Func1;
+import rx.functions.Func2;
 import rx.observers.SerializedSubscriber;
-import rx.subscriptions.*;
+import rx.subscriptions.CompositeSubscription;
+import rx.subscriptions.SerialSubscription;
 
 /**
  * Correlates the elements of two sequences based on overlapping durations.

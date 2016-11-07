@@ -16,11 +16,14 @@
 
 package rx.internal.operators;
 
-import java.util.*;
+import java.util.Iterator;
+import java.util.Queue;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import rx.*;
+import rx.Completable;
 import rx.Completable.OnSubscribe;
+import rx.CompletableSubscriber;
+import rx.Subscription;
 import rx.internal.util.unsafe.MpscLinkedQueue;
 import rx.subscriptions.CompositeSubscription;
 

@@ -16,7 +16,9 @@
 
 package rx.internal.operators;
 
-import rx.*;
+import rx.Observable;
+import rx.Single;
+import rx.Subscriber;
 import rx.internal.operators.SingleLiftObservableOperator.WrapSubscriberIntoSingle;
 
 /**

@@ -15,8 +15,6 @@
  */
 package rx;
 
-import com.google.j2objc.WeakProxy;
-
 import rx.internal.util.SubscriptionList;
 
 /**
@@ -40,7 +38,7 @@ public abstract class Subscriber<T> implements Observer<T>, Subscription {
     private final SubscriptionList subscriptions;
     private Subscriber<?> subscriber;
     /* protected by `this` */
-    private Producer producer;
+    private Producer producerr;
     /* protected by `this` */
     private long requested = NOT_SET; // default to not set
 
@@ -98,7 +96,12 @@ public abstract class Subscriber<T> implements Observer<T>, Subscription {
     @Override
     public final void unsubscribe() {
         subscriptions.unsubscribe();
-        producer = null;
+        updateProducerField(null);
+    }
+
+    private void updateProducerField(Producer p)
+    {
+        producerr = p;
     }
 
     /**
@@ -149,8 +152,8 @@ public abstract class Subscriber<T> implements Observer<T>, Subscription {
         // otherwise we increase the requested count by n
         Producer producerToRequestFrom;
         synchronized (this) {
-            if (producer != null) {
-                producerToRequestFrom = producer;
+            if (producerr != null) {
+                producerToRequestFrom = producerr;
             } else {
                 addToRequested(n);
                 return;
@@ -194,7 +197,9 @@ public abstract class Subscriber<T> implements Observer<T>, Subscription {
         boolean passToSubscriber = false;
         synchronized (this) {
             toRequest = requested;
-            producer = WeakProxy.forObject(p);
+
+            updateProducerField(p);
+//            updateProducerField(WeakProxy.forObject(p));
             if (subscriber != null) {
                 // middle operator ... we pass through unless a request has been made
                 if (toRequest == NOT_SET) {
@@ -205,13 +210,13 @@ public abstract class Subscriber<T> implements Observer<T>, Subscription {
         }
         // do after releasing lock
         if (passToSubscriber) {
-            subscriber.setProducer(producer);
+            subscriber.setProducer(producerr);
         } else {
             // we execute the request with whatever has been requested (or Long.MAX_VALUE)
             if (toRequest == NOT_SET) {
-                producer.request(Long.MAX_VALUE);
+                producerr.request(Long.MAX_VALUE);
             } else {
-                producer.request(toRequest);
+                producerr.request(toRequest);
             }
         }
     }
@@ -222,7 +227,7 @@ public abstract class Subscriber<T> implements Observer<T>, Subscription {
      */
     public void j2objcCleanup()
     {
-        producer = null;
+        updateProducerField(null);
         if(subscriber != null)
         {
             subscriber.j2objcCleanup();

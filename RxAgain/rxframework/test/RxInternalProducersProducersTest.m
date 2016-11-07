@@ -650,9 +650,9 @@ J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxInternalProducersProducersTest)
   [((id<RxObserver>) nil_chk(child_)) onNextWithId:JavaLangInteger_valueOfWithInt_((jint) n)];
 }
 
-- (void)dealloc {
-  RELEASE_(child_);
-  [super dealloc];
+- (void)__javaClone:(RxInternalProducersProducersTest_TestProducer *)original {
+  [super __javaClone:original];
+  [child_ release];
 }
 
 + (const J2ObjcClassInfo *)__metadata {
@@ -677,7 +677,7 @@ J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxInternalProducersProducersTest)
 
 void RxInternalProducersProducersTest_TestProducer_initWithRxObserver_(RxInternalProducersProducersTest_TestProducer *self, id<RxObserver> child) {
   NSObject_init(self);
-  JreStrongAssign(&self->child_, child);
+  self->child_ = child;
 }
 
 RxInternalProducersProducersTest_TestProducer *new_RxInternalProducersProducersTest_TestProducer_initWithRxObserver_(id<RxObserver> child) {

@@ -91,7 +91,7 @@ J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxInternalOperatorsOnSubscribeDetach)
 }
 
 - (void)onErrorWithNSException:(NSException *)e {
-  [((JavaUtilConcurrentAtomicAtomicReference *) nil_chk(producer_DetachSubscriber_)) lazySetWithId:JreLoadEnum(RxInternalOperatorsOnSubscribeDetach_TerminatedProducer, INSTANCE)];
+  [((JavaUtilConcurrentAtomicAtomicReference *) nil_chk(producer_)) lazySetWithId:JreLoadEnum(RxInternalOperatorsOnSubscribeDetach_TerminatedProducer, INSTANCE)];
   RxSubscriber *a = [((JavaUtilConcurrentAtomicAtomicReference *) nil_chk(actual_)) getAndSetWithId:nil];
   if (a != nil) {
     [a onErrorWithNSException:e];
@@ -102,7 +102,7 @@ J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxInternalOperatorsOnSubscribeDetach)
 }
 
 - (void)onCompleted {
-  [((JavaUtilConcurrentAtomicAtomicReference *) nil_chk(producer_DetachSubscriber_)) lazySetWithId:JreLoadEnum(RxInternalOperatorsOnSubscribeDetach_TerminatedProducer, INSTANCE)];
+  [((JavaUtilConcurrentAtomicAtomicReference *) nil_chk(producer_)) lazySetWithId:JreLoadEnum(RxInternalOperatorsOnSubscribeDetach_TerminatedProducer, INSTANCE)];
   RxSubscriber *a = [((JavaUtilConcurrentAtomicAtomicReference *) nil_chk(actual_)) getAndSetWithId:nil];
   if (a != nil) {
     [a onCompleted];
@@ -113,13 +113,13 @@ J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxInternalOperatorsOnSubscribeDetach)
   if (n < 0LL) {
     @throw create_JavaLangIllegalArgumentException_initWithNSString_(JreStrcat("$J", @"n >= 0 required but it was ", n));
   }
-  id<RxProducer> p = [((JavaUtilConcurrentAtomicAtomicReference *) nil_chk(producer_DetachSubscriber_)) get];
+  id<RxProducer> p = [((JavaUtilConcurrentAtomicAtomicReference *) nil_chk(producer_)) get];
   if (p != nil) {
     [p requestWithLong:n];
   }
   else {
     RxInternalOperatorsBackpressureUtils_getAndAddRequestWithJavaUtilConcurrentAtomicAtomicLong_withLong_(requested_DetachSubscriber_, n);
-    p = [producer_DetachSubscriber_ get];
+    p = [producer_ get];
     if (p != nil && p != JreLoadEnum(RxInternalOperatorsOnSubscribeDetach_TerminatedProducer, INSTANCE)) {
       jlong r = [((JavaUtilConcurrentAtomicAtomicLong *) nil_chk(requested_DetachSubscriber_)) getAndSetWithLong:0LL];
       [p requestWithLong:r];
@@ -128,19 +128,19 @@ J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxInternalOperatorsOnSubscribeDetach)
 }
 
 - (void)setProducerWithRxProducer:(id<RxProducer>)p {
-  if ([((JavaUtilConcurrentAtomicAtomicReference *) nil_chk(producer_DetachSubscriber_)) compareAndSetWithId:nil withId:p]) {
+  if ([((JavaUtilConcurrentAtomicAtomicReference *) nil_chk(producer_)) compareAndSetWithId:nil withId:p]) {
     jlong r = [((JavaUtilConcurrentAtomicAtomicLong *) nil_chk(requested_DetachSubscriber_)) getAndSetWithLong:0LL];
     [((id<RxProducer>) nil_chk(p)) requestWithLong:r];
   }
   else {
-    if ([producer_DetachSubscriber_ get] != JreLoadEnum(RxInternalOperatorsOnSubscribeDetach_TerminatedProducer, INSTANCE)) {
+    if ([producer_ get] != JreLoadEnum(RxInternalOperatorsOnSubscribeDetach_TerminatedProducer, INSTANCE)) {
       @throw create_JavaLangIllegalStateException_initWithNSString_(@"Producer already set!");
     }
   }
 }
 
 - (void)innerUnsubscribe {
-  [((JavaUtilConcurrentAtomicAtomicReference *) nil_chk(producer_DetachSubscriber_)) lazySetWithId:JreLoadEnum(RxInternalOperatorsOnSubscribeDetach_TerminatedProducer, INSTANCE)];
+  [((JavaUtilConcurrentAtomicAtomicReference *) nil_chk(producer_)) lazySetWithId:JreLoadEnum(RxInternalOperatorsOnSubscribeDetach_TerminatedProducer, INSTANCE)];
   [((JavaUtilConcurrentAtomicAtomicReference *) nil_chk(actual_)) lazySetWithId:nil];
   [self unsubscribe];
 }
@@ -148,7 +148,7 @@ J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxInternalOperatorsOnSubscribeDetach)
 - (void)dealloc {
   JreCheckFinalize(self, [RxInternalOperatorsOnSubscribeDetach_DetachSubscriber class]);
   RELEASE_(actual_);
-  RELEASE_(producer_DetachSubscriber_);
+  RELEASE_(producer_);
   RELEASE_(requested_DetachSubscriber_);
   [super dealloc];
 }
@@ -175,11 +175,11 @@ J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxInternalOperatorsOnSubscribeDetach)
   #pragma clang diagnostic pop
   static const J2ObjcFieldInfo fields[] = {
     { "actual_", "LJavaUtilConcurrentAtomicAtomicReference;", .constantValue.asLong = 0, 0x10, -1, -1, 11, -1 },
-    { "producer_DetachSubscriber_", "LJavaUtilConcurrentAtomicAtomicReference;", .constantValue.asLong = 0, 0x10, 12, -1, 13, -1 },
-    { "requested_DetachSubscriber_", "LJavaUtilConcurrentAtomicAtomicLong;", .constantValue.asLong = 0, 0x10, 14, -1, -1, -1 },
+    { "producer_", "LJavaUtilConcurrentAtomicAtomicReference;", .constantValue.asLong = 0, 0x10, -1, -1, 12, -1 },
+    { "requested_DetachSubscriber_", "LJavaUtilConcurrentAtomicAtomicLong;", .constantValue.asLong = 0, 0x10, 13, -1, -1, -1 },
   };
-  static const void *ptrTable[] = { "LRxSubscriber;", "(Lrx/Subscriber<-TT;>;)V", "onNext", "LNSObject;", "(TT;)V", "onError", "LNSException;", "innerRequest", "J", "setProducer", "LRxProducer;", "Ljava/util/concurrent/atomic/AtomicReference<Lrx/Subscriber<-TT;>;>;", "producer", "Ljava/util/concurrent/atomic/AtomicReference<Lrx/Producer;>;", "requested", "LRxInternalOperatorsOnSubscribeDetach;", "<T:Ljava/lang/Object;>Lrx/Subscriber<TT;>;" };
-  static const J2ObjcClassInfo _RxInternalOperatorsOnSubscribeDetach_DetachSubscriber = { "DetachSubscriber", "rx.internal.operators", ptrTable, methods, fields, 7, 0x18, 7, 3, 15, -1, -1, 16, -1 };
+  static const void *ptrTable[] = { "LRxSubscriber;", "(Lrx/Subscriber<-TT;>;)V", "onNext", "LNSObject;", "(TT;)V", "onError", "LNSException;", "innerRequest", "J", "setProducer", "LRxProducer;", "Ljava/util/concurrent/atomic/AtomicReference<Lrx/Subscriber<-TT;>;>;", "Ljava/util/concurrent/atomic/AtomicReference<Lrx/Producer;>;", "requested", "LRxInternalOperatorsOnSubscribeDetach;", "<T:Ljava/lang/Object;>Lrx/Subscriber<TT;>;" };
+  static const J2ObjcClassInfo _RxInternalOperatorsOnSubscribeDetach_DetachSubscriber = { "DetachSubscriber", "rx.internal.operators", ptrTable, methods, fields, 7, 0x18, 7, 3, 14, -1, -1, 15, -1 };
   return &_RxInternalOperatorsOnSubscribeDetach_DetachSubscriber;
 }
 
@@ -188,7 +188,7 @@ J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxInternalOperatorsOnSubscribeDetach)
 void RxInternalOperatorsOnSubscribeDetach_DetachSubscriber_initWithRxSubscriber_(RxInternalOperatorsOnSubscribeDetach_DetachSubscriber *self, RxSubscriber *actual) {
   RxSubscriber_init(self);
   JreStrongAssignAndConsume(&self->actual_, new_JavaUtilConcurrentAtomicAtomicReference_initWithId_(actual));
-  JreStrongAssignAndConsume(&self->producer_DetachSubscriber_, new_JavaUtilConcurrentAtomicAtomicReference_init());
+  JreStrongAssignAndConsume(&self->producer_, new_JavaUtilConcurrentAtomicAtomicReference_init());
   JreStrongAssignAndConsume(&self->requested_DetachSubscriber_, new_JavaUtilConcurrentAtomicAtomicLong_init());
 }
 

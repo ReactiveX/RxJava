@@ -15,18 +15,22 @@
  */
 package rx.internal.operators;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
-import rx.*;
 import rx.Observable;
 import rx.Observable.Operator;
+import rx.Producer;
+import rx.Subscriber;
+import rx.Subscription;
 import rx.exceptions.CompositeException;
 import rx.functions.Action0;
 import rx.internal.util.RxRingBuffer;
 import rx.internal.util.atomic.SpscLinkedArrayQueue;
 import rx.plugins.RxJavaHooks;
-import rx.subscriptions.*;
+import rx.subscriptions.SerialSubscription;
+import rx.subscriptions.Subscriptions;
 
 /**
  * Transforms an Observable that emits Observables into a single Observable that

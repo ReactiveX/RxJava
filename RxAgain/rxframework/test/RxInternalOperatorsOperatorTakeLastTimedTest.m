@@ -227,26 +227,29 @@ __attribute__((unused)) static RxInternalOperatorsOperatorTakeLastTimedTest_$2 *
   @try {
     jint n = 1000;
     for (jint i = 0; i < 25000; i++) {
-      if (i % 1000 == 0) {
-        [((JavaIoPrintStream *) nil_chk(JreLoadStatic(JavaLangSystem, out))) printlnWithNSString:JreStrcat("$I", @"completionRequestRace >> ", i)];
-      }
-      RxSubjectsPublishSubject *ps = RxSubjectsPublishSubject_create();
-      RxObserversTestSubscriber *ts = create_RxObserversTestSubscriber_initWithLong_(0);
-      [((RxObservable *) nil_chk([((RxSubjectsPublishSubject *) nil_chk(ps)) takeLastWithInt:n withLong:1 withJavaUtilConcurrentTimeUnit:JreLoadEnum(JavaUtilConcurrentTimeUnit, DAYS)])) subscribeWithRxSubscriber:ts];
-      for (jint j = 0; j < n; j++) {
-        [ps onNextWithId:JavaLangInteger_valueOfWithInt_(j)];
-      }
-      JavaUtilConcurrentAtomicAtomicBoolean *go = create_JavaUtilConcurrentAtomicAtomicBoolean_init();
-      [((RxScheduler_Worker *) nil_chk(w)) scheduleWithRxFunctionsAction0:create_RxInternalOperatorsOperatorTakeLastTimedTest_$1_initWithJavaUtilConcurrentAtomicAtomicBoolean_withRxObserversTestSubscriber_(go, ts)];
-      [go setWithBoolean:true];
-      [ps onCompleted];
-      [ts awaitTerminalEventWithLong:1 withJavaUtilConcurrentTimeUnit:JreLoadEnum(JavaUtilConcurrentTimeUnit, SECONDS)];
-      [ts assertValueCountWithInt:n];
-      [ts assertNoErrors];
-      [ts assertCompleted];
-      id<JavaUtilList> list = [ts getOnNextEvents];
-      for (jint j = 0; j < n; j++) {
-        OrgJunitAssert_assertEqualsWithLong_withLong_(j, [((JavaLangInteger *) nil_chk([((id<JavaUtilList>) nil_chk(list)) getWithInt:j])) intValue]);
+      @autoreleasepool {
+        if (i % 1000 == 0) {
+          [((JavaIoPrintStream *) nil_chk(JreLoadStatic(JavaLangSystem, out))) printlnWithNSString:JreStrcat("$I", @"completionRequestRace >> ", i)];
+        }
+        RxSubjectsPublishSubject *ps = RxSubjectsPublishSubject_create();
+        RxObserversTestSubscriber *ts = create_RxObserversTestSubscriber_initWithLong_(0);
+        [((RxObservable *) nil_chk([((RxSubjectsPublishSubject *) nil_chk(ps)) takeLastWithInt:n withLong:1 withJavaUtilConcurrentTimeUnit:JreLoadEnum(JavaUtilConcurrentTimeUnit, DAYS)])) subscribeWithRxSubscriber:ts];
+        for (jint j = 0; j < n; j++) {
+          [ps onNextWithId:JavaLangInteger_valueOfWithInt_(j)];
+        }
+        JavaUtilConcurrentAtomicAtomicBoolean *go = create_JavaUtilConcurrentAtomicAtomicBoolean_init();
+        [((RxScheduler_Worker *) nil_chk(w)) scheduleWithRxFunctionsAction0:create_RxInternalOperatorsOperatorTakeLastTimedTest_$1_initWithJavaUtilConcurrentAtomicAtomicBoolean_withRxObserversTestSubscriber_(go, ts)];
+        [go setWithBoolean:true];
+        [ps onCompleted];
+        [ts awaitTerminalEventWithLong:1 withJavaUtilConcurrentTimeUnit:JreLoadEnum(JavaUtilConcurrentTimeUnit, SECONDS)];
+        [ts assertValueCountWithInt:n];
+        [ts assertNoErrors];
+        [ts assertCompleted];
+        id<JavaUtilList> list = [ts getOnNextEvents];
+        for (jint j = 0; j < n; j++) {
+          OrgJunitAssert_assertEqualsWithLong_withLong_(j, [((JavaLangInteger *) nil_chk([((id<JavaUtilList>) nil_chk(list)) getWithInt:j])) intValue]);
+        }
+        [ts unsubscribe];
       }
     }
   }

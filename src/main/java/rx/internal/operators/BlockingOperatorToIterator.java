@@ -15,11 +15,14 @@
  */
 package rx.internal.operators;
 
-import java.util.*;
-import java.util.concurrent.*;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
-import rx.*;
+import rx.Notification;
 import rx.Observable;
+import rx.Subscriber;
 import rx.exceptions.Exceptions;
 import rx.internal.util.RxRingBuffer;
 

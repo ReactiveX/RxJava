@@ -16,13 +16,23 @@
 package rx.internal.operators;
 
 import java.util.Queue;
-import java.util.concurrent.atomic.*;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicReference;
 
-import rx.*;
-import rx.exceptions.*;
-import rx.functions.*;
-import rx.internal.util.*;
-import rx.internal.util.unsafe.*;
+import rx.Observable;
+import rx.Producer;
+import rx.Subscriber;
+import rx.Subscription;
+import rx.exceptions.Exceptions;
+import rx.exceptions.MissingBackpressureException;
+import rx.functions.Action0;
+import rx.functions.Action1;
+import rx.functions.Func1;
+import rx.internal.util.RxRingBuffer;
+import rx.internal.util.SynchronizedQueue;
+import rx.internal.util.unsafe.SpscArrayQueue;
+import rx.internal.util.unsafe.UnsafeAccess;
 import rx.observables.ConnectableObservable;
 import rx.subscriptions.Subscriptions;
 

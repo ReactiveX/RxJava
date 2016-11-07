@@ -15,10 +15,14 @@
  */
 package rx.internal.operators;
 
-import java.util.concurrent.atomic.*;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicReference;
 
-import rx.*;
+import rx.Observable;
 import rx.Observable.OnSubscribe;
+import rx.Producer;
+import rx.Subscriber;
+import rx.Subscription;
 import rx.plugins.RxJavaHooks;
 
 /**

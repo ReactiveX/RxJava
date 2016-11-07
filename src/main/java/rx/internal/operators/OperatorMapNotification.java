@@ -15,12 +15,15 @@
  */
 package rx.internal.operators;
 
-import java.util.concurrent.atomic.*;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicReference;
 
-import rx.*;
 import rx.Observable.Operator;
+import rx.Producer;
+import rx.Subscriber;
 import rx.exceptions.Exceptions;
-import rx.functions.*;
+import rx.functions.Func0;
+import rx.functions.Func1;
 
 /**
  * Applies a function of your choosing to every item emitted by an {@code Observable}, and emits the results of

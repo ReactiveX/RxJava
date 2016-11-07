@@ -544,11 +544,11 @@ IOSObjectArray *RxInternalOperatorsOperatorReplay_ReplaySubscriber_TERMINATED;
 }
 
 - (void)setProducerWithRxProducer:(id<RxProducer>)p {
-  id<RxProducer> p0 = JreLoadVolatileId(&producer_ReplaySubscriber_);
+  id<RxProducer> p0 = JreLoadVolatileId(&producer_);
   if (p0 != nil) {
     @throw create_JavaLangIllegalStateException_initWithNSString_(@"Only a single producer can be set on a Subscriber.");
   }
-  JreVolatileStrongAssign(&producer_ReplaySubscriber_, p);
+  JreVolatileStrongAssign(&producer_, p);
   [self manageRequestsWithRxInternalOperatorsOperatorReplay_InnerProducer:nil];
   [self replay];
 }
@@ -684,7 +684,7 @@ IOSObjectArray *RxInternalOperatorsOperatorReplay_ReplaySubscriber_TERMINATED;
 - (void)makeRequestWithLong:(jlong)maxTotalRequests
                    withLong:(jlong)previousTotalRequests {
   jlong ur = maxUpstreamRequested_;
-  id<RxProducer> p = JreLoadVolatileId(&producer_ReplaySubscriber_);
+  id<RxProducer> p = JreLoadVolatileId(&producer_);
   jlong diff = maxTotalRequests - previousTotalRequests;
   if (diff != 0) {
     maxChildRequested_ = maxTotalRequests;
@@ -742,7 +742,7 @@ IOSObjectArray *RxInternalOperatorsOperatorReplay_ReplaySubscriber_TERMINATED;
 
 - (void)__javaClone:(RxInternalOperatorsOperatorReplay_ReplaySubscriber *)original {
   [super __javaClone:original];
-  JreCloneVolatileStrong(&producer_ReplaySubscriber_, &original->producer_ReplaySubscriber_);
+  JreCloneVolatileStrong(&producer_, &original->producer_);
 }
 
 - (void)dealloc {
@@ -751,7 +751,7 @@ IOSObjectArray *RxInternalOperatorsOperatorReplay_ReplaySubscriber_TERMINATED;
   RELEASE_(producers_);
   RELEASE_(producersCache_);
   RELEASE_(shouldConnect_);
-  JreReleaseVolatile(&producer_ReplaySubscriber_);
+  JreReleaseVolatile(&producer_);
   RELEASE_(coordinationQueue_);
   [super dealloc];
 }
@@ -801,12 +801,12 @@ IOSObjectArray *RxInternalOperatorsOperatorReplay_ReplaySubscriber_TERMINATED;
     { "missed_", "Z", .constantValue.asLong = 0, 0x0, -1, -1, -1, -1 },
     { "maxChildRequested_", "J", .constantValue.asLong = 0, 0x0, -1, -1, -1, -1 },
     { "maxUpstreamRequested_", "J", .constantValue.asLong = 0, 0x0, -1, -1, -1, -1 },
-    { "producer_ReplaySubscriber_", "LRxProducer;", .constantValue.asLong = 0, 0x40, 23, -1, -1, -1 },
-    { "coordinationQueue_", "LJavaUtilList;", .constantValue.asLong = 0, 0x0, -1, -1, 24, -1 },
+    { "producer_", "LRxProducer;", .constantValue.asLong = 0, 0x40, -1, -1, -1, -1 },
+    { "coordinationQueue_", "LJavaUtilList;", .constantValue.asLong = 0, 0x0, -1, -1, 23, -1 },
     { "coordinateAll_", "Z", .constantValue.asLong = 0, 0x0, -1, -1, -1, -1 },
   };
-  static const void *ptrTable[] = { "LRxInternalOperatorsOperatorReplay_ReplayBuffer;", "(Lrx/internal/operators/OperatorReplay$ReplayBuffer<TT;>;)V", "init", "add", "LRxInternalOperatorsOperatorReplay_InnerProducer;", "(Lrx/internal/operators/OperatorReplay$InnerProducer<TT;>;)Z", "remove", "(Lrx/internal/operators/OperatorReplay$InnerProducer<TT;>;)V", "setProducer", "LRxProducer;", "onNext", "LNSObject;", "(TT;)V", "onError", "LNSException;", "manageRequests", "makeRequest", "JJ", "Lrx/internal/operators/OperatorReplay$ReplayBuffer<TT;>;", &RxInternalOperatorsOperatorReplay_ReplaySubscriber_EMPTY, &RxInternalOperatorsOperatorReplay_ReplaySubscriber_TERMINATED, "Lrx/internal/util/OpenHashSet<Lrx/internal/operators/OperatorReplay$InnerProducer<TT;>;>;", "[Lrx/internal/operators/OperatorReplay$InnerProducer<TT;>;", "producer", "Ljava/util/List<Lrx/internal/operators/OperatorReplay$InnerProducer<TT;>;>;", "LRxInternalOperatorsOperatorReplay;", "<T:Ljava/lang/Object;>Lrx/Subscriber<TT;>;Lrx/Subscription;" };
-  static const J2ObjcClassInfo _RxInternalOperatorsOperatorReplay_ReplaySubscriber = { "ReplaySubscriber", "rx.internal.operators", ptrTable, methods, fields, 7, 0x18, 12, 17, 25, -1, -1, 26, -1 };
+  static const void *ptrTable[] = { "LRxInternalOperatorsOperatorReplay_ReplayBuffer;", "(Lrx/internal/operators/OperatorReplay$ReplayBuffer<TT;>;)V", "init", "add", "LRxInternalOperatorsOperatorReplay_InnerProducer;", "(Lrx/internal/operators/OperatorReplay$InnerProducer<TT;>;)Z", "remove", "(Lrx/internal/operators/OperatorReplay$InnerProducer<TT;>;)V", "setProducer", "LRxProducer;", "onNext", "LNSObject;", "(TT;)V", "onError", "LNSException;", "manageRequests", "makeRequest", "JJ", "Lrx/internal/operators/OperatorReplay$ReplayBuffer<TT;>;", &RxInternalOperatorsOperatorReplay_ReplaySubscriber_EMPTY, &RxInternalOperatorsOperatorReplay_ReplaySubscriber_TERMINATED, "Lrx/internal/util/OpenHashSet<Lrx/internal/operators/OperatorReplay$InnerProducer<TT;>;>;", "[Lrx/internal/operators/OperatorReplay$InnerProducer<TT;>;", "Ljava/util/List<Lrx/internal/operators/OperatorReplay$InnerProducer<TT;>;>;", "LRxInternalOperatorsOperatorReplay;", "<T:Ljava/lang/Object;>Lrx/Subscriber<TT;>;Lrx/Subscription;" };
+  static const J2ObjcClassInfo _RxInternalOperatorsOperatorReplay_ReplaySubscriber = { "ReplaySubscriber", "rx.internal.operators", ptrTable, methods, fields, 7, 0x18, 12, 17, 24, -1, -1, 25, -1 };
   return &_RxInternalOperatorsOperatorReplay_ReplaySubscriber;
 }
 

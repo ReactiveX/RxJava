@@ -16,7 +16,8 @@
 package rx.internal.schedulers;
 
 import java.util.concurrent.Future;
-import java.util.concurrent.atomic.*;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 
 import rx.Subscription;
 import rx.exceptions.OnErrorNotImplementedException;

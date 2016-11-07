@@ -16,19 +16,46 @@
 
 package rx;
 
-import java.util.*;
-import java.util.concurrent.*;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.concurrent.Callable;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import rx.annotations.*;
-import rx.exceptions.*;
-import rx.functions.*;
-import rx.internal.operators.*;
-import rx.internal.util.*;
-import rx.observers.*;
+import rx.annotations.Beta;
+import rx.annotations.Experimental;
+import rx.exceptions.CompositeException;
+import rx.exceptions.Exceptions;
+import rx.functions.Action0;
+import rx.functions.Action1;
+import rx.functions.Actions;
+import rx.functions.Func0;
+import rx.functions.Func1;
+import rx.functions.Func2;
+import rx.internal.operators.CompletableFromEmitter;
+import rx.internal.operators.CompletableOnSubscribeConcat;
+import rx.internal.operators.CompletableOnSubscribeConcatArray;
+import rx.internal.operators.CompletableOnSubscribeConcatIterable;
+import rx.internal.operators.CompletableOnSubscribeMerge;
+import rx.internal.operators.CompletableOnSubscribeMergeArray;
+import rx.internal.operators.CompletableOnSubscribeMergeDelayErrorArray;
+import rx.internal.operators.CompletableOnSubscribeMergeDelayErrorIterable;
+import rx.internal.operators.CompletableOnSubscribeMergeIterable;
+import rx.internal.operators.CompletableOnSubscribeTimeout;
+import rx.internal.util.SubscriptionList;
+import rx.internal.util.UtilityFunctions;
+import rx.observers.SafeCompletableSubscriber;
+import rx.observers.SafeSubscriber;
 import rx.plugins.RxJavaHooks;
 import rx.schedulers.Schedulers;
-import rx.subscriptions.*;
+import rx.subscriptions.BooleanSubscription;
+import rx.subscriptions.CompositeSubscription;
+import rx.subscriptions.MultipleAssignmentSubscription;
+import rx.subscriptions.SerialSubscription;
+import rx.subscriptions.Subscriptions;
 
 /**
  * Represents a deferred computation without any value but only indication for completion or exception.

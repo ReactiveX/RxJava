@@ -16,7 +16,8 @@
  */
 package rx.internal.util.atomic;
 
-import java.util.concurrent.atomic.*;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicReferenceArray;
 
 /**
  * A Single-Producer-Single-Consumer queue backed by a pre-allocated buffer.

@@ -15,7 +15,9 @@
  */
 package rx.observers;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import rx.Notification;
 import rx.Observer;

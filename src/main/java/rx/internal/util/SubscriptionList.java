@@ -15,7 +15,11 @@
  */
 package rx.internal.util;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
 
 import rx.Subscription;
 import rx.exceptions.Exceptions;

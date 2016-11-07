@@ -16,11 +16,15 @@
 
 package rx.internal.operators;
 
-import java.util.concurrent.*;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import rx.*;
+import rx.Completable;
 import rx.Completable.OnSubscribe;
+import rx.CompletableSubscriber;
+import rx.Scheduler;
+import rx.Subscription;
 import rx.functions.Action0;
 import rx.plugins.RxJavaHooks;
 import rx.subscriptions.CompositeSubscription;

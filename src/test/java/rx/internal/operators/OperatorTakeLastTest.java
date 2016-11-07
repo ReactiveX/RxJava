@@ -15,6 +15,9 @@
  */
 package rx.internal.operators;
 
+import com.google.j2objc.annotations.AutoreleasePool;
+
+
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
@@ -26,6 +29,7 @@ import java.util.concurrent.atomic.*;
 import org.junit.*;
 import org.mockito.InOrder;
 
+import co.touchlab.doppel.testing.DoppelHacks;
 import rx.Observable;
 import rx.Observer;
 import rx.Scheduler.Worker;
@@ -36,6 +40,7 @@ import rx.observers.TestSubscriber;
 import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
 
+@DoppelHacks//Added unsubscribes
 public class OperatorTakeLastTest {
 
     @Test
@@ -120,6 +125,7 @@ public class OperatorTakeLastTest {
         ts.awaitTerminalEvent();
         ts.assertNoErrors();
         ts.assertReceivedOnNext(Arrays.asList(100000));
+        ts.unsubscribe();
     }
 
     @Test
@@ -129,6 +135,7 @@ public class OperatorTakeLastTest {
         ts.awaitTerminalEvent();
         ts.assertNoErrors();
         assertEquals(RxRingBuffer.SIZE * 4, ts.getOnNextEvents().size());
+        ts.unsubscribe();
     }
 
     private Func1<Integer, Integer> newSlowProcessor() {
@@ -163,133 +170,168 @@ public class OperatorTakeLastTest {
     @Test
     public void testIgnoreRequest1() {
         // If `takeLast` does not ignore `request` properly, StackOverflowError will be thrown.
-        Observable.range(0, 100000).takeLast(100000).subscribe(new Subscriber<Integer>() {
+        Subscriber<Integer> subscriber = new Subscriber<Integer>()
+        {
 
             @Override
-            public void onStart() {
+            public void onStart()
+            {
                 request(Long.MAX_VALUE);
             }
 
             @Override
-            public void onCompleted() {
+            public void onCompleted()
+            {
 
             }
 
             @Override
-            public void onError(Throwable e) {
+            public void onError(Throwable e)
+            {
             }
 
             @Override
-            public void onNext(Integer integer) {
+            public void onNext(Integer integer)
+            {
                 request(Long.MAX_VALUE);
             }
-        });
+        };
+        Observable.range(0, 100000).takeLast(100000).subscribe(subscriber);
+        subscriber.unsubscribe();
     }
 
     @Test
     public void testIgnoreRequest2() {
         // If `takeLast` does not ignore `request` properly, StackOverflowError will be thrown.
-        Observable.range(0, 100000).takeLast(100000).subscribe(new Subscriber<Integer>() {
+        Subscriber<Integer> subscriber = new Subscriber<Integer>()
+        {
 
             @Override
-            public void onStart() {
+            public void onStart()
+            {
                 request(1);
             }
 
             @Override
-            public void onCompleted() {
+            public void onCompleted()
+            {
             }
 
             @Override
-            public void onError(Throwable e) {
+            public void onError(Throwable e)
+            {
             }
 
             @Override
-            public void onNext(Integer integer) {
+            public void onNext(Integer integer)
+            {
                 request(1);
             }
-        });
+        };
+        Observable.range(0, 100000).takeLast(100000).subscribe(subscriber);
+        subscriber.unsubscribe();
     }
 
     @Test(timeout = 30000)
     public void testIgnoreRequest3() {
         // If `takeLast` does not ignore `request` properly, it will enter an infinite loop.
-        Observable.range(0, 100000).takeLast(100000).subscribe(new Subscriber<Integer>() {
+        Subscriber<Integer> subscriber = new Subscriber<Integer>()
+        {
 
             @Override
-            public void onStart() {
+            public void onStart()
+            {
                 request(1);
             }
 
             @Override
-            public void onCompleted() {
+            public void onCompleted()
+            {
 
             }
 
             @Override
-            public void onError(Throwable e) {
+            public void onError(Throwable e)
+            {
             }
 
             @Override
-            public void onNext(Integer integer) {
+            public void onNext(Integer integer)
+            {
                 request(Long.MAX_VALUE);
             }
-        });
+        };
+        Observable.range(0, 100000).takeLast(100000).subscribe(subscriber);
+        subscriber.unsubscribe();
     }
 
 
     @Test
     public void testIgnoreRequest4() {
         // If `takeLast` does not ignore `request` properly, StackOverflowError will be thrown.
-        Observable.range(0, 100000).takeLast(100000).subscribe(new Subscriber<Integer>() {
+        Subscriber<Integer> subscriber = new Subscriber<Integer>()
+        {
 
             @Override
-            public void onStart() {
+            public void onStart()
+            {
                 request(Long.MAX_VALUE);
             }
 
             @Override
-            public void onCompleted() {
+            public void onCompleted()
+            {
 
             }
 
             @Override
-            public void onError(Throwable e) {
+            public void onError(Throwable e)
+            {
             }
 
             @Override
-            public void onNext(Integer integer) {
+            public void onNext(Integer integer)
+            {
                 request(1);
             }
-        });
+        };
+        Observable.range(0, 100000).takeLast(100000).subscribe(subscriber);
+        subscriber.unsubscribe();
     }
 
     @Test
     public void testUnsubscribeTakesEffectEarlyOnFastPath() {
         final AtomicInteger count = new AtomicInteger();
-        Observable.range(0, 100000).takeLast(100000).subscribe(new Subscriber<Integer>() {
+        Subscriber<Integer> subscriber = new Subscriber<Integer>()
+        {
 
             @Override
-            public void onStart() {
+            public void onStart()
+            {
                 request(Long.MAX_VALUE);
             }
 
             @Override
-            public void onCompleted() {
+            public void onCompleted()
+            {
 
             }
 
             @Override
-            public void onError(Throwable e) {
+            public void onError(Throwable e)
+            {
             }
 
             @Override
-            public void onNext(Integer integer) {
+            public void onNext(Integer integer)
+            {
                 count.incrementAndGet();
                 unsubscribe();
             }
-        });
+        };
+        Observable.range(0, 100000).takeLast(100000).subscribe(subscriber);
         assertEquals(1,count.get());
+        subscriber.unsubscribe();
     }
 
     @Test(timeout=10000)
@@ -320,12 +362,13 @@ public class OperatorTakeLastTest {
         assertEquals(50, list.size());
     }
 
-    @Test(timeout = 30000) // original could get into an infinite loop
+    @Test(timeout = 45000) // original could get into an infinite loop
+    @DoppelHacks//Added time
     public void completionRequestRace() {
         Worker w = Schedulers.computation().createWorker();
         try {
             final int n = 1000;
-            for (int i = 0; i < 25000; i++) {
+            for (@AutoreleasePool int i = 0; i < 25000; i++) {
                 if (i % 1000 == 0) {
                     System.out.println("completionRequestRace >> " + i);
                 }
@@ -361,6 +404,8 @@ public class OperatorTakeLastTest {
                 for (int j = 0; j < n; j++) {
                     Assert.assertEquals(j, list.get(j).intValue());
                 }
+
+                ts.unsubscribe();
             }
         } finally {
             w.unsubscribe();

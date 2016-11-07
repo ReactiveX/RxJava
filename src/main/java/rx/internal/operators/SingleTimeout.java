@@ -16,10 +16,13 @@
 
 package rx.internal.operators;
 
-import java.util.concurrent.*;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import rx.*;
+import rx.Scheduler;
+import rx.Single;
+import rx.SingleSubscriber;
 import rx.functions.Action0;
 import rx.plugins.RxJavaHooks;
 

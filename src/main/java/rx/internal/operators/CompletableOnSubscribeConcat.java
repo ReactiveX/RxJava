@@ -16,10 +16,15 @@
 
 package rx.internal.operators;
 
-import java.util.concurrent.atomic.*;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
-import rx.*;
+import rx.Completable;
 import rx.Completable.OnSubscribe;
+import rx.CompletableSubscriber;
+import rx.Observable;
+import rx.Subscriber;
+import rx.Subscription;
 import rx.exceptions.MissingBackpressureException;
 import rx.internal.util.unsafe.SpscArrayQueue;
 import rx.plugins.RxJavaHooks;

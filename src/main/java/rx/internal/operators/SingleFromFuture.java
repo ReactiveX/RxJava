@@ -16,9 +16,11 @@
 
 package rx.internal.operators;
 
-import java.util.concurrent.*;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
-import rx.*;
+import rx.Single;
+import rx.SingleSubscriber;
 import rx.exceptions.Exceptions;
 import rx.subscriptions.Subscriptions;
 

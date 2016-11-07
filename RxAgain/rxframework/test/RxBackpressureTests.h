@@ -108,7 +108,7 @@ J2OBJC_TYPE_LITERAL_HEADER(RxBackpressureTests)
   JavaUtilConcurrentAtomicAtomicInteger *counter_;
   JavaUtilConcurrentConcurrentLinkedQueue *threadsSeen_;
   JavaUtilConcurrentAtomicAtomicLong *requested_;
-  __unsafe_unretained RxSubscriber *s_;
+  RxSubscriber *s_;
   jint i_;
 }
 
@@ -130,6 +130,7 @@ J2OBJC_EMPTY_STATIC_INIT(RxBackpressureTests_BPTPRoducer)
 J2OBJC_FIELD_SETTER(RxBackpressureTests_BPTPRoducer, counter_, JavaUtilConcurrentAtomicAtomicInteger *)
 J2OBJC_FIELD_SETTER(RxBackpressureTests_BPTPRoducer, threadsSeen_, JavaUtilConcurrentConcurrentLinkedQueue *)
 J2OBJC_FIELD_SETTER(RxBackpressureTests_BPTPRoducer, requested_, JavaUtilConcurrentAtomicAtomicLong *)
+J2OBJC_FIELD_SETTER(RxBackpressureTests_BPTPRoducer, s_, RxSubscriber *)
 
 FOUNDATION_EXPORT void RxBackpressureTests_BPTPRoducer_initWithJavaUtilConcurrentAtomicAtomicInteger_withJavaUtilConcurrentConcurrentLinkedQueue_withJavaUtilConcurrentAtomicAtomicLong_withRxSubscriber_(RxBackpressureTests_BPTPRoducer *self, JavaUtilConcurrentAtomicAtomicInteger *counter, JavaUtilConcurrentConcurrentLinkedQueue *threadsSeen, JavaUtilConcurrentAtomicAtomicLong *requested, RxSubscriber *s);
 

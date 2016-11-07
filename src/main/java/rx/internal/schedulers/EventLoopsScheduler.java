@@ -15,13 +15,17 @@
  */
 package rx.internal.schedulers;
 
-import java.util.concurrent.*;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
-import rx.*;
+import rx.Scheduler;
+import rx.Subscription;
 import rx.functions.Action0;
-import rx.internal.util.*;
-import rx.subscriptions.*;
+import rx.internal.util.RxThreadFactory;
+import rx.internal.util.SubscriptionList;
+import rx.subscriptions.CompositeSubscription;
+import rx.subscriptions.Subscriptions;
 
 public final class EventLoopsScheduler extends Scheduler implements SchedulerLifecycle {
     /**

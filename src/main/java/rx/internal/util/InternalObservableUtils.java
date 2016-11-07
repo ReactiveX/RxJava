@@ -19,10 +19,16 @@ package rx.internal.util;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import rx.*;
+import rx.Notification;
+import rx.Observable;
 import rx.Observable.Operator;
+import rx.Scheduler;
 import rx.exceptions.OnErrorNotImplementedException;
-import rx.functions.*;
+import rx.functions.Action1;
+import rx.functions.Action2;
+import rx.functions.Func0;
+import rx.functions.Func1;
+import rx.functions.Func2;
 import rx.internal.operators.OperatorAny;
 import rx.observables.ConnectableObservable;
 

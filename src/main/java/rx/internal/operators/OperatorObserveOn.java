@@ -18,14 +18,18 @@ package rx.internal.operators;
 import java.util.Queue;
 import java.util.concurrent.atomic.AtomicLong;
 
-import rx.*;
 import rx.Observable.Operator;
+import rx.Producer;
+import rx.Scheduler;
+import rx.Subscriber;
 import rx.exceptions.MissingBackpressureException;
 import rx.functions.Action0;
-import rx.internal.schedulers.*;
+import rx.internal.schedulers.ImmediateScheduler;
+import rx.internal.schedulers.TrampolineScheduler;
 import rx.internal.util.RxRingBuffer;
 import rx.internal.util.atomic.SpscAtomicArrayQueue;
-import rx.internal.util.unsafe.*;
+import rx.internal.util.unsafe.SpscArrayQueue;
+import rx.internal.util.unsafe.UnsafeAccess;
 import rx.plugins.RxJavaHooks;
 import rx.schedulers.Schedulers;
 

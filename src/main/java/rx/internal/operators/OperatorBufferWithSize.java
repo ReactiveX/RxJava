@@ -15,12 +15,16 @@
  */
 package rx.internal.operators;
 
-import java.util.*;
-import java.util.concurrent.atomic.*;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicLong;
 
-import rx.*;
 import rx.Observable;
 import rx.Observable.Operator;
+import rx.Producer;
+import rx.Subscriber;
 import rx.exceptions.MissingBackpressureException;
 
 /**

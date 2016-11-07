@@ -138,7 +138,7 @@ J2OBJC_TYPE_LITERAL_HEADER(RxInternalOperatorsOperatorZip)
  @public
   RxSubscriber *child_;
   RxInternalOperatorsOperatorZip_Zip *zipper_;
-  RxInternalOperatorsOperatorZip_ZipProducer *producer_ZipSubscriber_;
+  RxInternalOperatorsOperatorZip_ZipProducer *producer_;
   jboolean started_;
 }
 
@@ -161,7 +161,7 @@ J2OBJC_EMPTY_STATIC_INIT(RxInternalOperatorsOperatorZip_ZipSubscriber)
 
 J2OBJC_FIELD_SETTER(RxInternalOperatorsOperatorZip_ZipSubscriber, child_, RxSubscriber *)
 J2OBJC_FIELD_SETTER(RxInternalOperatorsOperatorZip_ZipSubscriber, zipper_, RxInternalOperatorsOperatorZip_Zip *)
-J2OBJC_FIELD_SETTER(RxInternalOperatorsOperatorZip_ZipSubscriber, producer_ZipSubscriber_, RxInternalOperatorsOperatorZip_ZipProducer *)
+J2OBJC_FIELD_SETTER(RxInternalOperatorsOperatorZip_ZipSubscriber, producer_, RxInternalOperatorsOperatorZip_ZipProducer *)
 
 FOUNDATION_EXPORT void RxInternalOperatorsOperatorZip_ZipSubscriber_initWithRxInternalOperatorsOperatorZip_withRxSubscriber_withRxInternalOperatorsOperatorZip_Zip_withRxInternalOperatorsOperatorZip_ZipProducer_(RxInternalOperatorsOperatorZip_ZipSubscriber *self, RxInternalOperatorsOperatorZip *outer$, RxSubscriber *child, RxInternalOperatorsOperatorZip_Zip *zipper, RxInternalOperatorsOperatorZip_ZipProducer *producer);
 

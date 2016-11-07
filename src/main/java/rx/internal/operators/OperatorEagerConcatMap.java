@@ -16,16 +16,24 @@
 
 package rx.internal.operators;
 
-import java.util.*;
-import java.util.concurrent.atomic.*;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Queue;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
-import rx.*;
 import rx.Observable;
 import rx.Observable.Operator;
+import rx.Producer;
+import rx.Subscriber;
+import rx.Subscription;
 import rx.exceptions.Exceptions;
-import rx.functions.*;
+import rx.functions.Action0;
+import rx.functions.Func1;
 import rx.internal.util.atomic.SpscAtomicArrayQueue;
-import rx.internal.util.unsafe.*;
+import rx.internal.util.unsafe.SpscArrayQueue;
+import rx.internal.util.unsafe.UnsafeAccess;
 import rx.subscriptions.Subscriptions;
 
 public final class OperatorEagerConcatMap<T, R> implements Operator<R, T> {

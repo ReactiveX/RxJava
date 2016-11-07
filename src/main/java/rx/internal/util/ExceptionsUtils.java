@@ -16,7 +16,8 @@
 
 package rx.internal.util;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
 import rx.exceptions.CompositeException;

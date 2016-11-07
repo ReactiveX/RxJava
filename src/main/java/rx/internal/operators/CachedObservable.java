@@ -17,10 +17,16 @@ package rx.internal.operators;
 
 import com.google.j2objc.annotations.Weak;
 
-import java.util.concurrent.atomic.*;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicLong;
 
-import rx.*;
-import rx.exceptions.*;
+import rx.Observable;
+import rx.Observer;
+import rx.Producer;
+import rx.Subscriber;
+import rx.Subscription;
+import rx.exceptions.Exceptions;
+import rx.exceptions.OnErrorThrowable;
 import rx.internal.util.LinkedArrayList;
 import rx.subscriptions.SerialSubscription;
 

@@ -16,10 +16,13 @@
 package rx.internal.operators;
 
 import java.util.Arrays;
-import java.util.concurrent.atomic.*;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReferenceArray;
 
-import rx.*;
+import rx.Observable;
 import rx.Observable.OnSubscribe;
+import rx.Producer;
+import rx.Subscriber;
 import rx.exceptions.Exceptions;
 import rx.functions.FuncN;
 import rx.observers.SerializedSubscriber;

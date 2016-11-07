@@ -16,7 +16,8 @@
 package rx.observers;
 
 import rx.Observer;
-import rx.exceptions.*;
+import rx.exceptions.Exceptions;
+import rx.exceptions.OnErrorThrowable;
 import rx.internal.operators.NotificationLite;
 
 /**

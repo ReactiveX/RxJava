@@ -15,7 +15,8 @@
  */
 package rx.exceptions;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.Set;
 
 import rx.annotations.Experimental;
 import rx.plugins.RxJavaHooks;

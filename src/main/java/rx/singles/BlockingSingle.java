@@ -16,11 +16,14 @@
 
 package rx.singles;
 
-import java.util.concurrent.*;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicReference;
 
-import rx.*;
-import rx.annotations.*;
+import rx.Single;
+import rx.SingleSubscriber;
+import rx.Subscription;
+import rx.annotations.Beta;
 import rx.exceptions.Exceptions;
 import rx.internal.operators.BlockingOperatorToFuture;
 import rx.internal.util.BlockingUtils;

@@ -1489,10 +1489,12 @@ __attribute__((unused)) static RxObservablesSyncOnSubscribeTest_$59 *create_RxOb
 
 - (void)testConcurrentRequestsLoop {
   for (jint i = 0; i < 100; i++) {
-    if (i % 10 == 0) {
-      [((JavaIoPrintStream *) nil_chk(JreLoadStatic(JavaLangSystem, out))) printlnWithNSString:JreStrcat("$I", @"testConcurrentRequestsLoop >> ", i)];
+    @autoreleasepool {
+      if (i % 10 == 0) {
+        [((JavaIoPrintStream *) nil_chk(JreLoadStatic(JavaLangSystem, out))) printlnWithNSString:JreStrcat("$I", @"testConcurrentRequestsLoop >> ", i)];
+      }
+      [self testConcurrentRequests];
     }
-    [self testConcurrentRequests];
   }
 }
 
@@ -1523,6 +1525,7 @@ __attribute__((unused)) static RxObservablesSyncOnSubscribeTest_$59 *create_RxOb
   if (![l3 awaitWithLong:2 withJavaUtilConcurrentTimeUnit:JreLoadEnum(JavaUtilConcurrentTimeUnit, SECONDS)]) {
     OrgJunitAssert_failWithNSString_(@"SyncOnSubscribe failed to countDown onUnSubscribe latch");
   }
+  [ts unsubscribe];
 }
 
 - (void)testUnsubscribeOutsideOfLoop {

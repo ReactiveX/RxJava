@@ -16,15 +16,24 @@
 package rx.subjects;
 
 import java.util.Queue;
-import java.util.concurrent.atomic.*;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicReference;
 
-import rx.*;
+import rx.Observer;
+import rx.Producer;
+import rx.Subscriber;
+import rx.Subscription;
 import rx.annotations.Experimental;
-import rx.exceptions.*;
+import rx.exceptions.Exceptions;
+import rx.exceptions.OnErrorThrowable;
 import rx.functions.Action0;
-import rx.internal.operators.*;
-import rx.internal.util.atomic.*;
-import rx.internal.util.unsafe.*;
+import rx.internal.operators.BackpressureUtils;
+import rx.internal.operators.NotificationLite;
+import rx.internal.util.atomic.SpscLinkedAtomicQueue;
+import rx.internal.util.atomic.SpscUnboundedAtomicArrayQueue;
+import rx.internal.util.unsafe.SpscLinkedQueue;
+import rx.internal.util.unsafe.SpscUnboundedArrayQueue;
+import rx.internal.util.unsafe.UnsafeAccess;
 
 /**
  * A Subject variant which buffers events until a single Subscriber arrives and replays them to it

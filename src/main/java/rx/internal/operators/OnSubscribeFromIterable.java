@@ -18,8 +18,9 @@ package rx.internal.operators;
 import java.util.Iterator;
 import java.util.concurrent.atomic.AtomicLong;
 
-import rx.*;
 import rx.Observable.OnSubscribe;
+import rx.Producer;
+import rx.Subscriber;
 import rx.exceptions.Exceptions;
 
 /**

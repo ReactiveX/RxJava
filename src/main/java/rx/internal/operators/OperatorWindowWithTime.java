@@ -15,16 +15,22 @@
  */
 package rx.internal.operators;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import rx.*;
 import rx.Observable;
 import rx.Observable.Operator;
 import rx.Observer;
+import rx.Scheduler;
 import rx.Scheduler.Worker;
+import rx.Subscriber;
 import rx.functions.Action0;
-import rx.observers.*;
+import rx.observers.SerializedObserver;
+import rx.observers.SerializedSubscriber;
 import rx.subjects.UnicastSubject;
 import rx.subscriptions.Subscriptions;
 

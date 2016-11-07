@@ -16,7 +16,9 @@
 package rx.internal.operators;
 
 
-import rx.*;
+import rx.Observable;
+import rx.Producer;
+import rx.Subscriber;
 import rx.internal.producers.ProducerArbiter;
 import rx.subscriptions.SerialSubscription;
 

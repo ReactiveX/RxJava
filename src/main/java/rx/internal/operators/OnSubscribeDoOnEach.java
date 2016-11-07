@@ -17,9 +17,12 @@ package rx.internal.operators;
 
 import java.util.Arrays;
 
-import rx.*;
+import rx.Observable;
 import rx.Observable.OnSubscribe;
-import rx.exceptions.*;
+import rx.Observer;
+import rx.Subscriber;
+import rx.exceptions.CompositeException;
+import rx.exceptions.Exceptions;
 import rx.plugins.RxJavaHooks;
 
 /**

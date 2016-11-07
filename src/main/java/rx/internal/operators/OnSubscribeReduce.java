@@ -18,8 +18,10 @@ package rx.internal.operators;
 
 import java.util.NoSuchElementException;
 
-import rx.*;
+import rx.Observable;
 import rx.Observable.OnSubscribe;
+import rx.Producer;
+import rx.Subscriber;
 import rx.exceptions.Exceptions;
 import rx.functions.Func2;
 import rx.plugins.RxJavaHooks;

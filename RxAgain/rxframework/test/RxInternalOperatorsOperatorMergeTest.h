@@ -16,11 +16,15 @@
 #if !defined (RxInternalOperatorsOperatorMergeTest_) && (INCLUDE_ALL_RxInternalOperatorsOperatorMergeTest || defined(INCLUDE_RxInternalOperatorsOperatorMergeTest))
 #define RxInternalOperatorsOperatorMergeTest_
 
+@class RxObserversTestSubscriber;
+@protocol RxFunctionsFunc1;
 @protocol RxObserver;
 
 @interface RxInternalOperatorsOperatorMergeTest : NSObject {
  @public
   id<RxObserver> stringObserver_;
+  id<RxFunctionsFunc1> toScalar_;
+  id<RxFunctionsFunc1> toHiddenScalar_;
 }
 
 #pragma mark Public
@@ -29,13 +33,146 @@
 
 - (void)before;
 
+- (void)delayedErrorsShouldBeEmittedWhenCompleteAfterApplyingBackpressure_FastPath;
+
+- (void)delayedErrorsShouldBeEmittedWhenCompleteAfterApplyingBackpressure_NormalPath;
+
+- (void)flatMapJustJust;
+
+- (void)flatMapJustRange;
+
+- (void)flatMapMaxConcurrentJustJust;
+
+- (void)flatMapMaxConcurrentJustRange;
+
+- (void)merge1000000SyncStreamOf1;
+
+- (void)merge10000SyncStreamOf10;
+
+- (void)merge1000AsyncStreamOf1000;
+
+- (void)merge1000SyncStreamOf1000;
+
+- (void)merge100AsyncStreamOf1;
+
+- (void)merge10AsyncStreamOf1000;
+
+- (void)merge1AsyncStreamOf1;
+
+- (void)merge1AsyncStreamOf1000;
+
+- (void)merge1SyncStreamOf1;
+
+- (void)merge1SyncStreamOf1000000;
+
+- (void)merge2000AsyncStreamOf100;
+
+- (void)mergeArrayMaxConcurrent;
+
+- (void)mergeConcurrentJustJust;
+
+- (void)mergeConcurrentJustRange;
+
+- (void)mergeJustNull;
+
+- (void)mergeMany;
+
+- (void)mergeManyAsyncSingle;
+
+- (void)mergeWithNullValues;
+
+- (void)mergeWithTerminalEventAfterUnsubscribe;
+
+- (void)mergingNullObservable;
+
+- (void)negativeMaxConcurrent;
+
+- (void)noInnerReordering;
+
+- (void)noOuterScalarReordering;
+
+- (void)shouldCompleteAfterApplyingBackpressure_FastPath;
+
+- (void)shouldCompleteAfterApplyingBackpressure_NormalPath;
+
+- (void)shouldNotCompleteIfThereArePendingScalarSynchronousEmissionsWhenTheLastInnerSubscriberCompletes;
+
+- (void)shouldNotCompleteWhileThereAreStillScalarSynchronousEmissionsInTheQueue;
+
+- (void)shouldNotReceivedDelayedErrorWhileThereAreStillNormalEmissionsInTheQueue;
+
+- (void)shouldNotReceivedDelayedErrorWhileThereAreStillScalarSynchronousEmissionsInTheQueue;
+
+- (void)testBackpressureBothUpstreamAndDownstreamWithRegularObservables;
+
+- (void)testBackpressureBothUpstreamAndDownstreamWithSynchronousScalarObservables;
+
+- (void)testBackpressureDownstreamWithConcurrentStreams;
+
+- (void)testBackpressureUpstream;
+
 - (void)testBackpressureUpstream2;
+
+- (void)testBackpressureUpstream2InLoop;
+
+- (void)testConcurrency;
+
+- (void)testConcurrencyLimit;
+
+- (void)testConcurrencyWithBrokenOnCompleteContract;
+
+- (void)testConcurrencyWithSleeping;
+
+- (void)testEarlyUnsubscribe;
+
+- (void)testError1;
+
+- (void)testError2;
+
+- (void)testFastMergeFullScalar;
+
+- (void)testFastMergeHiddenScalar;
+
+- (void)testMergeArray;
+
+- (void)testMergeArrayWithThreading;
+
+- (void)testMergeKeepsRequesting;
+
+- (void)testMergeList;
+
+- (void)testMergeObservableOfObservables;
+
+- (void)testMergeRequestOverflow;
+
+- (void)testSlowMergeFullScalar;
+
+- (void)testSlowMergeHiddenScalar;
+
+- (void)testSynchronizationOfMultipleSequences;
+
+- (void)testThrownErrorHandling;
+
+- (void)testUnboundedDefaultConcurrency;
+
+- (void)testUnsubscribeAsObservablesComplete;
+
+- (void)testUnSubscribeObservableOfObservables;
+
+- (void)zeroMaxConcurrent;
+
+#pragma mark Package-Private
+
+- (void)runMergeWithRxFunctionsFunc1:(id<RxFunctionsFunc1>)func
+       withRxObserversTestSubscriber:(RxObserversTestSubscriber *)ts;
 
 @end
 
 J2OBJC_EMPTY_STATIC_INIT(RxInternalOperatorsOperatorMergeTest)
 
 J2OBJC_FIELD_SETTER(RxInternalOperatorsOperatorMergeTest, stringObserver_, id<RxObserver>)
+J2OBJC_FIELD_SETTER(RxInternalOperatorsOperatorMergeTest, toScalar_, id<RxFunctionsFunc1>)
+J2OBJC_FIELD_SETTER(RxInternalOperatorsOperatorMergeTest, toHiddenScalar_, id<RxFunctionsFunc1>)
 
 FOUNDATION_EXPORT void RxInternalOperatorsOperatorMergeTest_init(RxInternalOperatorsOperatorMergeTest *self);
 

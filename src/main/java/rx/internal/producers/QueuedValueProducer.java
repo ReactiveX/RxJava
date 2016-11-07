@@ -18,13 +18,16 @@ package rx.internal.producers;
 import com.google.j2objc.annotations.Weak;
 
 import java.util.Queue;
-import java.util.concurrent.atomic.*;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
-import rx.*;
-import rx.exceptions.*;
+import rx.Producer;
+import rx.Subscriber;
+import rx.exceptions.Exceptions;
 import rx.internal.operators.BackpressureUtils;
 import rx.internal.util.atomic.SpscLinkedAtomicQueue;
-import rx.internal.util.unsafe.*;
+import rx.internal.util.unsafe.SpscLinkedQueue;
+import rx.internal.util.unsafe.UnsafeAccess;
 
 /**
  * Producer that holds an unbounded (or custom) queue to enqueue values and relays them

@@ -16,11 +16,13 @@
  */
 package rx.internal.util.unsafe;
 
-import static rx.internal.util.unsafe.UnsafeAccess.UNSAFE;
-
-import java.util.*;
+import java.util.AbstractQueue;
+import java.util.Iterator;
 
 import rx.internal.util.SuppressAnimalSniffer;
+
+
+import static rx.internal.util.unsafe.UnsafeAccess.UNSAFE;
 
 abstract class ConcurrentCircularArrayQueueL0Pad<E> extends AbstractQueue<E> implements MessagePassingQueue<E> {
     long p00, p01, p02, p03, p04, p05, p06, p07;

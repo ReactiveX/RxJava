@@ -787,7 +787,7 @@ public class OperatorConcatTest {
             }
         });
 
-        executor.awaitTermination(20000, TimeUnit.MILLISECONDS);
+        executor.awaitTermination(40000, TimeUnit.MILLISECONDS);
 
         assertEquals(n, counter.get());
     }

@@ -19,8 +19,9 @@ import com.google.j2objc.annotations.Weak;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-import rx.*;
-import rx.exceptions.*;
+import rx.Producer;
+import rx.Subscriber;
+import rx.exceptions.Exceptions;
 
 /**
  * Producer that emits a single value and completes the child subscriber once that

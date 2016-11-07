@@ -15,7 +15,8 @@
  */
 package rx.subscriptions;
 
-import rx.*;
+import rx.Observable;
+import rx.Subscription;
 import rx.internal.subscriptions.SequentialSubscription;
 
 /**

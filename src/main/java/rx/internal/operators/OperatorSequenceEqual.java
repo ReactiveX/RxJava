@@ -15,11 +15,14 @@
  */
 package rx.internal.operators;
 
-import static rx.Observable.*;
-
 import rx.Observable;
-import rx.functions.*;
+import rx.functions.Func2;
 import rx.internal.util.UtilityFunctions;
+
+
+import static rx.Observable.concat;
+import static rx.Observable.just;
+import static rx.Observable.zip;
 
 /**
  * Returns an {@link Observable} that emits a single {@code Boolean} value that indicates whether two source

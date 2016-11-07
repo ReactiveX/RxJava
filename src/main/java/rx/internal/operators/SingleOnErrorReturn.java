@@ -16,8 +16,9 @@
 
 package rx.internal.operators;
 
-import rx.*;
+import rx.Single;
 import rx.Single.OnSubscribe;
+import rx.SingleSubscriber;
 import rx.exceptions.Exceptions;
 import rx.functions.Func1;
 

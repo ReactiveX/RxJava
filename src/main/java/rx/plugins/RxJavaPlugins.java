@@ -15,8 +15,10 @@
  */
 package rx.plugins;
 
-import java.util.*;
+import java.util.Map;
+import java.util.Properties;
 import java.util.concurrent.atomic.AtomicReference;
+
 import rx.annotations.Experimental;
 
 /**

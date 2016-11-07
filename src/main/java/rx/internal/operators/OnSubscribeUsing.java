@@ -17,10 +17,16 @@ package rx.internal.operators;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import rx.*;
+import rx.Observable;
 import rx.Observable.OnSubscribe;
-import rx.exceptions.*;
-import rx.functions.*;
+import rx.Subscriber;
+import rx.Subscription;
+import rx.exceptions.CompositeException;
+import rx.exceptions.Exceptions;
+import rx.functions.Action0;
+import rx.functions.Action1;
+import rx.functions.Func0;
+import rx.functions.Func1;
 import rx.observers.Subscribers;
 
 /**

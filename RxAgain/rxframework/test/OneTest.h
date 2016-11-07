@@ -27,19 +27,13 @@
 
 + (id<JavaUtilList>)allTestClassnames;
 
-+ (void)runNamedTestWithNSString:(NSString *)classname;
++ (void)runSingleClassWithNSString:(NSString *)className_;
 
 + (void)runTests;
 
 @end
 
 J2OBJC_STATIC_INIT(OneTest)
-
-inline IOSObjectArray *OneTest_get_littletest();
-inline IOSObjectArray *OneTest_set_littletest(IOSObjectArray *value);
-/*! INTERNAL ONLY - Use accessor function from above. */
-FOUNDATION_EXPORT IOSObjectArray *OneTest_littletest;
-J2OBJC_STATIC_FIELD_OBJ(OneTest, littletest, IOSObjectArray *)
 
 inline IOSObjectArray *OneTest_get_alltests();
 inline IOSObjectArray *OneTest_set_alltests(IOSObjectArray *value);
@@ -53,11 +47,17 @@ inline IOSObjectArray *OneTest_set_bigmem(IOSObjectArray *value);
 FOUNDATION_EXPORT IOSObjectArray *OneTest_bigmem;
 J2OBJC_STATIC_FIELD_OBJ(OneTest, bigmem, IOSObjectArray *)
 
+inline IOSObjectArray *OneTest_get_failing();
+inline IOSObjectArray *OneTest_set_failing(IOSObjectArray *value);
+/*! INTERNAL ONLY - Use accessor function from above. */
+FOUNDATION_EXPORT IOSObjectArray *OneTest_failing;
+J2OBJC_STATIC_FIELD_OBJ(OneTest, failing, IOSObjectArray *)
+
 FOUNDATION_EXPORT id<JavaUtilList> OneTest_allTestClassnames();
 
-FOUNDATION_EXPORT void OneTest_runNamedTestWithNSString_(NSString *classname);
-
 FOUNDATION_EXPORT void OneTest_runTests();
+
+FOUNDATION_EXPORT void OneTest_runSingleClassWithNSString_(NSString *className_);
 
 FOUNDATION_EXPORT void OneTest_init(OneTest *self);
 
@@ -66,6 +66,44 @@ FOUNDATION_EXPORT OneTest *new_OneTest_init() NS_RETURNS_RETAINED;
 FOUNDATION_EXPORT OneTest *create_OneTest_init();
 
 J2OBJC_TYPE_LITERAL_HEADER(OneTest)
+
+#endif
+
+#if !defined (OneTest_BigMemRunListener_) && (INCLUDE_ALL_OneTest || defined(INCLUDE_OneTest_BigMemRunListener))
+#define OneTest_BigMemRunListener_
+
+#define RESTRICT_OrgJunitRunnerNotificationRunListener 1
+#define INCLUDE_OrgJunitRunnerNotificationRunListener 1
+#include "org/junit/runner/notification/RunListener.h"
+
+@class OrgJunitRunnerDescription;
+
+@interface OneTest_BigMemRunListener : OrgJunitRunnerNotificationRunListener {
+ @public
+  jlong memSize_;
+}
+
+#pragma mark Public
+
+- (void)testFinishedWithOrgJunitRunnerDescription:(OrgJunitRunnerDescription *)description_;
+
+- (void)testStartedWithOrgJunitRunnerDescription:(OrgJunitRunnerDescription *)description_;
+
+#pragma mark Package-Private
+
+- (instancetype)init;
+
+@end
+
+J2OBJC_EMPTY_STATIC_INIT(OneTest_BigMemRunListener)
+
+FOUNDATION_EXPORT void OneTest_BigMemRunListener_init(OneTest_BigMemRunListener *self);
+
+FOUNDATION_EXPORT OneTest_BigMemRunListener *new_OneTest_BigMemRunListener_init() NS_RETURNS_RETAINED;
+
+FOUNDATION_EXPORT OneTest_BigMemRunListener *create_OneTest_BigMemRunListener_init();
+
+J2OBJC_TYPE_LITERAL_HEADER(OneTest_BigMemRunListener)
 
 #endif
 

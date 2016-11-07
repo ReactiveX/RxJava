@@ -16,13 +16,14 @@
  */
 package rx.internal.util.unsafe;
 
-import static rx.internal.util.unsafe.UnsafeAccess.*;
-
 import java.lang.reflect.Field;
 import java.util.AbstractQueue;
 import java.util.Iterator;
 
 import rx.internal.util.SuppressAnimalSniffer;
+
+
+import static rx.internal.util.unsafe.UnsafeAccess.UNSAFE;
 
 abstract class SpscUnboundedArrayQueueProducerFields<E> extends AbstractQueue<E> {
     protected long producerIndex;

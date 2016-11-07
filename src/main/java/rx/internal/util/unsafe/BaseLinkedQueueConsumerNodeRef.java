@@ -1,6 +1,4 @@
 package rx.internal.util.unsafe;
-import java.util.AbstractQueue;
-
 import rx.internal.util.atomic.LinkedQueueNode;
 
 

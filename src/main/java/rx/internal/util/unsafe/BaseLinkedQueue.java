@@ -16,9 +16,7 @@
  */
 package rx.internal.util.unsafe;
 
-import static rx.internal.util.unsafe.UnsafeAccess.UNSAFE;
-
-import java.util.*;
+import java.util.Iterator;
 
 import rx.internal.util.atomic.LinkedQueueNode;
 

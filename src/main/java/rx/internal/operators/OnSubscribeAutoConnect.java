@@ -17,8 +17,9 @@ package rx.internal.operators;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-import rx.*;
 import rx.Observable.OnSubscribe;
+import rx.Subscriber;
+import rx.Subscription;
 import rx.functions.Action1;
 import rx.observables.ConnectableObservable;
 import rx.observers.Subscribers;

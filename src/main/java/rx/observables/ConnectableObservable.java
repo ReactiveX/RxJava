@@ -15,9 +15,13 @@
  */
 package rx.observables;
 
-import rx.*;
-import rx.functions.*;
-import rx.internal.operators.*;
+import rx.Observable;
+import rx.Subscriber;
+import rx.Subscription;
+import rx.functions.Action1;
+import rx.functions.Actions;
+import rx.internal.operators.OnSubscribeAutoConnect;
+import rx.internal.operators.OnSubscribeRefCount;
 
 /**
  * A {@code ConnectableObservable} resembles an ordinary {@link Observable}, except that it does not begin

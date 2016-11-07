@@ -15,12 +15,19 @@ package rx.internal.operators;
 
 import com.google.j2objc.annotations.Weak;
 
-import java.util.*;
-import java.util.concurrent.atomic.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Queue;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicReference;
 
-import rx.*;
 import rx.Observable;
 import rx.Observable.OnSubscribe;
+import rx.Producer;
+import rx.Subscriber;
+import rx.Subscription;
 import rx.exceptions.CompositeException;
 import rx.functions.FuncN;
 import rx.internal.util.RxRingBuffer;
@@ -359,6 +366,7 @@ public final class OnSubscribeCombineLatest<T, R> implements OnSubscribe<R> {
     }
 
     static final class CombinerSubscriber<T, R> extends Subscriber<T> {
+        @Weak
         final LatestCoordinator<T, R> parent;
         final int index;
 

@@ -16,9 +16,11 @@
 
 package rx.internal.operators;
 
-import rx.*;
 import rx.Observable.Operator;
+import rx.Single;
 import rx.Single.OnSubscribe;
+import rx.SingleSubscriber;
+import rx.Subscriber;
 import rx.exceptions.Exceptions;
 import rx.internal.operators.SingleFromObservable.WrapSingleIntoSubscriber;
 import rx.internal.producers.SingleProducer;

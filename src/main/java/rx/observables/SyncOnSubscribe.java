@@ -18,11 +18,18 @@ package rx.observables;
 
 import java.util.concurrent.atomic.AtomicLong;
 
-import rx.*;
 import rx.Observable.OnSubscribe;
+import rx.Observer;
+import rx.Producer;
+import rx.Subscriber;
+import rx.Subscription;
 import rx.annotations.Beta;
 import rx.exceptions.Exceptions;
-import rx.functions.*;
+import rx.functions.Action0;
+import rx.functions.Action1;
+import rx.functions.Action2;
+import rx.functions.Func0;
+import rx.functions.Func2;
 import rx.internal.operators.BackpressureUtils;
 import rx.plugins.RxJavaHooks;
 

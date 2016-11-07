@@ -1,17 +1,31 @@
 import com.google.j2objc.annotations.AutoreleasePool;
 
+import org.junit.runner.Description;
+import org.junit.runner.Result;
 import org.junit.runner.notification.RunListener;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import co.touchlab.doppel.testing.DopplJunitTestRunner;
 import rx.internal.operators.InternalSafeSubscriberTest;
+import rx.internal.operators.OnSubscribeCollectTest;
 import rx.internal.operators.OnSubscribeRefCountTest;
 import rx.internal.operators.OperatorCastTest;
+import rx.internal.operators.OperatorCountTest;
 import rx.internal.schedulers.InternalGenericScheduledExecutorServiceTest;
 import rx.subjects.ReplaySubjectBoundedConcurrencyTest;
+
+/*-[
+#import <mach/mach.h>
+]-*/
 
 /**
  * Created by kgalligan on 10/12/16.
@@ -40,25 +54,17 @@ public class OneTest
         }
     }
 
-    public static void runNamedTest(String classname) throws ClassNotFoundException
+    public static void runTests()
     {
-        final List<Class> batchClasses = new ArrayList<>();
-        batchClasses.add(Class.forName(classname));
-
+//        runDoppl();
         new Thread()
         {
             @Override
             public void run()
             {
-                runBatch(batchClasses.toArray(new Class[batchClasses.size()]));
+                runDoppl();
             }
         }.start();
-    }
-
-    @AutoreleasePool
-    private static void runBatch(Class[] batch)
-    {
-        DopplJunitTestRunner.run(batch, new RunListener());
     }
 
     @AutoreleasePool
@@ -66,37 +72,100 @@ public class OneTest
     {
         List<Class> smoothClasses = new ArrayList<>(Arrays.asList(alltests));
         smoothClasses.removeAll(Arrays.asList(bigmem));
+        smoothClasses.removeAll(Arrays.asList(failing));
 
-//        Class[] asdf = smoothClasses.toArray(new Class[smoothClasses.size()]);
+        Class[] asdf = smoothClasses.toArray(new Class[smoothClasses.size()]);
 
+        DopplJunitTestRunner.run(asdf,
+                new BigMemRunListener());
 
-        DopplJunitTestRunner.run(new Class[]{rx.internal.operators.OperatorMergeTest.class},
-                new RunListener());
+//        DopplJunitTestRunner.run(new Class[]{OperatorCountTest.class},
+//                new RunListener());
+
+//        DopplJunitTestRunner.run(loadClassList(TestResources.fulllist), new RunListener());
     }
 
-    public static void runTests()
+
+    public static void runSingleClass(String className)
     {
-        runDoppl();
-        /*new Thread()
+        try
         {
-            @Override
-            public void run()
-            {
-                runDoppl();
-            }
-        }.start();*/
+            DopplJunitTestRunner.run(new Class[]{Class.forName(className)},
+                    new BigMemRunListener());
+        }
+        catch(ClassNotFoundException e)
+        {
+            throw new RuntimeException(e);
+        }
     }
 
-    public static Class[] littletest = new Class[] {
-//            rx.internal.operators.OperatorSingleTest.class,
-            OnSubscribeRefCountTest.class,
-            OperatorCastTest.class,
-            rx.internal.operators.OnSubscribeRefCountTest.class,
-            rx.internal.operators.OnSubscribeGroupJoinTest.class,
-            //            rx.subjects.ReplaySubjectBoundedConcurrencyTest.class,
-//            rx.subjects.ReplaySubjectConcurrencyTest.class,
-//            rx.doppl.misc.LinkedBlockingQueueTest.class
-    };
+    static class BigMemRunListener extends RunListener
+    {
+        long memSize;
+
+        @Override
+        public void testStarted(Description description) throws Exception
+        {
+            super.testStarted(description);
+            System.out.println("TRACE Starting "+ description.getClassName() + "-" + description.getMethodName() );
+            memSize = printMem();
+        }
+
+        @Override
+        public void testFinished(Description description) throws Exception
+        {
+            super.testFinished(description);
+            System.out.println("TRACE Finished "+ description.getClassName() + "-" + description.getMethodName() );
+            long endSize = printMem();
+
+            long megs = (long)Math.floor((double)(endSize-memSize)/(double)(1024*1024));
+            if(Math.abs(megs) > 0)
+            {
+                System.out.println(
+                        "ZZZZ: " + description.getClassName() + "-" + description.getMethodName() + " diff: " +
+                                megs +"m");
+            }
+        }
+    }
+
+    private static native long printMem()/*-[
+    struct task_basic_info info;
+  mach_msg_type_number_t size = sizeof(info);
+  kern_return_t kerr = task_info(mach_task_self(),
+                                 TASK_BASIC_INFO,
+                                 (task_info_t)&info,
+                                 &size);
+  if( kerr == KERN_SUCCESS ) {
+    return info.resident_size;
+  } else {
+    return 0;
+  }
+    ]-*/;
+
+    private static Class[] loadClassList(String fileData)
+    {
+        try
+        {
+            BufferedReader bufferedReader = new BufferedReader(new StringReader(fileData));
+            String line;
+            List<Class> classList = new ArrayList<>();
+
+            while((line = bufferedReader.readLine()) != null)
+            {
+                if(line.endsWith(".java"))
+                {
+                    String className = line.substring(0, line.lastIndexOf(".java")).replace('/', '.');
+                    classList.add(Class.forName(className));
+                }
+            }
+
+            return classList.toArray(new Class[classList.size()]);
+        }
+        catch(Exception e)
+        {
+            throw new RuntimeException(e);
+        }
+    }
 
     public static Class[] alltests = new Class[] {
             rx.BackpressureTests.class,
@@ -327,19 +396,24 @@ public class OneTest
 //            rx.doppl.ReflectionTest.class,
 //            rx.BackpressureTests.class,
 //            rx.internal.operators.CachedObservableTest.class,
-            rx.internal.operators.OnSubscribeCombineLatestTest.class,
+
+//            rx.internal.operators.OnSubscribeCombineLatestTest.class, //Still leaking a couple megs
+
 //            rx.internal.operators.OnSubscribeFlattenIterableTest.class,
 //            rx.internal.operators.OperatorFlatMapTest.class,
 //            rx.internal.operators.OperatorGroupByTest.class,
 //            rx.internal.operators.OperatorMergeMaxConcurrentTest.class,
             rx.internal.operators.OperatorMergeTest.class,
             rx.internal.operators.OperatorObserveOnTest.class,
-            rx.internal.operators.OperatorPublishTest.class,
+//            rx.internal.operators.OperatorPublishTest.class,
             rx.internal.operators.OperatorReplayTest.class,
+
+
+
             rx.internal.operators.OperatorRetryTest.class,
-            rx.internal.operators.OperatorSwitchTest.class,
-            rx.internal.operators.OperatorTakeLastTest.class,
-            rx.internal.operators.OperatorTakeLastTimedTest.class,
+//            rx.internal.operators.OperatorSwitchTest.class,
+//            rx.internal.operators.OperatorTakeLastTest.class,
+//            rx.internal.operators.OperatorTakeLastTimedTest.class,
             rx.internal.util.JCToolsQueueTests.class,
 
             rx.subjects.BehaviorSubjectTest.class,
@@ -353,5 +427,19 @@ public class OneTest
 
             rx.observables.SyncOnSubscribeTest.class,
             rx.internal.operators.OperatorDelayTest.class,
+
+//            rx.internal.operators.OnSubscribeCollectTest.class,
+    };
+
+    public static Class[] failing = new Class[]{
+            //testUnSubscribeForScheduler for both. Probably with 'unsubscribe'
+            rx.schedulers.NewThreadSchedulerTest.class,
+            rx.schedulers.IoSchedulerTest.class,
+            rx.schedulers.ImmediateSchedulerTest.class,
+
+
+            //This is huge and runs forever. It fails on release pool
+            //Maybe a stack overflow, but thread stack doesn't show as that.
+            rx.internal.operators.OperatorSwitchTest.class,
     };
 }

@@ -16,12 +16,18 @@
 package rx.subjects;
 
 import java.lang.reflect.Array;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.*;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicReference;
 
-import rx.*;
 import rx.Observer;
+import rx.Producer;
+import rx.Scheduler;
+import rx.Subscriber;
+import rx.Subscription;
 import rx.exceptions.Exceptions;
 import rx.internal.operators.BackpressureUtils;
 import rx.plugins.RxJavaHooks;

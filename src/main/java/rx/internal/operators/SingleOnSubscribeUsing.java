@@ -18,9 +18,13 @@ package rx.internal.operators;
 
 import java.util.Arrays;
 
-import rx.*;
-import rx.exceptions.*;
-import rx.functions.*;
+import rx.Single;
+import rx.SingleSubscriber;
+import rx.exceptions.CompositeException;
+import rx.exceptions.Exceptions;
+import rx.functions.Action1;
+import rx.functions.Func0;
+import rx.functions.Func1;
 import rx.plugins.RxJavaHooks;
 
 /**

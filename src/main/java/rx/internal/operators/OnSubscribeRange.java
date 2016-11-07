@@ -15,13 +15,13 @@
  */
 package rx.internal.operators;
 
-import com.google.j2objc.annotations.AutoreleasePool;
 import com.google.j2objc.annotations.Weak;
 
 import java.util.concurrent.atomic.AtomicLong;
 
-import rx.*;
 import rx.Observable.OnSubscribe;
+import rx.Producer;
+import rx.Subscriber;
 
 /**
  * Emit integers from start to end inclusive.

@@ -23,6 +23,27 @@ import java.util.concurrent.atomic.AtomicReference;
 abstract class BaseLinkedAtomicQueue<E> extends AbstractQueue<E> {
     private final AtomicReference<LinkedQueueNode<E>> producerNode;
     private final AtomicReference<LinkedQueueNode<E>> consumerNode;
+
+    /*@Override
+    protected void finalize() throws Throwable
+    {
+        clearQueue(producerNode);
+        clearQueue(consumerNode);
+        super.finalize();
+
+    }
+
+    private void clearQueue(AtomicReference<LinkedQueueNode<E>> clearBaseNode)
+    {
+        LinkedQueueNode<E> linkedQueueNode = clearBaseNode.get();
+        while(linkedQueueNode != null)
+        {
+            LinkedQueueNode<E> nextNode = linkedQueueNode.lvNext();
+            linkedQueueNode.set(null);
+            linkedQueueNode = nextNode;
+        }
+    }*/
+
     public BaseLinkedAtomicQueue() {
         producerNode = new AtomicReference<LinkedQueueNode<E>>();
         consumerNode = new AtomicReference<LinkedQueueNode<E>>();

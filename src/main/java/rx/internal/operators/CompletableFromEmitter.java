@@ -17,8 +17,11 @@ package rx.internal.operators;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import rx.*;
 import rx.AsyncEmitter.Cancellable;
+import rx.Completable;
+import rx.CompletableEmitter;
+import rx.CompletableSubscriber;
+import rx.Subscription;
 import rx.exceptions.Exceptions;
 import rx.functions.Action1;
 import rx.internal.operators.OnSubscribeFromAsyncEmitter.CancellableSubscription;

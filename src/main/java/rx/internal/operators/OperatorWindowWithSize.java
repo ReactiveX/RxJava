@@ -15,15 +15,21 @@
  */
 package rx.internal.operators;
 
-import java.util.*;
-import java.util.concurrent.atomic.*;
+import java.util.ArrayDeque;
+import java.util.Queue;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
-import rx.*;
 import rx.Observable;
 import rx.Observable.Operator;
+import rx.Producer;
+import rx.Subscriber;
+import rx.Subscription;
 import rx.functions.Action0;
 import rx.internal.util.atomic.SpscLinkedArrayQueue;
-import rx.subjects.*;
+import rx.subjects.Subject;
+import rx.subjects.UnicastSubject;
 import rx.subscriptions.Subscriptions;
 
 /**

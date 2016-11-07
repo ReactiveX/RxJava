@@ -16,13 +16,20 @@
 
 package rx.internal.operators;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.atomic.*;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
-import rx.*;
+import rx.Completable;
 import rx.Completable.OnSubscribe;
+import rx.CompletableSubscriber;
 import rx.Observable;
+import rx.Subscriber;
+import rx.Subscription;
 import rx.exceptions.CompositeException;
 import rx.plugins.RxJavaHooks;
 import rx.subscriptions.CompositeSubscription;

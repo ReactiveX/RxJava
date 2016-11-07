@@ -18,7 +18,8 @@ package rx.internal.operators;
 import rx.Observable.Operator;
 import rx.Subscriber;
 import rx.exceptions.Exceptions;
-import rx.functions.*;
+import rx.functions.Func1;
+import rx.functions.Func2;
 
 /**O
  * Returns an Observable that emits items emitted by the source Observable as long as a specified

@@ -15,7 +15,8 @@
  */
 package rx.internal.operators;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 import rx.Observable;
 import rx.Observable.Operator;
@@ -23,7 +24,8 @@ import rx.Observer;
 import rx.Subscriber;
 import rx.exceptions.Exceptions;
 import rx.functions.Func0;
-import rx.observers.*;
+import rx.observers.SerializedSubscriber;
+import rx.observers.Subscribers;
 
 /**
  * This operation takes

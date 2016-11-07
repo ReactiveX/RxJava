@@ -15,7 +15,8 @@
  */
 package rx.internal.operators;
 
-import java.util.concurrent.*;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 import rx.Observable.OnSubscribe;
 import rx.Subscriber;

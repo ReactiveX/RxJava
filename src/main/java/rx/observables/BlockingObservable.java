@@ -15,18 +15,34 @@
  */
 package rx.observables;
 
-import java.util.*;
-import java.util.concurrent.*;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Future;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicReference;
 
-import rx.*;
 import rx.Observable;
 import rx.Observer;
+import rx.Producer;
+import rx.Subscriber;
+import rx.Subscription;
 import rx.annotations.Beta;
-import rx.exceptions.*;
-import rx.functions.*;
-import rx.internal.operators.*;
-import rx.internal.util.*;
+import rx.exceptions.Exceptions;
+import rx.exceptions.OnErrorNotImplementedException;
+import rx.functions.Action0;
+import rx.functions.Action1;
+import rx.functions.Actions;
+import rx.functions.Func1;
+import rx.internal.operators.BlockingOperatorLatest;
+import rx.internal.operators.BlockingOperatorMostRecent;
+import rx.internal.operators.BlockingOperatorNext;
+import rx.internal.operators.BlockingOperatorToFuture;
+import rx.internal.operators.BlockingOperatorToIterator;
+import rx.internal.operators.NotificationLite;
+import rx.internal.util.BlockingUtils;
+import rx.internal.util.UtilityFunctions;
 import rx.subscriptions.Subscriptions;
 
 /**

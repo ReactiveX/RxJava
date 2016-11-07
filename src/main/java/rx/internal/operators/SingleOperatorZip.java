@@ -17,9 +17,11 @@
 package rx.internal.operators;
 
 import java.util.NoSuchElementException;
-import java.util.concurrent.atomic.*;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
-import rx.*;
+import rx.Single;
+import rx.SingleSubscriber;
 import rx.exceptions.Exceptions;
 import rx.functions.FuncN;
 import rx.plugins.RxJavaHooks;

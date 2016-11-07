@@ -16,9 +16,10 @@
  */
 package rx.internal.util.unsafe;
 
-import static rx.internal.util.unsafe.UnsafeAccess.UNSAFE;
-
 import rx.internal.util.SuppressAnimalSniffer;
+
+
+import static rx.internal.util.unsafe.UnsafeAccess.UNSAFE;
 
 abstract class SpscArrayQueueColdField<E> extends ConcurrentCircularArrayQueue<E> {
     private static final Integer MAX_LOOK_AHEAD_STEP = Integer.getInteger("jctools.spsc.max.lookahead.step", 4096);

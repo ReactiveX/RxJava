@@ -19,6 +19,7 @@
 #include "RxSubscriber.h"
 #include "RxSubscription.h"
 #include "RxTestTestObstructionDetection.h"
+#include "com/google/j2objc/WeakProxy.h"
 #include "java/io/PrintStream.h"
 #include "java/lang/Boolean.h"
 #include "java/lang/Integer.h"
@@ -990,15 +991,11 @@ J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxBackpressureTests)
   }
 }
 
-- (void)__javaClone:(RxBackpressureTests_BPTPRoducer *)original {
-  [super __javaClone:original];
-  [s_ release];
-}
-
 - (void)dealloc {
   RELEASE_(counter_);
   RELEASE_(threadsSeen_);
   RELEASE_(requested_);
+  RELEASE_(s_);
   [super dealloc];
 }
 
@@ -1032,7 +1029,7 @@ void RxBackpressureTests_BPTPRoducer_initWithJavaUtilConcurrentAtomicAtomicInteg
   JreStrongAssign(&self->counter_, counter);
   JreStrongAssign(&self->threadsSeen_, threadsSeen);
   JreStrongAssign(&self->requested_, requested);
-  self->s_ = s;
+  JreStrongAssign(&self->s_, ComGoogleJ2objcWeakProxy_forObjectWithId_(s));
 }
 
 RxBackpressureTests_BPTPRoducer *new_RxBackpressureTests_BPTPRoducer_initWithJavaUtilConcurrentAtomicAtomicInteger_withJavaUtilConcurrentConcurrentLinkedQueue_withJavaUtilConcurrentAtomicAtomicLong_withRxSubscriber_(JavaUtilConcurrentAtomicAtomicInteger *counter, JavaUtilConcurrentConcurrentLinkedQueue *threadsSeen, JavaUtilConcurrentAtomicAtomicLong *requested, RxSubscriber *s) {

@@ -18,7 +18,8 @@ package rx.internal.operators;
 import rx.Observable.Operator;
 import rx.Subscriber;
 import rx.exceptions.Exceptions;
-import rx.functions.*;
+import rx.functions.Func1;
+import rx.functions.Func2;
 import rx.internal.util.UtilityFunctions;
 
 /**

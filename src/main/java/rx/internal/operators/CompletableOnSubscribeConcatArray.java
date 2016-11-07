@@ -18,8 +18,10 @@ package rx.internal.operators;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-import rx.*;
+import rx.Completable;
 import rx.Completable.OnSubscribe;
+import rx.CompletableSubscriber;
+import rx.Subscription;
 import rx.subscriptions.SerialSubscription;
 
 public final class CompletableOnSubscribeConcatArray implements OnSubscribe {

@@ -16,15 +16,24 @@
 
 package rx.observables;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import rx.*;
 import rx.Observable;
 import rx.Observable.OnSubscribe;
 import rx.Observer;
+import rx.Producer;
+import rx.Subscriber;
+import rx.Subscription;
 import rx.annotations.Experimental;
-import rx.functions.*;
+import rx.functions.Action0;
+import rx.functions.Action1;
+import rx.functions.Action2;
+import rx.functions.Action3;
+import rx.functions.Func0;
+import rx.functions.Func1;
+import rx.functions.Func3;
 import rx.internal.operators.BufferUntilSubscriber;
 import rx.observers.SerializedObserver;
 import rx.plugins.RxJavaHooks;

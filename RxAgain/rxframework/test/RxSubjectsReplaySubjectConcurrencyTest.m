@@ -600,9 +600,11 @@ void RxSubjectsReplaySubjectConcurrencyTest_mainWithNSStringArray_(IOSObjectArra
   RxSubjectsReplaySubjectConcurrencyTest_initialize();
   @try {
     for (jint i = 0; i < 100; i++) {
-      [create_RxSubjectsReplaySubjectConcurrencyTest_init() testSubscribeCompletionRaceCondition];
-      [create_RxSubjectsReplaySubjectConcurrencyTest_init() testReplaySubjectConcurrentSubscriptions];
-      [create_RxSubjectsReplaySubjectConcurrencyTest_init() testReplaySubjectConcurrentSubscribersDoingReplayDontBlockEachOther];
+      @autoreleasepool {
+        [create_RxSubjectsReplaySubjectConcurrencyTest_init() testSubscribeCompletionRaceCondition];
+        [create_RxSubjectsReplaySubjectConcurrencyTest_init() testReplaySubjectConcurrentSubscriptions];
+        [create_RxSubjectsReplaySubjectConcurrencyTest_init() testReplaySubjectConcurrentSubscribersDoingReplayDontBlockEachOther];
+      }
     }
   }
   @catch (JavaLangInterruptedException *e) {

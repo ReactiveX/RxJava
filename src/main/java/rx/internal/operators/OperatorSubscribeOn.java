@@ -15,9 +15,12 @@
  */
 package rx.internal.operators;
 
-import rx.*;
+import rx.Observable;
 import rx.Observable.OnSubscribe;
+import rx.Producer;
+import rx.Scheduler;
 import rx.Scheduler.Worker;
+import rx.Subscriber;
 import rx.functions.Action0;
 
 /**

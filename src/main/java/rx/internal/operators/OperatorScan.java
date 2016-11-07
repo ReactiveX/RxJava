@@ -18,12 +18,16 @@ package rx.internal.operators;
 import java.util.Queue;
 import java.util.concurrent.atomic.AtomicLong;
 
-import rx.*;
 import rx.Observable.Operator;
+import rx.Observer;
+import rx.Producer;
+import rx.Subscriber;
 import rx.exceptions.Exceptions;
-import rx.functions.*;
+import rx.functions.Func0;
+import rx.functions.Func2;
 import rx.internal.util.atomic.SpscLinkedAtomicQueue;
-import rx.internal.util.unsafe.*;
+import rx.internal.util.unsafe.SpscLinkedQueue;
+import rx.internal.util.unsafe.UnsafeAccess;
 
 /**
  * Returns an Observable that applies a function to the first item emitted by a source Observable, then feeds

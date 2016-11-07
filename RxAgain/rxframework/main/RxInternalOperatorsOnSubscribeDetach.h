@@ -64,7 +64,7 @@ J2OBJC_TYPE_LITERAL_HEADER(RxInternalOperatorsOnSubscribeDetach)
 @interface RxInternalOperatorsOnSubscribeDetach_DetachSubscriber : RxSubscriber {
  @public
   JavaUtilConcurrentAtomicAtomicReference *actual_;
-  JavaUtilConcurrentAtomicAtomicReference *producer_DetachSubscriber_;
+  JavaUtilConcurrentAtomicAtomicReference *producer_;
   JavaUtilConcurrentAtomicAtomicLong *requested_DetachSubscriber_;
 }
 
@@ -91,7 +91,7 @@ J2OBJC_TYPE_LITERAL_HEADER(RxInternalOperatorsOnSubscribeDetach)
 J2OBJC_EMPTY_STATIC_INIT(RxInternalOperatorsOnSubscribeDetach_DetachSubscriber)
 
 J2OBJC_FIELD_SETTER(RxInternalOperatorsOnSubscribeDetach_DetachSubscriber, actual_, JavaUtilConcurrentAtomicAtomicReference *)
-J2OBJC_FIELD_SETTER(RxInternalOperatorsOnSubscribeDetach_DetachSubscriber, producer_DetachSubscriber_, JavaUtilConcurrentAtomicAtomicReference *)
+J2OBJC_FIELD_SETTER(RxInternalOperatorsOnSubscribeDetach_DetachSubscriber, producer_, JavaUtilConcurrentAtomicAtomicReference *)
 J2OBJC_FIELD_SETTER(RxInternalOperatorsOnSubscribeDetach_DetachSubscriber, requested_DetachSubscriber_, JavaUtilConcurrentAtomicAtomicLong *)
 
 FOUNDATION_EXPORT void RxInternalOperatorsOnSubscribeDetach_DetachSubscriber_initWithRxSubscriber_(RxInternalOperatorsOnSubscribeDetach_DetachSubscriber *self, RxSubscriber *actual);

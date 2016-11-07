@@ -16,8 +16,9 @@
 
 package rx.internal.operators;
 
-import rx.*;
+import rx.Observable;
 import rx.Observable.OnSubscribe;
+import rx.Subscriber;
 
 public final class OnSubscribeTakeLastOne<T> implements OnSubscribe<T> {
 

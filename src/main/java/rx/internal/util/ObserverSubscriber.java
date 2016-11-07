@@ -16,7 +16,8 @@
 
 package rx.internal.util;
 
-import rx.*;
+import rx.Observer;
+import rx.Subscriber;
 
 /**
  * Wraps an Observer and forwards the onXXX method calls to it.

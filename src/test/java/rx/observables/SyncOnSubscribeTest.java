@@ -16,6 +16,9 @@
 
 package rx.observables;
 
+import com.google.j2objc.annotations.AutoreleasePool;
+
+
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
@@ -459,7 +462,7 @@ public class SyncOnSubscribeTest {
 
     @Test
     public void testConcurrentRequestsLoop() throws InterruptedException {
-        for (int i = 0; i < 100; i++) {
+        for (@AutoreleasePool int i = 0; i < 100; i++) {
             if (i % 10 == 0) {
                 System.out.println("testConcurrentRequestsLoop >> " + i);
             }
@@ -542,6 +545,8 @@ public class SyncOnSubscribeTest {
         if (!l3.await(2, TimeUnit.SECONDS)) {
             fail("SyncOnSubscribe failed to countDown onUnSubscribe latch");
         }
+
+        ts.unsubscribe();
     }
 
     @Test

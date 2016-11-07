@@ -15,8 +15,10 @@
  */
 package rx.internal.operators;
 
-import rx.*;
+import rx.Observable;
 import rx.Observable.Operator;
+import rx.Producer;
+import rx.Subscriber;
 import rx.exceptions.Exceptions;
 import rx.functions.Func1;
 import rx.internal.producers.ProducerArbiter;

@@ -15,12 +15,16 @@
  */
 package rx.internal.operators;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
-import rx.*;
 import rx.Observable;
-import rx.functions.*;
+import rx.Subscriber;
+import rx.Subscription;
+import rx.functions.Action0;
+import rx.functions.Action1;
+import rx.functions.Func0;
 import rx.observables.ConnectableObservable;
 import rx.observers.Subscribers;
 import rx.subjects.Subject;

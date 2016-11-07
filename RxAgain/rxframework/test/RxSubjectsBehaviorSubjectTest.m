@@ -431,26 +431,28 @@ __attribute__((unused)) static RxSubjectsBehaviorSubjectTest_$4 *create_RxSubjec
   RxScheduler_Worker *worker = [((RxScheduler *) nil_chk(RxSchedulersSchedulers_io())) createWorker];
   @try {
     for (jint i = 0; i < 50000; i++) {
-      if (i % 1000 == 0) {
-        [((JavaIoPrintStream *) nil_chk(JreLoadStatic(JavaLangSystem, out))) printlnWithInt:i];
-      }
-      RxSubjectsBehaviorSubject *rs = RxSubjectsBehaviorSubject_create();
-      JavaUtilConcurrentCountDownLatch *finish = create_JavaUtilConcurrentCountDownLatch_initWithInt_(1);
-      JavaUtilConcurrentCountDownLatch *start = create_JavaUtilConcurrentCountDownLatch_initWithInt_(1);
-      [((RxScheduler_Worker *) nil_chk(worker)) scheduleWithRxFunctionsAction0:create_RxSubjectsBehaviorSubjectTest_$2_initWithJavaUtilConcurrentCountDownLatch_withRxSubjectsBehaviorSubject_(start, rs)];
-      JavaUtilConcurrentAtomicAtomicReference *o = create_JavaUtilConcurrentAtomicAtomicReference_init();
-      [((RxObservable *) nil_chk([((RxObservable *) nil_chk([((RxSubjectsBehaviorSubject *) nil_chk(rs)) subscribeOnWithRxScheduler:s])) observeOnWithRxScheduler:RxSchedulersSchedulers_io()])) subscribeWithRxObserver:create_RxSubjectsBehaviorSubjectTest_$3_initWithJavaUtilConcurrentAtomicAtomicReference_withJavaUtilConcurrentCountDownLatch_(o, finish)];
-      [start countDown];
-      if (![finish awaitWithLong:5 withJavaUtilConcurrentTimeUnit:JreLoadEnum(JavaUtilConcurrentTimeUnit, SECONDS)]) {
-        [((JavaIoPrintStream *) nil_chk(JreLoadStatic(JavaLangSystem, out))) printlnWithId:[o get]];
-        [JreLoadStatic(JavaLangSystem, out) printlnWithBoolean:[rs hasObservers]];
-        [rs onCompleted];
-        OrgJunitAssert_failWithNSString_(JreStrcat("$I", @"Timeout @ ", i));
-        break;
-      }
-      else {
-        OrgJunitAssert_assertEqualsWithId_withId_(JavaLangInteger_valueOfWithInt_(1), [o get]);
-        [worker scheduleWithRxFunctionsAction0:create_RxSubjectsBehaviorSubjectTest_$4_initWithRxSubjectsBehaviorSubject_(rs)];
+      @autoreleasepool {
+        if (i % 1000 == 0) {
+          [((JavaIoPrintStream *) nil_chk(JreLoadStatic(JavaLangSystem, out))) printlnWithInt:i];
+        }
+        RxSubjectsBehaviorSubject *rs = RxSubjectsBehaviorSubject_create();
+        JavaUtilConcurrentCountDownLatch *finish = create_JavaUtilConcurrentCountDownLatch_initWithInt_(1);
+        JavaUtilConcurrentCountDownLatch *start = create_JavaUtilConcurrentCountDownLatch_initWithInt_(1);
+        [((RxScheduler_Worker *) nil_chk(worker)) scheduleWithRxFunctionsAction0:create_RxSubjectsBehaviorSubjectTest_$2_initWithJavaUtilConcurrentCountDownLatch_withRxSubjectsBehaviorSubject_(start, rs)];
+        JavaUtilConcurrentAtomicAtomicReference *o = create_JavaUtilConcurrentAtomicAtomicReference_init();
+        [((RxObservable *) nil_chk([((RxObservable *) nil_chk([((RxSubjectsBehaviorSubject *) nil_chk(rs)) subscribeOnWithRxScheduler:s])) observeOnWithRxScheduler:RxSchedulersSchedulers_io()])) subscribeWithRxObserver:create_RxSubjectsBehaviorSubjectTest_$3_initWithJavaUtilConcurrentAtomicAtomicReference_withJavaUtilConcurrentCountDownLatch_(o, finish)];
+        [start countDown];
+        if (![finish awaitWithLong:5 withJavaUtilConcurrentTimeUnit:JreLoadEnum(JavaUtilConcurrentTimeUnit, SECONDS)]) {
+          [((JavaIoPrintStream *) nil_chk(JreLoadStatic(JavaLangSystem, out))) printlnWithId:[o get]];
+          [JreLoadStatic(JavaLangSystem, out) printlnWithBoolean:[rs hasObservers]];
+          [rs onCompleted];
+          OrgJunitAssert_failWithNSString_(JreStrcat("$I", @"Timeout @ ", i));
+          break;
+        }
+        else {
+          OrgJunitAssert_assertEqualsWithId_withId_(JavaLangInteger_valueOfWithInt_(1), [o get]);
+          [worker scheduleWithRxFunctionsAction0:create_RxSubjectsBehaviorSubjectTest_$4_initWithRxSubjectsBehaviorSubject_(rs)];
+        }
       }
     }
   }

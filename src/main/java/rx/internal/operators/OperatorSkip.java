@@ -15,7 +15,9 @@
  */
 package rx.internal.operators;
 
-import rx.*;
+import rx.Observable;
+import rx.Producer;
+import rx.Subscriber;
 
 /**
  * Returns an Observable that skips the first <code>num</code> items emitted by the source

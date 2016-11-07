@@ -15,9 +15,12 @@
  */
 package rx.internal.util;
 
-import rx.*;
+import rx.Scheduler;
 import rx.Scheduler.Worker;
-import rx.functions.*;
+import rx.Single;
+import rx.SingleSubscriber;
+import rx.functions.Action0;
+import rx.functions.Func1;
 import rx.internal.schedulers.EventLoopsScheduler;
 
 public final class ScalarSynchronousSingle<T> extends Single<T> {

@@ -16,7 +16,9 @@
 
 package rx.internal.schedulers;
 
-import java.util.concurrent.*;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ThreadFactory;
 
 import rx.functions.Func0;
 import rx.internal.util.RxThreadFactory;

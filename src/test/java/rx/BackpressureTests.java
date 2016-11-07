@@ -15,6 +15,7 @@
  */
 package rx;
 
+import com.google.j2objc.WeakProxy;
 import com.google.j2objc.annotations.AutoreleasePool;
 import com.google.j2objc.annotations.Weak;
 
@@ -617,7 +618,7 @@ public class BackpressureTests {
         final AtomicInteger counter;
         final ConcurrentLinkedQueue<Thread> threadsSeen;
         final AtomicLong requested;
-        @Weak
+//        @Weak
         final Subscriber<? super Integer> s;
         int i = 0;
 
@@ -626,7 +627,7 @@ public class BackpressureTests {
             this.counter = counter;
             this.threadsSeen = threadsSeen;
             this.requested = requested;
-            this.s = s;
+            this.s = WeakProxy.forObject(s);
         }
 
         @Override

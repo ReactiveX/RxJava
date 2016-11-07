@@ -16,8 +16,9 @@
 
 package rx.internal.operators;
 
-import rx.*;
+import rx.Observable;
 import rx.Observable.OnSubscribe;
+import rx.Subscriber;
 
 /**
  * Holds a singleton instance of an empty Observable which is stateless and completes

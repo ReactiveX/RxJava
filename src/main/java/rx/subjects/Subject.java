@@ -15,7 +15,9 @@
  */
 package rx.subjects;
 
-import rx.*;
+import rx.Observable;
+import rx.Observer;
+import rx.Subscriber;
 
 /**
  * Represents an object that is both an Observable and an Observer.

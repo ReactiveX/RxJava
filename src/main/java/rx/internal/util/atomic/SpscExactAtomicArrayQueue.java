@@ -17,8 +17,11 @@
 
 package rx.internal.util.atomic;
 
-import java.util.*;
-import java.util.concurrent.atomic.*;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.Queue;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicReferenceArray;
 
 import rx.internal.util.unsafe.Pow2;
 

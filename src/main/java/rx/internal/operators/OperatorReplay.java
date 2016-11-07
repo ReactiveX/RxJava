@@ -15,14 +15,25 @@
  */
 package rx.internal.operators;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.*;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicReference;
 
-import rx.*;
 import rx.Observable;
-import rx.exceptions.*;
-import rx.functions.*;
+import rx.Producer;
+import rx.Scheduler;
+import rx.Subscriber;
+import rx.Subscription;
+import rx.exceptions.Exceptions;
+import rx.exceptions.OnErrorThrowable;
+import rx.functions.Action0;
+import rx.functions.Action1;
+import rx.functions.Func0;
+import rx.functions.Func1;
 import rx.internal.util.OpenHashSet;
 import rx.observables.ConnectableObservable;
 import rx.schedulers.Timestamped;

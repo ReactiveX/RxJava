@@ -15,8 +15,10 @@
  */
 package rx.internal.operators;
 
-import rx.*;
-import rx.exceptions.*;
+import rx.Single;
+import rx.SingleSubscriber;
+import rx.exceptions.Exceptions;
+import rx.exceptions.OnErrorThrowable;
 import rx.functions.Func1;
 import rx.plugins.RxJavaHooks;
 

@@ -17,7 +17,9 @@ package rx.internal.operators;
 
 import java.util.concurrent.TimeUnit;
 
-import rx.*;
+import rx.Observable;
+import rx.Scheduler;
+import rx.Subscription;
 import rx.functions.Action0;
 
 /**

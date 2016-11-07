@@ -18,11 +18,17 @@
 package rx.internal.util;
 
 import java.util.Queue;
-import java.util.concurrent.*;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.Future;
+import java.util.concurrent.RejectedExecutionException;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
-import rx.internal.schedulers.*;
-import rx.internal.util.unsafe.*;
+import rx.internal.schedulers.GenericScheduledExecutorService;
+import rx.internal.schedulers.SchedulerLifecycle;
+import rx.internal.util.unsafe.MpmcArrayQueue;
+import rx.internal.util.unsafe.UnsafeAccess;
 import rx.plugins.RxJavaHooks;
 
 public abstract class ObjectPool<T> implements SchedulerLifecycle {

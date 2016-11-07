@@ -16,7 +16,8 @@
 
 package rx.internal.operators;
 
-import rx.Observable.*;
+import rx.Observable.OnSubscribe;
+import rx.Observable.Operator;
 import rx.Subscriber;
 import rx.exceptions.Exceptions;
 import rx.plugins.RxJavaHooks;

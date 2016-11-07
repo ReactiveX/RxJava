@@ -15,7 +15,8 @@
  */
 package rx.plugins;
 
-import rx.*;
+import rx.Observable;
+import rx.Subscriber;
 import rx.annotations.Beta;
 import rx.exceptions.Exceptions;
 

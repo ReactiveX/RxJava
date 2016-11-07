@@ -16,8 +16,9 @@
 
 package rx.internal.operators;
 
-import rx.*;
 import rx.Observable.OnSubscribe;
+import rx.Observer;
+import rx.Subscriber;
 
 /**
  * An Observable that invokes {@link Observer#onError onError} when the {@link Observer} subscribes to it.

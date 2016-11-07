@@ -15,6 +15,8 @@
  */
 package rx.subjects;
 
+import java.util.concurrent.TimeUnit;
+
 import rx.Observer;
 import rx.Scheduler;
 import rx.functions.Action0;
@@ -22,8 +24,6 @@ import rx.functions.Action1;
 import rx.internal.operators.NotificationLite;
 import rx.schedulers.TestScheduler;
 import rx.subjects.SubjectSubscriptionManager.SubjectObserver;
-
-import java.util.concurrent.TimeUnit;
 
 /**
  * A variety of Subject that is useful for testing purposes. It operates on a {@link TestScheduler} and allows

@@ -15,9 +15,11 @@
  */
 package rx.observers;
 
-import rx.*;
+import rx.Observer;
+import rx.Subscriber;
 import rx.exceptions.OnErrorNotImplementedException;
-import rx.functions.*;
+import rx.functions.Action0;
+import rx.functions.Action1;
 
 /**
  * Helper methods and utilities for creating and working with {@link Subscriber} objects.

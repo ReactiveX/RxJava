@@ -16,7 +16,10 @@
 
 package rx.internal.operators;
 
-import rx.*;
+import rx.Observable;
+import rx.Single;
+import rx.SingleSubscriber;
+import rx.Subscriber;
 import rx.plugins.RxJavaHooks;
 import rx.subscriptions.SerialSubscription;
 

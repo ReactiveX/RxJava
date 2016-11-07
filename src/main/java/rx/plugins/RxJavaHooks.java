@@ -18,10 +18,22 @@ package rx.plugins;
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.util.concurrent.ScheduledExecutorService;
 
-import rx.*;
+import rx.Completable;
+import rx.Observable;
+import rx.Scheduler;
+import rx.Single;
+import rx.Subscription;
 import rx.annotations.Experimental;
-import rx.functions.*;
-import rx.internal.operators.*;
+import rx.functions.Action0;
+import rx.functions.Action1;
+import rx.functions.Func0;
+import rx.functions.Func1;
+import rx.functions.Func2;
+import rx.internal.operators.OnSubscribeOnAssembly;
+import rx.internal.operators.OnSubscribeOnAssemblyCompletable;
+import rx.internal.operators.OnSubscribeOnAssemblySingle;
+import rx.internal.operators.SingleFromObservable;
+import rx.internal.operators.SingleToObservable;
 
 /**
  * Utility class that holds hooks for various Observable, Single and Completable lifecycle-related
