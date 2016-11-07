@@ -8566,7 +8566,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Observable<T> repeatWhen(final Function<? super Observable<Object>, ? extends ObservableSource<?>> handler) {
         ObjectHelper.requireNonNull(handler, "handler is null");
-        return RxJavaPlugins.onAssembly(new ObservableRedo<T>(this, ObservableInternalHelper.repeatWhenHandler(handler)));
+        return RxJavaPlugins.onAssembly(new ObservableRedo<T>(this, ObservableInternalHelper.repeatWhenHandler(handler), false));
     }
 
     /**
@@ -9219,7 +9219,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     public final Observable<T> retryWhen(
             final Function<? super Observable<Throwable>, ? extends ObservableSource<?>> handler) {
         ObjectHelper.requireNonNull(handler, "handler is null");
-        return RxJavaPlugins.onAssembly(new ObservableRedo<T>(this, ObservableInternalHelper.retryWhenHandler(handler)));
+        return RxJavaPlugins.onAssembly(new ObservableRedo<T>(this, ObservableInternalHelper.retryWhenHandler(handler), true));
     }
 
     /**

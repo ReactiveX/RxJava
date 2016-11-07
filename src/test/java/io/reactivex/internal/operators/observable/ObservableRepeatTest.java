@@ -280,4 +280,18 @@ public class ObservableRepeatTest {
       disposable.dispose();
       assertFalse(subject.hasObservers());
     }
+
+    @Test
+    public void testRepeatWhen() {
+        Observable.error(new TestException())
+        .repeatWhen(new Function<Observable<Object>, ObservableSource<Object>>() {
+            @Override
+            public ObservableSource<Object> apply(Observable<Object> v) throws Exception {
+                return v.delay(10, TimeUnit.SECONDS);
+            }
+        })
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertFailure(TestException.class);
+    }
 }

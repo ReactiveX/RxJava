@@ -27,10 +27,14 @@ import io.reactivex.subjects.*;
 public final class ObservableRedo<T> extends AbstractObservableWithUpstream<T, T> {
     final Function<? super Observable<Notification<Object>>, ? extends ObservableSource<?>> manager;
 
+    final boolean retryMode;
+
     public ObservableRedo(ObservableSource<T> source,
-            Function<? super Observable<Notification<Object>>, ? extends ObservableSource<?>> manager) {
+            Function<? super Observable<Notification<Object>>, ? extends ObservableSource<?>> manager,
+                    boolean retryMode) {
         super(source);
         this.manager = manager;
+        this.retryMode = retryMode;
     }
 
     @Override
@@ -38,7 +42,7 @@ public final class ObservableRedo<T> extends AbstractObservableWithUpstream<T, T
 
         Subject<Notification<Object>> subject = BehaviorSubject.<Notification<Object>>create().toSerialized();
 
-        final RedoObserver<T> parent = new RedoObserver<T>(s, subject, source);
+        final RedoObserver<T> parent = new RedoObserver<T>(s, subject, source, retryMode);
 
         ToNotificationObserver<Object> actionObserver = new ToNotificationObserver<Object>(new Consumer<Notification<Object>>() {
             @Override
@@ -73,13 +77,16 @@ public final class ObservableRedo<T> extends AbstractObservableWithUpstream<T, T
         final ObservableSource<? extends T> source;
         final SequentialDisposable arbiter;
 
+        final boolean retryMode;
+
         final AtomicInteger wip = new AtomicInteger();
 
-        RedoObserver(Observer<? super T> actual, Subject<Notification<Object>> subject, ObservableSource<? extends T> source) {
+        RedoObserver(Observer<? super T> actual, Subject<Notification<Object>> subject, ObservableSource<? extends T> source, boolean retryMode) {
             this.actual = actual;
             this.subject = subject;
             this.source = source;
             this.arbiter = new SequentialDisposable();
+            this.retryMode = retryMode;
             this.lazySet(true);
         }
 
@@ -96,14 +103,22 @@ public final class ObservableRedo<T> extends AbstractObservableWithUpstream<T, T
         @Override
         public void onError(Throwable t) {
             if (compareAndSet(false, true)) {
-                subject.onNext(Notification.createOnError(t));
+                if (retryMode) {
+                    subject.onNext(Notification.createOnError(t));
+                } else {
+                    subject.onError(t);
+                }
             }
         }
 
         @Override
         public void onComplete() {
             if (compareAndSet(false, true)) {
-                subject.onNext(Notification.createOnComplete());
+                if (retryMode) {
+                    subject.onComplete();
+                } else {
+                    subject.onNext(Notification.createOnComplete());
+                }
             }
         }
 
