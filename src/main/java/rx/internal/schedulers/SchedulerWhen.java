@@ -143,8 +143,7 @@ public class SchedulerWhen extends Scheduler implements Subscription {
                     @Override
                     public void call(CompletableSubscriber actionCompletable) {
                         actionCompletable.onSubscribe(action);
-                        action.call(actualWorker);
-                        actionCompletable.onCompleted();
+                        action.call(actualWorker, actionCompletable);
                     }
                 });
             }
@@ -212,7 +211,7 @@ public class SchedulerWhen extends Scheduler implements Subscription {
             super(SUBSCRIBED);
         }
 
-        private void call(Worker actualWorker) {
+        private void call(Worker actualWorker, CompletableSubscriber actionCompletable) {
             Subscription oldState = get();
             // either SUBSCRIBED or UNSUBSCRIBED
             if (oldState == UNSUBSCRIBED) {
@@ -226,7 +225,7 @@ public class SchedulerWhen extends Scheduler implements Subscription {
                 return;
             }
 
-            Subscription newState = callActual(actualWorker);
+            Subscription newState = callActual(actualWorker, actionCompletable);
 
             if (!compareAndSet(SUBSCRIBED, newState)) {
                 // set would only fail if the new current state is some other
@@ -237,7 +236,7 @@ public class SchedulerWhen extends Scheduler implements Subscription {
             }
         }
 
-        protected abstract Subscription callActual(Worker actualWorker);
+        protected abstract Subscription callActual(Worker actualWorker, CompletableSubscriber actionCompletable);
 
         @Override
         public boolean isUnsubscribed() {
@@ -273,8 +272,8 @@ public class SchedulerWhen extends Scheduler implements Subscription {
         }
 
         @Override
-        protected Subscription callActual(Worker actualWorker) {
-            return actualWorker.schedule(action);
+        protected Subscription callActual(Worker actualWorker, CompletableSubscriber actionCompletable) {
+            return actualWorker.schedule(new OnCompletedAction(action, actionCompletable));
         }
     }
 
@@ -291,8 +290,27 @@ public class SchedulerWhen extends Scheduler implements Subscription {
         }
 
         @Override
-        protected Subscription callActual(Worker actualWorker) {
-            return actualWorker.schedule(action, delayTime, unit);
+        protected Subscription callActual(Worker actualWorker, CompletableSubscriber actionCompletable) {
+            return actualWorker.schedule(new OnCompletedAction(action, actionCompletable), delayTime, unit);
+        }
+    }
+
+    private static class OnCompletedAction implements Action0 {
+        private CompletableSubscriber actionCompletable;
+        private Action0 action;
+
+        public OnCompletedAction(Action0 action, CompletableSubscriber actionCompletable) {
+            this.action = action;
+            this.actionCompletable = actionCompletable;
+        }
+
+        @Override
+        public void call() {
+            try {
+                action.call();
+            } finally {
+                actionCompletable.onCompleted();
+            }
         }
     }
 }

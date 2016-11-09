@@ -16,6 +16,8 @@
 package rx.schedulers;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
+import static rx.Observable.just;
+import static rx.Observable.merge;
 
 import org.junit.Test;
 
@@ -204,4 +206,17 @@ public class SchedulerWhenTest {
 		}, tSched);
 		return sched;
 	}
+
+    @Test(timeout=1000)
+    public void testRaceConditions() {
+        Scheduler comp = Schedulers.computation();
+        Scheduler limited = comp.when(new Func1<Observable<Observable<Completable>>, Completable>() {
+            @Override
+            public Completable call(Observable<Observable<Completable>> t) {
+                return Completable.merge(Observable.merge(t, 10));
+            }
+        });
+
+        merge(just(just(1).subscribeOn(limited).observeOn(comp)).repeat(1000)).toBlocking().subscribe();
+    }
 }
