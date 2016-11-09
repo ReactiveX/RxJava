@@ -206,7 +206,7 @@ public class SchedulerWhen extends Scheduler implements Subscription {
     static final Subscription UNSUBSCRIBED = Subscriptions.unsubscribed();
 
     @SuppressWarnings("serial")
-    private static abstract class ScheduledAction extends AtomicReference<Subscription>implements Subscription {
+    static abstract class ScheduledAction extends AtomicReference<Subscription>implements Subscription {
         public ScheduledAction() {
             super(SUBSCRIBED);
         }
@@ -264,7 +264,7 @@ public class SchedulerWhen extends Scheduler implements Subscription {
     }
 
     @SuppressWarnings("serial")
-    private static class ImmediateAction extends ScheduledAction {
+    static class ImmediateAction extends ScheduledAction {
         private final Action0 action;
 
         public ImmediateAction(Action0 action) {
@@ -278,7 +278,7 @@ public class SchedulerWhen extends Scheduler implements Subscription {
     }
 
     @SuppressWarnings("serial")
-    private static class DelayedAction extends ScheduledAction {
+    static class DelayedAction extends ScheduledAction {
         private final Action0 action;
         private final long delayTime;
         private final TimeUnit unit;
@@ -295,7 +295,7 @@ public class SchedulerWhen extends Scheduler implements Subscription {
         }
     }
 
-    private static class OnCompletedAction implements Action0 {
+    static class OnCompletedAction implements Action0 {
         private CompletableSubscriber actionCompletable;
         private Action0 action;
 
