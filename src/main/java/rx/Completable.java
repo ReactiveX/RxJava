@@ -2365,7 +2365,7 @@ public class Completable {
             }
         });
     }
-    
+
     // -------------------------------------------------------------------------
     // Fluent test support, super handy and reduces test preparation boilerplate
     // -------------------------------------------------------------------------

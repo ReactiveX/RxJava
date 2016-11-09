@@ -12642,7 +12642,7 @@ public class Observable<T> {
     public final <T2, R> Observable<R> zipWith(Observable<? extends T2> other, Func2<? super T, ? super T2, ? extends R> zipFunction) {
         return (Observable<R>)zip(this, other, zipFunction);
     }
-    
+
     // -------------------------------------------------------------------------
     // Fluent test support, super handy and reduces test preparation boilerplate
     // -------------------------------------------------------------------------
@@ -12664,7 +12664,7 @@ public class Observable<T> {
         subscribe(ts);
         return ts;
     }
-    
+
     /**
      * Creates an AssertableSubscriber with the initial request amount and subscribes
      * it to this Observable.
@@ -12675,6 +12675,7 @@ public class Observable<T> {
      *  <dd>{@code test} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * @return the new AssertableSubscriber instance
+     * @param initialRequestAmount the amount to request from upstream upfront, non-negative (not verified)
      * @since 1.2.3
      */
     @Experimental
