@@ -104,195 +104,213 @@ import rx.subscriptions.Subscriptions;
  */
 @Experimental
 public class SchedulerWhen extends Scheduler implements Subscription {
-	private final Scheduler actualScheduler;
-	private final Observer<Observable<Completable>> workerObserver;
-	private final Subscription subscription;
+    private final Scheduler actualScheduler;
+    private final Observer<Observable<Completable>> workerObserver;
+    private final Subscription subscription;
 
-	public SchedulerWhen(Func1<Observable<Observable<Completable>>, Completable> combine, Scheduler actualScheduler) {
-		this.actualScheduler = actualScheduler;
-		// workers are converted into completables and put in this queue.
-		PublishSubject<Observable<Completable>> workerSubject = PublishSubject.create();
-		this.workerObserver = new SerializedObserver<Observable<Completable>>(workerSubject);
-		// send it to a custom combinator to pick the order and rate at which
-		// workers are processed.
-		this.subscription = combine.call(workerSubject.onBackpressureBuffer()).subscribe();
-	}
+    public SchedulerWhen(Func1<Observable<Observable<Completable>>, Completable> combine, Scheduler actualScheduler) {
+        this.actualScheduler = actualScheduler;
+        // workers are converted into completables and put in this queue.
+        PublishSubject<Observable<Completable>> workerSubject = PublishSubject.create();
+        this.workerObserver = new SerializedObserver<Observable<Completable>>(workerSubject);
+        // send it to a custom combinator to pick the order and rate at which
+        // workers are processed.
+        this.subscription = combine.call(workerSubject.onBackpressureBuffer()).subscribe();
+    }
 
-	@Override
-	public void unsubscribe() {
-		subscription.unsubscribe();
-	}
+    @Override
+    public void unsubscribe() {
+        subscription.unsubscribe();
+    }
 
-	@Override
-	public boolean isUnsubscribed() {
-		return subscription.isUnsubscribed();
-	}
+    @Override
+    public boolean isUnsubscribed() {
+        return subscription.isUnsubscribed();
+    }
 
-	@Override
-	public Worker createWorker() {
-		final Worker actualWorker = actualScheduler.createWorker();
-		// a queue for the actions submitted while worker is waiting to get to
-		// the subscribe to off the workerQueue.
-		BufferUntilSubscriber<ScheduledAction> actionSubject = BufferUntilSubscriber.<ScheduledAction>create();
-		final Observer<ScheduledAction> actionObserver = new SerializedObserver<ScheduledAction>(actionSubject);
-		// convert the work of scheduling all the actions into a completable
-		Observable<Completable> actions = actionSubject.map(new Func1<ScheduledAction, Completable>() {
-			@Override
-			public Completable call(final ScheduledAction action) {
-				return Completable.create(new OnSubscribe() {
-					@Override
-					public void call(CompletableSubscriber actionCompletable) {
-						actionCompletable.onSubscribe(action);
-						action.call(actualWorker);
-						actionCompletable.onCompleted();
-					}
-				});
-			}
-		});
+    @Override
+    public Worker createWorker() {
+        final Worker actualWorker = actualScheduler.createWorker();
+        // a queue for the actions submitted while worker is waiting to get to
+        // the subscribe to off the workerQueue.
+        BufferUntilSubscriber<ScheduledAction> actionSubject = BufferUntilSubscriber.<ScheduledAction> create();
+        final Observer<ScheduledAction> actionObserver = new SerializedObserver<ScheduledAction>(actionSubject);
+        // convert the work of scheduling all the actions into a completable
+        Observable<Completable> actions = actionSubject.map(new Func1<ScheduledAction, Completable>() {
+            @Override
+            public Completable call(final ScheduledAction action) {
+                return Completable.create(new OnSubscribe() {
+                    @Override
+                    public void call(CompletableSubscriber actionCompletable) {
+                        actionCompletable.onSubscribe(action);
+                        action.call(actualWorker, actionCompletable);
+                    }
+                });
+            }
+        });
 
-		// a worker that queues the action to the actionQueue subject.
-		Worker worker = new Worker() {
-			private final AtomicBoolean unsubscribed = new AtomicBoolean();
+        // a worker that queues the action to the actionQueue subject.
+        Worker worker = new Worker() {
+            private final AtomicBoolean unsubscribed = new AtomicBoolean();
 
-			@Override
-			public void unsubscribe() {
-				// complete the actionQueue when worker is unsubscribed to make
-				// room for the next worker in the workerQueue.
-				if (unsubscribed.compareAndSet(false, true)) {
-					actualWorker.unsubscribe();
-					actionObserver.onCompleted();
-				}
-			}
+            @Override
+            public void unsubscribe() {
+                // complete the actionQueue when worker is unsubscribed to make
+                // room for the next worker in the workerQueue.
+                if (unsubscribed.compareAndSet(false, true)) {
+                    actualWorker.unsubscribe();
+                    actionObserver.onCompleted();
+                }
+            }
 
-			@Override
-			public boolean isUnsubscribed() {
-				return unsubscribed.get();
-			}
+            @Override
+            public boolean isUnsubscribed() {
+                return unsubscribed.get();
+            }
 
-			@Override
-			public Subscription schedule(final Action0 action, final long delayTime, final TimeUnit unit) {
-				// send a scheduled action to the actionQueue
-				DelayedAction delayedAction = new DelayedAction(action, delayTime, unit);
-				actionObserver.onNext(delayedAction);
-				return delayedAction;
-			}
+            @Override
+            public Subscription schedule(final Action0 action, final long delayTime, final TimeUnit unit) {
+                // send a scheduled action to the actionQueue
+                DelayedAction delayedAction = new DelayedAction(action, delayTime, unit);
+                actionObserver.onNext(delayedAction);
+                return delayedAction;
+            }
 
-			@Override
-			public Subscription schedule(final Action0 action) {
-				// send a scheduled action to the actionQueue
-				ImmediateAction immediateAction = new ImmediateAction(action);
-				actionObserver.onNext(immediateAction);
-				return immediateAction;
-			}
-		};
+            @Override
+            public Subscription schedule(final Action0 action) {
+                // send a scheduled action to the actionQueue
+                ImmediateAction immediateAction = new ImmediateAction(action);
+                actionObserver.onNext(immediateAction);
+                return immediateAction;
+            }
+        };
 
-		// enqueue the completable that process actions put in reply subject
-		workerObserver.onNext(actions);
+        // enqueue the completable that process actions put in reply subject
+        workerObserver.onNext(actions);
 
-		// return the worker that adds actions to the reply subject
-		return worker;
-	}
+        // return the worker that adds actions to the reply subject
+        return worker;
+    }
 
-	static final Subscription SUBSCRIBED = new Subscription() {
-		@Override
-		public void unsubscribe() {
-		}
+    static final Subscription SUBSCRIBED = new Subscription() {
+        @Override
+        public void unsubscribe() {
+        }
 
-		@Override
-		public boolean isUnsubscribed() {
-			return false;
-		}
-	};
+        @Override
+        public boolean isUnsubscribed() {
+            return false;
+        }
+    };
 
-	static final Subscription UNSUBSCRIBED = Subscriptions.unsubscribed();
+    static final Subscription UNSUBSCRIBED = Subscriptions.unsubscribed();
 
-	@SuppressWarnings("serial")
-	private static abstract class ScheduledAction extends AtomicReference<Subscription> implements Subscription {
-		public ScheduledAction() {
-			super(SUBSCRIBED);
-		}
+    @SuppressWarnings("serial")
+    private static abstract class ScheduledAction extends AtomicReference<Subscription>implements Subscription {
+        public ScheduledAction() {
+            super(SUBSCRIBED);
+        }
 
-		private void call(Worker actualWorker) {
-			Subscription oldState = get();
-			// either SUBSCRIBED or UNSUBSCRIBED
-			if (oldState == UNSUBSCRIBED) {
-				// no need to schedule return
-				return;
-			}
-			if (oldState != SUBSCRIBED) {
-				// has already been scheduled return
-				// should not be able to get here but handle it anyway by not
-				// rescheduling.
-				return;
-			}
+        private void call(Worker actualWorker, CompletableSubscriber actionCompletable) {
+            Subscription oldState = get();
+            // either SUBSCRIBED or UNSUBSCRIBED
+            if (oldState == UNSUBSCRIBED) {
+                // no need to schedule return
+                return;
+            }
+            if (oldState != SUBSCRIBED) {
+                // has already been scheduled return
+                // should not be able to get here but handle it anyway by not
+                // rescheduling.
+                return;
+            }
 
-			Subscription newState = callActual(actualWorker);
+            Subscription newState = callActual(actualWorker, actionCompletable);
 
-			if (!compareAndSet(SUBSCRIBED, newState)) {
-				// set would only fail if the new current state is some other
-				// subscription from a concurrent call to this method.
-				// Unsubscribe from the action just scheduled because it lost
-				// the race.
-				newState.unsubscribe();
-			}
-		}
+            if (!compareAndSet(SUBSCRIBED, newState)) {
+                // set would only fail if the new current state is some other
+                // subscription from a concurrent call to this method.
+                // Unsubscribe from the action just scheduled because it lost
+                // the race.
+                newState.unsubscribe();
+            }
+        }
 
-		protected abstract Subscription callActual(Worker actualWorker);
+        protected abstract Subscription callActual(Worker actualWorker, CompletableSubscriber actionCompletable);
 
-		@Override
-		public boolean isUnsubscribed() {
-			return get().isUnsubscribed();
-		}
+        @Override
+        public boolean isUnsubscribed() {
+            return get().isUnsubscribed();
+        }
 
-		@Override
-		public void unsubscribe() {
-			Subscription oldState;
-			// no matter what the current state is the new state is going to be
-			Subscription newState = UNSUBSCRIBED;
-			do {
-				oldState = get();
-				if (oldState == UNSUBSCRIBED) {
-					// the action has already been unsubscribed
-					return;
-				}
-			} while (!compareAndSet(oldState, newState));
+        @Override
+        public void unsubscribe() {
+            Subscription oldState;
+            // no matter what the current state is the new state is going to be
+            Subscription newState = UNSUBSCRIBED;
+            do {
+                oldState = get();
+                if (oldState == UNSUBSCRIBED) {
+                    // the action has already been unsubscribed
+                    return;
+                }
+            } while (!compareAndSet(oldState, newState));
 
-			if (oldState != SUBSCRIBED) {
-				// the action was scheduled. stop it.
-				oldState.unsubscribe();
-			}
-		}
-	}
+            if (oldState != SUBSCRIBED) {
+                // the action was scheduled. stop it.
+                oldState.unsubscribe();
+            }
+        }
+    }
 
-	@SuppressWarnings("serial")
-	private static class ImmediateAction extends ScheduledAction {
-		private final Action0 action;
+    @SuppressWarnings("serial")
+    private static class ImmediateAction extends ScheduledAction {
+        private final Action0 action;
 
-		public ImmediateAction(Action0 action) {
-			this.action = action;
-		}
+        public ImmediateAction(Action0 action) {
+            this.action = action;
+        }
 
-		@Override
-		protected Subscription callActual(Worker actualWorker) {
-			return actualWorker.schedule(action);
-		}
-	}
+        @Override
+        protected Subscription callActual(Worker actualWorker, CompletableSubscriber actionCompletable) {
+            return actualWorker.schedule(new OnCompletedAction(action, actionCompletable));
+        }
+    }
 
-	@SuppressWarnings("serial")
-	private static class DelayedAction extends ScheduledAction {
-		private final Action0 action;
-		private final long delayTime;
-		private final TimeUnit unit;
+    @SuppressWarnings("serial")
+    private static class DelayedAction extends ScheduledAction {
+        private final Action0 action;
+        private final long delayTime;
+        private final TimeUnit unit;
 
-		public DelayedAction(Action0 action, long delayTime, TimeUnit unit) {
-			this.action = action;
-			this.delayTime = delayTime;
-			this.unit = unit;
-		}
+        public DelayedAction(Action0 action, long delayTime, TimeUnit unit) {
+            this.action = action;
+            this.delayTime = delayTime;
+            this.unit = unit;
+        }
 
-		@Override
-		protected Subscription callActual(Worker actualWorker) {
-			return actualWorker.schedule(action, delayTime, unit);
-		}
-	}
+        @Override
+        protected Subscription callActual(Worker actualWorker, CompletableSubscriber actionCompletable) {
+            return actualWorker.schedule(new OnCompletedAction(action, actionCompletable), delayTime, unit);
+        }
+    }
+
+    private static class OnCompletedAction implements Action0 {
+        private CompletableSubscriber actionCompletable;
+        private Action0 action;
+
+        public OnCompletedAction(Action0 action, CompletableSubscriber actionCompletable) {
+            this.action = action;
+            this.actionCompletable = actionCompletable;
+        }
+
+        @Override
+        public void call() {
+            try {
+                action.call();
+            } finally {
+                actionCompletable.onCompleted();
+            }
+        }
+    }
 }
