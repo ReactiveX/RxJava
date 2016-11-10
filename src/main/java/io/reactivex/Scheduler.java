@@ -215,7 +215,7 @@ public abstract class Scheduler {
      * actions. Generally each {@link Flowable} uses its own {@link Worker}.
      * This means that this will essentially limit the number of concurrent
      * subscribes. The danger comes from using operators like
-     * {@link Flowable#zip(Flowable, Flowable, rx.functions.Func2)} where
+     * {@link Flowable#zip(org.reactivestreams.Publisher, org.reactivestreams.Publisher, io.reactivex.functions.BiFunction)} where
      * subscribing to the first {@link Flowable} could deadlock the
      * subscription to the second.
      * 

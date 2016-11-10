@@ -51,7 +51,7 @@ import io.reactivex.processors.UnicastProcessor;
  * Finally the actions scheduled on the parent {@link Scheduler} when the inner
  * most {@link Completable}s are subscribed to.
  * <p>
- * When the {@link Worker} is unsubscribed the {@link Completable} emits an
+ * When the {@link io.reactivex.Scheduler.Worker Worker} is unsubscribed the {@link Completable} emits an
  * onComplete and triggers any behavior in the flattening operator. The
  * {@link Observable} and all {@link Completable}s give to the flattening
  * function never onError.
@@ -69,11 +69,11 @@ import io.reactivex.processors.UnicastProcessor;
  * <p>
  * This is a slightly different way to limit the concurrency but it has some
  * interesting benefits and drawbacks to the method above. It works by limited
- * the number of concurrent {@link Worker}s rather than individual actions.
- * Generally each {@link Observable} uses its own {@link Worker}. This means
+ * the number of concurrent {@link io.reactivex.Scheduler.Worker Worker}s rather than individual actions.
+ * Generally each {@link Observable} uses its own {@link io.reactivex.Scheduler.Worker Worker}. This means
  * that this will essentially limit the number of concurrent subscribes. The
  * danger comes from using operators like
- * {@link Observable#zip(Observable, Observable, rx.functions.Func2)} where
+ * {@link Flowable#zip(org.reactivestreams.Publisher, org.reactivestreams.Publisher, io.reactivex.functions.BiFunction)} where
  * subscribing to the first {@link Observable} could deadlock the subscription
  * to the second.
  * 
@@ -99,9 +99,6 @@ import io.reactivex.processors.UnicastProcessor;
  *  }));
  * });
  * </pre>
- * 
- * @param combine
- * @return
  */
 @Experimental
 public class SchedulerWhen extends Scheduler implements Disposable {
@@ -209,12 +206,12 @@ public class SchedulerWhen extends Scheduler implements Disposable {
     static final Disposable DISPOSED = Disposables.disposed();
 
     @SuppressWarnings("serial")
-    static abstract class ScheduledAction extends AtomicReference<Disposable>implements Disposable {
-        public ScheduledAction() {
+    abstract static class ScheduledAction extends AtomicReference<Disposable>implements Disposable {
+        ScheduledAction() {
             super(SUBSCRIBED);
         }
 
-        private final void call(Worker actualWorker, CompletableObserver actionCompletable) {
+        void call(Worker actualWorker, CompletableObserver actionCompletable) {
             Disposable oldState = get();
             // either SUBSCRIBED or UNSUBSCRIBED
             if (oldState == DISPOSED) {
@@ -270,7 +267,7 @@ public class SchedulerWhen extends Scheduler implements Disposable {
     static class ImmediateAction extends ScheduledAction {
         private final Runnable action;
 
-        public ImmediateAction(Runnable action) {
+        ImmediateAction(Runnable action) {
             this.action = action;
         }
 
@@ -286,7 +283,7 @@ public class SchedulerWhen extends Scheduler implements Disposable {
         private final long delayTime;
         private final TimeUnit unit;
 
-        public DelayedAction(Runnable action, long delayTime, TimeUnit unit) {
+        DelayedAction(Runnable action, long delayTime, TimeUnit unit) {
             this.action = action;
             this.delayTime = delayTime;
             this.unit = unit;
@@ -302,7 +299,7 @@ public class SchedulerWhen extends Scheduler implements Disposable {
         private CompletableObserver actionCompletable;
         private Runnable action;
 
-        public OnCompletedAction(Runnable action, CompletableObserver actionCompletable) {
+        OnCompletedAction(Runnable action, CompletableObserver actionCompletable) {
             this.action = action;
             this.actionCompletable = actionCompletable;
         }
