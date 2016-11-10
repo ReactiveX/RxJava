@@ -2058,7 +2058,7 @@ public class CompletableTest {
             // expected
         }
 
-        Assert.assertFalse("Closure called", doneAfter.get());
+        Assert.assertTrue("Closure called", doneAfter.get());
     }
 
     @Test(expected = NullPointerException.class)
