@@ -1347,7 +1347,7 @@ public class Completable {
      * @param onSubscribe the consumer called when a CompletableSubscriber subscribes.
      * @param onError the consumer called when this emits an onError event
      * @param onComplete the runnable called just before when this Completable completes normally
-     * @param onAfterComplete the runnable called after this Completable completes normally
+     * @param onAfterTerminate the runnable called after this Completable terminates
      * @param onUnsubscribe the runnable called when the child cancels the subscription
      * @return the new Completable instance
      */
@@ -1355,12 +1355,12 @@ public class Completable {
             final Action1<? super Subscription> onSubscribe,
             final Action1<? super Throwable> onError,
             final Action0 onComplete,
-            final Action0 onAfterComplete,
+            final Action0 onAfterTerminate,
             final Action0 onUnsubscribe) {
         requireNonNull(onSubscribe);
         requireNonNull(onError);
         requireNonNull(onComplete);
-        requireNonNull(onAfterComplete);
+        requireNonNull(onAfterTerminate);
         requireNonNull(onUnsubscribe);
         return create(new OnSubscribe() {
             @Override
@@ -1379,7 +1379,7 @@ public class Completable {
                         s.onCompleted();
 
                         try {
-                            onAfterComplete.call();
+                            onAfterTerminate.call();
                         } catch (Throwable e) {
                             RxJavaHooks.onError(e);
                         }
@@ -1394,6 +1394,12 @@ public class Completable {
                         }
 
                         s.onError(e);
+
+                        try {
+                            onAfterTerminate.call();
+                        } catch (Throwable ex) {
+                            RxJavaHooks.onError(ex);
+                        }
                     }
 
                     @Override
@@ -1455,12 +1461,12 @@ public class Completable {
     /**
      * Returns a Completable instance that calls the given onAfterComplete callback after this
      * Completable completes normally.
-     * @param onAfterComplete the callback to call after this Completable emits an onComplete event.
+     * @param onAfterTerminate the callback to call after this Completable emits an onCompleted or onError event.
      * @return the new Completable instance
      * @throws NullPointerException if onAfterComplete is null
      */
-    public final Completable doAfterTerminate(Action0 onAfterComplete) {
-        return doOnLifecycle(Actions.empty(), Actions.empty(), Actions.empty(), onAfterComplete, Actions.empty());
+    public final Completable doAfterTerminate(Action0 onAfterTerminate) {
+        return doOnLifecycle(Actions.empty(), Actions.empty(), Actions.empty(), onAfterTerminate, Actions.empty());
     }
 
     /**
