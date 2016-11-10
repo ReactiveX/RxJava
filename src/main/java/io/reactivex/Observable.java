@@ -16,7 +16,6 @@ package io.reactivex;
 import java.util.*;
 import java.util.concurrent.*;
 
-import io.reactivex.internal.operators.flowable.FlowableOnBackpressureError;
 import org.reactivestreams.Publisher;
 
 import io.reactivex.annotations.*;
@@ -26,7 +25,7 @@ import io.reactivex.functions.*;
 import io.reactivex.internal.functions.*;
 import io.reactivex.internal.fuseable.ScalarCallable;
 import io.reactivex.internal.observers.*;
-import io.reactivex.internal.operators.flowable.FlowableFromObservable;
+import io.reactivex.internal.operators.flowable.*;
 import io.reactivex.internal.operators.observable.*;
 import io.reactivex.internal.util.*;
 import io.reactivex.observables.*;
@@ -6438,6 +6437,30 @@ public abstract class Observable<T> implements ObservableSource<T> {
     public final Observable<T> doAfterTerminate(Action onFinally) {
         ObjectHelper.requireNonNull(onFinally, "onFinally is null");
         return doOnEach(Functions.emptyConsumer(), Functions.emptyConsumer(), Functions.EMPTY_ACTION, onFinally);
+    }
+
+    /**
+     * Calls the specified action after this Observable signals onError or onCompleted or gets disposed by
+     * the downstream.
+     * <p>In case of a race between a terminal event and a dispose call, the provided {@code onFinally} action
+     * is executed once per subscription.
+     * <p>Note that the {@code onFinally} action is shared between subscriptions and as such
+     * should be thread-safe.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code doFinally} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <td><b>Operator-fusion:</b></dt>
+     *  <dd>This operator supports boundary-limited synchronous or asynchronous queue-fusion.</dd>
+     * </dl>
+     * @param onFinally the action called when this Observable terminates or gets cancelled
+     * @return the new Observable instance
+     * @since 2.0.1 - experimental
+     */
+    @SchedulerSupport(SchedulerSupport.NONE)
+    @Experimental
+    public final Observable<T> doFinally(Action onFinally) {
+        ObjectHelper.requireNonNull(onFinally, "onFinally is null");
+        return RxJavaPlugins.onAssembly(new ObservableDoFinally<T>(this, onFinally));
     }
 
     /**

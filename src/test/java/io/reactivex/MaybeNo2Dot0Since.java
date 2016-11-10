@@ -84,7 +84,7 @@ public class MaybeNo2Dot0Since {
                 }
 
                 if (classDefPassed) {
-                    if (line.contains("@since") && line.contains("2.0")) {
+                    if (line.contains("@since") && line.contains("2.0") && !line.contains("2.0.")) {
                         b.append("java.lang.RuntimeException: @since 2.0 found").append("\r\n")
                         .append(" at io.reactivex.Maybe (Maybe.java:").append(ln).append(")\r\n\r\n");
                         ;

@@ -7328,7 +7328,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * Calls the specified action after this Flowable signals onError or onCompleted or gets cancelled by
      * the downstream.
      * <p>In case of a race between a terminal event and a cancellation, the provided {@code onFinally} action
-     * is executed at once per subscription.
+     * is executed once per subscription.
      * <p>Note that the {@code onFinally} action is shared between subscriptions and as such
      * should be thread-safe.
      * <dl>
