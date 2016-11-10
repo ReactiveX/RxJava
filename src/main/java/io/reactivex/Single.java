@@ -1717,6 +1717,28 @@ public abstract class Single<T> implements SingleSource<T> {
     }
 
     /**
+     * Calls the specified action after this Single signals onSuccess or onError or gets disposed by
+     * the downstream.
+     * <p>In case of a race between a terminal event and a dispose call, the provided {@code onFinally} action
+     * is executed once per subscription.
+     * <p>Note that the {@code onFinally} action is shared between subscriptions and as such
+     * should be thread-safe.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code doFinally} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param onFinally the action called when this Single terminates or gets cancelled
+     * @return the new Single instance
+     * @since 2.0.1 - experimental
+     */
+    @SchedulerSupport(SchedulerSupport.NONE)
+    @Experimental
+    public final Single<T> doFinally(Action onFinally) {
+        ObjectHelper.requireNonNull(onFinally, "onFinally is null");
+        return RxJavaPlugins.onAssembly(new SingleDoFinally<T>(this, onFinally));
+    }
+
+    /**
      * Calls the shared consumer with the Disposable sent through the onSubscribe for each
      * SingleObserver that subscribes to the current Single.
      * <dl>

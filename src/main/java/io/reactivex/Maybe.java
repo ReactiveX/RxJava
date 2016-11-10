@@ -2303,6 +2303,28 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     }
 
     /**
+     * Calls the specified action after this Maybe signals onSuccess, onError or onComplete or gets disposed by
+     * the downstream.
+     * <p>In case of a race between a terminal event and a dispose call, the provided {@code onFinally} action
+     * is executed once per subscription.
+     * <p>Note that the {@code onFinally} action is shared between subscriptions and as such
+     * should be thread-safe.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code doFinally} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param onFinally the action called when this Maybe terminates or gets cancelled
+     * @return the new Maybe instance
+     * @since 2.0.1 - experimental
+     */
+    @SchedulerSupport(SchedulerSupport.NONE)
+    @Experimental
+    public final Maybe<T> doFinally(Action onFinally) {
+        ObjectHelper.requireNonNull(onFinally, "onFinally is null");
+        return RxJavaPlugins.onAssembly(new MaybeDoFinally<T>(this, onFinally));
+    }
+
+    /**
      * Calls the shared runnable if a MaybeObserver subscribed to the current Maybe
      * disposes the common Disposable it received via onSubscribe.
      * <dl>
