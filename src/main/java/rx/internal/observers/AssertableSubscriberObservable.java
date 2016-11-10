@@ -135,8 +135,11 @@ public class AssertableSubscriberObservable<T> extends Subscriber<T> implements 
      * @see rx.observers.AssertableSubscriber#awaitValueCount(int, long, java.util.concurrent.TimeUnit)
      */
     @Override
-    public final boolean awaitValueCount(int expected, long timeout, TimeUnit unit) {
-        return ts.awaitValueCount(expected, timeout, unit);
+    public final AssertableSubscriber<T> awaitValueCount(int expected, long timeout, TimeUnit unit) {
+        if (!ts.awaitValueCount(expected, timeout, unit)) {
+            throw new AssertionError("Did not receive enough values in time. Expected: " + expected + ", Actual: " + ts.getValueCount());
+        }
+        return this;
     }
 
     /* (non-Javadoc)
@@ -282,7 +285,7 @@ public class AssertableSubscriberObservable<T> extends Subscriber<T> implements 
         ts.assertValue(value);
         return this;
     }
-    
+
     /* (non-Javadoc)
      * @see rx.observers.AssertableSubscriber#assertValuesAndClear(T, T)
      */
@@ -307,4 +310,34 @@ public class AssertableSubscriberObservable<T> extends Subscriber<T> implements 
         return ts.toString();
     }
 
+    @Override
+    public final AssertableSubscriber<T> assertResult(T... values) {
+        ts.assertValues(values);
+        ts.assertNoErrors();
+        ts.assertCompleted();
+        return this;
+    }
+
+    @Override
+    public final AssertableSubscriber<T> assertFailure(Class<? extends Throwable> errorClass, T... values) {
+        ts.assertValues(values);
+        ts.assertError(errorClass);
+        ts.assertNotCompleted();
+        return this;
+    }
+
+    @Override
+    public final AssertableSubscriber<T> assertFailureAndMessage(Class<? extends Throwable> errorClass, String message,
+            T... values) {
+        ts.assertValues(values);
+        ts.assertError(errorClass);
+        ts.assertNotCompleted();
+
+        String actualMessage = ts.getOnErrorEvents().get(0).getMessage();
+        if (!(actualMessage == message || (message != null && message.equals(actualMessage)))) {
+            throw new AssertionError("Error message differs. Expected: \'" + message + "\', Received: \'" + actualMessage + "\'");
+        }
+
+        return this;
+    }
 }
