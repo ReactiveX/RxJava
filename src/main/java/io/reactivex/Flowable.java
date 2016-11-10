@@ -7325,6 +7325,35 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     /**
+     * Calls the specified action after this Flowable signals onError or onCompleted or gets cancelled by
+     * the downstream.
+     * <p>In case of a race between a terminal event and a cancellation, the provided {@code onFinally} action
+     * is executed at once per subscription.
+     * <p>Note that the {@code onFinally} action is shared between subscriptions and as such
+     * should be thread-safe.
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The operator doesn't interfere with backpressure which is determined by the source {@code Publisher}'s backpressure
+     *  behavior.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code doFinally} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <td><b>Operator-fusion:</b></dt>
+     *  <dd>This operator supports normal and conditional Subscribers as well as boundary-limited
+     *  synchronous or asynchronous queue-fusion.</dd>
+     * </dl>
+     * @param onFinally the action called when this Flowable terminates or gets cancelled
+     * @return the new Flowable instance
+     * @since 2.0.1 - experimental
+     */
+    @BackpressureSupport(BackpressureKind.PASS_THROUGH)
+    @SchedulerSupport(SchedulerSupport.NONE)
+    @Experimental
+    public final Flowable<T> doFinally(Action onFinally) {
+        ObjectHelper.requireNonNull(onFinally, "onFinally is null");
+        return RxJavaPlugins.onAssembly(new FlowableDoFinally<T>(this, onFinally));
+    }
+
+    /**
      * Registers an {@link Action} to be called when this Publisher invokes either
      * {@link Subscriber#onComplete onComplete} or {@link Subscriber#onError onError}.
      * <p>
