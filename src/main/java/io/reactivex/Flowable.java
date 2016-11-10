@@ -7362,7 +7362,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *  <dd>The operator doesn't interfere with backpressure which is determined by the source {@code Publisher}'s backpressure
      *  behavior.</dd>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code doFinally} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dd>{@code doAfterNext} does not operate by default on a particular {@link Scheduler}.</dd>
      *  <td><b>Operator-fusion:</b></dt>
      *  <dd>This operator supports normal and conditional Subscribers as well as boundary-limited
      *  synchronous or asynchronous queue-fusion.</dd>
