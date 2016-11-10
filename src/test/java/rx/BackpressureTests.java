@@ -39,6 +39,7 @@ import rx.observers.TestSubscriber;
 import rx.schedulers.Schedulers;
 import rx.test.TestObstructionDetection;
 
+@DoppelHacks//Lots of unsubscribe
 public class BackpressureTests {
 
     @Rule
@@ -513,6 +514,8 @@ public class BackpressureTests {
             assertTrue(NUM - 1 <= lastEvent.intValue());
             assertTrue(0 < dropCount.get());
             assertEquals(emitCount.get(), passCount.get() + dropCount.get());
+
+            ts.unsubscribe();
         }
     }
 
@@ -523,7 +526,7 @@ public class BackpressureTests {
             AtomicInteger c = new AtomicInteger();
             TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
             firehose(c).onBackpressureDrop()
-            .map(SLOW_PASS_THRU).take(NUM).subscribe(ts);
+                    .map(SLOW_PASS_THRU).take(NUM).subscribe(ts);
             ts.awaitTerminalEvent();
             ts.assertNoErrors();
 

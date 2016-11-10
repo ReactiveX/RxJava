@@ -263,9 +263,9 @@ J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxInternalOperatorsOperatorMerge_HolderDelayErr
   return [self addAndGetWithLong:-n];
 }
 
-- (void)dealloc {
-  RELEASE_(subscriber_);
-  [super dealloc];
+- (void)__javaClone:(RxInternalOperatorsOperatorMerge_MergeProducer *)original {
+  [super __javaClone:original];
+  [subscriber_ release];
 }
 
 + (const J2ObjcClassInfo *)__metadata {
@@ -293,7 +293,7 @@ J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxInternalOperatorsOperatorMerge_HolderDelayErr
 
 void RxInternalOperatorsOperatorMerge_MergeProducer_initWithRxInternalOperatorsOperatorMerge_MergeSubscriber_(RxInternalOperatorsOperatorMerge_MergeProducer *self, RxInternalOperatorsOperatorMerge_MergeSubscriber *subscriber) {
   JavaUtilConcurrentAtomicAtomicLong_init(self);
-  JreStrongAssign(&self->subscriber_, subscriber);
+  self->subscriber_ = subscriber;
 }
 
 RxInternalOperatorsOperatorMerge_MergeProducer *new_RxInternalOperatorsOperatorMerge_MergeProducer_initWithRxInternalOperatorsOperatorMerge_MergeSubscriber_(RxInternalOperatorsOperatorMerge_MergeSubscriber *subscriber) {
@@ -863,6 +863,7 @@ IOSObjectArray *RxInternalOperatorsOperatorMerge_MergeSubscriber_EMPTY;
 
 - (void)__javaClone:(RxInternalOperatorsOperatorMerge_MergeSubscriber *)original {
   [super __javaClone:original];
+  [child_ release];
   JreCloneVolatileStrong(&queue_, &original->queue_);
   JreCloneVolatileStrong(&subscriptions_MergeSubscriber_, &original->subscriptions_MergeSubscriber_);
   JreCloneVolatileStrong(&errors_, &original->errors_);
@@ -871,7 +872,6 @@ IOSObjectArray *RxInternalOperatorsOperatorMerge_MergeSubscriber_EMPTY;
 
 - (void)dealloc {
   JreCheckFinalize(self, [RxInternalOperatorsOperatorMerge_MergeSubscriber class]);
-  RELEASE_(child_);
   RELEASE_(producer_);
   JreReleaseVolatile(&queue_);
   JreReleaseVolatile(&subscriptions_MergeSubscriber_);
@@ -963,7 +963,7 @@ IOSObjectArray *RxInternalOperatorsOperatorMerge_MergeSubscriber_EMPTY;
 
 void RxInternalOperatorsOperatorMerge_MergeSubscriber_initWithRxSubscriber_withBoolean_withInt_(RxInternalOperatorsOperatorMerge_MergeSubscriber *self, RxSubscriber *child, jboolean delayErrors, jint maxConcurrent) {
   RxSubscriber_init(self);
-  JreStrongAssign(&self->child_, child);
+  self->child_ = child;
   self->delayErrors_ = delayErrors;
   self->maxConcurrent_ = maxConcurrent;
   JreStrongAssignAndConsume(&self->innerGuard_, new_NSObject_init());

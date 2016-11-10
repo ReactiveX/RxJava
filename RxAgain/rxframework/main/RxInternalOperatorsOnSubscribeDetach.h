@@ -119,7 +119,7 @@ J2OBJC_TYPE_LITERAL_HEADER(RxInternalOperatorsOnSubscribeDetach_DetachSubscriber
 
 @interface RxInternalOperatorsOnSubscribeDetach_DetachProducer : NSObject < RxProducer, RxSubscription > {
  @public
-  RxInternalOperatorsOnSubscribeDetach_DetachSubscriber *parent_;
+  __unsafe_unretained RxInternalOperatorsOnSubscribeDetach_DetachSubscriber *parent_;
 }
 
 #pragma mark Public
@@ -135,8 +135,6 @@ J2OBJC_TYPE_LITERAL_HEADER(RxInternalOperatorsOnSubscribeDetach_DetachSubscriber
 @end
 
 J2OBJC_EMPTY_STATIC_INIT(RxInternalOperatorsOnSubscribeDetach_DetachProducer)
-
-J2OBJC_FIELD_SETTER(RxInternalOperatorsOnSubscribeDetach_DetachProducer, parent_, RxInternalOperatorsOnSubscribeDetach_DetachSubscriber *)
 
 FOUNDATION_EXPORT void RxInternalOperatorsOnSubscribeDetach_DetachProducer_initWithRxInternalOperatorsOnSubscribeDetach_DetachSubscriber_(RxInternalOperatorsOnSubscribeDetach_DetachProducer *self, RxInternalOperatorsOnSubscribeDetach_DetachSubscriber *parent);
 

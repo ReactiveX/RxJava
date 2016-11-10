@@ -16,6 +16,8 @@
 
 package rx.internal.operators;
 
+import com.google.j2objc.annotations.Weak;
+
 import java.util.Iterator;
 import java.util.Queue;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -66,12 +68,7 @@ public final class OnSubscribeFlattenIterable<T, R> implements OnSubscribe<R> {
         final FlattenIterableSubscriber<T, R> parent = new FlattenIterableSubscriber<T, R>(t, mapper, prefetch);
 
         t.add(parent);
-        t.setProducer(new Producer() {
-            @Override
-            public void request(long n) {
-                parent.requestMore(n);
-            }
-        });
+        t.setProducer(new MyProducer(parent));
 
         source.unsafeSubscribe(parent);
     }
@@ -367,6 +364,22 @@ public final class OnSubscribeFlattenIterable<T, R> implements OnSubscribe<R> {
             }
 
             t.setProducer(new OnSubscribeFromIterable.IterableProducer<R>(t, iterator));
+        }
+    }
+
+    private static class MyProducer<T, R> implements Producer
+    {
+        @Weak
+        private final FlattenIterableSubscriber<T, R> parent;
+
+        public MyProducer(FlattenIterableSubscriber<T, R> parent)
+        {
+            this.parent = parent;
+        }
+
+        @Override
+        public void request(long n) {
+            parent.requestMore(n);
         }
     }
 }

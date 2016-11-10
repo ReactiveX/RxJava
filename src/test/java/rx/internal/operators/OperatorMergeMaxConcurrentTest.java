@@ -27,6 +27,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.*;
 import org.mockito.*;
 
+import co.touchlab.doppel.testing.DoppelHacks;
 import rx.*;
 import rx.Observable;
 import rx.Observer;
@@ -34,6 +35,7 @@ import rx.internal.util.PlatformDependent;
 import rx.observers.TestSubscriber;
 import rx.schedulers.Schedulers;
 
+@DoppelHacks//Extended loop timeouts
 public class OperatorMergeMaxConcurrentTest {
 
     @Mock
@@ -194,7 +196,7 @@ public class OperatorMergeMaxConcurrentTest {
             ts.assertReceivedOnNext(result);
         }
     }
-    @Test(timeout = 20000)
+    @Test(timeout = 30000)
     public void testSimpleAsyncLoop() {
         for (@AutoreleasePool int i = 0; i < 200; i++) {
             testSimpleAsync();
@@ -220,7 +222,7 @@ public class OperatorMergeMaxConcurrentTest {
             assertEquals(expected, actual);
         }
     }
-    @Test(timeout = 10000)
+    @Test(timeout = 20000)
     public void testSimpleOneLessAsyncLoop() {
         int max = 200;
         if (PlatformDependent.isAndroid()) {

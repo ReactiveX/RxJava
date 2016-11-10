@@ -690,6 +690,7 @@ id<RxFunctionsFunc1> RxBackpressureTests_SLOW_PASS_THRU;
       OrgJunitAssert_assertTrueWithBoolean_(NUM - 1 <= [((JavaLangInteger *) nil_chk(lastEvent)) intValue]);
       OrgJunitAssert_assertTrueWithBoolean_(0 < [dropCount get]);
       OrgJunitAssert_assertEqualsWithLong_withLong_([emitCount get], [passCount get] + [dropCount get]);
+      [ts unsubscribe];
     }
   }
 }

@@ -17,7 +17,6 @@
 #include "RxPluginsRxJavaHooks.h"
 #include "RxPluginsRxJavaPlugins.h"
 #include "RxSubscriber.h"
-#include "com/google/j2objc/WeakProxy.h"
 #include "java/util/Arrays.h"
 #include "java/util/List.h"
 
@@ -162,7 +161,7 @@ J2OBJC_FIELD_SETTER(RxObserversSafeSubscriber, actual_, RxSubscriber *)
 
 void RxObserversSafeSubscriber_initWithRxSubscriber_(RxObserversSafeSubscriber *self, RxSubscriber *actual) {
   RxSubscriber_initWithRxSubscriber_(self, actual);
-  JreStrongAssign(&self->actual_, ComGoogleJ2objcWeakProxy_forObjectWithId_(actual));
+  JreStrongAssign(&self->actual_, actual);
 }
 
 RxObserversSafeSubscriber *new_RxObserversSafeSubscriber_initWithRxSubscriber_(RxSubscriber *actual) {

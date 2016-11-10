@@ -73,6 +73,73 @@ __attribute__((unused)) static IOSObjectArray *RxInternalOperatorsOnSubscribeDoO
 
 __attribute__((unused)) static IOSObjectArray *RxInternalOperatorsOnSubscribeDoOnEachTest__Annotations$14();
 
+@interface RxInternalOperatorsOnSubscribeDoOnEachTest_MyProducer : NSObject < RxProducer > {
+ @public
+  __unsafe_unretained RxSubscriber *subscriber_;
+}
+
+- (instancetype)initWithRxSubscriber:(RxSubscriber *)subscriber;
+
+- (void)requestWithLong:(jlong)n;
+
+@end
+
+J2OBJC_EMPTY_STATIC_INIT(RxInternalOperatorsOnSubscribeDoOnEachTest_MyProducer)
+
+__attribute__((unused)) static void RxInternalOperatorsOnSubscribeDoOnEachTest_MyProducer_initWithRxSubscriber_(RxInternalOperatorsOnSubscribeDoOnEachTest_MyProducer *self, RxSubscriber *subscriber);
+
+__attribute__((unused)) static RxInternalOperatorsOnSubscribeDoOnEachTest_MyProducer *new_RxInternalOperatorsOnSubscribeDoOnEachTest_MyProducer_initWithRxSubscriber_(RxSubscriber *subscriber) NS_RETURNS_RETAINED;
+
+__attribute__((unused)) static RxInternalOperatorsOnSubscribeDoOnEachTest_MyProducer *create_RxInternalOperatorsOnSubscribeDoOnEachTest_MyProducer_initWithRxSubscriber_(RxSubscriber *subscriber);
+
+J2OBJC_TYPE_LITERAL_HEADER(RxInternalOperatorsOnSubscribeDoOnEachTest_MyProducer)
+
+@interface RxInternalOperatorsOnSubscribeDoOnEachTest_MyProducer2 : NSObject < RxProducer > {
+ @public
+  __unsafe_unretained RxSubscriber *subscriber_;
+}
+
+- (instancetype)initWithRxSubscriber:(RxSubscriber *)subscriber;
+
+- (void)requestWithLong:(jlong)n;
+
+@end
+
+J2OBJC_EMPTY_STATIC_INIT(RxInternalOperatorsOnSubscribeDoOnEachTest_MyProducer2)
+
+__attribute__((unused)) static void RxInternalOperatorsOnSubscribeDoOnEachTest_MyProducer2_initWithRxSubscriber_(RxInternalOperatorsOnSubscribeDoOnEachTest_MyProducer2 *self, RxSubscriber *subscriber);
+
+__attribute__((unused)) static RxInternalOperatorsOnSubscribeDoOnEachTest_MyProducer2 *new_RxInternalOperatorsOnSubscribeDoOnEachTest_MyProducer2_initWithRxSubscriber_(RxSubscriber *subscriber) NS_RETURNS_RETAINED;
+
+__attribute__((unused)) static RxInternalOperatorsOnSubscribeDoOnEachTest_MyProducer2 *create_RxInternalOperatorsOnSubscribeDoOnEachTest_MyProducer2_initWithRxSubscriber_(RxSubscriber *subscriber);
+
+J2OBJC_TYPE_LITERAL_HEADER(RxInternalOperatorsOnSubscribeDoOnEachTest_MyProducer2)
+
+@interface RxInternalOperatorsOnSubscribeDoOnEachTest_MyProducer3 : NSObject < RxProducer > {
+ @public
+  __unsafe_unretained RxSubscriber *subscriber_;
+  JavaLangRuntimeException *e2_;
+}
+
+- (instancetype)initWithRxSubscriber:(RxSubscriber *)subscriber
+        withJavaLangRuntimeException:(JavaLangRuntimeException *)e2;
+
+- (void)requestWithLong:(jlong)n;
+
+@end
+
+J2OBJC_EMPTY_STATIC_INIT(RxInternalOperatorsOnSubscribeDoOnEachTest_MyProducer3)
+
+J2OBJC_FIELD_SETTER(RxInternalOperatorsOnSubscribeDoOnEachTest_MyProducer3, e2_, JavaLangRuntimeException *)
+
+__attribute__((unused)) static void RxInternalOperatorsOnSubscribeDoOnEachTest_MyProducer3_initWithRxSubscriber_withJavaLangRuntimeException_(RxInternalOperatorsOnSubscribeDoOnEachTest_MyProducer3 *self, RxSubscriber *subscriber, JavaLangRuntimeException *e2);
+
+__attribute__((unused)) static RxInternalOperatorsOnSubscribeDoOnEachTest_MyProducer3 *new_RxInternalOperatorsOnSubscribeDoOnEachTest_MyProducer3_initWithRxSubscriber_withJavaLangRuntimeException_(RxSubscriber *subscriber, JavaLangRuntimeException *e2) NS_RETURNS_RETAINED;
+
+__attribute__((unused)) static RxInternalOperatorsOnSubscribeDoOnEachTest_MyProducer3 *create_RxInternalOperatorsOnSubscribeDoOnEachTest_MyProducer3_initWithRxSubscriber_withJavaLangRuntimeException_(RxSubscriber *subscriber, JavaLangRuntimeException *e2);
+
+J2OBJC_TYPE_LITERAL_HEADER(RxInternalOperatorsOnSubscribeDoOnEachTest_MyProducer3)
+
 @interface RxInternalOperatorsOnSubscribeDoOnEachTest_$1 : NSObject < RxFunctionsFunc1 >
 
 - (NSString *)callWithId:(NSString *)s;
@@ -259,27 +326,6 @@ __attribute__((unused)) static RxInternalOperatorsOnSubscribeDoOnEachTest_$10 *n
 
 __attribute__((unused)) static RxInternalOperatorsOnSubscribeDoOnEachTest_$10 *create_RxInternalOperatorsOnSubscribeDoOnEachTest_$10_init();
 
-@interface RxInternalOperatorsOnSubscribeDoOnEachTest_$10_$1 : NSObject < RxProducer > {
- @public
-  RxSubscriber *val$subscriber_;
-}
-
-- (void)requestWithLong:(jlong)n;
-
-- (instancetype)initWithRxSubscriber:(RxSubscriber *)capture$0;
-
-@end
-
-J2OBJC_EMPTY_STATIC_INIT(RxInternalOperatorsOnSubscribeDoOnEachTest_$10_$1)
-
-J2OBJC_FIELD_SETTER(RxInternalOperatorsOnSubscribeDoOnEachTest_$10_$1, val$subscriber_, RxSubscriber *)
-
-__attribute__((unused)) static void RxInternalOperatorsOnSubscribeDoOnEachTest_$10_$1_initWithRxSubscriber_(RxInternalOperatorsOnSubscribeDoOnEachTest_$10_$1 *self, RxSubscriber *capture$0);
-
-__attribute__((unused)) static RxInternalOperatorsOnSubscribeDoOnEachTest_$10_$1 *new_RxInternalOperatorsOnSubscribeDoOnEachTest_$10_$1_initWithRxSubscriber_(RxSubscriber *capture$0) NS_RETURNS_RETAINED;
-
-__attribute__((unused)) static RxInternalOperatorsOnSubscribeDoOnEachTest_$10_$1 *create_RxInternalOperatorsOnSubscribeDoOnEachTest_$10_$1_initWithRxSubscriber_(RxSubscriber *capture$0);
-
 @interface RxInternalOperatorsOnSubscribeDoOnEachTest_$11 : NSObject < RxFunctionsAction1 > {
  @public
   JavaLangRuntimeException *val$e1_;
@@ -316,27 +362,6 @@ __attribute__((unused)) static void RxInternalOperatorsOnSubscribeDoOnEachTest_$
 __attribute__((unused)) static RxInternalOperatorsOnSubscribeDoOnEachTest_$12 *new_RxInternalOperatorsOnSubscribeDoOnEachTest_$12_init() NS_RETURNS_RETAINED;
 
 __attribute__((unused)) static RxInternalOperatorsOnSubscribeDoOnEachTest_$12 *create_RxInternalOperatorsOnSubscribeDoOnEachTest_$12_init();
-
-@interface RxInternalOperatorsOnSubscribeDoOnEachTest_$12_$1 : NSObject < RxProducer > {
- @public
-  RxSubscriber *val$subscriber_;
-}
-
-- (void)requestWithLong:(jlong)n;
-
-- (instancetype)initWithRxSubscriber:(RxSubscriber *)capture$0;
-
-@end
-
-J2OBJC_EMPTY_STATIC_INIT(RxInternalOperatorsOnSubscribeDoOnEachTest_$12_$1)
-
-J2OBJC_FIELD_SETTER(RxInternalOperatorsOnSubscribeDoOnEachTest_$12_$1, val$subscriber_, RxSubscriber *)
-
-__attribute__((unused)) static void RxInternalOperatorsOnSubscribeDoOnEachTest_$12_$1_initWithRxSubscriber_(RxInternalOperatorsOnSubscribeDoOnEachTest_$12_$1 *self, RxSubscriber *capture$0);
-
-__attribute__((unused)) static RxInternalOperatorsOnSubscribeDoOnEachTest_$12_$1 *new_RxInternalOperatorsOnSubscribeDoOnEachTest_$12_$1_initWithRxSubscriber_(RxSubscriber *capture$0) NS_RETURNS_RETAINED;
-
-__attribute__((unused)) static RxInternalOperatorsOnSubscribeDoOnEachTest_$12_$1 *create_RxInternalOperatorsOnSubscribeDoOnEachTest_$12_$1_initWithRxSubscriber_(RxSubscriber *capture$0);
 
 @interface RxInternalOperatorsOnSubscribeDoOnEachTest_$13 : NSObject < RxFunctionsAction1 > {
  @public
@@ -400,30 +425,6 @@ __attribute__((unused)) static void RxInternalOperatorsOnSubscribeDoOnEachTest_$
 __attribute__((unused)) static RxInternalOperatorsOnSubscribeDoOnEachTest_$15 *new_RxInternalOperatorsOnSubscribeDoOnEachTest_$15_initWithJavaLangRuntimeException_(JavaLangRuntimeException *capture$0) NS_RETURNS_RETAINED;
 
 __attribute__((unused)) static RxInternalOperatorsOnSubscribeDoOnEachTest_$15 *create_RxInternalOperatorsOnSubscribeDoOnEachTest_$15_initWithJavaLangRuntimeException_(JavaLangRuntimeException *capture$0);
-
-@interface RxInternalOperatorsOnSubscribeDoOnEachTest_$15_$1 : NSObject < RxProducer > {
- @public
-  RxInternalOperatorsOnSubscribeDoOnEachTest_$15 *this$0_;
-  RxSubscriber *val$subscriber_;
-}
-
-- (void)requestWithLong:(jlong)n;
-
-- (instancetype)initWithRxInternalOperatorsOnSubscribeDoOnEachTest_$15:(RxInternalOperatorsOnSubscribeDoOnEachTest_$15 *)outer$
-                                                      withRxSubscriber:(RxSubscriber *)capture$0;
-
-@end
-
-J2OBJC_EMPTY_STATIC_INIT(RxInternalOperatorsOnSubscribeDoOnEachTest_$15_$1)
-
-J2OBJC_FIELD_SETTER(RxInternalOperatorsOnSubscribeDoOnEachTest_$15_$1, this$0_, RxInternalOperatorsOnSubscribeDoOnEachTest_$15 *)
-J2OBJC_FIELD_SETTER(RxInternalOperatorsOnSubscribeDoOnEachTest_$15_$1, val$subscriber_, RxSubscriber *)
-
-__attribute__((unused)) static void RxInternalOperatorsOnSubscribeDoOnEachTest_$15_$1_initWithRxInternalOperatorsOnSubscribeDoOnEachTest_$15_withRxSubscriber_(RxInternalOperatorsOnSubscribeDoOnEachTest_$15_$1 *self, RxInternalOperatorsOnSubscribeDoOnEachTest_$15 *outer$, RxSubscriber *capture$0);
-
-__attribute__((unused)) static RxInternalOperatorsOnSubscribeDoOnEachTest_$15_$1 *new_RxInternalOperatorsOnSubscribeDoOnEachTest_$15_$1_initWithRxInternalOperatorsOnSubscribeDoOnEachTest_$15_withRxSubscriber_(RxInternalOperatorsOnSubscribeDoOnEachTest_$15 *outer$, RxSubscriber *capture$0) NS_RETURNS_RETAINED;
-
-__attribute__((unused)) static RxInternalOperatorsOnSubscribeDoOnEachTest_$15_$1 *create_RxInternalOperatorsOnSubscribeDoOnEachTest_$15_$1_initWithRxInternalOperatorsOnSubscribeDoOnEachTest_$15_withRxSubscriber_(RxInternalOperatorsOnSubscribeDoOnEachTest_$15 *outer$, RxSubscriber *capture$0);
 
 @interface RxInternalOperatorsOnSubscribeDoOnEachTest_$16 : NSObject < RxFunctionsAction1 > {
  @public
@@ -688,8 +689,8 @@ J2OBJC_IGNORE_DESIGNATED_END
     { "subscribedObserver_", "LRxObserver;", .constantValue.asLong = 0, 0x0, -1, -1, 13, 14 },
     { "sideEffectObserver_", "LRxObserver;", .constantValue.asLong = 0, 0x0, -1, -1, 13, 15 },
   };
-  static const void *ptrTable[] = { (void *)&RxInternalOperatorsOnSubscribeDoOnEachTest__Annotations$0, (void *)&RxInternalOperatorsOnSubscribeDoOnEachTest__Annotations$1, (void *)&RxInternalOperatorsOnSubscribeDoOnEachTest__Annotations$2, (void *)&RxInternalOperatorsOnSubscribeDoOnEachTest__Annotations$3, (void *)&RxInternalOperatorsOnSubscribeDoOnEachTest__Annotations$4, (void *)&RxInternalOperatorsOnSubscribeDoOnEachTest__Annotations$5, (void *)&RxInternalOperatorsOnSubscribeDoOnEachTest__Annotations$6, (void *)&RxInternalOperatorsOnSubscribeDoOnEachTest__Annotations$7, (void *)&RxInternalOperatorsOnSubscribeDoOnEachTest__Annotations$8, (void *)&RxInternalOperatorsOnSubscribeDoOnEachTest__Annotations$9, (void *)&RxInternalOperatorsOnSubscribeDoOnEachTest__Annotations$10, (void *)&RxInternalOperatorsOnSubscribeDoOnEachTest__Annotations$11, (void *)&RxInternalOperatorsOnSubscribeDoOnEachTest__Annotations$12, "Lrx/Observer<Ljava/lang/String;>;", (void *)&RxInternalOperatorsOnSubscribeDoOnEachTest__Annotations$13, (void *)&RxInternalOperatorsOnSubscribeDoOnEachTest__Annotations$14 };
-  static const J2ObjcClassInfo _RxInternalOperatorsOnSubscribeDoOnEachTest = { "OnSubscribeDoOnEachTest", "rx.internal.operators", ptrTable, methods, fields, 7, 0x1, 14, 2, -1, -1, -1, -1, -1 };
+  static const void *ptrTable[] = { (void *)&RxInternalOperatorsOnSubscribeDoOnEachTest__Annotations$0, (void *)&RxInternalOperatorsOnSubscribeDoOnEachTest__Annotations$1, (void *)&RxInternalOperatorsOnSubscribeDoOnEachTest__Annotations$2, (void *)&RxInternalOperatorsOnSubscribeDoOnEachTest__Annotations$3, (void *)&RxInternalOperatorsOnSubscribeDoOnEachTest__Annotations$4, (void *)&RxInternalOperatorsOnSubscribeDoOnEachTest__Annotations$5, (void *)&RxInternalOperatorsOnSubscribeDoOnEachTest__Annotations$6, (void *)&RxInternalOperatorsOnSubscribeDoOnEachTest__Annotations$7, (void *)&RxInternalOperatorsOnSubscribeDoOnEachTest__Annotations$8, (void *)&RxInternalOperatorsOnSubscribeDoOnEachTest__Annotations$9, (void *)&RxInternalOperatorsOnSubscribeDoOnEachTest__Annotations$10, (void *)&RxInternalOperatorsOnSubscribeDoOnEachTest__Annotations$11, (void *)&RxInternalOperatorsOnSubscribeDoOnEachTest__Annotations$12, "Lrx/Observer<Ljava/lang/String;>;", (void *)&RxInternalOperatorsOnSubscribeDoOnEachTest__Annotations$13, (void *)&RxInternalOperatorsOnSubscribeDoOnEachTest__Annotations$14, "LRxInternalOperatorsOnSubscribeDoOnEachTest_MyProducer;LRxInternalOperatorsOnSubscribeDoOnEachTest_MyProducer2;LRxInternalOperatorsOnSubscribeDoOnEachTest_MyProducer3;" };
+  static const J2ObjcClassInfo _RxInternalOperatorsOnSubscribeDoOnEachTest = { "OnSubscribeDoOnEachTest", "rx.internal.operators", ptrTable, methods, fields, 7, 0x1, 14, 2, -1, 16, -1, -1, -1 };
   return &_RxInternalOperatorsOnSubscribeDoOnEachTest;
 }
 
@@ -768,6 +769,176 @@ IOSObjectArray *RxInternalOperatorsOnSubscribeDoOnEachTest__Annotations$14() {
 }
 
 J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxInternalOperatorsOnSubscribeDoOnEachTest)
+
+@implementation RxInternalOperatorsOnSubscribeDoOnEachTest_MyProducer
+
+- (instancetype)initWithRxSubscriber:(RxSubscriber *)subscriber {
+  RxInternalOperatorsOnSubscribeDoOnEachTest_MyProducer_initWithRxSubscriber_(self, subscriber);
+  return self;
+}
+
+- (void)requestWithLong:(jlong)n {
+  if (n > 0) {
+    [((RxSubscriber *) nil_chk(subscriber_)) onNextWithId:JavaLangInteger_valueOfWithInt_(1)];
+    [subscriber_ onCompleted];
+  }
+}
+
+- (void)__javaClone:(RxInternalOperatorsOnSubscribeDoOnEachTest_MyProducer *)original {
+  [super __javaClone:original];
+  [subscriber_ release];
+}
+
++ (const J2ObjcClassInfo *)__metadata {
+  static J2ObjcMethodInfo methods[] = {
+    { NULL, NULL, 0x1, -1, 0, -1, 1, -1, -1 },
+    { NULL, "V", 0x1, 2, 3, -1, -1, -1, -1 },
+  };
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Wobjc-multiple-method-names"
+  methods[0].selector = @selector(initWithRxSubscriber:);
+  methods[1].selector = @selector(requestWithLong:);
+  #pragma clang diagnostic pop
+  static const J2ObjcFieldInfo fields[] = {
+    { "subscriber_", "LRxSubscriber;", .constantValue.asLong = 0, 0x12, -1, -1, 4, -1 },
+  };
+  static const void *ptrTable[] = { "LRxSubscriber;", "(Lrx/Subscriber<-Ljava/lang/Integer;>;)V", "request", "J", "Lrx/Subscriber<-Ljava/lang/Integer;>;", "LRxInternalOperatorsOnSubscribeDoOnEachTest;" };
+  static const J2ObjcClassInfo _RxInternalOperatorsOnSubscribeDoOnEachTest_MyProducer = { "MyProducer", "rx.internal.operators", ptrTable, methods, fields, 7, 0xa, 2, 1, 5, -1, -1, -1, -1 };
+  return &_RxInternalOperatorsOnSubscribeDoOnEachTest_MyProducer;
+}
+
+@end
+
+void RxInternalOperatorsOnSubscribeDoOnEachTest_MyProducer_initWithRxSubscriber_(RxInternalOperatorsOnSubscribeDoOnEachTest_MyProducer *self, RxSubscriber *subscriber) {
+  NSObject_init(self);
+  self->subscriber_ = subscriber;
+}
+
+RxInternalOperatorsOnSubscribeDoOnEachTest_MyProducer *new_RxInternalOperatorsOnSubscribeDoOnEachTest_MyProducer_initWithRxSubscriber_(RxSubscriber *subscriber) {
+  J2OBJC_NEW_IMPL(RxInternalOperatorsOnSubscribeDoOnEachTest_MyProducer, initWithRxSubscriber_, subscriber)
+}
+
+RxInternalOperatorsOnSubscribeDoOnEachTest_MyProducer *create_RxInternalOperatorsOnSubscribeDoOnEachTest_MyProducer_initWithRxSubscriber_(RxSubscriber *subscriber) {
+  J2OBJC_CREATE_IMPL(RxInternalOperatorsOnSubscribeDoOnEachTest_MyProducer, initWithRxSubscriber_, subscriber)
+}
+
+J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxInternalOperatorsOnSubscribeDoOnEachTest_MyProducer)
+
+@implementation RxInternalOperatorsOnSubscribeDoOnEachTest_MyProducer2
+
+- (instancetype)initWithRxSubscriber:(RxSubscriber *)subscriber {
+  RxInternalOperatorsOnSubscribeDoOnEachTest_MyProducer2_initWithRxSubscriber_(self, subscriber);
+  return self;
+}
+
+- (void)requestWithLong:(jlong)n {
+  if (n > 2) {
+    [((RxSubscriber *) nil_chk(subscriber_)) onNextWithId:JavaLangInteger_valueOfWithInt_(1)];
+    [subscriber_ onNextWithId:JavaLangInteger_valueOfWithInt_(2)];
+  }
+}
+
+- (void)__javaClone:(RxInternalOperatorsOnSubscribeDoOnEachTest_MyProducer2 *)original {
+  [super __javaClone:original];
+  [subscriber_ release];
+}
+
++ (const J2ObjcClassInfo *)__metadata {
+  static J2ObjcMethodInfo methods[] = {
+    { NULL, NULL, 0x1, -1, 0, -1, 1, -1, -1 },
+    { NULL, "V", 0x1, 2, 3, -1, -1, -1, -1 },
+  };
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Wobjc-multiple-method-names"
+  methods[0].selector = @selector(initWithRxSubscriber:);
+  methods[1].selector = @selector(requestWithLong:);
+  #pragma clang diagnostic pop
+  static const J2ObjcFieldInfo fields[] = {
+    { "subscriber_", "LRxSubscriber;", .constantValue.asLong = 0, 0x12, -1, -1, 4, -1 },
+  };
+  static const void *ptrTable[] = { "LRxSubscriber;", "(Lrx/Subscriber<-Ljava/lang/Integer;>;)V", "request", "J", "Lrx/Subscriber<-Ljava/lang/Integer;>;", "LRxInternalOperatorsOnSubscribeDoOnEachTest;" };
+  static const J2ObjcClassInfo _RxInternalOperatorsOnSubscribeDoOnEachTest_MyProducer2 = { "MyProducer2", "rx.internal.operators", ptrTable, methods, fields, 7, 0xa, 2, 1, 5, -1, -1, -1, -1 };
+  return &_RxInternalOperatorsOnSubscribeDoOnEachTest_MyProducer2;
+}
+
+@end
+
+void RxInternalOperatorsOnSubscribeDoOnEachTest_MyProducer2_initWithRxSubscriber_(RxInternalOperatorsOnSubscribeDoOnEachTest_MyProducer2 *self, RxSubscriber *subscriber) {
+  NSObject_init(self);
+  self->subscriber_ = subscriber;
+}
+
+RxInternalOperatorsOnSubscribeDoOnEachTest_MyProducer2 *new_RxInternalOperatorsOnSubscribeDoOnEachTest_MyProducer2_initWithRxSubscriber_(RxSubscriber *subscriber) {
+  J2OBJC_NEW_IMPL(RxInternalOperatorsOnSubscribeDoOnEachTest_MyProducer2, initWithRxSubscriber_, subscriber)
+}
+
+RxInternalOperatorsOnSubscribeDoOnEachTest_MyProducer2 *create_RxInternalOperatorsOnSubscribeDoOnEachTest_MyProducer2_initWithRxSubscriber_(RxSubscriber *subscriber) {
+  J2OBJC_CREATE_IMPL(RxInternalOperatorsOnSubscribeDoOnEachTest_MyProducer2, initWithRxSubscriber_, subscriber)
+}
+
+J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxInternalOperatorsOnSubscribeDoOnEachTest_MyProducer2)
+
+@implementation RxInternalOperatorsOnSubscribeDoOnEachTest_MyProducer3
+
+- (instancetype)initWithRxSubscriber:(RxSubscriber *)subscriber
+        withJavaLangRuntimeException:(JavaLangRuntimeException *)e2 {
+  RxInternalOperatorsOnSubscribeDoOnEachTest_MyProducer3_initWithRxSubscriber_withJavaLangRuntimeException_(self, subscriber, e2);
+  return self;
+}
+
+- (void)requestWithLong:(jlong)n {
+  if (n > 2) {
+    [((RxSubscriber *) nil_chk(subscriber_)) onNextWithId:JavaLangInteger_valueOfWithInt_(1)];
+    [subscriber_ onErrorWithNSException:e2_];
+  }
+}
+
+- (void)__javaClone:(RxInternalOperatorsOnSubscribeDoOnEachTest_MyProducer3 *)original {
+  [super __javaClone:original];
+  [subscriber_ release];
+}
+
+- (void)dealloc {
+  RELEASE_(e2_);
+  [super dealloc];
+}
+
++ (const J2ObjcClassInfo *)__metadata {
+  static J2ObjcMethodInfo methods[] = {
+    { NULL, NULL, 0x1, -1, 0, -1, 1, -1, -1 },
+    { NULL, "V", 0x1, 2, 3, -1, -1, -1, -1 },
+  };
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Wobjc-multiple-method-names"
+  methods[0].selector = @selector(initWithRxSubscriber:withJavaLangRuntimeException:);
+  methods[1].selector = @selector(requestWithLong:);
+  #pragma clang diagnostic pop
+  static const J2ObjcFieldInfo fields[] = {
+    { "subscriber_", "LRxSubscriber;", .constantValue.asLong = 0, 0x12, -1, -1, 4, -1 },
+    { "e2_", "LJavaLangRuntimeException;", .constantValue.asLong = 0, 0x12, -1, -1, -1, -1 },
+  };
+  static const void *ptrTable[] = { "LRxSubscriber;LJavaLangRuntimeException;", "(Lrx/Subscriber<-Ljava/lang/Integer;>;Ljava/lang/RuntimeException;)V", "request", "J", "Lrx/Subscriber<-Ljava/lang/Integer;>;", "LRxInternalOperatorsOnSubscribeDoOnEachTest;" };
+  static const J2ObjcClassInfo _RxInternalOperatorsOnSubscribeDoOnEachTest_MyProducer3 = { "MyProducer3", "rx.internal.operators", ptrTable, methods, fields, 7, 0xa, 2, 2, 5, -1, -1, -1, -1 };
+  return &_RxInternalOperatorsOnSubscribeDoOnEachTest_MyProducer3;
+}
+
+@end
+
+void RxInternalOperatorsOnSubscribeDoOnEachTest_MyProducer3_initWithRxSubscriber_withJavaLangRuntimeException_(RxInternalOperatorsOnSubscribeDoOnEachTest_MyProducer3 *self, RxSubscriber *subscriber, JavaLangRuntimeException *e2) {
+  NSObject_init(self);
+  self->subscriber_ = subscriber;
+  JreStrongAssign(&self->e2_, e2);
+}
+
+RxInternalOperatorsOnSubscribeDoOnEachTest_MyProducer3 *new_RxInternalOperatorsOnSubscribeDoOnEachTest_MyProducer3_initWithRxSubscriber_withJavaLangRuntimeException_(RxSubscriber *subscriber, JavaLangRuntimeException *e2) {
+  J2OBJC_NEW_IMPL(RxInternalOperatorsOnSubscribeDoOnEachTest_MyProducer3, initWithRxSubscriber_withJavaLangRuntimeException_, subscriber, e2)
+}
+
+RxInternalOperatorsOnSubscribeDoOnEachTest_MyProducer3 *create_RxInternalOperatorsOnSubscribeDoOnEachTest_MyProducer3_initWithRxSubscriber_withJavaLangRuntimeException_(RxSubscriber *subscriber, JavaLangRuntimeException *e2) {
+  J2OBJC_CREATE_IMPL(RxInternalOperatorsOnSubscribeDoOnEachTest_MyProducer3, initWithRxSubscriber_withJavaLangRuntimeException_, subscriber, e2)
+}
+
+J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxInternalOperatorsOnSubscribeDoOnEachTest_MyProducer3)
 
 @implementation RxInternalOperatorsOnSubscribeDoOnEachTest_$1
 
@@ -1211,7 +1382,7 @@ RxInternalOperatorsOnSubscribeDoOnEachTest_$9 *create_RxInternalOperatorsOnSubsc
 @implementation RxInternalOperatorsOnSubscribeDoOnEachTest_$10
 
 - (void)callWithId:(RxSubscriber *)subscriber {
-  [((RxSubscriber *) nil_chk(subscriber)) setProducerWithRxProducer:create_RxInternalOperatorsOnSubscribeDoOnEachTest_$10_$1_initWithRxSubscriber_(subscriber)];
+  [((RxSubscriber *) nil_chk(subscriber)) setProducerWithRxProducer:create_RxInternalOperatorsOnSubscribeDoOnEachTest_MyProducer_initWithRxSubscriber_(subscriber)];
 }
 
 J2OBJC_IGNORE_DESIGNATED_BEGIN
@@ -1248,58 +1419,6 @@ RxInternalOperatorsOnSubscribeDoOnEachTest_$10 *new_RxInternalOperatorsOnSubscri
 
 RxInternalOperatorsOnSubscribeDoOnEachTest_$10 *create_RxInternalOperatorsOnSubscribeDoOnEachTest_$10_init() {
   J2OBJC_CREATE_IMPL(RxInternalOperatorsOnSubscribeDoOnEachTest_$10, init)
-}
-
-@implementation RxInternalOperatorsOnSubscribeDoOnEachTest_$10_$1
-
-- (void)requestWithLong:(jlong)n {
-  if (n > 0) {
-    [((RxSubscriber *) nil_chk(val$subscriber_)) onNextWithId:JavaLangInteger_valueOfWithInt_(1)];
-    [val$subscriber_ onCompleted];
-  }
-}
-
-- (instancetype)initWithRxSubscriber:(RxSubscriber *)capture$0 {
-  RxInternalOperatorsOnSubscribeDoOnEachTest_$10_$1_initWithRxSubscriber_(self, capture$0);
-  return self;
-}
-
-- (void)dealloc {
-  RELEASE_(val$subscriber_);
-  [super dealloc];
-}
-
-+ (const J2ObjcClassInfo *)__metadata {
-  static J2ObjcMethodInfo methods[] = {
-    { NULL, "V", 0x1, 0, 1, -1, -1, -1, -1 },
-    { NULL, NULL, 0x0, -1, 2, -1, 3, -1, -1 },
-  };
-  #pragma clang diagnostic push
-  #pragma clang diagnostic ignored "-Wobjc-multiple-method-names"
-  methods[0].selector = @selector(requestWithLong:);
-  methods[1].selector = @selector(initWithRxSubscriber:);
-  #pragma clang diagnostic pop
-  static const J2ObjcFieldInfo fields[] = {
-    { "val$subscriber_", "LRxSubscriber;", .constantValue.asLong = 0, 0x1012, -1, -1, 4, -1 },
-  };
-  static const void *ptrTable[] = { "request", "J", "LRxSubscriber;", "(Lrx/Subscriber<-Ljava/lang/Integer;>;)V", "Lrx/Subscriber<-Ljava/lang/Integer;>;", "LRxInternalOperatorsOnSubscribeDoOnEachTest_$10;", "callWithId:" };
-  static const J2ObjcClassInfo _RxInternalOperatorsOnSubscribeDoOnEachTest_$10_$1 = { "", "rx.internal.operators", ptrTable, methods, fields, 7, 0x8008, 2, 1, 5, -1, 6, -1, -1 };
-  return &_RxInternalOperatorsOnSubscribeDoOnEachTest_$10_$1;
-}
-
-@end
-
-void RxInternalOperatorsOnSubscribeDoOnEachTest_$10_$1_initWithRxSubscriber_(RxInternalOperatorsOnSubscribeDoOnEachTest_$10_$1 *self, RxSubscriber *capture$0) {
-  JreStrongAssign(&self->val$subscriber_, capture$0);
-  NSObject_init(self);
-}
-
-RxInternalOperatorsOnSubscribeDoOnEachTest_$10_$1 *new_RxInternalOperatorsOnSubscribeDoOnEachTest_$10_$1_initWithRxSubscriber_(RxSubscriber *capture$0) {
-  J2OBJC_NEW_IMPL(RxInternalOperatorsOnSubscribeDoOnEachTest_$10_$1, initWithRxSubscriber_, capture$0)
-}
-
-RxInternalOperatorsOnSubscribeDoOnEachTest_$10_$1 *create_RxInternalOperatorsOnSubscribeDoOnEachTest_$10_$1_initWithRxSubscriber_(RxSubscriber *capture$0) {
-  J2OBJC_CREATE_IMPL(RxInternalOperatorsOnSubscribeDoOnEachTest_$10_$1, initWithRxSubscriber_, capture$0)
 }
 
 @implementation RxInternalOperatorsOnSubscribeDoOnEachTest_$11
@@ -1354,7 +1473,7 @@ RxInternalOperatorsOnSubscribeDoOnEachTest_$11 *create_RxInternalOperatorsOnSubs
 @implementation RxInternalOperatorsOnSubscribeDoOnEachTest_$12
 
 - (void)callWithId:(RxSubscriber *)subscriber {
-  [((RxSubscriber *) nil_chk(subscriber)) setProducerWithRxProducer:create_RxInternalOperatorsOnSubscribeDoOnEachTest_$12_$1_initWithRxSubscriber_(subscriber)];
+  [((RxSubscriber *) nil_chk(subscriber)) setProducerWithRxProducer:create_RxInternalOperatorsOnSubscribeDoOnEachTest_MyProducer2_initWithRxSubscriber_(subscriber)];
 }
 
 J2OBJC_IGNORE_DESIGNATED_BEGIN
@@ -1391,58 +1510,6 @@ RxInternalOperatorsOnSubscribeDoOnEachTest_$12 *new_RxInternalOperatorsOnSubscri
 
 RxInternalOperatorsOnSubscribeDoOnEachTest_$12 *create_RxInternalOperatorsOnSubscribeDoOnEachTest_$12_init() {
   J2OBJC_CREATE_IMPL(RxInternalOperatorsOnSubscribeDoOnEachTest_$12, init)
-}
-
-@implementation RxInternalOperatorsOnSubscribeDoOnEachTest_$12_$1
-
-- (void)requestWithLong:(jlong)n {
-  if (n > 2) {
-    [((RxSubscriber *) nil_chk(val$subscriber_)) onNextWithId:JavaLangInteger_valueOfWithInt_(1)];
-    [val$subscriber_ onNextWithId:JavaLangInteger_valueOfWithInt_(2)];
-  }
-}
-
-- (instancetype)initWithRxSubscriber:(RxSubscriber *)capture$0 {
-  RxInternalOperatorsOnSubscribeDoOnEachTest_$12_$1_initWithRxSubscriber_(self, capture$0);
-  return self;
-}
-
-- (void)dealloc {
-  RELEASE_(val$subscriber_);
-  [super dealloc];
-}
-
-+ (const J2ObjcClassInfo *)__metadata {
-  static J2ObjcMethodInfo methods[] = {
-    { NULL, "V", 0x1, 0, 1, -1, -1, -1, -1 },
-    { NULL, NULL, 0x0, -1, 2, -1, 3, -1, -1 },
-  };
-  #pragma clang diagnostic push
-  #pragma clang diagnostic ignored "-Wobjc-multiple-method-names"
-  methods[0].selector = @selector(requestWithLong:);
-  methods[1].selector = @selector(initWithRxSubscriber:);
-  #pragma clang diagnostic pop
-  static const J2ObjcFieldInfo fields[] = {
-    { "val$subscriber_", "LRxSubscriber;", .constantValue.asLong = 0, 0x1012, -1, -1, 4, -1 },
-  };
-  static const void *ptrTable[] = { "request", "J", "LRxSubscriber;", "(Lrx/Subscriber<-Ljava/lang/Integer;>;)V", "Lrx/Subscriber<-Ljava/lang/Integer;>;", "LRxInternalOperatorsOnSubscribeDoOnEachTest_$12;", "callWithId:" };
-  static const J2ObjcClassInfo _RxInternalOperatorsOnSubscribeDoOnEachTest_$12_$1 = { "", "rx.internal.operators", ptrTable, methods, fields, 7, 0x8008, 2, 1, 5, -1, 6, -1, -1 };
-  return &_RxInternalOperatorsOnSubscribeDoOnEachTest_$12_$1;
-}
-
-@end
-
-void RxInternalOperatorsOnSubscribeDoOnEachTest_$12_$1_initWithRxSubscriber_(RxInternalOperatorsOnSubscribeDoOnEachTest_$12_$1 *self, RxSubscriber *capture$0) {
-  JreStrongAssign(&self->val$subscriber_, capture$0);
-  NSObject_init(self);
-}
-
-RxInternalOperatorsOnSubscribeDoOnEachTest_$12_$1 *new_RxInternalOperatorsOnSubscribeDoOnEachTest_$12_$1_initWithRxSubscriber_(RxSubscriber *capture$0) {
-  J2OBJC_NEW_IMPL(RxInternalOperatorsOnSubscribeDoOnEachTest_$12_$1, initWithRxSubscriber_, capture$0)
-}
-
-RxInternalOperatorsOnSubscribeDoOnEachTest_$12_$1 *create_RxInternalOperatorsOnSubscribeDoOnEachTest_$12_$1_initWithRxSubscriber_(RxSubscriber *capture$0) {
-  J2OBJC_CREATE_IMPL(RxInternalOperatorsOnSubscribeDoOnEachTest_$12_$1, initWithRxSubscriber_, capture$0)
 }
 
 @implementation RxInternalOperatorsOnSubscribeDoOnEachTest_$13
@@ -1546,7 +1613,7 @@ RxInternalOperatorsOnSubscribeDoOnEachTest_$14 *create_RxInternalOperatorsOnSubs
 @implementation RxInternalOperatorsOnSubscribeDoOnEachTest_$15
 
 - (void)callWithId:(RxSubscriber *)subscriber {
-  [((RxSubscriber *) nil_chk(subscriber)) setProducerWithRxProducer:create_RxInternalOperatorsOnSubscribeDoOnEachTest_$15_$1_initWithRxInternalOperatorsOnSubscribeDoOnEachTest_$15_withRxSubscriber_(self, subscriber)];
+  [((RxSubscriber *) nil_chk(subscriber)) setProducerWithRxProducer:create_RxInternalOperatorsOnSubscribeDoOnEachTest_MyProducer3_initWithRxSubscriber_withJavaLangRuntimeException_(subscriber, val$e2_)];
 }
 
 - (instancetype)initWithJavaLangRuntimeException:(JavaLangRuntimeException *)capture$0 {
@@ -1590,62 +1657,6 @@ RxInternalOperatorsOnSubscribeDoOnEachTest_$15 *new_RxInternalOperatorsOnSubscri
 
 RxInternalOperatorsOnSubscribeDoOnEachTest_$15 *create_RxInternalOperatorsOnSubscribeDoOnEachTest_$15_initWithJavaLangRuntimeException_(JavaLangRuntimeException *capture$0) {
   J2OBJC_CREATE_IMPL(RxInternalOperatorsOnSubscribeDoOnEachTest_$15, initWithJavaLangRuntimeException_, capture$0)
-}
-
-@implementation RxInternalOperatorsOnSubscribeDoOnEachTest_$15_$1
-
-- (void)requestWithLong:(jlong)n {
-  if (n > 2) {
-    [((RxSubscriber *) nil_chk(val$subscriber_)) onNextWithId:JavaLangInteger_valueOfWithInt_(1)];
-    [val$subscriber_ onErrorWithNSException:this$0_->val$e2_];
-  }
-}
-
-- (instancetype)initWithRxInternalOperatorsOnSubscribeDoOnEachTest_$15:(RxInternalOperatorsOnSubscribeDoOnEachTest_$15 *)outer$
-                                                      withRxSubscriber:(RxSubscriber *)capture$0 {
-  RxInternalOperatorsOnSubscribeDoOnEachTest_$15_$1_initWithRxInternalOperatorsOnSubscribeDoOnEachTest_$15_withRxSubscriber_(self, outer$, capture$0);
-  return self;
-}
-
-- (void)dealloc {
-  RELEASE_(this$0_);
-  RELEASE_(val$subscriber_);
-  [super dealloc];
-}
-
-+ (const J2ObjcClassInfo *)__metadata {
-  static J2ObjcMethodInfo methods[] = {
-    { NULL, "V", 0x1, 0, 1, -1, -1, -1, -1 },
-    { NULL, NULL, 0x0, -1, 2, -1, 3, -1, -1 },
-  };
-  #pragma clang diagnostic push
-  #pragma clang diagnostic ignored "-Wobjc-multiple-method-names"
-  methods[0].selector = @selector(requestWithLong:);
-  methods[1].selector = @selector(initWithRxInternalOperatorsOnSubscribeDoOnEachTest_$15:withRxSubscriber:);
-  #pragma clang diagnostic pop
-  static const J2ObjcFieldInfo fields[] = {
-    { "this$0_", "LRxInternalOperatorsOnSubscribeDoOnEachTest_$15;", .constantValue.asLong = 0, 0x1012, -1, -1, -1, -1 },
-    { "val$subscriber_", "LRxSubscriber;", .constantValue.asLong = 0, 0x1012, -1, -1, 4, -1 },
-  };
-  static const void *ptrTable[] = { "request", "J", "LRxInternalOperatorsOnSubscribeDoOnEachTest_$15;LRxSubscriber;", "(Lrx/internal/operators/OnSubscribeDoOnEachTest$15;Lrx/Subscriber<-Ljava/lang/Integer;>;)V", "Lrx/Subscriber<-Ljava/lang/Integer;>;", "LRxInternalOperatorsOnSubscribeDoOnEachTest_$15;", "callWithId:" };
-  static const J2ObjcClassInfo _RxInternalOperatorsOnSubscribeDoOnEachTest_$15_$1 = { "", "rx.internal.operators", ptrTable, methods, fields, 7, 0x8008, 2, 2, 5, -1, 6, -1, -1 };
-  return &_RxInternalOperatorsOnSubscribeDoOnEachTest_$15_$1;
-}
-
-@end
-
-void RxInternalOperatorsOnSubscribeDoOnEachTest_$15_$1_initWithRxInternalOperatorsOnSubscribeDoOnEachTest_$15_withRxSubscriber_(RxInternalOperatorsOnSubscribeDoOnEachTest_$15_$1 *self, RxInternalOperatorsOnSubscribeDoOnEachTest_$15 *outer$, RxSubscriber *capture$0) {
-  JreStrongAssign(&self->this$0_, outer$);
-  JreStrongAssign(&self->val$subscriber_, capture$0);
-  NSObject_init(self);
-}
-
-RxInternalOperatorsOnSubscribeDoOnEachTest_$15_$1 *new_RxInternalOperatorsOnSubscribeDoOnEachTest_$15_$1_initWithRxInternalOperatorsOnSubscribeDoOnEachTest_$15_withRxSubscriber_(RxInternalOperatorsOnSubscribeDoOnEachTest_$15 *outer$, RxSubscriber *capture$0) {
-  J2OBJC_NEW_IMPL(RxInternalOperatorsOnSubscribeDoOnEachTest_$15_$1, initWithRxInternalOperatorsOnSubscribeDoOnEachTest_$15_withRxSubscriber_, outer$, capture$0)
-}
-
-RxInternalOperatorsOnSubscribeDoOnEachTest_$15_$1 *create_RxInternalOperatorsOnSubscribeDoOnEachTest_$15_$1_initWithRxInternalOperatorsOnSubscribeDoOnEachTest_$15_withRxSubscriber_(RxInternalOperatorsOnSubscribeDoOnEachTest_$15 *outer$, RxSubscriber *capture$0) {
-  J2OBJC_CREATE_IMPL(RxInternalOperatorsOnSubscribeDoOnEachTest_$15_$1, initWithRxInternalOperatorsOnSubscribeDoOnEachTest_$15_withRxSubscriber_, outer$, capture$0)
 }
 
 @implementation RxInternalOperatorsOnSubscribeDoOnEachTest_$16

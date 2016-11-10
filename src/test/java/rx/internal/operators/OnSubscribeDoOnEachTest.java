@@ -15,6 +15,9 @@
  */
 package rx.internal.operators;
 
+import com.google.j2objc.annotations.Weak;
+
+
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
@@ -233,15 +236,7 @@ public class OnSubscribeDoOnEachTest {
 
             @Override
             public void call(final Subscriber<? super Integer> subscriber) {
-                subscriber.setProducer(new Producer() {
-
-                    @Override
-                    public void request(long n) {
-                        if (n > 0) {
-                            subscriber.onNext(1);
-                            subscriber.onCompleted();
-                        }
-                    }});
+                subscriber.setProducer(new MyProducer(subscriber));
             }})
             .doOnNext(new Action1<Integer>() {
 
@@ -263,15 +258,7 @@ public class OnSubscribeDoOnEachTest {
 
             @Override
             public void call(final Subscriber<? super Integer> subscriber) {
-                subscriber.setProducer(new Producer() {
-
-                    @Override
-                    public void request(long n) {
-                        if (n > 2) {
-                            subscriber.onNext(1);
-                            subscriber.onNext(2);
-                        }
-                    }});
+                subscriber.setProducer(new MyProducer2(subscriber));
             }})
             .doOnNext(new Action1<Integer>() {
 
@@ -302,16 +289,7 @@ public class OnSubscribeDoOnEachTest {
 
                 @Override
                 public void call(final Subscriber<? super Integer> subscriber) {
-                    subscriber.setProducer(new Producer() {
-
-                        @Override
-                        public void request(long n) {
-                            if (n > 2) {
-                                subscriber.onNext(1);
-                                subscriber.onError(e2);
-                            }
-                        }
-                    });
+                    subscriber.setProducer(new MyProducer3(subscriber, e2));
                 }
             }).doOnNext(new Action1<Integer>() {
 
@@ -366,4 +344,62 @@ public class OnSubscribeDoOnEachTest {
         assertTrue(unsub.get());
     }
 
+    private static class MyProducer implements Producer
+    {
+        @Weak
+        private final Subscriber<? super Integer> subscriber;
+
+        public MyProducer(Subscriber<? super Integer> subscriber)
+        {
+            this.subscriber = subscriber;
+        }
+
+        @Override
+        public void request(long n) {
+            if (n > 0) {
+                subscriber.onNext(1);
+                subscriber.onCompleted();
+            }
+        }
+    }
+
+    private static class MyProducer2 implements Producer
+    {
+        @Weak
+        private final Subscriber<? super Integer> subscriber;
+
+        public MyProducer2(Subscriber<? super Integer> subscriber)
+        {
+            this.subscriber = subscriber;
+        }
+
+        @Override
+        public void request(long n) {
+            if (n > 2) {
+                subscriber.onNext(1);
+                subscriber.onNext(2);
+            }
+        }
+    }
+
+    private static class MyProducer3 implements Producer
+    {
+        @Weak
+        private final Subscriber<? super Integer> subscriber;
+        private final RuntimeException e2;
+
+        public MyProducer3(Subscriber<? super Integer> subscriber, RuntimeException e2)
+        {
+            this.subscriber = subscriber;
+            this.e2 = e2;
+        }
+
+        @Override
+        public void request(long n) {
+            if (n > 2) {
+                subscriber.onNext(1);
+                subscriber.onError(e2);
+            }
+        }
+    }
 }

@@ -221,9 +221,9 @@ J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxInternalOperatorsOnSubscribeDetach_DetachSubs
   [((RxInternalOperatorsOnSubscribeDetach_DetachSubscriber *) nil_chk(parent_)) innerUnsubscribe];
 }
 
-- (void)dealloc {
-  RELEASE_(parent_);
-  [super dealloc];
+- (void)__javaClone:(RxInternalOperatorsOnSubscribeDetach_DetachProducer *)original {
+  [super __javaClone:original];
+  [parent_ release];
 }
 
 + (const J2ObjcClassInfo *)__metadata {
@@ -252,7 +252,7 @@ J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxInternalOperatorsOnSubscribeDetach_DetachSubs
 
 void RxInternalOperatorsOnSubscribeDetach_DetachProducer_initWithRxInternalOperatorsOnSubscribeDetach_DetachSubscriber_(RxInternalOperatorsOnSubscribeDetach_DetachProducer *self, RxInternalOperatorsOnSubscribeDetach_DetachSubscriber *parent) {
   NSObject_init(self);
-  JreStrongAssign(&self->parent_, parent);
+  self->parent_ = parent;
 }
 
 RxInternalOperatorsOnSubscribeDetach_DetachProducer *new_RxInternalOperatorsOnSubscribeDetach_DetachProducer_initWithRxInternalOperatorsOnSubscribeDetach_DetachSubscriber_(RxInternalOperatorsOnSubscribeDetach_DetachSubscriber *parent) {

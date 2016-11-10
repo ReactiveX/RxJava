@@ -357,6 +357,7 @@ public final class OnSubscribeConcatMap<T, R> implements OnSubscribe<R> {
     static final class ConcatMapInnerScalarProducer<T, R> implements Producer {
         final R value;
 
+        //Not sure this needs to be weak
         @Weak
         final ConcatMapSubscriber<T, R> parent;
 

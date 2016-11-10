@@ -16,6 +16,7 @@
 package rx.internal.operators;
 
 import com.google.j2objc.annotations.AutoreleasePool;
+import com.google.j2objc.annotations.Weak;
 
 
 import static org.junit.Assert.*;
@@ -29,6 +30,7 @@ import java.util.concurrent.atomic.*;
 import org.junit.*;
 import org.mockito.*;
 
+import co.touchlab.doppel.testing.DoppelHacks;
 import rx.*;
 import rx.Observable;
 import rx.Observable.OnSubscribe;
@@ -116,13 +118,7 @@ public class OperatorGroupByTest {
             @Override
             public Observable<String> call(final GroupedObservable<Integer, String> o) {
                 groupCounter.incrementAndGet();
-                return o.map(new Func1<String, String>() {
-
-                    @Override
-                    public String call(String v) {
-                        return "Event => key: " + o.getKey() + " value: " + v;
-                    }
-                });
+                return o.map(new ErrorFunc1(o));
             }
         }).subscribe(new Subscriber<String>() {
 
@@ -868,15 +864,8 @@ public class OperatorGroupByTest {
 
             @Override
             public Observable<String> call(final GroupedObservable<Integer, Integer> group) {
-                return group.subscribeOn(Schedulers.newThread()).map(new Func1<Integer, String>() {
-
-                    @Override
-                    public String call(Integer t1) {
-                        System.out.println("Received: " + t1 + " on group : " + group.getKey());
-                        return "first groups: " + t1;
-                    }
-
-                });
+                return group.subscribeOn(Schedulers.newThread()).map(new GroupsWithNestedSubscribeOnFunc1(
+                        group));
             }
 
         }).doOnEach(new Action1<Notification<? super String>>() {
@@ -1033,22 +1022,8 @@ public class OperatorGroupByTest {
 
                     @Override
                     public Observable<String> call(final GroupedObservable<Boolean, Integer> g) {
-                        return g.observeOn(Schedulers.computation()).map(new Func1<Integer, String>() {
-
-                            @Override
-                            public String call(Integer l) {
-                                if (g.getKey()) {
-                                    try {
-                                        Thread.sleep(1);
-                                    } catch (InterruptedException e) {
-                                    }
-                                    return l + " is even.";
-                                } else {
-                                    return l + " is odd.";
-                                }
-                            }
-
-                        });
+                        return g.observeOn(Schedulers.computation()).map(new GroupByBackpressureFunc1(
+                                g));
                     }
 
                 }).subscribe(ts);
@@ -1851,12 +1826,7 @@ public class OperatorGroupByTest {
             .flatMap(new Func1<GroupedObservable<Integer, Integer>, Observable<String>>() {
                 @Override
                 public Observable<String> call(final GroupedObservable<Integer, Integer> g) {
-                    return g.map(new Func1<Integer, String>() {
-                        @Override
-                        public String call(Integer x) {
-                            return g.getKey() + ":" + x;
-                        }
-                    });
+                    return g.map(new MapFactoryEvictionFunction(g));
                 }
             })
             .subscribe(ts);
@@ -1975,7 +1945,7 @@ public class OperatorGroupByTest {
         assertEquals(expected, ts.getOnNextEvents());
     }*/
 
-    @Test(expected = NullPointerException.class)
+   @Test(expected = NullPointerException.class)
     public void testGroupByThrowsNpeIfEvictingMapFactoryNull() {
         Observable
         .range(1, 100)
@@ -2015,5 +1985,82 @@ public class OperatorGroupByTest {
             public Map<Integer, Object> call(Action1<Integer> t) {
                 throw exception;
             }};
+    }
+
+    @DoppelHacks//Function had a reference to the Observable it was involved in. Not sure if this is
+    //a fluke or a common issue
+    private static class MapFactoryEvictionFunction implements Func1<Integer, String>
+    {
+        @Weak
+        private final GroupedObservable<Integer, Integer> g;
+
+        public MapFactoryEvictionFunction(GroupedObservable<Integer, Integer> g)
+        {
+            this.g = g;
+        }
+
+        @Override
+        public String call(Integer x) {
+            return g.getKey() + ":" + x;
+        }
+    }
+
+    private static class GroupByBackpressureFunc1 implements Func1<Integer, String>
+    {
+        @Weak
+        private final GroupedObservable<Boolean, Integer> g;
+
+        public GroupByBackpressureFunc1(GroupedObservable<Boolean, Integer> g)
+        {
+            this.g = g;
+        }
+
+        @Override
+        public String call(Integer l) {
+            if (g.getKey()) {
+                try {
+                    Thread.sleep(1);
+                } catch (InterruptedException e) {
+                }
+                return l + " is even.";
+            } else {
+                return l + " is odd.";
+            }
+        }
+
+    }
+
+    private static class GroupsWithNestedSubscribeOnFunc1 implements Func1<Integer, String>
+    {
+        @Weak
+        private final GroupedObservable<Integer, Integer> group;
+
+        public GroupsWithNestedSubscribeOnFunc1(GroupedObservable<Integer, Integer> group)
+        {
+            this.group = group;
+        }
+
+        @Override
+        public String call(Integer t1) {
+            System.out.println("Received: " + t1 + " on group : " + group.getKey());
+            return "first groups: " + t1;
+        }
+
+    }
+
+    private static class ErrorFunc1 implements Func1<String, String>
+    {
+
+        private final GroupedObservable<Integer, String> o;
+
+        public ErrorFunc1(GroupedObservable<Integer, String> o)
+        {
+            this.o = o;
+        }
+
+        @Override
+        public String call(String v) {
+            return "Event => key: " + o.getKey() + " value: " + v;
+        }
     }
 }

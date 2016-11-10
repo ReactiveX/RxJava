@@ -17,8 +17,11 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    [OneTest runTests];
-//    [OneTest runSingleClassWithNSString:@"rx.internal.operators.OperatorTakeLastTimedTest"];
+//    [OneTest runTests];
+//    [OneTest runSingleClassWithNSString:@"rx.BackpressureTests"];
+//    [OneTest runSingleClassWithNSString:@"rx.internal.operators.OperatorMergeTest"];
+        [OneTest runSingleClassWithNSString:@"rx.internal.operators.OperatorGroupByTest"];
+//    [OneTest runSingleClassWithNSString:@"rx.doppl.memory.SubscriberAutomaticRemovalTest"];
 }
 
 

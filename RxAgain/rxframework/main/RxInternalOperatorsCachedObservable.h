@@ -178,7 +178,7 @@ J2OBJC_TYPE_LITERAL_HEADER(RxInternalOperatorsCachedObservable_CachedSubscribe)
 
 @interface RxInternalOperatorsCachedObservable_ReplayProducer : JavaUtilConcurrentAtomicAtomicLong < RxProducer, RxSubscription > {
  @public
-  RxSubscriber *child_;
+  __unsafe_unretained RxSubscriber *child_;
   __unsafe_unretained RxInternalOperatorsCachedObservable_CacheState *state_;
   IOSObjectArray *currentBuffer_;
   jint currentIndexInBuffer_;
@@ -206,7 +206,6 @@ withRxInternalOperatorsCachedObservable_CacheState:(RxInternalOperatorsCachedObs
 
 J2OBJC_EMPTY_STATIC_INIT(RxInternalOperatorsCachedObservable_ReplayProducer)
 
-J2OBJC_FIELD_SETTER(RxInternalOperatorsCachedObservable_ReplayProducer, child_, RxSubscriber *)
 J2OBJC_FIELD_SETTER(RxInternalOperatorsCachedObservable_ReplayProducer, currentBuffer_, IOSObjectArray *)
 
 FOUNDATION_EXPORT void RxInternalOperatorsCachedObservable_ReplayProducer_initWithRxSubscriber_withRxInternalOperatorsCachedObservable_CacheState_(RxInternalOperatorsCachedObservable_ReplayProducer *self, RxSubscriber *child, RxInternalOperatorsCachedObservable_CacheState *state);

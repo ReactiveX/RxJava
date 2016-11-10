@@ -1509,6 +1509,8 @@
 		635B2B481DCADB6800BB0E12 /* RxZipTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 635B259C1DCADB6400BB0E12 /* RxZipTests.m */; };
 		635B2B4A1DCADBC800BB0E12 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 635B2B491DCADBC800BB0E12 /* UIKit.framework */; };
 		635B2B4C1DCADFDF00BB0E12 /* JSR305.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 635B2B4B1DCADFDF00BB0E12 /* JSR305.framework */; };
+		63D8E9AB1DD11F1800103716 /* RxDopplMemorySubscriberAutomaticRemovalTest.h in Headers */ = {isa = PBXBuildFile; fileRef = 63D8E9A91DD11F1800103716 /* RxDopplMemorySubscriberAutomaticRemovalTest.h */; };
+		63D8E9AC1DD11F1800103716 /* RxDopplMemorySubscriberAutomaticRemovalTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 63D8E9AA1DD11F1800103716 /* RxDopplMemorySubscriberAutomaticRemovalTest.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -3066,6 +3068,8 @@
 		635B259C1DCADB6400BB0E12 /* RxZipTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RxZipTests.m; sourceTree = "<group>"; };
 		635B2B491DCADBC800BB0E12 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		635B2B4B1DCADFDF00BB0E12 /* JSR305.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JSR305.framework; path = ../../../devel/j2objc/dist/frameworks/JSR305.framework; sourceTree = "<group>"; };
+		63D8E9A91DD11F1800103716 /* RxDopplMemorySubscriberAutomaticRemovalTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RxDopplMemorySubscriberAutomaticRemovalTest.h; sourceTree = "<group>"; };
+		63D8E9AA1DD11F1800103716 /* RxDopplMemorySubscriberAutomaticRemovalTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RxDopplMemorySubscriberAutomaticRemovalTest.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -4667,6 +4671,8 @@
 		635B238D1DCADB6200BB0E12 /* test */ = {
 			isa = PBXGroup;
 			children = (
+				63D8E9A91DD11F1800103716 /* RxDopplMemorySubscriberAutomaticRemovalTest.h */,
+				63D8E9AA1DD11F1800103716 /* RxDopplMemorySubscriberAutomaticRemovalTest.m */,
 				63331ADA1DCF8A7A00CA641D /* TestResources.h */,
 				63331ADB1DCF8A7A00CA641D /* TestResources.m */,
 				63111F461DCC042000DE6670 /* RxCompletableTestFunc1a$Moxy.h */,
@@ -5956,6 +5962,7 @@
 				635B260B1DCADB6400BB0E12 /* AndroidDatabaseSqliteSQLiteOutOfMemoryException.h in Headers */,
 				635B2A851DCADB6700BB0E12 /* RxInternalOperatorsOperatorZipTest.h in Headers */,
 				635B264B1DCADB6400BB0E12 /* AndroidUtilPrefixPrinter.h in Headers */,
+				63D8E9AB1DD11F1800103716 /* RxDopplMemorySubscriberAutomaticRemovalTest.h in Headers */,
 				635B2A1F1DCADB6700BB0E12 /* RxInternalOperatorsOperatorObserveOnTest.h in Headers */,
 				635B28171DCADB6500BB0E12 /* RxInternalOperatorsOperatorWindowWithSize.h in Headers */,
 				635B26431DCADB6400BB0E12 /* AndroidUtilAndroidRuntimeException.h in Headers */,
@@ -6821,6 +6828,7 @@
 				635B2B121DCADB6800BB0E12 /* RxSchedulerWorkerTest.m in Sources */,
 				635B25E41DCADB6400BB0E12 /* AndroidDatabaseSqliteSQLiteConnection.m in Sources */,
 				635B2B281DCADB6800BB0E12 /* RxSubjectsSerializedSubjectTest.m in Sources */,
+				63D8E9AC1DD11F1800103716 /* RxDopplMemorySubscriberAutomaticRemovalTest.m in Sources */,
 				635B282E1DCADB6500BB0E12 /* RxInternalOperatorsSingleDoOnUnsubscribe.m in Sources */,
 				635B28081DCADB6500BB0E12 /* RxInternalOperatorsOperatorTimeoutBase.m in Sources */,
 				635B29461DCADB6600BB0E12 /* RxSubscriptionsCompositeSubscription.m in Sources */,

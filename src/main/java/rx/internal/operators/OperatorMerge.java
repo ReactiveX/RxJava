@@ -15,6 +15,8 @@
  */
 package rx.internal.operators;
 
+import com.google.j2objc.annotations.Weak;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
@@ -128,6 +130,7 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
         /** */
         private static final long serialVersionUID = -1214379189873595503L;
 
+        @Weak
         final MergeSubscriber<T> subscriber;
 
         public MergeProducer(MergeSubscriber<T> subscriber) {
@@ -157,6 +160,7 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
      * @param <T> the value type
      */
     static final class MergeSubscriber<T> extends Subscriber<Observable<? extends T>> {
+        @Weak
         final Subscriber<? super T> child;
         final boolean delayErrors;
         final int maxConcurrent;

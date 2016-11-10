@@ -135,7 +135,7 @@ J2OBJC_TYPE_LITERAL_HEADER(RxInternalOperatorsOperatorMerge_HolderDelayErrors)
 
 @interface RxInternalOperatorsOperatorMerge_MergeProducer : JavaUtilConcurrentAtomicAtomicLong < RxProducer > {
  @public
-  RxInternalOperatorsOperatorMerge_MergeSubscriber *subscriber_;
+  __unsafe_unretained RxInternalOperatorsOperatorMerge_MergeSubscriber *subscriber_;
 }
 
 #pragma mark Public
@@ -149,8 +149,6 @@ J2OBJC_TYPE_LITERAL_HEADER(RxInternalOperatorsOperatorMerge_HolderDelayErrors)
 @end
 
 J2OBJC_EMPTY_STATIC_INIT(RxInternalOperatorsOperatorMerge_MergeProducer)
-
-J2OBJC_FIELD_SETTER(RxInternalOperatorsOperatorMerge_MergeProducer, subscriber_, RxInternalOperatorsOperatorMerge_MergeSubscriber *)
 
 FOUNDATION_EXPORT void RxInternalOperatorsOperatorMerge_MergeProducer_initWithRxInternalOperatorsOperatorMerge_MergeSubscriber_(RxInternalOperatorsOperatorMerge_MergeProducer *self, RxInternalOperatorsOperatorMerge_MergeSubscriber *subscriber);
 
@@ -179,7 +177,7 @@ J2OBJC_TYPE_LITERAL_HEADER(RxInternalOperatorsOperatorMerge_MergeProducer)
 
 @interface RxInternalOperatorsOperatorMerge_MergeSubscriber : RxSubscriber {
  @public
-  RxSubscriber *child_;
+  __unsafe_unretained RxSubscriber *child_;
   jboolean delayErrors_;
   jint maxConcurrent_;
   RxInternalOperatorsOperatorMerge_MergeProducer *producer_;
@@ -253,7 +251,6 @@ J2OBJC_TYPE_LITERAL_HEADER(RxInternalOperatorsOperatorMerge_MergeProducer)
 
 J2OBJC_STATIC_INIT(RxInternalOperatorsOperatorMerge_MergeSubscriber)
 
-J2OBJC_FIELD_SETTER(RxInternalOperatorsOperatorMerge_MergeSubscriber, child_, RxSubscriber *)
 J2OBJC_FIELD_SETTER(RxInternalOperatorsOperatorMerge_MergeSubscriber, producer_, RxInternalOperatorsOperatorMerge_MergeProducer *)
 J2OBJC_VOLATILE_FIELD_SETTER(RxInternalOperatorsOperatorMerge_MergeSubscriber, queue_, id<JavaUtilQueue>)
 J2OBJC_VOLATILE_FIELD_SETTER(RxInternalOperatorsOperatorMerge_MergeSubscriber, subscriptions_MergeSubscriber_, RxSubscriptionsCompositeSubscription *)

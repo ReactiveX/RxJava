@@ -9,9 +9,10 @@
 #include "RxExceptionsExceptions.h"
 #include "RxInternalUtilSubscriptionList.h"
 #include "RxSubscription.h"
+#include "java/lang/ref/WeakReference.h"
 #include "java/util/ArrayList.h"
-#include "java/util/Arrays.h"
 #include "java/util/Collection.h"
+#include "java/util/Iterator.h"
 #include "java/util/LinkedList.h"
 #include "java/util/List.h"
 
@@ -64,7 +65,7 @@ J2OBJC_IGNORE_DESIGNATED_END
           subs = create_JavaUtilLinkedList_init();
           JreStrongAssign(&subscriptions_, subs);
         }
-        [subs addWithId:s];
+        [subs addWithId:create_JavaLangRefWeakReference_initWithId_(s)];
         return;
       }
     }
@@ -74,13 +75,21 @@ J2OBJC_IGNORE_DESIGNATED_END
 
 - (void)removeWithRxSubscription:(id<RxSubscription>)s {
   if (!JreLoadVolatileBoolean(&unsubscribed_)) {
-    jboolean unsubscribe;
+    jboolean unsubscribe = false;
     @synchronized(self) {
       id<JavaUtilList> subs = subscriptions_;
       if (JreLoadVolatileBoolean(&unsubscribed_) || subs == nil) {
         return;
       }
-      unsubscribe = [subs removeWithId:s];
+      id<JavaUtilIterator> iterator = [subs iterator];
+      while ([((id<JavaUtilIterator>) nil_chk(iterator)) hasNext]) {
+        JavaLangRefWeakReference *next = [iterator next];
+        if ([((JavaLangRefWeakReference *) nil_chk(next)) get] != nil && [next isEqual:s]) {
+          unsubscribe = true;
+          [iterator remove];
+          break;
+        }
+      }
     }
     if (unsubscribe) {
       [((id<RxSubscription>) nil_chk(s)) unsubscribe];
@@ -121,7 +130,13 @@ J2OBJC_IGNORE_DESIGNATED_END
 - (jboolean)hasSubscriptions {
   if (!JreLoadVolatileBoolean(&unsubscribed_)) {
     @synchronized(self) {
-      return !JreLoadVolatileBoolean(&unsubscribed_) && subscriptions_ != nil && ![subscriptions_ isEmpty];
+      if (!JreLoadVolatileBoolean(&unsubscribed_) && subscriptions_ != nil) {
+        id<JavaUtilIterator> iterator = [subscriptions_ iterator];
+        while ([((id<JavaUtilIterator>) nil_chk(iterator)) hasNext]) {
+          JavaLangRefWeakReference *next = [iterator next];
+          if ([((JavaLangRefWeakReference *) nil_chk(next)) get] != nil) return true;
+        }
+      }
     }
   }
   return false;
@@ -162,7 +177,7 @@ J2OBJC_IGNORE_DESIGNATED_END
     { "subscriptions_", "LJavaUtilList;", .constantValue.asLong = 0, 0x2, -1, -1, 7, -1 },
     { "unsubscribed_", "Z", .constantValue.asLong = 0, 0x42, -1, -1, -1, -1 },
   };
-  static const void *ptrTable[] = { "[LRxSubscription;", "LRxSubscription;", "add", "remove", "unsubscribeFromAll", "LJavaUtilCollection;", "(Ljava/util/Collection<Lrx/Subscription;>;)V", "Ljava/util/List<Lrx/Subscription;>;" };
+  static const void *ptrTable[] = { "[LRxSubscription;", "LRxSubscription;", "add", "remove", "unsubscribeFromAll", "LJavaUtilCollection;", "(Ljava/util/Collection<Ljava/lang/ref/WeakReference<Lrx/Subscription;>;>;)V", "Ljava/util/List<Ljava/lang/ref/WeakReference<Lrx/Subscription;>;>;" };
   static const J2ObjcClassInfo _RxInternalUtilSubscriptionList = { "SubscriptionList", "rx.internal.util", ptrTable, methods, fields, 7, 0x11, 10, 2, -1, -1, -1, -1, -1 };
   return &_RxInternalUtilSubscriptionList;
 }
@@ -183,7 +198,16 @@ RxInternalUtilSubscriptionList *create_RxInternalUtilSubscriptionList_init() {
 
 void RxInternalUtilSubscriptionList_initWithRxSubscriptionArray_(RxInternalUtilSubscriptionList *self, IOSObjectArray *subscriptions) {
   NSObject_init(self);
-  JreStrongAssignAndConsume(&self->subscriptions_, new_JavaUtilLinkedList_initWithJavaUtilCollection_(JavaUtilArrays_asListWithNSObjectArray_(subscriptions)));
+  JreStrongAssignAndConsume(&self->subscriptions_, new_JavaUtilLinkedList_init());
+  {
+    IOSObjectArray *a__ = subscriptions;
+    id<RxSubscription> const *b__ = ((IOSObjectArray *) nil_chk(a__))->buffer_;
+    id<RxSubscription> const *e__ = b__ + a__->size_;
+    while (b__ < e__) {
+      id<RxSubscription> subscription = *b__++;
+      [((id<JavaUtilList>) nil_chk(self->subscriptions_)) addWithId:create_JavaLangRefWeakReference_initWithId_(subscription)];
+    }
+  }
 }
 
 RxInternalUtilSubscriptionList *new_RxInternalUtilSubscriptionList_initWithRxSubscriptionArray_(IOSObjectArray *subscriptions) {
@@ -197,7 +221,7 @@ RxInternalUtilSubscriptionList *create_RxInternalUtilSubscriptionList_initWithRx
 void RxInternalUtilSubscriptionList_initWithRxSubscription_(RxInternalUtilSubscriptionList *self, id<RxSubscription> s) {
   NSObject_init(self);
   JreStrongAssignAndConsume(&self->subscriptions_, new_JavaUtilLinkedList_init());
-  [self->subscriptions_ addWithId:s];
+  [self->subscriptions_ addWithId:create_JavaLangRefWeakReference_initWithId_(s)];
 }
 
 RxInternalUtilSubscriptionList *new_RxInternalUtilSubscriptionList_initWithRxSubscription_(id<RxSubscription> s) {
@@ -214,9 +238,10 @@ void RxInternalUtilSubscriptionList_unsubscribeFromAllWithJavaUtilCollection_(id
     return;
   }
   id<JavaUtilList> es = nil;
-  for (id<RxSubscription> __strong s in subscriptions) {
+  for (JavaLangRefWeakReference * __strong wr in subscriptions) {
+    id<RxSubscription> s = [((JavaLangRefWeakReference *) nil_chk(wr)) get];
     @try {
-      [((id<RxSubscription>) nil_chk(s)) unsubscribe];
+      if (s != nil) [s unsubscribe];
     }
     @catch (NSException *e) {
       if (es == nil) {

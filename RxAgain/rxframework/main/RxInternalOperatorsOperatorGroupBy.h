@@ -98,7 +98,7 @@ J2OBJC_TYPE_LITERAL_HEADER(RxInternalOperatorsOperatorGroupBy)
 
 @interface RxInternalOperatorsOperatorGroupBy_GroupByProducer : NSObject < RxProducer > {
  @public
-  RxInternalOperatorsOperatorGroupBy_GroupBySubscriber *parent_;
+  __unsafe_unretained RxInternalOperatorsOperatorGroupBy_GroupBySubscriber *parent_;
 }
 
 #pragma mark Public
@@ -110,8 +110,6 @@ J2OBJC_TYPE_LITERAL_HEADER(RxInternalOperatorsOperatorGroupBy)
 @end
 
 J2OBJC_EMPTY_STATIC_INIT(RxInternalOperatorsOperatorGroupBy_GroupByProducer)
-
-J2OBJC_FIELD_SETTER(RxInternalOperatorsOperatorGroupBy_GroupByProducer, parent_, RxInternalOperatorsOperatorGroupBy_GroupBySubscriber *)
 
 FOUNDATION_EXPORT void RxInternalOperatorsOperatorGroupBy_GroupByProducer_initWithRxInternalOperatorsOperatorGroupBy_GroupBySubscriber_(RxInternalOperatorsOperatorGroupBy_GroupByProducer *self, RxInternalOperatorsOperatorGroupBy_GroupBySubscriber *parent);
 

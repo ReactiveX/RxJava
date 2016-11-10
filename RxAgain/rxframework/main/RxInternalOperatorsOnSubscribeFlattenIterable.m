@@ -34,26 +34,26 @@
 #include "java/util/concurrent/atomic/AtomicLong.h"
 #include "java/util/concurrent/atomic/AtomicReference.h"
 
-@interface RxInternalOperatorsOnSubscribeFlattenIterable_$1 : NSObject < RxProducer > {
+@interface RxInternalOperatorsOnSubscribeFlattenIterable_MyProducer : NSObject < RxProducer > {
  @public
-  RxInternalOperatorsOnSubscribeFlattenIterable_FlattenIterableSubscriber *val$parent_;
+  __unsafe_unretained RxInternalOperatorsOnSubscribeFlattenIterable_FlattenIterableSubscriber *parent_;
 }
+
+- (instancetype)initWithRxInternalOperatorsOnSubscribeFlattenIterable_FlattenIterableSubscriber:(RxInternalOperatorsOnSubscribeFlattenIterable_FlattenIterableSubscriber *)parent;
 
 - (void)requestWithLong:(jlong)n;
 
-- (instancetype)initWithRxInternalOperatorsOnSubscribeFlattenIterable_FlattenIterableSubscriber:(RxInternalOperatorsOnSubscribeFlattenIterable_FlattenIterableSubscriber *)capture$0;
-
 @end
 
-J2OBJC_EMPTY_STATIC_INIT(RxInternalOperatorsOnSubscribeFlattenIterable_$1)
+J2OBJC_EMPTY_STATIC_INIT(RxInternalOperatorsOnSubscribeFlattenIterable_MyProducer)
 
-J2OBJC_FIELD_SETTER(RxInternalOperatorsOnSubscribeFlattenIterable_$1, val$parent_, RxInternalOperatorsOnSubscribeFlattenIterable_FlattenIterableSubscriber *)
+__attribute__((unused)) static void RxInternalOperatorsOnSubscribeFlattenIterable_MyProducer_initWithRxInternalOperatorsOnSubscribeFlattenIterable_FlattenIterableSubscriber_(RxInternalOperatorsOnSubscribeFlattenIterable_MyProducer *self, RxInternalOperatorsOnSubscribeFlattenIterable_FlattenIterableSubscriber *parent);
 
-__attribute__((unused)) static void RxInternalOperatorsOnSubscribeFlattenIterable_$1_initWithRxInternalOperatorsOnSubscribeFlattenIterable_FlattenIterableSubscriber_(RxInternalOperatorsOnSubscribeFlattenIterable_$1 *self, RxInternalOperatorsOnSubscribeFlattenIterable_FlattenIterableSubscriber *capture$0);
+__attribute__((unused)) static RxInternalOperatorsOnSubscribeFlattenIterable_MyProducer *new_RxInternalOperatorsOnSubscribeFlattenIterable_MyProducer_initWithRxInternalOperatorsOnSubscribeFlattenIterable_FlattenIterableSubscriber_(RxInternalOperatorsOnSubscribeFlattenIterable_FlattenIterableSubscriber *parent) NS_RETURNS_RETAINED;
 
-__attribute__((unused)) static RxInternalOperatorsOnSubscribeFlattenIterable_$1 *new_RxInternalOperatorsOnSubscribeFlattenIterable_$1_initWithRxInternalOperatorsOnSubscribeFlattenIterable_FlattenIterableSubscriber_(RxInternalOperatorsOnSubscribeFlattenIterable_FlattenIterableSubscriber *capture$0) NS_RETURNS_RETAINED;
+__attribute__((unused)) static RxInternalOperatorsOnSubscribeFlattenIterable_MyProducer *create_RxInternalOperatorsOnSubscribeFlattenIterable_MyProducer_initWithRxInternalOperatorsOnSubscribeFlattenIterable_FlattenIterableSubscriber_(RxInternalOperatorsOnSubscribeFlattenIterable_FlattenIterableSubscriber *parent);
 
-__attribute__((unused)) static RxInternalOperatorsOnSubscribeFlattenIterable_$1 *create_RxInternalOperatorsOnSubscribeFlattenIterable_$1_initWithRxInternalOperatorsOnSubscribeFlattenIterable_FlattenIterableSubscriber_(RxInternalOperatorsOnSubscribeFlattenIterable_FlattenIterableSubscriber *capture$0);
+J2OBJC_TYPE_LITERAL_HEADER(RxInternalOperatorsOnSubscribeFlattenIterable_MyProducer)
 
 @implementation RxInternalOperatorsOnSubscribeFlattenIterable
 
@@ -67,7 +67,7 @@ __attribute__((unused)) static RxInternalOperatorsOnSubscribeFlattenIterable_$1 
 - (void)callWithId:(RxSubscriber *)t {
   RxInternalOperatorsOnSubscribeFlattenIterable_FlattenIterableSubscriber *parent = create_RxInternalOperatorsOnSubscribeFlattenIterable_FlattenIterableSubscriber_initWithRxSubscriber_withRxFunctionsFunc1_withInt_(t, mapper_, prefetch_);
   [((RxSubscriber *) nil_chk(t)) addWithRxSubscription:parent];
-  [t setProducerWithRxProducer:create_RxInternalOperatorsOnSubscribeFlattenIterable_$1_initWithRxInternalOperatorsOnSubscribeFlattenIterable_FlattenIterableSubscriber_(parent)];
+  [t setProducerWithRxProducer:create_RxInternalOperatorsOnSubscribeFlattenIterable_MyProducer_initWithRxInternalOperatorsOnSubscribeFlattenIterable_FlattenIterableSubscriber_(parent)];
   [((RxObservable *) nil_chk(source_)) unsafeSubscribeWithRxSubscriber:parent];
 }
 
@@ -100,7 +100,7 @@ __attribute__((unused)) static RxInternalOperatorsOnSubscribeFlattenIterable_$1 
     { "mapper_", "LRxFunctionsFunc1;", .constantValue.asLong = 0, 0x10, -1, -1, 8, -1 },
     { "prefetch_", "I", .constantValue.asLong = 0, 0x10, -1, -1, -1, -1 },
   };
-  static const void *ptrTable[] = { "LRxObservable;LRxFunctionsFunc1;I", "(Lrx/Observable<+TT;>;Lrx/functions/Func1<-TT;+Ljava/lang/Iterable<+TR;>;>;I)V", "call", "LRxSubscriber;", "(Lrx/Subscriber<-TR;>;)V", "createFrom", "<T:Ljava/lang/Object;R:Ljava/lang/Object;>(Lrx/Observable<+TT;>;Lrx/functions/Func1<-TT;+Ljava/lang/Iterable<+TR;>;>;I)Lrx/Observable<TR;>;", "Lrx/Observable<+TT;>;", "Lrx/functions/Func1<-TT;+Ljava/lang/Iterable<+TR;>;>;", "LRxInternalOperatorsOnSubscribeFlattenIterable_FlattenIterableSubscriber;LRxInternalOperatorsOnSubscribeFlattenIterable_OnSubscribeScalarFlattenIterable;", "<T:Ljava/lang/Object;R:Ljava/lang/Object;>Ljava/lang/Object;Lrx/Observable$OnSubscribe<TR;>;" };
+  static const void *ptrTable[] = { "LRxObservable;LRxFunctionsFunc1;I", "(Lrx/Observable<+TT;>;Lrx/functions/Func1<-TT;+Ljava/lang/Iterable<+TR;>;>;I)V", "call", "LRxSubscriber;", "(Lrx/Subscriber<-TR;>;)V", "createFrom", "<T:Ljava/lang/Object;R:Ljava/lang/Object;>(Lrx/Observable<+TT;>;Lrx/functions/Func1<-TT;+Ljava/lang/Iterable<+TR;>;>;I)Lrx/Observable<TR;>;", "Lrx/Observable<+TT;>;", "Lrx/functions/Func1<-TT;+Ljava/lang/Iterable<+TR;>;>;", "LRxInternalOperatorsOnSubscribeFlattenIterable_FlattenIterableSubscriber;LRxInternalOperatorsOnSubscribeFlattenIterable_OnSubscribeScalarFlattenIterable;LRxInternalOperatorsOnSubscribeFlattenIterable_MyProducer;", "<T:Ljava/lang/Object;R:Ljava/lang/Object;>Ljava/lang/Object;Lrx/Observable$OnSubscribe<TR;>;" };
   static const J2ObjcClassInfo _RxInternalOperatorsOnSubscribeFlattenIterable = { "OnSubscribeFlattenIterable", "rx.internal.operators", ptrTable, methods, fields, 7, 0x11, 3, 3, -1, 9, -1, 10, -1 };
   return &_RxInternalOperatorsOnSubscribeFlattenIterable;
 }
@@ -466,51 +466,53 @@ RxInternalOperatorsOnSubscribeFlattenIterable_OnSubscribeScalarFlattenIterable *
 
 J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxInternalOperatorsOnSubscribeFlattenIterable_OnSubscribeScalarFlattenIterable)
 
-@implementation RxInternalOperatorsOnSubscribeFlattenIterable_$1
+@implementation RxInternalOperatorsOnSubscribeFlattenIterable_MyProducer
 
-- (void)requestWithLong:(jlong)n {
-  [((RxInternalOperatorsOnSubscribeFlattenIterable_FlattenIterableSubscriber *) nil_chk(val$parent_)) requestMoreWithLong:n];
-}
-
-- (instancetype)initWithRxInternalOperatorsOnSubscribeFlattenIterable_FlattenIterableSubscriber:(RxInternalOperatorsOnSubscribeFlattenIterable_FlattenIterableSubscriber *)capture$0 {
-  RxInternalOperatorsOnSubscribeFlattenIterable_$1_initWithRxInternalOperatorsOnSubscribeFlattenIterable_FlattenIterableSubscriber_(self, capture$0);
+- (instancetype)initWithRxInternalOperatorsOnSubscribeFlattenIterable_FlattenIterableSubscriber:(RxInternalOperatorsOnSubscribeFlattenIterable_FlattenIterableSubscriber *)parent {
+  RxInternalOperatorsOnSubscribeFlattenIterable_MyProducer_initWithRxInternalOperatorsOnSubscribeFlattenIterable_FlattenIterableSubscriber_(self, parent);
   return self;
 }
 
-- (void)dealloc {
-  RELEASE_(val$parent_);
-  [super dealloc];
+- (void)requestWithLong:(jlong)n {
+  [((RxInternalOperatorsOnSubscribeFlattenIterable_FlattenIterableSubscriber *) nil_chk(parent_)) requestMoreWithLong:n];
+}
+
+- (void)__javaClone:(RxInternalOperatorsOnSubscribeFlattenIterable_MyProducer *)original {
+  [super __javaClone:original];
+  [parent_ release];
 }
 
 + (const J2ObjcClassInfo *)__metadata {
   static J2ObjcMethodInfo methods[] = {
-    { NULL, "V", 0x1, 0, 1, -1, -1, -1, -1 },
-    { NULL, NULL, 0x0, -1, 2, -1, 3, -1, -1 },
+    { NULL, NULL, 0x1, -1, 0, -1, 1, -1, -1 },
+    { NULL, "V", 0x1, 2, 3, -1, -1, -1, -1 },
   };
   #pragma clang diagnostic push
   #pragma clang diagnostic ignored "-Wobjc-multiple-method-names"
-  methods[0].selector = @selector(requestWithLong:);
-  methods[1].selector = @selector(initWithRxInternalOperatorsOnSubscribeFlattenIterable_FlattenIterableSubscriber:);
+  methods[0].selector = @selector(initWithRxInternalOperatorsOnSubscribeFlattenIterable_FlattenIterableSubscriber:);
+  methods[1].selector = @selector(requestWithLong:);
   #pragma clang diagnostic pop
   static const J2ObjcFieldInfo fields[] = {
-    { "val$parent_", "LRxInternalOperatorsOnSubscribeFlattenIterable_FlattenIterableSubscriber;", .constantValue.asLong = 0, 0x1012, -1, -1, 4, -1 },
+    { "parent_", "LRxInternalOperatorsOnSubscribeFlattenIterable_FlattenIterableSubscriber;", .constantValue.asLong = 0, 0x12, -1, -1, 4, -1 },
   };
-  static const void *ptrTable[] = { "request", "J", "LRxInternalOperatorsOnSubscribeFlattenIterable_FlattenIterableSubscriber;", "(Lrx/internal/operators/OnSubscribeFlattenIterable$FlattenIterableSubscriber<TT;TR;>;)V", "Lrx/internal/operators/OnSubscribeFlattenIterable$FlattenIterableSubscriber<TT;TR;>;", "LRxInternalOperatorsOnSubscribeFlattenIterable;", "callWithId:" };
-  static const J2ObjcClassInfo _RxInternalOperatorsOnSubscribeFlattenIterable_$1 = { "", "rx.internal.operators", ptrTable, methods, fields, 7, 0x8008, 2, 1, 5, -1, 6, -1, -1 };
-  return &_RxInternalOperatorsOnSubscribeFlattenIterable_$1;
+  static const void *ptrTable[] = { "LRxInternalOperatorsOnSubscribeFlattenIterable_FlattenIterableSubscriber;", "(Lrx/internal/operators/OnSubscribeFlattenIterable$FlattenIterableSubscriber<TT;TR;>;)V", "request", "J", "Lrx/internal/operators/OnSubscribeFlattenIterable$FlattenIterableSubscriber<TT;TR;>;", "LRxInternalOperatorsOnSubscribeFlattenIterable;", "<T:Ljava/lang/Object;R:Ljava/lang/Object;>Ljava/lang/Object;Lrx/Producer;" };
+  static const J2ObjcClassInfo _RxInternalOperatorsOnSubscribeFlattenIterable_MyProducer = { "MyProducer", "rx.internal.operators", ptrTable, methods, fields, 7, 0xa, 2, 1, 5, -1, -1, 6, -1 };
+  return &_RxInternalOperatorsOnSubscribeFlattenIterable_MyProducer;
 }
 
 @end
 
-void RxInternalOperatorsOnSubscribeFlattenIterable_$1_initWithRxInternalOperatorsOnSubscribeFlattenIterable_FlattenIterableSubscriber_(RxInternalOperatorsOnSubscribeFlattenIterable_$1 *self, RxInternalOperatorsOnSubscribeFlattenIterable_FlattenIterableSubscriber *capture$0) {
-  JreStrongAssign(&self->val$parent_, capture$0);
+void RxInternalOperatorsOnSubscribeFlattenIterable_MyProducer_initWithRxInternalOperatorsOnSubscribeFlattenIterable_FlattenIterableSubscriber_(RxInternalOperatorsOnSubscribeFlattenIterable_MyProducer *self, RxInternalOperatorsOnSubscribeFlattenIterable_FlattenIterableSubscriber *parent) {
   NSObject_init(self);
+  self->parent_ = parent;
 }
 
-RxInternalOperatorsOnSubscribeFlattenIterable_$1 *new_RxInternalOperatorsOnSubscribeFlattenIterable_$1_initWithRxInternalOperatorsOnSubscribeFlattenIterable_FlattenIterableSubscriber_(RxInternalOperatorsOnSubscribeFlattenIterable_FlattenIterableSubscriber *capture$0) {
-  J2OBJC_NEW_IMPL(RxInternalOperatorsOnSubscribeFlattenIterable_$1, initWithRxInternalOperatorsOnSubscribeFlattenIterable_FlattenIterableSubscriber_, capture$0)
+RxInternalOperatorsOnSubscribeFlattenIterable_MyProducer *new_RxInternalOperatorsOnSubscribeFlattenIterable_MyProducer_initWithRxInternalOperatorsOnSubscribeFlattenIterable_FlattenIterableSubscriber_(RxInternalOperatorsOnSubscribeFlattenIterable_FlattenIterableSubscriber *parent) {
+  J2OBJC_NEW_IMPL(RxInternalOperatorsOnSubscribeFlattenIterable_MyProducer, initWithRxInternalOperatorsOnSubscribeFlattenIterable_FlattenIterableSubscriber_, parent)
 }
 
-RxInternalOperatorsOnSubscribeFlattenIterable_$1 *create_RxInternalOperatorsOnSubscribeFlattenIterable_$1_initWithRxInternalOperatorsOnSubscribeFlattenIterable_FlattenIterableSubscriber_(RxInternalOperatorsOnSubscribeFlattenIterable_FlattenIterableSubscriber *capture$0) {
-  J2OBJC_CREATE_IMPL(RxInternalOperatorsOnSubscribeFlattenIterable_$1, initWithRxInternalOperatorsOnSubscribeFlattenIterable_FlattenIterableSubscriber_, capture$0)
+RxInternalOperatorsOnSubscribeFlattenIterable_MyProducer *create_RxInternalOperatorsOnSubscribeFlattenIterable_MyProducer_initWithRxInternalOperatorsOnSubscribeFlattenIterable_FlattenIterableSubscriber_(RxInternalOperatorsOnSubscribeFlattenIterable_FlattenIterableSubscriber *parent) {
+  J2OBJC_CREATE_IMPL(RxInternalOperatorsOnSubscribeFlattenIterable_MyProducer, initWithRxInternalOperatorsOnSubscribeFlattenIterable_FlattenIterableSubscriber_, parent)
 }
+
+J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxInternalOperatorsOnSubscribeFlattenIterable_MyProducer)

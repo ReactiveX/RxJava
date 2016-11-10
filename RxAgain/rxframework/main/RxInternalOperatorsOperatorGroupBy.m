@@ -220,9 +220,9 @@ J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxInternalOperatorsOperatorGroupBy)
   [((RxInternalOperatorsOperatorGroupBy_GroupBySubscriber *) nil_chk(parent_)) requestMoreWithLong:n];
 }
 
-- (void)dealloc {
-  RELEASE_(parent_);
-  [super dealloc];
+- (void)__javaClone:(RxInternalOperatorsOperatorGroupBy_GroupByProducer *)original {
+  [super __javaClone:original];
+  [parent_ release];
 }
 
 + (const J2ObjcClassInfo *)__metadata {
@@ -247,7 +247,7 @@ J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxInternalOperatorsOperatorGroupBy)
 
 void RxInternalOperatorsOperatorGroupBy_GroupByProducer_initWithRxInternalOperatorsOperatorGroupBy_GroupBySubscriber_(RxInternalOperatorsOperatorGroupBy_GroupByProducer *self, RxInternalOperatorsOperatorGroupBy_GroupBySubscriber *parent) {
   NSObject_init(self);
-  JreStrongAssign(&self->parent_, parent);
+  self->parent_ = parent;
 }
 
 RxInternalOperatorsOperatorGroupBy_GroupByProducer *new_RxInternalOperatorsOperatorGroupBy_GroupByProducer_initWithRxInternalOperatorsOperatorGroupBy_GroupBySubscriber_(RxInternalOperatorsOperatorGroupBy_GroupBySubscriber *parent) {

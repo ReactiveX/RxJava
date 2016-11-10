@@ -15,9 +15,11 @@
  */
 package rx.internal.util;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -31,8 +33,8 @@ import rx.exceptions.Exceptions;
  */
 public final class SubscriptionList implements Subscription {
 
-    private List<Subscription> subscriptions;
-    private volatile boolean unsubscribed;
+    private List<WeakReference<Subscription>> subscriptions;
+    private volatile boolean    unsubscribed;
 
     /**
      * Constructs an empty SubscriptionList.
@@ -46,7 +48,11 @@ public final class SubscriptionList implements Subscription {
      * @param subscriptions the array of subscriptions to start with
      */
     public SubscriptionList(final Subscription... subscriptions) {
-        this.subscriptions = new LinkedList<Subscription>(Arrays.asList(subscriptions));
+        this.subscriptions = new LinkedList<WeakReference<Subscription>>();
+        for(Subscription subscription : subscriptions)
+        {
+            this.subscriptions.add(new WeakReference<Subscription>(subscription));
+        }
     }
 
     /**
@@ -54,8 +60,8 @@ public final class SubscriptionList implements Subscription {
      * @param s the initial subscription instance
      */
     public SubscriptionList(Subscription s) {
-        this.subscriptions = new LinkedList<Subscription>();
-        this.subscriptions.add(s);
+        this.subscriptions = new LinkedList<WeakReference<Subscription>>();
+        this.subscriptions.add(new WeakReference<Subscription>(s));
     }
 
     @Override
@@ -78,12 +84,12 @@ public final class SubscriptionList implements Subscription {
         if (!unsubscribed) {
             synchronized (this) {
                 if (!unsubscribed) {
-                    List<Subscription> subs = subscriptions;
+                    List<WeakReference<Subscription>> subs = subscriptions;
                     if (subs == null) {
-                        subs = new LinkedList<Subscription>();
+                        subs = new LinkedList<WeakReference<Subscription>>();
                         subscriptions = subs;
                     }
-                    subs.add(s);
+                    subs.add(new WeakReference<Subscription>(s));
                     return;
                 }
             }
@@ -94,13 +100,24 @@ public final class SubscriptionList implements Subscription {
 
     public void remove(final Subscription s) {
         if (!unsubscribed) {
-            boolean unsubscribe;
+            boolean unsubscribe = false;
             synchronized (this) {
-                List<Subscription> subs = subscriptions;
+                List<WeakReference<Subscription>> subs = subscriptions;
                 if (unsubscribed || subs == null) {
                     return;
                 }
-                unsubscribe = subs.remove(s);
+
+                Iterator<WeakReference<Subscription>> iterator = subs.iterator();
+                while(iterator.hasNext())
+                {
+                    WeakReference<Subscription> next = iterator.next();
+                    if(next.get() != null && next.equals(s))
+                    {
+                        unsubscribe = true;
+                        iterator.remove();
+                        break;
+                    }
+                }
             }
             if (unsubscribe) {
                 // if we removed successfully we then need to call unsubscribe on it (outside of the lock)
@@ -116,7 +133,7 @@ public final class SubscriptionList implements Subscription {
     @Override
     public void unsubscribe() {
         if (!unsubscribed) {
-            List<Subscription> list;
+            List<WeakReference<Subscription>> list;
             synchronized (this) {
                 if (unsubscribed) {
                     return;
@@ -130,14 +147,16 @@ public final class SubscriptionList implements Subscription {
         }
     }
 
-    private static void unsubscribeFromAll(Collection<Subscription> subscriptions) {
+    private static void unsubscribeFromAll(Collection<WeakReference<Subscription>> subscriptions) {
         if (subscriptions == null) {
             return;
         }
         List<Throwable> es = null;
-        for (Subscription s : subscriptions) {
+        for (WeakReference<Subscription> wr : subscriptions) {
+            Subscription s = wr.get();
             try {
-                s.unsubscribe();
+                if(s != null)
+                    s.unsubscribe();
             } catch (Throwable e) {
                 if (es == null) {
                     es = new ArrayList<Throwable>();
@@ -150,7 +169,7 @@ public final class SubscriptionList implements Subscription {
     /* perf support */
     public void clear() {
         if (!unsubscribed) {
-            List<Subscription> list;
+            List<WeakReference<Subscription>> list;
             synchronized (this) {
                 list = subscriptions;
                 subscriptions = null;
@@ -165,7 +184,16 @@ public final class SubscriptionList implements Subscription {
     public boolean hasSubscriptions() {
         if (!unsubscribed) {
             synchronized (this) {
-                return !unsubscribed && subscriptions != null && !subscriptions.isEmpty();
+                if(!unsubscribed && subscriptions != null)
+                {
+                    Iterator<WeakReference<Subscription>> iterator = subscriptions.iterator();
+                    while(iterator.hasNext())
+                    {
+                        WeakReference<Subscription> next = iterator.next();
+                        if(next.get() != null)
+                            return true;
+                    }
+                }
             }
         }
         return false;

@@ -442,7 +442,7 @@ IOSObjectArray *RxInternalOperatorsOperatorMergeMaxConcurrentTest__Annotations$6
 }
 
 IOSObjectArray *RxInternalOperatorsOperatorMergeMaxConcurrentTest__Annotations$7() {
-  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 20000) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 30000) } count:1 type:JavaLangAnnotationAnnotation_class_()];
 }
 
 IOSObjectArray *RxInternalOperatorsOperatorMergeMaxConcurrentTest__Annotations$8() {
@@ -450,7 +450,7 @@ IOSObjectArray *RxInternalOperatorsOperatorMergeMaxConcurrentTest__Annotations$8
 }
 
 IOSObjectArray *RxInternalOperatorsOperatorMergeMaxConcurrentTest__Annotations$9() {
-  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 10000) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 20000) } count:1 type:JavaLangAnnotationAnnotation_class_()];
 }
 
 IOSObjectArray *RxInternalOperatorsOperatorMergeMaxConcurrentTest__Annotations$10() {

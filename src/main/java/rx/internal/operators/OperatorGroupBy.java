@@ -112,6 +112,7 @@ public final class OperatorGroupBy<T, K, V> implements Operator<GroupedObservabl
     }
 
     public static final class GroupByProducer implements Producer {
+        @Weak
         final GroupBySubscriber<?, ?, ?> parent;
 
         public GroupByProducer(GroupBySubscriber<?, ?, ?> parent) {

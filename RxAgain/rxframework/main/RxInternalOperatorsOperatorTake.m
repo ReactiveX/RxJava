@@ -11,13 +11,16 @@
 #include "java/lang/Math.h"
 #include "java/util/concurrent/atomic/AtomicLong.h"
 
-@interface RxInternalOperatorsOperatorTake_$1 : RxSubscriber {
+@interface RxInternalOperatorsOperatorTake_TakeSubscriber : RxSubscriber {
  @public
-  RxInternalOperatorsOperatorTake *this$0_;
+  RxSubscriber *child_;
+  jint limit_;
   jint count_;
   jboolean completed_;
-  RxSubscriber *val$child_;
 }
+
+- (instancetype)initWithRxSubscriber:(RxSubscriber *)child
+                             withInt:(jint)limit;
 
 - (void)onCompleted;
 
@@ -27,47 +30,46 @@
 
 - (void)setProducerWithRxProducer:(id<RxProducer>)producer;
 
-- (instancetype)initWithRxInternalOperatorsOperatorTake:(RxInternalOperatorsOperatorTake *)outer$
-                                       withRxSubscriber:(RxSubscriber *)capture$0;
-
 @end
 
-J2OBJC_EMPTY_STATIC_INIT(RxInternalOperatorsOperatorTake_$1)
+J2OBJC_EMPTY_STATIC_INIT(RxInternalOperatorsOperatorTake_TakeSubscriber)
 
-J2OBJC_FIELD_SETTER(RxInternalOperatorsOperatorTake_$1, this$0_, RxInternalOperatorsOperatorTake *)
-J2OBJC_FIELD_SETTER(RxInternalOperatorsOperatorTake_$1, val$child_, RxSubscriber *)
+J2OBJC_FIELD_SETTER(RxInternalOperatorsOperatorTake_TakeSubscriber, child_, RxSubscriber *)
 
-__attribute__((unused)) static void RxInternalOperatorsOperatorTake_$1_initWithRxInternalOperatorsOperatorTake_withRxSubscriber_(RxInternalOperatorsOperatorTake_$1 *self, RxInternalOperatorsOperatorTake *outer$, RxSubscriber *capture$0);
+__attribute__((unused)) static void RxInternalOperatorsOperatorTake_TakeSubscriber_initWithRxSubscriber_withInt_(RxInternalOperatorsOperatorTake_TakeSubscriber *self, RxSubscriber *child, jint limit);
 
-__attribute__((unused)) static RxInternalOperatorsOperatorTake_$1 *new_RxInternalOperatorsOperatorTake_$1_initWithRxInternalOperatorsOperatorTake_withRxSubscriber_(RxInternalOperatorsOperatorTake *outer$, RxSubscriber *capture$0) NS_RETURNS_RETAINED;
+__attribute__((unused)) static RxInternalOperatorsOperatorTake_TakeSubscriber *new_RxInternalOperatorsOperatorTake_TakeSubscriber_initWithRxSubscriber_withInt_(RxSubscriber *child, jint limit) NS_RETURNS_RETAINED;
 
-__attribute__((unused)) static RxInternalOperatorsOperatorTake_$1 *create_RxInternalOperatorsOperatorTake_$1_initWithRxInternalOperatorsOperatorTake_withRxSubscriber_(RxInternalOperatorsOperatorTake *outer$, RxSubscriber *capture$0);
+__attribute__((unused)) static RxInternalOperatorsOperatorTake_TakeSubscriber *create_RxInternalOperatorsOperatorTake_TakeSubscriber_initWithRxSubscriber_withInt_(RxSubscriber *child, jint limit);
 
-@interface RxInternalOperatorsOperatorTake_$1_$1 : NSObject < RxProducer > {
+J2OBJC_TYPE_LITERAL_HEADER(RxInternalOperatorsOperatorTake_TakeSubscriber)
+
+@interface RxInternalOperatorsOperatorTake_TakeSubscriber_TakeInnerProducer : NSObject < RxProducer > {
  @public
-  RxInternalOperatorsOperatorTake_$1 *this$0_;
+  __unsafe_unretained RxInternalOperatorsOperatorTake_TakeSubscriber *this$0_;
   JavaUtilConcurrentAtomicAtomicLong *requested_;
-  id<RxProducer> val$producer_;
+  id<RxProducer> producer_;
 }
+
+- (instancetype)initWithRxInternalOperatorsOperatorTake_TakeSubscriber:(RxInternalOperatorsOperatorTake_TakeSubscriber *)outer$
+                                                        withRxProducer:(id<RxProducer>)producer;
 
 - (void)requestWithLong:(jlong)n;
 
-- (instancetype)initWithRxInternalOperatorsOperatorTake_$1:(RxInternalOperatorsOperatorTake_$1 *)outer$
-                                            withRxProducer:(id<RxProducer>)capture$0;
-
 @end
 
-J2OBJC_EMPTY_STATIC_INIT(RxInternalOperatorsOperatorTake_$1_$1)
+J2OBJC_EMPTY_STATIC_INIT(RxInternalOperatorsOperatorTake_TakeSubscriber_TakeInnerProducer)
 
-J2OBJC_FIELD_SETTER(RxInternalOperatorsOperatorTake_$1_$1, this$0_, RxInternalOperatorsOperatorTake_$1 *)
-J2OBJC_FIELD_SETTER(RxInternalOperatorsOperatorTake_$1_$1, requested_, JavaUtilConcurrentAtomicAtomicLong *)
-J2OBJC_FIELD_SETTER(RxInternalOperatorsOperatorTake_$1_$1, val$producer_, id<RxProducer>)
+J2OBJC_FIELD_SETTER(RxInternalOperatorsOperatorTake_TakeSubscriber_TakeInnerProducer, requested_, JavaUtilConcurrentAtomicAtomicLong *)
+J2OBJC_FIELD_SETTER(RxInternalOperatorsOperatorTake_TakeSubscriber_TakeInnerProducer, producer_, id<RxProducer>)
 
-__attribute__((unused)) static void RxInternalOperatorsOperatorTake_$1_$1_initWithRxInternalOperatorsOperatorTake_$1_withRxProducer_(RxInternalOperatorsOperatorTake_$1_$1 *self, RxInternalOperatorsOperatorTake_$1 *outer$, id<RxProducer> capture$0);
+__attribute__((unused)) static void RxInternalOperatorsOperatorTake_TakeSubscriber_TakeInnerProducer_initWithRxInternalOperatorsOperatorTake_TakeSubscriber_withRxProducer_(RxInternalOperatorsOperatorTake_TakeSubscriber_TakeInnerProducer *self, RxInternalOperatorsOperatorTake_TakeSubscriber *outer$, id<RxProducer> producer);
 
-__attribute__((unused)) static RxInternalOperatorsOperatorTake_$1_$1 *new_RxInternalOperatorsOperatorTake_$1_$1_initWithRxInternalOperatorsOperatorTake_$1_withRxProducer_(RxInternalOperatorsOperatorTake_$1 *outer$, id<RxProducer> capture$0) NS_RETURNS_RETAINED;
+__attribute__((unused)) static RxInternalOperatorsOperatorTake_TakeSubscriber_TakeInnerProducer *new_RxInternalOperatorsOperatorTake_TakeSubscriber_TakeInnerProducer_initWithRxInternalOperatorsOperatorTake_TakeSubscriber_withRxProducer_(RxInternalOperatorsOperatorTake_TakeSubscriber *outer$, id<RxProducer> producer) NS_RETURNS_RETAINED;
 
-__attribute__((unused)) static RxInternalOperatorsOperatorTake_$1_$1 *create_RxInternalOperatorsOperatorTake_$1_$1_initWithRxInternalOperatorsOperatorTake_$1_withRxProducer_(RxInternalOperatorsOperatorTake_$1 *outer$, id<RxProducer> capture$0);
+__attribute__((unused)) static RxInternalOperatorsOperatorTake_TakeSubscriber_TakeInnerProducer *create_RxInternalOperatorsOperatorTake_TakeSubscriber_TakeInnerProducer_initWithRxInternalOperatorsOperatorTake_TakeSubscriber_withRxProducer_(RxInternalOperatorsOperatorTake_TakeSubscriber *outer$, id<RxProducer> producer);
+
+J2OBJC_TYPE_LITERAL_HEADER(RxInternalOperatorsOperatorTake_TakeSubscriber_TakeInnerProducer)
 
 @implementation RxInternalOperatorsOperatorTake
 
@@ -77,7 +79,7 @@ __attribute__((unused)) static RxInternalOperatorsOperatorTake_$1_$1 *create_RxI
 }
 
 - (RxSubscriber *)callWithId:(RxSubscriber *)child {
-  RxSubscriber *parent = create_RxInternalOperatorsOperatorTake_$1_initWithRxInternalOperatorsOperatorTake_withRxSubscriber_(self, child);
+  RxSubscriber *parent = create_RxInternalOperatorsOperatorTake_TakeSubscriber_initWithRxSubscriber_withInt_(child, limit_);
   if (limit_ == 0) {
     [((RxSubscriber *) nil_chk(child)) onCompleted];
     [parent unsubscribe];
@@ -99,8 +101,8 @@ __attribute__((unused)) static RxInternalOperatorsOperatorTake_$1_$1 *create_RxI
   static const J2ObjcFieldInfo fields[] = {
     { "limit_", "I", .constantValue.asLong = 0, 0x10, -1, -1, -1, -1 },
   };
-  static const void *ptrTable[] = { "I", "call", "LRxSubscriber;", "(Lrx/Subscriber<-TT;>;)Lrx/Subscriber<-TT;>;", "<T:Ljava/lang/Object;>Ljava/lang/Object;Lrx/Observable$Operator<TT;TT;>;" };
-  static const J2ObjcClassInfo _RxInternalOperatorsOperatorTake = { "OperatorTake", "rx.internal.operators", ptrTable, methods, fields, 7, 0x11, 2, 1, -1, -1, -1, 4, -1 };
+  static const void *ptrTable[] = { "I", "call", "LRxSubscriber;", "(Lrx/Subscriber<-TT;>;)Lrx/Subscriber<-TT;>;", "LRxInternalOperatorsOperatorTake_TakeSubscriber;", "<T:Ljava/lang/Object;>Ljava/lang/Object;Lrx/Observable$Operator<TT;TT;>;" };
+  static const J2ObjcClassInfo _RxInternalOperatorsOperatorTake = { "OperatorTake", "rx.internal.operators", ptrTable, methods, fields, 7, 0x11, 2, 1, -1, 4, -1, 5, -1 };
   return &_RxInternalOperatorsOperatorTake;
 }
 
@@ -124,12 +126,18 @@ RxInternalOperatorsOperatorTake *create_RxInternalOperatorsOperatorTake_initWith
 
 J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxInternalOperatorsOperatorTake)
 
-@implementation RxInternalOperatorsOperatorTake_$1
+@implementation RxInternalOperatorsOperatorTake_TakeSubscriber
+
+- (instancetype)initWithRxSubscriber:(RxSubscriber *)child
+                             withInt:(jint)limit {
+  RxInternalOperatorsOperatorTake_TakeSubscriber_initWithRxSubscriber_withInt_(self, child, limit);
+  return self;
+}
 
 - (void)onCompleted {
   if (!completed_) {
     completed_ = true;
-    [((RxSubscriber *) nil_chk(val$child_)) onCompleted];
+    [((RxSubscriber *) nil_chk(child_)) onCompleted];
   }
 }
 
@@ -137,7 +145,7 @@ J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxInternalOperatorsOperatorTake)
   if (!completed_) {
     completed_ = true;
     @try {
-      [((RxSubscriber *) nil_chk(val$child_)) onErrorWithNSException:e];
+      [((RxSubscriber *) nil_chk(child_)) onErrorWithNSException:e];
     }
     @finally {
       [self unsubscribe];
@@ -146,13 +154,13 @@ J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxInternalOperatorsOperatorTake)
 }
 
 - (void)onNextWithId:(id)i {
-  if (![self isUnsubscribed] && count_++ < this$0_->limit_) {
-    jboolean stop = count_ == this$0_->limit_;
-    [((RxSubscriber *) nil_chk(val$child_)) onNextWithId:i];
+  if (![self isUnsubscribed] && count_++ < limit_) {
+    jboolean stop = count_ == limit_;
+    [((RxSubscriber *) nil_chk(child_)) onNextWithId:i];
     if (stop && !completed_) {
       completed_ = true;
       @try {
-        [val$child_ onCompleted];
+        [child_ onCompleted];
       }
       @finally {
         [self unsubscribe];
@@ -162,129 +170,130 @@ J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxInternalOperatorsOperatorTake)
 }
 
 - (void)setProducerWithRxProducer:(id<RxProducer>)producer {
-  [((RxSubscriber *) nil_chk(val$child_)) setProducerWithRxProducer:create_RxInternalOperatorsOperatorTake_$1_$1_initWithRxInternalOperatorsOperatorTake_$1_withRxProducer_(self, producer)];
-}
-
-- (instancetype)initWithRxInternalOperatorsOperatorTake:(RxInternalOperatorsOperatorTake *)outer$
-                                       withRxSubscriber:(RxSubscriber *)capture$0 {
-  RxInternalOperatorsOperatorTake_$1_initWithRxInternalOperatorsOperatorTake_withRxSubscriber_(self, outer$, capture$0);
-  return self;
+  [((RxSubscriber *) nil_chk(child_)) setProducerWithRxProducer:create_RxInternalOperatorsOperatorTake_TakeSubscriber_TakeInnerProducer_initWithRxInternalOperatorsOperatorTake_TakeSubscriber_withRxProducer_(self, producer)];
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOperatorTake_$1 class]);
-  RELEASE_(this$0_);
-  RELEASE_(val$child_);
+  JreCheckFinalize(self, [RxInternalOperatorsOperatorTake_TakeSubscriber class]);
+  RELEASE_(child_);
   [super dealloc];
 }
 
 + (const J2ObjcClassInfo *)__metadata {
   static J2ObjcMethodInfo methods[] = {
+    { NULL, NULL, 0x1, -1, 0, -1, 1, -1, -1 },
     { NULL, "V", 0x1, -1, -1, -1, -1, -1, -1 },
-    { NULL, "V", 0x1, 0, 1, -1, -1, -1, -1 },
-    { NULL, "V", 0x1, 2, 3, -1, 4, -1, -1 },
-    { NULL, "V", 0x1, 5, 6, -1, -1, -1, -1 },
-    { NULL, NULL, 0x0, -1, 7, -1, 8, -1, -1 },
+    { NULL, "V", 0x1, 2, 3, -1, -1, -1, -1 },
+    { NULL, "V", 0x1, 4, 5, -1, 6, -1, -1 },
+    { NULL, "V", 0x1, 7, 8, -1, -1, -1, -1 },
   };
   #pragma clang diagnostic push
   #pragma clang diagnostic ignored "-Wobjc-multiple-method-names"
-  methods[0].selector = @selector(onCompleted);
-  methods[1].selector = @selector(onErrorWithNSException:);
-  methods[2].selector = @selector(onNextWithId:);
-  methods[3].selector = @selector(setProducerWithRxProducer:);
-  methods[4].selector = @selector(initWithRxInternalOperatorsOperatorTake:withRxSubscriber:);
+  methods[0].selector = @selector(initWithRxSubscriber:withInt:);
+  methods[1].selector = @selector(onCompleted);
+  methods[2].selector = @selector(onErrorWithNSException:);
+  methods[3].selector = @selector(onNextWithId:);
+  methods[4].selector = @selector(setProducerWithRxProducer:);
   #pragma clang diagnostic pop
   static const J2ObjcFieldInfo fields[] = {
-    { "this$0_", "LRxInternalOperatorsOperatorTake;", .constantValue.asLong = 0, 0x1012, -1, -1, -1, -1 },
+    { "child_", "LRxSubscriber;", .constantValue.asLong = 0, 0x12, -1, -1, 9, -1 },
+    { "limit_", "I", .constantValue.asLong = 0, 0x10, -1, -1, -1, -1 },
     { "count_", "I", .constantValue.asLong = 0, 0x0, -1, -1, -1, -1 },
     { "completed_", "Z", .constantValue.asLong = 0, 0x0, -1, -1, -1, -1 },
-    { "val$child_", "LRxSubscriber;", .constantValue.asLong = 0, 0x1012, -1, -1, 9, -1 },
   };
-  static const void *ptrTable[] = { "onError", "LNSException;", "onNext", "LNSObject;", "(TT;)V", "setProducer", "LRxProducer;", "LRxInternalOperatorsOperatorTake;LRxSubscriber;", "(Lrx/internal/operators/OperatorTake;Lrx/Subscriber<-TT;>;)V", "Lrx/Subscriber<-TT;>;", "LRxInternalOperatorsOperatorTake;", "callWithId:", "Lrx/Subscriber<TT;>;" };
-  static const J2ObjcClassInfo _RxInternalOperatorsOperatorTake_$1 = { "", "rx.internal.operators", ptrTable, methods, fields, 7, 0x8008, 5, 4, 10, -1, 11, 12, -1 };
-  return &_RxInternalOperatorsOperatorTake_$1;
+  static const void *ptrTable[] = { "LRxSubscriber;I", "(Lrx/Subscriber<-TT;>;I)V", "onError", "LNSException;", "onNext", "LNSObject;", "(TT;)V", "setProducer", "LRxProducer;", "Lrx/Subscriber<-TT;>;", "LRxInternalOperatorsOperatorTake;", "LRxInternalOperatorsOperatorTake_TakeSubscriber_TakeInnerProducer;", "<T:Ljava/lang/Object;>Lrx/Subscriber<TT;>;" };
+  static const J2ObjcClassInfo _RxInternalOperatorsOperatorTake_TakeSubscriber = { "TakeSubscriber", "rx.internal.operators", ptrTable, methods, fields, 7, 0xa, 5, 4, 10, 11, -1, 12, -1 };
+  return &_RxInternalOperatorsOperatorTake_TakeSubscriber;
 }
 
 @end
 
-void RxInternalOperatorsOperatorTake_$1_initWithRxInternalOperatorsOperatorTake_withRxSubscriber_(RxInternalOperatorsOperatorTake_$1 *self, RxInternalOperatorsOperatorTake *outer$, RxSubscriber *capture$0) {
-  JreStrongAssign(&self->this$0_, outer$);
-  JreStrongAssign(&self->val$child_, capture$0);
+void RxInternalOperatorsOperatorTake_TakeSubscriber_initWithRxSubscriber_withInt_(RxInternalOperatorsOperatorTake_TakeSubscriber *self, RxSubscriber *child, jint limit) {
   RxSubscriber_init(self);
+  JreStrongAssign(&self->child_, child);
+  self->limit_ = limit;
 }
 
-RxInternalOperatorsOperatorTake_$1 *new_RxInternalOperatorsOperatorTake_$1_initWithRxInternalOperatorsOperatorTake_withRxSubscriber_(RxInternalOperatorsOperatorTake *outer$, RxSubscriber *capture$0) {
-  J2OBJC_NEW_IMPL(RxInternalOperatorsOperatorTake_$1, initWithRxInternalOperatorsOperatorTake_withRxSubscriber_, outer$, capture$0)
+RxInternalOperatorsOperatorTake_TakeSubscriber *new_RxInternalOperatorsOperatorTake_TakeSubscriber_initWithRxSubscriber_withInt_(RxSubscriber *child, jint limit) {
+  J2OBJC_NEW_IMPL(RxInternalOperatorsOperatorTake_TakeSubscriber, initWithRxSubscriber_withInt_, child, limit)
 }
 
-RxInternalOperatorsOperatorTake_$1 *create_RxInternalOperatorsOperatorTake_$1_initWithRxInternalOperatorsOperatorTake_withRxSubscriber_(RxInternalOperatorsOperatorTake *outer$, RxSubscriber *capture$0) {
-  J2OBJC_CREATE_IMPL(RxInternalOperatorsOperatorTake_$1, initWithRxInternalOperatorsOperatorTake_withRxSubscriber_, outer$, capture$0)
+RxInternalOperatorsOperatorTake_TakeSubscriber *create_RxInternalOperatorsOperatorTake_TakeSubscriber_initWithRxSubscriber_withInt_(RxSubscriber *child, jint limit) {
+  J2OBJC_CREATE_IMPL(RxInternalOperatorsOperatorTake_TakeSubscriber, initWithRxSubscriber_withInt_, child, limit)
 }
 
-@implementation RxInternalOperatorsOperatorTake_$1_$1
+J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxInternalOperatorsOperatorTake_TakeSubscriber)
+
+@implementation RxInternalOperatorsOperatorTake_TakeSubscriber_TakeInnerProducer
+
+- (instancetype)initWithRxInternalOperatorsOperatorTake_TakeSubscriber:(RxInternalOperatorsOperatorTake_TakeSubscriber *)outer$
+                                                        withRxProducer:(id<RxProducer>)producer {
+  RxInternalOperatorsOperatorTake_TakeSubscriber_TakeInnerProducer_initWithRxInternalOperatorsOperatorTake_TakeSubscriber_withRxProducer_(self, outer$, producer);
+  return self;
+}
 
 - (void)requestWithLong:(jlong)n {
   if (n > 0 && !this$0_->completed_) {
     while (true) {
       jlong r = [((JavaUtilConcurrentAtomicAtomicLong *) nil_chk(requested_)) get];
-      jlong c = JavaLangMath_minWithLong_withLong_(n, this$0_->this$0_->limit_ - r);
+      jlong c = JavaLangMath_minWithLong_withLong_(n, this$0_->limit_ - r);
       if (c == 0) {
         break;
       }
       else if ([requested_ compareAndSetWithLong:r withLong:r + c]) {
-        [((id<RxProducer>) nil_chk(val$producer_)) requestWithLong:c];
+        [((id<RxProducer>) nil_chk(producer_)) requestWithLong:c];
         break;
       }
     }
   }
 }
 
-- (instancetype)initWithRxInternalOperatorsOperatorTake_$1:(RxInternalOperatorsOperatorTake_$1 *)outer$
-                                            withRxProducer:(id<RxProducer>)capture$0 {
-  RxInternalOperatorsOperatorTake_$1_$1_initWithRxInternalOperatorsOperatorTake_$1_withRxProducer_(self, outer$, capture$0);
-  return self;
+- (void)__javaClone:(RxInternalOperatorsOperatorTake_TakeSubscriber_TakeInnerProducer *)original {
+  [super __javaClone:original];
+  [this$0_ release];
 }
 
 - (void)dealloc {
-  RELEASE_(this$0_);
   RELEASE_(requested_);
-  RELEASE_(val$producer_);
+  RELEASE_(producer_);
   [super dealloc];
 }
 
 + (const J2ObjcClassInfo *)__metadata {
   static J2ObjcMethodInfo methods[] = {
-    { NULL, "V", 0x1, 0, 1, -1, -1, -1, -1 },
-    { NULL, NULL, 0x0, -1, 2, -1, -1, -1, -1 },
+    { NULL, NULL, 0x1, -1, 0, -1, -1, -1, -1 },
+    { NULL, "V", 0x1, 1, 2, -1, -1, -1, -1 },
   };
   #pragma clang diagnostic push
   #pragma clang diagnostic ignored "-Wobjc-multiple-method-names"
-  methods[0].selector = @selector(requestWithLong:);
-  methods[1].selector = @selector(initWithRxInternalOperatorsOperatorTake_$1:withRxProducer:);
+  methods[0].selector = @selector(initWithRxInternalOperatorsOperatorTake_TakeSubscriber:withRxProducer:);
+  methods[1].selector = @selector(requestWithLong:);
   #pragma clang diagnostic pop
   static const J2ObjcFieldInfo fields[] = {
-    { "this$0_", "LRxInternalOperatorsOperatorTake_$1;", .constantValue.asLong = 0, 0x1012, -1, -1, -1, -1 },
+    { "this$0_", "LRxInternalOperatorsOperatorTake_TakeSubscriber;", .constantValue.asLong = 0, 0x1012, -1, -1, -1, -1 },
     { "requested_", "LJavaUtilConcurrentAtomicAtomicLong;", .constantValue.asLong = 0, 0x10, -1, -1, -1, -1 },
-    { "val$producer_", "LRxProducer;", .constantValue.asLong = 0, 0x1012, -1, -1, -1, -1 },
+    { "producer_", "LRxProducer;", .constantValue.asLong = 0, 0x12, -1, -1, -1, -1 },
   };
-  static const void *ptrTable[] = { "request", "J", "LRxInternalOperatorsOperatorTake_$1;LRxProducer;", "LRxInternalOperatorsOperatorTake_$1;", "setProducerWithRxProducer:" };
-  static const J2ObjcClassInfo _RxInternalOperatorsOperatorTake_$1_$1 = { "", "rx.internal.operators", ptrTable, methods, fields, 7, 0x8008, 2, 3, 3, -1, 4, -1, -1 };
-  return &_RxInternalOperatorsOperatorTake_$1_$1;
+  static const void *ptrTable[] = { "LRxInternalOperatorsOperatorTake_TakeSubscriber;LRxProducer;", "request", "J", "LRxInternalOperatorsOperatorTake_TakeSubscriber;" };
+  static const J2ObjcClassInfo _RxInternalOperatorsOperatorTake_TakeSubscriber_TakeInnerProducer = { "TakeInnerProducer", "rx.internal.operators", ptrTable, methods, fields, 7, 0x2, 2, 3, 3, -1, -1, -1, -1 };
+  return &_RxInternalOperatorsOperatorTake_TakeSubscriber_TakeInnerProducer;
 }
 
 @end
 
-void RxInternalOperatorsOperatorTake_$1_$1_initWithRxInternalOperatorsOperatorTake_$1_withRxProducer_(RxInternalOperatorsOperatorTake_$1_$1 *self, RxInternalOperatorsOperatorTake_$1 *outer$, id<RxProducer> capture$0) {
-  JreStrongAssign(&self->this$0_, outer$);
-  JreStrongAssign(&self->val$producer_, capture$0);
+void RxInternalOperatorsOperatorTake_TakeSubscriber_TakeInnerProducer_initWithRxInternalOperatorsOperatorTake_TakeSubscriber_withRxProducer_(RxInternalOperatorsOperatorTake_TakeSubscriber_TakeInnerProducer *self, RxInternalOperatorsOperatorTake_TakeSubscriber *outer$, id<RxProducer> producer) {
+  self->this$0_ = outer$;
   NSObject_init(self);
+  JreStrongAssign(&self->producer_, producer);
   JreStrongAssignAndConsume(&self->requested_, new_JavaUtilConcurrentAtomicAtomicLong_initWithLong_(0));
 }
 
-RxInternalOperatorsOperatorTake_$1_$1 *new_RxInternalOperatorsOperatorTake_$1_$1_initWithRxInternalOperatorsOperatorTake_$1_withRxProducer_(RxInternalOperatorsOperatorTake_$1 *outer$, id<RxProducer> capture$0) {
-  J2OBJC_NEW_IMPL(RxInternalOperatorsOperatorTake_$1_$1, initWithRxInternalOperatorsOperatorTake_$1_withRxProducer_, outer$, capture$0)
+RxInternalOperatorsOperatorTake_TakeSubscriber_TakeInnerProducer *new_RxInternalOperatorsOperatorTake_TakeSubscriber_TakeInnerProducer_initWithRxInternalOperatorsOperatorTake_TakeSubscriber_withRxProducer_(RxInternalOperatorsOperatorTake_TakeSubscriber *outer$, id<RxProducer> producer) {
+  J2OBJC_NEW_IMPL(RxInternalOperatorsOperatorTake_TakeSubscriber_TakeInnerProducer, initWithRxInternalOperatorsOperatorTake_TakeSubscriber_withRxProducer_, outer$, producer)
 }
 
-RxInternalOperatorsOperatorTake_$1_$1 *create_RxInternalOperatorsOperatorTake_$1_$1_initWithRxInternalOperatorsOperatorTake_$1_withRxProducer_(RxInternalOperatorsOperatorTake_$1 *outer$, id<RxProducer> capture$0) {
-  J2OBJC_CREATE_IMPL(RxInternalOperatorsOperatorTake_$1_$1, initWithRxInternalOperatorsOperatorTake_$1_withRxProducer_, outer$, capture$0)
+RxInternalOperatorsOperatorTake_TakeSubscriber_TakeInnerProducer *create_RxInternalOperatorsOperatorTake_TakeSubscriber_TakeInnerProducer_initWithRxInternalOperatorsOperatorTake_TakeSubscriber_withRxProducer_(RxInternalOperatorsOperatorTake_TakeSubscriber *outer$, id<RxProducer> producer) {
+  J2OBJC_CREATE_IMPL(RxInternalOperatorsOperatorTake_TakeSubscriber_TakeInnerProducer, initWithRxInternalOperatorsOperatorTake_TakeSubscriber_withRxProducer_, outer$, producer)
 }
+
+J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxInternalOperatorsOperatorTake_TakeSubscriber_TakeInnerProducer)

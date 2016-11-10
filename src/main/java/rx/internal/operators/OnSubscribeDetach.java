@@ -15,6 +15,8 @@
  */
 package rx.internal.operators;
 
+import com.google.j2objc.annotations.Weak;
+
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -141,6 +143,7 @@ public final class OnSubscribeDetach<T> implements OnSubscribe<T> {
      * @param <T> the value type
      */
     static final class DetachProducer<T> implements Producer, Subscription {
+        @Weak
         final DetachSubscriber<T> parent;
 
         public DetachProducer(DetachSubscriber<T> parent) {

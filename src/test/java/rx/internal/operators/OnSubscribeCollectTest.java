@@ -15,6 +15,9 @@
  */
 package rx.internal.operators;
 
+import com.google.j2objc.annotations.Weak;
+
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 
@@ -134,16 +137,7 @@ public class OnSubscribeCollectTest {
 
                 @Override
                 public void call(final Subscriber<? super Integer> sub) {
-                    sub.setProducer(new Producer() {
-
-                        @Override
-                        public void request(long n) {
-                            if (n > 0) {
-                                sub.onNext(1);
-                                sub.onError(e2);
-                            }
-                        }
-                    });
+                    sub.setProducer(new MyProducer3(sub, e2));
                 }
             }).collect(new Func0<List<Integer>>() {
 
@@ -175,16 +169,7 @@ public class OnSubscribeCollectTest {
 
             @Override
             public void call(final Subscriber<? super Integer> sub) {
-                sub.setProducer(new Producer() {
-
-                    @Override
-                    public void request(long n) {
-                        if (n > 0) {
-                            sub.onNext(1);
-                            sub.onCompleted();
-                        }
-                    }
-                });
+                sub.setProducer(new MyProducer(sub));
             }
         }).collect(new Func0<List<Integer>>() {
 
@@ -213,16 +198,7 @@ public class OnSubscribeCollectTest {
 
             @Override
             public void call(final Subscriber<? super Integer> sub) {
-                sub.setProducer(new Producer() {
-
-                    @Override
-                    public void request(long n) {
-                        if (n > 0) {
-                            sub.onNext(1);
-                            sub.onNext(2);
-                        }
-                    }
-                });
+                sub.setProducer(new MyProducer2(sub));
             }
         }).collect(new Func0<List<Integer>>() {
 
@@ -249,4 +225,62 @@ public class OnSubscribeCollectTest {
         assertFalse(added.get());
     }
 
+    private static class MyProducer implements Producer
+    {
+        @Weak
+        private final Subscriber<? super Integer> sub;
+
+        public MyProducer(Subscriber<? super Integer> sub)
+        {
+            this.sub = sub;
+        }
+
+        @Override
+        public void request(long n) {
+            if (n > 0) {
+                sub.onNext(1);
+                sub.onCompleted();
+            }
+        }
+    }
+
+    private static class MyProducer2 implements Producer
+    {
+        @Weak
+        private final Subscriber<? super Integer> sub;
+
+        public MyProducer2(Subscriber<? super Integer> sub)
+        {
+            this.sub = sub;
+        }
+
+        @Override
+        public void request(long n) {
+            if (n > 0) {
+                sub.onNext(1);
+                sub.onNext(2);
+            }
+        }
+    }
+
+    private static class MyProducer3 implements Producer
+    {
+        @Weak
+        private final Subscriber<? super Integer> sub;
+        private final RuntimeException e2;
+
+        public MyProducer3(Subscriber<? super Integer> sub, RuntimeException e2)
+        {
+            this.sub = sub;
+            this.e2 = e2;
+        }
+
+        @Override
+        public void request(long n) {
+            if (n > 0) {
+                sub.onNext(1);
+                sub.onError(e2);
+            }
+        }
+    }
 }

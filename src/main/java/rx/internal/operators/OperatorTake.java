@@ -15,6 +15,9 @@
  */
 package rx.internal.operators;
 
+import com.google.j2objc.annotations.Weak;
+import com.google.j2objc.annotations.WeakOuter;
+
 import java.util.concurrent.atomic.AtomicLong;
 
 import rx.Observable.Operator;
@@ -45,78 +48,7 @@ public final class OperatorTake<T> implements Operator<T, T> {
 
     @Override
     public Subscriber<? super T> call(final Subscriber<? super T> child) {
-        final Subscriber<T> parent = new Subscriber<T>() {
-
-            int count;
-            boolean completed;
-
-            @Override
-            public void onCompleted() {
-                if (!completed) {
-                    completed = true;
-                    child.onCompleted();
-                }
-            }
-
-            @Override
-            public void onError(Throwable e) {
-                if (!completed) {
-                    completed = true;
-                    try {
-                        child.onError(e);
-                    } finally {
-                        unsubscribe();
-                    }
-                }
-            }
-
-            @Override
-            public void onNext(T i) {
-                if (!isUnsubscribed() && count++ < limit) {
-                    boolean stop = count == limit;
-                    child.onNext(i);
-                    if (stop && !completed) {
-                        completed = true;
-                        try {
-                            child.onCompleted();
-                        } finally {
-                            unsubscribe();
-                        }
-                    }
-                }
-            }
-
-            /**
-             * We want to adjust the requested values based on the `take` count.
-             */
-            @Override
-            public void setProducer(final Producer producer) {
-                child.setProducer(new Producer() {
-
-                    // keeps track of requests up to maximum of `limit`
-                    final AtomicLong requested = new AtomicLong(0);
-
-                    @Override
-                    public void request(long n) {
-                        if (n >0 && !completed) {
-                            // because requests may happen concurrently use a CAS loop to
-                            // ensure we only request as much as needed, no more no less
-                            while (true) {
-                                long r = requested.get();
-                                long c = Math.min(n, limit - r);
-                                if (c == 0) {
-                                    break;
-                                } else if (requested.compareAndSet(r, r + c)) {
-                                    producer.request(c);
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                });
-            }
-
-        };
+        final Subscriber<T> parent = new TakeSubscriber<>(child, limit);
 
         if (limit == 0) {
             child.onCompleted();
@@ -137,4 +69,94 @@ public final class OperatorTake<T> implements Operator<T, T> {
         return parent;
     }
 
+    private static class TakeSubscriber <T> extends Subscriber<T>
+    {
+        private final Subscriber<? super T> child;
+        final int limit;
+        int count;
+        boolean completed;
+
+        public TakeSubscriber(Subscriber<? super T> child, int limit)
+        {
+            this.child = child;
+            this.limit = limit;
+        }
+
+        @Override
+        public void onCompleted() {
+            if (!completed) {
+                completed = true;
+                child.onCompleted();
+            }
+        }
+
+        @Override
+        public void onError(Throwable e) {
+            if (!completed) {
+                completed = true;
+                try {
+                    child.onError(e);
+                } finally {
+                    unsubscribe();
+                }
+            }
+        }
+
+        @Override
+        public void onNext(T i) {
+            if (!isUnsubscribed() && count++ < limit) {
+                boolean stop = count == limit;
+                child.onNext(i);
+                if (stop && !completed) {
+                    completed = true;
+                    try {
+                        child.onCompleted();
+                    } finally {
+                        unsubscribe();
+                    }
+                }
+            }
+        }
+
+        /**
+         * We want to adjust the requested values based on the `take` count.
+         */
+        @Override
+        public void setProducer(final Producer producer) {
+            child.setProducer(new TakeInnerProducer(producer));
+        }
+
+        @WeakOuter
+        private class TakeInnerProducer implements Producer
+        {
+
+            // keeps track of requests up to maximum of `limit`
+            final         AtomicLong requested;
+            private final Producer   producer;
+
+            public TakeInnerProducer(Producer producer)
+            {
+                this.producer = producer;
+                requested = new AtomicLong(0);
+            }
+
+            @Override
+            public void request(long n) {
+                if (n >0 && !completed) {
+                    // because requests may happen concurrently use a CAS loop to
+                    // ensure we only request as much as needed, no more no less
+                    while (true) {
+                        long r = requested.get();
+                        long c = Math.min(n, limit - r);
+                        if (c == 0) {
+                            break;
+                        } else if (requested.compareAndSet(r, r + c)) {
+                            producer.request(c);
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+    }
 }
