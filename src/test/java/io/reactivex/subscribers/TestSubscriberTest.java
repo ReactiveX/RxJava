@@ -1707,4 +1707,16 @@ public class TestSubscriberTest {
             }
         });
     }
+
+    @Test
+    public void requestMore() {
+        Flowable.range(1, 5)
+        .test(0)
+        .requestMore(1)
+        .assertValue(1)
+        .requestMore(2)
+        .assertValues(1, 2, 3)
+        .requestMore(3)
+        .assertResult(1, 2, 3, 4, 5);
+    }
 }
