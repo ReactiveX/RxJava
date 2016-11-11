@@ -11327,7 +11327,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *         either the first item emitted by the source ObservableSource or any subsequent item doesn't arrive
      *         within time windows defined by the timeout selectors
      * @throws NullPointerException
-     *             if {@code itemTimeoutIndicator} is null
+     *             if {@code itemTimeoutIndicator} is null, or
      *             if {@code other} is null
      * @see <a href="http://reactivex.io/documentation/operators/timeout.html">ReactiveX operators documentation: Timeout</a>
      */

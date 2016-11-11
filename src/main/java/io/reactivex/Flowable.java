@@ -7747,7 +7747,7 @@ public abstract class Flowable<T> implements Publisher<T> {
 
     /**
      * Returns a Flowable that emits the item found at a specified index in a sequence of emissions from
-     * source Publisher, or a default item if that index is out of range.
+     * this Flowable, or a default item if that index is out of range.
      * <p>
      * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/elementAtOrDefault.png" alt="">
      * <dl>
