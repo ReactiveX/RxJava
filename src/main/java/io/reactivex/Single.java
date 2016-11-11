@@ -1717,6 +1717,25 @@ public abstract class Single<T> implements SingleSource<T> {
     }
 
     /**
+     * Calls the specified consumer with the success item after this item has been emitted to the downstream.
+     * <p>Note that the {@code doAfterSuccess} action is shared between subscriptions and as such
+     * should be thread-safe.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code doAfterSuccess} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param onAfterSuccess the Consumer that will be called after emitting an item from upstream to the downstream
+     * @return the new Single instance
+     * @since 2.0.1 - experimental
+     */
+    @SchedulerSupport(SchedulerSupport.NONE)
+    @Experimental
+    public final Single<T> doAfterSuccess(Consumer<? super T> onAfterSuccess) {
+        ObjectHelper.requireNonNull(onAfterSuccess, "doAfterSuccess is null");
+        return RxJavaPlugins.onAssembly(new SingleDoAfterSuccess<T>(this, onAfterSuccess));
+    }
+
+    /**
      * Calls the specified action after this Single signals onSuccess or onError or gets disposed by
      * the downstream.
      * <p>In case of a race between a terminal event and a dispose call, the provided {@code onFinally} action

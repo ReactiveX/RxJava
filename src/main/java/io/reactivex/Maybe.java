@@ -2274,6 +2274,25 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     }
 
     /**
+     * Calls the specified consumer with the success item after this item has been emitted to the downstream.
+     * <p>Note that the {@code onAfterNext} action is shared between subscriptions and as such
+     * should be thread-safe.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code doAfterSuccess} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param onAfterSuccess the Consumer that will be called after emitting an item from upstream to the downstream
+     * @return the new Maybe instance
+     * @since 2.0.1 - experimental
+     */
+    @SchedulerSupport(SchedulerSupport.NONE)
+    @Experimental
+    public final Maybe<T> doAfterSuccess(Consumer<? super T> onAfterSuccess) {
+        ObjectHelper.requireNonNull(onAfterSuccess, "doAfterSuccess is null");
+        return RxJavaPlugins.onAssembly(new MaybeDoAfterSuccess<T>(this, onAfterSuccess));
+    }
+
+    /**
      * Registers an {@link Action} to be called when this Maybe invokes either
      * {@link MaybeObserver#onComplete onSuccess},
      * {@link MaybeObserver#onComplete onComplete} or {@link MaybeObserver#onError onError}.
