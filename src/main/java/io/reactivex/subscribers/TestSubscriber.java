@@ -16,11 +16,12 @@ import java.util.concurrent.atomic.*;
 
 import org.reactivestreams.*;
 
+import io.reactivex.annotations.Experimental;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 import io.reactivex.internal.fuseable.QueueSubscription;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
-import io.reactivex.internal.util.*;
+import io.reactivex.internal.util.ExceptionHelper;
 import io.reactivex.observers.BaseTestConsumer;
 
 /**
@@ -400,6 +401,18 @@ implements Subscriber<T>, Subscription, Disposable {
         } catch (Throwable ex) {
             throw ExceptionHelper.wrapOrThrow(ex);
         }
+        return this;
+    }
+
+    /**
+     * Calls {@link #request(long)} and returns this.
+     * @param n the request amount
+     * @return this
+     * @since 2.0.1 - experimental
+     */
+    @Experimental
+    public final TestSubscriber<T> requestMore(long n) {
+        request(n);
         return this;
     }
 
