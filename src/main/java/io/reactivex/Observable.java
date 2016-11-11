@@ -6417,6 +6417,27 @@ public abstract class Observable<T> implements ObservableSource<T> {
     }
 
     /**
+     * Calls the specified consumer with the current item after this item has been emitted to the downstream.
+     * <p>Note that the {@code onAfterNext} action is shared between subscriptions and as such
+     * should be thread-safe.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code doAfterNext} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <td><b>Operator-fusion:</b></dt>
+     *  <dd>This operator supports boundary-limited synchronous or asynchronous queue-fusion.</dd>
+     * </dl>
+     * @param onAfterNext the Consumer that will be called after emitting an item from upstream to the downstream
+     * @return the new Observable instance
+     * @since 2.0.1 - experimental
+     */
+    @SchedulerSupport(SchedulerSupport.NONE)
+    @Experimental
+    public final Observable<T> doAfterNext(Consumer<? super T> onAfterNext) {
+        ObjectHelper.requireNonNull(onAfterNext, "onAfterNext is null");
+        return RxJavaPlugins.onAssembly(new ObservableDoAfterNext<T>(this, onAfterNext));
+    }
+
+    /**
      * Registers an {@link Action} to be called when this ObservableSource invokes either
      * {@link Observer#onComplete onComplete} or {@link Observer#onError onError}.
      * <p>
