@@ -6722,8 +6722,8 @@ public abstract class Observable<T> implements ObservableSource<T> {
     }
 
     /**
-     * Returns a Maybe that emits the single item at a specified index in a sequence of emissions from a
-     * source ObservableSource.
+     * Returns a Maybe that emits the single item at a specified index in a sequence of emissions from
+     * this Observable or completes if this Observable signals fewer elements than index.
      * <p>
      * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/elementAt.2m.png" alt="">
      * <dl>
@@ -6748,8 +6748,8 @@ public abstract class Observable<T> implements ObservableSource<T> {
     }
 
     /**
-     * Returns a Single that emits the item found at a specified index in a sequence of emissions from a
-     * source ObservableSource, or a default item if that index is out of range.
+     * Returns a Single that emits the item found at a specified index in a sequence of emissions from
+     * this Observable, or a default item if that index is out of range.
      * <p>
      * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/elementAt.2s.png" alt="">
      * <dl>
@@ -6777,8 +6777,8 @@ public abstract class Observable<T> implements ObservableSource<T> {
     }
 
     /**
-     * Returns a Single that emits the item found at a specified index in a sequence of emissions from a source ObservableSource.
-     * If the source ObservableSource does not contain the item at the specified index a {@link NoSuchElementException} will be thrown.
+     * Returns a Single that emits the item found at a specified index in a sequence of emissions from this Observable
+     * or signals a {@link NoSuchElementException} if this Observable signals fewer elements than index.
      * <p>
      * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/elementAt.2s.png" alt="">
      * <dl>
@@ -6863,8 +6863,8 @@ public abstract class Observable<T> implements ObservableSource<T> {
     }
 
     /**
-     * Returns a Single that emits only the very first item emitted by the source ObservableSource.
-     * If the source ObservableSource completes without emitting any items a {@link NoSuchElementException} will be thrown.
+     * Returns a Single that emits only the very first item emitted by this Observable or
+     * signals a {@link NoSuchElementException} if this Observable is empty.
      * <p>
      * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/first.2.png" alt="">
      * <dl>
@@ -7466,8 +7466,6 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *            a Disposable that allows cancelling an asynchronous sequence
      * @throws NullPointerException
      *             if {@code onNext} is null
-     * @throws RuntimeException
-     *             if the ObservableSource calls {@code onError}
      * @see <a href="http://reactivex.io/documentation/operators/subscribe.html">ReactiveX operators documentation: Subscribe</a>
      */
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -7489,8 +7487,6 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *            a Disposable that allows cancelling an asynchronous sequence
      * @throws NullPointerException
      *             if {@code onNext} is null
-     * @throws RuntimeException
-     *             if the ObservableSource calls {@code onError}
      * @see <a href="http://reactivex.io/documentation/operators/subscribe.html">ReactiveX operators documentation: Subscribe</a>
      */
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -7889,8 +7885,8 @@ public abstract class Observable<T> implements ObservableSource<T> {
     }
 
     /**
-     * Returns a Maybe that emits the last item emitted by the source ObservableSource or
-     * completes if the source is empty.
+     * Returns a Maybe that emits the last item emitted by this Observable or
+     * completes if this Observable is empty.
      * <p>
      * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/lastElement.png" alt="">
      * <dl>
@@ -7908,8 +7904,8 @@ public abstract class Observable<T> implements ObservableSource<T> {
     }
 
     /**
-     * Returns a Single that emits only the last item emitted by the source ObservableSource, or a default item
-     * if the source ObservableSource completes without emitting any items.
+     * Returns a Single that emits only the last item emitted by this Observable, or a default item
+     * if this Observable completes without emitting any items.
      * <p>
      * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/last.2.png" alt="">
      * <dl>
@@ -7930,8 +7926,8 @@ public abstract class Observable<T> implements ObservableSource<T> {
     }
 
     /**
-     * Returns a Single that emits only the last item emitted by the source ObservableSource.
-     * If the source ObservableSource completes without emitting any items a {@link NoSuchElementException} will be thrown.
+     * Returns a Single that emits only the last item emitted by this Observable or
+     * signals a {@link NoSuchElementException} if this Observable is empty.
      * <p>
      * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/last.2.png" alt="">
      * <dl>
@@ -8415,8 +8411,6 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *            result will be used in the next accumulator call
      * @return a Maybe that emits a single item that is the result of accumulating the items emitted by
      *         the source ObservableSource
-     * @throws IllegalArgumentException
-     *             if the source ObservableSource emits no items
      * @see <a href="http://reactivex.io/documentation/operators/reduce.html">ReactiveX operators documentation: Reduce</a>
      * @see <a href="http://en.wikipedia.org/wiki/Fold_(higher-order_function)">Wikipedia: Fold (higher-order function)</a>
      */
@@ -9537,9 +9531,9 @@ public abstract class Observable<T> implements ObservableSource<T> {
     }
 
     /**
-     * Returns an Observable that emits the single item emitted by the source ObservableSource, if that ObservableSource
-     * emits only a single item. If the source ObservableSource emits more than one item or no items, notify of an
-     * {@code IllegalArgumentException} or {@code NoSuchElementException} respectively.
+     * Returns an Observable that emits the single item emitted by this Observable if this Observable
+     * emits only a single item, otherwise if this Observable emits more than one item or no items, an
+     * {@code IllegalArgumentException} or {@code NoSuchElementException} is signalled respectively.
      * <p>
      * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/singleElement.png" alt="">
      * <dl>
@@ -9548,10 +9542,6 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * </dl>
      *
      * @return an Observable that emits the single item emitted by the source ObservableSource
-     * @throws IllegalArgumentException
-     *             if the source emits more than one item
-     * @throws NoSuchElementException
-     *             if the source emits no items
      * @see <a href="http://reactivex.io/documentation/operators/first.html">ReactiveX operators documentation: First</a>
      */
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -9560,9 +9550,9 @@ public abstract class Observable<T> implements ObservableSource<T> {
     }
 
     /**
-     * Returns a Single that emits the single item emitted by the source ObservableSource, if that ObservableSource
+     * Returns a Single that emits the single item emitted by this Observable, if this Observable
      * emits only a single item, or a default item if the source ObservableSource emits no items. If the source
-     * ObservableSource emits more than one item, throw an {@code IllegalArgumentException}.
+     * ObservableSource emits more than one item, an {@code IllegalArgumentException} is signalled instead.
      * <p>
      * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/single.2.png" alt="">
      * <dl>
@@ -9573,8 +9563,6 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @param defaultItem
      *            a default value to emit if the source ObservableSource emits no item
      * @return the new Single instance
-     * @throws IllegalArgumentException
-     *             if the source ObservableSource emits more than one item
      * @see <a href="http://reactivex.io/documentation/operators/first.html">ReactiveX operators documentation: First</a>
      */
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -9584,10 +9572,10 @@ public abstract class Observable<T> implements ObservableSource<T> {
     }
 
     /**
-     * Returns a Single that emits the single item emitted by the source ObservableSource, if that ObservableSource
-     * emits only a single item.
-     * If the source ObservableSource completes without emitting any items a {@link NoSuchElementException} will be thrown.
-     * If the source ObservableSource emits more than one item, throw an {@code IllegalArgumentException}.
+     * Returns a Single that emits the single item emitted by this Observalbe if this Observable
+     * emits only a single item, otherwise
+     * if this Observable completes without emitting any items or emits more than one item a
+     * {@link NoSuchElementException} or {@code IllegalArgumentException} will be signalled respectively.
      * <p>
      * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/single.2.png" alt="">
      * <dl>
@@ -9596,10 +9584,6 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * </dl>
      *
      * @return the new Single instance
-     * @throws IllegalArgumentException
-     *             if the source ObservableSource emits more than one item
-     * @throws NoSuchElementException
-     *             if the source ObservableSource completes without emitting any items
      * @see <a href="http://reactivex.io/documentation/operators/first.html">ReactiveX operators documentation: First</a>
      */
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -9913,6 +9897,10 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * sorted order. Each item emitted by the ObservableSource must implement {@link Comparable} with respect to all
      * other items in the sequence.
      *
+     * <p>If any item emitted by this Observable does not implement {@link Comparable} with respect to
+     *             all other items emitted by this Observable, no items will be emitted and the
+     *             sequence is terminated with a {@link ClassCastException}.
+     *
      * <p>Note that calling {@code sorted} with long, non-terminating or infinite sources
      * might cause {@link OutOfMemoryError}
      *
@@ -9920,10 +9908,6 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code sorted} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     *
-     * @throws ClassCastException
-     *             if any item emitted by the ObservableSource does not implement {@link Comparable} with respect to
-     *             all other items emitted by the ObservableSource
      * @return an Observable that emits the items emitted by the source ObservableSource in sorted order
      */
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -11343,7 +11327,8 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *         either the first item emitted by the source ObservableSource or any subsequent item doesn't arrive
      *         within time windows defined by the timeout selectors
      * @throws NullPointerException
-     *             if {@code itemTimeoutIndicator} is null
+     *             if {@code itemTimeoutIndicator} is null, or
+     *             if {@code other} is null
      * @see <a href="http://reactivex.io/documentation/operators/timeout.html">ReactiveX operators documentation: Timeout</a>
      */
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -11815,16 +11800,16 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * Returns a Single that emits a list that contains the items emitted by the source ObservableSource, in a
      * sorted order. Each item emitted by the ObservableSource must implement {@link Comparable} with respect to all
      * other items in the sequence.
+     *
+     * <p>If any item emitted by this Observable does not implement {@link Comparable} with respect to
+     *             all other items emitted by this Observable, no items will be emitted and the
+     *             sequence is terminated with a {@link ClassCastException}.
      * <p>
      * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/toSortedList.2.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code toSortedList} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     *
-     * @throws ClassCastException
-     *             if any item emitted by the ObservableSource does not implement {@link Comparable} with respect to
-     *             all other items emitted by the ObservableSource
      * @return a Single that emits a list that contains the items emitted by the source ObservableSource in
      *         sorted order
      * @see <a href="http://reactivex.io/documentation/operators/to.html">ReactiveX operators documentation: To</a>
@@ -11887,6 +11872,10 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * Returns a Single that emits a list that contains the items emitted by the source ObservableSource, in a
      * sorted order. Each item emitted by the ObservableSource must implement {@link Comparable} with respect to all
      * other items in the sequence.
+     *
+     * <p>If any item emitted by this Observable does not implement {@link Comparable} with respect to
+     *             all other items emitted by this Observable, no items will be emitted and the
+     *             sequence is terminated with a {@link ClassCastException}.
      * <p>
      * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/toSortedList.2.png" alt="">
      * <dl>
@@ -11898,9 +11887,6 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *             the initial capacity of the ArrayList used to accumulate items before sorting
      * @return a Single that emits a list that contains the items emitted by the source ObservableSource in
      *         sorted order
-     * @throws ClassCastException
-     *             if any item emitted by the ObservableSource does not implement {@link Comparable} with respect to
-     *             all other items emitted by the ObservableSource
      * @see <a href="http://reactivex.io/documentation/operators/to.html">ReactiveX operators documentation: To</a>
      * @since 2.0
      */

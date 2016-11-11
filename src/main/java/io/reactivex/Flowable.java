@@ -7718,8 +7718,8 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     /**
-     * Returns a Maybe that emits the single item at a specified index in a sequence of emissions from a
-     * source Publisher.
+     * Returns a Maybe that emits the single item at a specified index in a sequence of emissions from
+     * this Flowable or completes if this Flowable sequence has fewer elements than index.
      * <p>
      * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/elementAt.png" alt="">
      * <dl>
@@ -7746,8 +7746,8 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     /**
-     * Returns a Flowable that emits the item found at a specified index in a sequence of emissions from a
-     * source Publisher, or a default item if that index is out of range.
+     * Returns a Flowable that emits the item found at a specified index in a sequence of emissions from
+     * this Flowable, or a default item if that index is out of range.
      * <p>
      * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/elementAtOrDefault.png" alt="">
      * <dl>
@@ -7779,9 +7779,8 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     /**
-     * Returns a Flowable that emits the item found at a specified index in a sequence of emissions from a
-     * source Publisher.
-     * If the source Publisher does not contain the item at the specified index a {@link NoSuchElementException} will be thrown.
+     * Returns a Flowable that emits the item found at a specified index in a sequence of emissions from
+     * this Flowable or signals a {@link NoSuchElementException} if this Flowable has fewer elements than index.
      * <p>
      * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/elementAtOrDefault.png" alt="">
      * <dl>
@@ -7836,8 +7835,8 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     /**
-     * Returns a Maybe that emits only the very first item emitted by the source Publisher, or notifies
-     * of an {@code NoSuchElementException} if the source Publisher is empty.
+     * Returns a Maybe that emits only the very first item emitted by this Flowable or
+     * completes if this Flowable is empty.
      * <p>
      * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/first.png" alt="">
      * <dl>
@@ -7848,8 +7847,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *  <dd>{@code firstElement} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
-     * @return a Maybe that emits only the very first item emitted by the source Publisher, or raises an
-     *         {@code NoSuchElementException} if the source Publisher is empty
+     * @return the new Maybe instance
      * @see <a href="http://reactivex.io/documentation/operators/first.html">ReactiveX operators documentation: First</a>
      */
     @BackpressureSupport(BackpressureKind.SPECIAL) // take may trigger UNBOUNDED_IN
@@ -7859,8 +7857,8 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     /**
-     * Returns a Single that emits only the very first item emitted by the source Publisher, or a default
-     * item if the source Publisher completes without emitting anything.
+     * Returns a Single that emits only the very first item emitted by this Flowable, or a default
+     * item if this Flowable completes without emitting anything.
      * <p>
      * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/firstOrDefault.png" alt="">
      * <dl>
@@ -7884,9 +7882,8 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     /**
-     * Returns a Single that emits only the very first item emitted by the source Publisher, or a default
-     * item if the source Publisher completes without emitting anything.
-     * If the source Publisher completes without emitting any items a {@link NoSuchElementException} will be thrown.
+     * Returns a Single that emits only the very first item emitted by this Flowable or
+     * signals a {@link NoSuchElementException} if this Flowable is empty.
      * <p>
      * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/firstOrError.png" alt="">
      * <dl>
@@ -8655,8 +8652,6 @@ public abstract class Flowable<T> implements Publisher<T> {
      *            a Disposable that allows cancelling an asynchronous sequence
      * @throws NullPointerException
      *             if {@code onNext} is null
-     * @throws RuntimeException
-     *             if the Publisher calls {@code onError}
      * @see <a href="http://reactivex.io/documentation/operators/subscribe.html">ReactiveX operators documentation: Subscribe</a>
      */
     @BackpressureSupport(BackpressureKind.NONE)
@@ -8682,8 +8677,6 @@ public abstract class Flowable<T> implements Publisher<T> {
      *            a {@link Disposable} that allows cancelling an asynchronous sequence
      * @throws NullPointerException
      *             if {@code onNext} is null
-     * @throws RuntimeException
-     *             if the Publisher calls {@code onError}
      * @see <a href="http://reactivex.io/documentation/operators/subscribe.html">ReactiveX operators documentation: Subscribe</a>
      */
     @BackpressureSupport(BackpressureKind.NONE)
@@ -9144,7 +9137,8 @@ public abstract class Flowable<T> implements Publisher<T> {
 
 
     /**
-     * Returns a Maybe that emits the last item emitted by the source Publisher or completes if the source Publisher is empty.
+     * Returns a Maybe that emits the last item emitted by this Flowable or completes if
+     * this Flowable is empty.
      * <p>
      * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/last.png" alt="">
      * <dl>
@@ -9165,8 +9159,8 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     /**
-     * Returns a Single that emits only the last item emitted by the source Publisher, or a default item
-     * if the source Publisher completes without emitting any items.
+     * Returns a Single that emits only the last item emitted by this Flowable, or a default item
+     * if this Flowable completes without emitting any items.
      * <p>
      * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/lastOrDefault.png" alt="">
      * <dl>
@@ -9179,8 +9173,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *
      * @param defaultItem
      *            the default item to emit if the source Publisher is empty
-     * @return a Single that emits only the last item emitted by the source Publisher, or a default item
-     *         if the source Publisher is empty
+     * @return the new Single instance
      * @see <a href="http://reactivex.io/documentation/operators/last.html">ReactiveX operators documentation: Last</a>
      */
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
@@ -9191,8 +9184,8 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     /**
-     * Returns a Single that emits only the last item emitted by the source Publisher.
-     * If the source Publisher completes without emitting any items a {@link NoSuchElementException} will be thrown.
+     * Returns a Single that emits only the last item emitted by this Flowable or signals
+     * a {@link NoSuchElementException} if this Flowable is empty.
      * <p>
      * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/lastOrError.png" alt="">
      * <dl>
@@ -11470,9 +11463,9 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     /**
-     * Returns a Maybe that emits the single item emitted by the source Publisher, if that Publisher
-     * emits only a single item. If the source Publisher emits more than one item, notify of an
-     * {@code IllegalArgumentException}.
+     * Returns a Maybe that completes if this Flowable is empty, signals one item if this Flowable
+     * signals exactly one item or signals an {@code IllegalArgumentException} if this Flowable signals
+     * more than one item.
      * <p>
      * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/single.png" alt="">
      * <dl>
@@ -11484,8 +11477,6 @@ public abstract class Flowable<T> implements Publisher<T> {
      * </dl>
      *
      * @return a Maybe that emits the single item emitted by the source Publisher
-     * @throws IllegalArgumentException
-     *             if the source emits more than one item
      * @see <a href="http://reactivex.io/documentation/operators/first.html">ReactiveX operators documentation: First</a>
      */
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
@@ -11497,7 +11488,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     /**
      * Returns a Single that emits the single item emitted by the source Publisher, if that Publisher
      * emits only a single item, or a default item if the source Publisher emits no items. If the source
-     * Publisher emits more than one item, throw an {@code IllegalArgumentException}.
+     * Publisher emits more than one item, an {@code IllegalArgumentException} is signalled instead.
      * <p>
      * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/singleOrDefault.png" alt="">
      * <dl>
@@ -11522,10 +11513,10 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     /**
-     * Returns a Single that emits the single item emitted by the source Publisher, if that Publisher
-     * emits only a single item.
-     * If the source Publisher completes without emitting any items a {@link NoSuchElementException} will be thrown.
-     * If the source Publisher emits more than one item, throw an {@code IllegalArgumentException}.
+     * Returns a Single that emits the single item emitted by this Flowable, if this Flowable
+     * emits only a single item, otherwise
+     * if this Flowable completes without emitting any items a {@link NoSuchElementException} will be signalled and
+     * if this Flowable emits more than one item, an {@code IllegalArgumentException} will be signalled.
      * <p>
      * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/singleOrError.png" alt="">
      * <dl>
@@ -11894,6 +11885,9 @@ public abstract class Flowable<T> implements Publisher<T> {
      * sorted order. Each item emitted by the Publisher must implement {@link Comparable} with respect to all
      * other items in the sequence.
      *
+     * <p>If any item emitted by this Flowable does not implement {@link Comparable} with respect to
+     *             all other items emitted by this Flowable, no items will be emitted and the
+     *             sequence is terminated with a {@link ClassCastException}.
      * <p>Note that calling {@code sorted} with long, non-terminating or infinite sources
      * might cause {@link OutOfMemoryError}
      *
@@ -11905,9 +11899,6 @@ public abstract class Flowable<T> implements Publisher<T> {
      *  <dd>{@code sorted} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
-     * @throws ClassCastException
-     *             if any item emitted by the Publisher does not implement {@link Comparable} with respect to
-     *             all other items emitted by the Publisher
      * @return a Flowable that emits the items emitted by the source Publisher in sorted order
      */
     @BackpressureSupport(BackpressureKind.FULL)
@@ -14079,6 +14070,10 @@ public abstract class Flowable<T> implements Publisher<T> {
      * Returns a Single that emits a list that contains the items emitted by the source Publisher, in a
      * sorted order. Each item emitted by the Publisher must implement {@link Comparable} with respect to all
      * other items in the sequence.
+     *
+     * <p>If any item emitted by this Flowable does not implement {@link Comparable} with respect to
+     *             all other items emitted by this Flowable, no items will be emitted and the
+     *             sequence is terminated with a {@link ClassCastException}.
      * <p>
      * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/toSortedList.png" alt="">
      * <dl>
@@ -14088,10 +14083,6 @@ public abstract class Flowable<T> implements Publisher<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code toSortedList} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     *
-     * @throws ClassCastException
-     *             if any item emitted by the Publisher does not implement {@link Comparable} with respect to
-     *             all other items emitted by the Publisher
      * @return a Single that emits a list that contains the items emitted by the source Publisher in
      *         sorted order
      * @see <a href="http://reactivex.io/documentation/operators/to.html">ReactiveX operators documentation: To</a>
@@ -14163,6 +14154,10 @@ public abstract class Flowable<T> implements Publisher<T> {
      * Returns a Flowable that emits a list that contains the items emitted by the source Publisher, in a
      * sorted order. Each item emitted by the Publisher must implement {@link Comparable} with respect to all
      * other items in the sequence.
+     *
+     * <p>If any item emitted by this Flowable does not implement {@link Comparable} with respect to
+     *             all other items emitted by this Flowable, no items will be emitted and the
+     *             sequence is terminated with a {@link ClassCastException}.
      * <p>
      * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/toSortedList.png" alt="">
      * <dl>
@@ -14177,9 +14172,6 @@ public abstract class Flowable<T> implements Publisher<T> {
      *             the initial capacity of the ArrayList used to accumulate items before sorting
      * @return a Flowable that emits a list that contains the items emitted by the source Publisher in
      *         sorted order
-     * @throws ClassCastException
-     *             if any item emitted by the Publisher does not implement {@link Comparable} with respect to
-     *             all other items emitted by the Publisher
      * @see <a href="http://reactivex.io/documentation/operators/to.html">ReactiveX operators documentation: To</a>
      * @since 2.0
      */
