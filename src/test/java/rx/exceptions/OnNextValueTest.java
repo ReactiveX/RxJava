@@ -15,19 +15,15 @@
  */
 package rx.exceptions;
 
+import static org.junit.Assert.*;
+
+import java.io.*;
+
 import org.junit.Test;
 
-import rx.Observable;
-import rx.Observer;
+import rx.*;
 import rx.exceptions.OnErrorThrowable.OnNextValue;
 import rx.functions.Func1;
-
-import java.io.PrintWriter;
-import java.io.StringWriter;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 /**
  * ```java
@@ -165,5 +161,33 @@ public final class OnNextValueTest {
     @Test
     public void testRenderVoid() {
         assertEquals("null", OnNextValue.renderValue((Void) null));
+    }
+
+    static class Value {
+        @Override
+        public String toString() {
+            return "Value";
+        }
+    }
+
+    @Test
+    public void nonSerializableValue() throws Exception {
+        Throwable e = OnErrorThrowable.addValueAsLastCause(new RuntimeException(), new Value());
+
+        ByteArrayOutputStream bout = new ByteArrayOutputStream();
+        ObjectOutputStream oos = new ObjectOutputStream(bout);
+        oos.writeObject(e);
+        oos.close();
+
+        ByteArrayInputStream bin = new ByteArrayInputStream(bout.toByteArray());
+        ObjectInputStream ois = new ObjectInputStream(bin);
+
+        Throwable f = (Throwable)ois.readObject();
+
+        ois.close();
+
+        Object v = ((OnNextValue)f.getCause()).getValue();
+
+        assertEquals("Value", v);
     }
 }
