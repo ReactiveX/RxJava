@@ -15,6 +15,7 @@
  */
 package rx.internal.operators;
 
+import java.lang.ref.WeakReference;
 import java.util.concurrent.TimeUnit;
 
 import rx.Observable;
@@ -22,6 +23,7 @@ import rx.Observable.OnSubscribe;
 import rx.Scheduler;
 import rx.Scheduler.Worker;
 import rx.Subscriber;
+import rx.doppl.SafeObservableUnsubscribe;
 import rx.functions.Action0;
 import rx.observers.Subscribers;
 
@@ -31,13 +33,13 @@ import rx.observers.Subscribers;
  * @param <T> the value type
  */
 public final class OnSubscribeDelaySubscription<T> implements OnSubscribe<T> {
-    final Observable<? extends T> source;
-    final long time;
-    final TimeUnit unit;
-    final Scheduler scheduler;
+    final SafeObservableUnsubscribe source;
+    final long                      time;
+    final TimeUnit                  unit;
+    final Scheduler                 scheduler;
 
     public OnSubscribeDelaySubscription(Observable<? extends T> source, long time, TimeUnit unit, Scheduler scheduler) {
-        this.source = source;
+        this.source = new SafeObservableUnsubscribe(source);
         this.time = time;
         this.unit = unit;
         this.scheduler = scheduler;

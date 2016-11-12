@@ -269,7 +269,7 @@ public final class CachedObservable<T> extends Observable<T> {
         /** */
         private static final long serialVersionUID = -2557562030197141021L;
         /** The actual child subscriber. */
-        @Weak
+//        @Weak
         final Subscriber<? super T> child;
 
         @Weak

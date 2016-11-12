@@ -267,19 +267,21 @@ __attribute__((unused)) static RxInternalOperatorsCachedObservableTest_$6 *creat
 - (void)testAsync {
   RxObservable *source = RxObservable_rangeWithInt_withInt_(1, 10000);
   for (jint i = 0; i < 100; i++) {
-    RxObserversTestSubscriber *ts1 = create_RxObserversTestSubscriber_init();
-    RxInternalOperatorsCachedObservable *cached = RxInternalOperatorsCachedObservable_fromWithRxObservable_(source);
-    [((RxObservable *) nil_chk([((RxInternalOperatorsCachedObservable *) nil_chk(cached)) observeOnWithRxScheduler:RxSchedulersSchedulers_computation()])) subscribeWithRxSubscriber:ts1];
-    [ts1 awaitTerminalEventWithLong:2 withJavaUtilConcurrentTimeUnit:JreLoadEnum(JavaUtilConcurrentTimeUnit, SECONDS)];
-    [ts1 assertNoErrors];
-    [ts1 assertTerminalEvent];
-    OrgJunitAssert_assertEqualsWithLong_withLong_(10000, [((id<JavaUtilList>) nil_chk([ts1 getOnNextEvents])) size]);
-    RxObserversTestSubscriber *ts2 = create_RxObserversTestSubscriber_init();
-    [((RxObservable *) nil_chk([cached observeOnWithRxScheduler:RxSchedulersSchedulers_computation()])) subscribeWithRxSubscriber:ts2];
-    [ts2 awaitTerminalEventWithLong:2 withJavaUtilConcurrentTimeUnit:JreLoadEnum(JavaUtilConcurrentTimeUnit, SECONDS)];
-    [ts2 assertNoErrors];
-    [ts2 assertTerminalEvent];
-    OrgJunitAssert_assertEqualsWithLong_withLong_(10000, [((id<JavaUtilList>) nil_chk([ts2 getOnNextEvents])) size]);
+    @autoreleasepool {
+      RxObserversTestSubscriber *ts1 = create_RxObserversTestSubscriber_init();
+      RxInternalOperatorsCachedObservable *cached = RxInternalOperatorsCachedObservable_fromWithRxObservable_(source);
+      [((RxObservable *) nil_chk([((RxInternalOperatorsCachedObservable *) nil_chk(cached)) observeOnWithRxScheduler:RxSchedulersSchedulers_computation()])) subscribeWithRxSubscriber:ts1];
+      [ts1 awaitTerminalEventWithLong:2 withJavaUtilConcurrentTimeUnit:JreLoadEnum(JavaUtilConcurrentTimeUnit, SECONDS)];
+      [ts1 assertNoErrors];
+      [ts1 assertTerminalEvent];
+      OrgJunitAssert_assertEqualsWithLong_withLong_(10000, [((id<JavaUtilList>) nil_chk([ts1 getOnNextEvents])) size]);
+      RxObserversTestSubscriber *ts2 = create_RxObserversTestSubscriber_init();
+      [((RxObservable *) nil_chk([cached observeOnWithRxScheduler:RxSchedulersSchedulers_computation()])) subscribeWithRxSubscriber:ts2];
+      [ts2 awaitTerminalEventWithLong:2 withJavaUtilConcurrentTimeUnit:JreLoadEnum(JavaUtilConcurrentTimeUnit, SECONDS)];
+      [ts2 assertNoErrors];
+      [ts2 assertTerminalEvent];
+      OrgJunitAssert_assertEqualsWithLong_withLong_(10000, [((id<JavaUtilList>) nil_chk([ts2 getOnNextEvents])) size]);
+    }
   }
 }
 
@@ -289,9 +291,11 @@ __attribute__((unused)) static RxInternalOperatorsCachedObservableTest_$6 *creat
   RxObservable *output = [((RxInternalOperatorsCachedObservable *) nil_chk(cached)) observeOnWithRxScheduler:RxSchedulersSchedulers_computation()];
   id<JavaUtilList> list = create_JavaUtilArrayList_initWithInt_(100);
   for (jint i = 0; i < 100; i++) {
-    RxObserversTestSubscriber *ts = create_RxObserversTestSubscriber_init();
-    [list addWithId:ts];
-    [((RxObservable *) nil_chk([((RxObservable *) nil_chk([((RxObservable *) nil_chk(output)) skipWithInt:i * 10])) takeWithInt:10])) subscribeWithRxSubscriber:ts];
+    @autoreleasepool {
+      RxObserversTestSubscriber *ts = create_RxObserversTestSubscriber_init();
+      [list addWithId:ts];
+      [((RxObservable *) nil_chk([((RxObservable *) nil_chk([((RxObservable *) nil_chk(output)) skipWithInt:i * 10])) takeWithInt:10])) subscribeWithRxSubscriber:ts];
+    }
   }
   id<JavaUtilList> expected = create_JavaUtilArrayList_init();
   for (jint i = 0; i < 10; i++) {
@@ -299,19 +303,21 @@ __attribute__((unused)) static RxInternalOperatorsCachedObservableTest_$6 *creat
   }
   jint j = 0;
   for (RxObserversTestSubscriber * __strong ts in list) {
-    [((RxObserversTestSubscriber *) nil_chk(ts)) awaitTerminalEventWithLong:3 withJavaUtilConcurrentTimeUnit:JreLoadEnum(JavaUtilConcurrentTimeUnit, SECONDS)];
-    [ts assertNoErrors];
-    [ts assertTerminalEvent];
-    for (jint i = j * 10; i < j * 10 + 10; i++) {
-      [expected setWithInt:i - j * 10 withId:JavaLangLong_valueOfWithLong_((jlong) i)];
+    @autoreleasepool {
+      [((RxObserversTestSubscriber *) nil_chk(ts)) awaitTerminalEventWithLong:3 withJavaUtilConcurrentTimeUnit:JreLoadEnum(JavaUtilConcurrentTimeUnit, SECONDS)];
+      [ts assertNoErrors];
+      [ts assertTerminalEvent];
+      for (jint i = j * 10; i < j * 10 + 10; i++) {
+        [expected setWithInt:i - j * 10 withId:JavaLangLong_valueOfWithLong_((jlong) i)];
+      }
+      [ts assertReceivedOnNextWithJavaUtilList:expected];
+      j++;
     }
-    [ts assertReceivedOnNextWithJavaUtilList:expected];
-    j++;
   }
 }
 
 - (void)testNoMissingBackpressureException {
-  jint m = 4 * 1000 * 1000;
+  jint m = 4 * 100 * 1000;
   RxObservable *firehose = RxObservable_createWithRxObservable_OnSubscribe_(create_RxInternalOperatorsCachedObservableTest_$4_init());
   RxObserversTestSubscriber *ts = create_RxObserversTestSubscriber_init();
   [((RxObservable *) nil_chk([((RxObservable *) nil_chk([((RxObservable *) nil_chk([((RxObservable *) nil_chk(firehose)) cache])) observeOnWithRxScheduler:RxSchedulersSchedulers_computation()])) takeLastWithInt:100])) subscribeWithRxSubscriber:ts];
@@ -652,10 +658,8 @@ RxInternalOperatorsCachedObservableTest_$3 *create_RxInternalOperatorsCachedObse
 @implementation RxInternalOperatorsCachedObservableTest_$4
 
 - (void)callWithId:(RxSubscriber *)t {
-  for (jint i = 0; i < 4000000; i++) {
-    @autoreleasepool {
-      [((RxSubscriber *) nil_chk(t)) onNextWithId:JavaLangInteger_valueOfWithInt_(i)];
-    }
+  for (jint i = 0; i < 400000; i++) {
+    [((RxSubscriber *) nil_chk(t)) onNextWithId:JavaLangInteger_valueOfWithInt_(i)];
   }
   [((RxSubscriber *) nil_chk(t)) onCompleted];
 }

@@ -21,6 +21,7 @@ import rx.Observable;
 import rx.Single;
 import rx.SingleSubscriber;
 import rx.Subscriber;
+import rx.doppl.SafeObservableUnsubscribe;
 
 /**
  * Allows conversion of an Observable to a Single ensuring that exactly one item is emitted - no more and no less.
@@ -29,10 +30,10 @@ import rx.Subscriber;
  */
 public class OnSubscribeSingle<T> implements Single.OnSubscribe<T> {
 
-    private final Observable<T> observable;
+    private final SafeObservableUnsubscribe observable;
 
     public OnSubscribeSingle(Observable<T> observable) {
-        this.observable = observable;
+        this.observable = new SafeObservableUnsubscribe(observable);
     }
 
     @Override

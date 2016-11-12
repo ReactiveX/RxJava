@@ -25,6 +25,7 @@
 #include "RxSchedulersSchedulers.h"
 #include "RxSubscriber.h"
 #include "RxSubscription.h"
+#include "com/google/j2objc/WeakProxy.h"
 #include "java/io/PrintStream.h"
 #include "java/lang/Boolean.h"
 #include "java/lang/IllegalStateException.h"
@@ -214,7 +215,7 @@ J2OBJC_TYPE_LITERAL_HEADER(RxInternalOperatorsOperatorGroupByTest_Event)
 
 @interface RxInternalOperatorsOperatorGroupByTest_MapFactoryEvictionFunction : NSObject < RxFunctionsFunc1 > {
  @public
-  __unsafe_unretained RxObservablesGroupedObservable *g_;
+  RxObservablesGroupedObservable *g_;
 }
 
 - (instancetype)initWithRxObservablesGroupedObservable:(RxObservablesGroupedObservable *)g;
@@ -225,6 +226,8 @@ J2OBJC_TYPE_LITERAL_HEADER(RxInternalOperatorsOperatorGroupByTest_Event)
 
 J2OBJC_EMPTY_STATIC_INIT(RxInternalOperatorsOperatorGroupByTest_MapFactoryEvictionFunction)
 
+J2OBJC_FIELD_SETTER(RxInternalOperatorsOperatorGroupByTest_MapFactoryEvictionFunction, g_, RxObservablesGroupedObservable *)
+
 __attribute__((unused)) static void RxInternalOperatorsOperatorGroupByTest_MapFactoryEvictionFunction_initWithRxObservablesGroupedObservable_(RxInternalOperatorsOperatorGroupByTest_MapFactoryEvictionFunction *self, RxObservablesGroupedObservable *g);
 
 __attribute__((unused)) static RxInternalOperatorsOperatorGroupByTest_MapFactoryEvictionFunction *new_RxInternalOperatorsOperatorGroupByTest_MapFactoryEvictionFunction_initWithRxObservablesGroupedObservable_(RxObservablesGroupedObservable *g) NS_RETURNS_RETAINED;
@@ -232,6 +235,71 @@ __attribute__((unused)) static RxInternalOperatorsOperatorGroupByTest_MapFactory
 __attribute__((unused)) static RxInternalOperatorsOperatorGroupByTest_MapFactoryEvictionFunction *create_RxInternalOperatorsOperatorGroupByTest_MapFactoryEvictionFunction_initWithRxObservablesGroupedObservable_(RxObservablesGroupedObservable *g);
 
 J2OBJC_TYPE_LITERAL_HEADER(RxInternalOperatorsOperatorGroupByTest_MapFactoryEvictionFunction)
+
+@interface RxInternalOperatorsOperatorGroupByTest_GroupByBackpressureFunc1 : NSObject < RxFunctionsFunc1 > {
+ @public
+  __unsafe_unretained RxObservablesGroupedObservable *g_;
+}
+
+- (instancetype)initWithRxObservablesGroupedObservable:(RxObservablesGroupedObservable *)g;
+
+- (NSString *)callWithId:(JavaLangInteger *)l;
+
+@end
+
+J2OBJC_EMPTY_STATIC_INIT(RxInternalOperatorsOperatorGroupByTest_GroupByBackpressureFunc1)
+
+__attribute__((unused)) static void RxInternalOperatorsOperatorGroupByTest_GroupByBackpressureFunc1_initWithRxObservablesGroupedObservable_(RxInternalOperatorsOperatorGroupByTest_GroupByBackpressureFunc1 *self, RxObservablesGroupedObservable *g);
+
+__attribute__((unused)) static RxInternalOperatorsOperatorGroupByTest_GroupByBackpressureFunc1 *new_RxInternalOperatorsOperatorGroupByTest_GroupByBackpressureFunc1_initWithRxObservablesGroupedObservable_(RxObservablesGroupedObservable *g) NS_RETURNS_RETAINED;
+
+__attribute__((unused)) static RxInternalOperatorsOperatorGroupByTest_GroupByBackpressureFunc1 *create_RxInternalOperatorsOperatorGroupByTest_GroupByBackpressureFunc1_initWithRxObservablesGroupedObservable_(RxObservablesGroupedObservable *g);
+
+J2OBJC_TYPE_LITERAL_HEADER(RxInternalOperatorsOperatorGroupByTest_GroupByBackpressureFunc1)
+
+@interface RxInternalOperatorsOperatorGroupByTest_GroupsWithNestedSubscribeOnFunc1 : NSObject < RxFunctionsFunc1 > {
+ @public
+  __unsafe_unretained RxObservablesGroupedObservable *group_;
+}
+
+- (instancetype)initWithRxObservablesGroupedObservable:(RxObservablesGroupedObservable *)group;
+
+- (NSString *)callWithId:(JavaLangInteger *)t1;
+
+@end
+
+J2OBJC_EMPTY_STATIC_INIT(RxInternalOperatorsOperatorGroupByTest_GroupsWithNestedSubscribeOnFunc1)
+
+__attribute__((unused)) static void RxInternalOperatorsOperatorGroupByTest_GroupsWithNestedSubscribeOnFunc1_initWithRxObservablesGroupedObservable_(RxInternalOperatorsOperatorGroupByTest_GroupsWithNestedSubscribeOnFunc1 *self, RxObservablesGroupedObservable *group);
+
+__attribute__((unused)) static RxInternalOperatorsOperatorGroupByTest_GroupsWithNestedSubscribeOnFunc1 *new_RxInternalOperatorsOperatorGroupByTest_GroupsWithNestedSubscribeOnFunc1_initWithRxObservablesGroupedObservable_(RxObservablesGroupedObservable *group) NS_RETURNS_RETAINED;
+
+__attribute__((unused)) static RxInternalOperatorsOperatorGroupByTest_GroupsWithNestedSubscribeOnFunc1 *create_RxInternalOperatorsOperatorGroupByTest_GroupsWithNestedSubscribeOnFunc1_initWithRxObservablesGroupedObservable_(RxObservablesGroupedObservable *group);
+
+J2OBJC_TYPE_LITERAL_HEADER(RxInternalOperatorsOperatorGroupByTest_GroupsWithNestedSubscribeOnFunc1)
+
+@interface RxInternalOperatorsOperatorGroupByTest_ErrorFunc1 : NSObject < RxFunctionsFunc1 > {
+ @public
+  RxObservablesGroupedObservable *o_;
+}
+
+- (instancetype)initWithRxObservablesGroupedObservable:(RxObservablesGroupedObservable *)o;
+
+- (NSString *)callWithId:(NSString *)v;
+
+@end
+
+J2OBJC_EMPTY_STATIC_INIT(RxInternalOperatorsOperatorGroupByTest_ErrorFunc1)
+
+J2OBJC_FIELD_SETTER(RxInternalOperatorsOperatorGroupByTest_ErrorFunc1, o_, RxObservablesGroupedObservable *)
+
+__attribute__((unused)) static void RxInternalOperatorsOperatorGroupByTest_ErrorFunc1_initWithRxObservablesGroupedObservable_(RxInternalOperatorsOperatorGroupByTest_ErrorFunc1 *self, RxObservablesGroupedObservable *o);
+
+__attribute__((unused)) static RxInternalOperatorsOperatorGroupByTest_ErrorFunc1 *new_RxInternalOperatorsOperatorGroupByTest_ErrorFunc1_initWithRxObservablesGroupedObservable_(RxObservablesGroupedObservable *o) NS_RETURNS_RETAINED;
+
+__attribute__((unused)) static RxInternalOperatorsOperatorGroupByTest_ErrorFunc1 *create_RxInternalOperatorsOperatorGroupByTest_ErrorFunc1_initWithRxObservablesGroupedObservable_(RxObservablesGroupedObservable *o);
+
+J2OBJC_TYPE_LITERAL_HEADER(RxInternalOperatorsOperatorGroupByTest_ErrorFunc1)
 
 @interface RxInternalOperatorsOperatorGroupByTest_$1 : NSObject < RxFunctionsFunc1 >
 
@@ -269,27 +337,6 @@ __attribute__((unused)) static void RxInternalOperatorsOperatorGroupByTest_$7_in
 __attribute__((unused)) static RxInternalOperatorsOperatorGroupByTest_$7 *new_RxInternalOperatorsOperatorGroupByTest_$7_initWithJavaUtilConcurrentAtomicAtomicInteger_(JavaUtilConcurrentAtomicAtomicInteger *capture$0) NS_RETURNS_RETAINED;
 
 __attribute__((unused)) static RxInternalOperatorsOperatorGroupByTest_$7 *create_RxInternalOperatorsOperatorGroupByTest_$7_initWithJavaUtilConcurrentAtomicAtomicInteger_(JavaUtilConcurrentAtomicAtomicInteger *capture$0);
-
-@interface RxInternalOperatorsOperatorGroupByTest_$7_$1 : NSObject < RxFunctionsFunc1 > {
- @public
-  RxObservablesGroupedObservable *val$o_;
-}
-
-- (NSString *)callWithId:(NSString *)v;
-
-- (instancetype)initWithRxObservablesGroupedObservable:(RxObservablesGroupedObservable *)capture$0;
-
-@end
-
-J2OBJC_EMPTY_STATIC_INIT(RxInternalOperatorsOperatorGroupByTest_$7_$1)
-
-J2OBJC_FIELD_SETTER(RxInternalOperatorsOperatorGroupByTest_$7_$1, val$o_, RxObservablesGroupedObservable *)
-
-__attribute__((unused)) static void RxInternalOperatorsOperatorGroupByTest_$7_$1_initWithRxObservablesGroupedObservable_(RxInternalOperatorsOperatorGroupByTest_$7_$1 *self, RxObservablesGroupedObservable *capture$0);
-
-__attribute__((unused)) static RxInternalOperatorsOperatorGroupByTest_$7_$1 *new_RxInternalOperatorsOperatorGroupByTest_$7_$1_initWithRxObservablesGroupedObservable_(RxObservablesGroupedObservable *capture$0) NS_RETURNS_RETAINED;
-
-__attribute__((unused)) static RxInternalOperatorsOperatorGroupByTest_$7_$1 *create_RxInternalOperatorsOperatorGroupByTest_$7_$1_initWithRxObservablesGroupedObservable_(RxObservablesGroupedObservable *capture$0);
 
 @interface RxInternalOperatorsOperatorGroupByTest_$8 : RxSubscriber {
  @public
@@ -343,7 +390,7 @@ __attribute__((unused)) static RxInternalOperatorsOperatorGroupByTest_$9 *create
 @interface RxInternalOperatorsOperatorGroupByTest_$9_$1 : NSObject < RxFunctionsAction1 > {
  @public
   RxInternalOperatorsOperatorGroupByTest_$9 *this$0_;
-  RxObservablesGroupedObservable *val$o_;
+  RxObservablesGroupedObservable *val$weakO_;
 }
 
 - (void)callWithId:(id)v;
@@ -356,7 +403,7 @@ __attribute__((unused)) static RxInternalOperatorsOperatorGroupByTest_$9 *create
 J2OBJC_EMPTY_STATIC_INIT(RxInternalOperatorsOperatorGroupByTest_$9_$1)
 
 J2OBJC_FIELD_SETTER(RxInternalOperatorsOperatorGroupByTest_$9_$1, this$0_, RxInternalOperatorsOperatorGroupByTest_$9 *)
-J2OBJC_FIELD_SETTER(RxInternalOperatorsOperatorGroupByTest_$9_$1, val$o_, RxObservablesGroupedObservable *)
+J2OBJC_FIELD_SETTER(RxInternalOperatorsOperatorGroupByTest_$9_$1, val$weakO_, RxObservablesGroupedObservable *)
 
 __attribute__((unused)) static void RxInternalOperatorsOperatorGroupByTest_$9_$1_initWithRxInternalOperatorsOperatorGroupByTest_$9_withRxObservablesGroupedObservable_(RxInternalOperatorsOperatorGroupByTest_$9_$1 *self, RxInternalOperatorsOperatorGroupByTest_$9 *outer$, RxObservablesGroupedObservable *capture$0);
 
@@ -1387,27 +1434,6 @@ __attribute__((unused)) static RxInternalOperatorsOperatorGroupByTest_$46 *new_R
 
 __attribute__((unused)) static RxInternalOperatorsOperatorGroupByTest_$46 *create_RxInternalOperatorsOperatorGroupByTest_$46_init();
 
-@interface RxInternalOperatorsOperatorGroupByTest_$46_$1 : NSObject < RxFunctionsFunc1 > {
- @public
-  RxObservablesGroupedObservable *val$group_;
-}
-
-- (NSString *)callWithId:(JavaLangInteger *)t1;
-
-- (instancetype)initWithRxObservablesGroupedObservable:(RxObservablesGroupedObservable *)capture$0;
-
-@end
-
-J2OBJC_EMPTY_STATIC_INIT(RxInternalOperatorsOperatorGroupByTest_$46_$1)
-
-J2OBJC_FIELD_SETTER(RxInternalOperatorsOperatorGroupByTest_$46_$1, val$group_, RxObservablesGroupedObservable *)
-
-__attribute__((unused)) static void RxInternalOperatorsOperatorGroupByTest_$46_$1_initWithRxObservablesGroupedObservable_(RxInternalOperatorsOperatorGroupByTest_$46_$1 *self, RxObservablesGroupedObservable *capture$0);
-
-__attribute__((unused)) static RxInternalOperatorsOperatorGroupByTest_$46_$1 *new_RxInternalOperatorsOperatorGroupByTest_$46_$1_initWithRxObservablesGroupedObservable_(RxObservablesGroupedObservable *capture$0) NS_RETURNS_RETAINED;
-
-__attribute__((unused)) static RxInternalOperatorsOperatorGroupByTest_$46_$1 *create_RxInternalOperatorsOperatorGroupByTest_$46_$1_initWithRxObservablesGroupedObservable_(RxObservablesGroupedObservable *capture$0);
-
 @interface RxInternalOperatorsOperatorGroupByTest_$47 : NSObject < RxFunctionsAction1 >
 
 - (void)callWithId:(RxNotification *)t1;
@@ -1604,27 +1630,6 @@ __attribute__((unused)) static RxInternalOperatorsOperatorGroupByTest_$54 *new_R
 
 __attribute__((unused)) static RxInternalOperatorsOperatorGroupByTest_$54 *create_RxInternalOperatorsOperatorGroupByTest_$54_init();
 
-@interface RxInternalOperatorsOperatorGroupByTest_$54_$1 : NSObject < RxFunctionsFunc1 > {
- @public
-  RxObservablesGroupedObservable *val$g_;
-}
-
-- (NSString *)callWithId:(JavaLangInteger *)l;
-
-- (instancetype)initWithRxObservablesGroupedObservable:(RxObservablesGroupedObservable *)capture$0;
-
-@end
-
-J2OBJC_EMPTY_STATIC_INIT(RxInternalOperatorsOperatorGroupByTest_$54_$1)
-
-J2OBJC_FIELD_SETTER(RxInternalOperatorsOperatorGroupByTest_$54_$1, val$g_, RxObservablesGroupedObservable *)
-
-__attribute__((unused)) static void RxInternalOperatorsOperatorGroupByTest_$54_$1_initWithRxObservablesGroupedObservable_(RxInternalOperatorsOperatorGroupByTest_$54_$1 *self, RxObservablesGroupedObservable *capture$0);
-
-__attribute__((unused)) static RxInternalOperatorsOperatorGroupByTest_$54_$1 *new_RxInternalOperatorsOperatorGroupByTest_$54_$1_initWithRxObservablesGroupedObservable_(RxObservablesGroupedObservable *capture$0) NS_RETURNS_RETAINED;
-
-__attribute__((unused)) static RxInternalOperatorsOperatorGroupByTest_$54_$1 *create_RxInternalOperatorsOperatorGroupByTest_$54_$1_initWithRxObservablesGroupedObservable_(RxObservablesGroupedObservable *capture$0);
-
 @interface RxInternalOperatorsOperatorGroupByTest_$55 : NSObject < RxFunctionsFunc1 > {
  @public
   id val$value_;
@@ -1745,7 +1750,7 @@ __attribute__((unused)) static RxInternalOperatorsOperatorGroupByTest_$60 *creat
 @interface RxInternalOperatorsOperatorGroupByTest_$60_$1 : NSObject < RxFunctionsFunc1 > {
  @public
   jint count_;
-  RxObservablesGroupedObservable *val$g_;
+  RxObservablesGroupedObservable *val$proxyG_;
 }
 
 - (NSString *)callWithId:(NSString *)v;
@@ -1756,7 +1761,7 @@ __attribute__((unused)) static RxInternalOperatorsOperatorGroupByTest_$60 *creat
 
 J2OBJC_EMPTY_STATIC_INIT(RxInternalOperatorsOperatorGroupByTest_$60_$1)
 
-J2OBJC_FIELD_SETTER(RxInternalOperatorsOperatorGroupByTest_$60_$1, val$g_, RxObservablesGroupedObservable *)
+J2OBJC_FIELD_SETTER(RxInternalOperatorsOperatorGroupByTest_$60_$1, val$proxyG_, RxObservablesGroupedObservable *)
 
 __attribute__((unused)) static void RxInternalOperatorsOperatorGroupByTest_$60_$1_initWithRxObservablesGroupedObservable_(RxInternalOperatorsOperatorGroupByTest_$60_$1 *self, RxObservablesGroupedObservable *capture$0);
 
@@ -1889,7 +1894,7 @@ __attribute__((unused)) static RxInternalOperatorsOperatorGroupByTest_$64 *creat
 
 @interface RxInternalOperatorsOperatorGroupByTest_$64_$1 : NSObject < RxFunctionsFunc1 > {
  @public
-  RxObservablesGroupedObservable *val$g_;
+  RxObservablesGroupedObservable *val$weakG_;
 }
 
 - (NSString *)callWithId:(JavaLangInteger *)l;
@@ -1900,7 +1905,7 @@ __attribute__((unused)) static RxInternalOperatorsOperatorGroupByTest_$64 *creat
 
 J2OBJC_EMPTY_STATIC_INIT(RxInternalOperatorsOperatorGroupByTest_$64_$1)
 
-J2OBJC_FIELD_SETTER(RxInternalOperatorsOperatorGroupByTest_$64_$1, val$g_, RxObservablesGroupedObservable *)
+J2OBJC_FIELD_SETTER(RxInternalOperatorsOperatorGroupByTest_$64_$1, val$weakG_, RxObservablesGroupedObservable *)
 
 __attribute__((unused)) static void RxInternalOperatorsOperatorGroupByTest_$64_$1_initWithRxObservablesGroupedObservable_(RxInternalOperatorsOperatorGroupByTest_$64_$1 *self, RxObservablesGroupedObservable *capture$0);
 
@@ -3297,7 +3302,7 @@ J2OBJC_IGNORE_DESIGNATED_END
     { "EVICTING_MAP_ELEMENT_SELECTOR", "LRxFunctionsFunc1;", .constantValue.asLong = 0, 0x1a, -1, 76, 73, -1 },
     { "EVICTING_MAP_KEY_SELECTOR", "LRxFunctionsFunc1;", .constantValue.asLong = 0, 0x1a, -1, 77, 73, -1 },
   };
-  static const void *ptrTable[] = { (void *)&RxInternalOperatorsOperatorGroupByTest__Annotations$0, (void *)&RxInternalOperatorsOperatorGroupByTest__Annotations$1, (void *)&RxInternalOperatorsOperatorGroupByTest__Annotations$2, (void *)&RxInternalOperatorsOperatorGroupByTest__Annotations$3, (void *)&RxInternalOperatorsOperatorGroupByTest__Annotations$4, "toMap", "LRxObservable;", "<K:Ljava/lang/Object;V:Ljava/lang/Object;>(Lrx/Observable<Lrx/observables/GroupedObservable<TK;TV;>;>;)Ljava/util/Map<TK;Ljava/util/Collection<TV;>;>;", "LNSException;", (void *)&RxInternalOperatorsOperatorGroupByTest__Annotations$5, "LJavaLangInterruptedException;", (void *)&RxInternalOperatorsOperatorGroupByTest__Annotations$6, (void *)&RxInternalOperatorsOperatorGroupByTest__Annotations$7, "doTestUnsubscribeOnNestedTakeAndAsyncInfiniteStream", "LRxObservable;LJavaUtilConcurrentAtomicAtomicInteger;", "(Lrx/Observable<Lrx/internal/operators/OperatorGroupByTest$Event;>;Ljava/util/concurrent/atomic/AtomicInteger;)V", (void *)&RxInternalOperatorsOperatorGroupByTest__Annotations$8, (void *)&RxInternalOperatorsOperatorGroupByTest__Annotations$9, (void *)&RxInternalOperatorsOperatorGroupByTest__Annotations$10, (void *)&RxInternalOperatorsOperatorGroupByTest__Annotations$11, (void *)&RxInternalOperatorsOperatorGroupByTest__Annotations$12, (void *)&RxInternalOperatorsOperatorGroupByTest__Annotations$13, (void *)&RxInternalOperatorsOperatorGroupByTest__Annotations$14, (void *)&RxInternalOperatorsOperatorGroupByTest__Annotations$15, (void *)&RxInternalOperatorsOperatorGroupByTest__Annotations$16, (void *)&RxInternalOperatorsOperatorGroupByTest__Annotations$17, "ASYNC_INFINITE_OBSERVABLE_OF_EVENT", "ILJavaUtilConcurrentAtomicAtomicInteger;LJavaUtilConcurrentAtomicAtomicInteger;", "(ILjava/util/concurrent/atomic/AtomicInteger;Ljava/util/concurrent/atomic/AtomicInteger;)Lrx/Observable<Lrx/internal/operators/OperatorGroupByTest$Event;>;", "SYNC_INFINITE_OBSERVABLE_OF_EVENT", (void *)&RxInternalOperatorsOperatorGroupByTest__Annotations$18, (void *)&RxInternalOperatorsOperatorGroupByTest__Annotations$19, "just", "LNSObject;", "<T:Ljava/lang/Object;R:Ljava/lang/Object;>(TR;)Lrx/functions/Func1<TT;TR;>;", "fail", "<T:Ljava/lang/Object;>(TT;)Lrx/functions/Func1<Ljava/lang/Integer;TT;>;", "fail2", (void *)&RxInternalOperatorsOperatorGroupByTest__Annotations$20, (void *)&RxInternalOperatorsOperatorGroupByTest__Annotations$21, (void *)&RxInternalOperatorsOperatorGroupByTest__Annotations$22, (void *)&RxInternalOperatorsOperatorGroupByTest__Annotations$23, (void *)&RxInternalOperatorsOperatorGroupByTest__Annotations$24, (void *)&RxInternalOperatorsOperatorGroupByTest__Annotations$25, (void *)&RxInternalOperatorsOperatorGroupByTest__Annotations$26, (void *)&RxInternalOperatorsOperatorGroupByTest__Annotations$27, (void *)&RxInternalOperatorsOperatorGroupByTest__Annotations$28, (void *)&RxInternalOperatorsOperatorGroupByTest__Annotations$29, (void *)&RxInternalOperatorsOperatorGroupByTest__Annotations$30, (void *)&RxInternalOperatorsOperatorGroupByTest__Annotations$31, (void *)&RxInternalOperatorsOperatorGroupByTest__Annotations$32, (void *)&RxInternalOperatorsOperatorGroupByTest__Annotations$33, (void *)&RxInternalOperatorsOperatorGroupByTest__Annotations$34, (void *)&RxInternalOperatorsOperatorGroupByTest__Annotations$35, (void *)&RxInternalOperatorsOperatorGroupByTest__Annotations$36, (void *)&RxInternalOperatorsOperatorGroupByTest__Annotations$37, (void *)&RxInternalOperatorsOperatorGroupByTest__Annotations$38, (void *)&RxInternalOperatorsOperatorGroupByTest__Annotations$39, (void *)&RxInternalOperatorsOperatorGroupByTest__Annotations$40, (void *)&RxInternalOperatorsOperatorGroupByTest__Annotations$41, (void *)&RxInternalOperatorsOperatorGroupByTest__Annotations$42, "createMapFactoryThatThrowsOnPut", "LJavaLangRuntimeException;", "(Ljava/lang/RuntimeException;)Lrx/functions/Func1<Lrx/functions/Action1<Ljava/lang/Integer;>;Ljava/util/Map<Ljava/lang/Integer;Ljava/lang/Object;>;>;", (void *)&RxInternalOperatorsOperatorGroupByTest__Annotations$43, (void *)&RxInternalOperatorsOperatorGroupByTest__Annotations$44, (void *)&RxInternalOperatorsOperatorGroupByTest__Annotations$45, "createMapFactoryThatThrowsOnCreate", "Lrx/functions/Func1<Ljava/lang/String;Ljava/lang/Integer;>;", &RxInternalOperatorsOperatorGroupByTest_IS_EVEN, "Lrx/functions/Func1<Ljava/lang/Long;Ljava/lang/Boolean;>;", &RxInternalOperatorsOperatorGroupByTest_IS_EVEN2, "Lrx/functions/Func1<Ljava/lang/Integer;Ljava/lang/Boolean;>;", "Lrx/functions/Func1<Ljava/lang/Integer;Ljava/lang/Integer;>;", &RxInternalOperatorsOperatorGroupByTest_FLATTEN_INTEGER, "Lrx/functions/Func1<Lrx/observables/GroupedObservable<Ljava/lang/Integer;Ljava/lang/Integer;>;Lrx/Observable<Ljava/lang/Integer;>;>;", &RxInternalOperatorsOperatorGroupByTest_EVICTING_MAP_ELEMENT_SELECTOR, &RxInternalOperatorsOperatorGroupByTest_EVICTING_MAP_KEY_SELECTOR, "LRxInternalOperatorsOperatorGroupByTest_Event;LRxInternalOperatorsOperatorGroupByTest_MapFactoryEvictionFunction;" };
+  static const void *ptrTable[] = { (void *)&RxInternalOperatorsOperatorGroupByTest__Annotations$0, (void *)&RxInternalOperatorsOperatorGroupByTest__Annotations$1, (void *)&RxInternalOperatorsOperatorGroupByTest__Annotations$2, (void *)&RxInternalOperatorsOperatorGroupByTest__Annotations$3, (void *)&RxInternalOperatorsOperatorGroupByTest__Annotations$4, "toMap", "LRxObservable;", "<K:Ljava/lang/Object;V:Ljava/lang/Object;>(Lrx/Observable<Lrx/observables/GroupedObservable<TK;TV;>;>;)Ljava/util/Map<TK;Ljava/util/Collection<TV;>;>;", "LNSException;", (void *)&RxInternalOperatorsOperatorGroupByTest__Annotations$5, "LJavaLangInterruptedException;", (void *)&RxInternalOperatorsOperatorGroupByTest__Annotations$6, (void *)&RxInternalOperatorsOperatorGroupByTest__Annotations$7, "doTestUnsubscribeOnNestedTakeAndAsyncInfiniteStream", "LRxObservable;LJavaUtilConcurrentAtomicAtomicInteger;", "(Lrx/Observable<Lrx/internal/operators/OperatorGroupByTest$Event;>;Ljava/util/concurrent/atomic/AtomicInteger;)V", (void *)&RxInternalOperatorsOperatorGroupByTest__Annotations$8, (void *)&RxInternalOperatorsOperatorGroupByTest__Annotations$9, (void *)&RxInternalOperatorsOperatorGroupByTest__Annotations$10, (void *)&RxInternalOperatorsOperatorGroupByTest__Annotations$11, (void *)&RxInternalOperatorsOperatorGroupByTest__Annotations$12, (void *)&RxInternalOperatorsOperatorGroupByTest__Annotations$13, (void *)&RxInternalOperatorsOperatorGroupByTest__Annotations$14, (void *)&RxInternalOperatorsOperatorGroupByTest__Annotations$15, (void *)&RxInternalOperatorsOperatorGroupByTest__Annotations$16, (void *)&RxInternalOperatorsOperatorGroupByTest__Annotations$17, "ASYNC_INFINITE_OBSERVABLE_OF_EVENT", "ILJavaUtilConcurrentAtomicAtomicInteger;LJavaUtilConcurrentAtomicAtomicInteger;", "(ILjava/util/concurrent/atomic/AtomicInteger;Ljava/util/concurrent/atomic/AtomicInteger;)Lrx/Observable<Lrx/internal/operators/OperatorGroupByTest$Event;>;", "SYNC_INFINITE_OBSERVABLE_OF_EVENT", (void *)&RxInternalOperatorsOperatorGroupByTest__Annotations$18, (void *)&RxInternalOperatorsOperatorGroupByTest__Annotations$19, "just", "LNSObject;", "<T:Ljava/lang/Object;R:Ljava/lang/Object;>(TR;)Lrx/functions/Func1<TT;TR;>;", "fail", "<T:Ljava/lang/Object;>(TT;)Lrx/functions/Func1<Ljava/lang/Integer;TT;>;", "fail2", (void *)&RxInternalOperatorsOperatorGroupByTest__Annotations$20, (void *)&RxInternalOperatorsOperatorGroupByTest__Annotations$21, (void *)&RxInternalOperatorsOperatorGroupByTest__Annotations$22, (void *)&RxInternalOperatorsOperatorGroupByTest__Annotations$23, (void *)&RxInternalOperatorsOperatorGroupByTest__Annotations$24, (void *)&RxInternalOperatorsOperatorGroupByTest__Annotations$25, (void *)&RxInternalOperatorsOperatorGroupByTest__Annotations$26, (void *)&RxInternalOperatorsOperatorGroupByTest__Annotations$27, (void *)&RxInternalOperatorsOperatorGroupByTest__Annotations$28, (void *)&RxInternalOperatorsOperatorGroupByTest__Annotations$29, (void *)&RxInternalOperatorsOperatorGroupByTest__Annotations$30, (void *)&RxInternalOperatorsOperatorGroupByTest__Annotations$31, (void *)&RxInternalOperatorsOperatorGroupByTest__Annotations$32, (void *)&RxInternalOperatorsOperatorGroupByTest__Annotations$33, (void *)&RxInternalOperatorsOperatorGroupByTest__Annotations$34, (void *)&RxInternalOperatorsOperatorGroupByTest__Annotations$35, (void *)&RxInternalOperatorsOperatorGroupByTest__Annotations$36, (void *)&RxInternalOperatorsOperatorGroupByTest__Annotations$37, (void *)&RxInternalOperatorsOperatorGroupByTest__Annotations$38, (void *)&RxInternalOperatorsOperatorGroupByTest__Annotations$39, (void *)&RxInternalOperatorsOperatorGroupByTest__Annotations$40, (void *)&RxInternalOperatorsOperatorGroupByTest__Annotations$41, (void *)&RxInternalOperatorsOperatorGroupByTest__Annotations$42, "createMapFactoryThatThrowsOnPut", "LJavaLangRuntimeException;", "(Ljava/lang/RuntimeException;)Lrx/functions/Func1<Lrx/functions/Action1<Ljava/lang/Integer;>;Ljava/util/Map<Ljava/lang/Integer;Ljava/lang/Object;>;>;", (void *)&RxInternalOperatorsOperatorGroupByTest__Annotations$43, (void *)&RxInternalOperatorsOperatorGroupByTest__Annotations$44, (void *)&RxInternalOperatorsOperatorGroupByTest__Annotations$45, "createMapFactoryThatThrowsOnCreate", "Lrx/functions/Func1<Ljava/lang/String;Ljava/lang/Integer;>;", &RxInternalOperatorsOperatorGroupByTest_IS_EVEN, "Lrx/functions/Func1<Ljava/lang/Long;Ljava/lang/Boolean;>;", &RxInternalOperatorsOperatorGroupByTest_IS_EVEN2, "Lrx/functions/Func1<Ljava/lang/Integer;Ljava/lang/Boolean;>;", "Lrx/functions/Func1<Ljava/lang/Integer;Ljava/lang/Integer;>;", &RxInternalOperatorsOperatorGroupByTest_FLATTEN_INTEGER, "Lrx/functions/Func1<Lrx/observables/GroupedObservable<Ljava/lang/Integer;Ljava/lang/Integer;>;Lrx/Observable<Ljava/lang/Integer;>;>;", &RxInternalOperatorsOperatorGroupByTest_EVICTING_MAP_ELEMENT_SELECTOR, &RxInternalOperatorsOperatorGroupByTest_EVICTING_MAP_KEY_SELECTOR, "LRxInternalOperatorsOperatorGroupByTest_Event;LRxInternalOperatorsOperatorGroupByTest_MapFactoryEvictionFunction;LRxInternalOperatorsOperatorGroupByTest_GroupByBackpressureFunc1;LRxInternalOperatorsOperatorGroupByTest_GroupsWithNestedSubscribeOnFunc1;LRxInternalOperatorsOperatorGroupByTest_ErrorFunc1;" };
   static const J2ObjcClassInfo _RxInternalOperatorsOperatorGroupByTest = { "OperatorGroupByTest", "rx.internal.operators", ptrTable, methods, fields, 7, 0x1, 56, 8, -1, 78, -1, -1, -1 };
   return &_RxInternalOperatorsOperatorGroupByTest;
 }
@@ -3610,9 +3615,9 @@ J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxInternalOperatorsOperatorGroupByTest_Event)
   return JreStrcat("@C@", [((RxObservablesGroupedObservable *) nil_chk(g_)) getKey], ':', x);
 }
 
-- (void)__javaClone:(RxInternalOperatorsOperatorGroupByTest_MapFactoryEvictionFunction *)original {
-  [super __javaClone:original];
-  [g_ release];
+- (void)dealloc {
+  RELEASE_(g_);
+  [super dealloc];
 }
 
 + (const J2ObjcClassInfo *)__metadata {
@@ -3637,7 +3642,7 @@ J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxInternalOperatorsOperatorGroupByTest_Event)
 
 void RxInternalOperatorsOperatorGroupByTest_MapFactoryEvictionFunction_initWithRxObservablesGroupedObservable_(RxInternalOperatorsOperatorGroupByTest_MapFactoryEvictionFunction *self, RxObservablesGroupedObservable *g) {
   NSObject_init(self);
-  self->g_ = g;
+  JreStrongAssign(&self->g_, g);
 }
 
 RxInternalOperatorsOperatorGroupByTest_MapFactoryEvictionFunction *new_RxInternalOperatorsOperatorGroupByTest_MapFactoryEvictionFunction_initWithRxObservablesGroupedObservable_(RxObservablesGroupedObservable *g) {
@@ -3649,6 +3654,170 @@ RxInternalOperatorsOperatorGroupByTest_MapFactoryEvictionFunction *create_RxInte
 }
 
 J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxInternalOperatorsOperatorGroupByTest_MapFactoryEvictionFunction)
+
+@implementation RxInternalOperatorsOperatorGroupByTest_GroupByBackpressureFunc1
+
+- (instancetype)initWithRxObservablesGroupedObservable:(RxObservablesGroupedObservable *)g {
+  RxInternalOperatorsOperatorGroupByTest_GroupByBackpressureFunc1_initWithRxObservablesGroupedObservable_(self, g);
+  return self;
+}
+
+- (NSString *)callWithId:(JavaLangInteger *)l {
+  if ([((JavaLangBoolean *) nil_chk([((RxObservablesGroupedObservable *) nil_chk(g_)) getKey])) booleanValue]) {
+    @try {
+      JavaLangThread_sleepWithLong_(1);
+    }
+    @catch (JavaLangInterruptedException *e) {
+    }
+    return JreStrcat("@$", l, @" is even.");
+  }
+  else {
+    return JreStrcat("@$", l, @" is odd.");
+  }
+}
+
+- (void)__javaClone:(RxInternalOperatorsOperatorGroupByTest_GroupByBackpressureFunc1 *)original {
+  [super __javaClone:original];
+  [g_ release];
+}
+
++ (const J2ObjcClassInfo *)__metadata {
+  static J2ObjcMethodInfo methods[] = {
+    { NULL, NULL, 0x1, -1, 0, -1, 1, -1, -1 },
+    { NULL, "LNSString;", 0x1, 2, 3, -1, -1, -1, -1 },
+  };
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Wobjc-multiple-method-names"
+  methods[0].selector = @selector(initWithRxObservablesGroupedObservable:);
+  methods[1].selector = @selector(callWithId:);
+  #pragma clang diagnostic pop
+  static const J2ObjcFieldInfo fields[] = {
+    { "g_", "LRxObservablesGroupedObservable;", .constantValue.asLong = 0, 0x12, -1, -1, 4, -1 },
+  };
+  static const void *ptrTable[] = { "LRxObservablesGroupedObservable;", "(Lrx/observables/GroupedObservable<Ljava/lang/Boolean;Ljava/lang/Integer;>;)V", "call", "LJavaLangInteger;", "Lrx/observables/GroupedObservable<Ljava/lang/Boolean;Ljava/lang/Integer;>;", "LRxInternalOperatorsOperatorGroupByTest;", "Ljava/lang/Object;Lrx/functions/Func1<Ljava/lang/Integer;Ljava/lang/String;>;" };
+  static const J2ObjcClassInfo _RxInternalOperatorsOperatorGroupByTest_GroupByBackpressureFunc1 = { "GroupByBackpressureFunc1", "rx.internal.operators", ptrTable, methods, fields, 7, 0xa, 2, 1, 5, -1, -1, 6, -1 };
+  return &_RxInternalOperatorsOperatorGroupByTest_GroupByBackpressureFunc1;
+}
+
+@end
+
+void RxInternalOperatorsOperatorGroupByTest_GroupByBackpressureFunc1_initWithRxObservablesGroupedObservable_(RxInternalOperatorsOperatorGroupByTest_GroupByBackpressureFunc1 *self, RxObservablesGroupedObservable *g) {
+  NSObject_init(self);
+  self->g_ = g;
+}
+
+RxInternalOperatorsOperatorGroupByTest_GroupByBackpressureFunc1 *new_RxInternalOperatorsOperatorGroupByTest_GroupByBackpressureFunc1_initWithRxObservablesGroupedObservable_(RxObservablesGroupedObservable *g) {
+  J2OBJC_NEW_IMPL(RxInternalOperatorsOperatorGroupByTest_GroupByBackpressureFunc1, initWithRxObservablesGroupedObservable_, g)
+}
+
+RxInternalOperatorsOperatorGroupByTest_GroupByBackpressureFunc1 *create_RxInternalOperatorsOperatorGroupByTest_GroupByBackpressureFunc1_initWithRxObservablesGroupedObservable_(RxObservablesGroupedObservable *g) {
+  J2OBJC_CREATE_IMPL(RxInternalOperatorsOperatorGroupByTest_GroupByBackpressureFunc1, initWithRxObservablesGroupedObservable_, g)
+}
+
+J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxInternalOperatorsOperatorGroupByTest_GroupByBackpressureFunc1)
+
+@implementation RxInternalOperatorsOperatorGroupByTest_GroupsWithNestedSubscribeOnFunc1
+
+- (instancetype)initWithRxObservablesGroupedObservable:(RxObservablesGroupedObservable *)group {
+  RxInternalOperatorsOperatorGroupByTest_GroupsWithNestedSubscribeOnFunc1_initWithRxObservablesGroupedObservable_(self, group);
+  return self;
+}
+
+- (NSString *)callWithId:(JavaLangInteger *)t1 {
+  [((JavaIoPrintStream *) nil_chk(JreLoadStatic(JavaLangSystem, out))) printlnWithNSString:JreStrcat("$@$@", @"Received: ", t1, @" on group : ", [((RxObservablesGroupedObservable *) nil_chk(group_)) getKey])];
+  return JreStrcat("$@", @"first groups: ", t1);
+}
+
+- (void)__javaClone:(RxInternalOperatorsOperatorGroupByTest_GroupsWithNestedSubscribeOnFunc1 *)original {
+  [super __javaClone:original];
+  [group_ release];
+}
+
++ (const J2ObjcClassInfo *)__metadata {
+  static J2ObjcMethodInfo methods[] = {
+    { NULL, NULL, 0x1, -1, 0, -1, 1, -1, -1 },
+    { NULL, "LNSString;", 0x1, 2, 3, -1, -1, -1, -1 },
+  };
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Wobjc-multiple-method-names"
+  methods[0].selector = @selector(initWithRxObservablesGroupedObservable:);
+  methods[1].selector = @selector(callWithId:);
+  #pragma clang diagnostic pop
+  static const J2ObjcFieldInfo fields[] = {
+    { "group_", "LRxObservablesGroupedObservable;", .constantValue.asLong = 0, 0x12, -1, -1, 4, -1 },
+  };
+  static const void *ptrTable[] = { "LRxObservablesGroupedObservable;", "(Lrx/observables/GroupedObservable<Ljava/lang/Integer;Ljava/lang/Integer;>;)V", "call", "LJavaLangInteger;", "Lrx/observables/GroupedObservable<Ljava/lang/Integer;Ljava/lang/Integer;>;", "LRxInternalOperatorsOperatorGroupByTest;", "Ljava/lang/Object;Lrx/functions/Func1<Ljava/lang/Integer;Ljava/lang/String;>;" };
+  static const J2ObjcClassInfo _RxInternalOperatorsOperatorGroupByTest_GroupsWithNestedSubscribeOnFunc1 = { "GroupsWithNestedSubscribeOnFunc1", "rx.internal.operators", ptrTable, methods, fields, 7, 0xa, 2, 1, 5, -1, -1, 6, -1 };
+  return &_RxInternalOperatorsOperatorGroupByTest_GroupsWithNestedSubscribeOnFunc1;
+}
+
+@end
+
+void RxInternalOperatorsOperatorGroupByTest_GroupsWithNestedSubscribeOnFunc1_initWithRxObservablesGroupedObservable_(RxInternalOperatorsOperatorGroupByTest_GroupsWithNestedSubscribeOnFunc1 *self, RxObservablesGroupedObservable *group) {
+  NSObject_init(self);
+  self->group_ = group;
+}
+
+RxInternalOperatorsOperatorGroupByTest_GroupsWithNestedSubscribeOnFunc1 *new_RxInternalOperatorsOperatorGroupByTest_GroupsWithNestedSubscribeOnFunc1_initWithRxObservablesGroupedObservable_(RxObservablesGroupedObservable *group) {
+  J2OBJC_NEW_IMPL(RxInternalOperatorsOperatorGroupByTest_GroupsWithNestedSubscribeOnFunc1, initWithRxObservablesGroupedObservable_, group)
+}
+
+RxInternalOperatorsOperatorGroupByTest_GroupsWithNestedSubscribeOnFunc1 *create_RxInternalOperatorsOperatorGroupByTest_GroupsWithNestedSubscribeOnFunc1_initWithRxObservablesGroupedObservable_(RxObservablesGroupedObservable *group) {
+  J2OBJC_CREATE_IMPL(RxInternalOperatorsOperatorGroupByTest_GroupsWithNestedSubscribeOnFunc1, initWithRxObservablesGroupedObservable_, group)
+}
+
+J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxInternalOperatorsOperatorGroupByTest_GroupsWithNestedSubscribeOnFunc1)
+
+@implementation RxInternalOperatorsOperatorGroupByTest_ErrorFunc1
+
+- (instancetype)initWithRxObservablesGroupedObservable:(RxObservablesGroupedObservable *)o {
+  RxInternalOperatorsOperatorGroupByTest_ErrorFunc1_initWithRxObservablesGroupedObservable_(self, o);
+  return self;
+}
+
+- (NSString *)callWithId:(NSString *)v {
+  return JreStrcat("$@$$", @"Event => key: ", [((RxObservablesGroupedObservable *) nil_chk(o_)) getKey], @" value: ", v);
+}
+
+- (void)dealloc {
+  RELEASE_(o_);
+  [super dealloc];
+}
+
++ (const J2ObjcClassInfo *)__metadata {
+  static J2ObjcMethodInfo methods[] = {
+    { NULL, NULL, 0x1, -1, 0, -1, 1, -1, -1 },
+    { NULL, "LNSString;", 0x1, 2, 3, -1, -1, -1, -1 },
+  };
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Wobjc-multiple-method-names"
+  methods[0].selector = @selector(initWithRxObservablesGroupedObservable:);
+  methods[1].selector = @selector(callWithId:);
+  #pragma clang diagnostic pop
+  static const J2ObjcFieldInfo fields[] = {
+    { "o_", "LRxObservablesGroupedObservable;", .constantValue.asLong = 0, 0x12, -1, -1, 4, -1 },
+  };
+  static const void *ptrTable[] = { "LRxObservablesGroupedObservable;", "(Lrx/observables/GroupedObservable<Ljava/lang/Integer;Ljava/lang/String;>;)V", "call", "LNSString;", "Lrx/observables/GroupedObservable<Ljava/lang/Integer;Ljava/lang/String;>;", "LRxInternalOperatorsOperatorGroupByTest;", "Ljava/lang/Object;Lrx/functions/Func1<Ljava/lang/String;Ljava/lang/String;>;" };
+  static const J2ObjcClassInfo _RxInternalOperatorsOperatorGroupByTest_ErrorFunc1 = { "ErrorFunc1", "rx.internal.operators", ptrTable, methods, fields, 7, 0xa, 2, 1, 5, -1, -1, 6, -1 };
+  return &_RxInternalOperatorsOperatorGroupByTest_ErrorFunc1;
+}
+
+@end
+
+void RxInternalOperatorsOperatorGroupByTest_ErrorFunc1_initWithRxObservablesGroupedObservable_(RxInternalOperatorsOperatorGroupByTest_ErrorFunc1 *self, RxObservablesGroupedObservable *o) {
+  NSObject_init(self);
+  JreStrongAssign(&self->o_, o);
+}
+
+RxInternalOperatorsOperatorGroupByTest_ErrorFunc1 *new_RxInternalOperatorsOperatorGroupByTest_ErrorFunc1_initWithRxObservablesGroupedObservable_(RxObservablesGroupedObservable *o) {
+  J2OBJC_NEW_IMPL(RxInternalOperatorsOperatorGroupByTest_ErrorFunc1, initWithRxObservablesGroupedObservable_, o)
+}
+
+RxInternalOperatorsOperatorGroupByTest_ErrorFunc1 *create_RxInternalOperatorsOperatorGroupByTest_ErrorFunc1_initWithRxObservablesGroupedObservable_(RxObservablesGroupedObservable *o) {
+  J2OBJC_CREATE_IMPL(RxInternalOperatorsOperatorGroupByTest_ErrorFunc1, initWithRxObservablesGroupedObservable_, o)
+}
+
+J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxInternalOperatorsOperatorGroupByTest_ErrorFunc1)
 
 @implementation RxInternalOperatorsOperatorGroupByTest_$1
 
@@ -3696,7 +3865,7 @@ RxInternalOperatorsOperatorGroupByTest_$1 *create_RxInternalOperatorsOperatorGro
 
 - (RxObservable *)callWithId:(RxObservablesGroupedObservable *)o {
   [((JavaUtilConcurrentAtomicAtomicInteger *) nil_chk(val$groupCounter_)) incrementAndGet];
-  return [((RxObservablesGroupedObservable *) nil_chk(o)) mapWithRxFunctionsFunc1:create_RxInternalOperatorsOperatorGroupByTest_$7_$1_initWithRxObservablesGroupedObservable_(o)];
+  return [((RxObservablesGroupedObservable *) nil_chk(o)) mapWithRxFunctionsFunc1:create_RxInternalOperatorsOperatorGroupByTest_ErrorFunc1_initWithRxObservablesGroupedObservable_(o)];
 }
 
 - (instancetype)initWithJavaUtilConcurrentAtomicAtomicInteger:(JavaUtilConcurrentAtomicAtomicInteger *)capture$0 {
@@ -3740,55 +3909,6 @@ RxInternalOperatorsOperatorGroupByTest_$7 *new_RxInternalOperatorsOperatorGroupB
 
 RxInternalOperatorsOperatorGroupByTest_$7 *create_RxInternalOperatorsOperatorGroupByTest_$7_initWithJavaUtilConcurrentAtomicAtomicInteger_(JavaUtilConcurrentAtomicAtomicInteger *capture$0) {
   J2OBJC_CREATE_IMPL(RxInternalOperatorsOperatorGroupByTest_$7, initWithJavaUtilConcurrentAtomicAtomicInteger_, capture$0)
-}
-
-@implementation RxInternalOperatorsOperatorGroupByTest_$7_$1
-
-- (NSString *)callWithId:(NSString *)v {
-  return JreStrcat("$@$$", @"Event => key: ", [((RxObservablesGroupedObservable *) nil_chk(val$o_)) getKey], @" value: ", v);
-}
-
-- (instancetype)initWithRxObservablesGroupedObservable:(RxObservablesGroupedObservable *)capture$0 {
-  RxInternalOperatorsOperatorGroupByTest_$7_$1_initWithRxObservablesGroupedObservable_(self, capture$0);
-  return self;
-}
-
-- (void)dealloc {
-  RELEASE_(val$o_);
-  [super dealloc];
-}
-
-+ (const J2ObjcClassInfo *)__metadata {
-  static J2ObjcMethodInfo methods[] = {
-    { NULL, "LNSString;", 0x1, 0, 1, -1, -1, -1, -1 },
-    { NULL, NULL, 0x0, -1, 2, -1, 3, -1, -1 },
-  };
-  #pragma clang diagnostic push
-  #pragma clang diagnostic ignored "-Wobjc-multiple-method-names"
-  methods[0].selector = @selector(callWithId:);
-  methods[1].selector = @selector(initWithRxObservablesGroupedObservable:);
-  #pragma clang diagnostic pop
-  static const J2ObjcFieldInfo fields[] = {
-    { "val$o_", "LRxObservablesGroupedObservable;", .constantValue.asLong = 0, 0x1012, -1, -1, 4, -1 },
-  };
-  static const void *ptrTable[] = { "call", "LNSString;", "LRxObservablesGroupedObservable;", "(Lrx/observables/GroupedObservable<Ljava/lang/Integer;Ljava/lang/String;>;)V", "Lrx/observables/GroupedObservable<Ljava/lang/Integer;Ljava/lang/String;>;", "LRxInternalOperatorsOperatorGroupByTest_$7;", "callWithId:", "Ljava/lang/Object;Lrx/functions/Func1<Ljava/lang/String;Ljava/lang/String;>;" };
-  static const J2ObjcClassInfo _RxInternalOperatorsOperatorGroupByTest_$7_$1 = { "", "rx.internal.operators", ptrTable, methods, fields, 7, 0x8008, 2, 1, 5, -1, 6, 7, -1 };
-  return &_RxInternalOperatorsOperatorGroupByTest_$7_$1;
-}
-
-@end
-
-void RxInternalOperatorsOperatorGroupByTest_$7_$1_initWithRxObservablesGroupedObservable_(RxInternalOperatorsOperatorGroupByTest_$7_$1 *self, RxObservablesGroupedObservable *capture$0) {
-  JreStrongAssign(&self->val$o_, capture$0);
-  NSObject_init(self);
-}
-
-RxInternalOperatorsOperatorGroupByTest_$7_$1 *new_RxInternalOperatorsOperatorGroupByTest_$7_$1_initWithRxObservablesGroupedObservable_(RxObservablesGroupedObservable *capture$0) {
-  J2OBJC_NEW_IMPL(RxInternalOperatorsOperatorGroupByTest_$7_$1, initWithRxObservablesGroupedObservable_, capture$0)
-}
-
-RxInternalOperatorsOperatorGroupByTest_$7_$1 *create_RxInternalOperatorsOperatorGroupByTest_$7_$1_initWithRxObservablesGroupedObservable_(RxObservablesGroupedObservable *capture$0) {
-  J2OBJC_CREATE_IMPL(RxInternalOperatorsOperatorGroupByTest_$7_$1, initWithRxObservablesGroupedObservable_, capture$0)
 }
 
 @implementation RxInternalOperatorsOperatorGroupByTest_$8
@@ -3862,7 +3982,8 @@ RxInternalOperatorsOperatorGroupByTest_$8 *create_RxInternalOperatorsOperatorGro
 
 - (void)callWithId:(RxObservablesGroupedObservable *)o {
   [((JavaUtilConcurrentConcurrentHashMap *) nil_chk(val$result_)) putWithId:[((RxObservablesGroupedObservable *) nil_chk(o)) getKey] withId:create_JavaUtilConcurrentConcurrentLinkedQueue_init()];
-  [o subscribeWithRxFunctionsAction1:create_RxInternalOperatorsOperatorGroupByTest_$9_$1_initWithRxInternalOperatorsOperatorGroupByTest_$9_withRxObservablesGroupedObservable_(self, o)];
+  RxObservablesGroupedObservable *weakO = ComGoogleJ2objcWeakProxy_forObjectWithId_(o);
+  [o subscribeWithRxFunctionsAction1:create_RxInternalOperatorsOperatorGroupByTest_$9_$1_initWithRxInternalOperatorsOperatorGroupByTest_$9_withRxObservablesGroupedObservable_(self, weakO)];
 }
 
 - (instancetype)initWithJavaUtilConcurrentConcurrentHashMap:(JavaUtilConcurrentConcurrentHashMap *)capture$0 {
@@ -3911,7 +4032,7 @@ RxInternalOperatorsOperatorGroupByTest_$9 *create_RxInternalOperatorsOperatorGro
 @implementation RxInternalOperatorsOperatorGroupByTest_$9_$1
 
 - (void)callWithId:(id)v {
-  [((id<JavaUtilCollection>) nil_chk([((JavaUtilConcurrentConcurrentHashMap *) nil_chk(this$0_->val$result_)) getWithId:[((RxObservablesGroupedObservable *) nil_chk(val$o_)) getKey]])) addWithId:v];
+  [((id<JavaUtilCollection>) nil_chk([((JavaUtilConcurrentConcurrentHashMap *) nil_chk(this$0_->val$result_)) getWithId:[((RxObservablesGroupedObservable *) nil_chk(val$weakO_)) getKey]])) addWithId:v];
 }
 
 - (instancetype)initWithRxInternalOperatorsOperatorGroupByTest_$9:(RxInternalOperatorsOperatorGroupByTest_$9 *)outer$
@@ -3922,7 +4043,7 @@ RxInternalOperatorsOperatorGroupByTest_$9 *create_RxInternalOperatorsOperatorGro
 
 - (void)dealloc {
   RELEASE_(this$0_);
-  RELEASE_(val$o_);
+  RELEASE_(val$weakO_);
   [super dealloc];
 }
 
@@ -3938,7 +4059,7 @@ RxInternalOperatorsOperatorGroupByTest_$9 *create_RxInternalOperatorsOperatorGro
   #pragma clang diagnostic pop
   static const J2ObjcFieldInfo fields[] = {
     { "this$0_", "LRxInternalOperatorsOperatorGroupByTest_$9;", .constantValue.asLong = 0, 0x1012, -1, -1, -1, -1 },
-    { "val$o_", "LRxObservablesGroupedObservable;", .constantValue.asLong = 0, 0x1012, -1, -1, 5, -1 },
+    { "val$weakO_", "LRxObservablesGroupedObservable;", .constantValue.asLong = 0, 0x1012, -1, -1, 5, -1 },
   };
   static const void *ptrTable[] = { "call", "LNSObject;", "(TV;)V", "LRxInternalOperatorsOperatorGroupByTest_$9;LRxObservablesGroupedObservable;", "(Lrx/internal/operators/OperatorGroupByTest$9;Lrx/observables/GroupedObservable<TK;TV;>;)V", "Lrx/observables/GroupedObservable<TK;TV;>;", "LRxInternalOperatorsOperatorGroupByTest_$9;", "callWithId:", "Ljava/lang/Object;Lrx/functions/Action1<TV;>;" };
   static const J2ObjcClassInfo _RxInternalOperatorsOperatorGroupByTest_$9_$1 = { "", "rx.internal.operators", ptrTable, methods, fields, 7, 0x8008, 2, 2, 6, -1, 7, 8, -1 };
@@ -3949,7 +4070,7 @@ RxInternalOperatorsOperatorGroupByTest_$9 *create_RxInternalOperatorsOperatorGro
 
 void RxInternalOperatorsOperatorGroupByTest_$9_$1_initWithRxInternalOperatorsOperatorGroupByTest_$9_withRxObservablesGroupedObservable_(RxInternalOperatorsOperatorGroupByTest_$9_$1 *self, RxInternalOperatorsOperatorGroupByTest_$9 *outer$, RxObservablesGroupedObservable *capture$0) {
   JreStrongAssign(&self->this$0_, outer$);
-  JreStrongAssign(&self->val$o_, capture$0);
+  JreStrongAssign(&self->val$weakO_, capture$0);
   NSObject_init(self);
 }
 
@@ -6559,7 +6680,7 @@ RxInternalOperatorsOperatorGroupByTest_$45 *create_RxInternalOperatorsOperatorGr
 @implementation RxInternalOperatorsOperatorGroupByTest_$46
 
 - (RxObservable *)callWithId:(RxObservablesGroupedObservable *)group {
-  return [((RxObservable *) nil_chk([((RxObservablesGroupedObservable *) nil_chk(group)) subscribeOnWithRxScheduler:RxSchedulersSchedulers_newThread()])) mapWithRxFunctionsFunc1:create_RxInternalOperatorsOperatorGroupByTest_$46_$1_initWithRxObservablesGroupedObservable_(group)];
+  return [((RxObservable *) nil_chk([((RxObservablesGroupedObservable *) nil_chk(group)) subscribeOnWithRxScheduler:RxSchedulersSchedulers_newThread()])) mapWithRxFunctionsFunc1:create_RxInternalOperatorsOperatorGroupByTest_GroupsWithNestedSubscribeOnFunc1_initWithRxObservablesGroupedObservable_(group)];
 }
 
 J2OBJC_IGNORE_DESIGNATED_BEGIN
@@ -6596,56 +6717,6 @@ RxInternalOperatorsOperatorGroupByTest_$46 *new_RxInternalOperatorsOperatorGroup
 
 RxInternalOperatorsOperatorGroupByTest_$46 *create_RxInternalOperatorsOperatorGroupByTest_$46_init() {
   J2OBJC_CREATE_IMPL(RxInternalOperatorsOperatorGroupByTest_$46, init)
-}
-
-@implementation RxInternalOperatorsOperatorGroupByTest_$46_$1
-
-- (NSString *)callWithId:(JavaLangInteger *)t1 {
-  [((JavaIoPrintStream *) nil_chk(JreLoadStatic(JavaLangSystem, out))) printlnWithNSString:JreStrcat("$@$@", @"Received: ", t1, @" on group : ", [((RxObservablesGroupedObservable *) nil_chk(val$group_)) getKey])];
-  return JreStrcat("$@", @"first groups: ", t1);
-}
-
-- (instancetype)initWithRxObservablesGroupedObservable:(RxObservablesGroupedObservable *)capture$0 {
-  RxInternalOperatorsOperatorGroupByTest_$46_$1_initWithRxObservablesGroupedObservable_(self, capture$0);
-  return self;
-}
-
-- (void)dealloc {
-  RELEASE_(val$group_);
-  [super dealloc];
-}
-
-+ (const J2ObjcClassInfo *)__metadata {
-  static J2ObjcMethodInfo methods[] = {
-    { NULL, "LNSString;", 0x1, 0, 1, -1, -1, -1, -1 },
-    { NULL, NULL, 0x0, -1, 2, -1, 3, -1, -1 },
-  };
-  #pragma clang diagnostic push
-  #pragma clang diagnostic ignored "-Wobjc-multiple-method-names"
-  methods[0].selector = @selector(callWithId:);
-  methods[1].selector = @selector(initWithRxObservablesGroupedObservable:);
-  #pragma clang diagnostic pop
-  static const J2ObjcFieldInfo fields[] = {
-    { "val$group_", "LRxObservablesGroupedObservable;", .constantValue.asLong = 0, 0x1012, -1, -1, 4, -1 },
-  };
-  static const void *ptrTable[] = { "call", "LJavaLangInteger;", "LRxObservablesGroupedObservable;", "(Lrx/observables/GroupedObservable<Ljava/lang/Integer;Ljava/lang/Integer;>;)V", "Lrx/observables/GroupedObservable<Ljava/lang/Integer;Ljava/lang/Integer;>;", "LRxInternalOperatorsOperatorGroupByTest_$46;", "callWithId:", "Ljava/lang/Object;Lrx/functions/Func1<Ljava/lang/Integer;Ljava/lang/String;>;" };
-  static const J2ObjcClassInfo _RxInternalOperatorsOperatorGroupByTest_$46_$1 = { "", "rx.internal.operators", ptrTable, methods, fields, 7, 0x8008, 2, 1, 5, -1, 6, 7, -1 };
-  return &_RxInternalOperatorsOperatorGroupByTest_$46_$1;
-}
-
-@end
-
-void RxInternalOperatorsOperatorGroupByTest_$46_$1_initWithRxObservablesGroupedObservable_(RxInternalOperatorsOperatorGroupByTest_$46_$1 *self, RxObservablesGroupedObservable *capture$0) {
-  JreStrongAssign(&self->val$group_, capture$0);
-  NSObject_init(self);
-}
-
-RxInternalOperatorsOperatorGroupByTest_$46_$1 *new_RxInternalOperatorsOperatorGroupByTest_$46_$1_initWithRxObservablesGroupedObservable_(RxObservablesGroupedObservable *capture$0) {
-  J2OBJC_NEW_IMPL(RxInternalOperatorsOperatorGroupByTest_$46_$1, initWithRxObservablesGroupedObservable_, capture$0)
-}
-
-RxInternalOperatorsOperatorGroupByTest_$46_$1 *create_RxInternalOperatorsOperatorGroupByTest_$46_$1_initWithRxObservablesGroupedObservable_(RxObservablesGroupedObservable *capture$0) {
-  J2OBJC_CREATE_IMPL(RxInternalOperatorsOperatorGroupByTest_$46_$1, initWithRxObservablesGroupedObservable_, capture$0)
 }
 
 @implementation RxInternalOperatorsOperatorGroupByTest_$47
@@ -7113,7 +7184,7 @@ RxInternalOperatorsOperatorGroupByTest_$3 *create_RxInternalOperatorsOperatorGro
 @implementation RxInternalOperatorsOperatorGroupByTest_$54
 
 - (RxObservable *)callWithId:(RxObservablesGroupedObservable *)g {
-  return [((RxObservable *) nil_chk([((RxObservablesGroupedObservable *) nil_chk(g)) observeOnWithRxScheduler:RxSchedulersSchedulers_computation()])) mapWithRxFunctionsFunc1:create_RxInternalOperatorsOperatorGroupByTest_$54_$1_initWithRxObservablesGroupedObservable_(g)];
+  return [((RxObservable *) nil_chk([((RxObservablesGroupedObservable *) nil_chk(g)) observeOnWithRxScheduler:RxSchedulersSchedulers_computation()])) mapWithRxFunctionsFunc1:create_RxInternalOperatorsOperatorGroupByTest_GroupByBackpressureFunc1_initWithRxObservablesGroupedObservable_(g)];
 }
 
 J2OBJC_IGNORE_DESIGNATED_BEGIN
@@ -7150,65 +7221,6 @@ RxInternalOperatorsOperatorGroupByTest_$54 *new_RxInternalOperatorsOperatorGroup
 
 RxInternalOperatorsOperatorGroupByTest_$54 *create_RxInternalOperatorsOperatorGroupByTest_$54_init() {
   J2OBJC_CREATE_IMPL(RxInternalOperatorsOperatorGroupByTest_$54, init)
-}
-
-@implementation RxInternalOperatorsOperatorGroupByTest_$54_$1
-
-- (NSString *)callWithId:(JavaLangInteger *)l {
-  if ([((JavaLangBoolean *) nil_chk([((RxObservablesGroupedObservable *) nil_chk(val$g_)) getKey])) booleanValue]) {
-    @try {
-      JavaLangThread_sleepWithLong_(1);
-    }
-    @catch (JavaLangInterruptedException *e) {
-    }
-    return JreStrcat("@$", l, @" is even.");
-  }
-  else {
-    return JreStrcat("@$", l, @" is odd.");
-  }
-}
-
-- (instancetype)initWithRxObservablesGroupedObservable:(RxObservablesGroupedObservable *)capture$0 {
-  RxInternalOperatorsOperatorGroupByTest_$54_$1_initWithRxObservablesGroupedObservable_(self, capture$0);
-  return self;
-}
-
-- (void)dealloc {
-  RELEASE_(val$g_);
-  [super dealloc];
-}
-
-+ (const J2ObjcClassInfo *)__metadata {
-  static J2ObjcMethodInfo methods[] = {
-    { NULL, "LNSString;", 0x1, 0, 1, -1, -1, -1, -1 },
-    { NULL, NULL, 0x0, -1, 2, -1, 3, -1, -1 },
-  };
-  #pragma clang diagnostic push
-  #pragma clang diagnostic ignored "-Wobjc-multiple-method-names"
-  methods[0].selector = @selector(callWithId:);
-  methods[1].selector = @selector(initWithRxObservablesGroupedObservable:);
-  #pragma clang diagnostic pop
-  static const J2ObjcFieldInfo fields[] = {
-    { "val$g_", "LRxObservablesGroupedObservable;", .constantValue.asLong = 0, 0x1012, -1, -1, 4, -1 },
-  };
-  static const void *ptrTable[] = { "call", "LJavaLangInteger;", "LRxObservablesGroupedObservable;", "(Lrx/observables/GroupedObservable<Ljava/lang/Boolean;Ljava/lang/Integer;>;)V", "Lrx/observables/GroupedObservable<Ljava/lang/Boolean;Ljava/lang/Integer;>;", "LRxInternalOperatorsOperatorGroupByTest_$54;", "callWithId:", "Ljava/lang/Object;Lrx/functions/Func1<Ljava/lang/Integer;Ljava/lang/String;>;" };
-  static const J2ObjcClassInfo _RxInternalOperatorsOperatorGroupByTest_$54_$1 = { "", "rx.internal.operators", ptrTable, methods, fields, 7, 0x8008, 2, 1, 5, -1, 6, 7, -1 };
-  return &_RxInternalOperatorsOperatorGroupByTest_$54_$1;
-}
-
-@end
-
-void RxInternalOperatorsOperatorGroupByTest_$54_$1_initWithRxObservablesGroupedObservable_(RxInternalOperatorsOperatorGroupByTest_$54_$1 *self, RxObservablesGroupedObservable *capture$0) {
-  JreStrongAssign(&self->val$g_, capture$0);
-  NSObject_init(self);
-}
-
-RxInternalOperatorsOperatorGroupByTest_$54_$1 *new_RxInternalOperatorsOperatorGroupByTest_$54_$1_initWithRxObservablesGroupedObservable_(RxObservablesGroupedObservable *capture$0) {
-  J2OBJC_NEW_IMPL(RxInternalOperatorsOperatorGroupByTest_$54_$1, initWithRxObservablesGroupedObservable_, capture$0)
-}
-
-RxInternalOperatorsOperatorGroupByTest_$54_$1 *create_RxInternalOperatorsOperatorGroupByTest_$54_$1_initWithRxObservablesGroupedObservable_(RxObservablesGroupedObservable *capture$0) {
-  J2OBJC_CREATE_IMPL(RxInternalOperatorsOperatorGroupByTest_$54_$1, initWithRxObservablesGroupedObservable_, capture$0)
 }
 
 @implementation RxInternalOperatorsOperatorGroupByTest_$55
@@ -7474,7 +7486,8 @@ RxInternalOperatorsOperatorGroupByTest_$59 *create_RxInternalOperatorsOperatorGr
 
 - (RxObservable *)callWithId:(RxObservablesGroupedObservable *)g {
   [((JavaIoPrintStream *) nil_chk(JreLoadStatic(JavaLangSystem, out))) printlnWithNSString:JreStrcat("$$", @"-----------> NEXT: ", [((RxObservablesGroupedObservable *) nil_chk(g)) getKey])];
-  return [((RxObservable *) nil_chk([g takeWithInt:2])) mapWithRxFunctionsFunc1:create_RxInternalOperatorsOperatorGroupByTest_$60_$1_initWithRxObservablesGroupedObservable_(g)];
+  RxObservablesGroupedObservable *proxyG = ComGoogleJ2objcWeakProxy_forObjectWithId_(g);
+  return [((RxObservable *) nil_chk([g takeWithInt:2])) mapWithRxFunctionsFunc1:create_RxInternalOperatorsOperatorGroupByTest_$60_$1_initWithRxObservablesGroupedObservable_(proxyG)];
 }
 
 J2OBJC_IGNORE_DESIGNATED_BEGIN
@@ -7516,7 +7529,7 @@ RxInternalOperatorsOperatorGroupByTest_$60 *create_RxInternalOperatorsOperatorGr
 @implementation RxInternalOperatorsOperatorGroupByTest_$60_$1
 
 - (NSString *)callWithId:(NSString *)v {
-  return JreStrcat("$CI", [((RxObservablesGroupedObservable *) nil_chk(val$g_)) getKey], '-', count_++);
+  return JreStrcat("$CI", [((RxObservablesGroupedObservable *) nil_chk(val$proxyG_)) getKey], '-', count_++);
 }
 
 - (instancetype)initWithRxObservablesGroupedObservable:(RxObservablesGroupedObservable *)capture$0 {
@@ -7525,7 +7538,7 @@ RxInternalOperatorsOperatorGroupByTest_$60 *create_RxInternalOperatorsOperatorGr
 }
 
 - (void)dealloc {
-  RELEASE_(val$g_);
+  RELEASE_(val$proxyG_);
   [super dealloc];
 }
 
@@ -7541,7 +7554,7 @@ RxInternalOperatorsOperatorGroupByTest_$60 *create_RxInternalOperatorsOperatorGr
   #pragma clang diagnostic pop
   static const J2ObjcFieldInfo fields[] = {
     { "count_", "I", .constantValue.asLong = 0, 0x0, -1, -1, -1, -1 },
-    { "val$g_", "LRxObservablesGroupedObservable;", .constantValue.asLong = 0, 0x1012, -1, -1, 4, -1 },
+    { "val$proxyG_", "LRxObservablesGroupedObservable;", .constantValue.asLong = 0, 0x1012, -1, -1, 4, -1 },
   };
   static const void *ptrTable[] = { "call", "LNSString;", "LRxObservablesGroupedObservable;", "(Lrx/observables/GroupedObservable<Ljava/lang/String;Ljava/lang/String;>;)V", "Lrx/observables/GroupedObservable<Ljava/lang/String;Ljava/lang/String;>;", "LRxInternalOperatorsOperatorGroupByTest_$60;", "callWithId:", "Ljava/lang/Object;Lrx/functions/Func1<Ljava/lang/String;Ljava/lang/String;>;" };
   static const J2ObjcClassInfo _RxInternalOperatorsOperatorGroupByTest_$60_$1 = { "", "rx.internal.operators", ptrTable, methods, fields, 7, 0x8008, 2, 2, 5, -1, 6, 7, -1 };
@@ -7551,7 +7564,7 @@ RxInternalOperatorsOperatorGroupByTest_$60 *create_RxInternalOperatorsOperatorGr
 @end
 
 void RxInternalOperatorsOperatorGroupByTest_$60_$1_initWithRxObservablesGroupedObservable_(RxInternalOperatorsOperatorGroupByTest_$60_$1 *self, RxObservablesGroupedObservable *capture$0) {
-  JreStrongAssign(&self->val$g_, capture$0);
+  JreStrongAssign(&self->val$proxyG_, capture$0);
   NSObject_init(self);
   self->count_ = 0;
 }
@@ -7847,7 +7860,8 @@ RxInternalOperatorsOperatorGroupByTest_$63 *create_RxInternalOperatorsOperatorGr
 @implementation RxInternalOperatorsOperatorGroupByTest_$64
 
 - (RxObservable *)callWithId:(RxObservablesGroupedObservable *)g {
-  return [((RxObservable *) nil_chk([((RxObservable *) nil_chk([((RxObservablesGroupedObservable *) nil_chk(g)) takeWithInt:2])) observeOnWithRxScheduler:RxSchedulersSchedulers_computation()])) mapWithRxFunctionsFunc1:create_RxInternalOperatorsOperatorGroupByTest_$64_$1_initWithRxObservablesGroupedObservable_(g)];
+  RxObservablesGroupedObservable *weakG = ComGoogleJ2objcWeakProxy_forObjectWithId_(g);
+  return [((RxObservable *) nil_chk([((RxObservable *) nil_chk([((RxObservablesGroupedObservable *) nil_chk(g)) takeWithInt:2])) observeOnWithRxScheduler:RxSchedulersSchedulers_computation()])) mapWithRxFunctionsFunc1:create_RxInternalOperatorsOperatorGroupByTest_$64_$1_initWithRxObservablesGroupedObservable_(weakG)];
 }
 
 J2OBJC_IGNORE_DESIGNATED_BEGIN
@@ -7889,7 +7903,7 @@ RxInternalOperatorsOperatorGroupByTest_$64 *create_RxInternalOperatorsOperatorGr
 @implementation RxInternalOperatorsOperatorGroupByTest_$64_$1
 
 - (NSString *)callWithId:(JavaLangInteger *)l {
-  if ([((JavaLangBoolean *) nil_chk([((RxObservablesGroupedObservable *) nil_chk(val$g_)) getKey])) booleanValue]) {
+  if ([((JavaLangBoolean *) nil_chk([((RxObservablesGroupedObservable *) nil_chk(val$weakG_)) getKey])) booleanValue]) {
     @try {
       JavaLangThread_sleepWithLong_(1);
     }
@@ -7908,7 +7922,7 @@ RxInternalOperatorsOperatorGroupByTest_$64 *create_RxInternalOperatorsOperatorGr
 }
 
 - (void)dealloc {
-  RELEASE_(val$g_);
+  RELEASE_(val$weakG_);
   [super dealloc];
 }
 
@@ -7923,7 +7937,7 @@ RxInternalOperatorsOperatorGroupByTest_$64 *create_RxInternalOperatorsOperatorGr
   methods[1].selector = @selector(initWithRxObservablesGroupedObservable:);
   #pragma clang diagnostic pop
   static const J2ObjcFieldInfo fields[] = {
-    { "val$g_", "LRxObservablesGroupedObservable;", .constantValue.asLong = 0, 0x1012, -1, -1, 4, -1 },
+    { "val$weakG_", "LRxObservablesGroupedObservable;", .constantValue.asLong = 0, 0x1012, -1, -1, 4, -1 },
   };
   static const void *ptrTable[] = { "call", "LJavaLangInteger;", "LRxObservablesGroupedObservable;", "(Lrx/observables/GroupedObservable<Ljava/lang/Boolean;Ljava/lang/Integer;>;)V", "Lrx/observables/GroupedObservable<Ljava/lang/Boolean;Ljava/lang/Integer;>;", "LRxInternalOperatorsOperatorGroupByTest_$64;", "callWithId:", "Ljava/lang/Object;Lrx/functions/Func1<Ljava/lang/Integer;Ljava/lang/String;>;" };
   static const J2ObjcClassInfo _RxInternalOperatorsOperatorGroupByTest_$64_$1 = { "", "rx.internal.operators", ptrTable, methods, fields, 7, 0x8008, 2, 1, 5, -1, 6, 7, -1 };
@@ -7933,7 +7947,7 @@ RxInternalOperatorsOperatorGroupByTest_$64 *create_RxInternalOperatorsOperatorGr
 @end
 
 void RxInternalOperatorsOperatorGroupByTest_$64_$1_initWithRxObservablesGroupedObservable_(RxInternalOperatorsOperatorGroupByTest_$64_$1 *self, RxObservablesGroupedObservable *capture$0) {
-  JreStrongAssign(&self->val$g_, capture$0);
+  JreStrongAssign(&self->val$weakG_, capture$0);
   NSObject_init(self);
 }
 

@@ -40,6 +40,10 @@
 + (jint)runWithIOSClassArray:(IOSObjectArray *)classes
 withOrgJunitRunnerNotificationRunListener:(OrgJunitRunnerNotificationRunListener *)listener;
 
++ (jint)runMethodWithIOSClass:(IOSClass *)clazz
+                 withNSString:(NSString *)methodName
+withOrgJunitRunnerNotificationRunListener:(OrgJunitRunnerNotificationRunListener *)listener;
+
 - (void)sortClassesWithIOSClassArray:(IOSObjectArray *)classes
 withCoTouchlabDoppelTestingDopplJunitTestRunner_SortOrder:(CoTouchlabDoppelTestingDopplJunitTestRunner_SortOrder *)sortOrder;
 
@@ -70,6 +74,8 @@ FOUNDATION_EXPORT CoTouchlabDoppelTestingDopplJunitTestRunner *new_CoTouchlabDop
 FOUNDATION_EXPORT CoTouchlabDoppelTestingDopplJunitTestRunner *create_CoTouchlabDoppelTestingDopplJunitTestRunner_initWithJavaIoPrintStream_(JavaIoPrintStream *outArg);
 
 FOUNDATION_EXPORT jint CoTouchlabDoppelTestingDopplJunitTestRunner_mainWithNSStringArray_(IOSObjectArray *args);
+
+FOUNDATION_EXPORT jint CoTouchlabDoppelTestingDopplJunitTestRunner_runMethodWithIOSClass_withNSString_withOrgJunitRunnerNotificationRunListener_(IOSClass *clazz, NSString *methodName, OrgJunitRunnerNotificationRunListener *listener);
 
 FOUNDATION_EXPORT jint CoTouchlabDoppelTestingDopplJunitTestRunner_runWithIOSClassArray_withOrgJunitRunnerNotificationRunListener_(IOSObjectArray *classes, OrgJunitRunnerNotificationRunListener *listener);
 

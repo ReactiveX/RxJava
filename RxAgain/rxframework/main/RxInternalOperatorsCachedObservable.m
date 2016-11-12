@@ -597,11 +597,11 @@ withRxInternalOperatorsCachedObservable_CacheState:(RxInternalOperatorsCachedObs
 
 - (void)__javaClone:(RxInternalOperatorsCachedObservable_ReplayProducer *)original {
   [super __javaClone:original];
-  [child_ release];
   [state_ release];
 }
 
 - (void)dealloc {
+  RELEASE_(child_);
   RELEASE_(currentBuffer_);
   [super dealloc];
 }
@@ -643,7 +643,7 @@ withRxInternalOperatorsCachedObservable_CacheState:(RxInternalOperatorsCachedObs
 
 void RxInternalOperatorsCachedObservable_ReplayProducer_initWithRxSubscriber_withRxInternalOperatorsCachedObservable_CacheState_(RxInternalOperatorsCachedObservable_ReplayProducer *self, RxSubscriber *child, RxInternalOperatorsCachedObservable_CacheState *state) {
   JavaUtilConcurrentAtomicAtomicLong_init(self);
-  self->child_ = child;
+  JreStrongAssign(&self->child_, child);
   self->state_ = state;
 }
 

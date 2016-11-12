@@ -20,13 +20,14 @@
 #define INCLUDE_RxObservable_OnSubscribe 1
 #include "RxObservable.h"
 
+@class RxDopplSafeObservableUnsubscribe;
 @class RxObservable;
 @class RxSubscriber;
 @protocol RxFunctionsFunc1;
 
 @interface RxInternalOperatorsOnSubscribeConcatMap : NSObject < RxObservable_OnSubscribe > {
  @public
-  RxObservable *source_;
+  RxDopplSafeObservableUnsubscribe *source_;
   id<RxFunctionsFunc1> mapper_;
   jint prefetch_;
   jint delayErrorMode_;
@@ -45,7 +46,7 @@
 
 J2OBJC_EMPTY_STATIC_INIT(RxInternalOperatorsOnSubscribeConcatMap)
 
-J2OBJC_FIELD_SETTER(RxInternalOperatorsOnSubscribeConcatMap, source_, RxObservable *)
+J2OBJC_FIELD_SETTER(RxInternalOperatorsOnSubscribeConcatMap, source_, RxDopplSafeObservableUnsubscribe *)
 J2OBJC_FIELD_SETTER(RxInternalOperatorsOnSubscribeConcatMap, mapper_, id<RxFunctionsFunc1>)
 
 inline jint RxInternalOperatorsOnSubscribeConcatMap_get_IMMEDIATE();

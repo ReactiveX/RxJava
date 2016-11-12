@@ -254,6 +254,8 @@
 
 + (void)runDoppl;
 
++ (void)runWithNSStringArray:(IOSObjectArray *)classNames;
+
 + (jlong)printMem;
 
 + (IOSObjectArray *)loadClassListWithNSString:(NSString *)fileData;
@@ -263,6 +265,8 @@
 __attribute__((unused)) static void OneTest_loadClassesWithJavaUtilList_withIOSClassArray_(id<JavaUtilList> allClassnames, IOSObjectArray *batch0);
 
 __attribute__((unused)) static void OneTest_runDoppl();
+
+__attribute__((unused)) static void OneTest_runWithNSStringArray_(IOSObjectArray *classNames);
 
 __attribute__((unused)) static jlong OneTest_printMem();
 
@@ -309,8 +313,35 @@ IOSObjectArray *OneTest_failing;
   OneTest_runDoppl();
 }
 
-+ (void)runSingleClassWithNSString:(NSString *)className_ {
-  OneTest_runSingleClassWithNSString_(className_);
++ (void)runTestsWithNSString:(NSString *)a {
+  OneTest_runTestsWithNSString_(a);
+}
+
++ (void)runTestsWithNSString:(NSString *)a
+                withNSString:(NSString *)b {
+  OneTest_runTestsWithNSString_withNSString_(a, b);
+}
+
++ (void)runTestsWithNSString:(NSString *)a
+                withNSString:(NSString *)b
+                withNSString:(NSString *)c {
+  OneTest_runTestsWithNSString_withNSString_withNSString_(a, b, c);
+}
+
++ (void)runTestsWithNSString:(NSString *)a
+                withNSString:(NSString *)b
+                withNSString:(NSString *)c
+                withNSString:(NSString *)d {
+  OneTest_runTestsWithNSString_withNSString_withNSString_withNSString_(a, b, c, d);
+}
+
++ (void)runWithNSStringArray:(IOSObjectArray *)classNames {
+  OneTest_runWithNSStringArray_(classNames);
+}
+
++ (void)runMethodWithNSString:(NSString *)className_
+                 withNSString:(NSString *)methodName {
+  OneTest_runMethodWithNSString_withNSString_(className_, methodName);
 }
 
 + (jlong)printMem {
@@ -335,8 +366,13 @@ J2OBJC_IGNORE_DESIGNATED_END
     { NULL, "V", 0x9, -1, -1, -1, -1, -1, -1 },
     { NULL, "V", 0xa, -1, -1, -1, -1, -1, -1 },
     { NULL, "V", 0x9, 4, 5, -1, -1, -1, -1 },
+    { NULL, "V", 0x9, 4, 6, -1, -1, -1, -1 },
+    { NULL, "V", 0x9, 4, 7, -1, -1, -1, -1 },
+    { NULL, "V", 0x9, 4, 8, -1, -1, -1, -1 },
+    { NULL, "V", 0x8a, 9, 10, -1, -1, -1, -1 },
+    { NULL, "V", 0x9, 11, 6, -1, -1, -1, -1 },
     { NULL, "J", 0x10a, -1, -1, -1, -1, -1, -1 },
-    { NULL, "[LIOSClass;", 0xa, 6, 5, -1, -1, -1, -1 },
+    { NULL, "[LIOSClass;", 0xa, 12, 5, -1, -1, -1, -1 },
     { NULL, NULL, 0x1, -1, -1, -1, -1, -1, -1 },
   };
   #pragma clang diagnostic push
@@ -345,18 +381,23 @@ J2OBJC_IGNORE_DESIGNATED_END
   methods[1].selector = @selector(loadClassesWithJavaUtilList:withIOSClassArray:);
   methods[2].selector = @selector(runTests);
   methods[3].selector = @selector(runDoppl);
-  methods[4].selector = @selector(runSingleClassWithNSString:);
-  methods[5].selector = @selector(printMem);
-  methods[6].selector = @selector(loadClassListWithNSString:);
-  methods[7].selector = @selector(init);
+  methods[4].selector = @selector(runTestsWithNSString:);
+  methods[5].selector = @selector(runTestsWithNSString:withNSString:);
+  methods[6].selector = @selector(runTestsWithNSString:withNSString:withNSString:);
+  methods[7].selector = @selector(runTestsWithNSString:withNSString:withNSString:withNSString:);
+  methods[8].selector = @selector(runWithNSStringArray:);
+  methods[9].selector = @selector(runMethodWithNSString:withNSString:);
+  methods[10].selector = @selector(printMem);
+  methods[11].selector = @selector(loadClassListWithNSString:);
+  methods[12].selector = @selector(init);
   #pragma clang diagnostic pop
   static const J2ObjcFieldInfo fields[] = {
-    { "alltests", "[LIOSClass;", .constantValue.asLong = 0, 0x9, -1, 7, -1, -1 },
-    { "bigmem", "[LIOSClass;", .constantValue.asLong = 0, 0x9, -1, 8, -1, -1 },
-    { "failing", "[LIOSClass;", .constantValue.asLong = 0, 0x9, -1, 9, -1, -1 },
+    { "alltests", "[LIOSClass;", .constantValue.asLong = 0, 0x9, -1, 13, -1, -1 },
+    { "bigmem", "[LIOSClass;", .constantValue.asLong = 0, 0x9, -1, 14, -1, -1 },
+    { "failing", "[LIOSClass;", .constantValue.asLong = 0, 0x9, -1, 15, -1, -1 },
   };
-  static const void *ptrTable[] = { "()Ljava/util/List<Ljava/lang/String;>;", "loadClasses", "LJavaUtilList;[LIOSClass;", "(Ljava/util/List<Ljava/lang/String;>;[Ljava/lang/Class;)V", "runSingleClass", "LNSString;", "loadClassList", &OneTest_alltests, &OneTest_bigmem, &OneTest_failing, "LOneTest_BigMemRunListener;" };
-  static const J2ObjcClassInfo _OneTest = { "OneTest", NULL, ptrTable, methods, fields, 7, 0x1, 8, 3, -1, 10, -1, -1, -1 };
+  static const void *ptrTable[] = { "()Ljava/util/List<Ljava/lang/String;>;", "loadClasses", "LJavaUtilList;[LIOSClass;", "(Ljava/util/List<Ljava/lang/String;>;[Ljava/lang/Class;)V", "runTests", "LNSString;", "LNSString;LNSString;", "LNSString;LNSString;LNSString;", "LNSString;LNSString;LNSString;LNSString;", "run", "[LNSString;", "runMethod", "loadClassList", &OneTest_alltests, &OneTest_bigmem, &OneTest_failing, "LOneTest_BigMemRunListener;" };
+  static const J2ObjcClassInfo _OneTest = { "OneTest", NULL, ptrTable, methods, fields, 7, 0x1, 13, 3, -1, 16, -1, -1, -1 };
   return &_OneTest;
 }
 
@@ -410,10 +451,50 @@ void OneTest_runDoppl() {
   }
 }
 
-void OneTest_runSingleClassWithNSString_(NSString *className_) {
+void OneTest_runTestsWithNSString_(NSString *a) {
+  OneTest_initialize();
+  OneTest_runWithNSStringArray_([IOSObjectArray arrayWithObjects:(id[]){ a } count:1 type:NSString_class_()]);
+}
+
+void OneTest_runTestsWithNSString_withNSString_(NSString *a, NSString *b) {
+  OneTest_initialize();
+  OneTest_runWithNSStringArray_([IOSObjectArray arrayWithObjects:(id[]){ a, b } count:2 type:NSString_class_()]);
+}
+
+void OneTest_runTestsWithNSString_withNSString_withNSString_(NSString *a, NSString *b, NSString *c) {
+  OneTest_initialize();
+  OneTest_runWithNSStringArray_([IOSObjectArray arrayWithObjects:(id[]){ a, b, c } count:3 type:NSString_class_()]);
+}
+
+void OneTest_runTestsWithNSString_withNSString_withNSString_withNSString_(NSString *a, NSString *b, NSString *c, NSString *d) {
+  OneTest_initialize();
+  OneTest_runWithNSStringArray_([IOSObjectArray arrayWithObjects:(id[]){ a, b, c, d } count:4 type:NSString_class_()]);
+}
+
+void OneTest_runWithNSStringArray_(IOSObjectArray *classNames) {
   OneTest_initialize();
   @try {
-    CoTouchlabDoppelTestingDopplJunitTestRunner_runWithIOSClassArray_withOrgJunitRunnerNotificationRunListener_([IOSObjectArray arrayWithObjects:(id[]){ IOSClass_forName_(className_) } count:1 type:IOSClass_class_()], create_OneTest_BigMemRunListener_init());
+    id<JavaUtilList> clses = create_JavaUtilArrayList_init();
+    {
+      IOSObjectArray *a__ = classNames;
+      NSString * const *b__ = ((IOSObjectArray *) nil_chk(a__))->buffer_;
+      NSString * const *e__ = b__ + a__->size_;
+      while (b__ < e__) {
+        NSString *s = *b__++;
+        [clses addWithId:IOSClass_forName_(s)];
+      }
+    }
+    CoTouchlabDoppelTestingDopplJunitTestRunner_runWithIOSClassArray_withOrgJunitRunnerNotificationRunListener_([clses toArrayWithNSObjectArray:[IOSObjectArray arrayWithLength:[clses size] type:IOSClass_class_()]], create_OneTest_BigMemRunListener_init());
+  }
+  @catch (JavaLangClassNotFoundException *e) {
+    @throw create_JavaLangRuntimeException_initWithNSException_(e);
+  }
+}
+
+void OneTest_runMethodWithNSString_withNSString_(NSString *className_, NSString *methodName) {
+  OneTest_initialize();
+  @try {
+    CoTouchlabDoppelTestingDopplJunitTestRunner_runMethodWithIOSClass_withNSString_withOrgJunitRunnerNotificationRunListener_(IOSClass_forName_(className_), methodName, create_OneTest_BigMemRunListener_init());
   }
   @catch (JavaLangClassNotFoundException *e) {
     @throw create_JavaLangRuntimeException_initWithNSException_(e);

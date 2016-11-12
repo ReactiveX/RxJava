@@ -5,6 +5,7 @@
 
 #include "IOSClass.h"
 #include "J2ObjC_source.h"
+#include "RxDopplSafeObservableUnsubscribe.h"
 #include "RxExceptionsExceptions.h"
 #include "RxExceptionsMissingBackpressureException.h"
 #include "RxFunctionsFunc1.h"
@@ -23,7 +24,6 @@
 #include "RxPluginsRxJavaHooks.h"
 #include "RxProducer.h"
 #include "RxSubscriber.h"
-#include "RxSubscription.h"
 #include "java/lang/IllegalStateException.h"
 #include "java/lang/Integer.h"
 #include "java/lang/Iterable.h"
@@ -68,7 +68,7 @@ J2OBJC_TYPE_LITERAL_HEADER(RxInternalOperatorsOnSubscribeFlattenIterable_MyProdu
   RxInternalOperatorsOnSubscribeFlattenIterable_FlattenIterableSubscriber *parent = create_RxInternalOperatorsOnSubscribeFlattenIterable_FlattenIterableSubscriber_initWithRxSubscriber_withRxFunctionsFunc1_withInt_(t, mapper_, prefetch_);
   [((RxSubscriber *) nil_chk(t)) addWithRxSubscription:parent];
   [t setProducerWithRxProducer:create_RxInternalOperatorsOnSubscribeFlattenIterable_MyProducer_initWithRxInternalOperatorsOnSubscribeFlattenIterable_FlattenIterableSubscriber_(parent)];
-  [((RxObservable *) nil_chk(source_)) unsafeSubscribeWithRxSubscriber:parent];
+  [((RxDopplSafeObservableUnsubscribe *) nil_chk(source_)) unsafeSubscribeWithRxSubscriber:parent];
 }
 
 + (RxObservable *)createFromWithRxObservable:(RxObservable *)source
@@ -96,12 +96,12 @@ J2OBJC_TYPE_LITERAL_HEADER(RxInternalOperatorsOnSubscribeFlattenIterable_MyProdu
   methods[2].selector = @selector(createFromWithRxObservable:withRxFunctionsFunc1:withInt:);
   #pragma clang diagnostic pop
   static const J2ObjcFieldInfo fields[] = {
-    { "source_", "LRxObservable;", .constantValue.asLong = 0, 0x10, -1, -1, 7, -1 },
-    { "mapper_", "LRxFunctionsFunc1;", .constantValue.asLong = 0, 0x10, -1, -1, 8, -1 },
+    { "source_", "LRxDopplSafeObservableUnsubscribe;", .constantValue.asLong = 0, 0x10, -1, -1, -1, -1 },
+    { "mapper_", "LRxFunctionsFunc1;", .constantValue.asLong = 0, 0x10, -1, -1, 7, -1 },
     { "prefetch_", "I", .constantValue.asLong = 0, 0x10, -1, -1, -1, -1 },
   };
-  static const void *ptrTable[] = { "LRxObservable;LRxFunctionsFunc1;I", "(Lrx/Observable<+TT;>;Lrx/functions/Func1<-TT;+Ljava/lang/Iterable<+TR;>;>;I)V", "call", "LRxSubscriber;", "(Lrx/Subscriber<-TR;>;)V", "createFrom", "<T:Ljava/lang/Object;R:Ljava/lang/Object;>(Lrx/Observable<+TT;>;Lrx/functions/Func1<-TT;+Ljava/lang/Iterable<+TR;>;>;I)Lrx/Observable<TR;>;", "Lrx/Observable<+TT;>;", "Lrx/functions/Func1<-TT;+Ljava/lang/Iterable<+TR;>;>;", "LRxInternalOperatorsOnSubscribeFlattenIterable_FlattenIterableSubscriber;LRxInternalOperatorsOnSubscribeFlattenIterable_OnSubscribeScalarFlattenIterable;LRxInternalOperatorsOnSubscribeFlattenIterable_MyProducer;", "<T:Ljava/lang/Object;R:Ljava/lang/Object;>Ljava/lang/Object;Lrx/Observable$OnSubscribe<TR;>;" };
-  static const J2ObjcClassInfo _RxInternalOperatorsOnSubscribeFlattenIterable = { "OnSubscribeFlattenIterable", "rx.internal.operators", ptrTable, methods, fields, 7, 0x11, 3, 3, -1, 9, -1, 10, -1 };
+  static const void *ptrTable[] = { "LRxObservable;LRxFunctionsFunc1;I", "(Lrx/Observable<+TT;>;Lrx/functions/Func1<-TT;+Ljava/lang/Iterable<+TR;>;>;I)V", "call", "LRxSubscriber;", "(Lrx/Subscriber<-TR;>;)V", "createFrom", "<T:Ljava/lang/Object;R:Ljava/lang/Object;>(Lrx/Observable<+TT;>;Lrx/functions/Func1<-TT;+Ljava/lang/Iterable<+TR;>;>;I)Lrx/Observable<TR;>;", "Lrx/functions/Func1<-TT;+Ljava/lang/Iterable<+TR;>;>;", "LRxInternalOperatorsOnSubscribeFlattenIterable_FlattenIterableSubscriber;LRxInternalOperatorsOnSubscribeFlattenIterable_OnSubscribeScalarFlattenIterable;LRxInternalOperatorsOnSubscribeFlattenIterable_MyProducer;", "<T:Ljava/lang/Object;R:Ljava/lang/Object;>Ljava/lang/Object;Lrx/Observable$OnSubscribe<TR;>;" };
+  static const J2ObjcClassInfo _RxInternalOperatorsOnSubscribeFlattenIterable = { "OnSubscribeFlattenIterable", "rx.internal.operators", ptrTable, methods, fields, 7, 0x11, 3, 3, -1, 8, -1, 9, -1 };
   return &_RxInternalOperatorsOnSubscribeFlattenIterable;
 }
 
@@ -109,7 +109,7 @@ J2OBJC_TYPE_LITERAL_HEADER(RxInternalOperatorsOnSubscribeFlattenIterable_MyProdu
 
 void RxInternalOperatorsOnSubscribeFlattenIterable_initWithRxObservable_withRxFunctionsFunc1_withInt_(RxInternalOperatorsOnSubscribeFlattenIterable *self, RxObservable *source, id<RxFunctionsFunc1> mapper, jint prefetch) {
   NSObject_init(self);
-  JreStrongAssign(&self->source_, source);
+  JreStrongAssignAndConsume(&self->source_, new_RxDopplSafeObservableUnsubscribe_initWithRxObservable_(source));
   JreStrongAssign(&self->mapper_, mapper);
   self->prefetch_ = prefetch;
 }

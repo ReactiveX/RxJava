@@ -18,6 +18,7 @@ package rx.internal.operators;
 
 import com.google.j2objc.annotations.Weak;
 
+import java.lang.ref.WeakReference;
 import java.util.Queue;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
@@ -26,6 +27,7 @@ import rx.Observable;
 import rx.Observable.OnSubscribe;
 import rx.Producer;
 import rx.Subscriber;
+import rx.doppl.SafeObservableUnsubscribe;
 import rx.exceptions.Exceptions;
 import rx.exceptions.MissingBackpressureException;
 import rx.functions.Func1;
@@ -48,7 +50,7 @@ import rx.subscriptions.SerialSubscription;
  * @since 1.1.2
  */
 public final class OnSubscribeConcatMap<T, R> implements OnSubscribe<R> {
-    final Observable<? extends T> source;
+    final SafeObservableUnsubscribe source;
 
     final Func1<? super T, ? extends Observable<? extends R>> mapper;
 
@@ -71,7 +73,7 @@ public final class OnSubscribeConcatMap<T, R> implements OnSubscribe<R> {
 
     public OnSubscribeConcatMap(Observable<? extends T> source, Func1<? super T, ? extends Observable<? extends R>> mapper, int prefetch,
             int delayErrorMode) {
-        this.source = source;
+        this.source = new SafeObservableUnsubscribe(source);
         this.mapper = mapper;
         this.prefetch = prefetch;
         this.delayErrorMode = delayErrorMode;
@@ -91,10 +93,14 @@ public final class OnSubscribeConcatMap<T, R> implements OnSubscribe<R> {
 
         child.add(parent);
         child.add(parent.inner);
+        final WeakReference<ConcatMapSubscriber<T, R>> weakParent = new WeakReference<ConcatMapSubscriber<T, R>>(parent);
+
         child.setProducer(new Producer() {
             @Override
             public void request(long n) {
-                parent.requestMore(n);
+                final ConcatMapSubscriber<T, R> parent = weakParent.get();
+                if(parent != null)
+                    parent.requestMore(n);
             }
         });
 

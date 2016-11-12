@@ -216,11 +216,12 @@ J2OBJC_TYPE_LITERAL_HEADER(RxInternalUtilScalarSynchronousObservable_ScalarAsync
 #define INCLUDE_RxProducer 1
 #include "RxProducer.h"
 
+@class JavaLangRefWeakReference;
 @class RxSubscriber;
 
 @interface RxInternalUtilScalarSynchronousObservable_WeakSingleProducer : NSObject < RxProducer > {
  @public
-  RxSubscriber *actual_;
+  JavaLangRefWeakReference *actual_;
   id value_;
   jboolean once_;
 }
@@ -236,7 +237,7 @@ J2OBJC_TYPE_LITERAL_HEADER(RxInternalUtilScalarSynchronousObservable_ScalarAsync
 
 J2OBJC_EMPTY_STATIC_INIT(RxInternalUtilScalarSynchronousObservable_WeakSingleProducer)
 
-J2OBJC_FIELD_SETTER(RxInternalUtilScalarSynchronousObservable_WeakSingleProducer, actual_, RxSubscriber *)
+J2OBJC_FIELD_SETTER(RxInternalUtilScalarSynchronousObservable_WeakSingleProducer, actual_, JavaLangRefWeakReference *)
 J2OBJC_FIELD_SETTER(RxInternalUtilScalarSynchronousObservable_WeakSingleProducer, value_, id)
 
 FOUNDATION_EXPORT void RxInternalUtilScalarSynchronousObservable_WeakSingleProducer_initWithRxSubscriber_withId_(RxInternalUtilScalarSynchronousObservable_WeakSingleProducer *self, RxSubscriber *actual, id value);

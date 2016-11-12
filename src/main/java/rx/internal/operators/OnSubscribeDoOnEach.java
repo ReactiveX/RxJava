@@ -15,12 +15,14 @@
  */
 package rx.internal.operators;
 
+import java.lang.ref.WeakReference;
 import java.util.Arrays;
 
 import rx.Observable;
 import rx.Observable.OnSubscribe;
 import rx.Observer;
 import rx.Subscriber;
+import rx.doppl.SafeObservableUnsubscribe;
 import rx.exceptions.CompositeException;
 import rx.exceptions.Exceptions;
 import rx.plugins.RxJavaHooks;
@@ -31,11 +33,11 @@ import rx.plugins.RxJavaHooks;
  * @param <T> the value type
  */
 public class OnSubscribeDoOnEach<T> implements OnSubscribe<T> {
-    private final Observer<? super T> doOnEachObserver;
-    private final Observable<T> source;
+    private final Observer<? super T>       doOnEachObserver;
+    private final SafeObservableUnsubscribe source;
 
     public OnSubscribeDoOnEach(Observable<T> source, Observer<? super T> doOnEachObserver) {
-        this.source = source;
+        this.source = new SafeObservableUnsubscribe(source);
         this.doOnEachObserver = doOnEachObserver;
     }
 

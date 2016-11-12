@@ -6,13 +6,13 @@
 #include "IOSClass.h"
 #include "IOSObjectArray.h"
 #include "J2ObjC_source.h"
+#include "RxDopplSafeObservableUnsubscribe.h"
 #include "RxInternalOperatorsBackpressureUtils.h"
 #include "RxInternalOperatorsOnSubscribeDetach.h"
 #include "RxObservable.h"
 #include "RxPluginsRxJavaHooks.h"
 #include "RxProducer.h"
 #include "RxSubscriber.h"
-#include "RxSubscription.h"
 #include "java/lang/Enum.h"
 #include "java/lang/IllegalArgumentException.h"
 #include "java/lang/IllegalStateException.h"
@@ -33,7 +33,7 @@ __attribute__((unused)) static void RxInternalOperatorsOnSubscribeDetach_Termina
   RxInternalOperatorsOnSubscribeDetach_DetachProducer *producer = create_RxInternalOperatorsOnSubscribeDetach_DetachProducer_initWithRxInternalOperatorsOnSubscribeDetach_DetachSubscriber_(parent);
   [((RxSubscriber *) nil_chk(t)) addWithRxSubscription:producer];
   [t setProducerWithRxProducer:producer];
-  [((RxObservable *) nil_chk(source_)) unsafeSubscribeWithRxSubscriber:parent];
+  [((RxDopplSafeObservableUnsubscribe *) nil_chk(source_)) unsafeSubscribeWithRxSubscriber:parent];
 }
 
 - (void)dealloc {
@@ -52,10 +52,10 @@ __attribute__((unused)) static void RxInternalOperatorsOnSubscribeDetach_Termina
   methods[1].selector = @selector(callWithId:);
   #pragma clang diagnostic pop
   static const J2ObjcFieldInfo fields[] = {
-    { "source_", "LRxObservable;", .constantValue.asLong = 0, 0x10, -1, -1, 5, -1 },
+    { "source_", "LRxDopplSafeObservableUnsubscribe;", .constantValue.asLong = 0, 0x10, -1, -1, -1, -1 },
   };
-  static const void *ptrTable[] = { "LRxObservable;", "(Lrx/Observable<TT;>;)V", "call", "LRxSubscriber;", "(Lrx/Subscriber<-TT;>;)V", "Lrx/Observable<TT;>;", "LRxInternalOperatorsOnSubscribeDetach_DetachSubscriber;LRxInternalOperatorsOnSubscribeDetach_DetachProducer;LRxInternalOperatorsOnSubscribeDetach_TerminatedProducer;", "<T:Ljava/lang/Object;>Ljava/lang/Object;Lrx/Observable$OnSubscribe<TT;>;" };
-  static const J2ObjcClassInfo _RxInternalOperatorsOnSubscribeDetach = { "OnSubscribeDetach", "rx.internal.operators", ptrTable, methods, fields, 7, 0x11, 2, 1, -1, 6, -1, 7, -1 };
+  static const void *ptrTable[] = { "LRxObservable;", "(Lrx/Observable<TT;>;)V", "call", "LRxSubscriber;", "(Lrx/Subscriber<-TT;>;)V", "LRxInternalOperatorsOnSubscribeDetach_DetachSubscriber;LRxInternalOperatorsOnSubscribeDetach_DetachProducer;LRxInternalOperatorsOnSubscribeDetach_TerminatedProducer;", "<T:Ljava/lang/Object;>Ljava/lang/Object;Lrx/Observable$OnSubscribe<TT;>;" };
+  static const J2ObjcClassInfo _RxInternalOperatorsOnSubscribeDetach = { "OnSubscribeDetach", "rx.internal.operators", ptrTable, methods, fields, 7, 0x11, 2, 1, -1, 5, -1, 6, -1 };
   return &_RxInternalOperatorsOnSubscribeDetach;
 }
 
@@ -63,7 +63,7 @@ __attribute__((unused)) static void RxInternalOperatorsOnSubscribeDetach_Termina
 
 void RxInternalOperatorsOnSubscribeDetach_initWithRxObservable_(RxInternalOperatorsOnSubscribeDetach *self, RxObservable *source) {
   NSObject_init(self);
-  JreStrongAssign(&self->source_, source);
+  JreStrongAssignAndConsume(&self->source_, new_RxDopplSafeObservableUnsubscribe_initWithRxObservable_(source));
 }
 
 RxInternalOperatorsOnSubscribeDetach *new_RxInternalOperatorsOnSubscribeDetach_initWithRxObservable_(RxObservable *source) {

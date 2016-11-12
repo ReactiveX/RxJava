@@ -4,6 +4,7 @@
 //
 
 #include "J2ObjC_source.h"
+#include "RxDopplSafeObservableUnsubscribe.h"
 #include "RxExceptionsExceptions.h"
 #include "RxExceptionsOnErrorThrowable.h"
 #include "RxFunctionsFunc1.h"
@@ -12,7 +13,6 @@
 #include "RxPluginsRxJavaHooks.h"
 #include "RxProducer.h"
 #include "RxSubscriber.h"
-#include "RxSubscription.h"
 #include "java/lang/Boolean.h"
 
 @implementation RxInternalOperatorsOnSubscribeFilter
@@ -26,7 +26,7 @@
 - (void)callWithId:(RxSubscriber *)child {
   RxInternalOperatorsOnSubscribeFilter_FilterSubscriber *parent = create_RxInternalOperatorsOnSubscribeFilter_FilterSubscriber_initWithRxSubscriber_withRxFunctionsFunc1_(child, predicate_);
   [((RxSubscriber *) nil_chk(child)) addWithRxSubscription:parent];
-  [((RxObservable *) nil_chk(source_)) unsafeSubscribeWithRxSubscriber:parent];
+  [((RxDopplSafeObservableUnsubscribe *) nil_chk(source_)) unsafeSubscribeWithRxSubscriber:parent];
 }
 
 - (void)dealloc {
@@ -46,11 +46,11 @@
   methods[1].selector = @selector(callWithId:);
   #pragma clang diagnostic pop
   static const J2ObjcFieldInfo fields[] = {
-    { "source_", "LRxObservable;", .constantValue.asLong = 0, 0x10, -1, -1, 5, -1 },
-    { "predicate_", "LRxFunctionsFunc1;", .constantValue.asLong = 0, 0x10, -1, -1, 6, -1 },
+    { "source_", "LRxDopplSafeObservableUnsubscribe;", .constantValue.asLong = 0, 0x10, -1, -1, -1, -1 },
+    { "predicate_", "LRxFunctionsFunc1;", .constantValue.asLong = 0, 0x10, -1, -1, 5, -1 },
   };
-  static const void *ptrTable[] = { "LRxObservable;LRxFunctionsFunc1;", "(Lrx/Observable<TT;>;Lrx/functions/Func1<-TT;Ljava/lang/Boolean;>;)V", "call", "LRxSubscriber;", "(Lrx/Subscriber<-TT;>;)V", "Lrx/Observable<TT;>;", "Lrx/functions/Func1<-TT;Ljava/lang/Boolean;>;", "LRxInternalOperatorsOnSubscribeFilter_FilterSubscriber;", "<T:Ljava/lang/Object;>Ljava/lang/Object;Lrx/Observable$OnSubscribe<TT;>;" };
-  static const J2ObjcClassInfo _RxInternalOperatorsOnSubscribeFilter = { "OnSubscribeFilter", "rx.internal.operators", ptrTable, methods, fields, 7, 0x11, 2, 2, -1, 7, -1, 8, -1 };
+  static const void *ptrTable[] = { "LRxObservable;LRxFunctionsFunc1;", "(Lrx/Observable<TT;>;Lrx/functions/Func1<-TT;Ljava/lang/Boolean;>;)V", "call", "LRxSubscriber;", "(Lrx/Subscriber<-TT;>;)V", "Lrx/functions/Func1<-TT;Ljava/lang/Boolean;>;", "LRxInternalOperatorsOnSubscribeFilter_FilterSubscriber;", "<T:Ljava/lang/Object;>Ljava/lang/Object;Lrx/Observable$OnSubscribe<TT;>;" };
+  static const J2ObjcClassInfo _RxInternalOperatorsOnSubscribeFilter = { "OnSubscribeFilter", "rx.internal.operators", ptrTable, methods, fields, 7, 0x11, 2, 2, -1, 6, -1, 7, -1 };
   return &_RxInternalOperatorsOnSubscribeFilter;
 }
 
@@ -58,7 +58,7 @@
 
 void RxInternalOperatorsOnSubscribeFilter_initWithRxObservable_withRxFunctionsFunc1_(RxInternalOperatorsOnSubscribeFilter *self, RxObservable *source, id<RxFunctionsFunc1> predicate) {
   NSObject_init(self);
-  JreStrongAssign(&self->source_, source);
+  JreStrongAssignAndConsume(&self->source_, new_RxDopplSafeObservableUnsubscribe_initWithRxObservable_(source));
   JreStrongAssign(&self->predicate_, predicate);
 }
 

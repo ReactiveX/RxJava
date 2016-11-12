@@ -26,6 +26,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.*;
 
+import co.touchlab.doppel.testing.DoppelHacks;
 import rx.*;
 import rx.Observable.OnSubscribe;
 import rx.Observable;
@@ -162,7 +163,7 @@ public class CachedObservableTest {
     @Test
     public void testAsync() {
         Observable<Integer> source = Observable.range(1, 10000);
-        for (int i = 0; i < 100; i++) {
+        for (@AutoreleasePool int i = 0; i < 100; i++) {
             TestSubscriber<Integer> ts1 = new TestSubscriber<Integer>();
 
             CachedObservable<Integer> cached = CachedObservable.from(source);
@@ -193,7 +194,7 @@ public class CachedObservableTest {
         Observable<Long> output = cached.observeOn(Schedulers.computation());
 
         List<TestSubscriber<Long>> list = new ArrayList<TestSubscriber<Long>>(100);
-        for (int i = 0; i < 100; i++) {
+        for (@AutoreleasePool int i = 0; i < 100; i++) {
             TestSubscriber<Long> ts = new TestSubscriber<Long>();
             list.add(ts);
             output.skip(i * 10).take(10).subscribe(ts);
@@ -204,7 +205,7 @@ public class CachedObservableTest {
             expected.add((long)(i - 10));
         }
         int j = 0;
-        for (TestSubscriber<Long> ts : list) {
+        for (@AutoreleasePool TestSubscriber<Long> ts : list) {
             ts.awaitTerminalEvent(3, TimeUnit.SECONDS);
             ts.assertNoErrors();
             ts.assertTerminalEvent();
@@ -220,12 +221,13 @@ public class CachedObservableTest {
     }
 
     @Test
+    @DoppelHacks //Made smaller. Meh.
     public void testNoMissingBackpressureException() {
-        final int m = 4 * 1000 * 1000;
+        final int m = 4 * 100 * 1000;
         Observable<Integer> firehose = Observable.create(new OnSubscribe<Integer>() {
             @Override
             public void call(Subscriber<? super Integer> t) {
-                for (@AutoreleasePool int i = 0; i < m; i++) {
+                for (int i = 0; i < m; i++) {
                     t.onNext(i);
                 }
                 t.onCompleted();

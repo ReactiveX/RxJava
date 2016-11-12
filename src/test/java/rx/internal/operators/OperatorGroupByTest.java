@@ -15,6 +15,7 @@
  */
 package rx.internal.operators;
 
+import com.google.j2objc.WeakProxy;
 import com.google.j2objc.annotations.AutoreleasePool;
 import com.google.j2objc.annotations.Weak;
 
@@ -23,6 +24,8 @@ import static org.junit.Assert.*;
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 
+
+import java.lang.ref.WeakReference;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
@@ -155,11 +158,12 @@ public class OperatorGroupByTest {
             @Override
             public void call(final GroupedObservable<K, V> o) {
                 result.put(o.getKey(), new ConcurrentLinkedQueue<V>());
+                final GroupedObservable<K, V> weakO = WeakProxy.forObject(o);
                 o.subscribe(new Action1<V>() {
 
                     @Override
                     public void call(V v) {
-                        result.get(o.getKey()).add(v);
+                        result.get(weakO.getKey()).add(v);
                     }
 
                 });
@@ -1114,13 +1118,14 @@ public class OperatorGroupByTest {
             @Override
             public Observable<String> call(final GroupedObservable<String, String> g) {
                 System.out.println("-----------> NEXT: " + g.getKey());
+                final GroupedObservable<String, String> proxyG = WeakProxy.forObject(g);
                 return g.take(2).map(new Func1<String, String>() {
 
                     int count = 0;
 
                     @Override
                     public String call(String v) {
-                        return g.getKey() + "-" + count++;
+                        return proxyG.getKey() + "-" + count++;
                     }
 
                 });
@@ -1286,11 +1291,12 @@ public class OperatorGroupByTest {
 
             @Override
             public Observable<String> call(final GroupedObservable<Boolean, Integer> g) {
+                final GroupedObservable<Boolean, Integer> weakG = WeakProxy.forObject(g);
                 return g.take(2).observeOn(Schedulers.computation()).map(new Func1<Integer, String>() {
 
                     @Override
                     public String call(Integer l) {
-                        if (g.getKey()) {
+                        if (weakG.getKey()) {
                             try {
                                 Thread.sleep(1);
                             } catch (InterruptedException e) {
@@ -1991,7 +1997,7 @@ public class OperatorGroupByTest {
     //a fluke or a common issue
     private static class MapFactoryEvictionFunction implements Func1<Integer, String>
     {
-        @Weak
+//        @Weak
         private final GroupedObservable<Integer, Integer> g;
 
         public MapFactoryEvictionFunction(GroupedObservable<Integer, Integer> g)

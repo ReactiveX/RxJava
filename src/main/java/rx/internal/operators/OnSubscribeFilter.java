@@ -19,6 +19,7 @@ import rx.Observable;
 import rx.Observable.OnSubscribe;
 import rx.Producer;
 import rx.Subscriber;
+import rx.doppl.SafeObservableUnsubscribe;
 import rx.exceptions.Exceptions;
 import rx.exceptions.OnErrorThrowable;
 import rx.functions.Func1;
@@ -32,12 +33,12 @@ import rx.plugins.RxJavaHooks;
  */
 public final class OnSubscribeFilter<T> implements OnSubscribe<T> {
 
-    final Observable<T> source;
+    final SafeObservableUnsubscribe source;
 
     final Func1<? super T, Boolean> predicate;
 
     public OnSubscribeFilter(Observable<T> source, Func1<? super T, Boolean> predicate) {
-        this.source = source;
+        this.source = new SafeObservableUnsubscribe(source);
         this.predicate = predicate;
     }
 

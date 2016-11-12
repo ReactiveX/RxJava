@@ -20,13 +20,14 @@
 #define INCLUDE_RxObservable_OnSubscribe 1
 #include "RxObservable.h"
 
+@class RxDopplSafeObservableUnsubscribe;
 @class RxObservable;
 @class RxSubscriber;
 @protocol RxFunctionsFunc0;
 
 @interface RxInternalOperatorsOnSubscribeDelaySubscriptionWithSelector : NSObject < RxObservable_OnSubscribe > {
  @public
-  RxObservable *source_;
+  RxDopplSafeObservableUnsubscribe *source_;
   id<RxFunctionsFunc0> subscriptionDelay_;
 }
 
@@ -41,7 +42,7 @@
 
 J2OBJC_EMPTY_STATIC_INIT(RxInternalOperatorsOnSubscribeDelaySubscriptionWithSelector)
 
-J2OBJC_FIELD_SETTER(RxInternalOperatorsOnSubscribeDelaySubscriptionWithSelector, source_, RxObservable *)
+J2OBJC_FIELD_SETTER(RxInternalOperatorsOnSubscribeDelaySubscriptionWithSelector, source_, RxDopplSafeObservableUnsubscribe *)
 J2OBJC_FIELD_SETTER(RxInternalOperatorsOnSubscribeDelaySubscriptionWithSelector, subscriptionDelay_, id<RxFunctionsFunc0>)
 
 FOUNDATION_EXPORT void RxInternalOperatorsOnSubscribeDelaySubscriptionWithSelector_initWithRxObservable_withRxFunctionsFunc0_(RxInternalOperatorsOnSubscribeDelaySubscriptionWithSelector *self, RxObservable *source, id<RxFunctionsFunc0> subscriptionDelay);

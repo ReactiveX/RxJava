@@ -990,20 +990,22 @@ __attribute__((unused)) static RxInternalOperatorsOperatorObserveOnTest_$27 *cre
 
 - (void)testOnErrorCutsAheadOfOnNext {
   for (jint i = 0; i < 50; i++) {
-    RxSubjectsPublishSubject *subject = RxSubjectsPublishSubject_create();
-    JavaUtilConcurrentAtomicAtomicLong *counter = create_JavaUtilConcurrentAtomicAtomicLong_init();
-    RxObserversTestSubscriber *ts = create_RxObserversTestSubscriber_initWithRxObserver_(create_RxInternalOperatorsOperatorObserveOnTest_$18_init());
-    [((RxObservable *) nil_chk([((RxSubjectsPublishSubject *) nil_chk(subject)) observeOnWithRxScheduler:RxSchedulersSchedulers_computation()])) subscribeWithRxSubscriber:ts];
-    while ([counter get] < 102400) {
-      [subject onNextWithId:JavaLangLong_valueOfWithLong_([counter get])];
-      [counter incrementAndGet];
+    @autoreleasepool {
+      RxSubjectsPublishSubject *subject = RxSubjectsPublishSubject_create();
+      JavaUtilConcurrentAtomicAtomicLong *counter = create_JavaUtilConcurrentAtomicAtomicLong_init();
+      RxObserversTestSubscriber *ts = create_RxObserversTestSubscriber_initWithRxObserver_(create_RxInternalOperatorsOperatorObserveOnTest_$18_init());
+      [((RxObservable *) nil_chk([((RxSubjectsPublishSubject *) nil_chk(subject)) observeOnWithRxScheduler:RxSchedulersSchedulers_computation()])) subscribeWithRxSubscriber:ts];
+      while ([counter get] < 102400) {
+        [subject onNextWithId:JavaLangLong_valueOfWithLong_([counter get])];
+        [counter incrementAndGet];
+      }
+      [ts awaitTerminalEvent];
+      OrgJunitAssert_assertEqualsWithLong_withLong_(1, [((id<JavaUtilList>) nil_chk([ts getOnErrorEvents])) size]);
+      OrgJunitAssert_assertTrueWithBoolean_([[((id<JavaUtilList>) nil_chk([ts getOnErrorEvents])) getWithInt:0] isKindOfClass:[RxExceptionsMissingBackpressureException class]]);
+      id<JavaUtilList> onNextEvents = [ts getOnNextEvents];
+      OrgJunitAssert_assertTrueWithBoolean_([((id<JavaUtilList>) nil_chk(onNextEvents)) isEmpty] || [onNextEvents size] == [((JavaLangLong *) nil_chk([onNextEvents getWithInt:[onNextEvents size] - 1])) longLongValue] + 1);
+      OrgJunitAssert_assertTrueWithBoolean_([onNextEvents size] < JreLoadStatic(RxInternalUtilRxRingBuffer, SIZE));
     }
-    [ts awaitTerminalEvent];
-    OrgJunitAssert_assertEqualsWithLong_withLong_(1, [((id<JavaUtilList>) nil_chk([ts getOnErrorEvents])) size]);
-    OrgJunitAssert_assertTrueWithBoolean_([[((id<JavaUtilList>) nil_chk([ts getOnErrorEvents])) getWithInt:0] isKindOfClass:[RxExceptionsMissingBackpressureException class]]);
-    id<JavaUtilList> onNextEvents = [ts getOnNextEvents];
-    OrgJunitAssert_assertTrueWithBoolean_([((id<JavaUtilList>) nil_chk(onNextEvents)) isEmpty] || [onNextEvents size] == [((JavaLangLong *) nil_chk([onNextEvents getWithInt:[onNextEvents size] - 1])) longLongValue] + 1);
-    OrgJunitAssert_assertTrueWithBoolean_([onNextEvents size] < JreLoadStatic(RxInternalUtilRxRingBuffer, SIZE));
   }
 }
 

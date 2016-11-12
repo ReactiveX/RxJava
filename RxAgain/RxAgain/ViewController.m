@@ -17,10 +17,11 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-//    [OneTest runTests];
-//    [OneTest runSingleClassWithNSString:@"rx.BackpressureTests"];
-//    [OneTest runSingleClassWithNSString:@"rx.internal.operators.OperatorMergeTest"];
-        [OneTest runSingleClassWithNSString:@"rx.internal.operators.OperatorGroupByTest"];
+    [OneTest runTests];
+//    [OneTest runTestsWithNSString:@"rx.BackpressureTests"];
+//    [OneTest runMethodWithNSString:@"rx.internal.operators.CachedObservableTest" withNSString:@"testColdReplayBackpressure"];
+//    [OneTest runTestsWithNSString:@"rx.internal.operators.CachedObservableTest"];
+//        [OneTest runTestsWithNSString:@"rx.internal.operators.OperatorGroupByTest"];
 //    [OneTest runSingleClassWithNSString:@"rx.doppl.memory.SubscriberAutomaticRemovalTest"];
 }
 

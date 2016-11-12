@@ -6,6 +6,7 @@
 #include "IOSClass.h"
 #include "IOSObjectArray.h"
 #include "J2ObjC_source.h"
+#include "RxDopplSafeObservableUnsubscribe.h"
 #include "RxExceptionsCompositeException.h"
 #include "RxExceptionsExceptions.h"
 #include "RxInternalOperatorsOnSubscribeDoOnEach.h"
@@ -13,20 +14,19 @@
 #include "RxObserver.h"
 #include "RxPluginsRxJavaHooks.h"
 #include "RxSubscriber.h"
-#include "RxSubscription.h"
 #include "java/util/Arrays.h"
 #include "java/util/List.h"
 
 @interface RxInternalOperatorsOnSubscribeDoOnEach () {
  @public
   id<RxObserver> doOnEachObserver_;
-  RxObservable *source_;
+  RxDopplSafeObservableUnsubscribe *source_;
 }
 
 @end
 
 J2OBJC_FIELD_SETTER(RxInternalOperatorsOnSubscribeDoOnEach, doOnEachObserver_, id<RxObserver>)
-J2OBJC_FIELD_SETTER(RxInternalOperatorsOnSubscribeDoOnEach, source_, RxObservable *)
+J2OBJC_FIELD_SETTER(RxInternalOperatorsOnSubscribeDoOnEach, source_, RxDopplSafeObservableUnsubscribe *)
 
 @interface RxInternalOperatorsOnSubscribeDoOnEach_DoOnEachSubscriber : RxSubscriber {
  @public
@@ -68,7 +68,7 @@ J2OBJC_TYPE_LITERAL_HEADER(RxInternalOperatorsOnSubscribeDoOnEach_DoOnEachSubscr
 }
 
 - (void)callWithId:(RxSubscriber *)subscriber {
-  [((RxObservable *) nil_chk(source_)) unsafeSubscribeWithRxSubscriber:create_RxInternalOperatorsOnSubscribeDoOnEach_DoOnEachSubscriber_initWithRxSubscriber_withRxObserver_(subscriber, doOnEachObserver_)];
+  [((RxDopplSafeObservableUnsubscribe *) nil_chk(source_)) unsafeSubscribeWithRxSubscriber:create_RxInternalOperatorsOnSubscribeDoOnEach_DoOnEachSubscriber_initWithRxSubscriber_withRxObserver_(subscriber, doOnEachObserver_)];
 }
 
 - (void)dealloc {
@@ -89,10 +89,10 @@ J2OBJC_TYPE_LITERAL_HEADER(RxInternalOperatorsOnSubscribeDoOnEach_DoOnEachSubscr
   #pragma clang diagnostic pop
   static const J2ObjcFieldInfo fields[] = {
     { "doOnEachObserver_", "LRxObserver;", .constantValue.asLong = 0, 0x12, -1, -1, 5, -1 },
-    { "source_", "LRxObservable;", .constantValue.asLong = 0, 0x12, -1, -1, 6, -1 },
+    { "source_", "LRxDopplSafeObservableUnsubscribe;", .constantValue.asLong = 0, 0x12, -1, -1, -1, -1 },
   };
-  static const void *ptrTable[] = { "LRxObservable;LRxObserver;", "(Lrx/Observable<TT;>;Lrx/Observer<-TT;>;)V", "call", "LRxSubscriber;", "(Lrx/Subscriber<-TT;>;)V", "Lrx/Observer<-TT;>;", "Lrx/Observable<TT;>;", "LRxInternalOperatorsOnSubscribeDoOnEach_DoOnEachSubscriber;", "<T:Ljava/lang/Object;>Ljava/lang/Object;Lrx/Observable$OnSubscribe<TT;>;" };
-  static const J2ObjcClassInfo _RxInternalOperatorsOnSubscribeDoOnEach = { "OnSubscribeDoOnEach", "rx.internal.operators", ptrTable, methods, fields, 7, 0x1, 2, 2, -1, 7, -1, 8, -1 };
+  static const void *ptrTable[] = { "LRxObservable;LRxObserver;", "(Lrx/Observable<TT;>;Lrx/Observer<-TT;>;)V", "call", "LRxSubscriber;", "(Lrx/Subscriber<-TT;>;)V", "Lrx/Observer<-TT;>;", "LRxInternalOperatorsOnSubscribeDoOnEach_DoOnEachSubscriber;", "<T:Ljava/lang/Object;>Ljava/lang/Object;Lrx/Observable$OnSubscribe<TT;>;" };
+  static const J2ObjcClassInfo _RxInternalOperatorsOnSubscribeDoOnEach = { "OnSubscribeDoOnEach", "rx.internal.operators", ptrTable, methods, fields, 7, 0x1, 2, 2, -1, 6, -1, 7, -1 };
   return &_RxInternalOperatorsOnSubscribeDoOnEach;
 }
 
@@ -100,7 +100,7 @@ J2OBJC_TYPE_LITERAL_HEADER(RxInternalOperatorsOnSubscribeDoOnEach_DoOnEachSubscr
 
 void RxInternalOperatorsOnSubscribeDoOnEach_initWithRxObservable_withRxObserver_(RxInternalOperatorsOnSubscribeDoOnEach *self, RxObservable *source, id<RxObserver> doOnEachObserver) {
   NSObject_init(self);
-  JreStrongAssign(&self->source_, source);
+  JreStrongAssignAndConsume(&self->source_, new_RxDopplSafeObservableUnsubscribe_initWithRxObservable_(source));
   JreStrongAssign(&self->doOnEachObserver_, doOnEachObserver);
 }
 

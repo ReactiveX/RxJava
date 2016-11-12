@@ -4,6 +4,7 @@
 //
 
 #include "J2ObjC_source.h"
+#include "RxDopplSafeObservableUnsubscribe.h"
 #include "RxFunctionsAction0.h"
 #include "RxInternalOperatorsOnSubscribeDelaySubscription.h"
 #include "RxObservable.h"
@@ -71,13 +72,13 @@ __attribute__((unused)) static RxInternalOperatorsOnSubscribeDelaySubscription_$
   methods[1].selector = @selector(callWithId:);
   #pragma clang diagnostic pop
   static const J2ObjcFieldInfo fields[] = {
-    { "source_", "LRxObservable;", .constantValue.asLong = 0, 0x10, -1, -1, 5, -1 },
+    { "source_", "LRxDopplSafeObservableUnsubscribe;", .constantValue.asLong = 0, 0x10, -1, -1, -1, -1 },
     { "time_", "J", .constantValue.asLong = 0, 0x10, -1, -1, -1, -1 },
     { "unit_", "LJavaUtilConcurrentTimeUnit;", .constantValue.asLong = 0, 0x10, -1, -1, -1, -1 },
     { "scheduler_", "LRxScheduler;", .constantValue.asLong = 0, 0x10, -1, -1, -1, -1 },
   };
-  static const void *ptrTable[] = { "LRxObservable;JLJavaUtilConcurrentTimeUnit;LRxScheduler;", "(Lrx/Observable<+TT;>;JLjava/util/concurrent/TimeUnit;Lrx/Scheduler;)V", "call", "LRxSubscriber;", "(Lrx/Subscriber<-TT;>;)V", "Lrx/Observable<+TT;>;", "<T:Ljava/lang/Object;>Ljava/lang/Object;Lrx/Observable$OnSubscribe<TT;>;" };
-  static const J2ObjcClassInfo _RxInternalOperatorsOnSubscribeDelaySubscription = { "OnSubscribeDelaySubscription", "rx.internal.operators", ptrTable, methods, fields, 7, 0x11, 2, 4, -1, -1, -1, 6, -1 };
+  static const void *ptrTable[] = { "LRxObservable;JLJavaUtilConcurrentTimeUnit;LRxScheduler;", "(Lrx/Observable<+TT;>;JLjava/util/concurrent/TimeUnit;Lrx/Scheduler;)V", "call", "LRxSubscriber;", "(Lrx/Subscriber<-TT;>;)V", "<T:Ljava/lang/Object;>Ljava/lang/Object;Lrx/Observable$OnSubscribe<TT;>;" };
+  static const J2ObjcClassInfo _RxInternalOperatorsOnSubscribeDelaySubscription = { "OnSubscribeDelaySubscription", "rx.internal.operators", ptrTable, methods, fields, 7, 0x11, 2, 4, -1, -1, -1, 5, -1 };
   return &_RxInternalOperatorsOnSubscribeDelaySubscription;
 }
 
@@ -85,7 +86,7 @@ __attribute__((unused)) static RxInternalOperatorsOnSubscribeDelaySubscription_$
 
 void RxInternalOperatorsOnSubscribeDelaySubscription_initWithRxObservable_withLong_withJavaUtilConcurrentTimeUnit_withRxScheduler_(RxInternalOperatorsOnSubscribeDelaySubscription *self, RxObservable *source, jlong time, JavaUtilConcurrentTimeUnit *unit, RxScheduler *scheduler) {
   NSObject_init(self);
-  JreStrongAssign(&self->source_, source);
+  JreStrongAssignAndConsume(&self->source_, new_RxDopplSafeObservableUnsubscribe_initWithRxObservable_(source));
   self->time_ = time;
   JreStrongAssign(&self->unit_, unit);
   JreStrongAssign(&self->scheduler_, scheduler);
@@ -105,7 +106,7 @@ J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxInternalOperatorsOnSubscribeDelaySubscription
 
 - (void)call {
   if (![((RxSubscriber *) nil_chk(val$s_)) isUnsubscribed]) {
-    [((RxObservable *) nil_chk(this$0_->source_)) unsafeSubscribeWithRxSubscriber:RxObserversSubscribers_wrapWithRxSubscriber_(val$s_)];
+    [((RxDopplSafeObservableUnsubscribe *) nil_chk(this$0_->source_)) unsafeSubscribeWithRxSubscriber:RxObserversSubscribers_wrapWithRxSubscriber_(val$s_)];
   }
 }
 

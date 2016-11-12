@@ -20,6 +20,7 @@
 #define INCLUDE_RxObservable_OnSubscribe 1
 #include "RxObservable.h"
 
+@class RxDopplSafeObservableUnsubscribe;
 @class RxObservable;
 @class RxScheduler;
 @class RxSubscriber;
@@ -27,7 +28,7 @@
 
 @interface RxInternalOperatorsOnSubscribeRedo : NSObject < RxObservable_OnSubscribe > {
  @public
-  RxObservable *source_;
+  RxDopplSafeObservableUnsubscribe *source_;
   jboolean stopOnComplete_;
   jboolean stopOnError_;
 }
@@ -75,7 +76,7 @@
 
 J2OBJC_STATIC_INIT(RxInternalOperatorsOnSubscribeRedo)
 
-J2OBJC_FIELD_SETTER(RxInternalOperatorsOnSubscribeRedo, source_, RxObservable *)
+J2OBJC_FIELD_SETTER(RxInternalOperatorsOnSubscribeRedo, source_, RxDopplSafeObservableUnsubscribe *)
 
 inline id<RxFunctionsFunc1> RxInternalOperatorsOnSubscribeRedo_get_REDO_INFINITE();
 /*! INTERNAL ONLY - Use accessor function from above. */

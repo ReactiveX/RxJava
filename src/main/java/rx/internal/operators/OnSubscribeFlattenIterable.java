@@ -28,6 +28,7 @@ import rx.Observable;
 import rx.Observable.OnSubscribe;
 import rx.Producer;
 import rx.Subscriber;
+import rx.doppl.SafeObservableUnsubscribe;
 import rx.exceptions.Exceptions;
 import rx.exceptions.MissingBackpressureException;
 import rx.functions.Func1;
@@ -48,7 +49,7 @@ import rx.plugins.RxJavaHooks;
  */
 public final class OnSubscribeFlattenIterable<T, R> implements OnSubscribe<R> {
 
-    final Observable<? extends T> source;
+    final SafeObservableUnsubscribe source;
 
     final Func1<? super T, ? extends Iterable<? extends R>> mapper;
 
@@ -57,7 +58,7 @@ public final class OnSubscribeFlattenIterable<T, R> implements OnSubscribe<R> {
     /** Protected: use createFrom to handle source-dependent optimizations. */
     protected OnSubscribeFlattenIterable(Observable<? extends T> source,
             Func1<? super T, ? extends Iterable<? extends R>> mapper, int prefetch) {
-        this.source = source;
+        this.source = new SafeObservableUnsubscribe(source);
         this.mapper = mapper;
         this.prefetch = prefetch;
     }

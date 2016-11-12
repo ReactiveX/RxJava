@@ -165,6 +165,7 @@ public final class OperatorZip<R> implements Operator<R, Observable<?>[]> {
         /** */
         private static final long serialVersionUID = -1216676403723546796L;
 
+        @Weak
         final Zip<R> zipper;
 
         public ZipProducer(Zip<R> zipper) {

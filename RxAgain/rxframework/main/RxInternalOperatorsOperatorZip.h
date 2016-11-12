@@ -188,7 +188,7 @@ J2OBJC_TYPE_LITERAL_HEADER(RxInternalOperatorsOperatorZip_ZipSubscriber)
 
 @interface RxInternalOperatorsOperatorZip_ZipProducer : JavaUtilConcurrentAtomicAtomicLong < RxProducer > {
  @public
-  RxInternalOperatorsOperatorZip_Zip *zipper_;
+  __unsafe_unretained RxInternalOperatorsOperatorZip_Zip *zipper_;
 }
 
 #pragma mark Public
@@ -200,8 +200,6 @@ J2OBJC_TYPE_LITERAL_HEADER(RxInternalOperatorsOperatorZip_ZipSubscriber)
 @end
 
 J2OBJC_EMPTY_STATIC_INIT(RxInternalOperatorsOperatorZip_ZipProducer)
-
-J2OBJC_FIELD_SETTER(RxInternalOperatorsOperatorZip_ZipProducer, zipper_, RxInternalOperatorsOperatorZip_Zip *)
 
 FOUNDATION_EXPORT void RxInternalOperatorsOperatorZip_ZipProducer_initWithRxInternalOperatorsOperatorZip_Zip_(RxInternalOperatorsOperatorZip_ZipProducer *self, RxInternalOperatorsOperatorZip_Zip *zipper);
 

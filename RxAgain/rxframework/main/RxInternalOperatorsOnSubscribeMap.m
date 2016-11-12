@@ -4,6 +4,7 @@
 //
 
 #include "J2ObjC_source.h"
+#include "RxDopplSafeObservableUnsubscribe.h"
 #include "RxExceptionsExceptions.h"
 #include "RxExceptionsOnErrorThrowable.h"
 #include "RxFunctionsFunc1.h"
@@ -12,7 +13,6 @@
 #include "RxPluginsRxJavaHooks.h"
 #include "RxProducer.h"
 #include "RxSubscriber.h"
-#include "RxSubscription.h"
 
 @implementation RxInternalOperatorsOnSubscribeMap
 
@@ -25,7 +25,7 @@
 - (void)callWithId:(RxSubscriber *)o {
   RxInternalOperatorsOnSubscribeMap_MapSubscriber *parent = create_RxInternalOperatorsOnSubscribeMap_MapSubscriber_initWithRxSubscriber_withRxFunctionsFunc1_(o, transformer_);
   [((RxSubscriber *) nil_chk(o)) addWithRxSubscription:parent];
-  [((RxObservable *) nil_chk(source_)) unsafeSubscribeWithRxSubscriber:parent];
+  [((RxDopplSafeObservableUnsubscribe *) nil_chk(source_)) unsafeSubscribeWithRxSubscriber:parent];
 }
 
 - (void)dealloc {
@@ -45,11 +45,11 @@
   methods[1].selector = @selector(callWithId:);
   #pragma clang diagnostic pop
   static const J2ObjcFieldInfo fields[] = {
-    { "source_", "LRxObservable;", .constantValue.asLong = 0, 0x10, -1, -1, 5, -1 },
-    { "transformer_", "LRxFunctionsFunc1;", .constantValue.asLong = 0, 0x10, -1, -1, 6, -1 },
+    { "source_", "LRxDopplSafeObservableUnsubscribe;", .constantValue.asLong = 0, 0x10, -1, -1, -1, -1 },
+    { "transformer_", "LRxFunctionsFunc1;", .constantValue.asLong = 0, 0x10, -1, -1, 5, -1 },
   };
-  static const void *ptrTable[] = { "LRxObservable;LRxFunctionsFunc1;", "(Lrx/Observable<TT;>;Lrx/functions/Func1<-TT;+TR;>;)V", "call", "LRxSubscriber;", "(Lrx/Subscriber<-TR;>;)V", "Lrx/Observable<TT;>;", "Lrx/functions/Func1<-TT;+TR;>;", "LRxInternalOperatorsOnSubscribeMap_MapSubscriber;", "<T:Ljava/lang/Object;R:Ljava/lang/Object;>Ljava/lang/Object;Lrx/Observable$OnSubscribe<TR;>;" };
-  static const J2ObjcClassInfo _RxInternalOperatorsOnSubscribeMap = { "OnSubscribeMap", "rx.internal.operators", ptrTable, methods, fields, 7, 0x11, 2, 2, -1, 7, -1, 8, -1 };
+  static const void *ptrTable[] = { "LRxObservable;LRxFunctionsFunc1;", "(Lrx/Observable<TT;>;Lrx/functions/Func1<-TT;+TR;>;)V", "call", "LRxSubscriber;", "(Lrx/Subscriber<-TR;>;)V", "Lrx/functions/Func1<-TT;+TR;>;", "LRxInternalOperatorsOnSubscribeMap_MapSubscriber;", "<T:Ljava/lang/Object;R:Ljava/lang/Object;>Ljava/lang/Object;Lrx/Observable$OnSubscribe<TR;>;" };
+  static const J2ObjcClassInfo _RxInternalOperatorsOnSubscribeMap = { "OnSubscribeMap", "rx.internal.operators", ptrTable, methods, fields, 7, 0x11, 2, 2, -1, 6, -1, 7, -1 };
   return &_RxInternalOperatorsOnSubscribeMap;
 }
 
@@ -57,7 +57,7 @@
 
 void RxInternalOperatorsOnSubscribeMap_initWithRxObservable_withRxFunctionsFunc1_(RxInternalOperatorsOnSubscribeMap *self, RxObservable *source, id<RxFunctionsFunc1> transformer) {
   NSObject_init(self);
-  JreStrongAssign(&self->source_, source);
+  JreStrongAssignAndConsume(&self->source_, new_RxDopplSafeObservableUnsubscribe_initWithRxObservable_(source));
   JreStrongAssign(&self->transformer_, transformer);
 }
 

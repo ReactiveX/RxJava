@@ -15,6 +15,7 @@
  */
 package rx.internal.operators;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayDeque;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -46,10 +47,11 @@ public final class OperatorTakeLast<T> implements Operator<T, T> {
         final TakeLastSubscriber<T> parent = new TakeLastSubscriber<T>(subscriber, count);
 
         subscriber.add(parent);
+        final WeakReference<TakeLastSubscriber<T>> weakParent = new WeakReference<TakeLastSubscriber<T>>(parent);
         subscriber.setProducer(new Producer() {
             @Override
             public void request(long n) {
-                parent.requestMore(n);
+                weakParent.get().requestMore(n);
             }
         });
 

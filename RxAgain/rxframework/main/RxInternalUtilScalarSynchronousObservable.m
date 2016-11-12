@@ -21,6 +21,7 @@
 #include "java/lang/IllegalArgumentException.h"
 #include "java/lang/IllegalStateException.h"
 #include "java/lang/System.h"
+#include "java/lang/ref/WeakReference.h"
 #include "java/util/concurrent/atomic/AtomicBoolean.h"
 
 inline jlong RxInternalUtilScalarSynchronousObservable_ScalarAsyncProducer_get_serialVersionUID();
@@ -446,8 +447,8 @@ J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxInternalUtilScalarSynchronousObservable_Scala
     return;
   }
   once_ = true;
-  RxSubscriber *a = actual_;
-  if ([((RxSubscriber *) nil_chk(a)) isUnsubscribed]) {
+  RxSubscriber *a = [((JavaLangRefWeakReference *) nil_chk(actual_)) get];
+  if (a == nil || [a isUnsubscribed]) {
     return;
   }
   id v = value_;
@@ -481,11 +482,11 @@ J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxInternalUtilScalarSynchronousObservable_Scala
   methods[1].selector = @selector(requestWithLong:);
   #pragma clang diagnostic pop
   static const J2ObjcFieldInfo fields[] = {
-    { "actual_", "LRxSubscriber;", .constantValue.asLong = 0, 0x10, -1, -1, 4, -1 },
+    { "actual_", "LJavaLangRefWeakReference;", .constantValue.asLong = 0, 0x10, -1, -1, 4, -1 },
     { "value_", "LNSObject;", .constantValue.asLong = 0, 0x10, -1, -1, 5, -1 },
     { "once_", "Z", .constantValue.asLong = 0, 0x0, -1, -1, -1, -1 },
   };
-  static const void *ptrTable[] = { "LRxSubscriber;LNSObject;", "(Lrx/Subscriber<-TT;>;TT;)V", "request", "J", "Lrx/Subscriber<-TT;>;", "TT;", "LRxInternalUtilScalarSynchronousObservable;", "<T:Ljava/lang/Object;>Ljava/lang/Object;Lrx/Producer;" };
+  static const void *ptrTable[] = { "LRxSubscriber;LNSObject;", "(Lrx/Subscriber<-TT;>;TT;)V", "request", "J", "Ljava/lang/ref/WeakReference<Lrx/Subscriber<-TT;>;>;", "TT;", "LRxInternalUtilScalarSynchronousObservable;", "<T:Ljava/lang/Object;>Ljava/lang/Object;Lrx/Producer;" };
   static const J2ObjcClassInfo _RxInternalUtilScalarSynchronousObservable_WeakSingleProducer = { "WeakSingleProducer", "rx.internal.util", ptrTable, methods, fields, 7, 0x18, 2, 3, 6, -1, -1, 7, -1 };
   return &_RxInternalUtilScalarSynchronousObservable_WeakSingleProducer;
 }
@@ -494,7 +495,7 @@ J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxInternalUtilScalarSynchronousObservable_Scala
 
 void RxInternalUtilScalarSynchronousObservable_WeakSingleProducer_initWithRxSubscriber_withId_(RxInternalUtilScalarSynchronousObservable_WeakSingleProducer *self, RxSubscriber *actual, id value) {
   NSObject_init(self);
-  JreStrongAssign(&self->actual_, actual);
+  JreStrongAssignAndConsume(&self->actual_, new_JavaLangRefWeakReference_initWithId_(actual));
   JreStrongAssign(&self->value_, value);
 }
 

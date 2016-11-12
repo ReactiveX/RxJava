@@ -25,6 +25,7 @@ import rx.Observable.OnSubscribe;
 import rx.Producer;
 import rx.Subscriber;
 import rx.Subscription;
+import rx.doppl.SafeObservableUnsubscribe;
 import rx.plugins.RxJavaHooks;
 
 /**
@@ -34,10 +35,10 @@ import rx.plugins.RxJavaHooks;
  */
 public final class OnSubscribeDetach<T> implements OnSubscribe<T> {
 
-    final Observable<T> source;
+    final SafeObservableUnsubscribe source;
 
     public OnSubscribeDetach(Observable<T> source) {
-        this.source = source;
+        this.source = new SafeObservableUnsubscribe(source);
     }
 
     @Override

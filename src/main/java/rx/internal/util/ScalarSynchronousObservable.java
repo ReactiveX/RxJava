@@ -15,6 +15,7 @@
  */
 package rx.internal.util;
 
+import java.lang.ref.WeakReference;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import rx.Observable;
@@ -252,12 +253,13 @@ public final class ScalarSynchronousObservable<T> extends Observable<T> {
      * @param <T> the value type
      */
     static final class WeakSingleProducer<T> implements Producer {
-        final Subscriber<? super T> actual;
+
+        final WeakReference<Subscriber<? super T>> actual;
         final T value;
         boolean once;
 
         public WeakSingleProducer(Subscriber<? super T> actual, T value) {
-            this.actual = actual;
+            this.actual = new WeakReference<Subscriber<? super T>>(actual);
             this.value = value;
         }
 
@@ -273,8 +275,8 @@ public final class ScalarSynchronousObservable<T> extends Observable<T> {
                 return;
             }
             once = true;
-            Subscriber<? super T> a = actual;
-            if (a.isUnsubscribed()) {
+            Subscriber<? super T> a = actual.get();
+            if (a == null || a.isUnsubscribed()) {
                 return;
             }
             T v = value;

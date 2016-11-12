@@ -1045,12 +1045,12 @@ jint RxInternalOperatorsOperatorMerge_InnerSubscriber_LIMIT;
 
 - (void)__javaClone:(RxInternalOperatorsOperatorMerge_InnerSubscriber *)original {
   [super __javaClone:original];
+  [parent_ release];
   JreCloneVolatileStrong(&queue_, &original->queue_);
 }
 
 - (void)dealloc {
   JreCheckFinalize(self, [RxInternalOperatorsOperatorMerge_InnerSubscriber class]);
-  RELEASE_(parent_);
   JreReleaseVolatile(&queue_);
   [super dealloc];
 }
@@ -1097,7 +1097,7 @@ jint RxInternalOperatorsOperatorMerge_InnerSubscriber_LIMIT;
 
 void RxInternalOperatorsOperatorMerge_InnerSubscriber_initWithRxInternalOperatorsOperatorMerge_MergeSubscriber_withLong_(RxInternalOperatorsOperatorMerge_InnerSubscriber *self, RxInternalOperatorsOperatorMerge_MergeSubscriber *parent, jlong id_) {
   RxSubscriber_init(self);
-  JreStrongAssign(&self->parent_, parent);
+  self->parent_ = parent;
   self->id__ = id_;
 }
 

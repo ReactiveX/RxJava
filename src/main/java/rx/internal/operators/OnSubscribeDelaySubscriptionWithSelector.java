@@ -18,6 +18,7 @@ package rx.internal.operators;
 import rx.Observable;
 import rx.Observable.OnSubscribe;
 import rx.Subscriber;
+import rx.doppl.SafeObservableUnsubscribe;
 import rx.exceptions.Exceptions;
 import rx.functions.Func0;
 import rx.observers.Subscribers;
@@ -30,11 +31,11 @@ import rx.observers.Subscribers;
  * @param <U> the value type of the Observable triggering the delayed subscription
  */
 public final class OnSubscribeDelaySubscriptionWithSelector<T, U> implements OnSubscribe<T> {
-    final Observable<? extends T> source;
+    final SafeObservableUnsubscribe      source;
     final Func0<? extends Observable<U>> subscriptionDelay;
 
     public OnSubscribeDelaySubscriptionWithSelector(Observable<? extends T> source, Func0<? extends Observable<U>> subscriptionDelay) {
-        this.source = source;
+        this.source = new SafeObservableUnsubscribe(source);
         this.subscriptionDelay = subscriptionDelay;
     }
 

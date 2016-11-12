@@ -369,9 +369,9 @@ J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxInternalOperatorsOperatorZip_ZipSubscriber)
   [((RxInternalOperatorsOperatorZip_Zip *) nil_chk(zipper_)) tick];
 }
 
-- (void)dealloc {
-  RELEASE_(zipper_);
-  [super dealloc];
+- (void)__javaClone:(RxInternalOperatorsOperatorZip_ZipProducer *)original {
+  [super __javaClone:original];
+  [zipper_ release];
 }
 
 + (const J2ObjcClassInfo *)__metadata {
@@ -397,7 +397,7 @@ J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxInternalOperatorsOperatorZip_ZipSubscriber)
 
 void RxInternalOperatorsOperatorZip_ZipProducer_initWithRxInternalOperatorsOperatorZip_Zip_(RxInternalOperatorsOperatorZip_ZipProducer *self, RxInternalOperatorsOperatorZip_Zip *zipper) {
   JavaUtilConcurrentAtomicAtomicLong_init(self);
-  JreStrongAssign(&self->zipper_, zipper);
+  self->zipper_ = zipper;
 }
 
 RxInternalOperatorsOperatorZip_ZipProducer *new_RxInternalOperatorsOperatorZip_ZipProducer_initWithRxInternalOperatorsOperatorZip_Zip_(RxInternalOperatorsOperatorZip_Zip *zipper) {

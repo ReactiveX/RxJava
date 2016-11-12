@@ -20,12 +20,13 @@
 #define INCLUDE_RxObservable_OnSubscribe 1
 #include "RxObservable.h"
 
+@class RxDopplSafeObservableUnsubscribe;
 @class RxObservable;
 @class RxSubscriber;
 
 @interface RxInternalOperatorsOnSubscribeDetach : NSObject < RxObservable_OnSubscribe > {
  @public
-  RxObservable *source_;
+  RxDopplSafeObservableUnsubscribe *source_;
 }
 
 #pragma mark Public
@@ -38,7 +39,7 @@
 
 J2OBJC_EMPTY_STATIC_INIT(RxInternalOperatorsOnSubscribeDetach)
 
-J2OBJC_FIELD_SETTER(RxInternalOperatorsOnSubscribeDetach, source_, RxObservable *)
+J2OBJC_FIELD_SETTER(RxInternalOperatorsOnSubscribeDetach, source_, RxDopplSafeObservableUnsubscribe *)
 
 FOUNDATION_EXPORT void RxInternalOperatorsOnSubscribeDetach_initWithRxObservable_(RxInternalOperatorsOnSubscribeDetach *self, RxObservable *source);
 

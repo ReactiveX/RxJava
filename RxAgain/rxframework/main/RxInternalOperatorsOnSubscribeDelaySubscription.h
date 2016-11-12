@@ -21,13 +21,14 @@
 #include "RxObservable.h"
 
 @class JavaUtilConcurrentTimeUnit;
+@class RxDopplSafeObservableUnsubscribe;
 @class RxObservable;
 @class RxScheduler;
 @class RxSubscriber;
 
 @interface RxInternalOperatorsOnSubscribeDelaySubscription : NSObject < RxObservable_OnSubscribe > {
  @public
-  RxObservable *source_;
+  RxDopplSafeObservableUnsubscribe *source_;
   jlong time_;
   JavaUtilConcurrentTimeUnit *unit_;
   RxScheduler *scheduler_;
@@ -46,7 +47,7 @@
 
 J2OBJC_EMPTY_STATIC_INIT(RxInternalOperatorsOnSubscribeDelaySubscription)
 
-J2OBJC_FIELD_SETTER(RxInternalOperatorsOnSubscribeDelaySubscription, source_, RxObservable *)
+J2OBJC_FIELD_SETTER(RxInternalOperatorsOnSubscribeDelaySubscription, source_, RxDopplSafeObservableUnsubscribe *)
 J2OBJC_FIELD_SETTER(RxInternalOperatorsOnSubscribeDelaySubscription, unit_, JavaUtilConcurrentTimeUnit *)
 J2OBJC_FIELD_SETTER(RxInternalOperatorsOnSubscribeDelaySubscription, scheduler_, RxScheduler *)
 

@@ -621,7 +621,7 @@ public class OperatorObserveOnTest {
 
     @Test
     public void testOnErrorCutsAheadOfOnNext() {
-        for (int i = 0; i < 50; i++) {
+        for (@AutoreleasePool int i = 0; i < 50; i++) {
             final PublishSubject<Long> subject = PublishSubject.create();
 
             final AtomicLong counter = new AtomicLong();

@@ -85,12 +85,50 @@ public class OneTest
 //        DopplJunitTestRunner.run(loadClassList(TestResources.fulllist), new RunListener());
     }
 
+    public static void runTests(String a)
+    {
+        run(a);
+    }
 
-    public static void runSingleClass(String className)
+    public static void runTests(String a, String b)
+    {
+        run(a, b);
+    }
+
+    public static void runTests(String a, String b, String c)
+    {
+        run(a, b, c);
+    }
+
+    public static void runTests(String a, String b, String c, String d)
+    {
+        run(a, b, c, d);
+    }
+
+    private static void run(String... classNames)
     {
         try
         {
-            DopplJunitTestRunner.run(new Class[]{Class.forName(className)},
+            List<Class> clses = new ArrayList<>();
+            for(String s : classNames)
+            {
+                clses.add(Class.forName(s));
+            }
+            DopplJunitTestRunner.run(clses.toArray(new Class[clses.size()]),
+                    new BigMemRunListener());
+        }
+        catch(ClassNotFoundException e)
+        {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static void runMethod(String className, String methodName)
+    {
+        try
+        {
+            DopplJunitTestRunner.runMethod(Class.forName(className),
+                    methodName,
                     new BigMemRunListener());
         }
         catch(ClassNotFoundException e)

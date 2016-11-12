@@ -4,6 +4,7 @@
 //
 
 #include "J2ObjC_source.h"
+#include "RxDopplSafeObservableUnsubscribe.h"
 #include "RxExceptionsExceptions.h"
 #include "RxExceptionsMissingBackpressureException.h"
 #include "RxFunctionsFunc1.h"
@@ -24,30 +25,31 @@
 #include "RxSubscriptionsSerialSubscription.h"
 #include "java/lang/IllegalArgumentException.h"
 #include "java/lang/NullPointerException.h"
+#include "java/lang/ref/WeakReference.h"
 #include "java/util/Queue.h"
 #include "java/util/concurrent/atomic/AtomicInteger.h"
 #include "java/util/concurrent/atomic/AtomicReference.h"
 
 @interface RxInternalOperatorsOnSubscribeConcatMap_$1 : NSObject < RxProducer > {
  @public
-  RxInternalOperatorsOnSubscribeConcatMap_ConcatMapSubscriber *val$parent_;
+  JavaLangRefWeakReference *val$weakParent_;
 }
 
 - (void)requestWithLong:(jlong)n;
 
-- (instancetype)initWithRxInternalOperatorsOnSubscribeConcatMap_ConcatMapSubscriber:(RxInternalOperatorsOnSubscribeConcatMap_ConcatMapSubscriber *)capture$0;
+- (instancetype)initWithJavaLangRefWeakReference:(JavaLangRefWeakReference *)capture$0;
 
 @end
 
 J2OBJC_EMPTY_STATIC_INIT(RxInternalOperatorsOnSubscribeConcatMap_$1)
 
-J2OBJC_FIELD_SETTER(RxInternalOperatorsOnSubscribeConcatMap_$1, val$parent_, RxInternalOperatorsOnSubscribeConcatMap_ConcatMapSubscriber *)
+J2OBJC_FIELD_SETTER(RxInternalOperatorsOnSubscribeConcatMap_$1, val$weakParent_, JavaLangRefWeakReference *)
 
-__attribute__((unused)) static void RxInternalOperatorsOnSubscribeConcatMap_$1_initWithRxInternalOperatorsOnSubscribeConcatMap_ConcatMapSubscriber_(RxInternalOperatorsOnSubscribeConcatMap_$1 *self, RxInternalOperatorsOnSubscribeConcatMap_ConcatMapSubscriber *capture$0);
+__attribute__((unused)) static void RxInternalOperatorsOnSubscribeConcatMap_$1_initWithJavaLangRefWeakReference_(RxInternalOperatorsOnSubscribeConcatMap_$1 *self, JavaLangRefWeakReference *capture$0);
 
-__attribute__((unused)) static RxInternalOperatorsOnSubscribeConcatMap_$1 *new_RxInternalOperatorsOnSubscribeConcatMap_$1_initWithRxInternalOperatorsOnSubscribeConcatMap_ConcatMapSubscriber_(RxInternalOperatorsOnSubscribeConcatMap_ConcatMapSubscriber *capture$0) NS_RETURNS_RETAINED;
+__attribute__((unused)) static RxInternalOperatorsOnSubscribeConcatMap_$1 *new_RxInternalOperatorsOnSubscribeConcatMap_$1_initWithJavaLangRefWeakReference_(JavaLangRefWeakReference *capture$0) NS_RETURNS_RETAINED;
 
-__attribute__((unused)) static RxInternalOperatorsOnSubscribeConcatMap_$1 *create_RxInternalOperatorsOnSubscribeConcatMap_$1_initWithRxInternalOperatorsOnSubscribeConcatMap_ConcatMapSubscriber_(RxInternalOperatorsOnSubscribeConcatMap_ConcatMapSubscriber *capture$0);
+__attribute__((unused)) static RxInternalOperatorsOnSubscribeConcatMap_$1 *create_RxInternalOperatorsOnSubscribeConcatMap_$1_initWithJavaLangRefWeakReference_(JavaLangRefWeakReference *capture$0);
 
 @implementation RxInternalOperatorsOnSubscribeConcatMap
 
@@ -70,9 +72,10 @@ __attribute__((unused)) static RxInternalOperatorsOnSubscribeConcatMap_$1 *creat
   RxInternalOperatorsOnSubscribeConcatMap_ConcatMapSubscriber *parent = create_RxInternalOperatorsOnSubscribeConcatMap_ConcatMapSubscriber_initWithRxSubscriber_withRxFunctionsFunc1_withInt_withInt_(s, mapper_, prefetch_, delayErrorMode_);
   [((RxSubscriber *) nil_chk(child)) addWithRxSubscription:parent];
   [child addWithRxSubscription:parent->inner_];
-  [child setProducerWithRxProducer:create_RxInternalOperatorsOnSubscribeConcatMap_$1_initWithRxInternalOperatorsOnSubscribeConcatMap_ConcatMapSubscriber_(parent)];
+  JavaLangRefWeakReference *weakParent = create_JavaLangRefWeakReference_initWithId_(parent);
+  [child setProducerWithRxProducer:create_RxInternalOperatorsOnSubscribeConcatMap_$1_initWithJavaLangRefWeakReference_(weakParent)];
   if (![child isUnsubscribed]) {
-    [((RxObservable *) nil_chk(source_)) unsafeSubscribeWithRxSubscriber:parent];
+    [((RxDopplSafeObservableUnsubscribe *) nil_chk(source_)) unsafeSubscribeWithRxSubscriber:parent];
   }
 }
 
@@ -93,16 +96,16 @@ __attribute__((unused)) static RxInternalOperatorsOnSubscribeConcatMap_$1 *creat
   methods[1].selector = @selector(callWithId:);
   #pragma clang diagnostic pop
   static const J2ObjcFieldInfo fields[] = {
-    { "source_", "LRxObservable;", .constantValue.asLong = 0, 0x10, -1, -1, 5, -1 },
-    { "mapper_", "LRxFunctionsFunc1;", .constantValue.asLong = 0, 0x10, -1, -1, 6, -1 },
+    { "source_", "LRxDopplSafeObservableUnsubscribe;", .constantValue.asLong = 0, 0x10, -1, -1, -1, -1 },
+    { "mapper_", "LRxFunctionsFunc1;", .constantValue.asLong = 0, 0x10, -1, -1, 5, -1 },
     { "prefetch_", "I", .constantValue.asLong = 0, 0x10, -1, -1, -1, -1 },
     { "delayErrorMode_", "I", .constantValue.asLong = 0, 0x10, -1, -1, -1, -1 },
     { "IMMEDIATE", "I", .constantValue.asInt = RxInternalOperatorsOnSubscribeConcatMap_IMMEDIATE, 0x19, -1, -1, -1, -1 },
     { "BOUNDARY", "I", .constantValue.asInt = RxInternalOperatorsOnSubscribeConcatMap_BOUNDARY, 0x19, -1, -1, -1, -1 },
     { "END", "I", .constantValue.asInt = RxInternalOperatorsOnSubscribeConcatMap_END, 0x19, -1, -1, -1, -1 },
   };
-  static const void *ptrTable[] = { "LRxObservable;LRxFunctionsFunc1;II", "(Lrx/Observable<+TT;>;Lrx/functions/Func1<-TT;+Lrx/Observable<+TR;>;>;II)V", "call", "LRxSubscriber;", "(Lrx/Subscriber<-TR;>;)V", "Lrx/Observable<+TT;>;", "Lrx/functions/Func1<-TT;+Lrx/Observable<+TR;>;>;", "LRxInternalOperatorsOnSubscribeConcatMap_ConcatMapSubscriber;LRxInternalOperatorsOnSubscribeConcatMap_ConcatMapInnerSubscriber;LRxInternalOperatorsOnSubscribeConcatMap_ConcatMapInnerScalarProducer;", "<T:Ljava/lang/Object;R:Ljava/lang/Object;>Ljava/lang/Object;Lrx/Observable$OnSubscribe<TR;>;" };
-  static const J2ObjcClassInfo _RxInternalOperatorsOnSubscribeConcatMap = { "OnSubscribeConcatMap", "rx.internal.operators", ptrTable, methods, fields, 7, 0x11, 2, 7, -1, 7, -1, 8, -1 };
+  static const void *ptrTable[] = { "LRxObservable;LRxFunctionsFunc1;II", "(Lrx/Observable<+TT;>;Lrx/functions/Func1<-TT;+Lrx/Observable<+TR;>;>;II)V", "call", "LRxSubscriber;", "(Lrx/Subscriber<-TR;>;)V", "Lrx/functions/Func1<-TT;+Lrx/Observable<+TR;>;>;", "LRxInternalOperatorsOnSubscribeConcatMap_ConcatMapSubscriber;LRxInternalOperatorsOnSubscribeConcatMap_ConcatMapInnerSubscriber;LRxInternalOperatorsOnSubscribeConcatMap_ConcatMapInnerScalarProducer;", "<T:Ljava/lang/Object;R:Ljava/lang/Object;>Ljava/lang/Object;Lrx/Observable$OnSubscribe<TR;>;" };
+  static const J2ObjcClassInfo _RxInternalOperatorsOnSubscribeConcatMap = { "OnSubscribeConcatMap", "rx.internal.operators", ptrTable, methods, fields, 7, 0x11, 2, 7, -1, 6, -1, 7, -1 };
   return &_RxInternalOperatorsOnSubscribeConcatMap;
 }
 
@@ -110,7 +113,7 @@ __attribute__((unused)) static RxInternalOperatorsOnSubscribeConcatMap_$1 *creat
 
 void RxInternalOperatorsOnSubscribeConcatMap_initWithRxObservable_withRxFunctionsFunc1_withInt_withInt_(RxInternalOperatorsOnSubscribeConcatMap *self, RxObservable *source, id<RxFunctionsFunc1> mapper, jint prefetch, jint delayErrorMode) {
   NSObject_init(self);
-  JreStrongAssign(&self->source_, source);
+  JreStrongAssignAndConsume(&self->source_, new_RxDopplSafeObservableUnsubscribe_initWithRxObservable_(source));
   JreStrongAssign(&self->mapper_, mapper);
   self->prefetch_ = prefetch;
   self->delayErrorMode_ = delayErrorMode;
@@ -535,16 +538,17 @@ J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxInternalOperatorsOnSubscribeConcatMap_ConcatM
 @implementation RxInternalOperatorsOnSubscribeConcatMap_$1
 
 - (void)requestWithLong:(jlong)n {
-  [((RxInternalOperatorsOnSubscribeConcatMap_ConcatMapSubscriber *) nil_chk(val$parent_)) requestMoreWithLong:n];
+  RxInternalOperatorsOnSubscribeConcatMap_ConcatMapSubscriber *parent = [((JavaLangRefWeakReference *) nil_chk(val$weakParent_)) get];
+  if (parent != nil) [parent requestMoreWithLong:n];
 }
 
-- (instancetype)initWithRxInternalOperatorsOnSubscribeConcatMap_ConcatMapSubscriber:(RxInternalOperatorsOnSubscribeConcatMap_ConcatMapSubscriber *)capture$0 {
-  RxInternalOperatorsOnSubscribeConcatMap_$1_initWithRxInternalOperatorsOnSubscribeConcatMap_ConcatMapSubscriber_(self, capture$0);
+- (instancetype)initWithJavaLangRefWeakReference:(JavaLangRefWeakReference *)capture$0 {
+  RxInternalOperatorsOnSubscribeConcatMap_$1_initWithJavaLangRefWeakReference_(self, capture$0);
   return self;
 }
 
 - (void)dealloc {
-  RELEASE_(val$parent_);
+  RELEASE_(val$weakParent_);
   [super dealloc];
 }
 
@@ -556,27 +560,27 @@ J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxInternalOperatorsOnSubscribeConcatMap_ConcatM
   #pragma clang diagnostic push
   #pragma clang diagnostic ignored "-Wobjc-multiple-method-names"
   methods[0].selector = @selector(requestWithLong:);
-  methods[1].selector = @selector(initWithRxInternalOperatorsOnSubscribeConcatMap_ConcatMapSubscriber:);
+  methods[1].selector = @selector(initWithJavaLangRefWeakReference:);
   #pragma clang diagnostic pop
   static const J2ObjcFieldInfo fields[] = {
-    { "val$parent_", "LRxInternalOperatorsOnSubscribeConcatMap_ConcatMapSubscriber;", .constantValue.asLong = 0, 0x1012, -1, -1, 4, -1 },
+    { "val$weakParent_", "LJavaLangRefWeakReference;", .constantValue.asLong = 0, 0x1012, -1, -1, 4, -1 },
   };
-  static const void *ptrTable[] = { "request", "J", "LRxInternalOperatorsOnSubscribeConcatMap_ConcatMapSubscriber;", "(Lrx/internal/operators/OnSubscribeConcatMap$ConcatMapSubscriber<TT;TR;>;)V", "Lrx/internal/operators/OnSubscribeConcatMap$ConcatMapSubscriber<TT;TR;>;", "LRxInternalOperatorsOnSubscribeConcatMap;", "callWithId:" };
+  static const void *ptrTable[] = { "request", "J", "LJavaLangRefWeakReference;", "(Ljava/lang/ref/WeakReference<Lrx/internal/operators/OnSubscribeConcatMap$ConcatMapSubscriber<TT;TR;>;>;)V", "Ljava/lang/ref/WeakReference<Lrx/internal/operators/OnSubscribeConcatMap$ConcatMapSubscriber<TT;TR;>;>;", "LRxInternalOperatorsOnSubscribeConcatMap;", "callWithId:" };
   static const J2ObjcClassInfo _RxInternalOperatorsOnSubscribeConcatMap_$1 = { "", "rx.internal.operators", ptrTable, methods, fields, 7, 0x8008, 2, 1, 5, -1, 6, -1, -1 };
   return &_RxInternalOperatorsOnSubscribeConcatMap_$1;
 }
 
 @end
 
-void RxInternalOperatorsOnSubscribeConcatMap_$1_initWithRxInternalOperatorsOnSubscribeConcatMap_ConcatMapSubscriber_(RxInternalOperatorsOnSubscribeConcatMap_$1 *self, RxInternalOperatorsOnSubscribeConcatMap_ConcatMapSubscriber *capture$0) {
-  JreStrongAssign(&self->val$parent_, capture$0);
+void RxInternalOperatorsOnSubscribeConcatMap_$1_initWithJavaLangRefWeakReference_(RxInternalOperatorsOnSubscribeConcatMap_$1 *self, JavaLangRefWeakReference *capture$0) {
+  JreStrongAssign(&self->val$weakParent_, capture$0);
   NSObject_init(self);
 }
 
-RxInternalOperatorsOnSubscribeConcatMap_$1 *new_RxInternalOperatorsOnSubscribeConcatMap_$1_initWithRxInternalOperatorsOnSubscribeConcatMap_ConcatMapSubscriber_(RxInternalOperatorsOnSubscribeConcatMap_ConcatMapSubscriber *capture$0) {
-  J2OBJC_NEW_IMPL(RxInternalOperatorsOnSubscribeConcatMap_$1, initWithRxInternalOperatorsOnSubscribeConcatMap_ConcatMapSubscriber_, capture$0)
+RxInternalOperatorsOnSubscribeConcatMap_$1 *new_RxInternalOperatorsOnSubscribeConcatMap_$1_initWithJavaLangRefWeakReference_(JavaLangRefWeakReference *capture$0) {
+  J2OBJC_NEW_IMPL(RxInternalOperatorsOnSubscribeConcatMap_$1, initWithJavaLangRefWeakReference_, capture$0)
 }
 
-RxInternalOperatorsOnSubscribeConcatMap_$1 *create_RxInternalOperatorsOnSubscribeConcatMap_$1_initWithRxInternalOperatorsOnSubscribeConcatMap_ConcatMapSubscriber_(RxInternalOperatorsOnSubscribeConcatMap_ConcatMapSubscriber *capture$0) {
-  J2OBJC_CREATE_IMPL(RxInternalOperatorsOnSubscribeConcatMap_$1, initWithRxInternalOperatorsOnSubscribeConcatMap_ConcatMapSubscriber_, capture$0)
+RxInternalOperatorsOnSubscribeConcatMap_$1 *create_RxInternalOperatorsOnSubscribeConcatMap_$1_initWithJavaLangRefWeakReference_(JavaLangRefWeakReference *capture$0) {
+  J2OBJC_CREATE_IMPL(RxInternalOperatorsOnSubscribeConcatMap_$1, initWithJavaLangRefWeakReference_, capture$0)
 }

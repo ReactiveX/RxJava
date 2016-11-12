@@ -39,6 +39,10 @@
 		63111F811DCC042000DE6670 /* ScheduledThreadPoolExecutor$Moxy.m in Sources */ = {isa = PBXBuildFile; fileRef = 63111F631DCC042000DE6670 /* ScheduledThreadPoolExecutor$Moxy.m */; };
 		63331ADC1DCF8A7A00CA641D /* TestResources.h in Headers */ = {isa = PBXBuildFile; fileRef = 63331ADA1DCF8A7A00CA641D /* TestResources.h */; };
 		63331ADD1DCF8A7A00CA641D /* TestResources.m in Sources */ = {isa = PBXBuildFile; fileRef = 63331ADB1DCF8A7A00CA641D /* TestResources.m */; };
+		63403E5B1DD62E8F00607444 /* RxDopplMemoryAllocationTracker.h in Headers */ = {isa = PBXBuildFile; fileRef = 63403E571DD62E8F00607444 /* RxDopplMemoryAllocationTracker.h */; };
+		63403E5C1DD62E8F00607444 /* RxDopplMemoryAllocationTracker.m in Sources */ = {isa = PBXBuildFile; fileRef = 63403E581DD62E8F00607444 /* RxDopplMemoryAllocationTracker.m */; };
+		63403E5D1DD62E8F00607444 /* RxDopplMemoryBasicOperatorTest.h in Headers */ = {isa = PBXBuildFile; fileRef = 63403E591DD62E8F00607444 /* RxDopplMemoryBasicOperatorTest.h */; };
+		63403E5E1DD62E8F00607444 /* RxDopplMemoryBasicOperatorTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 63403E5A1DD62E8F00607444 /* RxDopplMemoryBasicOperatorTest.m */; };
 		635B166A1DCAD3E900BB0E12 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 635B16691DCAD3E900BB0E12 /* main.m */; };
 		635B166D1DCAD3E900BB0E12 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 635B166C1DCAD3E900BB0E12 /* AppDelegate.m */; };
 		635B16701DCAD3E900BB0E12 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 635B166F1DCAD3E900BB0E12 /* ViewController.m */; };
@@ -1511,6 +1515,8 @@
 		635B2B4C1DCADFDF00BB0E12 /* JSR305.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 635B2B4B1DCADFDF00BB0E12 /* JSR305.framework */; };
 		63D8E9AB1DD11F1800103716 /* RxDopplMemorySubscriberAutomaticRemovalTest.h in Headers */ = {isa = PBXBuildFile; fileRef = 63D8E9A91DD11F1800103716 /* RxDopplMemorySubscriberAutomaticRemovalTest.h */; };
 		63D8E9AC1DD11F1800103716 /* RxDopplMemorySubscriberAutomaticRemovalTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 63D8E9AA1DD11F1800103716 /* RxDopplMemorySubscriberAutomaticRemovalTest.m */; };
+		63D8E9AF1DD5854100103716 /* RxDopplSafeObservableUnsubscribe.h in Headers */ = {isa = PBXBuildFile; fileRef = 63D8E9AD1DD5854100103716 /* RxDopplSafeObservableUnsubscribe.h */; };
+		63D8E9B01DD5854100103716 /* RxDopplSafeObservableUnsubscribe.m in Sources */ = {isa = PBXBuildFile; fileRef = 63D8E9AE1DD5854100103716 /* RxDopplSafeObservableUnsubscribe.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -1591,6 +1597,10 @@
 		63111F631DCC042000DE6670 /* ScheduledThreadPoolExecutor$Moxy.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ScheduledThreadPoolExecutor$Moxy.m; sourceTree = "<group>"; };
 		63331ADA1DCF8A7A00CA641D /* TestResources.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TestResources.h; sourceTree = "<group>"; };
 		63331ADB1DCF8A7A00CA641D /* TestResources.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TestResources.m; sourceTree = "<group>"; };
+		63403E571DD62E8F00607444 /* RxDopplMemoryAllocationTracker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RxDopplMemoryAllocationTracker.h; sourceTree = "<group>"; };
+		63403E581DD62E8F00607444 /* RxDopplMemoryAllocationTracker.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RxDopplMemoryAllocationTracker.m; sourceTree = "<group>"; };
+		63403E591DD62E8F00607444 /* RxDopplMemoryBasicOperatorTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RxDopplMemoryBasicOperatorTest.h; sourceTree = "<group>"; };
+		63403E5A1DD62E8F00607444 /* RxDopplMemoryBasicOperatorTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RxDopplMemoryBasicOperatorTest.m; sourceTree = "<group>"; };
 		635B16651DCAD3E900BB0E12 /* RxAgain.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RxAgain.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		635B16691DCAD3E900BB0E12 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		635B166B1DCAD3E900BB0E12 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -3070,6 +3080,8 @@
 		635B2B4B1DCADFDF00BB0E12 /* JSR305.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JSR305.framework; path = ../../../devel/j2objc/dist/frameworks/JSR305.framework; sourceTree = "<group>"; };
 		63D8E9A91DD11F1800103716 /* RxDopplMemorySubscriberAutomaticRemovalTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RxDopplMemorySubscriberAutomaticRemovalTest.h; sourceTree = "<group>"; };
 		63D8E9AA1DD11F1800103716 /* RxDopplMemorySubscriberAutomaticRemovalTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RxDopplMemorySubscriberAutomaticRemovalTest.m; sourceTree = "<group>"; };
+		63D8E9AD1DD5854100103716 /* RxDopplSafeObservableUnsubscribe.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RxDopplSafeObservableUnsubscribe.h; sourceTree = "<group>"; };
+		63D8E9AE1DD5854100103716 /* RxDopplSafeObservableUnsubscribe.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RxDopplSafeObservableUnsubscribe.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -3204,6 +3216,8 @@
 		635B1F981DCADB5C00BB0E12 /* main */ = {
 			isa = PBXGroup;
 			children = (
+				63D8E9AD1DD5854100103716 /* RxDopplSafeObservableUnsubscribe.h */,
+				63D8E9AE1DD5854100103716 /* RxDopplSafeObservableUnsubscribe.m */,
 				635B1F991DCADB5C00BB0E12 /* androidbase */,
 				635B20951DCADB5D00BB0E12 /* androidbasetest */,
 				635B20D81DCADB5D00BB0E12 /* rx */,
@@ -4671,6 +4685,10 @@
 		635B238D1DCADB6200BB0E12 /* test */ = {
 			isa = PBXGroup;
 			children = (
+				63403E571DD62E8F00607444 /* RxDopplMemoryAllocationTracker.h */,
+				63403E581DD62E8F00607444 /* RxDopplMemoryAllocationTracker.m */,
+				63403E591DD62E8F00607444 /* RxDopplMemoryBasicOperatorTest.h */,
+				63403E5A1DD62E8F00607444 /* RxDopplMemoryBasicOperatorTest.m */,
 				63D8E9A91DD11F1800103716 /* RxDopplMemorySubscriberAutomaticRemovalTest.h */,
 				63D8E9AA1DD11F1800103716 /* RxDopplMemorySubscriberAutomaticRemovalTest.m */,
 				63331ADA1DCF8A7A00CA641D /* TestResources.h */,
@@ -5509,6 +5527,7 @@
 				635B2B2F1DCADB6800BB0E12 /* RxSubscriptionsMultipleAssignmentSubscriptionTest.h in Headers */,
 				63111F641DCC042000DE6670 /* RxCompletableTestFunc1a$Moxy.h in Headers */,
 				635B2B051DCADB6700BB0E12 /* RxSchedulersSchedulerLifecycleTest.h in Headers */,
+				63D8E9AF1DD5854100103716 /* RxDopplSafeObservableUnsubscribe.h in Headers */,
 				635B2A711DCADB6700BB0E12 /* RxInternalOperatorsOperatorToObservableListTest.h in Headers */,
 				635B27B51DCADB6500BB0E12 /* RxInternalOperatorsOperatorEagerConcatMap.h in Headers */,
 				635B28631DCADB6500BB0E12 /* RxInternalSchedulersGenericScheduledExecutorServiceFactory.h in Headers */,
@@ -5613,6 +5632,7 @@
 				635B2A211DCADB6700BB0E12 /* RxInternalOperatorsOperatorOnBackpressureBufferTest.h in Headers */,
 				635B278F1DCADB6500BB0E12 /* RxInternalOperatorsOperatorAll.h in Headers */,
 				635B277B1DCADB6500BB0E12 /* RxInternalOperatorsOnSubscribeSingle.h in Headers */,
+				63403E5B1DD62E8F00607444 /* RxDopplMemoryAllocationTracker.h in Headers */,
 				635B2B151DCADB6800BB0E12 /* RxSingleTest.h in Headers */,
 				635B2ACF1DCADB6700BB0E12 /* RxObservablesConnectableObservableTest.h in Headers */,
 				635B26671DCADB6400BB0E12 /* RenameOrgKxml2IoKXmlSerializer.h in Headers */,
@@ -5817,6 +5837,7 @@
 				635B29ED1DCADB6600BB0E12 /* RxInternalOperatorsOperatorCountTest.h in Headers */,
 				635B28531DCADB6500BB0E12 /* RxInternalProducersQueuedProducer.h in Headers */,
 				635B290B1DCADB6600BB0E12 /* RxPluginsRxJavaSingleExecutionHook.h in Headers */,
+				63403E5D1DD62E8F00607444 /* RxDopplMemoryBasicOperatorTest.h in Headers */,
 				635B26B91DCADB6400BB0E12 /* RxCompletable.h in Headers */,
 				635B28BD1DCADB6500BB0E12 /* RxInternalUtilUnsafeMessagePassingQueue.h in Headers */,
 				635B29F71DCADB6600BB0E12 /* RxInternalOperatorsOperatorDistinctTest.h in Headers */,
@@ -6422,6 +6443,7 @@
 				635B27401DCADB6500BB0E12 /* RxInternalOperatorsOnSubscribeAutoConnect.m in Sources */,
 				63111F6D1DCC042000DE6670 /* RxDopplMockMObserver$Moxy.m in Sources */,
 				635B28041DCADB6500BB0E12 /* RxInternalOperatorsOperatorTimeInterval.m in Sources */,
+				63403E5C1DD62E8F00607444 /* RxDopplMemoryAllocationTracker.m in Sources */,
 				635B266A1DCADB6400BB0E12 /* RenameOrgKxml2KdomDocument.m in Sources */,
 				635B2A041DCADB6600BB0E12 /* RxInternalOperatorsOperatorEagerConcatMapTest.m in Sources */,
 				635B27621DCADB6500BB0E12 /* RxInternalOperatorsOnSubscribeGroupJoin.m in Sources */,
@@ -6498,6 +6520,7 @@
 				635B29DC1DCADB6600BB0E12 /* RxInternalOperatorsOnSubscribeToMultimapTest.m in Sources */,
 				635B2B161DCADB6800BB0E12 /* RxSingleTest.m in Sources */,
 				635B2AC21DCADB6700BB0E12 /* RxInternalUtilUtilityFunctionsTest.m in Sources */,
+				63D8E9B01DD5854100103716 /* RxDopplSafeObservableUnsubscribe.m in Sources */,
 				635B25EC1DCADB6400BB0E12 /* AndroidDatabaseSqliteSQLiteCursorDriver.m in Sources */,
 				635B2A121DCADB6700BB0E12 /* RxInternalOperatorsOperatorMapNotificationTest.m in Sources */,
 				635B27B01DCADB6500BB0E12 /* RxInternalOperatorsOperatorDoOnRequest.m in Sources */,
@@ -6525,6 +6548,7 @@
 				635B27321DCADB6500BB0E12 /* RxInternalOperatorsCompletableOnSubscribeTimeout.m in Sources */,
 				635B26EC1DCADB6400BB0E12 /* RxFunctionsActionN.m in Sources */,
 				635B28961DCADB6500BB0E12 /* RxInternalUtilExceptionsUtils.m in Sources */,
+				63403E5E1DD62E8F00607444 /* RxDopplMemoryBasicOperatorTest.m in Sources */,
 				635B29F41DCADB6600BB0E12 /* RxInternalOperatorsOperatorDelayTest.m in Sources */,
 				63111F6F1DCC042000DE6670 /* RxDopplMockMSubscriber$Moxy.m in Sources */,
 				635B265C1DCADB6400BB0E12 /* RenameComAndroidInternalUtilXmlUtils.m in Sources */,

@@ -22,18 +22,19 @@ import rx.Observable;
 import rx.Observable.OnSubscribe;
 import rx.Producer;
 import rx.Subscriber;
+import rx.doppl.SafeObservableUnsubscribe;
 import rx.exceptions.Exceptions;
 import rx.functions.Func2;
 import rx.plugins.RxJavaHooks;
 
 public final class OnSubscribeReduce<T> implements OnSubscribe<T> {
 
-    final Observable<T> source;
+    final SafeObservableUnsubscribe source;
 
     final Func2<T, T, T> reducer;
 
     public OnSubscribeReduce(Observable<T> source, Func2<T, T, T> reducer) {
-        this.source = source;
+        this.source = new SafeObservableUnsubscribe(source);
         this.reducer = reducer;
     }
 
