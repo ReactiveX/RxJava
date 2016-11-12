@@ -2,6 +2,28 @@
 
 Version 1.x can be found at https://github.com/ReactiveX/RxJava/blob/1.x/CHANGES.md
 
+### Version 2.0.1 - November 12, 2016 ([Maven](http://search.maven.org/#artifactdetails%7Cio.reactivex.rxjava2%7Crxjava%7C2.0.1%7C))
+
+**API enhancements**
+- [Pull 4827](https://github.com/ReactiveX/RxJava/pull/4827): Porting the `Scheduler.when` operator from 1.x to 2.x
+- [Pull 4831](https://github.com/ReactiveX/RxJava/pull/4831): add `Flowable.doFinally(Action)` for handling post-terminal or cancel cleanup.
+- [Pull 4832](https://github.com/ReactiveX/RxJava/pull/4832): add `doFinally` to the rest of the reactive base classes
+- [Pull 4833](https://github.com/ReactiveX/RxJava/pull/4833): add `Flowable.doAfterNext` operator
+- [Pull 4835](https://github.com/ReactiveX/RxJava/pull/4835): add `Observable.doAfterNext` and `{Single|Maybe}.doAfterSuccess`.
+- [Pull 4838](https://github.com/ReactiveX/RxJava/pull/4838): add fluent `TestSubscriber.requestMore`
+
+**Documentation fixes/enhancements**
+- [Pull 4793](https://github.com/ReactiveX/RxJava/pull/4793): Fix javadoc mentioning `IllegalArgumentException` instead of `NullPointerException` for calling with `null` parameter(s).
+- [Pull 4798](https://github.com/ReactiveX/RxJava/pull/4798): Fix `Observable.toFlowable` documentation
+- [Pull 4803](https://github.com/ReactiveX/RxJava/pull/4803): Fix `ObservableEmitter` mentioning `FlowableEmitter`.
+- [Pull 4810](https://github.com/ReactiveX/RxJava/pull/4810): Fix `Completable.retryWhen` terminology about signal emission.
+- [Pull 4815](https://github.com/ReactiveX/RxJava/pull/4815): Fix typo in javadoc of `Maybe.toSingle`
+- [Pull 4839](https://github.com/ReactiveX/RxJava/pull/4839): fix wording of some operators, remove `@throws` implications
+
+**Bugfixes**
+- [Pull 4783](https://github.com/ReactiveX/RxJava/pull/4783): Fix `Observable.repeatWhen` & `retryWhen` not disposing the inner.
+- [Pull 4819](https://github.com/ReactiveX/RxJava/pull/4819): Fix `Observable.repeatWhen` not reacting to upstream `onError` properly.
+
 ### Version 2.0.0 - October 29, 2016 ([Maven](http://search.maven.org/#artifactdetails%7Cio.reactivex.rxjava2%7Crxjava%7C2.0.0%7C))
 
 This is it, general availability of RxJava 2! Rewritten from scratch to offer better performance, lower overhead, more features, a modern underlying technology and interoperation with the Reactive-Streams ecosystem. Big thanks goes to the several dozen people who gave feedback, fixes, enhancements and reviewed pull requests in the past, very intensive, 4 months.
