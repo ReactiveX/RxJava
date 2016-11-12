@@ -3,6 +3,7 @@
 //  source: /Users/kgalligan/devel-doppl/RxJava/src/test/java/rx/internal/operators/OperatorMergeMaxConcurrentTest.java
 //
 
+#include "CoTouchlabDoppelTestingPlatformUtils.h"
 #include "IOSClass.h"
 #include "IOSObjectArray.h"
 #include "J2ObjC_source.h"
@@ -284,7 +285,7 @@ __attribute__((unused)) static RxInternalOperatorsOperatorMergeMaxConcurrentTest
 
 - (void)testSimpleOneLessAsyncLoop {
   jint max = 200;
-  if (RxInternalUtilPlatformDependent_isAndroid()) {
+  if (RxInternalUtilPlatformDependent_isAndroid() || CoTouchlabDoppelTestingPlatformUtils_isJ2objc()) {
     max = 50;
   }
   for (jint i = 0; i < max; i++) {

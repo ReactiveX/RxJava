@@ -396,12 +396,11 @@ public class OperatorPublishTest {
         assertEquals(2, calls.get());
     }
     @Test
-    @DoppelHacks//Added unsubscribe from TestSubscriber to kill memory retention. Investigate
-    //doing this with weak references instead
+    @DoppelHacks//Less runs, longer terminal timeout
     public void testObserveOn() {
         ConnectableObservable<Integer> co = Observable.range(0, 1000).publish();
         Observable<Integer> obs = co.observeOn(Schedulers.computation());
-        for (@AutoreleasePool int i = 0; i < 1000; i++) {
+        for (@AutoreleasePool int i = 0; i < 100; i++) {
             for (int j = 1; j < 6; j++) {
                 List<TestSubscriber<Integer>> tss = new ArrayList<TestSubscriber<Integer>>();
                 for (int k = 1; k < j; k++) {
@@ -413,13 +412,10 @@ public class OperatorPublishTest {
                 Subscription s = co.connect();
 
                 for (TestSubscriber<Integer> ts : tss) {
-                    ts.awaitTerminalEvent(2, TimeUnit.SECONDS);
+                    ts.awaitTerminalEvent(4, TimeUnit.SECONDS);
                     ts.assertTerminalEvent();
                     ts.assertNoErrors();
                     assertEquals(1000, ts.getOnNextEvents().size());
-
-                    //Added for memory issues in doppl
-                    ts.unsubscribe();
                 }
                 s.unsubscribe();
             }

@@ -362,13 +362,13 @@ public class OperatorTakeLastTest {
         assertEquals(50, list.size());
     }
 
-    @Test(timeout = 45000) // original could get into an infinite loop
-    @DoppelHacks//Added time
+    @Test(timeout = 60000) // original could get into an infinite loop
+    @DoppelHacks//Added time, reduced runs
     public void completionRequestRace() {
         Worker w = Schedulers.computation().createWorker();
         try {
             final int n = 1000;
-            for (@AutoreleasePool int i = 0; i < 25000; i++) {
+            for (@AutoreleasePool int i = 0; i < 13000; i++) {
                 if (i % 1000 == 0) {
                     System.out.println("completionRequestRace >> " + i);
                 }
@@ -404,8 +404,6 @@ public class OperatorTakeLastTest {
                 for (int j = 0; j < n; j++) {
                     Assert.assertEquals(j, list.get(j).intValue());
                 }
-
-                ts.unsubscribe();
             }
         } finally {
             w.unsubscribe();

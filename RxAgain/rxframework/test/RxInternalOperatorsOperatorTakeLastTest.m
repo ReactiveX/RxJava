@@ -407,7 +407,7 @@ __attribute__((unused)) static RxInternalOperatorsOperatorTakeLastTest_$8 *creat
   RxScheduler_Worker *w = [((RxScheduler *) nil_chk(RxSchedulersSchedulers_computation())) createWorker];
   @try {
     jint n = 1000;
-    for (jint i = 0; i < 25000; i++) {
+    for (jint i = 0; i < 13000; i++) {
       @autoreleasepool {
         if (i % 1000 == 0) {
           [((JavaIoPrintStream *) nil_chk(JreLoadStatic(JavaLangSystem, out))) printlnWithNSString:JreStrcat("$I", @"completionRequestRace >> ", i)];
@@ -430,7 +430,6 @@ __attribute__((unused)) static RxInternalOperatorsOperatorTakeLastTest_$8 *creat
         for (jint j = 0; j < n; j++) {
           OrgJunitAssert_assertEqualsWithLong_withLong_(j, [((JavaLangInteger *) nil_chk([((id<JavaUtilList>) nil_chk(list)) getWithInt:j])) intValue]);
         }
-        [ts unsubscribe];
       }
     }
   }
@@ -644,7 +643,7 @@ IOSObjectArray *RxInternalOperatorsOperatorTakeLastTest__Annotations$14() {
 }
 
 IOSObjectArray *RxInternalOperatorsOperatorTakeLastTest__Annotations$15() {
-  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 45000) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 60000) } count:1 type:JavaLangAnnotationAnnotation_class_()];
 }
 
 IOSObjectArray *RxInternalOperatorsOperatorTakeLastTest__Annotations$16() {

@@ -841,7 +841,6 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
 
     static final class InnerSubscriber<T> extends Subscriber<T> {
 
-        @Weak
         final MergeSubscriber<T> parent;
         final long id;
         volatile boolean done;

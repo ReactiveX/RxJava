@@ -16,26 +16,26 @@
 #include "java/util/concurrent/TimeUnit.h"
 #include "java/util/concurrent/atomic/AtomicLong.h"
 
-@interface RxInternalOperatorsOperatorTakeLastTimed_$1 : NSObject < RxProducer > {
+@interface RxInternalOperatorsOperatorTakeLastTimed_InnerProducer : NSObject < RxProducer > {
  @public
-  RxInternalOperatorsOperatorTakeLastTimed_TakeLastTimedSubscriber *val$parent_;
+  __unsafe_unretained RxInternalOperatorsOperatorTakeLastTimed_TakeLastTimedSubscriber *parent_;
 }
+
+- (instancetype)initWithRxInternalOperatorsOperatorTakeLastTimed_TakeLastTimedSubscriber:(RxInternalOperatorsOperatorTakeLastTimed_TakeLastTimedSubscriber *)parent;
 
 - (void)requestWithLong:(jlong)n;
 
-- (instancetype)initWithRxInternalOperatorsOperatorTakeLastTimed_TakeLastTimedSubscriber:(RxInternalOperatorsOperatorTakeLastTimed_TakeLastTimedSubscriber *)capture$0;
-
 @end
 
-J2OBJC_EMPTY_STATIC_INIT(RxInternalOperatorsOperatorTakeLastTimed_$1)
+J2OBJC_EMPTY_STATIC_INIT(RxInternalOperatorsOperatorTakeLastTimed_InnerProducer)
 
-J2OBJC_FIELD_SETTER(RxInternalOperatorsOperatorTakeLastTimed_$1, val$parent_, RxInternalOperatorsOperatorTakeLastTimed_TakeLastTimedSubscriber *)
+__attribute__((unused)) static void RxInternalOperatorsOperatorTakeLastTimed_InnerProducer_initWithRxInternalOperatorsOperatorTakeLastTimed_TakeLastTimedSubscriber_(RxInternalOperatorsOperatorTakeLastTimed_InnerProducer *self, RxInternalOperatorsOperatorTakeLastTimed_TakeLastTimedSubscriber *parent);
 
-__attribute__((unused)) static void RxInternalOperatorsOperatorTakeLastTimed_$1_initWithRxInternalOperatorsOperatorTakeLastTimed_TakeLastTimedSubscriber_(RxInternalOperatorsOperatorTakeLastTimed_$1 *self, RxInternalOperatorsOperatorTakeLastTimed_TakeLastTimedSubscriber *capture$0);
+__attribute__((unused)) static RxInternalOperatorsOperatorTakeLastTimed_InnerProducer *new_RxInternalOperatorsOperatorTakeLastTimed_InnerProducer_initWithRxInternalOperatorsOperatorTakeLastTimed_TakeLastTimedSubscriber_(RxInternalOperatorsOperatorTakeLastTimed_TakeLastTimedSubscriber *parent) NS_RETURNS_RETAINED;
 
-__attribute__((unused)) static RxInternalOperatorsOperatorTakeLastTimed_$1 *new_RxInternalOperatorsOperatorTakeLastTimed_$1_initWithRxInternalOperatorsOperatorTakeLastTimed_TakeLastTimedSubscriber_(RxInternalOperatorsOperatorTakeLastTimed_TakeLastTimedSubscriber *capture$0) NS_RETURNS_RETAINED;
+__attribute__((unused)) static RxInternalOperatorsOperatorTakeLastTimed_InnerProducer *create_RxInternalOperatorsOperatorTakeLastTimed_InnerProducer_initWithRxInternalOperatorsOperatorTakeLastTimed_TakeLastTimedSubscriber_(RxInternalOperatorsOperatorTakeLastTimed_TakeLastTimedSubscriber *parent);
 
-__attribute__((unused)) static RxInternalOperatorsOperatorTakeLastTimed_$1 *create_RxInternalOperatorsOperatorTakeLastTimed_$1_initWithRxInternalOperatorsOperatorTakeLastTimed_TakeLastTimedSubscriber_(RxInternalOperatorsOperatorTakeLastTimed_TakeLastTimedSubscriber *capture$0);
+J2OBJC_TYPE_LITERAL_HEADER(RxInternalOperatorsOperatorTakeLastTimed_InnerProducer)
 
 @implementation RxInternalOperatorsOperatorTakeLastTimed
 
@@ -57,7 +57,7 @@ withJavaUtilConcurrentTimeUnit:(JavaUtilConcurrentTimeUnit *)unit
 - (RxSubscriber *)callWithId:(RxSubscriber *)subscriber {
   RxInternalOperatorsOperatorTakeLastTimed_TakeLastTimedSubscriber *parent = create_RxInternalOperatorsOperatorTakeLastTimed_TakeLastTimedSubscriber_initWithRxSubscriber_withInt_withLong_withRxScheduler_(subscriber, count_, ageMillis_, scheduler_);
   [((RxSubscriber *) nil_chk(subscriber)) addWithRxSubscription:parent];
-  [subscriber setProducerWithRxProducer:create_RxInternalOperatorsOperatorTakeLastTimed_$1_initWithRxInternalOperatorsOperatorTakeLastTimed_TakeLastTimedSubscriber_(parent)];
+  [subscriber setProducerWithRxProducer:create_RxInternalOperatorsOperatorTakeLastTimed_InnerProducer_initWithRxInternalOperatorsOperatorTakeLastTimed_TakeLastTimedSubscriber_(parent)];
   return parent;
 }
 
@@ -83,7 +83,7 @@ withJavaUtilConcurrentTimeUnit:(JavaUtilConcurrentTimeUnit *)unit
     { "scheduler_", "LRxScheduler;", .constantValue.asLong = 0, 0x10, -1, -1, -1, -1 },
     { "count_", "I", .constantValue.asLong = 0, 0x10, -1, -1, -1, -1 },
   };
-  static const void *ptrTable[] = { "JLJavaUtilConcurrentTimeUnit;LRxScheduler;", "IJLJavaUtilConcurrentTimeUnit;LRxScheduler;", "call", "LRxSubscriber;", "(Lrx/Subscriber<-TT;>;)Lrx/Subscriber<-TT;>;", "LRxInternalOperatorsOperatorTakeLastTimed_TakeLastTimedSubscriber;", "<T:Ljava/lang/Object;>Ljava/lang/Object;Lrx/Observable$Operator<TT;TT;>;" };
+  static const void *ptrTable[] = { "JLJavaUtilConcurrentTimeUnit;LRxScheduler;", "IJLJavaUtilConcurrentTimeUnit;LRxScheduler;", "call", "LRxSubscriber;", "(Lrx/Subscriber<-TT;>;)Lrx/Subscriber<-TT;>;", "LRxInternalOperatorsOperatorTakeLastTimed_TakeLastTimedSubscriber;LRxInternalOperatorsOperatorTakeLastTimed_InnerProducer;", "<T:Ljava/lang/Object;>Ljava/lang/Object;Lrx/Observable$Operator<TT;TT;>;" };
   static const J2ObjcClassInfo _RxInternalOperatorsOperatorTakeLastTimed = { "OperatorTakeLastTimed", "rx.internal.operators", ptrTable, methods, fields, 7, 0x11, 3, 3, -1, 5, -1, 6, -1 };
   return &_RxInternalOperatorsOperatorTakeLastTimed;
 }
@@ -247,51 +247,53 @@ RxInternalOperatorsOperatorTakeLastTimed_TakeLastTimedSubscriber *create_RxInter
 
 J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxInternalOperatorsOperatorTakeLastTimed_TakeLastTimedSubscriber)
 
-@implementation RxInternalOperatorsOperatorTakeLastTimed_$1
+@implementation RxInternalOperatorsOperatorTakeLastTimed_InnerProducer
 
-- (void)requestWithLong:(jlong)n {
-  [((RxInternalOperatorsOperatorTakeLastTimed_TakeLastTimedSubscriber *) nil_chk(val$parent_)) requestMoreWithLong:n];
-}
-
-- (instancetype)initWithRxInternalOperatorsOperatorTakeLastTimed_TakeLastTimedSubscriber:(RxInternalOperatorsOperatorTakeLastTimed_TakeLastTimedSubscriber *)capture$0 {
-  RxInternalOperatorsOperatorTakeLastTimed_$1_initWithRxInternalOperatorsOperatorTakeLastTimed_TakeLastTimedSubscriber_(self, capture$0);
+- (instancetype)initWithRxInternalOperatorsOperatorTakeLastTimed_TakeLastTimedSubscriber:(RxInternalOperatorsOperatorTakeLastTimed_TakeLastTimedSubscriber *)parent {
+  RxInternalOperatorsOperatorTakeLastTimed_InnerProducer_initWithRxInternalOperatorsOperatorTakeLastTimed_TakeLastTimedSubscriber_(self, parent);
   return self;
 }
 
-- (void)dealloc {
-  RELEASE_(val$parent_);
-  [super dealloc];
+- (void)requestWithLong:(jlong)n {
+  [((RxInternalOperatorsOperatorTakeLastTimed_TakeLastTimedSubscriber *) nil_chk(parent_)) requestMoreWithLong:n];
+}
+
+- (void)__javaClone:(RxInternalOperatorsOperatorTakeLastTimed_InnerProducer *)original {
+  [super __javaClone:original];
+  [parent_ release];
 }
 
 + (const J2ObjcClassInfo *)__metadata {
   static J2ObjcMethodInfo methods[] = {
-    { NULL, "V", 0x1, 0, 1, -1, -1, -1, -1 },
-    { NULL, NULL, 0x0, -1, 2, -1, 3, -1, -1 },
+    { NULL, NULL, 0x1, -1, 0, -1, 1, -1, -1 },
+    { NULL, "V", 0x1, 2, 3, -1, -1, -1, -1 },
   };
   #pragma clang diagnostic push
   #pragma clang diagnostic ignored "-Wobjc-multiple-method-names"
-  methods[0].selector = @selector(requestWithLong:);
-  methods[1].selector = @selector(initWithRxInternalOperatorsOperatorTakeLastTimed_TakeLastTimedSubscriber:);
+  methods[0].selector = @selector(initWithRxInternalOperatorsOperatorTakeLastTimed_TakeLastTimedSubscriber:);
+  methods[1].selector = @selector(requestWithLong:);
   #pragma clang diagnostic pop
   static const J2ObjcFieldInfo fields[] = {
-    { "val$parent_", "LRxInternalOperatorsOperatorTakeLastTimed_TakeLastTimedSubscriber;", .constantValue.asLong = 0, 0x1012, -1, -1, 4, -1 },
+    { "parent_", "LRxInternalOperatorsOperatorTakeLastTimed_TakeLastTimedSubscriber;", .constantValue.asLong = 0, 0x12, -1, -1, 4, -1 },
   };
-  static const void *ptrTable[] = { "request", "J", "LRxInternalOperatorsOperatorTakeLastTimed_TakeLastTimedSubscriber;", "(Lrx/internal/operators/OperatorTakeLastTimed$TakeLastTimedSubscriber<TT;>;)V", "Lrx/internal/operators/OperatorTakeLastTimed$TakeLastTimedSubscriber<TT;>;", "LRxInternalOperatorsOperatorTakeLastTimed;", "callWithId:" };
-  static const J2ObjcClassInfo _RxInternalOperatorsOperatorTakeLastTimed_$1 = { "", "rx.internal.operators", ptrTable, methods, fields, 7, 0x8008, 2, 1, 5, -1, 6, -1, -1 };
-  return &_RxInternalOperatorsOperatorTakeLastTimed_$1;
+  static const void *ptrTable[] = { "LRxInternalOperatorsOperatorTakeLastTimed_TakeLastTimedSubscriber;", "(Lrx/internal/operators/OperatorTakeLastTimed$TakeLastTimedSubscriber<TT;>;)V", "request", "J", "Lrx/internal/operators/OperatorTakeLastTimed$TakeLastTimedSubscriber<TT;>;", "LRxInternalOperatorsOperatorTakeLastTimed;", "<T:Ljava/lang/Object;>Ljava/lang/Object;Lrx/Producer;" };
+  static const J2ObjcClassInfo _RxInternalOperatorsOperatorTakeLastTimed_InnerProducer = { "InnerProducer", "rx.internal.operators", ptrTable, methods, fields, 7, 0xa, 2, 1, 5, -1, -1, 6, -1 };
+  return &_RxInternalOperatorsOperatorTakeLastTimed_InnerProducer;
 }
 
 @end
 
-void RxInternalOperatorsOperatorTakeLastTimed_$1_initWithRxInternalOperatorsOperatorTakeLastTimed_TakeLastTimedSubscriber_(RxInternalOperatorsOperatorTakeLastTimed_$1 *self, RxInternalOperatorsOperatorTakeLastTimed_TakeLastTimedSubscriber *capture$0) {
-  JreStrongAssign(&self->val$parent_, capture$0);
+void RxInternalOperatorsOperatorTakeLastTimed_InnerProducer_initWithRxInternalOperatorsOperatorTakeLastTimed_TakeLastTimedSubscriber_(RxInternalOperatorsOperatorTakeLastTimed_InnerProducer *self, RxInternalOperatorsOperatorTakeLastTimed_TakeLastTimedSubscriber *parent) {
   NSObject_init(self);
+  self->parent_ = parent;
 }
 
-RxInternalOperatorsOperatorTakeLastTimed_$1 *new_RxInternalOperatorsOperatorTakeLastTimed_$1_initWithRxInternalOperatorsOperatorTakeLastTimed_TakeLastTimedSubscriber_(RxInternalOperatorsOperatorTakeLastTimed_TakeLastTimedSubscriber *capture$0) {
-  J2OBJC_NEW_IMPL(RxInternalOperatorsOperatorTakeLastTimed_$1, initWithRxInternalOperatorsOperatorTakeLastTimed_TakeLastTimedSubscriber_, capture$0)
+RxInternalOperatorsOperatorTakeLastTimed_InnerProducer *new_RxInternalOperatorsOperatorTakeLastTimed_InnerProducer_initWithRxInternalOperatorsOperatorTakeLastTimed_TakeLastTimedSubscriber_(RxInternalOperatorsOperatorTakeLastTimed_TakeLastTimedSubscriber *parent) {
+  J2OBJC_NEW_IMPL(RxInternalOperatorsOperatorTakeLastTimed_InnerProducer, initWithRxInternalOperatorsOperatorTakeLastTimed_TakeLastTimedSubscriber_, parent)
 }
 
-RxInternalOperatorsOperatorTakeLastTimed_$1 *create_RxInternalOperatorsOperatorTakeLastTimed_$1_initWithRxInternalOperatorsOperatorTakeLastTimed_TakeLastTimedSubscriber_(RxInternalOperatorsOperatorTakeLastTimed_TakeLastTimedSubscriber *capture$0) {
-  J2OBJC_CREATE_IMPL(RxInternalOperatorsOperatorTakeLastTimed_$1, initWithRxInternalOperatorsOperatorTakeLastTimed_TakeLastTimedSubscriber_, capture$0)
+RxInternalOperatorsOperatorTakeLastTimed_InnerProducer *create_RxInternalOperatorsOperatorTakeLastTimed_InnerProducer_initWithRxInternalOperatorsOperatorTakeLastTimed_TakeLastTimedSubscriber_(RxInternalOperatorsOperatorTakeLastTimed_TakeLastTimedSubscriber *parent) {
+  J2OBJC_CREATE_IMPL(RxInternalOperatorsOperatorTakeLastTimed_InnerProducer, initWithRxInternalOperatorsOperatorTakeLastTimed_TakeLastTimedSubscriber_, parent)
 }
+
+J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxInternalOperatorsOperatorTakeLastTimed_InnerProducer)

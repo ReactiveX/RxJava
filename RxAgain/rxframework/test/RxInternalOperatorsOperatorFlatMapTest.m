@@ -1060,7 +1060,7 @@ IOSObjectArray *RxInternalOperatorsOperatorFlatMapTest__Annotations$14() {
 }
 
 IOSObjectArray *RxInternalOperatorsOperatorFlatMapTest__Annotations$15() {
-  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 60000) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 90000) } count:1 type:JavaLangAnnotationAnnotation_class_()];
 }
 
 IOSObjectArray *RxInternalOperatorsOperatorFlatMapTest__Annotations$16() {

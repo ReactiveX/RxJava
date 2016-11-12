@@ -19,8 +19,9 @@
     [super viewDidLoad];
     [OneTest runTests];
 //    [OneTest runTestsWithNSString:@"rx.BackpressureTests"];
-//    [OneTest runMethodWithNSString:@"rx.internal.operators.CachedObservableTest" withNSString:@"testColdReplayBackpressure"];
-//    [OneTest runTestsWithNSString:@"rx.internal.operators.CachedObservableTest"];
+    //rx.internal.operators.OperatorFlatMapTest#flatMapRangeMixedAsyncLoop
+//    [OneTest runMethodWithNSString:@"rx.internal.operators.OperatorFlatMapTest" withNSString:@"flatMapRangeMixedAsyncLoop"];
+//    [OneTest runTestsWithNSString:@"rx.schedulers.TrampolineSchedulerTest"];
 //        [OneTest runTestsWithNSString:@"rx.internal.operators.OperatorGroupByTest"];
 //    [OneTest runSingleClassWithNSString:@"rx.doppl.memory.SubscriberAutomaticRemovalTest"];
 }

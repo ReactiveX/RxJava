@@ -473,7 +473,7 @@ public class OperatorFlatMapTest {
         }
     }
     @DoppelHacks //Extended timeout
-    @Test(timeout = 60000)
+    @Test(timeout = 90000)
     public void flatMapRangeMixedAsyncLoop() {
         for (@AutoreleasePool int i = 0; i < 2000; i++) {
             if (i % 10 == 0) {

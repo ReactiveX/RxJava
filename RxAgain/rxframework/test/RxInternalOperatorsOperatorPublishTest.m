@@ -592,7 +592,7 @@ __attribute__((unused)) static RxInternalOperatorsOperatorPublishTest_$15 *creat
 - (void)testObserveOn {
   RxObservablesConnectableObservable *co = [((RxObservable *) nil_chk(RxObservable_rangeWithInt_withInt_(0, 1000))) publish];
   RxObservable *obs = [((RxObservablesConnectableObservable *) nil_chk(co)) observeOnWithRxScheduler:RxSchedulersSchedulers_computation()];
-  for (jint i = 0; i < 1000; i++) {
+  for (jint i = 0; i < 100; i++) {
     @autoreleasepool {
       for (jint j = 1; j < 6; j++) {
         id<JavaUtilList> tss = create_JavaUtilArrayList_init();
@@ -603,11 +603,10 @@ __attribute__((unused)) static RxInternalOperatorsOperatorPublishTest_$15 *creat
         }
         id<RxSubscription> s = [co connect];
         for (RxObserversTestSubscriber * __strong ts in tss) {
-          [((RxObserversTestSubscriber *) nil_chk(ts)) awaitTerminalEventWithLong:2 withJavaUtilConcurrentTimeUnit:JreLoadEnum(JavaUtilConcurrentTimeUnit, SECONDS)];
+          [((RxObserversTestSubscriber *) nil_chk(ts)) awaitTerminalEventWithLong:4 withJavaUtilConcurrentTimeUnit:JreLoadEnum(JavaUtilConcurrentTimeUnit, SECONDS)];
           [ts assertTerminalEvent];
           [ts assertNoErrors];
           OrgJunitAssert_assertEqualsWithLong_withLong_(1000, [((id<JavaUtilList>) nil_chk([ts getOnNextEvents])) size]);
-          [ts unsubscribe];
         }
         [((id<RxSubscription>) nil_chk(s)) unsubscribe];
       }

@@ -28,6 +28,7 @@ import org.junit.*;
 import org.mockito.*;
 
 import co.touchlab.doppel.testing.DoppelHacks;
+import co.touchlab.doppel.testing.PlatformUtils;
 import rx.*;
 import rx.Observable;
 import rx.Observer;
@@ -225,7 +226,7 @@ public class OperatorMergeMaxConcurrentTest {
     @Test(timeout = 20000)
     public void testSimpleOneLessAsyncLoop() {
         int max = 200;
-        if (PlatformDependent.isAndroid()) {
+        if (PlatformDependent.isAndroid() || PlatformUtils.isJ2objc()) {
             max = 50;
         }
         for (@AutoreleasePool int i = 0; i < max; i++) {

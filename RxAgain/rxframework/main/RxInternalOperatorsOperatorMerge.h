@@ -285,7 +285,7 @@ J2OBJC_TYPE_LITERAL_HEADER(RxInternalOperatorsOperatorMerge_MergeSubscriber)
 
 @interface RxInternalOperatorsOperatorMerge_InnerSubscriber : RxSubscriber {
  @public
-  __unsafe_unretained RxInternalOperatorsOperatorMerge_MergeSubscriber *parent_;
+  RxInternalOperatorsOperatorMerge_MergeSubscriber *parent_;
   jlong id__;
   volatile_jboolean done_;
   volatile_id queue_;
@@ -311,6 +311,7 @@ J2OBJC_TYPE_LITERAL_HEADER(RxInternalOperatorsOperatorMerge_MergeSubscriber)
 
 J2OBJC_STATIC_INIT(RxInternalOperatorsOperatorMerge_InnerSubscriber)
 
+J2OBJC_FIELD_SETTER(RxInternalOperatorsOperatorMerge_InnerSubscriber, parent_, RxInternalOperatorsOperatorMerge_MergeSubscriber *)
 J2OBJC_VOLATILE_FIELD_SETTER(RxInternalOperatorsOperatorMerge_InnerSubscriber, queue_, RxInternalUtilRxRingBuffer *)
 
 inline jint RxInternalOperatorsOperatorMerge_InnerSubscriber_get_LIMIT();

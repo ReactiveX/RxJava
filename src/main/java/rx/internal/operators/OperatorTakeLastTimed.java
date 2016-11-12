@@ -15,6 +15,8 @@
  */
 package rx.internal.operators;
 
+import com.google.j2objc.annotations.Weak;
+
 import java.util.ArrayDeque;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
@@ -58,12 +60,7 @@ public final class OperatorTakeLastTimed<T> implements Operator<T, T> {
         final TakeLastTimedSubscriber<T> parent = new TakeLastTimedSubscriber<T>(subscriber, count, ageMillis, scheduler);
 
         subscriber.add(parent);
-        subscriber.setProducer(new Producer() {
-            @Override
-            public void request(long n) {
-                parent.requestMore(n);
-            }
-        });
+        subscriber.setProducer(new InnerProducer(parent));
 
         return parent;
     }
@@ -139,6 +136,22 @@ public final class OperatorTakeLastTimed<T> implements Operator<T, T> {
 
         void requestMore(long n) {
             BackpressureUtils.postCompleteRequest(requested, n, queue, actual, this);
+        }
+    }
+
+    private static class InnerProducer<T> implements Producer
+    {
+        @Weak
+        private final TakeLastTimedSubscriber<T> parent;
+
+        public InnerProducer(TakeLastTimedSubscriber<T> parent)
+        {
+            this.parent = parent;
+        }
+
+        @Override
+        public void request(long n) {
+            parent.requestMore(n);
         }
     }
 }
