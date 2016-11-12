@@ -15,11 +15,10 @@
  */
 package rx.exceptions;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.io.*;
+import java.util.*;
 
-import rx.plugins.RxJavaErrorHandler;
-import rx.plugins.RxJavaPlugins;
+import rx.plugins.*;
 
 /**
  * Represents a {@code Throwable} that an {@code Observable} might notify its subscribers of, but that then can
@@ -43,7 +42,17 @@ public final class OnErrorThrowable extends RuntimeException {
     private OnErrorThrowable(Throwable exception, Object value) {
         super(exception);
         hasValue = true;
-        this.value = value;
+        Object v;
+        if (value instanceof Serializable) {
+            v = value;
+        } else {
+            try {
+                v = String.valueOf(value);
+            } catch (Throwable ex) {
+                v = ex.getMessage();
+            }
+        }
+        this.value = v;
     }
 
     /**
@@ -150,7 +159,17 @@ public final class OnErrorThrowable extends RuntimeException {
          */
         public OnNextValue(Object value) {
             super("OnError while emitting onNext value: " + renderValue(value));
-            this.value = value;
+            Object v;
+            if (value instanceof Serializable) {
+                v = value;
+            } else {
+                try {
+                    v = String.valueOf(value);
+                } catch (Throwable ex) {
+                    v = ex.getMessage();
+                }
+            }
+            this.value = v;
         }
 
         /**
@@ -177,7 +196,7 @@ public final class OnErrorThrowable extends RuntimeException {
          * @return a string version of the object if primitive or managed through error plugin,
          *        otherwise the class name of the object
          */
-        static String renderValue(Object value){
+        static String renderValue(Object value) {
             if (value == null) {
                 return "null";
             }
