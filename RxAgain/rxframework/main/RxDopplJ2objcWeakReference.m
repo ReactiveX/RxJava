@@ -19,10 +19,6 @@
 J2OBJC_FIELD_SETTER(RxDopplJ2objcWeakReference, weakReference_, JavaLangRefWeakReference *)
 J2OBJC_FIELD_SETTER(RxDopplJ2objcWeakReference, hardRef_, id)
 
-inline jboolean RxDopplJ2objcWeakReference_get_USE_WEAK();
-#define RxDopplJ2objcWeakReference_USE_WEAK false
-J2OBJC_STATIC_FIELD_CONSTANT(RxDopplJ2objcWeakReference, USE_WEAK, jboolean)
-
 @implementation RxDopplJ2objcWeakReference
 
 - (instancetype)initWithId:(id)val {
@@ -51,7 +47,7 @@ J2OBJC_STATIC_FIELD_CONSTANT(RxDopplJ2objcWeakReference, USE_WEAK, jboolean)
   methods[1].selector = @selector(get);
   #pragma clang diagnostic pop
   static const J2ObjcFieldInfo fields[] = {
-    { "USE_WEAK", "Z", .constantValue.asBOOL = RxDopplJ2objcWeakReference_USE_WEAK, 0x1a, -1, -1, -1, -1 },
+    { "USE_WEAK", "Z", .constantValue.asBOOL = RxDopplJ2objcWeakReference_USE_WEAK, 0x19, -1, -1, -1, -1 },
     { "weakReference_", "LJavaLangRefWeakReference;", .constantValue.asLong = 0, 0x12, -1, -1, 3, -1 },
     { "hardRef_", "LNSObject;", .constantValue.asLong = 0, 0x12, -1, -1, 4, -1 },
   };

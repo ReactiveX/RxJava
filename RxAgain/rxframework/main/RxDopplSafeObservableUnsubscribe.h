@@ -23,6 +23,7 @@
 @interface RxDopplSafeObservableUnsubscribe : NSObject {
  @public
   JavaLangRefWeakReference *observableWeakReference_;
+  RxObservable *hardRef_;
 }
 
 #pragma mark Public
@@ -36,6 +37,7 @@
 J2OBJC_EMPTY_STATIC_INIT(RxDopplSafeObservableUnsubscribe)
 
 J2OBJC_FIELD_SETTER(RxDopplSafeObservableUnsubscribe, observableWeakReference_, JavaLangRefWeakReference *)
+J2OBJC_FIELD_SETTER(RxDopplSafeObservableUnsubscribe, hardRef_, RxObservable *)
 
 FOUNDATION_EXPORT void RxDopplSafeObservableUnsubscribe_initWithRxObservable_(RxDopplSafeObservableUnsubscribe *self, RxObservable *observable);
 

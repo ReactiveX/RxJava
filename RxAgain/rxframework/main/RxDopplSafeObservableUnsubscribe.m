@@ -3,6 +3,7 @@
 //  source: /Users/kgalligan/devel-doppl/RxJava/src/main/java/rx/doppl/SafeObservableUnsubscribe.java
 //
 
+#include "IOSClass.h"
 #include "J2ObjC_source.h"
 #include "RxDopplSafeObservableUnsubscribe.h"
 #include "RxObservable.h"
@@ -18,12 +19,14 @@
 }
 
 - (void)unsafeSubscribeWithRxSubscriber:(RxSubscriber *)subscriber {
-  RxObservable *observable = [((JavaLangRefWeakReference *) nil_chk(observableWeakReference_)) get];
-  if (observable != nil) [observable unsafeSubscribeWithRxSubscriber:subscriber];
+  {
+    [((RxObservable *) nil_chk(hardRef_)) unsafeSubscribeWithRxSubscriber:subscriber];
+  }
 }
 
 - (void)dealloc {
   RELEASE_(observableWeakReference_);
+  RELEASE_(hardRef_);
   [super dealloc];
 }
 
@@ -39,9 +42,10 @@
   #pragma clang diagnostic pop
   static const J2ObjcFieldInfo fields[] = {
     { "observableWeakReference_", "LJavaLangRefWeakReference;", .constantValue.asLong = 0, 0x10, -1, -1, 3, -1 },
+    { "hardRef_", "LRxObservable;", .constantValue.asLong = 0, 0x10, -1, -1, -1, -1 },
   };
   static const void *ptrTable[] = { "LRxObservable;", "unsafeSubscribe", "LRxSubscriber;", "Ljava/lang/ref/WeakReference<Lrx/Observable;>;" };
-  static const J2ObjcClassInfo _RxDopplSafeObservableUnsubscribe = { "SafeObservableUnsubscribe", "rx.doppl", ptrTable, methods, fields, 7, 0x1, 2, 1, -1, -1, -1, -1, -1 };
+  static const J2ObjcClassInfo _RxDopplSafeObservableUnsubscribe = { "SafeObservableUnsubscribe", "rx.doppl", ptrTable, methods, fields, 7, 0x1, 2, 2, -1, -1, -1, -1, -1 };
   return &_RxDopplSafeObservableUnsubscribe;
 }
 
@@ -49,7 +53,8 @@
 
 void RxDopplSafeObservableUnsubscribe_initWithRxObservable_(RxDopplSafeObservableUnsubscribe *self, RxObservable *observable) {
   NSObject_init(self);
-  JreStrongAssignAndConsume(&self->observableWeakReference_, new_JavaLangRefWeakReference_initWithId_(observable));
+  JreStrongAssign(&self->observableWeakReference_, nil);
+  JreStrongAssign(&self->hardRef_, observable);
 }
 
 RxDopplSafeObservableUnsubscribe *new_RxDopplSafeObservableUnsubscribe_initWithRxObservable_(RxObservable *observable) {

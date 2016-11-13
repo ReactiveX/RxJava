@@ -22,10 +22,10 @@
     //rx.internal.operators.OperatorFlatMapTest#flatMapRangeMixedAsyncLoop
 //    [OneTest runMethodWithNSString:@"rx.internal.operators.OperatorMergeTest" withNSString:@"mergeManyAsyncSingle"];
     
-    [OneTest runTestsWithNSString:@"rx.observers.SafeObserverTest#testActual"];
+    [OneTest runTestsWithNSString:@"rx.internal.operators.OperatorDelayTest"];
 //    [OneTest runTestsWithNSString:@"rx.schedulers.ComputationSchedulerTests"];
     
-    [OneTest runTestsWithNSString:@"rx.schedulers.ImmediateSchedulerTest#testMixOfDelayedAndNonDelayedActions"];
+//    [OneTest runTestsWithNSString:@"rx.schedulers.ImmediateSchedulerTest#testMixOfDelayedAndNonDelayedActions"];
 //    [OneTest runTestsWithNSString:@"rx.schedulers.ImmediateSchedulerTest#testSequenceOfDelayedActions"];
 //    [OneTest runTestsWithNSString:@"rx.schedulers.ImmediateSchedulerTest#testNestedActions"];
     

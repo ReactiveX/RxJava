@@ -28,6 +28,10 @@
 
 J2OBJC_EMPTY_STATIC_INIT(RxDopplJ2objcWeakReference)
 
+inline jboolean RxDopplJ2objcWeakReference_get_USE_WEAK();
+#define RxDopplJ2objcWeakReference_USE_WEAK false
+J2OBJC_STATIC_FIELD_CONSTANT(RxDopplJ2objcWeakReference, USE_WEAK, jboolean)
+
 FOUNDATION_EXPORT void RxDopplJ2objcWeakReference_initWithId_(RxDopplJ2objcWeakReference *self, id val);
 
 FOUNDATION_EXPORT RxDopplJ2objcWeakReference *new_RxDopplJ2objcWeakReference_initWithId_(id val) NS_RETURNS_RETAINED;

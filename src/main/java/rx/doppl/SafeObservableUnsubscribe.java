@@ -11,16 +11,24 @@ import rx.Subscriber;
 public class SafeObservableUnsubscribe
 {
     final WeakReference<Observable> observableWeakReference;
+    final Observable hardRef;
 
     public SafeObservableUnsubscribe(Observable observable)
     {
-        observableWeakReference = new WeakReference<Observable>(observable);
+        observableWeakReference = J2objcWeakReference.USE_WEAK ? new WeakReference<Observable>(observable) : null;
+        hardRef = J2objcWeakReference.USE_WEAK ? null : observable;
     }
 
     public void unsafeSubscribe(Subscriber subscriber)
     {
-        Observable observable = observableWeakReference.get();
-        if(observable != null)
-            observable.unsafeSubscribe(subscriber);
+        if(J2objcWeakReference.USE_WEAK)
+        {
+            Observable observable = observableWeakReference.get();
+            if(observable != null) observable.unsafeSubscribe(subscriber);
+        }
+        else
+        {
+            hardRef.unsafeSubscribe(subscriber);
+        }
     }
 }

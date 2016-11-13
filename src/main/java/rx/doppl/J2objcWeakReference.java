@@ -7,7 +7,7 @@ import java.lang.ref.WeakReference;
 
 public class J2objcWeakReference<T>
 {
-    private static final boolean USE_WEAK = false;
+    public static final boolean USE_WEAK = false;
     private final WeakReference<T> weakReference;
     private final T hardRef;
     public J2objcWeakReference(T val)
