@@ -22,6 +22,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.*;
 
+import co.touchlab.doppel.testing.DoppelHacks;
 import rx.*;
 import rx.Scheduler.Worker;
 import rx.functions.*;
@@ -30,6 +31,7 @@ import rx.internal.util.RxThreadFactory;
 import rx.plugins.RxJavaHooks;
 import rx.schedulers.*;
 
+@DoppelHacks//Cut the run size WAY down. TODO.
 public class ExecutorSchedulerTest extends AbstractSchedulerConcurrencyTests {
 
     final static Executor executor = Executors.newFixedThreadPool(2, new RxThreadFactory("TestCustomPool-"));

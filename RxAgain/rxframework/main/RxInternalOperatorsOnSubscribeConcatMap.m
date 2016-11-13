@@ -4,6 +4,7 @@
 //
 
 #include "J2ObjC_source.h"
+#include "RxDopplJ2objcWeakReference.h"
 #include "RxDopplSafeObservableUnsubscribe.h"
 #include "RxExceptionsExceptions.h"
 #include "RxExceptionsMissingBackpressureException.h"
@@ -25,31 +26,30 @@
 #include "RxSubscriptionsSerialSubscription.h"
 #include "java/lang/IllegalArgumentException.h"
 #include "java/lang/NullPointerException.h"
-#include "java/lang/ref/WeakReference.h"
 #include "java/util/Queue.h"
 #include "java/util/concurrent/atomic/AtomicInteger.h"
 #include "java/util/concurrent/atomic/AtomicReference.h"
 
 @interface RxInternalOperatorsOnSubscribeConcatMap_$1 : NSObject < RxProducer > {
  @public
-  JavaLangRefWeakReference *val$weakParent_;
+  RxDopplJ2objcWeakReference *val$weakParent_;
 }
 
 - (void)requestWithLong:(jlong)n;
 
-- (instancetype)initWithJavaLangRefWeakReference:(JavaLangRefWeakReference *)capture$0;
+- (instancetype)initWithRxDopplJ2objcWeakReference:(RxDopplJ2objcWeakReference *)capture$0;
 
 @end
 
 J2OBJC_EMPTY_STATIC_INIT(RxInternalOperatorsOnSubscribeConcatMap_$1)
 
-J2OBJC_FIELD_SETTER(RxInternalOperatorsOnSubscribeConcatMap_$1, val$weakParent_, JavaLangRefWeakReference *)
+J2OBJC_FIELD_SETTER(RxInternalOperatorsOnSubscribeConcatMap_$1, val$weakParent_, RxDopplJ2objcWeakReference *)
 
-__attribute__((unused)) static void RxInternalOperatorsOnSubscribeConcatMap_$1_initWithJavaLangRefWeakReference_(RxInternalOperatorsOnSubscribeConcatMap_$1 *self, JavaLangRefWeakReference *capture$0);
+__attribute__((unused)) static void RxInternalOperatorsOnSubscribeConcatMap_$1_initWithRxDopplJ2objcWeakReference_(RxInternalOperatorsOnSubscribeConcatMap_$1 *self, RxDopplJ2objcWeakReference *capture$0);
 
-__attribute__((unused)) static RxInternalOperatorsOnSubscribeConcatMap_$1 *new_RxInternalOperatorsOnSubscribeConcatMap_$1_initWithJavaLangRefWeakReference_(JavaLangRefWeakReference *capture$0) NS_RETURNS_RETAINED;
+__attribute__((unused)) static RxInternalOperatorsOnSubscribeConcatMap_$1 *new_RxInternalOperatorsOnSubscribeConcatMap_$1_initWithRxDopplJ2objcWeakReference_(RxDopplJ2objcWeakReference *capture$0) NS_RETURNS_RETAINED;
 
-__attribute__((unused)) static RxInternalOperatorsOnSubscribeConcatMap_$1 *create_RxInternalOperatorsOnSubscribeConcatMap_$1_initWithJavaLangRefWeakReference_(JavaLangRefWeakReference *capture$0);
+__attribute__((unused)) static RxInternalOperatorsOnSubscribeConcatMap_$1 *create_RxInternalOperatorsOnSubscribeConcatMap_$1_initWithRxDopplJ2objcWeakReference_(RxDopplJ2objcWeakReference *capture$0);
 
 @implementation RxInternalOperatorsOnSubscribeConcatMap
 
@@ -72,8 +72,8 @@ __attribute__((unused)) static RxInternalOperatorsOnSubscribeConcatMap_$1 *creat
   RxInternalOperatorsOnSubscribeConcatMap_ConcatMapSubscriber *parent = create_RxInternalOperatorsOnSubscribeConcatMap_ConcatMapSubscriber_initWithRxSubscriber_withRxFunctionsFunc1_withInt_withInt_(s, mapper_, prefetch_, delayErrorMode_);
   [((RxSubscriber *) nil_chk(child)) addWithRxSubscription:parent];
   [child addWithRxSubscription:parent->inner_];
-  JavaLangRefWeakReference *weakParent = create_JavaLangRefWeakReference_initWithId_(parent);
-  [child setProducerWithRxProducer:create_RxInternalOperatorsOnSubscribeConcatMap_$1_initWithJavaLangRefWeakReference_(weakParent)];
+  RxDopplJ2objcWeakReference *weakParent = create_RxDopplJ2objcWeakReference_initWithId_(parent);
+  [child setProducerWithRxProducer:create_RxInternalOperatorsOnSubscribeConcatMap_$1_initWithRxDopplJ2objcWeakReference_(weakParent)];
   if (![child isUnsubscribed]) {
     [((RxDopplSafeObservableUnsubscribe *) nil_chk(source_)) unsafeSubscribeWithRxSubscriber:parent];
   }
@@ -538,12 +538,12 @@ J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxInternalOperatorsOnSubscribeConcatMap_ConcatM
 @implementation RxInternalOperatorsOnSubscribeConcatMap_$1
 
 - (void)requestWithLong:(jlong)n {
-  RxInternalOperatorsOnSubscribeConcatMap_ConcatMapSubscriber *parent = [((JavaLangRefWeakReference *) nil_chk(val$weakParent_)) get];
+  RxInternalOperatorsOnSubscribeConcatMap_ConcatMapSubscriber *parent = [((RxDopplJ2objcWeakReference *) nil_chk(val$weakParent_)) get];
   if (parent != nil) [parent requestMoreWithLong:n];
 }
 
-- (instancetype)initWithJavaLangRefWeakReference:(JavaLangRefWeakReference *)capture$0 {
-  RxInternalOperatorsOnSubscribeConcatMap_$1_initWithJavaLangRefWeakReference_(self, capture$0);
+- (instancetype)initWithRxDopplJ2objcWeakReference:(RxDopplJ2objcWeakReference *)capture$0 {
+  RxInternalOperatorsOnSubscribeConcatMap_$1_initWithRxDopplJ2objcWeakReference_(self, capture$0);
   return self;
 }
 
@@ -560,27 +560,27 @@ J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxInternalOperatorsOnSubscribeConcatMap_ConcatM
   #pragma clang diagnostic push
   #pragma clang diagnostic ignored "-Wobjc-multiple-method-names"
   methods[0].selector = @selector(requestWithLong:);
-  methods[1].selector = @selector(initWithJavaLangRefWeakReference:);
+  methods[1].selector = @selector(initWithRxDopplJ2objcWeakReference:);
   #pragma clang diagnostic pop
   static const J2ObjcFieldInfo fields[] = {
-    { "val$weakParent_", "LJavaLangRefWeakReference;", .constantValue.asLong = 0, 0x1012, -1, -1, 4, -1 },
+    { "val$weakParent_", "LRxDopplJ2objcWeakReference;", .constantValue.asLong = 0, 0x1012, -1, -1, 4, -1 },
   };
-  static const void *ptrTable[] = { "request", "J", "LJavaLangRefWeakReference;", "(Ljava/lang/ref/WeakReference<Lrx/internal/operators/OnSubscribeConcatMap$ConcatMapSubscriber<TT;TR;>;>;)V", "Ljava/lang/ref/WeakReference<Lrx/internal/operators/OnSubscribeConcatMap$ConcatMapSubscriber<TT;TR;>;>;", "LRxInternalOperatorsOnSubscribeConcatMap;", "callWithId:" };
+  static const void *ptrTable[] = { "request", "J", "LRxDopplJ2objcWeakReference;", "(Lrx/doppl/J2objcWeakReference<Lrx/internal/operators/OnSubscribeConcatMap$ConcatMapSubscriber<TT;TR;>;>;)V", "Lrx/doppl/J2objcWeakReference<Lrx/internal/operators/OnSubscribeConcatMap$ConcatMapSubscriber<TT;TR;>;>;", "LRxInternalOperatorsOnSubscribeConcatMap;", "callWithId:" };
   static const J2ObjcClassInfo _RxInternalOperatorsOnSubscribeConcatMap_$1 = { "", "rx.internal.operators", ptrTable, methods, fields, 7, 0x8008, 2, 1, 5, -1, 6, -1, -1 };
   return &_RxInternalOperatorsOnSubscribeConcatMap_$1;
 }
 
 @end
 
-void RxInternalOperatorsOnSubscribeConcatMap_$1_initWithJavaLangRefWeakReference_(RxInternalOperatorsOnSubscribeConcatMap_$1 *self, JavaLangRefWeakReference *capture$0) {
+void RxInternalOperatorsOnSubscribeConcatMap_$1_initWithRxDopplJ2objcWeakReference_(RxInternalOperatorsOnSubscribeConcatMap_$1 *self, RxDopplJ2objcWeakReference *capture$0) {
   JreStrongAssign(&self->val$weakParent_, capture$0);
   NSObject_init(self);
 }
 
-RxInternalOperatorsOnSubscribeConcatMap_$1 *new_RxInternalOperatorsOnSubscribeConcatMap_$1_initWithJavaLangRefWeakReference_(JavaLangRefWeakReference *capture$0) {
-  J2OBJC_NEW_IMPL(RxInternalOperatorsOnSubscribeConcatMap_$1, initWithJavaLangRefWeakReference_, capture$0)
+RxInternalOperatorsOnSubscribeConcatMap_$1 *new_RxInternalOperatorsOnSubscribeConcatMap_$1_initWithRxDopplJ2objcWeakReference_(RxDopplJ2objcWeakReference *capture$0) {
+  J2OBJC_NEW_IMPL(RxInternalOperatorsOnSubscribeConcatMap_$1, initWithRxDopplJ2objcWeakReference_, capture$0)
 }
 
-RxInternalOperatorsOnSubscribeConcatMap_$1 *create_RxInternalOperatorsOnSubscribeConcatMap_$1_initWithJavaLangRefWeakReference_(JavaLangRefWeakReference *capture$0) {
-  J2OBJC_CREATE_IMPL(RxInternalOperatorsOnSubscribeConcatMap_$1, initWithJavaLangRefWeakReference_, capture$0)
+RxInternalOperatorsOnSubscribeConcatMap_$1 *create_RxInternalOperatorsOnSubscribeConcatMap_$1_initWithRxDopplJ2objcWeakReference_(RxDopplJ2objcWeakReference *capture$0) {
+  J2OBJC_CREATE_IMPL(RxInternalOperatorsOnSubscribeConcatMap_$1, initWithRxDopplJ2objcWeakReference_, capture$0)
 }

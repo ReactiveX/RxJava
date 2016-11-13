@@ -15,9 +15,6 @@
  */
 package rx.internal.operators;
 
-import com.google.j2objc.annotations.Weak;
-
-import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -31,6 +28,7 @@ import rx.Producer;
 import rx.Scheduler;
 import rx.Subscriber;
 import rx.Subscription;
+import rx.doppl.J2objcWeakReference;
 import rx.exceptions.Exceptions;
 import rx.exceptions.OnErrorThrowable;
 import rx.functions.Action0;
@@ -655,7 +653,7 @@ public final class OperatorReplay<T> extends ConnectableObservable<T> {
          * The parent subscriber-to-source used to allow removing the child in case of
          * child unsubscription.
          */
-        final WeakReference<ReplaySubscriber<T>> weakParent;
+        final J2objcWeakReference<ReplaySubscriber<T>> weakParent;
         /** The actual child subscriber. */
         Subscriber<? super T> child;
         /**
@@ -678,7 +676,7 @@ public final class OperatorReplay<T> extends ConnectableObservable<T> {
         static final long UNSUBSCRIBED = Long.MIN_VALUE;
 
         public InnerProducer(ReplaySubscriber<T> parent, Subscriber<? super T> child) {
-            this.weakParent = new WeakReference<ReplaySubscriber<T>>(parent);
+            this.weakParent = new J2objcWeakReference<ReplaySubscriber<T>>(parent);
             this.child = child;
             this.totalRequested = new AtomicLong();
         }

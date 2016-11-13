@@ -449,7 +449,7 @@ public class OneTest
 
             rx.internal.operators.OperatorZipTest.class,
 
-            rx.internal.schedulers.ExecutorSchedulerTest.class,
+//            rx.internal.schedulers.ExecutorSchedulerTest.class,
 
             rx.observables.SyncOnSubscribeTest.class,
             rx.internal.operators.OperatorDelayTest.class,
@@ -459,8 +459,8 @@ public class OneTest
 
     public static Class[] failing = new Class[]{
             //testUnSubscribeForScheduler for both. Probably with 'unsubscribe'
-            rx.schedulers.NewThreadSchedulerTest.class,
-            rx.schedulers.IoSchedulerTest.class,
+//            rx.schedulers.NewThreadSchedulerTest.class,
+//            rx.schedulers.IoSchedulerTest.class,
             rx.schedulers.ImmediateSchedulerTest.class,
 
 

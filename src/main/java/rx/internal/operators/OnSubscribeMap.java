@@ -15,8 +15,6 @@
  */
 package rx.internal.operators;
 
-import java.lang.ref.WeakReference;
-
 import rx.Observable;
 import rx.Observable.OnSubscribe;
 import rx.Producer;

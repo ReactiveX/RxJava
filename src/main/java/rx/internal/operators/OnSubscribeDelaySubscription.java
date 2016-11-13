@@ -15,7 +15,6 @@
  */
 package rx.internal.operators;
 
-import java.lang.ref.WeakReference;
 import java.util.concurrent.TimeUnit;
 
 import rx.Observable;

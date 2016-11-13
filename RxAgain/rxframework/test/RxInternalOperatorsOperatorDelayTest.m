@@ -544,9 +544,12 @@ __attribute__((unused)) static RxInternalOperatorsOperatorDelayTest_$22 *new_RxI
 
 __attribute__((unused)) static RxInternalOperatorsOperatorDelayTest_$22 *create_RxInternalOperatorsOperatorDelayTest_$22_init();
 
-@interface RxInternalOperatorsOperatorDelayTest_$23 : NSObject < RxFunctionsFunc0 >
+@interface RxInternalOperatorsOperatorDelayTest_$23 : NSObject < RxFunctionsFunc1 > {
+ @public
+  jint c_;
+}
 
-- (RxObservable *)call;
+- (JavaLangInteger *)callWithId:(JavaLangInteger *)t;
 
 - (instancetype)init;
 
@@ -560,9 +563,9 @@ __attribute__((unused)) static RxInternalOperatorsOperatorDelayTest_$23 *new_RxI
 
 __attribute__((unused)) static RxInternalOperatorsOperatorDelayTest_$23 *create_RxInternalOperatorsOperatorDelayTest_$23_init();
 
-@interface RxInternalOperatorsOperatorDelayTest_$24 : NSObject < RxFunctionsFunc1 >
+@interface RxInternalOperatorsOperatorDelayTest_$24 : NSObject < RxFunctionsFunc0 >
 
-- (RxObservable *)callWithId:(JavaLangInteger *)i;
+- (RxObservable *)call;
 
 - (instancetype)init;
 
@@ -576,12 +579,9 @@ __attribute__((unused)) static RxInternalOperatorsOperatorDelayTest_$24 *new_RxI
 
 __attribute__((unused)) static RxInternalOperatorsOperatorDelayTest_$24 *create_RxInternalOperatorsOperatorDelayTest_$24_init();
 
-@interface RxInternalOperatorsOperatorDelayTest_$25 : NSObject < RxFunctionsFunc1 > {
- @public
-  jint c_;
-}
+@interface RxInternalOperatorsOperatorDelayTest_$25 : NSObject < RxFunctionsFunc1 >
 
-- (JavaLangInteger *)callWithId:(JavaLangInteger *)t;
+- (RxObservable *)callWithId:(JavaLangInteger *)i;
 
 - (instancetype)init;
 
@@ -595,7 +595,26 @@ __attribute__((unused)) static RxInternalOperatorsOperatorDelayTest_$25 *new_RxI
 
 __attribute__((unused)) static RxInternalOperatorsOperatorDelayTest_$25 *create_RxInternalOperatorsOperatorDelayTest_$25_init();
 
-@interface RxInternalOperatorsOperatorDelayTest_$26 : NSObject < RxFunctionsAction0 > {
+@interface RxInternalOperatorsOperatorDelayTest_$26 : NSObject < RxFunctionsFunc1 > {
+ @public
+  jint c_;
+}
+
+- (JavaLangInteger *)callWithId:(JavaLangInteger *)t;
+
+- (instancetype)init;
+
+@end
+
+J2OBJC_EMPTY_STATIC_INIT(RxInternalOperatorsOperatorDelayTest_$26)
+
+__attribute__((unused)) static void RxInternalOperatorsOperatorDelayTest_$26_init(RxInternalOperatorsOperatorDelayTest_$26 *self);
+
+__attribute__((unused)) static RxInternalOperatorsOperatorDelayTest_$26 *new_RxInternalOperatorsOperatorDelayTest_$26_init() NS_RETURNS_RETAINED;
+
+__attribute__((unused)) static RxInternalOperatorsOperatorDelayTest_$26 *create_RxInternalOperatorsOperatorDelayTest_$26_init();
+
+@interface RxInternalOperatorsOperatorDelayTest_$27 : NSObject < RxFunctionsAction0 > {
  @public
   JavaUtilConcurrentAtomicAtomicBoolean *val$subscribed_;
 }
@@ -606,15 +625,15 @@ __attribute__((unused)) static RxInternalOperatorsOperatorDelayTest_$25 *create_
 
 @end
 
-J2OBJC_EMPTY_STATIC_INIT(RxInternalOperatorsOperatorDelayTest_$26)
+J2OBJC_EMPTY_STATIC_INIT(RxInternalOperatorsOperatorDelayTest_$27)
 
-J2OBJC_FIELD_SETTER(RxInternalOperatorsOperatorDelayTest_$26, val$subscribed_, JavaUtilConcurrentAtomicAtomicBoolean *)
+J2OBJC_FIELD_SETTER(RxInternalOperatorsOperatorDelayTest_$27, val$subscribed_, JavaUtilConcurrentAtomicAtomicBoolean *)
 
-__attribute__((unused)) static void RxInternalOperatorsOperatorDelayTest_$26_initWithJavaUtilConcurrentAtomicAtomicBoolean_(RxInternalOperatorsOperatorDelayTest_$26 *self, JavaUtilConcurrentAtomicAtomicBoolean *capture$0);
+__attribute__((unused)) static void RxInternalOperatorsOperatorDelayTest_$27_initWithJavaUtilConcurrentAtomicAtomicBoolean_(RxInternalOperatorsOperatorDelayTest_$27 *self, JavaUtilConcurrentAtomicAtomicBoolean *capture$0);
 
-__attribute__((unused)) static RxInternalOperatorsOperatorDelayTest_$26 *new_RxInternalOperatorsOperatorDelayTest_$26_initWithJavaUtilConcurrentAtomicAtomicBoolean_(JavaUtilConcurrentAtomicAtomicBoolean *capture$0) NS_RETURNS_RETAINED;
+__attribute__((unused)) static RxInternalOperatorsOperatorDelayTest_$27 *new_RxInternalOperatorsOperatorDelayTest_$27_initWithJavaUtilConcurrentAtomicAtomicBoolean_(JavaUtilConcurrentAtomicAtomicBoolean *capture$0) NS_RETURNS_RETAINED;
 
-__attribute__((unused)) static RxInternalOperatorsOperatorDelayTest_$26 *create_RxInternalOperatorsOperatorDelayTest_$26_initWithJavaUtilConcurrentAtomicAtomicBoolean_(JavaUtilConcurrentAtomicAtomicBoolean *capture$0);
+__attribute__((unused)) static RxInternalOperatorsOperatorDelayTest_$27 *create_RxInternalOperatorsOperatorDelayTest_$27_initWithJavaUtilConcurrentAtomicAtomicBoolean_(JavaUtilConcurrentAtomicAtomicBoolean *capture$0);
 
 @implementation RxInternalOperatorsOperatorDelayTest
 
@@ -1020,8 +1039,12 @@ __attribute__((unused)) static RxInternalOperatorsOperatorDelayTest_$26 *create_
 }
 
 - (void)testBackpressureWithSelectorDelayAndSubscriptionDelay {
+  RxObserversTestSubscriber *tsBase = create_RxObserversTestSubscriber_init();
+  jint count = JreLoadStatic(RxInternalUtilRxRingBuffer, SIZE) * 2;
+  [((JavaIoPrintStream *) nil_chk(JreLoadStatic(JavaLangSystem, out))) printlnWithNSString:JreStrcat("$I", @"count == ", count)];
+  [((RxObservable *) nil_chk([((RxObservable *) nil_chk(RxObservable_rangeWithInt_withInt_(1, count))) mapWithRxFunctionsFunc1:create_RxInternalOperatorsOperatorDelayTest_$23_init()])) subscribeWithRxSubscriber:tsBase];
   RxObserversTestSubscriber *ts = create_RxObserversTestSubscriber_init();
-  [((RxObservable *) nil_chk([((RxObservable *) nil_chk([((RxObservable *) nil_chk([((RxObservable *) nil_chk(RxObservable_rangeWithInt_withInt_(1, JreLoadStatic(RxInternalUtilRxRingBuffer, SIZE) * 2))) delayWithRxFunctionsFunc0:create_RxInternalOperatorsOperatorDelayTest_$23_init() withRxFunctionsFunc1:create_RxInternalOperatorsOperatorDelayTest_$24_init()])) observeOnWithRxScheduler:RxSchedulersSchedulers_computation()])) mapWithRxFunctionsFunc1:create_RxInternalOperatorsOperatorDelayTest_$25_init()])) subscribeWithRxSubscriber:ts];
+  [((RxObservable *) nil_chk([((RxObservable *) nil_chk([((RxObservable *) nil_chk([((RxObservable *) nil_chk(RxObservable_rangeWithInt_withInt_(1, count))) delayWithRxFunctionsFunc0:create_RxInternalOperatorsOperatorDelayTest_$24_init() withRxFunctionsFunc1:create_RxInternalOperatorsOperatorDelayTest_$25_init()])) observeOnWithRxScheduler:RxSchedulersSchedulers_computation()])) mapWithRxFunctionsFunc1:create_RxInternalOperatorsOperatorDelayTest_$26_init()])) subscribeWithRxSubscriber:ts];
   [ts awaitTerminalEvent];
   [ts assertNoErrors];
   OrgJunitAssert_assertEqualsWithLong_withLong_(JreLoadStatic(RxInternalUtilRxRingBuffer, SIZE) * 2, [((id<JavaUtilList>) nil_chk([ts getOnNextEvents])) size]);
@@ -1056,7 +1079,7 @@ __attribute__((unused)) static RxInternalOperatorsOperatorDelayTest_$26 *create_
   RxSubjectsPublishSubject *interrupt = RxSubjectsPublishSubject_create();
   JavaUtilConcurrentAtomicAtomicBoolean *subscribed = create_JavaUtilConcurrentAtomicAtomicBoolean_initWithBoolean_(false);
   RxSchedulersTestScheduler *testScheduler = create_RxSchedulersTestScheduler_init();
-  [((RxObservable *) nil_chk([((RxObservable *) nil_chk([((RxObservable *) nil_chk([((RxObservable *) nil_chk(RxObservable_justWithId_(JavaLangInteger_valueOfWithInt_(1)))) doOnSubscribeWithRxFunctionsAction0:create_RxInternalOperatorsOperatorDelayTest_$26_initWithJavaUtilConcurrentAtomicAtomicBoolean_(subscribed)])) delaySubscriptionWithLong:1 withJavaUtilConcurrentTimeUnit:JreLoadEnum(JavaUtilConcurrentTimeUnit, SECONDS) withRxScheduler:testScheduler])) takeUntilWithRxObservable:interrupt])) subscribe];
+  [((RxObservable *) nil_chk([((RxObservable *) nil_chk([((RxObservable *) nil_chk([((RxObservable *) nil_chk(RxObservable_justWithId_(JavaLangInteger_valueOfWithInt_(1)))) doOnSubscribeWithRxFunctionsAction0:create_RxInternalOperatorsOperatorDelayTest_$27_initWithJavaUtilConcurrentAtomicAtomicBoolean_(subscribed)])) delaySubscriptionWithLong:1 withJavaUtilConcurrentTimeUnit:JreLoadEnum(JavaUtilConcurrentTimeUnit, SECONDS) withRxScheduler:testScheduler])) takeUntilWithRxObservable:interrupt])) subscribe];
   [((RxSubjectsPublishSubject *) nil_chk(interrupt)) onNextWithId:JavaLangInteger_valueOfWithInt_(9000)];
   [testScheduler advanceTimeByWithLong:1 withJavaUtilConcurrentTimeUnit:JreLoadEnum(JavaUtilConcurrentTimeUnit, SECONDS)];
   OrgJunitAssert_assertFalseWithBoolean_([subscribed get]);
@@ -2333,13 +2356,67 @@ RxInternalOperatorsOperatorDelayTest_$22 *create_RxInternalOperatorsOperatorDela
 
 @implementation RxInternalOperatorsOperatorDelayTest_$23
 
+- (JavaLangInteger *)callWithId:(JavaLangInteger *)t {
+  [((JavaIoPrintStream *) nil_chk(JreLoadStatic(JavaLangSystem, out))) printlnWithNSString:JreStrcat("$I$@", @"base-c == ", c_, @"/t == ", t)];
+  if (c_++ <= 0) {
+    @try {
+      JavaLangThread_sleepWithLong_(500);
+    }
+    @catch (JavaLangInterruptedException *e) {
+    }
+  }
+  return t;
+}
+
+J2OBJC_IGNORE_DESIGNATED_BEGIN
+- (instancetype)init {
+  RxInternalOperatorsOperatorDelayTest_$23_init(self);
+  return self;
+}
+J2OBJC_IGNORE_DESIGNATED_END
+
++ (const J2ObjcClassInfo *)__metadata {
+  static J2ObjcMethodInfo methods[] = {
+    { NULL, "LJavaLangInteger;", 0x1, 0, 1, -1, -1, -1, -1 },
+    { NULL, NULL, 0x0, -1, -1, -1, -1, -1, -1 },
+  };
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Wobjc-multiple-method-names"
+  methods[0].selector = @selector(callWithId:);
+  methods[1].selector = @selector(init);
+  #pragma clang diagnostic pop
+  static const J2ObjcFieldInfo fields[] = {
+    { "c_", "I", .constantValue.asLong = 0, 0x0, -1, -1, -1, -1 },
+  };
+  static const void *ptrTable[] = { "call", "LJavaLangInteger;", "LRxInternalOperatorsOperatorDelayTest;", "testBackpressureWithSelectorDelayAndSubscriptionDelay", "Ljava/lang/Object;Lrx/functions/Func1<Ljava/lang/Integer;Ljava/lang/Integer;>;" };
+  static const J2ObjcClassInfo _RxInternalOperatorsOperatorDelayTest_$23 = { "", "rx.internal.operators", ptrTable, methods, fields, 7, 0x8008, 2, 1, 2, -1, 3, 4, -1 };
+  return &_RxInternalOperatorsOperatorDelayTest_$23;
+}
+
+@end
+
+void RxInternalOperatorsOperatorDelayTest_$23_init(RxInternalOperatorsOperatorDelayTest_$23 *self) {
+  NSObject_init(self);
+  self->c_ = 0;
+}
+
+RxInternalOperatorsOperatorDelayTest_$23 *new_RxInternalOperatorsOperatorDelayTest_$23_init() {
+  J2OBJC_NEW_IMPL(RxInternalOperatorsOperatorDelayTest_$23, init)
+}
+
+RxInternalOperatorsOperatorDelayTest_$23 *create_RxInternalOperatorsOperatorDelayTest_$23_init() {
+  J2OBJC_CREATE_IMPL(RxInternalOperatorsOperatorDelayTest_$23, init)
+}
+
+@implementation RxInternalOperatorsOperatorDelayTest_$24
+
 - (RxObservable *)call {
   return RxObservable_timerWithLong_withJavaUtilConcurrentTimeUnit_(500, JreLoadEnum(JavaUtilConcurrentTimeUnit, MILLISECONDS));
 }
 
 J2OBJC_IGNORE_DESIGNATED_BEGIN
 - (instancetype)init {
-  RxInternalOperatorsOperatorDelayTest_$23_init(self);
+  RxInternalOperatorsOperatorDelayTest_$24_init(self);
   return self;
 }
 J2OBJC_IGNORE_DESIGNATED_END
@@ -2355,49 +2432,7 @@ J2OBJC_IGNORE_DESIGNATED_END
   methods[1].selector = @selector(init);
   #pragma clang diagnostic pop
   static const void *ptrTable[] = { "()Lrx/Observable<Ljava/lang/Long;>;", "LRxInternalOperatorsOperatorDelayTest;", "testBackpressureWithSelectorDelayAndSubscriptionDelay", "Ljava/lang/Object;Lrx/functions/Func0<Lrx/Observable<Ljava/lang/Long;>;>;" };
-  static const J2ObjcClassInfo _RxInternalOperatorsOperatorDelayTest_$23 = { "", "rx.internal.operators", ptrTable, methods, NULL, 7, 0x8008, 2, 0, 1, -1, 2, 3, -1 };
-  return &_RxInternalOperatorsOperatorDelayTest_$23;
-}
-
-@end
-
-void RxInternalOperatorsOperatorDelayTest_$23_init(RxInternalOperatorsOperatorDelayTest_$23 *self) {
-  NSObject_init(self);
-}
-
-RxInternalOperatorsOperatorDelayTest_$23 *new_RxInternalOperatorsOperatorDelayTest_$23_init() {
-  J2OBJC_NEW_IMPL(RxInternalOperatorsOperatorDelayTest_$23, init)
-}
-
-RxInternalOperatorsOperatorDelayTest_$23 *create_RxInternalOperatorsOperatorDelayTest_$23_init() {
-  J2OBJC_CREATE_IMPL(RxInternalOperatorsOperatorDelayTest_$23, init)
-}
-
-@implementation RxInternalOperatorsOperatorDelayTest_$24
-
-- (RxObservable *)callWithId:(JavaLangInteger *)i {
-  return RxObservable_timerWithLong_withJavaUtilConcurrentTimeUnit_(100, JreLoadEnum(JavaUtilConcurrentTimeUnit, MILLISECONDS));
-}
-
-J2OBJC_IGNORE_DESIGNATED_BEGIN
-- (instancetype)init {
-  RxInternalOperatorsOperatorDelayTest_$24_init(self);
-  return self;
-}
-J2OBJC_IGNORE_DESIGNATED_END
-
-+ (const J2ObjcClassInfo *)__metadata {
-  static J2ObjcMethodInfo methods[] = {
-    { NULL, "LRxObservable;", 0x1, 0, 1, -1, 2, -1, -1 },
-    { NULL, NULL, 0x0, -1, -1, -1, -1, -1, -1 },
-  };
-  #pragma clang diagnostic push
-  #pragma clang diagnostic ignored "-Wobjc-multiple-method-names"
-  methods[0].selector = @selector(callWithId:);
-  methods[1].selector = @selector(init);
-  #pragma clang diagnostic pop
-  static const void *ptrTable[] = { "call", "LJavaLangInteger;", "(Ljava/lang/Integer;)Lrx/Observable<Ljava/lang/Long;>;", "LRxInternalOperatorsOperatorDelayTest;", "testBackpressureWithSelectorDelayAndSubscriptionDelay", "Ljava/lang/Object;Lrx/functions/Func1<Ljava/lang/Integer;Lrx/Observable<Ljava/lang/Long;>;>;" };
-  static const J2ObjcClassInfo _RxInternalOperatorsOperatorDelayTest_$24 = { "", "rx.internal.operators", ptrTable, methods, NULL, 7, 0x8008, 2, 0, 3, -1, 4, 5, -1 };
+  static const J2ObjcClassInfo _RxInternalOperatorsOperatorDelayTest_$24 = { "", "rx.internal.operators", ptrTable, methods, NULL, 7, 0x8008, 2, 0, 1, -1, 2, 3, -1 };
   return &_RxInternalOperatorsOperatorDelayTest_$24;
 }
 
@@ -2417,7 +2452,50 @@ RxInternalOperatorsOperatorDelayTest_$24 *create_RxInternalOperatorsOperatorDela
 
 @implementation RxInternalOperatorsOperatorDelayTest_$25
 
+- (RxObservable *)callWithId:(JavaLangInteger *)i {
+  return RxObservable_timerWithLong_withJavaUtilConcurrentTimeUnit_(100, JreLoadEnum(JavaUtilConcurrentTimeUnit, MILLISECONDS));
+}
+
+J2OBJC_IGNORE_DESIGNATED_BEGIN
+- (instancetype)init {
+  RxInternalOperatorsOperatorDelayTest_$25_init(self);
+  return self;
+}
+J2OBJC_IGNORE_DESIGNATED_END
+
++ (const J2ObjcClassInfo *)__metadata {
+  static J2ObjcMethodInfo methods[] = {
+    { NULL, "LRxObservable;", 0x1, 0, 1, -1, 2, -1, -1 },
+    { NULL, NULL, 0x0, -1, -1, -1, -1, -1, -1 },
+  };
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Wobjc-multiple-method-names"
+  methods[0].selector = @selector(callWithId:);
+  methods[1].selector = @selector(init);
+  #pragma clang diagnostic pop
+  static const void *ptrTable[] = { "call", "LJavaLangInteger;", "(Ljava/lang/Integer;)Lrx/Observable<Ljava/lang/Long;>;", "LRxInternalOperatorsOperatorDelayTest;", "testBackpressureWithSelectorDelayAndSubscriptionDelay", "Ljava/lang/Object;Lrx/functions/Func1<Ljava/lang/Integer;Lrx/Observable<Ljava/lang/Long;>;>;" };
+  static const J2ObjcClassInfo _RxInternalOperatorsOperatorDelayTest_$25 = { "", "rx.internal.operators", ptrTable, methods, NULL, 7, 0x8008, 2, 0, 3, -1, 4, 5, -1 };
+  return &_RxInternalOperatorsOperatorDelayTest_$25;
+}
+
+@end
+
+void RxInternalOperatorsOperatorDelayTest_$25_init(RxInternalOperatorsOperatorDelayTest_$25 *self) {
+  NSObject_init(self);
+}
+
+RxInternalOperatorsOperatorDelayTest_$25 *new_RxInternalOperatorsOperatorDelayTest_$25_init() {
+  J2OBJC_NEW_IMPL(RxInternalOperatorsOperatorDelayTest_$25, init)
+}
+
+RxInternalOperatorsOperatorDelayTest_$25 *create_RxInternalOperatorsOperatorDelayTest_$25_init() {
+  J2OBJC_CREATE_IMPL(RxInternalOperatorsOperatorDelayTest_$25, init)
+}
+
+@implementation RxInternalOperatorsOperatorDelayTest_$26
+
 - (JavaLangInteger *)callWithId:(JavaLangInteger *)t {
+  [((JavaIoPrintStream *) nil_chk(JreLoadStatic(JavaLangSystem, out))) printlnWithNSString:JreStrcat("$I$@", @"c == ", c_, @"/t == ", t)];
   if (c_++ <= 0) {
     @try {
       JavaLangThread_sleepWithLong_(500);
@@ -2430,7 +2508,7 @@ RxInternalOperatorsOperatorDelayTest_$24 *create_RxInternalOperatorsOperatorDela
 
 J2OBJC_IGNORE_DESIGNATED_BEGIN
 - (instancetype)init {
-  RxInternalOperatorsOperatorDelayTest_$25_init(self);
+  RxInternalOperatorsOperatorDelayTest_$26_init(self);
   return self;
 }
 J2OBJC_IGNORE_DESIGNATED_END
@@ -2449,33 +2527,33 @@ J2OBJC_IGNORE_DESIGNATED_END
     { "c_", "I", .constantValue.asLong = 0, 0x0, -1, -1, -1, -1 },
   };
   static const void *ptrTable[] = { "call", "LJavaLangInteger;", "LRxInternalOperatorsOperatorDelayTest;", "testBackpressureWithSelectorDelayAndSubscriptionDelay", "Ljava/lang/Object;Lrx/functions/Func1<Ljava/lang/Integer;Ljava/lang/Integer;>;" };
-  static const J2ObjcClassInfo _RxInternalOperatorsOperatorDelayTest_$25 = { "", "rx.internal.operators", ptrTable, methods, fields, 7, 0x8008, 2, 1, 2, -1, 3, 4, -1 };
-  return &_RxInternalOperatorsOperatorDelayTest_$25;
+  static const J2ObjcClassInfo _RxInternalOperatorsOperatorDelayTest_$26 = { "", "rx.internal.operators", ptrTable, methods, fields, 7, 0x8008, 2, 1, 2, -1, 3, 4, -1 };
+  return &_RxInternalOperatorsOperatorDelayTest_$26;
 }
 
 @end
 
-void RxInternalOperatorsOperatorDelayTest_$25_init(RxInternalOperatorsOperatorDelayTest_$25 *self) {
+void RxInternalOperatorsOperatorDelayTest_$26_init(RxInternalOperatorsOperatorDelayTest_$26 *self) {
   NSObject_init(self);
   self->c_ = 0;
 }
 
-RxInternalOperatorsOperatorDelayTest_$25 *new_RxInternalOperatorsOperatorDelayTest_$25_init() {
-  J2OBJC_NEW_IMPL(RxInternalOperatorsOperatorDelayTest_$25, init)
+RxInternalOperatorsOperatorDelayTest_$26 *new_RxInternalOperatorsOperatorDelayTest_$26_init() {
+  J2OBJC_NEW_IMPL(RxInternalOperatorsOperatorDelayTest_$26, init)
 }
 
-RxInternalOperatorsOperatorDelayTest_$25 *create_RxInternalOperatorsOperatorDelayTest_$25_init() {
-  J2OBJC_CREATE_IMPL(RxInternalOperatorsOperatorDelayTest_$25, init)
+RxInternalOperatorsOperatorDelayTest_$26 *create_RxInternalOperatorsOperatorDelayTest_$26_init() {
+  J2OBJC_CREATE_IMPL(RxInternalOperatorsOperatorDelayTest_$26, init)
 }
 
-@implementation RxInternalOperatorsOperatorDelayTest_$26
+@implementation RxInternalOperatorsOperatorDelayTest_$27
 
 - (void)call {
   [((JavaUtilConcurrentAtomicAtomicBoolean *) nil_chk(val$subscribed_)) setWithBoolean:true];
 }
 
 - (instancetype)initWithJavaUtilConcurrentAtomicAtomicBoolean:(JavaUtilConcurrentAtomicAtomicBoolean *)capture$0 {
-  RxInternalOperatorsOperatorDelayTest_$26_initWithJavaUtilConcurrentAtomicAtomicBoolean_(self, capture$0);
+  RxInternalOperatorsOperatorDelayTest_$27_initWithJavaUtilConcurrentAtomicAtomicBoolean_(self, capture$0);
   return self;
 }
 
@@ -2498,21 +2576,21 @@ RxInternalOperatorsOperatorDelayTest_$25 *create_RxInternalOperatorsOperatorDela
     { "val$subscribed_", "LJavaUtilConcurrentAtomicAtomicBoolean;", .constantValue.asLong = 0, 0x1012, -1, -1, -1, -1 },
   };
   static const void *ptrTable[] = { "LJavaUtilConcurrentAtomicAtomicBoolean;", "LRxInternalOperatorsOperatorDelayTest;", "delayAndTakeUntilNeverSubscribeToSource" };
-  static const J2ObjcClassInfo _RxInternalOperatorsOperatorDelayTest_$26 = { "", "rx.internal.operators", ptrTable, methods, fields, 7, 0x8008, 2, 1, 1, -1, 2, -1, -1 };
-  return &_RxInternalOperatorsOperatorDelayTest_$26;
+  static const J2ObjcClassInfo _RxInternalOperatorsOperatorDelayTest_$27 = { "", "rx.internal.operators", ptrTable, methods, fields, 7, 0x8008, 2, 1, 1, -1, 2, -1, -1 };
+  return &_RxInternalOperatorsOperatorDelayTest_$27;
 }
 
 @end
 
-void RxInternalOperatorsOperatorDelayTest_$26_initWithJavaUtilConcurrentAtomicAtomicBoolean_(RxInternalOperatorsOperatorDelayTest_$26 *self, JavaUtilConcurrentAtomicAtomicBoolean *capture$0) {
+void RxInternalOperatorsOperatorDelayTest_$27_initWithJavaUtilConcurrentAtomicAtomicBoolean_(RxInternalOperatorsOperatorDelayTest_$27 *self, JavaUtilConcurrentAtomicAtomicBoolean *capture$0) {
   JreStrongAssign(&self->val$subscribed_, capture$0);
   NSObject_init(self);
 }
 
-RxInternalOperatorsOperatorDelayTest_$26 *new_RxInternalOperatorsOperatorDelayTest_$26_initWithJavaUtilConcurrentAtomicAtomicBoolean_(JavaUtilConcurrentAtomicAtomicBoolean *capture$0) {
-  J2OBJC_NEW_IMPL(RxInternalOperatorsOperatorDelayTest_$26, initWithJavaUtilConcurrentAtomicAtomicBoolean_, capture$0)
+RxInternalOperatorsOperatorDelayTest_$27 *new_RxInternalOperatorsOperatorDelayTest_$27_initWithJavaUtilConcurrentAtomicAtomicBoolean_(JavaUtilConcurrentAtomicAtomicBoolean *capture$0) {
+  J2OBJC_NEW_IMPL(RxInternalOperatorsOperatorDelayTest_$27, initWithJavaUtilConcurrentAtomicAtomicBoolean_, capture$0)
 }
 
-RxInternalOperatorsOperatorDelayTest_$26 *create_RxInternalOperatorsOperatorDelayTest_$26_initWithJavaUtilConcurrentAtomicAtomicBoolean_(JavaUtilConcurrentAtomicAtomicBoolean *capture$0) {
-  J2OBJC_CREATE_IMPL(RxInternalOperatorsOperatorDelayTest_$26, initWithJavaUtilConcurrentAtomicAtomicBoolean_, capture$0)
+RxInternalOperatorsOperatorDelayTest_$27 *create_RxInternalOperatorsOperatorDelayTest_$27_initWithJavaUtilConcurrentAtomicAtomicBoolean_(JavaUtilConcurrentAtomicAtomicBoolean *capture$0) {
+  J2OBJC_CREATE_IMPL(RxInternalOperatorsOperatorDelayTest_$27, initWithJavaUtilConcurrentAtomicAtomicBoolean_, capture$0)
 }

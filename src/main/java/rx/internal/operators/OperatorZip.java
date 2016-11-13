@@ -187,7 +187,6 @@ public final class OperatorZip<R> implements Operator<R, Observable<?>[]> {
 
         final Observer<? super R> child;
         private final FuncN<? extends R> zipFunction;
-        @Weak
         private final CompositeSubscription childSubscription = new CompositeSubscription();
 
         static final int THRESHOLD = (int) (RxRingBuffer.SIZE * 0.7);

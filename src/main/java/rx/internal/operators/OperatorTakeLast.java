@@ -15,13 +15,13 @@
  */
 package rx.internal.operators;
 
-import java.lang.ref.WeakReference;
 import java.util.ArrayDeque;
 import java.util.concurrent.atomic.AtomicLong;
 
 import rx.Observable.Operator;
 import rx.Producer;
 import rx.Subscriber;
+import rx.doppl.J2objcWeakReference;
 import rx.functions.Func1;
 
 /**
@@ -47,7 +47,7 @@ public final class OperatorTakeLast<T> implements Operator<T, T> {
         final TakeLastSubscriber<T> parent = new TakeLastSubscriber<T>(subscriber, count);
 
         subscriber.add(parent);
-        final WeakReference<TakeLastSubscriber<T>> weakParent = new WeakReference<TakeLastSubscriber<T>>(parent);
+        final J2objcWeakReference<TakeLastSubscriber<T>> weakParent = new J2objcWeakReference<TakeLastSubscriber<T>>(parent);
         subscriber.setProducer(new Producer() {
             @Override
             public void request(long n) {

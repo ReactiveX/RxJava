@@ -37,7 +37,7 @@ J2OBJC_FIELD_SETTER(RxInternalOperatorsOperatorObserveOn, scheduler_, RxSchedule
 
 @interface RxInternalOperatorsOperatorObserveOn_ObserveOnSubscriber_ObserveOnProducer : NSObject < RxProducer > {
  @public
-  __unsafe_unretained RxInternalOperatorsOperatorObserveOn_ObserveOnSubscriber *this$0_;
+  RxInternalOperatorsOperatorObserveOn_ObserveOnSubscriber *this$0_;
 }
 
 - (void)requestWithLong:(jlong)n;
@@ -47,6 +47,8 @@ J2OBJC_FIELD_SETTER(RxInternalOperatorsOperatorObserveOn, scheduler_, RxSchedule
 @end
 
 J2OBJC_EMPTY_STATIC_INIT(RxInternalOperatorsOperatorObserveOn_ObserveOnSubscriber_ObserveOnProducer)
+
+J2OBJC_FIELD_SETTER(RxInternalOperatorsOperatorObserveOn_ObserveOnSubscriber_ObserveOnProducer, this$0_, RxInternalOperatorsOperatorObserveOn_ObserveOnSubscriber *)
 
 __attribute__((unused)) static void RxInternalOperatorsOperatorObserveOn_ObserveOnSubscriber_ObserveOnProducer_initWithRxInternalOperatorsOperatorObserveOn_ObserveOnSubscriber_(RxInternalOperatorsOperatorObserveOn_ObserveOnSubscriber_ObserveOnProducer *self, RxInternalOperatorsOperatorObserveOn_ObserveOnSubscriber *outer$);
 
@@ -408,9 +410,9 @@ J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxInternalOperatorsOperatorObserveOn_ObserveOnS
   return self;
 }
 
-- (void)__javaClone:(RxInternalOperatorsOperatorObserveOn_ObserveOnSubscriber_ObserveOnProducer *)original {
-  [super __javaClone:original];
-  [this$0_ release];
+- (void)dealloc {
+  RELEASE_(this$0_);
+  [super dealloc];
 }
 
 + (const J2ObjcClassInfo *)__metadata {
@@ -434,7 +436,7 @@ J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxInternalOperatorsOperatorObserveOn_ObserveOnS
 @end
 
 void RxInternalOperatorsOperatorObserveOn_ObserveOnSubscriber_ObserveOnProducer_initWithRxInternalOperatorsOperatorObserveOn_ObserveOnSubscriber_(RxInternalOperatorsOperatorObserveOn_ObserveOnSubscriber_ObserveOnProducer *self, RxInternalOperatorsOperatorObserveOn_ObserveOnSubscriber *outer$) {
-  self->this$0_ = outer$;
+  JreStrongAssign(&self->this$0_, outer$);
   NSObject_init(self);
 }
 

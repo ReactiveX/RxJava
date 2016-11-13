@@ -35,7 +35,8 @@ public final class SingleProducer<T> extends AtomicBoolean implements Producer {
     @Weak
     final Subscriber<? super T> child;
     /** The value to be emitted. */
-    final T value;
+    T value;
+
     /**
      * Constructs the producer with the given target child and value to be emitted.
      * @param child the child subscriber, non-null
@@ -61,6 +62,7 @@ public final class SingleProducer<T> extends AtomicBoolean implements Producer {
             final Subscriber<? super T> c = child;
             // eagerly check for unsubscription
             if (c.isUnsubscribed()) {
+                cleanReference();
                 return;
             }
             T v = value;
@@ -73,10 +75,17 @@ public final class SingleProducer<T> extends AtomicBoolean implements Producer {
             }
             // eagerly check for unsubscription
             if (c.isUnsubscribed()) {
+                cleanReference();
                 return;
             }
             // complete the child
             c.onCompleted();
+            cleanReference();
         }
+    }
+
+    private void cleanReference()
+    {
+        value = null;
     }
 }

@@ -43,6 +43,8 @@
 		63403E5C1DD62E8F00607444 /* RxDopplMemoryAllocationTracker.m in Sources */ = {isa = PBXBuildFile; fileRef = 63403E581DD62E8F00607444 /* RxDopplMemoryAllocationTracker.m */; };
 		63403E5D1DD62E8F00607444 /* RxDopplMemoryBasicOperatorTest.h in Headers */ = {isa = PBXBuildFile; fileRef = 63403E591DD62E8F00607444 /* RxDopplMemoryBasicOperatorTest.h */; };
 		63403E5E1DD62E8F00607444 /* RxDopplMemoryBasicOperatorTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 63403E5A1DD62E8F00607444 /* RxDopplMemoryBasicOperatorTest.m */; };
+		63403E611DD8D2F400607444 /* RxDopplJ2objcWeakReference.h in Headers */ = {isa = PBXBuildFile; fileRef = 63403E5F1DD8D2F400607444 /* RxDopplJ2objcWeakReference.h */; };
+		63403E621DD8D2F400607444 /* RxDopplJ2objcWeakReference.m in Sources */ = {isa = PBXBuildFile; fileRef = 63403E601DD8D2F400607444 /* RxDopplJ2objcWeakReference.m */; };
 		635B166A1DCAD3E900BB0E12 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 635B16691DCAD3E900BB0E12 /* main.m */; };
 		635B166D1DCAD3E900BB0E12 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 635B166C1DCAD3E900BB0E12 /* AppDelegate.m */; };
 		635B16701DCAD3E900BB0E12 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 635B166F1DCAD3E900BB0E12 /* ViewController.m */; };
@@ -1601,6 +1603,8 @@
 		63403E581DD62E8F00607444 /* RxDopplMemoryAllocationTracker.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RxDopplMemoryAllocationTracker.m; sourceTree = "<group>"; };
 		63403E591DD62E8F00607444 /* RxDopplMemoryBasicOperatorTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RxDopplMemoryBasicOperatorTest.h; sourceTree = "<group>"; };
 		63403E5A1DD62E8F00607444 /* RxDopplMemoryBasicOperatorTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RxDopplMemoryBasicOperatorTest.m; sourceTree = "<group>"; };
+		63403E5F1DD8D2F400607444 /* RxDopplJ2objcWeakReference.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RxDopplJ2objcWeakReference.h; sourceTree = "<group>"; };
+		63403E601DD8D2F400607444 /* RxDopplJ2objcWeakReference.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RxDopplJ2objcWeakReference.m; sourceTree = "<group>"; };
 		635B16651DCAD3E900BB0E12 /* RxAgain.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RxAgain.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		635B16691DCAD3E900BB0E12 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		635B166B1DCAD3E900BB0E12 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -3216,6 +3220,8 @@
 		635B1F981DCADB5C00BB0E12 /* main */ = {
 			isa = PBXGroup;
 			children = (
+				63403E5F1DD8D2F400607444 /* RxDopplJ2objcWeakReference.h */,
+				63403E601DD8D2F400607444 /* RxDopplJ2objcWeakReference.m */,
 				63D8E9AD1DD5854100103716 /* RxDopplSafeObservableUnsubscribe.h */,
 				63D8E9AE1DD5854100103716 /* RxDopplSafeObservableUnsubscribe.m */,
 				635B1F991DCADB5C00BB0E12 /* androidbase */,
@@ -5502,6 +5508,7 @@
 				635B27E31DCADB6500BB0E12 /* RxInternalOperatorsOperatorSkip.h in Headers */,
 				635B2A6D1DCADB6700BB0E12 /* RxInternalOperatorsOperatorTimeoutWithSelectorTest.h in Headers */,
 				635B287F1DCADB6500BB0E12 /* RxInternalUtilAtomicAtomicReferenceArrayQueue.h in Headers */,
+				63403E611DD8D2F400607444 /* RxDopplJ2objcWeakReference.h in Headers */,
 				635B28B91DCADB6500BB0E12 /* RxInternalUtilUnsafeConcurrentCircularArrayQueue.h in Headers */,
 				635B27B31DCADB6500BB0E12 /* RxInternalOperatorsOperatorDoOnUnsubscribe.h in Headers */,
 				635B276F1DCADB6500BB0E12 /* RxInternalOperatorsOnSubscribePublishMulticast.h in Headers */,
@@ -6972,6 +6979,7 @@
 				635B296A1DCADB6600BB0E12 /* RxDopplMockMFunc1.m in Sources */,
 				635B274E1DCADB6500BB0E12 /* RxInternalOperatorsOnSubscribeDelaySubscriptionWithSelector.m in Sources */,
 				635B26521DCADB6400BB0E12 /* AndroidUtilTimeUtils.m in Sources */,
+				63403E621DD8D2F400607444 /* RxDopplJ2objcWeakReference.m in Sources */,
 				635B25FC1DCADB6400BB0E12 /* AndroidDatabaseSqliteSQLiteDirectCursorDriver.m in Sources */,
 				635B2A1E1DCADB6700BB0E12 /* RxInternalOperatorsOperatorMulticastTest.m in Sources */,
 				635B28321DCADB6500BB0E12 /* RxInternalOperatorsSingleFromFuture.m in Sources */,

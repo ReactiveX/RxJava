@@ -76,6 +76,8 @@
 
 - (RxObservable *)createInfiniteObservableWithJavaUtilConcurrentAtomicAtomicInteger:(JavaUtilConcurrentAtomicAtomicInteger *)generated;
 
+- (void)runZipRaceWithRxObservable:(RxObservable *)src;
+
 @end
 
 __attribute__((unused)) static id<RxFunctionsFunc2> RxInternalOperatorsOperatorZipTest_getConcat2Strings(RxInternalOperatorsOperatorZipTest *self);
@@ -91,6 +93,8 @@ __attribute__((unused)) static id<RxFunctionsFunc3> RxInternalOperatorsOperatorZ
 __attribute__((unused)) static NSString *RxInternalOperatorsOperatorZipTest_getStringValueWithId_(id o);
 
 __attribute__((unused)) static RxObservable *RxInternalOperatorsOperatorZipTest_createInfiniteObservableWithJavaUtilConcurrentAtomicAtomicInteger_(RxInternalOperatorsOperatorZipTest *self, JavaUtilConcurrentAtomicAtomicInteger *generated);
+
+__attribute__((unused)) static void RxInternalOperatorsOperatorZipTest_runZipRaceWithRxObservable_(RxInternalOperatorsOperatorZipTest *self, RxObservable *src);
 
 __attribute__((unused)) static IOSObjectArray *RxInternalOperatorsOperatorZipTest__Annotations$0();
 
@@ -1825,9 +1829,12 @@ __attribute__((unused)) static RxInternalOperatorsOperatorZipTest_$48 *create_Rx
   RxObservable *src = [((RxObservable *) nil_chk(RxObservable_justWithId_(JavaLangInteger_valueOfWithInt_(1)))) subscribeOnWithRxScheduler:RxSchedulersSchedulers_computation()];
   jint i = 0;
   while (JavaLangSystem_currentTimeMillis() - startTime < 9000 && i++ < 100000) {
-    jint value = [((JavaLangInteger *) nil_chk([((RxObservablesBlockingObservable *) nil_chk([((RxObservable *) nil_chk(RxObservable_zipWithRxObservable_withRxObservable_withRxFunctionsFunc2_(src, src, create_RxInternalOperatorsOperatorZipTest_$39_init()))) toBlocking])) singleOrDefaultWithId:JavaLangInteger_valueOfWithInt_(0)])) intValue];
-    OrgJunitAssert_assertEqualsWithLong_withLong_(11, value);
+    RxInternalOperatorsOperatorZipTest_runZipRaceWithRxObservable_(self, src);
   }
+}
+
+- (void)runZipRaceWithRxObservable:(RxObservable *)src {
+  RxInternalOperatorsOperatorZipTest_runZipRaceWithRxObservable_(self, src);
 }
 
 - (void)testZipRequest1 {
@@ -1979,14 +1986,15 @@ J2OBJC_IGNORE_DESIGNATED_END
     { NULL, "V", 0x1, -1, -1, -1, -1, 55, -1 },
     { NULL, "V", 0x1, -1, -1, -1, -1, 56, -1 },
     { NULL, "V", 0x1, -1, -1, -1, -1, 57, -1 },
-    { NULL, "V", 0x1, -1, -1, -1, -1, 58, -1 },
-    { NULL, "V", 0x1, -1, -1, -1, -1, 59, -1 },
-    { NULL, "V", 0x1, -1, -1, -1, -1, 60, -1 },
+    { NULL, "V", 0x2, 58, 59, -1, 60, -1, -1 },
     { NULL, "V", 0x1, -1, -1, -1, -1, 61, -1 },
     { NULL, "V", 0x1, -1, -1, -1, -1, 62, -1 },
     { NULL, "V", 0x1, -1, -1, -1, -1, 63, -1 },
     { NULL, "V", 0x1, -1, -1, -1, -1, 64, -1 },
     { NULL, "V", 0x1, -1, -1, -1, -1, 65, -1 },
+    { NULL, "V", 0x1, -1, -1, -1, -1, 66, -1 },
+    { NULL, "V", 0x1, -1, -1, -1, -1, 67, -1 },
+    { NULL, "V", 0x1, -1, -1, -1, -1, 68, -1 },
     { NULL, NULL, 0x1, -1, -1, -1, -1, -1, -1 },
   };
   #pragma clang diagnostic push
@@ -2043,29 +2051,30 @@ J2OBJC_IGNORE_DESIGNATED_END
   methods[49].selector = @selector(testIssue1812);
   methods[50].selector = @selector(testUnboundedDownstreamOverRequesting);
   methods[51].selector = @selector(testZipRace);
-  methods[52].selector = @selector(testZipRequest1);
-  methods[53].selector = @selector(testZipObservableObservableBackpressure);
-  methods[54].selector = @selector(zip4);
-  methods[55].selector = @selector(zip5);
-  methods[56].selector = @selector(zip6);
-  methods[57].selector = @selector(zip7);
-  methods[58].selector = @selector(zip8);
-  methods[59].selector = @selector(zip9);
-  methods[60].selector = @selector(init);
+  methods[52].selector = @selector(runZipRaceWithRxObservable:);
+  methods[53].selector = @selector(testZipRequest1);
+  methods[54].selector = @selector(testZipObservableObservableBackpressure);
+  methods[55].selector = @selector(zip4);
+  methods[56].selector = @selector(zip5);
+  methods[57].selector = @selector(zip6);
+  methods[58].selector = @selector(zip7);
+  methods[59].selector = @selector(zip8);
+  methods[60].selector = @selector(zip9);
+  methods[61].selector = @selector(init);
   #pragma clang diagnostic pop
   static const J2ObjcFieldInfo fields[] = {
-    { "concat2Strings_", "LRxFunctionsFunc2;", .constantValue.asLong = 0, 0x0, -1, -1, 66, -1 },
-    { "s1_", "LRxSubjectsPublishSubject;", .constantValue.asLong = 0, 0x0, -1, -1, 67, -1 },
-    { "s2_", "LRxSubjectsPublishSubject;", .constantValue.asLong = 0, 0x0, -1, -1, 67, -1 },
-    { "zipped_", "LRxObservable;", .constantValue.asLong = 0, 0x0, -1, -1, 68, -1 },
-    { "observer_", "LRxObserver;", .constantValue.asLong = 0, 0x0, -1, -1, 69, -1 },
+    { "concat2Strings_", "LRxFunctionsFunc2;", .constantValue.asLong = 0, 0x0, -1, -1, 69, -1 },
+    { "s1_", "LRxSubjectsPublishSubject;", .constantValue.asLong = 0, 0x0, -1, -1, 70, -1 },
+    { "s2_", "LRxSubjectsPublishSubject;", .constantValue.asLong = 0, 0x0, -1, -1, 70, -1 },
+    { "zipped_", "LRxObservable;", .constantValue.asLong = 0, 0x0, -1, -1, 71, -1 },
+    { "observer_", "LRxObserver;", .constantValue.asLong = 0, 0x0, -1, -1, 72, -1 },
     { "inOrder_", "LOrgMockitoInOrder;", .constantValue.asLong = 0, 0x0, -1, -1, -1, -1 },
-    { "zipr2_", "LRxFunctionsFunc2;", .constantValue.asLong = 0, 0x0, -1, -1, 70, -1 },
-    { "zipr3_", "LRxFunctionsFunc3;", .constantValue.asLong = 0, 0x0, -1, -1, 71, -1 },
-    { "OBSERVABLE_OF_5_INTEGERS_", "LRxObservable;", .constantValue.asLong = 0, 0x0, -1, -1, 72, -1 },
+    { "zipr2_", "LRxFunctionsFunc2;", .constantValue.asLong = 0, 0x0, -1, -1, 73, -1 },
+    { "zipr3_", "LRxFunctionsFunc3;", .constantValue.asLong = 0, 0x0, -1, -1, 74, -1 },
+    { "OBSERVABLE_OF_5_INTEGERS_", "LRxObservable;", .constantValue.asLong = 0, 0x0, -1, -1, 75, -1 },
   };
-  static const void *ptrTable[] = { (void *)&RxInternalOperatorsOperatorZipTest__Annotations$0, (void *)&RxInternalOperatorsOperatorZipTest__Annotations$1, (void *)&RxInternalOperatorsOperatorZipTest__Annotations$2, (void *)&RxInternalOperatorsOperatorZipTest__Annotations$3, (void *)&RxInternalOperatorsOperatorZipTest__Annotations$4, (void *)&RxInternalOperatorsOperatorZipTest__Annotations$5, (void *)&RxInternalOperatorsOperatorZipTest__Annotations$6, (void *)&RxInternalOperatorsOperatorZipTest__Annotations$7, (void *)&RxInternalOperatorsOperatorZipTest__Annotations$8, (void *)&RxInternalOperatorsOperatorZipTest__Annotations$9, (void *)&RxInternalOperatorsOperatorZipTest__Annotations$10, (void *)&RxInternalOperatorsOperatorZipTest__Annotations$11, (void *)&RxInternalOperatorsOperatorZipTest__Annotations$12, (void *)&RxInternalOperatorsOperatorZipTest__Annotations$13, (void *)&RxInternalOperatorsOperatorZipTest__Annotations$14, (void *)&RxInternalOperatorsOperatorZipTest__Annotations$15, (void *)&RxInternalOperatorsOperatorZipTest__Annotations$16, "()Lrx/functions/Func2<Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;>;", "()Lrx/functions/Func2<Ljava/lang/Integer;Ljava/lang/Integer;Ljava/lang/Integer;>;", "()Lrx/functions/Func3<Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;>;", "()Lrx/functions/Func2<Ljava/lang/String;Ljava/lang/Integer;Ljava/lang/String;>;", "()Lrx/functions/Func3<Ljava/lang/String;Ljava/lang/Integer;[LI;Ljava/lang/String;>;", "getStringValue", "LNSObject;", (void *)&RxInternalOperatorsOperatorZipTest__Annotations$17, (void *)&RxInternalOperatorsOperatorZipTest__Annotations$18, (void *)&RxInternalOperatorsOperatorZipTest__Annotations$19, (void *)&RxInternalOperatorsOperatorZipTest__Annotations$20, (void *)&RxInternalOperatorsOperatorZipTest__Annotations$21, (void *)&RxInternalOperatorsOperatorZipTest__Annotations$22, (void *)&RxInternalOperatorsOperatorZipTest__Annotations$23, (void *)&RxInternalOperatorsOperatorZipTest__Annotations$24, "LJavaLangInterruptedException;", (void *)&RxInternalOperatorsOperatorZipTest__Annotations$25, (void *)&RxInternalOperatorsOperatorZipTest__Annotations$26, (void *)&RxInternalOperatorsOperatorZipTest__Annotations$27, (void *)&RxInternalOperatorsOperatorZipTest__Annotations$28, (void *)&RxInternalOperatorsOperatorZipTest__Annotations$29, (void *)&RxInternalOperatorsOperatorZipTest__Annotations$30, (void *)&RxInternalOperatorsOperatorZipTest__Annotations$31, (void *)&RxInternalOperatorsOperatorZipTest__Annotations$32, (void *)&RxInternalOperatorsOperatorZipTest__Annotations$33, (void *)&RxInternalOperatorsOperatorZipTest__Annotations$34, (void *)&RxInternalOperatorsOperatorZipTest__Annotations$35, (void *)&RxInternalOperatorsOperatorZipTest__Annotations$36, (void *)&RxInternalOperatorsOperatorZipTest__Annotations$37, (void *)&RxInternalOperatorsOperatorZipTest__Annotations$38, (void *)&RxInternalOperatorsOperatorZipTest__Annotations$39, "createInfiniteObservable", "LJavaUtilConcurrentAtomicAtomicInteger;", "(Ljava/util/concurrent/atomic/AtomicInteger;)Lrx/Observable<Ljava/lang/Integer;>;", "OBSERVABLE_OF_5_INTEGERS", "ASYNC_OBSERVABLE_OF_INFINITE_INTEGERS", "LJavaUtilConcurrentCountDownLatch;", "(Ljava/util/concurrent/CountDownLatch;)Lrx/Observable<Ljava/lang/Integer;>;", (void *)&RxInternalOperatorsOperatorZipTest__Annotations$40, (void *)&RxInternalOperatorsOperatorZipTest__Annotations$41, (void *)&RxInternalOperatorsOperatorZipTest__Annotations$42, (void *)&RxInternalOperatorsOperatorZipTest__Annotations$43, (void *)&RxInternalOperatorsOperatorZipTest__Annotations$44, (void *)&RxInternalOperatorsOperatorZipTest__Annotations$45, (void *)&RxInternalOperatorsOperatorZipTest__Annotations$46, (void *)&RxInternalOperatorsOperatorZipTest__Annotations$47, (void *)&RxInternalOperatorsOperatorZipTest__Annotations$48, (void *)&RxInternalOperatorsOperatorZipTest__Annotations$49, (void *)&RxInternalOperatorsOperatorZipTest__Annotations$50, "Lrx/functions/Func2<Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;>;", "Lrx/subjects/PublishSubject<Ljava/lang/String;>;", "Lrx/Observable<Ljava/lang/String;>;", "Lrx/Observer<Ljava/lang/String;>;", "Lrx/functions/Func2<Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/String;>;", "Lrx/functions/Func3<Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/String;>;", "Lrx/Observable<Ljava/lang/Integer;>;", "LRxInternalOperatorsOperatorZipTest_TestObservable;" };
-  static const J2ObjcClassInfo _RxInternalOperatorsOperatorZipTest = { "OperatorZipTest", "rx.internal.operators", ptrTable, methods, fields, 7, 0x1, 61, 9, -1, 73, -1, -1, -1 };
+  static const void *ptrTable[] = { (void *)&RxInternalOperatorsOperatorZipTest__Annotations$0, (void *)&RxInternalOperatorsOperatorZipTest__Annotations$1, (void *)&RxInternalOperatorsOperatorZipTest__Annotations$2, (void *)&RxInternalOperatorsOperatorZipTest__Annotations$3, (void *)&RxInternalOperatorsOperatorZipTest__Annotations$4, (void *)&RxInternalOperatorsOperatorZipTest__Annotations$5, (void *)&RxInternalOperatorsOperatorZipTest__Annotations$6, (void *)&RxInternalOperatorsOperatorZipTest__Annotations$7, (void *)&RxInternalOperatorsOperatorZipTest__Annotations$8, (void *)&RxInternalOperatorsOperatorZipTest__Annotations$9, (void *)&RxInternalOperatorsOperatorZipTest__Annotations$10, (void *)&RxInternalOperatorsOperatorZipTest__Annotations$11, (void *)&RxInternalOperatorsOperatorZipTest__Annotations$12, (void *)&RxInternalOperatorsOperatorZipTest__Annotations$13, (void *)&RxInternalOperatorsOperatorZipTest__Annotations$14, (void *)&RxInternalOperatorsOperatorZipTest__Annotations$15, (void *)&RxInternalOperatorsOperatorZipTest__Annotations$16, "()Lrx/functions/Func2<Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;>;", "()Lrx/functions/Func2<Ljava/lang/Integer;Ljava/lang/Integer;Ljava/lang/Integer;>;", "()Lrx/functions/Func3<Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;>;", "()Lrx/functions/Func2<Ljava/lang/String;Ljava/lang/Integer;Ljava/lang/String;>;", "()Lrx/functions/Func3<Ljava/lang/String;Ljava/lang/Integer;[LI;Ljava/lang/String;>;", "getStringValue", "LNSObject;", (void *)&RxInternalOperatorsOperatorZipTest__Annotations$17, (void *)&RxInternalOperatorsOperatorZipTest__Annotations$18, (void *)&RxInternalOperatorsOperatorZipTest__Annotations$19, (void *)&RxInternalOperatorsOperatorZipTest__Annotations$20, (void *)&RxInternalOperatorsOperatorZipTest__Annotations$21, (void *)&RxInternalOperatorsOperatorZipTest__Annotations$22, (void *)&RxInternalOperatorsOperatorZipTest__Annotations$23, (void *)&RxInternalOperatorsOperatorZipTest__Annotations$24, "LJavaLangInterruptedException;", (void *)&RxInternalOperatorsOperatorZipTest__Annotations$25, (void *)&RxInternalOperatorsOperatorZipTest__Annotations$26, (void *)&RxInternalOperatorsOperatorZipTest__Annotations$27, (void *)&RxInternalOperatorsOperatorZipTest__Annotations$28, (void *)&RxInternalOperatorsOperatorZipTest__Annotations$29, (void *)&RxInternalOperatorsOperatorZipTest__Annotations$30, (void *)&RxInternalOperatorsOperatorZipTest__Annotations$31, (void *)&RxInternalOperatorsOperatorZipTest__Annotations$32, (void *)&RxInternalOperatorsOperatorZipTest__Annotations$33, (void *)&RxInternalOperatorsOperatorZipTest__Annotations$34, (void *)&RxInternalOperatorsOperatorZipTest__Annotations$35, (void *)&RxInternalOperatorsOperatorZipTest__Annotations$36, (void *)&RxInternalOperatorsOperatorZipTest__Annotations$37, (void *)&RxInternalOperatorsOperatorZipTest__Annotations$38, (void *)&RxInternalOperatorsOperatorZipTest__Annotations$39, "createInfiniteObservable", "LJavaUtilConcurrentAtomicAtomicInteger;", "(Ljava/util/concurrent/atomic/AtomicInteger;)Lrx/Observable<Ljava/lang/Integer;>;", "OBSERVABLE_OF_5_INTEGERS", "ASYNC_OBSERVABLE_OF_INFINITE_INTEGERS", "LJavaUtilConcurrentCountDownLatch;", "(Ljava/util/concurrent/CountDownLatch;)Lrx/Observable<Ljava/lang/Integer;>;", (void *)&RxInternalOperatorsOperatorZipTest__Annotations$40, (void *)&RxInternalOperatorsOperatorZipTest__Annotations$41, (void *)&RxInternalOperatorsOperatorZipTest__Annotations$42, "runZipRace", "LRxObservable;", "(Lrx/Observable<Ljava/lang/Integer;>;)V", (void *)&RxInternalOperatorsOperatorZipTest__Annotations$43, (void *)&RxInternalOperatorsOperatorZipTest__Annotations$44, (void *)&RxInternalOperatorsOperatorZipTest__Annotations$45, (void *)&RxInternalOperatorsOperatorZipTest__Annotations$46, (void *)&RxInternalOperatorsOperatorZipTest__Annotations$47, (void *)&RxInternalOperatorsOperatorZipTest__Annotations$48, (void *)&RxInternalOperatorsOperatorZipTest__Annotations$49, (void *)&RxInternalOperatorsOperatorZipTest__Annotations$50, "Lrx/functions/Func2<Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;>;", "Lrx/subjects/PublishSubject<Ljava/lang/String;>;", "Lrx/Observable<Ljava/lang/String;>;", "Lrx/Observer<Ljava/lang/String;>;", "Lrx/functions/Func2<Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/String;>;", "Lrx/functions/Func3<Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/String;>;", "Lrx/Observable<Ljava/lang/Integer;>;", "LRxInternalOperatorsOperatorZipTest_TestObservable;" };
+  static const J2ObjcClassInfo _RxInternalOperatorsOperatorZipTest = { "OperatorZipTest", "rx.internal.operators", ptrTable, methods, fields, 7, 0x1, 62, 9, -1, 76, -1, -1, -1 };
   return &_RxInternalOperatorsOperatorZipTest;
 }
 
@@ -2108,6 +2117,13 @@ NSString *RxInternalOperatorsOperatorZipTest_getStringValueWithId_(id o) {
 
 RxObservable *RxInternalOperatorsOperatorZipTest_createInfiniteObservableWithJavaUtilConcurrentAtomicAtomicInteger_(RxInternalOperatorsOperatorZipTest *self, JavaUtilConcurrentAtomicAtomicInteger *generated) {
   return RxObservable_fromWithJavaLangIterable_(create_RxInternalOperatorsOperatorZipTest_$32_initWithJavaUtilConcurrentAtomicAtomicInteger_(generated));
+}
+
+void RxInternalOperatorsOperatorZipTest_runZipRaceWithRxObservable_(RxInternalOperatorsOperatorZipTest *self, RxObservable *src) {
+  @autoreleasepool {
+    jint value = [((JavaLangInteger *) nil_chk([((RxObservablesBlockingObservable *) nil_chk([((RxObservable *) nil_chk(RxObservable_zipWithRxObservable_withRxObservable_withRxFunctionsFunc2_(src, src, create_RxInternalOperatorsOperatorZipTest_$39_init()))) toBlocking])) singleOrDefaultWithId:JavaLangInteger_valueOfWithInt_(0)])) intValue];
+    OrgJunitAssert_assertEqualsWithLong_withLong_(11, value);
+  }
 }
 
 void RxInternalOperatorsOperatorZipTest_init(RxInternalOperatorsOperatorZipTest *self) {
@@ -4321,7 +4337,7 @@ J2OBJC_IGNORE_DESIGNATED_END
   methods[0].selector = @selector(callWithId:withId:);
   methods[1].selector = @selector(init);
   #pragma clang diagnostic pop
-  static const void *ptrTable[] = { "call", "LJavaLangInteger;LJavaLangInteger;", "LRxInternalOperatorsOperatorZipTest;", "testZipRace", "Ljava/lang/Object;Lrx/functions/Func2<Ljava/lang/Integer;Ljava/lang/Integer;Ljava/lang/Integer;>;" };
+  static const void *ptrTable[] = { "call", "LJavaLangInteger;LJavaLangInteger;", "LRxInternalOperatorsOperatorZipTest;", "runZipRaceWithRxObservable:", "Ljava/lang/Object;Lrx/functions/Func2<Ljava/lang/Integer;Ljava/lang/Integer;Ljava/lang/Integer;>;" };
   static const J2ObjcClassInfo _RxInternalOperatorsOperatorZipTest_$39 = { "", "rx.internal.operators", ptrTable, methods, NULL, 7, 0x8008, 2, 0, 2, -1, 3, 4, -1 };
   return &_RxInternalOperatorsOperatorZipTest_$39;
 }

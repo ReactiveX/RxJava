@@ -16,12 +16,12 @@
 package rx.subjects;
 
 
-import java.lang.ref.WeakReference;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
 import rx.Observer;
+import rx.doppl.J2objcWeakReference;
 import rx.exceptions.Exceptions;
 import rx.functions.Action1;
 import rx.internal.operators.NotificationLite;
@@ -104,7 +104,7 @@ public final class BehaviorSubject<T> extends Subject<T, T> {
         if (hasDefault) {
             state.setLatest(NotificationLite.next(defaultValue));
         }
-        final WeakReference<SubjectSubscriptionManager<T>> weakState = new WeakReference<SubjectSubscriptionManager<T>>(state);
+        final J2objcWeakReference<SubjectSubscriptionManager<T>> weakState = new J2objcWeakReference<SubjectSubscriptionManager<T>>(state);
         state.onAdded = new Action1<SubjectObserver<T>>() {
 
             @Override

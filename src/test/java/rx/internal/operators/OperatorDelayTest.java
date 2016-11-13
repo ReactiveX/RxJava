@@ -760,8 +760,31 @@ public class OperatorDelayTest {
 
     @Test
     public void testBackpressureWithSelectorDelayAndSubscriptionDelay() {
+        TestSubscriber<Integer> tsBase = new TestSubscriber<Integer>();
+        int count = RxRingBuffer.SIZE * 2;
+
+        System.out.println("count == "+ count);
+
+        Observable.range(1, count).map(new Func1<Integer, Integer>() {
+
+            int c = 0;
+
+            @Override
+            public Integer call(Integer t) {
+                System.out.println("base-c == "+ c +"/t == "+ t);
+                if (c++ <= 0) {
+                    try {
+                        Thread.sleep(500);
+                    } catch (InterruptedException e) {
+                    }
+                }
+                return t;
+            }
+
+        }).subscribe(tsBase);
+
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
-        Observable.range(1, RxRingBuffer.SIZE * 2)
+        Observable.range(1, count)
                 .delay(new Func0<Observable<Long>>() {
 
                     @Override
@@ -783,6 +806,7 @@ public class OperatorDelayTest {
 
                     @Override
                     public Integer call(Integer t) {
+                        System.out.println("c == "+ c +"/t == "+ t);
                         if (c++ <= 0) {
                             try {
                                 Thread.sleep(500);

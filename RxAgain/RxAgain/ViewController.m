@@ -17,12 +17,17 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-//    [OneTest runTests];
+    [OneTest runTests];
 //    [OneTest runTestsWithNSString:@"rx.BackpressureTests"];
     //rx.internal.operators.OperatorFlatMapTest#flatMapRangeMixedAsyncLoop
 //    [OneTest runMethodWithNSString:@"rx.internal.operators.OperatorMergeTest" withNSString:@"mergeManyAsyncSingle"];
-//    [OneTest runTestsWithNSString:@"rx.internal.operators.OperatorFlatMapTest"];
-    [OneTest runTestsWithNSString:@"rx.internal.operators.OperatorZipTest"];
+    
+    
+//    [OneTest runTestsWithNSString:@"rx.schedulers.ImmediateSchedulerTest#testMixOfDelayedAndNonDelayedActions"];
+//    [OneTest runTestsWithNSString:@"rx.schedulers.ImmediateSchedulerTest#testSequenceOfDelayedActions"];
+//    [OneTest runTestsWithNSString:@"rx.schedulers.ImmediateSchedulerTest#testNestedActions"];
+    
+//    [OneTest runTestsWithNSString:@"rx.schedulers.NewThreadSchedulerTest" withNSString:@"rx.schedulers.IoSchedulerTest" withNSString:@"rx.schedulers.ImmediateSchedulerTest"];
     //rx.observables.BlockingObservableTest
 //        [OneTest runTestsWithNSString:@"rx.internal.operators.OperatorGroupByTest"];
 //    [OneTest runSingleClassWithNSString:@"rx.doppl.memory.SubscriberAutomaticRemovalTest"];

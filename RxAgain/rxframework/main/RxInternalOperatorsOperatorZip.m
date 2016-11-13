@@ -35,7 +35,7 @@ J2OBJC_STATIC_FIELD_CONSTANT(RxInternalOperatorsOperatorZip_ZipProducer, serialV
 @interface RxInternalOperatorsOperatorZip_Zip () {
  @public
   id<RxFunctionsFuncN> zipFunction_;
-  __unsafe_unretained RxSubscriptionsCompositeSubscription *childSubscription_;
+  RxSubscriptionsCompositeSubscription *childSubscription_;
   volatile_id subscribers_;
   JavaUtilConcurrentAtomicAtomicLong *requested_;
 }
@@ -43,6 +43,7 @@ J2OBJC_STATIC_FIELD_CONSTANT(RxInternalOperatorsOperatorZip_ZipProducer, serialV
 @end
 
 J2OBJC_FIELD_SETTER(RxInternalOperatorsOperatorZip_Zip, zipFunction_, id<RxFunctionsFuncN>)
+J2OBJC_FIELD_SETTER(RxInternalOperatorsOperatorZip_Zip, childSubscription_, RxSubscriptionsCompositeSubscription *)
 J2OBJC_VOLATILE_FIELD_SETTER(RxInternalOperatorsOperatorZip_Zip, subscribers_, IOSObjectArray *)
 J2OBJC_FIELD_SETTER(RxInternalOperatorsOperatorZip_Zip, requested_, JavaUtilConcurrentAtomicAtomicLong *)
 
@@ -515,13 +516,13 @@ withJavaUtilConcurrentAtomicAtomicLong:(JavaUtilConcurrentAtomicAtomicLong *)req
 
 - (void)__javaClone:(RxInternalOperatorsOperatorZip_Zip *)original {
   [super __javaClone:original];
-  [childSubscription_ release];
   JreCloneVolatileStrong(&subscribers_, &original->subscribers_);
 }
 
 - (void)dealloc {
   RELEASE_(child_);
   RELEASE_(zipFunction_);
+  RELEASE_(childSubscription_);
   JreReleaseVolatile(&subscribers_);
   RELEASE_(requested_);
   [super dealloc];
@@ -565,7 +566,7 @@ withJavaUtilConcurrentAtomicAtomicLong:(JavaUtilConcurrentAtomicAtomicLong *)req
 
 void RxInternalOperatorsOperatorZip_Zip_initWithRxSubscriber_withRxFunctionsFuncN_(RxInternalOperatorsOperatorZip_Zip *self, RxSubscriber *child, id<RxFunctionsFuncN> zipFunction) {
   JavaUtilConcurrentAtomicAtomicLong_init(self);
-  self->childSubscription_ = create_RxSubscriptionsCompositeSubscription_init();
+  JreStrongAssignAndConsume(&self->childSubscription_, new_RxSubscriptionsCompositeSubscription_init());
   JreStrongAssign(&self->child_, child);
   JreStrongAssign(&self->zipFunction_, zipFunction);
   [((RxSubscriber *) nil_chk(child)) addWithRxSubscription:self->childSubscription_];

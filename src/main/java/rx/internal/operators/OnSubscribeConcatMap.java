@@ -18,7 +18,6 @@ package rx.internal.operators;
 
 import com.google.j2objc.annotations.Weak;
 
-import java.lang.ref.WeakReference;
 import java.util.Queue;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
@@ -27,6 +26,7 @@ import rx.Observable;
 import rx.Observable.OnSubscribe;
 import rx.Producer;
 import rx.Subscriber;
+import rx.doppl.J2objcWeakReference;
 import rx.doppl.SafeObservableUnsubscribe;
 import rx.exceptions.Exceptions;
 import rx.exceptions.MissingBackpressureException;
@@ -93,7 +93,7 @@ public final class OnSubscribeConcatMap<T, R> implements OnSubscribe<R> {
 
         child.add(parent);
         child.add(parent.inner);
-        final WeakReference<ConcatMapSubscriber<T, R>> weakParent = new WeakReference<ConcatMapSubscriber<T, R>>(parent);
+        final J2objcWeakReference<ConcatMapSubscriber<T, R>> weakParent = new J2objcWeakReference<ConcatMapSubscriber<T, R>>(parent);
 
         child.setProducer(new Producer() {
             @Override

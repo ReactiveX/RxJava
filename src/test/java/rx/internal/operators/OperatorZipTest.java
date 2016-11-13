@@ -15,6 +15,9 @@
  */
 package rx.internal.operators;
 
+import com.google.j2objc.annotations.AutoreleasePool;
+
+
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
@@ -1321,16 +1324,23 @@ public class OperatorZipTest {
         // used so that this test will not timeout on slow machines.
         int i = 0;
         while (System.currentTimeMillis()-startTime < 9000 && i++ < 100000) {
-            int value = Observable.zip(src, src, new Func2<Integer, Integer, Integer>() {
-                @Override
-                public Integer call(Integer t1, Integer t2) {
-                    return t1 + t2 * 10;
-                }
-            }).toBlocking().singleOrDefault(0);
-
-            Assert.assertEquals(11, value);
+            runZipRace(src);
         }
     }
+
+    @AutoreleasePool
+    private void runZipRace(Observable<Integer> src)
+    {
+        int value = Observable.zip(src, src, new Func2<Integer, Integer, Integer>() {
+            @Override
+            public Integer call(Integer t1, Integer t2) {
+                return t1 + t2 * 10;
+            }
+        }).toBlocking().singleOrDefault(0);
+
+        Assert.assertEquals(11, value);
+    }
+
     /**
      * Request only a single value and don't wait for another request just
      * to emit an onCompleted.

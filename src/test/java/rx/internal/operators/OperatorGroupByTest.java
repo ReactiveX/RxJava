@@ -25,7 +25,6 @@ import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 
 
-import java.lang.ref.WeakReference;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;

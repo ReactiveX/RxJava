@@ -15,6 +15,9 @@
  */
 package rx.schedulers;
 
+import com.google.j2objc.annotations.AutoreleasePool;
+
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -48,6 +51,8 @@ import rx.subscriptions.Subscriptions;
  * The Current/Immediate schedulers will not work with these tests.
  */
 public abstract class AbstractSchedulerConcurrencyTests extends AbstractSchedulerTests {
+
+    public static final long BIG_COUNT = 50000L;
 
     /**
      * Bug report: https://github.com/ReactiveX/RxJava/issues/431
@@ -247,7 +252,7 @@ public abstract class AbstractSchedulerConcurrencyTests extends AbstractSchedule
                     if (i % 100000 == 0) {
                         System.out.println(i + "  Total Memory: " + Runtime.getRuntime().totalMemory() + "  Free: " + Runtime.getRuntime().freeMemory());
                     }
-                    if (i < 1000000L) {
+                    if (i < BIG_COUNT) {
                         inner.schedule(this);
                     } else {
                         latch.countDown();
@@ -276,7 +281,7 @@ public abstract class AbstractSchedulerConcurrencyTests extends AbstractSchedule
                     if (i % 100000 == 0) {
                         System.out.println(i + "  Total Memory: " + Runtime.getRuntime().totalMemory() + "  Free: " + Runtime.getRuntime().freeMemory());
                     }
-                    if (i < 1000000L) {
+                    if (i < BIG_COUNT) {
                         inner.schedule(this);
                     } else {
                         latch.countDown();

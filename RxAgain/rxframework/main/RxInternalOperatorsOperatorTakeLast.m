@@ -4,36 +4,36 @@
 //
 
 #include "J2ObjC_source.h"
+#include "RxDopplJ2objcWeakReference.h"
 #include "RxInternalOperatorsBackpressureUtils.h"
 #include "RxInternalOperatorsNotificationLite.h"
 #include "RxInternalOperatorsOperatorTakeLast.h"
 #include "RxProducer.h"
 #include "RxSubscriber.h"
 #include "java/lang/IndexOutOfBoundsException.h"
-#include "java/lang/ref/WeakReference.h"
 #include "java/util/ArrayDeque.h"
 #include "java/util/concurrent/atomic/AtomicLong.h"
 
 @interface RxInternalOperatorsOperatorTakeLast_$1 : NSObject < RxProducer > {
  @public
-  JavaLangRefWeakReference *val$weakParent_;
+  RxDopplJ2objcWeakReference *val$weakParent_;
 }
 
 - (void)requestWithLong:(jlong)n;
 
-- (instancetype)initWithJavaLangRefWeakReference:(JavaLangRefWeakReference *)capture$0;
+- (instancetype)initWithRxDopplJ2objcWeakReference:(RxDopplJ2objcWeakReference *)capture$0;
 
 @end
 
 J2OBJC_EMPTY_STATIC_INIT(RxInternalOperatorsOperatorTakeLast_$1)
 
-J2OBJC_FIELD_SETTER(RxInternalOperatorsOperatorTakeLast_$1, val$weakParent_, JavaLangRefWeakReference *)
+J2OBJC_FIELD_SETTER(RxInternalOperatorsOperatorTakeLast_$1, val$weakParent_, RxDopplJ2objcWeakReference *)
 
-__attribute__((unused)) static void RxInternalOperatorsOperatorTakeLast_$1_initWithJavaLangRefWeakReference_(RxInternalOperatorsOperatorTakeLast_$1 *self, JavaLangRefWeakReference *capture$0);
+__attribute__((unused)) static void RxInternalOperatorsOperatorTakeLast_$1_initWithRxDopplJ2objcWeakReference_(RxInternalOperatorsOperatorTakeLast_$1 *self, RxDopplJ2objcWeakReference *capture$0);
 
-__attribute__((unused)) static RxInternalOperatorsOperatorTakeLast_$1 *new_RxInternalOperatorsOperatorTakeLast_$1_initWithJavaLangRefWeakReference_(JavaLangRefWeakReference *capture$0) NS_RETURNS_RETAINED;
+__attribute__((unused)) static RxInternalOperatorsOperatorTakeLast_$1 *new_RxInternalOperatorsOperatorTakeLast_$1_initWithRxDopplJ2objcWeakReference_(RxDopplJ2objcWeakReference *capture$0) NS_RETURNS_RETAINED;
 
-__attribute__((unused)) static RxInternalOperatorsOperatorTakeLast_$1 *create_RxInternalOperatorsOperatorTakeLast_$1_initWithJavaLangRefWeakReference_(JavaLangRefWeakReference *capture$0);
+__attribute__((unused)) static RxInternalOperatorsOperatorTakeLast_$1 *create_RxInternalOperatorsOperatorTakeLast_$1_initWithRxDopplJ2objcWeakReference_(RxDopplJ2objcWeakReference *capture$0);
 
 @implementation RxInternalOperatorsOperatorTakeLast
 
@@ -45,8 +45,8 @@ __attribute__((unused)) static RxInternalOperatorsOperatorTakeLast_$1 *create_Rx
 - (RxSubscriber *)callWithId:(RxSubscriber *)subscriber {
   RxInternalOperatorsOperatorTakeLast_TakeLastSubscriber *parent = create_RxInternalOperatorsOperatorTakeLast_TakeLastSubscriber_initWithRxSubscriber_withInt_(subscriber, count_);
   [((RxSubscriber *) nil_chk(subscriber)) addWithRxSubscription:parent];
-  JavaLangRefWeakReference *weakParent = create_JavaLangRefWeakReference_initWithId_(parent);
-  [subscriber setProducerWithRxProducer:create_RxInternalOperatorsOperatorTakeLast_$1_initWithJavaLangRefWeakReference_(weakParent)];
+  RxDopplJ2objcWeakReference *weakParent = create_RxDopplJ2objcWeakReference_initWithId_(parent);
+  [subscriber setProducerWithRxProducer:create_RxInternalOperatorsOperatorTakeLast_$1_initWithRxDopplJ2objcWeakReference_(weakParent)];
   return parent;
 }
 
@@ -182,11 +182,11 @@ J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxInternalOperatorsOperatorTakeLast_TakeLastSub
 @implementation RxInternalOperatorsOperatorTakeLast_$1
 
 - (void)requestWithLong:(jlong)n {
-  [((RxInternalOperatorsOperatorTakeLast_TakeLastSubscriber *) nil_chk([((JavaLangRefWeakReference *) nil_chk(val$weakParent_)) get])) requestMoreWithLong:n];
+  [((RxInternalOperatorsOperatorTakeLast_TakeLastSubscriber *) nil_chk([((RxDopplJ2objcWeakReference *) nil_chk(val$weakParent_)) get])) requestMoreWithLong:n];
 }
 
-- (instancetype)initWithJavaLangRefWeakReference:(JavaLangRefWeakReference *)capture$0 {
-  RxInternalOperatorsOperatorTakeLast_$1_initWithJavaLangRefWeakReference_(self, capture$0);
+- (instancetype)initWithRxDopplJ2objcWeakReference:(RxDopplJ2objcWeakReference *)capture$0 {
+  RxInternalOperatorsOperatorTakeLast_$1_initWithRxDopplJ2objcWeakReference_(self, capture$0);
   return self;
 }
 
@@ -203,27 +203,27 @@ J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxInternalOperatorsOperatorTakeLast_TakeLastSub
   #pragma clang diagnostic push
   #pragma clang diagnostic ignored "-Wobjc-multiple-method-names"
   methods[0].selector = @selector(requestWithLong:);
-  methods[1].selector = @selector(initWithJavaLangRefWeakReference:);
+  methods[1].selector = @selector(initWithRxDopplJ2objcWeakReference:);
   #pragma clang diagnostic pop
   static const J2ObjcFieldInfo fields[] = {
-    { "val$weakParent_", "LJavaLangRefWeakReference;", .constantValue.asLong = 0, 0x1012, -1, -1, 4, -1 },
+    { "val$weakParent_", "LRxDopplJ2objcWeakReference;", .constantValue.asLong = 0, 0x1012, -1, -1, 4, -1 },
   };
-  static const void *ptrTable[] = { "request", "J", "LJavaLangRefWeakReference;", "(Ljava/lang/ref/WeakReference<Lrx/internal/operators/OperatorTakeLast$TakeLastSubscriber<TT;>;>;)V", "Ljava/lang/ref/WeakReference<Lrx/internal/operators/OperatorTakeLast$TakeLastSubscriber<TT;>;>;", "LRxInternalOperatorsOperatorTakeLast;", "callWithId:" };
+  static const void *ptrTable[] = { "request", "J", "LRxDopplJ2objcWeakReference;", "(Lrx/doppl/J2objcWeakReference<Lrx/internal/operators/OperatorTakeLast$TakeLastSubscriber<TT;>;>;)V", "Lrx/doppl/J2objcWeakReference<Lrx/internal/operators/OperatorTakeLast$TakeLastSubscriber<TT;>;>;", "LRxInternalOperatorsOperatorTakeLast;", "callWithId:" };
   static const J2ObjcClassInfo _RxInternalOperatorsOperatorTakeLast_$1 = { "", "rx.internal.operators", ptrTable, methods, fields, 7, 0x8008, 2, 1, 5, -1, 6, -1, -1 };
   return &_RxInternalOperatorsOperatorTakeLast_$1;
 }
 
 @end
 
-void RxInternalOperatorsOperatorTakeLast_$1_initWithJavaLangRefWeakReference_(RxInternalOperatorsOperatorTakeLast_$1 *self, JavaLangRefWeakReference *capture$0) {
+void RxInternalOperatorsOperatorTakeLast_$1_initWithRxDopplJ2objcWeakReference_(RxInternalOperatorsOperatorTakeLast_$1 *self, RxDopplJ2objcWeakReference *capture$0) {
   JreStrongAssign(&self->val$weakParent_, capture$0);
   NSObject_init(self);
 }
 
-RxInternalOperatorsOperatorTakeLast_$1 *new_RxInternalOperatorsOperatorTakeLast_$1_initWithJavaLangRefWeakReference_(JavaLangRefWeakReference *capture$0) {
-  J2OBJC_NEW_IMPL(RxInternalOperatorsOperatorTakeLast_$1, initWithJavaLangRefWeakReference_, capture$0)
+RxInternalOperatorsOperatorTakeLast_$1 *new_RxInternalOperatorsOperatorTakeLast_$1_initWithRxDopplJ2objcWeakReference_(RxDopplJ2objcWeakReference *capture$0) {
+  J2OBJC_NEW_IMPL(RxInternalOperatorsOperatorTakeLast_$1, initWithRxDopplJ2objcWeakReference_, capture$0)
 }
 
-RxInternalOperatorsOperatorTakeLast_$1 *create_RxInternalOperatorsOperatorTakeLast_$1_initWithJavaLangRefWeakReference_(JavaLangRefWeakReference *capture$0) {
-  J2OBJC_CREATE_IMPL(RxInternalOperatorsOperatorTakeLast_$1, initWithJavaLangRefWeakReference_, capture$0)
+RxInternalOperatorsOperatorTakeLast_$1 *create_RxInternalOperatorsOperatorTakeLast_$1_initWithRxDopplJ2objcWeakReference_(RxDopplJ2objcWeakReference *capture$0) {
+  J2OBJC_CREATE_IMPL(RxInternalOperatorsOperatorTakeLast_$1, initWithRxDopplJ2objcWeakReference_, capture$0)
 }

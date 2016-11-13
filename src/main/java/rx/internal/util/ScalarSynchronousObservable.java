@@ -15,9 +15,6 @@
  */
 package rx.internal.util;
 
-import com.google.j2objc.annotations.Weak;
-
-import java.lang.ref.WeakReference;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import rx.Observable;
@@ -25,6 +22,7 @@ import rx.Producer;
 import rx.Scheduler;
 import rx.Subscriber;
 import rx.Subscription;
+import rx.doppl.J2objcWeakReference;
 import rx.exceptions.Exceptions;
 import rx.functions.Action0;
 import rx.functions.Func1;
@@ -263,12 +261,12 @@ public final class ScalarSynchronousObservable<T> extends Observable<T> {
      */
     static final class WeakSingleProducer<T> implements Producer {
 
-        final WeakReference<Subscriber<? super T>> actual;
+        final J2objcWeakReference<Subscriber<? super T>> actual;
         final T value;
         boolean once;
 
         public WeakSingleProducer(Subscriber<? super T> actual, T value) {
-            this.actual = new WeakReference<Subscriber<? super T>>(actual);
+            this.actual = new J2objcWeakReference<Subscriber<? super T>>(actual);
             this.value = value;
         }
 

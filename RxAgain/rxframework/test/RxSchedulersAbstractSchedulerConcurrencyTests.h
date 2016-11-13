@@ -48,6 +48,10 @@
 
 J2OBJC_EMPTY_STATIC_INIT(RxSchedulersAbstractSchedulerConcurrencyTests)
 
+inline jlong RxSchedulersAbstractSchedulerConcurrencyTests_get_BIG_COUNT();
+#define RxSchedulersAbstractSchedulerConcurrencyTests_BIG_COUNT 50000LL
+J2OBJC_STATIC_FIELD_CONSTANT(RxSchedulersAbstractSchedulerConcurrencyTests, BIG_COUNT, jlong)
+
 FOUNDATION_EXPORT void RxSchedulersAbstractSchedulerConcurrencyTests_init(RxSchedulersAbstractSchedulerConcurrencyTests *self);
 
 J2OBJC_TYPE_LITERAL_HEADER(RxSchedulersAbstractSchedulerConcurrencyTests)

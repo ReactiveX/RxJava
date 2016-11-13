@@ -15,15 +15,14 @@
  */
 package rx.internal.util;
 
-import java.lang.ref.WeakReference;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
 import rx.Subscription;
+import rx.doppl.J2objcWeakReference;
 import rx.exceptions.Exceptions;
 
 /**
@@ -33,7 +32,7 @@ import rx.exceptions.Exceptions;
  */
 public final class SubscriptionList implements Subscription {
 
-    private List<WeakReference<Subscription>> subscriptions;
+    private List<J2objcWeakReference<Subscription>> subscriptions;
     private volatile boolean    unsubscribed;
 
     /**
@@ -48,10 +47,10 @@ public final class SubscriptionList implements Subscription {
      * @param subscriptions the array of subscriptions to start with
      */
     public SubscriptionList(final Subscription... subscriptions) {
-        this.subscriptions = new LinkedList<WeakReference<Subscription>>();
+        this.subscriptions = new LinkedList<J2objcWeakReference<Subscription>>();
         for(Subscription subscription : subscriptions)
         {
-            this.subscriptions.add(new WeakReference<Subscription>(subscription));
+            this.subscriptions.add(new J2objcWeakReference<Subscription>(subscription));
         }
     }
 
@@ -60,8 +59,8 @@ public final class SubscriptionList implements Subscription {
      * @param s the initial subscription instance
      */
     public SubscriptionList(Subscription s) {
-        this.subscriptions = new LinkedList<WeakReference<Subscription>>();
-        this.subscriptions.add(new WeakReference<Subscription>(s));
+        this.subscriptions = new LinkedList<J2objcWeakReference<Subscription>>();
+        this.subscriptions.add(new J2objcWeakReference<Subscription>(s));
     }
 
     @Override
@@ -84,12 +83,12 @@ public final class SubscriptionList implements Subscription {
         if (!unsubscribed) {
             synchronized (this) {
                 if (!unsubscribed) {
-                    List<WeakReference<Subscription>> subs = subscriptions;
+                    List<J2objcWeakReference<Subscription>> subs = subscriptions;
                     if (subs == null) {
-                        subs = new LinkedList<WeakReference<Subscription>>();
+                        subs = new LinkedList<J2objcWeakReference<Subscription>>();
                         subscriptions = subs;
                     }
-                    subs.add(new WeakReference<Subscription>(s));
+                    subs.add(new J2objcWeakReference<Subscription>(s));
                     return;
                 }
             }
@@ -102,15 +101,15 @@ public final class SubscriptionList implements Subscription {
         if (!unsubscribed) {
             boolean unsubscribe = false;
             synchronized (this) {
-                List<WeakReference<Subscription>> subs = subscriptions;
+                List<J2objcWeakReference<Subscription>> subs = subscriptions;
                 if (unsubscribed || subs == null) {
                     return;
                 }
 
-                Iterator<WeakReference<Subscription>> iterator = subs.iterator();
+                Iterator<J2objcWeakReference<Subscription>> iterator = subs.iterator();
                 while(iterator.hasNext())
                 {
-                    WeakReference<Subscription> next = iterator.next();
+                    J2objcWeakReference<Subscription> next = iterator.next();
                     if(next.get() != null && next.equals(s))
                     {
                         unsubscribe = true;
@@ -133,7 +132,7 @@ public final class SubscriptionList implements Subscription {
     @Override
     public void unsubscribe() {
         if (!unsubscribed) {
-            List<WeakReference<Subscription>> list;
+            List<J2objcWeakReference<Subscription>> list;
             synchronized (this) {
                 if (unsubscribed) {
                     return;
@@ -147,12 +146,12 @@ public final class SubscriptionList implements Subscription {
         }
     }
 
-    private static void unsubscribeFromAll(Collection<WeakReference<Subscription>> subscriptions) {
+    private static void unsubscribeFromAll(Collection<J2objcWeakReference<Subscription>> subscriptions) {
         if (subscriptions == null) {
             return;
         }
         List<Throwable> es = null;
-        for (WeakReference<Subscription> wr : subscriptions) {
+        for (J2objcWeakReference<Subscription> wr : subscriptions) {
             Subscription s = wr.get();
             try {
                 if(s != null)
@@ -169,7 +168,7 @@ public final class SubscriptionList implements Subscription {
     /* perf support */
     public void clear() {
         if (!unsubscribed) {
-            List<WeakReference<Subscription>> list;
+            List<J2objcWeakReference<Subscription>> list;
             synchronized (this) {
                 list = subscriptions;
                 subscriptions = null;
@@ -186,10 +185,10 @@ public final class SubscriptionList implements Subscription {
             synchronized (this) {
                 if(!unsubscribed && subscriptions != null)
                 {
-                    Iterator<WeakReference<Subscription>> iterator = subscriptions.iterator();
+                    Iterator<J2objcWeakReference<Subscription>> iterator = subscriptions.iterator();
                     while(iterator.hasNext())
                     {
-                        WeakReference<Subscription> next = iterator.next();
+                        J2objcWeakReference<Subscription> next = iterator.next();
                         if(next.get() != null)
                             return true;
                     }

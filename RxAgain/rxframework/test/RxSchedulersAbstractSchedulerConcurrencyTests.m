@@ -676,8 +676,11 @@ J2OBJC_IGNORE_DESIGNATED_END
   methods[8].selector = @selector(workerUnderConcurrentUnsubscribeShouldNotAllowLaterTasksToRunDueToUnsubscriptionRace);
   methods[9].selector = @selector(init);
   #pragma clang diagnostic pop
+  static const J2ObjcFieldInfo fields[] = {
+    { "BIG_COUNT", "J", .constantValue.asLong = RxSchedulersAbstractSchedulerConcurrencyTests_BIG_COUNT, 0x19, -1, -1, -1, -1 },
+  };
   static const void *ptrTable[] = { "LJavaLangInterruptedException;", (void *)&RxSchedulersAbstractSchedulerConcurrencyTests__Annotations$0, (void *)&RxSchedulersAbstractSchedulerConcurrencyTests__Annotations$1, (void *)&RxSchedulersAbstractSchedulerConcurrencyTests__Annotations$2, (void *)&RxSchedulersAbstractSchedulerConcurrencyTests__Annotations$3, (void *)&RxSchedulersAbstractSchedulerConcurrencyTests__Annotations$4, (void *)&RxSchedulersAbstractSchedulerConcurrencyTests__Annotations$5, (void *)&RxSchedulersAbstractSchedulerConcurrencyTests__Annotations$6, (void *)&RxSchedulersAbstractSchedulerConcurrencyTests__Annotations$7, (void *)&RxSchedulersAbstractSchedulerConcurrencyTests__Annotations$8 };
-  static const J2ObjcClassInfo _RxSchedulersAbstractSchedulerConcurrencyTests = { "AbstractSchedulerConcurrencyTests", "rx.schedulers", ptrTable, methods, NULL, 7, 0x401, 10, 0, -1, -1, -1, -1, -1 };
+  static const J2ObjcClassInfo _RxSchedulersAbstractSchedulerConcurrencyTests = { "AbstractSchedulerConcurrencyTests", "rx.schedulers", ptrTable, methods, fields, 7, 0x401, 10, 1, -1, -1, -1, -1, -1 };
   return &_RxSchedulersAbstractSchedulerConcurrencyTests;
 }
 
@@ -1204,7 +1207,7 @@ RxSchedulersAbstractSchedulerConcurrencyTests_$5_$1 *create_RxSchedulersAbstract
   if (i_ % 100000 == 0) {
     [((JavaIoPrintStream *) nil_chk(JreLoadStatic(JavaLangSystem, out))) printlnWithNSString:JreStrcat("I$J$J", i_, @"  Total Memory: ", [((JavaLangRuntime *) nil_chk(JavaLangRuntime_getRuntime())) totalMemory], @"  Free: ", [((JavaLangRuntime *) nil_chk(JavaLangRuntime_getRuntime())) freeMemory])];
   }
-  if (i_ < 1000000LL) {
+  if (i_ < RxSchedulersAbstractSchedulerConcurrencyTests_BIG_COUNT) {
     [((RxScheduler_Worker *) nil_chk(val$inner_)) scheduleWithRxFunctionsAction0:self];
   }
   else {
@@ -1268,7 +1271,7 @@ RxSchedulersAbstractSchedulerConcurrencyTests_$6 *create_RxSchedulersAbstractSch
   if (i_ % 100000 == 0) {
     [((JavaIoPrintStream *) nil_chk(JreLoadStatic(JavaLangSystem, out))) printlnWithNSString:JreStrcat("J$J$J", i_, @"  Total Memory: ", [((JavaLangRuntime *) nil_chk(JavaLangRuntime_getRuntime())) totalMemory], @"  Free: ", [((JavaLangRuntime *) nil_chk(JavaLangRuntime_getRuntime())) freeMemory])];
   }
-  if (i_ < 1000000LL) {
+  if (i_ < RxSchedulersAbstractSchedulerConcurrencyTests_BIG_COUNT) {
     [((RxScheduler_Worker *) nil_chk(val$inner_)) scheduleWithRxFunctionsAction0:self];
   }
   else {
