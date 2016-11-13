@@ -21,7 +21,8 @@ import java.util.concurrent.atomic.*;
 import rx.*;
 import rx.exceptions.*;
 import rx.functions.*;
-import rx.internal.util.*;
+import rx.internal.util.RxRingBuffer;
+import rx.internal.util.atomic.SpscAtomicArrayQueue;
 import rx.internal.util.unsafe.*;
 import rx.observables.ConnectableObservable;
 import rx.subscriptions.Subscriptions;
@@ -244,7 +245,7 @@ public final class OperatorPublish<T> extends ConnectableObservable<T> {
         public PublishSubscriber(AtomicReference<PublishSubscriber<T>> current) {
             this.queue = UnsafeAccess.isUnsafeAvailable()
                     ? new SpscArrayQueue<Object>(RxRingBuffer.SIZE)
-                    : new SynchronizedQueue<Object>(RxRingBuffer.SIZE);
+                    : new SpscAtomicArrayQueue<Object>(RxRingBuffer.SIZE);
 
             this.producers = new AtomicReference<InnerProducer[]>(EMPTY);
             this.current = current;

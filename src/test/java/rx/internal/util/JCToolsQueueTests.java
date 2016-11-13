@@ -169,7 +169,7 @@ public class JCToolsQueueTests {
 
         Integer j;
         for (int i = 0; i < 1000 * 1000; i++) {
-            while ((j = q.poll()) == null);
+            while ((j = q.poll()) == null) { }
             assertTrue("Value " + j + " already removed", set.remove(j));
         }
         assertTrue("Set is not empty", set.isEmpty());
@@ -242,7 +242,7 @@ public class JCToolsQueueTests {
 
         Integer j;
         for (int i = 0; i < 1000 * 1000; i++) {
-            while ((j = q.poll()) == null);
+            while ((j = q.poll()) == null) { }
             assertTrue("Value " + j + " already removed", set.remove(j));
         }
         assertTrue("Set is not empty", set.isEmpty());
@@ -366,7 +366,7 @@ public class JCToolsQueueTests {
             public void run() {
                 Integer j;
                 for (int i = 0; i < 1000 * 1000; i++) {
-                    while ((j = q.poll()) == null);
+                    while ((j = q.poll()) == null) { }
                     if (j == i) {
                         count.getAndIncrement();
                     }
@@ -424,7 +424,7 @@ public class JCToolsQueueTests {
             public void run() {
                 Integer j;
                 for (int i = 0; i < 1000 * 1000; i++) {
-                    while ((j = q.poll()) == null);
+                    while ((j = q.poll()) == null) { }
                     if (j == i) {
                         count.getAndIncrement();
                     }

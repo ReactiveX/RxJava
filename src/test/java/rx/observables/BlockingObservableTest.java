@@ -565,7 +565,7 @@ public class BlockingObservableTest {
                 @Override
                 public Iterator<Void> iterator() {
                     return new Iterator<Void>() {
-                        private boolean nextCalled = false;
+                        private boolean nextCalled;
 
                         @Override
                         public boolean hasNext() {

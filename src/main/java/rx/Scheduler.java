@@ -212,9 +212,9 @@ public abstract class Scheduler {
      *
      * <pre>
      * Scheduler limitScheduler = Schedulers.computation().when(workers -> {
-     * 	// use merge max concurrent to limit the number of concurrent
-     * 	// callbacks two at a time
-     * 	return Completable.merge(Observable.merge(workers), 2);
+     *     // use merge max concurrent to limit the number of concurrent
+     *     // callbacks two at a time
+     *     return Completable.merge(Observable.merge(workers), 2);
      * });
      * </pre>
      * <p>
@@ -230,9 +230,9 @@ public abstract class Scheduler {
      *
      * <pre>
      * Scheduler limitScheduler = Schedulers.computation().when(workers -> {
-     * 	// use merge max concurrent to limit the number of concurrent
-     * 	// Observables two at a time
-     * 	return Completable.merge(Observable.merge(workers, 2));
+     *     // use merge max concurrent to limit the number of concurrent
+     *     // Observables two at a time
+     *     return Completable.merge(Observable.merge(workers, 2));
      * });
      * </pre>
      *
@@ -243,10 +243,10 @@ public abstract class Scheduler {
      *
      * <pre>
      * Scheduler slowScheduler = Schedulers.computation().when(workers -> {
-     * 	// use concatenate to make each worker happen one at a time.
-     * 	return Completable.concat(workers.map(actions -> {
-     * 		// delay the starting of the next worker by 1 second.
-     * 		return Completable.merge(actions.delaySubscription(1, TimeUnit.SECONDS));
+     *     // use concatenate to make each worker happen one at a time.
+     *     return Completable.concat(workers.map(actions -> {
+     *         // delay the starting of the next worker by 1 second.
+     *         return Completable.merge(actions.delaySubscription(1, TimeUnit.SECONDS));
      *    }));
      * });
      * </pre>

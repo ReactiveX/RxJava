@@ -278,7 +278,7 @@ public class OnSubscribeMapTest {
         };
 
         Func1<Object, Object> mapper = new Func1<Object, Object>() {
-            private int count = 0;
+            private int count;
 
             @Override
             public Object call(Object object) {

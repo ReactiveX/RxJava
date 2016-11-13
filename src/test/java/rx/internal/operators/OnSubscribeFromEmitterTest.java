@@ -145,7 +145,7 @@ public class OnSubscribeFromEmitterTest {
 
     @Test
     public void overflowErrorIsNotFollowedByAnotherErrorDueToOnNextFromUpstream() {
-        Action1<Emitter<Integer>> source = new Action1<Emitter<Integer>>(){
+        Action1<Emitter<Integer>> source = new Action1<Emitter<Integer>>() {
 
             @Override
             public void call(Emitter<Integer> emitter) {
@@ -164,7 +164,7 @@ public class OnSubscribeFromEmitterTest {
 
     @Test
     public void overflowErrorIsNotFollowedByAnotherCompletedDueToCompletedFromUpstream() {
-        Action1<Emitter<Integer>> source = new Action1<Emitter<Integer>>(){
+        Action1<Emitter<Integer>> source = new Action1<Emitter<Integer>>() {
 
             @Override
             public void call(Emitter<Integer> emitter) {
@@ -191,7 +191,7 @@ public class OnSubscribeFromEmitterTest {
                     list.add(t);
                 }});
             final RuntimeException e = new RuntimeException();
-            Action1<Emitter<Integer>> source = new Action1<Emitter<Integer>>(){
+            Action1<Emitter<Integer>> source = new Action1<Emitter<Integer>>() {
 
                 @Override
                 public void call(Emitter<Integer> emitter) {

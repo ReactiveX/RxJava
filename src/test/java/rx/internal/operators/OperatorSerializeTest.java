@@ -223,7 +223,7 @@ public class OperatorSerializeTest {
     private static class TestSingleThreadedObservable implements Observable.OnSubscribe<String> {
 
         final String[] values;
-        private Thread t = null;
+        private Thread t;
 
         public TestSingleThreadedObservable(final String... values) {
             this.values = values;
@@ -270,7 +270,7 @@ public class OperatorSerializeTest {
      */
     private static class TestMultiThreadedObservable implements Observable.OnSubscribe<String> {
         final String[] values;
-        Thread t = null;
+        Thread t;
         AtomicInteger threadsRunning = new AtomicInteger();
         AtomicInteger maxConcurrentThreads = new AtomicInteger();
         ExecutorService threadPool;
@@ -302,8 +302,9 @@ public class OperatorSerializeTest {
                                             System.out.println("TestMultiThreadedObservable onNext: null");
                                             // force an error
                                             throw npe;
-                                        } else
+                                        } else {
                                             System.out.println("TestMultiThreadedObservable onNext: " + s);
+                                        }
                                         observer.onNext(s);
                                         // capture 'maxThreads'
                                         int concurrentThreads = threadsRunning.get();
@@ -350,8 +351,8 @@ public class OperatorSerializeTest {
     }
 
     private static class BusyObserver extends Subscriber<String> {
-        volatile boolean onCompleted = false;
-        volatile boolean onError = false;
+        volatile boolean onCompleted;
+        volatile boolean onError;
         AtomicInteger onNextCount = new AtomicInteger();
         AtomicInteger threadsRunning = new AtomicInteger();
         AtomicInteger maxConcurrentThreads = new AtomicInteger();

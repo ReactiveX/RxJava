@@ -21,6 +21,7 @@ import rx.Observer;
 import rx.Subscription;
 import rx.exceptions.MissingBackpressureException;
 import rx.internal.operators.NotificationLite;
+import rx.internal.util.atomic.SpscAtomicArrayQueue;
 import rx.internal.util.unsafe.SpmcArrayQueue;
 import rx.internal.util.unsafe.SpscArrayQueue;
 import rx.internal.util.unsafe.UnsafeAccess;
@@ -128,7 +129,6 @@ public class RxRingBuffer implements Subscription {
     private Queue<Object> queue;
 
     private final int size;
-    private final ObjectPool<Queue<Object>> pool;
 
     /**
      * We store the terminal state separately so it doesn't count against the size.
@@ -261,29 +261,9 @@ public class RxRingBuffer implements Subscription {
     }
     public static final int SIZE;
 
-    /* Public so Schedulers can manage the lifecycle of the inner worker. */
-    public static final ObjectPool<Queue<Object>> SPSC_POOL = new ObjectPool<Queue<Object>>() {
-
-        @Override
-        protected SpscArrayQueue<Object> createObject() {
-            return new SpscArrayQueue<Object>(SIZE);
-        }
-
-    };
-
-    /* Public so Schedulers can manage the lifecycle of the inner worker. */
-    public static final ObjectPool<Queue<Object>> SPMC_POOL = new ObjectPool<Queue<Object>>() {
-
-        @Override
-        protected SpmcArrayQueue<Object> createObject() {
-            return new SpmcArrayQueue<Object>(SIZE);
-        }
-
-    };
-
     public static RxRingBuffer getSpscInstance() {
         if (UnsafeAccess.isUnsafeAvailable()) {
-            return new RxRingBuffer(SPSC_POOL, SIZE);
+            return new RxRingBuffer(false, SIZE);
         } else {
             return new RxRingBuffer();
         }
@@ -291,7 +271,7 @@ public class RxRingBuffer implements Subscription {
 
     public static RxRingBuffer getSpmcInstance() {
         if (UnsafeAccess.isUnsafeAvailable()) {
-            return new RxRingBuffer(SPMC_POOL, SIZE);
+            return new RxRingBuffer(true, SIZE);
         } else {
             return new RxRingBuffer();
         }
@@ -299,24 +279,16 @@ public class RxRingBuffer implements Subscription {
 
     private RxRingBuffer(Queue<Object> queue, int size) {
         this.queue = queue;
-        this.pool = null;
         this.size = size;
     }
 
-    private RxRingBuffer(ObjectPool<Queue<Object>> pool, int size) {
-        this.pool = pool;
-        this.queue = pool.borrowObject();
+    private RxRingBuffer(boolean spmc, int size) {
+        this.queue = spmc ? new SpmcArrayQueue<Object>(size) : new SpscArrayQueue<Object>(size);
         this.size = size;
     }
 
     public synchronized void release() { // NOPMD
-        Queue<Object> q = queue;
-        ObjectPool<Queue<Object>> p = pool;
-        if (p != null && q != null) {
-            q.clear();
-            queue = null;
-            p.returnObject(q);
-        }
+        // 1.2.3: no longer pooling
     }
 
     @Override
@@ -325,7 +297,7 @@ public class RxRingBuffer implements Subscription {
     }
 
     /* package accessible for unit tests */RxRingBuffer() {
-        this(new SynchronizedQueue<Object>(SIZE), SIZE);
+        this(new SpscAtomicArrayQueue<Object>(SIZE), SIZE);
     }
 
     /**

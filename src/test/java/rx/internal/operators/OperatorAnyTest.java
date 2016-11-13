@@ -298,9 +298,9 @@ public class OperatorAnyTest {
             boolean once = true;
             @Override
             public Boolean call(Integer t) {
-                if (once)
+                if (once) {
                     throw new RuntimeException("boo");
-                else  {
+                } else  {
                     once = false;
                     return true;
                 }

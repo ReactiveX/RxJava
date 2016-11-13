@@ -49,7 +49,7 @@ public class SyncOnSubscribePerf {
     }
 
     private static OnSubscribe<Integer> createSyncOnSubscribe(final Iterator<Integer> iterator) {
-        return new SyncOnSubscribe<Void, Integer>(){
+        return new SyncOnSubscribe<Void, Integer>() {
 
             @Override
             protected Void generateState() {
@@ -60,12 +60,12 @@ public class SyncOnSubscribePerf {
             protected Void next(Void state, Observer<? super Integer> observer) {
                 if (iterator.hasNext()) {
                     observer.onNext(iterator.next());
-                }
-                else
+                } else {
                     observer.onCompleted();
-                return null;
                 }
-            };
+                return null;
+            }
+        };
     }
 
 //    @Benchmark

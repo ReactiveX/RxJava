@@ -182,6 +182,6 @@ public abstract class ConcurrentCircularArrayQueue<E> extends ConcurrentCircular
     @Override
     public void clear() {
         // we have to test isEmpty because of the weaker poll() guarantee
-        while (poll() != null || !isEmpty()) ; // NOPMD
+        while (poll() != null || !isEmpty()) { } // NOPMD
     }
 }

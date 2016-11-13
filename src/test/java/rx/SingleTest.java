@@ -2055,7 +2055,7 @@ public class SingleTest {
         })
         .subscribe();
 
-        while (!ps.hasObservers() && !Thread.currentThread().isInterrupted()) ;
+        while (!ps.hasObservers() && !Thread.currentThread().isInterrupted()) { }
 
         s.unsubscribe();
 

@@ -125,7 +125,7 @@ public class TrampolineSchedulerTest extends AbstractSchedulerTests {
                                          return trampolineWorker.schedule(new Action0() {
 
                                              @Override
-                                             public void call() {}
+                                             public void call() { }
 
                                          });
                                      }

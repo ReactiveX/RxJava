@@ -1315,7 +1315,7 @@ public class OperatorZipTest {
         // time limit of 9 seconds ( 1 second less than the test timeout) is
         // used so that this test will not timeout on slow machines.
         int i = 0;
-        while (System.currentTimeMillis()-startTime < 9000 && i++ < 100000) {
+        while (System.currentTimeMillis() - startTime < 9000 && i++ < 100000) {
             int value = Observable.zip(src, src, new Func2<Integer, Integer, Integer>() {
                 @Override
                 public Integer call(Integer t1, Integer t2) {

@@ -113,7 +113,7 @@ public final class OperatorSwitch<T> implements Operator<T, Observable<? extends
                     clearProducer();
                 }
             }));
-            child.setProducer(new Producer(){
+            child.setProducer(new Producer() {
 
                 @Override
                 public void request(long n) {

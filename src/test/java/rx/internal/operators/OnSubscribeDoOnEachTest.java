@@ -124,7 +124,7 @@ public class OnSubscribeDoOnEachTest {
         // https://github.com/Netflix/RxJava/issues/1451
         final int expectedCount = 3;
         final AtomicInteger count = new AtomicInteger();
-        for (int i=0; i < expectedCount; i++) {
+        for (int i = 0; i < expectedCount; i++) {
             Observable
                     .just(Boolean.TRUE, Boolean.FALSE)
                     .takeWhile(new Func1<Boolean, Boolean>() {
@@ -150,7 +150,7 @@ public class OnSubscribeDoOnEachTest {
         // https://github.com/Netflix/RxJava/issues/1451
         final int expectedCount = 3;
         final AtomicInteger count = new AtomicInteger();
-        for (int i=0; i < expectedCount; i++) {
+        for (int i = 0; i < expectedCount; i++) {
             Observable
                     .just(Boolean.TRUE, Boolean.FALSE, Boolean.FALSE)
                     .takeWhile(new Func1<Boolean, Boolean>() {
@@ -288,7 +288,7 @@ public class OnSubscribeDoOnEachTest {
     @Test
     public void testIfOnNextActionFailsEmitsErrorAndReportsMoreErrorsToRxJavaHooksNotDownstream() {
         try {
-            final List<Throwable> list= new CopyOnWriteArrayList<Throwable>();
+            final List<Throwable> list = new CopyOnWriteArrayList<Throwable>();
             RxJavaHooks.setOnError(new Action1<Throwable>() {
 
                 @Override

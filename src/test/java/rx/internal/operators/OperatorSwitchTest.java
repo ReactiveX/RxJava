@@ -412,16 +412,16 @@ public class OperatorSwitchTest {
             public void call(final Subscriber<? super String> observer) {
                 observer.setProducer(new Producer() {
 
-                    private int emitted = 0;
+                    private int emitted;
 
                     @Override
                     public void request(long n) {
-                        for(int i = 0; i < n && emitted < 10 && !observer.isUnsubscribed(); i++) {
+                        for (int i = 0; i < n && emitted < 10 && !observer.isUnsubscribed(); i++) {
                             scheduler.advanceTimeBy(5, TimeUnit.MILLISECONDS);
                             emitted++;
                             observer.onNext("a" + emitted);
                         }
-                        if(emitted == 10) {
+                        if (emitted == 10) {
                             observer.onCompleted();
                         }
                     }
@@ -433,16 +433,16 @@ public class OperatorSwitchTest {
             public void call(final Subscriber<? super String> observer) {
                 observer.setProducer(new Producer() {
 
-                    private int emitted = 0;
+                    private int emitted;
 
                     @Override
                     public void request(long n) {
-                        for(int i = 0; i < n && emitted < 10 && !observer.isUnsubscribed(); i++) {
+                        for (int i = 0; i < n && emitted < 10 && !observer.isUnsubscribed(); i++) {
                             scheduler.advanceTimeBy(5, TimeUnit.MILLISECONDS);
                             emitted++;
                             observer.onNext("b" + emitted);
                         }
-                        if(emitted == 10) {
+                        if (emitted == 10) {
                             observer.onCompleted();
                         }
                     }
@@ -454,15 +454,15 @@ public class OperatorSwitchTest {
             public void call(final Subscriber<? super String> observer) {
                 observer.setProducer(new Producer() {
 
-                    private int emitted = 0;
+                    private int emitted;
 
                     @Override
                     public void request(long n) {
-                        for(int i = 0; i < n && emitted < 10 && !observer.isUnsubscribed(); i++) {
+                        for (int i = 0; i < n && emitted < 10 && !observer.isUnsubscribed(); i++) {
                             emitted++;
                             observer.onNext("c" + emitted);
                         }
-                        if(emitted == 10) {
+                        if (emitted == 10) {
                             observer.onCompleted();
                         }
                     }
@@ -481,7 +481,7 @@ public class OperatorSwitchTest {
         final TestSubscriber<String> testSubscriber = new TestSubscriber<String>();
         Observable.switchOnNext(o).subscribe(new Subscriber<String>() {
 
-            private int requested = 0;
+            private int requested;
 
             @Override
             public void onStart() {
@@ -503,7 +503,7 @@ public class OperatorSwitchTest {
             public void onNext(String s) {
                 testSubscriber.onNext(s);
                 requested--;
-                if(requested == 0) {
+                if (requested == 0) {
                     requested = 3;
                     request(3);
                 }
@@ -657,7 +657,7 @@ public class OperatorSwitchTest {
         ts.awaitTerminalEvent();
         assertTrue(ts.getOnNextEvents().size() > 0);
         assertEquals(4, requests.size()); // depends on the request pattern
-        assertEquals(Long.MAX_VALUE, (long) requests.get(requests.size()-1));
+        assertEquals(Long.MAX_VALUE, (long) requests.get(requests.size() - 1));
     }
 
     @Test

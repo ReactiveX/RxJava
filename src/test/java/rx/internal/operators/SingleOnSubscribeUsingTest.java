@@ -273,7 +273,7 @@ public class SingleOnSubscribeUsingTest {
         final List<String> events = new ArrayList<String>();
         Func0<Resource> resourceFactory = createResourceFactory(events);
         final Action1<String> completion = createOnSuccessAction(events);
-        final Action0 unsub =createUnsubAction(events);
+        final Action0 unsub = createUnsubAction(events);
 
         Func1<Resource, Single<String>> observableFactory = new Func1<Resource, Single<String>>() {
             @Override
@@ -298,7 +298,7 @@ public class SingleOnSubscribeUsingTest {
         final List<String> events = new ArrayList<String>();
         Func0<Resource> resourceFactory = createResourceFactory(events);
         final Action1<String> completion = createOnSuccessAction(events);
-        final Action0 unsub =createUnsubAction(events);
+        final Action0 unsub = createUnsubAction(events);
 
         Func1<Resource, Single<String>> observableFactory = new Func1<Resource, Single<String>>() {
             @Override

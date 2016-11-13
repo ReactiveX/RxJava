@@ -141,7 +141,7 @@ public final class CompositeException extends RuntimeException {
 
                 List<Throwable> listOfCauses = getListOfCauses(e);
                 // check if any of them have been seen before
-                for(Throwable child : listOfCauses) {
+                for (Throwable child : listOfCauses) {
                     if (seenCauses.contains(child)) {
                         // already seen this outer Throwable so skip
                         e = new RuntimeException("Duplicate found in causal chain so cropping to prevent loop ...");
@@ -288,7 +288,7 @@ public final class CompositeException extends RuntimeException {
         if (root == null || root == ex) {
             return list;
         } else {
-            while(true) {
+            while (true) {
                 list.add(root);
                 Throwable cause = root.getCause();
                 if (cause == null || cause == root) {
@@ -311,7 +311,7 @@ public final class CompositeException extends RuntimeException {
         if (root == null || root == e) {
             return e;
         } else {
-            while(true) {
+            while (true) {
                 Throwable cause = root.getCause();
                 if (cause == null || cause == root) {
                     return root;

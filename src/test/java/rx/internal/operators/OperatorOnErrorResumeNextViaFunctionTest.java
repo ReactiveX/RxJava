@@ -242,8 +242,9 @@ public class OperatorOnErrorResumeNextViaFunctionTest {
         w = w.map(new Func1<String, String>() {
             @Override
             public String call(String s) {
-                if ("fail".equals(s))
+                if ("fail".equals(s)) {
                     throw new RuntimeException("Forced Failure");
+                }
                 System.out.println("BadMapper:" + s);
                 return s;
             }
@@ -277,7 +278,7 @@ public class OperatorOnErrorResumeNextViaFunctionTest {
 
         final Subscription s;
         final String[] values;
-        Thread t = null;
+        Thread t;
 
         public TestObservable(Subscription s, String... values) {
             this.s = s;
@@ -326,7 +327,7 @@ public class OperatorOnErrorResumeNextViaFunctionTest {
                 })
                 .observeOn(Schedulers.computation())
                 .map(new Func1<Integer, Integer>() {
-                    int c = 0;
+                    int c;
 
                     @Override
                     public Integer call(Integer t1) {

@@ -173,7 +173,7 @@ public final class OpenHashSet<T> {
 
 
         for (int j = size; j-- != 0; ) {
-            while (a[--i] == null); // NOPMD
+            while (a[--i] == null) { } // NOPMD
             int pos = mix(a[i].hashCode()) & m;
             if (b[pos] != null) {
                 for (;;) {

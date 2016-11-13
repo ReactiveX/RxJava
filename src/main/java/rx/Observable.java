@@ -3470,7 +3470,7 @@ public class Observable<T> {
         if (start > Integer.MAX_VALUE - count + 1) {
             throw new IllegalArgumentException("start + count can not exceed Integer.MAX_VALUE");
         }
-        if(count == 1) {
+        if (count == 1) {
             return Observable.just(start);
         }
         return Observable.create(new OnSubscribeRange(start, start + (count - 1)));
@@ -11742,7 +11742,7 @@ public class Observable<T> {
      * @return an Observable that emits the items emitted by the source Observable in sorted order
      */
     @Experimental
-    public final Observable<T> sorted(){
+    public final Observable<T> sorted() {
         return toSortedList().flatMapIterable(UtilityFunctions.<List<T>>identity());
     }
 

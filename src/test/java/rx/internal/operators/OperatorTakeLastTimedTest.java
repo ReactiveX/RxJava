@@ -237,7 +237,7 @@ public class OperatorTakeLastTimedTest {
                 w.schedule(new Action0() {
                     @Override
                     public void call() {
-                        while (!go.get());
+                        while (!go.get()) { }
                         ts.requestMore(n + 1);
                     }
                 });

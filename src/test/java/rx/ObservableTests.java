@@ -1089,7 +1089,7 @@ public class ObservableTests {
         subscriber.assertUnsubscribed();
     }
 
-    @Test(expected=OnErrorNotImplementedException.class)
+    @Test(expected = OnErrorNotImplementedException.class)
     public void testForEachWithError() {
         Observable.error(new Exception("boo"))
         //
@@ -1100,7 +1100,7 @@ public class ObservableTests {
             }});
     }
 
-    @Test(expected=IllegalArgumentException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void testForEachWithNull() {
         Observable.error(new Exception("boo"))
         //

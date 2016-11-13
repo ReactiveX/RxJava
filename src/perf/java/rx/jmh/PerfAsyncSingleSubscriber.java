@@ -64,6 +64,6 @@ public final class PerfAsyncSingleSubscriber extends SingleSubscriber<Object> {
      * Spins until the subscriber receives an events.
      */
     public void spinAwait() {
-        while (cdl.getCount() != 0) ;
+        while (cdl.getCount() != 0) { }
     }
 }

@@ -58,7 +58,7 @@ public class BlockingOperatorToFutureTest {
             // we expect an exception since there are more than 1 element
             f.get();
         }
-        catch(ExecutionException e) {
+        catch (ExecutionException e) {
             throw e.getCause();
         }
     }
@@ -83,7 +83,7 @@ public class BlockingOperatorToFutureTest {
         }
     }
 
-    @Test(expected=CancellationException.class)
+    @Test(expected = CancellationException.class)
     public void testGetAfterCancel() throws Exception {
         Observable<String> obs = Observable.create(new OperationNeverComplete<String>());
         Future<String> f = toFuture(obs);
@@ -92,7 +92,7 @@ public class BlockingOperatorToFutureTest {
         f.get();                // Future.get() docs require this to throw
     }
 
-    @Test(expected=CancellationException.class)
+    @Test(expected = CancellationException.class)
     public void testGetWithTimeoutAfterCancel() throws Exception {
         Observable<String> obs = Observable.create(new OperationNeverComplete<String>());
         Future<String> f = toFuture(obs);
@@ -118,7 +118,7 @@ public class BlockingOperatorToFutureTest {
         try {
             f.get();
         }
-        catch(ExecutionException e) {
+        catch (ExecutionException e) {
             throw e.getCause();
         }
     }

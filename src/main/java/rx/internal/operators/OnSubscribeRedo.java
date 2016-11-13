@@ -78,12 +78,12 @@ public final class OnSubscribeRedo<T> implements OnSubscribe<T> {
 
                 @Override
                 public Notification<?> call(Notification<?> terminalNotification) {
-                    if(count == 0) {
+                    if (count == 0) {
                         return terminalNotification;
                     }
 
                     num++;
-                    if(num <= count) {
+                    if (num <= count) {
                         return Notification.createOnNext(num);
                     } else {
                         return terminalNotification;
@@ -153,7 +153,7 @@ public final class OnSubscribeRedo<T> implements OnSubscribe<T> {
     }
 
     public static <T> Observable<T> repeat(Observable<T> source, final long count, Scheduler scheduler) {
-        if(count == 0) {
+        if (count == 0) {
             return Observable.empty();
         }
         if (count < 0) {

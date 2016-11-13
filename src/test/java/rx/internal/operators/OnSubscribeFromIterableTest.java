@@ -66,7 +66,7 @@ public class OnSubscribeFromIterableTest {
             public Iterator<String> iterator() {
                 return new Iterator<String>() {
 
-                    int i = 0;
+                    int i;
 
                     @Override
                     public boolean hasNext() {
@@ -184,7 +184,7 @@ public class OnSubscribeFromIterableTest {
             @Override
             public void onNext(Integer t) {
                 latch.countDown();
-                request(Long.MAX_VALUE-1);
+                request(Long.MAX_VALUE - 1);
             }});
         assertTrue(latch.await(10, TimeUnit.SECONDS));
     }
@@ -237,8 +237,9 @@ public class OnSubscribeFromIterableTest {
                         if (count > 1) {
                             called.set(true);
                             return false;
-                        } else
+                        } else {
                             return true;
+                        }
                     }
 
                     @Override
@@ -274,8 +275,9 @@ public class OnSubscribeFromIterableTest {
                         if (count > 1) {
                             called.set(true);
                             return false;
-                        } else
+                        } else {
                             return true;
+                        }
                     }
 
                     @Override

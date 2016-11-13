@@ -70,7 +70,7 @@ abstract class BaseLinkedAtomicQueue<E> extends AbstractQueue<E> {
         // must chase the nodes all the way to the producer node, but there's no need to chase a moving target.
         while (chaserNode != producerNode && size < Integer.MAX_VALUE) {
             LinkedQueueNode<E> next;
-            while((next = chaserNode.lvNext()) == null); // NOPMD
+            while ((next = chaserNode.lvNext()) == null) { } // NOPMD
             chaserNode = next;
             size++;
         }

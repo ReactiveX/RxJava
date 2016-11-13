@@ -65,8 +65,12 @@ public final class SchedulerTests {
             assertEquals("Should have received exactly 1 exception", 1, handler.count);
             Throwable cause = handler.caught;
             while (cause != null) {
-                if (error.equals(cause)) break;
-                if (cause == cause.getCause()) break;
+                if (error.equals(cause)) {
+                    break;
+                }
+                if (cause == cause.getCause()) {
+                    break;
+                }
                 cause = cause.getCause();
             }
             assertEquals("Our error should have been delivered to the handler", error, cause);
@@ -105,8 +109,12 @@ public final class SchedulerTests {
 
             Throwable cause = observer.error;
             while (cause != null) {
-                if (error.equals(cause)) break;
-                if (cause == cause.getCause()) break;
+                if (error.equals(cause)) {
+                    break;
+                }
+                if (cause == cause.getCause()) {
+                    break;
+                }
                 cause = cause.getCause();
             }
             assertEquals("Our error should have been delivered to the observer", error, cause);
@@ -183,8 +191,8 @@ public final class SchedulerTests {
 
     private static final class CapturingObserver<T> implements Observer<T> {
         CountDownLatch completed = new CountDownLatch(1);
-        int errorCount = 0;
-        int nextCount = 0;
+        int errorCount;
+        int nextCount;
         Throwable error;
 
         @Override

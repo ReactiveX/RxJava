@@ -245,7 +245,7 @@ public class OperatorTakeTest {
     private static class TestObservableFunc implements Observable.OnSubscribe<String> {
 
         final String[] values;
-        Thread t = null;
+        Thread t;
 
         public TestObservableFunc(String... values) {
             this.values = values;

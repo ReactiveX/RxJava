@@ -111,7 +111,7 @@ public abstract class AbstractSchedulerConcurrencyTests extends AbstractSchedule
                 public void call() {
                     inner.schedule(new Action0() {
 
-                        int i = 0;
+                        int i;
 
                         @Override
                         public void call() {
@@ -159,7 +159,7 @@ public abstract class AbstractSchedulerConcurrencyTests extends AbstractSchedule
                 public void call() {
                     inner.schedule(new Action0() {
 
-                        int i = 0;
+                        int i;
 
                         @Override
                         public void call() {
@@ -239,7 +239,7 @@ public abstract class AbstractSchedulerConcurrencyTests extends AbstractSchedule
         try {
             inner.schedule(new Action0() {
 
-                int i = 0;
+                int i;
 
                 @Override
                 public void call() {
@@ -268,7 +268,7 @@ public abstract class AbstractSchedulerConcurrencyTests extends AbstractSchedule
         try {
             inner.schedule(new Action0() {
 
-                private long i = 0;
+                private long i;
 
                 @Override
                 public void call() {

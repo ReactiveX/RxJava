@@ -671,7 +671,7 @@ public class OperatorDelayTest {
                 .observeOn(Schedulers.computation())
                 .map(new Func1<Integer, Integer>() {
 
-                    int c = 0;
+                    int c;
 
                     @Override
                     public Integer call(Integer t) {
@@ -700,7 +700,7 @@ public class OperatorDelayTest {
                 .observeOn(Schedulers.computation())
                 .map(new Func1<Integer, Integer>() {
 
-                    int c = 0;
+                    int c;
 
                     @Override
                     public Integer call(Integer t) {
@@ -735,7 +735,7 @@ public class OperatorDelayTest {
                 .observeOn(Schedulers.computation())
                 .map(new Func1<Integer, Integer>() {
 
-                    int c = 0;
+                    int c;
 
                     @Override
                     public Integer call(Integer t) {
@@ -776,7 +776,7 @@ public class OperatorDelayTest {
                 .observeOn(Schedulers.computation())
                 .map(new Func1<Integer, Integer>() {
 
-                    int c = 0;
+                    int c;
 
                     @Override
                     public Integer call(Integer t) {

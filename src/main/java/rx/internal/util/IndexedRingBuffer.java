@@ -52,15 +52,6 @@ public final class IndexedRingBuffer<E> implements Subscription {
     /* package for unit testing */final AtomicInteger index = new AtomicInteger();
     /* package for unit testing */final AtomicInteger removedIndex = new AtomicInteger();
 
-    private static final ObjectPool<IndexedRingBuffer<?>> POOL = new ObjectPool<IndexedRingBuffer<?>>() {
-
-        @Override
-        protected IndexedRingBuffer<?> createObject() {
-            return new IndexedRingBuffer<Object>();
-        }
-
-    };
-
     /* package for unit testing */static final int SIZE;
 
     // default size of ring buffer
@@ -255,9 +246,8 @@ public final class IndexedRingBuffer<E> implements Subscription {
         SIZE = defaultSize;
     }
 
-    @SuppressWarnings("unchecked")
     public static <T> IndexedRingBuffer<T> getInstance() {
-        return (IndexedRingBuffer<T>) POOL.borrowObject();
+        return new IndexedRingBuffer<T>();
     }
 
     /**
@@ -283,7 +273,6 @@ public final class IndexedRingBuffer<E> implements Subscription {
 
         index.set(0);
         removedIndex.set(0);
-        POOL.returnObject(this);
     }
 
     @Override

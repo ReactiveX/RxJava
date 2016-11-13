@@ -317,14 +317,14 @@ public class DeferredScalarSubscriberTest {
                     @Override
                     public void call() {
                         ready.decrementAndGet();
-                        while (ready.get() != 0) ;
+                        while (ready.get() != 0) { }
 
                         ts.requestMore(1);
                     }
                 });
 
                 ready.decrementAndGet();
-                while (ready.get() != 0) ;
+                while (ready.get() != 0) { }
 
                 ds.onCompleted();
 
@@ -361,7 +361,7 @@ public class DeferredScalarSubscriberTest {
                     @Override
                     public void call() {
                         ready.decrementAndGet();
-                        while (ready.get() != 0) ;
+                        while (ready.get() != 0) { }
 
                         ts.requestMore(1);
                     }
@@ -371,14 +371,14 @@ public class DeferredScalarSubscriberTest {
                     @Override
                     public void call() {
                         ready.decrementAndGet();
-                        while (ready.get() != 0) ;
+                        while (ready.get() != 0) { }
 
                         ts.requestMore(1);
                     }
                 });
 
                 ready.decrementAndGet();
-                while (ready.get() != 0) ;
+                while (ready.get() != 0) { }
 
                 ds.onCompleted();
 

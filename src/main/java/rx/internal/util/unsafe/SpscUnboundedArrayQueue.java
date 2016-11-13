@@ -50,7 +50,7 @@ abstract class SpscUnboundedArrayQueueConsumerField<E> extends SpscUnboundedArra
 
 @SuppressAnimalSniffer
 public class SpscUnboundedArrayQueue<E> extends SpscUnboundedArrayQueueConsumerField<E>
-    implements QueueProgressIndicators{
+    implements QueueProgressIndicators {
     static final int MAX_LOOK_AHEAD_STEP = Integer.getInteger("jctools.spsc.max.lookahead.step", 4096);
     private final static long P_INDEX_OFFSET;
     private final static long C_INDEX_OFFSET;
@@ -126,7 +126,7 @@ public class SpscUnboundedArrayQueue<E> extends SpscUnboundedArrayQueueConsumerF
             final int lookAheadStep = producerLookAheadStep;
             // go around the buffer or resize if full (unless we hit max capacity)
             long lookAheadElementOffset = calcWrappedOffset(index + lookAheadStep, mask);
-            if (null == lvElement(buffer, lookAheadElementOffset)) {// LoadLoad
+            if (null == lvElement(buffer, lookAheadElementOffset)) { // LoadLoad
                 producerLookAhead = index + lookAheadStep - 1; // joy, there's plenty of room
                 return writeToQueue(buffer, e, index, offset);
             } else if (null != lvElement(buffer, calcWrappedOffset(index + 1, mask))) { // buffer is not full
@@ -159,11 +159,11 @@ public class SpscUnboundedArrayQueue<E> extends SpscUnboundedArrayQueueConsumerF
     }
 
     private void soNext(E[] curr, E[] next) {
-        soElement(curr, calcDirectOffset(curr.length -1), next);
+        soElement(curr, calcDirectOffset(curr.length - 1), next);
     }
     @SuppressWarnings("unchecked")
     private E[] lvNext(E[] curr) {
-        return (E[]) lvElement(curr, calcDirectOffset(curr.length -1));
+        return (E[]) lvElement(curr, calcDirectOffset(curr.length - 1));
     }
     /**
      * {@inheritDoc}

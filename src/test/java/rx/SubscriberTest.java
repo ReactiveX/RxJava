@@ -489,7 +489,7 @@ public class SubscriberTest {
             @Override
             public void onStart() {
                 request(2);
-                request(Long.MAX_VALUE-1);
+                request(Long.MAX_VALUE - 1);
             }
 
             @Override

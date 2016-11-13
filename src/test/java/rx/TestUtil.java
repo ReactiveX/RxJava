@@ -67,7 +67,7 @@ public enum TestUtil {
                 @Override
                 public void call() {
                     if (counter.decrementAndGet() != 0) {
-                        while (counter.get() != 0);
+                        while (counter.get() != 0) { }
                     }
 
                     try {
@@ -81,7 +81,7 @@ public enum TestUtil {
             });
 
             if (counter.decrementAndGet() != 0) {
-                while (counter.get() != 0);
+                while (counter.get() != 0) { }
             }
 
             try {

@@ -84,11 +84,11 @@ public class OperatorConcatTest {
         final String[] l = { "a", "b", "c", "d", "e" };
 
         Func1<List<String>,List<String>> identity = new Func1<List<String>, List<String>>() {
-			@Override
-			public List<String> call(List<String> t) {
-				return t;
-			}
-		};
+            @Override
+            public List<String> call(List<String> t) {
+                return t;
+            }
+        };
 
         final Observable<List<String>> listObs = Observable.just(Arrays.asList(l));
         final Observable<String> concatMap = listObs.concatMapIterable(identity);
@@ -497,8 +497,8 @@ public class OperatorConcatTest {
 
         };
         private final List<T> values;
-        private Thread t = null;
-        private int count = 0;
+        private Thread t;
+        private int count;
         private boolean subscribed = true;
         private final CountDownLatch once;
         private final CountDownLatch okToContinue;
@@ -535,20 +535,24 @@ public class OperatorConcatTest {
                 public void run() {
                     try {
                         while (count < size && subscribed) {
-                            if (null != values)
+                            if (null != values) {
                                 observer.onNext(values.get(count));
-                            else
+                            } else {
                                 observer.onNext(seed);
+                            }
                             count++;
                             //Unblock the main thread to call unsubscribe.
-                            if (null != once)
+                            if (null != once) {
                                 once.countDown();
+                            }
                             //Block until the main thread has called unsubscribe.
-                            if (null != okToContinue)
+                            if (null != okToContinue) {
                                 okToContinue.await(5, TimeUnit.SECONDS);
+                            }
                         }
-                        if (subscribed)
+                        if (subscribed) {
                             observer.onCompleted();
+                        }
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                         fail(e.getMessage());
@@ -821,8 +825,9 @@ public class OperatorConcatTest {
         final long startTime = System.currentTimeMillis();
         for (int i = 0;; i++) {
             //only run this for a max of ten seconds
-            if (System.currentTimeMillis()-startTime > TimeUnit.SECONDS.toMillis(durationSeconds))
+            if (System.currentTimeMillis() - startTime > TimeUnit.SECONDS.toMillis(durationSeconds)) {
                 return;
+            }
             if (i % 1000 == 0) {
                 System.out.println("concatMapRangeAsyncLoop > " + i);
             }
