@@ -7,15 +7,17 @@ import java.lang.ref.WeakReference;
 
 public class J2objcWeakReference<T>
 {
+    private static final boolean USE_WEAK = false;
     private final WeakReference<T> weakReference;
-
+    private final T hardRef;
     public J2objcWeakReference(T val)
     {
-        weakReference = new WeakReference<T>(val);
+        weakReference = USE_WEAK ? new WeakReference<T>(val) : null;
+        hardRef = USE_WEAK ? null : val;
     }
 
     public T get()
     {
-        return weakReference.get();
+        return USE_WEAK ? weakReference.get() : hardRef;
     }
 }

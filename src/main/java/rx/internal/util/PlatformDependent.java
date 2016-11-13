@@ -43,7 +43,7 @@ public final class PlatformDependent {
      * J2OBJC will always be in a mobile situation, so always true
      */
     public static boolean isAndroid() {
-        return true;
+        return false;
     }
 
     /**

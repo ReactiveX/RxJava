@@ -199,7 +199,6 @@ public abstract class Subscriber<T> implements Observer<T>, Subscription {
             toRequest = requested;
 
             updateProducerField(p);
-//            updateProducerField(WeakProxy.forObject(p));
             if (subscriber != null) {
                 // middle operator ... we pass through unless a request has been made
                 if (toRequest == NOT_SET) {

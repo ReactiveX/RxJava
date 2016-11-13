@@ -477,8 +477,6 @@ public class SafeObserverTest {
     @Test
     @DoppelHacks//Doppl using WeakProxy, so this fails
     public void testActual() {
-        if(PlatformUtils.isJ2objc())
-            return;
         Subscriber<Integer> actual = new Subscriber<Integer>() {
             @Override
             public void onNext(Integer t) {

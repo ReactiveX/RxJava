@@ -3,7 +3,6 @@
 //  source: /Users/kgalligan/devel-doppl/RxJava/src/test/java/rx/observers/SafeObserverTest.java
 //
 
-#include "CoTouchlabDoppelTestingPlatformUtils.h"
 #include "IOSClass.h"
 #include "IOSObjectArray.h"
 #include "J2ObjC_source.h"
@@ -618,7 +617,6 @@ __attribute__((unused)) static RxObserversSafeObserverTest_$13 *create_RxObserve
 }
 
 - (void)testActual {
-  if (CoTouchlabDoppelTestingPlatformUtils_isJ2objc()) return;
   RxSubscriber *actual = create_RxObserversSafeObserverTest_$13_init();
   RxObserversSafeSubscriber *s = create_RxObserversSafeSubscriber_initWithRxSubscriber_(actual);
   OrgJunitAssert_assertSameWithId_withId_(actual, [s getActual]);

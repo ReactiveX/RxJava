@@ -86,6 +86,7 @@ j2objcConfig {
     copyMainOutput="RxAgain/rxframework/main"
     copyTestOutput="RxAgain/rxframework/test"
     copyDependencies true
+    ignoreWeakAnnotations true
 
     /*translateArgs '--prefix', 'rx.annotations=RXAN'
     translateArgs '--prefix', 'rx.exceptions=RXEX'

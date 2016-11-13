@@ -296,6 +296,9 @@ J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxSchedulersComputationSchedulerTests)
     [((JavaUtilHashMap *) nil_chk(statefulMap_)) putWithId:@"a" withId:i];
     [((JavaUtilHashMap *) nil_chk(statefulMap_)) putWithId:@"b" withId:i];
   }
+  if ([i intValue] % 1000 == 0) {
+    [((JavaIoPrintStream *) nil_chk(JreLoadStatic(JavaLangSystem, out))) printlnWithNSString:JreStrcat("$@", @"Hey count: ", i)];
+  }
   nonThreadSafeCounter_++;
   [((JavaUtilHashMap *) nil_chk(statefulMap_)) putWithId:@"nonThreadSafeCounter" withId:JavaLangInteger_valueOfWithInt_(nonThreadSafeCounter_)];
   if ([i intValue] < 1000000) {

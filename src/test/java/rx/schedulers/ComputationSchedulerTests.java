@@ -66,6 +66,10 @@ public class ComputationSchedulerTests extends AbstractSchedulerConcurrencyTests
                         statefulMap.put("a", i);
                         statefulMap.put("b", i);
                     }
+                    if(i % 1000 == 0)
+                    {
+                        System.out.println("Hey count: "+ i);
+                    }
                     nonThreadSafeCounter++;
                     statefulMap.put("nonThreadSafeCounter", nonThreadSafeCounter);
                     if (i < NUM) {

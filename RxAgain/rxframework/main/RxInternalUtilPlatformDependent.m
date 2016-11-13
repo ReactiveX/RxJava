@@ -128,7 +128,7 @@ RxInternalUtilPlatformDependent *create_RxInternalUtilPlatformDependent_init() {
 
 jboolean RxInternalUtilPlatformDependent_isAndroid() {
   RxInternalUtilPlatformDependent_initialize();
-  return true;
+  return false;
 }
 
 jint RxInternalUtilPlatformDependent_getAndroidApiVersion() {
