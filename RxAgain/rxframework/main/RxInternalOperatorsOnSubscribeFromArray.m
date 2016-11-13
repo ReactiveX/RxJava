@@ -145,8 +145,12 @@ J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxInternalOperatorsOnSubscribeFromArray)
   }
 }
 
+- (void)__javaClone:(RxInternalOperatorsOnSubscribeFromArray_FromArrayProducer *)original {
+  [super __javaClone:original];
+  [child_ release];
+}
+
 - (void)dealloc {
-  RELEASE_(child_);
   RELEASE_(array_);
   [super dealloc];
 }
@@ -180,7 +184,7 @@ J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxInternalOperatorsOnSubscribeFromArray)
 
 void RxInternalOperatorsOnSubscribeFromArray_FromArrayProducer_initWithRxSubscriber_withNSObjectArray_(RxInternalOperatorsOnSubscribeFromArray_FromArrayProducer *self, RxSubscriber *child, IOSObjectArray *array) {
   JavaUtilConcurrentAtomicAtomicLong_init(self);
-  JreStrongAssign(&self->child_, child);
+  self->child_ = child;
   JreStrongAssign(&self->array_, array);
 }
 

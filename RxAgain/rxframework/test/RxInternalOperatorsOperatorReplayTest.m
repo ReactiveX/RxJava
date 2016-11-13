@@ -1254,19 +1254,21 @@ __attribute__((unused)) static RxInternalOperatorsOperatorReplayTest_$28 *create
 - (void)testAsync {
   RxObservable *source = RxObservable_rangeWithInt_withInt_(1, 10000);
   for (jint i = 0; i < 100; i++) {
-    RxObserversTestSubscriber *ts1 = create_RxObserversTestSubscriber_init();
-    RxObservable *cached = [((RxObservablesConnectableObservable *) nil_chk([((RxObservable *) nil_chk(source)) replay])) autoConnect];
-    [((RxObservable *) nil_chk([((RxObservable *) nil_chk(cached)) observeOnWithRxScheduler:RxSchedulersSchedulers_computation()])) subscribeWithRxSubscriber:ts1];
-    [ts1 awaitTerminalEventWithLong:2 withJavaUtilConcurrentTimeUnit:JreLoadEnum(JavaUtilConcurrentTimeUnit, SECONDS)];
-    [ts1 assertNoErrors];
-    [ts1 assertTerminalEvent];
-    OrgJunitAssert_assertEqualsWithLong_withLong_(10000, [((id<JavaUtilList>) nil_chk([ts1 getOnNextEvents])) size]);
-    RxObserversTestSubscriber *ts2 = create_RxObserversTestSubscriber_init();
-    [((RxObservable *) nil_chk([cached observeOnWithRxScheduler:RxSchedulersSchedulers_computation()])) subscribeWithRxSubscriber:ts2];
-    [ts2 awaitTerminalEventWithLong:2 withJavaUtilConcurrentTimeUnit:JreLoadEnum(JavaUtilConcurrentTimeUnit, SECONDS)];
-    [ts2 assertNoErrors];
-    [ts2 assertTerminalEvent];
-    OrgJunitAssert_assertEqualsWithLong_withLong_(10000, [((id<JavaUtilList>) nil_chk([ts2 getOnNextEvents])) size]);
+    @autoreleasepool {
+      RxObserversTestSubscriber *ts1 = create_RxObserversTestSubscriber_init();
+      RxObservable *cached = [((RxObservablesConnectableObservable *) nil_chk([((RxObservable *) nil_chk(source)) replay])) autoConnect];
+      [((RxObservable *) nil_chk([((RxObservable *) nil_chk(cached)) observeOnWithRxScheduler:RxSchedulersSchedulers_computation()])) subscribeWithRxSubscriber:ts1];
+      [ts1 awaitTerminalEventWithLong:2 withJavaUtilConcurrentTimeUnit:JreLoadEnum(JavaUtilConcurrentTimeUnit, SECONDS)];
+      [ts1 assertNoErrors];
+      [ts1 assertTerminalEvent];
+      OrgJunitAssert_assertEqualsWithLong_withLong_(10000, [((id<JavaUtilList>) nil_chk([ts1 getOnNextEvents])) size]);
+      RxObserversTestSubscriber *ts2 = create_RxObserversTestSubscriber_init();
+      [((RxObservable *) nil_chk([cached observeOnWithRxScheduler:RxSchedulersSchedulers_computation()])) subscribeWithRxSubscriber:ts2];
+      [ts2 awaitTerminalEventWithLong:2 withJavaUtilConcurrentTimeUnit:JreLoadEnum(JavaUtilConcurrentTimeUnit, SECONDS)];
+      [ts2 assertNoErrors];
+      [ts2 assertTerminalEvent];
+      OrgJunitAssert_assertEqualsWithLong_withLong_(10000, [((id<JavaUtilList>) nil_chk([ts2 getOnNextEvents])) size]);
+    }
   }
 }
 

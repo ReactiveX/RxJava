@@ -27,9 +27,6 @@
 
 + (id<JavaUtilList>)allTestClassnames;
 
-+ (void)runMethodWithNSString:(NSString *)className_
-                 withNSString:(NSString *)methodName;
-
 + (void)runTests;
 
 + (void)runTestsWithNSString:(NSString *)a;
@@ -79,8 +76,6 @@ FOUNDATION_EXPORT void OneTest_runTestsWithNSString_withNSString_(NSString *a, N
 FOUNDATION_EXPORT void OneTest_runTestsWithNSString_withNSString_withNSString_(NSString *a, NSString *b, NSString *c);
 
 FOUNDATION_EXPORT void OneTest_runTestsWithNSString_withNSString_withNSString_withNSString_(NSString *a, NSString *b, NSString *c, NSString *d);
-
-FOUNDATION_EXPORT void OneTest_runMethodWithNSString_withNSString_(NSString *className_, NSString *methodName);
 
 FOUNDATION_EXPORT void OneTest_init(OneTest *self);
 

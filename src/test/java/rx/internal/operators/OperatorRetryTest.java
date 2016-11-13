@@ -15,6 +15,9 @@
  */
 package rx.internal.operators;
 
+import com.google.j2objc.annotations.AutoreleasePool;
+
+
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
@@ -26,6 +29,8 @@ import java.util.concurrent.atomic.*;
 import org.junit.Test;
 import org.mockito.*;
 
+import co.touchlab.doppel.testing.DoppelHacks;
+import co.touchlab.doppel.testing.PlatformUtils;
 import rx.*;
 import rx.Observable;
 import rx.Observable.OnSubscribe;
@@ -42,6 +47,7 @@ import rx.subscriptions.Subscriptions;
 public class OperatorRetryTest {
 
     @Test
+    @AutoreleasePool
     public void iterativeBackoff() {
         @SuppressWarnings("unchecked")
         Observer<String> consumer = mock(Observer.class);
@@ -112,6 +118,7 @@ public class OperatorRetryTest {
     }
 
     @Test
+    @AutoreleasePool
     public void testRetryIndefinitely() {
         @SuppressWarnings("unchecked")
         Observer<String> observer = mock(Observer.class);
@@ -132,6 +139,7 @@ public class OperatorRetryTest {
     }
 
     @Test
+    @AutoreleasePool
     public void testSchedulingNotificationHandler() {
         @SuppressWarnings("unchecked")
         Observer<String> observer = mock(Observer.class);
@@ -164,6 +172,7 @@ public class OperatorRetryTest {
     }
 
     @Test
+    @AutoreleasePool
     public void testOnNextFromNotificationHandler() {
         @SuppressWarnings("unchecked")
         Observer<String> observer = mock(Observer.class);
@@ -195,6 +204,7 @@ public class OperatorRetryTest {
     }
 
     @Test
+    @AutoreleasePool
     public void testOnCompletedFromNotificationHandler() {
         @SuppressWarnings("unchecked")
         Observer<String> observer = mock(Observer.class);
@@ -216,6 +226,7 @@ public class OperatorRetryTest {
     }
 
     @Test
+    @AutoreleasePool
     public void testOnErrorFromNotificationHandler() {
         @SuppressWarnings("unchecked")
         Observer<String> observer = mock(Observer.class);
@@ -236,6 +247,7 @@ public class OperatorRetryTest {
     }
 
     @Test
+    @AutoreleasePool
     public void testSingleSubscriptionOnFirst() throws Exception {
         final AtomicInteger inc = new AtomicInteger(0);
         Observable.OnSubscribe<Integer> onSubscribe = new OnSubscribe<Integer>() {
@@ -267,6 +279,7 @@ public class OperatorRetryTest {
     }
 
     @Test
+    @AutoreleasePool
     public void testOriginFails() {
         @SuppressWarnings("unchecked")
         Observer<String> observer = mock(Observer.class);
@@ -281,6 +294,7 @@ public class OperatorRetryTest {
     }
 
     @Test
+    @AutoreleasePool
     public void testRetryFail() {
         int NUM_RETRIES = 1;
         int NUM_FAILURES = 2;
@@ -301,6 +315,7 @@ public class OperatorRetryTest {
     }
 
     @Test
+    @AutoreleasePool
     public void testRetrySuccess() {
         int NUM_FAILURES = 1;
         @SuppressWarnings("unchecked")
@@ -321,6 +336,7 @@ public class OperatorRetryTest {
     }
 
     @Test
+    @AutoreleasePool
     public void testInfiniteRetry() {
         int NUM_FAILURES = 20;
         @SuppressWarnings("unchecked")
@@ -347,6 +363,7 @@ public class OperatorRetryTest {
      */
     @SuppressWarnings("unchecked")
     @Test
+    @AutoreleasePool
     public void testRetrySubscribesAgainAfterError() {
 
         // record emitted values with this action
@@ -440,6 +457,7 @@ public class OperatorRetryTest {
     }
 
     @Test
+    @AutoreleasePool
     public void testUnsubscribeFromRetry() {
         PublishSubject<Integer> subject = PublishSubject.create();
         final AtomicInteger count = new AtomicInteger(0);
@@ -456,6 +474,7 @@ public class OperatorRetryTest {
     }
 
     @Test
+    @AutoreleasePool
     public void testRetryAllowsSubscriptionAfterAllSubscriptionsUnsubscribed() throws InterruptedException {
         final AtomicInteger subsCount = new AtomicInteger(0);
         OnSubscribe<String> onSubscribe = new OnSubscribe<String>() {
@@ -489,6 +508,7 @@ public class OperatorRetryTest {
     }
 
     @Test
+    @AutoreleasePool
     public void testSourceObservableCallsUnsubscribe() throws InterruptedException {
         final AtomicInteger subsCount = new AtomicInteger(0);
 
@@ -517,6 +537,7 @@ public class OperatorRetryTest {
     }
 
     @Test
+    @AutoreleasePool
     public void testSourceObservableRetry1() throws InterruptedException {
         final AtomicInteger subsCount = new AtomicInteger(0);
 
@@ -535,6 +556,7 @@ public class OperatorRetryTest {
     }
 
     @Test
+    @AutoreleasePool
     public void testSourceObservableRetry0() throws InterruptedException {
         final AtomicInteger subsCount = new AtomicInteger(0);
 
@@ -644,7 +666,11 @@ public class OperatorRetryTest {
     }
 
     @Test(timeout = 10000)
+    @AutoreleasePool
+    @DoppelHacks//No idea
     public void testUnsubscribeAfterError() {
+        if(PlatformUtils.isJ2objc())
+            return;
 
         @SuppressWarnings("unchecked")
         Observer<Long> observer = mock(Observer.class);
@@ -669,6 +695,7 @@ public class OperatorRetryTest {
     }
 
     @Test(timeout = 10000)
+    @AutoreleasePool
     public void testTimeoutWithRetry() {
 
         @SuppressWarnings("unchecked")
@@ -693,6 +720,7 @@ public class OperatorRetryTest {
     }
 
     @Test//(timeout = 15000)
+    @AutoreleasePool
     public void testRetryWithBackpressure() throws InterruptedException {
         final int NUM_LOOPS = 1;
         for (int j=0;j<NUM_LOOPS;j++) {
@@ -720,6 +748,7 @@ public class OperatorRetryTest {
     }
 
     @Test//(timeout = 15000)
+    @AutoreleasePool
     public void testRetryWithBackpressureParallel() throws InterruptedException {
         final int NUM_LOOPS = 1;
         final int NUM_RETRIES = RxRingBuffer.SIZE * 2;
@@ -819,6 +848,7 @@ public class OperatorRetryTest {
         return sb;
     }
     @Test//(timeout = 3000)
+    @AutoreleasePool
     public void testIssue1900() throws InterruptedException {
         @SuppressWarnings("unchecked")
         Observer<String> observer = mock(Observer.class);
@@ -860,6 +890,7 @@ public class OperatorRetryTest {
         inOrder.verifyNoMoreInteractions();
     }
     @Test//(timeout = 3000)
+    @AutoreleasePool
     public void testIssue1900SourceNotSupportingBackpressure() {
         @SuppressWarnings("unchecked")
         Observer<String> observer = mock(Observer.class);
@@ -907,6 +938,7 @@ public class OperatorRetryTest {
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @Test
+    @AutoreleasePool
     public void retryWhenDefaultScheduler() {
         TestSubscriber<Integer> ts = TestSubscriber.create();
 
@@ -927,6 +959,7 @@ public class OperatorRetryTest {
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @Test
+    @AutoreleasePool
     public void retryWhenTrampolineScheduler() {
         TestSubscriber<Integer> ts = TestSubscriber.create();
 

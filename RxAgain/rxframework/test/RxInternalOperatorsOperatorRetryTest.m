@@ -746,282 +746,324 @@ __attribute__((unused)) static RxInternalOperatorsOperatorRetryTest_$22 *create_
 @implementation RxInternalOperatorsOperatorRetryTest
 
 - (void)iterativeBackoff {
-  id<RxObserver> consumer = OrgMockitoMockito_mockWithIOSClass_(RxObserver_class_());
-  RxObservable *producer = RxObservable_createWithRxObservable_OnSubscribe_(create_RxInternalOperatorsOperatorRetryTest_$1_init());
-  RxObserversTestSubscriber *ts = create_RxObserversTestSubscriber_initWithRxObserver_(consumer);
-  [((RxObservable *) nil_chk([((RxObservable *) nil_chk(producer)) retryWhenWithRxFunctionsFunc1:create_RxInternalOperatorsOperatorRetryTest_$2_init()])) subscribeWithRxSubscriber:ts];
-  [ts awaitTerminalEvent];
-  [ts assertNoErrors];
-  id<OrgMockitoInOrder> inOrder = OrgMockitoMockito_inOrderWithNSObjectArray_([IOSObjectArray arrayWithObjects:(id[]){ consumer } count:1 type:NSObject_class_()]);
-  [((id<RxObserver>) nil_chk([((id<OrgMockitoInOrder>) nil_chk(inOrder)) verifyWithId:consumer withOrgMockitoVerificationVerificationMode:OrgMockitoMockito_never()])) onErrorWithNSException:OrgMockitoMatchers_anyWithIOSClass_(NSException_class_())];
-  [((id<RxObserver>) nil_chk([inOrder verifyWithId:consumer withOrgMockitoVerificationVerificationMode:OrgMockitoMockito_timesWithInt_(1)])) onNextWithId:@"hello"];
-  [((id<RxObserver>) nil_chk([inOrder verifyWithId:consumer withOrgMockitoVerificationVerificationMode:OrgMockitoMockito_timesWithInt_(1)])) onCompleted];
-  [inOrder verifyNoMoreInteractions];
+  @autoreleasepool {
+    id<RxObserver> consumer = OrgMockitoMockito_mockWithIOSClass_(RxObserver_class_());
+    RxObservable *producer = RxObservable_createWithRxObservable_OnSubscribe_(create_RxInternalOperatorsOperatorRetryTest_$1_init());
+    RxObserversTestSubscriber *ts = create_RxObserversTestSubscriber_initWithRxObserver_(consumer);
+    [((RxObservable *) nil_chk([((RxObservable *) nil_chk(producer)) retryWhenWithRxFunctionsFunc1:create_RxInternalOperatorsOperatorRetryTest_$2_init()])) subscribeWithRxSubscriber:ts];
+    [ts awaitTerminalEvent];
+    [ts assertNoErrors];
+    id<OrgMockitoInOrder> inOrder = OrgMockitoMockito_inOrderWithNSObjectArray_([IOSObjectArray arrayWithObjects:(id[]){ consumer } count:1 type:NSObject_class_()]);
+    [((id<RxObserver>) nil_chk([((id<OrgMockitoInOrder>) nil_chk(inOrder)) verifyWithId:consumer withOrgMockitoVerificationVerificationMode:OrgMockitoMockito_never()])) onErrorWithNSException:OrgMockitoMatchers_anyWithIOSClass_(NSException_class_())];
+    [((id<RxObserver>) nil_chk([inOrder verifyWithId:consumer withOrgMockitoVerificationVerificationMode:OrgMockitoMockito_timesWithInt_(1)])) onNextWithId:@"hello"];
+    [((id<RxObserver>) nil_chk([inOrder verifyWithId:consumer withOrgMockitoVerificationVerificationMode:OrgMockitoMockito_timesWithInt_(1)])) onCompleted];
+    [inOrder verifyNoMoreInteractions];
+  }
 }
 
 - (void)testRetryIndefinitely {
-  id<RxObserver> observer = OrgMockitoMockito_mockWithIOSClass_(RxObserver_class_());
-  jint NUM_RETRIES = 20;
-  RxObservable *origin = RxObservable_createWithRxObservable_OnSubscribe_(create_RxInternalOperatorsOperatorRetryTest_FuncWithErrors_initWithInt_(NUM_RETRIES));
-  [((RxObservable *) nil_chk([((RxObservable *) nil_chk(origin)) retry])) unsafeSubscribeWithRxSubscriber:create_RxObserversTestSubscriber_initWithRxObserver_(observer)];
-  id<OrgMockitoInOrder> inOrder = OrgMockitoMockito_inOrderWithNSObjectArray_([IOSObjectArray arrayWithObjects:(id[]){ observer } count:1 type:NSObject_class_()]);
-  [((id<RxObserver>) nil_chk([((id<OrgMockitoInOrder>) nil_chk(inOrder)) verifyWithId:observer withOrgMockitoVerificationVerificationMode:OrgMockitoMockito_timesWithInt_(NUM_RETRIES + 1)])) onNextWithId:@"beginningEveryTime"];
-  [((id<RxObserver>) nil_chk([inOrder verifyWithId:observer withOrgMockitoVerificationVerificationMode:OrgMockitoMockito_never()])) onErrorWithNSException:OrgMockitoMatchers_anyWithIOSClass_(NSException_class_())];
-  [((id<RxObserver>) nil_chk([inOrder verifyWithId:observer withOrgMockitoVerificationVerificationMode:OrgMockitoMockito_timesWithInt_(1)])) onNextWithId:@"onSuccessOnly"];
-  [((id<RxObserver>) nil_chk([inOrder verifyWithId:observer withOrgMockitoVerificationVerificationMode:OrgMockitoMockito_timesWithInt_(1)])) onCompleted];
-  [inOrder verifyNoMoreInteractions];
+  @autoreleasepool {
+    id<RxObserver> observer = OrgMockitoMockito_mockWithIOSClass_(RxObserver_class_());
+    jint NUM_RETRIES = 20;
+    RxObservable *origin = RxObservable_createWithRxObservable_OnSubscribe_(create_RxInternalOperatorsOperatorRetryTest_FuncWithErrors_initWithInt_(NUM_RETRIES));
+    [((RxObservable *) nil_chk([((RxObservable *) nil_chk(origin)) retry])) unsafeSubscribeWithRxSubscriber:create_RxObserversTestSubscriber_initWithRxObserver_(observer)];
+    id<OrgMockitoInOrder> inOrder = OrgMockitoMockito_inOrderWithNSObjectArray_([IOSObjectArray arrayWithObjects:(id[]){ observer } count:1 type:NSObject_class_()]);
+    [((id<RxObserver>) nil_chk([((id<OrgMockitoInOrder>) nil_chk(inOrder)) verifyWithId:observer withOrgMockitoVerificationVerificationMode:OrgMockitoMockito_timesWithInt_(NUM_RETRIES + 1)])) onNextWithId:@"beginningEveryTime"];
+    [((id<RxObserver>) nil_chk([inOrder verifyWithId:observer withOrgMockitoVerificationVerificationMode:OrgMockitoMockito_never()])) onErrorWithNSException:OrgMockitoMatchers_anyWithIOSClass_(NSException_class_())];
+    [((id<RxObserver>) nil_chk([inOrder verifyWithId:observer withOrgMockitoVerificationVerificationMode:OrgMockitoMockito_timesWithInt_(1)])) onNextWithId:@"onSuccessOnly"];
+    [((id<RxObserver>) nil_chk([inOrder verifyWithId:observer withOrgMockitoVerificationVerificationMode:OrgMockitoMockito_timesWithInt_(1)])) onCompleted];
+    [inOrder verifyNoMoreInteractions];
+  }
 }
 
 - (void)testSchedulingNotificationHandler {
-  id<RxObserver> observer = OrgMockitoMockito_mockWithIOSClass_(RxObserver_class_());
-  jint NUM_RETRIES = 2;
-  RxObservable *origin = RxObservable_createWithRxObservable_OnSubscribe_(create_RxInternalOperatorsOperatorRetryTest_FuncWithErrors_initWithInt_(NUM_RETRIES));
-  RxObserversTestSubscriber *subscriber = create_RxObserversTestSubscriber_initWithRxObserver_(observer);
-  [((RxObservable *) nil_chk([((RxObservable *) nil_chk(origin)) retryWhenWithRxFunctionsFunc1:create_RxInternalOperatorsOperatorRetryTest_$3_init()])) subscribeWithRxSubscriber:subscriber];
-  [subscriber awaitTerminalEvent];
-  id<OrgMockitoInOrder> inOrder = OrgMockitoMockito_inOrderWithNSObjectArray_([IOSObjectArray arrayWithObjects:(id[]){ observer } count:1 type:NSObject_class_()]);
-  [((id<RxObserver>) nil_chk([((id<OrgMockitoInOrder>) nil_chk(inOrder)) verifyWithId:observer withOrgMockitoVerificationVerificationMode:OrgMockitoMockito_timesWithInt_(1 + NUM_RETRIES)])) onNextWithId:@"beginningEveryTime"];
-  [((id<RxObserver>) nil_chk([inOrder verifyWithId:observer withOrgMockitoVerificationVerificationMode:OrgMockitoMockito_never()])) onErrorWithNSException:OrgMockitoMatchers_anyWithIOSClass_(NSException_class_())];
-  [((id<RxObserver>) nil_chk([inOrder verifyWithId:observer withOrgMockitoVerificationVerificationMode:OrgMockitoMockito_timesWithInt_(1)])) onNextWithId:@"onSuccessOnly"];
-  [((id<RxObserver>) nil_chk([inOrder verifyWithId:observer withOrgMockitoVerificationVerificationMode:OrgMockitoMockito_timesWithInt_(1)])) onCompleted];
-  [inOrder verifyNoMoreInteractions];
+  @autoreleasepool {
+    id<RxObserver> observer = OrgMockitoMockito_mockWithIOSClass_(RxObserver_class_());
+    jint NUM_RETRIES = 2;
+    RxObservable *origin = RxObservable_createWithRxObservable_OnSubscribe_(create_RxInternalOperatorsOperatorRetryTest_FuncWithErrors_initWithInt_(NUM_RETRIES));
+    RxObserversTestSubscriber *subscriber = create_RxObserversTestSubscriber_initWithRxObserver_(observer);
+    [((RxObservable *) nil_chk([((RxObservable *) nil_chk(origin)) retryWhenWithRxFunctionsFunc1:create_RxInternalOperatorsOperatorRetryTest_$3_init()])) subscribeWithRxSubscriber:subscriber];
+    [subscriber awaitTerminalEvent];
+    id<OrgMockitoInOrder> inOrder = OrgMockitoMockito_inOrderWithNSObjectArray_([IOSObjectArray arrayWithObjects:(id[]){ observer } count:1 type:NSObject_class_()]);
+    [((id<RxObserver>) nil_chk([((id<OrgMockitoInOrder>) nil_chk(inOrder)) verifyWithId:observer withOrgMockitoVerificationVerificationMode:OrgMockitoMockito_timesWithInt_(1 + NUM_RETRIES)])) onNextWithId:@"beginningEveryTime"];
+    [((id<RxObserver>) nil_chk([inOrder verifyWithId:observer withOrgMockitoVerificationVerificationMode:OrgMockitoMockito_never()])) onErrorWithNSException:OrgMockitoMatchers_anyWithIOSClass_(NSException_class_())];
+    [((id<RxObserver>) nil_chk([inOrder verifyWithId:observer withOrgMockitoVerificationVerificationMode:OrgMockitoMockito_timesWithInt_(1)])) onNextWithId:@"onSuccessOnly"];
+    [((id<RxObserver>) nil_chk([inOrder verifyWithId:observer withOrgMockitoVerificationVerificationMode:OrgMockitoMockito_timesWithInt_(1)])) onCompleted];
+    [inOrder verifyNoMoreInteractions];
+  }
 }
 
 - (void)testOnNextFromNotificationHandler {
-  id<RxObserver> observer = OrgMockitoMockito_mockWithIOSClass_(RxObserver_class_());
-  jint NUM_RETRIES = 2;
-  RxObservable *origin = RxObservable_createWithRxObservable_OnSubscribe_(create_RxInternalOperatorsOperatorRetryTest_FuncWithErrors_initWithInt_(NUM_RETRIES));
-  [((RxObservable *) nil_chk([((RxObservable *) nil_chk(origin)) retryWhenWithRxFunctionsFunc1:create_RxInternalOperatorsOperatorRetryTest_$4_init()])) subscribeWithRxObserver:observer];
-  id<OrgMockitoInOrder> inOrder = OrgMockitoMockito_inOrderWithNSObjectArray_([IOSObjectArray arrayWithObjects:(id[]){ observer } count:1 type:NSObject_class_()]);
-  [((id<RxObserver>) nil_chk([((id<OrgMockitoInOrder>) nil_chk(inOrder)) verifyWithId:observer withOrgMockitoVerificationVerificationMode:OrgMockitoMockito_timesWithInt_(NUM_RETRIES + 1)])) onNextWithId:@"beginningEveryTime"];
-  [((id<RxObserver>) nil_chk([inOrder verifyWithId:observer withOrgMockitoVerificationVerificationMode:OrgMockitoMockito_never()])) onErrorWithNSException:OrgMockitoMatchers_anyWithIOSClass_(NSException_class_())];
-  [((id<RxObserver>) nil_chk([inOrder verifyWithId:observer withOrgMockitoVerificationVerificationMode:OrgMockitoMockito_timesWithInt_(1)])) onNextWithId:@"onSuccessOnly"];
-  [((id<RxObserver>) nil_chk([inOrder verifyWithId:observer withOrgMockitoVerificationVerificationMode:OrgMockitoMockito_timesWithInt_(1)])) onCompleted];
-  [inOrder verifyNoMoreInteractions];
+  @autoreleasepool {
+    id<RxObserver> observer = OrgMockitoMockito_mockWithIOSClass_(RxObserver_class_());
+    jint NUM_RETRIES = 2;
+    RxObservable *origin = RxObservable_createWithRxObservable_OnSubscribe_(create_RxInternalOperatorsOperatorRetryTest_FuncWithErrors_initWithInt_(NUM_RETRIES));
+    [((RxObservable *) nil_chk([((RxObservable *) nil_chk(origin)) retryWhenWithRxFunctionsFunc1:create_RxInternalOperatorsOperatorRetryTest_$4_init()])) subscribeWithRxObserver:observer];
+    id<OrgMockitoInOrder> inOrder = OrgMockitoMockito_inOrderWithNSObjectArray_([IOSObjectArray arrayWithObjects:(id[]){ observer } count:1 type:NSObject_class_()]);
+    [((id<RxObserver>) nil_chk([((id<OrgMockitoInOrder>) nil_chk(inOrder)) verifyWithId:observer withOrgMockitoVerificationVerificationMode:OrgMockitoMockito_timesWithInt_(NUM_RETRIES + 1)])) onNextWithId:@"beginningEveryTime"];
+    [((id<RxObserver>) nil_chk([inOrder verifyWithId:observer withOrgMockitoVerificationVerificationMode:OrgMockitoMockito_never()])) onErrorWithNSException:OrgMockitoMatchers_anyWithIOSClass_(NSException_class_())];
+    [((id<RxObserver>) nil_chk([inOrder verifyWithId:observer withOrgMockitoVerificationVerificationMode:OrgMockitoMockito_timesWithInt_(1)])) onNextWithId:@"onSuccessOnly"];
+    [((id<RxObserver>) nil_chk([inOrder verifyWithId:observer withOrgMockitoVerificationVerificationMode:OrgMockitoMockito_timesWithInt_(1)])) onCompleted];
+    [inOrder verifyNoMoreInteractions];
+  }
 }
 
 - (void)testOnCompletedFromNotificationHandler {
-  id<RxObserver> observer = OrgMockitoMockito_mockWithIOSClass_(RxObserver_class_());
-  RxObservable *origin = RxObservable_createWithRxObservable_OnSubscribe_(create_RxInternalOperatorsOperatorRetryTest_FuncWithErrors_initWithInt_(1));
-  RxObserversTestSubscriber *subscriber = create_RxObserversTestSubscriber_initWithRxObserver_(observer);
-  [((RxObservable *) nil_chk([((RxObservable *) nil_chk(origin)) retryWhenWithRxFunctionsFunc1:create_RxInternalOperatorsOperatorRetryTest_$5_init()])) subscribeWithRxSubscriber:subscriber];
-  id<OrgMockitoInOrder> inOrder = OrgMockitoMockito_inOrderWithNSObjectArray_([IOSObjectArray arrayWithObjects:(id[]){ observer } count:1 type:NSObject_class_()]);
-  [((id<RxObserver>) nil_chk([((id<OrgMockitoInOrder>) nil_chk(inOrder)) verifyWithId:observer withOrgMockitoVerificationVerificationMode:OrgMockitoMockito_never()])) onNextWithId:@"beginningEveryTime"];
-  [((id<RxObserver>) nil_chk([inOrder verifyWithId:observer withOrgMockitoVerificationVerificationMode:OrgMockitoMockito_never()])) onNextWithId:@"onSuccessOnly"];
-  [((id<RxObserver>) nil_chk([inOrder verifyWithId:observer withOrgMockitoVerificationVerificationMode:OrgMockitoMockito_timesWithInt_(1)])) onCompleted];
-  [((id<RxObserver>) nil_chk([inOrder verifyWithId:observer withOrgMockitoVerificationVerificationMode:OrgMockitoMockito_never()])) onErrorWithNSException:OrgMockitoMatchers_anyWithIOSClass_(JavaLangException_class_())];
-  [inOrder verifyNoMoreInteractions];
+  @autoreleasepool {
+    id<RxObserver> observer = OrgMockitoMockito_mockWithIOSClass_(RxObserver_class_());
+    RxObservable *origin = RxObservable_createWithRxObservable_OnSubscribe_(create_RxInternalOperatorsOperatorRetryTest_FuncWithErrors_initWithInt_(1));
+    RxObserversTestSubscriber *subscriber = create_RxObserversTestSubscriber_initWithRxObserver_(observer);
+    [((RxObservable *) nil_chk([((RxObservable *) nil_chk(origin)) retryWhenWithRxFunctionsFunc1:create_RxInternalOperatorsOperatorRetryTest_$5_init()])) subscribeWithRxSubscriber:subscriber];
+    id<OrgMockitoInOrder> inOrder = OrgMockitoMockito_inOrderWithNSObjectArray_([IOSObjectArray arrayWithObjects:(id[]){ observer } count:1 type:NSObject_class_()]);
+    [((id<RxObserver>) nil_chk([((id<OrgMockitoInOrder>) nil_chk(inOrder)) verifyWithId:observer withOrgMockitoVerificationVerificationMode:OrgMockitoMockito_never()])) onNextWithId:@"beginningEveryTime"];
+    [((id<RxObserver>) nil_chk([inOrder verifyWithId:observer withOrgMockitoVerificationVerificationMode:OrgMockitoMockito_never()])) onNextWithId:@"onSuccessOnly"];
+    [((id<RxObserver>) nil_chk([inOrder verifyWithId:observer withOrgMockitoVerificationVerificationMode:OrgMockitoMockito_timesWithInt_(1)])) onCompleted];
+    [((id<RxObserver>) nil_chk([inOrder verifyWithId:observer withOrgMockitoVerificationVerificationMode:OrgMockitoMockito_never()])) onErrorWithNSException:OrgMockitoMatchers_anyWithIOSClass_(JavaLangException_class_())];
+    [inOrder verifyNoMoreInteractions];
+  }
 }
 
 - (void)testOnErrorFromNotificationHandler {
-  id<RxObserver> observer = OrgMockitoMockito_mockWithIOSClass_(RxObserver_class_());
-  RxObservable *origin = RxObservable_createWithRxObservable_OnSubscribe_(create_RxInternalOperatorsOperatorRetryTest_FuncWithErrors_initWithInt_(2));
-  [((RxObservable *) nil_chk([((RxObservable *) nil_chk(origin)) retryWhenWithRxFunctionsFunc1:create_RxInternalOperatorsOperatorRetryTest_$6_init()])) subscribeWithRxObserver:observer];
-  id<OrgMockitoInOrder> inOrder = OrgMockitoMockito_inOrderWithNSObjectArray_([IOSObjectArray arrayWithObjects:(id[]){ observer } count:1 type:NSObject_class_()]);
-  [((id<RxObserver>) nil_chk([((id<OrgMockitoInOrder>) nil_chk(inOrder)) verifyWithId:observer withOrgMockitoVerificationVerificationMode:OrgMockitoMockito_never()])) onNextWithId:@"beginningEveryTime"];
-  [((id<RxObserver>) nil_chk([inOrder verifyWithId:observer withOrgMockitoVerificationVerificationMode:OrgMockitoMockito_never()])) onNextWithId:@"onSuccessOnly"];
-  [((id<RxObserver>) nil_chk([inOrder verifyWithId:observer withOrgMockitoVerificationVerificationMode:OrgMockitoMockito_never()])) onCompleted];
-  [((id<RxObserver>) nil_chk([inOrder verifyWithId:observer withOrgMockitoVerificationVerificationMode:OrgMockitoMockito_timesWithInt_(1)])) onErrorWithNSException:OrgMockitoMatchers_anyWithIOSClass_(JavaLangIllegalStateException_class_())];
-  [inOrder verifyNoMoreInteractions];
+  @autoreleasepool {
+    id<RxObserver> observer = OrgMockitoMockito_mockWithIOSClass_(RxObserver_class_());
+    RxObservable *origin = RxObservable_createWithRxObservable_OnSubscribe_(create_RxInternalOperatorsOperatorRetryTest_FuncWithErrors_initWithInt_(2));
+    [((RxObservable *) nil_chk([((RxObservable *) nil_chk(origin)) retryWhenWithRxFunctionsFunc1:create_RxInternalOperatorsOperatorRetryTest_$6_init()])) subscribeWithRxObserver:observer];
+    id<OrgMockitoInOrder> inOrder = OrgMockitoMockito_inOrderWithNSObjectArray_([IOSObjectArray arrayWithObjects:(id[]){ observer } count:1 type:NSObject_class_()]);
+    [((id<RxObserver>) nil_chk([((id<OrgMockitoInOrder>) nil_chk(inOrder)) verifyWithId:observer withOrgMockitoVerificationVerificationMode:OrgMockitoMockito_never()])) onNextWithId:@"beginningEveryTime"];
+    [((id<RxObserver>) nil_chk([inOrder verifyWithId:observer withOrgMockitoVerificationVerificationMode:OrgMockitoMockito_never()])) onNextWithId:@"onSuccessOnly"];
+    [((id<RxObserver>) nil_chk([inOrder verifyWithId:observer withOrgMockitoVerificationVerificationMode:OrgMockitoMockito_never()])) onCompleted];
+    [((id<RxObserver>) nil_chk([inOrder verifyWithId:observer withOrgMockitoVerificationVerificationMode:OrgMockitoMockito_timesWithInt_(1)])) onErrorWithNSException:OrgMockitoMatchers_anyWithIOSClass_(JavaLangIllegalStateException_class_())];
+    [inOrder verifyNoMoreInteractions];
+  }
 }
 
 - (void)testSingleSubscriptionOnFirst {
-  JavaUtilConcurrentAtomicAtomicInteger *inc = create_JavaUtilConcurrentAtomicAtomicInteger_initWithInt_(0);
-  id<RxObservable_OnSubscribe> onSubscribe = create_RxInternalOperatorsOperatorRetryTest_$7_initWithJavaUtilConcurrentAtomicAtomicInteger_(inc);
-  jint first = [((JavaLangInteger *) nil_chk([((RxObservablesBlockingObservable *) nil_chk([((RxObservable *) nil_chk([((RxObservable *) nil_chk(RxObservable_createWithRxObservable_OnSubscribe_(onSubscribe))) retryWhenWithRxFunctionsFunc1:create_RxInternalOperatorsOperatorRetryTest_$8_init()])) toBlocking])) first])) intValue];
-  OrgJunitAssert_assertEqualsWithNSString_withLong_withLong_(@"Observer did not receive the expected output", 1, first);
-  OrgJunitAssert_assertEqualsWithNSString_withLong_withLong_(@"Subscribe was not called once", 1, [inc get]);
+  @autoreleasepool {
+    JavaUtilConcurrentAtomicAtomicInteger *inc = create_JavaUtilConcurrentAtomicAtomicInteger_initWithInt_(0);
+    id<RxObservable_OnSubscribe> onSubscribe = create_RxInternalOperatorsOperatorRetryTest_$7_initWithJavaUtilConcurrentAtomicAtomicInteger_(inc);
+    jint first = [((JavaLangInteger *) nil_chk([((RxObservablesBlockingObservable *) nil_chk([((RxObservable *) nil_chk([((RxObservable *) nil_chk(RxObservable_createWithRxObservable_OnSubscribe_(onSubscribe))) retryWhenWithRxFunctionsFunc1:create_RxInternalOperatorsOperatorRetryTest_$8_init()])) toBlocking])) first])) intValue];
+    OrgJunitAssert_assertEqualsWithNSString_withLong_withLong_(@"Observer did not receive the expected output", 1, first);
+    OrgJunitAssert_assertEqualsWithNSString_withLong_withLong_(@"Subscribe was not called once", 1, [inc get]);
+  }
 }
 
 - (void)testOriginFails {
-  id<RxObserver> observer = OrgMockitoMockito_mockWithIOSClass_(RxObserver_class_());
-  RxObservable *origin = RxObservable_createWithRxObservable_OnSubscribe_(create_RxInternalOperatorsOperatorRetryTest_FuncWithErrors_initWithInt_(1));
-  [((RxObservable *) nil_chk(origin)) subscribeWithRxObserver:observer];
-  id<OrgMockitoInOrder> inOrder = OrgMockitoMockito_inOrderWithNSObjectArray_([IOSObjectArray arrayWithObjects:(id[]){ observer } count:1 type:NSObject_class_()]);
-  [((id<RxObserver>) nil_chk([((id<OrgMockitoInOrder>) nil_chk(inOrder)) verifyWithId:observer withOrgMockitoVerificationVerificationMode:OrgMockitoMockito_timesWithInt_(1)])) onNextWithId:@"beginningEveryTime"];
-  [((id<RxObserver>) nil_chk([inOrder verifyWithId:observer withOrgMockitoVerificationVerificationMode:OrgMockitoMockito_timesWithInt_(1)])) onErrorWithNSException:OrgMockitoMatchers_anyWithIOSClass_(JavaLangRuntimeException_class_())];
-  [((id<RxObserver>) nil_chk([inOrder verifyWithId:observer withOrgMockitoVerificationVerificationMode:OrgMockitoMockito_never()])) onNextWithId:@"onSuccessOnly"];
-  [((id<RxObserver>) nil_chk([inOrder verifyWithId:observer withOrgMockitoVerificationVerificationMode:OrgMockitoMockito_never()])) onCompleted];
+  @autoreleasepool {
+    id<RxObserver> observer = OrgMockitoMockito_mockWithIOSClass_(RxObserver_class_());
+    RxObservable *origin = RxObservable_createWithRxObservable_OnSubscribe_(create_RxInternalOperatorsOperatorRetryTest_FuncWithErrors_initWithInt_(1));
+    [((RxObservable *) nil_chk(origin)) subscribeWithRxObserver:observer];
+    id<OrgMockitoInOrder> inOrder = OrgMockitoMockito_inOrderWithNSObjectArray_([IOSObjectArray arrayWithObjects:(id[]){ observer } count:1 type:NSObject_class_()]);
+    [((id<RxObserver>) nil_chk([((id<OrgMockitoInOrder>) nil_chk(inOrder)) verifyWithId:observer withOrgMockitoVerificationVerificationMode:OrgMockitoMockito_timesWithInt_(1)])) onNextWithId:@"beginningEveryTime"];
+    [((id<RxObserver>) nil_chk([inOrder verifyWithId:observer withOrgMockitoVerificationVerificationMode:OrgMockitoMockito_timesWithInt_(1)])) onErrorWithNSException:OrgMockitoMatchers_anyWithIOSClass_(JavaLangRuntimeException_class_())];
+    [((id<RxObserver>) nil_chk([inOrder verifyWithId:observer withOrgMockitoVerificationVerificationMode:OrgMockitoMockito_never()])) onNextWithId:@"onSuccessOnly"];
+    [((id<RxObserver>) nil_chk([inOrder verifyWithId:observer withOrgMockitoVerificationVerificationMode:OrgMockitoMockito_never()])) onCompleted];
+  }
 }
 
 - (void)testRetryFail {
-  jint NUM_RETRIES = 1;
-  jint NUM_FAILURES = 2;
-  id<RxObserver> observer = OrgMockitoMockito_mockWithIOSClass_(RxObserver_class_());
-  RxObservable *origin = RxObservable_createWithRxObservable_OnSubscribe_(create_RxInternalOperatorsOperatorRetryTest_FuncWithErrors_initWithInt_(NUM_FAILURES));
-  [((RxObservable *) nil_chk([((RxObservable *) nil_chk(origin)) retryWithLong:NUM_RETRIES])) subscribeWithRxObserver:observer];
-  id<OrgMockitoInOrder> inOrder = OrgMockitoMockito_inOrderWithNSObjectArray_([IOSObjectArray arrayWithObjects:(id[]){ observer } count:1 type:NSObject_class_()]);
-  [((id<RxObserver>) nil_chk([((id<OrgMockitoInOrder>) nil_chk(inOrder)) verifyWithId:observer withOrgMockitoVerificationVerificationMode:OrgMockitoMockito_timesWithInt_(1 + NUM_RETRIES)])) onNextWithId:@"beginningEveryTime"];
-  [((id<RxObserver>) nil_chk([inOrder verifyWithId:observer withOrgMockitoVerificationVerificationMode:OrgMockitoMockito_timesWithInt_(1)])) onErrorWithNSException:OrgMockitoMatchers_anyWithIOSClass_(JavaLangRuntimeException_class_())];
-  [((id<RxObserver>) nil_chk([inOrder verifyWithId:observer withOrgMockitoVerificationVerificationMode:OrgMockitoMockito_never()])) onNextWithId:@"onSuccessOnly"];
-  [((id<RxObserver>) nil_chk([inOrder verifyWithId:observer withOrgMockitoVerificationVerificationMode:OrgMockitoMockito_never()])) onCompleted];
-  [inOrder verifyNoMoreInteractions];
+  @autoreleasepool {
+    jint NUM_RETRIES = 1;
+    jint NUM_FAILURES = 2;
+    id<RxObserver> observer = OrgMockitoMockito_mockWithIOSClass_(RxObserver_class_());
+    RxObservable *origin = RxObservable_createWithRxObservable_OnSubscribe_(create_RxInternalOperatorsOperatorRetryTest_FuncWithErrors_initWithInt_(NUM_FAILURES));
+    [((RxObservable *) nil_chk([((RxObservable *) nil_chk(origin)) retryWithLong:NUM_RETRIES])) subscribeWithRxObserver:observer];
+    id<OrgMockitoInOrder> inOrder = OrgMockitoMockito_inOrderWithNSObjectArray_([IOSObjectArray arrayWithObjects:(id[]){ observer } count:1 type:NSObject_class_()]);
+    [((id<RxObserver>) nil_chk([((id<OrgMockitoInOrder>) nil_chk(inOrder)) verifyWithId:observer withOrgMockitoVerificationVerificationMode:OrgMockitoMockito_timesWithInt_(1 + NUM_RETRIES)])) onNextWithId:@"beginningEveryTime"];
+    [((id<RxObserver>) nil_chk([inOrder verifyWithId:observer withOrgMockitoVerificationVerificationMode:OrgMockitoMockito_timesWithInt_(1)])) onErrorWithNSException:OrgMockitoMatchers_anyWithIOSClass_(JavaLangRuntimeException_class_())];
+    [((id<RxObserver>) nil_chk([inOrder verifyWithId:observer withOrgMockitoVerificationVerificationMode:OrgMockitoMockito_never()])) onNextWithId:@"onSuccessOnly"];
+    [((id<RxObserver>) nil_chk([inOrder verifyWithId:observer withOrgMockitoVerificationVerificationMode:OrgMockitoMockito_never()])) onCompleted];
+    [inOrder verifyNoMoreInteractions];
+  }
 }
 
 - (void)testRetrySuccess {
-  jint NUM_FAILURES = 1;
-  id<RxObserver> observer = OrgMockitoMockito_mockWithIOSClass_(RxObserver_class_());
-  RxObservable *origin = RxObservable_createWithRxObservable_OnSubscribe_(create_RxInternalOperatorsOperatorRetryTest_FuncWithErrors_initWithInt_(NUM_FAILURES));
-  [((RxObservable *) nil_chk([((RxObservable *) nil_chk(origin)) retryWithLong:3])) subscribeWithRxObserver:observer];
-  id<OrgMockitoInOrder> inOrder = OrgMockitoMockito_inOrderWithNSObjectArray_([IOSObjectArray arrayWithObjects:(id[]){ observer } count:1 type:NSObject_class_()]);
-  [((id<RxObserver>) nil_chk([((id<OrgMockitoInOrder>) nil_chk(inOrder)) verifyWithId:observer withOrgMockitoVerificationVerificationMode:OrgMockitoMockito_timesWithInt_(1 + NUM_FAILURES)])) onNextWithId:@"beginningEveryTime"];
-  [((id<RxObserver>) nil_chk([inOrder verifyWithId:observer withOrgMockitoVerificationVerificationMode:OrgMockitoMockito_never()])) onErrorWithNSException:OrgMockitoMatchers_anyWithIOSClass_(NSException_class_())];
-  [((id<RxObserver>) nil_chk([inOrder verifyWithId:observer withOrgMockitoVerificationVerificationMode:OrgMockitoMockito_timesWithInt_(1)])) onNextWithId:@"onSuccessOnly"];
-  [((id<RxObserver>) nil_chk([inOrder verifyWithId:observer withOrgMockitoVerificationVerificationMode:OrgMockitoMockito_timesWithInt_(1)])) onCompleted];
-  [inOrder verifyNoMoreInteractions];
+  @autoreleasepool {
+    jint NUM_FAILURES = 1;
+    id<RxObserver> observer = OrgMockitoMockito_mockWithIOSClass_(RxObserver_class_());
+    RxObservable *origin = RxObservable_createWithRxObservable_OnSubscribe_(create_RxInternalOperatorsOperatorRetryTest_FuncWithErrors_initWithInt_(NUM_FAILURES));
+    [((RxObservable *) nil_chk([((RxObservable *) nil_chk(origin)) retryWithLong:3])) subscribeWithRxObserver:observer];
+    id<OrgMockitoInOrder> inOrder = OrgMockitoMockito_inOrderWithNSObjectArray_([IOSObjectArray arrayWithObjects:(id[]){ observer } count:1 type:NSObject_class_()]);
+    [((id<RxObserver>) nil_chk([((id<OrgMockitoInOrder>) nil_chk(inOrder)) verifyWithId:observer withOrgMockitoVerificationVerificationMode:OrgMockitoMockito_timesWithInt_(1 + NUM_FAILURES)])) onNextWithId:@"beginningEveryTime"];
+    [((id<RxObserver>) nil_chk([inOrder verifyWithId:observer withOrgMockitoVerificationVerificationMode:OrgMockitoMockito_never()])) onErrorWithNSException:OrgMockitoMatchers_anyWithIOSClass_(NSException_class_())];
+    [((id<RxObserver>) nil_chk([inOrder verifyWithId:observer withOrgMockitoVerificationVerificationMode:OrgMockitoMockito_timesWithInt_(1)])) onNextWithId:@"onSuccessOnly"];
+    [((id<RxObserver>) nil_chk([inOrder verifyWithId:observer withOrgMockitoVerificationVerificationMode:OrgMockitoMockito_timesWithInt_(1)])) onCompleted];
+    [inOrder verifyNoMoreInteractions];
+  }
 }
 
 - (void)testInfiniteRetry {
-  jint NUM_FAILURES = 20;
-  id<RxObserver> observer = OrgMockitoMockito_mockWithIOSClass_(RxObserver_class_());
-  RxObservable *origin = RxObservable_createWithRxObservable_OnSubscribe_(create_RxInternalOperatorsOperatorRetryTest_FuncWithErrors_initWithInt_(NUM_FAILURES));
-  [((RxObservable *) nil_chk([((RxObservable *) nil_chk(origin)) retry])) subscribeWithRxObserver:observer];
-  id<OrgMockitoInOrder> inOrder = OrgMockitoMockito_inOrderWithNSObjectArray_([IOSObjectArray arrayWithObjects:(id[]){ observer } count:1 type:NSObject_class_()]);
-  [((id<RxObserver>) nil_chk([((id<OrgMockitoInOrder>) nil_chk(inOrder)) verifyWithId:observer withOrgMockitoVerificationVerificationMode:OrgMockitoMockito_timesWithInt_(1 + NUM_FAILURES)])) onNextWithId:@"beginningEveryTime"];
-  [((id<RxObserver>) nil_chk([inOrder verifyWithId:observer withOrgMockitoVerificationVerificationMode:OrgMockitoMockito_never()])) onErrorWithNSException:OrgMockitoMatchers_anyWithIOSClass_(NSException_class_())];
-  [((id<RxObserver>) nil_chk([inOrder verifyWithId:observer withOrgMockitoVerificationVerificationMode:OrgMockitoMockito_timesWithInt_(1)])) onNextWithId:@"onSuccessOnly"];
-  [((id<RxObserver>) nil_chk([inOrder verifyWithId:observer withOrgMockitoVerificationVerificationMode:OrgMockitoMockito_timesWithInt_(1)])) onCompleted];
-  [inOrder verifyNoMoreInteractions];
+  @autoreleasepool {
+    jint NUM_FAILURES = 20;
+    id<RxObserver> observer = OrgMockitoMockito_mockWithIOSClass_(RxObserver_class_());
+    RxObservable *origin = RxObservable_createWithRxObservable_OnSubscribe_(create_RxInternalOperatorsOperatorRetryTest_FuncWithErrors_initWithInt_(NUM_FAILURES));
+    [((RxObservable *) nil_chk([((RxObservable *) nil_chk(origin)) retry])) subscribeWithRxObserver:observer];
+    id<OrgMockitoInOrder> inOrder = OrgMockitoMockito_inOrderWithNSObjectArray_([IOSObjectArray arrayWithObjects:(id[]){ observer } count:1 type:NSObject_class_()]);
+    [((id<RxObserver>) nil_chk([((id<OrgMockitoInOrder>) nil_chk(inOrder)) verifyWithId:observer withOrgMockitoVerificationVerificationMode:OrgMockitoMockito_timesWithInt_(1 + NUM_FAILURES)])) onNextWithId:@"beginningEveryTime"];
+    [((id<RxObserver>) nil_chk([inOrder verifyWithId:observer withOrgMockitoVerificationVerificationMode:OrgMockitoMockito_never()])) onErrorWithNSException:OrgMockitoMatchers_anyWithIOSClass_(NSException_class_())];
+    [((id<RxObserver>) nil_chk([inOrder verifyWithId:observer withOrgMockitoVerificationVerificationMode:OrgMockitoMockito_timesWithInt_(1)])) onNextWithId:@"onSuccessOnly"];
+    [((id<RxObserver>) nil_chk([inOrder verifyWithId:observer withOrgMockitoVerificationVerificationMode:OrgMockitoMockito_timesWithInt_(1)])) onCompleted];
+    [inOrder verifyNoMoreInteractions];
+  }
 }
 
 - (void)testRetrySubscribesAgainAfterError {
-  id<RxFunctionsAction1> record = OrgMockitoMockito_mockWithIOSClass_(RxFunctionsAction1_class_());
-  id<OrgMockitoInOrder> inOrder = OrgMockitoMockito_inOrderWithNSObjectArray_([IOSObjectArray arrayWithObjects:(id[]){ record } count:1 type:NSObject_class_()]);
-  id<RxFunctionsAction1> throwException = OrgMockitoMockito_mockWithIOSClass_(RxFunctionsAction1_class_());
-  [((id<RxFunctionsAction1>) nil_chk([((id<OrgMockitoStubbingStubber>) nil_chk(OrgMockitoMockito_doThrowWithNSException_(create_JavaLangRuntimeException_init()))) whenWithId:throwException])) callWithId:JavaLangInteger_valueOfWithInt_(OrgMockitoMatchers_anyInt())];
-  RxSubjectsPublishSubject *subject = RxSubjectsPublishSubject_create();
-  [((RxObservable *) nil_chk([((RxObservable *) nil_chk([((RxObservable *) nil_chk([((RxSubjectsPublishSubject *) nil_chk(subject)) doOnNextWithRxFunctionsAction1:record])) doOnNextWithRxFunctionsAction1:throwException])) retry])) subscribe];
-  [((id<OrgMockitoInOrder>) nil_chk(inOrder)) verifyNoMoreInteractions];
-  [subject onNextWithId:JavaLangInteger_valueOfWithInt_(1)];
-  [((id<RxFunctionsAction1>) nil_chk([inOrder verifyWithId:record])) callWithId:JavaLangInteger_valueOfWithInt_(1)];
-  [subject onNextWithId:JavaLangInteger_valueOfWithInt_(2)];
-  [((id<RxFunctionsAction1>) nil_chk([inOrder verifyWithId:record])) callWithId:JavaLangInteger_valueOfWithInt_(2)];
-  [subject onNextWithId:JavaLangInteger_valueOfWithInt_(3)];
-  [((id<RxFunctionsAction1>) nil_chk([inOrder verifyWithId:record])) callWithId:JavaLangInteger_valueOfWithInt_(3)];
-  [inOrder verifyNoMoreInteractions];
+  @autoreleasepool {
+    id<RxFunctionsAction1> record = OrgMockitoMockito_mockWithIOSClass_(RxFunctionsAction1_class_());
+    id<OrgMockitoInOrder> inOrder = OrgMockitoMockito_inOrderWithNSObjectArray_([IOSObjectArray arrayWithObjects:(id[]){ record } count:1 type:NSObject_class_()]);
+    id<RxFunctionsAction1> throwException = OrgMockitoMockito_mockWithIOSClass_(RxFunctionsAction1_class_());
+    [((id<RxFunctionsAction1>) nil_chk([((id<OrgMockitoStubbingStubber>) nil_chk(OrgMockitoMockito_doThrowWithNSException_(create_JavaLangRuntimeException_init()))) whenWithId:throwException])) callWithId:JavaLangInteger_valueOfWithInt_(OrgMockitoMatchers_anyInt())];
+    RxSubjectsPublishSubject *subject = RxSubjectsPublishSubject_create();
+    [((RxObservable *) nil_chk([((RxObservable *) nil_chk([((RxObservable *) nil_chk([((RxSubjectsPublishSubject *) nil_chk(subject)) doOnNextWithRxFunctionsAction1:record])) doOnNextWithRxFunctionsAction1:throwException])) retry])) subscribe];
+    [((id<OrgMockitoInOrder>) nil_chk(inOrder)) verifyNoMoreInteractions];
+    [subject onNextWithId:JavaLangInteger_valueOfWithInt_(1)];
+    [((id<RxFunctionsAction1>) nil_chk([inOrder verifyWithId:record])) callWithId:JavaLangInteger_valueOfWithInt_(1)];
+    [subject onNextWithId:JavaLangInteger_valueOfWithInt_(2)];
+    [((id<RxFunctionsAction1>) nil_chk([inOrder verifyWithId:record])) callWithId:JavaLangInteger_valueOfWithInt_(2)];
+    [subject onNextWithId:JavaLangInteger_valueOfWithInt_(3)];
+    [((id<RxFunctionsAction1>) nil_chk([inOrder verifyWithId:record])) callWithId:JavaLangInteger_valueOfWithInt_(3)];
+    [inOrder verifyNoMoreInteractions];
+  }
 }
 
 - (void)testUnsubscribeFromRetry {
-  RxSubjectsPublishSubject *subject = RxSubjectsPublishSubject_create();
-  JavaUtilConcurrentAtomicAtomicInteger *count = create_JavaUtilConcurrentAtomicAtomicInteger_initWithInt_(0);
-  id<RxSubscription> sub = [((RxObservable *) nil_chk([((RxSubjectsPublishSubject *) nil_chk(subject)) retry])) subscribeWithRxFunctionsAction1:create_RxInternalOperatorsOperatorRetryTest_$9_initWithJavaUtilConcurrentAtomicAtomicInteger_(count)];
-  [subject onNextWithId:JavaLangInteger_valueOfWithInt_(1)];
-  [((id<RxSubscription>) nil_chk(sub)) unsubscribe];
-  [subject onNextWithId:JavaLangInteger_valueOfWithInt_(2)];
-  OrgJunitAssert_assertEqualsWithLong_withLong_(1, [count get]);
+  @autoreleasepool {
+    RxSubjectsPublishSubject *subject = RxSubjectsPublishSubject_create();
+    JavaUtilConcurrentAtomicAtomicInteger *count = create_JavaUtilConcurrentAtomicAtomicInteger_initWithInt_(0);
+    id<RxSubscription> sub = [((RxObservable *) nil_chk([((RxSubjectsPublishSubject *) nil_chk(subject)) retry])) subscribeWithRxFunctionsAction1:create_RxInternalOperatorsOperatorRetryTest_$9_initWithJavaUtilConcurrentAtomicAtomicInteger_(count)];
+    [subject onNextWithId:JavaLangInteger_valueOfWithInt_(1)];
+    [((id<RxSubscription>) nil_chk(sub)) unsubscribe];
+    [subject onNextWithId:JavaLangInteger_valueOfWithInt_(2)];
+    OrgJunitAssert_assertEqualsWithLong_withLong_(1, [count get]);
+  }
 }
 
 - (void)testRetryAllowsSubscriptionAfterAllSubscriptionsUnsubscribed {
-  JavaUtilConcurrentAtomicAtomicInteger *subsCount = create_JavaUtilConcurrentAtomicAtomicInteger_initWithInt_(0);
-  id<RxObservable_OnSubscribe> onSubscribe = create_RxInternalOperatorsOperatorRetryTest_$10_initWithJavaUtilConcurrentAtomicAtomicInteger_(subsCount);
-  RxObservable *stream = RxObservable_createWithRxObservable_OnSubscribe_(onSubscribe);
-  RxObservable *streamWithRetry = [((RxObservable *) nil_chk(stream)) retry];
-  id<RxSubscription> sub = [((RxObservable *) nil_chk(streamWithRetry)) subscribe];
-  OrgJunitAssert_assertEqualsWithLong_withLong_(1, [subsCount get]);
-  [((id<RxSubscription>) nil_chk(sub)) unsubscribe];
-  OrgJunitAssert_assertEqualsWithLong_withLong_(0, [subsCount get]);
-  [streamWithRetry subscribe];
-  OrgJunitAssert_assertEqualsWithLong_withLong_(1, [subsCount get]);
+  @autoreleasepool {
+    JavaUtilConcurrentAtomicAtomicInteger *subsCount = create_JavaUtilConcurrentAtomicAtomicInteger_initWithInt_(0);
+    id<RxObservable_OnSubscribe> onSubscribe = create_RxInternalOperatorsOperatorRetryTest_$10_initWithJavaUtilConcurrentAtomicAtomicInteger_(subsCount);
+    RxObservable *stream = RxObservable_createWithRxObservable_OnSubscribe_(onSubscribe);
+    RxObservable *streamWithRetry = [((RxObservable *) nil_chk(stream)) retry];
+    id<RxSubscription> sub = [((RxObservable *) nil_chk(streamWithRetry)) subscribe];
+    OrgJunitAssert_assertEqualsWithLong_withLong_(1, [subsCount get]);
+    [((id<RxSubscription>) nil_chk(sub)) unsubscribe];
+    OrgJunitAssert_assertEqualsWithLong_withLong_(0, [subsCount get]);
+    [streamWithRetry subscribe];
+    OrgJunitAssert_assertEqualsWithLong_withLong_(1, [subsCount get]);
+  }
 }
 
 - (void)testSourceObservableCallsUnsubscribe {
-  JavaUtilConcurrentAtomicAtomicInteger *subsCount = create_JavaUtilConcurrentAtomicAtomicInteger_initWithInt_(0);
-  RxObserversTestSubscriber *ts = create_RxObserversTestSubscriber_init();
-  id<RxObservable_OnSubscribe> onSubscribe = create_RxInternalOperatorsOperatorRetryTest_$11_initWithJavaUtilConcurrentAtomicAtomicInteger_(subsCount);
-  [((RxObservable *) nil_chk([((RxObservable *) nil_chk(RxObservable_createWithRxObservable_OnSubscribe_(onSubscribe))) retryWithLong:3])) subscribeWithRxSubscriber:ts];
-  OrgJunitAssert_assertEqualsWithLong_withLong_(4, [subsCount get]);
+  @autoreleasepool {
+    JavaUtilConcurrentAtomicAtomicInteger *subsCount = create_JavaUtilConcurrentAtomicAtomicInteger_initWithInt_(0);
+    RxObserversTestSubscriber *ts = create_RxObserversTestSubscriber_init();
+    id<RxObservable_OnSubscribe> onSubscribe = create_RxInternalOperatorsOperatorRetryTest_$11_initWithJavaUtilConcurrentAtomicAtomicInteger_(subsCount);
+    [((RxObservable *) nil_chk([((RxObservable *) nil_chk(RxObservable_createWithRxObservable_OnSubscribe_(onSubscribe))) retryWithLong:3])) subscribeWithRxSubscriber:ts];
+    OrgJunitAssert_assertEqualsWithLong_withLong_(4, [subsCount get]);
+  }
 }
 
 - (void)testSourceObservableRetry1 {
-  JavaUtilConcurrentAtomicAtomicInteger *subsCount = create_JavaUtilConcurrentAtomicAtomicInteger_initWithInt_(0);
-  RxObserversTestSubscriber *ts = create_RxObserversTestSubscriber_init();
-  id<RxObservable_OnSubscribe> onSubscribe = create_RxInternalOperatorsOperatorRetryTest_$12_initWithJavaUtilConcurrentAtomicAtomicInteger_(subsCount);
-  [((RxObservable *) nil_chk([((RxObservable *) nil_chk(RxObservable_createWithRxObservable_OnSubscribe_(onSubscribe))) retryWithLong:1])) subscribeWithRxSubscriber:ts];
-  OrgJunitAssert_assertEqualsWithLong_withLong_(2, [subsCount get]);
+  @autoreleasepool {
+    JavaUtilConcurrentAtomicAtomicInteger *subsCount = create_JavaUtilConcurrentAtomicAtomicInteger_initWithInt_(0);
+    RxObserversTestSubscriber *ts = create_RxObserversTestSubscriber_init();
+    id<RxObservable_OnSubscribe> onSubscribe = create_RxInternalOperatorsOperatorRetryTest_$12_initWithJavaUtilConcurrentAtomicAtomicInteger_(subsCount);
+    [((RxObservable *) nil_chk([((RxObservable *) nil_chk(RxObservable_createWithRxObservable_OnSubscribe_(onSubscribe))) retryWithLong:1])) subscribeWithRxSubscriber:ts];
+    OrgJunitAssert_assertEqualsWithLong_withLong_(2, [subsCount get]);
+  }
 }
 
 - (void)testSourceObservableRetry0 {
-  JavaUtilConcurrentAtomicAtomicInteger *subsCount = create_JavaUtilConcurrentAtomicAtomicInteger_initWithInt_(0);
-  RxObserversTestSubscriber *ts = create_RxObserversTestSubscriber_init();
-  id<RxObservable_OnSubscribe> onSubscribe = create_RxInternalOperatorsOperatorRetryTest_$13_initWithJavaUtilConcurrentAtomicAtomicInteger_(subsCount);
-  [((RxObservable *) nil_chk([((RxObservable *) nil_chk(RxObservable_createWithRxObservable_OnSubscribe_(onSubscribe))) retryWithLong:0])) subscribeWithRxSubscriber:ts];
-  OrgJunitAssert_assertEqualsWithLong_withLong_(1, [subsCount get]);
+  @autoreleasepool {
+    JavaUtilConcurrentAtomicAtomicInteger *subsCount = create_JavaUtilConcurrentAtomicAtomicInteger_initWithInt_(0);
+    RxObserversTestSubscriber *ts = create_RxObserversTestSubscriber_init();
+    id<RxObservable_OnSubscribe> onSubscribe = create_RxInternalOperatorsOperatorRetryTest_$13_initWithJavaUtilConcurrentAtomicAtomicInteger_(subsCount);
+    [((RxObservable *) nil_chk([((RxObservable *) nil_chk(RxObservable_createWithRxObservable_OnSubscribe_(onSubscribe))) retryWithLong:0])) subscribeWithRxSubscriber:ts];
+    OrgJunitAssert_assertEqualsWithLong_withLong_(1, [subsCount get]);
+  }
 }
 
 - (void)testUnsubscribeAfterError {
-  id<RxObserver> observer = OrgMockitoMockito_mockWithIOSClass_(RxObserver_class_());
-  RxInternalOperatorsOperatorRetryTest_SlowObservable *so = create_RxInternalOperatorsOperatorRetryTest_SlowObservable_initWithInt_withInt_(100, 0);
-  RxObservable *o = [((RxObservable *) nil_chk(RxObservable_createWithRxObservable_OnSubscribe_(so))) retryWithLong:5];
-  RxInternalOperatorsOperatorRetryTest_AsyncObserver *async = create_RxInternalOperatorsOperatorRetryTest_AsyncObserver_initWithRxObserver_(observer);
-  [((RxObservable *) nil_chk(o)) subscribeWithRxObserver:async];
-  [async await];
-  id<OrgMockitoInOrder> inOrder = OrgMockitoMockito_inOrderWithNSObjectArray_([IOSObjectArray arrayWithObjects:(id[]){ observer } count:1 type:NSObject_class_()]);
-  [((id<RxObserver>) nil_chk([((id<OrgMockitoInOrder>) nil_chk(inOrder)) verifyWithId:observer withOrgMockitoVerificationVerificationMode:OrgMockitoMockito_timesWithInt_(1)])) onErrorWithNSException:OrgMockitoMatchers_anyWithIOSClass_(NSException_class_())];
-  [((id<RxObserver>) nil_chk([inOrder verifyWithId:observer withOrgMockitoVerificationVerificationMode:OrgMockitoMockito_never()])) onCompleted];
-  OrgJunitAssert_assertEqualsWithNSString_withLong_withLong_(@"Start 6 threads, retry 5 then fail on 6", 6, [((JavaUtilConcurrentAtomicAtomicInteger *) nil_chk(so->efforts_)) get]);
-  OrgJunitAssert_assertEqualsWithNSString_withLong_withLong_(@"Only 1 active subscription", 1, [((JavaUtilConcurrentAtomicAtomicInteger *) nil_chk(so->maxActive_)) get]);
+  @autoreleasepool {
+    id<RxObserver> observer = OrgMockitoMockito_mockWithIOSClass_(RxObserver_class_());
+    RxInternalOperatorsOperatorRetryTest_SlowObservable *so = create_RxInternalOperatorsOperatorRetryTest_SlowObservable_initWithInt_withInt_(100, 0);
+    RxObservable *o = [((RxObservable *) nil_chk(RxObservable_createWithRxObservable_OnSubscribe_(so))) retryWithLong:5];
+    RxInternalOperatorsOperatorRetryTest_AsyncObserver *async = create_RxInternalOperatorsOperatorRetryTest_AsyncObserver_initWithRxObserver_(observer);
+    [((RxObservable *) nil_chk(o)) subscribeWithRxObserver:async];
+    [async await];
+    id<OrgMockitoInOrder> inOrder = OrgMockitoMockito_inOrderWithNSObjectArray_([IOSObjectArray arrayWithObjects:(id[]){ observer } count:1 type:NSObject_class_()]);
+    [((id<RxObserver>) nil_chk([((id<OrgMockitoInOrder>) nil_chk(inOrder)) verifyWithId:observer withOrgMockitoVerificationVerificationMode:OrgMockitoMockito_timesWithInt_(1)])) onErrorWithNSException:OrgMockitoMatchers_anyWithIOSClass_(NSException_class_())];
+    [((id<RxObserver>) nil_chk([inOrder verifyWithId:observer withOrgMockitoVerificationVerificationMode:OrgMockitoMockito_never()])) onCompleted];
+    OrgJunitAssert_assertEqualsWithNSString_withLong_withLong_(@"Start 6 threads, retry 5 then fail on 6", 6, [((JavaUtilConcurrentAtomicAtomicInteger *) nil_chk(so->efforts_)) get]);
+    OrgJunitAssert_assertEqualsWithNSString_withLong_withLong_(@"Only 1 active subscription", 1, [((JavaUtilConcurrentAtomicAtomicInteger *) nil_chk(so->maxActive_)) get]);
+  }
 }
 
 - (void)testTimeoutWithRetry {
-  id<RxObserver> observer = OrgMockitoMockito_mockWithIOSClass_(RxObserver_class_());
-  RxInternalOperatorsOperatorRetryTest_SlowObservable *so = create_RxInternalOperatorsOperatorRetryTest_SlowObservable_initWithInt_withInt_(100, 10);
-  RxObservable *o = [((RxObservable *) nil_chk([((RxObservable *) nil_chk(RxObservable_createWithRxObservable_OnSubscribe_(so))) timeoutWithLong:80 withJavaUtilConcurrentTimeUnit:JreLoadEnum(JavaUtilConcurrentTimeUnit, MILLISECONDS)])) retryWithLong:5];
-  RxInternalOperatorsOperatorRetryTest_AsyncObserver *async = create_RxInternalOperatorsOperatorRetryTest_AsyncObserver_initWithRxObserver_(observer);
-  [((RxObservable *) nil_chk(o)) subscribeWithRxObserver:async];
-  [async await];
-  id<OrgMockitoInOrder> inOrder = OrgMockitoMockito_inOrderWithNSObjectArray_([IOSObjectArray arrayWithObjects:(id[]){ observer } count:1 type:NSObject_class_()]);
-  [((id<RxObserver>) nil_chk([((id<OrgMockitoInOrder>) nil_chk(inOrder)) verifyWithId:observer withOrgMockitoVerificationVerificationMode:OrgMockitoMockito_timesWithInt_(1)])) onErrorWithNSException:OrgMockitoMatchers_anyWithIOSClass_(NSException_class_())];
-  [((id<RxObserver>) nil_chk([inOrder verifyWithId:observer withOrgMockitoVerificationVerificationMode:OrgMockitoMockito_never()])) onCompleted];
-  OrgJunitAssert_assertEqualsWithNSString_withLong_withLong_(@"Start 6 threads, retry 5 then fail on 6", 6, [((JavaUtilConcurrentAtomicAtomicInteger *) nil_chk(so->efforts_)) get]);
+  @autoreleasepool {
+    id<RxObserver> observer = OrgMockitoMockito_mockWithIOSClass_(RxObserver_class_());
+    RxInternalOperatorsOperatorRetryTest_SlowObservable *so = create_RxInternalOperatorsOperatorRetryTest_SlowObservable_initWithInt_withInt_(100, 10);
+    RxObservable *o = [((RxObservable *) nil_chk([((RxObservable *) nil_chk(RxObservable_createWithRxObservable_OnSubscribe_(so))) timeoutWithLong:80 withJavaUtilConcurrentTimeUnit:JreLoadEnum(JavaUtilConcurrentTimeUnit, MILLISECONDS)])) retryWithLong:5];
+    RxInternalOperatorsOperatorRetryTest_AsyncObserver *async = create_RxInternalOperatorsOperatorRetryTest_AsyncObserver_initWithRxObserver_(observer);
+    [((RxObservable *) nil_chk(o)) subscribeWithRxObserver:async];
+    [async await];
+    id<OrgMockitoInOrder> inOrder = OrgMockitoMockito_inOrderWithNSObjectArray_([IOSObjectArray arrayWithObjects:(id[]){ observer } count:1 type:NSObject_class_()]);
+    [((id<RxObserver>) nil_chk([((id<OrgMockitoInOrder>) nil_chk(inOrder)) verifyWithId:observer withOrgMockitoVerificationVerificationMode:OrgMockitoMockito_timesWithInt_(1)])) onErrorWithNSException:OrgMockitoMatchers_anyWithIOSClass_(NSException_class_())];
+    [((id<RxObserver>) nil_chk([inOrder verifyWithId:observer withOrgMockitoVerificationVerificationMode:OrgMockitoMockito_never()])) onCompleted];
+    OrgJunitAssert_assertEqualsWithNSString_withLong_withLong_(@"Start 6 threads, retry 5 then fail on 6", 6, [((JavaUtilConcurrentAtomicAtomicInteger *) nil_chk(so->efforts_)) get]);
+  }
 }
 
 - (void)testRetryWithBackpressure {
-  jint NUM_LOOPS = 1;
-  for (jint j = 0; j < NUM_LOOPS; j++) {
-    jint NUM_RETRIES = JreLoadStatic(RxInternalUtilRxRingBuffer, SIZE) * 2;
-    for (jint i = 0; i < 400; i++) {
-      id<RxObserver> observer = OrgMockitoMockito_mockWithIOSClass_(RxObserver_class_());
-      RxObservable *origin = RxObservable_createWithRxObservable_OnSubscribe_(create_RxInternalOperatorsOperatorRetryTest_FuncWithErrors_initWithInt_(NUM_RETRIES));
-      RxObserversTestSubscriber *ts = create_RxObserversTestSubscriber_initWithRxObserver_(observer);
-      [((RxObservable *) nil_chk([((RxObservable *) nil_chk([((RxObservable *) nil_chk(origin)) retry])) observeOnWithRxScheduler:RxSchedulersSchedulers_computation()])) unsafeSubscribeWithRxSubscriber:ts];
-      [ts awaitTerminalEventWithLong:5 withJavaUtilConcurrentTimeUnit:JreLoadEnum(JavaUtilConcurrentTimeUnit, SECONDS)];
-      id<OrgMockitoInOrder> inOrder = OrgMockitoMockito_inOrderWithNSObjectArray_([IOSObjectArray arrayWithObjects:(id[]){ observer } count:1 type:NSObject_class_()]);
-      [((id<RxObserver>) nil_chk(OrgMockitoMockito_verifyWithId_withOrgMockitoVerificationVerificationMode_(observer, OrgMockitoMockito_never()))) onErrorWithNSException:OrgMockitoMatchers_anyWithIOSClass_(NSException_class_())];
-      [((id<RxObserver>) nil_chk([((id<OrgMockitoInOrder>) nil_chk(inOrder)) verifyWithId:observer withOrgMockitoVerificationVerificationMode:OrgMockitoMockito_timesWithInt_(NUM_RETRIES + 1)])) onNextWithId:@"beginningEveryTime"];
-      [((id<RxObserver>) nil_chk([inOrder verifyWithId:observer withOrgMockitoVerificationVerificationMode:OrgMockitoMockito_timesWithInt_(1)])) onNextWithId:@"onSuccessOnly"];
-      [((id<RxObserver>) nil_chk([inOrder verifyWithId:observer withOrgMockitoVerificationVerificationMode:OrgMockitoMockito_timesWithInt_(1)])) onCompleted];
-      [inOrder verifyNoMoreInteractions];
+  @autoreleasepool {
+    jint NUM_LOOPS = 1;
+    for (jint j = 0; j < NUM_LOOPS; j++) {
+      jint NUM_RETRIES = JreLoadStatic(RxInternalUtilRxRingBuffer, SIZE) * 2;
+      for (jint i = 0; i < 400; i++) {
+        id<RxObserver> observer = OrgMockitoMockito_mockWithIOSClass_(RxObserver_class_());
+        RxObservable *origin = RxObservable_createWithRxObservable_OnSubscribe_(create_RxInternalOperatorsOperatorRetryTest_FuncWithErrors_initWithInt_(NUM_RETRIES));
+        RxObserversTestSubscriber *ts = create_RxObserversTestSubscriber_initWithRxObserver_(observer);
+        [((RxObservable *) nil_chk([((RxObservable *) nil_chk([((RxObservable *) nil_chk(origin)) retry])) observeOnWithRxScheduler:RxSchedulersSchedulers_computation()])) unsafeSubscribeWithRxSubscriber:ts];
+        [ts awaitTerminalEventWithLong:5 withJavaUtilConcurrentTimeUnit:JreLoadEnum(JavaUtilConcurrentTimeUnit, SECONDS)];
+        id<OrgMockitoInOrder> inOrder = OrgMockitoMockito_inOrderWithNSObjectArray_([IOSObjectArray arrayWithObjects:(id[]){ observer } count:1 type:NSObject_class_()]);
+        [((id<RxObserver>) nil_chk(OrgMockitoMockito_verifyWithId_withOrgMockitoVerificationVerificationMode_(observer, OrgMockitoMockito_never()))) onErrorWithNSException:OrgMockitoMatchers_anyWithIOSClass_(NSException_class_())];
+        [((id<RxObserver>) nil_chk([((id<OrgMockitoInOrder>) nil_chk(inOrder)) verifyWithId:observer withOrgMockitoVerificationVerificationMode:OrgMockitoMockito_timesWithInt_(NUM_RETRIES + 1)])) onNextWithId:@"beginningEveryTime"];
+        [((id<RxObserver>) nil_chk([inOrder verifyWithId:observer withOrgMockitoVerificationVerificationMode:OrgMockitoMockito_timesWithInt_(1)])) onNextWithId:@"onSuccessOnly"];
+        [((id<RxObserver>) nil_chk([inOrder verifyWithId:observer withOrgMockitoVerificationVerificationMode:OrgMockitoMockito_timesWithInt_(1)])) onCompleted];
+        [inOrder verifyNoMoreInteractions];
+      }
     }
   }
 }
 
 - (void)testRetryWithBackpressureParallel {
-  jint NUM_LOOPS = 1;
-  jint NUM_RETRIES = JreLoadStatic(RxInternalUtilRxRingBuffer, SIZE) * 2;
-  jint ncpu = [((JavaLangRuntime *) nil_chk(JavaLangRuntime_getRuntime())) availableProcessors];
-  id<JavaUtilConcurrentExecutorService> exec = JavaUtilConcurrentExecutors_newFixedThreadPoolWithInt_(JavaLangMath_maxWithInt_withInt_(ncpu / 2, 2));
-  @try {
-    for (jint r = 0; r < NUM_LOOPS; r++) {
-      if (r % 10 == 0) {
-        [((JavaIoPrintStream *) nil_chk(JreLoadStatic(JavaLangSystem, out))) printlnWithNSString:JreStrcat("$I", @"testRetryWithBackpressureParallelLoop -> ", r)];
-      }
-      JavaUtilConcurrentAtomicAtomicInteger *timeouts = create_JavaUtilConcurrentAtomicAtomicInteger_init();
-      id<JavaUtilMap> data = create_JavaUtilConcurrentConcurrentHashMap_init();
-      jint m = 5000;
-      JavaUtilConcurrentCountDownLatch *cdl = create_JavaUtilConcurrentCountDownLatch_initWithInt_(m);
-      for (jint i = 0; i < m; i++) {
-        jint j = i;
-        [((id<JavaUtilConcurrentExecutorService>) nil_chk(exec)) executeWithJavaLangRunnable:create_RxInternalOperatorsOperatorRetryTest_$14_initWithInt_withJavaUtilMap_withInt_withJavaUtilConcurrentAtomicAtomicInteger_withJavaUtilConcurrentCountDownLatch_(NUM_RETRIES, data, j, timeouts, cdl)];
-      }
-      [cdl await];
-      OrgJunitAssert_assertEqualsWithLong_withLong_(0, [timeouts get]);
-      if ([data size] > 0) {
-        OrgJunitAssert_failWithNSString_(JreStrcat("$@", @"Data content mismatch: ", RxInternalOperatorsOperatorRetryTest_allSequenceFrequencyWithJavaUtilMap_(data)));
+  @autoreleasepool {
+    jint NUM_LOOPS = 1;
+    jint NUM_RETRIES = JreLoadStatic(RxInternalUtilRxRingBuffer, SIZE) * 2;
+    jint ncpu = [((JavaLangRuntime *) nil_chk(JavaLangRuntime_getRuntime())) availableProcessors];
+    id<JavaUtilConcurrentExecutorService> exec = JavaUtilConcurrentExecutors_newFixedThreadPoolWithInt_(JavaLangMath_maxWithInt_withInt_(ncpu / 2, 2));
+    @try {
+      for (jint r = 0; r < NUM_LOOPS; r++) {
+        if (r % 10 == 0) {
+          [((JavaIoPrintStream *) nil_chk(JreLoadStatic(JavaLangSystem, out))) printlnWithNSString:JreStrcat("$I", @"testRetryWithBackpressureParallelLoop -> ", r)];
+        }
+        JavaUtilConcurrentAtomicAtomicInteger *timeouts = create_JavaUtilConcurrentAtomicAtomicInteger_init();
+        id<JavaUtilMap> data = create_JavaUtilConcurrentConcurrentHashMap_init();
+        jint m = 5000;
+        JavaUtilConcurrentCountDownLatch *cdl = create_JavaUtilConcurrentCountDownLatch_initWithInt_(m);
+        for (jint i = 0; i < m; i++) {
+          jint j = i;
+          [((id<JavaUtilConcurrentExecutorService>) nil_chk(exec)) executeWithJavaLangRunnable:create_RxInternalOperatorsOperatorRetryTest_$14_initWithInt_withJavaUtilMap_withInt_withJavaUtilConcurrentAtomicAtomicInteger_withJavaUtilConcurrentCountDownLatch_(NUM_RETRIES, data, j, timeouts, cdl)];
+        }
+        [cdl await];
+        OrgJunitAssert_assertEqualsWithLong_withLong_(0, [timeouts get]);
+        if ([data size] > 0) {
+          OrgJunitAssert_failWithNSString_(JreStrcat("$@", @"Data content mismatch: ", RxInternalOperatorsOperatorRetryTest_allSequenceFrequencyWithJavaUtilMap_(data)));
+        }
       }
     }
-  }
-  @finally {
-    [((id<JavaUtilConcurrentExecutorService>) nil_chk(exec)) shutdown];
+    @finally {
+      [((id<JavaUtilConcurrentExecutorService>) nil_chk(exec)) shutdown];
+    }
   }
 }
 
@@ -1034,45 +1076,53 @@ __attribute__((unused)) static RxInternalOperatorsOperatorRetryTest_$22 *create_
 }
 
 - (void)testIssue1900 {
-  id<RxObserver> observer = OrgMockitoMockito_mockWithIOSClass_(RxObserver_class_());
-  jint NUM_MSG = 1034;
-  JavaUtilConcurrentAtomicAtomicInteger *count = create_JavaUtilConcurrentAtomicAtomicInteger_init();
-  RxObservable *origin = [((RxObservable *) nil_chk(RxObservable_rangeWithInt_withInt_(0, NUM_MSG))) mapWithRxFunctionsFunc1:create_RxInternalOperatorsOperatorRetryTest_$15_initWithJavaUtilConcurrentAtomicAtomicInteger_(count)];
-  [((RxObservable *) nil_chk([((RxObservable *) nil_chk([((RxObservable *) nil_chk([((RxObservable *) nil_chk(origin)) retry])) groupByWithRxFunctionsFunc1:create_RxInternalOperatorsOperatorRetryTest_$16_init()])) flatMapWithRxFunctionsFunc1:create_RxInternalOperatorsOperatorRetryTest_$17_init()])) unsafeSubscribeWithRxSubscriber:create_RxObserversTestSubscriber_initWithRxObserver_(observer)];
-  id<OrgMockitoInOrder> inOrder = OrgMockitoMockito_inOrderWithNSObjectArray_([IOSObjectArray arrayWithObjects:(id[]){ observer } count:1 type:NSObject_class_()]);
-  [((id<RxObserver>) nil_chk([((id<OrgMockitoInOrder>) nil_chk(inOrder)) verifyWithId:observer withOrgMockitoVerificationVerificationMode:OrgMockitoMockito_timesWithInt_(NUM_MSG)])) onNextWithId:OrgMockitoMatchers_anyWithIOSClass_(NSString_class_())];
-  [((id<RxObserver>) nil_chk([inOrder verifyWithId:observer withOrgMockitoVerificationVerificationMode:OrgMockitoMockito_never()])) onErrorWithNSException:OrgMockitoMatchers_anyWithIOSClass_(NSException_class_())];
-  [((id<RxObserver>) nil_chk([inOrder verifyWithId:observer withOrgMockitoVerificationVerificationMode:OrgMockitoMockito_timesWithInt_(1)])) onCompleted];
-  [inOrder verifyNoMoreInteractions];
+  @autoreleasepool {
+    id<RxObserver> observer = OrgMockitoMockito_mockWithIOSClass_(RxObserver_class_());
+    jint NUM_MSG = 1034;
+    JavaUtilConcurrentAtomicAtomicInteger *count = create_JavaUtilConcurrentAtomicAtomicInteger_init();
+    RxObservable *origin = [((RxObservable *) nil_chk(RxObservable_rangeWithInt_withInt_(0, NUM_MSG))) mapWithRxFunctionsFunc1:create_RxInternalOperatorsOperatorRetryTest_$15_initWithJavaUtilConcurrentAtomicAtomicInteger_(count)];
+    [((RxObservable *) nil_chk([((RxObservable *) nil_chk([((RxObservable *) nil_chk([((RxObservable *) nil_chk(origin)) retry])) groupByWithRxFunctionsFunc1:create_RxInternalOperatorsOperatorRetryTest_$16_init()])) flatMapWithRxFunctionsFunc1:create_RxInternalOperatorsOperatorRetryTest_$17_init()])) unsafeSubscribeWithRxSubscriber:create_RxObserversTestSubscriber_initWithRxObserver_(observer)];
+    id<OrgMockitoInOrder> inOrder = OrgMockitoMockito_inOrderWithNSObjectArray_([IOSObjectArray arrayWithObjects:(id[]){ observer } count:1 type:NSObject_class_()]);
+    [((id<RxObserver>) nil_chk([((id<OrgMockitoInOrder>) nil_chk(inOrder)) verifyWithId:observer withOrgMockitoVerificationVerificationMode:OrgMockitoMockito_timesWithInt_(NUM_MSG)])) onNextWithId:OrgMockitoMatchers_anyWithIOSClass_(NSString_class_())];
+    [((id<RxObserver>) nil_chk([inOrder verifyWithId:observer withOrgMockitoVerificationVerificationMode:OrgMockitoMockito_never()])) onErrorWithNSException:OrgMockitoMatchers_anyWithIOSClass_(NSException_class_())];
+    [((id<RxObserver>) nil_chk([inOrder verifyWithId:observer withOrgMockitoVerificationVerificationMode:OrgMockitoMockito_timesWithInt_(1)])) onCompleted];
+    [inOrder verifyNoMoreInteractions];
+  }
 }
 
 - (void)testIssue1900SourceNotSupportingBackpressure {
-  id<RxObserver> observer = OrgMockitoMockito_mockWithIOSClass_(RxObserver_class_());
-  jint NUM_MSG = 1034;
-  JavaUtilConcurrentAtomicAtomicInteger *count = create_JavaUtilConcurrentAtomicAtomicInteger_init();
-  RxObservable *origin = RxObservable_createWithRxObservable_OnSubscribe_(create_RxInternalOperatorsOperatorRetryTest_$18_initWithJavaUtilConcurrentAtomicAtomicInteger_(count));
-  [((RxObservable *) nil_chk([((RxObservable *) nil_chk([((RxObservable *) nil_chk([((RxObservable *) nil_chk([((RxObservable *) nil_chk(origin)) retry])) onBackpressureBuffer])) groupByWithRxFunctionsFunc1:create_RxInternalOperatorsOperatorRetryTest_$19_init()])) flatMapWithRxFunctionsFunc1:create_RxInternalOperatorsOperatorRetryTest_$20_init()])) unsafeSubscribeWithRxSubscriber:create_RxObserversTestSubscriber_initWithRxObserver_(observer)];
-  id<OrgMockitoInOrder> inOrder = OrgMockitoMockito_inOrderWithNSObjectArray_([IOSObjectArray arrayWithObjects:(id[]){ observer } count:1 type:NSObject_class_()]);
-  [((id<RxObserver>) nil_chk([((id<OrgMockitoInOrder>) nil_chk(inOrder)) verifyWithId:observer withOrgMockitoVerificationVerificationMode:OrgMockitoMockito_timesWithInt_(NUM_MSG)])) onNextWithId:OrgMockitoMatchers_anyWithIOSClass_(NSString_class_())];
-  [((id<RxObserver>) nil_chk([inOrder verifyWithId:observer withOrgMockitoVerificationVerificationMode:OrgMockitoMockito_never()])) onErrorWithNSException:OrgMockitoMatchers_anyWithIOSClass_(NSException_class_())];
-  [((id<RxObserver>) nil_chk([inOrder verifyWithId:observer withOrgMockitoVerificationVerificationMode:OrgMockitoMockito_timesWithInt_(1)])) onCompleted];
-  [inOrder verifyNoMoreInteractions];
+  @autoreleasepool {
+    id<RxObserver> observer = OrgMockitoMockito_mockWithIOSClass_(RxObserver_class_());
+    jint NUM_MSG = 1034;
+    JavaUtilConcurrentAtomicAtomicInteger *count = create_JavaUtilConcurrentAtomicAtomicInteger_init();
+    RxObservable *origin = RxObservable_createWithRxObservable_OnSubscribe_(create_RxInternalOperatorsOperatorRetryTest_$18_initWithJavaUtilConcurrentAtomicAtomicInteger_(count));
+    [((RxObservable *) nil_chk([((RxObservable *) nil_chk([((RxObservable *) nil_chk([((RxObservable *) nil_chk([((RxObservable *) nil_chk(origin)) retry])) onBackpressureBuffer])) groupByWithRxFunctionsFunc1:create_RxInternalOperatorsOperatorRetryTest_$19_init()])) flatMapWithRxFunctionsFunc1:create_RxInternalOperatorsOperatorRetryTest_$20_init()])) unsafeSubscribeWithRxSubscriber:create_RxObserversTestSubscriber_initWithRxObserver_(observer)];
+    id<OrgMockitoInOrder> inOrder = OrgMockitoMockito_inOrderWithNSObjectArray_([IOSObjectArray arrayWithObjects:(id[]){ observer } count:1 type:NSObject_class_()]);
+    [((id<RxObserver>) nil_chk([((id<OrgMockitoInOrder>) nil_chk(inOrder)) verifyWithId:observer withOrgMockitoVerificationVerificationMode:OrgMockitoMockito_timesWithInt_(NUM_MSG)])) onNextWithId:OrgMockitoMatchers_anyWithIOSClass_(NSString_class_())];
+    [((id<RxObserver>) nil_chk([inOrder verifyWithId:observer withOrgMockitoVerificationVerificationMode:OrgMockitoMockito_never()])) onErrorWithNSException:OrgMockitoMatchers_anyWithIOSClass_(NSException_class_())];
+    [((id<RxObserver>) nil_chk([inOrder verifyWithId:observer withOrgMockitoVerificationVerificationMode:OrgMockitoMockito_timesWithInt_(1)])) onCompleted];
+    [inOrder verifyNoMoreInteractions];
+  }
 }
 
 - (void)retryWhenDefaultScheduler {
-  RxObserversTestSubscriber *ts = RxObserversTestSubscriber_create();
-  [((RxObservable *) nil_chk([((RxObservable *) nil_chk([((RxObservable *) nil_chk(RxObservable_justWithId_(JavaLangInteger_valueOfWithInt_(1)))) concatWithWithRxObservable:RxObservable_errorWithNSException_(create_RxExceptionsTestException_init())])) retryWhenWithRxFunctionsFunc1:create_RxInternalOperatorsOperatorRetryTest_$21_init()])) subscribeWithRxSubscriber:ts];
-  [((RxObserversTestSubscriber *) nil_chk(ts)) assertValuesWithNSObjectArray:[IOSObjectArray arrayWithObjects:(id[]){ JavaLangInteger_valueOfWithInt_(1), JavaLangInteger_valueOfWithInt_(1) } count:2 type:JavaLangInteger_class_()]];
-  [ts assertNoErrors];
-  [ts assertCompleted];
+  @autoreleasepool {
+    RxObserversTestSubscriber *ts = RxObserversTestSubscriber_create();
+    [((RxObservable *) nil_chk([((RxObservable *) nil_chk([((RxObservable *) nil_chk(RxObservable_justWithId_(JavaLangInteger_valueOfWithInt_(1)))) concatWithWithRxObservable:RxObservable_errorWithNSException_(create_RxExceptionsTestException_init())])) retryWhenWithRxFunctionsFunc1:create_RxInternalOperatorsOperatorRetryTest_$21_init()])) subscribeWithRxSubscriber:ts];
+    [((RxObserversTestSubscriber *) nil_chk(ts)) assertValuesWithNSObjectArray:[IOSObjectArray arrayWithObjects:(id[]){ JavaLangInteger_valueOfWithInt_(1), JavaLangInteger_valueOfWithInt_(1) } count:2 type:JavaLangInteger_class_()]];
+    [ts assertNoErrors];
+    [ts assertCompleted];
+  }
 }
 
 - (void)retryWhenTrampolineScheduler {
-  RxObserversTestSubscriber *ts = RxObserversTestSubscriber_create();
-  [((RxObservable *) nil_chk([((RxObservable *) nil_chk([((RxObservable *) nil_chk(RxObservable_justWithId_(JavaLangInteger_valueOfWithInt_(1)))) concatWithWithRxObservable:RxObservable_errorWithNSException_(create_RxExceptionsTestException_init())])) retryWhenWithRxFunctionsFunc1:create_RxInternalOperatorsOperatorRetryTest_$22_init() withRxScheduler:RxSchedulersSchedulers_trampoline()])) subscribeWithRxSubscriber:ts];
-  [((RxObserversTestSubscriber *) nil_chk(ts)) assertValuesWithNSObjectArray:[IOSObjectArray arrayWithObjects:(id[]){ JavaLangInteger_valueOfWithInt_(1), JavaLangInteger_valueOfWithInt_(1) } count:2 type:JavaLangInteger_class_()]];
-  [ts assertNoErrors];
-  [ts assertCompleted];
+  @autoreleasepool {
+    RxObserversTestSubscriber *ts = RxObserversTestSubscriber_create();
+    [((RxObservable *) nil_chk([((RxObservable *) nil_chk([((RxObservable *) nil_chk(RxObservable_justWithId_(JavaLangInteger_valueOfWithInt_(1)))) concatWithWithRxObservable:RxObservable_errorWithNSException_(create_RxExceptionsTestException_init())])) retryWhenWithRxFunctionsFunc1:create_RxInternalOperatorsOperatorRetryTest_$22_init() withRxScheduler:RxSchedulersSchedulers_trampoline()])) subscribeWithRxSubscriber:ts];
+    [((RxObserversTestSubscriber *) nil_chk(ts)) assertValuesWithNSObjectArray:[IOSObjectArray arrayWithObjects:(id[]){ JavaLangInteger_valueOfWithInt_(1), JavaLangInteger_valueOfWithInt_(1) } count:2 type:JavaLangInteger_class_()]];
+    [ts assertNoErrors];
+    [ts assertCompleted];
+  }
 }
 
 J2OBJC_IGNORE_DESIGNATED_BEGIN

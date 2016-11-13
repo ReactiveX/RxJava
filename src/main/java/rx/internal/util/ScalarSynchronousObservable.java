@@ -15,6 +15,8 @@
  */
 package rx.internal.util;
 
+import com.google.j2objc.annotations.Weak;
+
 import java.lang.ref.WeakReference;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -176,7 +178,8 @@ public final class ScalarSynchronousObservable<T> extends Observable<T> {
         /** */
         private static final long serialVersionUID = -2466317989629281651L;
 
-        final Subscriber<? super T> actual;
+        //Reference to Subscriber may have been cleared before getting to 'call'
+        Subscriber<? super T> actual;
         final T value;
         final Func1<Action0, Subscription> onSchedule;
 
@@ -199,7 +202,8 @@ public final class ScalarSynchronousObservable<T> extends Observable<T> {
         @Override
         public void call() {
             Subscriber<? super T> a = actual;
-            if (a.isUnsubscribed()) {
+            if (a == null || a.isUnsubscribed()) {
+                actual = null;
                 return;
             }
             T v = value;
@@ -210,9 +214,14 @@ public final class ScalarSynchronousObservable<T> extends Observable<T> {
                 return;
             }
             if (a.isUnsubscribed()) {
+                actual = null;
                 return;
             }
             a.onCompleted();
+            if(a.isUnsubscribed())
+            {
+                actual = null;
+            }
         }
 
         @Override

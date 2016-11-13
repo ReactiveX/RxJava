@@ -16,18 +16,11 @@
 #if !defined (RxObservablesBlockingObservableTest_) && (INCLUDE_ALL_RxObservablesBlockingObservableTest || defined(INCLUDE_RxObservablesBlockingObservableTest))
 #define RxObservablesBlockingObservableTest_
 
-@class RxSubscriber;
-
-@interface RxObservablesBlockingObservableTest : NSObject {
- @public
-  RxSubscriber *w_;
-}
+@interface RxObservablesBlockingObservableTest : NSObject
 
 #pragma mark Public
 
 - (instancetype)init;
-
-- (void)before;
 
 - (void)testFirst;
 
@@ -140,8 +133,6 @@
 @end
 
 J2OBJC_EMPTY_STATIC_INIT(RxObservablesBlockingObservableTest)
-
-J2OBJC_FIELD_SETTER(RxObservablesBlockingObservableTest, w_, RxSubscriber *)
 
 FOUNDATION_EXPORT void RxObservablesBlockingObservableTest_init(RxObservablesBlockingObservableTest *self);
 

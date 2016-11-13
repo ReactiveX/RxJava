@@ -226,7 +226,7 @@ public class OperatorMergeMaxConcurrentTest {
     @Test(timeout = 20000)
     public void testSimpleOneLessAsyncLoop() {
         int max = 200;
-        if (PlatformDependent.isAndroid() || PlatformUtils.isJ2objc()) {
+        if (PlatformDependent.isAndroid()) {
             max = 50;
         }
         for (@AutoreleasePool int i = 0; i < max; i++) {

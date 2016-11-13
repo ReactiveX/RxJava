@@ -107,23 +107,10 @@ public class OneTest
 
     private static void run(String... classNames)
     {
-        try
-        {
-            List<Class> clses = new ArrayList<>();
-            for(String s : classNames)
-            {
-                clses.add(Class.forName(s));
-            }
-            DopplJunitTestRunner.run(clses.toArray(new Class[clses.size()]),
-                    new BigMemRunListener());
-        }
-        catch(ClassNotFoundException e)
-        {
-            throw new RuntimeException(e);
-        }
+        DopplJunitTestRunner.run(classNames, new BigMemRunListener());
     }
 
-    public static void runMethod(String className, String methodName)
+    /*public static void runMethod(String className, String methodName)
     {
         try
         {
@@ -135,7 +122,7 @@ public class OneTest
         {
             throw new RuntimeException(e);
         }
-    }
+    }*/
 
     static class BigMemRunListener extends RunListener
     {
@@ -441,20 +428,21 @@ public class OneTest
 //            rx.internal.operators.OperatorFlatMapTest.class,
 //            rx.internal.operators.OperatorGroupByTest.class,
 //            rx.internal.operators.OperatorMergeMaxConcurrentTest.class,
-            rx.internal.operators.OperatorMergeTest.class,
-            rx.internal.operators.OperatorObserveOnTest.class,
+//            rx.internal.operators.OperatorMergeTest.class,
+//            rx.internal.operators.OperatorObserveOnTest.class,
 //            rx.internal.operators.OperatorPublishTest.class,
-            rx.internal.operators.OperatorReplayTest.class,
+//            rx.internal.operators.OperatorReplayTest.class,
 
 
 
-            rx.internal.operators.OperatorRetryTest.class,
+//            rx.internal.operators.OperatorRetryTest.class,
 //            rx.internal.operators.OperatorSwitchTest.class,
 //            rx.internal.operators.OperatorTakeLastTest.class,
 //            rx.internal.operators.OperatorTakeLastTimedTest.class,
             rx.internal.util.JCToolsQueueTests.class,
 
-            rx.subjects.BehaviorSubjectTest.class,
+            rx.internal.util.IndexedRingBufferTest.class,
+//            rx.subjects.BehaviorSubjectTest.class,
 
             rx.subjects.ReplaySubjectConcurrencyTest.class,
             ReplaySubjectBoundedConcurrencyTest.class,

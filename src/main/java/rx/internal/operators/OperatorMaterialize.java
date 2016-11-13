@@ -15,6 +15,8 @@
  */
 package rx.internal.operators;
 
+import com.google.j2objc.annotations.Weak;
+
 import java.util.concurrent.atomic.AtomicLong;
 
 import rx.Notification;
@@ -57,19 +59,13 @@ public final class OperatorMaterialize<T> implements Operator<Notification<T>, T
     public Subscriber<? super T> call(final Subscriber<? super Notification<T>> child) {
         final ParentSubscriber<T> parent = new ParentSubscriber<T>(child);
         child.add(parent);
-        child.setProducer(new Producer() {
-            @Override
-            public void request(long n) {
-                if (n > 0) {
-                    parent.requestMore(n);
-                }
-            }
-        });
+        child.setProducer(new MaterializeProducer<T>(parent));
         return parent;
     }
 
     static class ParentSubscriber<T> extends Subscriber<T> {
 
+        @Weak//TODO: Review this. Very worried this will have reference issues
         private final Subscriber<? super Notification<T>> child;
 
         private volatile Notification<T> terminalNotification;
@@ -164,6 +160,23 @@ public final class OperatorMaterialize<T> implements Operator<Notification<T>, T
                         return;
                     }
                 }
+            }
+        }
+    }
+
+    private static class MaterializeProducer<T> implements Producer
+    {
+        private final ParentSubscriber<T> parent;
+
+        public MaterializeProducer(ParentSubscriber<T> parent)
+        {
+            this.parent = parent;
+        }
+
+        @Override
+        public void request(long n) {
+            if (n > 0) {
+                parent.requestMore(n);
             }
         }
     }

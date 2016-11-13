@@ -400,8 +400,8 @@ public class OperatorPublishTest {
     public void testObserveOn() {
         ConnectableObservable<Integer> co = Observable.range(0, 1000).publish();
         Observable<Integer> obs = co.observeOn(Schedulers.computation());
-        for (@AutoreleasePool int i = 0; i < 100; i++) {
-            for (int j = 1; j < 6; j++) {
+        for (@AutoreleasePool int i = 0; i < 1000; i++) {
+            for (int j = 1; j < 3; j++) {
                 List<TestSubscriber<Integer>> tss = new ArrayList<TestSubscriber<Integer>>();
                 for (int k = 1; k < j; k++) {
                     TestSubscriber<Integer> ts = new TestSubscriber<Integer>();

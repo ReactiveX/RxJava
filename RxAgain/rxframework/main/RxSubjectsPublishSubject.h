@@ -164,7 +164,7 @@ J2OBJC_TYPE_LITERAL_HEADER(RxSubjectsPublishSubject_PublishSubjectState)
 @interface RxSubjectsPublishSubject_PublishSubjectProducer : JavaUtilConcurrentAtomicAtomicLong < RxProducer, RxSubscription, RxObserver > {
  @public
   RxSubjectsPublishSubject_PublishSubjectState *parent_;
-  RxSubscriber *actual_;
+  __unsafe_unretained RxSubscriber *actual_;
   jlong produced_;
 }
 
@@ -190,7 +190,6 @@ J2OBJC_TYPE_LITERAL_HEADER(RxSubjectsPublishSubject_PublishSubjectState)
 J2OBJC_EMPTY_STATIC_INIT(RxSubjectsPublishSubject_PublishSubjectProducer)
 
 J2OBJC_FIELD_SETTER(RxSubjectsPublishSubject_PublishSubjectProducer, parent_, RxSubjectsPublishSubject_PublishSubjectState *)
-J2OBJC_FIELD_SETTER(RxSubjectsPublishSubject_PublishSubjectProducer, actual_, RxSubscriber *)
 
 FOUNDATION_EXPORT void RxSubjectsPublishSubject_PublishSubjectProducer_initWithRxSubjectsPublishSubject_PublishSubjectState_withRxSubscriber_(RxSubjectsPublishSubject_PublishSubjectProducer *self, RxSubjectsPublishSubject_PublishSubjectState *parent, RxSubscriber *actual);
 

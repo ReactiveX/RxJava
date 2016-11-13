@@ -23,7 +23,7 @@ import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.*;
-import org.mockito.*;
+
 
 import rx.Observable;
 import rx.Observable.OnSubscribe;
@@ -36,13 +36,9 @@ import rx.subscriptions.Subscriptions;
 
 public class BlockingObservableTest {
 
-    @Mock
-    Subscriber<Integer> w;
+//    @Mock
+//    Subscriber<Integer> w;
 
-    @Before
-    public void before() {
-        MockitoAnnotations.initMocks(this);
-    }
 
     @Test
     public void testLast() {

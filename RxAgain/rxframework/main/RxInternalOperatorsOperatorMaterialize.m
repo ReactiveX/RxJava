@@ -16,7 +16,7 @@
 
 @interface RxInternalOperatorsOperatorMaterialize_ParentSubscriber () {
  @public
-  RxSubscriber *child_;
+  __unsafe_unretained RxSubscriber *child_;
   volatile_id terminalNotification_;
   jboolean busy_;
   jboolean missed_;
@@ -29,7 +29,6 @@
 
 @end
 
-J2OBJC_FIELD_SETTER(RxInternalOperatorsOperatorMaterialize_ParentSubscriber, child_, RxSubscriber *)
 J2OBJC_VOLATILE_FIELD_SETTER(RxInternalOperatorsOperatorMaterialize_ParentSubscriber, terminalNotification_, RxNotification *)
 J2OBJC_FIELD_SETTER(RxInternalOperatorsOperatorMaterialize_ParentSubscriber, requested_ParentSubscriber_, JavaUtilConcurrentAtomicAtomicLong *)
 
@@ -37,26 +36,28 @@ __attribute__((unused)) static void RxInternalOperatorsOperatorMaterialize_Paren
 
 __attribute__((unused)) static void RxInternalOperatorsOperatorMaterialize_ParentSubscriber_drain(RxInternalOperatorsOperatorMaterialize_ParentSubscriber *self);
 
-@interface RxInternalOperatorsOperatorMaterialize_$1 : NSObject < RxProducer > {
+@interface RxInternalOperatorsOperatorMaterialize_MaterializeProducer : NSObject < RxProducer > {
  @public
-  RxInternalOperatorsOperatorMaterialize_ParentSubscriber *val$parent_;
+  RxInternalOperatorsOperatorMaterialize_ParentSubscriber *parent_;
 }
+
+- (instancetype)initWithRxInternalOperatorsOperatorMaterialize_ParentSubscriber:(RxInternalOperatorsOperatorMaterialize_ParentSubscriber *)parent;
 
 - (void)requestWithLong:(jlong)n;
 
-- (instancetype)initWithRxInternalOperatorsOperatorMaterialize_ParentSubscriber:(RxInternalOperatorsOperatorMaterialize_ParentSubscriber *)capture$0;
-
 @end
 
-J2OBJC_EMPTY_STATIC_INIT(RxInternalOperatorsOperatorMaterialize_$1)
+J2OBJC_EMPTY_STATIC_INIT(RxInternalOperatorsOperatorMaterialize_MaterializeProducer)
 
-J2OBJC_FIELD_SETTER(RxInternalOperatorsOperatorMaterialize_$1, val$parent_, RxInternalOperatorsOperatorMaterialize_ParentSubscriber *)
+J2OBJC_FIELD_SETTER(RxInternalOperatorsOperatorMaterialize_MaterializeProducer, parent_, RxInternalOperatorsOperatorMaterialize_ParentSubscriber *)
 
-__attribute__((unused)) static void RxInternalOperatorsOperatorMaterialize_$1_initWithRxInternalOperatorsOperatorMaterialize_ParentSubscriber_(RxInternalOperatorsOperatorMaterialize_$1 *self, RxInternalOperatorsOperatorMaterialize_ParentSubscriber *capture$0);
+__attribute__((unused)) static void RxInternalOperatorsOperatorMaterialize_MaterializeProducer_initWithRxInternalOperatorsOperatorMaterialize_ParentSubscriber_(RxInternalOperatorsOperatorMaterialize_MaterializeProducer *self, RxInternalOperatorsOperatorMaterialize_ParentSubscriber *parent);
 
-__attribute__((unused)) static RxInternalOperatorsOperatorMaterialize_$1 *new_RxInternalOperatorsOperatorMaterialize_$1_initWithRxInternalOperatorsOperatorMaterialize_ParentSubscriber_(RxInternalOperatorsOperatorMaterialize_ParentSubscriber *capture$0) NS_RETURNS_RETAINED;
+__attribute__((unused)) static RxInternalOperatorsOperatorMaterialize_MaterializeProducer *new_RxInternalOperatorsOperatorMaterialize_MaterializeProducer_initWithRxInternalOperatorsOperatorMaterialize_ParentSubscriber_(RxInternalOperatorsOperatorMaterialize_ParentSubscriber *parent) NS_RETURNS_RETAINED;
 
-__attribute__((unused)) static RxInternalOperatorsOperatorMaterialize_$1 *create_RxInternalOperatorsOperatorMaterialize_$1_initWithRxInternalOperatorsOperatorMaterialize_ParentSubscriber_(RxInternalOperatorsOperatorMaterialize_ParentSubscriber *capture$0);
+__attribute__((unused)) static RxInternalOperatorsOperatorMaterialize_MaterializeProducer *create_RxInternalOperatorsOperatorMaterialize_MaterializeProducer_initWithRxInternalOperatorsOperatorMaterialize_ParentSubscriber_(RxInternalOperatorsOperatorMaterialize_ParentSubscriber *parent);
+
+J2OBJC_TYPE_LITERAL_HEADER(RxInternalOperatorsOperatorMaterialize_MaterializeProducer)
 
 @implementation RxInternalOperatorsOperatorMaterialize
 
@@ -74,7 +75,7 @@ J2OBJC_IGNORE_DESIGNATED_END
 - (RxSubscriber *)callWithId:(RxSubscriber *)child {
   RxInternalOperatorsOperatorMaterialize_ParentSubscriber *parent = create_RxInternalOperatorsOperatorMaterialize_ParentSubscriber_initWithRxSubscriber_(child);
   [((RxSubscriber *) nil_chk(child)) addWithRxSubscription:parent];
-  [child setProducerWithRxProducer:create_RxInternalOperatorsOperatorMaterialize_$1_initWithRxInternalOperatorsOperatorMaterialize_ParentSubscriber_(parent)];
+  [child setProducerWithRxProducer:create_RxInternalOperatorsOperatorMaterialize_MaterializeProducer_initWithRxInternalOperatorsOperatorMaterialize_ParentSubscriber_(parent)];
   return parent;
 }
 
@@ -90,7 +91,7 @@ J2OBJC_IGNORE_DESIGNATED_END
   methods[1].selector = @selector(init);
   methods[2].selector = @selector(callWithId:);
   #pragma clang diagnostic pop
-  static const void *ptrTable[] = { "<T:Ljava/lang/Object;>()Lrx/internal/operators/OperatorMaterialize<TT;>;", "call", "LRxSubscriber;", "(Lrx/Subscriber<-Lrx/Notification<TT;>;>;)Lrx/Subscriber<-TT;>;", "LRxInternalOperatorsOperatorMaterialize_Holder;LRxInternalOperatorsOperatorMaterialize_ParentSubscriber;", "<T:Ljava/lang/Object;>Ljava/lang/Object;Lrx/Observable$Operator<Lrx/Notification<TT;>;TT;>;" };
+  static const void *ptrTable[] = { "<T:Ljava/lang/Object;>()Lrx/internal/operators/OperatorMaterialize<TT;>;", "call", "LRxSubscriber;", "(Lrx/Subscriber<-Lrx/Notification<TT;>;>;)Lrx/Subscriber<-TT;>;", "LRxInternalOperatorsOperatorMaterialize_Holder;LRxInternalOperatorsOperatorMaterialize_ParentSubscriber;LRxInternalOperatorsOperatorMaterialize_MaterializeProducer;", "<T:Ljava/lang/Object;>Ljava/lang/Object;Lrx/Observable$Operator<Lrx/Notification<TT;>;TT;>;" };
   static const J2ObjcClassInfo _RxInternalOperatorsOperatorMaterialize = { "OperatorMaterialize", "rx.internal.operators", ptrTable, methods, NULL, 7, 0x11, 3, 0, -1, 4, -1, 5, -1 };
   return &_RxInternalOperatorsOperatorMaterialize;
 }
@@ -211,12 +212,12 @@ J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxInternalOperatorsOperatorMaterialize_Holder)
 
 - (void)__javaClone:(RxInternalOperatorsOperatorMaterialize_ParentSubscriber *)original {
   [super __javaClone:original];
+  [child_ release];
   JreCloneVolatileStrong(&terminalNotification_, &original->terminalNotification_);
 }
 
 - (void)dealloc {
   JreCheckFinalize(self, [RxInternalOperatorsOperatorMaterialize_ParentSubscriber class]);
-  RELEASE_(child_);
   JreReleaseVolatile(&terminalNotification_);
   RELEASE_(requested_ParentSubscriber_);
   [super dealloc];
@@ -261,7 +262,7 @@ J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxInternalOperatorsOperatorMaterialize_Holder)
 void RxInternalOperatorsOperatorMaterialize_ParentSubscriber_initWithRxSubscriber_(RxInternalOperatorsOperatorMaterialize_ParentSubscriber *self, RxSubscriber *child) {
   RxSubscriber_init(self);
   JreStrongAssignAndConsume(&self->requested_ParentSubscriber_, new_JavaUtilConcurrentAtomicAtomicLong_init());
-  JreStrongAssign(&self->child_, child);
+  self->child_ = child;
 }
 
 RxInternalOperatorsOperatorMaterialize_ParentSubscriber *new_RxInternalOperatorsOperatorMaterialize_ParentSubscriber_initWithRxSubscriber_(RxSubscriber *child) {
@@ -317,53 +318,55 @@ void RxInternalOperatorsOperatorMaterialize_ParentSubscriber_drain(RxInternalOpe
 
 J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxInternalOperatorsOperatorMaterialize_ParentSubscriber)
 
-@implementation RxInternalOperatorsOperatorMaterialize_$1
+@implementation RxInternalOperatorsOperatorMaterialize_MaterializeProducer
 
-- (void)requestWithLong:(jlong)n {
-  if (n > 0) {
-    [((RxInternalOperatorsOperatorMaterialize_ParentSubscriber *) nil_chk(val$parent_)) requestMoreWithLong:n];
-  }
-}
-
-- (instancetype)initWithRxInternalOperatorsOperatorMaterialize_ParentSubscriber:(RxInternalOperatorsOperatorMaterialize_ParentSubscriber *)capture$0 {
-  RxInternalOperatorsOperatorMaterialize_$1_initWithRxInternalOperatorsOperatorMaterialize_ParentSubscriber_(self, capture$0);
+- (instancetype)initWithRxInternalOperatorsOperatorMaterialize_ParentSubscriber:(RxInternalOperatorsOperatorMaterialize_ParentSubscriber *)parent {
+  RxInternalOperatorsOperatorMaterialize_MaterializeProducer_initWithRxInternalOperatorsOperatorMaterialize_ParentSubscriber_(self, parent);
   return self;
 }
 
+- (void)requestWithLong:(jlong)n {
+  if (n > 0) {
+    [((RxInternalOperatorsOperatorMaterialize_ParentSubscriber *) nil_chk(parent_)) requestMoreWithLong:n];
+  }
+}
+
 - (void)dealloc {
-  RELEASE_(val$parent_);
+  RELEASE_(parent_);
   [super dealloc];
 }
 
 + (const J2ObjcClassInfo *)__metadata {
   static J2ObjcMethodInfo methods[] = {
-    { NULL, "V", 0x1, 0, 1, -1, -1, -1, -1 },
-    { NULL, NULL, 0x0, -1, 2, -1, 3, -1, -1 },
+    { NULL, NULL, 0x1, -1, 0, -1, 1, -1, -1 },
+    { NULL, "V", 0x1, 2, 3, -1, -1, -1, -1 },
   };
   #pragma clang diagnostic push
   #pragma clang diagnostic ignored "-Wobjc-multiple-method-names"
-  methods[0].selector = @selector(requestWithLong:);
-  methods[1].selector = @selector(initWithRxInternalOperatorsOperatorMaterialize_ParentSubscriber:);
+  methods[0].selector = @selector(initWithRxInternalOperatorsOperatorMaterialize_ParentSubscriber:);
+  methods[1].selector = @selector(requestWithLong:);
   #pragma clang diagnostic pop
   static const J2ObjcFieldInfo fields[] = {
-    { "val$parent_", "LRxInternalOperatorsOperatorMaterialize_ParentSubscriber;", .constantValue.asLong = 0, 0x1012, -1, -1, 4, -1 },
+    { "parent_", "LRxInternalOperatorsOperatorMaterialize_ParentSubscriber;", .constantValue.asLong = 0, 0x12, -1, -1, 4, -1 },
   };
-  static const void *ptrTable[] = { "request", "J", "LRxInternalOperatorsOperatorMaterialize_ParentSubscriber;", "(Lrx/internal/operators/OperatorMaterialize$ParentSubscriber<TT;>;)V", "Lrx/internal/operators/OperatorMaterialize$ParentSubscriber<TT;>;", "LRxInternalOperatorsOperatorMaterialize;", "callWithId:" };
-  static const J2ObjcClassInfo _RxInternalOperatorsOperatorMaterialize_$1 = { "", "rx.internal.operators", ptrTable, methods, fields, 7, 0x8008, 2, 1, 5, -1, 6, -1, -1 };
-  return &_RxInternalOperatorsOperatorMaterialize_$1;
+  static const void *ptrTable[] = { "LRxInternalOperatorsOperatorMaterialize_ParentSubscriber;", "(Lrx/internal/operators/OperatorMaterialize$ParentSubscriber<TT;>;)V", "request", "J", "Lrx/internal/operators/OperatorMaterialize$ParentSubscriber<TT;>;", "LRxInternalOperatorsOperatorMaterialize;", "<T:Ljava/lang/Object;>Ljava/lang/Object;Lrx/Producer;" };
+  static const J2ObjcClassInfo _RxInternalOperatorsOperatorMaterialize_MaterializeProducer = { "MaterializeProducer", "rx.internal.operators", ptrTable, methods, fields, 7, 0xa, 2, 1, 5, -1, -1, 6, -1 };
+  return &_RxInternalOperatorsOperatorMaterialize_MaterializeProducer;
 }
 
 @end
 
-void RxInternalOperatorsOperatorMaterialize_$1_initWithRxInternalOperatorsOperatorMaterialize_ParentSubscriber_(RxInternalOperatorsOperatorMaterialize_$1 *self, RxInternalOperatorsOperatorMaterialize_ParentSubscriber *capture$0) {
-  JreStrongAssign(&self->val$parent_, capture$0);
+void RxInternalOperatorsOperatorMaterialize_MaterializeProducer_initWithRxInternalOperatorsOperatorMaterialize_ParentSubscriber_(RxInternalOperatorsOperatorMaterialize_MaterializeProducer *self, RxInternalOperatorsOperatorMaterialize_ParentSubscriber *parent) {
   NSObject_init(self);
+  JreStrongAssign(&self->parent_, parent);
 }
 
-RxInternalOperatorsOperatorMaterialize_$1 *new_RxInternalOperatorsOperatorMaterialize_$1_initWithRxInternalOperatorsOperatorMaterialize_ParentSubscriber_(RxInternalOperatorsOperatorMaterialize_ParentSubscriber *capture$0) {
-  J2OBJC_NEW_IMPL(RxInternalOperatorsOperatorMaterialize_$1, initWithRxInternalOperatorsOperatorMaterialize_ParentSubscriber_, capture$0)
+RxInternalOperatorsOperatorMaterialize_MaterializeProducer *new_RxInternalOperatorsOperatorMaterialize_MaterializeProducer_initWithRxInternalOperatorsOperatorMaterialize_ParentSubscriber_(RxInternalOperatorsOperatorMaterialize_ParentSubscriber *parent) {
+  J2OBJC_NEW_IMPL(RxInternalOperatorsOperatorMaterialize_MaterializeProducer, initWithRxInternalOperatorsOperatorMaterialize_ParentSubscriber_, parent)
 }
 
-RxInternalOperatorsOperatorMaterialize_$1 *create_RxInternalOperatorsOperatorMaterialize_$1_initWithRxInternalOperatorsOperatorMaterialize_ParentSubscriber_(RxInternalOperatorsOperatorMaterialize_ParentSubscriber *capture$0) {
-  J2OBJC_CREATE_IMPL(RxInternalOperatorsOperatorMaterialize_$1, initWithRxInternalOperatorsOperatorMaterialize_ParentSubscriber_, capture$0)
+RxInternalOperatorsOperatorMaterialize_MaterializeProducer *create_RxInternalOperatorsOperatorMaterialize_MaterializeProducer_initWithRxInternalOperatorsOperatorMaterialize_ParentSubscriber_(RxInternalOperatorsOperatorMaterialize_ParentSubscriber *parent) {
+  J2OBJC_CREATE_IMPL(RxInternalOperatorsOperatorMaterialize_MaterializeProducer, initWithRxInternalOperatorsOperatorMaterialize_ParentSubscriber_, parent)
 }
+
+J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxInternalOperatorsOperatorMaterialize_MaterializeProducer)

@@ -43,6 +43,16 @@
 
 __attribute__((unused)) static IOSObjectArray *RxSubjectsReplaySubjectConcurrencyTest__Annotations$0();
 
+__attribute__((unused)) static IOSObjectArray *RxSubjectsReplaySubjectConcurrencyTest__Annotations$1();
+
+__attribute__((unused)) static IOSObjectArray *RxSubjectsReplaySubjectConcurrencyTest__Annotations$2();
+
+__attribute__((unused)) static IOSObjectArray *RxSubjectsReplaySubjectConcurrencyTest__Annotations$3();
+
+__attribute__((unused)) static IOSObjectArray *RxSubjectsReplaySubjectConcurrencyTest__Annotations$4();
+
+__attribute__((unused)) static IOSObjectArray *RxSubjectsReplaySubjectConcurrencyTest__Annotations$5();
+
 @interface RxSubjectsReplaySubjectConcurrencyTest_SubjectObserverThread : JavaLangThread {
  @public
   RxSubjectsReplaySubject *subject_;
@@ -566,14 +576,14 @@ J2OBJC_IGNORE_DESIGNATED_END
 + (const J2ObjcClassInfo *)__metadata {
   static J2ObjcMethodInfo methods[] = {
     { NULL, "V", 0x9, 0, 1, -1, -1, -1, -1 },
-    { NULL, "V", 0x1, -1, -1, 2, -1, -1, -1 },
-    { NULL, "V", 0x1, -1, -1, 3, -1, -1, -1 },
-    { NULL, "V", 0x1, -1, -1, 2, -1, 4, -1 },
-    { NULL, "V", 0x9, 5, 6, 2, 7, -1, -1 },
-    { NULL, "V", 0x1, -1, -1, -1, -1, -1, -1 },
-    { NULL, "V", 0x1, -1, -1, -1, -1, -1, -1 },
-    { NULL, "V", 0x1, -1, -1, 3, -1, -1, -1 },
-    { NULL, "V", 0x1, -1, -1, 2, -1, -1, -1 },
+    { NULL, "V", 0x1, -1, -1, 2, -1, 3, -1 },
+    { NULL, "V", 0x1, -1, -1, 4, -1, -1, -1 },
+    { NULL, "V", 0x1, -1, -1, 2, -1, 5, -1 },
+    { NULL, "V", 0x9, 6, 7, 2, 8, -1, -1 },
+    { NULL, "V", 0x1, -1, -1, -1, -1, 9, -1 },
+    { NULL, "V", 0x1, -1, -1, -1, -1, 10, -1 },
+    { NULL, "V", 0x1, -1, -1, 4, -1, 11, -1 },
+    { NULL, "V", 0x1, -1, -1, 2, -1, 12, -1 },
     { NULL, NULL, 0x1, -1, -1, -1, -1, -1, -1 },
   };
   #pragma clang diagnostic push
@@ -589,8 +599,8 @@ J2OBJC_IGNORE_DESIGNATED_END
   methods[8].selector = @selector(testConcurrentSizeAndHasAnyValue);
   methods[9].selector = @selector(init);
   #pragma clang diagnostic pop
-  static const void *ptrTable[] = { "main", "[LNSString;", "LJavaLangInterruptedException;", "LJavaLangException;", (void *)&RxSubjectsReplaySubjectConcurrencyTest__Annotations$0, "concurrencyTest", "LRxSubjectsReplaySubject;", "(Lrx/subjects/ReplaySubject<Ljava/lang/Long;>;)V", "LRxSubjectsReplaySubjectConcurrencyTest_SubjectObserverThread;" };
-  static const J2ObjcClassInfo _RxSubjectsReplaySubjectConcurrencyTest = { "ReplaySubjectConcurrencyTest", "rx.subjects", ptrTable, methods, NULL, 7, 0x1, 10, 0, -1, 8, -1, -1, -1 };
+  static const void *ptrTable[] = { "main", "[LNSString;", "LJavaLangInterruptedException;", (void *)&RxSubjectsReplaySubjectConcurrencyTest__Annotations$0, "LJavaLangException;", (void *)&RxSubjectsReplaySubjectConcurrencyTest__Annotations$1, "concurrencyTest", "LRxSubjectsReplaySubject;", "(Lrx/subjects/ReplaySubject<Ljava/lang/Long;>;)V", (void *)&RxSubjectsReplaySubjectConcurrencyTest__Annotations$2, (void *)&RxSubjectsReplaySubjectConcurrencyTest__Annotations$3, (void *)&RxSubjectsReplaySubjectConcurrencyTest__Annotations$4, (void *)&RxSubjectsReplaySubjectConcurrencyTest__Annotations$5, "LRxSubjectsReplaySubjectConcurrencyTest_SubjectObserverThread;" };
+  static const J2ObjcClassInfo _RxSubjectsReplaySubjectConcurrencyTest = { "ReplaySubjectConcurrencyTest", "rx.subjects", ptrTable, methods, NULL, 7, 0x1, 10, 0, -1, 13, -1, -1, -1 };
   return &_RxSubjectsReplaySubjectConcurrencyTest;
 }
 
@@ -681,7 +691,27 @@ RxSubjectsReplaySubjectConcurrencyTest *create_RxSubjectsReplaySubjectConcurrenc
 }
 
 IOSObjectArray *RxSubjectsReplaySubjectConcurrencyTest__Annotations$0() {
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 4000) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+}
+
+IOSObjectArray *RxSubjectsReplaySubjectConcurrencyTest__Annotations$1() {
   return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+}
+
+IOSObjectArray *RxSubjectsReplaySubjectConcurrencyTest__Annotations$2() {
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 10000) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+}
+
+IOSObjectArray *RxSubjectsReplaySubjectConcurrencyTest__Annotations$3() {
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+}
+
+IOSObjectArray *RxSubjectsReplaySubjectConcurrencyTest__Annotations$4() {
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+}
+
+IOSObjectArray *RxSubjectsReplaySubjectConcurrencyTest__Annotations$5() {
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 10000) } count:1 type:JavaLangAnnotationAnnotation_class_()];
 }
 
 J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxSubjectsReplaySubjectConcurrencyTest)

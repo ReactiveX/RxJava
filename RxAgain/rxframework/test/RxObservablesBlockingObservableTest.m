@@ -42,11 +42,7 @@
 #include "java/util/concurrent/atomic/AtomicReference.h"
 #include "java/util/function/Consumer.h"
 #include "org/junit/Assert.h"
-#include "org/junit/Before.h"
 #include "org/junit/Test.h"
-#include "org/mockito/Answers.h"
-#include "org/mockito/Mock.h"
-#include "org/mockito/MockitoAnnotations.h"
 
 @interface RxObservablesBlockingObservableTest () {
  @public
@@ -178,10 +174,6 @@ __attribute__((unused)) static IOSObjectArray *RxObservablesBlockingObservableTe
 __attribute__((unused)) static IOSObjectArray *RxObservablesBlockingObservableTest__Annotations$52();
 
 __attribute__((unused)) static IOSObjectArray *RxObservablesBlockingObservableTest__Annotations$53();
-
-__attribute__((unused)) static IOSObjectArray *RxObservablesBlockingObservableTest__Annotations$54();
-
-__attribute__((unused)) static IOSObjectArray *RxObservablesBlockingObservableTest__Annotations$55();
 
 @interface RxObservablesBlockingObservableTest_InterruptionTests : NSObject {
  @public
@@ -967,10 +959,6 @@ __attribute__((unused)) static RxObservablesBlockingObservableTest_$34 *create_R
 
 @implementation RxObservablesBlockingObservableTest
 
-- (void)before {
-  OrgMockitoMockitoAnnotations_initMocksWithId_(self);
-}
-
 - (void)testLast {
   RxObservablesBlockingObservable *obs = RxObservablesBlockingObservable_fromWithRxObservable_(RxObservable_justWithId_withId_withId_(@"one", @"two", @"three"));
   OrgJunitAssert_assertEqualsWithId_withId_(@"three", [((RxObservablesBlockingObservable *) nil_chk(obs)) last]);
@@ -1303,7 +1291,6 @@ J2OBJC_IGNORE_DESIGNATED_BEGIN
 J2OBJC_IGNORE_DESIGNATED_END
 
 - (void)dealloc {
-  RELEASE_(w_);
   RELEASE_(singleAction_);
   RELEASE_(forEachAction_);
   RELEASE_(firstAction_);
@@ -1347,22 +1334,22 @@ J2OBJC_IGNORE_DESIGNATED_END
     { NULL, "V", 0x1, -1, -1, -1, -1, 27, -1 },
     { NULL, "V", 0x1, -1, -1, -1, -1, 28, -1 },
     { NULL, "V", 0x1, -1, -1, -1, -1, 29, -1 },
-    { NULL, "V", 0x1, -1, -1, -1, -1, 30, -1 },
-    { NULL, "V", 0x1, -1, -1, 31, -1, 32, -1 },
-    { NULL, "V", 0x1, -1, -1, 31, -1, 33, -1 },
-    { NULL, "V", 0x1, -1, -1, 31, -1, 34, -1 },
-    { NULL, "V", 0x1, -1, -1, 31, -1, 35, -1 },
-    { NULL, "V", 0x1, -1, -1, 31, -1, 36, -1 },
-    { NULL, "V", 0x1, -1, -1, 31, -1, 37, -1 },
-    { NULL, "V", 0x1, -1, -1, 31, -1, 38, -1 },
-    { NULL, "V", 0x1, -1, -1, 31, -1, 39, -1 },
-    { NULL, "V", 0x1, -1, -1, 31, -1, 40, -1 },
-    { NULL, "V", 0x1, -1, -1, 31, -1, 41, -1 },
-    { NULL, "V", 0x1, -1, -1, 31, -1, 42, -1 },
-    { NULL, "V", 0x1, -1, -1, 31, -1, 43, -1 },
-    { NULL, "V", 0x1, -1, -1, 31, -1, 44, -1 },
-    { NULL, "V", 0x1, -1, -1, 31, -1, 45, -1 },
-    { NULL, "V", 0x1, -1, -1, 31, -1, 46, -1 },
+    { NULL, "V", 0x1, -1, -1, 30, -1, 31, -1 },
+    { NULL, "V", 0x1, -1, -1, 30, -1, 32, -1 },
+    { NULL, "V", 0x1, -1, -1, 30, -1, 33, -1 },
+    { NULL, "V", 0x1, -1, -1, 30, -1, 34, -1 },
+    { NULL, "V", 0x1, -1, -1, 30, -1, 35, -1 },
+    { NULL, "V", 0x1, -1, -1, 30, -1, 36, -1 },
+    { NULL, "V", 0x1, -1, -1, 30, -1, 37, -1 },
+    { NULL, "V", 0x1, -1, -1, 30, -1, 38, -1 },
+    { NULL, "V", 0x1, -1, -1, 30, -1, 39, -1 },
+    { NULL, "V", 0x1, -1, -1, 30, -1, 40, -1 },
+    { NULL, "V", 0x1, -1, -1, 30, -1, 41, -1 },
+    { NULL, "V", 0x1, -1, -1, 30, -1, 42, -1 },
+    { NULL, "V", 0x1, -1, -1, 30, -1, 43, -1 },
+    { NULL, "V", 0x1, -1, -1, 30, -1, 44, -1 },
+    { NULL, "V", 0x1, -1, -1, 30, -1, 45, -1 },
+    { NULL, "V", 0x1, -1, -1, -1, -1, 46, -1 },
     { NULL, "V", 0x1, -1, -1, -1, -1, 47, -1 },
     { NULL, "V", 0x1, -1, -1, -1, -1, 48, -1 },
     { NULL, "V", 0x1, -1, -1, -1, -1, 49, -1 },
@@ -1371,81 +1358,78 @@ J2OBJC_IGNORE_DESIGNATED_END
     { NULL, "V", 0x1, -1, -1, -1, -1, 52, -1 },
     { NULL, "V", 0x1, -1, -1, -1, -1, 53, -1 },
     { NULL, "V", 0x1, -1, -1, -1, -1, 54, -1 },
-    { NULL, "V", 0x1, -1, -1, -1, -1, 55, -1 },
     { NULL, NULL, 0x1, -1, -1, -1, -1, -1, -1 },
   };
   #pragma clang diagnostic push
   #pragma clang diagnostic ignored "-Wobjc-multiple-method-names"
-  methods[0].selector = @selector(before);
-  methods[1].selector = @selector(testLast);
-  methods[2].selector = @selector(testLastEmptyObservable);
-  methods[3].selector = @selector(testLastOrDefault);
-  methods[4].selector = @selector(testLastOrDefault1);
-  methods[5].selector = @selector(testLastOrDefault2);
-  methods[6].selector = @selector(testLastOrDefaultWithPredicate);
-  methods[7].selector = @selector(testLastOrDefaultWrongPredicate);
-  methods[8].selector = @selector(testLastWithPredicate);
-  methods[9].selector = @selector(testSingle);
-  methods[10].selector = @selector(testSingleDefault);
-  methods[11].selector = @selector(testSingleDefaultPredicateMatchesMoreThanOne);
-  methods[12].selector = @selector(testSingleDefaultPredicateMatchesNothing);
-  methods[13].selector = @selector(testSingleDefaultWithMoreThanOne);
-  methods[14].selector = @selector(testSingleWithPredicateDefault);
-  methods[15].selector = @selector(testSingleWrong);
-  methods[16].selector = @selector(testSingleWrongPredicate);
-  methods[17].selector = @selector(testToIterable);
-  methods[18].selector = @selector(testToIterableNextOnly);
-  methods[19].selector = @selector(testToIterableNextOnlyTwice);
-  methods[20].selector = @selector(testToIterableManyTimes);
-  methods[21].selector = @selector(testToIterableWithException);
-  methods[22].selector = @selector(testForEachWithError);
-  methods[23].selector = @selector(testFirst);
-  methods[24].selector = @selector(testFirstWithEmpty);
-  methods[25].selector = @selector(testFirstWithPredicate);
-  methods[26].selector = @selector(testFirstWithPredicateAndEmpty);
-  methods[27].selector = @selector(testFirstOrDefault);
-  methods[28].selector = @selector(testFirstOrDefaultWithEmpty);
-  methods[29].selector = @selector(testFirstOrDefaultWithPredicate);
-  methods[30].selector = @selector(testFirstOrDefaultWithPredicateAndEmpty);
-  methods[31].selector = @selector(testSingleOrDefaultUnsubscribe);
-  methods[32].selector = @selector(testUnsubscribeFromSingleWhenInterrupted);
-  methods[33].selector = @selector(testNoInterruptedExceptionWhenInterruptedWhileSingleOnSynchronousObservable);
-  methods[34].selector = @selector(testUnsubscribeFromForEachWhenInterrupted);
-  methods[35].selector = @selector(testNoInterruptedExceptionWhenInterruptedWhileForEachOnSynchronousObservable);
-  methods[36].selector = @selector(testUnsubscribeFromFirstWhenInterrupted);
-  methods[37].selector = @selector(testNoInterruptedExceptionWhenInterruptedWhileFirstOnSynchronousObservable);
-  methods[38].selector = @selector(testUnsubscribeFromLastWhenInterrupted);
-  methods[39].selector = @selector(testNoInterruptedExceptionWhenInterruptedWhileLastOnSynchronousObservable);
-  methods[40].selector = @selector(testUnsubscribeFromLatestWhenInterrupted);
-  methods[41].selector = @selector(testUnsubscribeFromNextWhenInterrupted);
-  methods[42].selector = @selector(testUnsubscribeFromGetIteratorWhenInterrupted);
-  methods[43].selector = @selector(testNoInterruptedExceptionWhenInterruptedWhileGetIteratorOnSynchronousObservable);
-  methods[44].selector = @selector(testUnsubscribeFromToIterableWhenInterrupted);
-  methods[45].selector = @selector(testNoInterruptedExceptionWhenInterruptedWhileToIterableOnSynchronousObservable);
-  methods[46].selector = @selector(testRun);
-  methods[47].selector = @selector(testRunException);
-  methods[48].selector = @selector(testRunIOException);
-  methods[49].selector = @selector(testSubscriberBackpressure);
-  methods[50].selector = @selector(testOnErrorNotImplemented);
-  methods[51].selector = @selector(testSubscribeCallback1);
-  methods[52].selector = @selector(testSubscribeCallback2);
-  methods[53].selector = @selector(testSubscribeCallback3);
-  methods[54].selector = @selector(testSubscribeCallback3Error);
-  methods[55].selector = @selector(init);
+  methods[0].selector = @selector(testLast);
+  methods[1].selector = @selector(testLastEmptyObservable);
+  methods[2].selector = @selector(testLastOrDefault);
+  methods[3].selector = @selector(testLastOrDefault1);
+  methods[4].selector = @selector(testLastOrDefault2);
+  methods[5].selector = @selector(testLastOrDefaultWithPredicate);
+  methods[6].selector = @selector(testLastOrDefaultWrongPredicate);
+  methods[7].selector = @selector(testLastWithPredicate);
+  methods[8].selector = @selector(testSingle);
+  methods[9].selector = @selector(testSingleDefault);
+  methods[10].selector = @selector(testSingleDefaultPredicateMatchesMoreThanOne);
+  methods[11].selector = @selector(testSingleDefaultPredicateMatchesNothing);
+  methods[12].selector = @selector(testSingleDefaultWithMoreThanOne);
+  methods[13].selector = @selector(testSingleWithPredicateDefault);
+  methods[14].selector = @selector(testSingleWrong);
+  methods[15].selector = @selector(testSingleWrongPredicate);
+  methods[16].selector = @selector(testToIterable);
+  methods[17].selector = @selector(testToIterableNextOnly);
+  methods[18].selector = @selector(testToIterableNextOnlyTwice);
+  methods[19].selector = @selector(testToIterableManyTimes);
+  methods[20].selector = @selector(testToIterableWithException);
+  methods[21].selector = @selector(testForEachWithError);
+  methods[22].selector = @selector(testFirst);
+  methods[23].selector = @selector(testFirstWithEmpty);
+  methods[24].selector = @selector(testFirstWithPredicate);
+  methods[25].selector = @selector(testFirstWithPredicateAndEmpty);
+  methods[26].selector = @selector(testFirstOrDefault);
+  methods[27].selector = @selector(testFirstOrDefaultWithEmpty);
+  methods[28].selector = @selector(testFirstOrDefaultWithPredicate);
+  methods[29].selector = @selector(testFirstOrDefaultWithPredicateAndEmpty);
+  methods[30].selector = @selector(testSingleOrDefaultUnsubscribe);
+  methods[31].selector = @selector(testUnsubscribeFromSingleWhenInterrupted);
+  methods[32].selector = @selector(testNoInterruptedExceptionWhenInterruptedWhileSingleOnSynchronousObservable);
+  methods[33].selector = @selector(testUnsubscribeFromForEachWhenInterrupted);
+  methods[34].selector = @selector(testNoInterruptedExceptionWhenInterruptedWhileForEachOnSynchronousObservable);
+  methods[35].selector = @selector(testUnsubscribeFromFirstWhenInterrupted);
+  methods[36].selector = @selector(testNoInterruptedExceptionWhenInterruptedWhileFirstOnSynchronousObservable);
+  methods[37].selector = @selector(testUnsubscribeFromLastWhenInterrupted);
+  methods[38].selector = @selector(testNoInterruptedExceptionWhenInterruptedWhileLastOnSynchronousObservable);
+  methods[39].selector = @selector(testUnsubscribeFromLatestWhenInterrupted);
+  methods[40].selector = @selector(testUnsubscribeFromNextWhenInterrupted);
+  methods[41].selector = @selector(testUnsubscribeFromGetIteratorWhenInterrupted);
+  methods[42].selector = @selector(testNoInterruptedExceptionWhenInterruptedWhileGetIteratorOnSynchronousObservable);
+  methods[43].selector = @selector(testUnsubscribeFromToIterableWhenInterrupted);
+  methods[44].selector = @selector(testNoInterruptedExceptionWhenInterruptedWhileToIterableOnSynchronousObservable);
+  methods[45].selector = @selector(testRun);
+  methods[46].selector = @selector(testRunException);
+  methods[47].selector = @selector(testRunIOException);
+  methods[48].selector = @selector(testSubscriberBackpressure);
+  methods[49].selector = @selector(testOnErrorNotImplemented);
+  methods[50].selector = @selector(testSubscribeCallback1);
+  methods[51].selector = @selector(testSubscribeCallback2);
+  methods[52].selector = @selector(testSubscribeCallback3);
+  methods[53].selector = @selector(testSubscribeCallback3Error);
+  methods[54].selector = @selector(init);
   #pragma clang diagnostic pop
   static const J2ObjcFieldInfo fields[] = {
-    { "w_", "LRxSubscriber;", .constantValue.asLong = 0, 0x0, -1, -1, 56, 57 },
-    { "singleAction_", "LRxFunctionsAction1;", .constantValue.asLong = 0, 0x2, -1, -1, 58, -1 },
-    { "forEachAction_", "LRxFunctionsAction1;", .constantValue.asLong = 0, 0x2, -1, -1, 58, -1 },
-    { "firstAction_", "LRxFunctionsAction1;", .constantValue.asLong = 0, 0x2, -1, -1, 58, -1 },
-    { "lastAction_", "LRxFunctionsAction1;", .constantValue.asLong = 0, 0x2, -1, -1, 58, -1 },
-    { "latestAction_", "LRxFunctionsAction1;", .constantValue.asLong = 0, 0x2, -1, -1, 58, -1 },
-    { "nextAction_", "LRxFunctionsAction1;", .constantValue.asLong = 0, 0x2, -1, -1, 58, -1 },
-    { "getIteratorAction_", "LRxFunctionsAction1;", .constantValue.asLong = 0, 0x2, -1, -1, 58, -1 },
-    { "toIterableAction_", "LRxFunctionsAction1;", .constantValue.asLong = 0, 0x2, -1, -1, 58, -1 },
+    { "singleAction_", "LRxFunctionsAction1;", .constantValue.asLong = 0, 0x2, -1, -1, 55, -1 },
+    { "forEachAction_", "LRxFunctionsAction1;", .constantValue.asLong = 0, 0x2, -1, -1, 55, -1 },
+    { "firstAction_", "LRxFunctionsAction1;", .constantValue.asLong = 0, 0x2, -1, -1, 55, -1 },
+    { "lastAction_", "LRxFunctionsAction1;", .constantValue.asLong = 0, 0x2, -1, -1, 55, -1 },
+    { "latestAction_", "LRxFunctionsAction1;", .constantValue.asLong = 0, 0x2, -1, -1, 55, -1 },
+    { "nextAction_", "LRxFunctionsAction1;", .constantValue.asLong = 0, 0x2, -1, -1, 55, -1 },
+    { "getIteratorAction_", "LRxFunctionsAction1;", .constantValue.asLong = 0, 0x2, -1, -1, 55, -1 },
+    { "toIterableAction_", "LRxFunctionsAction1;", .constantValue.asLong = 0, 0x2, -1, -1, 55, -1 },
   };
-  static const void *ptrTable[] = { (void *)&RxObservablesBlockingObservableTest__Annotations$0, (void *)&RxObservablesBlockingObservableTest__Annotations$1, (void *)&RxObservablesBlockingObservableTest__Annotations$2, (void *)&RxObservablesBlockingObservableTest__Annotations$3, (void *)&RxObservablesBlockingObservableTest__Annotations$4, (void *)&RxObservablesBlockingObservableTest__Annotations$5, (void *)&RxObservablesBlockingObservableTest__Annotations$6, (void *)&RxObservablesBlockingObservableTest__Annotations$7, (void *)&RxObservablesBlockingObservableTest__Annotations$8, (void *)&RxObservablesBlockingObservableTest__Annotations$9, (void *)&RxObservablesBlockingObservableTest__Annotations$10, (void *)&RxObservablesBlockingObservableTest__Annotations$11, (void *)&RxObservablesBlockingObservableTest__Annotations$12, (void *)&RxObservablesBlockingObservableTest__Annotations$13, (void *)&RxObservablesBlockingObservableTest__Annotations$14, (void *)&RxObservablesBlockingObservableTest__Annotations$15, (void *)&RxObservablesBlockingObservableTest__Annotations$16, (void *)&RxObservablesBlockingObservableTest__Annotations$17, (void *)&RxObservablesBlockingObservableTest__Annotations$18, (void *)&RxObservablesBlockingObservableTest__Annotations$19, (void *)&RxObservablesBlockingObservableTest__Annotations$20, (void *)&RxObservablesBlockingObservableTest__Annotations$21, (void *)&RxObservablesBlockingObservableTest__Annotations$22, (void *)&RxObservablesBlockingObservableTest__Annotations$23, (void *)&RxObservablesBlockingObservableTest__Annotations$24, (void *)&RxObservablesBlockingObservableTest__Annotations$25, (void *)&RxObservablesBlockingObservableTest__Annotations$26, (void *)&RxObservablesBlockingObservableTest__Annotations$27, (void *)&RxObservablesBlockingObservableTest__Annotations$28, (void *)&RxObservablesBlockingObservableTest__Annotations$29, (void *)&RxObservablesBlockingObservableTest__Annotations$30, "LJavaLangInterruptedException;", (void *)&RxObservablesBlockingObservableTest__Annotations$31, (void *)&RxObservablesBlockingObservableTest__Annotations$32, (void *)&RxObservablesBlockingObservableTest__Annotations$33, (void *)&RxObservablesBlockingObservableTest__Annotations$34, (void *)&RxObservablesBlockingObservableTest__Annotations$35, (void *)&RxObservablesBlockingObservableTest__Annotations$36, (void *)&RxObservablesBlockingObservableTest__Annotations$37, (void *)&RxObservablesBlockingObservableTest__Annotations$38, (void *)&RxObservablesBlockingObservableTest__Annotations$39, (void *)&RxObservablesBlockingObservableTest__Annotations$40, (void *)&RxObservablesBlockingObservableTest__Annotations$41, (void *)&RxObservablesBlockingObservableTest__Annotations$42, (void *)&RxObservablesBlockingObservableTest__Annotations$43, (void *)&RxObservablesBlockingObservableTest__Annotations$44, (void *)&RxObservablesBlockingObservableTest__Annotations$45, (void *)&RxObservablesBlockingObservableTest__Annotations$46, (void *)&RxObservablesBlockingObservableTest__Annotations$47, (void *)&RxObservablesBlockingObservableTest__Annotations$48, (void *)&RxObservablesBlockingObservableTest__Annotations$49, (void *)&RxObservablesBlockingObservableTest__Annotations$50, (void *)&RxObservablesBlockingObservableTest__Annotations$51, (void *)&RxObservablesBlockingObservableTest__Annotations$52, (void *)&RxObservablesBlockingObservableTest__Annotations$53, (void *)&RxObservablesBlockingObservableTest__Annotations$54, "Lrx/Subscriber<Ljava/lang/Integer;>;", (void *)&RxObservablesBlockingObservableTest__Annotations$55, "Lrx/functions/Action1<Lrx/observables/BlockingObservable<Ljava/lang/Void;>;>;", "LRxObservablesBlockingObservableTest_InterruptionTests;" };
-  static const J2ObjcClassInfo _RxObservablesBlockingObservableTest = { "BlockingObservableTest", "rx.observables", ptrTable, methods, fields, 7, 0x1, 56, 9, -1, 59, -1, -1, -1 };
+  static const void *ptrTable[] = { (void *)&RxObservablesBlockingObservableTest__Annotations$0, (void *)&RxObservablesBlockingObservableTest__Annotations$1, (void *)&RxObservablesBlockingObservableTest__Annotations$2, (void *)&RxObservablesBlockingObservableTest__Annotations$3, (void *)&RxObservablesBlockingObservableTest__Annotations$4, (void *)&RxObservablesBlockingObservableTest__Annotations$5, (void *)&RxObservablesBlockingObservableTest__Annotations$6, (void *)&RxObservablesBlockingObservableTest__Annotations$7, (void *)&RxObservablesBlockingObservableTest__Annotations$8, (void *)&RxObservablesBlockingObservableTest__Annotations$9, (void *)&RxObservablesBlockingObservableTest__Annotations$10, (void *)&RxObservablesBlockingObservableTest__Annotations$11, (void *)&RxObservablesBlockingObservableTest__Annotations$12, (void *)&RxObservablesBlockingObservableTest__Annotations$13, (void *)&RxObservablesBlockingObservableTest__Annotations$14, (void *)&RxObservablesBlockingObservableTest__Annotations$15, (void *)&RxObservablesBlockingObservableTest__Annotations$16, (void *)&RxObservablesBlockingObservableTest__Annotations$17, (void *)&RxObservablesBlockingObservableTest__Annotations$18, (void *)&RxObservablesBlockingObservableTest__Annotations$19, (void *)&RxObservablesBlockingObservableTest__Annotations$20, (void *)&RxObservablesBlockingObservableTest__Annotations$21, (void *)&RxObservablesBlockingObservableTest__Annotations$22, (void *)&RxObservablesBlockingObservableTest__Annotations$23, (void *)&RxObservablesBlockingObservableTest__Annotations$24, (void *)&RxObservablesBlockingObservableTest__Annotations$25, (void *)&RxObservablesBlockingObservableTest__Annotations$26, (void *)&RxObservablesBlockingObservableTest__Annotations$27, (void *)&RxObservablesBlockingObservableTest__Annotations$28, (void *)&RxObservablesBlockingObservableTest__Annotations$29, "LJavaLangInterruptedException;", (void *)&RxObservablesBlockingObservableTest__Annotations$30, (void *)&RxObservablesBlockingObservableTest__Annotations$31, (void *)&RxObservablesBlockingObservableTest__Annotations$32, (void *)&RxObservablesBlockingObservableTest__Annotations$33, (void *)&RxObservablesBlockingObservableTest__Annotations$34, (void *)&RxObservablesBlockingObservableTest__Annotations$35, (void *)&RxObservablesBlockingObservableTest__Annotations$36, (void *)&RxObservablesBlockingObservableTest__Annotations$37, (void *)&RxObservablesBlockingObservableTest__Annotations$38, (void *)&RxObservablesBlockingObservableTest__Annotations$39, (void *)&RxObservablesBlockingObservableTest__Annotations$40, (void *)&RxObservablesBlockingObservableTest__Annotations$41, (void *)&RxObservablesBlockingObservableTest__Annotations$42, (void *)&RxObservablesBlockingObservableTest__Annotations$43, (void *)&RxObservablesBlockingObservableTest__Annotations$44, (void *)&RxObservablesBlockingObservableTest__Annotations$45, (void *)&RxObservablesBlockingObservableTest__Annotations$46, (void *)&RxObservablesBlockingObservableTest__Annotations$47, (void *)&RxObservablesBlockingObservableTest__Annotations$48, (void *)&RxObservablesBlockingObservableTest__Annotations$49, (void *)&RxObservablesBlockingObservableTest__Annotations$50, (void *)&RxObservablesBlockingObservableTest__Annotations$51, (void *)&RxObservablesBlockingObservableTest__Annotations$52, (void *)&RxObservablesBlockingObservableTest__Annotations$53, "Lrx/functions/Action1<Lrx/observables/BlockingObservable<Ljava/lang/Void;>;>;", "LRxObservablesBlockingObservableTest_InterruptionTests;" };
+  static const J2ObjcClassInfo _RxObservablesBlockingObservableTest = { "BlockingObservableTest", "rx.observables", ptrTable, methods, fields, 7, 0x1, 55, 8, -1, 56, -1, -1, -1 };
   return &_RxObservablesBlockingObservableTest;
 }
 
@@ -1472,15 +1456,15 @@ RxObservablesBlockingObservableTest *create_RxObservablesBlockingObservableTest_
 }
 
 IOSObjectArray *RxObservablesBlockingObservableTest__Annotations$0() {
-  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitBefore() } count:1 type:JavaLangAnnotationAnnotation_class_()];
-}
-
-IOSObjectArray *RxObservablesBlockingObservableTest__Annotations$1() {
   return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
 }
 
-IOSObjectArray *RxObservablesBlockingObservableTest__Annotations$2() {
+IOSObjectArray *RxObservablesBlockingObservableTest__Annotations$1() {
   return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(JavaUtilNoSuchElementException_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+}
+
+IOSObjectArray *RxObservablesBlockingObservableTest__Annotations$2() {
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
 }
 
 IOSObjectArray *RxObservablesBlockingObservableTest__Annotations$3() {
@@ -1512,35 +1496,35 @@ IOSObjectArray *RxObservablesBlockingObservableTest__Annotations$9() {
 }
 
 IOSObjectArray *RxObservablesBlockingObservableTest__Annotations$10() {
-  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(JavaLangIllegalArgumentException_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
 }
 
 IOSObjectArray *RxObservablesBlockingObservableTest__Annotations$11() {
-  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(JavaLangIllegalArgumentException_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
 }
 
 IOSObjectArray *RxObservablesBlockingObservableTest__Annotations$12() {
-  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(JavaLangIllegalArgumentException_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
 }
 
 IOSObjectArray *RxObservablesBlockingObservableTest__Annotations$13() {
-  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(JavaLangIllegalArgumentException_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
 }
 
 IOSObjectArray *RxObservablesBlockingObservableTest__Annotations$14() {
-  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
-}
-
-IOSObjectArray *RxObservablesBlockingObservableTest__Annotations$15() {
   return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(JavaLangIllegalArgumentException_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
 }
 
-IOSObjectArray *RxObservablesBlockingObservableTest__Annotations$16() {
+IOSObjectArray *RxObservablesBlockingObservableTest__Annotations$15() {
   return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(JavaUtilNoSuchElementException_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
 }
 
-IOSObjectArray *RxObservablesBlockingObservableTest__Annotations$17() {
+IOSObjectArray *RxObservablesBlockingObservableTest__Annotations$16() {
   return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+}
+
+IOSObjectArray *RxObservablesBlockingObservableTest__Annotations$17() {
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(JavaUtilNoSuchElementException_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
 }
 
 IOSObjectArray *RxObservablesBlockingObservableTest__Annotations$18() {
@@ -1548,15 +1532,15 @@ IOSObjectArray *RxObservablesBlockingObservableTest__Annotations$18() {
 }
 
 IOSObjectArray *RxObservablesBlockingObservableTest__Annotations$19() {
-  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(JavaUtilNoSuchElementException_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
-}
-
-IOSObjectArray *RxObservablesBlockingObservableTest__Annotations$20() {
   return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
 }
 
-IOSObjectArray *RxObservablesBlockingObservableTest__Annotations$21() {
+IOSObjectArray *RxObservablesBlockingObservableTest__Annotations$20() {
   return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(RxExceptionsTestException_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+}
+
+IOSObjectArray *RxObservablesBlockingObservableTest__Annotations$21() {
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
 }
 
 IOSObjectArray *RxObservablesBlockingObservableTest__Annotations$22() {
@@ -1564,19 +1548,19 @@ IOSObjectArray *RxObservablesBlockingObservableTest__Annotations$22() {
 }
 
 IOSObjectArray *RxObservablesBlockingObservableTest__Annotations$23() {
-  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(JavaUtilNoSuchElementException_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
 }
 
 IOSObjectArray *RxObservablesBlockingObservableTest__Annotations$24() {
-  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(JavaUtilNoSuchElementException_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
-}
-
-IOSObjectArray *RxObservablesBlockingObservableTest__Annotations$25() {
   return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
 }
 
-IOSObjectArray *RxObservablesBlockingObservableTest__Annotations$26() {
+IOSObjectArray *RxObservablesBlockingObservableTest__Annotations$25() {
   return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(JavaUtilNoSuchElementException_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+}
+
+IOSObjectArray *RxObservablesBlockingObservableTest__Annotations$26() {
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
 }
 
 IOSObjectArray *RxObservablesBlockingObservableTest__Annotations$27() {
@@ -1656,11 +1640,11 @@ IOSObjectArray *RxObservablesBlockingObservableTest__Annotations$45() {
 }
 
 IOSObjectArray *RxObservablesBlockingObservableTest__Annotations$46() {
-  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(RxExceptionsTestException_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
 }
 
 IOSObjectArray *RxObservablesBlockingObservableTest__Annotations$47() {
-  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(RxExceptionsTestException_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
 }
 
 IOSObjectArray *RxObservablesBlockingObservableTest__Annotations$48() {
@@ -1668,11 +1652,11 @@ IOSObjectArray *RxObservablesBlockingObservableTest__Annotations$48() {
 }
 
 IOSObjectArray *RxObservablesBlockingObservableTest__Annotations$49() {
-  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(RxExceptionsOnErrorNotImplementedException_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
 }
 
 IOSObjectArray *RxObservablesBlockingObservableTest__Annotations$50() {
-  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(RxExceptionsOnErrorNotImplementedException_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
 }
 
 IOSObjectArray *RxObservablesBlockingObservableTest__Annotations$51() {
@@ -1685,14 +1669,6 @@ IOSObjectArray *RxObservablesBlockingObservableTest__Annotations$52() {
 
 IOSObjectArray *RxObservablesBlockingObservableTest__Annotations$53() {
   return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
-}
-
-IOSObjectArray *RxObservablesBlockingObservableTest__Annotations$54() {
-  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
-}
-
-IOSObjectArray *RxObservablesBlockingObservableTest__Annotations$55() {
-  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgMockitoMock(JreLoadEnum(OrgMockitoAnswers, RETURNS_DEFAULTS), [IOSObjectArray arrayWithObjects:(id[]){  } count:0 type:NSObject_class_()], @"") } count:1 type:JavaLangAnnotationAnnotation_class_()];
 }
 
 J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxObservablesBlockingObservableTest)

@@ -156,9 +156,13 @@ J2OBJC_STATIC_FIELD_CONSTANT(RxInternalUtilBackpressureDrainManager, serialVersi
   }
 }
 
+- (void)__javaClone:(RxInternalUtilBackpressureDrainManager *)original {
+  [super __javaClone:original];
+  [actual_ release];
+}
+
 - (void)dealloc {
   RELEASE_(exception_);
-  RELEASE_(actual_);
   [super dealloc];
 }
 
@@ -200,7 +204,7 @@ J2OBJC_STATIC_FIELD_CONSTANT(RxInternalUtilBackpressureDrainManager, serialVersi
 
 void RxInternalUtilBackpressureDrainManager_initWithRxInternalUtilBackpressureDrainManager_BackpressureQueueCallback_(RxInternalUtilBackpressureDrainManager *self, id<RxInternalUtilBackpressureDrainManager_BackpressureQueueCallback> actual) {
   JavaUtilConcurrentAtomicAtomicLong_init(self);
-  JreStrongAssign(&self->actual_, actual);
+  self->actual_ = actual;
 }
 
 RxInternalUtilBackpressureDrainManager *new_RxInternalUtilBackpressureDrainManager_initWithRxInternalUtilBackpressureDrainManager_BackpressureQueueCallback_(id<RxInternalUtilBackpressureDrainManager_BackpressureQueueCallback> actual) {

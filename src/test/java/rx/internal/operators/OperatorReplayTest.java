@@ -15,6 +15,9 @@
  */
 package rx.internal.operators;
 
+import com.google.j2objc.annotations.AutoreleasePool;
+
+
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
@@ -996,7 +999,7 @@ public class OperatorReplayTest {
     @Test
     public void testAsync() {
         Observable<Integer> source = Observable.range(1, 10000);
-        for (int i = 0; i < 100; i++) {
+        for (@AutoreleasePool int i = 0; i < 100; i++) {
             TestSubscriber<Integer> ts1 = new TestSubscriber<Integer>();
 
             Observable<Integer> cached = source.replay().autoConnect();

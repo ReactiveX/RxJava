@@ -17,11 +17,13 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    [OneTest runTests];
+//    [OneTest runTests];
 //    [OneTest runTestsWithNSString:@"rx.BackpressureTests"];
     //rx.internal.operators.OperatorFlatMapTest#flatMapRangeMixedAsyncLoop
-//    [OneTest runMethodWithNSString:@"rx.internal.operators.OperatorFlatMapTest" withNSString:@"flatMapRangeMixedAsyncLoop"];
-//    [OneTest runTestsWithNSString:@"rx.schedulers.TrampolineSchedulerTest"];
+//    [OneTest runMethodWithNSString:@"rx.internal.operators.OperatorMergeTest" withNSString:@"mergeManyAsyncSingle"];
+//    [OneTest runTestsWithNSString:@"rx.internal.operators.OperatorFlatMapTest"];
+    [OneTest runTestsWithNSString:@"rx.internal.operators.OperatorZipTest"];
+    //rx.observables.BlockingObservableTest
 //        [OneTest runTestsWithNSString:@"rx.internal.operators.OperatorGroupByTest"];
 //    [OneTest runSingleClassWithNSString:@"rx.doppl.memory.SubscriberAutomaticRemovalTest"];
 }

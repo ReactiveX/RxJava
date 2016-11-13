@@ -16,6 +16,7 @@
 package rx.subjects;
 
 
+import java.lang.ref.WeakReference;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
@@ -103,11 +104,14 @@ public final class BehaviorSubject<T> extends Subject<T, T> {
         if (hasDefault) {
             state.setLatest(NotificationLite.next(defaultValue));
         }
+        final WeakReference<SubjectSubscriptionManager<T>> weakState = new WeakReference<SubjectSubscriptionManager<T>>(state);
         state.onAdded = new Action1<SubjectObserver<T>>() {
 
             @Override
             public void call(SubjectObserver<T> o) {
-                o.emitFirst(state.getLatest());
+                SubjectSubscriptionManager<T> state = weakState.get();
+                if(state != null)
+                    o.emitFirst(state.getLatest());
             }
 
         };

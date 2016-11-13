@@ -48,7 +48,7 @@ public class ReplaySubjectConcurrencyTest {
         }
     }
 
-//    @Test(timeout = 4000)
+    @Test(timeout = 4000)
     public void testReplaySubjectConcurrentSubscribersDoingReplayDontBlockEachOther() throws InterruptedException {
         final ReplaySubject<Long> replay = ReplaySubject.create();
         Thread source = new Thread(new Runnable() {
@@ -267,7 +267,7 @@ public class ReplaySubjectConcurrencyTest {
     /**
      * Can receive timeout if subscribe never receives an onError/onCompleted ... which reveals a race condition.
      */
-//    @Test(timeout = 10000)
+    @Test(timeout = 10000)
     public void testSubscribeCompletionRaceCondition() {
         for (int i = 0; i < 50; i++) {
             final ReplaySubject<String> subject = ReplaySubject.create();
@@ -329,9 +329,7 @@ public class ReplaySubjectConcurrencyTest {
     /**
      * https://github.com/ReactiveX/RxJava/issues/1147
      */
-
-    //DOPPL: Good test for cached cycles
-//    @Test
+    @Test
     public void testRaceForTerminalState() {
         final List<Integer> expected = Arrays.asList(1);
         for (@AutoreleasePool int i = 0; i < 10000; i++) {
@@ -363,7 +361,7 @@ public class ReplaySubjectConcurrencyTest {
             }
         }
     }
-//    @Test
+    @Test
     public void testReplaySubjectEmissionSubscriptionRace() throws Exception {
         Scheduler s = Schedulers.io();
         Scheduler.Worker worker = Schedulers.io().createWorker();
@@ -436,7 +434,7 @@ public class ReplaySubjectConcurrencyTest {
             worker.unsubscribe();
         }
     }
-//    @Test(timeout = 10000)
+    @Test(timeout = 10000)
     public void testConcurrentSizeAndHasAnyValue() throws InterruptedException {
         final ReplaySubject<Object> rs = ReplaySubject.create();
         final CyclicBarrier cb = new CyclicBarrier(2);

@@ -15,6 +15,8 @@
  */
 package rx.subjects;
 
+import com.google.j2objc.annotations.Weak;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
@@ -262,6 +264,7 @@ public final class PublishSubject<T> extends Subject<T, T> {
 
         final PublishSubjectState<T> parent;
 
+        @Weak
         final Subscriber<? super T> actual;
 
         long produced;

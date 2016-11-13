@@ -3,6 +3,7 @@
 //  source: /Users/kgalligan/devel-doppl/RxJava/src/main/java/rx/internal/util/ScalarSynchronousObservable.java
 //
 
+#include "IOSClass.h"
 #include "J2ObjC_source.h"
 #include "RxExceptionsExceptions.h"
 #include "RxFunctionsAction0.h"
@@ -356,7 +357,8 @@ J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxInternalUtilScalarSynchronousObservable_Scala
 
 - (void)call {
   RxSubscriber *a = actual_;
-  if ([((RxSubscriber *) nil_chk(a)) isUnsubscribed]) {
+  if (a == nil || [a isUnsubscribed]) {
+    JreStrongAssign(&actual_, nil);
     return;
   }
   id v = value_ScalarAsyncProducer_;
@@ -368,9 +370,13 @@ J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxInternalUtilScalarSynchronousObservable_Scala
     return;
   }
   if ([a isUnsubscribed]) {
+    JreStrongAssign(&actual_, nil);
     return;
   }
   [a onCompleted];
+  if ([a isUnsubscribed]) {
+    JreStrongAssign(&actual_, nil);
+  }
 }
 
 - (NSString *)description {
@@ -400,7 +406,7 @@ J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxInternalUtilScalarSynchronousObservable_Scala
   #pragma clang diagnostic pop
   static const J2ObjcFieldInfo fields[] = {
     { "serialVersionUID", "J", .constantValue.asLong = RxInternalUtilScalarSynchronousObservable_ScalarAsyncProducer_serialVersionUID, 0x1a, -1, -1, -1, -1 },
-    { "actual_", "LRxSubscriber;", .constantValue.asLong = 0, 0x10, -1, -1, 5, -1 },
+    { "actual_", "LRxSubscriber;", .constantValue.asLong = 0, 0x0, -1, -1, 5, -1 },
     { "value_ScalarAsyncProducer_", "LNSObject;", .constantValue.asLong = 0, 0x10, 6, -1, 7, -1 },
     { "onSchedule_", "LRxFunctionsFunc1;", .constantValue.asLong = 0, 0x10, -1, -1, 8, -1 },
   };

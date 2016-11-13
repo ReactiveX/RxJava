@@ -16,6 +16,8 @@
 
 package rx.internal.operators;
 
+import com.google.j2objc.annotations.Weak;
+
 import java.util.concurrent.atomic.AtomicLong;
 
 import rx.Observable.OnSubscribe;
@@ -39,6 +41,7 @@ public final class OnSubscribeFromArray<T> implements OnSubscribe<T> {
         /** */
         private static final long serialVersionUID = 3534218984725836979L;
 
+        @Weak
         final Subscriber<? super T> child;
         final T[] array;
 

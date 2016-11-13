@@ -66,7 +66,7 @@ J2OBJC_TYPE_LITERAL_HEADER(RxInternalOperatorsOnSubscribeFromArray)
 
 @interface RxInternalOperatorsOnSubscribeFromArray_FromArrayProducer : JavaUtilConcurrentAtomicAtomicLong < RxProducer > {
  @public
-  RxSubscriber *child_;
+  __unsafe_unretained RxSubscriber *child_;
   IOSObjectArray *array_;
   jint index_;
 }
@@ -88,7 +88,6 @@ J2OBJC_TYPE_LITERAL_HEADER(RxInternalOperatorsOnSubscribeFromArray)
 
 J2OBJC_EMPTY_STATIC_INIT(RxInternalOperatorsOnSubscribeFromArray_FromArrayProducer)
 
-J2OBJC_FIELD_SETTER(RxInternalOperatorsOnSubscribeFromArray_FromArrayProducer, child_, RxSubscriber *)
 J2OBJC_FIELD_SETTER(RxInternalOperatorsOnSubscribeFromArray_FromArrayProducer, array_, IOSObjectArray *)
 
 FOUNDATION_EXPORT void RxInternalOperatorsOnSubscribeFromArray_FromArrayProducer_initWithRxSubscriber_withNSObjectArray_(RxInternalOperatorsOnSubscribeFromArray_FromArrayProducer *self, RxSubscriber *child, IOSObjectArray *array);

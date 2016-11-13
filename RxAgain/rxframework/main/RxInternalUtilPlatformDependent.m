@@ -28,10 +28,6 @@ inline jint RxInternalUtilPlatformDependent_get_ANDROID_API_VERSION();
 static jint RxInternalUtilPlatformDependent_ANDROID_API_VERSION;
 J2OBJC_STATIC_FIELD_PRIMITIVE_FINAL(RxInternalUtilPlatformDependent, ANDROID_API_VERSION, jint)
 
-inline jboolean RxInternalUtilPlatformDependent_get_IS_ANDROID();
-static jboolean RxInternalUtilPlatformDependent_IS_ANDROID;
-J2OBJC_STATIC_FIELD_PRIMITIVE_FINAL(RxInternalUtilPlatformDependent, IS_ANDROID, jboolean)
-
 __attribute__((unused)) static void RxInternalUtilPlatformDependent_init(RxInternalUtilPlatformDependent *self);
 
 __attribute__((unused)) static RxInternalUtilPlatformDependent *new_RxInternalUtilPlatformDependent_init() NS_RETURNS_RETAINED;
@@ -102,17 +98,15 @@ J2OBJC_IGNORE_DESIGNATED_END
   static const J2ObjcFieldInfo fields[] = {
     { "ANDROID_API_VERSION_IS_NOT_ANDROID", "I", .constantValue.asInt = RxInternalUtilPlatformDependent_ANDROID_API_VERSION_IS_NOT_ANDROID, 0x19, -1, -1, -1, -1 },
     { "ANDROID_API_VERSION", "I", .constantValue.asLong = 0, 0x1a, -1, 0, -1, -1 },
-    { "IS_ANDROID", "Z", .constantValue.asLong = 0, 0x1a, -1, 1, -1, -1 },
   };
-  static const void *ptrTable[] = { &RxInternalUtilPlatformDependent_ANDROID_API_VERSION, &RxInternalUtilPlatformDependent_IS_ANDROID };
-  static const J2ObjcClassInfo _RxInternalUtilPlatformDependent = { "PlatformDependent", "rx.internal.util", ptrTable, methods, fields, 7, 0x11, 5, 3, -1, -1, -1, -1, -1 };
+  static const void *ptrTable[] = { &RxInternalUtilPlatformDependent_ANDROID_API_VERSION };
+  static const J2ObjcClassInfo _RxInternalUtilPlatformDependent = { "PlatformDependent", "rx.internal.util", ptrTable, methods, fields, 7, 0x11, 5, 2, -1, -1, -1, -1, -1 };
   return &_RxInternalUtilPlatformDependent;
 }
 
 + (void)initialize {
   if (self == [RxInternalUtilPlatformDependent class]) {
     RxInternalUtilPlatformDependent_ANDROID_API_VERSION = RxInternalUtilPlatformDependent_resolveAndroidApiVersion();
-    RxInternalUtilPlatformDependent_IS_ANDROID = (RxInternalUtilPlatformDependent_ANDROID_API_VERSION != RxInternalUtilPlatformDependent_ANDROID_API_VERSION_IS_NOT_ANDROID);
     J2OBJC_SET_INITIALIZED(RxInternalUtilPlatformDependent)
   }
 }
@@ -134,7 +128,7 @@ RxInternalUtilPlatformDependent *create_RxInternalUtilPlatformDependent_init() {
 
 jboolean RxInternalUtilPlatformDependent_isAndroid() {
   RxInternalUtilPlatformDependent_initialize();
-  return RxInternalUtilPlatformDependent_IS_ANDROID;
+  return true;
 }
 
 jint RxInternalUtilPlatformDependent_getAndroidApiVersion() {

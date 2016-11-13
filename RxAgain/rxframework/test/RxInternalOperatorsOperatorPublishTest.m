@@ -592,9 +592,9 @@ __attribute__((unused)) static RxInternalOperatorsOperatorPublishTest_$15 *creat
 - (void)testObserveOn {
   RxObservablesConnectableObservable *co = [((RxObservable *) nil_chk(RxObservable_rangeWithInt_withInt_(0, 1000))) publish];
   RxObservable *obs = [((RxObservablesConnectableObservable *) nil_chk(co)) observeOnWithRxScheduler:RxSchedulersSchedulers_computation()];
-  for (jint i = 0; i < 100; i++) {
+  for (jint i = 0; i < 1000; i++) {
     @autoreleasepool {
-      for (jint j = 1; j < 6; j++) {
+      for (jint j = 1; j < 3; j++) {
         id<JavaUtilList> tss = create_JavaUtilArrayList_init();
         for (jint k = 1; k < j; k++) {
           RxObserversTestSubscriber *ts = create_RxObserversTestSubscriber_init();

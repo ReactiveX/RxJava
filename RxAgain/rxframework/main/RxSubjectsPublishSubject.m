@@ -380,9 +380,13 @@ J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxSubjectsPublishSubject_PublishSubjectState)
   }
 }
 
+- (void)__javaClone:(RxSubjectsPublishSubject_PublishSubjectProducer *)original {
+  [super __javaClone:original];
+  [actual_ release];
+}
+
 - (void)dealloc {
   RELEASE_(parent_);
-  RELEASE_(actual_);
   [super dealloc];
 }
 
@@ -422,7 +426,7 @@ J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxSubjectsPublishSubject_PublishSubjectState)
 void RxSubjectsPublishSubject_PublishSubjectProducer_initWithRxSubjectsPublishSubject_PublishSubjectState_withRxSubscriber_(RxSubjectsPublishSubject_PublishSubjectProducer *self, RxSubjectsPublishSubject_PublishSubjectState *parent, RxSubscriber *actual) {
   JavaUtilConcurrentAtomicAtomicLong_init(self);
   JreStrongAssign(&self->parent_, parent);
-  JreStrongAssign(&self->actual_, actual);
+  self->actual_ = actual;
 }
 
 RxSubjectsPublishSubject_PublishSubjectProducer *new_RxSubjectsPublishSubject_PublishSubjectProducer_initWithRxSubjectsPublishSubject_PublishSubjectState_withRxSubscriber_(RxSubjectsPublishSubject_PublishSubjectState *parent, RxSubscriber *actual) {

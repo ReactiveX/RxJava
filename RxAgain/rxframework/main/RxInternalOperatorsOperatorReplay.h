@@ -222,12 +222,13 @@ J2OBJC_TYPE_LITERAL_HEADER(RxInternalOperatorsOperatorReplay_ReplaySubscriber)
 #define INCLUDE_RxSubscription 1
 #include "RxSubscription.h"
 
+@class JavaLangRefWeakReference;
 @class RxInternalOperatorsOperatorReplay_ReplaySubscriber;
 @class RxSubscriber;
 
 @interface RxInternalOperatorsOperatorReplay_InnerProducer : JavaUtilConcurrentAtomicAtomicLong < RxProducer, RxSubscription > {
  @public
-  RxInternalOperatorsOperatorReplay_ReplaySubscriber *parent_;
+  JavaLangRefWeakReference *weakParent_;
   RxSubscriber *child_;
   id index_;
   JavaUtilConcurrentAtomicAtomicLong *totalRequested_;
@@ -258,7 +259,7 @@ J2OBJC_TYPE_LITERAL_HEADER(RxInternalOperatorsOperatorReplay_ReplaySubscriber)
 
 J2OBJC_EMPTY_STATIC_INIT(RxInternalOperatorsOperatorReplay_InnerProducer)
 
-J2OBJC_FIELD_SETTER(RxInternalOperatorsOperatorReplay_InnerProducer, parent_, RxInternalOperatorsOperatorReplay_ReplaySubscriber *)
+J2OBJC_FIELD_SETTER(RxInternalOperatorsOperatorReplay_InnerProducer, weakParent_, JavaLangRefWeakReference *)
 J2OBJC_FIELD_SETTER(RxInternalOperatorsOperatorReplay_InnerProducer, child_, RxSubscriber *)
 J2OBJC_FIELD_SETTER(RxInternalOperatorsOperatorReplay_InnerProducer, index_, id)
 J2OBJC_FIELD_SETTER(RxInternalOperatorsOperatorReplay_InnerProducer, totalRequested_, JavaUtilConcurrentAtomicAtomicLong *)

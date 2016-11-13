@@ -155,138 +155,158 @@ __attribute__((unused)) static RxInternalOperatorsOperatorMaterializeTest_$1 *cr
 @implementation RxInternalOperatorsOperatorMaterializeTest
 
 - (void)testMaterialize1 {
-  RxInternalOperatorsOperatorMaterializeTest_TestAsyncErrorObservable *o1 = create_RxInternalOperatorsOperatorMaterializeTest_TestAsyncErrorObservable_initWithNSStringArray_([IOSObjectArray arrayWithObjects:(id[]){ @"one", @"two", nil, @"three" } count:4 type:NSString_class_()]);
-  RxInternalOperatorsOperatorMaterializeTest_TestObserver *Observer = create_RxInternalOperatorsOperatorMaterializeTest_TestObserver_init();
-  RxObservable *m = [((RxObservable *) nil_chk(RxObservable_createWithRxObservable_OnSubscribe_(o1))) materialize];
-  [((RxObservable *) nil_chk(m)) subscribeWithRxSubscriber:Observer];
-  @try {
-    [((JavaLangThread *) nil_chk(JreLoadVolatileId(&o1->t_))) join];
+  @autoreleasepool {
+    RxInternalOperatorsOperatorMaterializeTest_TestAsyncErrorObservable *o1 = create_RxInternalOperatorsOperatorMaterializeTest_TestAsyncErrorObservable_initWithNSStringArray_([IOSObjectArray arrayWithObjects:(id[]){ @"one", @"two", nil, @"three" } count:4 type:NSString_class_()]);
+    RxInternalOperatorsOperatorMaterializeTest_TestObserver *Observer = create_RxInternalOperatorsOperatorMaterializeTest_TestObserver_init();
+    RxObservable *m = [((RxObservable *) nil_chk(RxObservable_createWithRxObservable_OnSubscribe_(o1))) materialize];
+    [((RxObservable *) nil_chk(m)) subscribeWithRxSubscriber:Observer];
+    @try {
+      [((JavaLangThread *) nil_chk(JreLoadVolatileId(&o1->t_))) join];
+    }
+    @catch (JavaLangInterruptedException *e) {
+      @throw create_JavaLangRuntimeException_initWithNSException_(e);
+    }
+    OrgJunitAssert_assertFalseWithBoolean_(Observer->onError_);
+    OrgJunitAssert_assertTrueWithBoolean_(Observer->onCompleted_);
+    OrgJunitAssert_assertEqualsWithLong_withLong_(3, [((id<JavaUtilList>) nil_chk(Observer->notifications_)) size]);
+    OrgJunitAssert_assertEqualsWithId_withId_(@"one", [((RxNotification *) nil_chk([((id<JavaUtilList>) nil_chk(Observer->notifications_)) getWithInt:0])) getValue]);
+    OrgJunitAssert_assertTrueWithBoolean_([((RxNotification *) nil_chk([((id<JavaUtilList>) nil_chk(Observer->notifications_)) getWithInt:0])) isOnNext]);
+    OrgJunitAssert_assertEqualsWithId_withId_(@"two", [((RxNotification *) nil_chk([((id<JavaUtilList>) nil_chk(Observer->notifications_)) getWithInt:1])) getValue]);
+    OrgJunitAssert_assertTrueWithBoolean_([((RxNotification *) nil_chk([((id<JavaUtilList>) nil_chk(Observer->notifications_)) getWithInt:1])) isOnNext]);
+    OrgJunitAssert_assertEqualsWithId_withId_(JavaLangNullPointerException_class_(), [((NSException *) nil_chk([((RxNotification *) nil_chk([((id<JavaUtilList>) nil_chk(Observer->notifications_)) getWithInt:2])) getThrowable])) java_getClass]);
+    OrgJunitAssert_assertTrueWithBoolean_([((RxNotification *) nil_chk([((id<JavaUtilList>) nil_chk(Observer->notifications_)) getWithInt:2])) isOnError]);
   }
-  @catch (JavaLangInterruptedException *e) {
-    @throw create_JavaLangRuntimeException_initWithNSException_(e);
-  }
-  OrgJunitAssert_assertFalseWithBoolean_(Observer->onError_);
-  OrgJunitAssert_assertTrueWithBoolean_(Observer->onCompleted_);
-  OrgJunitAssert_assertEqualsWithLong_withLong_(3, [((id<JavaUtilList>) nil_chk(Observer->notifications_)) size]);
-  OrgJunitAssert_assertEqualsWithId_withId_(@"one", [((RxNotification *) nil_chk([((id<JavaUtilList>) nil_chk(Observer->notifications_)) getWithInt:0])) getValue]);
-  OrgJunitAssert_assertTrueWithBoolean_([((RxNotification *) nil_chk([((id<JavaUtilList>) nil_chk(Observer->notifications_)) getWithInt:0])) isOnNext]);
-  OrgJunitAssert_assertEqualsWithId_withId_(@"two", [((RxNotification *) nil_chk([((id<JavaUtilList>) nil_chk(Observer->notifications_)) getWithInt:1])) getValue]);
-  OrgJunitAssert_assertTrueWithBoolean_([((RxNotification *) nil_chk([((id<JavaUtilList>) nil_chk(Observer->notifications_)) getWithInt:1])) isOnNext]);
-  OrgJunitAssert_assertEqualsWithId_withId_(JavaLangNullPointerException_class_(), [((NSException *) nil_chk([((RxNotification *) nil_chk([((id<JavaUtilList>) nil_chk(Observer->notifications_)) getWithInt:2])) getThrowable])) java_getClass]);
-  OrgJunitAssert_assertTrueWithBoolean_([((RxNotification *) nil_chk([((id<JavaUtilList>) nil_chk(Observer->notifications_)) getWithInt:2])) isOnError]);
 }
 
 - (void)testMaterialize2 {
-  RxInternalOperatorsOperatorMaterializeTest_TestAsyncErrorObservable *o1 = create_RxInternalOperatorsOperatorMaterializeTest_TestAsyncErrorObservable_initWithNSStringArray_([IOSObjectArray arrayWithObjects:(id[]){ @"one", @"two", @"three" } count:3 type:NSString_class_()]);
-  RxInternalOperatorsOperatorMaterializeTest_TestObserver *Observer = create_RxInternalOperatorsOperatorMaterializeTest_TestObserver_init();
-  RxObservable *m = [((RxObservable *) nil_chk(RxObservable_createWithRxObservable_OnSubscribe_(o1))) materialize];
-  [((RxObservable *) nil_chk(m)) subscribeWithRxSubscriber:Observer];
-  @try {
-    [((JavaLangThread *) nil_chk(JreLoadVolatileId(&o1->t_))) join];
+  @autoreleasepool {
+    RxInternalOperatorsOperatorMaterializeTest_TestAsyncErrorObservable *o1 = create_RxInternalOperatorsOperatorMaterializeTest_TestAsyncErrorObservable_initWithNSStringArray_([IOSObjectArray arrayWithObjects:(id[]){ @"one", @"two", @"three" } count:3 type:NSString_class_()]);
+    RxInternalOperatorsOperatorMaterializeTest_TestObserver *Observer = create_RxInternalOperatorsOperatorMaterializeTest_TestObserver_init();
+    RxObservable *m = [((RxObservable *) nil_chk(RxObservable_createWithRxObservable_OnSubscribe_(o1))) materialize];
+    [((RxObservable *) nil_chk(m)) subscribeWithRxSubscriber:Observer];
+    @try {
+      [((JavaLangThread *) nil_chk(JreLoadVolatileId(&o1->t_))) join];
+    }
+    @catch (JavaLangInterruptedException *e) {
+      @throw create_JavaLangRuntimeException_initWithNSException_(e);
+    }
+    OrgJunitAssert_assertFalseWithBoolean_(Observer->onError_);
+    OrgJunitAssert_assertTrueWithBoolean_(Observer->onCompleted_);
+    OrgJunitAssert_assertEqualsWithLong_withLong_(4, [((id<JavaUtilList>) nil_chk(Observer->notifications_)) size]);
+    OrgJunitAssert_assertEqualsWithId_withId_(@"one", [((RxNotification *) nil_chk([((id<JavaUtilList>) nil_chk(Observer->notifications_)) getWithInt:0])) getValue]);
+    OrgJunitAssert_assertTrueWithBoolean_([((RxNotification *) nil_chk([((id<JavaUtilList>) nil_chk(Observer->notifications_)) getWithInt:0])) isOnNext]);
+    OrgJunitAssert_assertEqualsWithId_withId_(@"two", [((RxNotification *) nil_chk([((id<JavaUtilList>) nil_chk(Observer->notifications_)) getWithInt:1])) getValue]);
+    OrgJunitAssert_assertTrueWithBoolean_([((RxNotification *) nil_chk([((id<JavaUtilList>) nil_chk(Observer->notifications_)) getWithInt:1])) isOnNext]);
+    OrgJunitAssert_assertEqualsWithId_withId_(@"three", [((RxNotification *) nil_chk([((id<JavaUtilList>) nil_chk(Observer->notifications_)) getWithInt:2])) getValue]);
+    OrgJunitAssert_assertTrueWithBoolean_([((RxNotification *) nil_chk([((id<JavaUtilList>) nil_chk(Observer->notifications_)) getWithInt:2])) isOnNext]);
+    OrgJunitAssert_assertTrueWithBoolean_([((RxNotification *) nil_chk([((id<JavaUtilList>) nil_chk(Observer->notifications_)) getWithInt:3])) isOnCompleted]);
   }
-  @catch (JavaLangInterruptedException *e) {
-    @throw create_JavaLangRuntimeException_initWithNSException_(e);
-  }
-  OrgJunitAssert_assertFalseWithBoolean_(Observer->onError_);
-  OrgJunitAssert_assertTrueWithBoolean_(Observer->onCompleted_);
-  OrgJunitAssert_assertEqualsWithLong_withLong_(4, [((id<JavaUtilList>) nil_chk(Observer->notifications_)) size]);
-  OrgJunitAssert_assertEqualsWithId_withId_(@"one", [((RxNotification *) nil_chk([((id<JavaUtilList>) nil_chk(Observer->notifications_)) getWithInt:0])) getValue]);
-  OrgJunitAssert_assertTrueWithBoolean_([((RxNotification *) nil_chk([((id<JavaUtilList>) nil_chk(Observer->notifications_)) getWithInt:0])) isOnNext]);
-  OrgJunitAssert_assertEqualsWithId_withId_(@"two", [((RxNotification *) nil_chk([((id<JavaUtilList>) nil_chk(Observer->notifications_)) getWithInt:1])) getValue]);
-  OrgJunitAssert_assertTrueWithBoolean_([((RxNotification *) nil_chk([((id<JavaUtilList>) nil_chk(Observer->notifications_)) getWithInt:1])) isOnNext]);
-  OrgJunitAssert_assertEqualsWithId_withId_(@"three", [((RxNotification *) nil_chk([((id<JavaUtilList>) nil_chk(Observer->notifications_)) getWithInt:2])) getValue]);
-  OrgJunitAssert_assertTrueWithBoolean_([((RxNotification *) nil_chk([((id<JavaUtilList>) nil_chk(Observer->notifications_)) getWithInt:2])) isOnNext]);
-  OrgJunitAssert_assertTrueWithBoolean_([((RxNotification *) nil_chk([((id<JavaUtilList>) nil_chk(Observer->notifications_)) getWithInt:3])) isOnCompleted]);
 }
 
 - (void)testMultipleSubscribes {
-  RxInternalOperatorsOperatorMaterializeTest_TestAsyncErrorObservable *o = create_RxInternalOperatorsOperatorMaterializeTest_TestAsyncErrorObservable_initWithNSStringArray_([IOSObjectArray arrayWithObjects:(id[]){ @"one", @"two", nil, @"three" } count:4 type:NSString_class_()]);
-  RxObservable *m = [((RxObservable *) nil_chk(RxObservable_createWithRxObservable_OnSubscribe_(o))) materialize];
-  OrgJunitAssert_assertEqualsWithLong_withLong_(3, [((id<JavaUtilList>) nil_chk([((id<JavaUtilConcurrentFuture>) nil_chk([((RxObservablesBlockingObservable *) nil_chk([((RxObservable *) nil_chk([((RxObservable *) nil_chk(m)) toList])) toBlocking])) toFuture])) get])) size]);
-  OrgJunitAssert_assertEqualsWithLong_withLong_(3, [((id<JavaUtilList>) nil_chk([((id<JavaUtilConcurrentFuture>) nil_chk([((RxObservablesBlockingObservable *) nil_chk([((RxObservable *) nil_chk([m toList])) toBlocking])) toFuture])) get])) size]);
+  @autoreleasepool {
+    RxInternalOperatorsOperatorMaterializeTest_TestAsyncErrorObservable *o = create_RxInternalOperatorsOperatorMaterializeTest_TestAsyncErrorObservable_initWithNSStringArray_([IOSObjectArray arrayWithObjects:(id[]){ @"one", @"two", nil, @"three" } count:4 type:NSString_class_()]);
+    RxObservable *m = [((RxObservable *) nil_chk(RxObservable_createWithRxObservable_OnSubscribe_(o))) materialize];
+    OrgJunitAssert_assertEqualsWithLong_withLong_(3, [((id<JavaUtilList>) nil_chk([((id<JavaUtilConcurrentFuture>) nil_chk([((RxObservablesBlockingObservable *) nil_chk([((RxObservable *) nil_chk([((RxObservable *) nil_chk(m)) toList])) toBlocking])) toFuture])) get])) size]);
+    OrgJunitAssert_assertEqualsWithLong_withLong_(3, [((id<JavaUtilList>) nil_chk([((id<JavaUtilConcurrentFuture>) nil_chk([((RxObservablesBlockingObservable *) nil_chk([((RxObservable *) nil_chk([m toList])) toBlocking])) toFuture])) get])) size]);
+  }
 }
 
 - (void)testBackpressureOnEmptyStream {
-  RxObserversTestSubscriber *ts = RxObserversTestSubscriber_createWithLong_(0);
-  [((RxObservable *) nil_chk([((RxObservable *) nil_chk(RxObservable_empty())) materialize])) subscribeWithRxSubscriber:ts];
-  [((RxObserversTestSubscriber *) nil_chk(ts)) assertNoValues];
-  [ts requestMoreWithLong:1];
-  [ts assertValueCountWithInt:1];
-  OrgJunitAssert_assertTrueWithBoolean_([((RxNotification *) nil_chk([((id<JavaUtilList>) nil_chk([ts getOnNextEvents])) getWithInt:0])) isOnCompleted]);
-  [ts assertCompleted];
+  @autoreleasepool {
+    RxObserversTestSubscriber *ts = RxObserversTestSubscriber_createWithLong_(0);
+    [((RxObservable *) nil_chk([((RxObservable *) nil_chk(RxObservable_empty())) materialize])) subscribeWithRxSubscriber:ts];
+    [((RxObserversTestSubscriber *) nil_chk(ts)) assertNoValues];
+    [ts requestMoreWithLong:1];
+    [ts assertValueCountWithInt:1];
+    OrgJunitAssert_assertTrueWithBoolean_([((RxNotification *) nil_chk([((id<JavaUtilList>) nil_chk([ts getOnNextEvents])) getWithInt:0])) isOnCompleted]);
+    [ts assertCompleted];
+  }
 }
 
 - (void)testBackpressureNoError {
-  RxObserversTestSubscriber *ts = RxObserversTestSubscriber_createWithLong_(0);
-  [((RxObservable *) nil_chk([((RxObservable *) nil_chk(RxObservable_justWithId_withId_withId_(JavaLangInteger_valueOfWithInt_(1), JavaLangInteger_valueOfWithInt_(2), JavaLangInteger_valueOfWithInt_(3)))) materialize])) subscribeWithRxSubscriber:ts];
-  [((RxObserversTestSubscriber *) nil_chk(ts)) assertNoValues];
-  [ts requestMoreWithLong:1];
-  [ts assertValueCountWithInt:1];
-  [ts requestMoreWithLong:2];
-  [ts assertValueCountWithInt:3];
-  [ts requestMoreWithLong:1];
-  [ts assertValueCountWithInt:4];
-  [ts assertCompleted];
+  @autoreleasepool {
+    RxObserversTestSubscriber *ts = RxObserversTestSubscriber_createWithLong_(0);
+    [((RxObservable *) nil_chk([((RxObservable *) nil_chk(RxObservable_justWithId_withId_withId_(JavaLangInteger_valueOfWithInt_(1), JavaLangInteger_valueOfWithInt_(2), JavaLangInteger_valueOfWithInt_(3)))) materialize])) subscribeWithRxSubscriber:ts];
+    [((RxObserversTestSubscriber *) nil_chk(ts)) assertNoValues];
+    [ts requestMoreWithLong:1];
+    [ts assertValueCountWithInt:1];
+    [ts requestMoreWithLong:2];
+    [ts assertValueCountWithInt:3];
+    [ts requestMoreWithLong:1];
+    [ts assertValueCountWithInt:4];
+    [ts assertCompleted];
+  }
 }
 
 - (void)testBackpressureNoErrorAsync {
-  RxObserversTestSubscriber *ts = RxObserversTestSubscriber_createWithLong_(0);
-  [((RxObservable *) nil_chk([((RxObservable *) nil_chk([((RxObservable *) nil_chk(RxObservable_justWithId_withId_withId_(JavaLangInteger_valueOfWithInt_(1), JavaLangInteger_valueOfWithInt_(2), JavaLangInteger_valueOfWithInt_(3)))) materialize])) subscribeOnWithRxScheduler:RxSchedulersSchedulers_computation()])) subscribeWithRxSubscriber:ts];
-  JavaLangThread_sleepWithLong_(100);
-  [((RxObserversTestSubscriber *) nil_chk(ts)) assertNoValues];
-  [ts requestMoreWithLong:1];
-  JavaLangThread_sleepWithLong_(100);
-  [ts assertValueCountWithInt:1];
-  [ts requestMoreWithLong:2];
-  JavaLangThread_sleepWithLong_(100);
-  [ts assertValueCountWithInt:3];
-  [ts requestMoreWithLong:1];
-  JavaLangThread_sleepWithLong_(100);
-  [ts assertValueCountWithInt:4];
-  [ts assertCompleted];
+  @autoreleasepool {
+    RxObserversTestSubscriber *ts = RxObserversTestSubscriber_createWithLong_(0);
+    [((RxObservable *) nil_chk([((RxObservable *) nil_chk([((RxObservable *) nil_chk(RxObservable_justWithId_withId_withId_(JavaLangInteger_valueOfWithInt_(1), JavaLangInteger_valueOfWithInt_(2), JavaLangInteger_valueOfWithInt_(3)))) materialize])) subscribeOnWithRxScheduler:RxSchedulersSchedulers_computation()])) subscribeWithRxSubscriber:ts];
+    JavaLangThread_sleepWithLong_(100);
+    [((RxObserversTestSubscriber *) nil_chk(ts)) assertNoValues];
+    [ts requestMoreWithLong:1];
+    JavaLangThread_sleepWithLong_(100);
+    [ts assertValueCountWithInt:1];
+    [ts requestMoreWithLong:2];
+    JavaLangThread_sleepWithLong_(100);
+    [ts assertValueCountWithInt:3];
+    [ts requestMoreWithLong:1];
+    JavaLangThread_sleepWithLong_(100);
+    [ts assertValueCountWithInt:4];
+    [ts assertCompleted];
+  }
 }
 
 - (void)testBackpressureWithError {
-  RxObserversTestSubscriber *ts = RxObserversTestSubscriber_createWithLong_(0);
-  [((RxObservable *) nil_chk([((RxObservable *) nil_chk(RxObservable_errorWithNSException_(create_JavaLangIllegalArgumentException_init()))) materialize])) subscribeWithRxSubscriber:ts];
-  [((RxObserversTestSubscriber *) nil_chk(ts)) assertNoValues];
-  [ts requestMoreWithLong:1];
-  [ts assertValueCountWithInt:1];
-  [ts assertCompleted];
+  @autoreleasepool {
+    RxObserversTestSubscriber *ts = RxObserversTestSubscriber_createWithLong_(0);
+    [((RxObservable *) nil_chk([((RxObservable *) nil_chk(RxObservable_errorWithNSException_(create_JavaLangIllegalArgumentException_init()))) materialize])) subscribeWithRxSubscriber:ts];
+    [((RxObserversTestSubscriber *) nil_chk(ts)) assertNoValues];
+    [ts requestMoreWithLong:1];
+    [ts assertValueCountWithInt:1];
+    [ts assertCompleted];
+  }
 }
 
 - (void)testBackpressureWithEmissionThenError {
-  RxObserversTestSubscriber *ts = RxObserversTestSubscriber_createWithLong_(0);
-  JavaLangIllegalArgumentException *ex = create_JavaLangIllegalArgumentException_init();
-  [((RxObservable *) nil_chk([((RxObservable *) nil_chk([((RxObservable *) nil_chk(RxObservable_fromWithJavaLangIterable_(JavaUtilArrays_asListWithNSObjectArray_([IOSObjectArray arrayWithObjects:(id[]){ JavaLangInteger_valueOfWithInt_(1) } count:1 type:JavaLangInteger_class_()])))) concatWithWithRxObservable:RxObservable_errorWithNSException_(ex)])) materialize])) subscribeWithRxSubscriber:ts];
-  [((RxObserversTestSubscriber *) nil_chk(ts)) assertNoValues];
-  [ts requestMoreWithLong:1];
-  [ts assertValueCountWithInt:1];
-  OrgJunitAssert_assertTrueWithBoolean_([((RxNotification *) nil_chk([((id<JavaUtilList>) nil_chk([ts getOnNextEvents])) getWithInt:0])) hasValue]);
-  [ts requestMoreWithLong:1];
-  [ts assertValueCountWithInt:2];
-  OrgJunitAssert_assertTrueWithBoolean_([((RxNotification *) nil_chk([((id<JavaUtilList>) nil_chk([ts getOnNextEvents])) getWithInt:1])) isOnError]);
-  OrgJunitAssert_assertTrueWithBoolean_(ex == [((RxNotification *) nil_chk([((id<JavaUtilList>) nil_chk([ts getOnNextEvents])) getWithInt:1])) getThrowable]);
-  [ts assertCompleted];
+  @autoreleasepool {
+    RxObserversTestSubscriber *ts = RxObserversTestSubscriber_createWithLong_(0);
+    JavaLangIllegalArgumentException *ex = create_JavaLangIllegalArgumentException_init();
+    [((RxObservable *) nil_chk([((RxObservable *) nil_chk([((RxObservable *) nil_chk(RxObservable_fromWithJavaLangIterable_(JavaUtilArrays_asListWithNSObjectArray_([IOSObjectArray arrayWithObjects:(id[]){ JavaLangInteger_valueOfWithInt_(1) } count:1 type:JavaLangInteger_class_()])))) concatWithWithRxObservable:RxObservable_errorWithNSException_(ex)])) materialize])) subscribeWithRxSubscriber:ts];
+    [((RxObserversTestSubscriber *) nil_chk(ts)) assertNoValues];
+    [ts requestMoreWithLong:1];
+    [ts assertValueCountWithInt:1];
+    OrgJunitAssert_assertTrueWithBoolean_([((RxNotification *) nil_chk([((id<JavaUtilList>) nil_chk([ts getOnNextEvents])) getWithInt:0])) hasValue]);
+    [ts requestMoreWithLong:1];
+    [ts assertValueCountWithInt:2];
+    OrgJunitAssert_assertTrueWithBoolean_([((RxNotification *) nil_chk([((id<JavaUtilList>) nil_chk([ts getOnNextEvents])) getWithInt:1])) isOnError]);
+    OrgJunitAssert_assertTrueWithBoolean_(ex == [((RxNotification *) nil_chk([((id<JavaUtilList>) nil_chk([ts getOnNextEvents])) getWithInt:1])) getThrowable]);
+    [ts assertCompleted];
+  }
 }
 
 - (void)testWithCompletionCausingError {
-  RxObserversTestSubscriber *ts = RxObserversTestSubscriber_create();
-  JavaLangRuntimeException *ex = create_JavaLangRuntimeException_initWithNSString_(@"boo");
-  [((RxObservable *) nil_chk([((RxObservable *) nil_chk([((RxObservable *) nil_chk(RxObservable_empty())) materialize])) doOnNextWithRxFunctionsAction1:create_RxInternalOperatorsOperatorMaterializeTest_$1_initWithJavaLangRuntimeException_(ex)])) subscribeWithRxSubscriber:ts];
-  [((RxObserversTestSubscriber *) nil_chk(ts)) assertErrorWithNSException:ex];
-  [ts assertNoValues];
-  [ts assertTerminalEvent];
+  @autoreleasepool {
+    RxObserversTestSubscriber *ts = RxObserversTestSubscriber_create();
+    JavaLangRuntimeException *ex = create_JavaLangRuntimeException_initWithNSString_(@"boo");
+    [((RxObservable *) nil_chk([((RxObservable *) nil_chk([((RxObservable *) nil_chk(RxObservable_empty())) materialize])) doOnNextWithRxFunctionsAction1:create_RxInternalOperatorsOperatorMaterializeTest_$1_initWithJavaLangRuntimeException_(ex)])) subscribeWithRxSubscriber:ts];
+    [((RxObserversTestSubscriber *) nil_chk(ts)) assertErrorWithNSException:ex];
+    [ts assertNoValues];
+    [ts assertTerminalEvent];
+  }
 }
 
 - (void)testUnsubscribeJustBeforeCompletionNotificationShouldPreventThatNotificationArriving {
-  RxObserversTestSubscriber *ts = RxObserversTestSubscriber_createWithLong_(0);
-  [((RxObservable *) nil_chk([((RxObservable *) nil_chk(RxObservable_empty())) materialize])) subscribeWithRxSubscriber:ts];
-  [((RxObserversTestSubscriber *) nil_chk(ts)) assertNoValues];
-  [ts unsubscribe];
-  [ts requestMoreWithLong:1];
-  [ts assertNoValues];
-  [ts assertUnsubscribed];
+  @autoreleasepool {
+    RxObserversTestSubscriber *ts = RxObserversTestSubscriber_createWithLong_(0);
+    [((RxObservable *) nil_chk([((RxObservable *) nil_chk(RxObservable_empty())) materialize])) subscribeWithRxSubscriber:ts];
+    [((RxObserversTestSubscriber *) nil_chk(ts)) assertNoValues];
+    [ts unsubscribe];
+    [ts requestMoreWithLong:1];
+    [ts assertNoValues];
+    [ts assertUnsubscribed];
+  }
 }
 
 J2OBJC_IGNORE_DESIGNATED_BEGIN

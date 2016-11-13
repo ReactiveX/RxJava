@@ -15,6 +15,9 @@
  */
 package rx.internal.operators;
 
+import com.google.j2objc.annotations.AutoreleasePool;
+
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -35,7 +38,7 @@ import rx.schedulers.Schedulers;
 
 public class OperatorMaterializeTest {
 
-    @Test
+    @AutoreleasePool @Test
     public void testMaterialize1() {
         // null will cause onError to be triggered before "three" can be
         // returned
@@ -64,7 +67,7 @@ public class OperatorMaterializeTest {
         assertTrue(Observer.notifications.get(2).isOnError());
     }
 
-    @Test
+    @AutoreleasePool @Test
     public void testMaterialize2() {
         final TestAsyncErrorObservable o1 = new TestAsyncErrorObservable("one", "two", "three");
 
@@ -90,7 +93,7 @@ public class OperatorMaterializeTest {
         assertTrue(Observer.notifications.get(3).isOnCompleted());
     }
 
-    @Test
+    @AutoreleasePool @Test
     public void testMultipleSubscribes() throws InterruptedException, ExecutionException {
         final TestAsyncErrorObservable o = new TestAsyncErrorObservable("one", "two", null, "three");
 
@@ -100,7 +103,7 @@ public class OperatorMaterializeTest {
         assertEquals(3, m.toList().toBlocking().toFuture().get().size());
     }
 
-    @Test
+    @AutoreleasePool @Test
     public void testBackpressureOnEmptyStream() {
         TestSubscriber<Notification<Integer>> ts = TestSubscriber.create(0);
         Observable.<Integer> empty().materialize().subscribe(ts);
@@ -111,7 +114,7 @@ public class OperatorMaterializeTest {
         ts.assertCompleted();
     }
 
-    @Test
+    @AutoreleasePool @Test
     public void testBackpressureNoError() {
         TestSubscriber<Notification<Integer>> ts = TestSubscriber.create(0);
         Observable.just(1, 2, 3).materialize().subscribe(ts);
@@ -125,7 +128,7 @@ public class OperatorMaterializeTest {
         ts.assertCompleted();
     }
 
-    @Test
+    @AutoreleasePool @Test
     public void testBackpressureNoErrorAsync() throws InterruptedException {
         TestSubscriber<Notification<Integer>> ts = TestSubscriber.create(0);
         Observable.just(1, 2, 3)
@@ -146,7 +149,7 @@ public class OperatorMaterializeTest {
         ts.assertCompleted();
     }
 
-    @Test
+    @AutoreleasePool @Test
     public void testBackpressureWithError() {
         TestSubscriber<Notification<Integer>> ts = TestSubscriber.create(0);
         Observable.<Integer> error(new IllegalArgumentException()).materialize().subscribe(ts);
@@ -156,7 +159,7 @@ public class OperatorMaterializeTest {
         ts.assertCompleted();
     }
 
-    @Test
+    @AutoreleasePool @Test
     public void testBackpressureWithEmissionThenError() {
         TestSubscriber<Notification<Integer>> ts = TestSubscriber.create(0);
         IllegalArgumentException ex = new IllegalArgumentException();
@@ -173,7 +176,7 @@ public class OperatorMaterializeTest {
         ts.assertCompleted();
     }
 
-    @Test
+    @AutoreleasePool @Test
     public void testWithCompletionCausingError() {
         TestSubscriber<Notification<Integer>> ts = TestSubscriber.create();
         final RuntimeException ex = new RuntimeException("boo");
@@ -188,7 +191,7 @@ public class OperatorMaterializeTest {
         ts.assertTerminalEvent();
     }
 
-    @Test
+    @AutoreleasePool @Test
     public void testUnsubscribeJustBeforeCompletionNotificationShouldPreventThatNotificationArriving() {
         TestSubscriber<Notification<Integer>> ts = TestSubscriber.create(0);
 

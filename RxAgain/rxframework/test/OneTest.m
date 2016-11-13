@@ -233,7 +233,6 @@
 #include "java/io/BufferedReader.h"
 #include "java/io/PrintStream.h"
 #include "java/io/StringReader.h"
-#include "java/lang/ClassNotFoundException.h"
 #include "java/lang/Exception.h"
 #include "java/lang/Math.h"
 #include "java/lang/RuntimeException.h"
@@ -339,11 +338,6 @@ IOSObjectArray *OneTest_failing;
   OneTest_runWithNSStringArray_(classNames);
 }
 
-+ (void)runMethodWithNSString:(NSString *)className_
-                 withNSString:(NSString *)methodName {
-  OneTest_runMethodWithNSString_withNSString_(className_, methodName);
-}
-
 + (jlong)printMem {
   return OneTest_printMem();
 }
@@ -370,9 +364,8 @@ J2OBJC_IGNORE_DESIGNATED_END
     { NULL, "V", 0x9, 4, 7, -1, -1, -1, -1 },
     { NULL, "V", 0x9, 4, 8, -1, -1, -1, -1 },
     { NULL, "V", 0x8a, 9, 10, -1, -1, -1, -1 },
-    { NULL, "V", 0x9, 11, 6, -1, -1, -1, -1 },
     { NULL, "J", 0x10a, -1, -1, -1, -1, -1, -1 },
-    { NULL, "[LIOSClass;", 0xa, 12, 5, -1, -1, -1, -1 },
+    { NULL, "[LIOSClass;", 0xa, 11, 5, -1, -1, -1, -1 },
     { NULL, NULL, 0x1, -1, -1, -1, -1, -1, -1 },
   };
   #pragma clang diagnostic push
@@ -386,25 +379,24 @@ J2OBJC_IGNORE_DESIGNATED_END
   methods[6].selector = @selector(runTestsWithNSString:withNSString:withNSString:);
   methods[7].selector = @selector(runTestsWithNSString:withNSString:withNSString:withNSString:);
   methods[8].selector = @selector(runWithNSStringArray:);
-  methods[9].selector = @selector(runMethodWithNSString:withNSString:);
-  methods[10].selector = @selector(printMem);
-  methods[11].selector = @selector(loadClassListWithNSString:);
-  methods[12].selector = @selector(init);
+  methods[9].selector = @selector(printMem);
+  methods[10].selector = @selector(loadClassListWithNSString:);
+  methods[11].selector = @selector(init);
   #pragma clang diagnostic pop
   static const J2ObjcFieldInfo fields[] = {
-    { "alltests", "[LIOSClass;", .constantValue.asLong = 0, 0x9, -1, 13, -1, -1 },
-    { "bigmem", "[LIOSClass;", .constantValue.asLong = 0, 0x9, -1, 14, -1, -1 },
-    { "failing", "[LIOSClass;", .constantValue.asLong = 0, 0x9, -1, 15, -1, -1 },
+    { "alltests", "[LIOSClass;", .constantValue.asLong = 0, 0x9, -1, 12, -1, -1 },
+    { "bigmem", "[LIOSClass;", .constantValue.asLong = 0, 0x9, -1, 13, -1, -1 },
+    { "failing", "[LIOSClass;", .constantValue.asLong = 0, 0x9, -1, 14, -1, -1 },
   };
-  static const void *ptrTable[] = { "()Ljava/util/List<Ljava/lang/String;>;", "loadClasses", "LJavaUtilList;[LIOSClass;", "(Ljava/util/List<Ljava/lang/String;>;[Ljava/lang/Class;)V", "runTests", "LNSString;", "LNSString;LNSString;", "LNSString;LNSString;LNSString;", "LNSString;LNSString;LNSString;LNSString;", "run", "[LNSString;", "runMethod", "loadClassList", &OneTest_alltests, &OneTest_bigmem, &OneTest_failing, "LOneTest_BigMemRunListener;" };
-  static const J2ObjcClassInfo _OneTest = { "OneTest", NULL, ptrTable, methods, fields, 7, 0x1, 13, 3, -1, 16, -1, -1, -1 };
+  static const void *ptrTable[] = { "()Ljava/util/List<Ljava/lang/String;>;", "loadClasses", "LJavaUtilList;[LIOSClass;", "(Ljava/util/List<Ljava/lang/String;>;[Ljava/lang/Class;)V", "runTests", "LNSString;", "LNSString;LNSString;", "LNSString;LNSString;LNSString;", "LNSString;LNSString;LNSString;LNSString;", "run", "[LNSString;", "loadClassList", &OneTest_alltests, &OneTest_bigmem, &OneTest_failing, "LOneTest_BigMemRunListener;" };
+  static const J2ObjcClassInfo _OneTest = { "OneTest", NULL, ptrTable, methods, fields, 7, 0x1, 12, 3, -1, 15, -1, -1, -1 };
   return &_OneTest;
 }
 
 + (void)initialize {
   if (self == [OneTest class]) {
     JreStrongAssignAndConsume(&OneTest_alltests, [IOSObjectArray newArrayWithObjects:(id[]){ RxBackpressureTests_class_(), RxCombineLatestTests_class_(), RxConcatTests_class_(), RxCovarianceTest_class_(), RxErrorHandlingTests_class_(), RxGroupByTests_class_(), RxMergeTests_class_(), RxNotificationTest_class_(), RxObservableDoOnTest_class_(), RxObservableTests_class_(), RxObservableWindowTests_class_(), RxReduceTests_class_(), RxScanTests_class_(), RxSingleTest_class_(), RxStartWithTests_class_(), RxSubscriberTest_class_(), RxThrottleLastTests_class_(), RxThrottleWithTimeoutTests_class_(), RxZipTests_class_(), RxExceptionsCompositeExceptionTest_class_(), RxExceptionsExceptionsNullTest_class_(), RxExceptionsOnNextValueTest_class_(), RxFunctionsActionsTest_class_(), RxFunctionsFunctionsTest_class_(), RxInternalOperatorsBackpressureUtilsTest_class_(), RxInternalOperatorsBlockingOperatorLatestTest_class_(), RxInternalOperatorsBlockingOperatorMostRecentTest_class_(), RxInternalOperatorsBlockingOperatorNextTest_class_(), RxInternalOperatorsBlockingOperatorToFutureTest_class_(), RxInternalOperatorsBlockingOperatorToIteratorTest_class_(), RxInternalOperatorsCachedObservableTest_class_(), RxInternalOperatorsNotificationLiteTest_class_(), RxInternalOperatorsOnSubscribeAmbTest_class_(), RxInternalOperatorsOnSubscribeCombineLatestTest_class_(), RxInternalOperatorsOnSubscribeCompletableTest_class_(), RxInternalOperatorsOnSubscribeConcatDelayErrorTest_class_(), RxInternalOperatorsOnSubscribeDeferTest_class_(), RxInternalOperatorsOnSubscribeDelaySubscriptionOtherTest_class_(), RxInternalOperatorsOnSubscribeDetachTest_class_(), RxInternalOperatorsOnSubscribeFlattenIterableTest_class_(), RxInternalOperatorsOnSubscribeFromArrayTest_class_(), RxInternalOperatorsOnSubscribeFromCallableTest_class_(), RxInternalOperatorsOnSubscribeFromIterableTest_class_(), RxInternalOperatorsOnSubscribeGroupJoinTest_class_(), RxInternalOperatorsOnSubscribeJoinTest_class_(), RxInternalOperatorsOnSubscribeRangeTest_class_(), RxInternalOperatorsOnSubscribeRefCountTest_class_(), RxInternalOperatorsOnSubscribeSingleTest_class_(), RxInternalOperatorsOnSubscribeTimerTest_class_(), RxInternalOperatorsOnSubscribeToObservableFutureTest_class_(), RxInternalOperatorsOnSubscribeUsingTest_class_(), RxInternalOperatorsOperatorAllTest_class_(), RxInternalOperatorsOperatorAnyTest_class_(), RxInternalOperatorsOperatorAsObservableTest_class_(), RxInternalOperatorsOperatorBufferTest_class_(), RxInternalOperatorsOperatorCastTest_class_(), RxInternalOperatorsOperatorConcatTest_class_(), RxInternalOperatorsOperatorDebounceTest_class_(), RxInternalOperatorsOperatorDefaultIfEmptyTest_class_(), RxInternalOperatorsOperatorDematerializeTest_class_(), RxInternalOperatorsOperatorDistinctTest_class_(), RxInternalOperatorsOperatorDistinctUntilChangedTest_class_(), RxInternalOperatorsOperatorDoAfterTerminateTest_class_(), RxInternalOperatorsOperatorDoOnRequestTest_class_(), RxInternalOperatorsOperatorDoOnSubscribeTest_class_(), RxInternalOperatorsOperatorDoOnUnsubscribeTest_class_(), RxInternalOperatorsOperatorEagerConcatMapTest_class_(), RxInternalOperatorsOperatorElementAtTest_class_(), RxInternalOperatorsOperatorFirstTest_class_(), RxInternalOperatorsOperatorFlatMapTest_class_(), RxInternalOperatorsOperatorGroupByTest_class_(), RxInternalOperatorsOperatorIgnoreElementsTest_class_(), RxInternalOperatorsOperatorLastTest_class_(), RxInternalOperatorsOperatorMapNotificationTest_class_(), RxInternalOperatorsOperatorMapPairTest_class_(), RxInternalOperatorsOperatorMaterializeTest_class_(), RxInternalOperatorsOperatorMergeDelayErrorTest_class_(), RxInternalOperatorsOperatorMergeMaxConcurrentTest_class_(), RxInternalOperatorsOperatorMergeTest_class_(), RxInternalOperatorsOperatorMulticastTest_class_(), RxInternalOperatorsOperatorObserveOnTest_class_(), RxInternalOperatorsOperatorOnBackpressureBufferTest_class_(), RxInternalOperatorsOperatorOnBackpressureDropTest_class_(), RxInternalOperatorsOperatorOnBackpressureLatestTest_class_(), RxInternalOperatorsOperatorOnErrorResumeNextViaFunctionTest_class_(), RxInternalOperatorsOperatorOnErrorResumeNextViaObservableTest_class_(), RxInternalOperatorsOperatorOnErrorReturnTest_class_(), RxInternalOperatorsOperatorOnExceptionResumeNextViaObservableTest_class_(), RxInternalOperatorsOperatorPublishFunctionTest_class_(), RxInternalOperatorsOperatorPublishTest_class_(), RxInternalOperatorsOperatorRepeatTest_class_(), RxInternalOperatorsOperatorReplayTest_class_(), RxInternalOperatorsOperatorRetryTest_class_(), RxInternalOperatorsOperatorRetryWithPredicateTest_class_(), RxInternalOperatorsOperatorSampleTest_class_(), RxInternalOperatorsOperatorScanTest_class_(), RxInternalOperatorsOperatorSequenceEqualTest_class_(), RxInternalOperatorsOperatorSerializeTest_class_(), RxInternalOperatorsOperatorSingleTest_class_(), RxInternalOperatorsOperatorSkipLastTest_class_(), RxInternalOperatorsOperatorSkipLastTimedTest_class_(), RxInternalOperatorsOperatorSkipTest_class_(), RxInternalOperatorsOperatorSkipTimedTest_class_(), RxInternalOperatorsOperatorSkipUntilTest_class_(), RxInternalOperatorsOperatorSkipWhileTest_class_(), RxInternalOperatorsOperatorSubscribeOnTest_class_(), RxInternalOperatorsOperatorSwitchIfEmptyTest_class_(), RxInternalOperatorsOperatorSwitchTest_class_(), RxInternalOperatorsOperatorTakeLastOneTest_class_(), RxInternalOperatorsOperatorTakeLastTest_class_(), RxInternalOperatorsOperatorTakeLastTimedTest_class_(), RxInternalOperatorsOperatorTakeTest_class_(), RxInternalOperatorsOperatorTakeTimedTest_class_(), RxInternalOperatorsOperatorTakeUntilPredicateTest_class_(), RxInternalOperatorsOperatorTakeUntilTest_class_(), RxInternalOperatorsOperatorTakeWhileTest_class_(), RxInternalOperatorsOperatorThrottleFirstTest_class_(), RxInternalOperatorsOperatorTimeIntervalTest_class_(), RxInternalOperatorsOperatorTimeoutTests_class_(), RxInternalOperatorsOperatorTimeoutWithSelectorTest_class_(), RxInternalOperatorsOperatorTimestampTest_class_(), RxInternalOperatorsOperatorToObservableListTest_class_(), RxInternalOperatorsOperatorToObservableSortedListTest_class_(), RxInternalOperatorsOperatorUnsubscribeOnTest_class_(), RxInternalOperatorsOperatorWindowWithObservableTest_class_(), RxInternalOperatorsOperatorWindowWithSizeTest_class_(), RxInternalOperatorsOperatorWindowWithStartEndObservableTest_class_(), RxInternalOperatorsOperatorWindowWithTimeTest_class_(), RxInternalOperatorsOperatorWithLatestFromTest_class_(), RxInternalOperatorsOperatorZipCompletionTest_class_(), RxInternalOperatorsOperatorZipIterableTest_class_(), RxInternalOperatorsSingleDoAfterTerminateTest_class_(), RxInternalOperatorsSingleOnSubscribeDelaySubscriptionOtherTest_class_(), RxInternalOperatorsSingleOnSubscribeUsingTest_class_(), RxInternalProducersProducersTest_class_(), RxSchedulersGenericScheduledExecutorServiceTest_class_(), RxInternalSchedulersNewThreadWorkerTest_class_(), RxInternalUtilBlockingUtilsTest_class_(), RxInternalUtilIndexedRingBufferTest_class_(), RxInternalUtilJCToolsQueueTests_class_(), RxInternalUtilLinkedArrayListTest_class_(), RxInternalUtilOpenHashSetTest_class_(), RxInternalUtilRxRingBufferSpmcTest_class_(), RxInternalUtilRxRingBufferSpscTest_class_(), RxInternalUtilRxRingBufferWithoutUnsafeTest_class_(), RxInternalUtilScalarSynchronousObservableTest_class_(), RxInternalUtilScalarSynchronousSingleTest_class_(), RxInternalUtilSubscriptionListTest_class_(), RxInternalUtilSynchronizedQueueTest_class_(), RxObservablesBlockingObservableTest_class_(), RxObservablesConnectableObservableTest_class_(), RxObserversObserversTest_class_(), RxObserversSafeObserverTest_class_(), RxObserversSafeSubscriberTest_class_(), RxObserversSubscribersTest_class_(), RxObserversTestObserverTest_class_(), RxObserversTestSubscriberTest_class_(), RxPluginsRxJavaPluginsTest_class_(), RxPluginsRxJavaSchedulersHookTest_class_(), RxSchedulersComputationSchedulerTests_class_(), RxSchedulersImmediateSchedulerTest_class_(), RxSchedulersIoSchedulerTest_class_(), RxSchedulersNewThreadSchedulerTest_class_(), RxSchedulersResetSchedulersTest_class_(), RxSchedulersTestSchedulerTest_class_(), RxSchedulersTrampolineSchedulerTest_class_(), RxSinglesBlockingSingleTest_class_(), RxSubjectsAsyncSubjectTest_class_(), RxSubjectsBehaviorSubjectTest_class_(), RxSubjectsBufferUntilSubscriberTest_class_(), RxSubjectsPublishSubjectTest_class_(), RxSubjectsReplaySubjectBoundedConcurrencyTest_class_(), RxSubjectsReplaySubjectConcurrencyTest_class_(), RxSubjectsReplaySubjectTest_class_(), RxSubjectsSerializedSubjectTest_class_(), RxSubjectsTestSubjectTest_class_(), RxSubscriptionsCompositeSubscriptionTest_class_(), RxSubscriptionsMultipleAssignmentSubscriptionTest_class_(), RxSubscriptionsRefCountSubscriptionTest_class_(), RxSubscriptionsSubscriptionsTest_class_(), RxTestTestObstructionDetectionTest_class_(), RxUtilAssertObservableTest_class_(), RxEventStreamTest_class_(), RxSchedulerWorkerTest_class_(), RxInternalOperatorsCompletableFromEmitterTest_class_(), RxInternalOperatorsDeferredScalarSubscriberTest_class_(), RxInternalOperatorsOnSubscribeCollectTest_class_(), RxInternalOperatorsOnSubscribeDoOnEachTest_class_(), RxInternalOperatorsOnSubscribeFilterTest_class_(), RxInternalOperatorsOnSubscribeFromAsyncEmitterTest_class_(), RxInternalOperatorsOnSubscribeFromEmitterTest_class_(), RxInternalOperatorsOnSubscribeMapTest_class_(), RxInternalOperatorsOnSubscribeReduceTest_class_(), RxInternalOperatorsOnSubscribeToMapTest_class_(), RxInternalOperatorsOnSubscribeToMultimapTest_class_(), RxInternalOperatorsOperatorCountTest_class_(), RxInternalOperatorsOperatorZipTest_class_(), RxInternalOperatorsInternalSafeSubscriberTest_class_(), RxInternalOperatorsSingleOperatorZipTest_class_(), RxInternalProducersProducerArbiterTest_class_(), RxInternalProducersProducerObserverArbiterTest_class_(), RxInternalProducersSingleDelayedProducerTest_class_(), RxInternalProducersSingleProducerTest_class_(), RxInternalSchedulersExecutorSchedulerTest_class_(), RxInternalSchedulersInternalGenericScheduledExecutorServiceTest_class_(), RxInternalUtilUnsafePow2Test_class_(), RxInternalUtilUnsafeUnsafeAccessTest_class_(), RxInternalUtilExceptionUtilsTest_class_(), RxInternalUtilPlatformDependentTest_class_(), RxInternalUtilUtilityFunctionsTest_class_(), RxObservablesAsyncOnSubscribeTest_class_(), RxObservablesSyncOnSubscribeTest_class_(), RxObserversAsyncCompletableSubscriberTest_class_(), RxObserversCompletableSubscriberTest_class_(), RxObserversSerializedObserverTest_class_(), RxSchedulersDeprecatedSchedulersTest_class_(), RxSchedulersSchedulerLifecycleTest_class_(), RxSchedulersSchedulerWhenTest_class_(), RxSchedulersTimeXTest_class_(), RxSubscriptionsSerialSubscriptionTests_class_(), RxCompletableTest_class_() } count:221 type:IOSClass_class_()]);
-    JreStrongAssignAndConsume(&OneTest_bigmem, [IOSObjectArray newArrayWithObjects:(id[]){ RxInternalOperatorsOperatorMergeTest_class_(), RxInternalOperatorsOperatorObserveOnTest_class_(), RxInternalOperatorsOperatorReplayTest_class_(), RxInternalOperatorsOperatorRetryTest_class_(), RxInternalUtilJCToolsQueueTests_class_(), RxSubjectsBehaviorSubjectTest_class_(), RxSubjectsReplaySubjectConcurrencyTest_class_(), RxSubjectsReplaySubjectBoundedConcurrencyTest_class_(), RxInternalOperatorsOperatorZipTest_class_(), RxInternalSchedulersExecutorSchedulerTest_class_(), RxObservablesSyncOnSubscribeTest_class_(), RxInternalOperatorsOperatorDelayTest_class_() } count:12 type:IOSClass_class_()]);
+    JreStrongAssignAndConsume(&OneTest_bigmem, [IOSObjectArray newArrayWithObjects:(id[]){ RxInternalUtilJCToolsQueueTests_class_(), RxInternalUtilIndexedRingBufferTest_class_(), RxSubjectsReplaySubjectConcurrencyTest_class_(), RxSubjectsReplaySubjectBoundedConcurrencyTest_class_(), RxInternalOperatorsOperatorZipTest_class_(), RxInternalSchedulersExecutorSchedulerTest_class_(), RxObservablesSyncOnSubscribeTest_class_(), RxInternalOperatorsOperatorDelayTest_class_() } count:8 type:IOSClass_class_()]);
     JreStrongAssignAndConsume(&OneTest_failing, [IOSObjectArray newArrayWithObjects:(id[]){ RxSchedulersNewThreadSchedulerTest_class_(), RxSchedulersIoSchedulerTest_class_(), RxSchedulersImmediateSchedulerTest_class_(), RxInternalOperatorsOperatorSwitchTest_class_() } count:4 type:IOSClass_class_()]);
     J2OBJC_SET_INITIALIZED(OneTest)
   }
@@ -473,32 +465,7 @@ void OneTest_runTestsWithNSString_withNSString_withNSString_withNSString_(NSStri
 
 void OneTest_runWithNSStringArray_(IOSObjectArray *classNames) {
   OneTest_initialize();
-  @try {
-    id<JavaUtilList> clses = create_JavaUtilArrayList_init();
-    {
-      IOSObjectArray *a__ = classNames;
-      NSString * const *b__ = ((IOSObjectArray *) nil_chk(a__))->buffer_;
-      NSString * const *e__ = b__ + a__->size_;
-      while (b__ < e__) {
-        NSString *s = *b__++;
-        [clses addWithId:IOSClass_forName_(s)];
-      }
-    }
-    CoTouchlabDoppelTestingDopplJunitTestRunner_runWithIOSClassArray_withOrgJunitRunnerNotificationRunListener_([clses toArrayWithNSObjectArray:[IOSObjectArray arrayWithLength:[clses size] type:IOSClass_class_()]], create_OneTest_BigMemRunListener_init());
-  }
-  @catch (JavaLangClassNotFoundException *e) {
-    @throw create_JavaLangRuntimeException_initWithNSException_(e);
-  }
-}
-
-void OneTest_runMethodWithNSString_withNSString_(NSString *className_, NSString *methodName) {
-  OneTest_initialize();
-  @try {
-    CoTouchlabDoppelTestingDopplJunitTestRunner_runMethodWithIOSClass_withNSString_withOrgJunitRunnerNotificationRunListener_(IOSClass_forName_(className_), methodName, create_OneTest_BigMemRunListener_init());
-  }
-  @catch (JavaLangClassNotFoundException *e) {
-    @throw create_JavaLangRuntimeException_initWithNSException_(e);
-  }
+  CoTouchlabDoppelTestingDopplJunitTestRunner_runWithNSStringArray_withOrgJunitRunnerNotificationRunListener_(classNames, create_OneTest_BigMemRunListener_init());
 }
 
 jlong OneTest_printMem() {

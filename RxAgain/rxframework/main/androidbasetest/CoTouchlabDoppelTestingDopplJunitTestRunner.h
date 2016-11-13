@@ -40,8 +40,7 @@
 + (jint)runWithIOSClassArray:(IOSObjectArray *)classes
 withOrgJunitRunnerNotificationRunListener:(OrgJunitRunnerNotificationRunListener *)listener;
 
-+ (jint)runMethodWithIOSClass:(IOSClass *)clazz
-                 withNSString:(NSString *)methodName
++ (jint)runWithNSStringArray:(IOSObjectArray *)classes
 withOrgJunitRunnerNotificationRunListener:(OrgJunitRunnerNotificationRunListener *)listener;
 
 - (void)sortClassesWithIOSClassArray:(IOSObjectArray *)classes
@@ -75,7 +74,7 @@ FOUNDATION_EXPORT CoTouchlabDoppelTestingDopplJunitTestRunner *create_CoTouchlab
 
 FOUNDATION_EXPORT jint CoTouchlabDoppelTestingDopplJunitTestRunner_mainWithNSStringArray_(IOSObjectArray *args);
 
-FOUNDATION_EXPORT jint CoTouchlabDoppelTestingDopplJunitTestRunner_runMethodWithIOSClass_withNSString_withOrgJunitRunnerNotificationRunListener_(IOSClass *clazz, NSString *methodName, OrgJunitRunnerNotificationRunListener *listener);
+FOUNDATION_EXPORT jint CoTouchlabDoppelTestingDopplJunitTestRunner_runWithNSStringArray_withOrgJunitRunnerNotificationRunListener_(IOSObjectArray *classes, OrgJunitRunnerNotificationRunListener *listener);
 
 FOUNDATION_EXPORT jint CoTouchlabDoppelTestingDopplJunitTestRunner_runWithIOSClassArray_withOrgJunitRunnerNotificationRunListener_(IOSObjectArray *classes, OrgJunitRunnerNotificationRunListener *listener);
 
@@ -233,32 +232,31 @@ J2OBJC_TYPE_LITERAL_HEADER(CoTouchlabDoppelTestingDopplJunitTestRunner_TestInclu
 #if !defined (CoTouchlabDoppelTestingDopplJunitTestRunner_ResultContainer_) && (INCLUDE_ALL_CoTouchlabDoppelTestingDopplJunitTestRunner || defined(INCLUDE_CoTouchlabDoppelTestingDopplJunitTestRunner_ResultContainer))
 #define CoTouchlabDoppelTestingDopplJunitTestRunner_ResultContainer_
 
-@class IOSClass;
 @class OrgJunitRunnerResult;
 
 @interface CoTouchlabDoppelTestingDopplJunitTestRunner_ResultContainer : NSObject {
  @public
   OrgJunitRunnerResult *result_;
-  IOSClass *testClass_;
+  NSString *testClassName_;
 }
 
 #pragma mark Public
 
 - (instancetype)initWithOrgJunitRunnerResult:(OrgJunitRunnerResult *)result
-                                withIOSClass:(IOSClass *)testClass;
+                                withNSString:(NSString *)testClassName;
 
 @end
 
 J2OBJC_EMPTY_STATIC_INIT(CoTouchlabDoppelTestingDopplJunitTestRunner_ResultContainer)
 
 J2OBJC_FIELD_SETTER(CoTouchlabDoppelTestingDopplJunitTestRunner_ResultContainer, result_, OrgJunitRunnerResult *)
-J2OBJC_FIELD_SETTER(CoTouchlabDoppelTestingDopplJunitTestRunner_ResultContainer, testClass_, IOSClass *)
+J2OBJC_FIELD_SETTER(CoTouchlabDoppelTestingDopplJunitTestRunner_ResultContainer, testClassName_, NSString *)
 
-FOUNDATION_EXPORT void CoTouchlabDoppelTestingDopplJunitTestRunner_ResultContainer_initWithOrgJunitRunnerResult_withIOSClass_(CoTouchlabDoppelTestingDopplJunitTestRunner_ResultContainer *self, OrgJunitRunnerResult *result, IOSClass *testClass);
+FOUNDATION_EXPORT void CoTouchlabDoppelTestingDopplJunitTestRunner_ResultContainer_initWithOrgJunitRunnerResult_withNSString_(CoTouchlabDoppelTestingDopplJunitTestRunner_ResultContainer *self, OrgJunitRunnerResult *result, NSString *testClassName);
 
-FOUNDATION_EXPORT CoTouchlabDoppelTestingDopplJunitTestRunner_ResultContainer *new_CoTouchlabDoppelTestingDopplJunitTestRunner_ResultContainer_initWithOrgJunitRunnerResult_withIOSClass_(OrgJunitRunnerResult *result, IOSClass *testClass) NS_RETURNS_RETAINED;
+FOUNDATION_EXPORT CoTouchlabDoppelTestingDopplJunitTestRunner_ResultContainer *new_CoTouchlabDoppelTestingDopplJunitTestRunner_ResultContainer_initWithOrgJunitRunnerResult_withNSString_(OrgJunitRunnerResult *result, NSString *testClassName) NS_RETURNS_RETAINED;
 
-FOUNDATION_EXPORT CoTouchlabDoppelTestingDopplJunitTestRunner_ResultContainer *create_CoTouchlabDoppelTestingDopplJunitTestRunner_ResultContainer_initWithOrgJunitRunnerResult_withIOSClass_(OrgJunitRunnerResult *result, IOSClass *testClass);
+FOUNDATION_EXPORT CoTouchlabDoppelTestingDopplJunitTestRunner_ResultContainer *create_CoTouchlabDoppelTestingDopplJunitTestRunner_ResultContainer_initWithOrgJunitRunnerResult_withNSString_(OrgJunitRunnerResult *result, NSString *testClassName);
 
 J2OBJC_TYPE_LITERAL_HEADER(CoTouchlabDoppelTestingDopplJunitTestRunner_ResultContainer)
 
