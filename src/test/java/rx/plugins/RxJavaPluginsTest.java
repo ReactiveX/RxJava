@@ -72,7 +72,7 @@ public class RxJavaPluginsTest {
     public static class RxJavaErrorHandlerTestImpl extends RxJavaErrorHandler {
 
         private volatile Throwable e;
-        private volatile int count = 0;
+        private volatile int count;
 
         @Override
         public void handleError(Throwable e) {

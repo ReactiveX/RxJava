@@ -56,14 +56,14 @@ public class SingleDelayedProducerTest {
                     @Override
                     public void call() {
                         waiter.decrementAndGet();
-                        while (waiter.get() != 0) ;
+                        while (waiter.get() != 0) { }
                         pa.request(1);
                         cdl.countDown();
                     }
                 });
 
                 waiter.decrementAndGet();
-                while (waiter.get() != 0) ;
+                while (waiter.get() != 0) { }
                 pa.setValue(1);
                 if (!cdl.await(5, TimeUnit.SECONDS)) {
                     Assert.fail("The wait for completion timed out");

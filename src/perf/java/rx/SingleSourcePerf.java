@@ -169,7 +169,7 @@ public class SingleSourcePerf {
         }
 
         public void awaitSpin() {
-            while (cdl.getCount() != 0L) ;
+            while (cdl.getCount() != 0L) { }
         }
     }
 

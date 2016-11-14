@@ -44,14 +44,15 @@ public class OperatorSkipWhileTest {
     private static final Func1<Integer, Boolean> LESS_THAN_FIVE = new Func1<Integer, Boolean>() {
         @Override
         public Boolean call(Integer v) {
-            if (v == 42)
+            if (v == 42) {
                 throw new RuntimeException("that's not the answer to everything!");
+            }
             return v < 5;
         }
     };
 
     private static final Func1<Integer, Boolean> INDEX_LESS_THAN_THREE = new Func1<Integer, Boolean>() {
-        int index = 0;
+        int index;
         @Override
         public Boolean call(Integer value) {
             return index++ < 3;

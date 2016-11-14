@@ -121,7 +121,7 @@ public class OperatorOnBackpressureDropTest {
             public void onNext(Long t) {
                 count.incrementAndGet();
                 //cause overflow of requested if not handled properly in onBackpressureDrop operator
-                request(Long.MAX_VALUE-1);
+                request(Long.MAX_VALUE - 1);
             }});
         assertEquals(n, count.get());
     }
@@ -308,7 +308,7 @@ public class OperatorOnBackpressureDropTest {
 
             @Override
             public void call(Subscriber<? super Long> s) {
-                for (long i=0;i < n;i++) {
+                for (long i = 0;i < n;i++) {
                     if (s.isUnsubscribed()) {
                         break;
                     }

@@ -80,7 +80,7 @@ public class SafeSubscriberTest {
         assertTrue(safe.isUnsubscribed());
     }
 
-    @Test(expected=OnCompletedFailedException.class)
+    @Test(expected = OnCompletedFailedException.class)
     public void testPluginException() {
         RxJavaPlugins.getInstance().registerErrorHandler(new RxJavaErrorHandler() {
             @Override
@@ -261,7 +261,7 @@ public class SafeSubscriberTest {
         try {
             safe.onCompleted();
             Assert.fail();
-        } catch(UnsubscribeFailedException e) {
+        } catch (UnsubscribeFailedException e) {
             assertEquals(1, calls.get());
             assertEquals(0, errors.get());
         }
@@ -301,7 +301,7 @@ public class SafeSubscriberTest {
         try {
             safe.onCompleted();
             Assert.fail();
-        } catch(UnsubscribeFailedException e) {
+        } catch (UnsubscribeFailedException e) {
             assertEquals(2, calls.get());
             assertEquals(0, errors.get());
         }

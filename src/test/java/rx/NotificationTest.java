@@ -29,49 +29,49 @@ import rx.exceptions.TestException;
 public class NotificationTest {
 
     @Test
-    public void testOnNextIntegerNotificationDoesNotEqualNullNotification(){
+    public void testOnNextIntegerNotificationDoesNotEqualNullNotification() {
         final Notification<Integer> integerNotification = Notification.createOnNext(1);
         final Notification<Integer> nullNotification = Notification.createOnNext(null);
         assertFalse(integerNotification.equals(nullNotification));
     }
 
     @Test
-    public void testOnNextNullNotificationDoesNotEqualIntegerNotification(){
+    public void testOnNextNullNotificationDoesNotEqualIntegerNotification() {
         final Notification<Integer> integerNotification = Notification.createOnNext(1);
         final Notification<Integer> nullNotification = Notification.createOnNext(null);
         assertFalse(nullNotification.equals(integerNotification));
     }
 
     @Test
-    public void testOnNextIntegerNotificationsWhenEqual(){
+    public void testOnNextIntegerNotificationsWhenEqual() {
         final Notification<Integer> integerNotification = Notification.createOnNext(1);
         final Notification<Integer> integerNotification2 = Notification.createOnNext(1);
         assertTrue(integerNotification.equals(integerNotification2));
     }
 
     @Test
-    public void testOnNextIntegerNotificationsWhenNotEqual(){
+    public void testOnNextIntegerNotificationsWhenNotEqual() {
         final Notification<Integer> integerNotification = Notification.createOnNext(1);
         final Notification<Integer> integerNotification2 = Notification.createOnNext(2);
         assertFalse(integerNotification.equals(integerNotification2));
     }
 
     @Test
-    public void testOnErrorIntegerNotificationDoesNotEqualNullNotification(){
+    public void testOnErrorIntegerNotificationDoesNotEqualNullNotification() {
         final Notification<Integer> integerNotification = Notification.createOnError(new Exception());
         final Notification<Integer> nullNotification = Notification.createOnError(null);
         assertFalse(integerNotification.equals(nullNotification));
     }
 
     @Test
-    public void testOnErrorNullNotificationDoesNotEqualIntegerNotification(){
+    public void testOnErrorNullNotificationDoesNotEqualIntegerNotification() {
         final Notification<Integer> integerNotification = Notification.createOnError(new Exception());
         final Notification<Integer> nullNotification = Notification.createOnError(null);
         assertFalse(nullNotification.equals(integerNotification));
     }
 
     @Test
-    public void testOnErrorIntegerNotificationsWhenEqual(){
+    public void testOnErrorIntegerNotificationsWhenEqual() {
         final Exception exception = new Exception();
         final Notification<Integer> onErrorNotification = Notification.createOnError(exception);
         final Notification<Integer> onErrorNotification2 = Notification.createOnError(exception);
@@ -79,7 +79,7 @@ public class NotificationTest {
     }
 
     @Test
-    public void testOnErrorIntegerNotificationWhenNotEqual(){
+    public void testOnErrorIntegerNotificationWhenNotEqual() {
         final Notification<Integer> onErrorNotification = Notification.createOnError(new Exception());
         final Notification<Integer> onErrorNotification2 = Notification.createOnError(new Exception());
         assertFalse(onErrorNotification.equals(onErrorNotification2));
@@ -255,6 +255,11 @@ public class NotificationTest {
                 return getMessage().equals(((EqualException)o).getMessage());
             }
             return false;
+        }
+
+        @Override
+        public int hashCode() {
+            return getMessage().hashCode();
         }
     }
 }

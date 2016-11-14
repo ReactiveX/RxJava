@@ -19,7 +19,7 @@ package rx;
 import java.util.concurrent.CountDownLatch;
 
 public final class CapturingUncaughtExceptionHandler implements Thread.UncaughtExceptionHandler {
-    public int count = 0;
+    public int count;
     public Throwable caught;
     public CountDownLatch completed = new CountDownLatch(1);
 

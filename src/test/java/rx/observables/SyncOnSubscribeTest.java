@@ -62,7 +62,7 @@ public class SyncOnSubscribeTest {
     @Test
     public void testStateAfterTerminal() {
         final AtomicInteger finalStateValue = new AtomicInteger(-1);
-        OnSubscribe<Integer> os = SyncOnSubscribe.createStateful(new Func0<Integer>(){
+        OnSubscribe<Integer> os = SyncOnSubscribe.createStateful(new Func0<Integer>() {
             @Override
             public Integer call() {
                 return 1;
@@ -299,7 +299,7 @@ public class SyncOnSubscribeTest {
     public void testRange() {
         final int start = 1;
         final int count = 4000;
-        OnSubscribe<Integer> os = SyncOnSubscribe.createStateful(new Func0<Integer>(){
+        OnSubscribe<Integer> os = SyncOnSubscribe.createStateful(new Func0<Integer>() {
             @Override
             public Integer call() {
                 return start;
@@ -557,7 +557,7 @@ public class SyncOnSubscribeTest {
                         observer.onNext(null);
                         currentlyEvaluating.set(false);
                     }},
-                new Action0(){
+                new Action0() {
                     @Override
                     public void call() {
                         calledUnsubscribe.incrementAndGet();
@@ -569,10 +569,10 @@ public class SyncOnSubscribeTest {
 
         final CountDownLatch latch = new CountDownLatch(1);
         final TestSubscriber<Object> ts = new TestSubscriber<Object>(o);
-        Observable.create(os).lift(new Operator<Void, Void>(){
+        Observable.create(os).lift(new Operator<Void, Void>() {
             @Override
             public Subscriber<? super Void> call(final Subscriber<? super Void> subscriber) {
-                return new Subscriber<Void>(subscriber){
+                return new Subscriber<Void>(subscriber) {
                     @Override
                     public void setProducer(Producer p) {
                         p.request(1);
@@ -590,7 +590,7 @@ public class SyncOnSubscribeTest {
                     @Override
                     public void onNext(final Void t) {
                         subscriber.onNext(t);
-                        new Thread(new Runnable(){
+                        new Thread(new Runnable() {
                             @Override
                             public void run() {
                                 try {
@@ -709,8 +709,9 @@ public class SyncOnSubscribeTest {
                     @Override
                     public Integer call(Integer calls, Observer<? super Integer> observer) {
                         observer.onNext(calls);
-                        if (calls == count)
+                        if (calls == count) {
                             observer.onCompleted();
+                        }
                         return calls + 1;
                     }},
                 onUnSubscribe);
@@ -812,10 +813,10 @@ public class SyncOnSubscribeTest {
         assertEquals(1, countUnsubs.get());
     }
 
-    private interface FooQux {}
-    private static class Foo implements FooQux {}
-    private interface BarQux extends FooQux {}
-    private static class Bar extends Foo implements BarQux {}
+    private interface FooQux { }
+    private static class Foo implements FooQux { }
+    private interface BarQux extends FooQux { }
+    private static class Bar extends Foo implements BarQux { }
 
     @Test
     public void testGenericsCreateSingleState() {
@@ -932,7 +933,7 @@ public class SyncOnSubscribeTest {
     }
 
     @Test
-    public void testConcurrentUnsubscribe3000Iterations() throws InterruptedException, BrokenBarrierException, ExecutionException{
+    public void testConcurrentUnsubscribe3000Iterations() throws InterruptedException, BrokenBarrierException, ExecutionException {
         ExecutorService exec = null;
         try {
             exec = Executors.newSingleThreadExecutor();
@@ -986,7 +987,9 @@ public class SyncOnSubscribeTest {
                 assertEquals("Unsubscribe supposed to be called once", 1, wip.get());
             }
         } finally {
-            if (exec != null) exec.shutdownNow();
+            if (exec != null) {
+                exec.shutdownNow();
+            }
         }
     }
 

@@ -261,7 +261,7 @@ public abstract class SyncOnSubscribe<S, T> implements OnSubscribe<T> {
                 return null;
             }
         };
-        Action1<? super Void> wrappedOnUnsubscribe = new Action1<Void>(){
+        Action1<? super Void> wrappedOnUnsubscribe = new Action1<Void>() {
             @Override
             public void call(Void t) {
                 onUnsubscribe.call();
@@ -350,7 +350,7 @@ public abstract class SyncOnSubscribe<S, T> implements OnSubscribe<T> {
 
         @Override
         public void unsubscribe() {
-            while(true) {
+            while (true) {
                 long requestCount = get();
                 if (compareAndSet(0L, -1L)) {
                     doUnsubscribe();

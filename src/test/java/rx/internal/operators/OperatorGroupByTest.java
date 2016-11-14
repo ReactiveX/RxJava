@@ -1142,7 +1142,7 @@ public class OperatorGroupByTest {
                 System.out.println("-----------> NEXT: " + g.getKey());
                 return g.take(2).map(new Func1<String, String>() {
 
-                    int count = 0;
+                    int count;
 
                     @Override
                     public String call(String v) {
@@ -1264,7 +1264,7 @@ public class OperatorGroupByTest {
 
                 }).observeOn(Schedulers.computation()).map(new Func1<Integer, String>() {
 
-                    int c = 0;
+                    int c;
 
                     @Override
                     public String call(Integer l) {
@@ -1481,7 +1481,7 @@ public class OperatorGroupByTest {
                     public void onNext(Integer t) {
                         System.out.println(t);
                         //provoke possible request overflow
-                        request(Long.MAX_VALUE-1);
+                        request(Long.MAX_VALUE - 1);
                     }});
         assertTrue(completed.get());
     }
@@ -1812,10 +1812,10 @@ public class OperatorGroupByTest {
 
     @Test
     public void mapFactoryEvictionWorks() {
-        Func1<Integer, Integer> keySelector = new Func1<Integer, Integer> (){
+        Func1<Integer, Integer> keySelector = new Func1<Integer, Integer> () {
             @Override
             public Integer call(Integer t) {
-                return t /10;
+                return t / 10;
             }};
         Func1<Integer, Integer> elementSelector = UtilityFunctions.identity();
         final List<Integer> evictedKeys = new ArrayList<Integer>();
@@ -1831,7 +1831,7 @@ public class OperatorGroupByTest {
                 return new ConcurrentHashMap<Integer,Object>() {
                     private static final long serialVersionUID = -7519109652858021153L;
 
-                    Integer lastKey = null;
+                    Integer lastKey;
 
                     @Override
                     public Object put(Integer key, Object value) {
@@ -1867,7 +1867,7 @@ public class OperatorGroupByTest {
                 .map(new Func1<Integer, String>() {
                         @Override
                         public String call(Integer x) {
-                            return (x /10) + ":" + x;
+                            return (x / 10) + ":" + x;
                         }
                     })
                 .toList().toBlocking().single();
@@ -1876,10 +1876,10 @@ public class OperatorGroupByTest {
 
     private static final Func1<Integer, Integer> EVICTING_MAP_ELEMENT_SELECTOR = UtilityFunctions.identity();
 
-    private static final Func1<Integer, Integer> EVICTING_MAP_KEY_SELECTOR = new Func1<Integer, Integer> (){
+    private static final Func1<Integer, Integer> EVICTING_MAP_KEY_SELECTOR = new Func1<Integer, Integer> () {
         @Override
         public Integer call(Integer t) {
-            return t /10;
+            return t / 10;
         }};
 
     @Test
@@ -1969,7 +1969,7 @@ public class OperatorGroupByTest {
                 .map(new Func1<Integer, String>() {
                         @Override
                         public String call(Integer x) {
-                            return (x /10) + ":" + x;
+                            return (x / 10) + ":" + x;
                         }
                     })
                 .toList().toBlocking().single();
@@ -1996,7 +1996,7 @@ public class OperatorGroupByTest {
         ts.assertError(exception);
     }
 
-    @Test(expected=OnErrorNotImplementedException.class)
+    @Test(expected = OnErrorNotImplementedException.class)
     public void testEvictingMapFactoryIfMapCreateThrowsFatalErrorThenSubscribeThrows() {
         final OnErrorNotImplementedException exception = new OnErrorNotImplementedException("boo", new RuntimeException());
         Func1<Action1<Integer>, Map<Integer, Object>> mapFactory = createMapFactoryThatThrowsOnCreate(exception);

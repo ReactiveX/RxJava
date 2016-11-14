@@ -102,7 +102,7 @@ public final class BufferUntilSubscriber<T> extends Subject<T, T> {
                     }
                 }
                 if (win) {
-                    while(true) {
+                    while (true) {
                         Object o;
                         while ((o = state.buffer.poll()) != null) {
                             NotificationLite.accept(state.get(), o);

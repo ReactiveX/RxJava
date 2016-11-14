@@ -129,7 +129,7 @@ public class OperatorOnBackpressureBufferTest {
 
         int size = ts.getOnNextEvents().size();
         assertTrue(size <= 150);  // will get up to 50 more
-        assertTrue(ts.getOnNextEvents().get(size-1) == size-1);
+        assertTrue(ts.getOnNextEvents().get(size - 1) == size - 1);
         assertTrue(s.isUnsubscribed());
     }
 

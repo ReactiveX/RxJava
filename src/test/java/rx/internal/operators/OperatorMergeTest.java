@@ -667,13 +667,14 @@ public class OperatorMergeTest {
         TestSubscriber<Integer> testSubscriber = new TestSubscriber<Integer>() {
             @Override
             public void onNext(Integer t) {
-                if (t < 100)
+                if (t < 100) {
                     try {
                         // force a slow consumer
                         Thread.sleep(1);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
+                }
                 //                System.err.println("testSubscriber received => " + t + "  on thread " + Thread.currentThread());
                 super.onNext(t);
             }
@@ -708,13 +709,14 @@ public class OperatorMergeTest {
         TestSubscriber<Integer> testSubscriber = new TestSubscriber<Integer>() {
             @Override
             public void onNext(Integer t) {
-                if (t < 100)
+                if (t < 100) {
                     try {
                         // force a slow consumer
                         Thread.sleep(2);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
+                }
                 //                System.err.println("testSubscriber received => " + t + "  on thread " + Thread.currentThread());
                 super.onNext(t);
             }
@@ -759,17 +761,18 @@ public class OperatorMergeTest {
         });
 
         TestSubscriber<Integer> testSubscriber = new TestSubscriber<Integer>() {
-            int i = 0;
+            int i;
 
             @Override
             public void onNext(Integer t) {
-                if (i++ < 400)
+                if (i++ < 400) {
                     try {
                         // force a slow consumer
                         Thread.sleep(1);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
+                }
                 //                System.err.println("testSubscriber received => " + t + "  on thread " + Thread.currentThread());
                 super.onNext(t);
             }
@@ -1197,7 +1200,7 @@ public class OperatorMergeTest {
             public void onNext(Integer t) {
                 latch.countDown();
                 request(2);
-                request(Long.MAX_VALUE-1);
+                request(Long.MAX_VALUE - 1);
             }});
         assertTrue(latch.await(10, TimeUnit.SECONDS));
     }
@@ -1311,7 +1314,7 @@ public class OperatorMergeTest {
     @Test
     public void testUnboundedDefaultConcurrency() {
         List<Observable<Integer>> os = new ArrayList<Observable<Integer>>();
-        for(int i=0; i < 2000; i++) {
+        for (int i = 0; i < 2000; i++) {
             os.add(Observable.<Integer>never());
         }
         os.add(Observable.range(0, 100));
@@ -1326,7 +1329,7 @@ public class OperatorMergeTest {
     @Test
     public void testConcurrencyLimit() {
         List<Observable<Integer>> os = new ArrayList<Observable<Integer>>();
-        for(int i=0; i < 2000; i++) {
+        for (int i = 0; i < 2000; i++) {
             os.add(Observable.<Integer>never());
         }
         os.add(Observable.range(0, 100));

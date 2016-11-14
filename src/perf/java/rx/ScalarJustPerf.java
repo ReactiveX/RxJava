@@ -126,7 +126,7 @@ public class ScalarJustPerf {
 
         source.subscribe(lo);
 
-        while (lo.latch.getCount() != 0L);
+        while (lo.latch.getCount() != 0L) { }
     }
 
     @Benchmark

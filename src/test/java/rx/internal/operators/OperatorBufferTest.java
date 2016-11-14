@@ -309,7 +309,7 @@ public class OperatorBufferTest {
     private static class LongTimeAction implements Action1<List<Integer>> {
 
         CountDownLatch latch;
-        boolean fail = false;
+        boolean fail;
 
         public LongTimeAction(CountDownLatch latch) {
             this.latch = latch;

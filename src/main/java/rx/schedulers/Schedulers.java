@@ -15,19 +15,39 @@
  */
 package rx.schedulers;
 
-import rx.Scheduler;
-import rx.annotations.Experimental;
-import rx.internal.schedulers.ExecutorScheduler;
-import rx.internal.schedulers.GenericScheduledExecutorService;
-import rx.internal.schedulers.SchedulerLifecycle;
-import rx.internal.util.RxRingBuffer;
-import rx.plugins.*;
-
 import java.util.concurrent.Executor;
 import java.util.concurrent.atomic.AtomicReference;
 
+import rx.Scheduler;
+import rx.annotations.Experimental;
+import rx.internal.schedulers.*;
+import rx.plugins.*;
+
 /**
  * Static factory methods for creating Schedulers.
+ * <p>
+ * System configuration properties:
+ * <table border='1'>
+ * <tr><td>Property name</td><td>Description</td><td>Default</td></tr>
+ * <tr>
+ * <td>{@code rx.io-scheduler.keepalive}</td><td>time (in seconds) to keep an unused backing
+ *     thread-pool</td><td>60</td>
+ * </tr>
+ * <tr>
+ * <td>{@code rx.scheduler.max-computation-threads}</td><td>number of threads the
+ *     computation scheduler uses (between 1 and number of available processors)</td><td>
+ *     number of available processors.</td>
+ * </tr>
+ * <tr>
+ * <td>{@code rx.scheduler.jdk6.purge-frequency-millis}</td><td>time (in milliseconds) between calling
+ *     purge on any active backing thread-pool on a Java 6 runtime</td><td>1000</td>
+ * </tr>
+ * <tr>
+ * <td>{@code rx.scheduler.jdk6.purge-force}</td><td> boolean forcing the call to purge on any active
+ *     backing thread-pool</td><td>false</td>
+ * </tr>
+ * </ul>
+ * </table>
  */
 public final class Schedulers {
 
@@ -185,10 +205,6 @@ public final class Schedulers {
 
         synchronized (s) {
             GenericScheduledExecutorService.INSTANCE.start();
-
-            RxRingBuffer.SPSC_POOL.start();
-
-            RxRingBuffer.SPMC_POOL.start();
         }
     }
     /**
@@ -201,10 +217,6 @@ public final class Schedulers {
 
         synchronized (s) {
             GenericScheduledExecutorService.INSTANCE.shutdown();
-
-            RxRingBuffer.SPSC_POOL.shutdown();
-
-            RxRingBuffer.SPMC_POOL.shutdown();
         }
     }
 

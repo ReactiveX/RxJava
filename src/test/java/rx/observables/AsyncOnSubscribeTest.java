@@ -60,12 +60,12 @@ public class AsyncOnSubscribeTest {
     @Test
     public void testSerializesConcurrentObservables() throws InterruptedException {
         final TestScheduler scheduler = new TestScheduler();
-        AsyncOnSubscribe<Integer, Integer> os = AsyncOnSubscribe.createStateful(new Func0<Integer>(){
+        AsyncOnSubscribe<Integer, Integer> os = AsyncOnSubscribe.createStateful(new Func0<Integer>() {
             @Override
             public Integer call() {
                 return 1;
             }},
-        new Func3<Integer, Long, Observer<Observable<? extends Integer>>, Integer>(){
+        new Func3<Integer, Long, Observer<Observable<? extends Integer>>, Integer>() {
             @Override
             public Integer call(Integer state, Long requested, Observer<Observable<? extends Integer>> observer) {
                 if (state == 1) {
@@ -76,9 +76,9 @@ public class AsyncOnSubscribeTest {
                 else if (state == 2) {
                     Observable<Integer> o = Observable.just(5, 6, 7, 8);
                     observer.onNext(o);
-                }
-                else
+                } else {
                     observer.onCompleted();
+                }
                 return state + 1;
             }});
         // initial request emits [[1, 2, 3, 4]] on delay
@@ -105,7 +105,7 @@ public class AsyncOnSubscribeTest {
     public void testSubscribedByBufferingOperator() {
         final TestScheduler scheduler = new TestScheduler();
         OnSubscribe<Integer> os = AsyncOnSubscribe.createStateless(
-        new Action2<Long, Observer<Observable<? extends Integer>>>(){
+        new Action2<Long, Observer<Observable<? extends Integer>>>() {
             @Override
             public void call(Long requested, Observer<Observable<? extends Integer>> observer) {
                 observer.onNext(Observable.range(1, requested.intValue()));
@@ -121,19 +121,19 @@ public class AsyncOnSubscribeTest {
     @Test
     public void testOnUnsubscribeHasCorrectState() throws InterruptedException {
         final AtomicInteger lastState = new AtomicInteger(-1);
-        OnSubscribe<Integer> os = AsyncOnSubscribe.createStateful(new Func0<Integer>(){
+        OnSubscribe<Integer> os = AsyncOnSubscribe.createStateful(new Func0<Integer>() {
             @Override
             public Integer call() {
                 return 1;
             }},
-        new Func3<Integer, Long, Observer<Observable<? extends Integer>>, Integer>(){
+        new Func3<Integer, Long, Observer<Observable<? extends Integer>>, Integer>() {
             @Override
             public Integer call(Integer state, Long requested, Observer<Observable<? extends Integer>> observer) {
                 if (state < 3) {
                     observer.onNext(Observable.just(state));
-                }
-                else
+                } else {
                     observer.onCompleted();
+                }
                 return state + 1;
             }},
         new Action1<Integer>() {
@@ -153,7 +153,7 @@ public class AsyncOnSubscribeTest {
 
     @Test
     public void testOnCompleteOuter() throws InterruptedException {
-        OnSubscribe<Integer> os = AsyncOnSubscribe.createStateless(new Action2<Long, Observer<Observable<? extends Integer>>>(){
+        OnSubscribe<Integer> os = AsyncOnSubscribe.createStateless(new Action2<Long, Observer<Observable<? extends Integer>>>() {
             @Override
             public void call(Long requested, Observer<Observable<? extends Integer>> observer) {
                 observer.onCompleted();
@@ -167,7 +167,7 @@ public class AsyncOnSubscribeTest {
 
     @Test
     public void testTryOnNextTwice() throws InterruptedException {
-        OnSubscribe<Integer> os = AsyncOnSubscribe.createStateless(new Action2<Long, Observer<Observable<? extends Integer>>>(){
+        OnSubscribe<Integer> os = AsyncOnSubscribe.createStateless(new Action2<Long, Observer<Observable<? extends Integer>>>() {
             @Override
             public void call(Long requested, Observer<Observable<? extends Integer>> observer) {
                 observer.onNext(Observable.just(1));
@@ -184,7 +184,7 @@ public class AsyncOnSubscribeTest {
     @Test
     public void testThrowException() throws InterruptedException {
         OnSubscribe<Integer> os = AsyncOnSubscribe.createStateless(
-        new Action2<Long, Observer<Observable<? extends Integer>>>(){
+        new Action2<Long, Observer<Observable<? extends Integer>>>() {
             @Override
             public void call(Long requested, Observer<Observable<? extends Integer>> observer) {
                 throw new TestException();
@@ -198,12 +198,12 @@ public class AsyncOnSubscribeTest {
 
     @Test
     public void testThrowExceptionAfterTerminal() throws InterruptedException {
-        OnSubscribe<Integer> os = AsyncOnSubscribe.createStateful(new Func0<Integer>(){
+        OnSubscribe<Integer> os = AsyncOnSubscribe.createStateful(new Func0<Integer>() {
             @Override
             public Integer call() {
                 return 1;
             }},
-        new Func3<Integer, Long, Observer<Observable<? extends Integer>>, Integer>(){
+        new Func3<Integer, Long, Observer<Observable<? extends Integer>>, Integer>() {
             @Override
             public Integer call(Integer state, Long requested, Observer<Observable<? extends Integer>> observer) {
                 observer.onCompleted();
@@ -218,12 +218,12 @@ public class AsyncOnSubscribeTest {
 
     @Test
     public void testOnNextAfterCompleted() throws InterruptedException {
-        OnSubscribe<Integer> os = AsyncOnSubscribe.createStateful(new Func0<Integer>(){
+        OnSubscribe<Integer> os = AsyncOnSubscribe.createStateful(new Func0<Integer>() {
             @Override
             public Integer call() {
                 return 1;
             }},
-        new Func3<Integer, Long, Observer<Observable<? extends Integer>>, Integer>(){
+        new Func3<Integer, Long, Observer<Observable<? extends Integer>>, Integer>() {
             @Override
             public Integer call(Integer state, Long requested, Observer<Observable<? extends Integer>> observer) {
                 observer.onCompleted();
@@ -239,12 +239,12 @@ public class AsyncOnSubscribeTest {
 
     @Test
     public void testOnNextAfterError() throws InterruptedException {
-        OnSubscribe<Integer> os = AsyncOnSubscribe.createStateful(new Func0<Integer>(){
+        OnSubscribe<Integer> os = AsyncOnSubscribe.createStateful(new Func0<Integer>() {
             @Override
             public Integer call() {
                 return 1;
             }},
-        new Func3<Integer, Long, Observer<Observable<? extends Integer>>, Integer>(){
+        new Func3<Integer, Long, Observer<Observable<? extends Integer>>, Integer>() {
             @Override
             public Integer call(Integer state, Long requested, Observer<Observable<? extends Integer>> observer) {
                 observer.onError(new TestException());
@@ -260,12 +260,12 @@ public class AsyncOnSubscribeTest {
 
     @Test
     public void testEmittingEmptyObservable() throws InterruptedException {
-        OnSubscribe<Integer> os = AsyncOnSubscribe.createStateful(new Func0<Integer>(){
+        OnSubscribe<Integer> os = AsyncOnSubscribe.createStateful(new Func0<Integer>() {
             @Override
             public Integer call() {
                 return 1;
             }},
-        new Func3<Integer, Long, Observer<Observable<? extends Integer>>, Integer>(){
+        new Func3<Integer, Long, Observer<Observable<? extends Integer>>, Integer>() {
             @Override
             public Integer call(Integer state, Long requested, Observer<Observable<? extends Integer>> observer) {
                 observer.onNext(Observable.<Integer>empty());
@@ -281,12 +281,12 @@ public class AsyncOnSubscribeTest {
 
     @Test
     public void testOnErrorOuter() throws InterruptedException {
-        OnSubscribe<Integer> os = AsyncOnSubscribe.createStateful(new Func0<Integer>(){
+        OnSubscribe<Integer> os = AsyncOnSubscribe.createStateful(new Func0<Integer>() {
             @Override
             public Integer call() {
                 return 1;
             }},
-        new Func3<Integer, Long, Observer<Observable<? extends Integer>>, Integer>(){
+        new Func3<Integer, Long, Observer<Observable<? extends Integer>>, Integer>() {
             @Override
             public Integer call(Integer state, Long requested, Observer<Observable<? extends Integer>> observer) {
                 observer.onError(new TestException());
@@ -302,12 +302,12 @@ public class AsyncOnSubscribeTest {
 
     @Test
     public void testOnCompleteFollowedByOnErrorOuter() throws InterruptedException {
-        OnSubscribe<Integer> os = AsyncOnSubscribe.createStateful(new Func0<Integer>(){
+        OnSubscribe<Integer> os = AsyncOnSubscribe.createStateful(new Func0<Integer>() {
             @Override
             public Integer call() {
                 return 1;
             }},
-        new Func3<Integer, Long, Observer<Observable<? extends Integer>>, Integer>(){
+        new Func3<Integer, Long, Observer<Observable<? extends Integer>>, Integer>() {
             @Override
             public Integer call(Integer state, Long requested, Observer<Observable<? extends Integer>> observer) {
                 observer.onCompleted();
@@ -326,19 +326,19 @@ public class AsyncOnSubscribeTest {
     public void testUnsubscribesFromAllSelfTerminatedObservables() throws InterruptedException {
         final AtomicInteger l1 = new AtomicInteger();
         final AtomicInteger l2 = new AtomicInteger();
-        OnSubscribe<Integer> os = AsyncOnSubscribe.createStateful(new Func0<Integer>(){
+        OnSubscribe<Integer> os = AsyncOnSubscribe.createStateful(new Func0<Integer>() {
             @Override
             public Integer call() {
                 return 1;
             }},
-        new Func3<Integer, Long, Observer<Observable<? extends Integer>>, Integer>(){
+        new Func3<Integer, Long, Observer<Observable<? extends Integer>>, Integer>() {
             @Override
             public Integer call(Integer state, Long requested, Observer<Observable<? extends Integer>> observer) {
                 Observable<Integer> o1;
                 switch (state) {
                 case 1:
                     o1 = Observable.just(1)
-                            .doOnUnsubscribe(new Action0(){
+                            .doOnUnsubscribe(new Action0() {
                                 @Override
                                 public void call() {
                                     l1.incrementAndGet();
@@ -346,7 +346,7 @@ public class AsyncOnSubscribeTest {
                     break;
                 case 2:
                     o1 = Observable.just(2)
-                            .doOnUnsubscribe(new Action0(){
+                            .doOnUnsubscribe(new Action0() {
                                 @Override
                                 public void call() {
                                     l2.incrementAndGet();
@@ -380,19 +380,19 @@ public class AsyncOnSubscribeTest {
         final AtomicInteger l2 = new AtomicInteger();
         final TestScheduler scheduler = new TestScheduler();
         final AtomicReference<Subscription> sub = new AtomicReference<Subscription>();
-        OnSubscribe<Integer> os = AsyncOnSubscribe.createStateful(new Func0<Integer>(){
+        OnSubscribe<Integer> os = AsyncOnSubscribe.createStateful(new Func0<Integer>() {
                 @Override
                 public Integer call() {
                     return 1;
                 }},
-            new Func3<Integer, Long, Observer<Observable<? extends Integer>>, Integer>(){
+            new Func3<Integer, Long, Observer<Observable<? extends Integer>>, Integer>() {
                 @Override
                 public Integer call(Integer state, Long requested, Observer<Observable<? extends Integer>> observer) {
                     switch (state) {
                     case 1:
                         observer.onNext(Observable.range(1, requested.intValue())
                                 .subscribeOn(scheduler)
-                                .doOnUnsubscribe(new Action0(){
+                                .doOnUnsubscribe(new Action0() {
                                     @Override
                                     public void call() {
                                         l1.incrementAndGet();
@@ -402,7 +402,7 @@ public class AsyncOnSubscribeTest {
                         observer.onNext(Observable.just(1)
                                 .concatWith(Observable.<Integer>never())
                                 .subscribeOn(scheduler)
-                                .doOnUnsubscribe(new Action0(){
+                                .doOnUnsubscribe(new Action0() {
                                     @Override
                                     public void call() {
                                         l2.incrementAndGet();
@@ -429,29 +429,30 @@ public class AsyncOnSubscribeTest {
         assertEquals("did not unsub from Observable.never() inner obs", 1, l2.get());
     }
 
-    private static class Foo {}
-    private static class Bar extends Foo {}
+    private static class Foo { }
+    private static class Bar extends Foo { }
 
     @Test
     public void testGenerics() {
-        AsyncOnSubscribe.createStateless(new Action2<Long, Observer<Observable<? extends Foo>>>(){
+        AsyncOnSubscribe.createStateless(new Action2<Long, Observer<Observable<? extends Foo>>>() {
             @Override
             public void call(Long state, Observer<Observable<? extends Foo>> observer) {
-                if (state == null)
+                if (state == null) {
                     observer.onNext(Observable.just(new Foo()));
-                else
+                } else {
                     observer.onNext(Observable.just(new Bar()));
+                }
             }});
     }
 
     @Test
     public void testUnderdeliveryCorrection() {
-        OnSubscribe<Integer> os = AsyncOnSubscribe.createStateful(new Func0<Integer>(){
+        OnSubscribe<Integer> os = AsyncOnSubscribe.createStateful(new Func0<Integer>() {
             @Override
             public Integer call() {
                 return 1;
             }},
-        new Func3<Integer, Long, Observer<Observable<? extends Integer>>, Integer>(){
+        new Func3<Integer, Long, Observer<Observable<? extends Integer>>, Integer>() {
             @Override
             public Integer call(Integer state, Long requested, Observer<Observable<? extends Integer>> observer) {
                 switch (state) {

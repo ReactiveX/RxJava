@@ -2606,7 +2606,7 @@ public class CompletableTest {
     public void subscribeTwoCallbacksFirstNull() {
         normal.completable.subscribe(null, new Action1<Throwable>() {
             @Override
-            public void call(Throwable throwable) {}
+            public void call(Throwable throwable) { }
         });
     }
 
@@ -2894,9 +2894,9 @@ public class CompletableTest {
             }
         });
 
-        flow.toBlocking().forEach(new Action1<Object>(){
+        flow.toBlocking().forEach(new Action1<Object>() {
             @Override
-            public void call(Object e){ }
+            public void call(Object e) { }
         });
     }
 
@@ -3887,8 +3887,12 @@ public class CompletableTest {
             assertEquals("Should have received exactly 1 exception", 1, handler.count);
             Throwable caught = handler.caught;
             while (caught != null) {
-                if (caught instanceof TestException) break;
-                if (caught == caught.getCause()) break;
+                if (caught instanceof TestException) {
+                    break;
+                }
+                if (caught == caught.getCause()) {
+                    break;
+                }
                 caught = caught.getCause();
             }
             assertTrue("A TestException should have been delivered to the handler",

@@ -98,7 +98,7 @@ public class OperatorPublishTest {
 
         });
         Observable<Integer> slow = is.observeOn(Schedulers.computation()).map(new Func1<Integer, Integer>() {
-            int c = 0;
+            int c;
 
             @Override
             public Integer call(Integer i) {

@@ -33,7 +33,7 @@ import rx.observers.Subscribers;
 public final class OnSubscribeAutoConnect<T> extends AtomicInteger implements OnSubscribe<T> {
     // AtomicInteger aspect of `this` represents the number of clients
 
-	final ConnectableObservable<? extends T> source;
+    final ConnectableObservable<? extends T> source;
     final int numberOfSubscribers;
     final Action1<? super Subscription> connection;
 

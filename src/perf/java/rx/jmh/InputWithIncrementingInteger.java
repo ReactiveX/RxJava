@@ -59,7 +59,7 @@ public abstract class InputWithIncrementingInteger {
             @Override
             public Iterator<Integer> iterator() {
                 return new Iterator<Integer>() {
-                    int i = 0;
+                    int i;
 
                     @Override
                     public boolean hasNext() {

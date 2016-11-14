@@ -97,7 +97,7 @@ public final class OperatorTake<T> implements Operator<T, T> {
 
                     @Override
                     public void request(long n) {
-                        if (n >0 && !completed) {
+                        if (n > 0 && !completed) {
                             // because requests may happen concurrently use a CAS loop to
                             // ensure we only request as much as needed, no more no less
                             while (true) {

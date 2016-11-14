@@ -99,7 +99,7 @@ public class OperatorOnBackpressureDrop<T> implements Operator<T, T> {
                     requested.decrementAndGet();
                 } else {
                     // item dropped
-                    if(onDrop != null) {
+                    if (onDrop != null) {
                         try {
                             onDrop.call(t);
                         } catch (Throwable e) {

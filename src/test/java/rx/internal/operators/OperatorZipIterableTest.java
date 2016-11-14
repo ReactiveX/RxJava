@@ -366,8 +366,8 @@ public class OperatorZipIterableTest {
         @Override
         public String call(Integer t1) {
             counter.incrementAndGet();
-            System.out.println("Omg I'm calculating so hard: " + t1 + "*" + t1 + "=" + (t1*t1));
-            return " " + (t1*t1);
+            System.out.println("Omg I'm calculating so hard: " + t1 + "*" + t1 + "=" + (t1 * t1));
+            return " " + (t1 * t1);
         }
     }
 

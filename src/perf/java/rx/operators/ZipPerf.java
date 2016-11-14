@@ -67,7 +67,7 @@ public class ZipPerf {
         Integer[] array2 = new Integer[secondLen];
         Arrays.fill(array2, 777);
 
-        baseline = Observable.from(firstLen < secondLen? array2 : array1);
+        baseline = Observable.from(firstLen < secondLen ? array2 : array1);
 
         Observable<Integer> o1 = Observable.from(array1);
 
@@ -107,7 +107,7 @@ public class ZipPerf {
         firstSync.subscribe(o);
 
         if (small) {
-            while (o.latch.getCount() != 0);
+            while (o.latch.getCount() != 0) { }
         } else {
             o.latch.await();
         }
@@ -119,7 +119,7 @@ public class ZipPerf {
         secondSync.subscribe(o);
 
         if (small) {
-            while (o.latch.getCount() != 0);
+            while (o.latch.getCount() != 0) { }
         } else {
             o.latch.await();
         }
@@ -131,7 +131,7 @@ public class ZipPerf {
         bothAsync.subscribe(o);
 
         if (small) {
-            while (o.latch.getCount() != 0);
+            while (o.latch.getCount() != 0) { }
         } else {
             o.latch.await();
         }

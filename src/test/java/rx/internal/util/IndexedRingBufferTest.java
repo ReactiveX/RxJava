@@ -186,7 +186,7 @@ public class IndexedRingBufferTest {
 
         list.clear();
         nextIndex = buffer.forEach(new Func1<String, Boolean>() {
-            int i = 0;
+            int i;
 
             @Override
             public Boolean call(String t1) {

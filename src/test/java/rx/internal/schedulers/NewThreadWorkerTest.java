@@ -49,7 +49,7 @@ public class NewThreadWorkerTest {
 
     private static abstract class ScheduledExecutorServiceWithSetRemoveOnCancelPolicy implements ScheduledExecutorService {
         // Just declaration of required method to allow run tests on JDK 6
-        public void setRemoveOnCancelPolicy(boolean value) {}
+        public void setRemoveOnCancelPolicy(boolean value) { }
     }
 
     @Test

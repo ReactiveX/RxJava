@@ -299,7 +299,7 @@ public abstract class AbstractSchedulerTests {
 
             inner.schedule(new Action0() {
 
-                int state = 0;
+                int state;
 
                 @Override
                 public void call() {
@@ -328,7 +328,7 @@ public abstract class AbstractSchedulerTests {
                 final Scheduler.Worker inner = getScheduler().createWorker();
                 observer.add(inner);
                 inner.schedule(new Action0() {
-                    int i = 0;
+                    int i;
 
                     @Override
                     public void call() {
@@ -508,7 +508,7 @@ public abstract class AbstractSchedulerTests {
                 @Override
                 public void call() {
                     executions[0]++;
-                    while (cancel.get() == null);
+                    while (cancel.get() == null) { }
 
                     cancel.get().unsubscribe();
                     cdl.countDown();

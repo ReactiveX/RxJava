@@ -126,7 +126,7 @@ public class SafeSubscriberTest {
      */
     private static class TestObservable implements Observable.OnSubscribe<String> {
 
-        Observer<? super String> observer = null;
+        Observer<? super String> observer;
 
         /* used to simulate subscription */
         public void sendOnCompleted() {

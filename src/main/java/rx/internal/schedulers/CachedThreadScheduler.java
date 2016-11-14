@@ -24,7 +24,7 @@ import rx.internal.util.RxThreadFactory;
 import rx.subscriptions.*;
 
 public final class CachedThreadScheduler extends Scheduler implements SchedulerLifecycle {
-    private static final long KEEP_ALIVE_TIME = 60;
+    private static final long KEEP_ALIVE_TIME;
     private static final TimeUnit KEEP_ALIVE_UNIT = TimeUnit.SECONDS;
 
     static final ThreadWorker SHUTDOWN_THREADWORKER;
@@ -41,6 +41,8 @@ public final class CachedThreadScheduler extends Scheduler implements SchedulerL
 
         NONE = new CachedWorkerPool(null, 0, null);
         NONE.shutdown();
+
+        KEEP_ALIVE_TIME = Integer.getInteger("rx.io-scheduler.keepalive", 60);
     }
 
     static final class CachedWorkerPool {

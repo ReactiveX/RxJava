@@ -15,18 +15,12 @@
  */
 package rx.exceptions;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.io.*;
+import java.util.*;
 
-import org.junit.Test;
+import org.junit.*;
 
 import rx.exceptions.CompositeException.CompositeExceptionCausalChain;
 
@@ -159,7 +153,7 @@ public class CompositeExceptionTest {
         if (root == null) {
             return null;
         } else {
-            while(true) {
+            while (true) {
                 if (root.getCause() == null) {
                     return root;
                 } else {
@@ -257,7 +251,7 @@ public class CompositeExceptionTest {
         e5.initCause(e6);
 
         CompositeException compositeException = new CompositeException(e1, e3, e5);
-        assert(compositeException.getCause() instanceof CompositeExceptionCausalChain);
+        Assert.assertTrue(compositeException.getCause() instanceof CompositeExceptionCausalChain);
 
         List<Throwable> causeChain = new ArrayList<Throwable>();
         Throwable cause = compositeException.getCause().getCause();

@@ -203,8 +203,8 @@ public class OperatorMaterializeTest {
 
     private static class TestObserver extends Subscriber<Notification<String>> {
 
-        boolean onCompleted = false;
-        boolean onError = false;
+        boolean onCompleted;
+        boolean onError;
         List<Notification<String>> notifications = new Vector<Notification<String>>();
 
         @Override

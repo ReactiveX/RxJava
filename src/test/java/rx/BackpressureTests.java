@@ -600,7 +600,7 @@ public class BackpressureTests {
             @Override
             public void call(final Subscriber<? super Integer> s) {
                 s.setProducer(new Producer() {
-                    int i = 0;
+                    int i;
 
                     @Override
                     public void request(long n) {
@@ -639,7 +639,7 @@ public class BackpressureTests {
     private static Observable<Integer> firehose(final AtomicInteger counter) {
         return Observable.create(new OnSubscribe<Integer>() {
 
-            int i = 0;
+            int i;
 
             @Override
             public void call(final Subscriber<? super Integer> s) {

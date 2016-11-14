@@ -87,7 +87,7 @@ public class OperatorTakeWhileTest {
     public void testTakeWhile2() {
         Observable<String> w = Observable.just("one", "two", "three");
         Observable<String> take = w.takeWhile(new Func1<String, Boolean>() {
-            int index = 0;
+            int index;
 
             @Override
             public Boolean call(String input) {
@@ -158,7 +158,7 @@ public class OperatorTakeWhileTest {
         @SuppressWarnings("unchecked")
         Observer<String> observer = mock(Observer.class);
         Observable<String> take = Observable.create(w).takeWhile(new Func1<String, Boolean>() {
-            int index = 0;
+            int index;
 
             @Override
             public Boolean call(String s) {
@@ -186,7 +186,7 @@ public class OperatorTakeWhileTest {
 
         final Subscription s;
         final String[] values;
-        Thread t = null;
+        Thread t;
 
         public TestObservable(Subscription s, String... values) {
             this.s = s;

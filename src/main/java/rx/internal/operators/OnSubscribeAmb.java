@@ -29,7 +29,7 @@ import rx.subscriptions.Subscriptions;
  * Given multiple {@link Observable}s, propagates the one that first emits an item.
  * @param <T> the value type
  */
-public final class OnSubscribeAmb<T> implements OnSubscribe<T>{
+public final class OnSubscribeAmb<T> implements OnSubscribe<T> {
     //give default access instead of private as a micro-optimization
     //for access from anonymous classes below
     final Iterable<? extends Observable<? extends T>> sources;
@@ -336,12 +336,12 @@ public final class OnSubscribeAmb<T> implements OnSubscribe<T>{
     }
 
     @SuppressWarnings("serial")
-	static final class Selection<T> extends AtomicReference<AmbSubscriber<T>> {
+    static final class Selection<T> extends AtomicReference<AmbSubscriber<T>> {
         final Collection<AmbSubscriber<T>> ambSubscribers = new ConcurrentLinkedQueue<AmbSubscriber<T>>();
 
         public void unsubscribeLosers() {
             AmbSubscriber<T> winner = get();
-            if(winner != null) {
+            if (winner != null) {
                 unsubscribeOthers(winner);
             }
         }
@@ -437,7 +437,7 @@ public final class OnSubscribeAmb<T> implements OnSubscribe<T>{
     }
 
     static <T> void unsubscribeAmbSubscribers(Collection<AmbSubscriber<T>> ambSubscribers) {
-        if(!ambSubscribers.isEmpty()) {
+        if (!ambSubscribers.isEmpty()) {
             for (AmbSubscriber<T> other : ambSubscribers) {
                 other.unsubscribe();
             }

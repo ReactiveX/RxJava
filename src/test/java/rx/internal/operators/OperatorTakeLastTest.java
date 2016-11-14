@@ -133,7 +133,7 @@ public class OperatorTakeLastTest {
 
     private Func1<Integer, Integer> newSlowProcessor() {
         return new Func1<Integer, Integer>() {
-            int c = 0;
+            int c;
 
             @Override
             public Integer call(Integer i) {
@@ -292,7 +292,7 @@ public class OperatorTakeLastTest {
         assertEquals(1,count.get());
     }
 
-    @Test(timeout=10000)
+    @Test(timeout = 10000)
     public void testRequestOverflow() {
         final List<Integer> list = new ArrayList<Integer>();
         Observable.range(1, 100).takeLast(50).subscribe(new Subscriber<Integer>() {
@@ -315,7 +315,7 @@ public class OperatorTakeLastTest {
             @Override
             public void onNext(Integer t) {
                 list.add(t);
-                request(Long.MAX_VALUE-1);
+                request(Long.MAX_VALUE - 1);
             }});
         assertEquals(50, list.size());
     }
@@ -343,7 +343,7 @@ public class OperatorTakeLastTest {
                 w.schedule(new Action0() {
                     @Override
                     public void call() {
-                        while (!go.get());
+                        while (!go.get()) { }
                         ts.requestMore(n + 1);
                     }
                 });

@@ -163,7 +163,7 @@ public class OperatorTakeUntilTest {
 
     private static class TestObservable implements Observable.OnSubscribe<String> {
 
-        Observer<? super String> observer = null;
+        Observer<? super String> observer;
         Subscription s;
 
         public TestObservable(Subscription s) {

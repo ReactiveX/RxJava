@@ -43,7 +43,7 @@ import rx.subscriptions.Subscriptions;
  * @param <V>
  *            the value type of the groups
  */
-public final class OperatorGroupBy<T, K, V> implements Operator<GroupedObservable<K, V>, T>{
+public final class OperatorGroupBy<T, K, V> implements Operator<GroupedObservable<K, V>, T> {
     final Func1<? super T, ? extends K> keySelector;
     final Func1<? super T, ? extends V> valueSelector;
     final int bufferSize;

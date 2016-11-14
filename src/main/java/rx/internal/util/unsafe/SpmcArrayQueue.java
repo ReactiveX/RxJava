@@ -130,12 +130,12 @@ public final class SpmcArrayQueue<E> extends SpmcArrayQueueL3Pad<E> {
         if (null != lvElement(lb, offset)) {
             long size = currProducerIndex - lvConsumerIndex();
 
-            if(size > lMask) {
+            if (size > lMask) {
                 return false;
             }
             else {
                 // spin wait for slot to clear, buggers wait freedom
-                while(null != lvElement(lb, offset)); // NOPMD
+                while (null != lvElement(lb, offset)) { } // NOPMD
             }
         }
         spElement(lb, offset, e);

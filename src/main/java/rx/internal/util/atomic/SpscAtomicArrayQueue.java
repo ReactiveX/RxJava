@@ -57,10 +57,10 @@ public final class SpscAtomicArrayQueue<E> extends AtomicReferenceArrayQueue<E> 
         final int offset = calcElementOffset(index, mask);
         if (index >= producerLookAhead) {
             int step = lookAheadStep;
-            if (null == lvElement(buffer, calcElementOffset(index + step, mask))) {// LoadLoad
+            if (null == lvElement(buffer, calcElementOffset(index + step, mask))) { // LoadLoad
                 producerLookAhead = index + step;
             }
-            else if (null != lvElement(buffer, offset)){
+            else if (null != lvElement(buffer, offset)) {
                 return false;
             }
         }

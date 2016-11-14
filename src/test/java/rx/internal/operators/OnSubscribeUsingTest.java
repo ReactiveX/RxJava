@@ -280,7 +280,7 @@ public class OnSubscribeUsingTest {
         final List<String> events = new ArrayList<String>();
         Func0<Resource> resourceFactory = createResourceFactory(events);
         final Action0 completion = createOnCompletedAction(events);
-        final Action0 unsub =createUnsubAction(events);
+        final Action0 unsub = createUnsubAction(events);
 
         Func1<Resource, Observable<String>> observableFactory = new Func1<Resource, Observable<String>>() {
             @Override
@@ -305,7 +305,7 @@ public class OnSubscribeUsingTest {
         final List<String> events = new ArrayList<String>();
         Func0<Resource> resourceFactory = createResourceFactory(events);
         final Action0 completion = createOnCompletedAction(events);
-        final Action0 unsub =createUnsubAction(events);
+        final Action0 unsub = createUnsubAction(events);
 
         Func1<Resource, Observable<String>> observableFactory = new Func1<Resource, Observable<String>>() {
             @Override

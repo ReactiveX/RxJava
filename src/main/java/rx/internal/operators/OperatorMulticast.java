@@ -112,7 +112,7 @@ public final class OperatorMulticast<T, R> extends ConnectableObservable<R> {
                 guardedSubscription = gs.get();
 
                 // register any subscribers that are waiting with this new subject
-                for(final Subscriber<? super R> s : waitingForConnect) {
+                for (final Subscriber<? super R> s : waitingForConnect) {
                     subject.unsafeSubscribe(new Subscriber<R>(s) {
                         @Override
                         public void onNext(R t) {

@@ -155,7 +155,7 @@ public final class OnSubscribeToMultimap<T, K, V> implements OnSubscribe<Map<K, 
 
         @Override
         public void onNext(T t) {
-            if (done){
+            if (done) {
                 return;
             }
             try {

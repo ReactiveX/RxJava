@@ -57,9 +57,9 @@ public class OperatorRetryTest {
                 if (count.getAndDecrement() == 0) {
                     t1.onNext("hello");
                     t1.onCompleted();
-                }
-                else
+                } else {
                     t1.onError(new RuntimeException());
+                }
             }
 
         });
@@ -75,7 +75,7 @@ public class OperatorRetryTest {
                         public Tuple call(Throwable n) {
                             return new Tuple(new Long(1), n);
                         }})
-                    .scan(new Func2<Tuple, Tuple, Tuple>(){
+                    .scan(new Func2<Tuple, Tuple, Tuple>() {
                         @Override
                         public Tuple call(Tuple t, Tuple n) {
                             return new Tuple(t.count + n.count, n.n);
@@ -83,10 +83,10 @@ public class OperatorRetryTest {
                     .flatMap(new Func1<Tuple, Observable<Long>>() {
                         @Override
                         public Observable<Long> call(Tuple t) {
-                            System.out.println("Retry # "+t.count);
+                            System.out.println("Retry # " + t.count);
                             return t.count > 20 ?
                                 Observable.<Long>error(t.n) :
-                                Observable.timer(t.count *1L, TimeUnit.MILLISECONDS);
+                                Observable.timer(t.count * 1L, TimeUnit.MILLISECONDS);
                     }});
             }
         }).subscribe(ts);
@@ -398,7 +398,7 @@ public class OperatorRetryTest {
                 final AtomicLong req = new AtomicLong();
                 // 0 = not set, 1 = fast path, 2 = backpressure
                 final AtomicInteger path = new AtomicInteger(0);
-                volatile boolean done = false;
+                volatile boolean done;
 
                 @Override
                 public void request(long n) {
@@ -463,7 +463,7 @@ public class OperatorRetryTest {
             public void call(Subscriber<? super String> s) {
                 subsCount.incrementAndGet();
                 s.add(new Subscription() {
-                    boolean unsubscribed = false;
+                    boolean unsubscribed;
 
                     @Override
                     public void unsubscribe() {
@@ -695,7 +695,7 @@ public class OperatorRetryTest {
     @Test//(timeout = 15000)
     public void testRetryWithBackpressure() throws InterruptedException {
         final int NUM_LOOPS = 1;
-        for (int j=0;j<NUM_LOOPS;j++) {
+        for (int j = 0; j < NUM_LOOPS; j++) {
             final int NUM_RETRIES = RxRingBuffer.SIZE * 2;
             for (int i = 0; i < 400; i++) {
                 @SuppressWarnings("unchecked")
@@ -870,7 +870,7 @@ public class OperatorRetryTest {
 
             @Override
             public void call(Subscriber<? super String> o) {
-                for(int i=0; i<NUM_MSG; i++) {
+                for (int i = 0; i < NUM_MSG; i++) {
                     o.onNext("msg:" + count.incrementAndGet());
                 }
                 o.onCompleted();

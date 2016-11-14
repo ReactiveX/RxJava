@@ -49,7 +49,7 @@ public final class MpscLinkedQueue<E> extends BaseLinkedQueue<E> {
         Object oldVal;
         do {
             oldVal = producerNode;
-        } while(!UNSAFE.compareAndSwapObject(this, P_NODE_OFFSET, oldVal, newVal));
+        } while (!UNSAFE.compareAndSwapObject(this, P_NODE_OFFSET, oldVal, newVal));
         return (LinkedQueueNode<E>) oldVal;
     }
 
@@ -110,7 +110,7 @@ public final class MpscLinkedQueue<E> extends BaseLinkedQueue<E> {
         }
         else if (currConsumerNode != lvProducerNode()) {
             // spin, we are no longer wait free
-            while((nextNode = currConsumerNode.lvNext()) == null); // NOPMD
+            while ((nextNode = currConsumerNode.lvNext()) == null) { } // NOPMD
             // got the next node...
 
             // we have to null out the value because we are going to hang on to the node
@@ -130,7 +130,7 @@ public final class MpscLinkedQueue<E> extends BaseLinkedQueue<E> {
         }
         else if (currConsumerNode != lvProducerNode()) {
             // spin, we are no longer wait free
-            while((nextNode = currConsumerNode.lvNext()) == null); // NOPMD
+            while ((nextNode = currConsumerNode.lvNext()) == null) { } // NOPMD
             // got the next node...
             return nextNode.lpValue();
         }

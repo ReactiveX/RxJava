@@ -26,6 +26,10 @@ import rx.exceptions.MissingBackpressureException;
 @Beta
 public final class BackpressureOverflow {
 
+    private BackpressureOverflow() {
+        throw new IllegalStateException("No instances!");
+    }
+
     /**
      * Signal a MissingBackressureException due to lack of requests.
      */
@@ -65,10 +69,10 @@ public final class BackpressureOverflow {
     /**
      * Drop oldest items from the buffer making room for newer ones.
      */
-    static class DropOldest implements BackpressureOverflow.Strategy {
+    static final class DropOldest implements BackpressureOverflow.Strategy {
         static final DropOldest INSTANCE = new DropOldest();
 
-        private DropOldest() {}
+        private DropOldest() { }
 
         @Override
         public boolean mayAttemptDrop() {
@@ -80,10 +84,10 @@ public final class BackpressureOverflow {
      * Drop most recent items, but not {@code onError} nor unsubscribe from source
      * (as {code OperatorOnBackpressureDrop}).
      */
-    static class DropLatest implements BackpressureOverflow.Strategy {
+    static final class DropLatest implements BackpressureOverflow.Strategy {
         static final DropLatest INSTANCE = new DropLatest();
 
-        private DropLatest() {}
+        private DropLatest() { }
 
         @Override
         public boolean mayAttemptDrop() {
@@ -94,11 +98,11 @@ public final class BackpressureOverflow {
     /**
      * {@code onError} a MissingBackpressureException and unsubscribe from source.
      */
-    static class Error implements BackpressureOverflow.Strategy {
+    static final class Error implements BackpressureOverflow.Strategy {
 
         static final Error INSTANCE = new Error();
 
-        private Error() {}
+        private Error() { }
 
         @Override
         public boolean mayAttemptDrop() throws MissingBackpressureException {

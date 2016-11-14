@@ -25,7 +25,7 @@ abstract class SpscArrayQueueColdField<E> extends ConcurrentCircularArrayQueue<E
     protected final int lookAheadStep;
     public SpscArrayQueueColdField(int capacity) {
         super(capacity);
-        lookAheadStep = Math.min(capacity/4, MAX_LOOK_AHEAD_STEP);
+        lookAheadStep = Math.min(capacity / 4, MAX_LOOK_AHEAD_STEP);
     }
 }
 abstract class SpscArrayQueueL1Pad<E> extends SpscArrayQueueColdField<E> {
@@ -112,7 +112,7 @@ public final class SpscArrayQueue<E> extends SpscArrayQueueL3Pad<E> {
         final E[] lElementBuffer = buffer;
         final long index = producerIndex;
         final long offset = calcElementOffset(index);
-        if (null != lvElement(lElementBuffer, offset)){
+        if (null != lvElement(lElementBuffer, offset)) {
             return false;
         }
         soElement(lElementBuffer, offset, e); // StoreStore
