@@ -43,7 +43,7 @@ public final class CompletableOnSubscribeMerge implements OnSubscribe {
     public void call(CompletableSubscriber s) {
         CompletableMergeSubscriber parent = new CompletableMergeSubscriber(s, maxConcurrency, delayErrors);
         s.onSubscribe(parent);
-        source.subscribe(parent);
+        source.unsafeSubscribe(parent);
     }
 
     static final class CompletableMergeSubscriber
