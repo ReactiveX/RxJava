@@ -21,9 +21,9 @@ import java.util.concurrent.atomic.*;
 import rx.*;
 import rx.Completable.OnSubscribe;
 import rx.exceptions.MissingBackpressureException;
+import rx.internal.subscriptions.SequentialSubscription;
 import rx.internal.util.unsafe.SpscArrayQueue;
 import rx.plugins.RxJavaHooks;
-import rx.subscriptions.SerialSubscription;
 
 public final class CompletableOnSubscribeConcat implements OnSubscribe {
     final Observable<Completable> sources;
@@ -39,30 +39,29 @@ public final class CompletableOnSubscribeConcat implements OnSubscribe {
     public void call(CompletableSubscriber s) {
         CompletableConcatSubscriber parent = new CompletableConcatSubscriber(s, prefetch);
         s.onSubscribe(parent);
-        sources.subscribe(parent);
+        sources.unsafeSubscribe(parent);
     }
 
     static final class CompletableConcatSubscriber
     extends Subscriber<Completable> {
         final CompletableSubscriber actual;
-        final SerialSubscription sr;
+        final SequentialSubscription sr;
 
         final SpscArrayQueue<Completable> queue;
 
-        volatile boolean done;
+        final ConcatInnerSubscriber inner;
 
         final AtomicBoolean once;
 
-        final ConcatInnerSubscriber inner;
+        volatile boolean done;
 
-        final AtomicInteger wip;
+        volatile boolean active;
 
         public CompletableConcatSubscriber(CompletableSubscriber actual, int prefetch) {
             this.actual = actual;
             this.queue = new SpscArrayQueue<Completable>(prefetch);
-            this.sr = new SerialSubscription();
+            this.sr = new SequentialSubscription();
             this.inner = new ConcatInnerSubscriber();
-            this.wip = new AtomicInteger();
             this.once = new AtomicBoolean();
             add(sr);
             request(prefetch);
@@ -74,9 +73,7 @@ public final class CompletableOnSubscribeConcat implements OnSubscribe {
                 onError(new MissingBackpressureException());
                 return;
             }
-            if (wip.getAndIncrement() == 0) {
-                next();
-            }
+            drain();
         }
 
         @Override
@@ -94,9 +91,7 @@ public final class CompletableOnSubscribeConcat implements OnSubscribe {
                 return;
             }
             done = true;
-            if (wip.getAndIncrement() == 0) {
-                next();
-            }
+            drain();
         }
 
         void innerError(Throwable e) {
@@ -105,32 +100,45 @@ public final class CompletableOnSubscribeConcat implements OnSubscribe {
         }
 
         void innerComplete() {
-            if (wip.decrementAndGet() != 0) {
-                next();
-            }
-            if (!done) {
-                request(1);
-            }
+            active = false;
+            drain();
         }
 
-        void next() {
-            boolean d = done;
-            Completable c = queue.poll();
-            if (c == null) {
-                if (d) {
-                    if (once.compareAndSet(false, true)) {
-                        actual.onCompleted();
-                    }
-                    return;
-                }
-                RxJavaHooks.onError(new IllegalStateException("Queue is empty?!"));
+        void drain() {
+            ConcatInnerSubscriber inner = this.inner;
+            if (inner.getAndIncrement() != 0) {
                 return;
             }
 
-            c.unsafeSubscribe(inner);
+            do {
+                if (isUnsubscribed()) {
+                    return;
+                }
+                if (!active) {
+                    boolean d = done;
+                    Completable c = queue.poll();
+                    boolean empty = c == null;
+
+                    if (d && empty) {
+                        actual.onCompleted();
+                        return;
+                    }
+
+                    if (!empty) {
+                        active = true;
+                        c.subscribe(inner);
+
+                        request(1);
+                    }
+                }
+            } while (inner.decrementAndGet() != 0);
         }
 
-        final class ConcatInnerSubscriber implements CompletableSubscriber {
+        final class ConcatInnerSubscriber
+        extends AtomicInteger
+        implements CompletableSubscriber {
+            private static final long serialVersionUID = 7233503139645205620L;
+
             @Override
             public void onSubscribe(Subscription d) {
                 sr.set(d);
