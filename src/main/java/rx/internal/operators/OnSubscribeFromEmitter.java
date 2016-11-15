@@ -20,9 +20,9 @@ import java.util.concurrent.atomic.*;
 
 import rx.*;
 import rx.Observable.OnSubscribe;
-import rx.exceptions.*;
-import rx.functions.Action1;
-import rx.functions.Cancellable;
+import rx.exceptions.MissingBackpressureException;
+import rx.functions.*;
+import rx.internal.subscriptions.CancellableSubscription;
 import rx.internal.util.RxRingBuffer;
 import rx.internal.util.atomic.SpscUnboundedAtomicArrayQueue;
 import rx.internal.util.unsafe.*;
@@ -71,41 +71,6 @@ public final class OnSubscribeFromEmitter<T> implements OnSubscribe<T> {
         t.setProducer(emitter);
         Emitter.call(emitter);
 
-    }
-
-    /**
-     * A Subscription that wraps an Cancellable instance.
-     */
-    static final class CancellableSubscription
-    extends AtomicReference<Cancellable>
-    implements Subscription {
-
-        /** */
-        private static final long serialVersionUID = 5718521705281392066L;
-
-        public CancellableSubscription(Cancellable cancellable) {
-            super(cancellable);
-        }
-
-        @Override
-        public boolean isUnsubscribed() {
-            return get() == null;
-        }
-
-        @Override
-        public void unsubscribe() {
-            if (get() != null) {
-                Cancellable c = getAndSet(null);
-                if (c != null) {
-                    try {
-                        c.cancel();
-                    } catch (Exception ex) {
-                        Exceptions.throwIfFatal(ex);
-                        RxJavaHooks.onError(ex);
-                    }
-                }
-            }
-        }
     }
 
     static abstract class BaseEmitter<T>
