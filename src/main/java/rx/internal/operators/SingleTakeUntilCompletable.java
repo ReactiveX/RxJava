@@ -86,7 +86,7 @@ public final class SingleTakeUntilCompletable<T> implements Single.OnSubscribe<T
 
         @Override
         public void onCompleted() {
-            onError(new CancellationException("Stream was canceled before emitting a terminal event."));
+            onError(new CancellationException("Single::takeUntil(Completable) - Stream was canceled before emitting a terminal event."));
         }
     }
 }

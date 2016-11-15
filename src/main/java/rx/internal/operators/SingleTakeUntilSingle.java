@@ -86,7 +86,7 @@ public final class SingleTakeUntilSingle<T, U> implements Single.OnSubscribe<T> 
         final class OtherSubscriber extends SingleSubscriber<U> {
             @Override
             public void onSuccess(U value) {
-                onError(new CancellationException("Stream was canceled before emitting a terminal event."));
+                onError(new CancellationException("Single::takeUntil(Single) - Stream was canceled before emitting a terminal event."));
             }
 
             @Override
