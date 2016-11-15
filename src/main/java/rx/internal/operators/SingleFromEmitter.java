@@ -1,4 +1,4 @@
-/*
+/**
  * Copyright 2016 Netflix, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,62 +13,76 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package rx.internal.operators;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import rx.*;
+import rx.Single.OnSubscribe;
 import rx.exceptions.Exceptions;
 import rx.functions.*;
 import rx.internal.subscriptions.*;
 import rx.plugins.RxJavaHooks;
 
 /**
- * Allows push-based emission of terminal events to a CompletableSubscriber.
+ * Calls an action with a SingleEmitter instance for each individual subscribers that
+ * generates a terminal signal (eventually).
+ *
+ * @param <T> the success value type
  */
-public final class CompletableFromEmitter implements Completable.OnSubscribe {
+public final class SingleFromEmitter<T> implements OnSubscribe<T> {
 
-    final Action1<CompletableEmitter> producer;
+    final Action1<SingleEmitter<T>> producer;
 
-    public CompletableFromEmitter(Action1<CompletableEmitter> producer) {
+    public SingleFromEmitter(Action1<SingleEmitter<T>> producer) {
         this.producer = producer;
     }
 
     @Override
-    public void call(CompletableSubscriber t) {
-        FromEmitter emitter = new FromEmitter(t);
-        t.onSubscribe(emitter);
+    public void call(SingleSubscriber<? super T> t) {
+        SingleEmitterImpl<T> parent = new SingleEmitterImpl<T>(t);
+        t.add(parent);
 
         try {
-            producer.call(emitter);
+            producer.call(parent);
         } catch (Throwable ex) {
             Exceptions.throwIfFatal(ex);
-            emitter.onError(ex);
+            parent.onError(ex);
         }
-
     }
 
-    static final class FromEmitter
+    static final class SingleEmitterImpl<T>
     extends AtomicBoolean
-    implements CompletableEmitter, Subscription {
+    implements SingleEmitter<T>, Subscription {
+        private static final long serialVersionUID = 8082834163465882809L;
 
-        /** */
-        private static final long serialVersionUID = 5539301318568668881L;
-
-        final CompletableSubscriber actual;
+        final SingleSubscriber<? super T> actual;
 
         final SequentialSubscription resource;
 
-        public FromEmitter(CompletableSubscriber actual) {
+        SingleEmitterImpl(SingleSubscriber<? super T> actual) {
             this.actual = actual;
-            resource = new SequentialSubscription();
+            this.resource = new SequentialSubscription();
         }
 
         @Override
-        public void onCompleted() {
+        public void unsubscribe() {
+            if (compareAndSet(false, true)) {
+                resource.unsubscribe();
+            }
+        }
+
+        @Override
+        public boolean isUnsubscribed() {
+            return get();
+        }
+
+        @Override
+        public void onSuccess(T t) {
             if (compareAndSet(false, true)) {
                 try {
-                    actual.onCompleted();
+                    actual.onSuccess(t);
                 } finally {
                     resource.unsubscribe();
                 }
@@ -77,6 +91,9 @@ public final class CompletableFromEmitter implements Completable.OnSubscribe {
 
         @Override
         public void onError(Throwable t) {
+            if (t == null) {
+                t = new NullPointerException();
+            }
             if (compareAndSet(false, true)) {
                 try {
                     actual.onError(t);
@@ -97,18 +114,5 @@ public final class CompletableFromEmitter implements Completable.OnSubscribe {
         public void setCancellation(Cancellable c) {
             setSubscription(new CancellableSubscription(c));
         }
-
-        @Override
-        public void unsubscribe() {
-            if (compareAndSet(false, true)) {
-                resource.unsubscribe();
-            }
-        }
-
-        @Override
-        public boolean isUnsubscribed() {
-            return get();
-        }
-
     }
 }

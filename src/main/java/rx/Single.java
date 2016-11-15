@@ -574,6 +574,46 @@ public class Single<T> {
     }
 
     /**
+     * Provides an API (in a cold Single) that bridges the Single-reactive world
+     * with the callback-based world.
+     * <p>The {@link SingleEmitter} allows registering a callback for
+     * cancellation/unsubscription of a resource.
+     * <p>
+     * Example:
+     * <pre><code>
+     * Single.fromEmitter(emitter -&gt; {
+     *     Callback listener = new Callback() {
+     *         &#64;Override
+     *         public void onEvent(Event e) {
+     *             emitter.onSuccess(e.getData());
+     *         }
+     *
+     *         &#64;Override
+     *         public void onFailure(Exception e) {
+     *             emitter.onError(e);
+     *         }
+     *     };
+     *
+     *     AutoCloseable c = api.someMethod(listener);
+     *
+     *     emitter.setCancellation(c::close);
+     *
+     * });
+     * </code></pre>
+     * <p>All of the SingleEmitter's methods are thread-safe and ensure the
+     * Single's protocol are held.
+     * @param <T> the success value type
+     * @param producer the callback invoked for each incoming SingleSubscriber
+     * @return the new Single instance
+     * @since 1.2.3 - experimental (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
+     */
+    @Experimental
+    public static <T> Single<T> fromEmitter(Action1<SingleEmitter<T>> producer) {
+        if (producer == null) { throw new NullPointerException("producer is null"); }
+        return create(new SingleFromEmitter<T>(producer));
+    }
+
+    /**
      * Returns a {@code Single} that emits a specified item.
      * <p>
      * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.just.png" alt="">
