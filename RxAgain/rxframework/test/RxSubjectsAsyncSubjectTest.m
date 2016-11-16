@@ -555,7 +555,7 @@ IOSObjectArray *RxSubjectsAsyncSubjectTest__Annotations$7() {
 }
 
 IOSObjectArray *RxSubjectsAsyncSubjectTest__Annotations$8() {
-  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 10000) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 20000) } count:1 type:JavaLangAnnotationAnnotation_class_()];
 }
 
 IOSObjectArray *RxSubjectsAsyncSubjectTest__Annotations$9() {

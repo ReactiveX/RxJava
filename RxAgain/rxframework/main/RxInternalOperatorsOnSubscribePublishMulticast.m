@@ -434,7 +434,6 @@ J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxInternalOperatorsOnSubscribePublishMulticast)
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOnSubscribePublishMulticast_ParentSubscriber class]);
   RELEASE_(state_);
   [super dealloc];
 }

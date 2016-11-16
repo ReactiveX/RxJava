@@ -27,7 +27,8 @@
 
 + (id<JavaUtilList>)allTestClassnames;
 
-+ (void)runTests;
++ (void)runTestsWithInt:(jint)count
+                withInt:(jint)offset;
 
 + (void)runTestsWithNSString:(NSString *)a;
 
@@ -43,9 +44,66 @@
                 withNSString:(NSString *)c
                 withNSString:(NSString *)d;
 
++ (void)runTestsWithNSString:(NSString *)a
+                withNSString:(NSString *)b
+                withNSString:(NSString *)c
+                withNSString:(NSString *)d
+                withNSString:(NSString *)e;
+
++ (void)runTestsWithNSString:(NSString *)a
+                withNSString:(NSString *)b
+                withNSString:(NSString *)c
+                withNSString:(NSString *)d
+                withNSString:(NSString *)e
+                withNSString:(NSString *)f;
+
++ (void)runTestsWithNSString:(NSString *)a
+                withNSString:(NSString *)b
+                withNSString:(NSString *)c
+                withNSString:(NSString *)d
+                withNSString:(NSString *)e
+                withNSString:(NSString *)f
+                withNSString:(NSString *)g;
+
++ (void)runTestsWithNSString:(NSString *)a
+                withNSString:(NSString *)b
+                withNSString:(NSString *)c
+                withNSString:(NSString *)d
+                withNSString:(NSString *)e
+                withNSString:(NSString *)f
+                withNSString:(NSString *)g
+                withNSString:(NSString *)h;
+
++ (void)runTestsWithNSString:(NSString *)a
+                withNSString:(NSString *)b
+                withNSString:(NSString *)c
+                withNSString:(NSString *)d
+                withNSString:(NSString *)e
+                withNSString:(NSString *)f
+                withNSString:(NSString *)g
+                withNSString:(NSString *)h
+                withNSString:(NSString *)i;
+
++ (void)runTestsWithNSString:(NSString *)a
+                withNSString:(NSString *)b
+                withNSString:(NSString *)c
+                withNSString:(NSString *)d
+                withNSString:(NSString *)e
+                withNSString:(NSString *)f
+                withNSString:(NSString *)g
+                withNSString:(NSString *)h
+                withNSString:(NSString *)i
+                withNSString:(NSString *)j;
+
 @end
 
 J2OBJC_STATIC_INIT(OneTest)
+
+inline IOSObjectArray *OneTest_get_alltests2();
+inline IOSObjectArray *OneTest_set_alltests2(IOSObjectArray *value);
+/*! INTERNAL ONLY - Use accessor function from above. */
+FOUNDATION_EXPORT IOSObjectArray *OneTest_alltests2;
+J2OBJC_STATIC_FIELD_OBJ(OneTest, alltests2, IOSObjectArray *)
 
 inline IOSObjectArray *OneTest_get_alltests();
 inline IOSObjectArray *OneTest_set_alltests(IOSObjectArray *value);
@@ -67,7 +125,7 @@ J2OBJC_STATIC_FIELD_OBJ(OneTest, failing, IOSObjectArray *)
 
 FOUNDATION_EXPORT id<JavaUtilList> OneTest_allTestClassnames();
 
-FOUNDATION_EXPORT void OneTest_runTests();
+FOUNDATION_EXPORT void OneTest_runTestsWithInt_withInt_(jint count, jint offset);
 
 FOUNDATION_EXPORT void OneTest_runTestsWithNSString_(NSString *a);
 
@@ -77,6 +135,18 @@ FOUNDATION_EXPORT void OneTest_runTestsWithNSString_withNSString_withNSString_(N
 
 FOUNDATION_EXPORT void OneTest_runTestsWithNSString_withNSString_withNSString_withNSString_(NSString *a, NSString *b, NSString *c, NSString *d);
 
+FOUNDATION_EXPORT void OneTest_runTestsWithNSString_withNSString_withNSString_withNSString_withNSString_(NSString *a, NSString *b, NSString *c, NSString *d, NSString *e);
+
+FOUNDATION_EXPORT void OneTest_runTestsWithNSString_withNSString_withNSString_withNSString_withNSString_withNSString_(NSString *a, NSString *b, NSString *c, NSString *d, NSString *e, NSString *f);
+
+FOUNDATION_EXPORT void OneTest_runTestsWithNSString_withNSString_withNSString_withNSString_withNSString_withNSString_withNSString_(NSString *a, NSString *b, NSString *c, NSString *d, NSString *e, NSString *f, NSString *g);
+
+FOUNDATION_EXPORT void OneTest_runTestsWithNSString_withNSString_withNSString_withNSString_withNSString_withNSString_withNSString_withNSString_(NSString *a, NSString *b, NSString *c, NSString *d, NSString *e, NSString *f, NSString *g, NSString *h);
+
+FOUNDATION_EXPORT void OneTest_runTestsWithNSString_withNSString_withNSString_withNSString_withNSString_withNSString_withNSString_withNSString_withNSString_(NSString *a, NSString *b, NSString *c, NSString *d, NSString *e, NSString *f, NSString *g, NSString *h, NSString *i);
+
+FOUNDATION_EXPORT void OneTest_runTestsWithNSString_withNSString_withNSString_withNSString_withNSString_withNSString_withNSString_withNSString_withNSString_withNSString_(NSString *a, NSString *b, NSString *c, NSString *d, NSString *e, NSString *f, NSString *g, NSString *h, NSString *i, NSString *j);
+
 FOUNDATION_EXPORT void OneTest_init(OneTest *self);
 
 FOUNDATION_EXPORT OneTest *new_OneTest_init() NS_RETURNS_RETAINED;
@@ -84,6 +154,42 @@ FOUNDATION_EXPORT OneTest *new_OneTest_init() NS_RETURNS_RETAINED;
 FOUNDATION_EXPORT OneTest *create_OneTest_init();
 
 J2OBJC_TYPE_LITERAL_HEADER(OneTest)
+
+#endif
+
+#if !defined (OneTest_BigMemDopplRunListener_) && (INCLUDE_ALL_OneTest || defined(INCLUDE_OneTest_BigMemDopplRunListener))
+#define OneTest_BigMemDopplRunListener_
+
+#define RESTRICT_CoTouchlabDoppelTestingDopplJunitTestRunner 1
+#define INCLUDE_CoTouchlabDoppelTestingDopplJunitTestRunner_DopplJunitListener 1
+#include "CoTouchlabDoppelTestingDopplJunitTestRunner.h"
+
+@interface OneTest_BigMemDopplRunListener : NSObject < CoTouchlabDoppelTestingDopplJunitTestRunner_DopplJunitListener > {
+ @public
+  jlong memSize_;
+}
+
+#pragma mark Public
+
+- (void)endRunWithNSString:(NSString *)s;
+
+- (void)startRunWithNSString:(NSString *)s;
+
+#pragma mark Package-Private
+
+- (instancetype)init;
+
+@end
+
+J2OBJC_EMPTY_STATIC_INIT(OneTest_BigMemDopplRunListener)
+
+FOUNDATION_EXPORT void OneTest_BigMemDopplRunListener_init(OneTest_BigMemDopplRunListener *self);
+
+FOUNDATION_EXPORT OneTest_BigMemDopplRunListener *new_OneTest_BigMemDopplRunListener_init() NS_RETURNS_RETAINED;
+
+FOUNDATION_EXPORT OneTest_BigMemDopplRunListener *create_OneTest_BigMemDopplRunListener_init();
+
+J2OBJC_TYPE_LITERAL_HEADER(OneTest_BigMemDopplRunListener)
 
 #endif
 

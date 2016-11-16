@@ -108,7 +108,6 @@ J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxInternalOperatorsOperatorCast)
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOperatorCast_CastSubscriber class]);
   RELEASE_(actual_);
   RELEASE_(castClass_);
   [super dealloc];

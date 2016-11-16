@@ -16,6 +16,7 @@
 
 package rx.internal.operators;
 
+import com.google.j2objc.WeakProxy;
 import com.google.j2objc.annotations.Weak;
 
 import java.util.concurrent.atomic.AtomicInteger;
@@ -23,6 +24,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import rx.Observable;
 import rx.Producer;
 import rx.Subscriber;
+import rx.doppl.WeakReferenceHelper;
 
 /**
  * Base class for Subscribers that consume the entire upstream and signal
@@ -160,14 +162,14 @@ public abstract class DeferredScalarSubscriber<T, R> extends Subscriber<T> {
     /* test */ final void setupDownstream() {
         Subscriber<? super R> a = actual;
         a.add(this);
-        a.setProducer(new InnerProducer(this));
+        //Make weak proxy if this and 'a' are the same. Probably aren't, though.
+        a.setProducer(new InnerProducer(WeakReferenceHelper.wrapWeakProxyIfSame(this, a)));
     }
 
     /**
      * Redirects the downstream request amount bach to the DeferredScalarSubscriber.
      */
     static final class InnerProducer implements Producer {
-        @Weak
         final DeferredScalarSubscriber<?, ?> parent;
 
         public InnerProducer(DeferredScalarSubscriber<?, ?> parent) {

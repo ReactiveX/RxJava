@@ -31,7 +31,6 @@
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalUtilActionSubscriber class]);
   RELEASE_(onNext_);
   RELEASE_(onError_);
   RELEASE_(onCompleted_);

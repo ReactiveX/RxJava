@@ -147,7 +147,7 @@ J2OBJC_TYPE_LITERAL_HEADER(RxInternalOperatorsOperatorGroupBy_GroupByProducer)
   jboolean delayError_;
   id<JavaUtilMap> groups_;
   id<JavaUtilQueue> queue_;
-  RxInternalOperatorsOperatorGroupBy_GroupByProducer *producer_;
+  RxInternalOperatorsOperatorGroupBy_GroupByProducer *producer_GroupBySubscriber_;
   id<JavaUtilQueue> evictedKeys_;
   RxInternalProducersProducerArbiter *s_;
   JavaUtilConcurrentAtomicAtomicBoolean *cancelled_;
@@ -203,7 +203,7 @@ J2OBJC_FIELD_SETTER(RxInternalOperatorsOperatorGroupBy_GroupBySubscriber, keySel
 J2OBJC_FIELD_SETTER(RxInternalOperatorsOperatorGroupBy_GroupBySubscriber, valueSelector_, id<RxFunctionsFunc1>)
 J2OBJC_FIELD_SETTER(RxInternalOperatorsOperatorGroupBy_GroupBySubscriber, groups_, id<JavaUtilMap>)
 J2OBJC_FIELD_SETTER(RxInternalOperatorsOperatorGroupBy_GroupBySubscriber, queue_, id<JavaUtilQueue>)
-J2OBJC_FIELD_SETTER(RxInternalOperatorsOperatorGroupBy_GroupBySubscriber, producer_, RxInternalOperatorsOperatorGroupBy_GroupByProducer *)
+J2OBJC_FIELD_SETTER(RxInternalOperatorsOperatorGroupBy_GroupBySubscriber, producer_GroupBySubscriber_, RxInternalOperatorsOperatorGroupBy_GroupByProducer *)
 J2OBJC_FIELD_SETTER(RxInternalOperatorsOperatorGroupBy_GroupBySubscriber, evictedKeys_, id<JavaUtilQueue>)
 J2OBJC_FIELD_SETTER(RxInternalOperatorsOperatorGroupBy_GroupBySubscriber, s_, RxInternalProducersProducerArbiter *)
 J2OBJC_FIELD_SETTER(RxInternalOperatorsOperatorGroupBy_GroupBySubscriber, cancelled_, JavaUtilConcurrentAtomicAtomicBoolean *)
@@ -346,7 +346,7 @@ J2OBJC_TYPE_LITERAL_HEADER(RxInternalOperatorsOperatorGroupBy_GroupedUnicast)
  @public
   id key_;
   id<JavaUtilQueue> queue_;
-  __unsafe_unretained RxInternalOperatorsOperatorGroupBy_GroupBySubscriber *parent_;
+  RxInternalOperatorsOperatorGroupBy_GroupBySubscriber *parent_;
   jboolean delayError_;
   JavaUtilConcurrentAtomicAtomicLong *requested_;
   volatile_jboolean done_;
@@ -392,6 +392,7 @@ J2OBJC_EMPTY_STATIC_INIT(RxInternalOperatorsOperatorGroupBy_State)
 
 J2OBJC_FIELD_SETTER(RxInternalOperatorsOperatorGroupBy_State, key_, id)
 J2OBJC_FIELD_SETTER(RxInternalOperatorsOperatorGroupBy_State, queue_, id<JavaUtilQueue>)
+J2OBJC_FIELD_SETTER(RxInternalOperatorsOperatorGroupBy_State, parent_, RxInternalOperatorsOperatorGroupBy_GroupBySubscriber *)
 J2OBJC_FIELD_SETTER(RxInternalOperatorsOperatorGroupBy_State, requested_, JavaUtilConcurrentAtomicAtomicLong *)
 J2OBJC_FIELD_SETTER(RxInternalOperatorsOperatorGroupBy_State, error_, NSException *)
 J2OBJC_FIELD_SETTER(RxInternalOperatorsOperatorGroupBy_State, cancelled_, JavaUtilConcurrentAtomicAtomicBoolean *)

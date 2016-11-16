@@ -154,7 +154,6 @@ J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxInternalOperatorsOperatorDelayWithSelector)
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOperatorDelayWithSelector_$1 class]);
   RELEASE_(this$0_);
   RELEASE_(val$delayedEmissions_);
   RELEASE_(val$child_);

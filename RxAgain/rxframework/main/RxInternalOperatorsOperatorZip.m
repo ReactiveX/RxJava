@@ -302,15 +302,14 @@ J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxInternalOperatorsOperatorZip)
   }
   else {
     started_ = true;
-    [((RxInternalOperatorsOperatorZip_Zip *) nil_chk(zipper_)) startWithRxObservableArray:observables withJavaUtilConcurrentAtomicAtomicLong:producer_];
+    [((RxInternalOperatorsOperatorZip_Zip *) nil_chk(zipper_)) startWithRxObservableArray:observables withJavaUtilConcurrentAtomicAtomicLong:producer_ZipSubscriber_];
   }
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOperatorZip_ZipSubscriber class]);
   RELEASE_(child_);
   RELEASE_(zipper_);
-  RELEASE_(producer_);
+  RELEASE_(producer_ZipSubscriber_);
   [super dealloc];
 }
 
@@ -331,11 +330,11 @@ J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxInternalOperatorsOperatorZip)
   static const J2ObjcFieldInfo fields[] = {
     { "child_", "LRxSubscriber;", .constantValue.asLong = 0, 0x10, -1, -1, 6, -1 },
     { "zipper_", "LRxInternalOperatorsOperatorZip_Zip;", .constantValue.asLong = 0, 0x10, -1, -1, 7, -1 },
-    { "producer_", "LRxInternalOperatorsOperatorZip_ZipProducer;", .constantValue.asLong = 0, 0x10, -1, -1, 8, -1 },
+    { "producer_ZipSubscriber_", "LRxInternalOperatorsOperatorZip_ZipProducer;", .constantValue.asLong = 0, 0x10, 8, -1, 9, -1 },
     { "started_", "Z", .constantValue.asLong = 0, 0x0, -1, -1, -1, -1 },
   };
-  static const void *ptrTable[] = { "LRxInternalOperatorsOperatorZip;LRxSubscriber;LRxInternalOperatorsOperatorZip_Zip;LRxInternalOperatorsOperatorZip_ZipProducer;", "(Lrx/internal/operators/OperatorZip;Lrx/Subscriber<-TR;>;Lrx/internal/operators/OperatorZip$Zip<TR;>;Lrx/internal/operators/OperatorZip$ZipProducer<TR;>;)V", "onError", "LNSException;", "onNext", "[LRxObservable;", "Lrx/Subscriber<-TR;>;", "Lrx/internal/operators/OperatorZip$Zip<TR;>;", "Lrx/internal/operators/OperatorZip$ZipProducer<TR;>;", "LRxInternalOperatorsOperatorZip;", "Lrx/Subscriber<[Lrx/Observable;>;" };
-  static const J2ObjcClassInfo _RxInternalOperatorsOperatorZip_ZipSubscriber = { "ZipSubscriber", "rx.internal.operators", ptrTable, methods, fields, 7, 0x10, 4, 4, 9, -1, -1, 10, -1 };
+  static const void *ptrTable[] = { "LRxInternalOperatorsOperatorZip;LRxSubscriber;LRxInternalOperatorsOperatorZip_Zip;LRxInternalOperatorsOperatorZip_ZipProducer;", "(Lrx/internal/operators/OperatorZip;Lrx/Subscriber<-TR;>;Lrx/internal/operators/OperatorZip$Zip<TR;>;Lrx/internal/operators/OperatorZip$ZipProducer<TR;>;)V", "onError", "LNSException;", "onNext", "[LRxObservable;", "Lrx/Subscriber<-TR;>;", "Lrx/internal/operators/OperatorZip$Zip<TR;>;", "producer", "Lrx/internal/operators/OperatorZip$ZipProducer<TR;>;", "LRxInternalOperatorsOperatorZip;", "Lrx/Subscriber<[Lrx/Observable;>;" };
+  static const J2ObjcClassInfo _RxInternalOperatorsOperatorZip_ZipSubscriber = { "ZipSubscriber", "rx.internal.operators", ptrTable, methods, fields, 7, 0x10, 4, 4, 10, -1, -1, 11, -1 };
   return &_RxInternalOperatorsOperatorZip_ZipSubscriber;
 }
 
@@ -345,7 +344,7 @@ void RxInternalOperatorsOperatorZip_ZipSubscriber_initWithRxInternalOperatorsOpe
   RxSubscriber_init(self);
   JreStrongAssign(&self->child_, child);
   JreStrongAssign(&self->zipper_, zipper);
-  JreStrongAssign(&self->producer_, producer);
+  JreStrongAssign(&self->producer_ZipSubscriber_, producer);
 }
 
 RxInternalOperatorsOperatorZip_ZipSubscriber *new_RxInternalOperatorsOperatorZip_ZipSubscriber_initWithRxInternalOperatorsOperatorZip_withRxSubscriber_withRxInternalOperatorsOperatorZip_Zip_withRxInternalOperatorsOperatorZip_ZipProducer_(RxInternalOperatorsOperatorZip *outer$, RxSubscriber *child, RxInternalOperatorsOperatorZip_Zip *zipper, RxInternalOperatorsOperatorZip_ZipProducer *producer) {
@@ -617,7 +616,6 @@ J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxInternalOperatorsOperatorZip_Zip)
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOperatorZip_Zip_InnerSubscriber class]);
   RELEASE_(this$0_);
   RELEASE_(items_);
   [super dealloc];

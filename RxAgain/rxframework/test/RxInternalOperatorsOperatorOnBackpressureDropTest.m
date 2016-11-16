@@ -746,7 +746,6 @@ RxInternalOperatorsOperatorOnBackpressureDropTest_$3 *create_RxInternalOperators
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOperatorOnBackpressureDropTest_$4 class]);
   RELEASE_(val$count_);
   [super dealloc];
 }

@@ -962,7 +962,6 @@ RxSubjectsReplaySubjectConcurrencyTest_$2 *create_RxSubjectsReplaySubjectConcurr
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxSubjectsReplaySubjectConcurrencyTest_$2_$1 class]);
   RELEASE_(this$0_);
   [super dealloc];
 }
@@ -1083,7 +1082,6 @@ RxSubjectsReplaySubjectConcurrencyTest_$3 *create_RxSubjectsReplaySubjectConcurr
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxSubjectsReplaySubjectConcurrencyTest_$3_$1 class]);
   RELEASE_(val$fastLatch_);
   [super dealloc];
 }

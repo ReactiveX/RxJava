@@ -803,7 +803,6 @@ RxSchedulersAbstractSchedulerConcurrencyTests_$1 *create_RxSchedulersAbstractSch
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxSchedulersAbstractSchedulerConcurrencyTests_$2 class]);
   RELEASE_(val$countReceived_);
   RELEASE_(val$latch_);
   [super dealloc];
@@ -1519,7 +1518,6 @@ RxSchedulersAbstractSchedulerConcurrencyTests_$8_$2 *create_RxSchedulersAbstract
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxSchedulersAbstractSchedulerConcurrencyTests_$9 class]);
   RELEASE_(val$completed_);
   RELEASE_(val$count_);
   [super dealloc];

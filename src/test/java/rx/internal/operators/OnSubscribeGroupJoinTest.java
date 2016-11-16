@@ -34,7 +34,6 @@ import org.mockito.internal.util.collections.ArrayUtils;
 import rx.Observable;
 import rx.Observer;
 import rx.Subscriber;
-import rx.doppl.mock.MObserver;
 import rx.functions.Action1;
 import rx.functions.Func1;
 import rx.functions.Func2;
@@ -220,37 +219,37 @@ public class OnSubscribeGroupJoinTest {
 
         q.subscribe(new Subscriber<PPF>()
         {
-            @Override
+                    @Override
             public void onNext(final PPF ppf)
             {
                 ppf.fruits.filter(new Func1<PersonFruit, Boolean>()
                 {
-                    @Override
+                            @Override
                     public Boolean call(PersonFruit t1)
                     {
-                        return ppf.person.id == t1.personId;
-                    }
+                                return ppf.person.id == t1.personId;
+                            }
                 }).subscribe(new Action1<PersonFruit>()
                 {
-                    @Override
+                            @Override
                     public void call(PersonFruit t1)
                     {
                         ugnMockito.onNext(Arrays.asList(ppf.person.name, t1.fruit));
+                            }
+                        });
                     }
-                });
-            }
 
-            @Override
+                    @Override
             public void onError(Throwable e)
             {
                 ugnMockito.onError(e);
-            }
+                    }
 
-            @Override
+                    @Override
             public void onCompleted()
             {
                 ugnMockito.onCompleted();
-            }
+                    }
 
         });
 

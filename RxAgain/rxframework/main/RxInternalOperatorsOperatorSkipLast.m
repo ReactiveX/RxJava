@@ -123,7 +123,6 @@ J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxInternalOperatorsOperatorSkipLast)
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOperatorSkipLast_$1 class]);
   RELEASE_(this$0_);
   RELEASE_(deque_);
   RELEASE_(val$subscriber_);

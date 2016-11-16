@@ -20,13 +20,12 @@
 #define INCLUDE_RxObservable_OnSubscribe 1
 #include "RxObservable.h"
 
-@class RxDopplSafeObservableUnsubscribe;
 @class RxObservable;
 @class RxSubscriber;
 
 @interface RxInternalOperatorsOnSubscribeDetach : NSObject < RxObservable_OnSubscribe > {
  @public
-  RxDopplSafeObservableUnsubscribe *source_;
+  RxObservable *source_;
 }
 
 #pragma mark Public
@@ -39,7 +38,7 @@
 
 J2OBJC_EMPTY_STATIC_INIT(RxInternalOperatorsOnSubscribeDetach)
 
-J2OBJC_FIELD_SETTER(RxInternalOperatorsOnSubscribeDetach, source_, RxDopplSafeObservableUnsubscribe *)
+J2OBJC_FIELD_SETTER(RxInternalOperatorsOnSubscribeDetach, source_, RxObservable *)
 
 FOUNDATION_EXPORT void RxInternalOperatorsOnSubscribeDetach_initWithRxObservable_(RxInternalOperatorsOnSubscribeDetach *self, RxObservable *source);
 
@@ -65,7 +64,7 @@ J2OBJC_TYPE_LITERAL_HEADER(RxInternalOperatorsOnSubscribeDetach)
 @interface RxInternalOperatorsOnSubscribeDetach_DetachSubscriber : RxSubscriber {
  @public
   JavaUtilConcurrentAtomicAtomicReference *actual_;
-  JavaUtilConcurrentAtomicAtomicReference *producer_;
+  JavaUtilConcurrentAtomicAtomicReference *producer_DetachSubscriber_;
   JavaUtilConcurrentAtomicAtomicLong *requested_DetachSubscriber_;
 }
 
@@ -92,7 +91,7 @@ J2OBJC_TYPE_LITERAL_HEADER(RxInternalOperatorsOnSubscribeDetach)
 J2OBJC_EMPTY_STATIC_INIT(RxInternalOperatorsOnSubscribeDetach_DetachSubscriber)
 
 J2OBJC_FIELD_SETTER(RxInternalOperatorsOnSubscribeDetach_DetachSubscriber, actual_, JavaUtilConcurrentAtomicAtomicReference *)
-J2OBJC_FIELD_SETTER(RxInternalOperatorsOnSubscribeDetach_DetachSubscriber, producer_, JavaUtilConcurrentAtomicAtomicReference *)
+J2OBJC_FIELD_SETTER(RxInternalOperatorsOnSubscribeDetach_DetachSubscriber, producer_DetachSubscriber_, JavaUtilConcurrentAtomicAtomicReference *)
 J2OBJC_FIELD_SETTER(RxInternalOperatorsOnSubscribeDetach_DetachSubscriber, requested_DetachSubscriber_, JavaUtilConcurrentAtomicAtomicLong *)
 
 FOUNDATION_EXPORT void RxInternalOperatorsOnSubscribeDetach_DetachSubscriber_initWithRxSubscriber_(RxInternalOperatorsOnSubscribeDetach_DetachSubscriber *self, RxSubscriber *actual);

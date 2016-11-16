@@ -265,7 +265,7 @@ NSException *RxInternalOperatorsOperatorSwitch_SwitchSubscriber_TERMINAL_ERROR;
 
 - (void)clearProducer {
   @synchronized(self) {
-    JreStrongAssign(&producer_, nil);
+    JreStrongAssign(&producer_SwitchSubscriber_, nil);
   }
 }
 
@@ -279,7 +279,7 @@ NSException *RxInternalOperatorsOperatorSwitch_SwitchSubscriber_TERMINAL_ERROR;
   @synchronized(self) {
     inner = create_RxInternalOperatorsOperatorSwitch_InnerSubscriber_initWithLong_withRxInternalOperatorsOperatorSwitch_SwitchSubscriber_(id_, self);
     innerActive_ = true;
-    JreStrongAssign(&producer_, nil);
+    JreStrongAssign(&producer_SwitchSubscriber_, nil);
   }
   [serial_ setWithRxSubscription:inner];
   [((RxObservable *) nil_chk(t)) unsafeSubscribeWithRxSubscriber:inner];
@@ -341,7 +341,7 @@ withRxInternalOperatorsOperatorSwitch_InnerSubscriber:(RxInternalOperatorsOperat
     if ([((JavaUtilConcurrentAtomicAtomicLong *) nil_chk(index_)) get] == id_) {
       success = [self updateErrorWithNSException:e];
       innerActive_ = false;
-      JreStrongAssign(&producer_, nil);
+      JreStrongAssign(&producer_SwitchSubscriber_, nil);
     }
     else {
       success = true;
@@ -361,7 +361,7 @@ withRxInternalOperatorsOperatorSwitch_InnerSubscriber:(RxInternalOperatorsOperat
       return;
     }
     innerActive_ = false;
-    JreStrongAssign(&producer_, nil);
+    JreStrongAssign(&producer_SwitchSubscriber_, nil);
   }
   [self drain];
 }
@@ -378,7 +378,7 @@ withRxInternalOperatorsOperatorSwitch_InnerSubscriber:(RxInternalOperatorsOperat
       return;
     }
     n = requested_SwitchSubscriber_;
-    JreStrongAssign(&producer_, p);
+    JreStrongAssign(&producer_SwitchSubscriber_, p);
   }
   [((id<RxProducer>) nil_chk(p)) requestWithLong:n];
 }
@@ -386,7 +386,7 @@ withRxInternalOperatorsOperatorSwitch_InnerSubscriber:(RxInternalOperatorsOperat
 - (void)childRequestedWithLong:(jlong)n {
   id<RxProducer> p;
   @synchronized(self) {
-    p = producer_;
+    p = producer_SwitchSubscriber_;
     requested_SwitchSubscriber_ = RxInternalOperatorsBackpressureUtils_addCapWithLong_withLong_(requested_SwitchSubscriber_, n);
   }
   if (p != nil) {
@@ -497,12 +497,11 @@ withRxInternalUtilAtomicSpscLinkedArrayQueue:(RxInternalUtilAtomicSpscLinkedArra
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOperatorSwitch_SwitchSubscriber class]);
   RELEASE_(child_);
   RELEASE_(serial_);
   RELEASE_(index_);
   RELEASE_(queue_);
-  RELEASE_(producer_);
+  RELEASE_(producer_SwitchSubscriber_);
   RELEASE_(error_);
   [super dealloc];
 }
@@ -552,14 +551,14 @@ withRxInternalUtilAtomicSpscLinkedArrayQueue:(RxInternalUtilAtomicSpscLinkedArra
     { "emitting_", "Z", .constantValue.asLong = 0, 0x0, -1, -1, -1, -1 },
     { "missed_", "Z", .constantValue.asLong = 0, 0x0, -1, -1, -1, -1 },
     { "requested_SwitchSubscriber_", "J", .constantValue.asLong = 0, 0x0, 25, -1, -1, -1 },
-    { "producer_", "LRxProducer;", .constantValue.asLong = 0, 0x0, -1, -1, -1, -1 },
+    { "producer_SwitchSubscriber_", "LRxProducer;", .constantValue.asLong = 0, 0x0, 26, -1, -1, -1 },
     { "mainDone_", "Z", .constantValue.asLong = 0, 0x40, -1, -1, -1, -1 },
     { "error_", "LNSException;", .constantValue.asLong = 0, 0x0, -1, -1, -1, -1 },
     { "innerActive_", "Z", .constantValue.asLong = 0, 0x0, -1, -1, -1, -1 },
-    { "TERMINAL_ERROR", "LNSException;", .constantValue.asLong = 0, 0x18, -1, 26, -1, -1 },
+    { "TERMINAL_ERROR", "LNSException;", .constantValue.asLong = 0, 0x18, -1, 27, -1, -1 },
   };
-  static const void *ptrTable[] = { "LRxSubscriber;Z", "(Lrx/Subscriber<-TT;>;Z)V", "init", "onNext", "LRxObservable;", "(Lrx/Observable<+TT;>;)V", "onError", "LNSException;", "updateError", "emit", "LNSObject;LRxInternalOperatorsOperatorSwitch_InnerSubscriber;", "(TT;Lrx/internal/operators/OperatorSwitch$InnerSubscriber<TT;>;)V", "error", "LNSException;J", "complete", "J", "pluginError", "innerProducer", "LRxProducer;J", "childRequested", "checkTerminated", "ZZLNSException;LRxInternalUtilAtomicSpscLinkedArrayQueue;LRxSubscriber;Z", "(ZZLjava/lang/Throwable;Lrx/internal/util/atomic/SpscLinkedArrayQueue<Ljava/lang/Object;>;Lrx/Subscriber<-TT;>;Z)Z", "Lrx/Subscriber<-TT;>;", "Lrx/internal/util/atomic/SpscLinkedArrayQueue<Ljava/lang/Object;>;", "requested", &RxInternalOperatorsOperatorSwitch_SwitchSubscriber_TERMINAL_ERROR, "LRxInternalOperatorsOperatorSwitch;", "<T:Ljava/lang/Object;>Lrx/Subscriber<Lrx/Observable<+TT;>;>;" };
-  static const J2ObjcClassInfo _RxInternalOperatorsOperatorSwitch_SwitchSubscriber = { "SwitchSubscriber", "rx.internal.operators", ptrTable, methods, fields, 7, 0x18, 15, 13, 27, -1, -1, 28, -1 };
+  static const void *ptrTable[] = { "LRxSubscriber;Z", "(Lrx/Subscriber<-TT;>;Z)V", "init", "onNext", "LRxObservable;", "(Lrx/Observable<+TT;>;)V", "onError", "LNSException;", "updateError", "emit", "LNSObject;LRxInternalOperatorsOperatorSwitch_InnerSubscriber;", "(TT;Lrx/internal/operators/OperatorSwitch$InnerSubscriber<TT;>;)V", "error", "LNSException;J", "complete", "J", "pluginError", "innerProducer", "LRxProducer;J", "childRequested", "checkTerminated", "ZZLNSException;LRxInternalUtilAtomicSpscLinkedArrayQueue;LRxSubscriber;Z", "(ZZLjava/lang/Throwable;Lrx/internal/util/atomic/SpscLinkedArrayQueue<Ljava/lang/Object;>;Lrx/Subscriber<-TT;>;Z)Z", "Lrx/Subscriber<-TT;>;", "Lrx/internal/util/atomic/SpscLinkedArrayQueue<Ljava/lang/Object;>;", "requested", "producer", &RxInternalOperatorsOperatorSwitch_SwitchSubscriber_TERMINAL_ERROR, "LRxInternalOperatorsOperatorSwitch;", "<T:Ljava/lang/Object;>Lrx/Subscriber<Lrx/Observable<+TT;>;>;" };
+  static const J2ObjcClassInfo _RxInternalOperatorsOperatorSwitch_SwitchSubscriber = { "SwitchSubscriber", "rx.internal.operators", ptrTable, methods, fields, 7, 0x18, 15, 13, 28, -1, -1, 29, -1 };
   return &_RxInternalOperatorsOperatorSwitch_SwitchSubscriber;
 }
 
@@ -719,7 +718,6 @@ withRxInternalOperatorsOperatorSwitch_SwitchSubscriber:(RxInternalOperatorsOpera
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOperatorSwitch_InnerSubscriber class]);
   RELEASE_(parent_);
   [super dealloc];
 }

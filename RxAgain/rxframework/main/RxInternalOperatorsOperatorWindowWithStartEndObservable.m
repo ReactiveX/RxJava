@@ -313,7 +313,6 @@ J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxInternalOperatorsOperatorWindowWithStartEndOb
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOperatorWindowWithStartEndObservable_SourceSubscriber class]);
   RELEASE_(this$0_);
   RELEASE_(child_);
   RELEASE_(composite_);
@@ -403,7 +402,6 @@ J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxInternalOperatorsOperatorWindowWithStartEndOb
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOperatorWindowWithStartEndObservable_SourceSubscriber_$1 class]);
   RELEASE_(this$0_);
   RELEASE_(val$s_);
   [super dealloc];
@@ -474,7 +472,6 @@ RxInternalOperatorsOperatorWindowWithStartEndObservable_SourceSubscriber_$1 *cre
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOperatorWindowWithStartEndObservable_$1 class]);
   RELEASE_(val$sub_);
   [super dealloc];
 }

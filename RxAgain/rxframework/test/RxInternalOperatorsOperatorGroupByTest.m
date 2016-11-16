@@ -3933,7 +3933,6 @@ RxInternalOperatorsOperatorGroupByTest_$7 *create_RxInternalOperatorsOperatorGro
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOperatorGroupByTest_$8 class]);
   RELEASE_(val$error_);
   RELEASE_(val$eventCounter_);
   [super dealloc];
@@ -4346,7 +4345,6 @@ RxInternalOperatorsOperatorGroupByTest_$12_$1 *create_RxInternalOperatorsOperato
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOperatorGroupByTest_$13 class]);
   RELEASE_(val$latch_);
   RELEASE_(val$eventCounter_);
   [super dealloc];
@@ -4549,7 +4547,6 @@ RxInternalOperatorsOperatorGroupByTest_$15_$1 *create_RxInternalOperatorsOperato
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOperatorGroupByTest_$16 class]);
   RELEASE_(val$latch_);
   RELEASE_(val$eventCounter_);
   [super dealloc];
@@ -5108,7 +5105,6 @@ RxInternalOperatorsOperatorGroupByTest_$24_$1 *create_RxInternalOperatorsOperato
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOperatorGroupByTest_$25 class]);
   RELEASE_(val$latch_);
   RELEASE_(val$eventCounter_);
   [super dealloc];
@@ -5218,7 +5214,6 @@ RxInternalOperatorsOperatorGroupByTest_$26 *create_RxInternalOperatorsOperatorGr
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOperatorGroupByTest_$27 class]);
   RELEASE_(val$latch_);
   RELEASE_(val$eventCounter_);
   [super dealloc];
@@ -8261,7 +8256,6 @@ RxInternalOperatorsOperatorGroupByTest_$68 *create_RxInternalOperatorsOperatorGr
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOperatorGroupByTest_$69 class]);
   RELEASE_(val$inner1_);
   RELEASE_(val$inner2_);
   [super dealloc];
@@ -8507,7 +8501,6 @@ RxInternalOperatorsOperatorGroupByTest_$73 *create_RxInternalOperatorsOperatorGr
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOperatorGroupByTest_$74 class]);
   RELEASE_(val$completed_);
   [super dealloc];
 }
@@ -8788,7 +8781,6 @@ RxInternalOperatorsOperatorGroupByTest_$79 *create_RxInternalOperatorsOperatorGr
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOperatorGroupByTest_$80 class]);
   RELEASE_(val$inner1_);
   RELEASE_(val$inner2_);
   [super dealloc];
@@ -8935,7 +8927,6 @@ RxInternalOperatorsOperatorGroupByTest_$82 *create_RxInternalOperatorsOperatorGr
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOperatorGroupByTest_$83 class]);
   RELEASE_(val$inners_);
   [super dealloc];
 }
@@ -9082,7 +9073,6 @@ RxInternalOperatorsOperatorGroupByTest_$85 *create_RxInternalOperatorsOperatorGr
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOperatorGroupByTest_$86 class]);
   RELEASE_(val$inner1_);
   RELEASE_(val$inner2_);
   [super dealloc];
@@ -9315,7 +9305,6 @@ RxInternalOperatorsOperatorGroupByTest_$89_$1 *create_RxInternalOperatorsOperato
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOperatorGroupByTest_$90 class]);
   RELEASE_(val$inner1_);
   [super dealloc];
 }

@@ -3491,7 +3491,6 @@ RxCompletable_$10 *create_RxCompletable_$10_initWithRxObservable_(RxObservable *
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxCompletable_$10_$1 class]);
   RELEASE_(val$cs_);
   [super dealloc];
 }

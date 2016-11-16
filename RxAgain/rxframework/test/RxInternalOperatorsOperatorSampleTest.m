@@ -1487,7 +1487,6 @@ RxInternalOperatorsOperatorSampleTest_$6_$1 *create_RxInternalOperatorsOperatorS
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOperatorSampleTest_$7 class]);
   RELEASE_(val$count_);
   [super dealloc];
 }
@@ -1646,7 +1645,6 @@ RxInternalOperatorsOperatorSampleTest_$8_$1 *create_RxInternalOperatorsOperatorS
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOperatorSampleTest_$9 class]);
   RELEASE_(val$unsubscribed_);
   [super dealloc];
 }
@@ -1799,7 +1797,6 @@ RxInternalOperatorsOperatorSampleTest_$10_$1 *create_RxInternalOperatorsOperator
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOperatorSampleTest_$11 class]);
   RELEASE_(val$unsubscribed_);
   [super dealloc];
 }

@@ -606,7 +606,6 @@ RxInternalOperatorsOperatorMergeMaxConcurrentTest_SubscriptionCheckObservable_$1
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOperatorMergeMaxConcurrentTest_$1 class]);
   RELEASE_(val$cdl_);
   [super dealloc];
 }

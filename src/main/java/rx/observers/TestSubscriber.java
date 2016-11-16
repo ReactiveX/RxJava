@@ -35,7 +35,7 @@ import rx.exceptions.CompositeException;
  */
 public class TestSubscriber<T> extends Subscriber<T> {
 
-    private Observer<T> delegate;
+    private final Observer<T> delegate;
 
     private final List<T> values;
 
@@ -207,13 +207,6 @@ public class TestSubscriber<T> extends Subscriber<T> {
         } finally {
             latch.countDown();
         }
-    }
-
-    @Override
-    public void j2objcCleanup()
-    {
-        super.j2objcCleanup();
-        delegate = null;
     }
 
     /**

@@ -28,7 +28,6 @@ import rx.Observable;
 import rx.Observable.OnSubscribe;
 import rx.Producer;
 import rx.Subscriber;
-import rx.doppl.SafeObservableUnsubscribe;
 import rx.exceptions.Exceptions;
 import rx.exceptions.MissingBackpressureException;
 import rx.functions.Func1;
@@ -49,7 +48,7 @@ import rx.plugins.RxJavaHooks;
  */
 public final class OnSubscribeFlattenIterable<T, R> implements OnSubscribe<R> {
 
-    final SafeObservableUnsubscribe source;
+    final Observable<? extends T> source;
 
     final Func1<? super T, ? extends Iterable<? extends R>> mapper;
 
@@ -58,14 +57,13 @@ public final class OnSubscribeFlattenIterable<T, R> implements OnSubscribe<R> {
     /** Protected: use createFrom to handle source-dependent optimizations. */
     protected OnSubscribeFlattenIterable(Observable<? extends T> source,
             Func1<? super T, ? extends Iterable<? extends R>> mapper, int prefetch) {
-        this.source = new SafeObservableUnsubscribe(source);
+        this.source = source;
         this.mapper = mapper;
         this.prefetch = prefetch;
     }
 
     @Override
     public void call(Subscriber<? super R> t) {
-
         final FlattenIterableSubscriber<T, R> parent = new FlattenIterableSubscriber<T, R>(t, mapper, prefetch);
 
         t.add(parent);
@@ -84,7 +82,7 @@ public final class OnSubscribeFlattenIterable<T, R> implements OnSubscribe<R> {
     }
 
     static final class FlattenIterableSubscriber<T, R> extends Subscriber<T> {
-        Subscriber<? super R> actual;
+        final Subscriber<? super R> actual;
 
         final Func1<? super T, ? extends Iterable<? extends R>> mapper;
 
@@ -150,14 +148,6 @@ public final class OnSubscribeFlattenIterable<T, R> implements OnSubscribe<R> {
         public void onCompleted() {
             done = true;
             drain();
-        }
-
-        @Override
-        public void j2objcCleanup()
-        {
-            super.j2objcCleanup();
-            actual.j2objcCleanup();
-            actual = null;
         }
 
         void requestMore(long n) {

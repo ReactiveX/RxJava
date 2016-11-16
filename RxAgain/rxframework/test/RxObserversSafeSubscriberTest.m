@@ -684,11 +684,6 @@ J2OBJC_IGNORE_DESIGNATED_BEGIN
 }
 J2OBJC_IGNORE_DESIGNATED_END
 
-- (void)dealloc {
-  JreCheckFinalize(self, [RxObserversSafeSubscriberTest_$1 class]);
-  [super dealloc];
-}
-
 + (const J2ObjcClassInfo *)__metadata {
   static J2ObjcMethodInfo methods[] = {
     { NULL, "V", 0x1, -1, -1, -1, -1, -1, -1 },
@@ -730,11 +725,6 @@ J2OBJC_IGNORE_DESIGNATED_BEGIN
   return self;
 }
 J2OBJC_IGNORE_DESIGNATED_END
-
-- (void)dealloc {
-  JreCheckFinalize(self, [RxObserversSafeSubscriberTest_$2 class]);
-  [super dealloc];
-}
 
 + (const J2ObjcClassInfo *)__metadata {
   static J2ObjcMethodInfo methods[] = {
@@ -819,11 +809,6 @@ J2OBJC_IGNORE_DESIGNATED_BEGIN
   return self;
 }
 J2OBJC_IGNORE_DESIGNATED_END
-
-- (void)dealloc {
-  JreCheckFinalize(self, [RxObserversSafeSubscriberTest_$4 class]);
-  [super dealloc];
-}
 
 + (const J2ObjcClassInfo *)__metadata {
   static J2ObjcMethodInfo methods[] = {
@@ -1003,11 +988,6 @@ J2OBJC_IGNORE_DESIGNATED_BEGIN
 }
 J2OBJC_IGNORE_DESIGNATED_END
 
-- (void)dealloc {
-  JreCheckFinalize(self, [RxObserversSafeSubscriberTest_$8 class]);
-  [super dealloc];
-}
-
 + (const J2ObjcClassInfo *)__metadata {
   static J2ObjcMethodInfo methods[] = {
     { NULL, "V", 0x1, 0, 1, -1, -1, -1, -1 },
@@ -1139,11 +1119,6 @@ J2OBJC_IGNORE_DESIGNATED_BEGIN
 }
 J2OBJC_IGNORE_DESIGNATED_END
 
-- (void)dealloc {
-  JreCheckFinalize(self, [RxObserversSafeSubscriberTest_$11 class]);
-  [super dealloc];
-}
-
 + (const J2ObjcClassInfo *)__metadata {
   static J2ObjcMethodInfo methods[] = {
     { NULL, "V", 0x1, 0, 1, -1, -1, -1, -1 },
@@ -1232,11 +1207,6 @@ J2OBJC_IGNORE_DESIGNATED_BEGIN
   return self;
 }
 J2OBJC_IGNORE_DESIGNATED_END
-
-- (void)dealloc {
-  JreCheckFinalize(self, [RxObserversSafeSubscriberTest_$13 class]);
-  [super dealloc];
-}
 
 + (const J2ObjcClassInfo *)__metadata {
   static J2ObjcMethodInfo methods[] = {
@@ -1368,11 +1338,6 @@ J2OBJC_IGNORE_DESIGNATED_BEGIN
   return self;
 }
 J2OBJC_IGNORE_DESIGNATED_END
-
-- (void)dealloc {
-  JreCheckFinalize(self, [RxObserversSafeSubscriberTest_$16 class]);
-  [super dealloc];
-}
 
 + (const J2ObjcClassInfo *)__metadata {
   static J2ObjcMethodInfo methods[] = {
@@ -1506,7 +1471,6 @@ RxObserversSafeSubscriberTest_$18 *create_RxObserversSafeSubscriberTest_$18_init
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxObserversSafeSubscriberTest_$19 class]);
   RELEASE_(val$errors_);
   [super dealloc];
 }
@@ -1658,7 +1622,6 @@ RxObserversSafeSubscriberTest_$21 *create_RxObserversSafeSubscriberTest_$21_init
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxObserversSafeSubscriberTest_$22 class]);
   RELEASE_(val$errors_);
   [super dealloc];
 }

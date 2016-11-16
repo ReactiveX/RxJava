@@ -321,7 +321,6 @@ J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxInternalOperatorsOperatorOnBackpressureBuffer
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOperatorOnBackpressureBuffer_BufferSubscriber class]);
   RELEASE_(queue_);
   RELEASE_(capacity_);
   RELEASE_(child_);

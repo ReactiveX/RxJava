@@ -646,7 +646,6 @@ RxInternalProducersProducerObserverArbiterTest_$3 *create_RxInternalProducersPro
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalProducersProducerObserverArbiterTest_$4 class]);
   RELEASE_(val$o_);
   [super dealloc];
 }
@@ -699,7 +698,6 @@ RxInternalProducersProducerObserverArbiterTest_$4 *create_RxInternalProducersPro
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalProducersProducerObserverArbiterTest_$5 class]);
   RELEASE_(val$o_);
   [super dealloc];
 }
@@ -752,7 +750,6 @@ RxInternalProducersProducerObserverArbiterTest_$5 *create_RxInternalProducersPro
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalProducersProducerObserverArbiterTest_$6 class]);
   RELEASE_(val$o_);
   [super dealloc];
 }
@@ -803,11 +800,6 @@ J2OBJC_IGNORE_DESIGNATED_BEGIN
 }
 J2OBJC_IGNORE_DESIGNATED_END
 
-- (void)dealloc {
-  JreCheckFinalize(self, [RxInternalProducersProducerObserverArbiterTest_$7 class]);
-  [super dealloc];
-}
-
 + (const J2ObjcClassInfo *)__metadata {
   static J2ObjcMethodInfo methods[] = {
     { NULL, "V", 0x1, 0, 1, -1, 2, -1, -1 },
@@ -849,7 +841,6 @@ RxInternalProducersProducerObserverArbiterTest_$7 *create_RxInternalProducersPro
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalProducersProducerObserverArbiterTest_$8 class]);
   RELEASE_(val$o_);
   [super dealloc];
 }
@@ -899,7 +890,6 @@ RxInternalProducersProducerObserverArbiterTest_$8 *create_RxInternalProducersPro
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalProducersProducerObserverArbiterTest_$9 class]);
   RELEASE_(val$o_);
   [super dealloc];
 }
@@ -949,7 +939,6 @@ RxInternalProducersProducerObserverArbiterTest_$9 *create_RxInternalProducersPro
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalProducersProducerObserverArbiterTest_$10 class]);
   RELEASE_(val$o_);
   [super dealloc];
 }

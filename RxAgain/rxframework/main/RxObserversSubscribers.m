@@ -307,7 +307,6 @@ J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxObserversSubscribers)
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxObserversSubscribers_$1 class]);
   RELEASE_(val$o_);
   [super dealloc];
 }
@@ -368,7 +367,6 @@ RxObserversSubscribers_$1 *create_RxObserversSubscribers_$1_initWithRxObserver_(
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxObserversSubscribers_$2 class]);
   RELEASE_(val$onNext_);
   [super dealloc];
 }
@@ -430,7 +428,6 @@ RxObserversSubscribers_$2 *create_RxObserversSubscribers_$2_initWithRxFunctionsA
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxObserversSubscribers_$3 class]);
   RELEASE_(val$onError_);
   RELEASE_(val$onNext_);
   [super dealloc];
@@ -497,7 +494,6 @@ RxObserversSubscribers_$3 *create_RxObserversSubscribers_$3_initWithRxFunctionsA
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxObserversSubscribers_$4 class]);
   RELEASE_(val$onComplete_);
   RELEASE_(val$onError_);
   RELEASE_(val$onNext_);
@@ -566,7 +562,6 @@ RxObserversSubscribers_$4 *create_RxObserversSubscribers_$4_initWithRxFunctionsA
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxObserversSubscribers_$5 class]);
   RELEASE_(val$subscriber_);
   [super dealloc];
 }

@@ -546,7 +546,6 @@ RxInternalOperatorsOperatorScan_$1 *create_RxInternalOperatorsOperatorScan_$1_in
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOperatorScan_$2 class]);
   RELEASE_(this$0_);
   RELEASE_(value_);
   RELEASE_(val$child_);
@@ -629,7 +628,6 @@ RxInternalOperatorsOperatorScan_$2 *create_RxInternalOperatorsOperatorScan_$2_in
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOperatorScan_$3 class]);
   RELEASE_(this$0_);
   RELEASE_(value_);
   RELEASE_(val$ip_);

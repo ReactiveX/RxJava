@@ -157,7 +157,6 @@ J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxInternalOperatorsOperatorUnsubscribeOn)
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOperatorUnsubscribeOn_$1 class]);
   RELEASE_(val$subscriber_);
   [super dealloc];
 }

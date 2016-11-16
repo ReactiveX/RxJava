@@ -635,7 +635,6 @@ J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxObservablesBlockingObservable)
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxObservablesBlockingObservable_$1 class]);
   RELEASE_(val$latch_);
   RELEASE_(val$exceptionFromOnError_);
   RELEASE_(val$onNext_);
@@ -767,7 +766,6 @@ RxObservablesBlockingObservable_$2 *create_RxObservablesBlockingObservable_$2_in
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxObservablesBlockingObservable_$3 class]);
   RELEASE_(val$latch_);
   RELEASE_(val$returnException_);
   RELEASE_(val$returnItem_);
@@ -836,7 +834,6 @@ RxObservablesBlockingObservable_$3 *create_RxObservablesBlockingObservable_$3_in
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxObservablesBlockingObservable_$4 class]);
   RELEASE_(val$error_);
   RELEASE_(val$cdl_);
   [super dealloc];
@@ -901,7 +898,6 @@ RxObservablesBlockingObservable_$4 *create_RxObservablesBlockingObservable_$4_in
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxObservablesBlockingObservable_$5 class]);
   RELEASE_(val$queue_);
   [super dealloc];
 }
@@ -973,7 +969,6 @@ RxObservablesBlockingObservable_$5 *create_RxObservablesBlockingObservable_$5_in
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxObservablesBlockingObservable_$6 class]);
   RELEASE_(val$queue_);
   RELEASE_(val$theProducer_);
   [super dealloc];

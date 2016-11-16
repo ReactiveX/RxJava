@@ -196,7 +196,6 @@ J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxInternalOperatorsOperatorDefaultIfEmptyTest)
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOperatorDefaultIfEmptyTest_$1 class]);
   RELEASE_(val$o_);
   [super dealloc];
 }

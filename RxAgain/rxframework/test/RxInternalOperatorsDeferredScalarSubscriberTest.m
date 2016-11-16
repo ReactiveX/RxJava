@@ -559,11 +559,6 @@ J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxInternalOperatorsDeferredScalarSubscriberTest
   hasValue_ = true;
 }
 
-- (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsDeferredScalarSubscriberTest_TestingDeferredScalarSubscriber class]);
-  [super dealloc];
-}
-
 + (const J2ObjcClassInfo *)__metadata {
   static J2ObjcMethodInfo methods[] = {
     { NULL, NULL, 0x1, -1, 0, -1, 1, -1, -1 },
@@ -609,11 +604,6 @@ J2OBJC_IGNORE_DESIGNATED_BEGIN
 }
 J2OBJC_IGNORE_DESIGNATED_END
 
-- (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsDeferredScalarSubscriberTest_$1 class]);
-  [super dealloc];
-}
-
 + (const J2ObjcClassInfo *)__metadata {
   static J2ObjcMethodInfo methods[] = {
     { NULL, "V", 0x1, 0, 1, -1, 2, -1, -1 },
@@ -653,11 +643,6 @@ RxInternalOperatorsDeferredScalarSubscriberTest_$1 *create_RxInternalOperatorsDe
 - (instancetype)initWithLong:(jlong)arg$0 {
   RxInternalOperatorsDeferredScalarSubscriberTest_$2_initWithLong_(self, arg$0);
   return self;
-}
-
-- (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsDeferredScalarSubscriberTest_$2 class]);
-  [super dealloc];
 }
 
 + (const J2ObjcClassInfo *)__metadata {

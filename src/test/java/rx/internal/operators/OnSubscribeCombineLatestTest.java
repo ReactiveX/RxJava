@@ -460,7 +460,7 @@ public class OnSubscribeCombineLatestTest {
                 return Arrays.asList(args);
             }
         };
-        for (int i = 1; i <= n; i++) {
+        for (@AutoreleasePool int i = 1; i <= n; i++) {
             System.out.println("test1ToNSources: " + i + " sources");
             List<Observable<Integer>> sources = new ArrayList<Observable<Integer>>();
             List<Object> values = new ArrayList<Object>();
@@ -492,7 +492,7 @@ public class OnSubscribeCombineLatestTest {
                 return Arrays.asList(args);
             }
         };
-        for (int i = 1; i <= n; i++) {
+        for (@AutoreleasePool int i = 1; i <= n; i++) {
             System.out.println("test1ToNSourcesScheduled: " + i + " sources");
             List<Observable<Integer>> sources = new ArrayList<Observable<Integer>>();
             List<Object> values = new ArrayList<Object>();
@@ -773,14 +773,12 @@ public class OnSubscribeCombineLatestTest {
 
     @Test
     public void testBackpressureLoop() {
-        for (int i = 0; i < 5000; i++) {
+        for (@AutoreleasePool int i = 0; i < 5000; i++) {
             testBackpressure();
         }
     }
 
     @Test
-    @AutoreleasePool
-    @DoppelHacks//Added unsubscribe
     public void testBackpressure() {
         Func2<String, Integer, String> combineLatestFunction = getConcatStringIntegerCombineLatestFunction();
 
@@ -792,7 +790,6 @@ public class OnSubscribeCombineLatestTest {
 
         ts.awaitTerminalEvent();
         ts.assertNoErrors();
-        ts.unsubscribe();
         List<String> events = ts.getOnNextEvents();
         assertEquals("two2", events.get(0));
         assertEquals("two3", events.get(1));

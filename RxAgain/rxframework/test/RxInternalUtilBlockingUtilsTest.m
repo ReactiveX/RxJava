@@ -298,7 +298,6 @@ RxInternalUtilBlockingUtilsTest_$1 *create_RxInternalUtilBlockingUtilsTest_$1_in
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalUtilBlockingUtilsTest_$2 class]);
   RELEASE_(val$latch_);
   [super dealloc];
 }

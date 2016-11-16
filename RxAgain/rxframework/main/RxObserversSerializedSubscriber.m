@@ -44,7 +44,6 @@ J2OBJC_FIELD_SETTER(RxObserversSerializedSubscriber, s_, id<RxObserver>)
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxObserversSerializedSubscriber class]);
   RELEASE_(s_);
   [super dealloc];
 }

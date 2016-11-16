@@ -175,7 +175,6 @@ J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxInternalOperatorsOperatorSampleWithObservable
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOperatorSampleWithObservable_$1 class]);
   RELEASE_(val$value_);
   RELEASE_(val$s_);
   RELEASE_(val$main_);
@@ -248,7 +247,6 @@ RxInternalOperatorsOperatorSampleWithObservable_$1 *create_RxInternalOperatorsOp
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOperatorSampleWithObservable_$2 class]);
   RELEASE_(val$value_);
   RELEASE_(val$s_);
   RELEASE_(val$samplerSub_);

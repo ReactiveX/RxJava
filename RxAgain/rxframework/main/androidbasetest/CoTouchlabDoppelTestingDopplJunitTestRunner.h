@@ -21,7 +21,10 @@
 @class IOSClass;
 @class IOSObjectArray;
 @class JavaIoPrintStream;
+@class OrgJunitRunnerJUnitCore;
 @class OrgJunitRunnerNotificationRunListener;
+@class OrgJunitRunnerResult;
+@protocol CoTouchlabDoppelTestingDopplJunitTestRunner_DopplJunitListener;
 
 @interface CoTouchlabDoppelTestingDopplJunitTestRunner : NSObject
 
@@ -38,10 +41,15 @@
 - (jint)run;
 
 + (jint)runWithIOSClassArray:(IOSObjectArray *)classes
-withOrgJunitRunnerNotificationRunListener:(OrgJunitRunnerNotificationRunListener *)listener;
+withOrgJunitRunnerNotificationRunListener:(OrgJunitRunnerNotificationRunListener *)listener
+withCoTouchlabDoppelTestingDopplJunitTestRunner_DopplJunitListener:(id<CoTouchlabDoppelTestingDopplJunitTestRunner_DopplJunitListener>)dopplJunitListener;
 
 + (jint)runWithNSStringArray:(IOSObjectArray *)classes
-withOrgJunitRunnerNotificationRunListener:(OrgJunitRunnerNotificationRunListener *)listener;
+withOrgJunitRunnerNotificationRunListener:(OrgJunitRunnerNotificationRunListener *)listener
+withCoTouchlabDoppelTestingDopplJunitTestRunner_DopplJunitListener:(id<CoTouchlabDoppelTestingDopplJunitTestRunner_DopplJunitListener>)dopplListener;
+
++ (OrgJunitRunnerResult *)runSpecificTestWithOrgJunitRunnerJUnitCore:(OrgJunitRunnerJUnitCore *)junitCore
+                                                        withNSString:(NSString *)c;
 
 - (void)sortClassesWithIOSClassArray:(IOSObjectArray *)classes
 withCoTouchlabDoppelTestingDopplJunitTestRunner_SortOrder:(CoTouchlabDoppelTestingDopplJunitTestRunner_SortOrder *)sortOrder;
@@ -74,9 +82,11 @@ FOUNDATION_EXPORT CoTouchlabDoppelTestingDopplJunitTestRunner *create_CoTouchlab
 
 FOUNDATION_EXPORT jint CoTouchlabDoppelTestingDopplJunitTestRunner_mainWithNSStringArray_(IOSObjectArray *args);
 
-FOUNDATION_EXPORT jint CoTouchlabDoppelTestingDopplJunitTestRunner_runWithNSStringArray_withOrgJunitRunnerNotificationRunListener_(IOSObjectArray *classes, OrgJunitRunnerNotificationRunListener *listener);
+FOUNDATION_EXPORT jint CoTouchlabDoppelTestingDopplJunitTestRunner_runWithNSStringArray_withOrgJunitRunnerNotificationRunListener_withCoTouchlabDoppelTestingDopplJunitTestRunner_DopplJunitListener_(IOSObjectArray *classes, OrgJunitRunnerNotificationRunListener *listener, id<CoTouchlabDoppelTestingDopplJunitTestRunner_DopplJunitListener> dopplListener);
 
-FOUNDATION_EXPORT jint CoTouchlabDoppelTestingDopplJunitTestRunner_runWithIOSClassArray_withOrgJunitRunnerNotificationRunListener_(IOSObjectArray *classes, OrgJunitRunnerNotificationRunListener *listener);
+FOUNDATION_EXPORT OrgJunitRunnerResult *CoTouchlabDoppelTestingDopplJunitTestRunner_runSpecificTestWithOrgJunitRunnerJUnitCore_withNSString_(OrgJunitRunnerJUnitCore *junitCore, NSString *c);
+
+FOUNDATION_EXPORT jint CoTouchlabDoppelTestingDopplJunitTestRunner_runWithIOSClassArray_withOrgJunitRunnerNotificationRunListener_withCoTouchlabDoppelTestingDopplJunitTestRunner_DopplJunitListener_(IOSObjectArray *classes, OrgJunitRunnerNotificationRunListener *listener, id<CoTouchlabDoppelTestingDopplJunitTestRunner_DopplJunitListener> dopplJunitListener);
 
 J2OBJC_TYPE_LITERAL_HEADER(CoTouchlabDoppelTestingDopplJunitTestRunner)
 
@@ -226,6 +236,23 @@ FOUNDATION_EXPORT CoTouchlabDoppelTestingDopplJunitTestRunner_TestInclusion *CoT
 FOUNDATION_EXPORT CoTouchlabDoppelTestingDopplJunitTestRunner_TestInclusion *CoTouchlabDoppelTestingDopplJunitTestRunner_TestInclusion_fromOrdinal(NSUInteger ordinal);
 
 J2OBJC_TYPE_LITERAL_HEADER(CoTouchlabDoppelTestingDopplJunitTestRunner_TestInclusion)
+
+#endif
+
+#if !defined (CoTouchlabDoppelTestingDopplJunitTestRunner_DopplJunitListener_) && (INCLUDE_ALL_CoTouchlabDoppelTestingDopplJunitTestRunner || defined(INCLUDE_CoTouchlabDoppelTestingDopplJunitTestRunner_DopplJunitListener))
+#define CoTouchlabDoppelTestingDopplJunitTestRunner_DopplJunitListener_
+
+@protocol CoTouchlabDoppelTestingDopplJunitTestRunner_DopplJunitListener < JavaObject >
+
+- (void)startRunWithNSString:(NSString *)run;
+
+- (void)endRunWithNSString:(NSString *)run;
+
+@end
+
+J2OBJC_EMPTY_STATIC_INIT(CoTouchlabDoppelTestingDopplJunitTestRunner_DopplJunitListener)
+
+J2OBJC_TYPE_LITERAL_HEADER(CoTouchlabDoppelTestingDopplJunitTestRunner_DopplJunitListener)
 
 #endif
 

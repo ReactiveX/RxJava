@@ -142,7 +142,6 @@ J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxInternalOperatorsOperatorTakeUntilPredicate)
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOperatorTakeUntilPredicate_ParentSubscriber class]);
   RELEASE_(this$0_);
   RELEASE_(child_);
   [super dealloc];

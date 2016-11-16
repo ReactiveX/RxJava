@@ -34,8 +34,6 @@
 
 - (jboolean)isUnsubscribed;
 
-- (void)j2objcCleanup;
-
 - (void)onStart;
 
 - (void)setProducerWithRxProducer:(id<RxProducer>)p;
@@ -50,8 +48,6 @@
 
 - (instancetype)initWithRxSubscriber:(RxSubscriber *)subscriber
                          withBoolean:(jboolean)shareSubscriptions;
-
-- (void)javaFinalize;
 
 - (void)requestWithLong:(jlong)n;
 

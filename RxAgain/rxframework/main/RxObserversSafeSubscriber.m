@@ -59,11 +59,6 @@ J2OBJC_FIELD_SETTER(RxObserversSafeSubscriber, actual_, RxSubscriber *)
   }
 }
 
-- (void)j2objcCleanup {
-  JreStrongAssign(&actual_, nil);
-  [super j2objcCleanup];
-}
-
 - (void)onErrorWithNSException:(NSException *)e {
   RxExceptionsExceptions_throwIfFatalWithNSException_(e);
   if (!done_) {
@@ -123,7 +118,6 @@ J2OBJC_FIELD_SETTER(RxObserversSafeSubscriber, actual_, RxSubscriber *)
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxObserversSafeSubscriber class]);
   RELEASE_(actual_);
   [super dealloc];
 }
@@ -131,7 +125,6 @@ J2OBJC_FIELD_SETTER(RxObserversSafeSubscriber, actual_, RxSubscriber *)
 + (const J2ObjcClassInfo *)__metadata {
   static J2ObjcMethodInfo methods[] = {
     { NULL, NULL, 0x1, -1, 0, -1, 1, -1, -1 },
-    { NULL, "V", 0x1, -1, -1, -1, -1, -1, -1 },
     { NULL, "V", 0x1, -1, -1, -1, -1, -1, -1 },
     { NULL, "V", 0x1, 2, 3, -1, -1, -1, -1 },
     { NULL, "V", 0x1, 4, 5, -1, 6, -1, -1 },
@@ -142,18 +135,17 @@ J2OBJC_FIELD_SETTER(RxObserversSafeSubscriber, actual_, RxSubscriber *)
   #pragma clang diagnostic ignored "-Wobjc-multiple-method-names"
   methods[0].selector = @selector(initWithRxSubscriber:);
   methods[1].selector = @selector(onCompleted);
-  methods[2].selector = @selector(j2objcCleanup);
-  methods[3].selector = @selector(onErrorWithNSException:);
-  methods[4].selector = @selector(onNextWithId:);
-  methods[5].selector = @selector(_onErrorWithNSException:);
-  methods[6].selector = @selector(getActual);
+  methods[2].selector = @selector(onErrorWithNSException:);
+  methods[3].selector = @selector(onNextWithId:);
+  methods[4].selector = @selector(_onErrorWithNSException:);
+  methods[5].selector = @selector(getActual);
   #pragma clang diagnostic pop
   static const J2ObjcFieldInfo fields[] = {
-    { "actual_", "LRxSubscriber;", .constantValue.asLong = 0, 0x2, -1, -1, 9, -1 },
+    { "actual_", "LRxSubscriber;", .constantValue.asLong = 0, 0x12, -1, -1, 9, -1 },
     { "done_", "Z", .constantValue.asLong = 0, 0x0, -1, -1, -1, -1 },
   };
   static const void *ptrTable[] = { "LRxSubscriber;", "(Lrx/Subscriber<-TT;>;)V", "onError", "LNSException;", "onNext", "LNSObject;", "(TT;)V", "_onError", "()Lrx/Subscriber<-TT;>;", "Lrx/Subscriber<-TT;>;", "<T:Ljava/lang/Object;>Lrx/Subscriber<TT;>;" };
-  static const J2ObjcClassInfo _RxObserversSafeSubscriber = { "SafeSubscriber", "rx.observers", ptrTable, methods, fields, 7, 0x1, 7, 2, -1, -1, -1, 10, -1 };
+  static const J2ObjcClassInfo _RxObserversSafeSubscriber = { "SafeSubscriber", "rx.observers", ptrTable, methods, fields, 7, 0x1, 6, 2, -1, -1, -1, 10, -1 };
   return &_RxObserversSafeSubscriber;
 }
 

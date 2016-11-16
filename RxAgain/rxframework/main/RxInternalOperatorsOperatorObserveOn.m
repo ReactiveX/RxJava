@@ -35,7 +35,7 @@
 
 J2OBJC_FIELD_SETTER(RxInternalOperatorsOperatorObserveOn, scheduler_, RxScheduler *)
 
-@interface RxInternalOperatorsOperatorObserveOn_ObserveOnSubscriber_ObserveOnProducer : NSObject < RxProducer > {
+@interface RxInternalOperatorsOperatorObserveOn_ObserveOnSubscriber_$1 : NSObject < RxProducer > {
  @public
   RxInternalOperatorsOperatorObserveOn_ObserveOnSubscriber *this$0_;
 }
@@ -46,17 +46,15 @@ J2OBJC_FIELD_SETTER(RxInternalOperatorsOperatorObserveOn, scheduler_, RxSchedule
 
 @end
 
-J2OBJC_EMPTY_STATIC_INIT(RxInternalOperatorsOperatorObserveOn_ObserveOnSubscriber_ObserveOnProducer)
+J2OBJC_EMPTY_STATIC_INIT(RxInternalOperatorsOperatorObserveOn_ObserveOnSubscriber_$1)
 
-J2OBJC_FIELD_SETTER(RxInternalOperatorsOperatorObserveOn_ObserveOnSubscriber_ObserveOnProducer, this$0_, RxInternalOperatorsOperatorObserveOn_ObserveOnSubscriber *)
+J2OBJC_FIELD_SETTER(RxInternalOperatorsOperatorObserveOn_ObserveOnSubscriber_$1, this$0_, RxInternalOperatorsOperatorObserveOn_ObserveOnSubscriber *)
 
-__attribute__((unused)) static void RxInternalOperatorsOperatorObserveOn_ObserveOnSubscriber_ObserveOnProducer_initWithRxInternalOperatorsOperatorObserveOn_ObserveOnSubscriber_(RxInternalOperatorsOperatorObserveOn_ObserveOnSubscriber_ObserveOnProducer *self, RxInternalOperatorsOperatorObserveOn_ObserveOnSubscriber *outer$);
+__attribute__((unused)) static void RxInternalOperatorsOperatorObserveOn_ObserveOnSubscriber_$1_initWithRxInternalOperatorsOperatorObserveOn_ObserveOnSubscriber_(RxInternalOperatorsOperatorObserveOn_ObserveOnSubscriber_$1 *self, RxInternalOperatorsOperatorObserveOn_ObserveOnSubscriber *outer$);
 
-__attribute__((unused)) static RxInternalOperatorsOperatorObserveOn_ObserveOnSubscriber_ObserveOnProducer *new_RxInternalOperatorsOperatorObserveOn_ObserveOnSubscriber_ObserveOnProducer_initWithRxInternalOperatorsOperatorObserveOn_ObserveOnSubscriber_(RxInternalOperatorsOperatorObserveOn_ObserveOnSubscriber *outer$) NS_RETURNS_RETAINED;
+__attribute__((unused)) static RxInternalOperatorsOperatorObserveOn_ObserveOnSubscriber_$1 *new_RxInternalOperatorsOperatorObserveOn_ObserveOnSubscriber_$1_initWithRxInternalOperatorsOperatorObserveOn_ObserveOnSubscriber_(RxInternalOperatorsOperatorObserveOn_ObserveOnSubscriber *outer$) NS_RETURNS_RETAINED;
 
-__attribute__((unused)) static RxInternalOperatorsOperatorObserveOn_ObserveOnSubscriber_ObserveOnProducer *create_RxInternalOperatorsOperatorObserveOn_ObserveOnSubscriber_ObserveOnProducer_initWithRxInternalOperatorsOperatorObserveOn_ObserveOnSubscriber_(RxInternalOperatorsOperatorObserveOn_ObserveOnSubscriber *outer$);
-
-J2OBJC_TYPE_LITERAL_HEADER(RxInternalOperatorsOperatorObserveOn_ObserveOnSubscriber_ObserveOnProducer)
+__attribute__((unused)) static RxInternalOperatorsOperatorObserveOn_ObserveOnSubscriber_$1 *create_RxInternalOperatorsOperatorObserveOn_ObserveOnSubscriber_$1_initWithRxInternalOperatorsOperatorObserveOn_ObserveOnSubscriber_(RxInternalOperatorsOperatorObserveOn_ObserveOnSubscriber *outer$);
 
 @interface RxInternalOperatorsOperatorObserveOn_$1 : NSObject < RxObservable_Operator > {
  @public
@@ -187,7 +185,7 @@ J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxInternalOperatorsOperatorObserveOn)
 
 - (void)init__ {
   RxSubscriber *localChild = child_;
-  [((RxSubscriber *) nil_chk(localChild)) setProducerWithRxProducer:create_RxInternalOperatorsOperatorObserveOn_ObserveOnSubscriber_ObserveOnProducer_initWithRxInternalOperatorsOperatorObserveOn_ObserveOnSubscriber_(self)];
+  [((RxSubscriber *) nil_chk(localChild)) setProducerWithRxProducer:create_RxInternalOperatorsOperatorObserveOn_ObserveOnSubscriber_$1_initWithRxInternalOperatorsOperatorObserveOn_ObserveOnSubscriber_(self)];
   [localChild addWithRxSubscription:recursiveScheduler_];
   [localChild addWithRxSubscription:self];
 }
@@ -317,7 +315,6 @@ J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxInternalOperatorsOperatorObserveOn)
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOperatorObserveOn_ObserveOnSubscriber class]);
   RELEASE_(child_);
   RELEASE_(recursiveScheduler_);
   RELEASE_(queue_);
@@ -361,8 +358,8 @@ J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxInternalOperatorsOperatorObserveOn)
     { "error_", "LNSException;", .constantValue.asLong = 0, 0x0, -1, -1, -1, -1 },
     { "emitted_", "J", .constantValue.asLong = 0, 0x0, -1, -1, -1, -1 },
   };
-  static const void *ptrTable[] = { "LRxScheduler;LRxSubscriber;ZI", "(Lrx/Scheduler;Lrx/Subscriber<-TT;>;ZI)V", "init", "onNext", "LNSObject;", "(TT;)V", "onError", "LNSException;", "checkTerminated", "ZZLRxSubscriber;LJavaUtilQueue;", "(ZZLrx/Subscriber<-TT;>;Ljava/util/Queue<Ljava/lang/Object;>;)Z", "Lrx/Subscriber<-TT;>;", "Ljava/util/Queue<Ljava/lang/Object;>;", "requested", "LRxInternalOperatorsOperatorObserveOn;", "LRxInternalOperatorsOperatorObserveOn_ObserveOnSubscriber_ObserveOnProducer;", "<T:Ljava/lang/Object;>Lrx/Subscriber<TT;>;Lrx/functions/Action0;" };
-  static const J2ObjcClassInfo _RxInternalOperatorsOperatorObserveOn_ObserveOnSubscriber = { "ObserveOnSubscriber", "rx.internal.operators", ptrTable, methods, fields, 7, 0x18, 8, 10, 14, 15, -1, 16, -1 };
+  static const void *ptrTable[] = { "LRxScheduler;LRxSubscriber;ZI", "(Lrx/Scheduler;Lrx/Subscriber<-TT;>;ZI)V", "init", "onNext", "LNSObject;", "(TT;)V", "onError", "LNSException;", "checkTerminated", "ZZLRxSubscriber;LJavaUtilQueue;", "(ZZLrx/Subscriber<-TT;>;Ljava/util/Queue<Ljava/lang/Object;>;)Z", "Lrx/Subscriber<-TT;>;", "Ljava/util/Queue<Ljava/lang/Object;>;", "requested", "LRxInternalOperatorsOperatorObserveOn;", "<T:Ljava/lang/Object;>Lrx/Subscriber<TT;>;Lrx/functions/Action0;" };
+  static const J2ObjcClassInfo _RxInternalOperatorsOperatorObserveOn_ObserveOnSubscriber = { "ObserveOnSubscriber", "rx.internal.operators", ptrTable, methods, fields, 7, 0x18, 8, 10, 14, -1, -1, 15, -1 };
   return &_RxInternalOperatorsOperatorObserveOn_ObserveOnSubscriber;
 }
 
@@ -396,7 +393,7 @@ RxInternalOperatorsOperatorObserveOn_ObserveOnSubscriber *create_RxInternalOpera
 
 J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxInternalOperatorsOperatorObserveOn_ObserveOnSubscriber)
 
-@implementation RxInternalOperatorsOperatorObserveOn_ObserveOnSubscriber_ObserveOnProducer
+@implementation RxInternalOperatorsOperatorObserveOn_ObserveOnSubscriber_$1
 
 - (void)requestWithLong:(jlong)n {
   if (n > 0LL) {
@@ -406,7 +403,7 @@ J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxInternalOperatorsOperatorObserveOn_ObserveOnS
 }
 
 - (instancetype)initWithRxInternalOperatorsOperatorObserveOn_ObserveOnSubscriber:(RxInternalOperatorsOperatorObserveOn_ObserveOnSubscriber *)outer$ {
-  RxInternalOperatorsOperatorObserveOn_ObserveOnSubscriber_ObserveOnProducer_initWithRxInternalOperatorsOperatorObserveOn_ObserveOnSubscriber_(self, outer$);
+  RxInternalOperatorsOperatorObserveOn_ObserveOnSubscriber_$1_initWithRxInternalOperatorsOperatorObserveOn_ObserveOnSubscriber_(self, outer$);
   return self;
 }
 
@@ -418,7 +415,7 @@ J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxInternalOperatorsOperatorObserveOn_ObserveOnS
 + (const J2ObjcClassInfo *)__metadata {
   static J2ObjcMethodInfo methods[] = {
     { NULL, "V", 0x1, 0, 1, -1, -1, -1, -1 },
-    { NULL, NULL, 0x2, -1, 2, -1, -1, -1, -1 },
+    { NULL, NULL, 0x0, -1, 2, -1, -1, -1, -1 },
   };
   #pragma clang diagnostic push
   #pragma clang diagnostic ignored "-Wobjc-multiple-method-names"
@@ -428,27 +425,25 @@ J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxInternalOperatorsOperatorObserveOn_ObserveOnS
   static const J2ObjcFieldInfo fields[] = {
     { "this$0_", "LRxInternalOperatorsOperatorObserveOn_ObserveOnSubscriber;", .constantValue.asLong = 0, 0x1012, -1, -1, -1, -1 },
   };
-  static const void *ptrTable[] = { "request", "J", "LRxInternalOperatorsOperatorObserveOn_ObserveOnSubscriber;" };
-  static const J2ObjcClassInfo _RxInternalOperatorsOperatorObserveOn_ObserveOnSubscriber_ObserveOnProducer = { "ObserveOnProducer", "rx.internal.operators", ptrTable, methods, fields, 7, 0x2, 2, 1, 2, -1, -1, -1, -1 };
-  return &_RxInternalOperatorsOperatorObserveOn_ObserveOnSubscriber_ObserveOnProducer;
+  static const void *ptrTable[] = { "request", "J", "LRxInternalOperatorsOperatorObserveOn_ObserveOnSubscriber;", "init__" };
+  static const J2ObjcClassInfo _RxInternalOperatorsOperatorObserveOn_ObserveOnSubscriber_$1 = { "", "rx.internal.operators", ptrTable, methods, fields, 7, 0x8008, 2, 1, 2, -1, 3, -1, -1 };
+  return &_RxInternalOperatorsOperatorObserveOn_ObserveOnSubscriber_$1;
 }
 
 @end
 
-void RxInternalOperatorsOperatorObserveOn_ObserveOnSubscriber_ObserveOnProducer_initWithRxInternalOperatorsOperatorObserveOn_ObserveOnSubscriber_(RxInternalOperatorsOperatorObserveOn_ObserveOnSubscriber_ObserveOnProducer *self, RxInternalOperatorsOperatorObserveOn_ObserveOnSubscriber *outer$) {
+void RxInternalOperatorsOperatorObserveOn_ObserveOnSubscriber_$1_initWithRxInternalOperatorsOperatorObserveOn_ObserveOnSubscriber_(RxInternalOperatorsOperatorObserveOn_ObserveOnSubscriber_$1 *self, RxInternalOperatorsOperatorObserveOn_ObserveOnSubscriber *outer$) {
   JreStrongAssign(&self->this$0_, outer$);
   NSObject_init(self);
 }
 
-RxInternalOperatorsOperatorObserveOn_ObserveOnSubscriber_ObserveOnProducer *new_RxInternalOperatorsOperatorObserveOn_ObserveOnSubscriber_ObserveOnProducer_initWithRxInternalOperatorsOperatorObserveOn_ObserveOnSubscriber_(RxInternalOperatorsOperatorObserveOn_ObserveOnSubscriber *outer$) {
-  J2OBJC_NEW_IMPL(RxInternalOperatorsOperatorObserveOn_ObserveOnSubscriber_ObserveOnProducer, initWithRxInternalOperatorsOperatorObserveOn_ObserveOnSubscriber_, outer$)
+RxInternalOperatorsOperatorObserveOn_ObserveOnSubscriber_$1 *new_RxInternalOperatorsOperatorObserveOn_ObserveOnSubscriber_$1_initWithRxInternalOperatorsOperatorObserveOn_ObserveOnSubscriber_(RxInternalOperatorsOperatorObserveOn_ObserveOnSubscriber *outer$) {
+  J2OBJC_NEW_IMPL(RxInternalOperatorsOperatorObserveOn_ObserveOnSubscriber_$1, initWithRxInternalOperatorsOperatorObserveOn_ObserveOnSubscriber_, outer$)
 }
 
-RxInternalOperatorsOperatorObserveOn_ObserveOnSubscriber_ObserveOnProducer *create_RxInternalOperatorsOperatorObserveOn_ObserveOnSubscriber_ObserveOnProducer_initWithRxInternalOperatorsOperatorObserveOn_ObserveOnSubscriber_(RxInternalOperatorsOperatorObserveOn_ObserveOnSubscriber *outer$) {
-  J2OBJC_CREATE_IMPL(RxInternalOperatorsOperatorObserveOn_ObserveOnSubscriber_ObserveOnProducer, initWithRxInternalOperatorsOperatorObserveOn_ObserveOnSubscriber_, outer$)
+RxInternalOperatorsOperatorObserveOn_ObserveOnSubscriber_$1 *create_RxInternalOperatorsOperatorObserveOn_ObserveOnSubscriber_$1_initWithRxInternalOperatorsOperatorObserveOn_ObserveOnSubscriber_(RxInternalOperatorsOperatorObserveOn_ObserveOnSubscriber *outer$) {
+  J2OBJC_CREATE_IMPL(RxInternalOperatorsOperatorObserveOn_ObserveOnSubscriber_$1, initWithRxInternalOperatorsOperatorObserveOn_ObserveOnSubscriber_, outer$)
 }
-
-J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxInternalOperatorsOperatorObserveOn_ObserveOnSubscriber_ObserveOnProducer)
 
 @implementation RxInternalOperatorsOperatorObserveOn_$1
 

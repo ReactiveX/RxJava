@@ -85,11 +85,6 @@ id RxInternalOperatorsOnSubscribeTakeLastOne_TakeLastOneSubscriber_EMPTY;
   }
 }
 
-- (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOnSubscribeTakeLastOne_TakeLastOneSubscriber class]);
-  [super dealloc];
-}
-
 + (const J2ObjcClassInfo *)__metadata {
   static J2ObjcMethodInfo methods[] = {
     { NULL, NULL, 0x1, -1, 0, -1, 1, -1, -1 },

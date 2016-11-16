@@ -22,7 +22,6 @@ import rx.Producer;
 import rx.Scheduler;
 import rx.Subscriber;
 import rx.Subscription;
-import rx.doppl.J2objcWeakReference;
 import rx.exceptions.Exceptions;
 import rx.functions.Action0;
 import rx.functions.Func1;
@@ -175,9 +174,7 @@ public final class ScalarSynchronousObservable<T> extends Observable<T> {
     static final class ScalarAsyncProducer<T> extends AtomicBoolean implements Producer, Action0 {
         /** */
         private static final long serialVersionUID = -2466317989629281651L;
-
-        //Reference to Subscriber may have been cleared before getting to 'call'
-        Subscriber<? super T> actual;
+        final Subscriber<? super T> actual;
         final T value;
         final Func1<Action0, Subscription> onSchedule;
 
@@ -200,8 +197,7 @@ public final class ScalarSynchronousObservable<T> extends Observable<T> {
         @Override
         public void call() {
             Subscriber<? super T> a = actual;
-            if (a == null || a.isUnsubscribed()) {
-                actual = null;
+            if (a.isUnsubscribed()) {
                 return;
             }
             T v = value;
@@ -212,14 +208,9 @@ public final class ScalarSynchronousObservable<T> extends Observable<T> {
                 return;
             }
             if (a.isUnsubscribed()) {
-                actual = null;
                 return;
             }
             a.onCompleted();
-            if(a.isUnsubscribed())
-            {
-                actual = null;
-            }
         }
 
         @Override
@@ -260,13 +251,12 @@ public final class ScalarSynchronousObservable<T> extends Observable<T> {
      * @param <T> the value type
      */
     static final class WeakSingleProducer<T> implements Producer {
-
-        final J2objcWeakReference<Subscriber<? super T>> actual;
+        final Subscriber<? super T> actual;
         final T value;
         boolean once;
 
         public WeakSingleProducer(Subscriber<? super T> actual, T value) {
-            this.actual = new J2objcWeakReference<Subscriber<? super T>>(actual);
+            this.actual = actual;
             this.value = value;
         }
 
@@ -282,8 +272,8 @@ public final class ScalarSynchronousObservable<T> extends Observable<T> {
                 return;
             }
             once = true;
-            Subscriber<? super T> a = actual.get();
-            if (a == null || a.isUnsubscribed()) {
+            Subscriber<? super T> a = actual;
+            if (a.isUnsubscribed()) {
                 return;
             }
             T v = value;

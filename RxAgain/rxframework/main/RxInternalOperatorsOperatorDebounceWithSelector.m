@@ -174,7 +174,6 @@ J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxInternalOperatorsOperatorDebounceWithSelector
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOperatorDebounceWithSelector_$1 class]);
   RELEASE_(this$0_);
   RELEASE_(state_);
   RELEASE_(self__);
@@ -252,7 +251,6 @@ RxInternalOperatorsOperatorDebounceWithSelector_$1 *create_RxInternalOperatorsOp
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOperatorDebounceWithSelector_$1_$1 class]);
   RELEASE_(this$0_);
   [super dealloc];
 }

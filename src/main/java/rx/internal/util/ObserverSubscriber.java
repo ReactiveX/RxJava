@@ -24,7 +24,7 @@ import rx.Subscriber;
  * @param <T> the value type
  */
 public final class ObserverSubscriber<T> extends Subscriber<T> {
-    Observer<? super T> observer;
+    final Observer<? super T> observer;
 
     public ObserverSubscriber(Observer<? super T> observer) {
         this.observer = observer;

@@ -1525,7 +1525,6 @@ __attribute__((unused)) static RxObservablesSyncOnSubscribeTest_$59 *create_RxOb
   if (![l3 awaitWithLong:2 withJavaUtilConcurrentTimeUnit:JreLoadEnum(JavaUtilConcurrentTimeUnit, SECONDS)]) {
     OrgJunitAssert_failWithNSString_(@"SyncOnSubscribe failed to countDown onUnSubscribe latch");
   }
-  [ts unsubscribe];
 }
 
 - (void)testUnsubscribeOutsideOfLoop {
@@ -2664,11 +2663,6 @@ RxObservablesSyncOnSubscribeTest_$13 *create_RxObservablesSyncOnSubscribeTest_$1
   return self;
 }
 
-- (void)dealloc {
-  JreCheckFinalize(self, [RxObservablesSyncOnSubscribeTest_$14 class]);
-  [super dealloc];
-}
-
 + (const J2ObjcClassInfo *)__metadata {
   static J2ObjcMethodInfo methods[] = {
     { NULL, "V", 0x1, -1, -1, -1, -1, -1, -1 },
@@ -3526,7 +3520,6 @@ RxObservablesSyncOnSubscribeTest_$31 *create_RxObservablesSyncOnSubscribeTest_$3
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxObservablesSyncOnSubscribeTest_$31_$1 class]);
   RELEASE_(this$0_);
   RELEASE_(val$subscriber_);
   [super dealloc];
@@ -3971,7 +3964,6 @@ RxObservablesSyncOnSubscribeTest_$38 *create_RxObservablesSyncOnSubscribeTest_$3
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxObservablesSyncOnSubscribeTest_$39 class]);
   RELEASE_(val$exception_);
   [super dealloc];
 }

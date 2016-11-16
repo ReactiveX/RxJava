@@ -150,7 +150,6 @@ J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxInternalOperatorsOnSubscribeOnAssembly)
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOnSubscribeOnAssembly_OnAssemblySubscriber class]);
   RELEASE_(actual_);
   RELEASE_(stacktrace_);
   [super dealloc];

@@ -22,7 +22,6 @@ import rx.Observable.OnSubscribe;
 import rx.Scheduler;
 import rx.Scheduler.Worker;
 import rx.Subscriber;
-import rx.doppl.SafeObservableUnsubscribe;
 import rx.functions.Action0;
 
 /**
@@ -30,13 +29,13 @@ import rx.functions.Action0;
  * @param <T> the value type
  */
 public final class OnSubscribeSkipTimed<T> implements OnSubscribe<T> {
-    final long                      time;
-    final TimeUnit                  unit;
-    final Scheduler                 scheduler;
-    final SafeObservableUnsubscribe source;
+    final long time;
+    final TimeUnit unit;
+    final Scheduler scheduler;
+    final Observable<T> source;
 
     public OnSubscribeSkipTimed(Observable<T> source, long time, TimeUnit unit, Scheduler scheduler) {
-        this.source = new SafeObservableUnsubscribe(source);
+        this.source = source;
         this.time = time;
         this.unit = unit;
         this.scheduler = scheduler;

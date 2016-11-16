@@ -1193,7 +1193,6 @@ RxInternalOperatorsOperatorScanTest_$6 *create_RxInternalOperatorsOperatorScanTe
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOperatorScanTest_$7 class]);
   RELEASE_(val$count_);
   [super dealloc];
 }
@@ -1304,7 +1303,6 @@ RxInternalOperatorsOperatorScanTest_$8 *create_RxInternalOperatorsOperatorScanTe
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOperatorScanTest_$9 class]);
   RELEASE_(val$count_);
   [super dealloc];
 }
@@ -1411,7 +1409,6 @@ RxInternalOperatorsOperatorScanTest_$10 *create_RxInternalOperatorsOperatorScanT
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOperatorScanTest_$11 class]);
   RELEASE_(val$count_);
   [super dealloc];
 }
@@ -1691,11 +1688,6 @@ J2OBJC_IGNORE_DESIGNATED_BEGIN
   return self;
 }
 J2OBJC_IGNORE_DESIGNATED_END
-
-- (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOperatorScanTest_$17 class]);
-  [super dealloc];
-}
 
 + (const J2ObjcClassInfo *)__metadata {
   static J2ObjcMethodInfo methods[] = {
@@ -2043,11 +2035,6 @@ J2OBJC_IGNORE_DESIGNATED_BEGIN
   return self;
 }
 J2OBJC_IGNORE_DESIGNATED_END
-
-- (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOperatorScanTest_$24 class]);
-  [super dealloc];
-}
 
 + (const J2ObjcClassInfo *)__metadata {
   static J2ObjcMethodInfo methods[] = {

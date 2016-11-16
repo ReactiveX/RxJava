@@ -171,13 +171,13 @@ J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxInternalOperatorsOperatorWindowWithObservable
     [s onCompleted];
   }
   [self createNewWindow];
-  [((RxSubscriber *) nil_chk(child_)) onNextWithId:producer_];
+  [((RxSubscriber *) nil_chk(child_)) onNextWithId:producer_SourceSubscriber_];
 }
 
 - (void)createNewWindow {
   RxSubjectsUnicastSubject *bus = RxSubjectsUnicastSubject_create();
   JreStrongAssign(&consumer_, bus);
-  JreStrongAssign(&producer_, bus);
+  JreStrongAssign(&producer_SourceSubscriber_, bus);
   RxObservable *other;
   @try {
     other = [((id<RxFunctionsFunc0>) nil_chk(otherFactory_)) call];
@@ -282,7 +282,7 @@ J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxInternalOperatorsOperatorWindowWithObservable
 - (void)complete {
   id<RxObserver> s = consumer_;
   JreStrongAssign(&consumer_, nil);
-  JreStrongAssign(&producer_, nil);
+  JreStrongAssign(&producer_SourceSubscriber_, nil);
   if (s != nil) {
     [s onCompleted];
   }
@@ -293,7 +293,7 @@ J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxInternalOperatorsOperatorWindowWithObservable
 - (void)errorWithNSException:(NSException *)e {
   id<RxObserver> s = consumer_;
   JreStrongAssign(&consumer_, nil);
-  JreStrongAssign(&producer_, nil);
+  JreStrongAssign(&producer_SourceSubscriber_, nil);
   if (s != nil) {
     [s onErrorWithNSException:e];
   }
@@ -302,11 +302,10 @@ J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxInternalOperatorsOperatorWindowWithObservable
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOperatorWindowWithObservableFactory_SourceSubscriber class]);
   RELEASE_(child_);
   RELEASE_(guard_);
   RELEASE_(consumer_);
-  RELEASE_(producer_);
+  RELEASE_(producer_SourceSubscriber_);
   RELEASE_(queue_);
   RELEASE_(serial_);
   RELEASE_(otherFactory_);
@@ -347,14 +346,14 @@ J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxInternalOperatorsOperatorWindowWithObservable
     { "child_", "LRxSubscriber;", .constantValue.asLong = 0, 0x10, -1, -1, 12, -1 },
     { "guard_", "LNSObject;", .constantValue.asLong = 0, 0x10, -1, -1, -1, -1 },
     { "consumer_", "LRxObserver;", .constantValue.asLong = 0, 0x0, -1, -1, 13, -1 },
-    { "producer_", "LRxObservable;", .constantValue.asLong = 0, 0x0, -1, -1, 14, -1 },
+    { "producer_SourceSubscriber_", "LRxObservable;", .constantValue.asLong = 0, 0x0, 14, -1, 15, -1 },
     { "emitting_", "Z", .constantValue.asLong = 0, 0x0, -1, -1, -1, -1 },
-    { "queue_", "LJavaUtilList;", .constantValue.asLong = 0, 0x0, -1, -1, 15, -1 },
+    { "queue_", "LJavaUtilList;", .constantValue.asLong = 0, 0x0, -1, -1, 16, -1 },
     { "serial_", "LRxSubscriptionsSerialSubscription;", .constantValue.asLong = 0, 0x10, -1, -1, -1, -1 },
-    { "otherFactory_", "LRxFunctionsFunc0;", .constantValue.asLong = 0, 0x10, -1, -1, 16, -1 },
+    { "otherFactory_", "LRxFunctionsFunc0;", .constantValue.asLong = 0, 0x10, -1, -1, 17, -1 },
   };
-  static const void *ptrTable[] = { "LRxSubscriber;LRxFunctionsFunc0;", "(Lrx/Subscriber<-Lrx/Observable<TT;>;>;Lrx/functions/Func0<+Lrx/Observable<+TU;>;>;)V", "onNext", "LNSObject;", "(TT;)V", "drain", "LJavaUtilList;", "(Ljava/util/List<Ljava/lang/Object;>;)V", "emitValue", "onError", "LNSException;", "error", "Lrx/Subscriber<-Lrx/Observable<TT;>;>;", "Lrx/Observer<TT;>;", "Lrx/Observable<TT;>;", "Ljava/util/List<Ljava/lang/Object;>;", "Lrx/functions/Func0<+Lrx/Observable<+TU;>;>;", "LRxInternalOperatorsOperatorWindowWithObservableFactory;", "<T:Ljava/lang/Object;U:Ljava/lang/Object;>Lrx/Subscriber<TT;>;" };
-  static const J2ObjcClassInfo _RxInternalOperatorsOperatorWindowWithObservableFactory_SourceSubscriber = { "SourceSubscriber", "rx.internal.operators", ptrTable, methods, fields, 7, 0x18, 12, 8, 17, -1, -1, 18, -1 };
+  static const void *ptrTable[] = { "LRxSubscriber;LRxFunctionsFunc0;", "(Lrx/Subscriber<-Lrx/Observable<TT;>;>;Lrx/functions/Func0<+Lrx/Observable<+TU;>;>;)V", "onNext", "LNSObject;", "(TT;)V", "drain", "LJavaUtilList;", "(Ljava/util/List<Ljava/lang/Object;>;)V", "emitValue", "onError", "LNSException;", "error", "Lrx/Subscriber<-Lrx/Observable<TT;>;>;", "Lrx/Observer<TT;>;", "producer", "Lrx/Observable<TT;>;", "Ljava/util/List<Ljava/lang/Object;>;", "Lrx/functions/Func0<+Lrx/Observable<+TU;>;>;", "LRxInternalOperatorsOperatorWindowWithObservableFactory;", "<T:Ljava/lang/Object;U:Ljava/lang/Object;>Lrx/Subscriber<TT;>;" };
+  static const J2ObjcClassInfo _RxInternalOperatorsOperatorWindowWithObservableFactory_SourceSubscriber = { "SourceSubscriber", "rx.internal.operators", ptrTable, methods, fields, 7, 0x18, 12, 8, 18, -1, -1, 19, -1 };
   return &_RxInternalOperatorsOperatorWindowWithObservableFactory_SourceSubscriber;
 }
 
@@ -409,7 +408,6 @@ J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxInternalOperatorsOperatorWindowWithObservable
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOperatorWindowWithObservableFactory_BoundarySubscriber class]);
   RELEASE_(sub_);
   [super dealloc];
 }

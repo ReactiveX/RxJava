@@ -168,7 +168,6 @@ J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxInternalOperatorsOperatorSkipWhile)
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOperatorSkipWhile_$1 class]);
   RELEASE_(this$0_);
   RELEASE_(val$child_);
   [super dealloc];

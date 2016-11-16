@@ -232,7 +232,6 @@ RxInternalOperatorsOperatorTakeWhile_$1 *create_RxInternalOperatorsOperatorTakeW
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOperatorTakeWhile_$2 class]);
   RELEASE_(this$0_);
   RELEASE_(val$subscriber_);
   [super dealloc];

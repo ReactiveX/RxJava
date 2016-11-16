@@ -30,6 +30,42 @@
 
 - (void)doAfterTest;
 
+- (void)testFirehoseFailsAsExpected;
+
+- (void)testFlatMapAsync;
+
+- (void)testFlatMapSync;
+
+- (void)testMergeAsync;
+
+- (void)testMergeAsyncThenObserveOn;
+
+- (void)testMergeAsyncThenObserveOnLoop;
+
+- (void)testMergeSync;
+
+- (void)testObserveOn;
+
+- (void)testObserveOnWithSlowConsumer;
+
+- (void)testOnBackpressureBuffer;
+
+- (void)testOnBackpressureDrop;
+
+- (void)testOnBackpressureDropSynchronous;
+
+- (void)testOnBackpressureDropSynchronousWithAction;
+
+- (void)testOnBackpressureDropWithAction;
+
+- (void)testSubscribeOnScheduling;
+
+- (void)testTakeFilterSkipChainAsync;
+
+- (void)testUserSubscriberUsingRequestAsync;
+
+- (void)testUserSubscriberUsingRequestSync;
+
 - (void)testZipAsync;
 
 - (void)testZipSync;
@@ -52,57 +88,6 @@ FOUNDATION_EXPORT RxBackpressureTests *new_RxBackpressureTests_init() NS_RETURNS
 FOUNDATION_EXPORT RxBackpressureTests *create_RxBackpressureTests_init();
 
 J2OBJC_TYPE_LITERAL_HEADER(RxBackpressureTests)
-
-#endif
-
-#if !defined (RxBackpressureTests_BPTPRoducer_) && (INCLUDE_ALL_RxBackpressureTests || defined(INCLUDE_RxBackpressureTests_BPTPRoducer))
-#define RxBackpressureTests_BPTPRoducer_
-
-#define RESTRICT_RxProducer 1
-#define INCLUDE_RxProducer 1
-#include "RxProducer.h"
-
-@class JavaUtilConcurrentAtomicAtomicInteger;
-@class JavaUtilConcurrentAtomicAtomicLong;
-@class JavaUtilConcurrentConcurrentLinkedQueue;
-@class RxSubscriber;
-
-@interface RxBackpressureTests_BPTPRoducer : NSObject < RxProducer > {
- @public
-  JavaUtilConcurrentAtomicAtomicInteger *counter_;
-  JavaUtilConcurrentConcurrentLinkedQueue *threadsSeen_;
-  JavaUtilConcurrentAtomicAtomicLong *requested_;
-  RxSubscriber *s_;
-  jint i_;
-}
-
-#pragma mark Public
-
-- (void)requestWithLong:(jlong)n;
-
-#pragma mark Package-Private
-
-- (instancetype)initWithJavaUtilConcurrentAtomicAtomicInteger:(JavaUtilConcurrentAtomicAtomicInteger *)counter
-                  withJavaUtilConcurrentConcurrentLinkedQueue:(JavaUtilConcurrentConcurrentLinkedQueue *)threadsSeen
-                       withJavaUtilConcurrentAtomicAtomicLong:(JavaUtilConcurrentAtomicAtomicLong *)requested
-                                             withRxSubscriber:(RxSubscriber *)s;
-
-@end
-
-J2OBJC_EMPTY_STATIC_INIT(RxBackpressureTests_BPTPRoducer)
-
-J2OBJC_FIELD_SETTER(RxBackpressureTests_BPTPRoducer, counter_, JavaUtilConcurrentAtomicAtomicInteger *)
-J2OBJC_FIELD_SETTER(RxBackpressureTests_BPTPRoducer, threadsSeen_, JavaUtilConcurrentConcurrentLinkedQueue *)
-J2OBJC_FIELD_SETTER(RxBackpressureTests_BPTPRoducer, requested_, JavaUtilConcurrentAtomicAtomicLong *)
-J2OBJC_FIELD_SETTER(RxBackpressureTests_BPTPRoducer, s_, RxSubscriber *)
-
-FOUNDATION_EXPORT void RxBackpressureTests_BPTPRoducer_initWithJavaUtilConcurrentAtomicAtomicInteger_withJavaUtilConcurrentConcurrentLinkedQueue_withJavaUtilConcurrentAtomicAtomicLong_withRxSubscriber_(RxBackpressureTests_BPTPRoducer *self, JavaUtilConcurrentAtomicAtomicInteger *counter, JavaUtilConcurrentConcurrentLinkedQueue *threadsSeen, JavaUtilConcurrentAtomicAtomicLong *requested, RxSubscriber *s);
-
-FOUNDATION_EXPORT RxBackpressureTests_BPTPRoducer *new_RxBackpressureTests_BPTPRoducer_initWithJavaUtilConcurrentAtomicAtomicInteger_withJavaUtilConcurrentConcurrentLinkedQueue_withJavaUtilConcurrentAtomicAtomicLong_withRxSubscriber_(JavaUtilConcurrentAtomicAtomicInteger *counter, JavaUtilConcurrentConcurrentLinkedQueue *threadsSeen, JavaUtilConcurrentAtomicAtomicLong *requested, RxSubscriber *s) NS_RETURNS_RETAINED;
-
-FOUNDATION_EXPORT RxBackpressureTests_BPTPRoducer *create_RxBackpressureTests_BPTPRoducer_initWithJavaUtilConcurrentAtomicAtomicInteger_withJavaUtilConcurrentConcurrentLinkedQueue_withJavaUtilConcurrentAtomicAtomicLong_withRxSubscriber_(JavaUtilConcurrentAtomicAtomicInteger *counter, JavaUtilConcurrentConcurrentLinkedQueue *threadsSeen, JavaUtilConcurrentAtomicAtomicLong *requested, RxSubscriber *s);
-
-J2OBJC_TYPE_LITERAL_HEADER(RxBackpressureTests_BPTPRoducer)
 
 #endif
 

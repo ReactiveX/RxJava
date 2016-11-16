@@ -20,14 +20,13 @@
 #define INCLUDE_RxObservable_OnSubscribe 1
 #include "RxObservable.h"
 
-@class RxDopplSafeObservableUnsubscribe;
 @class RxObservable;
 @class RxSubscriber;
 @protocol RxFunctionsFunc1;
 
 @interface RxInternalOperatorsOnSubscribeFilter : NSObject < RxObservable_OnSubscribe > {
  @public
-  RxDopplSafeObservableUnsubscribe *source_;
+  RxObservable *source_;
   id<RxFunctionsFunc1> predicate_;
 }
 
@@ -42,7 +41,7 @@
 
 J2OBJC_EMPTY_STATIC_INIT(RxInternalOperatorsOnSubscribeFilter)
 
-J2OBJC_FIELD_SETTER(RxInternalOperatorsOnSubscribeFilter, source_, RxDopplSafeObservableUnsubscribe *)
+J2OBJC_FIELD_SETTER(RxInternalOperatorsOnSubscribeFilter, source_, RxObservable *)
 J2OBJC_FIELD_SETTER(RxInternalOperatorsOnSubscribeFilter, predicate_, id<RxFunctionsFunc1>)
 
 FOUNDATION_EXPORT void RxInternalOperatorsOnSubscribeFilter_initWithRxObservable_withRxFunctionsFunc1_(RxInternalOperatorsOnSubscribeFilter *self, RxObservable *source, id<RxFunctionsFunc1> predicate);

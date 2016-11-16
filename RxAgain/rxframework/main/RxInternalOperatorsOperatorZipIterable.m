@@ -154,7 +154,6 @@ J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxInternalOperatorsOperatorZipIterable)
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOperatorZipIterable_$1 class]);
   RELEASE_(this$0_);
   RELEASE_(val$subscriber_);
   RELEASE_(val$iterator_);

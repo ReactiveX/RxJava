@@ -154,7 +154,6 @@ withRxInternalProducersProducerArbiter:(RxInternalProducersProducerArbiter *)pa 
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOperatorRetryWithPredicate_SourceSubscriber class]);
   RELEASE_(child_);
   RELEASE_(predicate_);
   RELEASE_(inner_);
@@ -309,7 +308,6 @@ RxInternalOperatorsOperatorRetryWithPredicate_SourceSubscriber_$1 *create_RxInte
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOperatorRetryWithPredicate_SourceSubscriber_$1_$1 class]);
   RELEASE_(this$0_);
   RELEASE_(val$_self_);
   [super dealloc];

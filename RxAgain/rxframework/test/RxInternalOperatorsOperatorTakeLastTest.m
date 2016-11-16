@@ -345,7 +345,6 @@ __attribute__((unused)) static RxInternalOperatorsOperatorTakeLastTest_$8 *creat
   [ts awaitTerminalEvent];
   [ts assertNoErrors];
   [ts assertReceivedOnNextWithJavaUtilList:JavaUtilArrays_asListWithNSObjectArray_([IOSObjectArray arrayWithObjects:(id[]){ JavaLangInteger_valueOfWithInt_(100000) } count:1 type:JavaLangInteger_class_()])];
-  [ts unsubscribe];
 }
 
 - (void)testBackpressure2 {
@@ -354,7 +353,6 @@ __attribute__((unused)) static RxInternalOperatorsOperatorTakeLastTest_$8 *creat
   [ts awaitTerminalEvent];
   [ts assertNoErrors];
   OrgJunitAssert_assertEqualsWithLong_withLong_(JreLoadStatic(RxInternalUtilRxRingBuffer, SIZE) * 4, [((id<JavaUtilList>) nil_chk([ts getOnNextEvents])) size]);
-  [ts unsubscribe];
 }
 
 - (id<RxFunctionsFunc1>)newSlowProcessor {
@@ -366,35 +364,25 @@ __attribute__((unused)) static RxInternalOperatorsOperatorTakeLastTest_$8 *creat
 }
 
 - (void)testIgnoreRequest1 {
-  RxSubscriber *subscriber = create_RxInternalOperatorsOperatorTakeLastTest_$2_init();
-  [((RxObservable *) nil_chk([((RxObservable *) nil_chk(RxObservable_rangeWithInt_withInt_(0, 100000))) takeLastWithInt:100000])) subscribeWithRxSubscriber:subscriber];
-  [subscriber unsubscribe];
+  [((RxObservable *) nil_chk([((RxObservable *) nil_chk(RxObservable_rangeWithInt_withInt_(0, 100000))) takeLastWithInt:100000])) subscribeWithRxSubscriber:create_RxInternalOperatorsOperatorTakeLastTest_$2_init()];
 }
 
 - (void)testIgnoreRequest2 {
-  RxSubscriber *subscriber = create_RxInternalOperatorsOperatorTakeLastTest_$3_init();
-  [((RxObservable *) nil_chk([((RxObservable *) nil_chk(RxObservable_rangeWithInt_withInt_(0, 100000))) takeLastWithInt:100000])) subscribeWithRxSubscriber:subscriber];
-  [subscriber unsubscribe];
+  [((RxObservable *) nil_chk([((RxObservable *) nil_chk(RxObservable_rangeWithInt_withInt_(0, 100000))) takeLastWithInt:100000])) subscribeWithRxSubscriber:create_RxInternalOperatorsOperatorTakeLastTest_$3_init()];
 }
 
 - (void)testIgnoreRequest3 {
-  RxSubscriber *subscriber = create_RxInternalOperatorsOperatorTakeLastTest_$4_init();
-  [((RxObservable *) nil_chk([((RxObservable *) nil_chk(RxObservable_rangeWithInt_withInt_(0, 100000))) takeLastWithInt:100000])) subscribeWithRxSubscriber:subscriber];
-  [subscriber unsubscribe];
+  [((RxObservable *) nil_chk([((RxObservable *) nil_chk(RxObservable_rangeWithInt_withInt_(0, 100000))) takeLastWithInt:100000])) subscribeWithRxSubscriber:create_RxInternalOperatorsOperatorTakeLastTest_$4_init()];
 }
 
 - (void)testIgnoreRequest4 {
-  RxSubscriber *subscriber = create_RxInternalOperatorsOperatorTakeLastTest_$5_init();
-  [((RxObservable *) nil_chk([((RxObservable *) nil_chk(RxObservable_rangeWithInt_withInt_(0, 100000))) takeLastWithInt:100000])) subscribeWithRxSubscriber:subscriber];
-  [subscriber unsubscribe];
+  [((RxObservable *) nil_chk([((RxObservable *) nil_chk(RxObservable_rangeWithInt_withInt_(0, 100000))) takeLastWithInt:100000])) subscribeWithRxSubscriber:create_RxInternalOperatorsOperatorTakeLastTest_$5_init()];
 }
 
 - (void)testUnsubscribeTakesEffectEarlyOnFastPath {
   JavaUtilConcurrentAtomicAtomicInteger *count = create_JavaUtilConcurrentAtomicAtomicInteger_init();
-  RxSubscriber *subscriber = create_RxInternalOperatorsOperatorTakeLastTest_$6_initWithJavaUtilConcurrentAtomicAtomicInteger_(count);
-  [((RxObservable *) nil_chk([((RxObservable *) nil_chk(RxObservable_rangeWithInt_withInt_(0, 100000))) takeLastWithInt:100000])) subscribeWithRxSubscriber:subscriber];
+  [((RxObservable *) nil_chk([((RxObservable *) nil_chk(RxObservable_rangeWithInt_withInt_(0, 100000))) takeLastWithInt:100000])) subscribeWithRxSubscriber:create_RxInternalOperatorsOperatorTakeLastTest_$6_initWithJavaUtilConcurrentAtomicAtomicInteger_(count)];
   OrgJunitAssert_assertEqualsWithLong_withLong_(1, [count get]);
-  [subscriber unsubscribe];
 }
 
 - (void)testRequestOverflow {
@@ -748,11 +736,6 @@ J2OBJC_IGNORE_DESIGNATED_BEGIN
 }
 J2OBJC_IGNORE_DESIGNATED_END
 
-- (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOperatorTakeLastTest_$2 class]);
-  [super dealloc];
-}
-
 + (const J2ObjcClassInfo *)__metadata {
   static J2ObjcMethodInfo methods[] = {
     { NULL, "V", 0x1, -1, -1, -1, -1, -1, -1 },
@@ -810,11 +793,6 @@ J2OBJC_IGNORE_DESIGNATED_BEGIN
   return self;
 }
 J2OBJC_IGNORE_DESIGNATED_END
-
-- (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOperatorTakeLastTest_$3 class]);
-  [super dealloc];
-}
 
 + (const J2ObjcClassInfo *)__metadata {
   static J2ObjcMethodInfo methods[] = {
@@ -874,11 +852,6 @@ J2OBJC_IGNORE_DESIGNATED_BEGIN
 }
 J2OBJC_IGNORE_DESIGNATED_END
 
-- (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOperatorTakeLastTest_$4 class]);
-  [super dealloc];
-}
-
 + (const J2ObjcClassInfo *)__metadata {
   static J2ObjcMethodInfo methods[] = {
     { NULL, "V", 0x1, -1, -1, -1, -1, -1, -1 },
@@ -936,11 +909,6 @@ J2OBJC_IGNORE_DESIGNATED_BEGIN
   return self;
 }
 J2OBJC_IGNORE_DESIGNATED_END
-
-- (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOperatorTakeLastTest_$5 class]);
-  [super dealloc];
-}
 
 + (const J2ObjcClassInfo *)__metadata {
   static J2ObjcMethodInfo methods[] = {
@@ -1000,7 +968,6 @@ RxInternalOperatorsOperatorTakeLastTest_$5 *create_RxInternalOperatorsOperatorTa
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOperatorTakeLastTest_$6 class]);
   RELEASE_(val$count_);
   [super dealloc];
 }
@@ -1067,7 +1034,6 @@ RxInternalOperatorsOperatorTakeLastTest_$6 *create_RxInternalOperatorsOperatorTa
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOperatorTakeLastTest_$7 class]);
   RELEASE_(val$list_);
   [super dealloc];
 }

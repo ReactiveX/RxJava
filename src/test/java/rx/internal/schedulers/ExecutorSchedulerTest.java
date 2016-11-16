@@ -31,7 +31,6 @@ import rx.internal.util.RxThreadFactory;
 import rx.plugins.RxJavaHooks;
 import rx.schedulers.*;
 
-@DoppelHacks//Cut the run size WAY down. TODO.
 public class ExecutorSchedulerTest extends AbstractSchedulerConcurrencyTests {
 
     final static Executor executor = Executors.newFixedThreadPool(2, new RxThreadFactory("TestCustomPool-"));

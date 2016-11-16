@@ -167,7 +167,6 @@ J2OBJC_IGNORE_DESIGNATED_END
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsBlockingOperatorToIterator_SubscriberIterator class]);
   RELEASE_(notifications_);
   RELEASE_(buf_);
   [super dealloc];

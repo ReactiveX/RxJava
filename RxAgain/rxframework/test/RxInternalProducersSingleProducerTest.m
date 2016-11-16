@@ -155,11 +155,6 @@ J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxInternalProducersSingleProducerTest)
   return self;
 }
 
-- (void)dealloc {
-  JreCheckFinalize(self, [RxInternalProducersSingleProducerTest_$1 class]);
-  [super dealloc];
-}
-
 + (const J2ObjcClassInfo *)__metadata {
   static J2ObjcMethodInfo methods[] = {
     { NULL, "V", 0x1, 0, 1, -1, 2, -1, -1 },

@@ -142,7 +142,7 @@ J2OBJC_TYPE_LITERAL_HEADER(RxInternalOperatorsOperatorReplay)
   jboolean missed_;
   jlong maxChildRequested_;
   jlong maxUpstreamRequested_;
-  volatile_id producer_;
+  volatile_id producer_ReplaySubscriber_;
   id<JavaUtilList> coordinationQueue_;
   jboolean coordinateAll_;
 }
@@ -184,7 +184,7 @@ J2OBJC_FIELD_SETTER(RxInternalOperatorsOperatorReplay_ReplaySubscriber, buffer_,
 J2OBJC_FIELD_SETTER(RxInternalOperatorsOperatorReplay_ReplaySubscriber, producers_, RxInternalUtilOpenHashSet *)
 J2OBJC_FIELD_SETTER(RxInternalOperatorsOperatorReplay_ReplaySubscriber, producersCache_, IOSObjectArray *)
 J2OBJC_FIELD_SETTER(RxInternalOperatorsOperatorReplay_ReplaySubscriber, shouldConnect_, JavaUtilConcurrentAtomicAtomicBoolean *)
-J2OBJC_VOLATILE_FIELD_SETTER(RxInternalOperatorsOperatorReplay_ReplaySubscriber, producer_, id<RxProducer>)
+J2OBJC_VOLATILE_FIELD_SETTER(RxInternalOperatorsOperatorReplay_ReplaySubscriber, producer_ReplaySubscriber_, id<RxProducer>)
 J2OBJC_FIELD_SETTER(RxInternalOperatorsOperatorReplay_ReplaySubscriber, coordinationQueue_, id<JavaUtilList>)
 
 inline IOSObjectArray *RxInternalOperatorsOperatorReplay_ReplaySubscriber_get_EMPTY();
@@ -222,14 +222,13 @@ J2OBJC_TYPE_LITERAL_HEADER(RxInternalOperatorsOperatorReplay_ReplaySubscriber)
 #define INCLUDE_RxSubscription 1
 #include "RxSubscription.h"
 
-@class RxDopplJ2objcWeakReference;
 @class RxInternalOperatorsOperatorReplay_ReplaySubscriber;
 @class RxSubscriber;
 
 @interface RxInternalOperatorsOperatorReplay_InnerProducer : JavaUtilConcurrentAtomicAtomicLong < RxProducer, RxSubscription > {
  @public
-  RxDopplJ2objcWeakReference *weakParent_;
-  RxSubscriber *child_;
+  RxInternalOperatorsOperatorReplay_ReplaySubscriber *parent_;
+  __unsafe_unretained RxSubscriber *child_;
   id index_;
   JavaUtilConcurrentAtomicAtomicLong *totalRequested_;
   jboolean emitting_;
@@ -259,8 +258,7 @@ J2OBJC_TYPE_LITERAL_HEADER(RxInternalOperatorsOperatorReplay_ReplaySubscriber)
 
 J2OBJC_EMPTY_STATIC_INIT(RxInternalOperatorsOperatorReplay_InnerProducer)
 
-J2OBJC_FIELD_SETTER(RxInternalOperatorsOperatorReplay_InnerProducer, weakParent_, RxDopplJ2objcWeakReference *)
-J2OBJC_FIELD_SETTER(RxInternalOperatorsOperatorReplay_InnerProducer, child_, RxSubscriber *)
+J2OBJC_FIELD_SETTER(RxInternalOperatorsOperatorReplay_InnerProducer, parent_, RxInternalOperatorsOperatorReplay_ReplaySubscriber *)
 J2OBJC_FIELD_SETTER(RxInternalOperatorsOperatorReplay_InnerProducer, index_, id)
 J2OBJC_FIELD_SETTER(RxInternalOperatorsOperatorReplay_InnerProducer, totalRequested_, JavaUtilConcurrentAtomicAtomicLong *)
 

@@ -441,8 +441,6 @@ public final class OperatorGroupBy<T, K, V> implements Operator<GroupedObservabl
 
         final K key;
         final Queue<Object> queue;
-
-        @Weak
         final GroupBySubscriber<?, K, T> parent;
         final boolean delayError;
 

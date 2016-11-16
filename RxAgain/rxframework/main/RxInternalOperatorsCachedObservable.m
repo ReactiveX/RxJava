@@ -348,7 +348,6 @@ J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxInternalOperatorsCachedObservable_CacheState)
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsCachedObservable_CacheState_$1 class]);
   RELEASE_(this$0_);
   [super dealloc];
 }

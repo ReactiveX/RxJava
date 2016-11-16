@@ -191,7 +191,6 @@ J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxInternalOperatorsOperatorWindowWithSize)
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOperatorWindowWithSize_WindowExact class]);
   RELEASE_(actual_);
   RELEASE_(wip_);
   RELEASE_(cancel_);
@@ -371,7 +370,6 @@ RxInternalOperatorsOperatorWindowWithSize_WindowExact_$1 *create_RxInternalOpera
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOperatorWindowWithSize_WindowSkip class]);
   RELEASE_(actual_);
   RELEASE_(wip_);
   RELEASE_(cancel_);
@@ -635,7 +633,6 @@ J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxInternalOperatorsOperatorWindowWithSize_Windo
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOperatorWindowWithSize_WindowOverlap class]);
   RELEASE_(actual_);
   RELEASE_(wip_);
   RELEASE_(cancel_);

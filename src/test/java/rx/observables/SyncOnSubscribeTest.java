@@ -545,8 +545,6 @@ public class SyncOnSubscribeTest {
         if (!l3.await(2, TimeUnit.SECONDS)) {
             fail("SyncOnSubscribe failed to countDown onUnSubscribe latch");
         }
-
-        ts.unsubscribe();
     }
 
     @Test

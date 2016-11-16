@@ -196,7 +196,6 @@ J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxInternalOperatorsOperatorDelay)
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOperatorDelay_$1 class]);
   RELEASE_(this$0_);
   RELEASE_(val$worker_);
   RELEASE_(val$child_);

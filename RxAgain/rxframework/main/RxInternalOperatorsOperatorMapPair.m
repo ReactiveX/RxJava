@@ -148,7 +148,6 @@ J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxInternalOperatorsOperatorMapPair)
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOperatorMapPair_MapPairSubscriber class]);
   RELEASE_(actual_);
   RELEASE_(collectionSelector_);
   RELEASE_(resultSelector_);

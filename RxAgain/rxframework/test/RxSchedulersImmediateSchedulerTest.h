@@ -30,6 +30,14 @@
 
 - (void)testMergeWithImmediateScheduler1;
 
+- (void)testMergeWithoutScheduler;
+
+- (void)testMixOfDelayedAndNonDelayedActions;
+
+- (void)testNestedActions;
+
+- (void)testSequenceOfDelayedActions;
+
 #pragma mark Protected
 
 - (RxScheduler *)getScheduler;

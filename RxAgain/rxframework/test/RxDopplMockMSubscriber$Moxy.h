@@ -36,8 +36,6 @@
 
 - (NSUInteger)hash;
 
-- (void)j2objcCleanup;
-
 - (void)onCompleted;
 
 - (void)onErrorWithNSException:(NSException *)e;
@@ -53,8 +51,6 @@
 - (jboolean)super$equalsWithId:(id)arg0;
 
 - (jint)super$hashCode;
-
-- (void)super$j2objcCleanup;
 
 - (void)super$onCompleted;
 

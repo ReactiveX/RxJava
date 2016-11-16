@@ -295,7 +295,6 @@ J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxInternalOperatorsOnSubscribeJoin_ResultSink)
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOnSubscribeJoin_ResultSink_LeftSubscriber class]);
   RELEASE_(this$0_);
   [super dealloc];
 }
@@ -365,7 +364,6 @@ J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxInternalOperatorsOnSubscribeJoin_ResultSink_L
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOnSubscribeJoin_ResultSink_LeftSubscriber_LeftDurationSubscriber class]);
   RELEASE_(this$0_);
   [super dealloc];
 }
@@ -494,7 +492,6 @@ J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxInternalOperatorsOnSubscribeJoin_ResultSink_L
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOnSubscribeJoin_ResultSink_RightSubscriber class]);
   RELEASE_(this$0_);
   [super dealloc];
 }
@@ -564,7 +561,6 @@ J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxInternalOperatorsOnSubscribeJoin_ResultSink_R
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOnSubscribeJoin_ResultSink_RightSubscriber_RightDurationSubscriber class]);
   RELEASE_(this$0_);
   [super dealloc];
 }

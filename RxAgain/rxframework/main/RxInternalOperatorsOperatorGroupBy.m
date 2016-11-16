@@ -113,7 +113,7 @@ __attribute__((unused)) static RxInternalOperatorsOperatorGroupBy_$1 *create_RxI
     return parent2;
   }
   [((RxSubscriber *) nil_chk(child)) addWithRxSubscription:RxSubscriptionsSubscriptions_createWithRxFunctionsAction0_(create_RxInternalOperatorsOperatorGroupBy_$1_initWithRxInternalOperatorsOperatorGroupBy_GroupBySubscriber_(parent))];
-  [child setProducerWithRxProducer:((RxInternalOperatorsOperatorGroupBy_GroupBySubscriber *) nil_chk(parent))->producer_];
+  [child setProducerWithRxProducer:((RxInternalOperatorsOperatorGroupBy_GroupBySubscriber *) nil_chk(parent))->producer_GroupBySubscriber_];
   return parent;
 }
 
@@ -465,13 +465,12 @@ id RxInternalOperatorsOperatorGroupBy_GroupBySubscriber_NULL_KEY;
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOperatorGroupBy_GroupBySubscriber class]);
   RELEASE_(actual_);
   RELEASE_(keySelector_);
   RELEASE_(valueSelector_);
   RELEASE_(groups_);
   RELEASE_(queue_);
-  RELEASE_(producer_);
+  RELEASE_(producer_GroupBySubscriber_);
   RELEASE_(evictedKeys_);
   RELEASE_(s_);
   RELEASE_(cancelled_);
@@ -520,19 +519,19 @@ id RxInternalOperatorsOperatorGroupBy_GroupBySubscriber_NULL_KEY;
     { "delayError_", "Z", .constantValue.asLong = 0, 0x10, -1, -1, -1, -1 },
     { "groups_", "LJavaUtilMap;", .constantValue.asLong = 0, 0x10, -1, -1, 25, -1 },
     { "queue_", "LJavaUtilQueue;", .constantValue.asLong = 0, 0x10, -1, -1, 26, -1 },
-    { "producer_", "LRxInternalOperatorsOperatorGroupBy_GroupByProducer;", .constantValue.asLong = 0, 0x10, -1, -1, -1, -1 },
-    { "evictedKeys_", "LJavaUtilQueue;", .constantValue.asLong = 0, 0x10, -1, -1, 27, -1 },
-    { "NULL_KEY", "LNSObject;", .constantValue.asLong = 0, 0x18, -1, 28, -1, -1 },
+    { "producer_GroupBySubscriber_", "LRxInternalOperatorsOperatorGroupBy_GroupByProducer;", .constantValue.asLong = 0, 0x10, 27, -1, -1, -1 },
+    { "evictedKeys_", "LJavaUtilQueue;", .constantValue.asLong = 0, 0x10, -1, -1, 28, -1 },
+    { "NULL_KEY", "LNSObject;", .constantValue.asLong = 0, 0x18, -1, 29, -1, -1 },
     { "s_", "LRxInternalProducersProducerArbiter;", .constantValue.asLong = 0, 0x10, -1, -1, -1, -1 },
     { "cancelled_", "LJavaUtilConcurrentAtomicAtomicBoolean;", .constantValue.asLong = 0, 0x10, -1, -1, -1, -1 },
-    { "requested_GroupBySubscriber_", "LJavaUtilConcurrentAtomicAtomicLong;", .constantValue.asLong = 0, 0x10, 29, -1, -1, -1 },
+    { "requested_GroupBySubscriber_", "LJavaUtilConcurrentAtomicAtomicLong;", .constantValue.asLong = 0, 0x10, 30, -1, -1, -1 },
     { "groupCount_", "LJavaUtilConcurrentAtomicAtomicInteger;", .constantValue.asLong = 0, 0x10, -1, -1, -1, -1 },
     { "error_", "LNSException;", .constantValue.asLong = 0, 0x0, -1, -1, -1, -1 },
     { "done_", "Z", .constantValue.asLong = 0, 0x40, -1, -1, -1, -1 },
     { "wip_", "LJavaUtilConcurrentAtomicAtomicInteger;", .constantValue.asLong = 0, 0x10, -1, -1, -1, -1 },
   };
-  static const void *ptrTable[] = { "LRxSubscriber;LRxFunctionsFunc1;LRxFunctionsFunc1;IZLRxFunctionsFunc1;", "(Lrx/Subscriber<-Lrx/observables/GroupedObservable<TK;TV;>;>;Lrx/functions/Func1<-TT;+TK;>;Lrx/functions/Func1<-TT;+TV;>;IZLrx/functions/Func1<Lrx/functions/Action1<TK;>;Ljava/util/Map<TK;Ljava/lang/Object;>;>;)V", "createMap", "LRxFunctionsFunc1;LRxFunctionsAction1;", "(Lrx/functions/Func1<Lrx/functions/Action1<TK;>;Ljava/util/Map<TK;Ljava/lang/Object;>;>;Lrx/functions/Action1<TK;>;)Ljava/util/Map<Ljava/lang/Object;Lrx/internal/operators/OperatorGroupBy$GroupedUnicast<TK;TV;>;>;", "setProducer", "LRxProducer;", "onNext", "LNSObject;", "(TT;)V", "onError", "LNSException;", "requestMore", "J", "cancel", "(TK;)V", "errorAll", "LRxSubscriber;LJavaUtilQueue;LNSException;", "(Lrx/Subscriber<-Lrx/observables/GroupedObservable<TK;TV;>;>;Ljava/util/Queue<*>;Ljava/lang/Throwable;)V", "checkTerminated", "ZZLRxSubscriber;LJavaUtilQueue;", "(ZZLrx/Subscriber<-Lrx/observables/GroupedObservable<TK;TV;>;>;Ljava/util/Queue<*>;)Z", "Lrx/Subscriber<-Lrx/observables/GroupedObservable<TK;TV;>;>;", "Lrx/functions/Func1<-TT;+TK;>;", "Lrx/functions/Func1<-TT;+TV;>;", "Ljava/util/Map<Ljava/lang/Object;Lrx/internal/operators/OperatorGroupBy$GroupedUnicast<TK;TV;>;>;", "Ljava/util/Queue<Lrx/observables/GroupedObservable<TK;TV;>;>;", "Ljava/util/Queue<TK;>;", &RxInternalOperatorsOperatorGroupBy_GroupBySubscriber_NULL_KEY, "requested", "LRxInternalOperatorsOperatorGroupBy;", "LRxInternalOperatorsOperatorGroupBy_GroupBySubscriber_EvictionAction;", "<T:Ljava/lang/Object;K:Ljava/lang/Object;V:Ljava/lang/Object;>Lrx/Subscriber<TT;>;" };
-  static const J2ObjcClassInfo _RxInternalOperatorsOperatorGroupBy_GroupBySubscriber = { "GroupBySubscriber", "rx.internal.operators", ptrTable, methods, fields, 7, 0x19, 12, 17, 30, 31, -1, 32, -1 };
+  static const void *ptrTable[] = { "LRxSubscriber;LRxFunctionsFunc1;LRxFunctionsFunc1;IZLRxFunctionsFunc1;", "(Lrx/Subscriber<-Lrx/observables/GroupedObservable<TK;TV;>;>;Lrx/functions/Func1<-TT;+TK;>;Lrx/functions/Func1<-TT;+TV;>;IZLrx/functions/Func1<Lrx/functions/Action1<TK;>;Ljava/util/Map<TK;Ljava/lang/Object;>;>;)V", "createMap", "LRxFunctionsFunc1;LRxFunctionsAction1;", "(Lrx/functions/Func1<Lrx/functions/Action1<TK;>;Ljava/util/Map<TK;Ljava/lang/Object;>;>;Lrx/functions/Action1<TK;>;)Ljava/util/Map<Ljava/lang/Object;Lrx/internal/operators/OperatorGroupBy$GroupedUnicast<TK;TV;>;>;", "setProducer", "LRxProducer;", "onNext", "LNSObject;", "(TT;)V", "onError", "LNSException;", "requestMore", "J", "cancel", "(TK;)V", "errorAll", "LRxSubscriber;LJavaUtilQueue;LNSException;", "(Lrx/Subscriber<-Lrx/observables/GroupedObservable<TK;TV;>;>;Ljava/util/Queue<*>;Ljava/lang/Throwable;)V", "checkTerminated", "ZZLRxSubscriber;LJavaUtilQueue;", "(ZZLrx/Subscriber<-Lrx/observables/GroupedObservable<TK;TV;>;>;Ljava/util/Queue<*>;)Z", "Lrx/Subscriber<-Lrx/observables/GroupedObservable<TK;TV;>;>;", "Lrx/functions/Func1<-TT;+TK;>;", "Lrx/functions/Func1<-TT;+TV;>;", "Ljava/util/Map<Ljava/lang/Object;Lrx/internal/operators/OperatorGroupBy$GroupedUnicast<TK;TV;>;>;", "Ljava/util/Queue<Lrx/observables/GroupedObservable<TK;TV;>;>;", "producer", "Ljava/util/Queue<TK;>;", &RxInternalOperatorsOperatorGroupBy_GroupBySubscriber_NULL_KEY, "requested", "LRxInternalOperatorsOperatorGroupBy;", "LRxInternalOperatorsOperatorGroupBy_GroupBySubscriber_EvictionAction;", "<T:Ljava/lang/Object;K:Ljava/lang/Object;V:Ljava/lang/Object;>Lrx/Subscriber<TT;>;" };
+  static const J2ObjcClassInfo _RxInternalOperatorsOperatorGroupBy_GroupBySubscriber = { "GroupBySubscriber", "rx.internal.operators", ptrTable, methods, fields, 7, 0x19, 12, 17, 31, 32, -1, 33, -1 };
   return &_RxInternalOperatorsOperatorGroupBy_GroupBySubscriber;
 }
 
@@ -555,7 +554,7 @@ void RxInternalOperatorsOperatorGroupBy_GroupBySubscriber_initWithRxSubscriber_w
   JreStrongAssignAndConsume(&self->queue_, new_JavaUtilConcurrentConcurrentLinkedQueue_init());
   JreStrongAssignAndConsume(&self->s_, new_RxInternalProducersProducerArbiter_init());
   [self->s_ requestWithLong:bufferSize];
-  JreStrongAssignAndConsume(&self->producer_, new_RxInternalOperatorsOperatorGroupBy_GroupByProducer_initWithRxInternalOperatorsOperatorGroupBy_GroupBySubscriber_(self));
+  JreStrongAssignAndConsume(&self->producer_GroupBySubscriber_, new_RxInternalOperatorsOperatorGroupBy_GroupByProducer_initWithRxInternalOperatorsOperatorGroupBy_GroupBySubscriber_(self));
   JreStrongAssignAndConsume(&self->cancelled_, new_JavaUtilConcurrentAtomicAtomicBoolean_init());
   JreStrongAssignAndConsume(&self->requested_GroupBySubscriber_, new_JavaUtilConcurrentAtomicAtomicLong_init());
   JreStrongAssignAndConsume(&self->groupCount_, new_JavaUtilConcurrentAtomicAtomicInteger_initWithInt_(1));
@@ -863,14 +862,10 @@ withRxInternalOperatorsOperatorGroupBy_GroupBySubscriber:(RxInternalOperatorsOpe
   return false;
 }
 
-- (void)__javaClone:(RxInternalOperatorsOperatorGroupBy_State *)original {
-  [super __javaClone:original];
-  [parent_ release];
-}
-
 - (void)dealloc {
   RELEASE_(key_);
   RELEASE_(queue_);
+  RELEASE_(parent_);
   RELEASE_(requested_);
   RELEASE_(error_);
   RELEASE_(cancelled_);
@@ -928,7 +923,7 @@ withRxInternalOperatorsOperatorGroupBy_GroupBySubscriber:(RxInternalOperatorsOpe
 void RxInternalOperatorsOperatorGroupBy_State_initWithInt_withRxInternalOperatorsOperatorGroupBy_GroupBySubscriber_withId_withBoolean_(RxInternalOperatorsOperatorGroupBy_State *self, jint bufferSize, RxInternalOperatorsOperatorGroupBy_GroupBySubscriber *parent, id key, jboolean delayError) {
   JavaUtilConcurrentAtomicAtomicInteger_init(self);
   JreStrongAssignAndConsume(&self->queue_, new_JavaUtilConcurrentConcurrentLinkedQueue_init());
-  self->parent_ = parent;
+  JreStrongAssign(&self->parent_, parent);
   JreStrongAssign(&self->key_, key);
   self->delayError_ = delayError;
   JreStrongAssignAndConsume(&self->cancelled_, new_JavaUtilConcurrentAtomicAtomicBoolean_init());

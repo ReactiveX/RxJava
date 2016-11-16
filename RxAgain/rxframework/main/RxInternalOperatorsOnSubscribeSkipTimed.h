@@ -21,7 +21,6 @@
 #include "RxObservable.h"
 
 @class JavaUtilConcurrentTimeUnit;
-@class RxDopplSafeObservableUnsubscribe;
 @class RxObservable;
 @class RxScheduler;
 @class RxSubscriber;
@@ -31,7 +30,7 @@
   jlong time_;
   JavaUtilConcurrentTimeUnit *unit_;
   RxScheduler *scheduler_;
-  RxDopplSafeObservableUnsubscribe *source_;
+  RxObservable *source_;
 }
 
 #pragma mark Public
@@ -49,7 +48,7 @@ J2OBJC_EMPTY_STATIC_INIT(RxInternalOperatorsOnSubscribeSkipTimed)
 
 J2OBJC_FIELD_SETTER(RxInternalOperatorsOnSubscribeSkipTimed, unit_, JavaUtilConcurrentTimeUnit *)
 J2OBJC_FIELD_SETTER(RxInternalOperatorsOnSubscribeSkipTimed, scheduler_, RxScheduler *)
-J2OBJC_FIELD_SETTER(RxInternalOperatorsOnSubscribeSkipTimed, source_, RxDopplSafeObservableUnsubscribe *)
+J2OBJC_FIELD_SETTER(RxInternalOperatorsOnSubscribeSkipTimed, source_, RxObservable *)
 
 FOUNDATION_EXPORT void RxInternalOperatorsOnSubscribeSkipTimed_initWithRxObservable_withLong_withJavaUtilConcurrentTimeUnit_withRxScheduler_(RxInternalOperatorsOnSubscribeSkipTimed *self, RxObservable *source, jlong time, JavaUtilConcurrentTimeUnit *unit, RxScheduler *scheduler);
 

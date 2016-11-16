@@ -65,7 +65,6 @@ public final class OperatorMaterialize<T> implements Operator<Notification<T>, T
 
     static class ParentSubscriber<T> extends Subscriber<T> {
 
-        @Weak//TODO: Review this. Very worried this will have reference issues
         private final Subscriber<? super Notification<T>> child;
 
         private volatile Notification<T> terminalNotification;

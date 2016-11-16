@@ -7,19 +7,33 @@
 #include "IOSObjectArray.h"
 #include "J2ObjC_source.h"
 #include "RxFunctionsAction0.h"
+#include "RxFunctionsAction1.h"
 #include "RxObservable.h"
+#include "RxObservablesBlockingObservable.h"
 #include "RxObserver.h"
+#include "RxObserversTestSubscriber.h"
 #include "RxScheduler.h"
 #include "RxSchedulersSchedulers.h"
 #include "RxSubjectsReplaySubject.h"
 #include "RxSubjectsReplaySubjectBoundedConcurrencyTest.h"
+#include "RxSubjectsReplaySubjectConcurrencyTest.h"
+#include "RxSubscriber.h"
 #include "RxSubscription.h"
 #include "java/io/PrintStream.h"
 #include "java/lang/Exception.h"
 #include "java/lang/Integer.h"
+#include "java/lang/InterruptedException.h"
+#include "java/lang/Long.h"
+#include "java/lang/Runnable.h"
+#include "java/lang/RuntimeException.h"
 #include "java/lang/System.h"
+#include "java/lang/Thread.h"
 #include "java/lang/annotation/Annotation.h"
+#include "java/util/Arrays.h"
+#include "java/util/List.h"
+#include "java/util/concurrent/BrokenBarrierException.h"
 #include "java/util/concurrent/CountDownLatch.h"
+#include "java/util/concurrent/CyclicBarrier.h"
 #include "java/util/concurrent/TimeUnit.h"
 #include "java/util/concurrent/atomic/AtomicReference.h"
 #include "org/junit/Assert.h"
@@ -27,7 +41,222 @@
 
 __attribute__((unused)) static IOSObjectArray *RxSubjectsReplaySubjectBoundedConcurrencyTest__Annotations$0();
 
-@interface RxSubjectsReplaySubjectBoundedConcurrencyTest_$1 : NSObject < RxFunctionsAction0 > {
+__attribute__((unused)) static IOSObjectArray *RxSubjectsReplaySubjectBoundedConcurrencyTest__Annotations$1();
+
+__attribute__((unused)) static IOSObjectArray *RxSubjectsReplaySubjectBoundedConcurrencyTest__Annotations$2();
+
+__attribute__((unused)) static IOSObjectArray *RxSubjectsReplaySubjectBoundedConcurrencyTest__Annotations$3();
+
+__attribute__((unused)) static IOSObjectArray *RxSubjectsReplaySubjectBoundedConcurrencyTest__Annotations$4();
+
+__attribute__((unused)) static IOSObjectArray *RxSubjectsReplaySubjectBoundedConcurrencyTest__Annotations$5();
+
+__attribute__((unused)) static IOSObjectArray *RxSubjectsReplaySubjectBoundedConcurrencyTest__Annotations$6();
+
+__attribute__((unused)) static IOSObjectArray *RxSubjectsReplaySubjectBoundedConcurrencyTest__Annotations$7();
+
+__attribute__((unused)) static IOSObjectArray *RxSubjectsReplaySubjectBoundedConcurrencyTest__Annotations$8();
+
+@interface RxSubjectsReplaySubjectBoundedConcurrencyTest_SubjectObserverThread : JavaLangThread {
+ @public
+  RxSubjectsReplaySubject *subject_;
+  JavaUtilConcurrentAtomicAtomicReference *value_;
+}
+
+- (instancetype)initWithRxSubjectsReplaySubject:(RxSubjectsReplaySubject *)subject;
+
+- (void)run;
+
+@end
+
+J2OBJC_EMPTY_STATIC_INIT(RxSubjectsReplaySubjectBoundedConcurrencyTest_SubjectObserverThread)
+
+J2OBJC_FIELD_SETTER(RxSubjectsReplaySubjectBoundedConcurrencyTest_SubjectObserverThread, subject_, RxSubjectsReplaySubject *)
+J2OBJC_FIELD_SETTER(RxSubjectsReplaySubjectBoundedConcurrencyTest_SubjectObserverThread, value_, JavaUtilConcurrentAtomicAtomicReference *)
+
+__attribute__((unused)) static void RxSubjectsReplaySubjectBoundedConcurrencyTest_SubjectObserverThread_initWithRxSubjectsReplaySubject_(RxSubjectsReplaySubjectBoundedConcurrencyTest_SubjectObserverThread *self, RxSubjectsReplaySubject *subject);
+
+__attribute__((unused)) static RxSubjectsReplaySubjectBoundedConcurrencyTest_SubjectObserverThread *new_RxSubjectsReplaySubjectBoundedConcurrencyTest_SubjectObserverThread_initWithRxSubjectsReplaySubject_(RxSubjectsReplaySubject *subject) NS_RETURNS_RETAINED;
+
+__attribute__((unused)) static RxSubjectsReplaySubjectBoundedConcurrencyTest_SubjectObserverThread *create_RxSubjectsReplaySubjectBoundedConcurrencyTest_SubjectObserverThread_initWithRxSubjectsReplaySubject_(RxSubjectsReplaySubject *subject);
+
+J2OBJC_TYPE_LITERAL_HEADER(RxSubjectsReplaySubjectBoundedConcurrencyTest_SubjectObserverThread)
+
+@interface RxSubjectsReplaySubjectBoundedConcurrencyTest_$1 : NSObject < JavaLangRunnable > {
+ @public
+  RxSubjectsReplaySubject *val$replay_;
+}
+
+- (void)run;
+
+- (instancetype)initWithRxSubjectsReplaySubject:(RxSubjectsReplaySubject *)capture$0;
+
+@end
+
+J2OBJC_EMPTY_STATIC_INIT(RxSubjectsReplaySubjectBoundedConcurrencyTest_$1)
+
+J2OBJC_FIELD_SETTER(RxSubjectsReplaySubjectBoundedConcurrencyTest_$1, val$replay_, RxSubjectsReplaySubject *)
+
+__attribute__((unused)) static void RxSubjectsReplaySubjectBoundedConcurrencyTest_$1_initWithRxSubjectsReplaySubject_(RxSubjectsReplaySubjectBoundedConcurrencyTest_$1 *self, RxSubjectsReplaySubject *capture$0);
+
+__attribute__((unused)) static RxSubjectsReplaySubjectBoundedConcurrencyTest_$1 *new_RxSubjectsReplaySubjectBoundedConcurrencyTest_$1_initWithRxSubjectsReplaySubject_(RxSubjectsReplaySubject *capture$0) NS_RETURNS_RETAINED;
+
+__attribute__((unused)) static RxSubjectsReplaySubjectBoundedConcurrencyTest_$1 *create_RxSubjectsReplaySubjectBoundedConcurrencyTest_$1_initWithRxSubjectsReplaySubject_(RxSubjectsReplaySubject *capture$0);
+
+@interface RxSubjectsReplaySubjectBoundedConcurrencyTest_$1_$1 : NSObject < RxObservable_OnSubscribe >
+
+- (void)callWithId:(RxSubscriber *)o;
+
+- (instancetype)init;
+
+@end
+
+J2OBJC_EMPTY_STATIC_INIT(RxSubjectsReplaySubjectBoundedConcurrencyTest_$1_$1)
+
+__attribute__((unused)) static void RxSubjectsReplaySubjectBoundedConcurrencyTest_$1_$1_init(RxSubjectsReplaySubjectBoundedConcurrencyTest_$1_$1 *self);
+
+__attribute__((unused)) static RxSubjectsReplaySubjectBoundedConcurrencyTest_$1_$1 *new_RxSubjectsReplaySubjectBoundedConcurrencyTest_$1_$1_init() NS_RETURNS_RETAINED;
+
+__attribute__((unused)) static RxSubjectsReplaySubjectBoundedConcurrencyTest_$1_$1 *create_RxSubjectsReplaySubjectBoundedConcurrencyTest_$1_$1_init();
+
+@interface RxSubjectsReplaySubjectBoundedConcurrencyTest_$2 : NSObject < JavaLangRunnable > {
+ @public
+  JavaUtilConcurrentCountDownLatch *val$slowLatch_;
+  RxSubjectsReplaySubject *val$replay_;
+}
+
+- (void)run;
+
+- (instancetype)initWithJavaUtilConcurrentCountDownLatch:(JavaUtilConcurrentCountDownLatch *)capture$0
+                             withRxSubjectsReplaySubject:(RxSubjectsReplaySubject *)capture$1;
+
+@end
+
+J2OBJC_EMPTY_STATIC_INIT(RxSubjectsReplaySubjectBoundedConcurrencyTest_$2)
+
+J2OBJC_FIELD_SETTER(RxSubjectsReplaySubjectBoundedConcurrencyTest_$2, val$slowLatch_, JavaUtilConcurrentCountDownLatch *)
+J2OBJC_FIELD_SETTER(RxSubjectsReplaySubjectBoundedConcurrencyTest_$2, val$replay_, RxSubjectsReplaySubject *)
+
+__attribute__((unused)) static void RxSubjectsReplaySubjectBoundedConcurrencyTest_$2_initWithJavaUtilConcurrentCountDownLatch_withRxSubjectsReplaySubject_(RxSubjectsReplaySubjectBoundedConcurrencyTest_$2 *self, JavaUtilConcurrentCountDownLatch *capture$0, RxSubjectsReplaySubject *capture$1);
+
+__attribute__((unused)) static RxSubjectsReplaySubjectBoundedConcurrencyTest_$2 *new_RxSubjectsReplaySubjectBoundedConcurrencyTest_$2_initWithJavaUtilConcurrentCountDownLatch_withRxSubjectsReplaySubject_(JavaUtilConcurrentCountDownLatch *capture$0, RxSubjectsReplaySubject *capture$1) NS_RETURNS_RETAINED;
+
+__attribute__((unused)) static RxSubjectsReplaySubjectBoundedConcurrencyTest_$2 *create_RxSubjectsReplaySubjectBoundedConcurrencyTest_$2_initWithJavaUtilConcurrentCountDownLatch_withRxSubjectsReplaySubject_(JavaUtilConcurrentCountDownLatch *capture$0, RxSubjectsReplaySubject *capture$1);
+
+@interface RxSubjectsReplaySubjectBoundedConcurrencyTest_$2_$1 : RxSubscriber {
+ @public
+  RxSubjectsReplaySubjectBoundedConcurrencyTest_$2 *this$0_;
+}
+
+- (void)onCompleted;
+
+- (void)onErrorWithNSException:(NSException *)e;
+
+- (void)onNextWithId:(JavaLangLong *)args;
+
+- (instancetype)initWithRxSubjectsReplaySubjectBoundedConcurrencyTest_$2:(RxSubjectsReplaySubjectBoundedConcurrencyTest_$2 *)outer$;
+
+@end
+
+J2OBJC_EMPTY_STATIC_INIT(RxSubjectsReplaySubjectBoundedConcurrencyTest_$2_$1)
+
+J2OBJC_FIELD_SETTER(RxSubjectsReplaySubjectBoundedConcurrencyTest_$2_$1, this$0_, RxSubjectsReplaySubjectBoundedConcurrencyTest_$2 *)
+
+__attribute__((unused)) static void RxSubjectsReplaySubjectBoundedConcurrencyTest_$2_$1_initWithRxSubjectsReplaySubjectBoundedConcurrencyTest_$2_(RxSubjectsReplaySubjectBoundedConcurrencyTest_$2_$1 *self, RxSubjectsReplaySubjectBoundedConcurrencyTest_$2 *outer$);
+
+__attribute__((unused)) static RxSubjectsReplaySubjectBoundedConcurrencyTest_$2_$1 *new_RxSubjectsReplaySubjectBoundedConcurrencyTest_$2_$1_initWithRxSubjectsReplaySubjectBoundedConcurrencyTest_$2_(RxSubjectsReplaySubjectBoundedConcurrencyTest_$2 *outer$) NS_RETURNS_RETAINED;
+
+__attribute__((unused)) static RxSubjectsReplaySubjectBoundedConcurrencyTest_$2_$1 *create_RxSubjectsReplaySubjectBoundedConcurrencyTest_$2_$1_initWithRxSubjectsReplaySubjectBoundedConcurrencyTest_$2_(RxSubjectsReplaySubjectBoundedConcurrencyTest_$2 *outer$);
+
+@interface RxSubjectsReplaySubjectBoundedConcurrencyTest_$3 : NSObject < JavaLangRunnable > {
+ @public
+  RxSubjectsReplaySubject *val$replay_;
+}
+
+- (void)run;
+
+- (instancetype)initWithRxSubjectsReplaySubject:(RxSubjectsReplaySubject *)capture$0;
+
+@end
+
+J2OBJC_EMPTY_STATIC_INIT(RxSubjectsReplaySubjectBoundedConcurrencyTest_$3)
+
+J2OBJC_FIELD_SETTER(RxSubjectsReplaySubjectBoundedConcurrencyTest_$3, val$replay_, RxSubjectsReplaySubject *)
+
+__attribute__((unused)) static void RxSubjectsReplaySubjectBoundedConcurrencyTest_$3_initWithRxSubjectsReplaySubject_(RxSubjectsReplaySubjectBoundedConcurrencyTest_$3 *self, RxSubjectsReplaySubject *capture$0);
+
+__attribute__((unused)) static RxSubjectsReplaySubjectBoundedConcurrencyTest_$3 *new_RxSubjectsReplaySubjectBoundedConcurrencyTest_$3_initWithRxSubjectsReplaySubject_(RxSubjectsReplaySubject *capture$0) NS_RETURNS_RETAINED;
+
+__attribute__((unused)) static RxSubjectsReplaySubjectBoundedConcurrencyTest_$3 *create_RxSubjectsReplaySubjectBoundedConcurrencyTest_$3_initWithRxSubjectsReplaySubject_(RxSubjectsReplaySubject *capture$0);
+
+@interface RxSubjectsReplaySubjectBoundedConcurrencyTest_$3_$1 : RxSubscriber {
+ @public
+  JavaUtilConcurrentCountDownLatch *val$fastLatch_;
+}
+
+- (void)onCompleted;
+
+- (void)onErrorWithNSException:(NSException *)e;
+
+- (void)onNextWithId:(JavaLangLong *)args;
+
+- (instancetype)initWithJavaUtilConcurrentCountDownLatch:(JavaUtilConcurrentCountDownLatch *)capture$0;
+
+@end
+
+J2OBJC_EMPTY_STATIC_INIT(RxSubjectsReplaySubjectBoundedConcurrencyTest_$3_$1)
+
+J2OBJC_FIELD_SETTER(RxSubjectsReplaySubjectBoundedConcurrencyTest_$3_$1, val$fastLatch_, JavaUtilConcurrentCountDownLatch *)
+
+__attribute__((unused)) static void RxSubjectsReplaySubjectBoundedConcurrencyTest_$3_$1_initWithJavaUtilConcurrentCountDownLatch_(RxSubjectsReplaySubjectBoundedConcurrencyTest_$3_$1 *self, JavaUtilConcurrentCountDownLatch *capture$0);
+
+__attribute__((unused)) static RxSubjectsReplaySubjectBoundedConcurrencyTest_$3_$1 *new_RxSubjectsReplaySubjectBoundedConcurrencyTest_$3_$1_initWithJavaUtilConcurrentCountDownLatch_(JavaUtilConcurrentCountDownLatch *capture$0) NS_RETURNS_RETAINED;
+
+__attribute__((unused)) static RxSubjectsReplaySubjectBoundedConcurrencyTest_$3_$1 *create_RxSubjectsReplaySubjectBoundedConcurrencyTest_$3_$1_initWithJavaUtilConcurrentCountDownLatch_(JavaUtilConcurrentCountDownLatch *capture$0);
+
+@interface RxSubjectsReplaySubjectBoundedConcurrencyTest_$4 : NSObject < RxFunctionsAction1 > {
+ @public
+  JavaUtilConcurrentAtomicAtomicReference *val$value1_;
+}
+
+- (void)callWithId:(NSString *)t1;
+
+- (instancetype)initWithJavaUtilConcurrentAtomicAtomicReference:(JavaUtilConcurrentAtomicAtomicReference *)capture$0;
+
+@end
+
+J2OBJC_EMPTY_STATIC_INIT(RxSubjectsReplaySubjectBoundedConcurrencyTest_$4)
+
+J2OBJC_FIELD_SETTER(RxSubjectsReplaySubjectBoundedConcurrencyTest_$4, val$value1_, JavaUtilConcurrentAtomicAtomicReference *)
+
+__attribute__((unused)) static void RxSubjectsReplaySubjectBoundedConcurrencyTest_$4_initWithJavaUtilConcurrentAtomicAtomicReference_(RxSubjectsReplaySubjectBoundedConcurrencyTest_$4 *self, JavaUtilConcurrentAtomicAtomicReference *capture$0);
+
+__attribute__((unused)) static RxSubjectsReplaySubjectBoundedConcurrencyTest_$4 *new_RxSubjectsReplaySubjectBoundedConcurrencyTest_$4_initWithJavaUtilConcurrentAtomicAtomicReference_(JavaUtilConcurrentAtomicAtomicReference *capture$0) NS_RETURNS_RETAINED;
+
+__attribute__((unused)) static RxSubjectsReplaySubjectBoundedConcurrencyTest_$4 *create_RxSubjectsReplaySubjectBoundedConcurrencyTest_$4_initWithJavaUtilConcurrentAtomicAtomicReference_(JavaUtilConcurrentAtomicAtomicReference *capture$0);
+
+@interface RxSubjectsReplaySubjectBoundedConcurrencyTest_$5 : NSObject < JavaLangRunnable > {
+ @public
+  RxSubjectsReplaySubject *val$subject_;
+}
+
+- (void)run;
+
+- (instancetype)initWithRxSubjectsReplaySubject:(RxSubjectsReplaySubject *)capture$0;
+
+@end
+
+J2OBJC_EMPTY_STATIC_INIT(RxSubjectsReplaySubjectBoundedConcurrencyTest_$5)
+
+J2OBJC_FIELD_SETTER(RxSubjectsReplaySubjectBoundedConcurrencyTest_$5, val$subject_, RxSubjectsReplaySubject *)
+
+__attribute__((unused)) static void RxSubjectsReplaySubjectBoundedConcurrencyTest_$5_initWithRxSubjectsReplaySubject_(RxSubjectsReplaySubjectBoundedConcurrencyTest_$5 *self, RxSubjectsReplaySubject *capture$0);
+
+__attribute__((unused)) static RxSubjectsReplaySubjectBoundedConcurrencyTest_$5 *new_RxSubjectsReplaySubjectBoundedConcurrencyTest_$5_initWithRxSubjectsReplaySubject_(RxSubjectsReplaySubject *capture$0) NS_RETURNS_RETAINED;
+
+__attribute__((unused)) static RxSubjectsReplaySubjectBoundedConcurrencyTest_$5 *create_RxSubjectsReplaySubjectBoundedConcurrencyTest_$5_initWithRxSubjectsReplaySubject_(RxSubjectsReplaySubject *capture$0);
+
+@interface RxSubjectsReplaySubjectBoundedConcurrencyTest_$6 : NSObject < RxFunctionsAction0 > {
  @public
   JavaUtilConcurrentCountDownLatch *val$start_;
   RxSubjectsReplaySubject *val$rs_;
@@ -40,18 +269,18 @@ __attribute__((unused)) static IOSObjectArray *RxSubjectsReplaySubjectBoundedCon
 
 @end
 
-J2OBJC_EMPTY_STATIC_INIT(RxSubjectsReplaySubjectBoundedConcurrencyTest_$1)
+J2OBJC_EMPTY_STATIC_INIT(RxSubjectsReplaySubjectBoundedConcurrencyTest_$6)
 
-J2OBJC_FIELD_SETTER(RxSubjectsReplaySubjectBoundedConcurrencyTest_$1, val$start_, JavaUtilConcurrentCountDownLatch *)
-J2OBJC_FIELD_SETTER(RxSubjectsReplaySubjectBoundedConcurrencyTest_$1, val$rs_, RxSubjectsReplaySubject *)
+J2OBJC_FIELD_SETTER(RxSubjectsReplaySubjectBoundedConcurrencyTest_$6, val$start_, JavaUtilConcurrentCountDownLatch *)
+J2OBJC_FIELD_SETTER(RxSubjectsReplaySubjectBoundedConcurrencyTest_$6, val$rs_, RxSubjectsReplaySubject *)
 
-__attribute__((unused)) static void RxSubjectsReplaySubjectBoundedConcurrencyTest_$1_initWithJavaUtilConcurrentCountDownLatch_withRxSubjectsReplaySubject_(RxSubjectsReplaySubjectBoundedConcurrencyTest_$1 *self, JavaUtilConcurrentCountDownLatch *capture$0, RxSubjectsReplaySubject *capture$1);
+__attribute__((unused)) static void RxSubjectsReplaySubjectBoundedConcurrencyTest_$6_initWithJavaUtilConcurrentCountDownLatch_withRxSubjectsReplaySubject_(RxSubjectsReplaySubjectBoundedConcurrencyTest_$6 *self, JavaUtilConcurrentCountDownLatch *capture$0, RxSubjectsReplaySubject *capture$1);
 
-__attribute__((unused)) static RxSubjectsReplaySubjectBoundedConcurrencyTest_$1 *new_RxSubjectsReplaySubjectBoundedConcurrencyTest_$1_initWithJavaUtilConcurrentCountDownLatch_withRxSubjectsReplaySubject_(JavaUtilConcurrentCountDownLatch *capture$0, RxSubjectsReplaySubject *capture$1) NS_RETURNS_RETAINED;
+__attribute__((unused)) static RxSubjectsReplaySubjectBoundedConcurrencyTest_$6 *new_RxSubjectsReplaySubjectBoundedConcurrencyTest_$6_initWithJavaUtilConcurrentCountDownLatch_withRxSubjectsReplaySubject_(JavaUtilConcurrentCountDownLatch *capture$0, RxSubjectsReplaySubject *capture$1) NS_RETURNS_RETAINED;
 
-__attribute__((unused)) static RxSubjectsReplaySubjectBoundedConcurrencyTest_$1 *create_RxSubjectsReplaySubjectBoundedConcurrencyTest_$1_initWithJavaUtilConcurrentCountDownLatch_withRxSubjectsReplaySubject_(JavaUtilConcurrentCountDownLatch *capture$0, RxSubjectsReplaySubject *capture$1);
+__attribute__((unused)) static RxSubjectsReplaySubjectBoundedConcurrencyTest_$6 *create_RxSubjectsReplaySubjectBoundedConcurrencyTest_$6_initWithJavaUtilConcurrentCountDownLatch_withRxSubjectsReplaySubject_(JavaUtilConcurrentCountDownLatch *capture$0, RxSubjectsReplaySubject *capture$1);
 
-@interface RxSubjectsReplaySubjectBoundedConcurrencyTest_$2 : NSObject < RxObserver > {
+@interface RxSubjectsReplaySubjectBoundedConcurrencyTest_$7 : NSObject < RxObserver > {
  @public
   JavaUtilConcurrentAtomicAtomicReference *val$o_;
   JavaUtilConcurrentCountDownLatch *val$finish_;
@@ -68,18 +297,18 @@ __attribute__((unused)) static RxSubjectsReplaySubjectBoundedConcurrencyTest_$1 
 
 @end
 
-J2OBJC_EMPTY_STATIC_INIT(RxSubjectsReplaySubjectBoundedConcurrencyTest_$2)
+J2OBJC_EMPTY_STATIC_INIT(RxSubjectsReplaySubjectBoundedConcurrencyTest_$7)
 
-J2OBJC_FIELD_SETTER(RxSubjectsReplaySubjectBoundedConcurrencyTest_$2, val$o_, JavaUtilConcurrentAtomicAtomicReference *)
-J2OBJC_FIELD_SETTER(RxSubjectsReplaySubjectBoundedConcurrencyTest_$2, val$finish_, JavaUtilConcurrentCountDownLatch *)
+J2OBJC_FIELD_SETTER(RxSubjectsReplaySubjectBoundedConcurrencyTest_$7, val$o_, JavaUtilConcurrentAtomicAtomicReference *)
+J2OBJC_FIELD_SETTER(RxSubjectsReplaySubjectBoundedConcurrencyTest_$7, val$finish_, JavaUtilConcurrentCountDownLatch *)
 
-__attribute__((unused)) static void RxSubjectsReplaySubjectBoundedConcurrencyTest_$2_initWithJavaUtilConcurrentAtomicAtomicReference_withJavaUtilConcurrentCountDownLatch_(RxSubjectsReplaySubjectBoundedConcurrencyTest_$2 *self, JavaUtilConcurrentAtomicAtomicReference *capture$0, JavaUtilConcurrentCountDownLatch *capture$1);
+__attribute__((unused)) static void RxSubjectsReplaySubjectBoundedConcurrencyTest_$7_initWithJavaUtilConcurrentAtomicAtomicReference_withJavaUtilConcurrentCountDownLatch_(RxSubjectsReplaySubjectBoundedConcurrencyTest_$7 *self, JavaUtilConcurrentAtomicAtomicReference *capture$0, JavaUtilConcurrentCountDownLatch *capture$1);
 
-__attribute__((unused)) static RxSubjectsReplaySubjectBoundedConcurrencyTest_$2 *new_RxSubjectsReplaySubjectBoundedConcurrencyTest_$2_initWithJavaUtilConcurrentAtomicAtomicReference_withJavaUtilConcurrentCountDownLatch_(JavaUtilConcurrentAtomicAtomicReference *capture$0, JavaUtilConcurrentCountDownLatch *capture$1) NS_RETURNS_RETAINED;
+__attribute__((unused)) static RxSubjectsReplaySubjectBoundedConcurrencyTest_$7 *new_RxSubjectsReplaySubjectBoundedConcurrencyTest_$7_initWithJavaUtilConcurrentAtomicAtomicReference_withJavaUtilConcurrentCountDownLatch_(JavaUtilConcurrentAtomicAtomicReference *capture$0, JavaUtilConcurrentCountDownLatch *capture$1) NS_RETURNS_RETAINED;
 
-__attribute__((unused)) static RxSubjectsReplaySubjectBoundedConcurrencyTest_$2 *create_RxSubjectsReplaySubjectBoundedConcurrencyTest_$2_initWithJavaUtilConcurrentAtomicAtomicReference_withJavaUtilConcurrentCountDownLatch_(JavaUtilConcurrentAtomicAtomicReference *capture$0, JavaUtilConcurrentCountDownLatch *capture$1);
+__attribute__((unused)) static RxSubjectsReplaySubjectBoundedConcurrencyTest_$7 *create_RxSubjectsReplaySubjectBoundedConcurrencyTest_$7_initWithJavaUtilConcurrentAtomicAtomicReference_withJavaUtilConcurrentCountDownLatch_(JavaUtilConcurrentAtomicAtomicReference *capture$0, JavaUtilConcurrentCountDownLatch *capture$1);
 
-@interface RxSubjectsReplaySubjectBoundedConcurrencyTest_$3 : NSObject < RxFunctionsAction0 > {
+@interface RxSubjectsReplaySubjectBoundedConcurrencyTest_$8 : NSObject < RxFunctionsAction0 > {
  @public
   RxSubjectsReplaySubject *val$rs_;
 }
@@ -90,33 +319,193 @@ __attribute__((unused)) static RxSubjectsReplaySubjectBoundedConcurrencyTest_$2 
 
 @end
 
-J2OBJC_EMPTY_STATIC_INIT(RxSubjectsReplaySubjectBoundedConcurrencyTest_$3)
+J2OBJC_EMPTY_STATIC_INIT(RxSubjectsReplaySubjectBoundedConcurrencyTest_$8)
 
-J2OBJC_FIELD_SETTER(RxSubjectsReplaySubjectBoundedConcurrencyTest_$3, val$rs_, RxSubjectsReplaySubject *)
+J2OBJC_FIELD_SETTER(RxSubjectsReplaySubjectBoundedConcurrencyTest_$8, val$rs_, RxSubjectsReplaySubject *)
 
-__attribute__((unused)) static void RxSubjectsReplaySubjectBoundedConcurrencyTest_$3_initWithRxSubjectsReplaySubject_(RxSubjectsReplaySubjectBoundedConcurrencyTest_$3 *self, RxSubjectsReplaySubject *capture$0);
+__attribute__((unused)) static void RxSubjectsReplaySubjectBoundedConcurrencyTest_$8_initWithRxSubjectsReplaySubject_(RxSubjectsReplaySubjectBoundedConcurrencyTest_$8 *self, RxSubjectsReplaySubject *capture$0);
 
-__attribute__((unused)) static RxSubjectsReplaySubjectBoundedConcurrencyTest_$3 *new_RxSubjectsReplaySubjectBoundedConcurrencyTest_$3_initWithRxSubjectsReplaySubject_(RxSubjectsReplaySubject *capture$0) NS_RETURNS_RETAINED;
+__attribute__((unused)) static RxSubjectsReplaySubjectBoundedConcurrencyTest_$8 *new_RxSubjectsReplaySubjectBoundedConcurrencyTest_$8_initWithRxSubjectsReplaySubject_(RxSubjectsReplaySubject *capture$0) NS_RETURNS_RETAINED;
 
-__attribute__((unused)) static RxSubjectsReplaySubjectBoundedConcurrencyTest_$3 *create_RxSubjectsReplaySubjectBoundedConcurrencyTest_$3_initWithRxSubjectsReplaySubject_(RxSubjectsReplaySubject *capture$0);
+__attribute__((unused)) static RxSubjectsReplaySubjectBoundedConcurrencyTest_$8 *create_RxSubjectsReplaySubjectBoundedConcurrencyTest_$8_initWithRxSubjectsReplaySubject_(RxSubjectsReplaySubject *capture$0);
+
+@interface RxSubjectsReplaySubjectBoundedConcurrencyTest_$9 : NSObject < JavaLangRunnable > {
+ @public
+  JavaUtilConcurrentCyclicBarrier *val$cb_;
+  RxSubjectsReplaySubject *val$rs_;
+}
+
+- (void)run;
+
+- (instancetype)initWithJavaUtilConcurrentCyclicBarrier:(JavaUtilConcurrentCyclicBarrier *)capture$0
+                            withRxSubjectsReplaySubject:(RxSubjectsReplaySubject *)capture$1;
+
+@end
+
+J2OBJC_EMPTY_STATIC_INIT(RxSubjectsReplaySubjectBoundedConcurrencyTest_$9)
+
+J2OBJC_FIELD_SETTER(RxSubjectsReplaySubjectBoundedConcurrencyTest_$9, val$cb_, JavaUtilConcurrentCyclicBarrier *)
+J2OBJC_FIELD_SETTER(RxSubjectsReplaySubjectBoundedConcurrencyTest_$9, val$rs_, RxSubjectsReplaySubject *)
+
+__attribute__((unused)) static void RxSubjectsReplaySubjectBoundedConcurrencyTest_$9_initWithJavaUtilConcurrentCyclicBarrier_withRxSubjectsReplaySubject_(RxSubjectsReplaySubjectBoundedConcurrencyTest_$9 *self, JavaUtilConcurrentCyclicBarrier *capture$0, RxSubjectsReplaySubject *capture$1);
+
+__attribute__((unused)) static RxSubjectsReplaySubjectBoundedConcurrencyTest_$9 *new_RxSubjectsReplaySubjectBoundedConcurrencyTest_$9_initWithJavaUtilConcurrentCyclicBarrier_withRxSubjectsReplaySubject_(JavaUtilConcurrentCyclicBarrier *capture$0, RxSubjectsReplaySubject *capture$1) NS_RETURNS_RETAINED;
+
+__attribute__((unused)) static RxSubjectsReplaySubjectBoundedConcurrencyTest_$9 *create_RxSubjectsReplaySubjectBoundedConcurrencyTest_$9_initWithJavaUtilConcurrentCyclicBarrier_withRxSubjectsReplaySubject_(JavaUtilConcurrentCyclicBarrier *capture$0, RxSubjectsReplaySubject *capture$1);
+
+@interface RxSubjectsReplaySubjectBoundedConcurrencyTest_$10 : NSObject < JavaLangRunnable > {
+ @public
+  JavaUtilConcurrentCyclicBarrier *val$cb_;
+  RxSubjectsReplaySubject *val$rs_;
+}
+
+- (void)run;
+
+- (instancetype)initWithJavaUtilConcurrentCyclicBarrier:(JavaUtilConcurrentCyclicBarrier *)capture$0
+                            withRxSubjectsReplaySubject:(RxSubjectsReplaySubject *)capture$1;
+
+@end
+
+J2OBJC_EMPTY_STATIC_INIT(RxSubjectsReplaySubjectBoundedConcurrencyTest_$10)
+
+J2OBJC_FIELD_SETTER(RxSubjectsReplaySubjectBoundedConcurrencyTest_$10, val$cb_, JavaUtilConcurrentCyclicBarrier *)
+J2OBJC_FIELD_SETTER(RxSubjectsReplaySubjectBoundedConcurrencyTest_$10, val$rs_, RxSubjectsReplaySubject *)
+
+__attribute__((unused)) static void RxSubjectsReplaySubjectBoundedConcurrencyTest_$10_initWithJavaUtilConcurrentCyclicBarrier_withRxSubjectsReplaySubject_(RxSubjectsReplaySubjectBoundedConcurrencyTest_$10 *self, JavaUtilConcurrentCyclicBarrier *capture$0, RxSubjectsReplaySubject *capture$1);
+
+__attribute__((unused)) static RxSubjectsReplaySubjectBoundedConcurrencyTest_$10 *new_RxSubjectsReplaySubjectBoundedConcurrencyTest_$10_initWithJavaUtilConcurrentCyclicBarrier_withRxSubjectsReplaySubject_(JavaUtilConcurrentCyclicBarrier *capture$0, RxSubjectsReplaySubject *capture$1) NS_RETURNS_RETAINED;
+
+__attribute__((unused)) static RxSubjectsReplaySubjectBoundedConcurrencyTest_$10 *create_RxSubjectsReplaySubjectBoundedConcurrencyTest_$10_initWithJavaUtilConcurrentCyclicBarrier_withRxSubjectsReplaySubject_(JavaUtilConcurrentCyclicBarrier *capture$0, RxSubjectsReplaySubject *capture$1);
+
+@interface RxSubjectsReplaySubjectBoundedConcurrencyTest_$11 : NSObject < JavaLangRunnable > {
+ @public
+  JavaUtilConcurrentCyclicBarrier *val$cb_;
+  RxSubjectsReplaySubject *val$rs_;
+}
+
+- (void)run;
+
+- (instancetype)initWithJavaUtilConcurrentCyclicBarrier:(JavaUtilConcurrentCyclicBarrier *)capture$0
+                            withRxSubjectsReplaySubject:(RxSubjectsReplaySubject *)capture$1;
+
+@end
+
+J2OBJC_EMPTY_STATIC_INIT(RxSubjectsReplaySubjectBoundedConcurrencyTest_$11)
+
+J2OBJC_FIELD_SETTER(RxSubjectsReplaySubjectBoundedConcurrencyTest_$11, val$cb_, JavaUtilConcurrentCyclicBarrier *)
+J2OBJC_FIELD_SETTER(RxSubjectsReplaySubjectBoundedConcurrencyTest_$11, val$rs_, RxSubjectsReplaySubject *)
+
+__attribute__((unused)) static void RxSubjectsReplaySubjectBoundedConcurrencyTest_$11_initWithJavaUtilConcurrentCyclicBarrier_withRxSubjectsReplaySubject_(RxSubjectsReplaySubjectBoundedConcurrencyTest_$11 *self, JavaUtilConcurrentCyclicBarrier *capture$0, RxSubjectsReplaySubject *capture$1);
+
+__attribute__((unused)) static RxSubjectsReplaySubjectBoundedConcurrencyTest_$11 *new_RxSubjectsReplaySubjectBoundedConcurrencyTest_$11_initWithJavaUtilConcurrentCyclicBarrier_withRxSubjectsReplaySubject_(JavaUtilConcurrentCyclicBarrier *capture$0, RxSubjectsReplaySubject *capture$1) NS_RETURNS_RETAINED;
+
+__attribute__((unused)) static RxSubjectsReplaySubjectBoundedConcurrencyTest_$11 *create_RxSubjectsReplaySubjectBoundedConcurrencyTest_$11_initWithJavaUtilConcurrentCyclicBarrier_withRxSubjectsReplaySubject_(JavaUtilConcurrentCyclicBarrier *capture$0, RxSubjectsReplaySubject *capture$1);
 
 @implementation RxSubjectsReplaySubjectBoundedConcurrencyTest
+
++ (void)mainWithNSStringArray:(IOSObjectArray *)args {
+  RxSubjectsReplaySubjectBoundedConcurrencyTest_mainWithNSStringArray_(args);
+}
+
+- (void)testReplaySubjectConcurrentSubscribersDoingReplayDontBlockEachOther {
+  RxSubjectsReplaySubject *replay = RxSubjectsReplaySubject_createUnbounded();
+  JavaLangThread *source = create_JavaLangThread_initWithJavaLangRunnable_(create_RxSubjectsReplaySubjectBoundedConcurrencyTest_$1_initWithRxSubjectsReplaySubject_(replay));
+  [source start];
+  jlong v = [((JavaLangLong *) nil_chk([((RxObservablesBlockingObservable *) nil_chk([((RxSubjectsReplaySubject *) nil_chk(replay)) toBlocking])) last])) longLongValue];
+  OrgJunitAssert_assertEqualsWithLong_withLong_(10000, v);
+  JavaUtilConcurrentCountDownLatch *slowLatch = create_JavaUtilConcurrentCountDownLatch_initWithInt_(1);
+  JavaLangThread *slowThread = create_JavaLangThread_initWithJavaLangRunnable_(create_RxSubjectsReplaySubjectBoundedConcurrencyTest_$2_initWithJavaUtilConcurrentCountDownLatch_withRxSubjectsReplaySubject_(slowLatch, replay));
+  [slowThread start];
+  JavaLangThread *fastThread = create_JavaLangThread_initWithJavaLangRunnable_(create_RxSubjectsReplaySubjectBoundedConcurrencyTest_$3_initWithRxSubjectsReplaySubject_(replay));
+  [fastThread start];
+  [fastThread join];
+  OrgJunitAssert_assertEqualsWithLong_withLong_(1, [slowLatch getCount]);
+  [slowThread join];
+}
+
+- (void)unboundedReplaySubjectConcurrentSubscriptionsLoop {
+  for (jint i = 0; i < 50; i++) {
+    [((JavaIoPrintStream *) nil_chk(JreLoadStatic(JavaLangSystem, out))) printlnWithNSString:JreStrcat("I$", i, @" --------------------------------------------------------------- ")];
+    [self unboundedReplaySubjectConcurrentSubscriptions];
+  }
+}
+
+- (void)unboundedReplaySubjectConcurrentSubscriptions {
+  RxSubjectsReplaySubject *replay = RxSubjectsReplaySubject_createUnbounded();
+  RxSubjectsReplaySubjectConcurrencyTest_concurrencyTestWithRxSubjectsReplaySubject_(replay);
+}
+
+- (void)unboundedTimeReplaySubjectConcurrentSubscriptionsLoop {
+  for (jint i = 0; i < 50; i++) {
+    [((JavaIoPrintStream *) nil_chk(JreLoadStatic(JavaLangSystem, out))) printlnWithNSString:JreStrcat("I$", i, @" --------------------------------------------------------------- ")];
+    [self unboundedTimeReplaySubjectConcurrentSubscriptions];
+  }
+}
+
+- (void)unboundedTimeReplaySubjectConcurrentSubscriptions {
+  RxSubjectsReplaySubject *replay = RxSubjectsReplaySubject_createUnboundedTime();
+  RxSubjectsReplaySubjectConcurrencyTest_concurrencyTestWithRxSubjectsReplaySubject_(replay);
+}
+
+- (void)testSubscribeCompletionRaceCondition {
+  for (jint i = 0; i < 50; i++) {
+    RxSubjectsReplaySubject *subject = RxSubjectsReplaySubject_createUnbounded();
+    JavaUtilConcurrentAtomicAtomicReference *value1 = create_JavaUtilConcurrentAtomicAtomicReference_init();
+    [((RxSubjectsReplaySubject *) nil_chk(subject)) subscribeWithRxFunctionsAction1:create_RxSubjectsReplaySubjectBoundedConcurrencyTest_$4_initWithJavaUtilConcurrentAtomicAtomicReference_(value1)];
+    JavaLangThread *t1 = create_JavaLangThread_initWithJavaLangRunnable_(create_RxSubjectsReplaySubjectBoundedConcurrencyTest_$5_initWithRxSubjectsReplaySubject_(subject));
+    RxSubjectsReplaySubjectBoundedConcurrencyTest_SubjectObserverThread *t2 = create_RxSubjectsReplaySubjectBoundedConcurrencyTest_SubjectObserverThread_initWithRxSubjectsReplaySubject_(subject);
+    RxSubjectsReplaySubjectBoundedConcurrencyTest_SubjectObserverThread *t3 = create_RxSubjectsReplaySubjectBoundedConcurrencyTest_SubjectObserverThread_initWithRxSubjectsReplaySubject_(subject);
+    RxSubjectsReplaySubjectBoundedConcurrencyTest_SubjectObserverThread *t4 = create_RxSubjectsReplaySubjectBoundedConcurrencyTest_SubjectObserverThread_initWithRxSubjectsReplaySubject_(subject);
+    RxSubjectsReplaySubjectBoundedConcurrencyTest_SubjectObserverThread *t5 = create_RxSubjectsReplaySubjectBoundedConcurrencyTest_SubjectObserverThread_initWithRxSubjectsReplaySubject_(subject);
+    [t2 start];
+    [t3 start];
+    [t1 start];
+    [t4 start];
+    [t5 start];
+    @try {
+      [t1 join];
+      [t2 join];
+      [t3 join];
+      [t4 join];
+      [t5 join];
+    }
+    @catch (JavaLangInterruptedException *e) {
+      @throw create_JavaLangRuntimeException_initWithNSException_(e);
+    }
+    OrgJunitAssert_assertEqualsWithId_withId_(@"value", [value1 get]);
+    OrgJunitAssert_assertEqualsWithId_withId_(@"value", [((JavaUtilConcurrentAtomicAtomicReference *) nil_chk(t2->value_)) get]);
+    OrgJunitAssert_assertEqualsWithId_withId_(@"value", [t3->value_ get]);
+    OrgJunitAssert_assertEqualsWithId_withId_(@"value", [t4->value_ get]);
+    OrgJunitAssert_assertEqualsWithId_withId_(@"value", [t5->value_ get]);
+  }
+}
+
+- (void)testRaceForTerminalState {
+  id<JavaUtilList> expected = JavaUtilArrays_asListWithNSObjectArray_([IOSObjectArray arrayWithObjects:(id[]){ JavaLangInteger_valueOfWithInt_(1) } count:1 type:JavaLangInteger_class_()]);
+  for (jint i = 0; i < 100000; i++) {
+    RxObserversTestSubscriber *ts = create_RxObserversTestSubscriber_init();
+    [((RxObservable *) nil_chk([((RxObservable *) nil_chk([((RxObservable *) nil_chk(RxObservable_justWithId_(JavaLangInteger_valueOfWithInt_(1)))) subscribeOnWithRxScheduler:RxSchedulersSchedulers_computation()])) cache])) subscribeWithRxSubscriber:ts];
+    [ts awaitTerminalEvent];
+    [ts assertReceivedOnNextWithJavaUtilList:expected];
+    [ts assertTerminalEvent];
+  }
+}
 
 - (void)testReplaySubjectEmissionSubscriptionRace {
   RxScheduler *s = RxSchedulersSchedulers_io();
   RxScheduler_Worker *worker = [((RxScheduler *) nil_chk(RxSchedulersSchedulers_io())) createWorker];
   @try {
-    for (jint i = 0; i < 5000; i++) {
+    for (jint i = 0; i < 50000; i++) {
       @autoreleasepool {
-        if (i % 100 == 0) {
+        if (i % 1000 == 0) {
           [((JavaIoPrintStream *) nil_chk(JreLoadStatic(JavaLangSystem, out))) printlnWithInt:i];
         }
         RxSubjectsReplaySubject *rs = RxSubjectsReplaySubject_createWithSizeWithInt_(2);
         JavaUtilConcurrentCountDownLatch *finish = create_JavaUtilConcurrentCountDownLatch_initWithInt_(1);
         JavaUtilConcurrentCountDownLatch *start = create_JavaUtilConcurrentCountDownLatch_initWithInt_(1);
-        [((RxScheduler_Worker *) nil_chk(worker)) scheduleWithRxFunctionsAction0:create_RxSubjectsReplaySubjectBoundedConcurrencyTest_$1_initWithJavaUtilConcurrentCountDownLatch_withRxSubjectsReplaySubject_(start, rs)];
+        [((RxScheduler_Worker *) nil_chk(worker)) scheduleWithRxFunctionsAction0:create_RxSubjectsReplaySubjectBoundedConcurrencyTest_$6_initWithJavaUtilConcurrentCountDownLatch_withRxSubjectsReplaySubject_(start, rs)];
         JavaUtilConcurrentAtomicAtomicReference *o = create_JavaUtilConcurrentAtomicAtomicReference_init();
-        [((RxObservable *) nil_chk([((RxObservable *) nil_chk([((RxSubjectsReplaySubject *) nil_chk(rs)) subscribeOnWithRxScheduler:s])) observeOnWithRxScheduler:RxSchedulersSchedulers_io()])) subscribeWithRxObserver:create_RxSubjectsReplaySubjectBoundedConcurrencyTest_$2_initWithJavaUtilConcurrentAtomicAtomicReference_withJavaUtilConcurrentCountDownLatch_(o, finish)];
+        [((RxObservable *) nil_chk([((RxObservable *) nil_chk([((RxSubjectsReplaySubject *) nil_chk(rs)) subscribeOnWithRxScheduler:s])) observeOnWithRxScheduler:RxSchedulersSchedulers_io()])) subscribeWithRxObserver:create_RxSubjectsReplaySubjectBoundedConcurrencyTest_$7_initWithJavaUtilConcurrentAtomicAtomicReference_withJavaUtilConcurrentCountDownLatch_(o, finish)];
         [start countDown];
         if (![finish awaitWithLong:5 withJavaUtilConcurrentTimeUnit:JreLoadEnum(JavaUtilConcurrentTimeUnit, SECONDS)]) {
           [((JavaIoPrintStream *) nil_chk(JreLoadStatic(JavaLangSystem, out))) printlnWithId:[o get]];
@@ -127,7 +516,7 @@ __attribute__((unused)) static RxSubjectsReplaySubjectBoundedConcurrencyTest_$3 
         }
         else {
           OrgJunitAssert_assertEqualsWithId_withId_(JavaLangInteger_valueOfWithInt_(1), [o get]);
-          [worker scheduleWithRxFunctionsAction0:create_RxSubjectsReplaySubjectBoundedConcurrencyTest_$3_initWithRxSubjectsReplaySubject_(rs)];
+          [worker scheduleWithRxFunctionsAction0:create_RxSubjectsReplaySubjectBoundedConcurrencyTest_$8_initWithRxSubjectsReplaySubject_(rs)];
         }
       }
     }
@@ -135,6 +524,98 @@ __attribute__((unused)) static RxSubjectsReplaySubjectBoundedConcurrencyTest_$3 
   @finally {
     [((RxScheduler_Worker *) nil_chk(worker)) unsubscribe];
   }
+}
+
+- (void)testConcurrentSizeAndHasAnyValue {
+  RxSubjectsReplaySubject *rs = RxSubjectsReplaySubject_createUnbounded();
+  JavaUtilConcurrentCyclicBarrier *cb = create_JavaUtilConcurrentCyclicBarrier_initWithInt_(2);
+  JavaLangThread *t = create_JavaLangThread_initWithJavaLangRunnable_(create_RxSubjectsReplaySubjectBoundedConcurrencyTest_$9_initWithJavaUtilConcurrentCyclicBarrier_withRxSubjectsReplaySubject_(cb, rs));
+  [t start];
+  @try {
+    [cb await];
+  }
+  @catch (JavaLangInterruptedException *e) {
+    return;
+  }
+  @catch (JavaUtilConcurrentBrokenBarrierException *e) {
+    return;
+  }
+  jint lastSize = 0;
+  for (; ![((RxSubjectsReplaySubject *) nil_chk(rs)) hasThrowable] && ![rs hasCompleted]; ) {
+    jint size = [rs size];
+    jboolean hasAny = [rs hasAnyValue];
+    IOSObjectArray *values = [rs getValues];
+    if (size < lastSize) {
+      OrgJunitAssert_failWithNSString_(JreStrcat("$I$I", @"Size decreased! ", lastSize, @" -> ", size));
+    }
+    if ((size > 0) && !hasAny) {
+      OrgJunitAssert_failWithNSString_(@"hasAnyValue reports emptiness but size doesn't");
+    }
+    if (size > ((IOSObjectArray *) nil_chk(values))->size_) {
+      OrgJunitAssert_failWithNSString_(JreStrcat("$I$I", @"Got fewer values than size! ", size, @" -> ", values->size_));
+    }
+    for (jint i = 0; i < values->size_ - 1; i++) {
+      JavaLangInteger *v1 = (JavaLangInteger *) cast_chk(IOSObjectArray_Get(values, i), [JavaLangInteger class]);
+      JavaLangInteger *v2 = (JavaLangInteger *) cast_chk(IOSObjectArray_Get(values, i + 1), [JavaLangInteger class]);
+      OrgJunitAssert_assertEqualsWithLong_withLong_(1, [((JavaLangInteger *) nil_chk(v2)) intValue] - [((JavaLangInteger *) nil_chk(v1)) intValue]);
+    }
+    lastSize = size;
+  }
+  [t join];
+}
+
+- (void)testConcurrentSizeAndHasAnyValueBounded {
+  RxSubjectsReplaySubject *rs = RxSubjectsReplaySubject_createWithSizeWithInt_(3);
+  JavaUtilConcurrentCyclicBarrier *cb = create_JavaUtilConcurrentCyclicBarrier_initWithInt_(2);
+  JavaLangThread *t = create_JavaLangThread_initWithJavaLangRunnable_(create_RxSubjectsReplaySubjectBoundedConcurrencyTest_$10_initWithJavaUtilConcurrentCyclicBarrier_withRxSubjectsReplaySubject_(cb, rs));
+  [t start];
+  @try {
+    [cb await];
+  }
+  @catch (JavaLangInterruptedException *e) {
+    return;
+  }
+  @catch (JavaUtilConcurrentBrokenBarrierException *e) {
+    return;
+  }
+  for (; ![((RxSubjectsReplaySubject *) nil_chk(rs)) hasThrowable] && ![rs hasCompleted]; ) {
+    [rs size];
+    [rs hasAnyValue];
+    IOSObjectArray *values = [rs getValues];
+    for (jint i = 0; i < ((IOSObjectArray *) nil_chk(values))->size_ - 1; i++) {
+      JavaLangInteger *v1 = (JavaLangInteger *) cast_chk(IOSObjectArray_Get(values, i), [JavaLangInteger class]);
+      JavaLangInteger *v2 = (JavaLangInteger *) cast_chk(IOSObjectArray_Get(values, i + 1), [JavaLangInteger class]);
+      OrgJunitAssert_assertEqualsWithLong_withLong_(1, [((JavaLangInteger *) nil_chk(v2)) intValue] - [((JavaLangInteger *) nil_chk(v1)) intValue]);
+    }
+  }
+  [t join];
+}
+
+- (void)testConcurrentSizeAndHasAnyValueTimeBounded {
+  RxSubjectsReplaySubject *rs = RxSubjectsReplaySubject_createWithTimeWithLong_withJavaUtilConcurrentTimeUnit_withRxScheduler_(1, JreLoadEnum(JavaUtilConcurrentTimeUnit, MILLISECONDS), RxSchedulersSchedulers_computation());
+  JavaUtilConcurrentCyclicBarrier *cb = create_JavaUtilConcurrentCyclicBarrier_initWithInt_(2);
+  JavaLangThread *t = create_JavaLangThread_initWithJavaLangRunnable_(create_RxSubjectsReplaySubjectBoundedConcurrencyTest_$11_initWithJavaUtilConcurrentCyclicBarrier_withRxSubjectsReplaySubject_(cb, rs));
+  [t start];
+  @try {
+    [cb await];
+  }
+  @catch (JavaLangInterruptedException *e) {
+    return;
+  }
+  @catch (JavaUtilConcurrentBrokenBarrierException *e) {
+    return;
+  }
+  for (; ![((RxSubjectsReplaySubject *) nil_chk(rs)) hasThrowable] && ![rs hasCompleted]; ) {
+    [rs size];
+    [rs hasAnyValue];
+    IOSObjectArray *values = [rs getValues];
+    for (jint i = 0; i < ((IOSObjectArray *) nil_chk(values))->size_ - 1; i++) {
+      JavaLangInteger *v1 = (JavaLangInteger *) cast_chk(IOSObjectArray_Get(values, i), [JavaLangInteger class]);
+      JavaLangInteger *v2 = (JavaLangInteger *) cast_chk(IOSObjectArray_Get(values, i + 1), [JavaLangInteger class]);
+      OrgJunitAssert_assertEqualsWithLong_withLong_(1, [((JavaLangInteger *) nil_chk(v2)) intValue] - [((JavaLangInteger *) nil_chk(v1)) intValue]);
+    }
+  }
+  [t join];
 }
 
 J2OBJC_IGNORE_DESIGNATED_BEGIN
@@ -146,20 +627,56 @@ J2OBJC_IGNORE_DESIGNATED_END
 
 + (const J2ObjcClassInfo *)__metadata {
   static J2ObjcMethodInfo methods[] = {
-    { NULL, "V", 0x1, -1, -1, 0, -1, 1, -1 },
+    { NULL, "V", 0x9, 0, 1, -1, -1, -1, -1 },
+    { NULL, "V", 0x1, -1, -1, 2, -1, 3, -1 },
+    { NULL, "V", 0x1, -1, -1, 4, -1, -1, -1 },
+    { NULL, "V", 0x1, -1, -1, 2, -1, 5, -1 },
+    { NULL, "V", 0x1, -1, -1, 4, -1, -1, -1 },
+    { NULL, "V", 0x1, -1, -1, 2, -1, 6, -1 },
+    { NULL, "V", 0x1, -1, -1, -1, -1, 7, -1 },
+    { NULL, "V", 0x1, -1, -1, -1, -1, 8, -1 },
+    { NULL, "V", 0x1, -1, -1, 4, -1, 9, -1 },
+    { NULL, "V", 0x1, -1, -1, 2, -1, 10, -1 },
+    { NULL, "V", 0x1, -1, -1, 2, -1, 11, -1 },
+    { NULL, "V", 0x1, -1, -1, 2, -1, 12, -1 },
     { NULL, NULL, 0x1, -1, -1, -1, -1, -1, -1 },
   };
   #pragma clang diagnostic push
   #pragma clang diagnostic ignored "-Wobjc-multiple-method-names"
-  methods[0].selector = @selector(testReplaySubjectEmissionSubscriptionRace);
-  methods[1].selector = @selector(init);
+  methods[0].selector = @selector(mainWithNSStringArray:);
+  methods[1].selector = @selector(testReplaySubjectConcurrentSubscribersDoingReplayDontBlockEachOther);
+  methods[2].selector = @selector(unboundedReplaySubjectConcurrentSubscriptionsLoop);
+  methods[3].selector = @selector(unboundedReplaySubjectConcurrentSubscriptions);
+  methods[4].selector = @selector(unboundedTimeReplaySubjectConcurrentSubscriptionsLoop);
+  methods[5].selector = @selector(unboundedTimeReplaySubjectConcurrentSubscriptions);
+  methods[6].selector = @selector(testSubscribeCompletionRaceCondition);
+  methods[7].selector = @selector(testRaceForTerminalState);
+  methods[8].selector = @selector(testReplaySubjectEmissionSubscriptionRace);
+  methods[9].selector = @selector(testConcurrentSizeAndHasAnyValue);
+  methods[10].selector = @selector(testConcurrentSizeAndHasAnyValueBounded);
+  methods[11].selector = @selector(testConcurrentSizeAndHasAnyValueTimeBounded);
+  methods[12].selector = @selector(init);
   #pragma clang diagnostic pop
-  static const void *ptrTable[] = { "LJavaLangException;", (void *)&RxSubjectsReplaySubjectBoundedConcurrencyTest__Annotations$0 };
-  static const J2ObjcClassInfo _RxSubjectsReplaySubjectBoundedConcurrencyTest = { "ReplaySubjectBoundedConcurrencyTest", "rx.subjects", ptrTable, methods, NULL, 7, 0x1, 2, 0, -1, -1, -1, -1, -1 };
+  static const void *ptrTable[] = { "main", "[LNSString;", "LJavaLangInterruptedException;", (void *)&RxSubjectsReplaySubjectBoundedConcurrencyTest__Annotations$0, "LJavaLangException;", (void *)&RxSubjectsReplaySubjectBoundedConcurrencyTest__Annotations$1, (void *)&RxSubjectsReplaySubjectBoundedConcurrencyTest__Annotations$2, (void *)&RxSubjectsReplaySubjectBoundedConcurrencyTest__Annotations$3, (void *)&RxSubjectsReplaySubjectBoundedConcurrencyTest__Annotations$4, (void *)&RxSubjectsReplaySubjectBoundedConcurrencyTest__Annotations$5, (void *)&RxSubjectsReplaySubjectBoundedConcurrencyTest__Annotations$6, (void *)&RxSubjectsReplaySubjectBoundedConcurrencyTest__Annotations$7, (void *)&RxSubjectsReplaySubjectBoundedConcurrencyTest__Annotations$8, "LRxSubjectsReplaySubjectBoundedConcurrencyTest_SubjectObserverThread;" };
+  static const J2ObjcClassInfo _RxSubjectsReplaySubjectBoundedConcurrencyTest = { "ReplaySubjectBoundedConcurrencyTest", "rx.subjects", ptrTable, methods, NULL, 7, 0x1, 13, 0, -1, 13, -1, -1, -1 };
   return &_RxSubjectsReplaySubjectBoundedConcurrencyTest;
 }
 
 @end
+
+void RxSubjectsReplaySubjectBoundedConcurrencyTest_mainWithNSStringArray_(IOSObjectArray *args) {
+  RxSubjectsReplaySubjectBoundedConcurrencyTest_initialize();
+  @try {
+    for (jint i = 0; i < 100; i++) {
+      [create_RxSubjectsReplaySubjectConcurrencyTest_init() testSubscribeCompletionRaceCondition];
+      [create_RxSubjectsReplaySubjectConcurrencyTest_init() testReplaySubjectConcurrentSubscriptions];
+      [create_RxSubjectsReplaySubjectConcurrencyTest_init() testReplaySubjectConcurrentSubscribersDoingReplayDontBlockEachOther];
+    }
+  }
+  @catch (JavaLangInterruptedException *e) {
+    [((JavaLangInterruptedException *) nil_chk(e)) printStackTrace];
+  }
+}
 
 void RxSubjectsReplaySubjectBoundedConcurrencyTest_init(RxSubjectsReplaySubjectBoundedConcurrencyTest *self) {
   NSObject_init(self);
@@ -174,12 +691,556 @@ RxSubjectsReplaySubjectBoundedConcurrencyTest *create_RxSubjectsReplaySubjectBou
 }
 
 IOSObjectArray *RxSubjectsReplaySubjectBoundedConcurrencyTest__Annotations$0() {
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 4000) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+}
+
+IOSObjectArray *RxSubjectsReplaySubjectBoundedConcurrencyTest__Annotations$1() {
   return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+}
+
+IOSObjectArray *RxSubjectsReplaySubjectBoundedConcurrencyTest__Annotations$2() {
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+}
+
+IOSObjectArray *RxSubjectsReplaySubjectBoundedConcurrencyTest__Annotations$3() {
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 10000) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+}
+
+IOSObjectArray *RxSubjectsReplaySubjectBoundedConcurrencyTest__Annotations$4() {
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+}
+
+IOSObjectArray *RxSubjectsReplaySubjectBoundedConcurrencyTest__Annotations$5() {
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+}
+
+IOSObjectArray *RxSubjectsReplaySubjectBoundedConcurrencyTest__Annotations$6() {
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 5000) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+}
+
+IOSObjectArray *RxSubjectsReplaySubjectBoundedConcurrencyTest__Annotations$7() {
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 5000) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+}
+
+IOSObjectArray *RxSubjectsReplaySubjectBoundedConcurrencyTest__Annotations$8() {
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 10000) } count:1 type:JavaLangAnnotationAnnotation_class_()];
 }
 
 J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxSubjectsReplaySubjectBoundedConcurrencyTest)
 
+@implementation RxSubjectsReplaySubjectBoundedConcurrencyTest_SubjectObserverThread
+
+- (instancetype)initWithRxSubjectsReplaySubject:(RxSubjectsReplaySubject *)subject {
+  RxSubjectsReplaySubjectBoundedConcurrencyTest_SubjectObserverThread_initWithRxSubjectsReplaySubject_(self, subject);
+  return self;
+}
+
+- (void)run {
+  @try {
+    NSString *v = [((RxObservablesBlockingObservable *) nil_chk([((RxObservable *) nil_chk([((RxSubjectsReplaySubject *) nil_chk(subject_)) timeoutWithLong:2000 withJavaUtilConcurrentTimeUnit:JreLoadEnum(JavaUtilConcurrentTimeUnit, MILLISECONDS)])) toBlocking])) single];
+    [((JavaUtilConcurrentAtomicAtomicReference *) nil_chk(value_)) setWithId:v];
+  }
+  @catch (JavaLangException *e) {
+    [((JavaLangException *) nil_chk(e)) printStackTrace];
+  }
+}
+
+- (void)dealloc {
+  RELEASE_(subject_);
+  RELEASE_(value_);
+  [super dealloc];
+}
+
++ (const J2ObjcClassInfo *)__metadata {
+  static J2ObjcMethodInfo methods[] = {
+    { NULL, NULL, 0x1, -1, 0, -1, 1, -1, -1 },
+    { NULL, "V", 0x1, -1, -1, -1, -1, -1, -1 },
+  };
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Wobjc-multiple-method-names"
+  methods[0].selector = @selector(initWithRxSubjectsReplaySubject:);
+  methods[1].selector = @selector(run);
+  #pragma clang diagnostic pop
+  static const J2ObjcFieldInfo fields[] = {
+    { "subject_", "LRxSubjectsReplaySubject;", .constantValue.asLong = 0, 0x12, -1, -1, 2, -1 },
+    { "value_", "LJavaUtilConcurrentAtomicAtomicReference;", .constantValue.asLong = 0, 0x12, -1, -1, 3, -1 },
+  };
+  static const void *ptrTable[] = { "LRxSubjectsReplaySubject;", "(Lrx/subjects/ReplaySubject<Ljava/lang/String;>;)V", "Lrx/subjects/ReplaySubject<Ljava/lang/String;>;", "Ljava/util/concurrent/atomic/AtomicReference<Ljava/lang/String;>;", "LRxSubjectsReplaySubjectBoundedConcurrencyTest;" };
+  static const J2ObjcClassInfo _RxSubjectsReplaySubjectBoundedConcurrencyTest_SubjectObserverThread = { "SubjectObserverThread", "rx.subjects", ptrTable, methods, fields, 7, 0xa, 2, 2, 4, -1, -1, -1, -1 };
+  return &_RxSubjectsReplaySubjectBoundedConcurrencyTest_SubjectObserverThread;
+}
+
+@end
+
+void RxSubjectsReplaySubjectBoundedConcurrencyTest_SubjectObserverThread_initWithRxSubjectsReplaySubject_(RxSubjectsReplaySubjectBoundedConcurrencyTest_SubjectObserverThread *self, RxSubjectsReplaySubject *subject) {
+  JavaLangThread_init(self);
+  JreStrongAssignAndConsume(&self->value_, new_JavaUtilConcurrentAtomicAtomicReference_init());
+  JreStrongAssign(&self->subject_, subject);
+}
+
+RxSubjectsReplaySubjectBoundedConcurrencyTest_SubjectObserverThread *new_RxSubjectsReplaySubjectBoundedConcurrencyTest_SubjectObserverThread_initWithRxSubjectsReplaySubject_(RxSubjectsReplaySubject *subject) {
+  J2OBJC_NEW_IMPL(RxSubjectsReplaySubjectBoundedConcurrencyTest_SubjectObserverThread, initWithRxSubjectsReplaySubject_, subject)
+}
+
+RxSubjectsReplaySubjectBoundedConcurrencyTest_SubjectObserverThread *create_RxSubjectsReplaySubjectBoundedConcurrencyTest_SubjectObserverThread_initWithRxSubjectsReplaySubject_(RxSubjectsReplaySubject *subject) {
+  J2OBJC_CREATE_IMPL(RxSubjectsReplaySubjectBoundedConcurrencyTest_SubjectObserverThread, initWithRxSubjectsReplaySubject_, subject)
+}
+
+J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxSubjectsReplaySubjectBoundedConcurrencyTest_SubjectObserverThread)
+
 @implementation RxSubjectsReplaySubjectBoundedConcurrencyTest_$1
+
+- (void)run {
+  [((RxObservable *) nil_chk(RxObservable_createWithRxObservable_OnSubscribe_(create_RxSubjectsReplaySubjectBoundedConcurrencyTest_$1_$1_init()))) subscribeWithRxObserver:val$replay_];
+}
+
+- (instancetype)initWithRxSubjectsReplaySubject:(RxSubjectsReplaySubject *)capture$0 {
+  RxSubjectsReplaySubjectBoundedConcurrencyTest_$1_initWithRxSubjectsReplaySubject_(self, capture$0);
+  return self;
+}
+
+- (void)dealloc {
+  RELEASE_(val$replay_);
+  [super dealloc];
+}
+
++ (const J2ObjcClassInfo *)__metadata {
+  static J2ObjcMethodInfo methods[] = {
+    { NULL, "V", 0x1, -1, -1, -1, -1, -1, -1 },
+    { NULL, NULL, 0x0, -1, 0, -1, 1, -1, -1 },
+  };
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Wobjc-multiple-method-names"
+  methods[0].selector = @selector(run);
+  methods[1].selector = @selector(initWithRxSubjectsReplaySubject:);
+  #pragma clang diagnostic pop
+  static const J2ObjcFieldInfo fields[] = {
+    { "val$replay_", "LRxSubjectsReplaySubject;", .constantValue.asLong = 0, 0x1012, -1, -1, 2, -1 },
+  };
+  static const void *ptrTable[] = { "LRxSubjectsReplaySubject;", "(Lrx/subjects/ReplaySubject<Ljava/lang/Long;>;)V", "Lrx/subjects/ReplaySubject<Ljava/lang/Long;>;", "LRxSubjectsReplaySubjectBoundedConcurrencyTest;", "testReplaySubjectConcurrentSubscribersDoingReplayDontBlockEachOther" };
+  static const J2ObjcClassInfo _RxSubjectsReplaySubjectBoundedConcurrencyTest_$1 = { "", "rx.subjects", ptrTable, methods, fields, 7, 0x8008, 2, 1, 3, -1, 4, -1, -1 };
+  return &_RxSubjectsReplaySubjectBoundedConcurrencyTest_$1;
+}
+
+@end
+
+void RxSubjectsReplaySubjectBoundedConcurrencyTest_$1_initWithRxSubjectsReplaySubject_(RxSubjectsReplaySubjectBoundedConcurrencyTest_$1 *self, RxSubjectsReplaySubject *capture$0) {
+  JreStrongAssign(&self->val$replay_, capture$0);
+  NSObject_init(self);
+}
+
+RxSubjectsReplaySubjectBoundedConcurrencyTest_$1 *new_RxSubjectsReplaySubjectBoundedConcurrencyTest_$1_initWithRxSubjectsReplaySubject_(RxSubjectsReplaySubject *capture$0) {
+  J2OBJC_NEW_IMPL(RxSubjectsReplaySubjectBoundedConcurrencyTest_$1, initWithRxSubjectsReplaySubject_, capture$0)
+}
+
+RxSubjectsReplaySubjectBoundedConcurrencyTest_$1 *create_RxSubjectsReplaySubjectBoundedConcurrencyTest_$1_initWithRxSubjectsReplaySubject_(RxSubjectsReplaySubject *capture$0) {
+  J2OBJC_CREATE_IMPL(RxSubjectsReplaySubjectBoundedConcurrencyTest_$1, initWithRxSubjectsReplaySubject_, capture$0)
+}
+
+@implementation RxSubjectsReplaySubjectBoundedConcurrencyTest_$1_$1
+
+- (void)callWithId:(RxSubscriber *)o {
+  [((JavaIoPrintStream *) nil_chk(JreLoadStatic(JavaLangSystem, out))) printlnWithNSString:@"********* Start Source Data ***********"];
+  for (jlong l = 1; l <= 10000; l++) {
+    [((RxSubscriber *) nil_chk(o)) onNextWithId:JavaLangLong_valueOfWithLong_(l)];
+  }
+  [JreLoadStatic(JavaLangSystem, out) printlnWithNSString:@"********* Finished Source Data ***********"];
+  [((RxSubscriber *) nil_chk(o)) onCompleted];
+}
+
+J2OBJC_IGNORE_DESIGNATED_BEGIN
+- (instancetype)init {
+  RxSubjectsReplaySubjectBoundedConcurrencyTest_$1_$1_init(self);
+  return self;
+}
+J2OBJC_IGNORE_DESIGNATED_END
+
++ (const J2ObjcClassInfo *)__metadata {
+  static J2ObjcMethodInfo methods[] = {
+    { NULL, "V", 0x1, 0, 1, -1, 2, -1, -1 },
+    { NULL, NULL, 0x0, -1, -1, -1, -1, -1, -1 },
+  };
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Wobjc-multiple-method-names"
+  methods[0].selector = @selector(callWithId:);
+  methods[1].selector = @selector(init);
+  #pragma clang diagnostic pop
+  static const void *ptrTable[] = { "call", "LRxSubscriber;", "(Lrx/Subscriber<-Ljava/lang/Long;>;)V", "LRxSubjectsReplaySubjectBoundedConcurrencyTest_$1;", "run", "Ljava/lang/Object;Lrx/Observable$OnSubscribe<Ljava/lang/Long;>;" };
+  static const J2ObjcClassInfo _RxSubjectsReplaySubjectBoundedConcurrencyTest_$1_$1 = { "", "rx.subjects", ptrTable, methods, NULL, 7, 0x8008, 2, 0, 3, -1, 4, 5, -1 };
+  return &_RxSubjectsReplaySubjectBoundedConcurrencyTest_$1_$1;
+}
+
+@end
+
+void RxSubjectsReplaySubjectBoundedConcurrencyTest_$1_$1_init(RxSubjectsReplaySubjectBoundedConcurrencyTest_$1_$1 *self) {
+  NSObject_init(self);
+}
+
+RxSubjectsReplaySubjectBoundedConcurrencyTest_$1_$1 *new_RxSubjectsReplaySubjectBoundedConcurrencyTest_$1_$1_init() {
+  J2OBJC_NEW_IMPL(RxSubjectsReplaySubjectBoundedConcurrencyTest_$1_$1, init)
+}
+
+RxSubjectsReplaySubjectBoundedConcurrencyTest_$1_$1 *create_RxSubjectsReplaySubjectBoundedConcurrencyTest_$1_$1_init() {
+  J2OBJC_CREATE_IMPL(RxSubjectsReplaySubjectBoundedConcurrencyTest_$1_$1, init)
+}
+
+@implementation RxSubjectsReplaySubjectBoundedConcurrencyTest_$2
+
+- (void)run {
+  RxSubscriber *slow = create_RxSubjectsReplaySubjectBoundedConcurrencyTest_$2_$1_initWithRxSubjectsReplaySubjectBoundedConcurrencyTest_$2_(self);
+  [((RxSubjectsReplaySubject *) nil_chk(val$replay_)) subscribeWithRxSubscriber:slow];
+  @try {
+    [((JavaUtilConcurrentCountDownLatch *) nil_chk(val$slowLatch_)) await];
+  }
+  @catch (JavaLangInterruptedException *e1) {
+    [((JavaLangInterruptedException *) nil_chk(e1)) printStackTrace];
+  }
+}
+
+- (instancetype)initWithJavaUtilConcurrentCountDownLatch:(JavaUtilConcurrentCountDownLatch *)capture$0
+                             withRxSubjectsReplaySubject:(RxSubjectsReplaySubject *)capture$1 {
+  RxSubjectsReplaySubjectBoundedConcurrencyTest_$2_initWithJavaUtilConcurrentCountDownLatch_withRxSubjectsReplaySubject_(self, capture$0, capture$1);
+  return self;
+}
+
+- (void)dealloc {
+  RELEASE_(val$slowLatch_);
+  RELEASE_(val$replay_);
+  [super dealloc];
+}
+
++ (const J2ObjcClassInfo *)__metadata {
+  static J2ObjcMethodInfo methods[] = {
+    { NULL, "V", 0x1, -1, -1, -1, -1, -1, -1 },
+    { NULL, NULL, 0x0, -1, 0, -1, 1, -1, -1 },
+  };
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Wobjc-multiple-method-names"
+  methods[0].selector = @selector(run);
+  methods[1].selector = @selector(initWithJavaUtilConcurrentCountDownLatch:withRxSubjectsReplaySubject:);
+  #pragma clang diagnostic pop
+  static const J2ObjcFieldInfo fields[] = {
+    { "val$slowLatch_", "LJavaUtilConcurrentCountDownLatch;", .constantValue.asLong = 0, 0x1012, -1, -1, -1, -1 },
+    { "val$replay_", "LRxSubjectsReplaySubject;", .constantValue.asLong = 0, 0x1012, -1, -1, 2, -1 },
+  };
+  static const void *ptrTable[] = { "LJavaUtilConcurrentCountDownLatch;LRxSubjectsReplaySubject;", "(Ljava/util/concurrent/CountDownLatch;Lrx/subjects/ReplaySubject<Ljava/lang/Long;>;)V", "Lrx/subjects/ReplaySubject<Ljava/lang/Long;>;", "LRxSubjectsReplaySubjectBoundedConcurrencyTest;", "testReplaySubjectConcurrentSubscribersDoingReplayDontBlockEachOther" };
+  static const J2ObjcClassInfo _RxSubjectsReplaySubjectBoundedConcurrencyTest_$2 = { "", "rx.subjects", ptrTable, methods, fields, 7, 0x8008, 2, 2, 3, -1, 4, -1, -1 };
+  return &_RxSubjectsReplaySubjectBoundedConcurrencyTest_$2;
+}
+
+@end
+
+void RxSubjectsReplaySubjectBoundedConcurrencyTest_$2_initWithJavaUtilConcurrentCountDownLatch_withRxSubjectsReplaySubject_(RxSubjectsReplaySubjectBoundedConcurrencyTest_$2 *self, JavaUtilConcurrentCountDownLatch *capture$0, RxSubjectsReplaySubject *capture$1) {
+  JreStrongAssign(&self->val$slowLatch_, capture$0);
+  JreStrongAssign(&self->val$replay_, capture$1);
+  NSObject_init(self);
+}
+
+RxSubjectsReplaySubjectBoundedConcurrencyTest_$2 *new_RxSubjectsReplaySubjectBoundedConcurrencyTest_$2_initWithJavaUtilConcurrentCountDownLatch_withRxSubjectsReplaySubject_(JavaUtilConcurrentCountDownLatch *capture$0, RxSubjectsReplaySubject *capture$1) {
+  J2OBJC_NEW_IMPL(RxSubjectsReplaySubjectBoundedConcurrencyTest_$2, initWithJavaUtilConcurrentCountDownLatch_withRxSubjectsReplaySubject_, capture$0, capture$1)
+}
+
+RxSubjectsReplaySubjectBoundedConcurrencyTest_$2 *create_RxSubjectsReplaySubjectBoundedConcurrencyTest_$2_initWithJavaUtilConcurrentCountDownLatch_withRxSubjectsReplaySubject_(JavaUtilConcurrentCountDownLatch *capture$0, RxSubjectsReplaySubject *capture$1) {
+  J2OBJC_CREATE_IMPL(RxSubjectsReplaySubjectBoundedConcurrencyTest_$2, initWithJavaUtilConcurrentCountDownLatch_withRxSubjectsReplaySubject_, capture$0, capture$1)
+}
+
+@implementation RxSubjectsReplaySubjectBoundedConcurrencyTest_$2_$1
+
+- (void)onCompleted {
+  [((JavaIoPrintStream *) nil_chk(JreLoadStatic(JavaLangSystem, out))) printlnWithNSString:@"*** Slow Observer completed"];
+  [((JavaUtilConcurrentCountDownLatch *) nil_chk(this$0_->val$slowLatch_)) countDown];
+}
+
+- (void)onErrorWithNSException:(NSException *)e {
+}
+
+- (void)onNextWithId:(JavaLangLong *)args {
+  if ([((JavaLangLong *) nil_chk(args)) longLongValue] == 1) {
+    [((JavaIoPrintStream *) nil_chk(JreLoadStatic(JavaLangSystem, out))) printlnWithNSString:@"*** Slow Observer STARTED"];
+  }
+  @try {
+    if ([args longLongValue] % 10 == 0) {
+      JavaLangThread_sleepWithLong_(1);
+    }
+  }
+  @catch (JavaLangInterruptedException *e) {
+    [((JavaLangInterruptedException *) nil_chk(e)) printStackTrace];
+  }
+}
+
+- (instancetype)initWithRxSubjectsReplaySubjectBoundedConcurrencyTest_$2:(RxSubjectsReplaySubjectBoundedConcurrencyTest_$2 *)outer$ {
+  RxSubjectsReplaySubjectBoundedConcurrencyTest_$2_$1_initWithRxSubjectsReplaySubjectBoundedConcurrencyTest_$2_(self, outer$);
+  return self;
+}
+
+- (void)dealloc {
+  RELEASE_(this$0_);
+  [super dealloc];
+}
+
++ (const J2ObjcClassInfo *)__metadata {
+  static J2ObjcMethodInfo methods[] = {
+    { NULL, "V", 0x1, -1, -1, -1, -1, -1, -1 },
+    { NULL, "V", 0x1, 0, 1, -1, -1, -1, -1 },
+    { NULL, "V", 0x1, 2, 3, -1, -1, -1, -1 },
+    { NULL, NULL, 0x0, -1, 4, -1, -1, -1, -1 },
+  };
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Wobjc-multiple-method-names"
+  methods[0].selector = @selector(onCompleted);
+  methods[1].selector = @selector(onErrorWithNSException:);
+  methods[2].selector = @selector(onNextWithId:);
+  methods[3].selector = @selector(initWithRxSubjectsReplaySubjectBoundedConcurrencyTest_$2:);
+  #pragma clang diagnostic pop
+  static const J2ObjcFieldInfo fields[] = {
+    { "this$0_", "LRxSubjectsReplaySubjectBoundedConcurrencyTest_$2;", .constantValue.asLong = 0, 0x1012, -1, -1, -1, -1 },
+  };
+  static const void *ptrTable[] = { "onError", "LNSException;", "onNext", "LJavaLangLong;", "LRxSubjectsReplaySubjectBoundedConcurrencyTest_$2;", "run", "Lrx/Subscriber<Ljava/lang/Long;>;" };
+  static const J2ObjcClassInfo _RxSubjectsReplaySubjectBoundedConcurrencyTest_$2_$1 = { "", "rx.subjects", ptrTable, methods, fields, 7, 0x8008, 4, 1, 4, -1, 5, 6, -1 };
+  return &_RxSubjectsReplaySubjectBoundedConcurrencyTest_$2_$1;
+}
+
+@end
+
+void RxSubjectsReplaySubjectBoundedConcurrencyTest_$2_$1_initWithRxSubjectsReplaySubjectBoundedConcurrencyTest_$2_(RxSubjectsReplaySubjectBoundedConcurrencyTest_$2_$1 *self, RxSubjectsReplaySubjectBoundedConcurrencyTest_$2 *outer$) {
+  JreStrongAssign(&self->this$0_, outer$);
+  RxSubscriber_init(self);
+}
+
+RxSubjectsReplaySubjectBoundedConcurrencyTest_$2_$1 *new_RxSubjectsReplaySubjectBoundedConcurrencyTest_$2_$1_initWithRxSubjectsReplaySubjectBoundedConcurrencyTest_$2_(RxSubjectsReplaySubjectBoundedConcurrencyTest_$2 *outer$) {
+  J2OBJC_NEW_IMPL(RxSubjectsReplaySubjectBoundedConcurrencyTest_$2_$1, initWithRxSubjectsReplaySubjectBoundedConcurrencyTest_$2_, outer$)
+}
+
+RxSubjectsReplaySubjectBoundedConcurrencyTest_$2_$1 *create_RxSubjectsReplaySubjectBoundedConcurrencyTest_$2_$1_initWithRxSubjectsReplaySubjectBoundedConcurrencyTest_$2_(RxSubjectsReplaySubjectBoundedConcurrencyTest_$2 *outer$) {
+  J2OBJC_CREATE_IMPL(RxSubjectsReplaySubjectBoundedConcurrencyTest_$2_$1, initWithRxSubjectsReplaySubjectBoundedConcurrencyTest_$2_, outer$)
+}
+
+@implementation RxSubjectsReplaySubjectBoundedConcurrencyTest_$3
+
+- (void)run {
+  JavaUtilConcurrentCountDownLatch *fastLatch = create_JavaUtilConcurrentCountDownLatch_initWithInt_(1);
+  RxSubscriber *fast = create_RxSubjectsReplaySubjectBoundedConcurrencyTest_$3_$1_initWithJavaUtilConcurrentCountDownLatch_(fastLatch);
+  [((RxSubjectsReplaySubject *) nil_chk(val$replay_)) subscribeWithRxSubscriber:fast];
+  @try {
+    [fastLatch await];
+  }
+  @catch (JavaLangInterruptedException *e1) {
+    [((JavaLangInterruptedException *) nil_chk(e1)) printStackTrace];
+  }
+}
+
+- (instancetype)initWithRxSubjectsReplaySubject:(RxSubjectsReplaySubject *)capture$0 {
+  RxSubjectsReplaySubjectBoundedConcurrencyTest_$3_initWithRxSubjectsReplaySubject_(self, capture$0);
+  return self;
+}
+
+- (void)dealloc {
+  RELEASE_(val$replay_);
+  [super dealloc];
+}
+
++ (const J2ObjcClassInfo *)__metadata {
+  static J2ObjcMethodInfo methods[] = {
+    { NULL, "V", 0x1, -1, -1, -1, -1, -1, -1 },
+    { NULL, NULL, 0x0, -1, 0, -1, 1, -1, -1 },
+  };
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Wobjc-multiple-method-names"
+  methods[0].selector = @selector(run);
+  methods[1].selector = @selector(initWithRxSubjectsReplaySubject:);
+  #pragma clang diagnostic pop
+  static const J2ObjcFieldInfo fields[] = {
+    { "val$replay_", "LRxSubjectsReplaySubject;", .constantValue.asLong = 0, 0x1012, -1, -1, 2, -1 },
+  };
+  static const void *ptrTable[] = { "LRxSubjectsReplaySubject;", "(Lrx/subjects/ReplaySubject<Ljava/lang/Long;>;)V", "Lrx/subjects/ReplaySubject<Ljava/lang/Long;>;", "LRxSubjectsReplaySubjectBoundedConcurrencyTest;", "testReplaySubjectConcurrentSubscribersDoingReplayDontBlockEachOther" };
+  static const J2ObjcClassInfo _RxSubjectsReplaySubjectBoundedConcurrencyTest_$3 = { "", "rx.subjects", ptrTable, methods, fields, 7, 0x8008, 2, 1, 3, -1, 4, -1, -1 };
+  return &_RxSubjectsReplaySubjectBoundedConcurrencyTest_$3;
+}
+
+@end
+
+void RxSubjectsReplaySubjectBoundedConcurrencyTest_$3_initWithRxSubjectsReplaySubject_(RxSubjectsReplaySubjectBoundedConcurrencyTest_$3 *self, RxSubjectsReplaySubject *capture$0) {
+  JreStrongAssign(&self->val$replay_, capture$0);
+  NSObject_init(self);
+}
+
+RxSubjectsReplaySubjectBoundedConcurrencyTest_$3 *new_RxSubjectsReplaySubjectBoundedConcurrencyTest_$3_initWithRxSubjectsReplaySubject_(RxSubjectsReplaySubject *capture$0) {
+  J2OBJC_NEW_IMPL(RxSubjectsReplaySubjectBoundedConcurrencyTest_$3, initWithRxSubjectsReplaySubject_, capture$0)
+}
+
+RxSubjectsReplaySubjectBoundedConcurrencyTest_$3 *create_RxSubjectsReplaySubjectBoundedConcurrencyTest_$3_initWithRxSubjectsReplaySubject_(RxSubjectsReplaySubject *capture$0) {
+  J2OBJC_CREATE_IMPL(RxSubjectsReplaySubjectBoundedConcurrencyTest_$3, initWithRxSubjectsReplaySubject_, capture$0)
+}
+
+@implementation RxSubjectsReplaySubjectBoundedConcurrencyTest_$3_$1
+
+- (void)onCompleted {
+  [((JavaIoPrintStream *) nil_chk(JreLoadStatic(JavaLangSystem, out))) printlnWithNSString:@"*** Fast Observer completed"];
+  [((JavaUtilConcurrentCountDownLatch *) nil_chk(val$fastLatch_)) countDown];
+}
+
+- (void)onErrorWithNSException:(NSException *)e {
+}
+
+- (void)onNextWithId:(JavaLangLong *)args {
+  if ([((JavaLangLong *) nil_chk(args)) longLongValue] == 1) {
+    [((JavaIoPrintStream *) nil_chk(JreLoadStatic(JavaLangSystem, out))) printlnWithNSString:@"*** Fast Observer STARTED"];
+  }
+}
+
+- (instancetype)initWithJavaUtilConcurrentCountDownLatch:(JavaUtilConcurrentCountDownLatch *)capture$0 {
+  RxSubjectsReplaySubjectBoundedConcurrencyTest_$3_$1_initWithJavaUtilConcurrentCountDownLatch_(self, capture$0);
+  return self;
+}
+
+- (void)dealloc {
+  RELEASE_(val$fastLatch_);
+  [super dealloc];
+}
+
++ (const J2ObjcClassInfo *)__metadata {
+  static J2ObjcMethodInfo methods[] = {
+    { NULL, "V", 0x1, -1, -1, -1, -1, -1, -1 },
+    { NULL, "V", 0x1, 0, 1, -1, -1, -1, -1 },
+    { NULL, "V", 0x1, 2, 3, -1, -1, -1, -1 },
+    { NULL, NULL, 0x0, -1, 4, -1, -1, -1, -1 },
+  };
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Wobjc-multiple-method-names"
+  methods[0].selector = @selector(onCompleted);
+  methods[1].selector = @selector(onErrorWithNSException:);
+  methods[2].selector = @selector(onNextWithId:);
+  methods[3].selector = @selector(initWithJavaUtilConcurrentCountDownLatch:);
+  #pragma clang diagnostic pop
+  static const J2ObjcFieldInfo fields[] = {
+    { "val$fastLatch_", "LJavaUtilConcurrentCountDownLatch;", .constantValue.asLong = 0, 0x1012, -1, -1, -1, -1 },
+  };
+  static const void *ptrTable[] = { "onError", "LNSException;", "onNext", "LJavaLangLong;", "LJavaUtilConcurrentCountDownLatch;", "LRxSubjectsReplaySubjectBoundedConcurrencyTest_$3;", "run", "Lrx/Subscriber<Ljava/lang/Long;>;" };
+  static const J2ObjcClassInfo _RxSubjectsReplaySubjectBoundedConcurrencyTest_$3_$1 = { "", "rx.subjects", ptrTable, methods, fields, 7, 0x8008, 4, 1, 5, -1, 6, 7, -1 };
+  return &_RxSubjectsReplaySubjectBoundedConcurrencyTest_$3_$1;
+}
+
+@end
+
+void RxSubjectsReplaySubjectBoundedConcurrencyTest_$3_$1_initWithJavaUtilConcurrentCountDownLatch_(RxSubjectsReplaySubjectBoundedConcurrencyTest_$3_$1 *self, JavaUtilConcurrentCountDownLatch *capture$0) {
+  JreStrongAssign(&self->val$fastLatch_, capture$0);
+  RxSubscriber_init(self);
+}
+
+RxSubjectsReplaySubjectBoundedConcurrencyTest_$3_$1 *new_RxSubjectsReplaySubjectBoundedConcurrencyTest_$3_$1_initWithJavaUtilConcurrentCountDownLatch_(JavaUtilConcurrentCountDownLatch *capture$0) {
+  J2OBJC_NEW_IMPL(RxSubjectsReplaySubjectBoundedConcurrencyTest_$3_$1, initWithJavaUtilConcurrentCountDownLatch_, capture$0)
+}
+
+RxSubjectsReplaySubjectBoundedConcurrencyTest_$3_$1 *create_RxSubjectsReplaySubjectBoundedConcurrencyTest_$3_$1_initWithJavaUtilConcurrentCountDownLatch_(JavaUtilConcurrentCountDownLatch *capture$0) {
+  J2OBJC_CREATE_IMPL(RxSubjectsReplaySubjectBoundedConcurrencyTest_$3_$1, initWithJavaUtilConcurrentCountDownLatch_, capture$0)
+}
+
+@implementation RxSubjectsReplaySubjectBoundedConcurrencyTest_$4
+
+- (void)callWithId:(NSString *)t1 {
+  @try {
+    JavaLangThread_sleepWithLong_(50);
+  }
+  @catch (JavaLangInterruptedException *e) {
+    [((JavaLangInterruptedException *) nil_chk(e)) printStackTrace];
+  }
+  [((JavaUtilConcurrentAtomicAtomicReference *) nil_chk(val$value1_)) setWithId:t1];
+}
+
+- (instancetype)initWithJavaUtilConcurrentAtomicAtomicReference:(JavaUtilConcurrentAtomicAtomicReference *)capture$0 {
+  RxSubjectsReplaySubjectBoundedConcurrencyTest_$4_initWithJavaUtilConcurrentAtomicAtomicReference_(self, capture$0);
+  return self;
+}
+
+- (void)dealloc {
+  RELEASE_(val$value1_);
+  [super dealloc];
+}
+
++ (const J2ObjcClassInfo *)__metadata {
+  static J2ObjcMethodInfo methods[] = {
+    { NULL, "V", 0x1, 0, 1, -1, -1, -1, -1 },
+    { NULL, NULL, 0x0, -1, 2, -1, 3, -1, -1 },
+  };
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Wobjc-multiple-method-names"
+  methods[0].selector = @selector(callWithId:);
+  methods[1].selector = @selector(initWithJavaUtilConcurrentAtomicAtomicReference:);
+  #pragma clang diagnostic pop
+  static const J2ObjcFieldInfo fields[] = {
+    { "val$value1_", "LJavaUtilConcurrentAtomicAtomicReference;", .constantValue.asLong = 0, 0x1012, -1, -1, 4, -1 },
+  };
+  static const void *ptrTable[] = { "call", "LNSString;", "LJavaUtilConcurrentAtomicAtomicReference;", "(Ljava/util/concurrent/atomic/AtomicReference<Ljava/lang/String;>;)V", "Ljava/util/concurrent/atomic/AtomicReference<Ljava/lang/String;>;", "LRxSubjectsReplaySubjectBoundedConcurrencyTest;", "testSubscribeCompletionRaceCondition", "Ljava/lang/Object;Lrx/functions/Action1<Ljava/lang/String;>;" };
+  static const J2ObjcClassInfo _RxSubjectsReplaySubjectBoundedConcurrencyTest_$4 = { "", "rx.subjects", ptrTable, methods, fields, 7, 0x8008, 2, 1, 5, -1, 6, 7, -1 };
+  return &_RxSubjectsReplaySubjectBoundedConcurrencyTest_$4;
+}
+
+@end
+
+void RxSubjectsReplaySubjectBoundedConcurrencyTest_$4_initWithJavaUtilConcurrentAtomicAtomicReference_(RxSubjectsReplaySubjectBoundedConcurrencyTest_$4 *self, JavaUtilConcurrentAtomicAtomicReference *capture$0) {
+  JreStrongAssign(&self->val$value1_, capture$0);
+  NSObject_init(self);
+}
+
+RxSubjectsReplaySubjectBoundedConcurrencyTest_$4 *new_RxSubjectsReplaySubjectBoundedConcurrencyTest_$4_initWithJavaUtilConcurrentAtomicAtomicReference_(JavaUtilConcurrentAtomicAtomicReference *capture$0) {
+  J2OBJC_NEW_IMPL(RxSubjectsReplaySubjectBoundedConcurrencyTest_$4, initWithJavaUtilConcurrentAtomicAtomicReference_, capture$0)
+}
+
+RxSubjectsReplaySubjectBoundedConcurrencyTest_$4 *create_RxSubjectsReplaySubjectBoundedConcurrencyTest_$4_initWithJavaUtilConcurrentAtomicAtomicReference_(JavaUtilConcurrentAtomicAtomicReference *capture$0) {
+  J2OBJC_CREATE_IMPL(RxSubjectsReplaySubjectBoundedConcurrencyTest_$4, initWithJavaUtilConcurrentAtomicAtomicReference_, capture$0)
+}
+
+@implementation RxSubjectsReplaySubjectBoundedConcurrencyTest_$5
+
+- (void)run {
+  [((RxSubjectsReplaySubject *) nil_chk(val$subject_)) onNextWithId:@"value"];
+  [val$subject_ onCompleted];
+}
+
+- (instancetype)initWithRxSubjectsReplaySubject:(RxSubjectsReplaySubject *)capture$0 {
+  RxSubjectsReplaySubjectBoundedConcurrencyTest_$5_initWithRxSubjectsReplaySubject_(self, capture$0);
+  return self;
+}
+
+- (void)dealloc {
+  RELEASE_(val$subject_);
+  [super dealloc];
+}
+
++ (const J2ObjcClassInfo *)__metadata {
+  static J2ObjcMethodInfo methods[] = {
+    { NULL, "V", 0x1, -1, -1, -1, -1, -1, -1 },
+    { NULL, NULL, 0x0, -1, 0, -1, 1, -1, -1 },
+  };
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Wobjc-multiple-method-names"
+  methods[0].selector = @selector(run);
+  methods[1].selector = @selector(initWithRxSubjectsReplaySubject:);
+  #pragma clang diagnostic pop
+  static const J2ObjcFieldInfo fields[] = {
+    { "val$subject_", "LRxSubjectsReplaySubject;", .constantValue.asLong = 0, 0x1012, -1, -1, 2, -1 },
+  };
+  static const void *ptrTable[] = { "LRxSubjectsReplaySubject;", "(Lrx/subjects/ReplaySubject<Ljava/lang/String;>;)V", "Lrx/subjects/ReplaySubject<Ljava/lang/String;>;", "LRxSubjectsReplaySubjectBoundedConcurrencyTest;", "testSubscribeCompletionRaceCondition" };
+  static const J2ObjcClassInfo _RxSubjectsReplaySubjectBoundedConcurrencyTest_$5 = { "", "rx.subjects", ptrTable, methods, fields, 7, 0x8008, 2, 1, 3, -1, 4, -1, -1 };
+  return &_RxSubjectsReplaySubjectBoundedConcurrencyTest_$5;
+}
+
+@end
+
+void RxSubjectsReplaySubjectBoundedConcurrencyTest_$5_initWithRxSubjectsReplaySubject_(RxSubjectsReplaySubjectBoundedConcurrencyTest_$5 *self, RxSubjectsReplaySubject *capture$0) {
+  JreStrongAssign(&self->val$subject_, capture$0);
+  NSObject_init(self);
+}
+
+RxSubjectsReplaySubjectBoundedConcurrencyTest_$5 *new_RxSubjectsReplaySubjectBoundedConcurrencyTest_$5_initWithRxSubjectsReplaySubject_(RxSubjectsReplaySubject *capture$0) {
+  J2OBJC_NEW_IMPL(RxSubjectsReplaySubjectBoundedConcurrencyTest_$5, initWithRxSubjectsReplaySubject_, capture$0)
+}
+
+RxSubjectsReplaySubjectBoundedConcurrencyTest_$5 *create_RxSubjectsReplaySubjectBoundedConcurrencyTest_$5_initWithRxSubjectsReplaySubject_(RxSubjectsReplaySubject *capture$0) {
+  J2OBJC_CREATE_IMPL(RxSubjectsReplaySubjectBoundedConcurrencyTest_$5, initWithRxSubjectsReplaySubject_, capture$0)
+}
+
+@implementation RxSubjectsReplaySubjectBoundedConcurrencyTest_$6
 
 - (void)call {
   @try {
@@ -193,7 +1254,7 @@ J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxSubjectsReplaySubjectBoundedConcurrencyTest)
 
 - (instancetype)initWithJavaUtilConcurrentCountDownLatch:(JavaUtilConcurrentCountDownLatch *)capture$0
                              withRxSubjectsReplaySubject:(RxSubjectsReplaySubject *)capture$1 {
-  RxSubjectsReplaySubjectBoundedConcurrencyTest_$1_initWithJavaUtilConcurrentCountDownLatch_withRxSubjectsReplaySubject_(self, capture$0, capture$1);
+  RxSubjectsReplaySubjectBoundedConcurrencyTest_$6_initWithJavaUtilConcurrentCountDownLatch_withRxSubjectsReplaySubject_(self, capture$0, capture$1);
   return self;
 }
 
@@ -218,27 +1279,27 @@ J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxSubjectsReplaySubjectBoundedConcurrencyTest)
     { "val$rs_", "LRxSubjectsReplaySubject;", .constantValue.asLong = 0, 0x1012, -1, -1, 2, -1 },
   };
   static const void *ptrTable[] = { "LJavaUtilConcurrentCountDownLatch;LRxSubjectsReplaySubject;", "(Ljava/util/concurrent/CountDownLatch;Lrx/subjects/ReplaySubject<Ljava/lang/Object;>;)V", "Lrx/subjects/ReplaySubject<Ljava/lang/Object;>;", "LRxSubjectsReplaySubjectBoundedConcurrencyTest;", "testReplaySubjectEmissionSubscriptionRace" };
-  static const J2ObjcClassInfo _RxSubjectsReplaySubjectBoundedConcurrencyTest_$1 = { "", "rx.subjects", ptrTable, methods, fields, 7, 0x8008, 2, 2, 3, -1, 4, -1, -1 };
-  return &_RxSubjectsReplaySubjectBoundedConcurrencyTest_$1;
+  static const J2ObjcClassInfo _RxSubjectsReplaySubjectBoundedConcurrencyTest_$6 = { "", "rx.subjects", ptrTable, methods, fields, 7, 0x8008, 2, 2, 3, -1, 4, -1, -1 };
+  return &_RxSubjectsReplaySubjectBoundedConcurrencyTest_$6;
 }
 
 @end
 
-void RxSubjectsReplaySubjectBoundedConcurrencyTest_$1_initWithJavaUtilConcurrentCountDownLatch_withRxSubjectsReplaySubject_(RxSubjectsReplaySubjectBoundedConcurrencyTest_$1 *self, JavaUtilConcurrentCountDownLatch *capture$0, RxSubjectsReplaySubject *capture$1) {
+void RxSubjectsReplaySubjectBoundedConcurrencyTest_$6_initWithJavaUtilConcurrentCountDownLatch_withRxSubjectsReplaySubject_(RxSubjectsReplaySubjectBoundedConcurrencyTest_$6 *self, JavaUtilConcurrentCountDownLatch *capture$0, RxSubjectsReplaySubject *capture$1) {
   JreStrongAssign(&self->val$start_, capture$0);
   JreStrongAssign(&self->val$rs_, capture$1);
   NSObject_init(self);
 }
 
-RxSubjectsReplaySubjectBoundedConcurrencyTest_$1 *new_RxSubjectsReplaySubjectBoundedConcurrencyTest_$1_initWithJavaUtilConcurrentCountDownLatch_withRxSubjectsReplaySubject_(JavaUtilConcurrentCountDownLatch *capture$0, RxSubjectsReplaySubject *capture$1) {
-  J2OBJC_NEW_IMPL(RxSubjectsReplaySubjectBoundedConcurrencyTest_$1, initWithJavaUtilConcurrentCountDownLatch_withRxSubjectsReplaySubject_, capture$0, capture$1)
+RxSubjectsReplaySubjectBoundedConcurrencyTest_$6 *new_RxSubjectsReplaySubjectBoundedConcurrencyTest_$6_initWithJavaUtilConcurrentCountDownLatch_withRxSubjectsReplaySubject_(JavaUtilConcurrentCountDownLatch *capture$0, RxSubjectsReplaySubject *capture$1) {
+  J2OBJC_NEW_IMPL(RxSubjectsReplaySubjectBoundedConcurrencyTest_$6, initWithJavaUtilConcurrentCountDownLatch_withRxSubjectsReplaySubject_, capture$0, capture$1)
 }
 
-RxSubjectsReplaySubjectBoundedConcurrencyTest_$1 *create_RxSubjectsReplaySubjectBoundedConcurrencyTest_$1_initWithJavaUtilConcurrentCountDownLatch_withRxSubjectsReplaySubject_(JavaUtilConcurrentCountDownLatch *capture$0, RxSubjectsReplaySubject *capture$1) {
-  J2OBJC_CREATE_IMPL(RxSubjectsReplaySubjectBoundedConcurrencyTest_$1, initWithJavaUtilConcurrentCountDownLatch_withRxSubjectsReplaySubject_, capture$0, capture$1)
+RxSubjectsReplaySubjectBoundedConcurrencyTest_$6 *create_RxSubjectsReplaySubjectBoundedConcurrencyTest_$6_initWithJavaUtilConcurrentCountDownLatch_withRxSubjectsReplaySubject_(JavaUtilConcurrentCountDownLatch *capture$0, RxSubjectsReplaySubject *capture$1) {
+  J2OBJC_CREATE_IMPL(RxSubjectsReplaySubjectBoundedConcurrencyTest_$6, initWithJavaUtilConcurrentCountDownLatch_withRxSubjectsReplaySubject_, capture$0, capture$1)
 }
 
-@implementation RxSubjectsReplaySubjectBoundedConcurrencyTest_$2
+@implementation RxSubjectsReplaySubjectBoundedConcurrencyTest_$7
 
 - (void)onCompleted {
   [((JavaUtilConcurrentAtomicAtomicReference *) nil_chk(val$o_)) setWithId:JavaLangInteger_valueOfWithInt_(-1)];
@@ -257,7 +1318,7 @@ RxSubjectsReplaySubjectBoundedConcurrencyTest_$1 *create_RxSubjectsReplaySubject
 
 - (instancetype)initWithJavaUtilConcurrentAtomicAtomicReference:(JavaUtilConcurrentAtomicAtomicReference *)capture$0
                            withJavaUtilConcurrentCountDownLatch:(JavaUtilConcurrentCountDownLatch *)capture$1 {
-  RxSubjectsReplaySubjectBoundedConcurrencyTest_$2_initWithJavaUtilConcurrentAtomicAtomicReference_withJavaUtilConcurrentCountDownLatch_(self, capture$0, capture$1);
+  RxSubjectsReplaySubjectBoundedConcurrencyTest_$7_initWithJavaUtilConcurrentAtomicAtomicReference_withJavaUtilConcurrentCountDownLatch_(self, capture$0, capture$1);
   return self;
 }
 
@@ -286,34 +1347,34 @@ RxSubjectsReplaySubjectBoundedConcurrencyTest_$1 *create_RxSubjectsReplaySubject
     { "val$finish_", "LJavaUtilConcurrentCountDownLatch;", .constantValue.asLong = 0, 0x1012, -1, -1, -1, -1 },
   };
   static const void *ptrTable[] = { "onError", "LNSException;", "onNext", "LNSObject;", "LJavaUtilConcurrentAtomicAtomicReference;LJavaUtilConcurrentCountDownLatch;", "(Ljava/util/concurrent/atomic/AtomicReference<Ljava/lang/Object;>;Ljava/util/concurrent/CountDownLatch;)V", "Ljava/util/concurrent/atomic/AtomicReference<Ljava/lang/Object;>;", "LRxSubjectsReplaySubjectBoundedConcurrencyTest;", "testReplaySubjectEmissionSubscriptionRace", "Ljava/lang/Object;Lrx/Observer<Ljava/lang/Object;>;" };
-  static const J2ObjcClassInfo _RxSubjectsReplaySubjectBoundedConcurrencyTest_$2 = { "", "rx.subjects", ptrTable, methods, fields, 7, 0x8008, 4, 2, 7, -1, 8, 9, -1 };
-  return &_RxSubjectsReplaySubjectBoundedConcurrencyTest_$2;
+  static const J2ObjcClassInfo _RxSubjectsReplaySubjectBoundedConcurrencyTest_$7 = { "", "rx.subjects", ptrTable, methods, fields, 7, 0x8008, 4, 2, 7, -1, 8, 9, -1 };
+  return &_RxSubjectsReplaySubjectBoundedConcurrencyTest_$7;
 }
 
 @end
 
-void RxSubjectsReplaySubjectBoundedConcurrencyTest_$2_initWithJavaUtilConcurrentAtomicAtomicReference_withJavaUtilConcurrentCountDownLatch_(RxSubjectsReplaySubjectBoundedConcurrencyTest_$2 *self, JavaUtilConcurrentAtomicAtomicReference *capture$0, JavaUtilConcurrentCountDownLatch *capture$1) {
+void RxSubjectsReplaySubjectBoundedConcurrencyTest_$7_initWithJavaUtilConcurrentAtomicAtomicReference_withJavaUtilConcurrentCountDownLatch_(RxSubjectsReplaySubjectBoundedConcurrencyTest_$7 *self, JavaUtilConcurrentAtomicAtomicReference *capture$0, JavaUtilConcurrentCountDownLatch *capture$1) {
   JreStrongAssign(&self->val$o_, capture$0);
   JreStrongAssign(&self->val$finish_, capture$1);
   NSObject_init(self);
 }
 
-RxSubjectsReplaySubjectBoundedConcurrencyTest_$2 *new_RxSubjectsReplaySubjectBoundedConcurrencyTest_$2_initWithJavaUtilConcurrentAtomicAtomicReference_withJavaUtilConcurrentCountDownLatch_(JavaUtilConcurrentAtomicAtomicReference *capture$0, JavaUtilConcurrentCountDownLatch *capture$1) {
-  J2OBJC_NEW_IMPL(RxSubjectsReplaySubjectBoundedConcurrencyTest_$2, initWithJavaUtilConcurrentAtomicAtomicReference_withJavaUtilConcurrentCountDownLatch_, capture$0, capture$1)
+RxSubjectsReplaySubjectBoundedConcurrencyTest_$7 *new_RxSubjectsReplaySubjectBoundedConcurrencyTest_$7_initWithJavaUtilConcurrentAtomicAtomicReference_withJavaUtilConcurrentCountDownLatch_(JavaUtilConcurrentAtomicAtomicReference *capture$0, JavaUtilConcurrentCountDownLatch *capture$1) {
+  J2OBJC_NEW_IMPL(RxSubjectsReplaySubjectBoundedConcurrencyTest_$7, initWithJavaUtilConcurrentAtomicAtomicReference_withJavaUtilConcurrentCountDownLatch_, capture$0, capture$1)
 }
 
-RxSubjectsReplaySubjectBoundedConcurrencyTest_$2 *create_RxSubjectsReplaySubjectBoundedConcurrencyTest_$2_initWithJavaUtilConcurrentAtomicAtomicReference_withJavaUtilConcurrentCountDownLatch_(JavaUtilConcurrentAtomicAtomicReference *capture$0, JavaUtilConcurrentCountDownLatch *capture$1) {
-  J2OBJC_CREATE_IMPL(RxSubjectsReplaySubjectBoundedConcurrencyTest_$2, initWithJavaUtilConcurrentAtomicAtomicReference_withJavaUtilConcurrentCountDownLatch_, capture$0, capture$1)
+RxSubjectsReplaySubjectBoundedConcurrencyTest_$7 *create_RxSubjectsReplaySubjectBoundedConcurrencyTest_$7_initWithJavaUtilConcurrentAtomicAtomicReference_withJavaUtilConcurrentCountDownLatch_(JavaUtilConcurrentAtomicAtomicReference *capture$0, JavaUtilConcurrentCountDownLatch *capture$1) {
+  J2OBJC_CREATE_IMPL(RxSubjectsReplaySubjectBoundedConcurrencyTest_$7, initWithJavaUtilConcurrentAtomicAtomicReference_withJavaUtilConcurrentCountDownLatch_, capture$0, capture$1)
 }
 
-@implementation RxSubjectsReplaySubjectBoundedConcurrencyTest_$3
+@implementation RxSubjectsReplaySubjectBoundedConcurrencyTest_$8
 
 - (void)call {
   [((RxSubjectsReplaySubject *) nil_chk(val$rs_)) onCompleted];
 }
 
 - (instancetype)initWithRxSubjectsReplaySubject:(RxSubjectsReplaySubject *)capture$0 {
-  RxSubjectsReplaySubjectBoundedConcurrencyTest_$3_initWithRxSubjectsReplaySubject_(self, capture$0);
+  RxSubjectsReplaySubjectBoundedConcurrencyTest_$8_initWithRxSubjectsReplaySubject_(self, capture$0);
   return self;
 }
 
@@ -336,21 +1397,227 @@ RxSubjectsReplaySubjectBoundedConcurrencyTest_$2 *create_RxSubjectsReplaySubject
     { "val$rs_", "LRxSubjectsReplaySubject;", .constantValue.asLong = 0, 0x1012, -1, -1, 2, -1 },
   };
   static const void *ptrTable[] = { "LRxSubjectsReplaySubject;", "(Lrx/subjects/ReplaySubject<Ljava/lang/Object;>;)V", "Lrx/subjects/ReplaySubject<Ljava/lang/Object;>;", "LRxSubjectsReplaySubjectBoundedConcurrencyTest;", "testReplaySubjectEmissionSubscriptionRace" };
-  static const J2ObjcClassInfo _RxSubjectsReplaySubjectBoundedConcurrencyTest_$3 = { "", "rx.subjects", ptrTable, methods, fields, 7, 0x8008, 2, 1, 3, -1, 4, -1, -1 };
-  return &_RxSubjectsReplaySubjectBoundedConcurrencyTest_$3;
+  static const J2ObjcClassInfo _RxSubjectsReplaySubjectBoundedConcurrencyTest_$8 = { "", "rx.subjects", ptrTable, methods, fields, 7, 0x8008, 2, 1, 3, -1, 4, -1, -1 };
+  return &_RxSubjectsReplaySubjectBoundedConcurrencyTest_$8;
 }
 
 @end
 
-void RxSubjectsReplaySubjectBoundedConcurrencyTest_$3_initWithRxSubjectsReplaySubject_(RxSubjectsReplaySubjectBoundedConcurrencyTest_$3 *self, RxSubjectsReplaySubject *capture$0) {
+void RxSubjectsReplaySubjectBoundedConcurrencyTest_$8_initWithRxSubjectsReplaySubject_(RxSubjectsReplaySubjectBoundedConcurrencyTest_$8 *self, RxSubjectsReplaySubject *capture$0) {
   JreStrongAssign(&self->val$rs_, capture$0);
   NSObject_init(self);
 }
 
-RxSubjectsReplaySubjectBoundedConcurrencyTest_$3 *new_RxSubjectsReplaySubjectBoundedConcurrencyTest_$3_initWithRxSubjectsReplaySubject_(RxSubjectsReplaySubject *capture$0) {
-  J2OBJC_NEW_IMPL(RxSubjectsReplaySubjectBoundedConcurrencyTest_$3, initWithRxSubjectsReplaySubject_, capture$0)
+RxSubjectsReplaySubjectBoundedConcurrencyTest_$8 *new_RxSubjectsReplaySubjectBoundedConcurrencyTest_$8_initWithRxSubjectsReplaySubject_(RxSubjectsReplaySubject *capture$0) {
+  J2OBJC_NEW_IMPL(RxSubjectsReplaySubjectBoundedConcurrencyTest_$8, initWithRxSubjectsReplaySubject_, capture$0)
 }
 
-RxSubjectsReplaySubjectBoundedConcurrencyTest_$3 *create_RxSubjectsReplaySubjectBoundedConcurrencyTest_$3_initWithRxSubjectsReplaySubject_(RxSubjectsReplaySubject *capture$0) {
-  J2OBJC_CREATE_IMPL(RxSubjectsReplaySubjectBoundedConcurrencyTest_$3, initWithRxSubjectsReplaySubject_, capture$0)
+RxSubjectsReplaySubjectBoundedConcurrencyTest_$8 *create_RxSubjectsReplaySubjectBoundedConcurrencyTest_$8_initWithRxSubjectsReplaySubject_(RxSubjectsReplaySubject *capture$0) {
+  J2OBJC_CREATE_IMPL(RxSubjectsReplaySubjectBoundedConcurrencyTest_$8, initWithRxSubjectsReplaySubject_, capture$0)
+}
+
+@implementation RxSubjectsReplaySubjectBoundedConcurrencyTest_$9
+
+- (void)run {
+  @try {
+    [((JavaUtilConcurrentCyclicBarrier *) nil_chk(val$cb_)) await];
+  }
+  @catch (JavaLangInterruptedException *e) {
+    return;
+  }
+  @catch (JavaUtilConcurrentBrokenBarrierException *e) {
+    return;
+  }
+  for (jint i = 0; i < 1000000; i++) {
+    [((RxSubjectsReplaySubject *) nil_chk(val$rs_)) onNextWithId:JavaLangInteger_valueOfWithInt_(i)];
+  }
+  [((RxSubjectsReplaySubject *) nil_chk(val$rs_)) onCompleted];
+  [((JavaIoPrintStream *) nil_chk(JreLoadStatic(JavaLangSystem, out))) printlnWithNSString:@"Replay fill Thread finished!"];
+}
+
+- (instancetype)initWithJavaUtilConcurrentCyclicBarrier:(JavaUtilConcurrentCyclicBarrier *)capture$0
+                            withRxSubjectsReplaySubject:(RxSubjectsReplaySubject *)capture$1 {
+  RxSubjectsReplaySubjectBoundedConcurrencyTest_$9_initWithJavaUtilConcurrentCyclicBarrier_withRxSubjectsReplaySubject_(self, capture$0, capture$1);
+  return self;
+}
+
+- (void)dealloc {
+  RELEASE_(val$cb_);
+  RELEASE_(val$rs_);
+  [super dealloc];
+}
+
++ (const J2ObjcClassInfo *)__metadata {
+  static J2ObjcMethodInfo methods[] = {
+    { NULL, "V", 0x1, -1, -1, -1, -1, -1, -1 },
+    { NULL, NULL, 0x0, -1, 0, -1, 1, -1, -1 },
+  };
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Wobjc-multiple-method-names"
+  methods[0].selector = @selector(run);
+  methods[1].selector = @selector(initWithJavaUtilConcurrentCyclicBarrier:withRxSubjectsReplaySubject:);
+  #pragma clang diagnostic pop
+  static const J2ObjcFieldInfo fields[] = {
+    { "val$cb_", "LJavaUtilConcurrentCyclicBarrier;", .constantValue.asLong = 0, 0x1012, -1, -1, -1, -1 },
+    { "val$rs_", "LRxSubjectsReplaySubject;", .constantValue.asLong = 0, 0x1012, -1, -1, 2, -1 },
+  };
+  static const void *ptrTable[] = { "LJavaUtilConcurrentCyclicBarrier;LRxSubjectsReplaySubject;", "(Ljava/util/concurrent/CyclicBarrier;Lrx/subjects/ReplaySubject<Ljava/lang/Object;>;)V", "Lrx/subjects/ReplaySubject<Ljava/lang/Object;>;", "LRxSubjectsReplaySubjectBoundedConcurrencyTest;", "testConcurrentSizeAndHasAnyValue" };
+  static const J2ObjcClassInfo _RxSubjectsReplaySubjectBoundedConcurrencyTest_$9 = { "", "rx.subjects", ptrTable, methods, fields, 7, 0x8008, 2, 2, 3, -1, 4, -1, -1 };
+  return &_RxSubjectsReplaySubjectBoundedConcurrencyTest_$9;
+}
+
+@end
+
+void RxSubjectsReplaySubjectBoundedConcurrencyTest_$9_initWithJavaUtilConcurrentCyclicBarrier_withRxSubjectsReplaySubject_(RxSubjectsReplaySubjectBoundedConcurrencyTest_$9 *self, JavaUtilConcurrentCyclicBarrier *capture$0, RxSubjectsReplaySubject *capture$1) {
+  JreStrongAssign(&self->val$cb_, capture$0);
+  JreStrongAssign(&self->val$rs_, capture$1);
+  NSObject_init(self);
+}
+
+RxSubjectsReplaySubjectBoundedConcurrencyTest_$9 *new_RxSubjectsReplaySubjectBoundedConcurrencyTest_$9_initWithJavaUtilConcurrentCyclicBarrier_withRxSubjectsReplaySubject_(JavaUtilConcurrentCyclicBarrier *capture$0, RxSubjectsReplaySubject *capture$1) {
+  J2OBJC_NEW_IMPL(RxSubjectsReplaySubjectBoundedConcurrencyTest_$9, initWithJavaUtilConcurrentCyclicBarrier_withRxSubjectsReplaySubject_, capture$0, capture$1)
+}
+
+RxSubjectsReplaySubjectBoundedConcurrencyTest_$9 *create_RxSubjectsReplaySubjectBoundedConcurrencyTest_$9_initWithJavaUtilConcurrentCyclicBarrier_withRxSubjectsReplaySubject_(JavaUtilConcurrentCyclicBarrier *capture$0, RxSubjectsReplaySubject *capture$1) {
+  J2OBJC_CREATE_IMPL(RxSubjectsReplaySubjectBoundedConcurrencyTest_$9, initWithJavaUtilConcurrentCyclicBarrier_withRxSubjectsReplaySubject_, capture$0, capture$1)
+}
+
+@implementation RxSubjectsReplaySubjectBoundedConcurrencyTest_$10
+
+- (void)run {
+  @try {
+    [((JavaUtilConcurrentCyclicBarrier *) nil_chk(val$cb_)) await];
+  }
+  @catch (JavaLangInterruptedException *e) {
+    return;
+  }
+  @catch (JavaUtilConcurrentBrokenBarrierException *e) {
+    return;
+  }
+  for (jint i = 0; i < 1000000; i++) {
+    [((RxSubjectsReplaySubject *) nil_chk(val$rs_)) onNextWithId:JavaLangInteger_valueOfWithInt_(i)];
+  }
+  [((RxSubjectsReplaySubject *) nil_chk(val$rs_)) onCompleted];
+  [((JavaIoPrintStream *) nil_chk(JreLoadStatic(JavaLangSystem, out))) printlnWithNSString:@"Replay fill Thread finished!"];
+}
+
+- (instancetype)initWithJavaUtilConcurrentCyclicBarrier:(JavaUtilConcurrentCyclicBarrier *)capture$0
+                            withRxSubjectsReplaySubject:(RxSubjectsReplaySubject *)capture$1 {
+  RxSubjectsReplaySubjectBoundedConcurrencyTest_$10_initWithJavaUtilConcurrentCyclicBarrier_withRxSubjectsReplaySubject_(self, capture$0, capture$1);
+  return self;
+}
+
+- (void)dealloc {
+  RELEASE_(val$cb_);
+  RELEASE_(val$rs_);
+  [super dealloc];
+}
+
++ (const J2ObjcClassInfo *)__metadata {
+  static J2ObjcMethodInfo methods[] = {
+    { NULL, "V", 0x1, -1, -1, -1, -1, -1, -1 },
+    { NULL, NULL, 0x0, -1, 0, -1, 1, -1, -1 },
+  };
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Wobjc-multiple-method-names"
+  methods[0].selector = @selector(run);
+  methods[1].selector = @selector(initWithJavaUtilConcurrentCyclicBarrier:withRxSubjectsReplaySubject:);
+  #pragma clang diagnostic pop
+  static const J2ObjcFieldInfo fields[] = {
+    { "val$cb_", "LJavaUtilConcurrentCyclicBarrier;", .constantValue.asLong = 0, 0x1012, -1, -1, -1, -1 },
+    { "val$rs_", "LRxSubjectsReplaySubject;", .constantValue.asLong = 0, 0x1012, -1, -1, 2, -1 },
+  };
+  static const void *ptrTable[] = { "LJavaUtilConcurrentCyclicBarrier;LRxSubjectsReplaySubject;", "(Ljava/util/concurrent/CyclicBarrier;Lrx/subjects/ReplaySubject<Ljava/lang/Object;>;)V", "Lrx/subjects/ReplaySubject<Ljava/lang/Object;>;", "LRxSubjectsReplaySubjectBoundedConcurrencyTest;", "testConcurrentSizeAndHasAnyValueBounded" };
+  static const J2ObjcClassInfo _RxSubjectsReplaySubjectBoundedConcurrencyTest_$10 = { "", "rx.subjects", ptrTable, methods, fields, 7, 0x8008, 2, 2, 3, -1, 4, -1, -1 };
+  return &_RxSubjectsReplaySubjectBoundedConcurrencyTest_$10;
+}
+
+@end
+
+void RxSubjectsReplaySubjectBoundedConcurrencyTest_$10_initWithJavaUtilConcurrentCyclicBarrier_withRxSubjectsReplaySubject_(RxSubjectsReplaySubjectBoundedConcurrencyTest_$10 *self, JavaUtilConcurrentCyclicBarrier *capture$0, RxSubjectsReplaySubject *capture$1) {
+  JreStrongAssign(&self->val$cb_, capture$0);
+  JreStrongAssign(&self->val$rs_, capture$1);
+  NSObject_init(self);
+}
+
+RxSubjectsReplaySubjectBoundedConcurrencyTest_$10 *new_RxSubjectsReplaySubjectBoundedConcurrencyTest_$10_initWithJavaUtilConcurrentCyclicBarrier_withRxSubjectsReplaySubject_(JavaUtilConcurrentCyclicBarrier *capture$0, RxSubjectsReplaySubject *capture$1) {
+  J2OBJC_NEW_IMPL(RxSubjectsReplaySubjectBoundedConcurrencyTest_$10, initWithJavaUtilConcurrentCyclicBarrier_withRxSubjectsReplaySubject_, capture$0, capture$1)
+}
+
+RxSubjectsReplaySubjectBoundedConcurrencyTest_$10 *create_RxSubjectsReplaySubjectBoundedConcurrencyTest_$10_initWithJavaUtilConcurrentCyclicBarrier_withRxSubjectsReplaySubject_(JavaUtilConcurrentCyclicBarrier *capture$0, RxSubjectsReplaySubject *capture$1) {
+  J2OBJC_CREATE_IMPL(RxSubjectsReplaySubjectBoundedConcurrencyTest_$10, initWithJavaUtilConcurrentCyclicBarrier_withRxSubjectsReplaySubject_, capture$0, capture$1)
+}
+
+@implementation RxSubjectsReplaySubjectBoundedConcurrencyTest_$11
+
+- (void)run {
+  @try {
+    [((JavaUtilConcurrentCyclicBarrier *) nil_chk(val$cb_)) await];
+  }
+  @catch (JavaLangInterruptedException *e) {
+    return;
+  }
+  @catch (JavaUtilConcurrentBrokenBarrierException *e) {
+    return;
+  }
+  for (jint i = 0; i < 1000000; i++) {
+    [((RxSubjectsReplaySubject *) nil_chk(val$rs_)) onNextWithId:JavaLangInteger_valueOfWithInt_(i)];
+    if (i % 10000 == 0) {
+      @try {
+        JavaLangThread_sleepWithLong_(1);
+      }
+      @catch (JavaLangInterruptedException *e) {
+        return;
+      }
+    }
+  }
+  [((RxSubjectsReplaySubject *) nil_chk(val$rs_)) onCompleted];
+  [((JavaIoPrintStream *) nil_chk(JreLoadStatic(JavaLangSystem, out))) printlnWithNSString:@"Replay fill Thread finished!"];
+}
+
+- (instancetype)initWithJavaUtilConcurrentCyclicBarrier:(JavaUtilConcurrentCyclicBarrier *)capture$0
+                            withRxSubjectsReplaySubject:(RxSubjectsReplaySubject *)capture$1 {
+  RxSubjectsReplaySubjectBoundedConcurrencyTest_$11_initWithJavaUtilConcurrentCyclicBarrier_withRxSubjectsReplaySubject_(self, capture$0, capture$1);
+  return self;
+}
+
+- (void)dealloc {
+  RELEASE_(val$cb_);
+  RELEASE_(val$rs_);
+  [super dealloc];
+}
+
++ (const J2ObjcClassInfo *)__metadata {
+  static J2ObjcMethodInfo methods[] = {
+    { NULL, "V", 0x1, -1, -1, -1, -1, -1, -1 },
+    { NULL, NULL, 0x0, -1, 0, -1, 1, -1, -1 },
+  };
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Wobjc-multiple-method-names"
+  methods[0].selector = @selector(run);
+  methods[1].selector = @selector(initWithJavaUtilConcurrentCyclicBarrier:withRxSubjectsReplaySubject:);
+  #pragma clang diagnostic pop
+  static const J2ObjcFieldInfo fields[] = {
+    { "val$cb_", "LJavaUtilConcurrentCyclicBarrier;", .constantValue.asLong = 0, 0x1012, -1, -1, -1, -1 },
+    { "val$rs_", "LRxSubjectsReplaySubject;", .constantValue.asLong = 0, 0x1012, -1, -1, 2, -1 },
+  };
+  static const void *ptrTable[] = { "LJavaUtilConcurrentCyclicBarrier;LRxSubjectsReplaySubject;", "(Ljava/util/concurrent/CyclicBarrier;Lrx/subjects/ReplaySubject<Ljava/lang/Object;>;)V", "Lrx/subjects/ReplaySubject<Ljava/lang/Object;>;", "LRxSubjectsReplaySubjectBoundedConcurrencyTest;", "testConcurrentSizeAndHasAnyValueTimeBounded" };
+  static const J2ObjcClassInfo _RxSubjectsReplaySubjectBoundedConcurrencyTest_$11 = { "", "rx.subjects", ptrTable, methods, fields, 7, 0x8008, 2, 2, 3, -1, 4, -1, -1 };
+  return &_RxSubjectsReplaySubjectBoundedConcurrencyTest_$11;
+}
+
+@end
+
+void RxSubjectsReplaySubjectBoundedConcurrencyTest_$11_initWithJavaUtilConcurrentCyclicBarrier_withRxSubjectsReplaySubject_(RxSubjectsReplaySubjectBoundedConcurrencyTest_$11 *self, JavaUtilConcurrentCyclicBarrier *capture$0, RxSubjectsReplaySubject *capture$1) {
+  JreStrongAssign(&self->val$cb_, capture$0);
+  JreStrongAssign(&self->val$rs_, capture$1);
+  NSObject_init(self);
+}
+
+RxSubjectsReplaySubjectBoundedConcurrencyTest_$11 *new_RxSubjectsReplaySubjectBoundedConcurrencyTest_$11_initWithJavaUtilConcurrentCyclicBarrier_withRxSubjectsReplaySubject_(JavaUtilConcurrentCyclicBarrier *capture$0, RxSubjectsReplaySubject *capture$1) {
+  J2OBJC_NEW_IMPL(RxSubjectsReplaySubjectBoundedConcurrencyTest_$11, initWithJavaUtilConcurrentCyclicBarrier_withRxSubjectsReplaySubject_, capture$0, capture$1)
+}
+
+RxSubjectsReplaySubjectBoundedConcurrencyTest_$11 *create_RxSubjectsReplaySubjectBoundedConcurrencyTest_$11_initWithJavaUtilConcurrentCyclicBarrier_withRxSubjectsReplaySubject_(JavaUtilConcurrentCyclicBarrier *capture$0, RxSubjectsReplaySubject *capture$1) {
+  J2OBJC_CREATE_IMPL(RxSubjectsReplaySubjectBoundedConcurrencyTest_$11, initWithJavaUtilConcurrentCyclicBarrier_withRxSubjectsReplaySubject_, capture$0, capture$1)
 }

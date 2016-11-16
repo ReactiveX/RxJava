@@ -117,13 +117,13 @@ J2OBJC_TYPE_LITERAL_HEADER(RxInternalOperatorsOnSubscribeGroupJoin)
 
 - (id<RxObserver>)getWithId:(id)arg0;
 
+- (void)init__ OBJC_METHOD_FAMILY_NONE;
+
 - (jboolean)isUnsubscribed;
 
 - (id<RxObserver>)mergeWithId:(JavaLangInteger *)arg0
                        withId:(id<RxObserver>)arg1
 withJavaUtilFunctionBiFunction:(id<JavaUtilFunctionBiFunction>)arg2;
-
-- (void)onit;
 
 - (id<RxObserver>)putIfAbsentWithId:(JavaLangInteger *)arg0
                              withId:(id<RxObserver>)arg1;

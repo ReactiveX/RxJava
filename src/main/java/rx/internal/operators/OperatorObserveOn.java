@@ -140,7 +140,17 @@ public final class OperatorObserveOn<T> implements Operator<T, T> {
             // setProducer call
             Subscriber<? super T> localChild = child;
 
-            localChild.setProducer(new ObserveOnProducer());
+            localChild.setProducer(new Producer() {
+
+                @Override
+                public void request(long n) {
+                    if (n > 0L) {
+                        BackpressureUtils.getAndAddRequest(requested, n);
+                        schedule();
+                    }
+                }
+
+            });
             localChild.add(recursiveScheduler);
             localChild.add(this);
         }
@@ -283,20 +293,6 @@ public final class OperatorObserveOn<T> implements Operator<T, T> {
             }
 
             return false;
-        }
-
-//        @WeakOuter
-        private class ObserveOnProducer implements Producer
-        {
-
-            @Override
-            public void request(long n) {
-                if (n > 0L) {
-                    BackpressureUtils.getAndAddRequest(requested, n);
-                    schedule();
-                }
-            }
-
         }
     }
 }

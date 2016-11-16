@@ -106,8 +106,6 @@
 
 - (jint)getValueCount;
 
-- (void)j2objcCleanup;
-
 - (void)onCompleted;
 
 - (void)onErrorWithNSException:(NSException *)e;

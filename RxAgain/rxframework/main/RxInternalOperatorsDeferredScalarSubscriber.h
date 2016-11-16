@@ -97,7 +97,7 @@ J2OBJC_TYPE_LITERAL_HEADER(RxInternalOperatorsDeferredScalarSubscriber)
 
 @interface RxInternalOperatorsDeferredScalarSubscriber_InnerProducer : NSObject < RxProducer > {
  @public
-  __unsafe_unretained RxInternalOperatorsDeferredScalarSubscriber *parent_;
+  RxInternalOperatorsDeferredScalarSubscriber *parent_;
 }
 
 #pragma mark Public
@@ -109,6 +109,8 @@ J2OBJC_TYPE_LITERAL_HEADER(RxInternalOperatorsDeferredScalarSubscriber)
 @end
 
 J2OBJC_EMPTY_STATIC_INIT(RxInternalOperatorsDeferredScalarSubscriber_InnerProducer)
+
+J2OBJC_FIELD_SETTER(RxInternalOperatorsDeferredScalarSubscriber_InnerProducer, parent_, RxInternalOperatorsDeferredScalarSubscriber *)
 
 FOUNDATION_EXPORT void RxInternalOperatorsDeferredScalarSubscriber_InnerProducer_initWithRxInternalOperatorsDeferredScalarSubscriber_(RxInternalOperatorsDeferredScalarSubscriber_InnerProducer *self, RxInternalOperatorsDeferredScalarSubscriber *parent);
 

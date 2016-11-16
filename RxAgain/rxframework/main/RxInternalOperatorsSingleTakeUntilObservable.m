@@ -174,7 +174,6 @@ J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxInternalOperatorsSingleTakeUntilObservable_Ta
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsSingleTakeUntilObservable_TakeUntilSourceSubscriber_OtherSubscriber class]);
   RELEASE_(this$0_);
   [super dealloc];
 }

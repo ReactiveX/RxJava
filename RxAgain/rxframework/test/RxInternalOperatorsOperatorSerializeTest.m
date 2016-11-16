@@ -1076,7 +1076,6 @@ J2OBJC_IGNORE_DESIGNATED_BEGIN
 J2OBJC_IGNORE_DESIGNATED_END
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOperatorSerializeTest_BusyObserver class]);
   RELEASE_(onNextCount_);
   RELEASE_(threadsRunning_);
   RELEASE_(maxConcurrentThreads_);

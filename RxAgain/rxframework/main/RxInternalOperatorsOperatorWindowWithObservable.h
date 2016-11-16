@@ -71,7 +71,7 @@ J2OBJC_TYPE_LITERAL_HEADER(RxInternalOperatorsOperatorWindowWithObservable)
   RxSubscriber *child_;
   id guard_;
   id<RxObserver> consumer_;
-  RxObservable *producer_;
+  RxObservable *producer_SourceSubscriber_;
   jboolean emitting_;
   id<JavaUtilList> queue_;
 }
@@ -111,7 +111,7 @@ J2OBJC_EMPTY_STATIC_INIT(RxInternalOperatorsOperatorWindowWithObservable_SourceS
 J2OBJC_FIELD_SETTER(RxInternalOperatorsOperatorWindowWithObservable_SourceSubscriber, child_, RxSubscriber *)
 J2OBJC_FIELD_SETTER(RxInternalOperatorsOperatorWindowWithObservable_SourceSubscriber, guard_, id)
 J2OBJC_FIELD_SETTER(RxInternalOperatorsOperatorWindowWithObservable_SourceSubscriber, consumer_, id<RxObserver>)
-J2OBJC_FIELD_SETTER(RxInternalOperatorsOperatorWindowWithObservable_SourceSubscriber, producer_, RxObservable *)
+J2OBJC_FIELD_SETTER(RxInternalOperatorsOperatorWindowWithObservable_SourceSubscriber, producer_SourceSubscriber_, RxObservable *)
 J2OBJC_FIELD_SETTER(RxInternalOperatorsOperatorWindowWithObservable_SourceSubscriber, queue_, id<JavaUtilList>)
 
 FOUNDATION_EXPORT void RxInternalOperatorsOperatorWindowWithObservable_SourceSubscriber_initWithRxSubscriber_(RxInternalOperatorsOperatorWindowWithObservable_SourceSubscriber *self, RxSubscriber *child);

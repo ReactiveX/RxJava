@@ -525,7 +525,6 @@ RxInternalOperatorsOnSubscribeRangeTest_$1 *create_RxInternalOperatorsOnSubscrib
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOnSubscribeRangeTest_$2 class]);
   RELEASE_(val$count_);
   [super dealloc];
 }
@@ -591,7 +590,6 @@ RxInternalOperatorsOnSubscribeRangeTest_$2 *create_RxInternalOperatorsOnSubscrib
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOnSubscribeRangeTest_$3 class]);
   RELEASE_(val$completed_);
   [super dealloc];
 }

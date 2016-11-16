@@ -1360,7 +1360,6 @@ withJavaUtilConcurrentAtomicAtomicBoolean:(JavaUtilConcurrentAtomicAtomicBoolean
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOperatorPublishTest_$12 class]);
   RELEASE_(val$source_);
   RELEASE_(val$child2Unsubscribed_);
   RELEASE_(val$ts2_);
@@ -1514,11 +1513,6 @@ J2OBJC_IGNORE_DESIGNATED_BEGIN
   return self;
 }
 J2OBJC_IGNORE_DESIGNATED_END
-
-- (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOperatorPublishTest_$14 class]);
-  [super dealloc];
-}
 
 + (const J2ObjcClassInfo *)__metadata {
   static J2ObjcMethodInfo methods[] = {

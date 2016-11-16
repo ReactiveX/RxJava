@@ -104,7 +104,6 @@ J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxInternalOperatorsOnSubscribeCollect)
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOnSubscribeCollect_CollectSubscriber class]);
   RELEASE_(collector_);
   [super dealloc];
 }

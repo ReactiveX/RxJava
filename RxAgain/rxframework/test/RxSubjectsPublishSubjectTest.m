@@ -1042,7 +1042,6 @@ RxSubjectsPublishSubjectTest_$4 *create_RxSubjectsPublishSubjectTest_$4_initWith
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxSubjectsPublishSubjectTest_$5 class]);
   RELEASE_(val$ts0_);
   [super dealloc];
 }

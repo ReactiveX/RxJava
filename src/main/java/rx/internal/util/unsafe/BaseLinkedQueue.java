@@ -10,7 +10,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * Original License: https://github.com/JCTools/JCTools/blob/master/LICENSE
  * Original location: https://github.com/JCTools/JCTools/blob/master/jctools-core/src/main/java/org/jctools/queues/atomic/BaseLinkedQueue.java
  */
@@ -22,9 +22,9 @@ import rx.internal.util.atomic.LinkedQueueNode;
 
 /**
  * A base data structure for concurrent linked queues.
- * 
+ *
  * @author nitsanw
- * 
+ *
  * @param <E>
  */
 abstract class BaseLinkedQueue<E> extends BaseLinkedQueueConsumerNodeRef<E> {
@@ -41,7 +41,7 @@ abstract class BaseLinkedQueue<E> extends BaseLinkedQueueConsumerNodeRef<E> {
      * <p>
      * IMPLEMENTATION NOTES:<br>
      * This is an O(n) operation as we run through all the nodes and count them.<br>
-     * 
+     *
      * @see java.util.Queue#size()
      */
     @Override
@@ -60,7 +60,7 @@ abstract class BaseLinkedQueue<E> extends BaseLinkedQueueConsumerNodeRef<E> {
         }
         return size;
     }
-    
+
     /**
      * {@inheritDoc} <br>
      * <p>
@@ -68,7 +68,7 @@ abstract class BaseLinkedQueue<E> extends BaseLinkedQueueConsumerNodeRef<E> {
      * Queue is empty when producerNode is the same as consumerNode. An alternative implementation would be to observe
      * the producerNode.value is null, which also means an empty queue because only the consumerNode.value is allowed to
      * be null.
-     * 
+     *
      * @see MessagePassingQueue#isEmpty()
      */
     @Override

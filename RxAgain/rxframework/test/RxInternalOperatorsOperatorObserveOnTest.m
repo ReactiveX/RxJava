@@ -1121,7 +1121,6 @@ __attribute__((unused)) static RxInternalOperatorsOperatorObserveOnTest_$27 *cre
       [ts assertValueCountWithInt:1000 * 1000];
       [ts assertCompleted];
       [ts assertNoErrors];
-      [ts unsubscribe];
     }
   }
 }
@@ -2017,11 +2016,6 @@ J2OBJC_IGNORE_DESIGNATED_BEGIN
 }
 J2OBJC_IGNORE_DESIGNATED_END
 
-- (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOperatorObserveOnTest_$12 class]);
-  [super dealloc];
-}
-
 + (const J2ObjcClassInfo *)__metadata {
   static J2ObjcMethodInfo methods[] = {
     { NULL, "V", 0x1, 0, 1, -1, 2, -1, -1 },
@@ -2188,11 +2182,6 @@ J2OBJC_IGNORE_DESIGNATED_BEGIN
   return self;
 }
 J2OBJC_IGNORE_DESIGNATED_END
-
-- (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOperatorObserveOnTest_$14 class]);
-  [super dealloc];
-}
 
 + (const J2ObjcClassInfo *)__metadata {
   static J2ObjcMethodInfo methods[] = {
@@ -2729,7 +2718,6 @@ RxInternalOperatorsOperatorObserveOnTest_$22 *create_RxInternalOperatorsOperator
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOperatorObserveOnTest_$23 class]);
   RELEASE_(val$latch_);
   RELEASE_(val$count_);
   [super dealloc];
@@ -2850,7 +2838,6 @@ RxInternalOperatorsOperatorObserveOnTest_$24 *create_RxInternalOperatorsOperator
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOperatorObserveOnTest_$25 class]);
   RELEASE_(val$latch_);
   [super dealloc];
 }

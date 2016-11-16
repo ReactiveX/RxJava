@@ -292,7 +292,6 @@ J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxInternalOperatorsOperatorBufferWithTime)
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOperatorBufferWithTime_InexactSubscriber class]);
   RELEASE_(this$0_);
   RELEASE_(child_);
   RELEASE_(inner_);
@@ -536,7 +535,6 @@ RxInternalOperatorsOperatorBufferWithTime_InexactSubscriber_$2 *create_RxInterna
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOperatorBufferWithTime_ExactSubscriber class]);
   RELEASE_(this$0_);
   RELEASE_(child_);
   RELEASE_(inner_);

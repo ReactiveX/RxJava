@@ -935,7 +935,6 @@ public class OperatorObserveOnTest {
             ts.assertValueCount(1000 * 1000);
             ts.assertCompleted();
             ts.assertNoErrors();
-            ts.unsubscribe();
         }
     }
 

@@ -240,7 +240,6 @@ J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxInternalOperatorsOperatorDistinctUntilChanged
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOperatorDistinctUntilChanged_$1 class]);
   RELEASE_(this$0_);
   RELEASE_(previousKey_);
   RELEASE_(val$child_);

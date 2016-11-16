@@ -144,13 +144,13 @@ J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxInternalOperatorsOperatorMapNotification)
 
 - (void)accountProduced {
   jlong p = produced_;
-  if (p != 0LL && [((JavaUtilConcurrentAtomicAtomicReference *) nil_chk(producer_)) get] != nil) {
+  if (p != 0LL && [((JavaUtilConcurrentAtomicAtomicReference *) nil_chk(producer_MapNotificationSubscriber_)) get] != nil) {
     RxInternalOperatorsBackpressureUtils_producedWithJavaUtilConcurrentAtomicAtomicLong_withLong_(requested_MapNotificationSubscriber_, p);
   }
 }
 
 - (void)setProducerWithRxProducer:(id<RxProducer>)p {
-  if ([((JavaUtilConcurrentAtomicAtomicReference *) nil_chk(producer_)) compareAndSetWithId:nil withId:p]) {
+  if ([((JavaUtilConcurrentAtomicAtomicReference *) nil_chk(producer_MapNotificationSubscriber_)) compareAndSetWithId:nil withId:p]) {
     jlong r = [((JavaUtilConcurrentAtomicAtomicLong *) nil_chk(missedRequested_)) getAndSetWithLong:0LL];
     if (r != 0LL) {
       [((id<RxProducer>) nil_chk(p)) requestWithLong:r];
@@ -168,7 +168,7 @@ J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxInternalOperatorsOperatorMapNotification)
       break;
     }
     if ([requested_MapNotificationSubscriber_ compareAndSetWithLong:r withLong:r | RxInternalOperatorsOperatorMapNotification_MapNotificationSubscriber_COMPLETED_FLAG]) {
-      if (r != 0 || [((JavaUtilConcurrentAtomicAtomicReference *) nil_chk(producer_)) get] == nil) {
+      if (r != 0 || [((JavaUtilConcurrentAtomicAtomicReference *) nil_chk(producer_MapNotificationSubscriber_)) get] == nil) {
         if (![((RxSubscriber *) nil_chk(actual_)) isUnsubscribed]) {
           [actual_ onNextWithId:value_];
         }
@@ -212,7 +212,7 @@ J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxInternalOperatorsOperatorMapNotification)
       }
     }
   }
-  JavaUtilConcurrentAtomicAtomicReference *localProducer = producer_;
+  JavaUtilConcurrentAtomicAtomicReference *localProducer = producer_MapNotificationSubscriber_;
   id<RxProducer> actualProducer = [((JavaUtilConcurrentAtomicAtomicReference *) nil_chk(localProducer)) get];
   if (actualProducer != nil) {
     [actualProducer requestWithLong:n];
@@ -230,14 +230,13 @@ J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxInternalOperatorsOperatorMapNotification)
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOperatorMapNotification_MapNotificationSubscriber class]);
   RELEASE_(actual_);
   RELEASE_(onNext_);
   RELEASE_(onError_);
   RELEASE_(onCompleted_);
   RELEASE_(requested_MapNotificationSubscriber_);
   RELEASE_(missedRequested_);
-  RELEASE_(producer_);
+  RELEASE_(producer_MapNotificationSubscriber_);
   RELEASE_(value_);
   [super dealloc];
 }
@@ -271,14 +270,14 @@ J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxInternalOperatorsOperatorMapNotification)
     { "onCompleted_", "LRxFunctionsFunc0;", .constantValue.asLong = 0, 0x10, -1, -1, 14, -1 },
     { "requested_MapNotificationSubscriber_", "LJavaUtilConcurrentAtomicAtomicLong;", .constantValue.asLong = 0, 0x10, 15, -1, -1, -1 },
     { "missedRequested_", "LJavaUtilConcurrentAtomicAtomicLong;", .constantValue.asLong = 0, 0x10, -1, -1, -1, -1 },
-    { "producer_", "LJavaUtilConcurrentAtomicAtomicReference;", .constantValue.asLong = 0, 0x10, -1, -1, 16, -1 },
+    { "producer_MapNotificationSubscriber_", "LJavaUtilConcurrentAtomicAtomicReference;", .constantValue.asLong = 0, 0x10, 16, -1, 17, -1 },
     { "produced_", "J", .constantValue.asLong = 0, 0x0, -1, -1, -1, -1 },
-    { "value_", "LNSObject;", .constantValue.asLong = 0, 0x0, -1, -1, 17, -1 },
+    { "value_", "LNSObject;", .constantValue.asLong = 0, 0x0, -1, -1, 18, -1 },
     { "COMPLETED_FLAG", "J", .constantValue.asLong = RxInternalOperatorsOperatorMapNotification_MapNotificationSubscriber_COMPLETED_FLAG, 0x18, -1, -1, -1, -1 },
     { "REQUESTED_MASK", "J", .constantValue.asLong = RxInternalOperatorsOperatorMapNotification_MapNotificationSubscriber_REQUESTED_MASK, 0x18, -1, -1, -1, -1 },
   };
-  static const void *ptrTable[] = { "LRxSubscriber;LRxFunctionsFunc1;LRxFunctionsFunc1;LRxFunctionsFunc0;", "(Lrx/Subscriber<-TR;>;Lrx/functions/Func1<-TT;+TR;>;Lrx/functions/Func1<-Ljava/lang/Throwable;+TR;>;Lrx/functions/Func0<+TR;>;)V", "onNext", "LNSObject;", "(TT;)V", "onError", "LNSException;", "setProducer", "LRxProducer;", "requestInner", "J", "Lrx/Subscriber<-TR;>;", "Lrx/functions/Func1<-TT;+TR;>;", "Lrx/functions/Func1<-Ljava/lang/Throwable;+TR;>;", "Lrx/functions/Func0<+TR;>;", "requested", "Ljava/util/concurrent/atomic/AtomicReference<Lrx/Producer;>;", "TR;", "LRxInternalOperatorsOperatorMapNotification;", "<T:Ljava/lang/Object;R:Ljava/lang/Object;>Lrx/Subscriber<TT;>;" };
-  static const J2ObjcClassInfo _RxInternalOperatorsOperatorMapNotification_MapNotificationSubscriber = { "MapNotificationSubscriber", "rx.internal.operators", ptrTable, methods, fields, 7, 0x18, 8, 11, 18, -1, -1, 19, -1 };
+  static const void *ptrTable[] = { "LRxSubscriber;LRxFunctionsFunc1;LRxFunctionsFunc1;LRxFunctionsFunc0;", "(Lrx/Subscriber<-TR;>;Lrx/functions/Func1<-TT;+TR;>;Lrx/functions/Func1<-Ljava/lang/Throwable;+TR;>;Lrx/functions/Func0<+TR;>;)V", "onNext", "LNSObject;", "(TT;)V", "onError", "LNSException;", "setProducer", "LRxProducer;", "requestInner", "J", "Lrx/Subscriber<-TR;>;", "Lrx/functions/Func1<-TT;+TR;>;", "Lrx/functions/Func1<-Ljava/lang/Throwable;+TR;>;", "Lrx/functions/Func0<+TR;>;", "requested", "producer", "Ljava/util/concurrent/atomic/AtomicReference<Lrx/Producer;>;", "TR;", "LRxInternalOperatorsOperatorMapNotification;", "<T:Ljava/lang/Object;R:Ljava/lang/Object;>Lrx/Subscriber<TT;>;" };
+  static const J2ObjcClassInfo _RxInternalOperatorsOperatorMapNotification_MapNotificationSubscriber = { "MapNotificationSubscriber", "rx.internal.operators", ptrTable, methods, fields, 7, 0x18, 8, 11, 19, -1, -1, 20, -1 };
   return &_RxInternalOperatorsOperatorMapNotification_MapNotificationSubscriber;
 }
 
@@ -292,7 +291,7 @@ void RxInternalOperatorsOperatorMapNotification_MapNotificationSubscriber_initWi
   JreStrongAssign(&self->onCompleted_, onCompleted);
   JreStrongAssignAndConsume(&self->requested_MapNotificationSubscriber_, new_JavaUtilConcurrentAtomicAtomicLong_init());
   JreStrongAssignAndConsume(&self->missedRequested_, new_JavaUtilConcurrentAtomicAtomicLong_init());
-  JreStrongAssignAndConsume(&self->producer_, new_JavaUtilConcurrentAtomicAtomicReference_init());
+  JreStrongAssignAndConsume(&self->producer_MapNotificationSubscriber_, new_JavaUtilConcurrentAtomicAtomicReference_init());
 }
 
 RxInternalOperatorsOperatorMapNotification_MapNotificationSubscriber *new_RxInternalOperatorsOperatorMapNotification_MapNotificationSubscriber_initWithRxSubscriber_withRxFunctionsFunc1_withRxFunctionsFunc1_withRxFunctionsFunc0_(RxSubscriber *actual, id<RxFunctionsFunc1> onNext, id<RxFunctionsFunc1> onError, id<RxFunctionsFunc0> onCompleted) {

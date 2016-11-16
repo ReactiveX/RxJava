@@ -235,7 +235,6 @@ J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxInternalOperatorsOperatorBufferWithSingleObse
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOperatorBufferWithSingleObservable_BufferingSubscriber class]);
   RELEASE_(this$0_);
   RELEASE_(child_);
   RELEASE_(chunk_);
@@ -357,7 +356,6 @@ RxInternalOperatorsOperatorBufferWithSingleObservable_$1 *create_RxInternalOpera
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOperatorBufferWithSingleObservable_$2 class]);
   RELEASE_(val$s_);
   [super dealloc];
 }

@@ -123,7 +123,6 @@ J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxInternalOperatorsOperatorTakeLast)
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOperatorTakeLast_TakeLastSubscriber class]);
   RELEASE_(actual_);
   RELEASE_(requested_TakeLastSubscriber_);
   RELEASE_(queue_);

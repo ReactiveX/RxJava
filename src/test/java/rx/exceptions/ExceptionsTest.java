@@ -21,6 +21,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Test;
 
+import co.touchlab.doppel.testing.DoppelHacks;
+import co.touchlab.doppel.testing.PlatformUtils;
 import rx.*;
 import rx.functions.*;
 import rx.observables.GroupedObservable;
@@ -67,7 +69,10 @@ public class ExceptionsTest {
     }
 
     @Test
+    @DoppelHacks//Stack overflow not caught
     public void testStackOverflowWouldOccur() {
+        if(PlatformUtils.isJ2objc())
+            return;
         final PublishSubject<Integer> a = PublishSubject.create();
         final PublishSubject<Integer> b = PublishSubject.create();
         final int MAX_STACK_DEPTH = 800;

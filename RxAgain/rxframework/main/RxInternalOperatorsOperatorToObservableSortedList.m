@@ -370,7 +370,6 @@ RxInternalOperatorsOperatorToObservableSortedList_$1 *create_RxInternalOperators
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOperatorToObservableSortedList_$2 class]);
   RELEASE_(this$0_);
   RELEASE_(list_);
   RELEASE_(val$producer_);

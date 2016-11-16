@@ -3547,11 +3547,6 @@ J2OBJC_IGNORE_DESIGNATED_BEGIN
 }
 J2OBJC_IGNORE_DESIGNATED_END
 
-- (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOperatorBufferTest_$25 class]);
-  [super dealloc];
-}
-
 + (const J2ObjcClassInfo *)__metadata {
   static J2ObjcMethodInfo methods[] = {
     { NULL, "V", 0x1, -1, -1, -1, -1, -1, -1 },
@@ -3610,7 +3605,6 @@ withJavaUtilConcurrentCountDownLatch:(JavaUtilConcurrentCountDownLatch *)capture
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOperatorBufferTest_$26 class]);
   RELEASE_(val$o_);
   RELEASE_(val$cdl_);
   [super dealloc];

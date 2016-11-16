@@ -6,7 +6,6 @@
 #include "IOSClass.h"
 #include "IOSObjectArray.h"
 #include "J2ObjC_source.h"
-#include "RxDopplJ2objcWeakReference.h"
 #include "RxExceptionsExceptions.h"
 #include "RxExceptionsOnErrorThrowable.h"
 #include "RxFunctionsAction0.h"
@@ -545,11 +544,11 @@ IOSObjectArray *RxInternalOperatorsOperatorReplay_ReplaySubscriber_TERMINATED;
 }
 
 - (void)setProducerWithRxProducer:(id<RxProducer>)p {
-  id<RxProducer> p0 = JreLoadVolatileId(&producer_);
+  id<RxProducer> p0 = JreLoadVolatileId(&producer_ReplaySubscriber_);
   if (p0 != nil) {
     @throw create_JavaLangIllegalStateException_initWithNSString_(@"Only a single producer can be set on a Subscriber.");
   }
-  JreVolatileStrongAssign(&producer_, p);
+  JreVolatileStrongAssign(&producer_ReplaySubscriber_, p);
   [self manageRequestsWithRxInternalOperatorsOperatorReplay_InnerProducer:nil];
   [self replay];
 }
@@ -685,7 +684,7 @@ IOSObjectArray *RxInternalOperatorsOperatorReplay_ReplaySubscriber_TERMINATED;
 - (void)makeRequestWithLong:(jlong)maxTotalRequests
                    withLong:(jlong)previousTotalRequests {
   jlong ur = maxUpstreamRequested_;
-  id<RxProducer> p = JreLoadVolatileId(&producer_);
+  id<RxProducer> p = JreLoadVolatileId(&producer_ReplaySubscriber_);
   jlong diff = maxTotalRequests - previousTotalRequests;
   if (diff != 0) {
     maxChildRequested_ = maxTotalRequests;
@@ -743,16 +742,15 @@ IOSObjectArray *RxInternalOperatorsOperatorReplay_ReplaySubscriber_TERMINATED;
 
 - (void)__javaClone:(RxInternalOperatorsOperatorReplay_ReplaySubscriber *)original {
   [super __javaClone:original];
-  JreCloneVolatileStrong(&producer_, &original->producer_);
+  JreCloneVolatileStrong(&producer_ReplaySubscriber_, &original->producer_ReplaySubscriber_);
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOperatorReplay_ReplaySubscriber class]);
   RELEASE_(buffer_);
   RELEASE_(producers_);
   RELEASE_(producersCache_);
   RELEASE_(shouldConnect_);
-  JreReleaseVolatile(&producer_);
+  JreReleaseVolatile(&producer_ReplaySubscriber_);
   RELEASE_(coordinationQueue_);
   [super dealloc];
 }
@@ -802,12 +800,12 @@ IOSObjectArray *RxInternalOperatorsOperatorReplay_ReplaySubscriber_TERMINATED;
     { "missed_", "Z", .constantValue.asLong = 0, 0x0, -1, -1, -1, -1 },
     { "maxChildRequested_", "J", .constantValue.asLong = 0, 0x0, -1, -1, -1, -1 },
     { "maxUpstreamRequested_", "J", .constantValue.asLong = 0, 0x0, -1, -1, -1, -1 },
-    { "producer_", "LRxProducer;", .constantValue.asLong = 0, 0x40, -1, -1, -1, -1 },
-    { "coordinationQueue_", "LJavaUtilList;", .constantValue.asLong = 0, 0x0, -1, -1, 23, -1 },
+    { "producer_ReplaySubscriber_", "LRxProducer;", .constantValue.asLong = 0, 0x40, 23, -1, -1, -1 },
+    { "coordinationQueue_", "LJavaUtilList;", .constantValue.asLong = 0, 0x0, -1, -1, 24, -1 },
     { "coordinateAll_", "Z", .constantValue.asLong = 0, 0x0, -1, -1, -1, -1 },
   };
-  static const void *ptrTable[] = { "LRxInternalOperatorsOperatorReplay_ReplayBuffer;", "(Lrx/internal/operators/OperatorReplay$ReplayBuffer<TT;>;)V", "init", "add", "LRxInternalOperatorsOperatorReplay_InnerProducer;", "(Lrx/internal/operators/OperatorReplay$InnerProducer<TT;>;)Z", "remove", "(Lrx/internal/operators/OperatorReplay$InnerProducer<TT;>;)V", "setProducer", "LRxProducer;", "onNext", "LNSObject;", "(TT;)V", "onError", "LNSException;", "manageRequests", "makeRequest", "JJ", "Lrx/internal/operators/OperatorReplay$ReplayBuffer<TT;>;", &RxInternalOperatorsOperatorReplay_ReplaySubscriber_EMPTY, &RxInternalOperatorsOperatorReplay_ReplaySubscriber_TERMINATED, "Lrx/internal/util/OpenHashSet<Lrx/internal/operators/OperatorReplay$InnerProducer<TT;>;>;", "[Lrx/internal/operators/OperatorReplay$InnerProducer<TT;>;", "Ljava/util/List<Lrx/internal/operators/OperatorReplay$InnerProducer<TT;>;>;", "LRxInternalOperatorsOperatorReplay;", "<T:Ljava/lang/Object;>Lrx/Subscriber<TT;>;Lrx/Subscription;" };
-  static const J2ObjcClassInfo _RxInternalOperatorsOperatorReplay_ReplaySubscriber = { "ReplaySubscriber", "rx.internal.operators", ptrTable, methods, fields, 7, 0x18, 12, 17, 24, -1, -1, 25, -1 };
+  static const void *ptrTable[] = { "LRxInternalOperatorsOperatorReplay_ReplayBuffer;", "(Lrx/internal/operators/OperatorReplay$ReplayBuffer<TT;>;)V", "init", "add", "LRxInternalOperatorsOperatorReplay_InnerProducer;", "(Lrx/internal/operators/OperatorReplay$InnerProducer<TT;>;)Z", "remove", "(Lrx/internal/operators/OperatorReplay$InnerProducer<TT;>;)V", "setProducer", "LRxProducer;", "onNext", "LNSObject;", "(TT;)V", "onError", "LNSException;", "manageRequests", "makeRequest", "JJ", "Lrx/internal/operators/OperatorReplay$ReplayBuffer<TT;>;", &RxInternalOperatorsOperatorReplay_ReplaySubscriber_EMPTY, &RxInternalOperatorsOperatorReplay_ReplaySubscriber_TERMINATED, "Lrx/internal/util/OpenHashSet<Lrx/internal/operators/OperatorReplay$InnerProducer<TT;>;>;", "[Lrx/internal/operators/OperatorReplay$InnerProducer<TT;>;", "producer", "Ljava/util/List<Lrx/internal/operators/OperatorReplay$InnerProducer<TT;>;>;", "LRxInternalOperatorsOperatorReplay;", "<T:Ljava/lang/Object;>Lrx/Subscriber<TT;>;Lrx/Subscription;" };
+  static const J2ObjcClassInfo _RxInternalOperatorsOperatorReplay_ReplaySubscriber = { "ReplaySubscriber", "rx.internal.operators", ptrTable, methods, fields, 7, 0x18, 12, 17, 25, -1, -1, 26, -1 };
   return &_RxInternalOperatorsOperatorReplay_ReplaySubscriber;
 }
 
@@ -909,8 +907,6 @@ RxInternalOperatorsOperatorReplay_ReplaySubscriber_$1 *create_RxInternalOperator
   if (n < 0) {
     return;
   }
-  RxInternalOperatorsOperatorReplay_ReplaySubscriber *parent = [((RxDopplJ2objcWeakReference *) nil_chk(self->weakParent_)) get];
-  if (parent == nil) return;
   for (; ; ) {
     jlong r = [self get];
     if (r == RxInternalOperatorsOperatorReplay_InnerProducer_UNSUBSCRIBED) {
@@ -925,8 +921,8 @@ RxInternalOperatorsOperatorReplay_ReplaySubscriber_$1 *create_RxInternalOperator
     }
     if ([self compareAndSetWithLong:r withLong:u]) {
       [self addTotalRequestedWithLong:n];
-      [parent manageRequestsWithRxInternalOperatorsOperatorReplay_InnerProducer:self];
-      [((id<RxInternalOperatorsOperatorReplay_ReplayBuffer>) nil_chk(parent->buffer_)) replayWithRxInternalOperatorsOperatorReplay_InnerProducer:self];
+      [((RxInternalOperatorsOperatorReplay_ReplaySubscriber *) nil_chk(parent_)) manageRequestsWithRxInternalOperatorsOperatorReplay_InnerProducer:self];
+      [((id<RxInternalOperatorsOperatorReplay_ReplayBuffer>) nil_chk(parent_->buffer_)) replayWithRxInternalOperatorsOperatorReplay_InnerProducer:self];
       return;
     }
   }
@@ -973,12 +969,9 @@ RxInternalOperatorsOperatorReplay_ReplaySubscriber_$1 *create_RxInternalOperator
   if (r != RxInternalOperatorsOperatorReplay_InnerProducer_UNSUBSCRIBED) {
     r = [self getAndSetWithLong:RxInternalOperatorsOperatorReplay_InnerProducer_UNSUBSCRIBED];
     if (r != RxInternalOperatorsOperatorReplay_InnerProducer_UNSUBSCRIBED) {
-      RxInternalOperatorsOperatorReplay_ReplaySubscriber *parent = [((RxDopplJ2objcWeakReference *) nil_chk(self->weakParent_)) get];
-      if (parent != nil) {
-        [parent removeWithRxInternalOperatorsOperatorReplay_InnerProducer:self];
-        [parent manageRequestsWithRxInternalOperatorsOperatorReplay_InnerProducer:self];
-      }
-      JreStrongAssign(&child_, nil);
+      [((RxInternalOperatorsOperatorReplay_ReplaySubscriber *) nil_chk(parent_)) removeWithRxInternalOperatorsOperatorReplay_InnerProducer:self];
+      [parent_ manageRequestsWithRxInternalOperatorsOperatorReplay_InnerProducer:self];
+      child_ = nil;
     }
   }
 }
@@ -987,9 +980,13 @@ RxInternalOperatorsOperatorReplay_ReplaySubscriber_$1 *create_RxInternalOperator
   return index_;
 }
 
+- (void)__javaClone:(RxInternalOperatorsOperatorReplay_InnerProducer *)original {
+  [super __javaClone:original];
+  [child_ release];
+}
+
 - (void)dealloc {
-  RELEASE_(weakParent_);
-  RELEASE_(child_);
+  RELEASE_(parent_);
   RELEASE_(index_);
   RELEASE_(totalRequested_);
   [super dealloc];
@@ -1017,7 +1014,7 @@ RxInternalOperatorsOperatorReplay_ReplaySubscriber_$1 *create_RxInternalOperator
   #pragma clang diagnostic pop
   static const J2ObjcFieldInfo fields[] = {
     { "serialVersionUID", "J", .constantValue.asLong = RxInternalOperatorsOperatorReplay_InnerProducer_serialVersionUID, 0x1a, -1, -1, -1, -1 },
-    { "weakParent_", "LRxDopplJ2objcWeakReference;", .constantValue.asLong = 0, 0x10, -1, -1, 7, -1 },
+    { "parent_", "LRxInternalOperatorsOperatorReplay_ReplaySubscriber;", .constantValue.asLong = 0, 0x10, -1, -1, 7, -1 },
     { "child_", "LRxSubscriber;", .constantValue.asLong = 0, 0x0, -1, -1, 8, -1 },
     { "index_", "LNSObject;", .constantValue.asLong = 0, 0x0, -1, -1, -1, -1 },
     { "totalRequested_", "LJavaUtilConcurrentAtomicAtomicLong;", .constantValue.asLong = 0, 0x10, -1, -1, -1, -1 },
@@ -1025,7 +1022,7 @@ RxInternalOperatorsOperatorReplay_ReplaySubscriber_$1 *create_RxInternalOperator
     { "missed_", "Z", .constantValue.asLong = 0, 0x0, -1, -1, -1, -1 },
     { "UNSUBSCRIBED", "J", .constantValue.asLong = RxInternalOperatorsOperatorReplay_InnerProducer_UNSUBSCRIBED, 0x18, -1, -1, -1, -1 },
   };
-  static const void *ptrTable[] = { "LRxInternalOperatorsOperatorReplay_ReplaySubscriber;LRxSubscriber;", "(Lrx/internal/operators/OperatorReplay$ReplaySubscriber<TT;>;Lrx/Subscriber<-TT;>;)V", "request", "J", "addTotalRequested", "produced", "<U:Ljava/lang/Object;>()TU;", "Lrx/doppl/J2objcWeakReference<Lrx/internal/operators/OperatorReplay$ReplaySubscriber<TT;>;>;", "Lrx/Subscriber<-TT;>;", "LRxInternalOperatorsOperatorReplay;", "<T:Ljava/lang/Object;>Ljava/util/concurrent/atomic/AtomicLong;Lrx/Producer;Lrx/Subscription;" };
+  static const void *ptrTable[] = { "LRxInternalOperatorsOperatorReplay_ReplaySubscriber;LRxSubscriber;", "(Lrx/internal/operators/OperatorReplay$ReplaySubscriber<TT;>;Lrx/Subscriber<-TT;>;)V", "request", "J", "addTotalRequested", "produced", "<U:Ljava/lang/Object;>()TU;", "Lrx/internal/operators/OperatorReplay$ReplaySubscriber<TT;>;", "Lrx/Subscriber<-TT;>;", "LRxInternalOperatorsOperatorReplay;", "<T:Ljava/lang/Object;>Ljava/util/concurrent/atomic/AtomicLong;Lrx/Producer;Lrx/Subscription;" };
   static const J2ObjcClassInfo _RxInternalOperatorsOperatorReplay_InnerProducer = { "InnerProducer", "rx.internal.operators", ptrTable, methods, fields, 7, 0x18, 7, 8, 9, -1, -1, 10, -1 };
   return &_RxInternalOperatorsOperatorReplay_InnerProducer;
 }
@@ -1034,8 +1031,8 @@ RxInternalOperatorsOperatorReplay_ReplaySubscriber_$1 *create_RxInternalOperator
 
 void RxInternalOperatorsOperatorReplay_InnerProducer_initWithRxInternalOperatorsOperatorReplay_ReplaySubscriber_withRxSubscriber_(RxInternalOperatorsOperatorReplay_InnerProducer *self, RxInternalOperatorsOperatorReplay_ReplaySubscriber *parent, RxSubscriber *child) {
   JavaUtilConcurrentAtomicAtomicLong_init(self);
-  JreStrongAssignAndConsume(&self->weakParent_, new_RxDopplJ2objcWeakReference_initWithId_(parent));
-  JreStrongAssign(&self->child_, child);
+  JreStrongAssign(&self->parent_, parent);
+  self->child_ = child;
   JreStrongAssignAndConsume(&self->totalRequested_, new_JavaUtilConcurrentAtomicAtomicLong_init());
 }
 
@@ -1929,7 +1926,6 @@ RxInternalOperatorsOperatorReplay_$3 *create_RxInternalOperatorsOperatorReplay_$
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOperatorReplay_$3_$1 class]);
   RELEASE_(val$child_);
   [super dealloc];
 }

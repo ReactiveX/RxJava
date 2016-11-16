@@ -40,7 +40,6 @@ import rx.observers.TestSubscriber;
 import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
 
-@DoppelHacks//Added unsubscribes
 public class OperatorTakeLastTest {
 
     @Test
@@ -125,7 +124,6 @@ public class OperatorTakeLastTest {
         ts.awaitTerminalEvent();
         ts.assertNoErrors();
         ts.assertReceivedOnNext(Arrays.asList(100000));
-        ts.unsubscribe();
     }
 
     @Test
@@ -135,7 +133,6 @@ public class OperatorTakeLastTest {
         ts.awaitTerminalEvent();
         ts.assertNoErrors();
         assertEquals(RxRingBuffer.SIZE * 4, ts.getOnNextEvents().size());
-        ts.unsubscribe();
     }
 
     private Func1<Integer, Integer> newSlowProcessor() {
@@ -170,168 +167,133 @@ public class OperatorTakeLastTest {
     @Test
     public void testIgnoreRequest1() {
         // If `takeLast` does not ignore `request` properly, StackOverflowError will be thrown.
-        Subscriber<Integer> subscriber = new Subscriber<Integer>()
-        {
+        Observable.range(0, 100000).takeLast(100000).subscribe(new Subscriber<Integer>() {
 
             @Override
-            public void onStart()
-            {
+            public void onStart() {
                 request(Long.MAX_VALUE);
             }
 
             @Override
-            public void onCompleted()
-            {
+            public void onCompleted() {
 
             }
 
             @Override
-            public void onError(Throwable e)
-            {
+            public void onError(Throwable e) {
             }
 
             @Override
-            public void onNext(Integer integer)
-            {
+            public void onNext(Integer integer) {
                 request(Long.MAX_VALUE);
             }
-        };
-        Observable.range(0, 100000).takeLast(100000).subscribe(subscriber);
-        subscriber.unsubscribe();
+        });
     }
 
     @Test
     public void testIgnoreRequest2() {
         // If `takeLast` does not ignore `request` properly, StackOverflowError will be thrown.
-        Subscriber<Integer> subscriber = new Subscriber<Integer>()
-        {
+        Observable.range(0, 100000).takeLast(100000).subscribe(new Subscriber<Integer>() {
 
             @Override
-            public void onStart()
-            {
+            public void onStart() {
                 request(1);
             }
 
             @Override
-            public void onCompleted()
-            {
+            public void onCompleted() {
             }
 
             @Override
-            public void onError(Throwable e)
-            {
+            public void onError(Throwable e) {
             }
 
             @Override
-            public void onNext(Integer integer)
-            {
+            public void onNext(Integer integer) {
                 request(1);
             }
-        };
-        Observable.range(0, 100000).takeLast(100000).subscribe(subscriber);
-        subscriber.unsubscribe();
+        });
     }
 
     @Test(timeout = 30000)
     public void testIgnoreRequest3() {
         // If `takeLast` does not ignore `request` properly, it will enter an infinite loop.
-        Subscriber<Integer> subscriber = new Subscriber<Integer>()
-        {
+        Observable.range(0, 100000).takeLast(100000).subscribe(new Subscriber<Integer>() {
 
             @Override
-            public void onStart()
-            {
+            public void onStart() {
                 request(1);
             }
 
             @Override
-            public void onCompleted()
-            {
+            public void onCompleted() {
 
             }
 
             @Override
-            public void onError(Throwable e)
-            {
+            public void onError(Throwable e) {
             }
 
             @Override
-            public void onNext(Integer integer)
-            {
+            public void onNext(Integer integer) {
                 request(Long.MAX_VALUE);
             }
-        };
-        Observable.range(0, 100000).takeLast(100000).subscribe(subscriber);
-        subscriber.unsubscribe();
+        });
     }
 
 
     @Test
     public void testIgnoreRequest4() {
         // If `takeLast` does not ignore `request` properly, StackOverflowError will be thrown.
-        Subscriber<Integer> subscriber = new Subscriber<Integer>()
-        {
+        Observable.range(0, 100000).takeLast(100000).subscribe(new Subscriber<Integer>() {
 
             @Override
-            public void onStart()
-            {
+            public void onStart() {
                 request(Long.MAX_VALUE);
             }
 
             @Override
-            public void onCompleted()
-            {
+            public void onCompleted() {
 
             }
 
             @Override
-            public void onError(Throwable e)
-            {
+            public void onError(Throwable e) {
             }
 
             @Override
-            public void onNext(Integer integer)
-            {
+            public void onNext(Integer integer) {
                 request(1);
             }
-        };
-        Observable.range(0, 100000).takeLast(100000).subscribe(subscriber);
-        subscriber.unsubscribe();
+        });
     }
 
     @Test
     public void testUnsubscribeTakesEffectEarlyOnFastPath() {
         final AtomicInteger count = new AtomicInteger();
-        Subscriber<Integer> subscriber = new Subscriber<Integer>()
-        {
+        Observable.range(0, 100000).takeLast(100000).subscribe(new Subscriber<Integer>() {
 
             @Override
-            public void onStart()
-            {
+            public void onStart() {
                 request(Long.MAX_VALUE);
             }
 
             @Override
-            public void onCompleted()
-            {
+            public void onCompleted() {
 
             }
 
             @Override
-            public void onError(Throwable e)
-            {
+            public void onError(Throwable e) {
             }
 
             @Override
-            public void onNext(Integer integer)
-            {
+            public void onNext(Integer integer) {
                 count.incrementAndGet();
                 unsubscribe();
             }
-        };
-        Observable.range(0, 100000).takeLast(100000).subscribe(subscriber);
+        });
         assertEquals(1,count.get());
-        subscriber.unsubscribe();
     }
 
     @Test(timeout=10000)

@@ -160,7 +160,6 @@ J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxInternalOperatorsOperatorIgnoreElements_Holde
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOperatorIgnoreElements_$1 class]);
   RELEASE_(val$child_);
   [super dealloc];
 }

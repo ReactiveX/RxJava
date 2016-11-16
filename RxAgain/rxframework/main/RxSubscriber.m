@@ -18,11 +18,9 @@
  @public
   RxInternalUtilSubscriptionList *subscriptions_;
   RxSubscriber *subscriber_;
-  id<RxProducer> producerr_;
+  id<RxProducer> producer_;
   jlong requested_;
 }
-
-- (void)updateProducerFieldWithRxProducer:(id<RxProducer>)p;
 
 - (void)addToRequestedWithLong:(jlong)n;
 
@@ -30,13 +28,11 @@
 
 J2OBJC_FIELD_SETTER(RxSubscriber, subscriptions_, RxInternalUtilSubscriptionList *)
 J2OBJC_FIELD_SETTER(RxSubscriber, subscriber_, RxSubscriber *)
-J2OBJC_FIELD_SETTER(RxSubscriber, producerr_, id<RxProducer>)
+J2OBJC_FIELD_SETTER(RxSubscriber, producer_, id<RxProducer>)
 
 inline jlong RxSubscriber_get_NOT_SET();
 #define RxSubscriber_NOT_SET ((jlong) 0x8000000000000000LL)
 J2OBJC_STATIC_FIELD_CONSTANT(RxSubscriber, NOT_SET, jlong)
-
-__attribute__((unused)) static void RxSubscriber_updateProducerFieldWithRxProducer_(RxSubscriber *self, id<RxProducer> p);
 
 __attribute__((unused)) static void RxSubscriber_addToRequestedWithLong_(RxSubscriber *self, jlong n);
 
@@ -66,11 +62,6 @@ J2OBJC_IGNORE_DESIGNATED_END
 
 - (void)unsubscribe {
   [((RxInternalUtilSubscriptionList *) nil_chk(subscriptions_)) unsubscribe];
-  RxSubscriber_updateProducerFieldWithRxProducer_(self, nil);
-}
-
-- (void)updateProducerFieldWithRxProducer:(id<RxProducer>)p {
-  RxSubscriber_updateProducerFieldWithRxProducer_(self, p);
 }
 
 - (jboolean)isUnsubscribed {
@@ -86,8 +77,8 @@ J2OBJC_IGNORE_DESIGNATED_END
   }
   id<RxProducer> producerToRequestFrom;
   @synchronized(self) {
-    if (producerr_ != nil) {
-      producerToRequestFrom = producerr_;
+    if (producer_ != nil) {
+      producerToRequestFrom = producer_;
     }
     else {
       RxSubscriber_addToRequestedWithLong_(self, n);
@@ -106,7 +97,7 @@ J2OBJC_IGNORE_DESIGNATED_END
   jboolean passToSubscriber = false;
   @synchronized(self) {
     toRequest = requested_;
-    RxSubscriber_updateProducerFieldWithRxProducer_(self, p);
+    JreStrongAssign(&producer_, p);
     if (subscriber_ != nil) {
       if (toRequest == RxSubscriber_NOT_SET) {
         passToSubscriber = true;
@@ -114,36 +105,22 @@ J2OBJC_IGNORE_DESIGNATED_END
     }
   }
   if (passToSubscriber) {
-    [((RxSubscriber *) nil_chk(subscriber_)) setProducerWithRxProducer:producerr_];
+    [((RxSubscriber *) nil_chk(subscriber_)) setProducerWithRxProducer:producer_];
   }
   else {
     if (toRequest == RxSubscriber_NOT_SET) {
-      [((id<RxProducer>) nil_chk(producerr_)) requestWithLong:JavaLangLong_MAX_VALUE];
+      [((id<RxProducer>) nil_chk(producer_)) requestWithLong:JavaLangLong_MAX_VALUE];
     }
     else {
-      [((id<RxProducer>) nil_chk(producerr_)) requestWithLong:toRequest];
+      [((id<RxProducer>) nil_chk(producer_)) requestWithLong:toRequest];
     }
   }
-}
-
-- (void)j2objcCleanup {
-  RxSubscriber_updateProducerFieldWithRxProducer_(self, nil);
-  if (subscriber_ != nil) {
-    [subscriber_ j2objcCleanup];
-    JreStrongAssign(&subscriber_, nil);
-  }
-}
-
-- (void)javaFinalize {
-  [super javaFinalize];
-  [self j2objcCleanup];
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxSubscriber class]);
   RELEASE_(subscriptions_);
   RELEASE_(subscriber_);
-  RELEASE_(producerr_);
+  RELEASE_(producer_);
   [super dealloc];
 }
 
@@ -154,14 +131,11 @@ J2OBJC_IGNORE_DESIGNATED_END
     { NULL, NULL, 0x4, -1, 2, -1, 3, -1, -1 },
     { NULL, "V", 0x11, 4, 5, -1, -1, -1, -1 },
     { NULL, "V", 0x11, -1, -1, -1, -1, -1, -1 },
-    { NULL, "V", 0x2, 6, 7, -1, -1, -1, -1 },
     { NULL, "Z", 0x11, -1, -1, -1, -1, -1, -1 },
     { NULL, "V", 0x1, -1, -1, -1, -1, -1, -1 },
-    { NULL, "V", 0x14, 8, 9, -1, -1, -1, -1 },
-    { NULL, "V", 0x2, 10, 9, -1, -1, -1, -1 },
-    { NULL, "V", 0x1, 11, 7, -1, -1, -1, -1 },
-    { NULL, "V", 0x1, -1, -1, -1, -1, -1, -1 },
-    { NULL, "V", 0x4, 12, -1, 13, -1, -1, -1 },
+    { NULL, "V", 0x14, 6, 7, -1, -1, -1, -1 },
+    { NULL, "V", 0x2, 8, 7, -1, -1, -1, -1 },
+    { NULL, "V", 0x1, 9, 10, -1, -1, -1, -1 },
   };
   #pragma clang diagnostic push
   #pragma clang diagnostic ignored "-Wobjc-multiple-method-names"
@@ -170,24 +144,21 @@ J2OBJC_IGNORE_DESIGNATED_END
   methods[2].selector = @selector(initWithRxSubscriber:withBoolean:);
   methods[3].selector = @selector(addWithRxSubscription:);
   methods[4].selector = @selector(unsubscribe);
-  methods[5].selector = @selector(updateProducerFieldWithRxProducer:);
-  methods[6].selector = @selector(isUnsubscribed);
-  methods[7].selector = @selector(onStart);
-  methods[8].selector = @selector(requestWithLong:);
-  methods[9].selector = @selector(addToRequestedWithLong:);
-  methods[10].selector = @selector(setProducerWithRxProducer:);
-  methods[11].selector = @selector(j2objcCleanup);
-  methods[12].selector = @selector(javaFinalize);
+  methods[5].selector = @selector(isUnsubscribed);
+  methods[6].selector = @selector(onStart);
+  methods[7].selector = @selector(requestWithLong:);
+  methods[8].selector = @selector(addToRequestedWithLong:);
+  methods[9].selector = @selector(setProducerWithRxProducer:);
   #pragma clang diagnostic pop
   static const J2ObjcFieldInfo fields[] = {
     { "NOT_SET", "J", .constantValue.asLong = RxSubscriber_NOT_SET, 0x1a, -1, -1, -1, -1 },
     { "subscriptions_", "LRxInternalUtilSubscriptionList;", .constantValue.asLong = 0, 0x12, -1, -1, -1, -1 },
-    { "subscriber_", "LRxSubscriber;", .constantValue.asLong = 0, 0x2, -1, -1, 14, -1 },
-    { "producerr_", "LRxProducer;", .constantValue.asLong = 0, 0x2, -1, -1, -1, -1 },
+    { "subscriber_", "LRxSubscriber;", .constantValue.asLong = 0, 0x12, -1, -1, 11, -1 },
+    { "producer_", "LRxProducer;", .constantValue.asLong = 0, 0x2, -1, -1, -1, -1 },
     { "requested_", "J", .constantValue.asLong = 0, 0x2, -1, -1, -1, -1 },
   };
-  static const void *ptrTable[] = { "LRxSubscriber;", "(Lrx/Subscriber<*>;)V", "LRxSubscriber;Z", "(Lrx/Subscriber<*>;Z)V", "add", "LRxSubscription;", "updateProducerField", "LRxProducer;", "request", "J", "addToRequested", "setProducer", "finalize", "LNSException;", "Lrx/Subscriber<*>;", "<T:Ljava/lang/Object;>Ljava/lang/Object;Lrx/Observer<TT;>;Lrx/Subscription;" };
-  static const J2ObjcClassInfo _RxSubscriber = { "Subscriber", "rx", ptrTable, methods, fields, 7, 0x401, 13, 5, -1, -1, -1, 15, -1 };
+  static const void *ptrTable[] = { "LRxSubscriber;", "(Lrx/Subscriber<*>;)V", "LRxSubscriber;Z", "(Lrx/Subscriber<*>;Z)V", "add", "LRxSubscription;", "request", "J", "addToRequested", "setProducer", "LRxProducer;", "Lrx/Subscriber<*>;", "<T:Ljava/lang/Object;>Ljava/lang/Object;Lrx/Observer<TT;>;Lrx/Subscription;" };
+  static const J2ObjcClassInfo _RxSubscriber = { "Subscriber", "rx", ptrTable, methods, fields, 7, 0x401, 10, 5, -1, -1, -1, 12, -1 };
   return &_RxSubscriber;
 }
 
@@ -206,10 +177,6 @@ void RxSubscriber_initWithRxSubscriber_withBoolean_(RxSubscriber *self, RxSubscr
   self->requested_ = RxSubscriber_NOT_SET;
   JreStrongAssign(&self->subscriber_, subscriber);
   JreStrongAssign(&self->subscriptions_, shareSubscriptions && subscriber != nil ? subscriber->subscriptions_ : create_RxInternalUtilSubscriptionList_init());
-}
-
-void RxSubscriber_updateProducerFieldWithRxProducer_(RxSubscriber *self, id<RxProducer> p) {
-  JreStrongAssign(&self->producerr_, p);
 }
 
 void RxSubscriber_addToRequestedWithLong_(RxSubscriber *self, jlong n) {

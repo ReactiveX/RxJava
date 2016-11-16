@@ -19,7 +19,6 @@ import rx.Observable;
 import rx.Observable.OnSubscribe;
 import rx.Producer;
 import rx.Subscriber;
-import rx.doppl.SafeObservableUnsubscribe;
 import rx.exceptions.Exceptions;
 import rx.exceptions.OnErrorThrowable;
 import rx.functions.Func1;
@@ -36,14 +35,12 @@ import rx.plugins.RxJavaHooks;
  */
 public final class OnSubscribeMap<T, R> implements OnSubscribe<R> {
 
-    //The assumption here is we'd only be using this reference to unsubscribe, and if its already gone,
-    //I'm not sure what unsubscribing from it would do. Presumably somebody else has a hook to it if they need it?
-    final SafeObservableUnsubscribe source;
+    final Observable<T> source;
 
     final Func1<? super T, ? extends R> transformer;
 
     public OnSubscribeMap(Observable<T> source, Func1<? super T, ? extends R> transformer) {
-        this.source = new SafeObservableUnsubscribe(source);
+        this.source = source;
         this.transformer = transformer;
     }
 

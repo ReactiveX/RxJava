@@ -1562,7 +1562,6 @@ RxInternalOperatorsOperatorMergeDelayErrorTest_$1 *create_RxInternalOperatorsOpe
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOperatorMergeDelayErrorTest_$2 class]);
   RELEASE_(val$latch_);
   [super dealloc];
 }
@@ -1675,7 +1674,6 @@ RxInternalOperatorsOperatorMergeDelayErrorTest_$3 *create_RxInternalOperatorsOpe
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOperatorMergeDelayErrorTest_$4 class]);
   RELEASE_(val$o_);
   [super dealloc];
 }

@@ -254,7 +254,6 @@ J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxInternalOperatorsOperatorSingle_Holder)
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOperatorSingle_ParentSubscriber class]);
   RELEASE_(child_);
   RELEASE_(defaultValue_);
   RELEASE_(value_);

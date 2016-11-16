@@ -1591,11 +1591,6 @@ J2OBJC_IGNORE_DESIGNATED_BEGIN
 }
 J2OBJC_IGNORE_DESIGNATED_END
 
-- (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOnSubscribeFromAsyncEmitterTest_$5 class]);
-  [super dealloc];
-}
-
 + (const J2ObjcClassInfo *)__metadata {
   static J2ObjcMethodInfo methods[] = {
     { NULL, "V", 0x1, 0, 1, -1, 2, -1, -1 },
@@ -1635,11 +1630,6 @@ RxInternalOperatorsOnSubscribeFromAsyncEmitterTest_$5 *create_RxInternalOperator
 - (instancetype)initWithLong:(jlong)arg$0 {
   RxInternalOperatorsOnSubscribeFromAsyncEmitterTest_$6_initWithLong_(self, arg$0);
   return self;
-}
-
-- (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOnSubscribeFromAsyncEmitterTest_$6 class]);
-  [super dealloc];
 }
 
 + (const J2ObjcClassInfo *)__metadata {
@@ -1685,11 +1675,6 @@ J2OBJC_IGNORE_DESIGNATED_BEGIN
 }
 J2OBJC_IGNORE_DESIGNATED_END
 
-- (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOnSubscribeFromAsyncEmitterTest_$7 class]);
-  [super dealloc];
-}
-
 + (const J2ObjcClassInfo *)__metadata {
   static J2ObjcMethodInfo methods[] = {
     { NULL, "V", 0x1, 0, 1, -1, 2, -1, -1 },
@@ -1731,11 +1716,6 @@ RxInternalOperatorsOnSubscribeFromAsyncEmitterTest_$7 *create_RxInternalOperator
   return self;
 }
 
-- (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOnSubscribeFromAsyncEmitterTest_$8 class]);
-  [super dealloc];
-}
-
 + (const J2ObjcClassInfo *)__metadata {
   static J2ObjcMethodInfo methods[] = {
     { NULL, "V", 0x1, 0, 1, -1, 2, -1, -1 },
@@ -1775,11 +1755,6 @@ RxInternalOperatorsOnSubscribeFromAsyncEmitterTest_$8 *create_RxInternalOperator
 - (instancetype)initWithLong:(jlong)arg$0 {
   RxInternalOperatorsOnSubscribeFromAsyncEmitterTest_$9_initWithLong_(self, arg$0);
   return self;
-}
-
-- (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOnSubscribeFromAsyncEmitterTest_$9 class]);
-  [super dealloc];
 }
 
 + (const J2ObjcClassInfo *)__metadata {

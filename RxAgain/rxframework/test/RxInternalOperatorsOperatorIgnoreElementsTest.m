@@ -499,7 +499,6 @@ RxInternalOperatorsOperatorIgnoreElementsTest_$4 *create_RxInternalOperatorsOper
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOperatorIgnoreElementsTest_$5 class]);
   RELEASE_(val$count_);
   [super dealloc];
 }

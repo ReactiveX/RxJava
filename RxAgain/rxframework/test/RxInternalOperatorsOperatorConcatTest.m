@@ -1992,7 +1992,6 @@ RxInternalOperatorsOperatorConcatTest_$8 *create_RxInternalOperatorsOperatorConc
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOperatorConcatTest_$9 class]);
   RELEASE_(val$counter_);
   RELEASE_(val$executor_);
   [super dealloc];
@@ -2056,7 +2055,6 @@ RxInternalOperatorsOperatorConcatTest_$9 *create_RxInternalOperatorsOperatorConc
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOperatorConcatTest_$10 class]);
   RELEASE_(val$completed_);
   [super dealloc];
 }

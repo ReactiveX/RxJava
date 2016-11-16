@@ -335,7 +335,6 @@ RxInternalOperatorsOnSubscribeRefCount_$1 *create_RxInternalOperatorsOnSubscribe
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOnSubscribeRefCount_$2 class]);
   RELEASE_(this$0_);
   RELEASE_(val$subscriber_);
   RELEASE_(val$currentBase_);

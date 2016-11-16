@@ -1013,11 +1013,6 @@ J2OBJC_IGNORE_DESIGNATED_BEGIN
 }
 J2OBJC_IGNORE_DESIGNATED_END
 
-- (void)dealloc {
-  JreCheckFinalize(self, [RxObserversSafeObserverTest_$5 class]);
-  [super dealloc];
-}
-
 + (const J2ObjcClassInfo *)__metadata {
   static J2ObjcMethodInfo methods[] = {
     { NULL, "V", 0x1, -1, -1, -1, -1, -1, -1 },
@@ -1069,7 +1064,6 @@ RxObserversSafeObserverTest_$5 *create_RxObserversSafeObserverTest_$5_init() {
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxObserversSafeObserverTest_$6 class]);
   RELEASE_(val$onError_);
   [super dealloc];
 }
@@ -1130,7 +1124,6 @@ RxObserversSafeObserverTest_$6 *create_RxObserversSafeObserverTest_$6_initWithJa
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxObserversSafeObserverTest_$7 class]);
   RELEASE_(val$onError_);
   [super dealloc];
 }
@@ -1192,11 +1185,6 @@ J2OBJC_IGNORE_DESIGNATED_BEGIN
 }
 J2OBJC_IGNORE_DESIGNATED_END
 
-- (void)dealloc {
-  JreCheckFinalize(self, [RxObserversSafeObserverTest_$8 class]);
-  [super dealloc];
-}
-
 + (const J2ObjcClassInfo *)__metadata {
   static J2ObjcMethodInfo methods[] = {
     { NULL, "V", 0x1, -1, -1, -1, -1, -1, -1 },
@@ -1248,11 +1236,6 @@ J2OBJC_IGNORE_DESIGNATED_BEGIN
   return self;
 }
 J2OBJC_IGNORE_DESIGNATED_END
-
-- (void)dealloc {
-  JreCheckFinalize(self, [RxObserversSafeObserverTest_$9 class]);
-  [super dealloc];
-}
 
 + (const J2ObjcClassInfo *)__metadata {
   static J2ObjcMethodInfo methods[] = {
@@ -1306,11 +1289,6 @@ J2OBJC_IGNORE_DESIGNATED_BEGIN
 }
 J2OBJC_IGNORE_DESIGNATED_END
 
-- (void)dealloc {
-  JreCheckFinalize(self, [RxObserversSafeObserverTest_$10 class]);
-  [super dealloc];
-}
-
 + (const J2ObjcClassInfo *)__metadata {
   static J2ObjcMethodInfo methods[] = {
     { NULL, "V", 0x1, -1, -1, -1, -1, -1, -1 },
@@ -1363,7 +1341,6 @@ RxObserversSafeObserverTest_$10 *create_RxObserversSafeObserverTest_$10_init() {
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxObserversSafeObserverTest_$11 class]);
   RELEASE_(val$onError_);
   [super dealloc];
 }
@@ -1424,7 +1401,6 @@ RxObserversSafeObserverTest_$11 *create_RxObserversSafeObserverTest_$11_initWith
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxObserversSafeObserverTest_$12 class]);
   RELEASE_(val$error_);
   [super dealloc];
 }
@@ -1483,11 +1459,6 @@ J2OBJC_IGNORE_DESIGNATED_BEGIN
   return self;
 }
 J2OBJC_IGNORE_DESIGNATED_END
-
-- (void)dealloc {
-  JreCheckFinalize(self, [RxObserversSafeObserverTest_$13 class]);
-  [super dealloc];
-}
 
 + (const J2ObjcClassInfo *)__metadata {
   static J2ObjcMethodInfo methods[] = {

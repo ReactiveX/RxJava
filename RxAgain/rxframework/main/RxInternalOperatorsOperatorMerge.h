@@ -177,10 +177,10 @@ J2OBJC_TYPE_LITERAL_HEADER(RxInternalOperatorsOperatorMerge_MergeProducer)
 
 @interface RxInternalOperatorsOperatorMerge_MergeSubscriber : RxSubscriber {
  @public
-  __unsafe_unretained RxSubscriber *child_;
+  RxSubscriber *child_;
   jboolean delayErrors_;
   jint maxConcurrent_;
-  RxInternalOperatorsOperatorMerge_MergeProducer *producer_;
+  RxInternalOperatorsOperatorMerge_MergeProducer *producer_MergeSubscriber_;
   volatile_id queue_;
   volatile_id subscriptions_MergeSubscriber_;
   volatile_id errors_;
@@ -251,7 +251,8 @@ J2OBJC_TYPE_LITERAL_HEADER(RxInternalOperatorsOperatorMerge_MergeProducer)
 
 J2OBJC_STATIC_INIT(RxInternalOperatorsOperatorMerge_MergeSubscriber)
 
-J2OBJC_FIELD_SETTER(RxInternalOperatorsOperatorMerge_MergeSubscriber, producer_, RxInternalOperatorsOperatorMerge_MergeProducer *)
+J2OBJC_FIELD_SETTER(RxInternalOperatorsOperatorMerge_MergeSubscriber, child_, RxSubscriber *)
+J2OBJC_FIELD_SETTER(RxInternalOperatorsOperatorMerge_MergeSubscriber, producer_MergeSubscriber_, RxInternalOperatorsOperatorMerge_MergeProducer *)
 J2OBJC_VOLATILE_FIELD_SETTER(RxInternalOperatorsOperatorMerge_MergeSubscriber, queue_, id<JavaUtilQueue>)
 J2OBJC_VOLATILE_FIELD_SETTER(RxInternalOperatorsOperatorMerge_MergeSubscriber, subscriptions_MergeSubscriber_, RxSubscriptionsCompositeSubscription *)
 J2OBJC_VOLATILE_FIELD_SETTER(RxInternalOperatorsOperatorMerge_MergeSubscriber, errors_, JavaUtilConcurrentConcurrentLinkedQueue *)

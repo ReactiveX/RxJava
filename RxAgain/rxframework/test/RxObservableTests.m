@@ -6,31 +6,68 @@
 #include "IOSClass.h"
 #include "IOSObjectArray.h"
 #include "J2ObjC_source.h"
+#include "RxExceptionsOnErrorFailedException.h"
+#include "RxExceptionsOnErrorNotImplementedException.h"
 #include "RxExceptionsTestException.h"
+#include "RxFunctionsAction0.h"
 #include "RxFunctionsAction1.h"
+#include "RxFunctionsActions.h"
 #include "RxFunctionsFunc1.h"
+#include "RxFunctionsFunc2.h"
+#include "RxNotification.h"
 #include "RxObservable.h"
 #include "RxObservableTests.h"
+#include "RxObservablesBlockingObservable.h"
 #include "RxObservablesConnectableObservable.h"
 #include "RxObserver.h"
+#include "RxObserversSafeSubscriber.h"
+#include "RxObserversTestSubscriber.h"
+#include "RxPluginsRxJavaHooks.h"
+#include "RxScheduler.h"
+#include "RxSchedulersSchedulers.h"
+#include "RxSchedulersTestScheduler.h"
+#include "RxSubjectsReplaySubject.h"
+#include "RxSubjectsSubject.h"
 #include "RxSubscriber.h"
 #include "RxSubscription.h"
+#include "RxSubscriptionsBooleanSubscription.h"
 #include "java/io/PrintStream.h"
 #include "java/lang/Boolean.h"
+#include "java/lang/Error.h"
+#include "java/lang/Exception.h"
+#include "java/lang/IllegalArgumentException.h"
+#include "java/lang/IllegalStateException.h"
 #include "java/lang/Integer.h"
+#include "java/lang/Long.h"
+#include "java/lang/NullPointerException.h"
+#include "java/lang/NumberFormatException.h"
 #include "java/lang/Runnable.h"
+#include "java/lang/RuntimeException.h"
 #include "java/lang/System.h"
 #include "java/lang/Thread.h"
 #include "java/lang/annotation/Annotation.h"
+#include "java/util/ArrayList.h"
+#include "java/util/Arrays.h"
+#include "java/util/LinkedList.h"
+#include "java/util/List.h"
+#include "java/util/NoSuchElementException.h"
 #include "java/util/concurrent/CountDownLatch.h"
+#include "java/util/concurrent/ExecutorService.h"
+#include "java/util/concurrent/Executors.h"
+#include "java/util/concurrent/Future.h"
 #include "java/util/concurrent/TimeUnit.h"
 #include "java/util/concurrent/atomic/AtomicInteger.h"
+#include "java/util/concurrent/atomic/AtomicReference.h"
 #include "org/junit/Assert.h"
 #include "org/junit/Before.h"
 #include "org/junit/Test.h"
 #include "org/mockito/Answers.h"
+#include "org/mockito/InOrder.h"
+#include "org/mockito/Matchers.h"
 #include "org/mockito/Mock.h"
+#include "org/mockito/Mockito.h"
 #include "org/mockito/MockitoAnnotations.h"
+#include "org/mockito/verification/VerificationMode.h"
 
 inline id<RxFunctionsFunc1> RxObservableTests_get_IS_EVEN();
 static id<RxFunctionsFunc1> RxObservableTests_IS_EVEN;
@@ -41,6 +78,130 @@ __attribute__((unused)) static IOSObjectArray *RxObservableTests__Annotations$0(
 __attribute__((unused)) static IOSObjectArray *RxObservableTests__Annotations$1();
 
 __attribute__((unused)) static IOSObjectArray *RxObservableTests__Annotations$2();
+
+__attribute__((unused)) static IOSObjectArray *RxObservableTests__Annotations$3();
+
+__attribute__((unused)) static IOSObjectArray *RxObservableTests__Annotations$4();
+
+__attribute__((unused)) static IOSObjectArray *RxObservableTests__Annotations$5();
+
+__attribute__((unused)) static IOSObjectArray *RxObservableTests__Annotations$6();
+
+__attribute__((unused)) static IOSObjectArray *RxObservableTests__Annotations$7();
+
+__attribute__((unused)) static IOSObjectArray *RxObservableTests__Annotations$8();
+
+__attribute__((unused)) static IOSObjectArray *RxObservableTests__Annotations$9();
+
+__attribute__((unused)) static IOSObjectArray *RxObservableTests__Annotations$10();
+
+__attribute__((unused)) static IOSObjectArray *RxObservableTests__Annotations$11();
+
+__attribute__((unused)) static IOSObjectArray *RxObservableTests__Annotations$12();
+
+__attribute__((unused)) static IOSObjectArray *RxObservableTests__Annotations$13();
+
+__attribute__((unused)) static IOSObjectArray *RxObservableTests__Annotations$14();
+
+__attribute__((unused)) static IOSObjectArray *RxObservableTests__Annotations$15();
+
+__attribute__((unused)) static IOSObjectArray *RxObservableTests__Annotations$16();
+
+__attribute__((unused)) static IOSObjectArray *RxObservableTests__Annotations$17();
+
+__attribute__((unused)) static IOSObjectArray *RxObservableTests__Annotations$18();
+
+__attribute__((unused)) static IOSObjectArray *RxObservableTests__Annotations$19();
+
+__attribute__((unused)) static IOSObjectArray *RxObservableTests__Annotations$20();
+
+__attribute__((unused)) static IOSObjectArray *RxObservableTests__Annotations$21();
+
+__attribute__((unused)) static IOSObjectArray *RxObservableTests__Annotations$22();
+
+__attribute__((unused)) static IOSObjectArray *RxObservableTests__Annotations$23();
+
+__attribute__((unused)) static IOSObjectArray *RxObservableTests__Annotations$24();
+
+__attribute__((unused)) static IOSObjectArray *RxObservableTests__Annotations$25();
+
+__attribute__((unused)) static IOSObjectArray *RxObservableTests__Annotations$26();
+
+__attribute__((unused)) static IOSObjectArray *RxObservableTests__Annotations$27();
+
+__attribute__((unused)) static IOSObjectArray *RxObservableTests__Annotations$28();
+
+__attribute__((unused)) static IOSObjectArray *RxObservableTests__Annotations$29();
+
+__attribute__((unused)) static IOSObjectArray *RxObservableTests__Annotations$30();
+
+__attribute__((unused)) static IOSObjectArray *RxObservableTests__Annotations$31();
+
+__attribute__((unused)) static IOSObjectArray *RxObservableTests__Annotations$32();
+
+__attribute__((unused)) static IOSObjectArray *RxObservableTests__Annotations$33();
+
+__attribute__((unused)) static IOSObjectArray *RxObservableTests__Annotations$34();
+
+__attribute__((unused)) static IOSObjectArray *RxObservableTests__Annotations$35();
+
+__attribute__((unused)) static IOSObjectArray *RxObservableTests__Annotations$36();
+
+__attribute__((unused)) static IOSObjectArray *RxObservableTests__Annotations$37();
+
+__attribute__((unused)) static IOSObjectArray *RxObservableTests__Annotations$38();
+
+__attribute__((unused)) static IOSObjectArray *RxObservableTests__Annotations$39();
+
+__attribute__((unused)) static IOSObjectArray *RxObservableTests__Annotations$40();
+
+__attribute__((unused)) static IOSObjectArray *RxObservableTests__Annotations$41();
+
+__attribute__((unused)) static IOSObjectArray *RxObservableTests__Annotations$42();
+
+__attribute__((unused)) static IOSObjectArray *RxObservableTests__Annotations$43();
+
+__attribute__((unused)) static IOSObjectArray *RxObservableTests__Annotations$44();
+
+__attribute__((unused)) static IOSObjectArray *RxObservableTests__Annotations$45();
+
+__attribute__((unused)) static IOSObjectArray *RxObservableTests__Annotations$46();
+
+__attribute__((unused)) static IOSObjectArray *RxObservableTests__Annotations$47();
+
+__attribute__((unused)) static IOSObjectArray *RxObservableTests__Annotations$48();
+
+__attribute__((unused)) static IOSObjectArray *RxObservableTests__Annotations$49();
+
+__attribute__((unused)) static IOSObjectArray *RxObservableTests__Annotations$50();
+
+__attribute__((unused)) static IOSObjectArray *RxObservableTests__Annotations$51();
+
+__attribute__((unused)) static IOSObjectArray *RxObservableTests__Annotations$52();
+
+__attribute__((unused)) static IOSObjectArray *RxObservableTests__Annotations$53();
+
+__attribute__((unused)) static IOSObjectArray *RxObservableTests__Annotations$54();
+
+__attribute__((unused)) static IOSObjectArray *RxObservableTests__Annotations$55();
+
+__attribute__((unused)) static IOSObjectArray *RxObservableTests__Annotations$56();
+
+__attribute__((unused)) static IOSObjectArray *RxObservableTests__Annotations$57();
+
+__attribute__((unused)) static IOSObjectArray *RxObservableTests__Annotations$58();
+
+__attribute__((unused)) static IOSObjectArray *RxObservableTests__Annotations$59();
+
+__attribute__((unused)) static IOSObjectArray *RxObservableTests__Annotations$60();
+
+__attribute__((unused)) static IOSObjectArray *RxObservableTests__Annotations$61();
+
+__attribute__((unused)) static IOSObjectArray *RxObservableTests__Annotations$62();
+
+__attribute__((unused)) static IOSObjectArray *RxObservableTests__Annotations$63();
+
+__attribute__((unused)) static IOSObjectArray *RxObservableTests__Annotations$64();
 
 @interface RxObservableTests_FailingObservable_$1 : NSObject < RxObservable_OnSubscribe >
 
@@ -74,7 +235,371 @@ __attribute__((unused)) static RxObservableTests_$1 *new_RxObservableTests_$1_in
 
 __attribute__((unused)) static RxObservableTests_$1 *create_RxObservableTests_$1_init();
 
-@interface RxObservableTests_$2 : NSObject < RxObservable_OnSubscribe > {
+@interface RxObservableTests_$2 : NSObject < RxObservable_OnSubscribe >
+
+- (void)callWithId:(RxSubscriber *)Observer;
+
+- (instancetype)init;
+
+@end
+
+J2OBJC_EMPTY_STATIC_INIT(RxObservableTests_$2)
+
+__attribute__((unused)) static void RxObservableTests_$2_init(RxObservableTests_$2 *self);
+
+__attribute__((unused)) static RxObservableTests_$2 *new_RxObservableTests_$2_init() NS_RETURNS_RETAINED;
+
+__attribute__((unused)) static RxObservableTests_$2 *create_RxObservableTests_$2_init();
+
+@interface RxObservableTests_$3 : NSObject < RxObservable_OnSubscribe >
+
+- (void)callWithId:(RxSubscriber *)obsv;
+
+- (instancetype)init;
+
+@end
+
+J2OBJC_EMPTY_STATIC_INIT(RxObservableTests_$3)
+
+__attribute__((unused)) static void RxObservableTests_$3_init(RxObservableTests_$3 *self);
+
+__attribute__((unused)) static RxObservableTests_$3 *new_RxObservableTests_$3_init() NS_RETURNS_RETAINED;
+
+__attribute__((unused)) static RxObservableTests_$3 *create_RxObservableTests_$3_init();
+
+@interface RxObservableTests_$4 : NSObject < RxFunctionsFunc2 >
+
+- (JavaLangInteger *)callWithId:(JavaLangInteger *)t1
+                         withId:(JavaLangInteger *)t2;
+
+- (instancetype)init;
+
+@end
+
+J2OBJC_EMPTY_STATIC_INIT(RxObservableTests_$4)
+
+__attribute__((unused)) static void RxObservableTests_$4_init(RxObservableTests_$4 *self);
+
+__attribute__((unused)) static RxObservableTests_$4 *new_RxObservableTests_$4_init() NS_RETURNS_RETAINED;
+
+__attribute__((unused)) static RxObservableTests_$4 *create_RxObservableTests_$4_init();
+
+@interface RxObservableTests_$5 : NSObject < RxFunctionsFunc2 >
+
+- (JavaLangInteger *)callWithId:(JavaLangInteger *)t1
+                         withId:(JavaLangInteger *)t2;
+
+- (instancetype)init;
+
+@end
+
+J2OBJC_EMPTY_STATIC_INIT(RxObservableTests_$5)
+
+__attribute__((unused)) static void RxObservableTests_$5_init(RxObservableTests_$5 *self);
+
+__attribute__((unused)) static RxObservableTests_$5 *new_RxObservableTests_$5_init() NS_RETURNS_RETAINED;
+
+__attribute__((unused)) static RxObservableTests_$5 *create_RxObservableTests_$5_init();
+
+@interface RxObservableTests_$6 : NSObject < RxFunctionsAction1 >
+
+- (void)callWithId:(JavaLangInteger *)t1;
+
+- (instancetype)init;
+
+@end
+
+J2OBJC_EMPTY_STATIC_INIT(RxObservableTests_$6)
+
+__attribute__((unused)) static void RxObservableTests_$6_init(RxObservableTests_$6 *self);
+
+__attribute__((unused)) static RxObservableTests_$6 *new_RxObservableTests_$6_init() NS_RETURNS_RETAINED;
+
+__attribute__((unused)) static RxObservableTests_$6 *create_RxObservableTests_$6_init();
+
+@interface RxObservableTests_$7 : NSObject < RxFunctionsFunc2 >
+
+- (JavaLangInteger *)callWithId:(JavaLangInteger *)t1
+                         withId:(JavaLangInteger *)t2;
+
+- (instancetype)init;
+
+@end
+
+J2OBJC_EMPTY_STATIC_INIT(RxObservableTests_$7)
+
+__attribute__((unused)) static void RxObservableTests_$7_init(RxObservableTests_$7 *self);
+
+__attribute__((unused)) static RxObservableTests_$7 *new_RxObservableTests_$7_init() NS_RETURNS_RETAINED;
+
+__attribute__((unused)) static RxObservableTests_$7 *create_RxObservableTests_$7_init();
+
+@interface RxObservableTests_$8 : NSObject < RxFunctionsFunc2 >
+
+- (JavaLangInteger *)callWithId:(JavaLangInteger *)t1
+                         withId:(JavaLangInteger *)t2;
+
+- (instancetype)init;
+
+@end
+
+J2OBJC_EMPTY_STATIC_INIT(RxObservableTests_$8)
+
+__attribute__((unused)) static void RxObservableTests_$8_init(RxObservableTests_$8 *self);
+
+__attribute__((unused)) static RxObservableTests_$8 *new_RxObservableTests_$8_init() NS_RETURNS_RETAINED;
+
+__attribute__((unused)) static RxObservableTests_$8 *create_RxObservableTests_$8_init();
+
+@interface RxObservableTests_$9 : NSObject < RxObservable_OnSubscribe > {
+ @public
+  JavaLangRuntimeException *val$re_;
+}
+
+- (void)callWithId:(RxSubscriber *)t1;
+
+- (instancetype)initWithJavaLangRuntimeException:(JavaLangRuntimeException *)capture$0;
+
+@end
+
+J2OBJC_EMPTY_STATIC_INIT(RxObservableTests_$9)
+
+J2OBJC_FIELD_SETTER(RxObservableTests_$9, val$re_, JavaLangRuntimeException *)
+
+__attribute__((unused)) static void RxObservableTests_$9_initWithJavaLangRuntimeException_(RxObservableTests_$9 *self, JavaLangRuntimeException *capture$0);
+
+__attribute__((unused)) static RxObservableTests_$9 *new_RxObservableTests_$9_initWithJavaLangRuntimeException_(JavaLangRuntimeException *capture$0) NS_RETURNS_RETAINED;
+
+__attribute__((unused)) static RxObservableTests_$9 *create_RxObservableTests_$9_initWithJavaLangRuntimeException_(JavaLangRuntimeException *capture$0);
+
+@interface RxObservableTests_$10 : NSObject < RxObservable_OnSubscribe > {
+ @public
+  JavaUtilConcurrentCountDownLatch *val$latch_;
+}
+
+- (void)callWithId:(RxSubscriber *)observer;
+
+- (instancetype)initWithJavaUtilConcurrentCountDownLatch:(JavaUtilConcurrentCountDownLatch *)capture$0;
+
+@end
+
+J2OBJC_EMPTY_STATIC_INIT(RxObservableTests_$10)
+
+J2OBJC_FIELD_SETTER(RxObservableTests_$10, val$latch_, JavaUtilConcurrentCountDownLatch *)
+
+__attribute__((unused)) static void RxObservableTests_$10_initWithJavaUtilConcurrentCountDownLatch_(RxObservableTests_$10 *self, JavaUtilConcurrentCountDownLatch *capture$0);
+
+__attribute__((unused)) static RxObservableTests_$10 *new_RxObservableTests_$10_initWithJavaUtilConcurrentCountDownLatch_(JavaUtilConcurrentCountDownLatch *capture$0) NS_RETURNS_RETAINED;
+
+__attribute__((unused)) static RxObservableTests_$10 *create_RxObservableTests_$10_initWithJavaUtilConcurrentCountDownLatch_(JavaUtilConcurrentCountDownLatch *capture$0);
+
+@interface RxObservableTests_$10_$1 : NSObject < JavaLangRunnable > {
+ @public
+  RxObservableTests_$10 *this$0_;
+  RxSubscriptionsBooleanSubscription *val$s_;
+  RxSubscriber *val$observer_;
+}
+
+- (void)run;
+
+- (instancetype)initWithRxObservableTests_$10:(RxObservableTests_$10 *)outer$
+       withRxSubscriptionsBooleanSubscription:(RxSubscriptionsBooleanSubscription *)capture$0
+                             withRxSubscriber:(RxSubscriber *)capture$1;
+
+@end
+
+J2OBJC_EMPTY_STATIC_INIT(RxObservableTests_$10_$1)
+
+J2OBJC_FIELD_SETTER(RxObservableTests_$10_$1, this$0_, RxObservableTests_$10 *)
+J2OBJC_FIELD_SETTER(RxObservableTests_$10_$1, val$s_, RxSubscriptionsBooleanSubscription *)
+J2OBJC_FIELD_SETTER(RxObservableTests_$10_$1, val$observer_, RxSubscriber *)
+
+__attribute__((unused)) static void RxObservableTests_$10_$1_initWithRxObservableTests_$10_withRxSubscriptionsBooleanSubscription_withRxSubscriber_(RxObservableTests_$10_$1 *self, RxObservableTests_$10 *outer$, RxSubscriptionsBooleanSubscription *capture$0, RxSubscriber *capture$1);
+
+__attribute__((unused)) static RxObservableTests_$10_$1 *new_RxObservableTests_$10_$1_initWithRxObservableTests_$10_withRxSubscriptionsBooleanSubscription_withRxSubscriber_(RxObservableTests_$10 *outer$, RxSubscriptionsBooleanSubscription *capture$0, RxSubscriber *capture$1) NS_RETURNS_RETAINED;
+
+__attribute__((unused)) static RxObservableTests_$10_$1 *create_RxObservableTests_$10_$1_initWithRxObservableTests_$10_withRxSubscriptionsBooleanSubscription_withRxSubscriber_(RxObservableTests_$10 *outer$, RxSubscriptionsBooleanSubscription *capture$0, RxSubscriber *capture$1);
+
+@interface RxObservableTests_$11 : RxSubscriber {
+ @public
+  JavaUtilConcurrentAtomicAtomicReference *val$error_;
+  JavaUtilConcurrentAtomicAtomicInteger *val$count_;
+}
+
+- (void)onCompleted;
+
+- (void)onErrorWithNSException:(NSException *)e;
+
+- (void)onNextWithId:(NSString *)v;
+
+- (instancetype)initWithJavaUtilConcurrentAtomicAtomicReference:(JavaUtilConcurrentAtomicAtomicReference *)capture$0
+                      withJavaUtilConcurrentAtomicAtomicInteger:(JavaUtilConcurrentAtomicAtomicInteger *)capture$1;
+
+@end
+
+J2OBJC_EMPTY_STATIC_INIT(RxObservableTests_$11)
+
+J2OBJC_FIELD_SETTER(RxObservableTests_$11, val$error_, JavaUtilConcurrentAtomicAtomicReference *)
+J2OBJC_FIELD_SETTER(RxObservableTests_$11, val$count_, JavaUtilConcurrentAtomicAtomicInteger *)
+
+__attribute__((unused)) static void RxObservableTests_$11_initWithJavaUtilConcurrentAtomicAtomicReference_withJavaUtilConcurrentAtomicAtomicInteger_(RxObservableTests_$11 *self, JavaUtilConcurrentAtomicAtomicReference *capture$0, JavaUtilConcurrentAtomicAtomicInteger *capture$1);
+
+__attribute__((unused)) static RxObservableTests_$11 *new_RxObservableTests_$11_initWithJavaUtilConcurrentAtomicAtomicReference_withJavaUtilConcurrentAtomicAtomicInteger_(JavaUtilConcurrentAtomicAtomicReference *capture$0, JavaUtilConcurrentAtomicAtomicInteger *capture$1) NS_RETURNS_RETAINED;
+
+__attribute__((unused)) static RxObservableTests_$11 *create_RxObservableTests_$11_initWithJavaUtilConcurrentAtomicAtomicReference_withJavaUtilConcurrentAtomicAtomicInteger_(JavaUtilConcurrentAtomicAtomicReference *capture$0, JavaUtilConcurrentAtomicAtomicInteger *capture$1);
+
+@interface RxObservableTests_$12 : NSObject < RxObservable_OnSubscribe >
+
+- (void)callWithId:(RxSubscriber *)observer;
+
+- (instancetype)init;
+
+@end
+
+J2OBJC_EMPTY_STATIC_INIT(RxObservableTests_$12)
+
+__attribute__((unused)) static void RxObservableTests_$12_init(RxObservableTests_$12 *self);
+
+__attribute__((unused)) static RxObservableTests_$12 *new_RxObservableTests_$12_init() NS_RETURNS_RETAINED;
+
+__attribute__((unused)) static RxObservableTests_$12 *create_RxObservableTests_$12_init();
+
+@interface RxObservableTests_$13 : RxSubscriber {
+ @public
+  JavaUtilConcurrentAtomicAtomicReference *val$error_;
+  JavaUtilConcurrentAtomicAtomicInteger *val$count_;
+}
+
+- (void)onCompleted;
+
+- (void)onErrorWithNSException:(NSException *)e;
+
+- (void)onNextWithId:(NSString *)v;
+
+- (instancetype)initWithJavaUtilConcurrentAtomicAtomicReference:(JavaUtilConcurrentAtomicAtomicReference *)capture$0
+                      withJavaUtilConcurrentAtomicAtomicInteger:(JavaUtilConcurrentAtomicAtomicInteger *)capture$1;
+
+@end
+
+J2OBJC_EMPTY_STATIC_INIT(RxObservableTests_$13)
+
+J2OBJC_FIELD_SETTER(RxObservableTests_$13, val$error_, JavaUtilConcurrentAtomicAtomicReference *)
+J2OBJC_FIELD_SETTER(RxObservableTests_$13, val$count_, JavaUtilConcurrentAtomicAtomicInteger *)
+
+__attribute__((unused)) static void RxObservableTests_$13_initWithJavaUtilConcurrentAtomicAtomicReference_withJavaUtilConcurrentAtomicAtomicInteger_(RxObservableTests_$13 *self, JavaUtilConcurrentAtomicAtomicReference *capture$0, JavaUtilConcurrentAtomicAtomicInteger *capture$1);
+
+__attribute__((unused)) static RxObservableTests_$13 *new_RxObservableTests_$13_initWithJavaUtilConcurrentAtomicAtomicReference_withJavaUtilConcurrentAtomicAtomicInteger_(JavaUtilConcurrentAtomicAtomicReference *capture$0, JavaUtilConcurrentAtomicAtomicInteger *capture$1) NS_RETURNS_RETAINED;
+
+__attribute__((unused)) static RxObservableTests_$13 *create_RxObservableTests_$13_initWithJavaUtilConcurrentAtomicAtomicReference_withJavaUtilConcurrentAtomicAtomicInteger_(JavaUtilConcurrentAtomicAtomicReference *capture$0, JavaUtilConcurrentAtomicAtomicInteger *capture$1);
+
+@interface RxObservableTests_$14 : NSObject < RxObservable_OnSubscribe >
+
+- (void)callWithId:(RxSubscriber *)observer;
+
+- (instancetype)init;
+
+@end
+
+J2OBJC_EMPTY_STATIC_INIT(RxObservableTests_$14)
+
+__attribute__((unused)) static void RxObservableTests_$14_init(RxObservableTests_$14 *self);
+
+__attribute__((unused)) static RxObservableTests_$14 *new_RxObservableTests_$14_init() NS_RETURNS_RETAINED;
+
+__attribute__((unused)) static RxObservableTests_$14 *create_RxObservableTests_$14_init();
+
+@interface RxObservableTests_$15 : RxSubscriber {
+ @public
+  JavaUtilConcurrentAtomicAtomicReference *val$error_;
+  JavaUtilConcurrentAtomicAtomicInteger *val$count_;
+}
+
+- (void)onCompleted;
+
+- (void)onErrorWithNSException:(NSException *)e;
+
+- (void)onNextWithId:(NSString *)v;
+
+- (instancetype)initWithJavaUtilConcurrentAtomicAtomicReference:(JavaUtilConcurrentAtomicAtomicReference *)capture$0
+                      withJavaUtilConcurrentAtomicAtomicInteger:(JavaUtilConcurrentAtomicAtomicInteger *)capture$1;
+
+@end
+
+J2OBJC_EMPTY_STATIC_INIT(RxObservableTests_$15)
+
+J2OBJC_FIELD_SETTER(RxObservableTests_$15, val$error_, JavaUtilConcurrentAtomicAtomicReference *)
+J2OBJC_FIELD_SETTER(RxObservableTests_$15, val$count_, JavaUtilConcurrentAtomicAtomicInteger *)
+
+__attribute__((unused)) static void RxObservableTests_$15_initWithJavaUtilConcurrentAtomicAtomicReference_withJavaUtilConcurrentAtomicAtomicInteger_(RxObservableTests_$15 *self, JavaUtilConcurrentAtomicAtomicReference *capture$0, JavaUtilConcurrentAtomicAtomicInteger *capture$1);
+
+__attribute__((unused)) static RxObservableTests_$15 *new_RxObservableTests_$15_initWithJavaUtilConcurrentAtomicAtomicReference_withJavaUtilConcurrentAtomicAtomicInteger_(JavaUtilConcurrentAtomicAtomicReference *capture$0, JavaUtilConcurrentAtomicAtomicInteger *capture$1) NS_RETURNS_RETAINED;
+
+__attribute__((unused)) static RxObservableTests_$15 *create_RxObservableTests_$15_initWithJavaUtilConcurrentAtomicAtomicReference_withJavaUtilConcurrentAtomicAtomicInteger_(JavaUtilConcurrentAtomicAtomicReference *capture$0, JavaUtilConcurrentAtomicAtomicInteger *capture$1);
+
+@interface RxObservableTests_$16 : NSObject < RxObservable_OnSubscribe > {
+ @public
+  JavaUtilConcurrentAtomicAtomicInteger *val$count_;
+}
+
+- (void)callWithId:(RxSubscriber *)observer;
+
+- (instancetype)initWithJavaUtilConcurrentAtomicAtomicInteger:(JavaUtilConcurrentAtomicAtomicInteger *)capture$0;
+
+@end
+
+J2OBJC_EMPTY_STATIC_INIT(RxObservableTests_$16)
+
+J2OBJC_FIELD_SETTER(RxObservableTests_$16, val$count_, JavaUtilConcurrentAtomicAtomicInteger *)
+
+__attribute__((unused)) static void RxObservableTests_$16_initWithJavaUtilConcurrentAtomicAtomicInteger_(RxObservableTests_$16 *self, JavaUtilConcurrentAtomicAtomicInteger *capture$0);
+
+__attribute__((unused)) static RxObservableTests_$16 *new_RxObservableTests_$16_initWithJavaUtilConcurrentAtomicAtomicInteger_(JavaUtilConcurrentAtomicAtomicInteger *capture$0) NS_RETURNS_RETAINED;
+
+__attribute__((unused)) static RxObservableTests_$16 *create_RxObservableTests_$16_initWithJavaUtilConcurrentAtomicAtomicInteger_(JavaUtilConcurrentAtomicAtomicInteger *capture$0);
+
+@interface RxObservableTests_$16_$1 : NSObject < JavaLangRunnable > {
+ @public
+  RxSubscriber *val$observer_;
+}
+
+- (void)run;
+
+- (instancetype)initWithRxSubscriber:(RxSubscriber *)capture$0;
+
+@end
+
+J2OBJC_EMPTY_STATIC_INIT(RxObservableTests_$16_$1)
+
+J2OBJC_FIELD_SETTER(RxObservableTests_$16_$1, val$observer_, RxSubscriber *)
+
+__attribute__((unused)) static void RxObservableTests_$16_$1_initWithRxSubscriber_(RxObservableTests_$16_$1 *self, RxSubscriber *capture$0);
+
+__attribute__((unused)) static RxObservableTests_$16_$1 *new_RxObservableTests_$16_$1_initWithRxSubscriber_(RxSubscriber *capture$0) NS_RETURNS_RETAINED;
+
+__attribute__((unused)) static RxObservableTests_$16_$1 *create_RxObservableTests_$16_$1_initWithRxSubscriber_(RxSubscriber *capture$0);
+
+@interface RxObservableTests_$17 : NSObject < RxFunctionsAction1 > {
+ @public
+  JavaUtilConcurrentCountDownLatch *val$latch_;
+}
+
+- (void)callWithId:(NSString *)value;
+
+- (instancetype)initWithJavaUtilConcurrentCountDownLatch:(JavaUtilConcurrentCountDownLatch *)capture$0;
+
+@end
+
+J2OBJC_EMPTY_STATIC_INIT(RxObservableTests_$17)
+
+J2OBJC_FIELD_SETTER(RxObservableTests_$17, val$latch_, JavaUtilConcurrentCountDownLatch *)
+
+__attribute__((unused)) static void RxObservableTests_$17_initWithJavaUtilConcurrentCountDownLatch_(RxObservableTests_$17 *self, JavaUtilConcurrentCountDownLatch *capture$0);
+
+__attribute__((unused)) static RxObservableTests_$17 *new_RxObservableTests_$17_initWithJavaUtilConcurrentCountDownLatch_(JavaUtilConcurrentCountDownLatch *capture$0) NS_RETURNS_RETAINED;
+
+__attribute__((unused)) static RxObservableTests_$17 *create_RxObservableTests_$17_initWithJavaUtilConcurrentCountDownLatch_(JavaUtilConcurrentCountDownLatch *capture$0);
+
+@interface RxObservableTests_$18 : NSObject < RxObservable_OnSubscribe > {
  @public
   JavaUtilConcurrentAtomicAtomicInteger *val$counter_;
 }
@@ -85,41 +610,41 @@ __attribute__((unused)) static RxObservableTests_$1 *create_RxObservableTests_$1
 
 @end
 
-J2OBJC_EMPTY_STATIC_INIT(RxObservableTests_$2)
+J2OBJC_EMPTY_STATIC_INIT(RxObservableTests_$18)
 
-J2OBJC_FIELD_SETTER(RxObservableTests_$2, val$counter_, JavaUtilConcurrentAtomicAtomicInteger *)
+J2OBJC_FIELD_SETTER(RxObservableTests_$18, val$counter_, JavaUtilConcurrentAtomicAtomicInteger *)
 
-__attribute__((unused)) static void RxObservableTests_$2_initWithJavaUtilConcurrentAtomicAtomicInteger_(RxObservableTests_$2 *self, JavaUtilConcurrentAtomicAtomicInteger *capture$0);
+__attribute__((unused)) static void RxObservableTests_$18_initWithJavaUtilConcurrentAtomicAtomicInteger_(RxObservableTests_$18 *self, JavaUtilConcurrentAtomicAtomicInteger *capture$0);
 
-__attribute__((unused)) static RxObservableTests_$2 *new_RxObservableTests_$2_initWithJavaUtilConcurrentAtomicAtomicInteger_(JavaUtilConcurrentAtomicAtomicInteger *capture$0) NS_RETURNS_RETAINED;
+__attribute__((unused)) static RxObservableTests_$18 *new_RxObservableTests_$18_initWithJavaUtilConcurrentAtomicAtomicInteger_(JavaUtilConcurrentAtomicAtomicInteger *capture$0) NS_RETURNS_RETAINED;
 
-__attribute__((unused)) static RxObservableTests_$2 *create_RxObservableTests_$2_initWithJavaUtilConcurrentAtomicAtomicInteger_(JavaUtilConcurrentAtomicAtomicInteger *capture$0);
+__attribute__((unused)) static RxObservableTests_$18 *create_RxObservableTests_$18_initWithJavaUtilConcurrentAtomicAtomicInteger_(JavaUtilConcurrentAtomicAtomicInteger *capture$0);
 
-@interface RxObservableTests_$2_$1 : NSObject < JavaLangRunnable > {
+@interface RxObservableTests_$18_$1 : NSObject < JavaLangRunnable > {
  @public
-  RxObservableTests_$2 *this$0_;
+  RxObservableTests_$18 *this$0_;
   RxSubscriber *val$observer_;
 }
 
 - (void)run;
 
-- (instancetype)initWithRxObservableTests_$2:(RxObservableTests_$2 *)outer$
-                            withRxSubscriber:(RxSubscriber *)capture$0;
+- (instancetype)initWithRxObservableTests_$18:(RxObservableTests_$18 *)outer$
+                             withRxSubscriber:(RxSubscriber *)capture$0;
 
 @end
 
-J2OBJC_EMPTY_STATIC_INIT(RxObservableTests_$2_$1)
+J2OBJC_EMPTY_STATIC_INIT(RxObservableTests_$18_$1)
 
-J2OBJC_FIELD_SETTER(RxObservableTests_$2_$1, this$0_, RxObservableTests_$2 *)
-J2OBJC_FIELD_SETTER(RxObservableTests_$2_$1, val$observer_, RxSubscriber *)
+J2OBJC_FIELD_SETTER(RxObservableTests_$18_$1, this$0_, RxObservableTests_$18 *)
+J2OBJC_FIELD_SETTER(RxObservableTests_$18_$1, val$observer_, RxSubscriber *)
 
-__attribute__((unused)) static void RxObservableTests_$2_$1_initWithRxObservableTests_$2_withRxSubscriber_(RxObservableTests_$2_$1 *self, RxObservableTests_$2 *outer$, RxSubscriber *capture$0);
+__attribute__((unused)) static void RxObservableTests_$18_$1_initWithRxObservableTests_$18_withRxSubscriber_(RxObservableTests_$18_$1 *self, RxObservableTests_$18 *outer$, RxSubscriber *capture$0);
 
-__attribute__((unused)) static RxObservableTests_$2_$1 *new_RxObservableTests_$2_$1_initWithRxObservableTests_$2_withRxSubscriber_(RxObservableTests_$2 *outer$, RxSubscriber *capture$0) NS_RETURNS_RETAINED;
+__attribute__((unused)) static RxObservableTests_$18_$1 *new_RxObservableTests_$18_$1_initWithRxObservableTests_$18_withRxSubscriber_(RxObservableTests_$18 *outer$, RxSubscriber *capture$0) NS_RETURNS_RETAINED;
 
-__attribute__((unused)) static RxObservableTests_$2_$1 *create_RxObservableTests_$2_$1_initWithRxObservableTests_$2_withRxSubscriber_(RxObservableTests_$2 *outer$, RxSubscriber *capture$0);
+__attribute__((unused)) static RxObservableTests_$18_$1 *create_RxObservableTests_$18_$1_initWithRxObservableTests_$18_withRxSubscriber_(RxObservableTests_$18 *outer$, RxSubscriber *capture$0);
 
-@interface RxObservableTests_$3 : NSObject < RxFunctionsAction1 > {
+@interface RxObservableTests_$19 : NSObject < RxFunctionsAction1 > {
  @public
   JavaUtilConcurrentCountDownLatch *val$latch_;
 }
@@ -130,15 +655,752 @@ __attribute__((unused)) static RxObservableTests_$2_$1 *create_RxObservableTests
 
 @end
 
-J2OBJC_EMPTY_STATIC_INIT(RxObservableTests_$3)
+J2OBJC_EMPTY_STATIC_INIT(RxObservableTests_$19)
 
-J2OBJC_FIELD_SETTER(RxObservableTests_$3, val$latch_, JavaUtilConcurrentCountDownLatch *)
+J2OBJC_FIELD_SETTER(RxObservableTests_$19, val$latch_, JavaUtilConcurrentCountDownLatch *)
 
-__attribute__((unused)) static void RxObservableTests_$3_initWithJavaUtilConcurrentCountDownLatch_(RxObservableTests_$3 *self, JavaUtilConcurrentCountDownLatch *capture$0);
+__attribute__((unused)) static void RxObservableTests_$19_initWithJavaUtilConcurrentCountDownLatch_(RxObservableTests_$19 *self, JavaUtilConcurrentCountDownLatch *capture$0);
 
-__attribute__((unused)) static RxObservableTests_$3 *new_RxObservableTests_$3_initWithJavaUtilConcurrentCountDownLatch_(JavaUtilConcurrentCountDownLatch *capture$0) NS_RETURNS_RETAINED;
+__attribute__((unused)) static RxObservableTests_$19 *new_RxObservableTests_$19_initWithJavaUtilConcurrentCountDownLatch_(JavaUtilConcurrentCountDownLatch *capture$0) NS_RETURNS_RETAINED;
 
-__attribute__((unused)) static RxObservableTests_$3 *create_RxObservableTests_$3_initWithJavaUtilConcurrentCountDownLatch_(JavaUtilConcurrentCountDownLatch *capture$0);
+__attribute__((unused)) static RxObservableTests_$19 *create_RxObservableTests_$19_initWithJavaUtilConcurrentCountDownLatch_(JavaUtilConcurrentCountDownLatch *capture$0);
+
+@interface RxObservableTests_$20 : NSObject < RxFunctionsAction1 > {
+ @public
+  JavaUtilConcurrentCountDownLatch *val$latch_;
+}
+
+- (void)callWithId:(NSString *)v;
+
+- (instancetype)initWithJavaUtilConcurrentCountDownLatch:(JavaUtilConcurrentCountDownLatch *)capture$0;
+
+@end
+
+J2OBJC_EMPTY_STATIC_INIT(RxObservableTests_$20)
+
+J2OBJC_FIELD_SETTER(RxObservableTests_$20, val$latch_, JavaUtilConcurrentCountDownLatch *)
+
+__attribute__((unused)) static void RxObservableTests_$20_initWithJavaUtilConcurrentCountDownLatch_(RxObservableTests_$20 *self, JavaUtilConcurrentCountDownLatch *capture$0);
+
+__attribute__((unused)) static RxObservableTests_$20 *new_RxObservableTests_$20_initWithJavaUtilConcurrentCountDownLatch_(JavaUtilConcurrentCountDownLatch *capture$0) NS_RETURNS_RETAINED;
+
+__attribute__((unused)) static RxObservableTests_$20 *create_RxObservableTests_$20_initWithJavaUtilConcurrentCountDownLatch_(JavaUtilConcurrentCountDownLatch *capture$0);
+
+@interface RxObservableTests_$21 : NSObject < RxObservable_OnSubscribe > {
+ @public
+  JavaUtilConcurrentAtomicAtomicInteger *val$counter_;
+}
+
+- (void)callWithId:(RxSubscriber *)observer;
+
+- (instancetype)initWithJavaUtilConcurrentAtomicAtomicInteger:(JavaUtilConcurrentAtomicAtomicInteger *)capture$0;
+
+@end
+
+J2OBJC_EMPTY_STATIC_INIT(RxObservableTests_$21)
+
+J2OBJC_FIELD_SETTER(RxObservableTests_$21, val$counter_, JavaUtilConcurrentAtomicAtomicInteger *)
+
+__attribute__((unused)) static void RxObservableTests_$21_initWithJavaUtilConcurrentAtomicAtomicInteger_(RxObservableTests_$21 *self, JavaUtilConcurrentAtomicAtomicInteger *capture$0);
+
+__attribute__((unused)) static RxObservableTests_$21 *new_RxObservableTests_$21_initWithJavaUtilConcurrentAtomicAtomicInteger_(JavaUtilConcurrentAtomicAtomicInteger *capture$0) NS_RETURNS_RETAINED;
+
+__attribute__((unused)) static RxObservableTests_$21 *create_RxObservableTests_$21_initWithJavaUtilConcurrentAtomicAtomicInteger_(JavaUtilConcurrentAtomicAtomicInteger *capture$0);
+
+@interface RxObservableTests_$21_$1 : NSObject < JavaLangRunnable > {
+ @public
+  RxObservableTests_$21 *this$0_;
+  RxSubscriber *val$observer_;
+}
+
+- (void)run;
+
+- (instancetype)initWithRxObservableTests_$21:(RxObservableTests_$21 *)outer$
+                             withRxSubscriber:(RxSubscriber *)capture$0;
+
+@end
+
+J2OBJC_EMPTY_STATIC_INIT(RxObservableTests_$21_$1)
+
+J2OBJC_FIELD_SETTER(RxObservableTests_$21_$1, this$0_, RxObservableTests_$21 *)
+J2OBJC_FIELD_SETTER(RxObservableTests_$21_$1, val$observer_, RxSubscriber *)
+
+__attribute__((unused)) static void RxObservableTests_$21_$1_initWithRxObservableTests_$21_withRxSubscriber_(RxObservableTests_$21_$1 *self, RxObservableTests_$21 *outer$, RxSubscriber *capture$0);
+
+__attribute__((unused)) static RxObservableTests_$21_$1 *new_RxObservableTests_$21_$1_initWithRxObservableTests_$21_withRxSubscriber_(RxObservableTests_$21 *outer$, RxSubscriber *capture$0) NS_RETURNS_RETAINED;
+
+__attribute__((unused)) static RxObservableTests_$21_$1 *create_RxObservableTests_$21_$1_initWithRxObservableTests_$21_withRxSubscriber_(RxObservableTests_$21 *outer$, RxSubscriber *capture$0);
+
+@interface RxObservableTests_$22 : NSObject < RxFunctionsAction1 > {
+ @public
+  JavaUtilConcurrentCountDownLatch *val$latch_;
+}
+
+- (void)callWithId:(NSString *)v;
+
+- (instancetype)initWithJavaUtilConcurrentCountDownLatch:(JavaUtilConcurrentCountDownLatch *)capture$0;
+
+@end
+
+J2OBJC_EMPTY_STATIC_INIT(RxObservableTests_$22)
+
+J2OBJC_FIELD_SETTER(RxObservableTests_$22, val$latch_, JavaUtilConcurrentCountDownLatch *)
+
+__attribute__((unused)) static void RxObservableTests_$22_initWithJavaUtilConcurrentCountDownLatch_(RxObservableTests_$22 *self, JavaUtilConcurrentCountDownLatch *capture$0);
+
+__attribute__((unused)) static RxObservableTests_$22 *new_RxObservableTests_$22_initWithJavaUtilConcurrentCountDownLatch_(JavaUtilConcurrentCountDownLatch *capture$0) NS_RETURNS_RETAINED;
+
+__attribute__((unused)) static RxObservableTests_$22 *create_RxObservableTests_$22_initWithJavaUtilConcurrentCountDownLatch_(JavaUtilConcurrentCountDownLatch *capture$0);
+
+@interface RxObservableTests_$23 : NSObject < RxFunctionsAction1 > {
+ @public
+  JavaUtilConcurrentCountDownLatch *val$latch_;
+}
+
+- (void)callWithId:(NSString *)v;
+
+- (instancetype)initWithJavaUtilConcurrentCountDownLatch:(JavaUtilConcurrentCountDownLatch *)capture$0;
+
+@end
+
+J2OBJC_EMPTY_STATIC_INIT(RxObservableTests_$23)
+
+J2OBJC_FIELD_SETTER(RxObservableTests_$23, val$latch_, JavaUtilConcurrentCountDownLatch *)
+
+__attribute__((unused)) static void RxObservableTests_$23_initWithJavaUtilConcurrentCountDownLatch_(RxObservableTests_$23 *self, JavaUtilConcurrentCountDownLatch *capture$0);
+
+__attribute__((unused)) static RxObservableTests_$23 *new_RxObservableTests_$23_initWithJavaUtilConcurrentCountDownLatch_(JavaUtilConcurrentCountDownLatch *capture$0) NS_RETURNS_RETAINED;
+
+__attribute__((unused)) static RxObservableTests_$23 *create_RxObservableTests_$23_initWithJavaUtilConcurrentCountDownLatch_(JavaUtilConcurrentCountDownLatch *capture$0);
+
+@interface RxObservableTests_$24 : NSObject < RxObservable_OnSubscribe > {
+ @public
+  JavaUtilConcurrentAtomicAtomicInteger *val$counter_;
+}
+
+- (void)callWithId:(RxSubscriber *)observer;
+
+- (instancetype)initWithJavaUtilConcurrentAtomicAtomicInteger:(JavaUtilConcurrentAtomicAtomicInteger *)capture$0;
+
+@end
+
+J2OBJC_EMPTY_STATIC_INIT(RxObservableTests_$24)
+
+J2OBJC_FIELD_SETTER(RxObservableTests_$24, val$counter_, JavaUtilConcurrentAtomicAtomicInteger *)
+
+__attribute__((unused)) static void RxObservableTests_$24_initWithJavaUtilConcurrentAtomicAtomicInteger_(RxObservableTests_$24 *self, JavaUtilConcurrentAtomicAtomicInteger *capture$0);
+
+__attribute__((unused)) static RxObservableTests_$24 *new_RxObservableTests_$24_initWithJavaUtilConcurrentAtomicAtomicInteger_(JavaUtilConcurrentAtomicAtomicInteger *capture$0) NS_RETURNS_RETAINED;
+
+__attribute__((unused)) static RxObservableTests_$24 *create_RxObservableTests_$24_initWithJavaUtilConcurrentAtomicAtomicInteger_(JavaUtilConcurrentAtomicAtomicInteger *capture$0);
+
+@interface RxObservableTests_$24_$1 : NSObject < JavaLangRunnable > {
+ @public
+  RxObservableTests_$24 *this$0_;
+  RxSubscriber *val$observer_;
+}
+
+- (void)run;
+
+- (instancetype)initWithRxObservableTests_$24:(RxObservableTests_$24 *)outer$
+                             withRxSubscriber:(RxSubscriber *)capture$0;
+
+@end
+
+J2OBJC_EMPTY_STATIC_INIT(RxObservableTests_$24_$1)
+
+J2OBJC_FIELD_SETTER(RxObservableTests_$24_$1, this$0_, RxObservableTests_$24 *)
+J2OBJC_FIELD_SETTER(RxObservableTests_$24_$1, val$observer_, RxSubscriber *)
+
+__attribute__((unused)) static void RxObservableTests_$24_$1_initWithRxObservableTests_$24_withRxSubscriber_(RxObservableTests_$24_$1 *self, RxObservableTests_$24 *outer$, RxSubscriber *capture$0);
+
+__attribute__((unused)) static RxObservableTests_$24_$1 *new_RxObservableTests_$24_$1_initWithRxObservableTests_$24_withRxSubscriber_(RxObservableTests_$24 *outer$, RxSubscriber *capture$0) NS_RETURNS_RETAINED;
+
+__attribute__((unused)) static RxObservableTests_$24_$1 *create_RxObservableTests_$24_$1_initWithRxObservableTests_$24_withRxSubscriber_(RxObservableTests_$24 *outer$, RxSubscriber *capture$0);
+
+@interface RxObservableTests_$25 : NSObject < RxFunctionsAction1 > {
+ @public
+  JavaUtilConcurrentCountDownLatch *val$latch_;
+}
+
+- (void)callWithId:(NSString *)v;
+
+- (instancetype)initWithJavaUtilConcurrentCountDownLatch:(JavaUtilConcurrentCountDownLatch *)capture$0;
+
+@end
+
+J2OBJC_EMPTY_STATIC_INIT(RxObservableTests_$25)
+
+J2OBJC_FIELD_SETTER(RxObservableTests_$25, val$latch_, JavaUtilConcurrentCountDownLatch *)
+
+__attribute__((unused)) static void RxObservableTests_$25_initWithJavaUtilConcurrentCountDownLatch_(RxObservableTests_$25 *self, JavaUtilConcurrentCountDownLatch *capture$0);
+
+__attribute__((unused)) static RxObservableTests_$25 *new_RxObservableTests_$25_initWithJavaUtilConcurrentCountDownLatch_(JavaUtilConcurrentCountDownLatch *capture$0) NS_RETURNS_RETAINED;
+
+__attribute__((unused)) static RxObservableTests_$25 *create_RxObservableTests_$25_initWithJavaUtilConcurrentCountDownLatch_(JavaUtilConcurrentCountDownLatch *capture$0);
+
+@interface RxObservableTests_$26 : NSObject < RxFunctionsAction1 > {
+ @public
+  JavaUtilConcurrentCountDownLatch *val$latch_;
+}
+
+- (void)callWithId:(NSString *)v;
+
+- (instancetype)initWithJavaUtilConcurrentCountDownLatch:(JavaUtilConcurrentCountDownLatch *)capture$0;
+
+@end
+
+J2OBJC_EMPTY_STATIC_INIT(RxObservableTests_$26)
+
+J2OBJC_FIELD_SETTER(RxObservableTests_$26, val$latch_, JavaUtilConcurrentCountDownLatch *)
+
+__attribute__((unused)) static void RxObservableTests_$26_initWithJavaUtilConcurrentCountDownLatch_(RxObservableTests_$26 *self, JavaUtilConcurrentCountDownLatch *capture$0);
+
+__attribute__((unused)) static RxObservableTests_$26 *new_RxObservableTests_$26_initWithJavaUtilConcurrentCountDownLatch_(JavaUtilConcurrentCountDownLatch *capture$0) NS_RETURNS_RETAINED;
+
+__attribute__((unused)) static RxObservableTests_$26 *create_RxObservableTests_$26_initWithJavaUtilConcurrentCountDownLatch_(JavaUtilConcurrentCountDownLatch *capture$0);
+
+@interface RxObservableTests_$27 : NSObject < RxFunctionsAction1 >
+
+- (void)callWithId:(id)t1;
+
+- (instancetype)init;
+
+@end
+
+J2OBJC_EMPTY_STATIC_INIT(RxObservableTests_$27)
+
+__attribute__((unused)) static void RxObservableTests_$27_init(RxObservableTests_$27 *self);
+
+__attribute__((unused)) static RxObservableTests_$27 *new_RxObservableTests_$27_init() NS_RETURNS_RETAINED;
+
+__attribute__((unused)) static RxObservableTests_$27 *create_RxObservableTests_$27_init();
+
+@interface RxObservableTests_$28 : NSObject < RxObservable_OnSubscribe > {
+ @public
+  JavaUtilConcurrentAtomicAtomicReference *val$exception_;
+  JavaUtilConcurrentCountDownLatch *val$latch_;
+}
+
+- (void)callWithId:(RxSubscriber *)observer;
+
+- (instancetype)initWithJavaUtilConcurrentAtomicAtomicReference:(JavaUtilConcurrentAtomicAtomicReference *)capture$0
+                           withJavaUtilConcurrentCountDownLatch:(JavaUtilConcurrentCountDownLatch *)capture$1;
+
+@end
+
+J2OBJC_EMPTY_STATIC_INIT(RxObservableTests_$28)
+
+J2OBJC_FIELD_SETTER(RxObservableTests_$28, val$exception_, JavaUtilConcurrentAtomicAtomicReference *)
+J2OBJC_FIELD_SETTER(RxObservableTests_$28, val$latch_, JavaUtilConcurrentCountDownLatch *)
+
+__attribute__((unused)) static void RxObservableTests_$28_initWithJavaUtilConcurrentAtomicAtomicReference_withJavaUtilConcurrentCountDownLatch_(RxObservableTests_$28 *self, JavaUtilConcurrentAtomicAtomicReference *capture$0, JavaUtilConcurrentCountDownLatch *capture$1);
+
+__attribute__((unused)) static RxObservableTests_$28 *new_RxObservableTests_$28_initWithJavaUtilConcurrentAtomicAtomicReference_withJavaUtilConcurrentCountDownLatch_(JavaUtilConcurrentAtomicAtomicReference *capture$0, JavaUtilConcurrentCountDownLatch *capture$1) NS_RETURNS_RETAINED;
+
+__attribute__((unused)) static RxObservableTests_$28 *create_RxObservableTests_$28_initWithJavaUtilConcurrentAtomicAtomicReference_withJavaUtilConcurrentCountDownLatch_(JavaUtilConcurrentAtomicAtomicReference *capture$0, JavaUtilConcurrentCountDownLatch *capture$1);
+
+@interface RxObservableTests_$28_$1 : NSObject < JavaLangRunnable > {
+ @public
+  RxObservableTests_$28 *this$0_;
+  RxSubscriber *val$observer_;
+}
+
+- (void)run;
+
+- (instancetype)initWithRxObservableTests_$28:(RxObservableTests_$28 *)outer$
+                             withRxSubscriber:(RxSubscriber *)capture$0;
+
+@end
+
+J2OBJC_EMPTY_STATIC_INIT(RxObservableTests_$28_$1)
+
+J2OBJC_FIELD_SETTER(RxObservableTests_$28_$1, this$0_, RxObservableTests_$28 *)
+J2OBJC_FIELD_SETTER(RxObservableTests_$28_$1, val$observer_, RxSubscriber *)
+
+__attribute__((unused)) static void RxObservableTests_$28_$1_initWithRxObservableTests_$28_withRxSubscriber_(RxObservableTests_$28_$1 *self, RxObservableTests_$28 *outer$, RxSubscriber *capture$0);
+
+__attribute__((unused)) static RxObservableTests_$28_$1 *new_RxObservableTests_$28_$1_initWithRxObservableTests_$28_withRxSubscriber_(RxObservableTests_$28 *outer$, RxSubscriber *capture$0) NS_RETURNS_RETAINED;
+
+__attribute__((unused)) static RxObservableTests_$28_$1 *create_RxObservableTests_$28_$1_initWithRxObservableTests_$28_withRxSubscriber_(RxObservableTests_$28 *outer$, RxSubscriber *capture$0);
+
+@interface RxObservableTests_$29 : NSObject < RxFunctionsAction1 >
+
+- (void)callWithId:(NSString *)t1;
+
+- (instancetype)init;
+
+@end
+
+J2OBJC_EMPTY_STATIC_INIT(RxObservableTests_$29)
+
+__attribute__((unused)) static void RxObservableTests_$29_init(RxObservableTests_$29 *self);
+
+__attribute__((unused)) static RxObservableTests_$29 *new_RxObservableTests_$29_init() NS_RETURNS_RETAINED;
+
+__attribute__((unused)) static RxObservableTests_$29 *create_RxObservableTests_$29_init();
+
+@interface RxObservableTests_$30 : RxSubscriber {
+ @public
+  JavaUtilConcurrentAtomicAtomicReference *val$error_;
+  JavaUtilConcurrentAtomicAtomicInteger *val$count_;
+}
+
+- (void)onCompleted;
+
+- (void)onErrorWithNSException:(NSException *)e;
+
+- (void)onNextWithId:(NSString *)v;
+
+- (instancetype)initWithJavaUtilConcurrentAtomicAtomicReference:(JavaUtilConcurrentAtomicAtomicReference *)capture$0
+                      withJavaUtilConcurrentAtomicAtomicInteger:(JavaUtilConcurrentAtomicAtomicInteger *)capture$1;
+
+@end
+
+J2OBJC_EMPTY_STATIC_INIT(RxObservableTests_$30)
+
+J2OBJC_FIELD_SETTER(RxObservableTests_$30, val$error_, JavaUtilConcurrentAtomicAtomicReference *)
+J2OBJC_FIELD_SETTER(RxObservableTests_$30, val$count_, JavaUtilConcurrentAtomicAtomicInteger *)
+
+__attribute__((unused)) static void RxObservableTests_$30_initWithJavaUtilConcurrentAtomicAtomicReference_withJavaUtilConcurrentAtomicAtomicInteger_(RxObservableTests_$30 *self, JavaUtilConcurrentAtomicAtomicReference *capture$0, JavaUtilConcurrentAtomicAtomicInteger *capture$1);
+
+__attribute__((unused)) static RxObservableTests_$30 *new_RxObservableTests_$30_initWithJavaUtilConcurrentAtomicAtomicReference_withJavaUtilConcurrentAtomicAtomicInteger_(JavaUtilConcurrentAtomicAtomicReference *capture$0, JavaUtilConcurrentAtomicAtomicInteger *capture$1) NS_RETURNS_RETAINED;
+
+__attribute__((unused)) static RxObservableTests_$30 *create_RxObservableTests_$30_initWithJavaUtilConcurrentAtomicAtomicReference_withJavaUtilConcurrentAtomicAtomicInteger_(JavaUtilConcurrentAtomicAtomicReference *capture$0, JavaUtilConcurrentAtomicAtomicInteger *capture$1);
+
+@interface RxObservableTests_$31 : NSObject < RxFunctionsFunc1 >
+
+- (RxObservable *)callWithId:(NSString *)s;
+
+- (instancetype)init;
+
+@end
+
+J2OBJC_EMPTY_STATIC_INIT(RxObservableTests_$31)
+
+__attribute__((unused)) static void RxObservableTests_$31_init(RxObservableTests_$31 *self);
+
+__attribute__((unused)) static RxObservableTests_$31 *new_RxObservableTests_$31_init() NS_RETURNS_RETAINED;
+
+__attribute__((unused)) static RxObservableTests_$31 *create_RxObservableTests_$31_init();
+
+@interface RxObservableTests_$32 : NSObject < RxFunctionsFunc1 >
+
+- (JavaLangBoolean *)callWithId:(JavaLangBoolean *)value;
+
+- (instancetype)init;
+
+@end
+
+J2OBJC_EMPTY_STATIC_INIT(RxObservableTests_$32)
+
+__attribute__((unused)) static void RxObservableTests_$32_init(RxObservableTests_$32 *self);
+
+__attribute__((unused)) static RxObservableTests_$32 *new_RxObservableTests_$32_init() NS_RETURNS_RETAINED;
+
+__attribute__((unused)) static RxObservableTests_$32 *create_RxObservableTests_$32_init();
+
+@interface RxObservableTests_$33 : NSObject < RxFunctionsAction1 > {
+ @public
+  JavaUtilConcurrentAtomicAtomicInteger *val$count_;
+}
+
+- (void)callWithId:(id<JavaUtilList>)booleans;
+
+- (instancetype)initWithJavaUtilConcurrentAtomicAtomicInteger:(JavaUtilConcurrentAtomicAtomicInteger *)capture$0;
+
+@end
+
+J2OBJC_EMPTY_STATIC_INIT(RxObservableTests_$33)
+
+J2OBJC_FIELD_SETTER(RxObservableTests_$33, val$count_, JavaUtilConcurrentAtomicAtomicInteger *)
+
+__attribute__((unused)) static void RxObservableTests_$33_initWithJavaUtilConcurrentAtomicAtomicInteger_(RxObservableTests_$33 *self, JavaUtilConcurrentAtomicAtomicInteger *capture$0);
+
+__attribute__((unused)) static RxObservableTests_$33 *new_RxObservableTests_$33_initWithJavaUtilConcurrentAtomicAtomicInteger_(JavaUtilConcurrentAtomicAtomicInteger *capture$0) NS_RETURNS_RETAINED;
+
+__attribute__((unused)) static RxObservableTests_$33 *create_RxObservableTests_$33_initWithJavaUtilConcurrentAtomicAtomicInteger_(JavaUtilConcurrentAtomicAtomicInteger *capture$0);
+
+@interface RxObservableTests_$34 : NSObject < RxObservable_Transformer >
+
+- (RxObservable *)callWithId:(RxObservable *)t1;
+
+- (instancetype)init;
+
+@end
+
+J2OBJC_EMPTY_STATIC_INIT(RxObservableTests_$34)
+
+__attribute__((unused)) static void RxObservableTests_$34_init(RxObservableTests_$34 *self);
+
+__attribute__((unused)) static RxObservableTests_$34 *new_RxObservableTests_$34_init() NS_RETURNS_RETAINED;
+
+__attribute__((unused)) static RxObservableTests_$34 *create_RxObservableTests_$34_init();
+
+@interface RxObservableTests_$34_$1 : NSObject < RxFunctionsFunc1 >
+
+- (NSString *)callWithId:(JavaLangInteger *)t1;
+
+- (instancetype)init;
+
+@end
+
+J2OBJC_EMPTY_STATIC_INIT(RxObservableTests_$34_$1)
+
+__attribute__((unused)) static void RxObservableTests_$34_$1_init(RxObservableTests_$34_$1 *self);
+
+__attribute__((unused)) static RxObservableTests_$34_$1 *new_RxObservableTests_$34_$1_init() NS_RETURNS_RETAINED;
+
+__attribute__((unused)) static RxObservableTests_$34_$1 *create_RxObservableTests_$34_$1_init();
+
+@interface RxObservableTests_$35 : NSObject < JavaLangRunnable > {
+ @public
+  JavaUtilConcurrentAtomicAtomicReference *val$err_;
+}
+
+- (void)run;
+
+- (instancetype)initWithJavaUtilConcurrentAtomicAtomicReference:(JavaUtilConcurrentAtomicAtomicReference *)capture$0;
+
+@end
+
+J2OBJC_EMPTY_STATIC_INIT(RxObservableTests_$35)
+
+J2OBJC_FIELD_SETTER(RxObservableTests_$35, val$err_, JavaUtilConcurrentAtomicAtomicReference *)
+
+__attribute__((unused)) static void RxObservableTests_$35_initWithJavaUtilConcurrentAtomicAtomicReference_(RxObservableTests_$35 *self, JavaUtilConcurrentAtomicAtomicReference *capture$0);
+
+__attribute__((unused)) static RxObservableTests_$35 *new_RxObservableTests_$35_initWithJavaUtilConcurrentAtomicAtomicReference_(JavaUtilConcurrentAtomicAtomicReference *capture$0) NS_RETURNS_RETAINED;
+
+__attribute__((unused)) static RxObservableTests_$35 *create_RxObservableTests_$35_initWithJavaUtilConcurrentAtomicAtomicReference_(JavaUtilConcurrentAtomicAtomicReference *capture$0);
+
+@interface RxObservableTests_$35_$1 : NSObject < JavaLangThread_UncaughtExceptionHandler > {
+ @public
+  RxObservableTests_$35 *this$0_;
+}
+
+- (void)uncaughtExceptionWithJavaLangThread:(JavaLangThread *)t
+                            withNSException:(NSException *)e;
+
+- (instancetype)initWithRxObservableTests_$35:(RxObservableTests_$35 *)outer$;
+
+@end
+
+J2OBJC_EMPTY_STATIC_INIT(RxObservableTests_$35_$1)
+
+J2OBJC_FIELD_SETTER(RxObservableTests_$35_$1, this$0_, RxObservableTests_$35 *)
+
+__attribute__((unused)) static void RxObservableTests_$35_$1_initWithRxObservableTests_$35_(RxObservableTests_$35_$1 *self, RxObservableTests_$35 *outer$);
+
+__attribute__((unused)) static RxObservableTests_$35_$1 *new_RxObservableTests_$35_$1_initWithRxObservableTests_$35_(RxObservableTests_$35 *outer$) NS_RETURNS_RETAINED;
+
+__attribute__((unused)) static RxObservableTests_$35_$1 *create_RxObservableTests_$35_$1_initWithRxObservableTests_$35_(RxObservableTests_$35 *outer$);
+
+@interface RxObservableTests_$36 : NSObject < RxFunctionsAction1 >
+
+- (void)callWithId:(id)t;
+
+- (instancetype)init;
+
+@end
+
+J2OBJC_EMPTY_STATIC_INIT(RxObservableTests_$36)
+
+__attribute__((unused)) static void RxObservableTests_$36_init(RxObservableTests_$36 *self);
+
+__attribute__((unused)) static RxObservableTests_$36 *new_RxObservableTests_$36_init() NS_RETURNS_RETAINED;
+
+__attribute__((unused)) static RxObservableTests_$36 *create_RxObservableTests_$36_init();
+
+@interface RxObservableTests_$37 : NSObject < RxObservable_OnSubscribe > {
+ @public
+  JavaUtilConcurrentAtomicAtomicInteger *val$counter_;
+}
+
+- (void)callWithId:(RxSubscriber *)observer;
+
+- (instancetype)initWithJavaUtilConcurrentAtomicAtomicInteger:(JavaUtilConcurrentAtomicAtomicInteger *)capture$0;
+
+@end
+
+J2OBJC_EMPTY_STATIC_INIT(RxObservableTests_$37)
+
+J2OBJC_FIELD_SETTER(RxObservableTests_$37, val$counter_, JavaUtilConcurrentAtomicAtomicInteger *)
+
+__attribute__((unused)) static void RxObservableTests_$37_initWithJavaUtilConcurrentAtomicAtomicInteger_(RxObservableTests_$37 *self, JavaUtilConcurrentAtomicAtomicInteger *capture$0);
+
+__attribute__((unused)) static RxObservableTests_$37 *new_RxObservableTests_$37_initWithJavaUtilConcurrentAtomicAtomicInteger_(JavaUtilConcurrentAtomicAtomicInteger *capture$0) NS_RETURNS_RETAINED;
+
+__attribute__((unused)) static RxObservableTests_$37 *create_RxObservableTests_$37_initWithJavaUtilConcurrentAtomicAtomicInteger_(JavaUtilConcurrentAtomicAtomicInteger *capture$0);
+
+@interface RxObservableTests_$37_$1 : NSObject < JavaLangRunnable > {
+ @public
+  RxObservableTests_$37 *this$0_;
+  RxSubscriber *val$observer_;
+}
+
+- (void)run;
+
+- (instancetype)initWithRxObservableTests_$37:(RxObservableTests_$37 *)outer$
+                             withRxSubscriber:(RxSubscriber *)capture$0;
+
+@end
+
+J2OBJC_EMPTY_STATIC_INIT(RxObservableTests_$37_$1)
+
+J2OBJC_FIELD_SETTER(RxObservableTests_$37_$1, this$0_, RxObservableTests_$37 *)
+J2OBJC_FIELD_SETTER(RxObservableTests_$37_$1, val$observer_, RxSubscriber *)
+
+__attribute__((unused)) static void RxObservableTests_$37_$1_initWithRxObservableTests_$37_withRxSubscriber_(RxObservableTests_$37_$1 *self, RxObservableTests_$37 *outer$, RxSubscriber *capture$0);
+
+__attribute__((unused)) static RxObservableTests_$37_$1 *new_RxObservableTests_$37_$1_initWithRxObservableTests_$37_withRxSubscriber_(RxObservableTests_$37 *outer$, RxSubscriber *capture$0) NS_RETURNS_RETAINED;
+
+__attribute__((unused)) static RxObservableTests_$37_$1 *create_RxObservableTests_$37_$1_initWithRxObservableTests_$37_withRxSubscriber_(RxObservableTests_$37 *outer$, RxSubscriber *capture$0);
+
+@interface RxObservableTests_$38 : NSObject < RxFunctionsAction1 > {
+ @public
+  JavaUtilConcurrentCountDownLatch *val$latch_;
+}
+
+- (void)callWithId:(NSString *)v;
+
+- (instancetype)initWithJavaUtilConcurrentCountDownLatch:(JavaUtilConcurrentCountDownLatch *)capture$0;
+
+@end
+
+J2OBJC_EMPTY_STATIC_INIT(RxObservableTests_$38)
+
+J2OBJC_FIELD_SETTER(RxObservableTests_$38, val$latch_, JavaUtilConcurrentCountDownLatch *)
+
+__attribute__((unused)) static void RxObservableTests_$38_initWithJavaUtilConcurrentCountDownLatch_(RxObservableTests_$38 *self, JavaUtilConcurrentCountDownLatch *capture$0);
+
+__attribute__((unused)) static RxObservableTests_$38 *new_RxObservableTests_$38_initWithJavaUtilConcurrentCountDownLatch_(JavaUtilConcurrentCountDownLatch *capture$0) NS_RETURNS_RETAINED;
+
+__attribute__((unused)) static RxObservableTests_$38 *create_RxObservableTests_$38_initWithJavaUtilConcurrentCountDownLatch_(JavaUtilConcurrentCountDownLatch *capture$0);
+
+@interface RxObservableTests_$39 : NSObject < RxFunctionsAction1 > {
+ @public
+  JavaUtilConcurrentCountDownLatch *val$latch_;
+}
+
+- (void)callWithId:(NSString *)v;
+
+- (instancetype)initWithJavaUtilConcurrentCountDownLatch:(JavaUtilConcurrentCountDownLatch *)capture$0;
+
+@end
+
+J2OBJC_EMPTY_STATIC_INIT(RxObservableTests_$39)
+
+J2OBJC_FIELD_SETTER(RxObservableTests_$39, val$latch_, JavaUtilConcurrentCountDownLatch *)
+
+__attribute__((unused)) static void RxObservableTests_$39_initWithJavaUtilConcurrentCountDownLatch_(RxObservableTests_$39 *self, JavaUtilConcurrentCountDownLatch *capture$0);
+
+__attribute__((unused)) static RxObservableTests_$39 *new_RxObservableTests_$39_initWithJavaUtilConcurrentCountDownLatch_(JavaUtilConcurrentCountDownLatch *capture$0) NS_RETURNS_RETAINED;
+
+__attribute__((unused)) static RxObservableTests_$39 *create_RxObservableTests_$39_initWithJavaUtilConcurrentCountDownLatch_(JavaUtilConcurrentCountDownLatch *capture$0);
+
+@interface RxObservableTests_$40 : NSObject < RxFunctionsAction1 > {
+ @public
+  id<JavaUtilList> val$list_;
+}
+
+- (void)callWithId:(NSException *)t;
+
+- (instancetype)initWithJavaUtilList:(id<JavaUtilList>)capture$0;
+
+@end
+
+J2OBJC_EMPTY_STATIC_INIT(RxObservableTests_$40)
+
+J2OBJC_FIELD_SETTER(RxObservableTests_$40, val$list_, id<JavaUtilList>)
+
+__attribute__((unused)) static void RxObservableTests_$40_initWithJavaUtilList_(RxObservableTests_$40 *self, id<JavaUtilList> capture$0);
+
+__attribute__((unused)) static RxObservableTests_$40 *new_RxObservableTests_$40_initWithJavaUtilList_(id<JavaUtilList> capture$0) NS_RETURNS_RETAINED;
+
+__attribute__((unused)) static RxObservableTests_$40 *create_RxObservableTests_$40_initWithJavaUtilList_(id<JavaUtilList> capture$0);
+
+@interface RxObservableTests_$41 : RxObserversSafeSubscriber
+
+- (void)onErrorWithNSException:(NSException *)e;
+
+- (instancetype)initWithRxSubscriber:(RxSubscriber *)arg$0;
+
+@end
+
+J2OBJC_EMPTY_STATIC_INIT(RxObservableTests_$41)
+
+__attribute__((unused)) static void RxObservableTests_$41_initWithRxSubscriber_(RxObservableTests_$41 *self, RxSubscriber *arg$0);
+
+__attribute__((unused)) static RxObservableTests_$41 *new_RxObservableTests_$41_initWithRxSubscriber_(RxSubscriber *arg$0) NS_RETURNS_RETAINED;
+
+__attribute__((unused)) static RxObservableTests_$41 *create_RxObservableTests_$41_initWithRxSubscriber_(RxSubscriber *arg$0);
+
+@interface RxObservableTests_$42 : RxObserversTestSubscriber
+
+- (void)onErrorWithNSException:(NSException *)e;
+
+- (instancetype)init;
+
+@end
+
+J2OBJC_EMPTY_STATIC_INIT(RxObservableTests_$42)
+
+__attribute__((unused)) static void RxObservableTests_$42_init(RxObservableTests_$42 *self);
+
+__attribute__((unused)) static RxObservableTests_$42 *new_RxObservableTests_$42_init() NS_RETURNS_RETAINED;
+
+__attribute__((unused)) static RxObservableTests_$42 *create_RxObservableTests_$42_init();
+
+@interface RxObservableTests_$43 : NSObject < RxFunctionsAction1 > {
+ @public
+  id<JavaUtilList> val$list_;
+}
+
+- (void)callWithId:(JavaLangInteger *)t;
+
+- (instancetype)initWithJavaUtilList:(id<JavaUtilList>)capture$0;
+
+@end
+
+J2OBJC_EMPTY_STATIC_INIT(RxObservableTests_$43)
+
+J2OBJC_FIELD_SETTER(RxObservableTests_$43, val$list_, id<JavaUtilList>)
+
+__attribute__((unused)) static void RxObservableTests_$43_initWithJavaUtilList_(RxObservableTests_$43 *self, id<JavaUtilList> capture$0);
+
+__attribute__((unused)) static RxObservableTests_$43 *new_RxObservableTests_$43_initWithJavaUtilList_(id<JavaUtilList> capture$0) NS_RETURNS_RETAINED;
+
+__attribute__((unused)) static RxObservableTests_$43 *create_RxObservableTests_$43_initWithJavaUtilList_(id<JavaUtilList> capture$0);
+
+@interface RxObservableTests_$44 : NSObject < RxFunctionsAction1 > {
+ @public
+  id<JavaUtilList> val$list_;
+}
+
+- (void)callWithId:(JavaLangInteger *)t;
+
+- (instancetype)initWithJavaUtilList:(id<JavaUtilList>)capture$0;
+
+@end
+
+J2OBJC_EMPTY_STATIC_INIT(RxObservableTests_$44)
+
+J2OBJC_FIELD_SETTER(RxObservableTests_$44, val$list_, id<JavaUtilList>)
+
+__attribute__((unused)) static void RxObservableTests_$44_initWithJavaUtilList_(RxObservableTests_$44 *self, id<JavaUtilList> capture$0);
+
+__attribute__((unused)) static RxObservableTests_$44 *new_RxObservableTests_$44_initWithJavaUtilList_(id<JavaUtilList> capture$0) NS_RETURNS_RETAINED;
+
+__attribute__((unused)) static RxObservableTests_$44 *create_RxObservableTests_$44_initWithJavaUtilList_(id<JavaUtilList> capture$0);
+
+@interface RxObservableTests_$45 : NSObject < RxFunctionsAction1 > {
+ @public
+  id<JavaUtilList> val$list_;
+}
+
+- (void)callWithId:(NSException *)t;
+
+- (instancetype)initWithJavaUtilList:(id<JavaUtilList>)capture$0;
+
+@end
+
+J2OBJC_EMPTY_STATIC_INIT(RxObservableTests_$45)
+
+J2OBJC_FIELD_SETTER(RxObservableTests_$45, val$list_, id<JavaUtilList>)
+
+__attribute__((unused)) static void RxObservableTests_$45_initWithJavaUtilList_(RxObservableTests_$45 *self, id<JavaUtilList> capture$0);
+
+__attribute__((unused)) static RxObservableTests_$45 *new_RxObservableTests_$45_initWithJavaUtilList_(id<JavaUtilList> capture$0) NS_RETURNS_RETAINED;
+
+__attribute__((unused)) static RxObservableTests_$45 *create_RxObservableTests_$45_initWithJavaUtilList_(id<JavaUtilList> capture$0);
+
+@interface RxObservableTests_$46 : NSObject < RxFunctionsAction1 > {
+ @public
+  id<JavaUtilList> val$list_;
+}
+
+- (void)callWithId:(JavaLangInteger *)t;
+
+- (instancetype)initWithJavaUtilList:(id<JavaUtilList>)capture$0;
+
+@end
+
+J2OBJC_EMPTY_STATIC_INIT(RxObservableTests_$46)
+
+J2OBJC_FIELD_SETTER(RxObservableTests_$46, val$list_, id<JavaUtilList>)
+
+__attribute__((unused)) static void RxObservableTests_$46_initWithJavaUtilList_(RxObservableTests_$46 *self, id<JavaUtilList> capture$0);
+
+__attribute__((unused)) static RxObservableTests_$46 *new_RxObservableTests_$46_initWithJavaUtilList_(id<JavaUtilList> capture$0) NS_RETURNS_RETAINED;
+
+__attribute__((unused)) static RxObservableTests_$46 *create_RxObservableTests_$46_initWithJavaUtilList_(id<JavaUtilList> capture$0);
+
+@interface RxObservableTests_$47 : NSObject < RxFunctionsAction1 > {
+ @public
+  id<JavaUtilList> val$list_;
+}
+
+- (void)callWithId:(NSException *)t;
+
+- (instancetype)initWithJavaUtilList:(id<JavaUtilList>)capture$0;
+
+@end
+
+J2OBJC_EMPTY_STATIC_INIT(RxObservableTests_$47)
+
+J2OBJC_FIELD_SETTER(RxObservableTests_$47, val$list_, id<JavaUtilList>)
+
+__attribute__((unused)) static void RxObservableTests_$47_initWithJavaUtilList_(RxObservableTests_$47 *self, id<JavaUtilList> capture$0);
+
+__attribute__((unused)) static RxObservableTests_$47 *new_RxObservableTests_$47_initWithJavaUtilList_(id<JavaUtilList> capture$0) NS_RETURNS_RETAINED;
+
+__attribute__((unused)) static RxObservableTests_$47 *create_RxObservableTests_$47_initWithJavaUtilList_(id<JavaUtilList> capture$0);
+
+@interface RxObservableTests_$48 : NSObject < RxFunctionsAction0 > {
+ @public
+  id<JavaUtilList> val$list_;
+}
+
+- (void)call;
+
+- (instancetype)initWithJavaUtilList:(id<JavaUtilList>)capture$0;
+
+@end
+
+J2OBJC_EMPTY_STATIC_INIT(RxObservableTests_$48)
+
+J2OBJC_FIELD_SETTER(RxObservableTests_$48, val$list_, id<JavaUtilList>)
+
+__attribute__((unused)) static void RxObservableTests_$48_initWithJavaUtilList_(RxObservableTests_$48 *self, id<JavaUtilList> capture$0);
+
+__attribute__((unused)) static RxObservableTests_$48 *new_RxObservableTests_$48_initWithJavaUtilList_(id<JavaUtilList> capture$0) NS_RETURNS_RETAINED;
+
+__attribute__((unused)) static RxObservableTests_$48 *create_RxObservableTests_$48_initWithJavaUtilList_(id<JavaUtilList> capture$0);
+
+@interface RxObservableTests_$49 : NSObject < RxFunctionsFunc1 > {
+ @public
+  JavaUtilConcurrentAtomicAtomicReference *val$observableRef_;
+  id val$expectedResult_;
+}
+
+- (id)callWithId:(RxObservable *)observable;
+
+- (instancetype)initWithJavaUtilConcurrentAtomicAtomicReference:(JavaUtilConcurrentAtomicAtomicReference *)capture$0
+                                                         withId:(id)capture$1;
+
+@end
+
+J2OBJC_EMPTY_STATIC_INIT(RxObservableTests_$49)
+
+J2OBJC_FIELD_SETTER(RxObservableTests_$49, val$observableRef_, JavaUtilConcurrentAtomicAtomicReference *)
+J2OBJC_FIELD_SETTER(RxObservableTests_$49, val$expectedResult_, id)
+
+__attribute__((unused)) static void RxObservableTests_$49_initWithJavaUtilConcurrentAtomicAtomicReference_withId_(RxObservableTests_$49 *self, JavaUtilConcurrentAtomicAtomicReference *capture$0, id capture$1);
+
+__attribute__((unused)) static RxObservableTests_$49 *new_RxObservableTests_$49_initWithJavaUtilConcurrentAtomicAtomicReference_withId_(JavaUtilConcurrentAtomicAtomicReference *capture$0, id capture$1) NS_RETURNS_RETAINED;
+
+__attribute__((unused)) static RxObservableTests_$49 *create_RxObservableTests_$49_initWithJavaUtilConcurrentAtomicAtomicReference_withId_(JavaUtilConcurrentAtomicAtomicReference *capture$0, id capture$1);
 
 J2OBJC_INITIALIZED_DEFN(RxObservableTests)
 
@@ -148,28 +1410,689 @@ J2OBJC_INITIALIZED_DEFN(RxObservableTests)
   OrgMockitoMockitoAnnotations_initMocksWithId_(self);
 }
 
+- (void)fromArray {
+  IOSObjectArray *items = [IOSObjectArray arrayWithObjects:(id[]){ @"one", @"two", @"three" } count:3 type:NSString_class_()];
+  OrgJunitAssert_assertEqualsWithId_withId_(create_JavaLangInteger_initWithInt_(3), [((RxObservablesBlockingObservable *) nil_chk([((RxObservable *) nil_chk([((RxObservable *) nil_chk(RxObservable_fromWithNSObjectArray_(items))) count])) toBlocking])) single]);
+  OrgJunitAssert_assertEqualsWithId_withId_(@"two", [((RxObservablesBlockingObservable *) nil_chk([((RxObservable *) nil_chk([((RxObservable *) nil_chk([((RxObservable *) nil_chk(RxObservable_fromWithNSObjectArray_(items))) skipWithInt:1])) takeWithInt:1])) toBlocking])) single]);
+  OrgJunitAssert_assertEqualsWithId_withId_(@"three", [((RxObservablesBlockingObservable *) nil_chk([((RxObservable *) nil_chk([((RxObservable *) nil_chk(RxObservable_fromWithNSObjectArray_(items))) takeLastWithInt:1])) toBlocking])) single]);
+}
+
+- (void)fromIterable {
+  JavaUtilArrayList *items = create_JavaUtilArrayList_init();
+  [items addWithId:@"one"];
+  [items addWithId:@"two"];
+  [items addWithId:@"three"];
+  OrgJunitAssert_assertEqualsWithId_withId_(create_JavaLangInteger_initWithInt_(3), [((RxObservablesBlockingObservable *) nil_chk([((RxObservable *) nil_chk([((RxObservable *) nil_chk(RxObservable_fromWithJavaLangIterable_(items))) count])) toBlocking])) single]);
+  OrgJunitAssert_assertEqualsWithId_withId_(@"two", [((RxObservablesBlockingObservable *) nil_chk([((RxObservable *) nil_chk([((RxObservable *) nil_chk([((RxObservable *) nil_chk(RxObservable_fromWithJavaLangIterable_(items))) skipWithInt:1])) takeWithInt:1])) toBlocking])) single]);
+  OrgJunitAssert_assertEqualsWithId_withId_(@"three", [((RxObservablesBlockingObservable *) nil_chk([((RxObservable *) nil_chk([((RxObservable *) nil_chk(RxObservable_fromWithJavaLangIterable_(items))) takeLastWithInt:1])) toBlocking])) single]);
+}
+
+- (void)fromArityArgs3 {
+  RxObservable *items = RxObservable_justWithId_withId_withId_(@"one", @"two", @"three");
+  OrgJunitAssert_assertEqualsWithId_withId_(create_JavaLangInteger_initWithInt_(3), [((RxObservablesBlockingObservable *) nil_chk([((RxObservable *) nil_chk([((RxObservable *) nil_chk(items)) count])) toBlocking])) single]);
+  OrgJunitAssert_assertEqualsWithId_withId_(@"two", [((RxObservablesBlockingObservable *) nil_chk([((RxObservable *) nil_chk([((RxObservable *) nil_chk([items skipWithInt:1])) takeWithInt:1])) toBlocking])) single]);
+  OrgJunitAssert_assertEqualsWithId_withId_(@"three", [((RxObservablesBlockingObservable *) nil_chk([((RxObservable *) nil_chk([items takeLastWithInt:1])) toBlocking])) single]);
+}
+
+- (void)fromArityArgs1 {
+  RxObservable *items = RxObservable_justWithId_(@"one");
+  OrgJunitAssert_assertEqualsWithId_withId_(create_JavaLangInteger_initWithInt_(1), [((RxObservablesBlockingObservable *) nil_chk([((RxObservable *) nil_chk([((RxObservable *) nil_chk(items)) count])) toBlocking])) single]);
+  OrgJunitAssert_assertEqualsWithId_withId_(@"one", [((RxObservablesBlockingObservable *) nil_chk([((RxObservable *) nil_chk([items takeLastWithInt:1])) toBlocking])) single]);
+}
+
+- (void)testCreate {
+  RxObservable *observable = RxObservable_createWithRxObservable_OnSubscribe_(create_RxObservableTests_$2_init());
+  id<RxObserver> observer = OrgMockitoMockito_mockWithIOSClass_(RxObserver_class_());
+  [((RxObservable *) nil_chk(observable)) subscribeWithRxObserver:observer];
+  [((id<RxObserver>) nil_chk(OrgMockitoMockito_verifyWithId_withOrgMockitoVerificationVerificationMode_(observer, OrgMockitoMockito_timesWithInt_(1)))) onNextWithId:@"one"];
+  [((id<RxObserver>) nil_chk(OrgMockitoMockito_verifyWithId_withOrgMockitoVerificationVerificationMode_(observer, OrgMockitoMockito_timesWithInt_(1)))) onNextWithId:@"two"];
+  [((id<RxObserver>) nil_chk(OrgMockitoMockito_verifyWithId_withOrgMockitoVerificationVerificationMode_(observer, OrgMockitoMockito_timesWithInt_(1)))) onNextWithId:@"three"];
+  [((id<RxObserver>) nil_chk(OrgMockitoMockito_verifyWithId_withOrgMockitoVerificationVerificationMode_(observer, OrgMockitoMockito_never()))) onErrorWithNSException:OrgMockitoMatchers_anyWithIOSClass_(NSException_class_())];
+  [((id<RxObserver>) nil_chk(OrgMockitoMockito_verifyWithId_withOrgMockitoVerificationVerificationMode_(observer, OrgMockitoMockito_timesWithInt_(1)))) onCompleted];
+}
+
+- (void)testCountAFewItems {
+  RxObservable *observable = RxObservable_justWithId_withId_withId_withId_(@"a", @"b", @"c", @"d");
+  [((RxObservable *) nil_chk([((RxObservable *) nil_chk(observable)) count])) subscribeWithRxObserver:w_];
+  [((id<RxObserver>) nil_chk(OrgMockitoMockito_verifyWithId_withOrgMockitoVerificationVerificationMode_(w_, OrgMockitoMockito_timesWithInt_(1)))) onNextWithId:JavaLangInteger_valueOfWithInt_(OrgMockitoMatchers_anyInt())];
+  [((id<RxObserver>) nil_chk(OrgMockitoMockito_verifyWithId_(w_))) onNextWithId:JavaLangInteger_valueOfWithInt_(4)];
+  [((id<RxObserver>) nil_chk(OrgMockitoMockito_verifyWithId_withOrgMockitoVerificationVerificationMode_(w_, OrgMockitoMockito_never()))) onErrorWithNSException:OrgMockitoMatchers_anyWithIOSClass_(NSException_class_())];
+  [((id<RxObserver>) nil_chk(OrgMockitoMockito_verifyWithId_withOrgMockitoVerificationVerificationMode_(w_, OrgMockitoMockito_timesWithInt_(1)))) onCompleted];
+}
+
+- (void)testCountZeroItems {
+  RxObservable *observable = RxObservable_empty();
+  [((RxObservable *) nil_chk([((RxObservable *) nil_chk(observable)) count])) subscribeWithRxObserver:w_];
+  [((id<RxObserver>) nil_chk(OrgMockitoMockito_verifyWithId_withOrgMockitoVerificationVerificationMode_(w_, OrgMockitoMockito_timesWithInt_(1)))) onNextWithId:JavaLangInteger_valueOfWithInt_(OrgMockitoMatchers_anyInt())];
+  [((id<RxObserver>) nil_chk(OrgMockitoMockito_verifyWithId_(w_))) onNextWithId:JavaLangInteger_valueOfWithInt_(0)];
+  [((id<RxObserver>) nil_chk(OrgMockitoMockito_verifyWithId_withOrgMockitoVerificationVerificationMode_(w_, OrgMockitoMockito_never()))) onErrorWithNSException:OrgMockitoMatchers_anyWithIOSClass_(NSException_class_())];
+  [((id<RxObserver>) nil_chk(OrgMockitoMockito_verifyWithId_withOrgMockitoVerificationVerificationMode_(w_, OrgMockitoMockito_timesWithInt_(1)))) onCompleted];
+}
+
+- (void)testCountError {
+  RxObservable *o = RxObservable_createWithRxObservable_OnSubscribe_(create_RxObservableTests_$3_init());
+  [((RxObservable *) nil_chk([((RxObservable *) nil_chk(o)) count])) subscribeWithRxObserver:w_];
+  [((id<RxObserver>) nil_chk(OrgMockitoMockito_verifyWithId_withOrgMockitoVerificationVerificationMode_(w_, OrgMockitoMockito_never()))) onNextWithId:JavaLangInteger_valueOfWithInt_(OrgMockitoMatchers_anyInt())];
+  [((id<RxObserver>) nil_chk(OrgMockitoMockito_verifyWithId_withOrgMockitoVerificationVerificationMode_(w_, OrgMockitoMockito_never()))) onCompleted];
+  [((id<RxObserver>) nil_chk(OrgMockitoMockito_verifyWithId_withOrgMockitoVerificationVerificationMode_(w_, OrgMockitoMockito_timesWithInt_(1)))) onErrorWithNSException:OrgMockitoMatchers_anyWithIOSClass_(JavaLangRuntimeException_class_())];
+}
+
+- (void)testTakeFirstWithPredicateOfSome {
+  RxObservable *observable = RxObservable_justWithId_withId_withId_withId_withId_withId_(JavaLangInteger_valueOfWithInt_(1), JavaLangInteger_valueOfWithInt_(3), JavaLangInteger_valueOfWithInt_(5), JavaLangInteger_valueOfWithInt_(4), JavaLangInteger_valueOfWithInt_(6), JavaLangInteger_valueOfWithInt_(3));
+  [((RxObservable *) nil_chk([((RxObservable *) nil_chk(observable)) takeFirstWithRxFunctionsFunc1:RxObservableTests_IS_EVEN])) subscribeWithRxObserver:w_];
+  [((id<RxObserver>) nil_chk(OrgMockitoMockito_verifyWithId_withOrgMockitoVerificationVerificationMode_(w_, OrgMockitoMockito_timesWithInt_(1)))) onNextWithId:JavaLangInteger_valueOfWithInt_(OrgMockitoMatchers_anyInt())];
+  [((id<RxObserver>) nil_chk(OrgMockitoMockito_verifyWithId_(w_))) onNextWithId:JavaLangInteger_valueOfWithInt_(4)];
+  [((id<RxObserver>) nil_chk(OrgMockitoMockito_verifyWithId_withOrgMockitoVerificationVerificationMode_(w_, OrgMockitoMockito_timesWithInt_(1)))) onCompleted];
+  [((id<RxObserver>) nil_chk(OrgMockitoMockito_verifyWithId_withOrgMockitoVerificationVerificationMode_(w_, OrgMockitoMockito_never()))) onErrorWithNSException:OrgMockitoMatchers_anyWithIOSClass_(NSException_class_())];
+}
+
+- (void)testTakeFirstWithPredicateOfNoneMatchingThePredicate {
+  RxObservable *observable = RxObservable_justWithId_withId_withId_withId_withId_withId_withId_withId_withId_(JavaLangInteger_valueOfWithInt_(1), JavaLangInteger_valueOfWithInt_(3), JavaLangInteger_valueOfWithInt_(5), JavaLangInteger_valueOfWithInt_(7), JavaLangInteger_valueOfWithInt_(9), JavaLangInteger_valueOfWithInt_(7), JavaLangInteger_valueOfWithInt_(5), JavaLangInteger_valueOfWithInt_(3), JavaLangInteger_valueOfWithInt_(1));
+  [((RxObservable *) nil_chk([((RxObservable *) nil_chk(observable)) takeFirstWithRxFunctionsFunc1:RxObservableTests_IS_EVEN])) subscribeWithRxObserver:w_];
+  [((id<RxObserver>) nil_chk(OrgMockitoMockito_verifyWithId_withOrgMockitoVerificationVerificationMode_(w_, OrgMockitoMockito_never()))) onNextWithId:JavaLangInteger_valueOfWithInt_(OrgMockitoMatchers_anyInt())];
+  [((id<RxObserver>) nil_chk(OrgMockitoMockito_verifyWithId_withOrgMockitoVerificationVerificationMode_(w_, OrgMockitoMockito_timesWithInt_(1)))) onCompleted];
+  [((id<RxObserver>) nil_chk(OrgMockitoMockito_verifyWithId_withOrgMockitoVerificationVerificationMode_(w_, OrgMockitoMockito_never()))) onErrorWithNSException:OrgMockitoMatchers_anyWithIOSClass_(NSException_class_())];
+}
+
+- (void)testTakeFirstOfSome {
+  RxObservable *observable = RxObservable_justWithId_withId_withId_(JavaLangInteger_valueOfWithInt_(1), JavaLangInteger_valueOfWithInt_(2), JavaLangInteger_valueOfWithInt_(3));
+  [((RxObservable *) nil_chk([((RxObservable *) nil_chk(observable)) takeWithInt:1])) subscribeWithRxObserver:w_];
+  [((id<RxObserver>) nil_chk(OrgMockitoMockito_verifyWithId_withOrgMockitoVerificationVerificationMode_(w_, OrgMockitoMockito_timesWithInt_(1)))) onNextWithId:JavaLangInteger_valueOfWithInt_(OrgMockitoMatchers_anyInt())];
+  [((id<RxObserver>) nil_chk(OrgMockitoMockito_verifyWithId_(w_))) onNextWithId:JavaLangInteger_valueOfWithInt_(1)];
+  [((id<RxObserver>) nil_chk(OrgMockitoMockito_verifyWithId_withOrgMockitoVerificationVerificationMode_(w_, OrgMockitoMockito_timesWithInt_(1)))) onCompleted];
+  [((id<RxObserver>) nil_chk(OrgMockitoMockito_verifyWithId_withOrgMockitoVerificationVerificationMode_(w_, OrgMockitoMockito_never()))) onErrorWithNSException:OrgMockitoMatchers_anyWithIOSClass_(NSException_class_())];
+}
+
+- (void)testTakeFirstOfNone {
+  RxObservable *observable = RxObservable_empty();
+  [((RxObservable *) nil_chk([((RxObservable *) nil_chk(observable)) takeWithInt:1])) subscribeWithRxObserver:w_];
+  [((id<RxObserver>) nil_chk(OrgMockitoMockito_verifyWithId_withOrgMockitoVerificationVerificationMode_(w_, OrgMockitoMockito_never()))) onNextWithId:JavaLangInteger_valueOfWithInt_(OrgMockitoMatchers_anyInt())];
+  [((id<RxObserver>) nil_chk(OrgMockitoMockito_verifyWithId_withOrgMockitoVerificationVerificationMode_(w_, OrgMockitoMockito_timesWithInt_(1)))) onCompleted];
+  [((id<RxObserver>) nil_chk(OrgMockitoMockito_verifyWithId_withOrgMockitoVerificationVerificationMode_(w_, OrgMockitoMockito_never()))) onErrorWithNSException:OrgMockitoMatchers_anyWithIOSClass_(NSException_class_())];
+}
+
+- (void)testFirstOfNone {
+  RxObservable *observable = RxObservable_empty();
+  [((RxObservable *) nil_chk([((RxObservable *) nil_chk(observable)) first])) subscribeWithRxObserver:w_];
+  [((id<RxObserver>) nil_chk(OrgMockitoMockito_verifyWithId_withOrgMockitoVerificationVerificationMode_(w_, OrgMockitoMockito_never()))) onNextWithId:JavaLangInteger_valueOfWithInt_(OrgMockitoMatchers_anyInt())];
+  [((id<RxObserver>) nil_chk(OrgMockitoMockito_verifyWithId_withOrgMockitoVerificationVerificationMode_(w_, OrgMockitoMockito_never()))) onCompleted];
+  [((id<RxObserver>) nil_chk(OrgMockitoMockito_verifyWithId_withOrgMockitoVerificationVerificationMode_(w_, OrgMockitoMockito_timesWithInt_(1)))) onErrorWithNSException:OrgMockitoMatchers_isAWithIOSClass_(JavaUtilNoSuchElementException_class_())];
+}
+
+- (void)testFirstWithPredicateOfNoneMatchingThePredicate {
+  RxObservable *observable = RxObservable_justWithId_withId_withId_withId_withId_withId_withId_withId_withId_(JavaLangInteger_valueOfWithInt_(1), JavaLangInteger_valueOfWithInt_(3), JavaLangInteger_valueOfWithInt_(5), JavaLangInteger_valueOfWithInt_(7), JavaLangInteger_valueOfWithInt_(9), JavaLangInteger_valueOfWithInt_(7), JavaLangInteger_valueOfWithInt_(5), JavaLangInteger_valueOfWithInt_(3), JavaLangInteger_valueOfWithInt_(1));
+  [((RxObservable *) nil_chk([((RxObservable *) nil_chk(observable)) firstWithRxFunctionsFunc1:RxObservableTests_IS_EVEN])) subscribeWithRxObserver:w_];
+  [((id<RxObserver>) nil_chk(OrgMockitoMockito_verifyWithId_withOrgMockitoVerificationVerificationMode_(w_, OrgMockitoMockito_never()))) onNextWithId:JavaLangInteger_valueOfWithInt_(OrgMockitoMatchers_anyInt())];
+  [((id<RxObserver>) nil_chk(OrgMockitoMockito_verifyWithId_withOrgMockitoVerificationVerificationMode_(w_, OrgMockitoMockito_never()))) onCompleted];
+  [((id<RxObserver>) nil_chk(OrgMockitoMockito_verifyWithId_withOrgMockitoVerificationVerificationMode_(w_, OrgMockitoMockito_timesWithInt_(1)))) onErrorWithNSException:OrgMockitoMatchers_isAWithIOSClass_(JavaUtilNoSuchElementException_class_())];
+}
+
+- (void)testReduce {
+  RxObservable *observable = RxObservable_justWithId_withId_withId_withId_(JavaLangInteger_valueOfWithInt_(1), JavaLangInteger_valueOfWithInt_(2), JavaLangInteger_valueOfWithInt_(3), JavaLangInteger_valueOfWithInt_(4));
+  [((RxObservable *) nil_chk([((RxObservable *) nil_chk(observable)) reduceWithRxFunctionsFunc2:create_RxObservableTests_$4_init()])) subscribeWithRxObserver:w_];
+  [((id<RxObserver>) nil_chk(OrgMockitoMockito_verifyWithId_withOrgMockitoVerificationVerificationMode_(w_, OrgMockitoMockito_timesWithInt_(1)))) onNextWithId:JavaLangInteger_valueOfWithInt_(OrgMockitoMatchers_anyInt())];
+  [((id<RxObserver>) nil_chk(OrgMockitoMockito_verifyWithId_(w_))) onNextWithId:JavaLangInteger_valueOfWithInt_(10)];
+}
+
+- (void)testReduceWithEmptyObservable {
+  RxObservable *observable = RxObservable_rangeWithInt_withInt_(1, 0);
+  [((RxObservablesBlockingObservable *) nil_chk([((RxObservable *) nil_chk([((RxObservable *) nil_chk(observable)) reduceWithRxFunctionsFunc2:create_RxObservableTests_$5_init()])) toBlocking])) forEachWithRxFunctionsAction1:create_RxObservableTests_$6_init()];
+  OrgJunitAssert_failWithNSString_(@"Expected an exception to be thrown");
+}
+
+- (void)testReduceWithEmptyObservableAndSeed {
+  RxObservable *observable = RxObservable_rangeWithInt_withInt_(1, 0);
+  jint value = [((JavaLangInteger *) nil_chk([((RxObservablesBlockingObservable *) nil_chk([((RxObservable *) nil_chk([((RxObservable *) nil_chk(observable)) reduceWithId:JavaLangInteger_valueOfWithInt_(1) withRxFunctionsFunc2:create_RxObservableTests_$7_init()])) toBlocking])) last])) intValue];
+  OrgJunitAssert_assertEqualsWithLong_withLong_(1, value);
+}
+
+- (void)testReduceWithInitialValue {
+  RxObservable *observable = RxObservable_justWithId_withId_withId_withId_(JavaLangInteger_valueOfWithInt_(1), JavaLangInteger_valueOfWithInt_(2), JavaLangInteger_valueOfWithInt_(3), JavaLangInteger_valueOfWithInt_(4));
+  [((RxObservable *) nil_chk([((RxObservable *) nil_chk(observable)) reduceWithId:JavaLangInteger_valueOfWithInt_(50) withRxFunctionsFunc2:create_RxObservableTests_$8_init()])) subscribeWithRxObserver:w_];
+  [((id<RxObserver>) nil_chk(OrgMockitoMockito_verifyWithId_withOrgMockitoVerificationVerificationMode_(w_, OrgMockitoMockito_timesWithInt_(1)))) onNextWithId:JavaLangInteger_valueOfWithInt_(OrgMockitoMatchers_anyInt())];
+  [((id<RxObserver>) nil_chk(OrgMockitoMockito_verifyWithId_(w_))) onNextWithId:JavaLangInteger_valueOfWithInt_(60)];
+}
+
+- (void)testOnSubscribeFails {
+  id<RxObserver> observer = OrgMockitoMockito_mockWithIOSClass_(RxObserver_class_());
+  JavaLangRuntimeException *re = create_JavaLangRuntimeException_initWithNSString_(@"bad impl");
+  RxObservable *o = RxObservable_createWithRxObservable_OnSubscribe_(create_RxObservableTests_$9_initWithJavaLangRuntimeException_(re));
+  [((RxObservable *) nil_chk(o)) subscribeWithRxObserver:observer];
+  [((id<RxObserver>) nil_chk(OrgMockitoMockito_verifyWithId_withOrgMockitoVerificationVerificationMode_(observer, OrgMockitoMockito_timesWithInt_(0)))) onNextWithId:OrgMockitoMatchers_anyString()];
+  [((id<RxObserver>) nil_chk(OrgMockitoMockito_verifyWithId_withOrgMockitoVerificationVerificationMode_(observer, OrgMockitoMockito_timesWithInt_(0)))) onCompleted];
+  [((id<RxObserver>) nil_chk(OrgMockitoMockito_verifyWithId_withOrgMockitoVerificationVerificationMode_(observer, OrgMockitoMockito_timesWithInt_(1)))) onErrorWithNSException:re];
+}
+
+- (void)testMaterializeDematerializeChaining {
+  RxObservable *obs = RxObservable_justWithId_(JavaLangInteger_valueOfWithInt_(1));
+  RxObservable *chained = [((RxObservable *) nil_chk([((RxObservable *) nil_chk(obs)) materialize])) dematerialize];
+  id<RxObserver> observer = OrgMockitoMockito_mockWithIOSClass_(RxObserver_class_());
+  [((RxObservable *) nil_chk(chained)) subscribeWithRxObserver:observer];
+  [((id<RxObserver>) nil_chk(OrgMockitoMockito_verifyWithId_withOrgMockitoVerificationVerificationMode_(observer, OrgMockitoMockito_timesWithInt_(1)))) onNextWithId:JavaLangInteger_valueOfWithInt_(1)];
+  [((id<RxObserver>) nil_chk(OrgMockitoMockito_verifyWithId_withOrgMockitoVerificationVerificationMode_(observer, OrgMockitoMockito_timesWithInt_(1)))) onCompleted];
+  [((id<RxObserver>) nil_chk(OrgMockitoMockito_verifyWithId_withOrgMockitoVerificationVerificationMode_(observer, OrgMockitoMockito_timesWithInt_(0)))) onErrorWithNSException:OrgMockitoMatchers_anyWithIOSClass_(NSException_class_())];
+}
+
+- (void)testCustomObservableWithErrorInObserverAsynchronous {
+  JavaUtilConcurrentCountDownLatch *latch = create_JavaUtilConcurrentCountDownLatch_initWithInt_(1);
+  JavaUtilConcurrentAtomicAtomicInteger *count = create_JavaUtilConcurrentAtomicAtomicInteger_init();
+  JavaUtilConcurrentAtomicAtomicReference *error = create_JavaUtilConcurrentAtomicAtomicReference_init();
+  [((RxObservable *) nil_chk(RxObservable_createWithRxObservable_OnSubscribe_(create_RxObservableTests_$10_initWithJavaUtilConcurrentCountDownLatch_(latch)))) subscribeWithRxSubscriber:create_RxObservableTests_$11_initWithJavaUtilConcurrentAtomicAtomicReference_withJavaUtilConcurrentAtomicAtomicInteger_(error, count)];
+  [latch await];
+  OrgJunitAssert_assertEqualsWithLong_withLong_(2, [count get]);
+  OrgJunitAssert_assertNotNullWithId_([error get]);
+  if (!([[error get] isKindOfClass:[JavaLangNumberFormatException class]])) {
+    OrgJunitAssert_failWithNSString_(@"It should be a NumberFormatException");
+  }
+}
+
+- (void)testCustomObservableWithErrorInObserverSynchronous {
+  JavaUtilConcurrentAtomicAtomicInteger *count = create_JavaUtilConcurrentAtomicAtomicInteger_init();
+  JavaUtilConcurrentAtomicAtomicReference *error = create_JavaUtilConcurrentAtomicAtomicReference_init();
+  [((RxObservable *) nil_chk(RxObservable_createWithRxObservable_OnSubscribe_(create_RxObservableTests_$12_init()))) subscribeWithRxSubscriber:create_RxObservableTests_$13_initWithJavaUtilConcurrentAtomicAtomicReference_withJavaUtilConcurrentAtomicAtomicInteger_(error, count)];
+  OrgJunitAssert_assertEqualsWithLong_withLong_(2, [count get]);
+  OrgJunitAssert_assertNotNullWithId_([error get]);
+  if (!([[error get] isKindOfClass:[JavaLangNumberFormatException class]])) {
+    OrgJunitAssert_failWithNSString_(@"It should be a NumberFormatException");
+  }
+}
+
+- (void)testCustomObservableWithErrorInObservableSynchronous {
+  JavaUtilConcurrentAtomicAtomicInteger *count = create_JavaUtilConcurrentAtomicAtomicInteger_init();
+  JavaUtilConcurrentAtomicAtomicReference *error = create_JavaUtilConcurrentAtomicAtomicReference_init();
+  [((RxObservable *) nil_chk(RxObservable_createWithRxObservable_OnSubscribe_(create_RxObservableTests_$14_init()))) subscribeWithRxSubscriber:create_RxObservableTests_$15_initWithJavaUtilConcurrentAtomicAtomicReference_withJavaUtilConcurrentAtomicAtomicInteger_(error, count)];
+  OrgJunitAssert_assertEqualsWithLong_withLong_(2, [count get]);
+  OrgJunitAssert_assertNotNullWithId_([error get]);
+  if (!([[error get] isKindOfClass:[JavaLangNumberFormatException class]])) {
+    OrgJunitAssert_failWithNSString_(@"It should be a NumberFormatException");
+  }
+}
+
+- (void)testPublishLast {
+  JavaUtilConcurrentAtomicAtomicInteger *count = create_JavaUtilConcurrentAtomicAtomicInteger_init();
+  RxObservablesConnectableObservable *connectable = [((RxObservable *) nil_chk([((RxObservable *) nil_chk(RxObservable_createWithRxObservable_OnSubscribe_(create_RxObservableTests_$16_initWithJavaUtilConcurrentAtomicAtomicInteger_(count)))) takeLastWithInt:1])) publish];
+  JavaUtilConcurrentCountDownLatch *latch = create_JavaUtilConcurrentCountDownLatch_initWithInt_(2);
+  id<RxFunctionsAction1> subscriptionAction = create_RxObservableTests_$17_initWithJavaUtilConcurrentCountDownLatch_(latch);
+  [((RxObservablesConnectableObservable *) nil_chk(connectable)) subscribeWithRxFunctionsAction1:subscriptionAction];
+  [connectable subscribeWithRxFunctionsAction1:subscriptionAction];
+  id<RxSubscription> subscription = [connectable connect];
+  OrgJunitAssert_assertTrueWithBoolean_([latch awaitWithLong:1000 withJavaUtilConcurrentTimeUnit:JreLoadEnum(JavaUtilConcurrentTimeUnit, MILLISECONDS)]);
+  OrgJunitAssert_assertEqualsWithLong_withLong_(1, [count get]);
+  [((id<RxSubscription>) nil_chk(subscription)) unsubscribe];
+}
+
 - (void)testReplay {
   JavaUtilConcurrentAtomicAtomicInteger *counter = create_JavaUtilConcurrentAtomicAtomicInteger_init();
-  [((JavaIoPrintStream *) nil_chk(JreLoadStatic(JavaLangSystem, out))) printlnWithNSString:@"a1"];
-  RxObservablesConnectableObservable *o = [((RxObservable *) nil_chk(RxObservable_createWithRxObservable_OnSubscribe_(create_RxObservableTests_$2_initWithJavaUtilConcurrentAtomicAtomicInteger_(counter)))) replay];
-  [JreLoadStatic(JavaLangSystem, out) printlnWithNSString:@"a2"];
+  RxObservablesConnectableObservable *o = [((RxObservable *) nil_chk(RxObservable_createWithRxObservable_OnSubscribe_(create_RxObservableTests_$18_initWithJavaUtilConcurrentAtomicAtomicInteger_(counter)))) replay];
   id<RxSubscription> s = [((RxObservablesConnectableObservable *) nil_chk(o)) connect];
-  [JreLoadStatic(JavaLangSystem, out) printlnWithNSString:@"a3"];
   @try {
-    JavaUtilConcurrentCountDownLatch *latch = create_JavaUtilConcurrentCountDownLatch_initWithInt_(1);
-    [JreLoadStatic(JavaLangSystem, out) printlnWithNSString:@"a4"];
-    [o subscribeWithRxFunctionsAction1:create_RxObservableTests_$3_initWithJavaUtilConcurrentCountDownLatch_(latch)];
-    [JreLoadStatic(JavaLangSystem, out) printlnWithNSString:@"a5"];
+    JavaUtilConcurrentCountDownLatch *latch = create_JavaUtilConcurrentCountDownLatch_initWithInt_(2);
+    [o subscribeWithRxFunctionsAction1:create_RxObservableTests_$19_initWithJavaUtilConcurrentCountDownLatch_(latch)];
+    [o subscribeWithRxFunctionsAction1:create_RxObservableTests_$20_initWithJavaUtilConcurrentCountDownLatch_(latch)];
     if (![latch awaitWithLong:1000 withJavaUtilConcurrentTimeUnit:JreLoadEnum(JavaUtilConcurrentTimeUnit, MILLISECONDS)]) {
       OrgJunitAssert_failWithNSString_(@"subscriptions did not receive values");
     }
-    [JreLoadStatic(JavaLangSystem, out) printlnWithNSString:@"a7"];
     OrgJunitAssert_assertEqualsWithLong_withLong_(1, [counter get]);
-    [JreLoadStatic(JavaLangSystem, out) printlnWithNSString:@"a8"];
   }
   @finally {
     [((id<RxSubscription>) nil_chk(s)) unsubscribe];
   }
+}
+
+- (void)testCache {
+  JavaUtilConcurrentAtomicAtomicInteger *counter = create_JavaUtilConcurrentAtomicAtomicInteger_init();
+  RxObservable *o = [((RxObservable *) nil_chk(RxObservable_createWithRxObservable_OnSubscribe_(create_RxObservableTests_$21_initWithJavaUtilConcurrentAtomicAtomicInteger_(counter)))) cache];
+  JavaUtilConcurrentCountDownLatch *latch = create_JavaUtilConcurrentCountDownLatch_initWithInt_(2);
+  [((RxObservable *) nil_chk(o)) subscribeWithRxFunctionsAction1:create_RxObservableTests_$22_initWithJavaUtilConcurrentCountDownLatch_(latch)];
+  [o subscribeWithRxFunctionsAction1:create_RxObservableTests_$23_initWithJavaUtilConcurrentCountDownLatch_(latch)];
+  if (![latch awaitWithLong:1000 withJavaUtilConcurrentTimeUnit:JreLoadEnum(JavaUtilConcurrentTimeUnit, MILLISECONDS)]) {
+    OrgJunitAssert_failWithNSString_(@"subscriptions did not receive values");
+  }
+  OrgJunitAssert_assertEqualsWithLong_withLong_(1, [counter get]);
+}
+
+- (void)testCacheWithCapacity {
+  JavaUtilConcurrentAtomicAtomicInteger *counter = create_JavaUtilConcurrentAtomicAtomicInteger_init();
+  RxObservable *o = [((RxObservable *) nil_chk(RxObservable_createWithRxObservable_OnSubscribe_(create_RxObservableTests_$24_initWithJavaUtilConcurrentAtomicAtomicInteger_(counter)))) cacheWithInitialCapacityWithInt:1];
+  JavaUtilConcurrentCountDownLatch *latch = create_JavaUtilConcurrentCountDownLatch_initWithInt_(2);
+  [((RxObservable *) nil_chk(o)) subscribeWithRxFunctionsAction1:create_RxObservableTests_$25_initWithJavaUtilConcurrentCountDownLatch_(latch)];
+  [o subscribeWithRxFunctionsAction1:create_RxObservableTests_$26_initWithJavaUtilConcurrentCountDownLatch_(latch)];
+  if (![latch awaitWithLong:1000 withJavaUtilConcurrentTimeUnit:JreLoadEnum(JavaUtilConcurrentTimeUnit, MILLISECONDS)]) {
+    OrgJunitAssert_failWithNSString_(@"subscriptions did not receive values");
+  }
+  OrgJunitAssert_assertEqualsWithLong_withLong_(1, [counter get]);
+}
+
+- (void)testErrorThrownWithoutErrorHandlerSynchronous {
+  @try {
+    [((RxObservable *) nil_chk(RxObservable_errorWithNSException_(create_JavaLangRuntimeException_initWithNSString_(@"failure")))) subscribeWithRxFunctionsAction1:create_RxObservableTests_$27_init()];
+    OrgJunitAssert_failWithNSString_(@"expected exception");
+  }
+  @catch (NSException *e) {
+    OrgJunitAssert_assertEqualsWithId_withId_(@"failure", [((NSException *) nil_chk(e)) getMessage]);
+  }
+}
+
+- (void)testErrorThrownWithoutErrorHandlerAsynchronous {
+  JavaUtilConcurrentCountDownLatch *latch = create_JavaUtilConcurrentCountDownLatch_initWithInt_(1);
+  JavaUtilConcurrentAtomicAtomicReference *exception = create_JavaUtilConcurrentAtomicAtomicReference_init();
+  [((RxObservable *) nil_chk(RxObservable_createWithRxObservable_OnSubscribe_(create_RxObservableTests_$28_initWithJavaUtilConcurrentAtomicAtomicReference_withJavaUtilConcurrentCountDownLatch_(exception, latch)))) subscribeWithRxFunctionsAction1:create_RxObservableTests_$29_init()];
+  [latch awaitWithLong:3000 withJavaUtilConcurrentTimeUnit:JreLoadEnum(JavaUtilConcurrentTimeUnit, MILLISECONDS)];
+  OrgJunitAssert_assertNotNullWithId_([exception get]);
+  OrgJunitAssert_assertEqualsWithId_withId_(@"failure", [((NSException *) nil_chk([exception get])) getMessage]);
+}
+
+- (void)testTakeWithErrorInObserver {
+  JavaUtilConcurrentAtomicAtomicInteger *count = create_JavaUtilConcurrentAtomicAtomicInteger_init();
+  JavaUtilConcurrentAtomicAtomicReference *error = create_JavaUtilConcurrentAtomicAtomicReference_init();
+  [((RxObservable *) nil_chk([((RxObservable *) nil_chk(RxObservable_justWithId_withId_withId_withId_(@"1", @"2", @"three", @"4"))) takeWithInt:3])) subscribeWithRxSubscriber:create_RxObservableTests_$30_initWithJavaUtilConcurrentAtomicAtomicReference_withJavaUtilConcurrentAtomicAtomicInteger_(error, count)];
+  OrgJunitAssert_assertEqualsWithLong_withLong_(2, [count get]);
+  OrgJunitAssert_assertNotNullWithId_([error get]);
+  if (!([[error get] isKindOfClass:[JavaLangNumberFormatException class]])) {
+    OrgJunitAssert_failWithNSString_(@"It should be a NumberFormatException");
+  }
+}
+
+- (void)testOfType {
+  RxObservable *observable = [((RxObservable *) nil_chk(RxObservable_justWithId_withId_withId_withId_(JavaLangInteger_valueOfWithInt_(1), @"abc", JavaLangBoolean_valueOfWithBoolean_(false), JavaLangLong_valueOfWithLong_(2LL)))) ofTypeWithIOSClass:NSString_class_()];
+  id<RxObserver> observer = OrgMockitoMockito_mockWithIOSClass_(RxObserver_class_());
+  [((RxObservable *) nil_chk(observable)) subscribeWithRxObserver:observer];
+  [((id<RxObserver>) nil_chk(OrgMockitoMockito_verifyWithId_withOrgMockitoVerificationVerificationMode_(observer, OrgMockitoMockito_never()))) onNextWithId:JavaLangInteger_valueOfWithInt_(1)];
+  [((id<RxObserver>) nil_chk(OrgMockitoMockito_verifyWithId_withOrgMockitoVerificationVerificationMode_(observer, OrgMockitoMockito_timesWithInt_(1)))) onNextWithId:@"abc"];
+  [((id<RxObserver>) nil_chk(OrgMockitoMockito_verifyWithId_withOrgMockitoVerificationVerificationMode_(observer, OrgMockitoMockito_never()))) onNextWithId:JavaLangBoolean_valueOfWithBoolean_(false)];
+  [((id<RxObserver>) nil_chk(OrgMockitoMockito_verifyWithId_withOrgMockitoVerificationVerificationMode_(observer, OrgMockitoMockito_never()))) onNextWithId:JavaLangLong_valueOfWithLong_(2LL)];
+  [((id<RxObserver>) nil_chk(OrgMockitoMockito_verifyWithId_withOrgMockitoVerificationVerificationMode_(observer, OrgMockitoMockito_never()))) onErrorWithNSException:OrgMockitoMatchers_anyWithIOSClass_(NSException_class_())];
+  [((id<RxObserver>) nil_chk(OrgMockitoMockito_verifyWithId_withOrgMockitoVerificationVerificationMode_(observer, OrgMockitoMockito_timesWithInt_(1)))) onCompleted];
+}
+
+- (void)testOfTypeWithPolymorphism {
+  JavaUtilArrayList *l1 = create_JavaUtilArrayList_init();
+  [l1 addWithId:JavaLangInteger_valueOfWithInt_(1)];
+  JavaUtilLinkedList *l2 = create_JavaUtilLinkedList_init();
+  [l2 addWithId:JavaLangInteger_valueOfWithInt_(2)];
+  RxObservable *observable = [((RxObservable *) nil_chk(RxObservable_justWithId_withId_withId_(l1, l2, @"123"))) ofTypeWithIOSClass:JavaUtilList_class_()];
+  id<RxObserver> observer = OrgMockitoMockito_mockWithIOSClass_(RxObserver_class_());
+  [((RxObservable *) nil_chk(observable)) subscribeWithRxObserver:observer];
+  [((id<RxObserver>) nil_chk(OrgMockitoMockito_verifyWithId_withOrgMockitoVerificationVerificationMode_(observer, OrgMockitoMockito_timesWithInt_(1)))) onNextWithId:l1];
+  [((id<RxObserver>) nil_chk(OrgMockitoMockito_verifyWithId_withOrgMockitoVerificationVerificationMode_(observer, OrgMockitoMockito_timesWithInt_(1)))) onNextWithId:l2];
+  [((id<RxObserver>) nil_chk(OrgMockitoMockito_verifyWithId_withOrgMockitoVerificationVerificationMode_(observer, OrgMockitoMockito_never()))) onNextWithId:@"123"];
+  [((id<RxObserver>) nil_chk(OrgMockitoMockito_verifyWithId_withOrgMockitoVerificationVerificationMode_(observer, OrgMockitoMockito_never()))) onErrorWithNSException:OrgMockitoMatchers_anyWithIOSClass_(NSException_class_())];
+  [((id<RxObserver>) nil_chk(OrgMockitoMockito_verifyWithId_withOrgMockitoVerificationVerificationMode_(observer, OrgMockitoMockito_timesWithInt_(1)))) onCompleted];
+}
+
+- (void)testContains {
+  RxObservable *observable = [((RxObservable *) nil_chk(RxObservable_justWithId_withId_withId_(@"a", @"b", nil))) containsWithId:@"b"];
+  id<RxObserver> observer = OrgMockitoMockito_mockWithIOSClass_(RxObserver_class_());
+  [((RxObservable *) nil_chk(observable)) subscribeWithRxObserver:observer];
+  [((id<RxObserver>) nil_chk(OrgMockitoMockito_verifyWithId_withOrgMockitoVerificationVerificationMode_(observer, OrgMockitoMockito_timesWithInt_(1)))) onNextWithId:JavaLangBoolean_valueOfWithBoolean_(true)];
+  [((id<RxObserver>) nil_chk(OrgMockitoMockito_verifyWithId_withOrgMockitoVerificationVerificationMode_(observer, OrgMockitoMockito_never()))) onNextWithId:JavaLangBoolean_valueOfWithBoolean_(false)];
+  [((id<RxObserver>) nil_chk(OrgMockitoMockito_verifyWithId_withOrgMockitoVerificationVerificationMode_(observer, OrgMockitoMockito_never()))) onErrorWithNSException:OrgMockitoMatchers_anyWithIOSClass_(NSException_class_())];
+  [((id<RxObserver>) nil_chk(OrgMockitoMockito_verifyWithId_withOrgMockitoVerificationVerificationMode_(observer, OrgMockitoMockito_timesWithInt_(1)))) onCompleted];
+}
+
+- (void)testContainsWithInexistence {
+  RxObservable *observable = [((RxObservable *) nil_chk(RxObservable_justWithId_withId_withId_(@"a", @"b", nil))) containsWithId:@"c"];
+  id<RxObserver> observer = OrgMockitoMockito_mockWithIOSClass_(RxObserver_class_());
+  [((RxObservable *) nil_chk(observable)) subscribeWithRxObserver:observer];
+  [((id<RxObserver>) nil_chk(OrgMockitoMockito_verifyWithId_withOrgMockitoVerificationVerificationMode_(observer, OrgMockitoMockito_timesWithInt_(1)))) onNextWithId:JavaLangBoolean_valueOfWithBoolean_(false)];
+  [((id<RxObserver>) nil_chk(OrgMockitoMockito_verifyWithId_withOrgMockitoVerificationVerificationMode_(observer, OrgMockitoMockito_never()))) onNextWithId:JavaLangBoolean_valueOfWithBoolean_(true)];
+  [((id<RxObserver>) nil_chk(OrgMockitoMockito_verifyWithId_withOrgMockitoVerificationVerificationMode_(observer, OrgMockitoMockito_never()))) onErrorWithNSException:OrgMockitoMatchers_anyWithIOSClass_(NSException_class_())];
+  [((id<RxObserver>) nil_chk(OrgMockitoMockito_verifyWithId_withOrgMockitoVerificationVerificationMode_(observer, OrgMockitoMockito_timesWithInt_(1)))) onCompleted];
+}
+
+- (void)testContainsWithNull {
+  RxObservable *observable = [((RxObservable *) nil_chk(RxObservable_justWithId_withId_withId_(@"a", @"b", nil))) containsWithId:nil];
+  id<RxObserver> observer = OrgMockitoMockito_mockWithIOSClass_(RxObserver_class_());
+  [((RxObservable *) nil_chk(observable)) subscribeWithRxObserver:observer];
+  [((id<RxObserver>) nil_chk(OrgMockitoMockito_verifyWithId_withOrgMockitoVerificationVerificationMode_(observer, OrgMockitoMockito_timesWithInt_(1)))) onNextWithId:JavaLangBoolean_valueOfWithBoolean_(true)];
+  [((id<RxObserver>) nil_chk(OrgMockitoMockito_verifyWithId_withOrgMockitoVerificationVerificationMode_(observer, OrgMockitoMockito_never()))) onNextWithId:JavaLangBoolean_valueOfWithBoolean_(false)];
+  [((id<RxObserver>) nil_chk(OrgMockitoMockito_verifyWithId_withOrgMockitoVerificationVerificationMode_(observer, OrgMockitoMockito_never()))) onErrorWithNSException:OrgMockitoMatchers_anyWithIOSClass_(NSException_class_())];
+  [((id<RxObserver>) nil_chk(OrgMockitoMockito_verifyWithId_withOrgMockitoVerificationVerificationMode_(observer, OrgMockitoMockito_timesWithInt_(1)))) onCompleted];
+}
+
+- (void)testContainsWithEmptyObservable {
+  RxObservable *observable = [((RxObservable *) nil_chk(RxObservable_empty())) containsWithId:@"a"];
+  id<RxObserver> observer = OrgMockitoMockito_mockWithIOSClass_(RxObserver_class_());
+  [((RxObservable *) nil_chk(observable)) subscribeWithRxObserver:observer];
+  [((id<RxObserver>) nil_chk(OrgMockitoMockito_verifyWithId_withOrgMockitoVerificationVerificationMode_(observer, OrgMockitoMockito_timesWithInt_(1)))) onNextWithId:JavaLangBoolean_valueOfWithBoolean_(false)];
+  [((id<RxObserver>) nil_chk(OrgMockitoMockito_verifyWithId_withOrgMockitoVerificationVerificationMode_(observer, OrgMockitoMockito_never()))) onNextWithId:JavaLangBoolean_valueOfWithBoolean_(true)];
+  [((id<RxObserver>) nil_chk(OrgMockitoMockito_verifyWithId_withOrgMockitoVerificationVerificationMode_(observer, OrgMockitoMockito_never()))) onErrorWithNSException:OrgMockitoMatchers_anyWithIOSClass_(NSException_class_())];
+  [((id<RxObserver>) nil_chk(OrgMockitoMockito_verifyWithId_withOrgMockitoVerificationVerificationMode_(observer, OrgMockitoMockito_timesWithInt_(1)))) onCompleted];
+}
+
+- (void)testIgnoreElements {
+  RxObservable *observable = [((RxObservable *) nil_chk(RxObservable_justWithId_withId_withId_(JavaLangInteger_valueOfWithInt_(1), JavaLangInteger_valueOfWithInt_(2), JavaLangInteger_valueOfWithInt_(3)))) ignoreElements];
+  id<RxObserver> observer = OrgMockitoMockito_mockWithIOSClass_(RxObserver_class_());
+  [((RxObservable *) nil_chk(observable)) subscribeWithRxObserver:observer];
+  [((id<RxObserver>) nil_chk(OrgMockitoMockito_verifyWithId_withOrgMockitoVerificationVerificationMode_(observer, OrgMockitoMockito_never()))) onNextWithId:OrgMockitoMatchers_anyWithIOSClass_(JavaLangInteger_class_())];
+  [((id<RxObserver>) nil_chk(OrgMockitoMockito_verifyWithId_withOrgMockitoVerificationVerificationMode_(observer, OrgMockitoMockito_never()))) onErrorWithNSException:OrgMockitoMatchers_anyWithIOSClass_(NSException_class_())];
+  [((id<RxObserver>) nil_chk(OrgMockitoMockito_verifyWithId_withOrgMockitoVerificationVerificationMode_(observer, OrgMockitoMockito_timesWithInt_(1)))) onCompleted];
+}
+
+- (void)testJustWithScheduler {
+  RxSchedulersTestScheduler *scheduler = create_RxSchedulersTestScheduler_init();
+  RxObservable *observable = [((RxObservable *) nil_chk(RxObservable_fromWithJavaLangIterable_(JavaUtilArrays_asListWithNSObjectArray_([IOSObjectArray arrayWithObjects:(id[]){ JavaLangInteger_valueOfWithInt_(1), JavaLangInteger_valueOfWithInt_(2) } count:2 type:JavaLangInteger_class_()])))) subscribeOnWithRxScheduler:scheduler];
+  id<RxObserver> observer = OrgMockitoMockito_mockWithIOSClass_(RxObserver_class_());
+  [((RxObservable *) nil_chk(observable)) subscribeWithRxObserver:observer];
+  [scheduler advanceTimeByWithLong:1 withJavaUtilConcurrentTimeUnit:JreLoadEnum(JavaUtilConcurrentTimeUnit, MILLISECONDS)];
+  id<OrgMockitoInOrder> inOrder = OrgMockitoMockito_inOrderWithNSObjectArray_([IOSObjectArray arrayWithObjects:(id[]){ observer } count:1 type:NSObject_class_()]);
+  [((id<RxObserver>) nil_chk([((id<OrgMockitoInOrder>) nil_chk(inOrder)) verifyWithId:observer withOrgMockitoVerificationVerificationMode:OrgMockitoMockito_timesWithInt_(1)])) onNextWithId:JavaLangInteger_valueOfWithInt_(1)];
+  [((id<RxObserver>) nil_chk([inOrder verifyWithId:observer withOrgMockitoVerificationVerificationMode:OrgMockitoMockito_timesWithInt_(1)])) onNextWithId:JavaLangInteger_valueOfWithInt_(2)];
+  [((id<RxObserver>) nil_chk([inOrder verifyWithId:observer withOrgMockitoVerificationVerificationMode:OrgMockitoMockito_timesWithInt_(1)])) onCompleted];
+  [inOrder verifyNoMoreInteractions];
+}
+
+- (void)testStartWithWithScheduler {
+  RxSchedulersTestScheduler *scheduler = create_RxSchedulersTestScheduler_init();
+  RxObservable *observable = [((RxObservable *) nil_chk([((RxObservable *) nil_chk(RxObservable_justWithId_withId_(JavaLangInteger_valueOfWithInt_(3), JavaLangInteger_valueOfWithInt_(4)))) startWithWithJavaLangIterable:JavaUtilArrays_asListWithNSObjectArray_([IOSObjectArray arrayWithObjects:(id[]){ JavaLangInteger_valueOfWithInt_(1), JavaLangInteger_valueOfWithInt_(2) } count:2 type:JavaLangInteger_class_()])])) subscribeOnWithRxScheduler:scheduler];
+  id<RxObserver> observer = OrgMockitoMockito_mockWithIOSClass_(RxObserver_class_());
+  [((RxObservable *) nil_chk(observable)) subscribeWithRxObserver:observer];
+  [scheduler advanceTimeByWithLong:1 withJavaUtilConcurrentTimeUnit:JreLoadEnum(JavaUtilConcurrentTimeUnit, MILLISECONDS)];
+  id<OrgMockitoInOrder> inOrder = OrgMockitoMockito_inOrderWithNSObjectArray_([IOSObjectArray arrayWithObjects:(id[]){ observer } count:1 type:NSObject_class_()]);
+  [((id<RxObserver>) nil_chk([((id<OrgMockitoInOrder>) nil_chk(inOrder)) verifyWithId:observer withOrgMockitoVerificationVerificationMode:OrgMockitoMockito_timesWithInt_(1)])) onNextWithId:JavaLangInteger_valueOfWithInt_(1)];
+  [((id<RxObserver>) nil_chk([inOrder verifyWithId:observer withOrgMockitoVerificationVerificationMode:OrgMockitoMockito_timesWithInt_(1)])) onNextWithId:JavaLangInteger_valueOfWithInt_(2)];
+  [((id<RxObserver>) nil_chk([inOrder verifyWithId:observer withOrgMockitoVerificationVerificationMode:OrgMockitoMockito_timesWithInt_(1)])) onNextWithId:JavaLangInteger_valueOfWithInt_(3)];
+  [((id<RxObserver>) nil_chk([inOrder verifyWithId:observer withOrgMockitoVerificationVerificationMode:OrgMockitoMockito_timesWithInt_(1)])) onNextWithId:JavaLangInteger_valueOfWithInt_(4)];
+  [((id<RxObserver>) nil_chk([inOrder verifyWithId:observer withOrgMockitoVerificationVerificationMode:OrgMockitoMockito_timesWithInt_(1)])) onCompleted];
+  [inOrder verifyNoMoreInteractions];
+}
+
+- (void)testRangeWithScheduler {
+  RxSchedulersTestScheduler *scheduler = create_RxSchedulersTestScheduler_init();
+  RxObservable *observable = RxObservable_rangeWithInt_withInt_withRxScheduler_(3, 4, scheduler);
+  id<RxObserver> observer = OrgMockitoMockito_mockWithIOSClass_(RxObserver_class_());
+  [((RxObservable *) nil_chk(observable)) subscribeWithRxObserver:observer];
+  [scheduler advanceTimeByWithLong:1 withJavaUtilConcurrentTimeUnit:JreLoadEnum(JavaUtilConcurrentTimeUnit, MILLISECONDS)];
+  id<OrgMockitoInOrder> inOrder = OrgMockitoMockito_inOrderWithNSObjectArray_([IOSObjectArray arrayWithObjects:(id[]){ observer } count:1 type:NSObject_class_()]);
+  [((id<RxObserver>) nil_chk([((id<OrgMockitoInOrder>) nil_chk(inOrder)) verifyWithId:observer withOrgMockitoVerificationVerificationMode:OrgMockitoMockito_timesWithInt_(1)])) onNextWithId:JavaLangInteger_valueOfWithInt_(3)];
+  [((id<RxObserver>) nil_chk([inOrder verifyWithId:observer withOrgMockitoVerificationVerificationMode:OrgMockitoMockito_timesWithInt_(1)])) onNextWithId:JavaLangInteger_valueOfWithInt_(4)];
+  [((id<RxObserver>) nil_chk([inOrder verifyWithId:observer withOrgMockitoVerificationVerificationMode:OrgMockitoMockito_timesWithInt_(1)])) onNextWithId:JavaLangInteger_valueOfWithInt_(5)];
+  [((id<RxObserver>) nil_chk([inOrder verifyWithId:observer withOrgMockitoVerificationVerificationMode:OrgMockitoMockito_timesWithInt_(1)])) onNextWithId:JavaLangInteger_valueOfWithInt_(6)];
+  [((id<RxObserver>) nil_chk([inOrder verifyWithId:observer withOrgMockitoVerificationVerificationMode:OrgMockitoMockito_timesWithInt_(1)])) onCompleted];
+  [inOrder verifyNoMoreInteractions];
+}
+
+- (void)testMergeWith {
+  RxObserversTestSubscriber *ts = create_RxObserversTestSubscriber_init();
+  [((RxObservable *) nil_chk([((RxObservable *) nil_chk(RxObservable_justWithId_(JavaLangInteger_valueOfWithInt_(1)))) mergeWithWithRxObservable:RxObservable_justWithId_(JavaLangInteger_valueOfWithInt_(2))])) subscribeWithRxSubscriber:ts];
+  [ts assertReceivedOnNextWithJavaUtilList:JavaUtilArrays_asListWithNSObjectArray_([IOSObjectArray arrayWithObjects:(id[]){ JavaLangInteger_valueOfWithInt_(1), JavaLangInteger_valueOfWithInt_(2) } count:2 type:JavaLangInteger_class_()])];
+}
+
+- (void)testConcatWith {
+  RxObserversTestSubscriber *ts = create_RxObserversTestSubscriber_init();
+  [((RxObservable *) nil_chk([((RxObservable *) nil_chk(RxObservable_justWithId_(JavaLangInteger_valueOfWithInt_(1)))) concatWithWithRxObservable:RxObservable_justWithId_(JavaLangInteger_valueOfWithInt_(2))])) subscribeWithRxSubscriber:ts];
+  [ts assertReceivedOnNextWithJavaUtilList:JavaUtilArrays_asListWithNSObjectArray_([IOSObjectArray arrayWithObjects:(id[]){ JavaLangInteger_valueOfWithInt_(1), JavaLangInteger_valueOfWithInt_(2) } count:2 type:JavaLangInteger_class_()])];
+}
+
+- (void)testAmbWith {
+  RxObserversTestSubscriber *ts = create_RxObserversTestSubscriber_init();
+  [((RxObservable *) nil_chk([((RxObservable *) nil_chk(RxObservable_justWithId_(JavaLangInteger_valueOfWithInt_(1)))) ambWithWithRxObservable:RxObservable_justWithId_(JavaLangInteger_valueOfWithInt_(2))])) subscribeWithRxSubscriber:ts];
+  [ts assertReceivedOnNextWithJavaUtilList:JavaUtilArrays_asListWithNSObjectArray_([IOSObjectArray arrayWithObjects:(id[]){ JavaLangInteger_valueOfWithInt_(1) } count:1 type:JavaLangInteger_class_()])];
+}
+
+- (void)testSubscribeWithoutOnError {
+  RxObservable *o = [((RxObservable *) nil_chk(RxObservable_justWithId_withId_(@"a", @"b"))) flatMapWithRxFunctionsFunc1:create_RxObservableTests_$31_init()];
+  [((RxObservable *) nil_chk(o)) subscribe];
+}
+
+- (void)testTakeWhileToList {
+  jint expectedCount = 3;
+  JavaUtilConcurrentAtomicAtomicInteger *count = create_JavaUtilConcurrentAtomicAtomicInteger_init();
+  for (jint i = 0; i < expectedCount; i++) {
+    [((RxObservable *) nil_chk([((RxObservable *) nil_chk([((RxObservable *) nil_chk([((RxObservable *) nil_chk(RxObservable_justWithId_withId_(JreLoadStatic(JavaLangBoolean, TRUE), JreLoadStatic(JavaLangBoolean, FALSE)))) takeWhileWithRxFunctionsFunc1:create_RxObservableTests_$32_init()])) toList])) doOnNextWithRxFunctionsAction1:create_RxObservableTests_$33_initWithJavaUtilConcurrentAtomicAtomicInteger_(count)])) subscribe];
+  }
+  OrgJunitAssert_assertEqualsWithLong_withLong_(expectedCount, [count get]);
+}
+
+- (void)testCompose {
+  RxObserversTestSubscriber *ts = create_RxObserversTestSubscriber_init();
+  [((RxObservable *) nil_chk([((RxObservable *) nil_chk(RxObservable_justWithId_withId_withId_(JavaLangInteger_valueOfWithInt_(1), JavaLangInteger_valueOfWithInt_(2), JavaLangInteger_valueOfWithInt_(3)))) composeWithRxObservable_Transformer:create_RxObservableTests_$34_init()])) subscribeWithRxSubscriber:ts];
+  [ts assertTerminalEvent];
+  [ts assertNoErrors];
+  [ts assertReceivedOnNextWithJavaUtilList:JavaUtilArrays_asListWithNSObjectArray_([IOSObjectArray arrayWithObjects:(id[]){ @"1", @"2", @"3" } count:3 type:NSString_class_()])];
+}
+
+- (void)testErrorThrownIssue1685 {
+  RxSubjectsSubject *subject = RxSubjectsReplaySubject_create();
+  id<JavaUtilConcurrentExecutorService> exec = JavaUtilConcurrentExecutors_newSingleThreadExecutor();
+  @try {
+    JavaUtilConcurrentAtomicAtomicReference *err = create_JavaUtilConcurrentAtomicAtomicReference_init();
+    RxScheduler *s = RxSchedulersSchedulers_fromWithJavaUtilConcurrentExecutor_(exec);
+    [((id<JavaUtilConcurrentFuture>) nil_chk([((id<JavaUtilConcurrentExecutorService>) nil_chk(exec)) submitWithJavaLangRunnable:create_RxObservableTests_$35_initWithJavaUtilConcurrentAtomicAtomicReference_(err)])) get];
+    [((RxSubjectsSubject *) nil_chk(subject)) subscribe];
+    [((RxObservable *) nil_chk([((RxObservable *) nil_chk([((RxObservable *) nil_chk([((RxObservable *) nil_chk(RxObservable_errorWithNSException_(create_JavaLangRuntimeException_initWithNSString_(@"oops")))) materialize])) delayWithLong:1 withJavaUtilConcurrentTimeUnit:JreLoadEnum(JavaUtilConcurrentTimeUnit, SECONDS) withRxScheduler:s])) dematerialize])) subscribeWithRxObserver:subject];
+    [((RxObservablesBlockingObservable *) nil_chk([((RxObservable *) nil_chk([subject materialize])) toBlocking])) first];
+    for (jint i = 0; i < 50 && [err get] == nil; i++) {
+      JavaLangThread_sleepWithLong_(100);
+    }
+    OrgJunitAssert_assertNotNullWithNSString_withId_(@"UncaughtExceptionHandler didn't get anything.", [err get]);
+    [((JavaIoPrintStream *) nil_chk(JreLoadStatic(JavaLangSystem, out))) printlnWithNSString:@"Done"];
+  }
+  @finally {
+    [((id<JavaUtilConcurrentExecutorService>) nil_chk(exec)) shutdownNow];
+  }
+}
+
+- (void)testEmptyIdentity {
+  OrgJunitAssert_assertEqualsWithId_withId_(RxObservable_empty(), RxObservable_empty());
+}
+
+- (void)testEmptyIsEmpty {
+  [((RxObservable *) nil_chk(RxObservable_empty())) subscribeWithRxObserver:w_];
+  [((id<RxObserver>) nil_chk(OrgMockitoMockito_verifyWithId_(w_))) onCompleted];
+  [((id<RxObserver>) nil_chk(OrgMockitoMockito_verifyWithId_withOrgMockitoVerificationVerificationMode_(w_, OrgMockitoMockito_never()))) onNextWithId:OrgMockitoMatchers_anyWithIOSClass_(JavaLangInteger_class_())];
+  [((id<RxObserver>) nil_chk(OrgMockitoMockito_verifyWithId_withOrgMockitoVerificationVerificationMode_(w_, OrgMockitoMockito_never()))) onErrorWithNSException:OrgMockitoMatchers_anyWithIOSClass_(NSException_class_())];
+}
+
+- (void)testSubscribingSubscriberAsObserverMaintainsSubscriptionChain {
+  RxObserversTestSubscriber *subscriber = create_RxObserversTestSubscriber_init();
+  id<RxSubscription> subscription = [((RxObservable *) nil_chk(RxObservable_justWithId_(@"event"))) subscribeWithRxObserver:subscriber];
+  [((id<RxSubscription>) nil_chk(subscription)) unsubscribe];
+  [subscriber assertUnsubscribed];
+}
+
+- (void)testForEachWithError {
+  [((RxObservable *) nil_chk(RxObservable_errorWithNSException_(create_JavaLangException_initWithNSString_(@"boo")))) forEachWithRxFunctionsAction1:create_RxObservableTests_$36_init()];
+}
+
+- (void)testForEachWithNull {
+  [((RxObservable *) nil_chk(RxObservable_errorWithNSException_(create_JavaLangException_initWithNSString_(@"boo")))) forEachWithRxFunctionsAction1:nil];
+}
+
+- (void)nullOnSubscribe {
+  RxObservable *source = RxObservable_createWithRxObservable_OnSubscribe_(nil);
+  @try {
+    [((RxObservable *) nil_chk(source)) subscribe];
+    OrgJunitAssert_failWithNSString_(@"Should have thrown IllegalStateException");
+  }
+  @catch (JavaLangIllegalStateException *ex) {
+  }
+}
+
+- (void)nullObserver {
+  RxObservable *source = RxObservable_justWithId_(JavaLangInteger_valueOfWithInt_(1));
+  @try {
+    [((RxObservable *) nil_chk(source)) subscribeWithRxObserver:nil];
+    OrgJunitAssert_failWithNSString_(@"Should have thrown IllegalStateException");
+  }
+  @catch (JavaLangNullPointerException *ex) {
+  }
+}
+
+- (void)nullSubscriber {
+  RxObservable *source = RxObservable_justWithId_(JavaLangInteger_valueOfWithInt_(1));
+  @try {
+    [((RxObservable *) nil_chk(source)) subscribeWithRxSubscriber:nil];
+    OrgJunitAssert_failWithNSString_(@"Should have thrown IllegalStateException");
+  }
+  @catch (JavaLangIllegalArgumentException *ex) {
+  }
+}
+
+- (void)testCacheHint {
+  JavaUtilConcurrentAtomicAtomicInteger *counter = create_JavaUtilConcurrentAtomicAtomicInteger_init();
+  RxObservable *o = [((RxObservable *) nil_chk(RxObservable_createWithRxObservable_OnSubscribe_(create_RxObservableTests_$37_initWithJavaUtilConcurrentAtomicAtomicInteger_(counter)))) cacheWithInt:1];
+  JavaUtilConcurrentCountDownLatch *latch = create_JavaUtilConcurrentCountDownLatch_initWithInt_(2);
+  [((RxObservable *) nil_chk(o)) subscribeWithRxFunctionsAction1:create_RxObservableTests_$38_initWithJavaUtilConcurrentCountDownLatch_(latch)];
+  [o subscribeWithRxFunctionsAction1:create_RxObservableTests_$39_initWithJavaUtilConcurrentCountDownLatch_(latch)];
+  OrgJunitAssert_assertTrueWithNSString_withBoolean_(@"subscriptions did not receive values", [latch awaitWithLong:1000 withJavaUtilConcurrentTimeUnit:JreLoadEnum(JavaUtilConcurrentTimeUnit, MILLISECONDS)]);
+  OrgJunitAssert_assertEqualsWithLong_withLong_(1, [counter get]);
+}
+
+- (void)subscribeWithNull {
+  id<RxFunctionsAction1> onNext = RxFunctionsActions_empty();
+  id<RxFunctionsAction1> onError = RxFunctionsActions_empty();
+  id<RxFunctionsAction0> onCompleted = RxFunctionsActions_empty();
+  @try {
+    [((RxObservable *) nil_chk(RxObservable_justWithId_(JavaLangInteger_valueOfWithInt_(1)))) subscribeWithRxFunctionsAction1:nil];
+    OrgJunitAssert_failWithNSString_(@"Should have thrown IllegalArgumentException");
+  }
+  @catch (JavaLangIllegalArgumentException *ex) {
+    OrgJunitAssert_assertEqualsWithId_withId_(@"onNext can not be null", [((JavaLangIllegalArgumentException *) nil_chk(ex)) getMessage]);
+  }
+  @try {
+    [((RxObservable *) nil_chk(RxObservable_justWithId_(JavaLangInteger_valueOfWithInt_(1)))) subscribeWithRxFunctionsAction1:nil withRxFunctionsAction1:onError];
+    OrgJunitAssert_failWithNSString_(@"Should have thrown IllegalArgumentException");
+  }
+  @catch (JavaLangIllegalArgumentException *ex) {
+    OrgJunitAssert_assertEqualsWithId_withId_(@"onNext can not be null", [((JavaLangIllegalArgumentException *) nil_chk(ex)) getMessage]);
+  }
+  @try {
+    [((RxObservable *) nil_chk(RxObservable_justWithId_(JavaLangInteger_valueOfWithInt_(1)))) subscribeWithRxFunctionsAction1:nil withRxFunctionsAction1:onError withRxFunctionsAction0:onCompleted];
+    OrgJunitAssert_failWithNSString_(@"Should have thrown IllegalArgumentException");
+  }
+  @catch (JavaLangIllegalArgumentException *ex) {
+    OrgJunitAssert_assertEqualsWithId_withId_(@"onNext can not be null", [((JavaLangIllegalArgumentException *) nil_chk(ex)) getMessage]);
+  }
+  @try {
+    [((RxObservable *) nil_chk(RxObservable_justWithId_(JavaLangInteger_valueOfWithInt_(1)))) subscribeWithRxFunctionsAction1:onNext withRxFunctionsAction1:nil];
+    OrgJunitAssert_failWithNSString_(@"Should have thrown IllegalArgumentException");
+  }
+  @catch (JavaLangIllegalArgumentException *ex) {
+    OrgJunitAssert_assertEqualsWithId_withId_(@"onError can not be null", [((JavaLangIllegalArgumentException *) nil_chk(ex)) getMessage]);
+  }
+  @try {
+    [((RxObservable *) nil_chk(RxObservable_justWithId_(JavaLangInteger_valueOfWithInt_(1)))) subscribeWithRxFunctionsAction1:onNext withRxFunctionsAction1:nil withRxFunctionsAction0:onCompleted];
+    OrgJunitAssert_failWithNSString_(@"Should have thrown IllegalArgumentException");
+  }
+  @catch (JavaLangIllegalArgumentException *ex) {
+    OrgJunitAssert_assertEqualsWithId_withId_(@"onError can not be null", [((JavaLangIllegalArgumentException *) nil_chk(ex)) getMessage]);
+  }
+  @try {
+    [((RxObservable *) nil_chk(RxObservable_justWithId_(JavaLangInteger_valueOfWithInt_(1)))) subscribeWithRxFunctionsAction1:onNext withRxFunctionsAction1:onError withRxFunctionsAction0:nil];
+    OrgJunitAssert_failWithNSString_(@"Should have thrown IllegalArgumentException");
+  }
+  @catch (JavaLangIllegalArgumentException *ex) {
+    OrgJunitAssert_assertEqualsWithId_withId_(@"onComplete can not be null", [((JavaLangIllegalArgumentException *) nil_chk(ex)) getMessage]);
+  }
+}
+
+- (void)forEachWithNull {
+  id<RxFunctionsAction1> onNext = RxFunctionsActions_empty();
+  id<RxFunctionsAction1> onError = RxFunctionsActions_empty();
+  id<RxFunctionsAction0> onCompleted = RxFunctionsActions_empty();
+  @try {
+    [((RxObservable *) nil_chk(RxObservable_justWithId_(JavaLangInteger_valueOfWithInt_(1)))) forEachWithRxFunctionsAction1:nil];
+    OrgJunitAssert_failWithNSString_(@"Should have thrown IllegalArgumentException");
+  }
+  @catch (JavaLangIllegalArgumentException *ex) {
+    OrgJunitAssert_assertEqualsWithId_withId_(@"onNext can not be null", [((JavaLangIllegalArgumentException *) nil_chk(ex)) getMessage]);
+  }
+  @try {
+    [((RxObservable *) nil_chk(RxObservable_justWithId_(JavaLangInteger_valueOfWithInt_(1)))) forEachWithRxFunctionsAction1:nil withRxFunctionsAction1:onError];
+    OrgJunitAssert_failWithNSString_(@"Should have thrown IllegalArgumentException");
+  }
+  @catch (JavaLangIllegalArgumentException *ex) {
+    OrgJunitAssert_assertEqualsWithId_withId_(@"onNext can not be null", [((JavaLangIllegalArgumentException *) nil_chk(ex)) getMessage]);
+  }
+  @try {
+    [((RxObservable *) nil_chk(RxObservable_justWithId_(JavaLangInteger_valueOfWithInt_(1)))) forEachWithRxFunctionsAction1:nil withRxFunctionsAction1:onError withRxFunctionsAction0:onCompleted];
+    OrgJunitAssert_failWithNSString_(@"Should have thrown IllegalArgumentException");
+  }
+  @catch (JavaLangIllegalArgumentException *ex) {
+    OrgJunitAssert_assertEqualsWithId_withId_(@"onNext can not be null", [((JavaLangIllegalArgumentException *) nil_chk(ex)) getMessage]);
+  }
+  @try {
+    [((RxObservable *) nil_chk(RxObservable_justWithId_(JavaLangInteger_valueOfWithInt_(1)))) forEachWithRxFunctionsAction1:onNext withRxFunctionsAction1:nil];
+    OrgJunitAssert_failWithNSString_(@"Should have thrown IllegalArgumentException");
+  }
+  @catch (JavaLangIllegalArgumentException *ex) {
+    OrgJunitAssert_assertEqualsWithId_withId_(@"onError can not be null", [((JavaLangIllegalArgumentException *) nil_chk(ex)) getMessage]);
+  }
+  @try {
+    [((RxObservable *) nil_chk(RxObservable_justWithId_(JavaLangInteger_valueOfWithInt_(1)))) forEachWithRxFunctionsAction1:onNext withRxFunctionsAction1:nil withRxFunctionsAction0:onCompleted];
+    OrgJunitAssert_failWithNSString_(@"Should have thrown IllegalArgumentException");
+  }
+  @catch (JavaLangIllegalArgumentException *ex) {
+    OrgJunitAssert_assertEqualsWithId_withId_(@"onError can not be null", [((JavaLangIllegalArgumentException *) nil_chk(ex)) getMessage]);
+  }
+  @try {
+    [((RxObservable *) nil_chk(RxObservable_justWithId_(JavaLangInteger_valueOfWithInt_(1)))) forEachWithRxFunctionsAction1:onNext withRxFunctionsAction1:onError withRxFunctionsAction0:nil];
+    OrgJunitAssert_failWithNSString_(@"Should have thrown IllegalArgumentException");
+  }
+  @catch (JavaLangIllegalArgumentException *ex) {
+    OrgJunitAssert_assertEqualsWithId_withId_(@"onComplete can not be null", [((JavaLangIllegalArgumentException *) nil_chk(ex)) getMessage]);
+  }
+}
+
+- (void)observableThrowsWhileSubscriberIsUnsubscribed {
+  RxObserversTestSubscriber *ts = RxObserversTestSubscriber_create();
+  [((RxObserversTestSubscriber *) nil_chk(ts)) unsubscribe];
+  id<JavaUtilList> list = create_JavaUtilArrayList_init();
+  RxPluginsRxJavaHooks_setOnErrorWithRxFunctionsAction1_(create_RxObservableTests_$40_initWithJavaUtilList_(list));
+  @try {
+    [create_RxObservableTests_FailingObservable_init() subscribeWithRxSubscriber:ts];
+    OrgJunitAssert_assertEqualsWithLong_withLong_(1, [list size]);
+    OrgJunitAssert_assertEqualsWithId_withId_(@"Forced failure", [((NSException *) nil_chk([list getWithInt:0])) getMessage]);
+  }
+  @finally {
+    RxPluginsRxJavaHooks_reset();
+  }
+}
+
+- (void)observableThrowsWhileOnErrorFails {
+  RxSubscriber *ts = create_RxObservableTests_$41_initWithRxSubscriber_(create_RxObserversTestSubscriber_init());
+  @try {
+    [create_RxObservableTests_FailingObservable_init() subscribeWithRxSubscriber:ts];
+    OrgJunitAssert_failWithNSString_(@"Should have thrown OnErrorFailedException");
+  }
+  @catch (RxExceptionsOnErrorFailedException *ex) {
+    OrgJunitAssert_assertTrueWithNSString_withBoolean_([((NSException *) nil_chk([((RxExceptionsOnErrorFailedException *) nil_chk(ex)) getCause])) description], [[ex getCause] isKindOfClass:[RxExceptionsTestException class]]);
+    OrgJunitAssert_assertEqualsWithId_withId_(@"Forced failure", [((NSException *) nil_chk([ex getCause])) getMessage]);
+  }
+}
+
+- (void)observableThrowsWhileOnErrorFailsUnsafe {
+  RxSubscriber *ts = create_RxObservableTests_$42_init();
+  @try {
+    [create_RxObservableTests_FailingObservable_init() unsafeSubscribeWithRxSubscriber:ts];
+    OrgJunitAssert_failWithNSString_(@"Should have thrown OnErrorFailedException");
+  }
+  @catch (RxExceptionsOnErrorFailedException *ex) {
+    OrgJunitAssert_assertTrueWithNSString_withBoolean_([((NSException *) nil_chk([((RxExceptionsOnErrorFailedException *) nil_chk(ex)) getCause])) description], [[ex getCause] isKindOfClass:[RxExceptionsTestException class]]);
+    OrgJunitAssert_assertEqualsWithId_withId_(@"Forced failure", [((NSException *) nil_chk([ex getCause])) getMessage]);
+  }
+}
+
+- (void)forEachWithError {
+  id<RxFunctionsAction1> onError = RxFunctionsActions_empty();
+  id<JavaUtilList> list = create_JavaUtilArrayList_init();
+  [((RxObservable *) nil_chk(RxObservable_justWithId_(JavaLangInteger_valueOfWithInt_(1)))) forEachWithRxFunctionsAction1:create_RxObservableTests_$43_initWithJavaUtilList_(list) withRxFunctionsAction1:onError];
+  [((RxObservable *) nil_chk(RxObservable_errorWithNSException_(create_RxExceptionsTestException_init()))) forEachWithRxFunctionsAction1:create_RxObservableTests_$44_initWithJavaUtilList_(list) withRxFunctionsAction1:create_RxObservableTests_$45_initWithJavaUtilList_(list)];
+  [((RxObservable *) nil_chk(RxObservable_empty())) forEachWithRxFunctionsAction1:create_RxObservableTests_$46_initWithJavaUtilList_(list) withRxFunctionsAction1:create_RxObservableTests_$47_initWithJavaUtilList_(list) withRxFunctionsAction0:create_RxObservableTests_$48_initWithJavaUtilList_(list)];
+  OrgJunitAssert_assertEqualsWithLong_withLong_(3, [list size]);
+  OrgJunitAssert_assertEqualsWithId_withId_(JavaLangInteger_valueOfWithInt_(1), [list getWithInt:0]);
+  OrgJunitAssert_assertTrueWithNSString_withBoolean_([nil_chk([list getWithInt:1]) description], [[list getWithInt:1] isKindOfClass:[RxExceptionsTestException class]]);
+  OrgJunitAssert_assertEqualsWithId_withId_(JavaLangInteger_valueOfWithInt_(100), [list getWithInt:2]);
+}
+
+- (void)toFunctionReceivesObservableReturnsResult {
+  RxObservable *o = RxObservable_justWithId_(@"Hi");
+  id expectedResult = create_NSObject_init();
+  JavaUtilConcurrentAtomicAtomicReference *observableRef = create_JavaUtilConcurrentAtomicAtomicReference_init();
+  id actualResult = [((RxObservable *) nil_chk(o)) toWithRxFunctionsFunc1:create_RxObservableTests_$49_initWithJavaUtilConcurrentAtomicAtomicReference_withId_(observableRef, expectedResult)];
+  OrgJunitAssert_assertSameWithId_withId_(expectedResult, actualResult);
+  OrgJunitAssert_assertSameWithId_withId_(o, [observableRef get]);
 }
 
 J2OBJC_IGNORE_DESIGNATED_BEGIN
@@ -187,21 +2110,145 @@ J2OBJC_IGNORE_DESIGNATED_END
 + (const J2ObjcClassInfo *)__metadata {
   static J2ObjcMethodInfo methods[] = {
     { NULL, "V", 0x1, -1, -1, -1, -1, 0, -1 },
-    { NULL, "V", 0x1, -1, -1, 1, -1, 2, -1 },
+    { NULL, "V", 0x1, -1, -1, -1, -1, 1, -1 },
+    { NULL, "V", 0x1, -1, -1, -1, -1, 2, -1 },
+    { NULL, "V", 0x1, -1, -1, -1, -1, 3, -1 },
+    { NULL, "V", 0x1, -1, -1, -1, -1, 4, -1 },
+    { NULL, "V", 0x1, -1, -1, -1, -1, 5, -1 },
+    { NULL, "V", 0x1, -1, -1, -1, -1, 6, -1 },
+    { NULL, "V", 0x1, -1, -1, -1, -1, 7, -1 },
+    { NULL, "V", 0x1, -1, -1, -1, -1, 8, -1 },
+    { NULL, "V", 0x1, -1, -1, -1, -1, 9, -1 },
+    { NULL, "V", 0x1, -1, -1, -1, -1, 10, -1 },
+    { NULL, "V", 0x1, -1, -1, -1, -1, 11, -1 },
+    { NULL, "V", 0x1, -1, -1, -1, -1, 12, -1 },
+    { NULL, "V", 0x1, -1, -1, -1, -1, 13, -1 },
+    { NULL, "V", 0x1, -1, -1, -1, -1, 14, -1 },
+    { NULL, "V", 0x1, -1, -1, -1, -1, 15, -1 },
+    { NULL, "V", 0x1, -1, -1, -1, -1, 16, -1 },
+    { NULL, "V", 0x1, -1, -1, -1, -1, 17, -1 },
+    { NULL, "V", 0x1, -1, -1, -1, -1, 18, -1 },
+    { NULL, "V", 0x1, -1, -1, -1, -1, 19, -1 },
+    { NULL, "V", 0x1, -1, -1, -1, -1, 20, -1 },
+    { NULL, "V", 0x1, -1, -1, 21, -1, 22, -1 },
+    { NULL, "V", 0x1, -1, -1, -1, -1, 23, -1 },
+    { NULL, "V", 0x1, -1, -1, -1, -1, 24, -1 },
+    { NULL, "V", 0x1, -1, -1, 21, -1, 25, -1 },
+    { NULL, "V", 0x1, -1, -1, 21, -1, 26, -1 },
+    { NULL, "V", 0x1, -1, -1, 21, -1, 27, -1 },
+    { NULL, "V", 0x1, -1, -1, 21, -1, 28, -1 },
+    { NULL, "V", 0x1, -1, -1, -1, -1, 29, -1 },
+    { NULL, "V", 0x1, -1, -1, 21, -1, 30, -1 },
+    { NULL, "V", 0x1, -1, -1, -1, -1, 31, -1 },
+    { NULL, "V", 0x1, -1, -1, -1, -1, 32, -1 },
+    { NULL, "V", 0x1, -1, -1, -1, -1, 33, -1 },
+    { NULL, "V", 0x1, -1, -1, -1, -1, 34, -1 },
+    { NULL, "V", 0x1, -1, -1, -1, -1, 35, -1 },
+    { NULL, "V", 0x1, -1, -1, -1, -1, 36, -1 },
+    { NULL, "V", 0x1, -1, -1, -1, -1, 37, -1 },
+    { NULL, "V", 0x1, -1, -1, -1, -1, 38, -1 },
+    { NULL, "V", 0x1, -1, -1, -1, -1, 39, -1 },
+    { NULL, "V", 0x1, -1, -1, -1, -1, 40, -1 },
+    { NULL, "V", 0x1, -1, -1, -1, -1, 41, -1 },
+    { NULL, "V", 0x1, -1, -1, -1, -1, 42, -1 },
+    { NULL, "V", 0x1, -1, -1, -1, -1, 43, -1 },
+    { NULL, "V", 0x1, -1, -1, -1, -1, 44, -1 },
+    { NULL, "V", 0x1, -1, -1, -1, -1, 45, -1 },
+    { NULL, "V", 0x1, -1, -1, -1, -1, 46, -1 },
+    { NULL, "V", 0x1, -1, -1, -1, -1, 47, -1 },
+    { NULL, "V", 0x1, -1, -1, 48, -1, 49, -1 },
+    { NULL, "V", 0x1, -1, -1, -1, -1, 50, -1 },
+    { NULL, "V", 0x1, -1, -1, -1, -1, 51, -1 },
+    { NULL, "V", 0x1, -1, -1, -1, -1, 52, -1 },
+    { NULL, "V", 0x1, -1, -1, -1, -1, 53, -1 },
+    { NULL, "V", 0x1, -1, -1, -1, -1, 54, -1 },
+    { NULL, "V", 0x1, -1, -1, -1, -1, 55, -1 },
+    { NULL, "V", 0x1, -1, -1, -1, -1, 56, -1 },
+    { NULL, "V", 0x1, -1, -1, -1, -1, 57, -1 },
+    { NULL, "V", 0x1, -1, -1, 21, -1, 58, -1 },
+    { NULL, "V", 0x1, -1, -1, -1, -1, 59, -1 },
+    { NULL, "V", 0x1, -1, -1, -1, -1, 60, -1 },
+    { NULL, "V", 0x1, -1, -1, -1, -1, 61, -1 },
+    { NULL, "V", 0x1, -1, -1, -1, -1, 62, -1 },
+    { NULL, "V", 0x1, -1, -1, -1, -1, 63, -1 },
+    { NULL, "V", 0x1, -1, -1, -1, -1, 64, -1 },
+    { NULL, "V", 0x1, -1, -1, -1, -1, 65, -1 },
     { NULL, NULL, 0x1, -1, -1, -1, -1, -1, -1 },
   };
   #pragma clang diagnostic push
   #pragma clang diagnostic ignored "-Wobjc-multiple-method-names"
   methods[0].selector = @selector(before);
-  methods[1].selector = @selector(testReplay);
-  methods[2].selector = @selector(init);
+  methods[1].selector = @selector(fromArray);
+  methods[2].selector = @selector(fromIterable);
+  methods[3].selector = @selector(fromArityArgs3);
+  methods[4].selector = @selector(fromArityArgs1);
+  methods[5].selector = @selector(testCreate);
+  methods[6].selector = @selector(testCountAFewItems);
+  methods[7].selector = @selector(testCountZeroItems);
+  methods[8].selector = @selector(testCountError);
+  methods[9].selector = @selector(testTakeFirstWithPredicateOfSome);
+  methods[10].selector = @selector(testTakeFirstWithPredicateOfNoneMatchingThePredicate);
+  methods[11].selector = @selector(testTakeFirstOfSome);
+  methods[12].selector = @selector(testTakeFirstOfNone);
+  methods[13].selector = @selector(testFirstOfNone);
+  methods[14].selector = @selector(testFirstWithPredicateOfNoneMatchingThePredicate);
+  methods[15].selector = @selector(testReduce);
+  methods[16].selector = @selector(testReduceWithEmptyObservable);
+  methods[17].selector = @selector(testReduceWithEmptyObservableAndSeed);
+  methods[18].selector = @selector(testReduceWithInitialValue);
+  methods[19].selector = @selector(testOnSubscribeFails);
+  methods[20].selector = @selector(testMaterializeDematerializeChaining);
+  methods[21].selector = @selector(testCustomObservableWithErrorInObserverAsynchronous);
+  methods[22].selector = @selector(testCustomObservableWithErrorInObserverSynchronous);
+  methods[23].selector = @selector(testCustomObservableWithErrorInObservableSynchronous);
+  methods[24].selector = @selector(testPublishLast);
+  methods[25].selector = @selector(testReplay);
+  methods[26].selector = @selector(testCache);
+  methods[27].selector = @selector(testCacheWithCapacity);
+  methods[28].selector = @selector(testErrorThrownWithoutErrorHandlerSynchronous);
+  methods[29].selector = @selector(testErrorThrownWithoutErrorHandlerAsynchronous);
+  methods[30].selector = @selector(testTakeWithErrorInObserver);
+  methods[31].selector = @selector(testOfType);
+  methods[32].selector = @selector(testOfTypeWithPolymorphism);
+  methods[33].selector = @selector(testContains);
+  methods[34].selector = @selector(testContainsWithInexistence);
+  methods[35].selector = @selector(testContainsWithNull);
+  methods[36].selector = @selector(testContainsWithEmptyObservable);
+  methods[37].selector = @selector(testIgnoreElements);
+  methods[38].selector = @selector(testJustWithScheduler);
+  methods[39].selector = @selector(testStartWithWithScheduler);
+  methods[40].selector = @selector(testRangeWithScheduler);
+  methods[41].selector = @selector(testMergeWith);
+  methods[42].selector = @selector(testConcatWith);
+  methods[43].selector = @selector(testAmbWith);
+  methods[44].selector = @selector(testSubscribeWithoutOnError);
+  methods[45].selector = @selector(testTakeWhileToList);
+  methods[46].selector = @selector(testCompose);
+  methods[47].selector = @selector(testErrorThrownIssue1685);
+  methods[48].selector = @selector(testEmptyIdentity);
+  methods[49].selector = @selector(testEmptyIsEmpty);
+  methods[50].selector = @selector(testSubscribingSubscriberAsObserverMaintainsSubscriptionChain);
+  methods[51].selector = @selector(testForEachWithError);
+  methods[52].selector = @selector(testForEachWithNull);
+  methods[53].selector = @selector(nullOnSubscribe);
+  methods[54].selector = @selector(nullObserver);
+  methods[55].selector = @selector(nullSubscriber);
+  methods[56].selector = @selector(testCacheHint);
+  methods[57].selector = @selector(subscribeWithNull);
+  methods[58].selector = @selector(forEachWithNull);
+  methods[59].selector = @selector(observableThrowsWhileSubscriberIsUnsubscribed);
+  methods[60].selector = @selector(observableThrowsWhileOnErrorFails);
+  methods[61].selector = @selector(observableThrowsWhileOnErrorFailsUnsafe);
+  methods[62].selector = @selector(forEachWithError);
+  methods[63].selector = @selector(toFunctionReceivesObservableReturnsResult);
+  methods[64].selector = @selector(init);
   #pragma clang diagnostic pop
   static const J2ObjcFieldInfo fields[] = {
-    { "w_", "LRxObserver;", .constantValue.asLong = 0, 0x0, -1, -1, 3, 4 },
-    { "IS_EVEN", "LRxFunctionsFunc1;", .constantValue.asLong = 0, 0x1a, -1, 5, 6, -1 },
+    { "w_", "LRxObserver;", .constantValue.asLong = 0, 0x0, -1, -1, 66, 67 },
+    { "IS_EVEN", "LRxFunctionsFunc1;", .constantValue.asLong = 0, 0x1a, -1, 68, 69, -1 },
   };
-  static const void *ptrTable[] = { (void *)&RxObservableTests__Annotations$0, "LJavaLangInterruptedException;", (void *)&RxObservableTests__Annotations$1, "Lrx/Observer<Ljava/lang/Integer;>;", (void *)&RxObservableTests__Annotations$2, &RxObservableTests_IS_EVEN, "Lrx/functions/Func1<Ljava/lang/Integer;Ljava/lang/Boolean;>;", "LRxObservableTests_FailingObservable;" };
-  static const J2ObjcClassInfo _RxObservableTests = { "ObservableTests", "rx", ptrTable, methods, fields, 7, 0x1, 3, 2, -1, 7, -1, -1, -1 };
+  static const void *ptrTable[] = { (void *)&RxObservableTests__Annotations$0, (void *)&RxObservableTests__Annotations$1, (void *)&RxObservableTests__Annotations$2, (void *)&RxObservableTests__Annotations$3, (void *)&RxObservableTests__Annotations$4, (void *)&RxObservableTests__Annotations$5, (void *)&RxObservableTests__Annotations$6, (void *)&RxObservableTests__Annotations$7, (void *)&RxObservableTests__Annotations$8, (void *)&RxObservableTests__Annotations$9, (void *)&RxObservableTests__Annotations$10, (void *)&RxObservableTests__Annotations$11, (void *)&RxObservableTests__Annotations$12, (void *)&RxObservableTests__Annotations$13, (void *)&RxObservableTests__Annotations$14, (void *)&RxObservableTests__Annotations$15, (void *)&RxObservableTests__Annotations$16, (void *)&RxObservableTests__Annotations$17, (void *)&RxObservableTests__Annotations$18, (void *)&RxObservableTests__Annotations$19, (void *)&RxObservableTests__Annotations$20, "LJavaLangInterruptedException;", (void *)&RxObservableTests__Annotations$21, (void *)&RxObservableTests__Annotations$22, (void *)&RxObservableTests__Annotations$23, (void *)&RxObservableTests__Annotations$24, (void *)&RxObservableTests__Annotations$25, (void *)&RxObservableTests__Annotations$26, (void *)&RxObservableTests__Annotations$27, (void *)&RxObservableTests__Annotations$28, (void *)&RxObservableTests__Annotations$29, (void *)&RxObservableTests__Annotations$30, (void *)&RxObservableTests__Annotations$31, (void *)&RxObservableTests__Annotations$32, (void *)&RxObservableTests__Annotations$33, (void *)&RxObservableTests__Annotations$34, (void *)&RxObservableTests__Annotations$35, (void *)&RxObservableTests__Annotations$36, (void *)&RxObservableTests__Annotations$37, (void *)&RxObservableTests__Annotations$38, (void *)&RxObservableTests__Annotations$39, (void *)&RxObservableTests__Annotations$40, (void *)&RxObservableTests__Annotations$41, (void *)&RxObservableTests__Annotations$42, (void *)&RxObservableTests__Annotations$43, (void *)&RxObservableTests__Annotations$44, (void *)&RxObservableTests__Annotations$45, (void *)&RxObservableTests__Annotations$46, "LJavaLangException;", (void *)&RxObservableTests__Annotations$47, (void *)&RxObservableTests__Annotations$48, (void *)&RxObservableTests__Annotations$49, (void *)&RxObservableTests__Annotations$50, (void *)&RxObservableTests__Annotations$51, (void *)&RxObservableTests__Annotations$52, (void *)&RxObservableTests__Annotations$53, (void *)&RxObservableTests__Annotations$54, (void *)&RxObservableTests__Annotations$55, (void *)&RxObservableTests__Annotations$56, (void *)&RxObservableTests__Annotations$57, (void *)&RxObservableTests__Annotations$58, (void *)&RxObservableTests__Annotations$59, (void *)&RxObservableTests__Annotations$60, (void *)&RxObservableTests__Annotations$61, (void *)&RxObservableTests__Annotations$62, (void *)&RxObservableTests__Annotations$63, "Lrx/Observer<Ljava/lang/Integer;>;", (void *)&RxObservableTests__Annotations$64, &RxObservableTests_IS_EVEN, "Lrx/functions/Func1<Ljava/lang/Integer;Ljava/lang/Boolean;>;", "LRxObservableTests_FailingObservable;" };
+  static const J2ObjcClassInfo _RxObservableTests = { "ObservableTests", "rx", ptrTable, methods, fields, 7, 0x1, 65, 2, -1, 70, -1, -1, -1 };
   return &_RxObservableTests;
 }
 
@@ -235,6 +2282,254 @@ IOSObjectArray *RxObservableTests__Annotations$1() {
 }
 
 IOSObjectArray *RxObservableTests__Annotations$2() {
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+}
+
+IOSObjectArray *RxObservableTests__Annotations$3() {
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+}
+
+IOSObjectArray *RxObservableTests__Annotations$4() {
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+}
+
+IOSObjectArray *RxObservableTests__Annotations$5() {
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+}
+
+IOSObjectArray *RxObservableTests__Annotations$6() {
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+}
+
+IOSObjectArray *RxObservableTests__Annotations$7() {
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+}
+
+IOSObjectArray *RxObservableTests__Annotations$8() {
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+}
+
+IOSObjectArray *RxObservableTests__Annotations$9() {
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+}
+
+IOSObjectArray *RxObservableTests__Annotations$10() {
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+}
+
+IOSObjectArray *RxObservableTests__Annotations$11() {
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+}
+
+IOSObjectArray *RxObservableTests__Annotations$12() {
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+}
+
+IOSObjectArray *RxObservableTests__Annotations$13() {
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+}
+
+IOSObjectArray *RxObservableTests__Annotations$14() {
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+}
+
+IOSObjectArray *RxObservableTests__Annotations$15() {
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+}
+
+IOSObjectArray *RxObservableTests__Annotations$16() {
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(JavaUtilNoSuchElementException_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+}
+
+IOSObjectArray *RxObservableTests__Annotations$17() {
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+}
+
+IOSObjectArray *RxObservableTests__Annotations$18() {
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+}
+
+IOSObjectArray *RxObservableTests__Annotations$19() {
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+}
+
+IOSObjectArray *RxObservableTests__Annotations$20() {
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+}
+
+IOSObjectArray *RxObservableTests__Annotations$21() {
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+}
+
+IOSObjectArray *RxObservableTests__Annotations$22() {
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+}
+
+IOSObjectArray *RxObservableTests__Annotations$23() {
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+}
+
+IOSObjectArray *RxObservableTests__Annotations$24() {
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+}
+
+IOSObjectArray *RxObservableTests__Annotations$25() {
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+}
+
+IOSObjectArray *RxObservableTests__Annotations$26() {
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+}
+
+IOSObjectArray *RxObservableTests__Annotations$27() {
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+}
+
+IOSObjectArray *RxObservableTests__Annotations$28() {
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+}
+
+IOSObjectArray *RxObservableTests__Annotations$29() {
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+}
+
+IOSObjectArray *RxObservableTests__Annotations$30() {
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+}
+
+IOSObjectArray *RxObservableTests__Annotations$31() {
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+}
+
+IOSObjectArray *RxObservableTests__Annotations$32() {
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+}
+
+IOSObjectArray *RxObservableTests__Annotations$33() {
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+}
+
+IOSObjectArray *RxObservableTests__Annotations$34() {
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+}
+
+IOSObjectArray *RxObservableTests__Annotations$35() {
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+}
+
+IOSObjectArray *RxObservableTests__Annotations$36() {
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+}
+
+IOSObjectArray *RxObservableTests__Annotations$37() {
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+}
+
+IOSObjectArray *RxObservableTests__Annotations$38() {
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+}
+
+IOSObjectArray *RxObservableTests__Annotations$39() {
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+}
+
+IOSObjectArray *RxObservableTests__Annotations$40() {
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+}
+
+IOSObjectArray *RxObservableTests__Annotations$41() {
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+}
+
+IOSObjectArray *RxObservableTests__Annotations$42() {
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+}
+
+IOSObjectArray *RxObservableTests__Annotations$43() {
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+}
+
+IOSObjectArray *RxObservableTests__Annotations$44() {
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(RxExceptionsOnErrorNotImplementedException_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+}
+
+IOSObjectArray *RxObservableTests__Annotations$45() {
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+}
+
+IOSObjectArray *RxObservableTests__Annotations$46() {
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+}
+
+IOSObjectArray *RxObservableTests__Annotations$47() {
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+}
+
+IOSObjectArray *RxObservableTests__Annotations$48() {
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+}
+
+IOSObjectArray *RxObservableTests__Annotations$49() {
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+}
+
+IOSObjectArray *RxObservableTests__Annotations$50() {
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+}
+
+IOSObjectArray *RxObservableTests__Annotations$51() {
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(RxExceptionsOnErrorNotImplementedException_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+}
+
+IOSObjectArray *RxObservableTests__Annotations$52() {
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(JavaLangIllegalArgumentException_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+}
+
+IOSObjectArray *RxObservableTests__Annotations$53() {
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+}
+
+IOSObjectArray *RxObservableTests__Annotations$54() {
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+}
+
+IOSObjectArray *RxObservableTests__Annotations$55() {
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+}
+
+IOSObjectArray *RxObservableTests__Annotations$56() {
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+}
+
+IOSObjectArray *RxObservableTests__Annotations$57() {
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+}
+
+IOSObjectArray *RxObservableTests__Annotations$58() {
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+}
+
+IOSObjectArray *RxObservableTests__Annotations$59() {
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+}
+
+IOSObjectArray *RxObservableTests__Annotations$60() {
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+}
+
+IOSObjectArray *RxObservableTests__Annotations$61() {
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+}
+
+IOSObjectArray *RxObservableTests__Annotations$62() {
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+}
+
+IOSObjectArray *RxObservableTests__Annotations$63() {
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+}
+
+IOSObjectArray *RxObservableTests__Annotations$64() {
   return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgMockitoMock(JreLoadEnum(OrgMockitoAnswers, RETURNS_DEFAULTS), [IOSObjectArray arrayWithObjects:(id[]){  } count:0 type:NSObject_class_()], @"") } count:1 type:JavaLangAnnotationAnnotation_class_()];
 }
 
@@ -364,12 +2659,926 @@ RxObservableTests_$1 *create_RxObservableTests_$1_init() {
 
 @implementation RxObservableTests_$2
 
+- (void)callWithId:(RxSubscriber *)Observer {
+  [((RxSubscriber *) nil_chk(Observer)) onNextWithId:@"one"];
+  [Observer onNextWithId:@"two"];
+  [Observer onNextWithId:@"three"];
+  [Observer onCompleted];
+}
+
+J2OBJC_IGNORE_DESIGNATED_BEGIN
+- (instancetype)init {
+  RxObservableTests_$2_init(self);
+  return self;
+}
+J2OBJC_IGNORE_DESIGNATED_END
+
++ (const J2ObjcClassInfo *)__metadata {
+  static J2ObjcMethodInfo methods[] = {
+    { NULL, "V", 0x1, 0, 1, -1, 2, -1, -1 },
+    { NULL, NULL, 0x0, -1, -1, -1, -1, -1, -1 },
+  };
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Wobjc-multiple-method-names"
+  methods[0].selector = @selector(callWithId:);
+  methods[1].selector = @selector(init);
+  #pragma clang diagnostic pop
+  static const void *ptrTable[] = { "call", "LRxSubscriber;", "(Lrx/Subscriber<-Ljava/lang/String;>;)V", "LRxObservableTests;", "testCreate", "Ljava/lang/Object;Lrx/Observable$OnSubscribe<Ljava/lang/String;>;" };
+  static const J2ObjcClassInfo _RxObservableTests_$2 = { "", "rx", ptrTable, methods, NULL, 7, 0x8008, 2, 0, 3, -1, 4, 5, -1 };
+  return &_RxObservableTests_$2;
+}
+
+@end
+
+void RxObservableTests_$2_init(RxObservableTests_$2 *self) {
+  NSObject_init(self);
+}
+
+RxObservableTests_$2 *new_RxObservableTests_$2_init() {
+  J2OBJC_NEW_IMPL(RxObservableTests_$2, init)
+}
+
+RxObservableTests_$2 *create_RxObservableTests_$2_init() {
+  J2OBJC_CREATE_IMPL(RxObservableTests_$2, init)
+}
+
+@implementation RxObservableTests_$3
+
+- (void)callWithId:(RxSubscriber *)obsv {
+  [((RxSubscriber *) nil_chk(obsv)) onErrorWithNSException:create_JavaLangRuntimeException_init()];
+}
+
+J2OBJC_IGNORE_DESIGNATED_BEGIN
+- (instancetype)init {
+  RxObservableTests_$3_init(self);
+  return self;
+}
+J2OBJC_IGNORE_DESIGNATED_END
+
++ (const J2ObjcClassInfo *)__metadata {
+  static J2ObjcMethodInfo methods[] = {
+    { NULL, "V", 0x1, 0, 1, -1, 2, -1, -1 },
+    { NULL, NULL, 0x0, -1, -1, -1, -1, -1, -1 },
+  };
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Wobjc-multiple-method-names"
+  methods[0].selector = @selector(callWithId:);
+  methods[1].selector = @selector(init);
+  #pragma clang diagnostic pop
+  static const void *ptrTable[] = { "call", "LRxSubscriber;", "(Lrx/Subscriber<-Ljava/lang/String;>;)V", "LRxObservableTests;", "testCountError", "Ljava/lang/Object;Lrx/Observable$OnSubscribe<Ljava/lang/String;>;" };
+  static const J2ObjcClassInfo _RxObservableTests_$3 = { "", "rx", ptrTable, methods, NULL, 7, 0x8008, 2, 0, 3, -1, 4, 5, -1 };
+  return &_RxObservableTests_$3;
+}
+
+@end
+
+void RxObservableTests_$3_init(RxObservableTests_$3 *self) {
+  NSObject_init(self);
+}
+
+RxObservableTests_$3 *new_RxObservableTests_$3_init() {
+  J2OBJC_NEW_IMPL(RxObservableTests_$3, init)
+}
+
+RxObservableTests_$3 *create_RxObservableTests_$3_init() {
+  J2OBJC_CREATE_IMPL(RxObservableTests_$3, init)
+}
+
+@implementation RxObservableTests_$4
+
+- (JavaLangInteger *)callWithId:(JavaLangInteger *)t1
+                         withId:(JavaLangInteger *)t2 {
+  return JavaLangInteger_valueOfWithInt_([((JavaLangInteger *) nil_chk(t1)) intValue] + [((JavaLangInteger *) nil_chk(t2)) intValue]);
+}
+
+J2OBJC_IGNORE_DESIGNATED_BEGIN
+- (instancetype)init {
+  RxObservableTests_$4_init(self);
+  return self;
+}
+J2OBJC_IGNORE_DESIGNATED_END
+
++ (const J2ObjcClassInfo *)__metadata {
+  static J2ObjcMethodInfo methods[] = {
+    { NULL, "LJavaLangInteger;", 0x1, 0, 1, -1, -1, -1, -1 },
+    { NULL, NULL, 0x0, -1, -1, -1, -1, -1, -1 },
+  };
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Wobjc-multiple-method-names"
+  methods[0].selector = @selector(callWithId:withId:);
+  methods[1].selector = @selector(init);
+  #pragma clang diagnostic pop
+  static const void *ptrTable[] = { "call", "LJavaLangInteger;LJavaLangInteger;", "LRxObservableTests;", "testReduce", "Ljava/lang/Object;Lrx/functions/Func2<Ljava/lang/Integer;Ljava/lang/Integer;Ljava/lang/Integer;>;" };
+  static const J2ObjcClassInfo _RxObservableTests_$4 = { "", "rx", ptrTable, methods, NULL, 7, 0x8008, 2, 0, 2, -1, 3, 4, -1 };
+  return &_RxObservableTests_$4;
+}
+
+@end
+
+void RxObservableTests_$4_init(RxObservableTests_$4 *self) {
+  NSObject_init(self);
+}
+
+RxObservableTests_$4 *new_RxObservableTests_$4_init() {
+  J2OBJC_NEW_IMPL(RxObservableTests_$4, init)
+}
+
+RxObservableTests_$4 *create_RxObservableTests_$4_init() {
+  J2OBJC_CREATE_IMPL(RxObservableTests_$4, init)
+}
+
+@implementation RxObservableTests_$5
+
+- (JavaLangInteger *)callWithId:(JavaLangInteger *)t1
+                         withId:(JavaLangInteger *)t2 {
+  return JavaLangInteger_valueOfWithInt_([((JavaLangInteger *) nil_chk(t1)) intValue] + [((JavaLangInteger *) nil_chk(t2)) intValue]);
+}
+
+J2OBJC_IGNORE_DESIGNATED_BEGIN
+- (instancetype)init {
+  RxObservableTests_$5_init(self);
+  return self;
+}
+J2OBJC_IGNORE_DESIGNATED_END
+
++ (const J2ObjcClassInfo *)__metadata {
+  static J2ObjcMethodInfo methods[] = {
+    { NULL, "LJavaLangInteger;", 0x1, 0, 1, -1, -1, -1, -1 },
+    { NULL, NULL, 0x0, -1, -1, -1, -1, -1, -1 },
+  };
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Wobjc-multiple-method-names"
+  methods[0].selector = @selector(callWithId:withId:);
+  methods[1].selector = @selector(init);
+  #pragma clang diagnostic pop
+  static const void *ptrTable[] = { "call", "LJavaLangInteger;LJavaLangInteger;", "LRxObservableTests;", "testReduceWithEmptyObservable", "Ljava/lang/Object;Lrx/functions/Func2<Ljava/lang/Integer;Ljava/lang/Integer;Ljava/lang/Integer;>;" };
+  static const J2ObjcClassInfo _RxObservableTests_$5 = { "", "rx", ptrTable, methods, NULL, 7, 0x8008, 2, 0, 2, -1, 3, 4, -1 };
+  return &_RxObservableTests_$5;
+}
+
+@end
+
+void RxObservableTests_$5_init(RxObservableTests_$5 *self) {
+  NSObject_init(self);
+}
+
+RxObservableTests_$5 *new_RxObservableTests_$5_init() {
+  J2OBJC_NEW_IMPL(RxObservableTests_$5, init)
+}
+
+RxObservableTests_$5 *create_RxObservableTests_$5_init() {
+  J2OBJC_CREATE_IMPL(RxObservableTests_$5, init)
+}
+
+@implementation RxObservableTests_$6
+
+- (void)callWithId:(JavaLangInteger *)t1 {
+}
+
+J2OBJC_IGNORE_DESIGNATED_BEGIN
+- (instancetype)init {
+  RxObservableTests_$6_init(self);
+  return self;
+}
+J2OBJC_IGNORE_DESIGNATED_END
+
++ (const J2ObjcClassInfo *)__metadata {
+  static J2ObjcMethodInfo methods[] = {
+    { NULL, "V", 0x1, 0, 1, -1, -1, -1, -1 },
+    { NULL, NULL, 0x0, -1, -1, -1, -1, -1, -1 },
+  };
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Wobjc-multiple-method-names"
+  methods[0].selector = @selector(callWithId:);
+  methods[1].selector = @selector(init);
+  #pragma clang diagnostic pop
+  static const void *ptrTable[] = { "call", "LJavaLangInteger;", "LRxObservableTests;", "testReduceWithEmptyObservable", "Ljava/lang/Object;Lrx/functions/Action1<Ljava/lang/Integer;>;" };
+  static const J2ObjcClassInfo _RxObservableTests_$6 = { "", "rx", ptrTable, methods, NULL, 7, 0x8008, 2, 0, 2, -1, 3, 4, -1 };
+  return &_RxObservableTests_$6;
+}
+
+@end
+
+void RxObservableTests_$6_init(RxObservableTests_$6 *self) {
+  NSObject_init(self);
+}
+
+RxObservableTests_$6 *new_RxObservableTests_$6_init() {
+  J2OBJC_NEW_IMPL(RxObservableTests_$6, init)
+}
+
+RxObservableTests_$6 *create_RxObservableTests_$6_init() {
+  J2OBJC_CREATE_IMPL(RxObservableTests_$6, init)
+}
+
+@implementation RxObservableTests_$7
+
+- (JavaLangInteger *)callWithId:(JavaLangInteger *)t1
+                         withId:(JavaLangInteger *)t2 {
+  return JavaLangInteger_valueOfWithInt_([((JavaLangInteger *) nil_chk(t1)) intValue] + [((JavaLangInteger *) nil_chk(t2)) intValue]);
+}
+
+J2OBJC_IGNORE_DESIGNATED_BEGIN
+- (instancetype)init {
+  RxObservableTests_$7_init(self);
+  return self;
+}
+J2OBJC_IGNORE_DESIGNATED_END
+
++ (const J2ObjcClassInfo *)__metadata {
+  static J2ObjcMethodInfo methods[] = {
+    { NULL, "LJavaLangInteger;", 0x1, 0, 1, -1, -1, -1, -1 },
+    { NULL, NULL, 0x0, -1, -1, -1, -1, -1, -1 },
+  };
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Wobjc-multiple-method-names"
+  methods[0].selector = @selector(callWithId:withId:);
+  methods[1].selector = @selector(init);
+  #pragma clang diagnostic pop
+  static const void *ptrTable[] = { "call", "LJavaLangInteger;LJavaLangInteger;", "LRxObservableTests;", "testReduceWithEmptyObservableAndSeed", "Ljava/lang/Object;Lrx/functions/Func2<Ljava/lang/Integer;Ljava/lang/Integer;Ljava/lang/Integer;>;" };
+  static const J2ObjcClassInfo _RxObservableTests_$7 = { "", "rx", ptrTable, methods, NULL, 7, 0x8008, 2, 0, 2, -1, 3, 4, -1 };
+  return &_RxObservableTests_$7;
+}
+
+@end
+
+void RxObservableTests_$7_init(RxObservableTests_$7 *self) {
+  NSObject_init(self);
+}
+
+RxObservableTests_$7 *new_RxObservableTests_$7_init() {
+  J2OBJC_NEW_IMPL(RxObservableTests_$7, init)
+}
+
+RxObservableTests_$7 *create_RxObservableTests_$7_init() {
+  J2OBJC_CREATE_IMPL(RxObservableTests_$7, init)
+}
+
+@implementation RxObservableTests_$8
+
+- (JavaLangInteger *)callWithId:(JavaLangInteger *)t1
+                         withId:(JavaLangInteger *)t2 {
+  return JavaLangInteger_valueOfWithInt_([((JavaLangInteger *) nil_chk(t1)) intValue] + [((JavaLangInteger *) nil_chk(t2)) intValue]);
+}
+
+J2OBJC_IGNORE_DESIGNATED_BEGIN
+- (instancetype)init {
+  RxObservableTests_$8_init(self);
+  return self;
+}
+J2OBJC_IGNORE_DESIGNATED_END
+
++ (const J2ObjcClassInfo *)__metadata {
+  static J2ObjcMethodInfo methods[] = {
+    { NULL, "LJavaLangInteger;", 0x1, 0, 1, -1, -1, -1, -1 },
+    { NULL, NULL, 0x0, -1, -1, -1, -1, -1, -1 },
+  };
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Wobjc-multiple-method-names"
+  methods[0].selector = @selector(callWithId:withId:);
+  methods[1].selector = @selector(init);
+  #pragma clang diagnostic pop
+  static const void *ptrTable[] = { "call", "LJavaLangInteger;LJavaLangInteger;", "LRxObservableTests;", "testReduceWithInitialValue", "Ljava/lang/Object;Lrx/functions/Func2<Ljava/lang/Integer;Ljava/lang/Integer;Ljava/lang/Integer;>;" };
+  static const J2ObjcClassInfo _RxObservableTests_$8 = { "", "rx", ptrTable, methods, NULL, 7, 0x8008, 2, 0, 2, -1, 3, 4, -1 };
+  return &_RxObservableTests_$8;
+}
+
+@end
+
+void RxObservableTests_$8_init(RxObservableTests_$8 *self) {
+  NSObject_init(self);
+}
+
+RxObservableTests_$8 *new_RxObservableTests_$8_init() {
+  J2OBJC_NEW_IMPL(RxObservableTests_$8, init)
+}
+
+RxObservableTests_$8 *create_RxObservableTests_$8_init() {
+  J2OBJC_CREATE_IMPL(RxObservableTests_$8, init)
+}
+
+@implementation RxObservableTests_$9
+
+- (void)callWithId:(RxSubscriber *)t1 {
+  @throw val$re_;
+}
+
+- (instancetype)initWithJavaLangRuntimeException:(JavaLangRuntimeException *)capture$0 {
+  RxObservableTests_$9_initWithJavaLangRuntimeException_(self, capture$0);
+  return self;
+}
+
+- (void)dealloc {
+  RELEASE_(val$re_);
+  [super dealloc];
+}
+
++ (const J2ObjcClassInfo *)__metadata {
+  static J2ObjcMethodInfo methods[] = {
+    { NULL, "V", 0x1, 0, 1, -1, 2, -1, -1 },
+    { NULL, NULL, 0x0, -1, 3, -1, -1, -1, -1 },
+  };
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Wobjc-multiple-method-names"
+  methods[0].selector = @selector(callWithId:);
+  methods[1].selector = @selector(initWithJavaLangRuntimeException:);
+  #pragma clang diagnostic pop
+  static const J2ObjcFieldInfo fields[] = {
+    { "val$re_", "LJavaLangRuntimeException;", .constantValue.asLong = 0, 0x1012, -1, -1, -1, -1 },
+  };
+  static const void *ptrTable[] = { "call", "LRxSubscriber;", "(Lrx/Subscriber<-Ljava/lang/String;>;)V", "LJavaLangRuntimeException;", "LRxObservableTests;", "testOnSubscribeFails", "Ljava/lang/Object;Lrx/Observable$OnSubscribe<Ljava/lang/String;>;" };
+  static const J2ObjcClassInfo _RxObservableTests_$9 = { "", "rx", ptrTable, methods, fields, 7, 0x8008, 2, 1, 4, -1, 5, 6, -1 };
+  return &_RxObservableTests_$9;
+}
+
+@end
+
+void RxObservableTests_$9_initWithJavaLangRuntimeException_(RxObservableTests_$9 *self, JavaLangRuntimeException *capture$0) {
+  JreStrongAssign(&self->val$re_, capture$0);
+  NSObject_init(self);
+}
+
+RxObservableTests_$9 *new_RxObservableTests_$9_initWithJavaLangRuntimeException_(JavaLangRuntimeException *capture$0) {
+  J2OBJC_NEW_IMPL(RxObservableTests_$9, initWithJavaLangRuntimeException_, capture$0)
+}
+
+RxObservableTests_$9 *create_RxObservableTests_$9_initWithJavaLangRuntimeException_(JavaLangRuntimeException *capture$0) {
+  J2OBJC_CREATE_IMPL(RxObservableTests_$9, initWithJavaLangRuntimeException_, capture$0)
+}
+
+@implementation RxObservableTests_$10
+
 - (void)callWithId:(RxSubscriber *)observer {
-  [create_JavaLangThread_initWithJavaLangRunnable_(create_RxObservableTests_$2_$1_initWithRxObservableTests_$2_withRxSubscriber_(self, observer)) start];
+  RxSubscriptionsBooleanSubscription *s = create_RxSubscriptionsBooleanSubscription_init();
+  [create_JavaLangThread_initWithJavaLangRunnable_(create_RxObservableTests_$10_$1_initWithRxObservableTests_$10_withRxSubscriptionsBooleanSubscription_withRxSubscriber_(self, s, observer)) start];
+}
+
+- (instancetype)initWithJavaUtilConcurrentCountDownLatch:(JavaUtilConcurrentCountDownLatch *)capture$0 {
+  RxObservableTests_$10_initWithJavaUtilConcurrentCountDownLatch_(self, capture$0);
+  return self;
+}
+
+- (void)dealloc {
+  RELEASE_(val$latch_);
+  [super dealloc];
+}
+
++ (const J2ObjcClassInfo *)__metadata {
+  static J2ObjcMethodInfo methods[] = {
+    { NULL, "V", 0x1, 0, 1, -1, 2, -1, -1 },
+    { NULL, NULL, 0x0, -1, 3, -1, -1, -1, -1 },
+  };
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Wobjc-multiple-method-names"
+  methods[0].selector = @selector(callWithId:);
+  methods[1].selector = @selector(initWithJavaUtilConcurrentCountDownLatch:);
+  #pragma clang diagnostic pop
+  static const J2ObjcFieldInfo fields[] = {
+    { "val$latch_", "LJavaUtilConcurrentCountDownLatch;", .constantValue.asLong = 0, 0x1012, -1, -1, -1, -1 },
+  };
+  static const void *ptrTable[] = { "call", "LRxSubscriber;", "(Lrx/Subscriber<-Ljava/lang/String;>;)V", "LJavaUtilConcurrentCountDownLatch;", "LRxObservableTests;", "testCustomObservableWithErrorInObserverAsynchronous", "Ljava/lang/Object;Lrx/Observable$OnSubscribe<Ljava/lang/String;>;" };
+  static const J2ObjcClassInfo _RxObservableTests_$10 = { "", "rx", ptrTable, methods, fields, 7, 0x8008, 2, 1, 4, -1, 5, 6, -1 };
+  return &_RxObservableTests_$10;
+}
+
+@end
+
+void RxObservableTests_$10_initWithJavaUtilConcurrentCountDownLatch_(RxObservableTests_$10 *self, JavaUtilConcurrentCountDownLatch *capture$0) {
+  JreStrongAssign(&self->val$latch_, capture$0);
+  NSObject_init(self);
+}
+
+RxObservableTests_$10 *new_RxObservableTests_$10_initWithJavaUtilConcurrentCountDownLatch_(JavaUtilConcurrentCountDownLatch *capture$0) {
+  J2OBJC_NEW_IMPL(RxObservableTests_$10, initWithJavaUtilConcurrentCountDownLatch_, capture$0)
+}
+
+RxObservableTests_$10 *create_RxObservableTests_$10_initWithJavaUtilConcurrentCountDownLatch_(JavaUtilConcurrentCountDownLatch *capture$0) {
+  J2OBJC_CREATE_IMPL(RxObservableTests_$10, initWithJavaUtilConcurrentCountDownLatch_, capture$0)
+}
+
+@implementation RxObservableTests_$10_$1
+
+- (void)run {
+  @try {
+    if (![((RxSubscriptionsBooleanSubscription *) nil_chk(val$s_)) isUnsubscribed]) {
+      [((RxSubscriber *) nil_chk(val$observer_)) onNextWithId:@"1"];
+      [val$observer_ onNextWithId:@"2"];
+      [val$observer_ onNextWithId:@"three"];
+      [val$observer_ onNextWithId:@"4"];
+      [val$observer_ onCompleted];
+    }
+  }
+  @finally {
+    [((JavaUtilConcurrentCountDownLatch *) nil_chk(this$0_->val$latch_)) countDown];
+  }
+}
+
+- (instancetype)initWithRxObservableTests_$10:(RxObservableTests_$10 *)outer$
+       withRxSubscriptionsBooleanSubscription:(RxSubscriptionsBooleanSubscription *)capture$0
+                             withRxSubscriber:(RxSubscriber *)capture$1 {
+  RxObservableTests_$10_$1_initWithRxObservableTests_$10_withRxSubscriptionsBooleanSubscription_withRxSubscriber_(self, outer$, capture$0, capture$1);
+  return self;
+}
+
+- (void)dealloc {
+  RELEASE_(this$0_);
+  RELEASE_(val$s_);
+  RELEASE_(val$observer_);
+  [super dealloc];
+}
+
++ (const J2ObjcClassInfo *)__metadata {
+  static J2ObjcMethodInfo methods[] = {
+    { NULL, "V", 0x1, -1, -1, -1, -1, -1, -1 },
+    { NULL, NULL, 0x0, -1, 0, -1, 1, -1, -1 },
+  };
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Wobjc-multiple-method-names"
+  methods[0].selector = @selector(run);
+  methods[1].selector = @selector(initWithRxObservableTests_$10:withRxSubscriptionsBooleanSubscription:withRxSubscriber:);
+  #pragma clang diagnostic pop
+  static const J2ObjcFieldInfo fields[] = {
+    { "this$0_", "LRxObservableTests_$10;", .constantValue.asLong = 0, 0x1012, -1, -1, -1, -1 },
+    { "val$s_", "LRxSubscriptionsBooleanSubscription;", .constantValue.asLong = 0, 0x1012, -1, -1, -1, -1 },
+    { "val$observer_", "LRxSubscriber;", .constantValue.asLong = 0, 0x1012, -1, -1, 2, -1 },
+  };
+  static const void *ptrTable[] = { "LRxObservableTests_$10;LRxSubscriptionsBooleanSubscription;LRxSubscriber;", "(Lrx/ObservableTests$10;Lrx/subscriptions/BooleanSubscription;Lrx/Subscriber<-Ljava/lang/String;>;)V", "Lrx/Subscriber<-Ljava/lang/String;>;", "LRxObservableTests_$10;", "callWithId:" };
+  static const J2ObjcClassInfo _RxObservableTests_$10_$1 = { "", "rx", ptrTable, methods, fields, 7, 0x8008, 2, 3, 3, -1, 4, -1, -1 };
+  return &_RxObservableTests_$10_$1;
+}
+
+@end
+
+void RxObservableTests_$10_$1_initWithRxObservableTests_$10_withRxSubscriptionsBooleanSubscription_withRxSubscriber_(RxObservableTests_$10_$1 *self, RxObservableTests_$10 *outer$, RxSubscriptionsBooleanSubscription *capture$0, RxSubscriber *capture$1) {
+  JreStrongAssign(&self->this$0_, outer$);
+  JreStrongAssign(&self->val$s_, capture$0);
+  JreStrongAssign(&self->val$observer_, capture$1);
+  NSObject_init(self);
+}
+
+RxObservableTests_$10_$1 *new_RxObservableTests_$10_$1_initWithRxObservableTests_$10_withRxSubscriptionsBooleanSubscription_withRxSubscriber_(RxObservableTests_$10 *outer$, RxSubscriptionsBooleanSubscription *capture$0, RxSubscriber *capture$1) {
+  J2OBJC_NEW_IMPL(RxObservableTests_$10_$1, initWithRxObservableTests_$10_withRxSubscriptionsBooleanSubscription_withRxSubscriber_, outer$, capture$0, capture$1)
+}
+
+RxObservableTests_$10_$1 *create_RxObservableTests_$10_$1_initWithRxObservableTests_$10_withRxSubscriptionsBooleanSubscription_withRxSubscriber_(RxObservableTests_$10 *outer$, RxSubscriptionsBooleanSubscription *capture$0, RxSubscriber *capture$1) {
+  J2OBJC_CREATE_IMPL(RxObservableTests_$10_$1, initWithRxObservableTests_$10_withRxSubscriptionsBooleanSubscription_withRxSubscriber_, outer$, capture$0, capture$1)
+}
+
+@implementation RxObservableTests_$11
+
+- (void)onCompleted {
+  [((JavaIoPrintStream *) nil_chk(JreLoadStatic(JavaLangSystem, out))) printlnWithNSString:@"completed"];
+}
+
+- (void)onErrorWithNSException:(NSException *)e {
+  [((JavaUtilConcurrentAtomicAtomicReference *) nil_chk(val$error_)) setWithId:e];
+  [((JavaIoPrintStream *) nil_chk(JreLoadStatic(JavaLangSystem, out))) printlnWithNSString:@"error"];
+  [((NSException *) nil_chk(e)) printStackTrace];
+}
+
+- (void)onNextWithId:(NSString *)v {
+  jint num = JavaLangInteger_parseIntWithNSString_(v);
+  [((JavaIoPrintStream *) nil_chk(JreLoadStatic(JavaLangSystem, out))) printlnWithInt:num];
+  [((JavaUtilConcurrentAtomicAtomicInteger *) nil_chk(val$count_)) incrementAndGet];
+}
+
+- (instancetype)initWithJavaUtilConcurrentAtomicAtomicReference:(JavaUtilConcurrentAtomicAtomicReference *)capture$0
+                      withJavaUtilConcurrentAtomicAtomicInteger:(JavaUtilConcurrentAtomicAtomicInteger *)capture$1 {
+  RxObservableTests_$11_initWithJavaUtilConcurrentAtomicAtomicReference_withJavaUtilConcurrentAtomicAtomicInteger_(self, capture$0, capture$1);
+  return self;
+}
+
+- (void)dealloc {
+  RELEASE_(val$error_);
+  RELEASE_(val$count_);
+  [super dealloc];
+}
+
++ (const J2ObjcClassInfo *)__metadata {
+  static J2ObjcMethodInfo methods[] = {
+    { NULL, "V", 0x1, -1, -1, -1, -1, -1, -1 },
+    { NULL, "V", 0x1, 0, 1, -1, -1, -1, -1 },
+    { NULL, "V", 0x1, 2, 3, -1, -1, -1, -1 },
+    { NULL, NULL, 0x0, -1, 4, -1, 5, -1, -1 },
+  };
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Wobjc-multiple-method-names"
+  methods[0].selector = @selector(onCompleted);
+  methods[1].selector = @selector(onErrorWithNSException:);
+  methods[2].selector = @selector(onNextWithId:);
+  methods[3].selector = @selector(initWithJavaUtilConcurrentAtomicAtomicReference:withJavaUtilConcurrentAtomicAtomicInteger:);
+  #pragma clang diagnostic pop
+  static const J2ObjcFieldInfo fields[] = {
+    { "val$error_", "LJavaUtilConcurrentAtomicAtomicReference;", .constantValue.asLong = 0, 0x1012, -1, -1, 6, -1 },
+    { "val$count_", "LJavaUtilConcurrentAtomicAtomicInteger;", .constantValue.asLong = 0, 0x1012, -1, -1, -1, -1 },
+  };
+  static const void *ptrTable[] = { "onError", "LNSException;", "onNext", "LNSString;", "LJavaUtilConcurrentAtomicAtomicReference;LJavaUtilConcurrentAtomicAtomicInteger;", "(Ljava/util/concurrent/atomic/AtomicReference<Ljava/lang/Throwable;>;Ljava/util/concurrent/atomic/AtomicInteger;)V", "Ljava/util/concurrent/atomic/AtomicReference<Ljava/lang/Throwable;>;", "LRxObservableTests;", "testCustomObservableWithErrorInObserverAsynchronous", "Lrx/Subscriber<Ljava/lang/String;>;" };
+  static const J2ObjcClassInfo _RxObservableTests_$11 = { "", "rx", ptrTable, methods, fields, 7, 0x8008, 4, 2, 7, -1, 8, 9, -1 };
+  return &_RxObservableTests_$11;
+}
+
+@end
+
+void RxObservableTests_$11_initWithJavaUtilConcurrentAtomicAtomicReference_withJavaUtilConcurrentAtomicAtomicInteger_(RxObservableTests_$11 *self, JavaUtilConcurrentAtomicAtomicReference *capture$0, JavaUtilConcurrentAtomicAtomicInteger *capture$1) {
+  JreStrongAssign(&self->val$error_, capture$0);
+  JreStrongAssign(&self->val$count_, capture$1);
+  RxSubscriber_init(self);
+}
+
+RxObservableTests_$11 *new_RxObservableTests_$11_initWithJavaUtilConcurrentAtomicAtomicReference_withJavaUtilConcurrentAtomicAtomicInteger_(JavaUtilConcurrentAtomicAtomicReference *capture$0, JavaUtilConcurrentAtomicAtomicInteger *capture$1) {
+  J2OBJC_NEW_IMPL(RxObservableTests_$11, initWithJavaUtilConcurrentAtomicAtomicReference_withJavaUtilConcurrentAtomicAtomicInteger_, capture$0, capture$1)
+}
+
+RxObservableTests_$11 *create_RxObservableTests_$11_initWithJavaUtilConcurrentAtomicAtomicReference_withJavaUtilConcurrentAtomicAtomicInteger_(JavaUtilConcurrentAtomicAtomicReference *capture$0, JavaUtilConcurrentAtomicAtomicInteger *capture$1) {
+  J2OBJC_CREATE_IMPL(RxObservableTests_$11, initWithJavaUtilConcurrentAtomicAtomicReference_withJavaUtilConcurrentAtomicAtomicInteger_, capture$0, capture$1)
+}
+
+@implementation RxObservableTests_$12
+
+- (void)callWithId:(RxSubscriber *)observer {
+  [((RxSubscriber *) nil_chk(observer)) onNextWithId:@"1"];
+  [observer onNextWithId:@"2"];
+  [observer onNextWithId:@"three"];
+  [observer onNextWithId:@"4"];
+  [observer onCompleted];
+}
+
+J2OBJC_IGNORE_DESIGNATED_BEGIN
+- (instancetype)init {
+  RxObservableTests_$12_init(self);
+  return self;
+}
+J2OBJC_IGNORE_DESIGNATED_END
+
++ (const J2ObjcClassInfo *)__metadata {
+  static J2ObjcMethodInfo methods[] = {
+    { NULL, "V", 0x1, 0, 1, -1, 2, -1, -1 },
+    { NULL, NULL, 0x0, -1, -1, -1, -1, -1, -1 },
+  };
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Wobjc-multiple-method-names"
+  methods[0].selector = @selector(callWithId:);
+  methods[1].selector = @selector(init);
+  #pragma clang diagnostic pop
+  static const void *ptrTable[] = { "call", "LRxSubscriber;", "(Lrx/Subscriber<-Ljava/lang/String;>;)V", "LRxObservableTests;", "testCustomObservableWithErrorInObserverSynchronous", "Ljava/lang/Object;Lrx/Observable$OnSubscribe<Ljava/lang/String;>;" };
+  static const J2ObjcClassInfo _RxObservableTests_$12 = { "", "rx", ptrTable, methods, NULL, 7, 0x8008, 2, 0, 3, -1, 4, 5, -1 };
+  return &_RxObservableTests_$12;
+}
+
+@end
+
+void RxObservableTests_$12_init(RxObservableTests_$12 *self) {
+  NSObject_init(self);
+}
+
+RxObservableTests_$12 *new_RxObservableTests_$12_init() {
+  J2OBJC_NEW_IMPL(RxObservableTests_$12, init)
+}
+
+RxObservableTests_$12 *create_RxObservableTests_$12_init() {
+  J2OBJC_CREATE_IMPL(RxObservableTests_$12, init)
+}
+
+@implementation RxObservableTests_$13
+
+- (void)onCompleted {
+  [((JavaIoPrintStream *) nil_chk(JreLoadStatic(JavaLangSystem, out))) printlnWithNSString:@"completed"];
+}
+
+- (void)onErrorWithNSException:(NSException *)e {
+  [((JavaUtilConcurrentAtomicAtomicReference *) nil_chk(val$error_)) setWithId:e];
+  [((JavaIoPrintStream *) nil_chk(JreLoadStatic(JavaLangSystem, out))) printlnWithNSString:@"error"];
+  [((NSException *) nil_chk(e)) printStackTrace];
+}
+
+- (void)onNextWithId:(NSString *)v {
+  jint num = JavaLangInteger_parseIntWithNSString_(v);
+  [((JavaIoPrintStream *) nil_chk(JreLoadStatic(JavaLangSystem, out))) printlnWithInt:num];
+  [((JavaUtilConcurrentAtomicAtomicInteger *) nil_chk(val$count_)) incrementAndGet];
+}
+
+- (instancetype)initWithJavaUtilConcurrentAtomicAtomicReference:(JavaUtilConcurrentAtomicAtomicReference *)capture$0
+                      withJavaUtilConcurrentAtomicAtomicInteger:(JavaUtilConcurrentAtomicAtomicInteger *)capture$1 {
+  RxObservableTests_$13_initWithJavaUtilConcurrentAtomicAtomicReference_withJavaUtilConcurrentAtomicAtomicInteger_(self, capture$0, capture$1);
+  return self;
+}
+
+- (void)dealloc {
+  RELEASE_(val$error_);
+  RELEASE_(val$count_);
+  [super dealloc];
+}
+
++ (const J2ObjcClassInfo *)__metadata {
+  static J2ObjcMethodInfo methods[] = {
+    { NULL, "V", 0x1, -1, -1, -1, -1, -1, -1 },
+    { NULL, "V", 0x1, 0, 1, -1, -1, -1, -1 },
+    { NULL, "V", 0x1, 2, 3, -1, -1, -1, -1 },
+    { NULL, NULL, 0x0, -1, 4, -1, 5, -1, -1 },
+  };
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Wobjc-multiple-method-names"
+  methods[0].selector = @selector(onCompleted);
+  methods[1].selector = @selector(onErrorWithNSException:);
+  methods[2].selector = @selector(onNextWithId:);
+  methods[3].selector = @selector(initWithJavaUtilConcurrentAtomicAtomicReference:withJavaUtilConcurrentAtomicAtomicInteger:);
+  #pragma clang diagnostic pop
+  static const J2ObjcFieldInfo fields[] = {
+    { "val$error_", "LJavaUtilConcurrentAtomicAtomicReference;", .constantValue.asLong = 0, 0x1012, -1, -1, 6, -1 },
+    { "val$count_", "LJavaUtilConcurrentAtomicAtomicInteger;", .constantValue.asLong = 0, 0x1012, -1, -1, -1, -1 },
+  };
+  static const void *ptrTable[] = { "onError", "LNSException;", "onNext", "LNSString;", "LJavaUtilConcurrentAtomicAtomicReference;LJavaUtilConcurrentAtomicAtomicInteger;", "(Ljava/util/concurrent/atomic/AtomicReference<Ljava/lang/Throwable;>;Ljava/util/concurrent/atomic/AtomicInteger;)V", "Ljava/util/concurrent/atomic/AtomicReference<Ljava/lang/Throwable;>;", "LRxObservableTests;", "testCustomObservableWithErrorInObserverSynchronous", "Lrx/Subscriber<Ljava/lang/String;>;" };
+  static const J2ObjcClassInfo _RxObservableTests_$13 = { "", "rx", ptrTable, methods, fields, 7, 0x8008, 4, 2, 7, -1, 8, 9, -1 };
+  return &_RxObservableTests_$13;
+}
+
+@end
+
+void RxObservableTests_$13_initWithJavaUtilConcurrentAtomicAtomicReference_withJavaUtilConcurrentAtomicAtomicInteger_(RxObservableTests_$13 *self, JavaUtilConcurrentAtomicAtomicReference *capture$0, JavaUtilConcurrentAtomicAtomicInteger *capture$1) {
+  JreStrongAssign(&self->val$error_, capture$0);
+  JreStrongAssign(&self->val$count_, capture$1);
+  RxSubscriber_init(self);
+}
+
+RxObservableTests_$13 *new_RxObservableTests_$13_initWithJavaUtilConcurrentAtomicAtomicReference_withJavaUtilConcurrentAtomicAtomicInteger_(JavaUtilConcurrentAtomicAtomicReference *capture$0, JavaUtilConcurrentAtomicAtomicInteger *capture$1) {
+  J2OBJC_NEW_IMPL(RxObservableTests_$13, initWithJavaUtilConcurrentAtomicAtomicReference_withJavaUtilConcurrentAtomicAtomicInteger_, capture$0, capture$1)
+}
+
+RxObservableTests_$13 *create_RxObservableTests_$13_initWithJavaUtilConcurrentAtomicAtomicReference_withJavaUtilConcurrentAtomicAtomicInteger_(JavaUtilConcurrentAtomicAtomicReference *capture$0, JavaUtilConcurrentAtomicAtomicInteger *capture$1) {
+  J2OBJC_CREATE_IMPL(RxObservableTests_$13, initWithJavaUtilConcurrentAtomicAtomicReference_withJavaUtilConcurrentAtomicAtomicInteger_, capture$0, capture$1)
+}
+
+@implementation RxObservableTests_$14
+
+- (void)callWithId:(RxSubscriber *)observer {
+  [((RxSubscriber *) nil_chk(observer)) onNextWithId:@"1"];
+  [observer onNextWithId:@"2"];
+  @throw create_JavaLangNumberFormatException_init();
+}
+
+J2OBJC_IGNORE_DESIGNATED_BEGIN
+- (instancetype)init {
+  RxObservableTests_$14_init(self);
+  return self;
+}
+J2OBJC_IGNORE_DESIGNATED_END
+
++ (const J2ObjcClassInfo *)__metadata {
+  static J2ObjcMethodInfo methods[] = {
+    { NULL, "V", 0x1, 0, 1, -1, 2, -1, -1 },
+    { NULL, NULL, 0x0, -1, -1, -1, -1, -1, -1 },
+  };
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Wobjc-multiple-method-names"
+  methods[0].selector = @selector(callWithId:);
+  methods[1].selector = @selector(init);
+  #pragma clang diagnostic pop
+  static const void *ptrTable[] = { "call", "LRxSubscriber;", "(Lrx/Subscriber<-Ljava/lang/String;>;)V", "LRxObservableTests;", "testCustomObservableWithErrorInObservableSynchronous", "Ljava/lang/Object;Lrx/Observable$OnSubscribe<Ljava/lang/String;>;" };
+  static const J2ObjcClassInfo _RxObservableTests_$14 = { "", "rx", ptrTable, methods, NULL, 7, 0x8008, 2, 0, 3, -1, 4, 5, -1 };
+  return &_RxObservableTests_$14;
+}
+
+@end
+
+void RxObservableTests_$14_init(RxObservableTests_$14 *self) {
+  NSObject_init(self);
+}
+
+RxObservableTests_$14 *new_RxObservableTests_$14_init() {
+  J2OBJC_NEW_IMPL(RxObservableTests_$14, init)
+}
+
+RxObservableTests_$14 *create_RxObservableTests_$14_init() {
+  J2OBJC_CREATE_IMPL(RxObservableTests_$14, init)
+}
+
+@implementation RxObservableTests_$15
+
+- (void)onCompleted {
+  [((JavaIoPrintStream *) nil_chk(JreLoadStatic(JavaLangSystem, out))) printlnWithNSString:@"completed"];
+}
+
+- (void)onErrorWithNSException:(NSException *)e {
+  [((JavaUtilConcurrentAtomicAtomicReference *) nil_chk(val$error_)) setWithId:e];
+  [((JavaIoPrintStream *) nil_chk(JreLoadStatic(JavaLangSystem, out))) printlnWithNSString:@"error"];
+  [((NSException *) nil_chk(e)) printStackTrace];
+}
+
+- (void)onNextWithId:(NSString *)v {
+  [((JavaIoPrintStream *) nil_chk(JreLoadStatic(JavaLangSystem, out))) printlnWithNSString:v];
+  [((JavaUtilConcurrentAtomicAtomicInteger *) nil_chk(val$count_)) incrementAndGet];
+}
+
+- (instancetype)initWithJavaUtilConcurrentAtomicAtomicReference:(JavaUtilConcurrentAtomicAtomicReference *)capture$0
+                      withJavaUtilConcurrentAtomicAtomicInteger:(JavaUtilConcurrentAtomicAtomicInteger *)capture$1 {
+  RxObservableTests_$15_initWithJavaUtilConcurrentAtomicAtomicReference_withJavaUtilConcurrentAtomicAtomicInteger_(self, capture$0, capture$1);
+  return self;
+}
+
+- (void)dealloc {
+  RELEASE_(val$error_);
+  RELEASE_(val$count_);
+  [super dealloc];
+}
+
++ (const J2ObjcClassInfo *)__metadata {
+  static J2ObjcMethodInfo methods[] = {
+    { NULL, "V", 0x1, -1, -1, -1, -1, -1, -1 },
+    { NULL, "V", 0x1, 0, 1, -1, -1, -1, -1 },
+    { NULL, "V", 0x1, 2, 3, -1, -1, -1, -1 },
+    { NULL, NULL, 0x0, -1, 4, -1, 5, -1, -1 },
+  };
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Wobjc-multiple-method-names"
+  methods[0].selector = @selector(onCompleted);
+  methods[1].selector = @selector(onErrorWithNSException:);
+  methods[2].selector = @selector(onNextWithId:);
+  methods[3].selector = @selector(initWithJavaUtilConcurrentAtomicAtomicReference:withJavaUtilConcurrentAtomicAtomicInteger:);
+  #pragma clang diagnostic pop
+  static const J2ObjcFieldInfo fields[] = {
+    { "val$error_", "LJavaUtilConcurrentAtomicAtomicReference;", .constantValue.asLong = 0, 0x1012, -1, -1, 6, -1 },
+    { "val$count_", "LJavaUtilConcurrentAtomicAtomicInteger;", .constantValue.asLong = 0, 0x1012, -1, -1, -1, -1 },
+  };
+  static const void *ptrTable[] = { "onError", "LNSException;", "onNext", "LNSString;", "LJavaUtilConcurrentAtomicAtomicReference;LJavaUtilConcurrentAtomicAtomicInteger;", "(Ljava/util/concurrent/atomic/AtomicReference<Ljava/lang/Throwable;>;Ljava/util/concurrent/atomic/AtomicInteger;)V", "Ljava/util/concurrent/atomic/AtomicReference<Ljava/lang/Throwable;>;", "LRxObservableTests;", "testCustomObservableWithErrorInObservableSynchronous", "Lrx/Subscriber<Ljava/lang/String;>;" };
+  static const J2ObjcClassInfo _RxObservableTests_$15 = { "", "rx", ptrTable, methods, fields, 7, 0x8008, 4, 2, 7, -1, 8, 9, -1 };
+  return &_RxObservableTests_$15;
+}
+
+@end
+
+void RxObservableTests_$15_initWithJavaUtilConcurrentAtomicAtomicReference_withJavaUtilConcurrentAtomicAtomicInteger_(RxObservableTests_$15 *self, JavaUtilConcurrentAtomicAtomicReference *capture$0, JavaUtilConcurrentAtomicAtomicInteger *capture$1) {
+  JreStrongAssign(&self->val$error_, capture$0);
+  JreStrongAssign(&self->val$count_, capture$1);
+  RxSubscriber_init(self);
+}
+
+RxObservableTests_$15 *new_RxObservableTests_$15_initWithJavaUtilConcurrentAtomicAtomicReference_withJavaUtilConcurrentAtomicAtomicInteger_(JavaUtilConcurrentAtomicAtomicReference *capture$0, JavaUtilConcurrentAtomicAtomicInteger *capture$1) {
+  J2OBJC_NEW_IMPL(RxObservableTests_$15, initWithJavaUtilConcurrentAtomicAtomicReference_withJavaUtilConcurrentAtomicAtomicInteger_, capture$0, capture$1)
+}
+
+RxObservableTests_$15 *create_RxObservableTests_$15_initWithJavaUtilConcurrentAtomicAtomicReference_withJavaUtilConcurrentAtomicAtomicInteger_(JavaUtilConcurrentAtomicAtomicReference *capture$0, JavaUtilConcurrentAtomicAtomicInteger *capture$1) {
+  J2OBJC_CREATE_IMPL(RxObservableTests_$15, initWithJavaUtilConcurrentAtomicAtomicReference_withJavaUtilConcurrentAtomicAtomicInteger_, capture$0, capture$1)
+}
+
+@implementation RxObservableTests_$16
+
+- (void)callWithId:(RxSubscriber *)observer {
+  [((JavaUtilConcurrentAtomicAtomicInteger *) nil_chk(val$count_)) incrementAndGet];
+  [create_JavaLangThread_initWithJavaLangRunnable_(create_RxObservableTests_$16_$1_initWithRxSubscriber_(observer)) start];
 }
 
 - (instancetype)initWithJavaUtilConcurrentAtomicAtomicInteger:(JavaUtilConcurrentAtomicAtomicInteger *)capture$0 {
-  RxObservableTests_$2_initWithJavaUtilConcurrentAtomicAtomicInteger_(self, capture$0);
+  RxObservableTests_$16_initWithJavaUtilConcurrentAtomicAtomicInteger_(self, capture$0);
+  return self;
+}
+
+- (void)dealloc {
+  RELEASE_(val$count_);
+  [super dealloc];
+}
+
++ (const J2ObjcClassInfo *)__metadata {
+  static J2ObjcMethodInfo methods[] = {
+    { NULL, "V", 0x1, 0, 1, -1, 2, -1, -1 },
+    { NULL, NULL, 0x0, -1, 3, -1, -1, -1, -1 },
+  };
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Wobjc-multiple-method-names"
+  methods[0].selector = @selector(callWithId:);
+  methods[1].selector = @selector(initWithJavaUtilConcurrentAtomicAtomicInteger:);
+  #pragma clang diagnostic pop
+  static const J2ObjcFieldInfo fields[] = {
+    { "val$count_", "LJavaUtilConcurrentAtomicAtomicInteger;", .constantValue.asLong = 0, 0x1012, -1, -1, -1, -1 },
+  };
+  static const void *ptrTable[] = { "call", "LRxSubscriber;", "(Lrx/Subscriber<-Ljava/lang/String;>;)V", "LJavaUtilConcurrentAtomicAtomicInteger;", "LRxObservableTests;", "testPublishLast", "Ljava/lang/Object;Lrx/Observable$OnSubscribe<Ljava/lang/String;>;" };
+  static const J2ObjcClassInfo _RxObservableTests_$16 = { "", "rx", ptrTable, methods, fields, 7, 0x8008, 2, 1, 4, -1, 5, 6, -1 };
+  return &_RxObservableTests_$16;
+}
+
+@end
+
+void RxObservableTests_$16_initWithJavaUtilConcurrentAtomicAtomicInteger_(RxObservableTests_$16 *self, JavaUtilConcurrentAtomicAtomicInteger *capture$0) {
+  JreStrongAssign(&self->val$count_, capture$0);
+  NSObject_init(self);
+}
+
+RxObservableTests_$16 *new_RxObservableTests_$16_initWithJavaUtilConcurrentAtomicAtomicInteger_(JavaUtilConcurrentAtomicAtomicInteger *capture$0) {
+  J2OBJC_NEW_IMPL(RxObservableTests_$16, initWithJavaUtilConcurrentAtomicAtomicInteger_, capture$0)
+}
+
+RxObservableTests_$16 *create_RxObservableTests_$16_initWithJavaUtilConcurrentAtomicAtomicInteger_(JavaUtilConcurrentAtomicAtomicInteger *capture$0) {
+  J2OBJC_CREATE_IMPL(RxObservableTests_$16, initWithJavaUtilConcurrentAtomicAtomicInteger_, capture$0)
+}
+
+@implementation RxObservableTests_$16_$1
+
+- (void)run {
+  [((RxSubscriber *) nil_chk(val$observer_)) onNextWithId:@"first"];
+  [val$observer_ onNextWithId:@"last"];
+  [val$observer_ onCompleted];
+}
+
+- (instancetype)initWithRxSubscriber:(RxSubscriber *)capture$0 {
+  RxObservableTests_$16_$1_initWithRxSubscriber_(self, capture$0);
+  return self;
+}
+
+- (void)dealloc {
+  RELEASE_(val$observer_);
+  [super dealloc];
+}
+
++ (const J2ObjcClassInfo *)__metadata {
+  static J2ObjcMethodInfo methods[] = {
+    { NULL, "V", 0x1, -1, -1, -1, -1, -1, -1 },
+    { NULL, NULL, 0x0, -1, 0, -1, 1, -1, -1 },
+  };
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Wobjc-multiple-method-names"
+  methods[0].selector = @selector(run);
+  methods[1].selector = @selector(initWithRxSubscriber:);
+  #pragma clang diagnostic pop
+  static const J2ObjcFieldInfo fields[] = {
+    { "val$observer_", "LRxSubscriber;", .constantValue.asLong = 0, 0x1012, -1, -1, 2, -1 },
+  };
+  static const void *ptrTable[] = { "LRxSubscriber;", "(Lrx/Subscriber<-Ljava/lang/String;>;)V", "Lrx/Subscriber<-Ljava/lang/String;>;", "LRxObservableTests_$16;", "callWithId:" };
+  static const J2ObjcClassInfo _RxObservableTests_$16_$1 = { "", "rx", ptrTable, methods, fields, 7, 0x8008, 2, 1, 3, -1, 4, -1, -1 };
+  return &_RxObservableTests_$16_$1;
+}
+
+@end
+
+void RxObservableTests_$16_$1_initWithRxSubscriber_(RxObservableTests_$16_$1 *self, RxSubscriber *capture$0) {
+  JreStrongAssign(&self->val$observer_, capture$0);
+  NSObject_init(self);
+}
+
+RxObservableTests_$16_$1 *new_RxObservableTests_$16_$1_initWithRxSubscriber_(RxSubscriber *capture$0) {
+  J2OBJC_NEW_IMPL(RxObservableTests_$16_$1, initWithRxSubscriber_, capture$0)
+}
+
+RxObservableTests_$16_$1 *create_RxObservableTests_$16_$1_initWithRxSubscriber_(RxSubscriber *capture$0) {
+  J2OBJC_CREATE_IMPL(RxObservableTests_$16_$1, initWithRxSubscriber_, capture$0)
+}
+
+@implementation RxObservableTests_$17
+
+- (void)callWithId:(NSString *)value {
+  OrgJunitAssert_assertEqualsWithId_withId_(@"last", value);
+  [((JavaUtilConcurrentCountDownLatch *) nil_chk(val$latch_)) countDown];
+}
+
+- (instancetype)initWithJavaUtilConcurrentCountDownLatch:(JavaUtilConcurrentCountDownLatch *)capture$0 {
+  RxObservableTests_$17_initWithJavaUtilConcurrentCountDownLatch_(self, capture$0);
+  return self;
+}
+
+- (void)dealloc {
+  RELEASE_(val$latch_);
+  [super dealloc];
+}
+
++ (const J2ObjcClassInfo *)__metadata {
+  static J2ObjcMethodInfo methods[] = {
+    { NULL, "V", 0x1, 0, 1, -1, -1, -1, -1 },
+    { NULL, NULL, 0x0, -1, 2, -1, -1, -1, -1 },
+  };
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Wobjc-multiple-method-names"
+  methods[0].selector = @selector(callWithId:);
+  methods[1].selector = @selector(initWithJavaUtilConcurrentCountDownLatch:);
+  #pragma clang diagnostic pop
+  static const J2ObjcFieldInfo fields[] = {
+    { "val$latch_", "LJavaUtilConcurrentCountDownLatch;", .constantValue.asLong = 0, 0x1012, -1, -1, -1, -1 },
+  };
+  static const void *ptrTable[] = { "call", "LNSString;", "LJavaUtilConcurrentCountDownLatch;", "LRxObservableTests;", "testPublishLast", "Ljava/lang/Object;Lrx/functions/Action1<Ljava/lang/String;>;" };
+  static const J2ObjcClassInfo _RxObservableTests_$17 = { "", "rx", ptrTable, methods, fields, 7, 0x8008, 2, 1, 3, -1, 4, 5, -1 };
+  return &_RxObservableTests_$17;
+}
+
+@end
+
+void RxObservableTests_$17_initWithJavaUtilConcurrentCountDownLatch_(RxObservableTests_$17 *self, JavaUtilConcurrentCountDownLatch *capture$0) {
+  JreStrongAssign(&self->val$latch_, capture$0);
+  NSObject_init(self);
+}
+
+RxObservableTests_$17 *new_RxObservableTests_$17_initWithJavaUtilConcurrentCountDownLatch_(JavaUtilConcurrentCountDownLatch *capture$0) {
+  J2OBJC_NEW_IMPL(RxObservableTests_$17, initWithJavaUtilConcurrentCountDownLatch_, capture$0)
+}
+
+RxObservableTests_$17 *create_RxObservableTests_$17_initWithJavaUtilConcurrentCountDownLatch_(JavaUtilConcurrentCountDownLatch *capture$0) {
+  J2OBJC_CREATE_IMPL(RxObservableTests_$17, initWithJavaUtilConcurrentCountDownLatch_, capture$0)
+}
+
+@implementation RxObservableTests_$18
+
+- (void)callWithId:(RxSubscriber *)observer {
+  [create_JavaLangThread_initWithJavaLangRunnable_(create_RxObservableTests_$18_$1_initWithRxObservableTests_$18_withRxSubscriber_(self, observer)) start];
+}
+
+- (instancetype)initWithJavaUtilConcurrentAtomicAtomicInteger:(JavaUtilConcurrentAtomicAtomicInteger *)capture$0 {
+  RxObservableTests_$18_initWithJavaUtilConcurrentAtomicAtomicInteger_(self, capture$0);
   return self;
 }
 
@@ -392,40 +3601,36 @@ RxObservableTests_$1 *create_RxObservableTests_$1_init() {
     { "val$counter_", "LJavaUtilConcurrentAtomicAtomicInteger;", .constantValue.asLong = 0, 0x1012, -1, -1, -1, -1 },
   };
   static const void *ptrTable[] = { "call", "LRxSubscriber;", "(Lrx/Subscriber<-Ljava/lang/String;>;)V", "LJavaUtilConcurrentAtomicAtomicInteger;", "LRxObservableTests;", "testReplay", "Ljava/lang/Object;Lrx/Observable$OnSubscribe<Ljava/lang/String;>;" };
-  static const J2ObjcClassInfo _RxObservableTests_$2 = { "", "rx", ptrTable, methods, fields, 7, 0x8008, 2, 1, 4, -1, 5, 6, -1 };
-  return &_RxObservableTests_$2;
+  static const J2ObjcClassInfo _RxObservableTests_$18 = { "", "rx", ptrTable, methods, fields, 7, 0x8008, 2, 1, 4, -1, 5, 6, -1 };
+  return &_RxObservableTests_$18;
 }
 
 @end
 
-void RxObservableTests_$2_initWithJavaUtilConcurrentAtomicAtomicInteger_(RxObservableTests_$2 *self, JavaUtilConcurrentAtomicAtomicInteger *capture$0) {
+void RxObservableTests_$18_initWithJavaUtilConcurrentAtomicAtomicInteger_(RxObservableTests_$18 *self, JavaUtilConcurrentAtomicAtomicInteger *capture$0) {
   JreStrongAssign(&self->val$counter_, capture$0);
   NSObject_init(self);
 }
 
-RxObservableTests_$2 *new_RxObservableTests_$2_initWithJavaUtilConcurrentAtomicAtomicInteger_(JavaUtilConcurrentAtomicAtomicInteger *capture$0) {
-  J2OBJC_NEW_IMPL(RxObservableTests_$2, initWithJavaUtilConcurrentAtomicAtomicInteger_, capture$0)
+RxObservableTests_$18 *new_RxObservableTests_$18_initWithJavaUtilConcurrentAtomicAtomicInteger_(JavaUtilConcurrentAtomicAtomicInteger *capture$0) {
+  J2OBJC_NEW_IMPL(RxObservableTests_$18, initWithJavaUtilConcurrentAtomicAtomicInteger_, capture$0)
 }
 
-RxObservableTests_$2 *create_RxObservableTests_$2_initWithJavaUtilConcurrentAtomicAtomicInteger_(JavaUtilConcurrentAtomicAtomicInteger *capture$0) {
-  J2OBJC_CREATE_IMPL(RxObservableTests_$2, initWithJavaUtilConcurrentAtomicAtomicInteger_, capture$0)
+RxObservableTests_$18 *create_RxObservableTests_$18_initWithJavaUtilConcurrentAtomicAtomicInteger_(JavaUtilConcurrentAtomicAtomicInteger *capture$0) {
+  J2OBJC_CREATE_IMPL(RxObservableTests_$18, initWithJavaUtilConcurrentAtomicAtomicInteger_, capture$0)
 }
 
-@implementation RxObservableTests_$2_$1
+@implementation RxObservableTests_$18_$1
 
 - (void)run {
-  [((JavaIoPrintStream *) nil_chk(JreLoadStatic(JavaLangSystem, out))) printlnWithNSString:@"b1"];
   [((JavaUtilConcurrentAtomicAtomicInteger *) nil_chk(this$0_->val$counter_)) incrementAndGet];
-  [JreLoadStatic(JavaLangSystem, out) printlnWithNSString:@"b2"];
   [((RxSubscriber *) nil_chk(val$observer_)) onNextWithId:@"one"];
-  [JreLoadStatic(JavaLangSystem, out) printlnWithNSString:@"b3"];
   [val$observer_ onCompleted];
-  [JreLoadStatic(JavaLangSystem, out) printlnWithNSString:@"b4"];
 }
 
-- (instancetype)initWithRxObservableTests_$2:(RxObservableTests_$2 *)outer$
-                            withRxSubscriber:(RxSubscriber *)capture$0 {
-  RxObservableTests_$2_$1_initWithRxObservableTests_$2_withRxSubscriber_(self, outer$, capture$0);
+- (instancetype)initWithRxObservableTests_$18:(RxObservableTests_$18 *)outer$
+                             withRxSubscriber:(RxSubscriber *)capture$0 {
+  RxObservableTests_$18_$1_initWithRxObservableTests_$18_withRxSubscriber_(self, outer$, capture$0);
   return self;
 }
 
@@ -443,45 +3648,42 @@ RxObservableTests_$2 *create_RxObservableTests_$2_initWithJavaUtilConcurrentAtom
   #pragma clang diagnostic push
   #pragma clang diagnostic ignored "-Wobjc-multiple-method-names"
   methods[0].selector = @selector(run);
-  methods[1].selector = @selector(initWithRxObservableTests_$2:withRxSubscriber:);
+  methods[1].selector = @selector(initWithRxObservableTests_$18:withRxSubscriber:);
   #pragma clang diagnostic pop
   static const J2ObjcFieldInfo fields[] = {
-    { "this$0_", "LRxObservableTests_$2;", .constantValue.asLong = 0, 0x1012, -1, -1, -1, -1 },
+    { "this$0_", "LRxObservableTests_$18;", .constantValue.asLong = 0, 0x1012, -1, -1, -1, -1 },
     { "val$observer_", "LRxSubscriber;", .constantValue.asLong = 0, 0x1012, -1, -1, 2, -1 },
   };
-  static const void *ptrTable[] = { "LRxObservableTests_$2;LRxSubscriber;", "(Lrx/ObservableTests$2;Lrx/Subscriber<-Ljava/lang/String;>;)V", "Lrx/Subscriber<-Ljava/lang/String;>;", "LRxObservableTests_$2;", "callWithId:" };
-  static const J2ObjcClassInfo _RxObservableTests_$2_$1 = { "", "rx", ptrTable, methods, fields, 7, 0x8008, 2, 2, 3, -1, 4, -1, -1 };
-  return &_RxObservableTests_$2_$1;
+  static const void *ptrTable[] = { "LRxObservableTests_$18;LRxSubscriber;", "(Lrx/ObservableTests$18;Lrx/Subscriber<-Ljava/lang/String;>;)V", "Lrx/Subscriber<-Ljava/lang/String;>;", "LRxObservableTests_$18;", "callWithId:" };
+  static const J2ObjcClassInfo _RxObservableTests_$18_$1 = { "", "rx", ptrTable, methods, fields, 7, 0x8008, 2, 2, 3, -1, 4, -1, -1 };
+  return &_RxObservableTests_$18_$1;
 }
 
 @end
 
-void RxObservableTests_$2_$1_initWithRxObservableTests_$2_withRxSubscriber_(RxObservableTests_$2_$1 *self, RxObservableTests_$2 *outer$, RxSubscriber *capture$0) {
+void RxObservableTests_$18_$1_initWithRxObservableTests_$18_withRxSubscriber_(RxObservableTests_$18_$1 *self, RxObservableTests_$18 *outer$, RxSubscriber *capture$0) {
   JreStrongAssign(&self->this$0_, outer$);
   JreStrongAssign(&self->val$observer_, capture$0);
   NSObject_init(self);
 }
 
-RxObservableTests_$2_$1 *new_RxObservableTests_$2_$1_initWithRxObservableTests_$2_withRxSubscriber_(RxObservableTests_$2 *outer$, RxSubscriber *capture$0) {
-  J2OBJC_NEW_IMPL(RxObservableTests_$2_$1, initWithRxObservableTests_$2_withRxSubscriber_, outer$, capture$0)
+RxObservableTests_$18_$1 *new_RxObservableTests_$18_$1_initWithRxObservableTests_$18_withRxSubscriber_(RxObservableTests_$18 *outer$, RxSubscriber *capture$0) {
+  J2OBJC_NEW_IMPL(RxObservableTests_$18_$1, initWithRxObservableTests_$18_withRxSubscriber_, outer$, capture$0)
 }
 
-RxObservableTests_$2_$1 *create_RxObservableTests_$2_$1_initWithRxObservableTests_$2_withRxSubscriber_(RxObservableTests_$2 *outer$, RxSubscriber *capture$0) {
-  J2OBJC_CREATE_IMPL(RxObservableTests_$2_$1, initWithRxObservableTests_$2_withRxSubscriber_, outer$, capture$0)
+RxObservableTests_$18_$1 *create_RxObservableTests_$18_$1_initWithRxObservableTests_$18_withRxSubscriber_(RxObservableTests_$18 *outer$, RxSubscriber *capture$0) {
+  J2OBJC_CREATE_IMPL(RxObservableTests_$18_$1, initWithRxObservableTests_$18_withRxSubscriber_, outer$, capture$0)
 }
 
-@implementation RxObservableTests_$3
+@implementation RxObservableTests_$19
 
 - (void)callWithId:(NSString *)v {
-  [((JavaIoPrintStream *) nil_chk(JreLoadStatic(JavaLangSystem, out))) printlnWithNSString:@"c1"];
   OrgJunitAssert_assertEqualsWithId_withId_(@"one", v);
-  [JreLoadStatic(JavaLangSystem, out) printlnWithNSString:@"c2"];
   [((JavaUtilConcurrentCountDownLatch *) nil_chk(val$latch_)) countDown];
-  [JreLoadStatic(JavaLangSystem, out) printlnWithNSString:@"c3"];
 }
 
 - (instancetype)initWithJavaUtilConcurrentCountDownLatch:(JavaUtilConcurrentCountDownLatch *)capture$0 {
-  RxObservableTests_$3_initWithJavaUtilConcurrentCountDownLatch_(self, capture$0);
+  RxObservableTests_$19_initWithJavaUtilConcurrentCountDownLatch_(self, capture$0);
   return self;
 }
 
@@ -504,21 +3706,1782 @@ RxObservableTests_$2_$1 *create_RxObservableTests_$2_$1_initWithRxObservableTest
     { "val$latch_", "LJavaUtilConcurrentCountDownLatch;", .constantValue.asLong = 0, 0x1012, -1, -1, -1, -1 },
   };
   static const void *ptrTable[] = { "call", "LNSString;", "LJavaUtilConcurrentCountDownLatch;", "LRxObservableTests;", "testReplay", "Ljava/lang/Object;Lrx/functions/Action1<Ljava/lang/String;>;" };
-  static const J2ObjcClassInfo _RxObservableTests_$3 = { "", "rx", ptrTable, methods, fields, 7, 0x8008, 2, 1, 3, -1, 4, 5, -1 };
-  return &_RxObservableTests_$3;
+  static const J2ObjcClassInfo _RxObservableTests_$19 = { "", "rx", ptrTable, methods, fields, 7, 0x8008, 2, 1, 3, -1, 4, 5, -1 };
+  return &_RxObservableTests_$19;
 }
 
 @end
 
-void RxObservableTests_$3_initWithJavaUtilConcurrentCountDownLatch_(RxObservableTests_$3 *self, JavaUtilConcurrentCountDownLatch *capture$0) {
+void RxObservableTests_$19_initWithJavaUtilConcurrentCountDownLatch_(RxObservableTests_$19 *self, JavaUtilConcurrentCountDownLatch *capture$0) {
   JreStrongAssign(&self->val$latch_, capture$0);
   NSObject_init(self);
 }
 
-RxObservableTests_$3 *new_RxObservableTests_$3_initWithJavaUtilConcurrentCountDownLatch_(JavaUtilConcurrentCountDownLatch *capture$0) {
-  J2OBJC_NEW_IMPL(RxObservableTests_$3, initWithJavaUtilConcurrentCountDownLatch_, capture$0)
+RxObservableTests_$19 *new_RxObservableTests_$19_initWithJavaUtilConcurrentCountDownLatch_(JavaUtilConcurrentCountDownLatch *capture$0) {
+  J2OBJC_NEW_IMPL(RxObservableTests_$19, initWithJavaUtilConcurrentCountDownLatch_, capture$0)
 }
 
-RxObservableTests_$3 *create_RxObservableTests_$3_initWithJavaUtilConcurrentCountDownLatch_(JavaUtilConcurrentCountDownLatch *capture$0) {
-  J2OBJC_CREATE_IMPL(RxObservableTests_$3, initWithJavaUtilConcurrentCountDownLatch_, capture$0)
+RxObservableTests_$19 *create_RxObservableTests_$19_initWithJavaUtilConcurrentCountDownLatch_(JavaUtilConcurrentCountDownLatch *capture$0) {
+  J2OBJC_CREATE_IMPL(RxObservableTests_$19, initWithJavaUtilConcurrentCountDownLatch_, capture$0)
+}
+
+@implementation RxObservableTests_$20
+
+- (void)callWithId:(NSString *)v {
+  OrgJunitAssert_assertEqualsWithId_withId_(@"one", v);
+  [((JavaUtilConcurrentCountDownLatch *) nil_chk(val$latch_)) countDown];
+}
+
+- (instancetype)initWithJavaUtilConcurrentCountDownLatch:(JavaUtilConcurrentCountDownLatch *)capture$0 {
+  RxObservableTests_$20_initWithJavaUtilConcurrentCountDownLatch_(self, capture$0);
+  return self;
+}
+
+- (void)dealloc {
+  RELEASE_(val$latch_);
+  [super dealloc];
+}
+
++ (const J2ObjcClassInfo *)__metadata {
+  static J2ObjcMethodInfo methods[] = {
+    { NULL, "V", 0x1, 0, 1, -1, -1, -1, -1 },
+    { NULL, NULL, 0x0, -1, 2, -1, -1, -1, -1 },
+  };
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Wobjc-multiple-method-names"
+  methods[0].selector = @selector(callWithId:);
+  methods[1].selector = @selector(initWithJavaUtilConcurrentCountDownLatch:);
+  #pragma clang diagnostic pop
+  static const J2ObjcFieldInfo fields[] = {
+    { "val$latch_", "LJavaUtilConcurrentCountDownLatch;", .constantValue.asLong = 0, 0x1012, -1, -1, -1, -1 },
+  };
+  static const void *ptrTable[] = { "call", "LNSString;", "LJavaUtilConcurrentCountDownLatch;", "LRxObservableTests;", "testReplay", "Ljava/lang/Object;Lrx/functions/Action1<Ljava/lang/String;>;" };
+  static const J2ObjcClassInfo _RxObservableTests_$20 = { "", "rx", ptrTable, methods, fields, 7, 0x8008, 2, 1, 3, -1, 4, 5, -1 };
+  return &_RxObservableTests_$20;
+}
+
+@end
+
+void RxObservableTests_$20_initWithJavaUtilConcurrentCountDownLatch_(RxObservableTests_$20 *self, JavaUtilConcurrentCountDownLatch *capture$0) {
+  JreStrongAssign(&self->val$latch_, capture$0);
+  NSObject_init(self);
+}
+
+RxObservableTests_$20 *new_RxObservableTests_$20_initWithJavaUtilConcurrentCountDownLatch_(JavaUtilConcurrentCountDownLatch *capture$0) {
+  J2OBJC_NEW_IMPL(RxObservableTests_$20, initWithJavaUtilConcurrentCountDownLatch_, capture$0)
+}
+
+RxObservableTests_$20 *create_RxObservableTests_$20_initWithJavaUtilConcurrentCountDownLatch_(JavaUtilConcurrentCountDownLatch *capture$0) {
+  J2OBJC_CREATE_IMPL(RxObservableTests_$20, initWithJavaUtilConcurrentCountDownLatch_, capture$0)
+}
+
+@implementation RxObservableTests_$21
+
+- (void)callWithId:(RxSubscriber *)observer {
+  [create_JavaLangThread_initWithJavaLangRunnable_(create_RxObservableTests_$21_$1_initWithRxObservableTests_$21_withRxSubscriber_(self, observer)) start];
+}
+
+- (instancetype)initWithJavaUtilConcurrentAtomicAtomicInteger:(JavaUtilConcurrentAtomicAtomicInteger *)capture$0 {
+  RxObservableTests_$21_initWithJavaUtilConcurrentAtomicAtomicInteger_(self, capture$0);
+  return self;
+}
+
+- (void)dealloc {
+  RELEASE_(val$counter_);
+  [super dealloc];
+}
+
++ (const J2ObjcClassInfo *)__metadata {
+  static J2ObjcMethodInfo methods[] = {
+    { NULL, "V", 0x1, 0, 1, -1, 2, -1, -1 },
+    { NULL, NULL, 0x0, -1, 3, -1, -1, -1, -1 },
+  };
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Wobjc-multiple-method-names"
+  methods[0].selector = @selector(callWithId:);
+  methods[1].selector = @selector(initWithJavaUtilConcurrentAtomicAtomicInteger:);
+  #pragma clang diagnostic pop
+  static const J2ObjcFieldInfo fields[] = {
+    { "val$counter_", "LJavaUtilConcurrentAtomicAtomicInteger;", .constantValue.asLong = 0, 0x1012, -1, -1, -1, -1 },
+  };
+  static const void *ptrTable[] = { "call", "LRxSubscriber;", "(Lrx/Subscriber<-Ljava/lang/String;>;)V", "LJavaUtilConcurrentAtomicAtomicInteger;", "LRxObservableTests;", "testCache", "Ljava/lang/Object;Lrx/Observable$OnSubscribe<Ljava/lang/String;>;" };
+  static const J2ObjcClassInfo _RxObservableTests_$21 = { "", "rx", ptrTable, methods, fields, 7, 0x8008, 2, 1, 4, -1, 5, 6, -1 };
+  return &_RxObservableTests_$21;
+}
+
+@end
+
+void RxObservableTests_$21_initWithJavaUtilConcurrentAtomicAtomicInteger_(RxObservableTests_$21 *self, JavaUtilConcurrentAtomicAtomicInteger *capture$0) {
+  JreStrongAssign(&self->val$counter_, capture$0);
+  NSObject_init(self);
+}
+
+RxObservableTests_$21 *new_RxObservableTests_$21_initWithJavaUtilConcurrentAtomicAtomicInteger_(JavaUtilConcurrentAtomicAtomicInteger *capture$0) {
+  J2OBJC_NEW_IMPL(RxObservableTests_$21, initWithJavaUtilConcurrentAtomicAtomicInteger_, capture$0)
+}
+
+RxObservableTests_$21 *create_RxObservableTests_$21_initWithJavaUtilConcurrentAtomicAtomicInteger_(JavaUtilConcurrentAtomicAtomicInteger *capture$0) {
+  J2OBJC_CREATE_IMPL(RxObservableTests_$21, initWithJavaUtilConcurrentAtomicAtomicInteger_, capture$0)
+}
+
+@implementation RxObservableTests_$21_$1
+
+- (void)run {
+  [((JavaUtilConcurrentAtomicAtomicInteger *) nil_chk(this$0_->val$counter_)) incrementAndGet];
+  [((RxSubscriber *) nil_chk(val$observer_)) onNextWithId:@"one"];
+  [val$observer_ onCompleted];
+}
+
+- (instancetype)initWithRxObservableTests_$21:(RxObservableTests_$21 *)outer$
+                             withRxSubscriber:(RxSubscriber *)capture$0 {
+  RxObservableTests_$21_$1_initWithRxObservableTests_$21_withRxSubscriber_(self, outer$, capture$0);
+  return self;
+}
+
+- (void)dealloc {
+  RELEASE_(this$0_);
+  RELEASE_(val$observer_);
+  [super dealloc];
+}
+
++ (const J2ObjcClassInfo *)__metadata {
+  static J2ObjcMethodInfo methods[] = {
+    { NULL, "V", 0x1, -1, -1, -1, -1, -1, -1 },
+    { NULL, NULL, 0x0, -1, 0, -1, 1, -1, -1 },
+  };
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Wobjc-multiple-method-names"
+  methods[0].selector = @selector(run);
+  methods[1].selector = @selector(initWithRxObservableTests_$21:withRxSubscriber:);
+  #pragma clang diagnostic pop
+  static const J2ObjcFieldInfo fields[] = {
+    { "this$0_", "LRxObservableTests_$21;", .constantValue.asLong = 0, 0x1012, -1, -1, -1, -1 },
+    { "val$observer_", "LRxSubscriber;", .constantValue.asLong = 0, 0x1012, -1, -1, 2, -1 },
+  };
+  static const void *ptrTable[] = { "LRxObservableTests_$21;LRxSubscriber;", "(Lrx/ObservableTests$21;Lrx/Subscriber<-Ljava/lang/String;>;)V", "Lrx/Subscriber<-Ljava/lang/String;>;", "LRxObservableTests_$21;", "callWithId:" };
+  static const J2ObjcClassInfo _RxObservableTests_$21_$1 = { "", "rx", ptrTable, methods, fields, 7, 0x8008, 2, 2, 3, -1, 4, -1, -1 };
+  return &_RxObservableTests_$21_$1;
+}
+
+@end
+
+void RxObservableTests_$21_$1_initWithRxObservableTests_$21_withRxSubscriber_(RxObservableTests_$21_$1 *self, RxObservableTests_$21 *outer$, RxSubscriber *capture$0) {
+  JreStrongAssign(&self->this$0_, outer$);
+  JreStrongAssign(&self->val$observer_, capture$0);
+  NSObject_init(self);
+}
+
+RxObservableTests_$21_$1 *new_RxObservableTests_$21_$1_initWithRxObservableTests_$21_withRxSubscriber_(RxObservableTests_$21 *outer$, RxSubscriber *capture$0) {
+  J2OBJC_NEW_IMPL(RxObservableTests_$21_$1, initWithRxObservableTests_$21_withRxSubscriber_, outer$, capture$0)
+}
+
+RxObservableTests_$21_$1 *create_RxObservableTests_$21_$1_initWithRxObservableTests_$21_withRxSubscriber_(RxObservableTests_$21 *outer$, RxSubscriber *capture$0) {
+  J2OBJC_CREATE_IMPL(RxObservableTests_$21_$1, initWithRxObservableTests_$21_withRxSubscriber_, outer$, capture$0)
+}
+
+@implementation RxObservableTests_$22
+
+- (void)callWithId:(NSString *)v {
+  OrgJunitAssert_assertEqualsWithId_withId_(@"one", v);
+  [((JavaUtilConcurrentCountDownLatch *) nil_chk(val$latch_)) countDown];
+}
+
+- (instancetype)initWithJavaUtilConcurrentCountDownLatch:(JavaUtilConcurrentCountDownLatch *)capture$0 {
+  RxObservableTests_$22_initWithJavaUtilConcurrentCountDownLatch_(self, capture$0);
+  return self;
+}
+
+- (void)dealloc {
+  RELEASE_(val$latch_);
+  [super dealloc];
+}
+
++ (const J2ObjcClassInfo *)__metadata {
+  static J2ObjcMethodInfo methods[] = {
+    { NULL, "V", 0x1, 0, 1, -1, -1, -1, -1 },
+    { NULL, NULL, 0x0, -1, 2, -1, -1, -1, -1 },
+  };
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Wobjc-multiple-method-names"
+  methods[0].selector = @selector(callWithId:);
+  methods[1].selector = @selector(initWithJavaUtilConcurrentCountDownLatch:);
+  #pragma clang diagnostic pop
+  static const J2ObjcFieldInfo fields[] = {
+    { "val$latch_", "LJavaUtilConcurrentCountDownLatch;", .constantValue.asLong = 0, 0x1012, -1, -1, -1, -1 },
+  };
+  static const void *ptrTable[] = { "call", "LNSString;", "LJavaUtilConcurrentCountDownLatch;", "LRxObservableTests;", "testCache", "Ljava/lang/Object;Lrx/functions/Action1<Ljava/lang/String;>;" };
+  static const J2ObjcClassInfo _RxObservableTests_$22 = { "", "rx", ptrTable, methods, fields, 7, 0x8008, 2, 1, 3, -1, 4, 5, -1 };
+  return &_RxObservableTests_$22;
+}
+
+@end
+
+void RxObservableTests_$22_initWithJavaUtilConcurrentCountDownLatch_(RxObservableTests_$22 *self, JavaUtilConcurrentCountDownLatch *capture$0) {
+  JreStrongAssign(&self->val$latch_, capture$0);
+  NSObject_init(self);
+}
+
+RxObservableTests_$22 *new_RxObservableTests_$22_initWithJavaUtilConcurrentCountDownLatch_(JavaUtilConcurrentCountDownLatch *capture$0) {
+  J2OBJC_NEW_IMPL(RxObservableTests_$22, initWithJavaUtilConcurrentCountDownLatch_, capture$0)
+}
+
+RxObservableTests_$22 *create_RxObservableTests_$22_initWithJavaUtilConcurrentCountDownLatch_(JavaUtilConcurrentCountDownLatch *capture$0) {
+  J2OBJC_CREATE_IMPL(RxObservableTests_$22, initWithJavaUtilConcurrentCountDownLatch_, capture$0)
+}
+
+@implementation RxObservableTests_$23
+
+- (void)callWithId:(NSString *)v {
+  OrgJunitAssert_assertEqualsWithId_withId_(@"one", v);
+  [((JavaUtilConcurrentCountDownLatch *) nil_chk(val$latch_)) countDown];
+}
+
+- (instancetype)initWithJavaUtilConcurrentCountDownLatch:(JavaUtilConcurrentCountDownLatch *)capture$0 {
+  RxObservableTests_$23_initWithJavaUtilConcurrentCountDownLatch_(self, capture$0);
+  return self;
+}
+
+- (void)dealloc {
+  RELEASE_(val$latch_);
+  [super dealloc];
+}
+
++ (const J2ObjcClassInfo *)__metadata {
+  static J2ObjcMethodInfo methods[] = {
+    { NULL, "V", 0x1, 0, 1, -1, -1, -1, -1 },
+    { NULL, NULL, 0x0, -1, 2, -1, -1, -1, -1 },
+  };
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Wobjc-multiple-method-names"
+  methods[0].selector = @selector(callWithId:);
+  methods[1].selector = @selector(initWithJavaUtilConcurrentCountDownLatch:);
+  #pragma clang diagnostic pop
+  static const J2ObjcFieldInfo fields[] = {
+    { "val$latch_", "LJavaUtilConcurrentCountDownLatch;", .constantValue.asLong = 0, 0x1012, -1, -1, -1, -1 },
+  };
+  static const void *ptrTable[] = { "call", "LNSString;", "LJavaUtilConcurrentCountDownLatch;", "LRxObservableTests;", "testCache", "Ljava/lang/Object;Lrx/functions/Action1<Ljava/lang/String;>;" };
+  static const J2ObjcClassInfo _RxObservableTests_$23 = { "", "rx", ptrTable, methods, fields, 7, 0x8008, 2, 1, 3, -1, 4, 5, -1 };
+  return &_RxObservableTests_$23;
+}
+
+@end
+
+void RxObservableTests_$23_initWithJavaUtilConcurrentCountDownLatch_(RxObservableTests_$23 *self, JavaUtilConcurrentCountDownLatch *capture$0) {
+  JreStrongAssign(&self->val$latch_, capture$0);
+  NSObject_init(self);
+}
+
+RxObservableTests_$23 *new_RxObservableTests_$23_initWithJavaUtilConcurrentCountDownLatch_(JavaUtilConcurrentCountDownLatch *capture$0) {
+  J2OBJC_NEW_IMPL(RxObservableTests_$23, initWithJavaUtilConcurrentCountDownLatch_, capture$0)
+}
+
+RxObservableTests_$23 *create_RxObservableTests_$23_initWithJavaUtilConcurrentCountDownLatch_(JavaUtilConcurrentCountDownLatch *capture$0) {
+  J2OBJC_CREATE_IMPL(RxObservableTests_$23, initWithJavaUtilConcurrentCountDownLatch_, capture$0)
+}
+
+@implementation RxObservableTests_$24
+
+- (void)callWithId:(RxSubscriber *)observer {
+  [create_JavaLangThread_initWithJavaLangRunnable_(create_RxObservableTests_$24_$1_initWithRxObservableTests_$24_withRxSubscriber_(self, observer)) start];
+}
+
+- (instancetype)initWithJavaUtilConcurrentAtomicAtomicInteger:(JavaUtilConcurrentAtomicAtomicInteger *)capture$0 {
+  RxObservableTests_$24_initWithJavaUtilConcurrentAtomicAtomicInteger_(self, capture$0);
+  return self;
+}
+
+- (void)dealloc {
+  RELEASE_(val$counter_);
+  [super dealloc];
+}
+
++ (const J2ObjcClassInfo *)__metadata {
+  static J2ObjcMethodInfo methods[] = {
+    { NULL, "V", 0x1, 0, 1, -1, 2, -1, -1 },
+    { NULL, NULL, 0x0, -1, 3, -1, -1, -1, -1 },
+  };
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Wobjc-multiple-method-names"
+  methods[0].selector = @selector(callWithId:);
+  methods[1].selector = @selector(initWithJavaUtilConcurrentAtomicAtomicInteger:);
+  #pragma clang diagnostic pop
+  static const J2ObjcFieldInfo fields[] = {
+    { "val$counter_", "LJavaUtilConcurrentAtomicAtomicInteger;", .constantValue.asLong = 0, 0x1012, -1, -1, -1, -1 },
+  };
+  static const void *ptrTable[] = { "call", "LRxSubscriber;", "(Lrx/Subscriber<-Ljava/lang/String;>;)V", "LJavaUtilConcurrentAtomicAtomicInteger;", "LRxObservableTests;", "testCacheWithCapacity", "Ljava/lang/Object;Lrx/Observable$OnSubscribe<Ljava/lang/String;>;" };
+  static const J2ObjcClassInfo _RxObservableTests_$24 = { "", "rx", ptrTable, methods, fields, 7, 0x8008, 2, 1, 4, -1, 5, 6, -1 };
+  return &_RxObservableTests_$24;
+}
+
+@end
+
+void RxObservableTests_$24_initWithJavaUtilConcurrentAtomicAtomicInteger_(RxObservableTests_$24 *self, JavaUtilConcurrentAtomicAtomicInteger *capture$0) {
+  JreStrongAssign(&self->val$counter_, capture$0);
+  NSObject_init(self);
+}
+
+RxObservableTests_$24 *new_RxObservableTests_$24_initWithJavaUtilConcurrentAtomicAtomicInteger_(JavaUtilConcurrentAtomicAtomicInteger *capture$0) {
+  J2OBJC_NEW_IMPL(RxObservableTests_$24, initWithJavaUtilConcurrentAtomicAtomicInteger_, capture$0)
+}
+
+RxObservableTests_$24 *create_RxObservableTests_$24_initWithJavaUtilConcurrentAtomicAtomicInteger_(JavaUtilConcurrentAtomicAtomicInteger *capture$0) {
+  J2OBJC_CREATE_IMPL(RxObservableTests_$24, initWithJavaUtilConcurrentAtomicAtomicInteger_, capture$0)
+}
+
+@implementation RxObservableTests_$24_$1
+
+- (void)run {
+  [((JavaUtilConcurrentAtomicAtomicInteger *) nil_chk(this$0_->val$counter_)) incrementAndGet];
+  [((RxSubscriber *) nil_chk(val$observer_)) onNextWithId:@"one"];
+  [val$observer_ onCompleted];
+}
+
+- (instancetype)initWithRxObservableTests_$24:(RxObservableTests_$24 *)outer$
+                             withRxSubscriber:(RxSubscriber *)capture$0 {
+  RxObservableTests_$24_$1_initWithRxObservableTests_$24_withRxSubscriber_(self, outer$, capture$0);
+  return self;
+}
+
+- (void)dealloc {
+  RELEASE_(this$0_);
+  RELEASE_(val$observer_);
+  [super dealloc];
+}
+
++ (const J2ObjcClassInfo *)__metadata {
+  static J2ObjcMethodInfo methods[] = {
+    { NULL, "V", 0x1, -1, -1, -1, -1, -1, -1 },
+    { NULL, NULL, 0x0, -1, 0, -1, 1, -1, -1 },
+  };
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Wobjc-multiple-method-names"
+  methods[0].selector = @selector(run);
+  methods[1].selector = @selector(initWithRxObservableTests_$24:withRxSubscriber:);
+  #pragma clang diagnostic pop
+  static const J2ObjcFieldInfo fields[] = {
+    { "this$0_", "LRxObservableTests_$24;", .constantValue.asLong = 0, 0x1012, -1, -1, -1, -1 },
+    { "val$observer_", "LRxSubscriber;", .constantValue.asLong = 0, 0x1012, -1, -1, 2, -1 },
+  };
+  static const void *ptrTable[] = { "LRxObservableTests_$24;LRxSubscriber;", "(Lrx/ObservableTests$24;Lrx/Subscriber<-Ljava/lang/String;>;)V", "Lrx/Subscriber<-Ljava/lang/String;>;", "LRxObservableTests_$24;", "callWithId:" };
+  static const J2ObjcClassInfo _RxObservableTests_$24_$1 = { "", "rx", ptrTable, methods, fields, 7, 0x8008, 2, 2, 3, -1, 4, -1, -1 };
+  return &_RxObservableTests_$24_$1;
+}
+
+@end
+
+void RxObservableTests_$24_$1_initWithRxObservableTests_$24_withRxSubscriber_(RxObservableTests_$24_$1 *self, RxObservableTests_$24 *outer$, RxSubscriber *capture$0) {
+  JreStrongAssign(&self->this$0_, outer$);
+  JreStrongAssign(&self->val$observer_, capture$0);
+  NSObject_init(self);
+}
+
+RxObservableTests_$24_$1 *new_RxObservableTests_$24_$1_initWithRxObservableTests_$24_withRxSubscriber_(RxObservableTests_$24 *outer$, RxSubscriber *capture$0) {
+  J2OBJC_NEW_IMPL(RxObservableTests_$24_$1, initWithRxObservableTests_$24_withRxSubscriber_, outer$, capture$0)
+}
+
+RxObservableTests_$24_$1 *create_RxObservableTests_$24_$1_initWithRxObservableTests_$24_withRxSubscriber_(RxObservableTests_$24 *outer$, RxSubscriber *capture$0) {
+  J2OBJC_CREATE_IMPL(RxObservableTests_$24_$1, initWithRxObservableTests_$24_withRxSubscriber_, outer$, capture$0)
+}
+
+@implementation RxObservableTests_$25
+
+- (void)callWithId:(NSString *)v {
+  OrgJunitAssert_assertEqualsWithId_withId_(@"one", v);
+  [((JavaUtilConcurrentCountDownLatch *) nil_chk(val$latch_)) countDown];
+}
+
+- (instancetype)initWithJavaUtilConcurrentCountDownLatch:(JavaUtilConcurrentCountDownLatch *)capture$0 {
+  RxObservableTests_$25_initWithJavaUtilConcurrentCountDownLatch_(self, capture$0);
+  return self;
+}
+
+- (void)dealloc {
+  RELEASE_(val$latch_);
+  [super dealloc];
+}
+
++ (const J2ObjcClassInfo *)__metadata {
+  static J2ObjcMethodInfo methods[] = {
+    { NULL, "V", 0x1, 0, 1, -1, -1, -1, -1 },
+    { NULL, NULL, 0x0, -1, 2, -1, -1, -1, -1 },
+  };
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Wobjc-multiple-method-names"
+  methods[0].selector = @selector(callWithId:);
+  methods[1].selector = @selector(initWithJavaUtilConcurrentCountDownLatch:);
+  #pragma clang diagnostic pop
+  static const J2ObjcFieldInfo fields[] = {
+    { "val$latch_", "LJavaUtilConcurrentCountDownLatch;", .constantValue.asLong = 0, 0x1012, -1, -1, -1, -1 },
+  };
+  static const void *ptrTable[] = { "call", "LNSString;", "LJavaUtilConcurrentCountDownLatch;", "LRxObservableTests;", "testCacheWithCapacity", "Ljava/lang/Object;Lrx/functions/Action1<Ljava/lang/String;>;" };
+  static const J2ObjcClassInfo _RxObservableTests_$25 = { "", "rx", ptrTable, methods, fields, 7, 0x8008, 2, 1, 3, -1, 4, 5, -1 };
+  return &_RxObservableTests_$25;
+}
+
+@end
+
+void RxObservableTests_$25_initWithJavaUtilConcurrentCountDownLatch_(RxObservableTests_$25 *self, JavaUtilConcurrentCountDownLatch *capture$0) {
+  JreStrongAssign(&self->val$latch_, capture$0);
+  NSObject_init(self);
+}
+
+RxObservableTests_$25 *new_RxObservableTests_$25_initWithJavaUtilConcurrentCountDownLatch_(JavaUtilConcurrentCountDownLatch *capture$0) {
+  J2OBJC_NEW_IMPL(RxObservableTests_$25, initWithJavaUtilConcurrentCountDownLatch_, capture$0)
+}
+
+RxObservableTests_$25 *create_RxObservableTests_$25_initWithJavaUtilConcurrentCountDownLatch_(JavaUtilConcurrentCountDownLatch *capture$0) {
+  J2OBJC_CREATE_IMPL(RxObservableTests_$25, initWithJavaUtilConcurrentCountDownLatch_, capture$0)
+}
+
+@implementation RxObservableTests_$26
+
+- (void)callWithId:(NSString *)v {
+  OrgJunitAssert_assertEqualsWithId_withId_(@"one", v);
+  [((JavaUtilConcurrentCountDownLatch *) nil_chk(val$latch_)) countDown];
+}
+
+- (instancetype)initWithJavaUtilConcurrentCountDownLatch:(JavaUtilConcurrentCountDownLatch *)capture$0 {
+  RxObservableTests_$26_initWithJavaUtilConcurrentCountDownLatch_(self, capture$0);
+  return self;
+}
+
+- (void)dealloc {
+  RELEASE_(val$latch_);
+  [super dealloc];
+}
+
++ (const J2ObjcClassInfo *)__metadata {
+  static J2ObjcMethodInfo methods[] = {
+    { NULL, "V", 0x1, 0, 1, -1, -1, -1, -1 },
+    { NULL, NULL, 0x0, -1, 2, -1, -1, -1, -1 },
+  };
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Wobjc-multiple-method-names"
+  methods[0].selector = @selector(callWithId:);
+  methods[1].selector = @selector(initWithJavaUtilConcurrentCountDownLatch:);
+  #pragma clang diagnostic pop
+  static const J2ObjcFieldInfo fields[] = {
+    { "val$latch_", "LJavaUtilConcurrentCountDownLatch;", .constantValue.asLong = 0, 0x1012, -1, -1, -1, -1 },
+  };
+  static const void *ptrTable[] = { "call", "LNSString;", "LJavaUtilConcurrentCountDownLatch;", "LRxObservableTests;", "testCacheWithCapacity", "Ljava/lang/Object;Lrx/functions/Action1<Ljava/lang/String;>;" };
+  static const J2ObjcClassInfo _RxObservableTests_$26 = { "", "rx", ptrTable, methods, fields, 7, 0x8008, 2, 1, 3, -1, 4, 5, -1 };
+  return &_RxObservableTests_$26;
+}
+
+@end
+
+void RxObservableTests_$26_initWithJavaUtilConcurrentCountDownLatch_(RxObservableTests_$26 *self, JavaUtilConcurrentCountDownLatch *capture$0) {
+  JreStrongAssign(&self->val$latch_, capture$0);
+  NSObject_init(self);
+}
+
+RxObservableTests_$26 *new_RxObservableTests_$26_initWithJavaUtilConcurrentCountDownLatch_(JavaUtilConcurrentCountDownLatch *capture$0) {
+  J2OBJC_NEW_IMPL(RxObservableTests_$26, initWithJavaUtilConcurrentCountDownLatch_, capture$0)
+}
+
+RxObservableTests_$26 *create_RxObservableTests_$26_initWithJavaUtilConcurrentCountDownLatch_(JavaUtilConcurrentCountDownLatch *capture$0) {
+  J2OBJC_CREATE_IMPL(RxObservableTests_$26, initWithJavaUtilConcurrentCountDownLatch_, capture$0)
+}
+
+@implementation RxObservableTests_$27
+
+- (void)callWithId:(id)t1 {
+}
+
+J2OBJC_IGNORE_DESIGNATED_BEGIN
+- (instancetype)init {
+  RxObservableTests_$27_init(self);
+  return self;
+}
+J2OBJC_IGNORE_DESIGNATED_END
+
++ (const J2ObjcClassInfo *)__metadata {
+  static J2ObjcMethodInfo methods[] = {
+    { NULL, "V", 0x1, 0, 1, -1, -1, -1, -1 },
+    { NULL, NULL, 0x0, -1, -1, -1, -1, -1, -1 },
+  };
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Wobjc-multiple-method-names"
+  methods[0].selector = @selector(callWithId:);
+  methods[1].selector = @selector(init);
+  #pragma clang diagnostic pop
+  static const void *ptrTable[] = { "call", "LNSObject;", "LRxObservableTests;", "testErrorThrownWithoutErrorHandlerSynchronous", "Ljava/lang/Object;Lrx/functions/Action1<Ljava/lang/Object;>;" };
+  static const J2ObjcClassInfo _RxObservableTests_$27 = { "", "rx", ptrTable, methods, NULL, 7, 0x8008, 2, 0, 2, -1, 3, 4, -1 };
+  return &_RxObservableTests_$27;
+}
+
+@end
+
+void RxObservableTests_$27_init(RxObservableTests_$27 *self) {
+  NSObject_init(self);
+}
+
+RxObservableTests_$27 *new_RxObservableTests_$27_init() {
+  J2OBJC_NEW_IMPL(RxObservableTests_$27, init)
+}
+
+RxObservableTests_$27 *create_RxObservableTests_$27_init() {
+  J2OBJC_CREATE_IMPL(RxObservableTests_$27, init)
+}
+
+@implementation RxObservableTests_$28
+
+- (void)callWithId:(RxSubscriber *)observer {
+  [create_JavaLangThread_initWithJavaLangRunnable_(create_RxObservableTests_$28_$1_initWithRxObservableTests_$28_withRxSubscriber_(self, observer)) start];
+}
+
+- (instancetype)initWithJavaUtilConcurrentAtomicAtomicReference:(JavaUtilConcurrentAtomicAtomicReference *)capture$0
+                           withJavaUtilConcurrentCountDownLatch:(JavaUtilConcurrentCountDownLatch *)capture$1 {
+  RxObservableTests_$28_initWithJavaUtilConcurrentAtomicAtomicReference_withJavaUtilConcurrentCountDownLatch_(self, capture$0, capture$1);
+  return self;
+}
+
+- (void)dealloc {
+  RELEASE_(val$exception_);
+  RELEASE_(val$latch_);
+  [super dealloc];
+}
+
++ (const J2ObjcClassInfo *)__metadata {
+  static J2ObjcMethodInfo methods[] = {
+    { NULL, "V", 0x1, 0, 1, -1, 2, -1, -1 },
+    { NULL, NULL, 0x0, -1, 3, -1, 4, -1, -1 },
+  };
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Wobjc-multiple-method-names"
+  methods[0].selector = @selector(callWithId:);
+  methods[1].selector = @selector(initWithJavaUtilConcurrentAtomicAtomicReference:withJavaUtilConcurrentCountDownLatch:);
+  #pragma clang diagnostic pop
+  static const J2ObjcFieldInfo fields[] = {
+    { "val$exception_", "LJavaUtilConcurrentAtomicAtomicReference;", .constantValue.asLong = 0, 0x1012, -1, -1, 5, -1 },
+    { "val$latch_", "LJavaUtilConcurrentCountDownLatch;", .constantValue.asLong = 0, 0x1012, -1, -1, -1, -1 },
+  };
+  static const void *ptrTable[] = { "call", "LRxSubscriber;", "(Lrx/Subscriber<-Ljava/lang/String;>;)V", "LJavaUtilConcurrentAtomicAtomicReference;LJavaUtilConcurrentCountDownLatch;", "(Ljava/util/concurrent/atomic/AtomicReference<Ljava/lang/Throwable;>;Ljava/util/concurrent/CountDownLatch;)V", "Ljava/util/concurrent/atomic/AtomicReference<Ljava/lang/Throwable;>;", "LRxObservableTests;", "testErrorThrownWithoutErrorHandlerAsynchronous", "Ljava/lang/Object;Lrx/Observable$OnSubscribe<Ljava/lang/String;>;" };
+  static const J2ObjcClassInfo _RxObservableTests_$28 = { "", "rx", ptrTable, methods, fields, 7, 0x8008, 2, 2, 6, -1, 7, 8, -1 };
+  return &_RxObservableTests_$28;
+}
+
+@end
+
+void RxObservableTests_$28_initWithJavaUtilConcurrentAtomicAtomicReference_withJavaUtilConcurrentCountDownLatch_(RxObservableTests_$28 *self, JavaUtilConcurrentAtomicAtomicReference *capture$0, JavaUtilConcurrentCountDownLatch *capture$1) {
+  JreStrongAssign(&self->val$exception_, capture$0);
+  JreStrongAssign(&self->val$latch_, capture$1);
+  NSObject_init(self);
+}
+
+RxObservableTests_$28 *new_RxObservableTests_$28_initWithJavaUtilConcurrentAtomicAtomicReference_withJavaUtilConcurrentCountDownLatch_(JavaUtilConcurrentAtomicAtomicReference *capture$0, JavaUtilConcurrentCountDownLatch *capture$1) {
+  J2OBJC_NEW_IMPL(RxObservableTests_$28, initWithJavaUtilConcurrentAtomicAtomicReference_withJavaUtilConcurrentCountDownLatch_, capture$0, capture$1)
+}
+
+RxObservableTests_$28 *create_RxObservableTests_$28_initWithJavaUtilConcurrentAtomicAtomicReference_withJavaUtilConcurrentCountDownLatch_(JavaUtilConcurrentAtomicAtomicReference *capture$0, JavaUtilConcurrentCountDownLatch *capture$1) {
+  J2OBJC_CREATE_IMPL(RxObservableTests_$28, initWithJavaUtilConcurrentAtomicAtomicReference_withJavaUtilConcurrentCountDownLatch_, capture$0, capture$1)
+}
+
+@implementation RxObservableTests_$28_$1
+
+- (void)run {
+  @try {
+    [((RxSubscriber *) nil_chk(val$observer_)) onErrorWithNSException:create_JavaLangError_initWithNSString_(@"failure")];
+  }
+  @catch (NSException *e) {
+    [((JavaUtilConcurrentAtomicAtomicReference *) nil_chk(this$0_->val$exception_)) setWithId:e];
+  }
+  [((JavaUtilConcurrentCountDownLatch *) nil_chk(this$0_->val$latch_)) countDown];
+}
+
+- (instancetype)initWithRxObservableTests_$28:(RxObservableTests_$28 *)outer$
+                             withRxSubscriber:(RxSubscriber *)capture$0 {
+  RxObservableTests_$28_$1_initWithRxObservableTests_$28_withRxSubscriber_(self, outer$, capture$0);
+  return self;
+}
+
+- (void)dealloc {
+  RELEASE_(this$0_);
+  RELEASE_(val$observer_);
+  [super dealloc];
+}
+
++ (const J2ObjcClassInfo *)__metadata {
+  static J2ObjcMethodInfo methods[] = {
+    { NULL, "V", 0x1, -1, -1, -1, -1, -1, -1 },
+    { NULL, NULL, 0x0, -1, 0, -1, 1, -1, -1 },
+  };
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Wobjc-multiple-method-names"
+  methods[0].selector = @selector(run);
+  methods[1].selector = @selector(initWithRxObservableTests_$28:withRxSubscriber:);
+  #pragma clang diagnostic pop
+  static const J2ObjcFieldInfo fields[] = {
+    { "this$0_", "LRxObservableTests_$28;", .constantValue.asLong = 0, 0x1012, -1, -1, -1, -1 },
+    { "val$observer_", "LRxSubscriber;", .constantValue.asLong = 0, 0x1012, -1, -1, 2, -1 },
+  };
+  static const void *ptrTable[] = { "LRxObservableTests_$28;LRxSubscriber;", "(Lrx/ObservableTests$28;Lrx/Subscriber<-Ljava/lang/String;>;)V", "Lrx/Subscriber<-Ljava/lang/String;>;", "LRxObservableTests_$28;", "callWithId:" };
+  static const J2ObjcClassInfo _RxObservableTests_$28_$1 = { "", "rx", ptrTable, methods, fields, 7, 0x8008, 2, 2, 3, -1, 4, -1, -1 };
+  return &_RxObservableTests_$28_$1;
+}
+
+@end
+
+void RxObservableTests_$28_$1_initWithRxObservableTests_$28_withRxSubscriber_(RxObservableTests_$28_$1 *self, RxObservableTests_$28 *outer$, RxSubscriber *capture$0) {
+  JreStrongAssign(&self->this$0_, outer$);
+  JreStrongAssign(&self->val$observer_, capture$0);
+  NSObject_init(self);
+}
+
+RxObservableTests_$28_$1 *new_RxObservableTests_$28_$1_initWithRxObservableTests_$28_withRxSubscriber_(RxObservableTests_$28 *outer$, RxSubscriber *capture$0) {
+  J2OBJC_NEW_IMPL(RxObservableTests_$28_$1, initWithRxObservableTests_$28_withRxSubscriber_, outer$, capture$0)
+}
+
+RxObservableTests_$28_$1 *create_RxObservableTests_$28_$1_initWithRxObservableTests_$28_withRxSubscriber_(RxObservableTests_$28 *outer$, RxSubscriber *capture$0) {
+  J2OBJC_CREATE_IMPL(RxObservableTests_$28_$1, initWithRxObservableTests_$28_withRxSubscriber_, outer$, capture$0)
+}
+
+@implementation RxObservableTests_$29
+
+- (void)callWithId:(NSString *)t1 {
+}
+
+J2OBJC_IGNORE_DESIGNATED_BEGIN
+- (instancetype)init {
+  RxObservableTests_$29_init(self);
+  return self;
+}
+J2OBJC_IGNORE_DESIGNATED_END
+
++ (const J2ObjcClassInfo *)__metadata {
+  static J2ObjcMethodInfo methods[] = {
+    { NULL, "V", 0x1, 0, 1, -1, -1, -1, -1 },
+    { NULL, NULL, 0x0, -1, -1, -1, -1, -1, -1 },
+  };
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Wobjc-multiple-method-names"
+  methods[0].selector = @selector(callWithId:);
+  methods[1].selector = @selector(init);
+  #pragma clang diagnostic pop
+  static const void *ptrTable[] = { "call", "LNSString;", "LRxObservableTests;", "testErrorThrownWithoutErrorHandlerAsynchronous", "Ljava/lang/Object;Lrx/functions/Action1<Ljava/lang/String;>;" };
+  static const J2ObjcClassInfo _RxObservableTests_$29 = { "", "rx", ptrTable, methods, NULL, 7, 0x8008, 2, 0, 2, -1, 3, 4, -1 };
+  return &_RxObservableTests_$29;
+}
+
+@end
+
+void RxObservableTests_$29_init(RxObservableTests_$29 *self) {
+  NSObject_init(self);
+}
+
+RxObservableTests_$29 *new_RxObservableTests_$29_init() {
+  J2OBJC_NEW_IMPL(RxObservableTests_$29, init)
+}
+
+RxObservableTests_$29 *create_RxObservableTests_$29_init() {
+  J2OBJC_CREATE_IMPL(RxObservableTests_$29, init)
+}
+
+@implementation RxObservableTests_$30
+
+- (void)onCompleted {
+  [((JavaIoPrintStream *) nil_chk(JreLoadStatic(JavaLangSystem, out))) printlnWithNSString:@"completed"];
+}
+
+- (void)onErrorWithNSException:(NSException *)e {
+  [((JavaUtilConcurrentAtomicAtomicReference *) nil_chk(val$error_)) setWithId:e];
+  [((JavaIoPrintStream *) nil_chk(JreLoadStatic(JavaLangSystem, out))) printlnWithNSString:@"error"];
+  [((NSException *) nil_chk(e)) printStackTrace];
+}
+
+- (void)onNextWithId:(NSString *)v {
+  jint num = JavaLangInteger_parseIntWithNSString_(v);
+  [((JavaIoPrintStream *) nil_chk(JreLoadStatic(JavaLangSystem, out))) printlnWithInt:num];
+  [((JavaUtilConcurrentAtomicAtomicInteger *) nil_chk(val$count_)) incrementAndGet];
+}
+
+- (instancetype)initWithJavaUtilConcurrentAtomicAtomicReference:(JavaUtilConcurrentAtomicAtomicReference *)capture$0
+                      withJavaUtilConcurrentAtomicAtomicInteger:(JavaUtilConcurrentAtomicAtomicInteger *)capture$1 {
+  RxObservableTests_$30_initWithJavaUtilConcurrentAtomicAtomicReference_withJavaUtilConcurrentAtomicAtomicInteger_(self, capture$0, capture$1);
+  return self;
+}
+
+- (void)dealloc {
+  RELEASE_(val$error_);
+  RELEASE_(val$count_);
+  [super dealloc];
+}
+
++ (const J2ObjcClassInfo *)__metadata {
+  static J2ObjcMethodInfo methods[] = {
+    { NULL, "V", 0x1, -1, -1, -1, -1, -1, -1 },
+    { NULL, "V", 0x1, 0, 1, -1, -1, -1, -1 },
+    { NULL, "V", 0x1, 2, 3, -1, -1, -1, -1 },
+    { NULL, NULL, 0x0, -1, 4, -1, 5, -1, -1 },
+  };
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Wobjc-multiple-method-names"
+  methods[0].selector = @selector(onCompleted);
+  methods[1].selector = @selector(onErrorWithNSException:);
+  methods[2].selector = @selector(onNextWithId:);
+  methods[3].selector = @selector(initWithJavaUtilConcurrentAtomicAtomicReference:withJavaUtilConcurrentAtomicAtomicInteger:);
+  #pragma clang diagnostic pop
+  static const J2ObjcFieldInfo fields[] = {
+    { "val$error_", "LJavaUtilConcurrentAtomicAtomicReference;", .constantValue.asLong = 0, 0x1012, -1, -1, 6, -1 },
+    { "val$count_", "LJavaUtilConcurrentAtomicAtomicInteger;", .constantValue.asLong = 0, 0x1012, -1, -1, -1, -1 },
+  };
+  static const void *ptrTable[] = { "onError", "LNSException;", "onNext", "LNSString;", "LJavaUtilConcurrentAtomicAtomicReference;LJavaUtilConcurrentAtomicAtomicInteger;", "(Ljava/util/concurrent/atomic/AtomicReference<Ljava/lang/Throwable;>;Ljava/util/concurrent/atomic/AtomicInteger;)V", "Ljava/util/concurrent/atomic/AtomicReference<Ljava/lang/Throwable;>;", "LRxObservableTests;", "testTakeWithErrorInObserver", "Lrx/Subscriber<Ljava/lang/String;>;" };
+  static const J2ObjcClassInfo _RxObservableTests_$30 = { "", "rx", ptrTable, methods, fields, 7, 0x8008, 4, 2, 7, -1, 8, 9, -1 };
+  return &_RxObservableTests_$30;
+}
+
+@end
+
+void RxObservableTests_$30_initWithJavaUtilConcurrentAtomicAtomicReference_withJavaUtilConcurrentAtomicAtomicInteger_(RxObservableTests_$30 *self, JavaUtilConcurrentAtomicAtomicReference *capture$0, JavaUtilConcurrentAtomicAtomicInteger *capture$1) {
+  JreStrongAssign(&self->val$error_, capture$0);
+  JreStrongAssign(&self->val$count_, capture$1);
+  RxSubscriber_init(self);
+}
+
+RxObservableTests_$30 *new_RxObservableTests_$30_initWithJavaUtilConcurrentAtomicAtomicReference_withJavaUtilConcurrentAtomicAtomicInteger_(JavaUtilConcurrentAtomicAtomicReference *capture$0, JavaUtilConcurrentAtomicAtomicInteger *capture$1) {
+  J2OBJC_NEW_IMPL(RxObservableTests_$30, initWithJavaUtilConcurrentAtomicAtomicReference_withJavaUtilConcurrentAtomicAtomicInteger_, capture$0, capture$1)
+}
+
+RxObservableTests_$30 *create_RxObservableTests_$30_initWithJavaUtilConcurrentAtomicAtomicReference_withJavaUtilConcurrentAtomicAtomicInteger_(JavaUtilConcurrentAtomicAtomicReference *capture$0, JavaUtilConcurrentAtomicAtomicInteger *capture$1) {
+  J2OBJC_CREATE_IMPL(RxObservableTests_$30, initWithJavaUtilConcurrentAtomicAtomicReference_withJavaUtilConcurrentAtomicAtomicInteger_, capture$0, capture$1)
+}
+
+@implementation RxObservableTests_$31
+
+- (RxObservable *)callWithId:(NSString *)s {
+  return RxObservable_errorWithNSException_(create_JavaLangException_initWithNSString_(@"test"));
+}
+
+J2OBJC_IGNORE_DESIGNATED_BEGIN
+- (instancetype)init {
+  RxObservableTests_$31_init(self);
+  return self;
+}
+J2OBJC_IGNORE_DESIGNATED_END
+
++ (const J2ObjcClassInfo *)__metadata {
+  static J2ObjcMethodInfo methods[] = {
+    { NULL, "LRxObservable;", 0x1, 0, 1, -1, 2, -1, -1 },
+    { NULL, NULL, 0x0, -1, -1, -1, -1, -1, -1 },
+  };
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Wobjc-multiple-method-names"
+  methods[0].selector = @selector(callWithId:);
+  methods[1].selector = @selector(init);
+  #pragma clang diagnostic pop
+  static const void *ptrTable[] = { "call", "LNSString;", "(Ljava/lang/String;)Lrx/Observable<Ljava/lang/String;>;", "LRxObservableTests;", "testSubscribeWithoutOnError", "Ljava/lang/Object;Lrx/functions/Func1<Ljava/lang/String;Lrx/Observable<Ljava/lang/String;>;>;" };
+  static const J2ObjcClassInfo _RxObservableTests_$31 = { "", "rx", ptrTable, methods, NULL, 7, 0x8008, 2, 0, 3, -1, 4, 5, -1 };
+  return &_RxObservableTests_$31;
+}
+
+@end
+
+void RxObservableTests_$31_init(RxObservableTests_$31 *self) {
+  NSObject_init(self);
+}
+
+RxObservableTests_$31 *new_RxObservableTests_$31_init() {
+  J2OBJC_NEW_IMPL(RxObservableTests_$31, init)
+}
+
+RxObservableTests_$31 *create_RxObservableTests_$31_init() {
+  J2OBJC_CREATE_IMPL(RxObservableTests_$31, init)
+}
+
+@implementation RxObservableTests_$32
+
+- (JavaLangBoolean *)callWithId:(JavaLangBoolean *)value {
+  return value;
+}
+
+J2OBJC_IGNORE_DESIGNATED_BEGIN
+- (instancetype)init {
+  RxObservableTests_$32_init(self);
+  return self;
+}
+J2OBJC_IGNORE_DESIGNATED_END
+
++ (const J2ObjcClassInfo *)__metadata {
+  static J2ObjcMethodInfo methods[] = {
+    { NULL, "LJavaLangBoolean;", 0x1, 0, 1, -1, -1, -1, -1 },
+    { NULL, NULL, 0x0, -1, -1, -1, -1, -1, -1 },
+  };
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Wobjc-multiple-method-names"
+  methods[0].selector = @selector(callWithId:);
+  methods[1].selector = @selector(init);
+  #pragma clang diagnostic pop
+  static const void *ptrTable[] = { "call", "LJavaLangBoolean;", "LRxObservableTests;", "testTakeWhileToList", "Ljava/lang/Object;Lrx/functions/Func1<Ljava/lang/Boolean;Ljava/lang/Boolean;>;" };
+  static const J2ObjcClassInfo _RxObservableTests_$32 = { "", "rx", ptrTable, methods, NULL, 7, 0x8008, 2, 0, 2, -1, 3, 4, -1 };
+  return &_RxObservableTests_$32;
+}
+
+@end
+
+void RxObservableTests_$32_init(RxObservableTests_$32 *self) {
+  NSObject_init(self);
+}
+
+RxObservableTests_$32 *new_RxObservableTests_$32_init() {
+  J2OBJC_NEW_IMPL(RxObservableTests_$32, init)
+}
+
+RxObservableTests_$32 *create_RxObservableTests_$32_init() {
+  J2OBJC_CREATE_IMPL(RxObservableTests_$32, init)
+}
+
+@implementation RxObservableTests_$33
+
+- (void)callWithId:(id<JavaUtilList>)booleans {
+  [((JavaUtilConcurrentAtomicAtomicInteger *) nil_chk(val$count_)) incrementAndGet];
+}
+
+- (instancetype)initWithJavaUtilConcurrentAtomicAtomicInteger:(JavaUtilConcurrentAtomicAtomicInteger *)capture$0 {
+  RxObservableTests_$33_initWithJavaUtilConcurrentAtomicAtomicInteger_(self, capture$0);
+  return self;
+}
+
+- (void)dealloc {
+  RELEASE_(val$count_);
+  [super dealloc];
+}
+
++ (const J2ObjcClassInfo *)__metadata {
+  static J2ObjcMethodInfo methods[] = {
+    { NULL, "V", 0x1, 0, 1, -1, 2, -1, -1 },
+    { NULL, NULL, 0x0, -1, 3, -1, -1, -1, -1 },
+  };
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Wobjc-multiple-method-names"
+  methods[0].selector = @selector(callWithId:);
+  methods[1].selector = @selector(initWithJavaUtilConcurrentAtomicAtomicInteger:);
+  #pragma clang diagnostic pop
+  static const J2ObjcFieldInfo fields[] = {
+    { "val$count_", "LJavaUtilConcurrentAtomicAtomicInteger;", .constantValue.asLong = 0, 0x1012, -1, -1, -1, -1 },
+  };
+  static const void *ptrTable[] = { "call", "LJavaUtilList;", "(Ljava/util/List<Ljava/lang/Boolean;>;)V", "LJavaUtilConcurrentAtomicAtomicInteger;", "LRxObservableTests;", "testTakeWhileToList", "Ljava/lang/Object;Lrx/functions/Action1<Ljava/util/List<Ljava/lang/Boolean;>;>;" };
+  static const J2ObjcClassInfo _RxObservableTests_$33 = { "", "rx", ptrTable, methods, fields, 7, 0x8008, 2, 1, 4, -1, 5, 6, -1 };
+  return &_RxObservableTests_$33;
+}
+
+@end
+
+void RxObservableTests_$33_initWithJavaUtilConcurrentAtomicAtomicInteger_(RxObservableTests_$33 *self, JavaUtilConcurrentAtomicAtomicInteger *capture$0) {
+  JreStrongAssign(&self->val$count_, capture$0);
+  NSObject_init(self);
+}
+
+RxObservableTests_$33 *new_RxObservableTests_$33_initWithJavaUtilConcurrentAtomicAtomicInteger_(JavaUtilConcurrentAtomicAtomicInteger *capture$0) {
+  J2OBJC_NEW_IMPL(RxObservableTests_$33, initWithJavaUtilConcurrentAtomicAtomicInteger_, capture$0)
+}
+
+RxObservableTests_$33 *create_RxObservableTests_$33_initWithJavaUtilConcurrentAtomicAtomicInteger_(JavaUtilConcurrentAtomicAtomicInteger *capture$0) {
+  J2OBJC_CREATE_IMPL(RxObservableTests_$33, initWithJavaUtilConcurrentAtomicAtomicInteger_, capture$0)
+}
+
+@implementation RxObservableTests_$34
+
+- (RxObservable *)callWithId:(RxObservable *)t1 {
+  return [((RxObservable *) nil_chk(t1)) mapWithRxFunctionsFunc1:create_RxObservableTests_$34_$1_init()];
+}
+
+J2OBJC_IGNORE_DESIGNATED_BEGIN
+- (instancetype)init {
+  RxObservableTests_$34_init(self);
+  return self;
+}
+J2OBJC_IGNORE_DESIGNATED_END
+
++ (const J2ObjcClassInfo *)__metadata {
+  static J2ObjcMethodInfo methods[] = {
+    { NULL, "LRxObservable;", 0x1, 0, 1, -1, 2, -1, -1 },
+    { NULL, NULL, 0x0, -1, -1, -1, -1, -1, -1 },
+  };
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Wobjc-multiple-method-names"
+  methods[0].selector = @selector(callWithId:);
+  methods[1].selector = @selector(init);
+  #pragma clang diagnostic pop
+  static const void *ptrTable[] = { "call", "LRxObservable;", "(Lrx/Observable<Ljava/lang/Integer;>;)Lrx/Observable<Ljava/lang/String;>;", "LRxObservableTests;", "testCompose", "Ljava/lang/Object;Lrx/Observable$Transformer<Ljava/lang/Integer;Ljava/lang/String;>;" };
+  static const J2ObjcClassInfo _RxObservableTests_$34 = { "", "rx", ptrTable, methods, NULL, 7, 0x8008, 2, 0, 3, -1, 4, 5, -1 };
+  return &_RxObservableTests_$34;
+}
+
+@end
+
+void RxObservableTests_$34_init(RxObservableTests_$34 *self) {
+  NSObject_init(self);
+}
+
+RxObservableTests_$34 *new_RxObservableTests_$34_init() {
+  J2OBJC_NEW_IMPL(RxObservableTests_$34, init)
+}
+
+RxObservableTests_$34 *create_RxObservableTests_$34_init() {
+  J2OBJC_CREATE_IMPL(RxObservableTests_$34, init)
+}
+
+@implementation RxObservableTests_$34_$1
+
+- (NSString *)callWithId:(JavaLangInteger *)t1 {
+  return NSString_valueOf_(t1);
+}
+
+J2OBJC_IGNORE_DESIGNATED_BEGIN
+- (instancetype)init {
+  RxObservableTests_$34_$1_init(self);
+  return self;
+}
+J2OBJC_IGNORE_DESIGNATED_END
+
++ (const J2ObjcClassInfo *)__metadata {
+  static J2ObjcMethodInfo methods[] = {
+    { NULL, "LNSString;", 0x1, 0, 1, -1, -1, -1, -1 },
+    { NULL, NULL, 0x0, -1, -1, -1, -1, -1, -1 },
+  };
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Wobjc-multiple-method-names"
+  methods[0].selector = @selector(callWithId:);
+  methods[1].selector = @selector(init);
+  #pragma clang diagnostic pop
+  static const void *ptrTable[] = { "call", "LJavaLangInteger;", "LRxObservableTests_$34;", "callWithId:", "Ljava/lang/Object;Lrx/functions/Func1<Ljava/lang/Integer;Ljava/lang/String;>;" };
+  static const J2ObjcClassInfo _RxObservableTests_$34_$1 = { "", "rx", ptrTable, methods, NULL, 7, 0x8008, 2, 0, 2, -1, 3, 4, -1 };
+  return &_RxObservableTests_$34_$1;
+}
+
+@end
+
+void RxObservableTests_$34_$1_init(RxObservableTests_$34_$1 *self) {
+  NSObject_init(self);
+}
+
+RxObservableTests_$34_$1 *new_RxObservableTests_$34_$1_init() {
+  J2OBJC_NEW_IMPL(RxObservableTests_$34_$1, init)
+}
+
+RxObservableTests_$34_$1 *create_RxObservableTests_$34_$1_init() {
+  J2OBJC_CREATE_IMPL(RxObservableTests_$34_$1, init)
+}
+
+@implementation RxObservableTests_$35
+
+- (void)run {
+  [((JavaLangThread *) nil_chk(JavaLangThread_currentThread())) setUncaughtExceptionHandlerWithJavaLangThread_UncaughtExceptionHandler:create_RxObservableTests_$35_$1_initWithRxObservableTests_$35_(self)];
+}
+
+- (instancetype)initWithJavaUtilConcurrentAtomicAtomicReference:(JavaUtilConcurrentAtomicAtomicReference *)capture$0 {
+  RxObservableTests_$35_initWithJavaUtilConcurrentAtomicAtomicReference_(self, capture$0);
+  return self;
+}
+
+- (void)dealloc {
+  RELEASE_(val$err_);
+  [super dealloc];
+}
+
++ (const J2ObjcClassInfo *)__metadata {
+  static J2ObjcMethodInfo methods[] = {
+    { NULL, "V", 0x1, -1, -1, -1, -1, -1, -1 },
+    { NULL, NULL, 0x0, -1, 0, -1, 1, -1, -1 },
+  };
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Wobjc-multiple-method-names"
+  methods[0].selector = @selector(run);
+  methods[1].selector = @selector(initWithJavaUtilConcurrentAtomicAtomicReference:);
+  #pragma clang diagnostic pop
+  static const J2ObjcFieldInfo fields[] = {
+    { "val$err_", "LJavaUtilConcurrentAtomicAtomicReference;", .constantValue.asLong = 0, 0x1012, -1, -1, 2, -1 },
+  };
+  static const void *ptrTable[] = { "LJavaUtilConcurrentAtomicAtomicReference;", "(Ljava/util/concurrent/atomic/AtomicReference<Ljava/lang/Throwable;>;)V", "Ljava/util/concurrent/atomic/AtomicReference<Ljava/lang/Throwable;>;", "LRxObservableTests;", "testErrorThrownIssue1685" };
+  static const J2ObjcClassInfo _RxObservableTests_$35 = { "", "rx", ptrTable, methods, fields, 7, 0x8008, 2, 1, 3, -1, 4, -1, -1 };
+  return &_RxObservableTests_$35;
+}
+
+@end
+
+void RxObservableTests_$35_initWithJavaUtilConcurrentAtomicAtomicReference_(RxObservableTests_$35 *self, JavaUtilConcurrentAtomicAtomicReference *capture$0) {
+  JreStrongAssign(&self->val$err_, capture$0);
+  NSObject_init(self);
+}
+
+RxObservableTests_$35 *new_RxObservableTests_$35_initWithJavaUtilConcurrentAtomicAtomicReference_(JavaUtilConcurrentAtomicAtomicReference *capture$0) {
+  J2OBJC_NEW_IMPL(RxObservableTests_$35, initWithJavaUtilConcurrentAtomicAtomicReference_, capture$0)
+}
+
+RxObservableTests_$35 *create_RxObservableTests_$35_initWithJavaUtilConcurrentAtomicAtomicReference_(JavaUtilConcurrentAtomicAtomicReference *capture$0) {
+  J2OBJC_CREATE_IMPL(RxObservableTests_$35, initWithJavaUtilConcurrentAtomicAtomicReference_, capture$0)
+}
+
+@implementation RxObservableTests_$35_$1
+
+- (void)uncaughtExceptionWithJavaLangThread:(JavaLangThread *)t
+                            withNSException:(NSException *)e {
+  [((JavaUtilConcurrentAtomicAtomicReference *) nil_chk(this$0_->val$err_)) setWithId:e];
+}
+
+- (instancetype)initWithRxObservableTests_$35:(RxObservableTests_$35 *)outer$ {
+  RxObservableTests_$35_$1_initWithRxObservableTests_$35_(self, outer$);
+  return self;
+}
+
+- (void)dealloc {
+  RELEASE_(this$0_);
+  [super dealloc];
+}
+
++ (const J2ObjcClassInfo *)__metadata {
+  static J2ObjcMethodInfo methods[] = {
+    { NULL, "V", 0x1, 0, 1, -1, -1, -1, -1 },
+    { NULL, NULL, 0x0, -1, 2, -1, -1, -1, -1 },
+  };
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Wobjc-multiple-method-names"
+  methods[0].selector = @selector(uncaughtExceptionWithJavaLangThread:withNSException:);
+  methods[1].selector = @selector(initWithRxObservableTests_$35:);
+  #pragma clang diagnostic pop
+  static const J2ObjcFieldInfo fields[] = {
+    { "this$0_", "LRxObservableTests_$35;", .constantValue.asLong = 0, 0x1012, -1, -1, -1, -1 },
+  };
+  static const void *ptrTable[] = { "uncaughtException", "LJavaLangThread;LNSException;", "LRxObservableTests_$35;", "run" };
+  static const J2ObjcClassInfo _RxObservableTests_$35_$1 = { "", "rx", ptrTable, methods, fields, 7, 0x8008, 2, 1, 2, -1, 3, -1, -1 };
+  return &_RxObservableTests_$35_$1;
+}
+
+@end
+
+void RxObservableTests_$35_$1_initWithRxObservableTests_$35_(RxObservableTests_$35_$1 *self, RxObservableTests_$35 *outer$) {
+  JreStrongAssign(&self->this$0_, outer$);
+  NSObject_init(self);
+}
+
+RxObservableTests_$35_$1 *new_RxObservableTests_$35_$1_initWithRxObservableTests_$35_(RxObservableTests_$35 *outer$) {
+  J2OBJC_NEW_IMPL(RxObservableTests_$35_$1, initWithRxObservableTests_$35_, outer$)
+}
+
+RxObservableTests_$35_$1 *create_RxObservableTests_$35_$1_initWithRxObservableTests_$35_(RxObservableTests_$35 *outer$) {
+  J2OBJC_CREATE_IMPL(RxObservableTests_$35_$1, initWithRxObservableTests_$35_, outer$)
+}
+
+@implementation RxObservableTests_$36
+
+- (void)callWithId:(id)t {
+}
+
+J2OBJC_IGNORE_DESIGNATED_BEGIN
+- (instancetype)init {
+  RxObservableTests_$36_init(self);
+  return self;
+}
+J2OBJC_IGNORE_DESIGNATED_END
+
++ (const J2ObjcClassInfo *)__metadata {
+  static J2ObjcMethodInfo methods[] = {
+    { NULL, "V", 0x1, 0, 1, -1, -1, -1, -1 },
+    { NULL, NULL, 0x0, -1, -1, -1, -1, -1, -1 },
+  };
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Wobjc-multiple-method-names"
+  methods[0].selector = @selector(callWithId:);
+  methods[1].selector = @selector(init);
+  #pragma clang diagnostic pop
+  static const void *ptrTable[] = { "call", "LNSObject;", "LRxObservableTests;", "testForEachWithError", "Ljava/lang/Object;Lrx/functions/Action1<Ljava/lang/Object;>;" };
+  static const J2ObjcClassInfo _RxObservableTests_$36 = { "", "rx", ptrTable, methods, NULL, 7, 0x8008, 2, 0, 2, -1, 3, 4, -1 };
+  return &_RxObservableTests_$36;
+}
+
+@end
+
+void RxObservableTests_$36_init(RxObservableTests_$36 *self) {
+  NSObject_init(self);
+}
+
+RxObservableTests_$36 *new_RxObservableTests_$36_init() {
+  J2OBJC_NEW_IMPL(RxObservableTests_$36, init)
+}
+
+RxObservableTests_$36 *create_RxObservableTests_$36_init() {
+  J2OBJC_CREATE_IMPL(RxObservableTests_$36, init)
+}
+
+@implementation RxObservableTests_$37
+
+- (void)callWithId:(RxSubscriber *)observer {
+  [create_JavaLangThread_initWithJavaLangRunnable_(create_RxObservableTests_$37_$1_initWithRxObservableTests_$37_withRxSubscriber_(self, observer)) start];
+}
+
+- (instancetype)initWithJavaUtilConcurrentAtomicAtomicInteger:(JavaUtilConcurrentAtomicAtomicInteger *)capture$0 {
+  RxObservableTests_$37_initWithJavaUtilConcurrentAtomicAtomicInteger_(self, capture$0);
+  return self;
+}
+
+- (void)dealloc {
+  RELEASE_(val$counter_);
+  [super dealloc];
+}
+
++ (const J2ObjcClassInfo *)__metadata {
+  static J2ObjcMethodInfo methods[] = {
+    { NULL, "V", 0x1, 0, 1, -1, 2, -1, -1 },
+    { NULL, NULL, 0x0, -1, 3, -1, -1, -1, -1 },
+  };
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Wobjc-multiple-method-names"
+  methods[0].selector = @selector(callWithId:);
+  methods[1].selector = @selector(initWithJavaUtilConcurrentAtomicAtomicInteger:);
+  #pragma clang diagnostic pop
+  static const J2ObjcFieldInfo fields[] = {
+    { "val$counter_", "LJavaUtilConcurrentAtomicAtomicInteger;", .constantValue.asLong = 0, 0x1012, -1, -1, -1, -1 },
+  };
+  static const void *ptrTable[] = { "call", "LRxSubscriber;", "(Lrx/Subscriber<-Ljava/lang/String;>;)V", "LJavaUtilConcurrentAtomicAtomicInteger;", "LRxObservableTests;", "testCacheHint", "Ljava/lang/Object;Lrx/Observable$OnSubscribe<Ljava/lang/String;>;" };
+  static const J2ObjcClassInfo _RxObservableTests_$37 = { "", "rx", ptrTable, methods, fields, 7, 0x8008, 2, 1, 4, -1, 5, 6, -1 };
+  return &_RxObservableTests_$37;
+}
+
+@end
+
+void RxObservableTests_$37_initWithJavaUtilConcurrentAtomicAtomicInteger_(RxObservableTests_$37 *self, JavaUtilConcurrentAtomicAtomicInteger *capture$0) {
+  JreStrongAssign(&self->val$counter_, capture$0);
+  NSObject_init(self);
+}
+
+RxObservableTests_$37 *new_RxObservableTests_$37_initWithJavaUtilConcurrentAtomicAtomicInteger_(JavaUtilConcurrentAtomicAtomicInteger *capture$0) {
+  J2OBJC_NEW_IMPL(RxObservableTests_$37, initWithJavaUtilConcurrentAtomicAtomicInteger_, capture$0)
+}
+
+RxObservableTests_$37 *create_RxObservableTests_$37_initWithJavaUtilConcurrentAtomicAtomicInteger_(JavaUtilConcurrentAtomicAtomicInteger *capture$0) {
+  J2OBJC_CREATE_IMPL(RxObservableTests_$37, initWithJavaUtilConcurrentAtomicAtomicInteger_, capture$0)
+}
+
+@implementation RxObservableTests_$37_$1
+
+- (void)run {
+  [((JavaUtilConcurrentAtomicAtomicInteger *) nil_chk(this$0_->val$counter_)) incrementAndGet];
+  [((RxSubscriber *) nil_chk(val$observer_)) onNextWithId:@"one"];
+  [val$observer_ onCompleted];
+}
+
+- (instancetype)initWithRxObservableTests_$37:(RxObservableTests_$37 *)outer$
+                             withRxSubscriber:(RxSubscriber *)capture$0 {
+  RxObservableTests_$37_$1_initWithRxObservableTests_$37_withRxSubscriber_(self, outer$, capture$0);
+  return self;
+}
+
+- (void)dealloc {
+  RELEASE_(this$0_);
+  RELEASE_(val$observer_);
+  [super dealloc];
+}
+
++ (const J2ObjcClassInfo *)__metadata {
+  static J2ObjcMethodInfo methods[] = {
+    { NULL, "V", 0x1, -1, -1, -1, -1, -1, -1 },
+    { NULL, NULL, 0x0, -1, 0, -1, 1, -1, -1 },
+  };
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Wobjc-multiple-method-names"
+  methods[0].selector = @selector(run);
+  methods[1].selector = @selector(initWithRxObservableTests_$37:withRxSubscriber:);
+  #pragma clang diagnostic pop
+  static const J2ObjcFieldInfo fields[] = {
+    { "this$0_", "LRxObservableTests_$37;", .constantValue.asLong = 0, 0x1012, -1, -1, -1, -1 },
+    { "val$observer_", "LRxSubscriber;", .constantValue.asLong = 0, 0x1012, -1, -1, 2, -1 },
+  };
+  static const void *ptrTable[] = { "LRxObservableTests_$37;LRxSubscriber;", "(Lrx/ObservableTests$37;Lrx/Subscriber<-Ljava/lang/String;>;)V", "Lrx/Subscriber<-Ljava/lang/String;>;", "LRxObservableTests_$37;", "callWithId:" };
+  static const J2ObjcClassInfo _RxObservableTests_$37_$1 = { "", "rx", ptrTable, methods, fields, 7, 0x8008, 2, 2, 3, -1, 4, -1, -1 };
+  return &_RxObservableTests_$37_$1;
+}
+
+@end
+
+void RxObservableTests_$37_$1_initWithRxObservableTests_$37_withRxSubscriber_(RxObservableTests_$37_$1 *self, RxObservableTests_$37 *outer$, RxSubscriber *capture$0) {
+  JreStrongAssign(&self->this$0_, outer$);
+  JreStrongAssign(&self->val$observer_, capture$0);
+  NSObject_init(self);
+}
+
+RxObservableTests_$37_$1 *new_RxObservableTests_$37_$1_initWithRxObservableTests_$37_withRxSubscriber_(RxObservableTests_$37 *outer$, RxSubscriber *capture$0) {
+  J2OBJC_NEW_IMPL(RxObservableTests_$37_$1, initWithRxObservableTests_$37_withRxSubscriber_, outer$, capture$0)
+}
+
+RxObservableTests_$37_$1 *create_RxObservableTests_$37_$1_initWithRxObservableTests_$37_withRxSubscriber_(RxObservableTests_$37 *outer$, RxSubscriber *capture$0) {
+  J2OBJC_CREATE_IMPL(RxObservableTests_$37_$1, initWithRxObservableTests_$37_withRxSubscriber_, outer$, capture$0)
+}
+
+@implementation RxObservableTests_$38
+
+- (void)callWithId:(NSString *)v {
+  OrgJunitAssert_assertEqualsWithId_withId_(@"one", v);
+  [((JavaUtilConcurrentCountDownLatch *) nil_chk(val$latch_)) countDown];
+}
+
+- (instancetype)initWithJavaUtilConcurrentCountDownLatch:(JavaUtilConcurrentCountDownLatch *)capture$0 {
+  RxObservableTests_$38_initWithJavaUtilConcurrentCountDownLatch_(self, capture$0);
+  return self;
+}
+
+- (void)dealloc {
+  RELEASE_(val$latch_);
+  [super dealloc];
+}
+
++ (const J2ObjcClassInfo *)__metadata {
+  static J2ObjcMethodInfo methods[] = {
+    { NULL, "V", 0x1, 0, 1, -1, -1, -1, -1 },
+    { NULL, NULL, 0x0, -1, 2, -1, -1, -1, -1 },
+  };
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Wobjc-multiple-method-names"
+  methods[0].selector = @selector(callWithId:);
+  methods[1].selector = @selector(initWithJavaUtilConcurrentCountDownLatch:);
+  #pragma clang diagnostic pop
+  static const J2ObjcFieldInfo fields[] = {
+    { "val$latch_", "LJavaUtilConcurrentCountDownLatch;", .constantValue.asLong = 0, 0x1012, -1, -1, -1, -1 },
+  };
+  static const void *ptrTable[] = { "call", "LNSString;", "LJavaUtilConcurrentCountDownLatch;", "LRxObservableTests;", "testCacheHint", "Ljava/lang/Object;Lrx/functions/Action1<Ljava/lang/String;>;" };
+  static const J2ObjcClassInfo _RxObservableTests_$38 = { "", "rx", ptrTable, methods, fields, 7, 0x8008, 2, 1, 3, -1, 4, 5, -1 };
+  return &_RxObservableTests_$38;
+}
+
+@end
+
+void RxObservableTests_$38_initWithJavaUtilConcurrentCountDownLatch_(RxObservableTests_$38 *self, JavaUtilConcurrentCountDownLatch *capture$0) {
+  JreStrongAssign(&self->val$latch_, capture$0);
+  NSObject_init(self);
+}
+
+RxObservableTests_$38 *new_RxObservableTests_$38_initWithJavaUtilConcurrentCountDownLatch_(JavaUtilConcurrentCountDownLatch *capture$0) {
+  J2OBJC_NEW_IMPL(RxObservableTests_$38, initWithJavaUtilConcurrentCountDownLatch_, capture$0)
+}
+
+RxObservableTests_$38 *create_RxObservableTests_$38_initWithJavaUtilConcurrentCountDownLatch_(JavaUtilConcurrentCountDownLatch *capture$0) {
+  J2OBJC_CREATE_IMPL(RxObservableTests_$38, initWithJavaUtilConcurrentCountDownLatch_, capture$0)
+}
+
+@implementation RxObservableTests_$39
+
+- (void)callWithId:(NSString *)v {
+  OrgJunitAssert_assertEqualsWithId_withId_(@"one", v);
+  [((JavaUtilConcurrentCountDownLatch *) nil_chk(val$latch_)) countDown];
+}
+
+- (instancetype)initWithJavaUtilConcurrentCountDownLatch:(JavaUtilConcurrentCountDownLatch *)capture$0 {
+  RxObservableTests_$39_initWithJavaUtilConcurrentCountDownLatch_(self, capture$0);
+  return self;
+}
+
+- (void)dealloc {
+  RELEASE_(val$latch_);
+  [super dealloc];
+}
+
++ (const J2ObjcClassInfo *)__metadata {
+  static J2ObjcMethodInfo methods[] = {
+    { NULL, "V", 0x1, 0, 1, -1, -1, -1, -1 },
+    { NULL, NULL, 0x0, -1, 2, -1, -1, -1, -1 },
+  };
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Wobjc-multiple-method-names"
+  methods[0].selector = @selector(callWithId:);
+  methods[1].selector = @selector(initWithJavaUtilConcurrentCountDownLatch:);
+  #pragma clang diagnostic pop
+  static const J2ObjcFieldInfo fields[] = {
+    { "val$latch_", "LJavaUtilConcurrentCountDownLatch;", .constantValue.asLong = 0, 0x1012, -1, -1, -1, -1 },
+  };
+  static const void *ptrTable[] = { "call", "LNSString;", "LJavaUtilConcurrentCountDownLatch;", "LRxObservableTests;", "testCacheHint", "Ljava/lang/Object;Lrx/functions/Action1<Ljava/lang/String;>;" };
+  static const J2ObjcClassInfo _RxObservableTests_$39 = { "", "rx", ptrTable, methods, fields, 7, 0x8008, 2, 1, 3, -1, 4, 5, -1 };
+  return &_RxObservableTests_$39;
+}
+
+@end
+
+void RxObservableTests_$39_initWithJavaUtilConcurrentCountDownLatch_(RxObservableTests_$39 *self, JavaUtilConcurrentCountDownLatch *capture$0) {
+  JreStrongAssign(&self->val$latch_, capture$0);
+  NSObject_init(self);
+}
+
+RxObservableTests_$39 *new_RxObservableTests_$39_initWithJavaUtilConcurrentCountDownLatch_(JavaUtilConcurrentCountDownLatch *capture$0) {
+  J2OBJC_NEW_IMPL(RxObservableTests_$39, initWithJavaUtilConcurrentCountDownLatch_, capture$0)
+}
+
+RxObservableTests_$39 *create_RxObservableTests_$39_initWithJavaUtilConcurrentCountDownLatch_(JavaUtilConcurrentCountDownLatch *capture$0) {
+  J2OBJC_CREATE_IMPL(RxObservableTests_$39, initWithJavaUtilConcurrentCountDownLatch_, capture$0)
+}
+
+@implementation RxObservableTests_$40
+
+- (void)callWithId:(NSException *)t {
+  [((id<JavaUtilList>) nil_chk(val$list_)) addWithId:t];
+}
+
+- (instancetype)initWithJavaUtilList:(id<JavaUtilList>)capture$0 {
+  RxObservableTests_$40_initWithJavaUtilList_(self, capture$0);
+  return self;
+}
+
+- (void)dealloc {
+  RELEASE_(val$list_);
+  [super dealloc];
+}
+
++ (const J2ObjcClassInfo *)__metadata {
+  static J2ObjcMethodInfo methods[] = {
+    { NULL, "V", 0x1, 0, 1, -1, -1, -1, -1 },
+    { NULL, NULL, 0x0, -1, 2, -1, 3, -1, -1 },
+  };
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Wobjc-multiple-method-names"
+  methods[0].selector = @selector(callWithId:);
+  methods[1].selector = @selector(initWithJavaUtilList:);
+  #pragma clang diagnostic pop
+  static const J2ObjcFieldInfo fields[] = {
+    { "val$list_", "LJavaUtilList;", .constantValue.asLong = 0, 0x1012, -1, -1, 4, -1 },
+  };
+  static const void *ptrTable[] = { "call", "LNSException;", "LJavaUtilList;", "(Ljava/util/List<Ljava/lang/Throwable;>;)V", "Ljava/util/List<Ljava/lang/Throwable;>;", "LRxObservableTests;", "observableThrowsWhileSubscriberIsUnsubscribed", "Ljava/lang/Object;Lrx/functions/Action1<Ljava/lang/Throwable;>;" };
+  static const J2ObjcClassInfo _RxObservableTests_$40 = { "", "rx", ptrTable, methods, fields, 7, 0x8008, 2, 1, 5, -1, 6, 7, -1 };
+  return &_RxObservableTests_$40;
+}
+
+@end
+
+void RxObservableTests_$40_initWithJavaUtilList_(RxObservableTests_$40 *self, id<JavaUtilList> capture$0) {
+  JreStrongAssign(&self->val$list_, capture$0);
+  NSObject_init(self);
+}
+
+RxObservableTests_$40 *new_RxObservableTests_$40_initWithJavaUtilList_(id<JavaUtilList> capture$0) {
+  J2OBJC_NEW_IMPL(RxObservableTests_$40, initWithJavaUtilList_, capture$0)
+}
+
+RxObservableTests_$40 *create_RxObservableTests_$40_initWithJavaUtilList_(id<JavaUtilList> capture$0) {
+  J2OBJC_CREATE_IMPL(RxObservableTests_$40, initWithJavaUtilList_, capture$0)
+}
+
+@implementation RxObservableTests_$41
+
+- (void)onErrorWithNSException:(NSException *)e {
+  @throw create_RxExceptionsTestException_initWithNSString_(@"Forced failure");
+}
+
+- (instancetype)initWithRxSubscriber:(RxSubscriber *)arg$0 {
+  RxObservableTests_$41_initWithRxSubscriber_(self, arg$0);
+  return self;
+}
+
++ (const J2ObjcClassInfo *)__metadata {
+  static J2ObjcMethodInfo methods[] = {
+    { NULL, "V", 0x1, 0, 1, -1, -1, -1, -1 },
+    { NULL, NULL, 0x0, -1, 2, -1, 3, -1, -1 },
+  };
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Wobjc-multiple-method-names"
+  methods[0].selector = @selector(onErrorWithNSException:);
+  methods[1].selector = @selector(initWithRxSubscriber:);
+  #pragma clang diagnostic pop
+  static const void *ptrTable[] = { "onError", "LNSException;", "LRxSubscriber;", "(Lrx/Subscriber<-Ljava/lang/Object;>;)V", "LRxObservableTests;", "observableThrowsWhileOnErrorFails", "Lrx/observers/SafeSubscriber<Ljava/lang/Object;>;" };
+  static const J2ObjcClassInfo _RxObservableTests_$41 = { "", "rx", ptrTable, methods, NULL, 7, 0x8008, 2, 0, 4, -1, 5, 6, -1 };
+  return &_RxObservableTests_$41;
+}
+
+@end
+
+void RxObservableTests_$41_initWithRxSubscriber_(RxObservableTests_$41 *self, RxSubscriber *arg$0) {
+  RxObserversSafeSubscriber_initWithRxSubscriber_(self, arg$0);
+}
+
+RxObservableTests_$41 *new_RxObservableTests_$41_initWithRxSubscriber_(RxSubscriber *arg$0) {
+  J2OBJC_NEW_IMPL(RxObservableTests_$41, initWithRxSubscriber_, arg$0)
+}
+
+RxObservableTests_$41 *create_RxObservableTests_$41_initWithRxSubscriber_(RxSubscriber *arg$0) {
+  J2OBJC_CREATE_IMPL(RxObservableTests_$41, initWithRxSubscriber_, arg$0)
+}
+
+@implementation RxObservableTests_$42
+
+- (void)onErrorWithNSException:(NSException *)e {
+  @throw create_RxExceptionsTestException_initWithNSString_(@"Forced failure");
+}
+
+J2OBJC_IGNORE_DESIGNATED_BEGIN
+- (instancetype)init {
+  RxObservableTests_$42_init(self);
+  return self;
+}
+J2OBJC_IGNORE_DESIGNATED_END
+
++ (const J2ObjcClassInfo *)__metadata {
+  static J2ObjcMethodInfo methods[] = {
+    { NULL, "V", 0x1, 0, 1, -1, -1, -1, -1 },
+    { NULL, NULL, 0x0, -1, -1, -1, -1, -1, -1 },
+  };
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Wobjc-multiple-method-names"
+  methods[0].selector = @selector(onErrorWithNSException:);
+  methods[1].selector = @selector(init);
+  #pragma clang diagnostic pop
+  static const void *ptrTable[] = { "onError", "LNSException;", "LRxObservableTests;", "observableThrowsWhileOnErrorFailsUnsafe", "Lrx/observers/TestSubscriber<Ljava/lang/Object;>;" };
+  static const J2ObjcClassInfo _RxObservableTests_$42 = { "", "rx", ptrTable, methods, NULL, 7, 0x8008, 2, 0, 2, -1, 3, 4, -1 };
+  return &_RxObservableTests_$42;
+}
+
+@end
+
+void RxObservableTests_$42_init(RxObservableTests_$42 *self) {
+  RxObserversTestSubscriber_init(self);
+}
+
+RxObservableTests_$42 *new_RxObservableTests_$42_init() {
+  J2OBJC_NEW_IMPL(RxObservableTests_$42, init)
+}
+
+RxObservableTests_$42 *create_RxObservableTests_$42_init() {
+  J2OBJC_CREATE_IMPL(RxObservableTests_$42, init)
+}
+
+@implementation RxObservableTests_$43
+
+- (void)callWithId:(JavaLangInteger *)t {
+  [((id<JavaUtilList>) nil_chk(val$list_)) addWithId:t];
+}
+
+- (instancetype)initWithJavaUtilList:(id<JavaUtilList>)capture$0 {
+  RxObservableTests_$43_initWithJavaUtilList_(self, capture$0);
+  return self;
+}
+
+- (void)dealloc {
+  RELEASE_(val$list_);
+  [super dealloc];
+}
+
++ (const J2ObjcClassInfo *)__metadata {
+  static J2ObjcMethodInfo methods[] = {
+    { NULL, "V", 0x1, 0, 1, -1, -1, -1, -1 },
+    { NULL, NULL, 0x0, -1, 2, -1, 3, -1, -1 },
+  };
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Wobjc-multiple-method-names"
+  methods[0].selector = @selector(callWithId:);
+  methods[1].selector = @selector(initWithJavaUtilList:);
+  #pragma clang diagnostic pop
+  static const J2ObjcFieldInfo fields[] = {
+    { "val$list_", "LJavaUtilList;", .constantValue.asLong = 0, 0x1012, -1, -1, 4, -1 },
+  };
+  static const void *ptrTable[] = { "call", "LJavaLangInteger;", "LJavaUtilList;", "(Ljava/util/List<Ljava/lang/Object;>;)V", "Ljava/util/List<Ljava/lang/Object;>;", "LRxObservableTests;", "forEachWithError", "Ljava/lang/Object;Lrx/functions/Action1<Ljava/lang/Integer;>;" };
+  static const J2ObjcClassInfo _RxObservableTests_$43 = { "", "rx", ptrTable, methods, fields, 7, 0x8008, 2, 1, 5, -1, 6, 7, -1 };
+  return &_RxObservableTests_$43;
+}
+
+@end
+
+void RxObservableTests_$43_initWithJavaUtilList_(RxObservableTests_$43 *self, id<JavaUtilList> capture$0) {
+  JreStrongAssign(&self->val$list_, capture$0);
+  NSObject_init(self);
+}
+
+RxObservableTests_$43 *new_RxObservableTests_$43_initWithJavaUtilList_(id<JavaUtilList> capture$0) {
+  J2OBJC_NEW_IMPL(RxObservableTests_$43, initWithJavaUtilList_, capture$0)
+}
+
+RxObservableTests_$43 *create_RxObservableTests_$43_initWithJavaUtilList_(id<JavaUtilList> capture$0) {
+  J2OBJC_CREATE_IMPL(RxObservableTests_$43, initWithJavaUtilList_, capture$0)
+}
+
+@implementation RxObservableTests_$44
+
+- (void)callWithId:(JavaLangInteger *)t {
+  [((id<JavaUtilList>) nil_chk(val$list_)) addWithId:t];
+}
+
+- (instancetype)initWithJavaUtilList:(id<JavaUtilList>)capture$0 {
+  RxObservableTests_$44_initWithJavaUtilList_(self, capture$0);
+  return self;
+}
+
+- (void)dealloc {
+  RELEASE_(val$list_);
+  [super dealloc];
+}
+
++ (const J2ObjcClassInfo *)__metadata {
+  static J2ObjcMethodInfo methods[] = {
+    { NULL, "V", 0x1, 0, 1, -1, -1, -1, -1 },
+    { NULL, NULL, 0x0, -1, 2, -1, 3, -1, -1 },
+  };
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Wobjc-multiple-method-names"
+  methods[0].selector = @selector(callWithId:);
+  methods[1].selector = @selector(initWithJavaUtilList:);
+  #pragma clang diagnostic pop
+  static const J2ObjcFieldInfo fields[] = {
+    { "val$list_", "LJavaUtilList;", .constantValue.asLong = 0, 0x1012, -1, -1, 4, -1 },
+  };
+  static const void *ptrTable[] = { "call", "LJavaLangInteger;", "LJavaUtilList;", "(Ljava/util/List<Ljava/lang/Object;>;)V", "Ljava/util/List<Ljava/lang/Object;>;", "LRxObservableTests;", "forEachWithError", "Ljava/lang/Object;Lrx/functions/Action1<Ljava/lang/Integer;>;" };
+  static const J2ObjcClassInfo _RxObservableTests_$44 = { "", "rx", ptrTable, methods, fields, 7, 0x8008, 2, 1, 5, -1, 6, 7, -1 };
+  return &_RxObservableTests_$44;
+}
+
+@end
+
+void RxObservableTests_$44_initWithJavaUtilList_(RxObservableTests_$44 *self, id<JavaUtilList> capture$0) {
+  JreStrongAssign(&self->val$list_, capture$0);
+  NSObject_init(self);
+}
+
+RxObservableTests_$44 *new_RxObservableTests_$44_initWithJavaUtilList_(id<JavaUtilList> capture$0) {
+  J2OBJC_NEW_IMPL(RxObservableTests_$44, initWithJavaUtilList_, capture$0)
+}
+
+RxObservableTests_$44 *create_RxObservableTests_$44_initWithJavaUtilList_(id<JavaUtilList> capture$0) {
+  J2OBJC_CREATE_IMPL(RxObservableTests_$44, initWithJavaUtilList_, capture$0)
+}
+
+@implementation RxObservableTests_$45
+
+- (void)callWithId:(NSException *)t {
+  [((id<JavaUtilList>) nil_chk(val$list_)) addWithId:t];
+}
+
+- (instancetype)initWithJavaUtilList:(id<JavaUtilList>)capture$0 {
+  RxObservableTests_$45_initWithJavaUtilList_(self, capture$0);
+  return self;
+}
+
+- (void)dealloc {
+  RELEASE_(val$list_);
+  [super dealloc];
+}
+
++ (const J2ObjcClassInfo *)__metadata {
+  static J2ObjcMethodInfo methods[] = {
+    { NULL, "V", 0x1, 0, 1, -1, -1, -1, -1 },
+    { NULL, NULL, 0x0, -1, 2, -1, 3, -1, -1 },
+  };
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Wobjc-multiple-method-names"
+  methods[0].selector = @selector(callWithId:);
+  methods[1].selector = @selector(initWithJavaUtilList:);
+  #pragma clang diagnostic pop
+  static const J2ObjcFieldInfo fields[] = {
+    { "val$list_", "LJavaUtilList;", .constantValue.asLong = 0, 0x1012, -1, -1, 4, -1 },
+  };
+  static const void *ptrTable[] = { "call", "LNSException;", "LJavaUtilList;", "(Ljava/util/List<Ljava/lang/Object;>;)V", "Ljava/util/List<Ljava/lang/Object;>;", "LRxObservableTests;", "forEachWithError", "Ljava/lang/Object;Lrx/functions/Action1<Ljava/lang/Throwable;>;" };
+  static const J2ObjcClassInfo _RxObservableTests_$45 = { "", "rx", ptrTable, methods, fields, 7, 0x8008, 2, 1, 5, -1, 6, 7, -1 };
+  return &_RxObservableTests_$45;
+}
+
+@end
+
+void RxObservableTests_$45_initWithJavaUtilList_(RxObservableTests_$45 *self, id<JavaUtilList> capture$0) {
+  JreStrongAssign(&self->val$list_, capture$0);
+  NSObject_init(self);
+}
+
+RxObservableTests_$45 *new_RxObservableTests_$45_initWithJavaUtilList_(id<JavaUtilList> capture$0) {
+  J2OBJC_NEW_IMPL(RxObservableTests_$45, initWithJavaUtilList_, capture$0)
+}
+
+RxObservableTests_$45 *create_RxObservableTests_$45_initWithJavaUtilList_(id<JavaUtilList> capture$0) {
+  J2OBJC_CREATE_IMPL(RxObservableTests_$45, initWithJavaUtilList_, capture$0)
+}
+
+@implementation RxObservableTests_$46
+
+- (void)callWithId:(JavaLangInteger *)t {
+  [((id<JavaUtilList>) nil_chk(val$list_)) addWithId:t];
+}
+
+- (instancetype)initWithJavaUtilList:(id<JavaUtilList>)capture$0 {
+  RxObservableTests_$46_initWithJavaUtilList_(self, capture$0);
+  return self;
+}
+
+- (void)dealloc {
+  RELEASE_(val$list_);
+  [super dealloc];
+}
+
++ (const J2ObjcClassInfo *)__metadata {
+  static J2ObjcMethodInfo methods[] = {
+    { NULL, "V", 0x1, 0, 1, -1, -1, -1, -1 },
+    { NULL, NULL, 0x0, -1, 2, -1, 3, -1, -1 },
+  };
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Wobjc-multiple-method-names"
+  methods[0].selector = @selector(callWithId:);
+  methods[1].selector = @selector(initWithJavaUtilList:);
+  #pragma clang diagnostic pop
+  static const J2ObjcFieldInfo fields[] = {
+    { "val$list_", "LJavaUtilList;", .constantValue.asLong = 0, 0x1012, -1, -1, 4, -1 },
+  };
+  static const void *ptrTable[] = { "call", "LJavaLangInteger;", "LJavaUtilList;", "(Ljava/util/List<Ljava/lang/Object;>;)V", "Ljava/util/List<Ljava/lang/Object;>;", "LRxObservableTests;", "forEachWithError", "Ljava/lang/Object;Lrx/functions/Action1<Ljava/lang/Integer;>;" };
+  static const J2ObjcClassInfo _RxObservableTests_$46 = { "", "rx", ptrTable, methods, fields, 7, 0x8008, 2, 1, 5, -1, 6, 7, -1 };
+  return &_RxObservableTests_$46;
+}
+
+@end
+
+void RxObservableTests_$46_initWithJavaUtilList_(RxObservableTests_$46 *self, id<JavaUtilList> capture$0) {
+  JreStrongAssign(&self->val$list_, capture$0);
+  NSObject_init(self);
+}
+
+RxObservableTests_$46 *new_RxObservableTests_$46_initWithJavaUtilList_(id<JavaUtilList> capture$0) {
+  J2OBJC_NEW_IMPL(RxObservableTests_$46, initWithJavaUtilList_, capture$0)
+}
+
+RxObservableTests_$46 *create_RxObservableTests_$46_initWithJavaUtilList_(id<JavaUtilList> capture$0) {
+  J2OBJC_CREATE_IMPL(RxObservableTests_$46, initWithJavaUtilList_, capture$0)
+}
+
+@implementation RxObservableTests_$47
+
+- (void)callWithId:(NSException *)t {
+  [((id<JavaUtilList>) nil_chk(val$list_)) addWithId:t];
+}
+
+- (instancetype)initWithJavaUtilList:(id<JavaUtilList>)capture$0 {
+  RxObservableTests_$47_initWithJavaUtilList_(self, capture$0);
+  return self;
+}
+
+- (void)dealloc {
+  RELEASE_(val$list_);
+  [super dealloc];
+}
+
++ (const J2ObjcClassInfo *)__metadata {
+  static J2ObjcMethodInfo methods[] = {
+    { NULL, "V", 0x1, 0, 1, -1, -1, -1, -1 },
+    { NULL, NULL, 0x0, -1, 2, -1, 3, -1, -1 },
+  };
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Wobjc-multiple-method-names"
+  methods[0].selector = @selector(callWithId:);
+  methods[1].selector = @selector(initWithJavaUtilList:);
+  #pragma clang diagnostic pop
+  static const J2ObjcFieldInfo fields[] = {
+    { "val$list_", "LJavaUtilList;", .constantValue.asLong = 0, 0x1012, -1, -1, 4, -1 },
+  };
+  static const void *ptrTable[] = { "call", "LNSException;", "LJavaUtilList;", "(Ljava/util/List<Ljava/lang/Object;>;)V", "Ljava/util/List<Ljava/lang/Object;>;", "LRxObservableTests;", "forEachWithError", "Ljava/lang/Object;Lrx/functions/Action1<Ljava/lang/Throwable;>;" };
+  static const J2ObjcClassInfo _RxObservableTests_$47 = { "", "rx", ptrTable, methods, fields, 7, 0x8008, 2, 1, 5, -1, 6, 7, -1 };
+  return &_RxObservableTests_$47;
+}
+
+@end
+
+void RxObservableTests_$47_initWithJavaUtilList_(RxObservableTests_$47 *self, id<JavaUtilList> capture$0) {
+  JreStrongAssign(&self->val$list_, capture$0);
+  NSObject_init(self);
+}
+
+RxObservableTests_$47 *new_RxObservableTests_$47_initWithJavaUtilList_(id<JavaUtilList> capture$0) {
+  J2OBJC_NEW_IMPL(RxObservableTests_$47, initWithJavaUtilList_, capture$0)
+}
+
+RxObservableTests_$47 *create_RxObservableTests_$47_initWithJavaUtilList_(id<JavaUtilList> capture$0) {
+  J2OBJC_CREATE_IMPL(RxObservableTests_$47, initWithJavaUtilList_, capture$0)
+}
+
+@implementation RxObservableTests_$48
+
+- (void)call {
+  [((id<JavaUtilList>) nil_chk(val$list_)) addWithId:JavaLangInteger_valueOfWithInt_(100)];
+}
+
+- (instancetype)initWithJavaUtilList:(id<JavaUtilList>)capture$0 {
+  RxObservableTests_$48_initWithJavaUtilList_(self, capture$0);
+  return self;
+}
+
+- (void)dealloc {
+  RELEASE_(val$list_);
+  [super dealloc];
+}
+
++ (const J2ObjcClassInfo *)__metadata {
+  static J2ObjcMethodInfo methods[] = {
+    { NULL, "V", 0x1, -1, -1, -1, -1, -1, -1 },
+    { NULL, NULL, 0x0, -1, 0, -1, 1, -1, -1 },
+  };
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Wobjc-multiple-method-names"
+  methods[0].selector = @selector(call);
+  methods[1].selector = @selector(initWithJavaUtilList:);
+  #pragma clang diagnostic pop
+  static const J2ObjcFieldInfo fields[] = {
+    { "val$list_", "LJavaUtilList;", .constantValue.asLong = 0, 0x1012, -1, -1, 2, -1 },
+  };
+  static const void *ptrTable[] = { "LJavaUtilList;", "(Ljava/util/List<Ljava/lang/Object;>;)V", "Ljava/util/List<Ljava/lang/Object;>;", "LRxObservableTests;", "forEachWithError" };
+  static const J2ObjcClassInfo _RxObservableTests_$48 = { "", "rx", ptrTable, methods, fields, 7, 0x8008, 2, 1, 3, -1, 4, -1, -1 };
+  return &_RxObservableTests_$48;
+}
+
+@end
+
+void RxObservableTests_$48_initWithJavaUtilList_(RxObservableTests_$48 *self, id<JavaUtilList> capture$0) {
+  JreStrongAssign(&self->val$list_, capture$0);
+  NSObject_init(self);
+}
+
+RxObservableTests_$48 *new_RxObservableTests_$48_initWithJavaUtilList_(id<JavaUtilList> capture$0) {
+  J2OBJC_NEW_IMPL(RxObservableTests_$48, initWithJavaUtilList_, capture$0)
+}
+
+RxObservableTests_$48 *create_RxObservableTests_$48_initWithJavaUtilList_(id<JavaUtilList> capture$0) {
+  J2OBJC_CREATE_IMPL(RxObservableTests_$48, initWithJavaUtilList_, capture$0)
+}
+
+@implementation RxObservableTests_$49
+
+- (id)callWithId:(RxObservable *)observable {
+  [((JavaUtilConcurrentAtomicAtomicReference *) nil_chk(val$observableRef_)) setWithId:observable];
+  return val$expectedResult_;
+}
+
+- (instancetype)initWithJavaUtilConcurrentAtomicAtomicReference:(JavaUtilConcurrentAtomicAtomicReference *)capture$0
+                                                         withId:(id)capture$1 {
+  RxObservableTests_$49_initWithJavaUtilConcurrentAtomicAtomicReference_withId_(self, capture$0, capture$1);
+  return self;
+}
+
+- (void)dealloc {
+  RELEASE_(val$observableRef_);
+  RELEASE_(val$expectedResult_);
+  [super dealloc];
+}
+
++ (const J2ObjcClassInfo *)__metadata {
+  static J2ObjcMethodInfo methods[] = {
+    { NULL, "LNSObject;", 0x1, 0, 1, -1, 2, -1, -1 },
+    { NULL, NULL, 0x0, -1, 3, -1, 4, -1, -1 },
+  };
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Wobjc-multiple-method-names"
+  methods[0].selector = @selector(callWithId:);
+  methods[1].selector = @selector(initWithJavaUtilConcurrentAtomicAtomicReference:withId:);
+  #pragma clang diagnostic pop
+  static const J2ObjcFieldInfo fields[] = {
+    { "val$observableRef_", "LJavaUtilConcurrentAtomicAtomicReference;", .constantValue.asLong = 0, 0x1012, -1, -1, 5, -1 },
+    { "val$expectedResult_", "LNSObject;", .constantValue.asLong = 0, 0x1012, -1, -1, -1, -1 },
+  };
+  static const void *ptrTable[] = { "call", "LRxObservable;", "(Lrx/Observable<Ljava/lang/String;>;)Ljava/lang/Object;", "LJavaUtilConcurrentAtomicAtomicReference;LNSObject;", "(Ljava/util/concurrent/atomic/AtomicReference<Lrx/Observable<*>;>;Ljava/lang/Object;)V", "Ljava/util/concurrent/atomic/AtomicReference<Lrx/Observable<*>;>;", "LRxObservableTests;", "toFunctionReceivesObservableReturnsResult", "Ljava/lang/Object;Lrx/functions/Func1<Lrx/Observable<Ljava/lang/String;>;Ljava/lang/Object;>;" };
+  static const J2ObjcClassInfo _RxObservableTests_$49 = { "", "rx", ptrTable, methods, fields, 7, 0x8008, 2, 2, 6, -1, 7, 8, -1 };
+  return &_RxObservableTests_$49;
+}
+
+@end
+
+void RxObservableTests_$49_initWithJavaUtilConcurrentAtomicAtomicReference_withId_(RxObservableTests_$49 *self, JavaUtilConcurrentAtomicAtomicReference *capture$0, id capture$1) {
+  JreStrongAssign(&self->val$observableRef_, capture$0);
+  JreStrongAssign(&self->val$expectedResult_, capture$1);
+  NSObject_init(self);
+}
+
+RxObservableTests_$49 *new_RxObservableTests_$49_initWithJavaUtilConcurrentAtomicAtomicReference_withId_(JavaUtilConcurrentAtomicAtomicReference *capture$0, id capture$1) {
+  J2OBJC_NEW_IMPL(RxObservableTests_$49, initWithJavaUtilConcurrentAtomicAtomicReference_withId_, capture$0, capture$1)
+}
+
+RxObservableTests_$49 *create_RxObservableTests_$49_initWithJavaUtilConcurrentAtomicAtomicReference_withId_(JavaUtilConcurrentAtomicAtomicReference *capture$0, id capture$1) {
+  J2OBJC_CREATE_IMPL(RxObservableTests_$49, initWithJavaUtilConcurrentAtomicAtomicReference_withId_, capture$0, capture$1)
 }

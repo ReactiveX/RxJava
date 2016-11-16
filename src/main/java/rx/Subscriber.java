@@ -36,9 +36,9 @@ public abstract class Subscriber<T> implements Observer<T>, Subscription {
     private static final long NOT_SET = Long.MIN_VALUE;
 
     private final SubscriptionList subscriptions;
-    private Subscriber<?> subscriber;
+    private final Subscriber<?> subscriber;
     /* protected by `this` */
-    private Producer producerr;
+    private Producer producer;
     /* protected by `this` */
     private long requested = NOT_SET; // default to not set
 
@@ -96,12 +96,6 @@ public abstract class Subscriber<T> implements Observer<T>, Subscription {
     @Override
     public final void unsubscribe() {
         subscriptions.unsubscribe();
-        updateProducerField(null);
-    }
-
-    private void updateProducerField(Producer p)
-    {
-        producerr = p;
     }
 
     /**
@@ -152,8 +146,8 @@ public abstract class Subscriber<T> implements Observer<T>, Subscription {
         // otherwise we increase the requested count by n
         Producer producerToRequestFrom;
         synchronized (this) {
-            if (producerr != null) {
-                producerToRequestFrom = producerr;
+            if (producer != null) {
+                producerToRequestFrom = producer;
             } else {
                 addToRequested(n);
                 return;
@@ -197,8 +191,7 @@ public abstract class Subscriber<T> implements Observer<T>, Subscription {
         boolean passToSubscriber = false;
         synchronized (this) {
             toRequest = requested;
-
-            updateProducerField(p);
+            producer = p;
             if (subscriber != null) {
                 // middle operator ... we pass through unless a request has been made
                 if (toRequest == NOT_SET) {
@@ -209,35 +202,14 @@ public abstract class Subscriber<T> implements Observer<T>, Subscription {
         }
         // do after releasing lock
         if (passToSubscriber) {
-            subscriber.setProducer(producerr);
+            subscriber.setProducer(producer);
         } else {
             // we execute the request with whatever has been requested (or Long.MAX_VALUE)
             if (toRequest == NOT_SET) {
-                producerr.request(Long.MAX_VALUE);
+                producer.request(Long.MAX_VALUE);
             } else {
-                producerr.request(toRequest);
+                producer.request(toRequest);
             }
         }
-    }
-
-    /**
-     * Added for j2objc compatibility. Lots of memory cycles, so setting nulls is simpler than
-     * trying to set weak references. It will clutter code somewhat, but should be safer.
-     */
-    public void j2objcCleanup()
-    {
-        updateProducerField(null);
-        if(subscriber != null)
-        {
-            subscriber.j2objcCleanup();
-            subscriber = null;
-        }
-    }
-
-    @Override
-    protected void finalize() throws Throwable
-    {
-        super.finalize();
-        j2objcCleanup();
     }
 }

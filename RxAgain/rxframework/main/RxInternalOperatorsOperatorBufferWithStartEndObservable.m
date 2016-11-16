@@ -233,7 +233,6 @@ J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxInternalOperatorsOperatorBufferWithStartEndOb
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOperatorBufferWithStartEndObservable_BufferingSubscriber class]);
   RELEASE_(this$0_);
   RELEASE_(child_);
   RELEASE_(chunks_);
@@ -315,7 +314,6 @@ J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxInternalOperatorsOperatorBufferWithStartEndOb
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOperatorBufferWithStartEndObservable_BufferingSubscriber_$1 class]);
   RELEASE_(this$0_);
   RELEASE_(val$chunk_);
   [super dealloc];
@@ -380,7 +378,6 @@ RxInternalOperatorsOperatorBufferWithStartEndObservable_BufferingSubscriber_$1 *
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOperatorBufferWithStartEndObservable_$1 class]);
   RELEASE_(val$s_);
   [super dealloc];
 }

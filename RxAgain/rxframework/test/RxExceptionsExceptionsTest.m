@@ -3,6 +3,7 @@
 //  source: /Users/kgalligan/devel-doppl/RxJava/src/test/java/rx/exceptions/ExceptionsTest.java
 //
 
+#include "CoTouchlabDoppelTestingPlatformUtils.h"
 #include "IOSClass.h"
 #include "IOSObjectArray.h"
 #include "J2ObjC_source.h"
@@ -491,6 +492,7 @@ __attribute__((unused)) static RxExceptionsExceptionsTest_$16_$2 *create_RxExcep
 }
 
 - (void)testStackOverflowWouldOccur {
+  if (CoTouchlabDoppelTestingPlatformUtils_isJ2objc()) return;
   RxSubjectsPublishSubject *a = RxSubjectsPublishSubject_create();
   RxSubjectsPublishSubject *b = RxSubjectsPublishSubject_create();
   jint MAX_STACK_DEPTH = 800;
@@ -686,11 +688,6 @@ J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxExceptionsExceptionsTest)
   return self;
 }
 
-- (void)dealloc {
-  JreCheckFinalize(self, [RxExceptionsExceptionsTest_OnErrorFailedSubscriber class]);
-  [super dealloc];
-}
-
 + (const J2ObjcClassInfo *)__metadata {
   static J2ObjcMethodInfo methods[] = {
     { NULL, "V", 0x1, -1, -1, -1, -1, -1, -1 },
@@ -786,11 +783,6 @@ J2OBJC_IGNORE_DESIGNATED_BEGIN
   return self;
 }
 J2OBJC_IGNORE_DESIGNATED_END
-
-- (void)dealloc {
-  JreCheckFinalize(self, [RxExceptionsExceptionsTest_$2 class]);
-  [super dealloc];
-}
 
 + (const J2ObjcClassInfo *)__metadata {
   static J2ObjcMethodInfo methods[] = {
@@ -1695,7 +1687,6 @@ RxExceptionsExceptionsTest_$16_$1 *create_RxExceptionsExceptionsTest_$16_$1_init
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxExceptionsExceptionsTest_$16_$2 class]);
   RELEASE_(val$s1_);
   [super dealloc];
 }

@@ -197,7 +197,6 @@ J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxInternalOperatorsOperatorToObservableList_Hol
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOperatorToObservableList_$1 class]);
   RELEASE_(list_);
   RELEASE_(val$producer_);
   RELEASE_(val$o_);

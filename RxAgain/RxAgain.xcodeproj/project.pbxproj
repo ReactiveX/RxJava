@@ -7,44 +7,78 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		63111F641DCC042000DE6670 /* RxCompletableTestFunc1a$Moxy.h in Headers */ = {isa = PBXBuildFile; fileRef = 63111F461DCC042000DE6670 /* RxCompletableTestFunc1a$Moxy.h */; };
-		63111F651DCC042000DE6670 /* RxCompletableTestFunc1a$Moxy.m in Sources */ = {isa = PBXBuildFile; fileRef = 63111F471DCC042000DE6670 /* RxCompletableTestFunc1a$Moxy.m */; };
-		63111F661DCC042000DE6670 /* RxCompletableTestFunc1b$Moxy.h in Headers */ = {isa = PBXBuildFile; fileRef = 63111F481DCC042000DE6670 /* RxCompletableTestFunc1b$Moxy.h */; };
-		63111F671DCC042000DE6670 /* RxCompletableTestFunc1b$Moxy.m in Sources */ = {isa = PBXBuildFile; fileRef = 63111F491DCC042000DE6670 /* RxCompletableTestFunc1b$Moxy.m */; };
-		63111F681DCC042000DE6670 /* RxDopplMockMAction0$Moxy.h in Headers */ = {isa = PBXBuildFile; fileRef = 63111F4A1DCC042000DE6670 /* RxDopplMockMAction0$Moxy.h */; };
-		63111F691DCC042000DE6670 /* RxDopplMockMAction0$Moxy.m in Sources */ = {isa = PBXBuildFile; fileRef = 63111F4B1DCC042000DE6670 /* RxDopplMockMAction0$Moxy.m */; };
-		63111F6A1DCC042000DE6670 /* RxDopplMockMAction1$Moxy.h in Headers */ = {isa = PBXBuildFile; fileRef = 63111F4C1DCC042000DE6670 /* RxDopplMockMAction1$Moxy.h */; };
-		63111F6B1DCC042000DE6670 /* RxDopplMockMAction1$Moxy.m in Sources */ = {isa = PBXBuildFile; fileRef = 63111F4D1DCC042000DE6670 /* RxDopplMockMAction1$Moxy.m */; };
-		63111F6C1DCC042000DE6670 /* RxDopplMockMObserver$Moxy.h in Headers */ = {isa = PBXBuildFile; fileRef = 63111F4E1DCC042000DE6670 /* RxDopplMockMObserver$Moxy.h */; };
-		63111F6D1DCC042000DE6670 /* RxDopplMockMObserver$Moxy.m in Sources */ = {isa = PBXBuildFile; fileRef = 63111F4F1DCC042000DE6670 /* RxDopplMockMObserver$Moxy.m */; };
-		63111F6E1DCC042000DE6670 /* RxDopplMockMSubscriber$Moxy.h in Headers */ = {isa = PBXBuildFile; fileRef = 63111F501DCC042000DE6670 /* RxDopplMockMSubscriber$Moxy.h */; };
-		63111F6F1DCC042000DE6670 /* RxDopplMockMSubscriber$Moxy.m in Sources */ = {isa = PBXBuildFile; fileRef = 63111F511DCC042000DE6670 /* RxDopplMockMSubscriber$Moxy.m */; };
-		63111F701DCC042000DE6670 /* RxDopplMockMSubscription$Moxy.h in Headers */ = {isa = PBXBuildFile; fileRef = 63111F521DCC042000DE6670 /* RxDopplMockMSubscription$Moxy.h */; };
-		63111F711DCC042000DE6670 /* RxDopplMockMSubscription$Moxy.m in Sources */ = {isa = PBXBuildFile; fileRef = 63111F531DCC042000DE6670 /* RxDopplMockMSubscription$Moxy.m */; };
-		63111F721DCC042000DE6670 /* RxDopplMockSingletestFuncCreate$Moxy.h in Headers */ = {isa = PBXBuildFile; fileRef = 63111F541DCC042000DE6670 /* RxDopplMockSingletestFuncCreate$Moxy.h */; };
-		63111F731DCC042000DE6670 /* RxDopplMockSingletestFuncCreate$Moxy.m in Sources */ = {isa = PBXBuildFile; fileRef = 63111F551DCC042000DE6670 /* RxDopplMockSingletestFuncCreate$Moxy.m */; };
-		63111F741DCC042000DE6670 /* RxDopplMockSingletestFuncReturn$Moxy.h in Headers */ = {isa = PBXBuildFile; fileRef = 63111F561DCC042000DE6670 /* RxDopplMockSingletestFuncReturn$Moxy.h */; };
-		63111F751DCC042000DE6670 /* RxDopplMockSingletestFuncReturn$Moxy.m in Sources */ = {isa = PBXBuildFile; fileRef = 63111F571DCC042000DE6670 /* RxDopplMockSingletestFuncReturn$Moxy.m */; };
-		63111F761DCC042000DE6670 /* RxDopplMockSingletestFuncStart$Moxy.h in Headers */ = {isa = PBXBuildFile; fileRef = 63111F581DCC042000DE6670 /* RxDopplMockSingletestFuncStart$Moxy.h */; };
-		63111F771DCC042000DE6670 /* RxDopplMockSingletestFuncStart$Moxy.m in Sources */ = {isa = PBXBuildFile; fileRef = 63111F591DCC042000DE6670 /* RxDopplMockSingletestFuncStart$Moxy.m */; };
-		63111F781DCC042000DE6670 /* RxDopplReflectionTest.h in Headers */ = {isa = PBXBuildFile; fileRef = 63111F5A1DCC042000DE6670 /* RxDopplReflectionTest.h */; };
-		63111F791DCC042000DE6670 /* RxDopplReflectionTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 63111F5B1DCC042000DE6670 /* RxDopplReflectionTest.m */; };
-		63111F7A1DCC042000DE6670 /* RxInternalOperatorsOperatorReplayTest__InprocessWorker$Moxy.h in Headers */ = {isa = PBXBuildFile; fileRef = 63111F5C1DCC042000DE6670 /* RxInternalOperatorsOperatorReplayTest__InprocessWorker$Moxy.h */; };
-		63111F7B1DCC042000DE6670 /* RxInternalOperatorsOperatorReplayTest__InprocessWorker$Moxy.m in Sources */ = {isa = PBXBuildFile; fileRef = 63111F5D1DCC042000DE6670 /* RxInternalOperatorsOperatorReplayTest__InprocessWorker$Moxy.m */; };
-		63111F7C1DCC042000DE6670 /* RxInternalOperatorsOperatorScanTest__InnerProducer$Moxy.h in Headers */ = {isa = PBXBuildFile; fileRef = 63111F5E1DCC042000DE6670 /* RxInternalOperatorsOperatorScanTest__InnerProducer$Moxy.h */; };
-		63111F7D1DCC042000DE6670 /* RxInternalOperatorsOperatorScanTest__InnerProducer$Moxy.m in Sources */ = {isa = PBXBuildFile; fileRef = 63111F5F1DCC042000DE6670 /* RxInternalOperatorsOperatorScanTest__InnerProducer$Moxy.m */; };
-		63111F7E1DCC042000DE6670 /* RxInternalSchedulersNewThreadWorkerTest__ScheduledExecutorServiceWithSetRemoveOnCancelPolicy$Moxy.h in Headers */ = {isa = PBXBuildFile; fileRef = 63111F601DCC042000DE6670 /* RxInternalSchedulersNewThreadWorkerTest__ScheduledExecutorServiceWithSetRemoveOnCancelPolicy$Moxy.h */; };
-		63111F7F1DCC042000DE6670 /* RxInternalSchedulersNewThreadWorkerTest__ScheduledExecutorServiceWithSetRemoveOnCancelPolicy$Moxy.m in Sources */ = {isa = PBXBuildFile; fileRef = 63111F611DCC042000DE6670 /* RxInternalSchedulersNewThreadWorkerTest__ScheduledExecutorServiceWithSetRemoveOnCancelPolicy$Moxy.m */; };
-		63111F801DCC042000DE6670 /* ScheduledThreadPoolExecutor$Moxy.h in Headers */ = {isa = PBXBuildFile; fileRef = 63111F621DCC042000DE6670 /* ScheduledThreadPoolExecutor$Moxy.h */; };
-		63111F811DCC042000DE6670 /* ScheduledThreadPoolExecutor$Moxy.m in Sources */ = {isa = PBXBuildFile; fileRef = 63111F631DCC042000DE6670 /* ScheduledThreadPoolExecutor$Moxy.m */; };
 		63331ADC1DCF8A7A00CA641D /* TestResources.h in Headers */ = {isa = PBXBuildFile; fileRef = 63331ADA1DCF8A7A00CA641D /* TestResources.h */; };
 		63331ADD1DCF8A7A00CA641D /* TestResources.m in Sources */ = {isa = PBXBuildFile; fileRef = 63331ADB1DCF8A7A00CA641D /* TestResources.m */; };
-		63403E5B1DD62E8F00607444 /* RxDopplMemoryAllocationTracker.h in Headers */ = {isa = PBXBuildFile; fileRef = 63403E571DD62E8F00607444 /* RxDopplMemoryAllocationTracker.h */; };
-		63403E5C1DD62E8F00607444 /* RxDopplMemoryAllocationTracker.m in Sources */ = {isa = PBXBuildFile; fileRef = 63403E581DD62E8F00607444 /* RxDopplMemoryAllocationTracker.m */; };
-		63403E5D1DD62E8F00607444 /* RxDopplMemoryBasicOperatorTest.h in Headers */ = {isa = PBXBuildFile; fileRef = 63403E591DD62E8F00607444 /* RxDopplMemoryBasicOperatorTest.h */; };
-		63403E5E1DD62E8F00607444 /* RxDopplMemoryBasicOperatorTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 63403E5A1DD62E8F00607444 /* RxDopplMemoryBasicOperatorTest.m */; };
 		63403E611DD8D2F400607444 /* RxDopplJ2objcWeakReference.h in Headers */ = {isa = PBXBuildFile; fileRef = 63403E5F1DD8D2F400607444 /* RxDopplJ2objcWeakReference.h */; };
 		63403E621DD8D2F400607444 /* RxDopplJ2objcWeakReference.m in Sources */ = {isa = PBXBuildFile; fileRef = 63403E601DD8D2F400607444 /* RxDopplJ2objcWeakReference.m */; };
+		63403E691DD946E900607444 /* RxDopplMockSingletestFuncCreate.h in Headers */ = {isa = PBXBuildFile; fileRef = 63403E631DD946E900607444 /* RxDopplMockSingletestFuncCreate.h */; };
+		63403E6A1DD946E900607444 /* RxDopplMockSingletestFuncCreate.m in Sources */ = {isa = PBXBuildFile; fileRef = 63403E641DD946E900607444 /* RxDopplMockSingletestFuncCreate.m */; };
+		63403E6B1DD946E900607444 /* RxDopplMockSingletestFuncReturn.h in Headers */ = {isa = PBXBuildFile; fileRef = 63403E651DD946E900607444 /* RxDopplMockSingletestFuncReturn.h */; };
+		63403E6C1DD946E900607444 /* RxDopplMockSingletestFuncReturn.m in Sources */ = {isa = PBXBuildFile; fileRef = 63403E661DD946E900607444 /* RxDopplMockSingletestFuncReturn.m */; };
+		63403E6D1DD946E900607444 /* RxDopplMockSingletestFuncStart.h in Headers */ = {isa = PBXBuildFile; fileRef = 63403E671DD946E900607444 /* RxDopplMockSingletestFuncStart.h */; };
+		63403E6E1DD946E900607444 /* RxDopplMockSingletestFuncStart.m in Sources */ = {isa = PBXBuildFile; fileRef = 63403E681DD946E900607444 /* RxDopplMockSingletestFuncStart.m */; };
+		63403E7B1DD95B7800607444 /* RxDopplMockSingletestFuncCreate$Moxy.h in Headers */ = {isa = PBXBuildFile; fileRef = 63403E6F1DD95B7800607444 /* RxDopplMockSingletestFuncCreate$Moxy.h */; };
+		63403E7C1DD95B7800607444 /* RxDopplMockSingletestFuncCreate$Moxy.m in Sources */ = {isa = PBXBuildFile; fileRef = 63403E701DD95B7800607444 /* RxDopplMockSingletestFuncCreate$Moxy.m */; };
+		63403E7D1DD95B7800607444 /* RxDopplMockSingletestFuncReturn$Moxy.h in Headers */ = {isa = PBXBuildFile; fileRef = 63403E711DD95B7800607444 /* RxDopplMockSingletestFuncReturn$Moxy.h */; };
+		63403E7E1DD95B7800607444 /* RxDopplMockSingletestFuncReturn$Moxy.m in Sources */ = {isa = PBXBuildFile; fileRef = 63403E721DD95B7800607444 /* RxDopplMockSingletestFuncReturn$Moxy.m */; };
+		63403E7F1DD95B7800607444 /* RxDopplMockSingletestFuncStart$Moxy.h in Headers */ = {isa = PBXBuildFile; fileRef = 63403E731DD95B7800607444 /* RxDopplMockSingletestFuncStart$Moxy.h */; };
+		63403E801DD95B7800607444 /* RxDopplMockSingletestFuncStart$Moxy.m in Sources */ = {isa = PBXBuildFile; fileRef = 63403E741DD95B7800607444 /* RxDopplMockSingletestFuncStart$Moxy.m */; };
+		63403E811DD95B7800607444 /* RxInternalOperatorsOperatorScanTest__InnerProducer$Moxy.h in Headers */ = {isa = PBXBuildFile; fileRef = 63403E751DD95B7800607444 /* RxInternalOperatorsOperatorScanTest__InnerProducer$Moxy.h */; };
+		63403E821DD95B7800607444 /* RxInternalOperatorsOperatorScanTest__InnerProducer$Moxy.m in Sources */ = {isa = PBXBuildFile; fileRef = 63403E761DD95B7800607444 /* RxInternalOperatorsOperatorScanTest__InnerProducer$Moxy.m */; };
+		63403E831DD95B7800607444 /* RxInternalOperatorsSafeSubscriberTest.h in Headers */ = {isa = PBXBuildFile; fileRef = 63403E771DD95B7800607444 /* RxInternalOperatorsSafeSubscriberTest.h */; };
+		63403E841DD95B7800607444 /* RxInternalOperatorsSafeSubscriberTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 63403E781DD95B7800607444 /* RxInternalOperatorsSafeSubscriberTest.m */; };
+		63403E851DD95B7800607444 /* RxInternalSchedulersGenericScheduledExecutorServiceTest.h in Headers */ = {isa = PBXBuildFile; fileRef = 63403E791DD95B7800607444 /* RxInternalSchedulersGenericScheduledExecutorServiceTest.h */; };
+		63403E861DD95B7800607444 /* RxInternalSchedulersGenericScheduledExecutorServiceTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 63403E7A1DD95B7800607444 /* RxInternalSchedulersGenericScheduledExecutorServiceTest.m */; };
+		63403E8B1DD95E2A00607444 /* RxInternalSchedulersNewThreadWorkerTest__ScheduledExecutorServiceWithSetRemoveOnCancelPolicy$Moxy.h in Headers */ = {isa = PBXBuildFile; fileRef = 63403E871DD95E2A00607444 /* RxInternalSchedulersNewThreadWorkerTest__ScheduledExecutorServiceWithSetRemoveOnCancelPolicy$Moxy.h */; };
+		63403E8C1DD95E2A00607444 /* RxInternalSchedulersNewThreadWorkerTest__ScheduledExecutorServiceWithSetRemoveOnCancelPolicy$Moxy.m in Sources */ = {isa = PBXBuildFile; fileRef = 63403E881DD95E2A00607444 /* RxInternalSchedulersNewThreadWorkerTest__ScheduledExecutorServiceWithSetRemoveOnCancelPolicy$Moxy.m */; };
+		63403E8D1DD95E2A00607444 /* ScheduledThreadPoolExecutor$Moxy.h in Headers */ = {isa = PBXBuildFile; fileRef = 63403E891DD95E2A00607444 /* ScheduledThreadPoolExecutor$Moxy.h */; };
+		63403E8E1DD95E2A00607444 /* ScheduledThreadPoolExecutor$Moxy.m in Sources */ = {isa = PBXBuildFile; fileRef = 63403E8A1DD95E2A00607444 /* ScheduledThreadPoolExecutor$Moxy.m */; };
+		63403E971DD962C500607444 /* RxCompletableTestFunc1a.h in Headers */ = {isa = PBXBuildFile; fileRef = 63403E8F1DD962C500607444 /* RxCompletableTestFunc1a.h */; };
+		63403E981DD962C500607444 /* RxCompletableTestFunc1a.m in Sources */ = {isa = PBXBuildFile; fileRef = 63403E901DD962C500607444 /* RxCompletableTestFunc1a.m */; };
+		63403E991DD962C500607444 /* RxCompletableTestFunc1a$Moxy.h in Headers */ = {isa = PBXBuildFile; fileRef = 63403E911DD962C500607444 /* RxCompletableTestFunc1a$Moxy.h */; };
+		63403E9A1DD962C500607444 /* RxCompletableTestFunc1a$Moxy.m in Sources */ = {isa = PBXBuildFile; fileRef = 63403E921DD962C500607444 /* RxCompletableTestFunc1a$Moxy.m */; };
+		63403E9B1DD962C500607444 /* RxCompletableTestFunc1b.h in Headers */ = {isa = PBXBuildFile; fileRef = 63403E931DD962C500607444 /* RxCompletableTestFunc1b.h */; };
+		63403E9C1DD962C500607444 /* RxCompletableTestFunc1b.m in Sources */ = {isa = PBXBuildFile; fileRef = 63403E941DD962C500607444 /* RxCompletableTestFunc1b.m */; };
+		63403E9D1DD962C500607444 /* RxCompletableTestFunc1b$Moxy.h in Headers */ = {isa = PBXBuildFile; fileRef = 63403E951DD962C500607444 /* RxCompletableTestFunc1b$Moxy.h */; };
+		63403E9E1DD962C500607444 /* RxCompletableTestFunc1b$Moxy.m in Sources */ = {isa = PBXBuildFile; fileRef = 63403E961DD962C500607444 /* RxCompletableTestFunc1b$Moxy.m */; };
+		63403EBF1DD96FCC00607444 /* RxDopplMemoryAllocationTracker.h in Headers */ = {isa = PBXBuildFile; fileRef = 63403E9F1DD96FCC00607444 /* RxDopplMemoryAllocationTracker.h */; };
+		63403EC01DD96FCC00607444 /* RxDopplMemoryAllocationTracker.m in Sources */ = {isa = PBXBuildFile; fileRef = 63403EA01DD96FCC00607444 /* RxDopplMemoryAllocationTracker.m */; };
+		63403EC11DD96FCC00607444 /* RxDopplMemoryBasicOperatorTest.h in Headers */ = {isa = PBXBuildFile; fileRef = 63403EA11DD96FCC00607444 /* RxDopplMemoryBasicOperatorTest.h */; };
+		63403EC21DD96FCC00607444 /* RxDopplMemoryBasicOperatorTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 63403EA21DD96FCC00607444 /* RxDopplMemoryBasicOperatorTest.m */; };
+		63403EC31DD96FCC00607444 /* RxDopplMemorySubscriberAutomaticRemovalTest.h in Headers */ = {isa = PBXBuildFile; fileRef = 63403EA31DD96FCC00607444 /* RxDopplMemorySubscriberAutomaticRemovalTest.h */; };
+		63403EC41DD96FCC00607444 /* RxDopplMemorySubscriberAutomaticRemovalTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 63403EA41DD96FCC00607444 /* RxDopplMemorySubscriberAutomaticRemovalTest.m */; };
+		63403EC51DD96FCC00607444 /* RxDopplMockMAction0.h in Headers */ = {isa = PBXBuildFile; fileRef = 63403EA51DD96FCC00607444 /* RxDopplMockMAction0.h */; };
+		63403EC61DD96FCC00607444 /* RxDopplMockMAction0.m in Sources */ = {isa = PBXBuildFile; fileRef = 63403EA61DD96FCC00607444 /* RxDopplMockMAction0.m */; };
+		63403EC71DD96FCC00607444 /* RxDopplMockMAction0$Moxy.h in Headers */ = {isa = PBXBuildFile; fileRef = 63403EA71DD96FCC00607444 /* RxDopplMockMAction0$Moxy.h */; };
+		63403EC81DD96FCC00607444 /* RxDopplMockMAction0$Moxy.m in Sources */ = {isa = PBXBuildFile; fileRef = 63403EA81DD96FCC00607444 /* RxDopplMockMAction0$Moxy.m */; };
+		63403EC91DD96FCC00607444 /* RxDopplMockMAction1.h in Headers */ = {isa = PBXBuildFile; fileRef = 63403EA91DD96FCC00607444 /* RxDopplMockMAction1.h */; };
+		63403ECA1DD96FCC00607444 /* RxDopplMockMAction1.m in Sources */ = {isa = PBXBuildFile; fileRef = 63403EAA1DD96FCC00607444 /* RxDopplMockMAction1.m */; };
+		63403ECB1DD96FCC00607444 /* RxDopplMockMAction1$Moxy.h in Headers */ = {isa = PBXBuildFile; fileRef = 63403EAB1DD96FCC00607444 /* RxDopplMockMAction1$Moxy.h */; };
+		63403ECC1DD96FCC00607444 /* RxDopplMockMAction1$Moxy.m in Sources */ = {isa = PBXBuildFile; fileRef = 63403EAC1DD96FCC00607444 /* RxDopplMockMAction1$Moxy.m */; };
+		63403ECD1DD96FCC00607444 /* RxDopplMockMObserver.h in Headers */ = {isa = PBXBuildFile; fileRef = 63403EAD1DD96FCC00607444 /* RxDopplMockMObserver.h */; };
+		63403ECE1DD96FCC00607444 /* RxDopplMockMObserver.m in Sources */ = {isa = PBXBuildFile; fileRef = 63403EAE1DD96FCC00607444 /* RxDopplMockMObserver.m */; };
+		63403ECF1DD96FCC00607444 /* RxDopplMockMObserver$Moxy.h in Headers */ = {isa = PBXBuildFile; fileRef = 63403EAF1DD96FCC00607444 /* RxDopplMockMObserver$Moxy.h */; };
+		63403ED01DD96FCC00607444 /* RxDopplMockMObserver$Moxy.m in Sources */ = {isa = PBXBuildFile; fileRef = 63403EB01DD96FCC00607444 /* RxDopplMockMObserver$Moxy.m */; };
+		63403ED11DD96FCC00607444 /* RxDopplMockMScheduler.h in Headers */ = {isa = PBXBuildFile; fileRef = 63403EB11DD96FCC00607444 /* RxDopplMockMScheduler.h */; };
+		63403ED21DD96FCC00607444 /* RxDopplMockMScheduler.m in Sources */ = {isa = PBXBuildFile; fileRef = 63403EB21DD96FCC00607444 /* RxDopplMockMScheduler.m */; };
+		63403ED31DD96FCC00607444 /* RxDopplMockMSubscriber.h in Headers */ = {isa = PBXBuildFile; fileRef = 63403EB31DD96FCC00607444 /* RxDopplMockMSubscriber.h */; };
+		63403ED41DD96FCC00607444 /* RxDopplMockMSubscriber.m in Sources */ = {isa = PBXBuildFile; fileRef = 63403EB41DD96FCC00607444 /* RxDopplMockMSubscriber.m */; };
+		63403ED51DD96FCC00607444 /* RxDopplMockMSubscriber$Moxy.h in Headers */ = {isa = PBXBuildFile; fileRef = 63403EB51DD96FCC00607444 /* RxDopplMockMSubscriber$Moxy.h */; };
+		63403ED61DD96FCC00607444 /* RxDopplMockMSubscriber$Moxy.m in Sources */ = {isa = PBXBuildFile; fileRef = 63403EB61DD96FCC00607444 /* RxDopplMockMSubscriber$Moxy.m */; };
+		63403ED71DD96FCC00607444 /* RxDopplMockMSubscription.h in Headers */ = {isa = PBXBuildFile; fileRef = 63403EB71DD96FCC00607444 /* RxDopplMockMSubscription.h */; };
+		63403ED81DD96FCC00607444 /* RxDopplMockMSubscription.m in Sources */ = {isa = PBXBuildFile; fileRef = 63403EB81DD96FCC00607444 /* RxDopplMockMSubscription.m */; };
+		63403ED91DD96FCC00607444 /* RxDopplMockMSubscription$Moxy.h in Headers */ = {isa = PBXBuildFile; fileRef = 63403EB91DD96FCC00607444 /* RxDopplMockMSubscription$Moxy.h */; };
+		63403EDA1DD96FCC00607444 /* RxDopplMockMSubscription$Moxy.m in Sources */ = {isa = PBXBuildFile; fileRef = 63403EBA1DD96FCC00607444 /* RxDopplMockMSubscription$Moxy.m */; };
+		63403EDB1DD96FCD00607444 /* RxInternalOperatorsInternalSafeSubscriberTest.h in Headers */ = {isa = PBXBuildFile; fileRef = 63403EBB1DD96FCC00607444 /* RxInternalOperatorsInternalSafeSubscriberTest.h */; };
+		63403EDC1DD96FCD00607444 /* RxInternalOperatorsInternalSafeSubscriberTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 63403EBC1DD96FCC00607444 /* RxInternalOperatorsInternalSafeSubscriberTest.m */; };
+		63403EDD1DD96FCD00607444 /* RxInternalOperatorsOperatorReplayTest__InprocessWorker$Moxy.h in Headers */ = {isa = PBXBuildFile; fileRef = 63403EBD1DD96FCC00607444 /* RxInternalOperatorsOperatorReplayTest__InprocessWorker$Moxy.h */; };
+		63403EDE1DD96FCD00607444 /* RxInternalOperatorsOperatorReplayTest__InprocessWorker$Moxy.m in Sources */ = {isa = PBXBuildFile; fileRef = 63403EBE1DD96FCC00607444 /* RxInternalOperatorsOperatorReplayTest__InprocessWorker$Moxy.m */; };
+		63403EE51DDA401700607444 /* RxDopplWeakReferenceHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = 63403EDF1DDA401700607444 /* RxDopplWeakReferenceHelper.h */; };
+		63403EE61DDA401700607444 /* RxDopplWeakReferenceHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 63403EE01DDA401700607444 /* RxDopplWeakReferenceHelper.m */; };
+		63403EE71DDA401700607444 /* RxInternalObserversAssertableSubscriberObservable.h in Headers */ = {isa = PBXBuildFile; fileRef = 63403EE11DDA401700607444 /* RxInternalObserversAssertableSubscriberObservable.h */; };
+		63403EE81DDA401700607444 /* RxInternalObserversAssertableSubscriberObservable.m in Sources */ = {isa = PBXBuildFile; fileRef = 63403EE21DDA401700607444 /* RxInternalObserversAssertableSubscriberObservable.m */; };
+		63403EE91DDA401700607444 /* RxObserversAssertableSubscriber.h in Headers */ = {isa = PBXBuildFile; fileRef = 63403EE31DDA401700607444 /* RxObserversAssertableSubscriber.h */; };
+		63403EEA1DDA401700607444 /* RxObserversAssertableSubscriber.m in Sources */ = {isa = PBXBuildFile; fileRef = 63403EE41DDA401700607444 /* RxObserversAssertableSubscriber.m */; };
 		635B166A1DCAD3E900BB0E12 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 635B16691DCAD3E900BB0E12 /* main.m */; };
 		635B166D1DCAD3E900BB0E12 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 635B166C1DCAD3E900BB0E12 /* AppDelegate.m */; };
 		635B16701DCAD3E900BB0E12 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 635B166F1DCAD3E900BB0E12 /* ViewController.m */; };
@@ -1019,40 +1053,10 @@
 		635B29581DCADB6600BB0E12 /* RxCombineLatestTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 635B23AC1DCADB6200BB0E12 /* RxCombineLatestTests.m */; };
 		635B29591DCADB6600BB0E12 /* RxCompletableTest.h in Headers */ = {isa = PBXBuildFile; fileRef = 635B23AD1DCADB6200BB0E12 /* RxCompletableTest.h */; };
 		635B295A1DCADB6600BB0E12 /* RxCompletableTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 635B23AE1DCADB6200BB0E12 /* RxCompletableTest.m */; };
-		635B295B1DCADB6600BB0E12 /* RxCompletableTestFunc1a.h in Headers */ = {isa = PBXBuildFile; fileRef = 635B23AF1DCADB6200BB0E12 /* RxCompletableTestFunc1a.h */; };
-		635B295C1DCADB6600BB0E12 /* RxCompletableTestFunc1a.m in Sources */ = {isa = PBXBuildFile; fileRef = 635B23B01DCADB6200BB0E12 /* RxCompletableTestFunc1a.m */; };
-		635B295D1DCADB6600BB0E12 /* RxCompletableTestFunc1b.h in Headers */ = {isa = PBXBuildFile; fileRef = 635B23B11DCADB6200BB0E12 /* RxCompletableTestFunc1b.h */; };
-		635B295E1DCADB6600BB0E12 /* RxCompletableTestFunc1b.m in Sources */ = {isa = PBXBuildFile; fileRef = 635B23B21DCADB6200BB0E12 /* RxCompletableTestFunc1b.m */; };
 		635B295F1DCADB6600BB0E12 /* RxConcatTests.h in Headers */ = {isa = PBXBuildFile; fileRef = 635B23B31DCADB6200BB0E12 /* RxConcatTests.h */; };
 		635B29601DCADB6600BB0E12 /* RxConcatTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 635B23B41DCADB6200BB0E12 /* RxConcatTests.m */; };
 		635B29611DCADB6600BB0E12 /* RxCovarianceTest.h in Headers */ = {isa = PBXBuildFile; fileRef = 635B23B51DCADB6200BB0E12 /* RxCovarianceTest.h */; };
 		635B29621DCADB6600BB0E12 /* RxCovarianceTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 635B23B61DCADB6200BB0E12 /* RxCovarianceTest.m */; };
-		635B29631DCADB6600BB0E12 /* RxDopplMiscLinkedBlockingQueueTest.h in Headers */ = {isa = PBXBuildFile; fileRef = 635B23B71DCADB6200BB0E12 /* RxDopplMiscLinkedBlockingQueueTest.h */; };
-		635B29641DCADB6600BB0E12 /* RxDopplMiscLinkedBlockingQueueTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 635B23B81DCADB6200BB0E12 /* RxDopplMiscLinkedBlockingQueueTest.m */; };
-		635B29651DCADB6600BB0E12 /* RxDopplMockMAction0.h in Headers */ = {isa = PBXBuildFile; fileRef = 635B23B91DCADB6200BB0E12 /* RxDopplMockMAction0.h */; };
-		635B29661DCADB6600BB0E12 /* RxDopplMockMAction0.m in Sources */ = {isa = PBXBuildFile; fileRef = 635B23BA1DCADB6200BB0E12 /* RxDopplMockMAction0.m */; };
-		635B29671DCADB6600BB0E12 /* RxDopplMockMAction1.h in Headers */ = {isa = PBXBuildFile; fileRef = 635B23BB1DCADB6200BB0E12 /* RxDopplMockMAction1.h */; };
-		635B29681DCADB6600BB0E12 /* RxDopplMockMAction1.m in Sources */ = {isa = PBXBuildFile; fileRef = 635B23BC1DCADB6200BB0E12 /* RxDopplMockMAction1.m */; };
-		635B29691DCADB6600BB0E12 /* RxDopplMockMFunc1.h in Headers */ = {isa = PBXBuildFile; fileRef = 635B23BD1DCADB6200BB0E12 /* RxDopplMockMFunc1.h */; };
-		635B296A1DCADB6600BB0E12 /* RxDopplMockMFunc1.m in Sources */ = {isa = PBXBuildFile; fileRef = 635B23BE1DCADB6200BB0E12 /* RxDopplMockMFunc1.m */; };
-		635B296B1DCADB6600BB0E12 /* RxDopplMockMObserver.h in Headers */ = {isa = PBXBuildFile; fileRef = 635B23BF1DCADB6200BB0E12 /* RxDopplMockMObserver.h */; };
-		635B296C1DCADB6600BB0E12 /* RxDopplMockMObserver.m in Sources */ = {isa = PBXBuildFile; fileRef = 635B23C01DCADB6200BB0E12 /* RxDopplMockMObserver.m */; };
-		635B296D1DCADB6600BB0E12 /* RxDopplMockMProducer.h in Headers */ = {isa = PBXBuildFile; fileRef = 635B23C11DCADB6200BB0E12 /* RxDopplMockMProducer.h */; };
-		635B296E1DCADB6600BB0E12 /* RxDopplMockMProducer.m in Sources */ = {isa = PBXBuildFile; fileRef = 635B23C21DCADB6200BB0E12 /* RxDopplMockMProducer.m */; };
-		635B296F1DCADB6600BB0E12 /* RxDopplMockMScheduler.h in Headers */ = {isa = PBXBuildFile; fileRef = 635B23C31DCADB6200BB0E12 /* RxDopplMockMScheduler.h */; };
-		635B29701DCADB6600BB0E12 /* RxDopplMockMScheduler.m in Sources */ = {isa = PBXBuildFile; fileRef = 635B23C41DCADB6200BB0E12 /* RxDopplMockMScheduler.m */; };
-		635B29711DCADB6600BB0E12 /* RxDopplMockMSubscriber.h in Headers */ = {isa = PBXBuildFile; fileRef = 635B23C51DCADB6200BB0E12 /* RxDopplMockMSubscriber.h */; };
-		635B29721DCADB6600BB0E12 /* RxDopplMockMSubscriber.m in Sources */ = {isa = PBXBuildFile; fileRef = 635B23C61DCADB6200BB0E12 /* RxDopplMockMSubscriber.m */; };
-		635B29731DCADB6600BB0E12 /* RxDopplMockMSubscription.h in Headers */ = {isa = PBXBuildFile; fileRef = 635B23C71DCADB6200BB0E12 /* RxDopplMockMSubscription.h */; };
-		635B29741DCADB6600BB0E12 /* RxDopplMockMSubscription.m in Sources */ = {isa = PBXBuildFile; fileRef = 635B23C81DCADB6200BB0E12 /* RxDopplMockMSubscription.m */; };
-		635B29751DCADB6600BB0E12 /* RxDopplMockSingletestFuncCreate.h in Headers */ = {isa = PBXBuildFile; fileRef = 635B23C91DCADB6200BB0E12 /* RxDopplMockSingletestFuncCreate.h */; };
-		635B29761DCADB6600BB0E12 /* RxDopplMockSingletestFuncCreate.m in Sources */ = {isa = PBXBuildFile; fileRef = 635B23CA1DCADB6200BB0E12 /* RxDopplMockSingletestFuncCreate.m */; };
-		635B29771DCADB6600BB0E12 /* RxDopplMockSingletestFuncReturn.h in Headers */ = {isa = PBXBuildFile; fileRef = 635B23CB1DCADB6200BB0E12 /* RxDopplMockSingletestFuncReturn.h */; };
-		635B29781DCADB6600BB0E12 /* RxDopplMockSingletestFuncReturn.m in Sources */ = {isa = PBXBuildFile; fileRef = 635B23CC1DCADB6200BB0E12 /* RxDopplMockSingletestFuncReturn.m */; };
-		635B29791DCADB6600BB0E12 /* RxDopplMockSingletestFuncStart.h in Headers */ = {isa = PBXBuildFile; fileRef = 635B23CD1DCADB6200BB0E12 /* RxDopplMockSingletestFuncStart.h */; };
-		635B297A1DCADB6600BB0E12 /* RxDopplMockSingletestFuncStart.m in Sources */ = {isa = PBXBuildFile; fileRef = 635B23CE1DCADB6200BB0E12 /* RxDopplMockSingletestFuncStart.m */; };
-		635B297B1DCADB6600BB0E12 /* RxDopplSimpleBreakdownTest.h in Headers */ = {isa = PBXBuildFile; fileRef = 635B23CF1DCADB6200BB0E12 /* RxDopplSimpleBreakdownTest.h */; };
-		635B297C1DCADB6600BB0E12 /* RxDopplSimpleBreakdownTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 635B23D01DCADB6200BB0E12 /* RxDopplSimpleBreakdownTest.m */; };
 		635B297D1DCADB6600BB0E12 /* RxErrorHandlingTests.h in Headers */ = {isa = PBXBuildFile; fileRef = 635B23D11DCADB6200BB0E12 /* RxErrorHandlingTests.h */; };
 		635B297E1DCADB6600BB0E12 /* RxErrorHandlingTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 635B23D21DCADB6200BB0E12 /* RxErrorHandlingTests.m */; };
 		635B297F1DCADB6600BB0E12 /* RxEventStream.h in Headers */ = {isa = PBXBuildFile; fileRef = 635B23D31DCADB6200BB0E12 /* RxEventStream.h */; };
@@ -1093,8 +1097,6 @@
 		635B29A21DCADB6600BB0E12 /* RxInternalOperatorsCompletableFromEmitterTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 635B23F61DCADB6200BB0E12 /* RxInternalOperatorsCompletableFromEmitterTest.m */; };
 		635B29A31DCADB6600BB0E12 /* RxInternalOperatorsDeferredScalarSubscriberTest.h in Headers */ = {isa = PBXBuildFile; fileRef = 635B23F71DCADB6200BB0E12 /* RxInternalOperatorsDeferredScalarSubscriberTest.h */; };
 		635B29A41DCADB6600BB0E12 /* RxInternalOperatorsDeferredScalarSubscriberTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 635B23F81DCADB6200BB0E12 /* RxInternalOperatorsDeferredScalarSubscriberTest.m */; };
-		635B29A51DCADB6600BB0E12 /* RxInternalOperatorsInternalSafeSubscriberTest.h in Headers */ = {isa = PBXBuildFile; fileRef = 635B23F91DCADB6200BB0E12 /* RxInternalOperatorsInternalSafeSubscriberTest.h */; };
-		635B29A61DCADB6600BB0E12 /* RxInternalOperatorsInternalSafeSubscriberTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 635B23FA1DCADB6200BB0E12 /* RxInternalOperatorsInternalSafeSubscriberTest.m */; };
 		635B29A71DCADB6600BB0E12 /* RxInternalOperatorsNotificationLiteTest.h in Headers */ = {isa = PBXBuildFile; fileRef = 635B23FB1DCADB6200BB0E12 /* RxInternalOperatorsNotificationLiteTest.h */; };
 		635B29A81DCADB6600BB0E12 /* RxInternalOperatorsNotificationLiteTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 635B23FC1DCADB6200BB0E12 /* RxInternalOperatorsNotificationLiteTest.m */; };
 		635B29A91DCADB6600BB0E12 /* RxInternalOperatorsOnSubscribeAmbTest.h in Headers */ = {isa = PBXBuildFile; fileRef = 635B23FD1DCADB6200BB0E12 /* RxInternalOperatorsOnSubscribeAmbTest.h */; };
@@ -1339,8 +1341,6 @@
 		635B2A981DCADB6700BB0E12 /* RxInternalProducersSingleProducerTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 635B24EC1DCADB6300BB0E12 /* RxInternalProducersSingleProducerTest.m */; };
 		635B2A991DCADB6700BB0E12 /* RxInternalSchedulersExecutorSchedulerTest.h in Headers */ = {isa = PBXBuildFile; fileRef = 635B24ED1DCADB6300BB0E12 /* RxInternalSchedulersExecutorSchedulerTest.h */; };
 		635B2A9A1DCADB6700BB0E12 /* RxInternalSchedulersExecutorSchedulerTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 635B24EE1DCADB6300BB0E12 /* RxInternalSchedulersExecutorSchedulerTest.m */; };
-		635B2A9B1DCADB6700BB0E12 /* RxInternalSchedulersInternalGenericScheduledExecutorServiceTest.h in Headers */ = {isa = PBXBuildFile; fileRef = 635B24EF1DCADB6300BB0E12 /* RxInternalSchedulersInternalGenericScheduledExecutorServiceTest.h */; };
-		635B2A9C1DCADB6700BB0E12 /* RxInternalSchedulersInternalGenericScheduledExecutorServiceTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 635B24F01DCADB6300BB0E12 /* RxInternalSchedulersInternalGenericScheduledExecutorServiceTest.m */; };
 		635B2A9D1DCADB6700BB0E12 /* RxInternalSchedulersNewThreadWorkerTest.h in Headers */ = {isa = PBXBuildFile; fileRef = 635B24F11DCADB6300BB0E12 /* RxInternalSchedulersNewThreadWorkerTest.h */; };
 		635B2A9E1DCADB6700BB0E12 /* RxInternalSchedulersNewThreadWorkerTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 635B24F21DCADB6300BB0E12 /* RxInternalSchedulersNewThreadWorkerTest.m */; };
 		635B2A9F1DCADB6700BB0E12 /* RxInternalUtilBlockingUtilsTest.h in Headers */ = {isa = PBXBuildFile; fileRef = 635B24F31DCADB6300BB0E12 /* RxInternalUtilBlockingUtilsTest.h */; };
@@ -1515,8 +1515,6 @@
 		635B2B481DCADB6800BB0E12 /* RxZipTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 635B259C1DCADB6400BB0E12 /* RxZipTests.m */; };
 		635B2B4A1DCADBC800BB0E12 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 635B2B491DCADBC800BB0E12 /* UIKit.framework */; };
 		635B2B4C1DCADFDF00BB0E12 /* JSR305.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 635B2B4B1DCADFDF00BB0E12 /* JSR305.framework */; };
-		63D8E9AB1DD11F1800103716 /* RxDopplMemorySubscriberAutomaticRemovalTest.h in Headers */ = {isa = PBXBuildFile; fileRef = 63D8E9A91DD11F1800103716 /* RxDopplMemorySubscriberAutomaticRemovalTest.h */; };
-		63D8E9AC1DD11F1800103716 /* RxDopplMemorySubscriberAutomaticRemovalTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 63D8E9AA1DD11F1800103716 /* RxDopplMemorySubscriberAutomaticRemovalTest.m */; };
 		63D8E9AF1DD5854100103716 /* RxDopplSafeObservableUnsubscribe.h in Headers */ = {isa = PBXBuildFile; fileRef = 63D8E9AD1DD5854100103716 /* RxDopplSafeObservableUnsubscribe.h */; };
 		63D8E9B01DD5854100103716 /* RxDopplSafeObservableUnsubscribe.m in Sources */ = {isa = PBXBuildFile; fileRef = 63D8E9AE1DD5854100103716 /* RxDopplSafeObservableUnsubscribe.m */; };
 /* End PBXBuildFile section */
@@ -1567,44 +1565,78 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		63111F461DCC042000DE6670 /* RxCompletableTestFunc1a$Moxy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RxCompletableTestFunc1a$Moxy.h; sourceTree = "<group>"; };
-		63111F471DCC042000DE6670 /* RxCompletableTestFunc1a$Moxy.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RxCompletableTestFunc1a$Moxy.m; sourceTree = "<group>"; };
-		63111F481DCC042000DE6670 /* RxCompletableTestFunc1b$Moxy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RxCompletableTestFunc1b$Moxy.h; sourceTree = "<group>"; };
-		63111F491DCC042000DE6670 /* RxCompletableTestFunc1b$Moxy.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RxCompletableTestFunc1b$Moxy.m; sourceTree = "<group>"; };
-		63111F4A1DCC042000DE6670 /* RxDopplMockMAction0$Moxy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RxDopplMockMAction0$Moxy.h; sourceTree = "<group>"; };
-		63111F4B1DCC042000DE6670 /* RxDopplMockMAction0$Moxy.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RxDopplMockMAction0$Moxy.m; sourceTree = "<group>"; };
-		63111F4C1DCC042000DE6670 /* RxDopplMockMAction1$Moxy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RxDopplMockMAction1$Moxy.h; sourceTree = "<group>"; };
-		63111F4D1DCC042000DE6670 /* RxDopplMockMAction1$Moxy.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RxDopplMockMAction1$Moxy.m; sourceTree = "<group>"; };
-		63111F4E1DCC042000DE6670 /* RxDopplMockMObserver$Moxy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RxDopplMockMObserver$Moxy.h; sourceTree = "<group>"; };
-		63111F4F1DCC042000DE6670 /* RxDopplMockMObserver$Moxy.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RxDopplMockMObserver$Moxy.m; sourceTree = "<group>"; };
-		63111F501DCC042000DE6670 /* RxDopplMockMSubscriber$Moxy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RxDopplMockMSubscriber$Moxy.h; sourceTree = "<group>"; };
-		63111F511DCC042000DE6670 /* RxDopplMockMSubscriber$Moxy.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RxDopplMockMSubscriber$Moxy.m; sourceTree = "<group>"; };
-		63111F521DCC042000DE6670 /* RxDopplMockMSubscription$Moxy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RxDopplMockMSubscription$Moxy.h; sourceTree = "<group>"; };
-		63111F531DCC042000DE6670 /* RxDopplMockMSubscription$Moxy.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RxDopplMockMSubscription$Moxy.m; sourceTree = "<group>"; };
-		63111F541DCC042000DE6670 /* RxDopplMockSingletestFuncCreate$Moxy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RxDopplMockSingletestFuncCreate$Moxy.h; sourceTree = "<group>"; };
-		63111F551DCC042000DE6670 /* RxDopplMockSingletestFuncCreate$Moxy.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RxDopplMockSingletestFuncCreate$Moxy.m; sourceTree = "<group>"; };
-		63111F561DCC042000DE6670 /* RxDopplMockSingletestFuncReturn$Moxy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RxDopplMockSingletestFuncReturn$Moxy.h; sourceTree = "<group>"; };
-		63111F571DCC042000DE6670 /* RxDopplMockSingletestFuncReturn$Moxy.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RxDopplMockSingletestFuncReturn$Moxy.m; sourceTree = "<group>"; };
-		63111F581DCC042000DE6670 /* RxDopplMockSingletestFuncStart$Moxy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RxDopplMockSingletestFuncStart$Moxy.h; sourceTree = "<group>"; };
-		63111F591DCC042000DE6670 /* RxDopplMockSingletestFuncStart$Moxy.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RxDopplMockSingletestFuncStart$Moxy.m; sourceTree = "<group>"; };
-		63111F5A1DCC042000DE6670 /* RxDopplReflectionTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RxDopplReflectionTest.h; sourceTree = "<group>"; };
-		63111F5B1DCC042000DE6670 /* RxDopplReflectionTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RxDopplReflectionTest.m; sourceTree = "<group>"; };
-		63111F5C1DCC042000DE6670 /* RxInternalOperatorsOperatorReplayTest__InprocessWorker$Moxy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RxInternalOperatorsOperatorReplayTest__InprocessWorker$Moxy.h; sourceTree = "<group>"; };
-		63111F5D1DCC042000DE6670 /* RxInternalOperatorsOperatorReplayTest__InprocessWorker$Moxy.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RxInternalOperatorsOperatorReplayTest__InprocessWorker$Moxy.m; sourceTree = "<group>"; };
-		63111F5E1DCC042000DE6670 /* RxInternalOperatorsOperatorScanTest__InnerProducer$Moxy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RxInternalOperatorsOperatorScanTest__InnerProducer$Moxy.h; sourceTree = "<group>"; };
-		63111F5F1DCC042000DE6670 /* RxInternalOperatorsOperatorScanTest__InnerProducer$Moxy.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RxInternalOperatorsOperatorScanTest__InnerProducer$Moxy.m; sourceTree = "<group>"; };
-		63111F601DCC042000DE6670 /* RxInternalSchedulersNewThreadWorkerTest__ScheduledExecutorServiceWithSetRemoveOnCancelPolicy$Moxy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RxInternalSchedulersNewThreadWorkerTest__ScheduledExecutorServiceWithSetRemoveOnCancelPolicy$Moxy.h; sourceTree = "<group>"; };
-		63111F611DCC042000DE6670 /* RxInternalSchedulersNewThreadWorkerTest__ScheduledExecutorServiceWithSetRemoveOnCancelPolicy$Moxy.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RxInternalSchedulersNewThreadWorkerTest__ScheduledExecutorServiceWithSetRemoveOnCancelPolicy$Moxy.m; sourceTree = "<group>"; };
-		63111F621DCC042000DE6670 /* ScheduledThreadPoolExecutor$Moxy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ScheduledThreadPoolExecutor$Moxy.h; sourceTree = "<group>"; };
-		63111F631DCC042000DE6670 /* ScheduledThreadPoolExecutor$Moxy.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ScheduledThreadPoolExecutor$Moxy.m; sourceTree = "<group>"; };
 		63331ADA1DCF8A7A00CA641D /* TestResources.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TestResources.h; sourceTree = "<group>"; };
 		63331ADB1DCF8A7A00CA641D /* TestResources.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TestResources.m; sourceTree = "<group>"; };
-		63403E571DD62E8F00607444 /* RxDopplMemoryAllocationTracker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RxDopplMemoryAllocationTracker.h; sourceTree = "<group>"; };
-		63403E581DD62E8F00607444 /* RxDopplMemoryAllocationTracker.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RxDopplMemoryAllocationTracker.m; sourceTree = "<group>"; };
-		63403E591DD62E8F00607444 /* RxDopplMemoryBasicOperatorTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RxDopplMemoryBasicOperatorTest.h; sourceTree = "<group>"; };
-		63403E5A1DD62E8F00607444 /* RxDopplMemoryBasicOperatorTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RxDopplMemoryBasicOperatorTest.m; sourceTree = "<group>"; };
 		63403E5F1DD8D2F400607444 /* RxDopplJ2objcWeakReference.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RxDopplJ2objcWeakReference.h; sourceTree = "<group>"; };
 		63403E601DD8D2F400607444 /* RxDopplJ2objcWeakReference.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RxDopplJ2objcWeakReference.m; sourceTree = "<group>"; };
+		63403E631DD946E900607444 /* RxDopplMockSingletestFuncCreate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RxDopplMockSingletestFuncCreate.h; sourceTree = "<group>"; };
+		63403E641DD946E900607444 /* RxDopplMockSingletestFuncCreate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RxDopplMockSingletestFuncCreate.m; sourceTree = "<group>"; };
+		63403E651DD946E900607444 /* RxDopplMockSingletestFuncReturn.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RxDopplMockSingletestFuncReturn.h; sourceTree = "<group>"; };
+		63403E661DD946E900607444 /* RxDopplMockSingletestFuncReturn.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RxDopplMockSingletestFuncReturn.m; sourceTree = "<group>"; };
+		63403E671DD946E900607444 /* RxDopplMockSingletestFuncStart.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RxDopplMockSingletestFuncStart.h; sourceTree = "<group>"; };
+		63403E681DD946E900607444 /* RxDopplMockSingletestFuncStart.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RxDopplMockSingletestFuncStart.m; sourceTree = "<group>"; };
+		63403E6F1DD95B7800607444 /* RxDopplMockSingletestFuncCreate$Moxy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RxDopplMockSingletestFuncCreate$Moxy.h; sourceTree = "<group>"; };
+		63403E701DD95B7800607444 /* RxDopplMockSingletestFuncCreate$Moxy.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RxDopplMockSingletestFuncCreate$Moxy.m; sourceTree = "<group>"; };
+		63403E711DD95B7800607444 /* RxDopplMockSingletestFuncReturn$Moxy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RxDopplMockSingletestFuncReturn$Moxy.h; sourceTree = "<group>"; };
+		63403E721DD95B7800607444 /* RxDopplMockSingletestFuncReturn$Moxy.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RxDopplMockSingletestFuncReturn$Moxy.m; sourceTree = "<group>"; };
+		63403E731DD95B7800607444 /* RxDopplMockSingletestFuncStart$Moxy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RxDopplMockSingletestFuncStart$Moxy.h; sourceTree = "<group>"; };
+		63403E741DD95B7800607444 /* RxDopplMockSingletestFuncStart$Moxy.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RxDopplMockSingletestFuncStart$Moxy.m; sourceTree = "<group>"; };
+		63403E751DD95B7800607444 /* RxInternalOperatorsOperatorScanTest__InnerProducer$Moxy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RxInternalOperatorsOperatorScanTest__InnerProducer$Moxy.h; sourceTree = "<group>"; };
+		63403E761DD95B7800607444 /* RxInternalOperatorsOperatorScanTest__InnerProducer$Moxy.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RxInternalOperatorsOperatorScanTest__InnerProducer$Moxy.m; sourceTree = "<group>"; };
+		63403E771DD95B7800607444 /* RxInternalOperatorsSafeSubscriberTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RxInternalOperatorsSafeSubscriberTest.h; sourceTree = "<group>"; };
+		63403E781DD95B7800607444 /* RxInternalOperatorsSafeSubscriberTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RxInternalOperatorsSafeSubscriberTest.m; sourceTree = "<group>"; };
+		63403E791DD95B7800607444 /* RxInternalSchedulersGenericScheduledExecutorServiceTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RxInternalSchedulersGenericScheduledExecutorServiceTest.h; sourceTree = "<group>"; };
+		63403E7A1DD95B7800607444 /* RxInternalSchedulersGenericScheduledExecutorServiceTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RxInternalSchedulersGenericScheduledExecutorServiceTest.m; sourceTree = "<group>"; };
+		63403E871DD95E2A00607444 /* RxInternalSchedulersNewThreadWorkerTest__ScheduledExecutorServiceWithSetRemoveOnCancelPolicy$Moxy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RxInternalSchedulersNewThreadWorkerTest__ScheduledExecutorServiceWithSetRemoveOnCancelPolicy$Moxy.h; sourceTree = "<group>"; };
+		63403E881DD95E2A00607444 /* RxInternalSchedulersNewThreadWorkerTest__ScheduledExecutorServiceWithSetRemoveOnCancelPolicy$Moxy.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RxInternalSchedulersNewThreadWorkerTest__ScheduledExecutorServiceWithSetRemoveOnCancelPolicy$Moxy.m; sourceTree = "<group>"; };
+		63403E891DD95E2A00607444 /* ScheduledThreadPoolExecutor$Moxy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ScheduledThreadPoolExecutor$Moxy.h; sourceTree = "<group>"; };
+		63403E8A1DD95E2A00607444 /* ScheduledThreadPoolExecutor$Moxy.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ScheduledThreadPoolExecutor$Moxy.m; sourceTree = "<group>"; };
+		63403E8F1DD962C500607444 /* RxCompletableTestFunc1a.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RxCompletableTestFunc1a.h; sourceTree = "<group>"; };
+		63403E901DD962C500607444 /* RxCompletableTestFunc1a.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RxCompletableTestFunc1a.m; sourceTree = "<group>"; };
+		63403E911DD962C500607444 /* RxCompletableTestFunc1a$Moxy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RxCompletableTestFunc1a$Moxy.h; sourceTree = "<group>"; };
+		63403E921DD962C500607444 /* RxCompletableTestFunc1a$Moxy.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RxCompletableTestFunc1a$Moxy.m; sourceTree = "<group>"; };
+		63403E931DD962C500607444 /* RxCompletableTestFunc1b.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RxCompletableTestFunc1b.h; sourceTree = "<group>"; };
+		63403E941DD962C500607444 /* RxCompletableTestFunc1b.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RxCompletableTestFunc1b.m; sourceTree = "<group>"; };
+		63403E951DD962C500607444 /* RxCompletableTestFunc1b$Moxy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RxCompletableTestFunc1b$Moxy.h; sourceTree = "<group>"; };
+		63403E961DD962C500607444 /* RxCompletableTestFunc1b$Moxy.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RxCompletableTestFunc1b$Moxy.m; sourceTree = "<group>"; };
+		63403E9F1DD96FCC00607444 /* RxDopplMemoryAllocationTracker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RxDopplMemoryAllocationTracker.h; sourceTree = "<group>"; };
+		63403EA01DD96FCC00607444 /* RxDopplMemoryAllocationTracker.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RxDopplMemoryAllocationTracker.m; sourceTree = "<group>"; };
+		63403EA11DD96FCC00607444 /* RxDopplMemoryBasicOperatorTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RxDopplMemoryBasicOperatorTest.h; sourceTree = "<group>"; };
+		63403EA21DD96FCC00607444 /* RxDopplMemoryBasicOperatorTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RxDopplMemoryBasicOperatorTest.m; sourceTree = "<group>"; };
+		63403EA31DD96FCC00607444 /* RxDopplMemorySubscriberAutomaticRemovalTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RxDopplMemorySubscriberAutomaticRemovalTest.h; sourceTree = "<group>"; };
+		63403EA41DD96FCC00607444 /* RxDopplMemorySubscriberAutomaticRemovalTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RxDopplMemorySubscriberAutomaticRemovalTest.m; sourceTree = "<group>"; };
+		63403EA51DD96FCC00607444 /* RxDopplMockMAction0.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RxDopplMockMAction0.h; sourceTree = "<group>"; };
+		63403EA61DD96FCC00607444 /* RxDopplMockMAction0.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RxDopplMockMAction0.m; sourceTree = "<group>"; };
+		63403EA71DD96FCC00607444 /* RxDopplMockMAction0$Moxy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RxDopplMockMAction0$Moxy.h; sourceTree = "<group>"; };
+		63403EA81DD96FCC00607444 /* RxDopplMockMAction0$Moxy.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RxDopplMockMAction0$Moxy.m; sourceTree = "<group>"; };
+		63403EA91DD96FCC00607444 /* RxDopplMockMAction1.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RxDopplMockMAction1.h; sourceTree = "<group>"; };
+		63403EAA1DD96FCC00607444 /* RxDopplMockMAction1.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RxDopplMockMAction1.m; sourceTree = "<group>"; };
+		63403EAB1DD96FCC00607444 /* RxDopplMockMAction1$Moxy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RxDopplMockMAction1$Moxy.h; sourceTree = "<group>"; };
+		63403EAC1DD96FCC00607444 /* RxDopplMockMAction1$Moxy.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RxDopplMockMAction1$Moxy.m; sourceTree = "<group>"; };
+		63403EAD1DD96FCC00607444 /* RxDopplMockMObserver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RxDopplMockMObserver.h; sourceTree = "<group>"; };
+		63403EAE1DD96FCC00607444 /* RxDopplMockMObserver.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RxDopplMockMObserver.m; sourceTree = "<group>"; };
+		63403EAF1DD96FCC00607444 /* RxDopplMockMObserver$Moxy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RxDopplMockMObserver$Moxy.h; sourceTree = "<group>"; };
+		63403EB01DD96FCC00607444 /* RxDopplMockMObserver$Moxy.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RxDopplMockMObserver$Moxy.m; sourceTree = "<group>"; };
+		63403EB11DD96FCC00607444 /* RxDopplMockMScheduler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RxDopplMockMScheduler.h; sourceTree = "<group>"; };
+		63403EB21DD96FCC00607444 /* RxDopplMockMScheduler.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RxDopplMockMScheduler.m; sourceTree = "<group>"; };
+		63403EB31DD96FCC00607444 /* RxDopplMockMSubscriber.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RxDopplMockMSubscriber.h; sourceTree = "<group>"; };
+		63403EB41DD96FCC00607444 /* RxDopplMockMSubscriber.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RxDopplMockMSubscriber.m; sourceTree = "<group>"; };
+		63403EB51DD96FCC00607444 /* RxDopplMockMSubscriber$Moxy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RxDopplMockMSubscriber$Moxy.h; sourceTree = "<group>"; };
+		63403EB61DD96FCC00607444 /* RxDopplMockMSubscriber$Moxy.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RxDopplMockMSubscriber$Moxy.m; sourceTree = "<group>"; };
+		63403EB71DD96FCC00607444 /* RxDopplMockMSubscription.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RxDopplMockMSubscription.h; sourceTree = "<group>"; };
+		63403EB81DD96FCC00607444 /* RxDopplMockMSubscription.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RxDopplMockMSubscription.m; sourceTree = "<group>"; };
+		63403EB91DD96FCC00607444 /* RxDopplMockMSubscription$Moxy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RxDopplMockMSubscription$Moxy.h; sourceTree = "<group>"; };
+		63403EBA1DD96FCC00607444 /* RxDopplMockMSubscription$Moxy.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RxDopplMockMSubscription$Moxy.m; sourceTree = "<group>"; };
+		63403EBB1DD96FCC00607444 /* RxInternalOperatorsInternalSafeSubscriberTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RxInternalOperatorsInternalSafeSubscriberTest.h; sourceTree = "<group>"; };
+		63403EBC1DD96FCC00607444 /* RxInternalOperatorsInternalSafeSubscriberTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RxInternalOperatorsInternalSafeSubscriberTest.m; sourceTree = "<group>"; };
+		63403EBD1DD96FCC00607444 /* RxInternalOperatorsOperatorReplayTest__InprocessWorker$Moxy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RxInternalOperatorsOperatorReplayTest__InprocessWorker$Moxy.h; sourceTree = "<group>"; };
+		63403EBE1DD96FCC00607444 /* RxInternalOperatorsOperatorReplayTest__InprocessWorker$Moxy.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RxInternalOperatorsOperatorReplayTest__InprocessWorker$Moxy.m; sourceTree = "<group>"; };
+		63403EDF1DDA401700607444 /* RxDopplWeakReferenceHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RxDopplWeakReferenceHelper.h; sourceTree = "<group>"; };
+		63403EE01DDA401700607444 /* RxDopplWeakReferenceHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RxDopplWeakReferenceHelper.m; sourceTree = "<group>"; };
+		63403EE11DDA401700607444 /* RxInternalObserversAssertableSubscriberObservable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RxInternalObserversAssertableSubscriberObservable.h; sourceTree = "<group>"; };
+		63403EE21DDA401700607444 /* RxInternalObserversAssertableSubscriberObservable.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RxInternalObserversAssertableSubscriberObservable.m; sourceTree = "<group>"; };
+		63403EE31DDA401700607444 /* RxObserversAssertableSubscriber.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RxObserversAssertableSubscriber.h; sourceTree = "<group>"; };
+		63403EE41DDA401700607444 /* RxObserversAssertableSubscriber.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RxObserversAssertableSubscriber.m; sourceTree = "<group>"; };
 		635B16651DCAD3E900BB0E12 /* RxAgain.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RxAgain.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		635B16691DCAD3E900BB0E12 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		635B166B1DCAD3E900BB0E12 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -2586,40 +2618,10 @@
 		635B23AC1DCADB6200BB0E12 /* RxCombineLatestTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RxCombineLatestTests.m; sourceTree = "<group>"; };
 		635B23AD1DCADB6200BB0E12 /* RxCompletableTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RxCompletableTest.h; sourceTree = "<group>"; };
 		635B23AE1DCADB6200BB0E12 /* RxCompletableTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RxCompletableTest.m; sourceTree = "<group>"; };
-		635B23AF1DCADB6200BB0E12 /* RxCompletableTestFunc1a.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RxCompletableTestFunc1a.h; sourceTree = "<group>"; };
-		635B23B01DCADB6200BB0E12 /* RxCompletableTestFunc1a.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RxCompletableTestFunc1a.m; sourceTree = "<group>"; };
-		635B23B11DCADB6200BB0E12 /* RxCompletableTestFunc1b.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RxCompletableTestFunc1b.h; sourceTree = "<group>"; };
-		635B23B21DCADB6200BB0E12 /* RxCompletableTestFunc1b.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RxCompletableTestFunc1b.m; sourceTree = "<group>"; };
 		635B23B31DCADB6200BB0E12 /* RxConcatTests.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RxConcatTests.h; sourceTree = "<group>"; };
 		635B23B41DCADB6200BB0E12 /* RxConcatTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RxConcatTests.m; sourceTree = "<group>"; };
 		635B23B51DCADB6200BB0E12 /* RxCovarianceTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RxCovarianceTest.h; sourceTree = "<group>"; };
 		635B23B61DCADB6200BB0E12 /* RxCovarianceTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RxCovarianceTest.m; sourceTree = "<group>"; };
-		635B23B71DCADB6200BB0E12 /* RxDopplMiscLinkedBlockingQueueTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RxDopplMiscLinkedBlockingQueueTest.h; sourceTree = "<group>"; };
-		635B23B81DCADB6200BB0E12 /* RxDopplMiscLinkedBlockingQueueTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RxDopplMiscLinkedBlockingQueueTest.m; sourceTree = "<group>"; };
-		635B23B91DCADB6200BB0E12 /* RxDopplMockMAction0.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RxDopplMockMAction0.h; sourceTree = "<group>"; };
-		635B23BA1DCADB6200BB0E12 /* RxDopplMockMAction0.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RxDopplMockMAction0.m; sourceTree = "<group>"; };
-		635B23BB1DCADB6200BB0E12 /* RxDopplMockMAction1.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RxDopplMockMAction1.h; sourceTree = "<group>"; };
-		635B23BC1DCADB6200BB0E12 /* RxDopplMockMAction1.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RxDopplMockMAction1.m; sourceTree = "<group>"; };
-		635B23BD1DCADB6200BB0E12 /* RxDopplMockMFunc1.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RxDopplMockMFunc1.h; sourceTree = "<group>"; };
-		635B23BE1DCADB6200BB0E12 /* RxDopplMockMFunc1.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RxDopplMockMFunc1.m; sourceTree = "<group>"; };
-		635B23BF1DCADB6200BB0E12 /* RxDopplMockMObserver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RxDopplMockMObserver.h; sourceTree = "<group>"; };
-		635B23C01DCADB6200BB0E12 /* RxDopplMockMObserver.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RxDopplMockMObserver.m; sourceTree = "<group>"; };
-		635B23C11DCADB6200BB0E12 /* RxDopplMockMProducer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RxDopplMockMProducer.h; sourceTree = "<group>"; };
-		635B23C21DCADB6200BB0E12 /* RxDopplMockMProducer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RxDopplMockMProducer.m; sourceTree = "<group>"; };
-		635B23C31DCADB6200BB0E12 /* RxDopplMockMScheduler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RxDopplMockMScheduler.h; sourceTree = "<group>"; };
-		635B23C41DCADB6200BB0E12 /* RxDopplMockMScheduler.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RxDopplMockMScheduler.m; sourceTree = "<group>"; };
-		635B23C51DCADB6200BB0E12 /* RxDopplMockMSubscriber.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RxDopplMockMSubscriber.h; sourceTree = "<group>"; };
-		635B23C61DCADB6200BB0E12 /* RxDopplMockMSubscriber.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RxDopplMockMSubscriber.m; sourceTree = "<group>"; };
-		635B23C71DCADB6200BB0E12 /* RxDopplMockMSubscription.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RxDopplMockMSubscription.h; sourceTree = "<group>"; };
-		635B23C81DCADB6200BB0E12 /* RxDopplMockMSubscription.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RxDopplMockMSubscription.m; sourceTree = "<group>"; };
-		635B23C91DCADB6200BB0E12 /* RxDopplMockSingletestFuncCreate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RxDopplMockSingletestFuncCreate.h; sourceTree = "<group>"; };
-		635B23CA1DCADB6200BB0E12 /* RxDopplMockSingletestFuncCreate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RxDopplMockSingletestFuncCreate.m; sourceTree = "<group>"; };
-		635B23CB1DCADB6200BB0E12 /* RxDopplMockSingletestFuncReturn.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RxDopplMockSingletestFuncReturn.h; sourceTree = "<group>"; };
-		635B23CC1DCADB6200BB0E12 /* RxDopplMockSingletestFuncReturn.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RxDopplMockSingletestFuncReturn.m; sourceTree = "<group>"; };
-		635B23CD1DCADB6200BB0E12 /* RxDopplMockSingletestFuncStart.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RxDopplMockSingletestFuncStart.h; sourceTree = "<group>"; };
-		635B23CE1DCADB6200BB0E12 /* RxDopplMockSingletestFuncStart.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RxDopplMockSingletestFuncStart.m; sourceTree = "<group>"; };
-		635B23CF1DCADB6200BB0E12 /* RxDopplSimpleBreakdownTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RxDopplSimpleBreakdownTest.h; sourceTree = "<group>"; };
-		635B23D01DCADB6200BB0E12 /* RxDopplSimpleBreakdownTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RxDopplSimpleBreakdownTest.m; sourceTree = "<group>"; };
 		635B23D11DCADB6200BB0E12 /* RxErrorHandlingTests.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RxErrorHandlingTests.h; sourceTree = "<group>"; };
 		635B23D21DCADB6200BB0E12 /* RxErrorHandlingTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RxErrorHandlingTests.m; sourceTree = "<group>"; };
 		635B23D31DCADB6200BB0E12 /* RxEventStream.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RxEventStream.h; sourceTree = "<group>"; };
@@ -2660,8 +2662,6 @@
 		635B23F61DCADB6200BB0E12 /* RxInternalOperatorsCompletableFromEmitterTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RxInternalOperatorsCompletableFromEmitterTest.m; sourceTree = "<group>"; };
 		635B23F71DCADB6200BB0E12 /* RxInternalOperatorsDeferredScalarSubscriberTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RxInternalOperatorsDeferredScalarSubscriberTest.h; sourceTree = "<group>"; };
 		635B23F81DCADB6200BB0E12 /* RxInternalOperatorsDeferredScalarSubscriberTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RxInternalOperatorsDeferredScalarSubscriberTest.m; sourceTree = "<group>"; };
-		635B23F91DCADB6200BB0E12 /* RxInternalOperatorsInternalSafeSubscriberTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RxInternalOperatorsInternalSafeSubscriberTest.h; sourceTree = "<group>"; };
-		635B23FA1DCADB6200BB0E12 /* RxInternalOperatorsInternalSafeSubscriberTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RxInternalOperatorsInternalSafeSubscriberTest.m; sourceTree = "<group>"; };
 		635B23FB1DCADB6200BB0E12 /* RxInternalOperatorsNotificationLiteTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RxInternalOperatorsNotificationLiteTest.h; sourceTree = "<group>"; };
 		635B23FC1DCADB6200BB0E12 /* RxInternalOperatorsNotificationLiteTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RxInternalOperatorsNotificationLiteTest.m; sourceTree = "<group>"; };
 		635B23FD1DCADB6200BB0E12 /* RxInternalOperatorsOnSubscribeAmbTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RxInternalOperatorsOnSubscribeAmbTest.h; sourceTree = "<group>"; };
@@ -2906,8 +2906,6 @@
 		635B24EC1DCADB6300BB0E12 /* RxInternalProducersSingleProducerTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RxInternalProducersSingleProducerTest.m; sourceTree = "<group>"; };
 		635B24ED1DCADB6300BB0E12 /* RxInternalSchedulersExecutorSchedulerTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RxInternalSchedulersExecutorSchedulerTest.h; sourceTree = "<group>"; };
 		635B24EE1DCADB6300BB0E12 /* RxInternalSchedulersExecutorSchedulerTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RxInternalSchedulersExecutorSchedulerTest.m; sourceTree = "<group>"; };
-		635B24EF1DCADB6300BB0E12 /* RxInternalSchedulersInternalGenericScheduledExecutorServiceTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RxInternalSchedulersInternalGenericScheduledExecutorServiceTest.h; sourceTree = "<group>"; };
-		635B24F01DCADB6300BB0E12 /* RxInternalSchedulersInternalGenericScheduledExecutorServiceTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RxInternalSchedulersInternalGenericScheduledExecutorServiceTest.m; sourceTree = "<group>"; };
 		635B24F11DCADB6300BB0E12 /* RxInternalSchedulersNewThreadWorkerTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RxInternalSchedulersNewThreadWorkerTest.h; sourceTree = "<group>"; };
 		635B24F21DCADB6300BB0E12 /* RxInternalSchedulersNewThreadWorkerTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RxInternalSchedulersNewThreadWorkerTest.m; sourceTree = "<group>"; };
 		635B24F31DCADB6300BB0E12 /* RxInternalUtilBlockingUtilsTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RxInternalUtilBlockingUtilsTest.h; sourceTree = "<group>"; };
@@ -3082,8 +3080,6 @@
 		635B259C1DCADB6400BB0E12 /* RxZipTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RxZipTests.m; sourceTree = "<group>"; };
 		635B2B491DCADBC800BB0E12 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		635B2B4B1DCADFDF00BB0E12 /* JSR305.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JSR305.framework; path = ../../../devel/j2objc/dist/frameworks/JSR305.framework; sourceTree = "<group>"; };
-		63D8E9A91DD11F1800103716 /* RxDopplMemorySubscriberAutomaticRemovalTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RxDopplMemorySubscriberAutomaticRemovalTest.h; sourceTree = "<group>"; };
-		63D8E9AA1DD11F1800103716 /* RxDopplMemorySubscriberAutomaticRemovalTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RxDopplMemorySubscriberAutomaticRemovalTest.m; sourceTree = "<group>"; };
 		63D8E9AD1DD5854100103716 /* RxDopplSafeObservableUnsubscribe.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RxDopplSafeObservableUnsubscribe.h; sourceTree = "<group>"; };
 		63D8E9AE1DD5854100103716 /* RxDopplSafeObservableUnsubscribe.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RxDopplSafeObservableUnsubscribe.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -3220,6 +3216,12 @@
 		635B1F981DCADB5C00BB0E12 /* main */ = {
 			isa = PBXGroup;
 			children = (
+				63403EDF1DDA401700607444 /* RxDopplWeakReferenceHelper.h */,
+				63403EE01DDA401700607444 /* RxDopplWeakReferenceHelper.m */,
+				63403EE11DDA401700607444 /* RxInternalObserversAssertableSubscriberObservable.h */,
+				63403EE21DDA401700607444 /* RxInternalObserversAssertableSubscriberObservable.m */,
+				63403EE31DDA401700607444 /* RxObserversAssertableSubscriber.h */,
+				63403EE41DDA401700607444 /* RxObserversAssertableSubscriber.m */,
 				63403E5F1DD8D2F400607444 /* RxDopplJ2objcWeakReference.h */,
 				63403E601DD8D2F400607444 /* RxDopplJ2objcWeakReference.m */,
 				63D8E9AD1DD5854100103716 /* RxDopplSafeObservableUnsubscribe.h */,
@@ -4691,44 +4693,70 @@
 		635B238D1DCADB6200BB0E12 /* test */ = {
 			isa = PBXGroup;
 			children = (
-				63403E571DD62E8F00607444 /* RxDopplMemoryAllocationTracker.h */,
-				63403E581DD62E8F00607444 /* RxDopplMemoryAllocationTracker.m */,
-				63403E591DD62E8F00607444 /* RxDopplMemoryBasicOperatorTest.h */,
-				63403E5A1DD62E8F00607444 /* RxDopplMemoryBasicOperatorTest.m */,
-				63D8E9A91DD11F1800103716 /* RxDopplMemorySubscriberAutomaticRemovalTest.h */,
-				63D8E9AA1DD11F1800103716 /* RxDopplMemorySubscriberAutomaticRemovalTest.m */,
+				63403E9F1DD96FCC00607444 /* RxDopplMemoryAllocationTracker.h */,
+				63403EA01DD96FCC00607444 /* RxDopplMemoryAllocationTracker.m */,
+				63403EA11DD96FCC00607444 /* RxDopplMemoryBasicOperatorTest.h */,
+				63403EA21DD96FCC00607444 /* RxDopplMemoryBasicOperatorTest.m */,
+				63403EA31DD96FCC00607444 /* RxDopplMemorySubscriberAutomaticRemovalTest.h */,
+				63403EA41DD96FCC00607444 /* RxDopplMemorySubscriberAutomaticRemovalTest.m */,
+				63403EA51DD96FCC00607444 /* RxDopplMockMAction0.h */,
+				63403EA61DD96FCC00607444 /* RxDopplMockMAction0.m */,
+				63403EA71DD96FCC00607444 /* RxDopplMockMAction0$Moxy.h */,
+				63403EA81DD96FCC00607444 /* RxDopplMockMAction0$Moxy.m */,
+				63403EA91DD96FCC00607444 /* RxDopplMockMAction1.h */,
+				63403EAA1DD96FCC00607444 /* RxDopplMockMAction1.m */,
+				63403EAB1DD96FCC00607444 /* RxDopplMockMAction1$Moxy.h */,
+				63403EAC1DD96FCC00607444 /* RxDopplMockMAction1$Moxy.m */,
+				63403EAD1DD96FCC00607444 /* RxDopplMockMObserver.h */,
+				63403EAE1DD96FCC00607444 /* RxDopplMockMObserver.m */,
+				63403EAF1DD96FCC00607444 /* RxDopplMockMObserver$Moxy.h */,
+				63403EB01DD96FCC00607444 /* RxDopplMockMObserver$Moxy.m */,
+				63403EB11DD96FCC00607444 /* RxDopplMockMScheduler.h */,
+				63403EB21DD96FCC00607444 /* RxDopplMockMScheduler.m */,
+				63403EB31DD96FCC00607444 /* RxDopplMockMSubscriber.h */,
+				63403EB41DD96FCC00607444 /* RxDopplMockMSubscriber.m */,
+				63403EB51DD96FCC00607444 /* RxDopplMockMSubscriber$Moxy.h */,
+				63403EB61DD96FCC00607444 /* RxDopplMockMSubscriber$Moxy.m */,
+				63403EB71DD96FCC00607444 /* RxDopplMockMSubscription.h */,
+				63403EB81DD96FCC00607444 /* RxDopplMockMSubscription.m */,
+				63403EB91DD96FCC00607444 /* RxDopplMockMSubscription$Moxy.h */,
+				63403EBA1DD96FCC00607444 /* RxDopplMockMSubscription$Moxy.m */,
+				63403EBB1DD96FCC00607444 /* RxInternalOperatorsInternalSafeSubscriberTest.h */,
+				63403EBC1DD96FCC00607444 /* RxInternalOperatorsInternalSafeSubscriberTest.m */,
+				63403EBD1DD96FCC00607444 /* RxInternalOperatorsOperatorReplayTest__InprocessWorker$Moxy.h */,
+				63403EBE1DD96FCC00607444 /* RxInternalOperatorsOperatorReplayTest__InprocessWorker$Moxy.m */,
+				63403E8F1DD962C500607444 /* RxCompletableTestFunc1a.h */,
+				63403E901DD962C500607444 /* RxCompletableTestFunc1a.m */,
+				63403E911DD962C500607444 /* RxCompletableTestFunc1a$Moxy.h */,
+				63403E921DD962C500607444 /* RxCompletableTestFunc1a$Moxy.m */,
+				63403E931DD962C500607444 /* RxCompletableTestFunc1b.h */,
+				63403E941DD962C500607444 /* RxCompletableTestFunc1b.m */,
+				63403E951DD962C500607444 /* RxCompletableTestFunc1b$Moxy.h */,
+				63403E961DD962C500607444 /* RxCompletableTestFunc1b$Moxy.m */,
+				63403E871DD95E2A00607444 /* RxInternalSchedulersNewThreadWorkerTest__ScheduledExecutorServiceWithSetRemoveOnCancelPolicy$Moxy.h */,
+				63403E881DD95E2A00607444 /* RxInternalSchedulersNewThreadWorkerTest__ScheduledExecutorServiceWithSetRemoveOnCancelPolicy$Moxy.m */,
+				63403E891DD95E2A00607444 /* ScheduledThreadPoolExecutor$Moxy.h */,
+				63403E8A1DD95E2A00607444 /* ScheduledThreadPoolExecutor$Moxy.m */,
+				63403E6F1DD95B7800607444 /* RxDopplMockSingletestFuncCreate$Moxy.h */,
+				63403E701DD95B7800607444 /* RxDopplMockSingletestFuncCreate$Moxy.m */,
+				63403E711DD95B7800607444 /* RxDopplMockSingletestFuncReturn$Moxy.h */,
+				63403E721DD95B7800607444 /* RxDopplMockSingletestFuncReturn$Moxy.m */,
+				63403E731DD95B7800607444 /* RxDopplMockSingletestFuncStart$Moxy.h */,
+				63403E741DD95B7800607444 /* RxDopplMockSingletestFuncStart$Moxy.m */,
+				63403E751DD95B7800607444 /* RxInternalOperatorsOperatorScanTest__InnerProducer$Moxy.h */,
+				63403E761DD95B7800607444 /* RxInternalOperatorsOperatorScanTest__InnerProducer$Moxy.m */,
+				63403E771DD95B7800607444 /* RxInternalOperatorsSafeSubscriberTest.h */,
+				63403E781DD95B7800607444 /* RxInternalOperatorsSafeSubscriberTest.m */,
+				63403E791DD95B7800607444 /* RxInternalSchedulersGenericScheduledExecutorServiceTest.h */,
+				63403E7A1DD95B7800607444 /* RxInternalSchedulersGenericScheduledExecutorServiceTest.m */,
+				63403E631DD946E900607444 /* RxDopplMockSingletestFuncCreate.h */,
+				63403E641DD946E900607444 /* RxDopplMockSingletestFuncCreate.m */,
+				63403E651DD946E900607444 /* RxDopplMockSingletestFuncReturn.h */,
+				63403E661DD946E900607444 /* RxDopplMockSingletestFuncReturn.m */,
+				63403E671DD946E900607444 /* RxDopplMockSingletestFuncStart.h */,
+				63403E681DD946E900607444 /* RxDopplMockSingletestFuncStart.m */,
 				63331ADA1DCF8A7A00CA641D /* TestResources.h */,
 				63331ADB1DCF8A7A00CA641D /* TestResources.m */,
-				63111F461DCC042000DE6670 /* RxCompletableTestFunc1a$Moxy.h */,
-				63111F471DCC042000DE6670 /* RxCompletableTestFunc1a$Moxy.m */,
-				63111F481DCC042000DE6670 /* RxCompletableTestFunc1b$Moxy.h */,
-				63111F491DCC042000DE6670 /* RxCompletableTestFunc1b$Moxy.m */,
-				63111F4A1DCC042000DE6670 /* RxDopplMockMAction0$Moxy.h */,
-				63111F4B1DCC042000DE6670 /* RxDopplMockMAction0$Moxy.m */,
-				63111F4C1DCC042000DE6670 /* RxDopplMockMAction1$Moxy.h */,
-				63111F4D1DCC042000DE6670 /* RxDopplMockMAction1$Moxy.m */,
-				63111F4E1DCC042000DE6670 /* RxDopplMockMObserver$Moxy.h */,
-				63111F4F1DCC042000DE6670 /* RxDopplMockMObserver$Moxy.m */,
-				63111F501DCC042000DE6670 /* RxDopplMockMSubscriber$Moxy.h */,
-				63111F511DCC042000DE6670 /* RxDopplMockMSubscriber$Moxy.m */,
-				63111F521DCC042000DE6670 /* RxDopplMockMSubscription$Moxy.h */,
-				63111F531DCC042000DE6670 /* RxDopplMockMSubscription$Moxy.m */,
-				63111F541DCC042000DE6670 /* RxDopplMockSingletestFuncCreate$Moxy.h */,
-				63111F551DCC042000DE6670 /* RxDopplMockSingletestFuncCreate$Moxy.m */,
-				63111F561DCC042000DE6670 /* RxDopplMockSingletestFuncReturn$Moxy.h */,
-				63111F571DCC042000DE6670 /* RxDopplMockSingletestFuncReturn$Moxy.m */,
-				63111F581DCC042000DE6670 /* RxDopplMockSingletestFuncStart$Moxy.h */,
-				63111F591DCC042000DE6670 /* RxDopplMockSingletestFuncStart$Moxy.m */,
-				63111F5A1DCC042000DE6670 /* RxDopplReflectionTest.h */,
-				63111F5B1DCC042000DE6670 /* RxDopplReflectionTest.m */,
-				63111F5C1DCC042000DE6670 /* RxInternalOperatorsOperatorReplayTest__InprocessWorker$Moxy.h */,
-				63111F5D1DCC042000DE6670 /* RxInternalOperatorsOperatorReplayTest__InprocessWorker$Moxy.m */,
-				63111F5E1DCC042000DE6670 /* RxInternalOperatorsOperatorScanTest__InnerProducer$Moxy.h */,
-				63111F5F1DCC042000DE6670 /* RxInternalOperatorsOperatorScanTest__InnerProducer$Moxy.m */,
-				63111F601DCC042000DE6670 /* RxInternalSchedulersNewThreadWorkerTest__ScheduledExecutorServiceWithSetRemoveOnCancelPolicy$Moxy.h */,
-				63111F611DCC042000DE6670 /* RxInternalSchedulersNewThreadWorkerTest__ScheduledExecutorServiceWithSetRemoveOnCancelPolicy$Moxy.m */,
-				63111F621DCC042000DE6670 /* ScheduledThreadPoolExecutor$Moxy.h */,
-				63111F631DCC042000DE6670 /* ScheduledThreadPoolExecutor$Moxy.m */,
 				635B238E1DCADB6200BB0E12 /* OneTest.h */,
 				635B238F1DCADB6200BB0E12 /* OneTest.m */,
 				635B23901DCADB6200BB0E12 /* rx */,
@@ -4740,40 +4768,10 @@
 				635B23AC1DCADB6200BB0E12 /* RxCombineLatestTests.m */,
 				635B23AD1DCADB6200BB0E12 /* RxCompletableTest.h */,
 				635B23AE1DCADB6200BB0E12 /* RxCompletableTest.m */,
-				635B23AF1DCADB6200BB0E12 /* RxCompletableTestFunc1a.h */,
-				635B23B01DCADB6200BB0E12 /* RxCompletableTestFunc1a.m */,
-				635B23B11DCADB6200BB0E12 /* RxCompletableTestFunc1b.h */,
-				635B23B21DCADB6200BB0E12 /* RxCompletableTestFunc1b.m */,
 				635B23B31DCADB6200BB0E12 /* RxConcatTests.h */,
 				635B23B41DCADB6200BB0E12 /* RxConcatTests.m */,
 				635B23B51DCADB6200BB0E12 /* RxCovarianceTest.h */,
 				635B23B61DCADB6200BB0E12 /* RxCovarianceTest.m */,
-				635B23B71DCADB6200BB0E12 /* RxDopplMiscLinkedBlockingQueueTest.h */,
-				635B23B81DCADB6200BB0E12 /* RxDopplMiscLinkedBlockingQueueTest.m */,
-				635B23B91DCADB6200BB0E12 /* RxDopplMockMAction0.h */,
-				635B23BA1DCADB6200BB0E12 /* RxDopplMockMAction0.m */,
-				635B23BB1DCADB6200BB0E12 /* RxDopplMockMAction1.h */,
-				635B23BC1DCADB6200BB0E12 /* RxDopplMockMAction1.m */,
-				635B23BD1DCADB6200BB0E12 /* RxDopplMockMFunc1.h */,
-				635B23BE1DCADB6200BB0E12 /* RxDopplMockMFunc1.m */,
-				635B23BF1DCADB6200BB0E12 /* RxDopplMockMObserver.h */,
-				635B23C01DCADB6200BB0E12 /* RxDopplMockMObserver.m */,
-				635B23C11DCADB6200BB0E12 /* RxDopplMockMProducer.h */,
-				635B23C21DCADB6200BB0E12 /* RxDopplMockMProducer.m */,
-				635B23C31DCADB6200BB0E12 /* RxDopplMockMScheduler.h */,
-				635B23C41DCADB6200BB0E12 /* RxDopplMockMScheduler.m */,
-				635B23C51DCADB6200BB0E12 /* RxDopplMockMSubscriber.h */,
-				635B23C61DCADB6200BB0E12 /* RxDopplMockMSubscriber.m */,
-				635B23C71DCADB6200BB0E12 /* RxDopplMockMSubscription.h */,
-				635B23C81DCADB6200BB0E12 /* RxDopplMockMSubscription.m */,
-				635B23C91DCADB6200BB0E12 /* RxDopplMockSingletestFuncCreate.h */,
-				635B23CA1DCADB6200BB0E12 /* RxDopplMockSingletestFuncCreate.m */,
-				635B23CB1DCADB6200BB0E12 /* RxDopplMockSingletestFuncReturn.h */,
-				635B23CC1DCADB6200BB0E12 /* RxDopplMockSingletestFuncReturn.m */,
-				635B23CD1DCADB6200BB0E12 /* RxDopplMockSingletestFuncStart.h */,
-				635B23CE1DCADB6200BB0E12 /* RxDopplMockSingletestFuncStart.m */,
-				635B23CF1DCADB6200BB0E12 /* RxDopplSimpleBreakdownTest.h */,
-				635B23D01DCADB6200BB0E12 /* RxDopplSimpleBreakdownTest.m */,
 				635B23D11DCADB6200BB0E12 /* RxErrorHandlingTests.h */,
 				635B23D21DCADB6200BB0E12 /* RxErrorHandlingTests.m */,
 				635B23D31DCADB6200BB0E12 /* RxEventStream.h */,
@@ -4814,8 +4812,6 @@
 				635B23F61DCADB6200BB0E12 /* RxInternalOperatorsCompletableFromEmitterTest.m */,
 				635B23F71DCADB6200BB0E12 /* RxInternalOperatorsDeferredScalarSubscriberTest.h */,
 				635B23F81DCADB6200BB0E12 /* RxInternalOperatorsDeferredScalarSubscriberTest.m */,
-				635B23F91DCADB6200BB0E12 /* RxInternalOperatorsInternalSafeSubscriberTest.h */,
-				635B23FA1DCADB6200BB0E12 /* RxInternalOperatorsInternalSafeSubscriberTest.m */,
 				635B23FB1DCADB6200BB0E12 /* RxInternalOperatorsNotificationLiteTest.h */,
 				635B23FC1DCADB6200BB0E12 /* RxInternalOperatorsNotificationLiteTest.m */,
 				635B23FD1DCADB6200BB0E12 /* RxInternalOperatorsOnSubscribeAmbTest.h */,
@@ -5060,8 +5056,6 @@
 				635B24EC1DCADB6300BB0E12 /* RxInternalProducersSingleProducerTest.m */,
 				635B24ED1DCADB6300BB0E12 /* RxInternalSchedulersExecutorSchedulerTest.h */,
 				635B24EE1DCADB6300BB0E12 /* RxInternalSchedulersExecutorSchedulerTest.m */,
-				635B24EF1DCADB6300BB0E12 /* RxInternalSchedulersInternalGenericScheduledExecutorServiceTest.h */,
-				635B24F01DCADB6300BB0E12 /* RxInternalSchedulersInternalGenericScheduledExecutorServiceTest.m */,
 				635B24F11DCADB6300BB0E12 /* RxInternalSchedulersNewThreadWorkerTest.h */,
 				635B24F21DCADB6300BB0E12 /* RxInternalSchedulersNewThreadWorkerTest.m */,
 				635B24F31DCADB6300BB0E12 /* RxInternalUtilBlockingUtilsTest.h */,
@@ -5437,7 +5431,6 @@
 				635B26C91DCADB6400BB0E12 /* RxExceptionsOnCompletedFailedException.h in Headers */,
 				635B2AEB1DCADB6700BB0E12 /* RxPluginsRxJavaPluginsTest.h in Headers */,
 				635B2AD31DCADB6700BB0E12 /* RxObservableTests.h in Headers */,
-				635B296F1DCADB6600BB0E12 /* RxDopplMockMScheduler.h in Headers */,
 				635B27B71DCADB6500BB0E12 /* RxInternalOperatorsOperatorElementAt.h in Headers */,
 				635B29171DCADB6600BB0E12 /* RxSchedulerspackage-info.h in Headers */,
 				635B2A691DCADB6700BB0E12 /* RxInternalOperatorsOperatorTimeIntervalTest.h in Headers */,
@@ -5459,7 +5452,6 @@
 				635B28391DCADB6500BB0E12 /* RxInternalOperatorsSingleOnErrorReturn.h in Headers */,
 				635B26EB1DCADB6400BB0E12 /* RxFunctionsActionN.h in Headers */,
 				635B2B0D1DCADB6800BB0E12 /* RxSchedulersTimeXTest.h in Headers */,
-				635B29691DCADB6600BB0E12 /* RxDopplMockMFunc1.h in Headers */,
 				635B291D1DCADB6600BB0E12 /* RxSchedulersTimeInterval.h in Headers */,
 				635B2AD11DCADB6700BB0E12 /* RxObservablesSyncOnSubscribeTest.h in Headers */,
 				635B2AFF1DCADB6700BB0E12 /* RxSchedulersIoSchedulerTest.h in Headers */,
@@ -5495,11 +5487,13 @@
 				635B28831DCADB6500BB0E12 /* RxInternalUtilAtomicLinkedQueueNode.h in Headers */,
 				635B2A271DCADB6700BB0E12 /* RxInternalOperatorsOperatorOnErrorResumeNextViaFunctionTest.h in Headers */,
 				635B2B1D1DCADB6800BB0E12 /* RxSubjectsBufferUntilSubscriberTest.h in Headers */,
-				63111F801DCC042000DE6670 /* ScheduledThreadPoolExecutor$Moxy.h in Headers */,
 				635B2B011DCADB6700BB0E12 /* RxSchedulersNewThreadSchedulerTest.h in Headers */,
 				635B28431DCADB6500BB0E12 /* RxInternalOperatorsSingleOperatorZip.h in Headers */,
 				635B288F1DCADB6500BB0E12 /* RxInternalUtilAtomicSpscUnboundedAtomicArrayQueue.h in Headers */,
+				63403ED51DD96FCC00607444 /* RxDopplMockMSubscriber$Moxy.h in Headers */,
 				635B2AAB1DCADB6700BB0E12 /* RxInternalUtilPlatformDependentTest.h in Headers */,
+				63403E811DD95B7800607444 /* RxInternalOperatorsOperatorScanTest__InnerProducer$Moxy.h in Headers */,
+				63403E9D1DD962C500607444 /* RxCompletableTestFunc1b$Moxy.h in Headers */,
 				635B281F1DCADB6500BB0E12 /* RxInternalOperatorsOperatorWithLatestFromMany.h in Headers */,
 				635B2A331DCADB6700BB0E12 /* RxInternalOperatorsOperatorRepeatTest.h in Headers */,
 				635B260D1DCADB6400BB0E12 /* AndroidDatabaseSqliteSQLiteProgram.h in Headers */,
@@ -5514,12 +5508,13 @@
 				635B276F1DCADB6500BB0E12 /* RxInternalOperatorsOnSubscribePublishMulticast.h in Headers */,
 				635B28811DCADB6500BB0E12 /* RxInternalUtilAtomicBaseLinkedAtomicQueue.h in Headers */,
 				635B25A51DCADB6400BB0E12 /* AndroidAppSharedPreferencesImpl.h in Headers */,
+				63403E831DD95B7800607444 /* RxInternalOperatorsSafeSubscriberTest.h in Headers */,
 				635B275D1DCADB6500BB0E12 /* RxInternalOperatorsOnSubscribeFromEmitter.h in Headers */,
 				635B28F71DCADB6600BB0E12 /* RxObserversTestSubscriber.h in Headers */,
 				635B283B1DCADB6500BB0E12 /* RxInternalOperatorsSingleOnSubscribeDelaySubscriptionOther.h in Headers */,
 				635B29D31DCADB6600BB0E12 /* RxInternalOperatorsOnSubscribeRefCountTest.h in Headers */,
 				635B264D1DCADB6400BB0E12 /* AndroidUtilSize.h in Headers */,
-				63111F721DCC042000DE6670 /* RxDopplMockSingletestFuncCreate$Moxy.h in Headers */,
+				63403E6B1DD946E900607444 /* RxDopplMockSingletestFuncReturn.h in Headers */,
 				635B265F1DCADB6400BB0E12 /* RenameComGoogleAndroidCollectMaps.h in Headers */,
 				635B286F1DCADB6500BB0E12 /* RxInternalSchedulersSchedulerWhen.h in Headers */,
 				635B290F1DCADB6600BB0E12 /* RxProducer.h in Headers */,
@@ -5532,8 +5527,9 @@
 				635B261B1DCADB6400BB0E12 /* AndroidDatabaseSqliteSQLiteTableLockedException.h in Headers */,
 				635B277D1DCADB6500BB0E12 /* RxInternalOperatorsOnSubscribeSkipTimed.h in Headers */,
 				635B2B2F1DCADB6800BB0E12 /* RxSubscriptionsMultipleAssignmentSubscriptionTest.h in Headers */,
-				63111F641DCC042000DE6670 /* RxCompletableTestFunc1a$Moxy.h in Headers */,
+				63403E8D1DD95E2A00607444 /* ScheduledThreadPoolExecutor$Moxy.h in Headers */,
 				635B2B051DCADB6700BB0E12 /* RxSchedulersSchedulerLifecycleTest.h in Headers */,
+				63403EE51DDA401700607444 /* RxDopplWeakReferenceHelper.h in Headers */,
 				63D8E9AF1DD5854100103716 /* RxDopplSafeObservableUnsubscribe.h in Headers */,
 				635B2A711DCADB6700BB0E12 /* RxInternalOperatorsOperatorToObservableListTest.h in Headers */,
 				635B27B51DCADB6500BB0E12 /* RxInternalOperatorsOperatorEagerConcatMap.h in Headers */,
@@ -5542,15 +5538,15 @@
 				635B2A731DCADB6700BB0E12 /* RxInternalOperatorsOperatorToObservableSortedListTest.h in Headers */,
 				635B26511DCADB6400BB0E12 /* AndroidUtilTimeUtils.h in Headers */,
 				635B2A9F1DCADB6700BB0E12 /* RxInternalUtilBlockingUtilsTest.h in Headers */,
+				63403E6D1DD946E900607444 /* RxDopplMockSingletestFuncStart.h in Headers */,
 				635B288B1DCADB6500BB0E12 /* RxInternalUtilAtomicSpscLinkedArrayQueue.h in Headers */,
-				63111F6A1DCC042000DE6670 /* RxDopplMockMAction1$Moxy.h in Headers */,
 				635B28E11DCADB6600BB0E12 /* RxObservablesSyncOnSubscribe.h in Headers */,
 				635B29811DCADB6600BB0E12 /* RxEventStreamTest.h in Headers */,
 				635B27671DCADB6500BB0E12 /* RxInternalOperatorsOnSubscribeMap.h in Headers */,
 				635B27D31DCADB6500BB0E12 /* RxInternalOperatorsOperatorReplay.h in Headers */,
 				635B27B11DCADB6500BB0E12 /* RxInternalOperatorsOperatorDoOnSubscribe.h in Headers */,
-				63111F7E1DCC042000DE6670 /* RxInternalSchedulersNewThreadWorkerTest__ScheduledExecutorServiceWithSetRemoveOnCancelPolicy$Moxy.h in Headers */,
 				635B26FB1DCADB6400BB0E12 /* RxFunctionsFunc5.h in Headers */,
+				63403EC11DD96FCC00607444 /* RxDopplMemoryBasicOperatorTest.h in Headers */,
 				635B272D1DCADB6500BB0E12 /* RxInternalOperatorsCompletableOnSubscribeMergeDelayErrorIterable.h in Headers */,
 				635B26351DCADB6400BB0E12 /* AndroidSupportAnnotationCheckResult.h in Headers */,
 				635B2AB51DCADB6700BB0E12 /* RxInternalUtilScalarSynchronousObservableTest.h in Headers */,
@@ -5574,30 +5570,28 @@
 				635B26991DCADB6400BB0E12 /* OrgSkyscreamerJsonassertCustomization.h in Headers */,
 				635B2A6B1DCADB6700BB0E12 /* RxInternalOperatorsOperatorTimeoutTests.h in Headers */,
 				635B2B3D1DCADB6800BB0E12 /* RxTestUtil.h in Headers */,
-				635B29651DCADB6600BB0E12 /* RxDopplMockMAction0.h in Headers */,
 				635B2A4D1DCADB6700BB0E12 /* RxInternalOperatorsOperatorSkipUntilTest.h in Headers */,
 				635B278B1DCADB6500BB0E12 /* RxInternalOperatorsOnSubscribeToObservableFuture.h in Headers */,
 				635B27F31DCADB6500BB0E12 /* RxInternalOperatorsOperatorTake.h in Headers */,
 				635B25A71DCADB6400BB0E12 /* AndroidContentContentValues.h in Headers */,
 				635B276D1DCADB6500BB0E12 /* RxInternalOperatorsOnSubscribeOnAssemblySingle.h in Headers */,
 				635B2A531DCADB6700BB0E12 /* RxInternalOperatorsOperatorSwitchIfEmptyTest.h in Headers */,
-				63111F7C1DCC042000DE6670 /* RxInternalOperatorsOperatorScanTest__InnerProducer$Moxy.h in Headers */,
 				635B29CB1DCADB6600BB0E12 /* RxInternalOperatorsOnSubscribeJoinTest.h in Headers */,
 				635B27631DCADB6500BB0E12 /* RxInternalOperatorsOnSubscribeJoin.h in Headers */,
 				635B281D1DCADB6500BB0E12 /* RxInternalOperatorsOperatorWithLatestFrom.h in Headers */,
 				635B29DF1DCADB6600BB0E12 /* RxInternalOperatorsOnSubscribeUsingTest.h in Headers */,
 				635B26411DCADB6400BB0E12 /* AndroidTelephonyPhoneNumberUtils.h in Headers */,
+				63403EBF1DD96FCC00607444 /* RxDopplMemoryAllocationTracker.h in Headers */,
 				635B25CD1DCADB6400BB0E12 /* AndroidDatabaseMatrixCursor.h in Headers */,
 				635B29EB1DCADB6600BB0E12 /* RxInternalOperatorsOperatorConcatTest.h in Headers */,
 				635B279B1DCADB6500BB0E12 /* RxInternalOperatorsOperatorBufferWithTime.h in Headers */,
 				635B29891DCADB6600BB0E12 /* RxExceptionsOnNextValueTest.h in Headers */,
+				63403EDB1DD96FCD00607444 /* RxInternalOperatorsInternalSafeSubscriberTest.h in Headers */,
 				635B29A31DCADB6600BB0E12 /* RxInternalOperatorsDeferredScalarSubscriberTest.h in Headers */,
 				635B26BB1DCADB6400BB0E12 /* RxCompletableEmitter.h in Headers */,
 				635B27371DCADB6500BB0E12 /* RxInternalOperatorsEmptyObservableHolder.h in Headers */,
 				635B28871DCADB6500BB0E12 /* RxInternalUtilAtomicSpscAtomicArrayQueue.h in Headers */,
 				635B29571DCADB6600BB0E12 /* RxCombineLatestTests.h in Headers */,
-				635B297B1DCADB6600BB0E12 /* RxDopplSimpleBreakdownTest.h in Headers */,
-				63111F661DCC042000DE6670 /* RxCompletableTestFunc1b$Moxy.h in Headers */,
 				635B26AD1DCADB6400BB0E12 /* OrgSkyscreamerJsonassertValueMatcherException.h in Headers */,
 				635B26D91DCADB6400BB0E12 /* RxFunctionsAction1.h in Headers */,
 				635B27A71DCADB6500BB0E12 /* RxInternalOperatorsOperatorDematerialize.h in Headers */,
@@ -5622,12 +5616,13 @@
 				635B26391DCADB6400BB0E12 /* AndroidSupportAnnotationNonNull.h in Headers */,
 				635B28A91DCADB6500BB0E12 /* RxInternalUtilScalarSynchronousObservable.h in Headers */,
 				635B27451DCADB6500BB0E12 /* RxInternalOperatorsOnSubscribeConcatMap.h in Headers */,
-				63111F7A1DCC042000DE6670 /* RxInternalOperatorsOperatorReplayTest__InprocessWorker$Moxy.h in Headers */,
 				635B27B91DCADB6500BB0E12 /* RxInternalOperatorsOperatorGroupBy.h in Headers */,
+				63403EC91DD96FCC00607444 /* RxDopplMockMAction1.h in Headers */,
 				635B27AB1DCADB6500BB0E12 /* RxInternalOperatorsOperatorDistinctUntilChanged.h in Headers */,
 				635B27AD1DCADB6500BB0E12 /* RxInternalOperatorsOperatorDoAfterTerminate.h in Headers */,
 				635B27F71DCADB6500BB0E12 /* RxInternalOperatorsOperatorTakeLastTimed.h in Headers */,
 				635B28251DCADB6500BB0E12 /* RxInternalOperatorsSingleDelay.h in Headers */,
+				63403EE71DDA401700607444 /* RxInternalObserversAssertableSubscriberObservable.h in Headers */,
 				635B25FD1DCADB6400BB0E12 /* AndroidDatabaseSqliteSQLiteDiskIOException.h in Headers */,
 				635B2AF71DCADB6700BB0E12 /* RxSchedulersComputationSchedulerTests.h in Headers */,
 				635B25C91DCADB6400BB0E12 /* AndroidDatabaseDataSetObserver.h in Headers */,
@@ -5635,19 +5630,17 @@
 				635B2A751DCADB6700BB0E12 /* RxInternalOperatorsOperatorUnsubscribeOnTest.h in Headers */,
 				635B2B311DCADB6800BB0E12 /* RxSubscriptionsRefCountSubscriptionTest.h in Headers */,
 				635B2AEF1DCADB6700BB0E12 /* RxReduceTests.h in Headers */,
+				63403E8B1DD95E2A00607444 /* RxInternalSchedulersNewThreadWorkerTest__ScheduledExecutorServiceWithSetRemoveOnCancelPolicy$Moxy.h in Headers */,
 				635B297D1DCADB6600BB0E12 /* RxErrorHandlingTests.h in Headers */,
 				635B2A211DCADB6700BB0E12 /* RxInternalOperatorsOperatorOnBackpressureBufferTest.h in Headers */,
 				635B278F1DCADB6500BB0E12 /* RxInternalOperatorsOperatorAll.h in Headers */,
 				635B277B1DCADB6500BB0E12 /* RxInternalOperatorsOnSubscribeSingle.h in Headers */,
-				63403E5B1DD62E8F00607444 /* RxDopplMemoryAllocationTracker.h in Headers */,
 				635B2B151DCADB6800BB0E12 /* RxSingleTest.h in Headers */,
 				635B2ACF1DCADB6700BB0E12 /* RxObservablesConnectableObservableTest.h in Headers */,
 				635B26671DCADB6400BB0E12 /* RenameOrgKxml2IoKXmlSerializer.h in Headers */,
 				635B262B1DCADB6400BB0E12 /* AndroidOsMessage.h in Headers */,
 				635B2A0D1DCADB6700BB0E12 /* RxInternalOperatorsOperatorIgnoreElementsTest.h in Headers */,
-				63111F701DCC042000DE6670 /* RxDopplMockMSubscription$Moxy.h in Headers */,
 				635B26F71DCADB6400BB0E12 /* RxFunctionsFunc3.h in Headers */,
-				635B29711DCADB6600BB0E12 /* RxDopplMockMSubscriber.h in Headers */,
 				635B27931DCADB6500BB0E12 /* RxInternalOperatorsOperatorAsObservable.h in Headers */,
 				635B265B1DCADB6400BB0E12 /* RenameComAndroidInternalUtilXmlUtils.h in Headers */,
 				635B28371DCADB6500BB0E12 /* RxInternalOperatorsSingleObserveOn.h in Headers */,
@@ -5661,15 +5654,17 @@
 				635B259F1DCADB6400BB0E12 /* AndroidAnnotationNullable.h in Headers */,
 				635B27971DCADB6500BB0E12 /* RxInternalOperatorsOperatorBufferWithSize.h in Headers */,
 				635B2A391DCADB6700BB0E12 /* RxInternalOperatorsOperatorRetryWithPredicateTest.h in Headers */,
+				63403E691DD946E900607444 /* RxDopplMockSingletestFuncCreate.h in Headers */,
 				635B28191DCADB6500BB0E12 /* RxInternalOperatorsOperatorWindowWithStartEndObservable.h in Headers */,
 				635B26B31DCADB6400BB0E12 /* RxAnnotationspackage-info.h in Headers */,
 				635B26B51DCADB6400BB0E12 /* RxAsyncEmitter.h in Headers */,
+				63403E7B1DD95B7800607444 /* RxDopplMockSingletestFuncCreate$Moxy.h in Headers */,
 				635B2A051DCADB6600BB0E12 /* RxInternalOperatorsOperatorElementAtTest.h in Headers */,
 				635B29151DCADB6600BB0E12 /* RxSchedulersNewThreadScheduler.h in Headers */,
 				635B2B371DCADB6800BB0E12 /* RxTestOperatorTester.h in Headers */,
 				635B2AE11DCADB6700BB0E12 /* RxObserversSerializedObserverTest.h in Headers */,
 				635B29531DCADB6600BB0E12 /* RxBackpressureTests.h in Headers */,
-				635B29751DCADB6600BB0E12 /* RxDopplMockSingletestFuncCreate.h in Headers */,
+				63403ED11DD96FCC00607444 /* RxDopplMockMScheduler.h in Headers */,
 				635B2A551DCADB6700BB0E12 /* RxInternalOperatorsOperatorSwitchTest.h in Headers */,
 				635B29131DCADB6600BB0E12 /* RxSchedulersImmediateScheduler.h in Headers */,
 				635B269D1DCADB6400BB0E12 /* OrgSkyscreamerJsonassertJSONAssert.h in Headers */,
@@ -5699,12 +5694,12 @@
 				635B29291DCADB6600BB0E12 /* RxSingleSubscriber.h in Headers */,
 				635B2B2D1DCADB6800BB0E12 /* RxSubscriptionsCompositeSubscriptionTest.h in Headers */,
 				635B27DD1DCADB6500BB0E12 /* RxInternalOperatorsOperatorSequenceEqual.h in Headers */,
+				63403ECF1DD96FCC00607444 /* RxDopplMockMObserver$Moxy.h in Headers */,
 				635B2A471DCADB6700BB0E12 /* RxInternalOperatorsOperatorSkipLastTimedTest.h in Headers */,
 				635B292B1DCADB6600BB0E12 /* RxSubjectsAsyncSubject.h in Headers */,
 				635B26731DCADB6400BB0E12 /* SQLitePreparedStatement.h in Headers */,
 				635B2A431DCADB6700BB0E12 /* RxInternalOperatorsOperatorSingleTest.h in Headers */,
 				635B27951DCADB6500BB0E12 /* RxInternalOperatorsOperatorBufferWithSingleObservable.h in Headers */,
-				635B29631DCADB6600BB0E12 /* RxDopplMiscLinkedBlockingQueueTest.h in Headers */,
 				635B26711DCADB6400BB0E12 /* SQLiteErrors.h in Headers */,
 				635B25D31DCADB6400BB0E12 /* AndroidDatabaseSQLException.h in Headers */,
 				635B28FB1DCADB6600BB0E12 /* RxPluginspackage-info.h in Headers */,
@@ -5750,7 +5745,6 @@
 				635B28DB1DCADB6600BB0E12 /* RxObservablesConnectableObservable.h in Headers */,
 				635B29FD1DCADB6600BB0E12 /* RxInternalOperatorsOperatorDoOnRequestTest.h in Headers */,
 				635B29E31DCADB6600BB0E12 /* RxInternalOperatorsOperatorAnyTest.h in Headers */,
-				63111F6E1DCC042000DE6670 /* RxDopplMockMSubscriber$Moxy.h in Headers */,
 				635B274F1DCADB6500BB0E12 /* RxInternalOperatorsOnSubscribeDetach.h in Headers */,
 				635B2AB11DCADB6700BB0E12 /* RxInternalUtilRxRingBufferSpscTest.h in Headers */,
 				635B29F11DCADB6600BB0E12 /* RxInternalOperatorsOperatorDefaultIfEmptyTest.h in Headers */,
@@ -5772,6 +5766,7 @@
 				635B2B3F1DCADB6800BB0E12 /* RxThrottleLastTests.h in Headers */,
 				635B27ED1DCADB6500BB0E12 /* RxInternalOperatorsOperatorSubscribeOn.h in Headers */,
 				635B2AA11DCADB6700BB0E12 /* RxInternalUtilExceptionUtilsTest.h in Headers */,
+				63403E971DD962C500607444 /* RxCompletableTestFunc1a.h in Headers */,
 				635B28F31DCADB6600BB0E12 /* RxObserversSubscribers.h in Headers */,
 				635B27D51DCADB6500BB0E12 /* RxInternalOperatorsOperatorRetryWithPredicate.h in Headers */,
 				635B27851DCADB6500BB0E12 /* RxInternalOperatorsOnSubscribeTimerPeriodically.h in Headers */,
@@ -5781,7 +5776,6 @@
 				635B28DF1DCADB6600BB0E12 /* RxObservablespackage-info.h in Headers */,
 				635B2A5F1DCADB6700BB0E12 /* RxInternalOperatorsOperatorTakeTimedTest.h in Headers */,
 				635B25DD1DCADB6400BB0E12 /* AndroidDatabaseSqliteSQLiteBlobTooBigException.h in Headers */,
-				635B295B1DCADB6600BB0E12 /* RxCompletableTestFunc1a.h in Headers */,
 				635B2AFD1DCADB6700BB0E12 /* RxSchedulersImmediateSchedulerTest.h in Headers */,
 				635B26531DCADB6400BB0E12 /* AndroidUtilXml.h in Headers */,
 				635B26031DCADB6400BB0E12 /* AndroidDatabaseSqliteSQLiteFullException.h in Headers */,
@@ -5814,13 +5808,11 @@
 				635B29311DCADB6600BB0E12 /* RxSubjectsPublishSubject.h in Headers */,
 				635B27331DCADB6500BB0E12 /* RxInternalOperatorsDeferredScalarSubscriber.h in Headers */,
 				635B25F11DCADB6400BB0E12 /* AndroidDatabaseSqliteSQLiteDatabaseConfiguration.h in Headers */,
-				635B295D1DCADB6600BB0E12 /* RxCompletableTestFunc1b.h in Headers */,
 				635B27BF1DCADB6500BB0E12 /* RxInternalOperatorsOperatorMapPair.h in Headers */,
 				635B282B1DCADB6500BB0E12 /* RxInternalOperatorsSingleDoOnSubscribe.h in Headers */,
 				635B28C11DCADB6500BB0E12 /* RxInternalUtilUnsafeMpscLinkedQueue.h in Headers */,
 				635B267B1DCADB6400BB0E12 /* CoTouchlabDoppelTestingDoppelTest.h in Headers */,
 				635B28451DCADB6500BB0E12 /* RxInternalOperatorsSingleTakeUntilCompletable.h in Headers */,
-				63111F781DCC042000DE6670 /* RxDopplReflectionTest.h in Headers */,
 				635B28EB1DCADB6600BB0E12 /* RxObserversSafeCompletableSubscriber.h in Headers */,
 				635B27A91DCADB6500BB0E12 /* RxInternalOperatorsOperatorDistinct.h in Headers */,
 				635B26E91DCADB6400BB0E12 /* RxFunctionsAction9.h in Headers */,
@@ -5832,9 +5824,9 @@
 				635B29511DCADB6600BB0E12 /* OneTest.h in Headers */,
 				635B26471DCADB6400BB0E12 /* AndroidUtilLongSparseArray.h in Headers */,
 				635B28791DCADB6500BB0E12 /* RxInternalUtilActionNotificationObserver.h in Headers */,
-				635B2A9B1DCADB6700BB0E12 /* RxInternalSchedulersInternalGenericScheduledExecutorServiceTest.h in Headers */,
 				635B26CF1DCADB6400BB0E12 /* RxExceptionsOnErrorThrowable.h in Headers */,
 				635B27831DCADB6500BB0E12 /* RxInternalOperatorsOnSubscribeTimerOnce.h in Headers */,
+				63403EC51DD96FCC00607444 /* RxDopplMockMAction0.h in Headers */,
 				635B2A071DCADB6600BB0E12 /* RxInternalOperatorsOperatorFirstTest.h in Headers */,
 				635B2A891DCADB6700BB0E12 /* RxInternalOperatorsSingleOnSubscribeDelaySubscriptionOtherTest.h in Headers */,
 				635B261D1DCADB6400BB0E12 /* AndroidDatabaseSqliteSQLiteTransactionListener.h in Headers */,
@@ -5844,7 +5836,6 @@
 				635B29ED1DCADB6600BB0E12 /* RxInternalOperatorsOperatorCountTest.h in Headers */,
 				635B28531DCADB6500BB0E12 /* RxInternalProducersQueuedProducer.h in Headers */,
 				635B290B1DCADB6600BB0E12 /* RxPluginsRxJavaSingleExecutionHook.h in Headers */,
-				63403E5D1DD62E8F00607444 /* RxDopplMemoryBasicOperatorTest.h in Headers */,
 				635B26B91DCADB6400BB0E12 /* RxCompletable.h in Headers */,
 				635B28BD1DCADB6500BB0E12 /* RxInternalUtilUnsafeMessagePassingQueue.h in Headers */,
 				635B29F71DCADB6600BB0E12 /* RxInternalOperatorsOperatorDistinctTest.h in Headers */,
@@ -5854,7 +5845,6 @@
 				635B28591DCADB6500BB0E12 /* RxInternalProducersSingleProducer.h in Headers */,
 				635B26CB1DCADB6400BB0E12 /* RxExceptionsOnErrorFailedException.h in Headers */,
 				635B2AF11DCADB6700BB0E12 /* RxScanTests.h in Headers */,
-				635B296B1DCADB6600BB0E12 /* RxDopplMockMObserver.h in Headers */,
 				635B26ED1DCADB6400BB0E12 /* RxFunctionsActions.h in Headers */,
 				635B2AC11DCADB6700BB0E12 /* RxInternalUtilUtilityFunctionsTest.h in Headers */,
 				635B2A351DCADB6700BB0E12 /* RxInternalOperatorsOperatorReplayTest.h in Headers */,
@@ -5862,6 +5852,7 @@
 				635B27091DCADB6400BB0E12 /* RxFunctionsFunctions.h in Headers */,
 				635B29B91DCADB6600BB0E12 /* RxInternalOperatorsOnSubscribeDoOnEachTest.h in Headers */,
 				635B29011DCADB6600BB0E12 /* RxPluginsRxJavaHooks.h in Headers */,
+				63403ED91DD96FCC00607444 /* RxDopplMockMSubscription$Moxy.h in Headers */,
 				635B2AF51DCADB6700BB0E12 /* RxSchedulersAbstractSchedulerTests.h in Headers */,
 				635B28E91DCADB6600BB0E12 /* RxObserverspackage-info.h in Headers */,
 				635B275B1DCADB6500BB0E12 /* RxInternalOperatorsOnSubscribeFromCallable.h in Headers */,
@@ -5878,6 +5869,7 @@
 				635B25E71DCADB6400BB0E12 /* AndroidDatabaseSqliteSQLiteConstraintException.h in Headers */,
 				635B2A971DCADB6700BB0E12 /* RxInternalProducersSingleProducerTest.h in Headers */,
 				635B299F1DCADB6600BB0E12 /* RxInternalOperatorsCachedObservableTest.h in Headers */,
+				63403EC71DD96FCC00607444 /* RxDopplMockMAction0$Moxy.h in Headers */,
 				635B2AC71DCADB6700BB0E12 /* RxNotificationTest.h in Headers */,
 				635B26491DCADB6400BB0E12 /* AndroidUtilPatterns.h in Headers */,
 				635B27011DCADB6400BB0E12 /* RxFunctionsFunc8.h in Headers */,
@@ -5887,8 +5879,8 @@
 				635B26DD1DCADB6400BB0E12 /* RxFunctionsAction3.h in Headers */,
 				635B2ADB1DCADB6700BB0E12 /* RxObserversObserversTest.h in Headers */,
 				635B28CB1DCADB6500BB0E12 /* RxInternalUtilUnsafeSpscLinkedQueue.h in Headers */,
-				635B29791DCADB6600BB0E12 /* RxDopplMockSingletestFuncStart.h in Headers */,
 				635B2ABF1DCADB6700BB0E12 /* RxInternalUtilUnsafeUnsafeAccessTest.h in Headers */,
+				63403EE91DDA401700607444 /* RxObserversAssertableSubscriber.h in Headers */,
 				63331ADC1DCF8A7A00CA641D /* TestResources.h in Headers */,
 				635B2A8F1DCADB6700BB0E12 /* RxInternalProducersProducerArbiterTest.h in Headers */,
 				635B29E71DCADB6600BB0E12 /* RxInternalOperatorsOperatorBufferTest.h in Headers */,
@@ -5911,6 +5903,7 @@
 				635B29AF1DCADB6600BB0E12 /* RxInternalOperatorsOnSubscribeCompletableTest.h in Headers */,
 				635B269F1DCADB6400BB0E12 /* OrgSkyscreamerJsonassertJSONCompare.h in Headers */,
 				635B264F1DCADB6400BB0E12 /* AndroidUtilSizeF.h in Headers */,
+				63403EC31DD96FCC00607444 /* RxDopplMemorySubscriberAutomaticRemovalTest.h in Headers */,
 				635B28211DCADB6500BB0E12 /* RxInternalOperatorsOperatorZip.h in Headers */,
 				635B28571DCADB6500BB0E12 /* RxInternalProducersSingleDelayedProducer.h in Headers */,
 				635B26971DCADB6400BB0E12 /* OrgSkyscreamerJsonassertComparatorJSONCompareUtil.h in Headers */,
@@ -5962,7 +5955,6 @@
 				635B25F31DCADB6400BB0E12 /* AndroidDatabaseSqliteSQLiteDatabaseCorruptException.h in Headers */,
 				635B25C51DCADB6400BB0E12 /* AndroidDatabaseDatabaseUtils.h in Headers */,
 				635B28B51DCADB6500BB0E12 /* RxInternalUtilUnsafeBaseLinkedQueueConsumerNodeRef.h in Headers */,
-				63111F761DCC042000DE6670 /* RxDopplMockSingletestFuncStart$Moxy.h in Headers */,
 				635B29C31DCADB6600BB0E12 /* RxInternalOperatorsOnSubscribeFromCallableTest.h in Headers */,
 				635B25EB1DCADB6400BB0E12 /* AndroidDatabaseSqliteSQLiteCursorDriver.h in Headers */,
 				635B28FD1DCADB6600BB0E12 /* RxPluginsRxJavaCompletableExecutionHook.h in Headers */,
@@ -5974,6 +5966,7 @@
 				635B28B31DCADB6500BB0E12 /* RxInternalUtilUnsafeBaseLinkedQueue.h in Headers */,
 				635B270D1DCADB6400BB0E12 /* RxInternalOperatorsBackpressureUtils.h in Headers */,
 				635B26A91DCADB6400BB0E12 /* OrgSkyscreamerJsonassertRegularExpressionValueMatcher.h in Headers */,
+				63403E9B1DD962C500607444 /* RxCompletableTestFunc1b.h in Headers */,
 				635B2A7B1DCADB6700BB0E12 /* RxInternalOperatorsOperatorWindowWithStartEndObservableTest.h in Headers */,
 				635B26771DCADB6400BB0E12 /* CoTouchlabDoppelTestingDoppelParameterizedRobolectricTestRunner.h in Headers */,
 				635B263B1DCADB6400BB0E12 /* AndroidSupportAnnotationNullable.h in Headers */,
@@ -5990,7 +5983,6 @@
 				635B260B1DCADB6400BB0E12 /* AndroidDatabaseSqliteSQLiteOutOfMemoryException.h in Headers */,
 				635B2A851DCADB6700BB0E12 /* RxInternalOperatorsOperatorZipTest.h in Headers */,
 				635B264B1DCADB6400BB0E12 /* AndroidUtilPrefixPrinter.h in Headers */,
-				63D8E9AB1DD11F1800103716 /* RxDopplMemorySubscriberAutomaticRemovalTest.h in Headers */,
 				635B2A1F1DCADB6700BB0E12 /* RxInternalOperatorsOperatorObserveOnTest.h in Headers */,
 				635B28171DCADB6500BB0E12 /* RxInternalOperatorsOperatorWindowWithSize.h in Headers */,
 				635B26431DCADB6400BB0E12 /* AndroidUtilAndroidRuntimeException.h in Headers */,
@@ -6013,6 +6005,7 @@
 				635B26651DCADB6400BB0E12 /* RenameOrgKxml2IoKXmlParser.h in Headers */,
 				635B29C51DCADB6600BB0E12 /* RxInternalOperatorsOnSubscribeFromEmitterTest.h in Headers */,
 				635B28331DCADB6500BB0E12 /* RxInternalOperatorsSingleFromObservable.h in Headers */,
+				63403ED71DD96FCC00607444 /* RxDopplMockMSubscription.h in Headers */,
 				635B25C31DCADB6400BB0E12 /* AndroidDatabaseDatabaseErrorHandler.h in Headers */,
 				635B2A791DCADB6700BB0E12 /* RxInternalOperatorsOperatorWindowWithSizeTest.h in Headers */,
 				635B28E31DCADB6600BB0E12 /* RxObserver.h in Headers */,
@@ -6045,7 +6038,6 @@
 				635B2B071DCADB6800BB0E12 /* RxSchedulersSchedulerTests.h in Headers */,
 				635B26311DCADB6400BB0E12 /* AndroidOsTrace.h in Headers */,
 				635B273F1DCADB6500BB0E12 /* RxInternalOperatorsOnSubscribeAutoConnect.h in Headers */,
-				63111F6C1DCC042000DE6670 /* RxDopplMockMObserver$Moxy.h in Headers */,
 				635B2AB31DCADB6700BB0E12 /* RxInternalUtilRxRingBufferWithoutUnsafeTest.h in Headers */,
 				635B28D11DCADB6500BB0E12 /* RxInternalUtilUtilityFunctions.h in Headers */,
 				635B28ED1DCADB6600BB0E12 /* RxObserversSafeSubscriber.h in Headers */,
@@ -6056,13 +6048,14 @@
 				635B284B1DCADB6500BB0E12 /* RxInternalOperatorsSingleTimeout.h in Headers */,
 				635B26F31DCADB6400BB0E12 /* RxFunctionsFunc1.h in Headers */,
 				635B26811DCADB6400BB0E12 /* CoTouchlabDoppelTestingMockGen.h in Headers */,
+				63403ECB1DD96FCC00607444 /* RxDopplMockMAction1$Moxy.h in Headers */,
+				63403E991DD962C500607444 /* RxCompletableTestFunc1a$Moxy.h in Headers */,
 				635B29851DCADB6600BB0E12 /* RxExceptionsExceptionsNullTest.h in Headers */,
 				635B29DB1DCADB6600BB0E12 /* RxInternalOperatorsOnSubscribeToMultimapTest.h in Headers */,
 				635B27CF1DCADB6500BB0E12 /* RxInternalOperatorsOperatorOnErrorResumeNextViaFunction.h in Headers */,
 				635B27C71DCADB6500BB0E12 /* RxInternalOperatorsOperatorObserveOn.h in Headers */,
 				635B27CB1DCADB6500BB0E12 /* RxInternalOperatorsOperatorOnBackpressureDrop.h in Headers */,
 				635B2A411DCADB6700BB0E12 /* RxInternalOperatorsOperatorSerializeTest.h in Headers */,
-				63111F741DCC042000DE6670 /* RxDopplMockSingletestFuncReturn$Moxy.h in Headers */,
 				635B26D51DCADB6400BB0E12 /* RxFunctionsAction.h in Headers */,
 				635B29A11DCADB6600BB0E12 /* RxInternalOperatorsCompletableFromEmitterTest.h in Headers */,
 				635B2AED1DCADB6700BB0E12 /* RxPluginsRxJavaSchedulersHookTest.h in Headers */,
@@ -6071,7 +6064,6 @@
 				635B29551DCADB6600BB0E12 /* RxCapturingUncaughtExceptionHandler.h in Headers */,
 				635B27771DCADB6500BB0E12 /* RxInternalOperatorsOnSubscribeReduceSeed.h in Headers */,
 				635B27D11DCADB6500BB0E12 /* RxInternalOperatorsOperatorPublish.h in Headers */,
-				63111F681DCC042000DE6670 /* RxDopplMockMAction0$Moxy.h in Headers */,
 				635B26131DCADB6400BB0E12 /* AndroidDatabaseSqliteSQLiteReadOnlyDatabaseException.h in Headers */,
 				635B29431DCADB6600BB0E12 /* RxSubscriptionsBooleanSubscription.h in Headers */,
 				635B26851DCADB6400BB0E12 /* CoTouchlabDoppelTestingRuntimeEnvironment.h in Headers */,
@@ -6088,7 +6080,6 @@
 				635B2B131DCADB6800BB0E12 /* RxSinglesBlockingSingleTest.h in Headers */,
 				635B29371DCADB6600BB0E12 /* RxSubjectsSubject.h in Headers */,
 				635B27F51DCADB6500BB0E12 /* RxInternalOperatorsOperatorTakeLast.h in Headers */,
-				635B296D1DCADB6600BB0E12 /* RxDopplMockMProducer.h in Headers */,
 				635B25D11DCADB6400BB0E12 /* AndroidDatabaseObservable.h in Headers */,
 				635B28031DCADB6500BB0E12 /* RxInternalOperatorsOperatorTimeInterval.h in Headers */,
 				635B29471DCADB6600BB0E12 /* RxSubscriptionsMultipleAssignmentSubscription.h in Headers */,
@@ -6098,8 +6089,10 @@
 				635B29B31DCADB6600BB0E12 /* RxInternalOperatorsOnSubscribeDeferTest.h in Headers */,
 				635B29D11DCADB6600BB0E12 /* RxInternalOperatorsOnSubscribeReduceTest.h in Headers */,
 				635B273B1DCADB6500BB0E12 /* RxInternalOperatorsNotificationLite.h in Headers */,
+				63403ED31DD96FCC00607444 /* RxDopplMockMSubscriber.h in Headers */,
 				635B28711DCADB6500BB0E12 /* RxInternalSchedulersSleepingAction.h in Headers */,
 				635B2AAF1DCADB6700BB0E12 /* RxInternalUtilRxRingBufferSpmcTest.h in Headers */,
+				63403ECD1DD96FCC00607444 /* RxDopplMockMObserver.h in Headers */,
 				635B26D71DCADB6400BB0E12 /* RxFunctionsAction0.h in Headers */,
 				635B2A251DCADB6700BB0E12 /* RxInternalOperatorsOperatorOnBackpressureLatestTest.h in Headers */,
 				635B26231DCADB6400BB0E12 /* AndroidOsFileUtils.h in Headers */,
@@ -6117,8 +6110,10 @@
 				635B2A8B1DCADB6700BB0E12 /* RxInternalOperatorsSingleOnSubscribeUsingTest.h in Headers */,
 				635B2A591DCADB6700BB0E12 /* RxInternalOperatorsOperatorTakeLastTest.h in Headers */,
 				635B27FF1DCADB6500BB0E12 /* RxInternalOperatorsOperatorTakeWhile.h in Headers */,
+				63403E7D1DD95B7800607444 /* RxDopplMockSingletestFuncReturn$Moxy.h in Headers */,
 				635B2B291DCADB6800BB0E12 /* RxSubjectsTestSubjectTest.h in Headers */,
 				635B2A4B1DCADB6700BB0E12 /* RxInternalOperatorsOperatorSkipTimedTest.h in Headers */,
+				63403E7F1DD95B7800607444 /* RxDopplMockSingletestFuncStart$Moxy.h in Headers */,
 				635B25B11DCADB6400BB0E12 /* AndroidDatabaseAbstractWindowedCursor.h in Headers */,
 				635B27511DCADB6500BB0E12 /* RxInternalOperatorsOnSubscribeDoOnEach.h in Headers */,
 				635B27DB1DCADB6500BB0E12 /* RxInternalOperatorsOperatorScan.h in Headers */,
@@ -6142,7 +6137,6 @@
 				635B285F1DCADB6500BB0E12 /* RxInternalSchedulersExecutorScheduler.h in Headers */,
 				635B266B1DCADB6400BB0E12 /* RenameOrgKxml2KdomElement.h in Headers */,
 				635B268F1DCADB6400BB0E12 /* OrgSkyscreamerJsonassertComparatorArraySizeComparator.h in Headers */,
-				635B29771DCADB6600BB0E12 /* RxDopplMockSingletestFuncReturn.h in Headers */,
 				635B27271DCADB6500BB0E12 /* RxInternalOperatorsCompletableOnSubscribeMerge.h in Headers */,
 				635B29BD1DCADB6600BB0E12 /* RxInternalOperatorsOnSubscribeFlattenIterableTest.h in Headers */,
 				635B25E11DCADB6400BB0E12 /* AndroidDatabaseSqliteSQLiteClosable.h in Headers */,
@@ -6154,13 +6148,13 @@
 				635B2A571DCADB6700BB0E12 /* RxInternalOperatorsOperatorTakeLastOneTest.h in Headers */,
 				635B2A2B1DCADB6700BB0E12 /* RxInternalOperatorsOperatorOnErrorReturnTest.h in Headers */,
 				635B29A71DCADB6600BB0E12 /* RxInternalOperatorsNotificationLiteTest.h in Headers */,
-				635B29731DCADB6600BB0E12 /* RxDopplMockMSubscription.h in Headers */,
 				635B29BF1DCADB6600BB0E12 /* RxInternalOperatorsOnSubscribeFromArrayTest.h in Headers */,
 				635B27171DCADB6400BB0E12 /* RxInternalOperatorsBlockingOperatorToIterator.h in Headers */,
 				635B294D1DCADB6600BB0E12 /* RxSubscriptionsSerialSubscription.h in Headers */,
 				635B29911DCADB6600BB0E12 /* RxGroupByTests.h in Headers */,
 				635B29451DCADB6600BB0E12 /* RxSubscriptionsCompositeSubscription.h in Headers */,
 				635B294B1DCADB6600BB0E12 /* RxSubscriptionsRefCountSubscription.h in Headers */,
+				63403E851DD95B7800607444 /* RxInternalSchedulersGenericScheduledExecutorServiceTest.h in Headers */,
 				635B28FF1DCADB6600BB0E12 /* RxPluginsRxJavaErrorHandler.h in Headers */,
 				635B288D1DCADB6500BB0E12 /* RxInternalUtilAtomicSpscLinkedAtomicQueue.h in Headers */,
 				635B28A31DCADB6500BB0E12 /* RxInternalUtilPlatformDependent.h in Headers */,
@@ -6168,11 +6162,10 @@
 				635B27C11DCADB6500BB0E12 /* RxInternalOperatorsOperatorMaterialize.h in Headers */,
 				635B2B391DCADB6800BB0E12 /* RxTestTestObstructionDetection.h in Headers */,
 				635B26BD1DCADB6400BB0E12 /* RxCompletableSubscriber.h in Headers */,
+				63403EDD1DD96FCD00607444 /* RxInternalOperatorsOperatorReplayTest__InprocessWorker$Moxy.h in Headers */,
 				635B272B1DCADB6500BB0E12 /* RxInternalOperatorsCompletableOnSubscribeMergeDelayErrorArray.h in Headers */,
-				635B29671DCADB6600BB0E12 /* RxDopplMockMAction1.h in Headers */,
 				635B2A2D1DCADB6700BB0E12 /* RxInternalOperatorsOperatorOnExceptionResumeNextViaObservableTest.h in Headers */,
 				635B2AA31DCADB6700BB0E12 /* RxInternalUtilIndexedRingBufferTest.h in Headers */,
-				635B29A51DCADB6600BB0E12 /* RxInternalOperatorsInternalSafeSubscriberTest.h in Headers */,
 				635B27291DCADB6500BB0E12 /* RxInternalOperatorsCompletableOnSubscribeMergeArray.h in Headers */,
 				635B2A9D1DCADB6700BB0E12 /* RxInternalSchedulersNewThreadWorkerTest.h in Headers */,
 				635B274B1DCADB6500BB0E12 /* RxInternalOperatorsOnSubscribeDelaySubscriptionOther.h in Headers */,
@@ -6363,7 +6356,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				635B295E1DCADB6600BB0E12 /* RxCompletableTestFunc1b.m in Sources */,
 				635B2AEC1DCADB6700BB0E12 /* RxPluginsRxJavaPluginsTest.m in Sources */,
 				635B27541DCADB6500BB0E12 /* RxInternalOperatorsOnSubscribeFilter.m in Sources */,
 				635B28541DCADB6500BB0E12 /* RxInternalProducersQueuedProducer.m in Sources */,
@@ -6378,6 +6370,7 @@
 				635B277A1DCADB6500BB0E12 /* RxInternalOperatorsOnSubscribeRefCount.m in Sources */,
 				635B2A2C1DCADB6700BB0E12 /* RxInternalOperatorsOperatorOnErrorReturnTest.m in Sources */,
 				635B29221DCADB6600BB0E12 /* RxSchedulersTrampolineScheduler.m in Sources */,
+				63403EDC1DD96FCD00607444 /* RxInternalOperatorsInternalSafeSubscriberTest.m in Sources */,
 				635B28481DCADB6500BB0E12 /* RxInternalOperatorsSingleTakeUntilObservable.m in Sources */,
 				635B28341DCADB6500BB0E12 /* RxInternalOperatorsSingleFromObservable.m in Sources */,
 				635B25F81DCADB6400BB0E12 /* AndroidDatabaseSqliteSQLiteDatatypeMismatchException.m in Sources */,
@@ -6391,17 +6384,13 @@
 				635B29921DCADB6600BB0E12 /* RxGroupByTests.m in Sources */,
 				635B28101DCADB6500BB0E12 /* RxInternalOperatorsOperatorToObservableSortedList.m in Sources */,
 				635B27A41DCADB6500BB0E12 /* RxInternalOperatorsOperatorDelay.m in Sources */,
-				63111F691DCC042000DE6670 /* RxDopplMockMAction0$Moxy.m in Sources */,
 				635B285C1DCADB6500BB0E12 /* RxInternalSchedulersCachedThreadScheduler.m in Sources */,
 				635B28381DCADB6500BB0E12 /* RxInternalOperatorsSingleObserveOn.m in Sources */,
 				635B26D21DCADB6400BB0E12 /* RxExceptionspackage-info.m in Sources */,
-				63111F771DCC042000DE6670 /* RxDopplMockSingletestFuncStart$Moxy.m in Sources */,
 				635B281E1DCADB6500BB0E12 /* RxInternalOperatorsOperatorWithLatestFrom.m in Sources */,
 				635B2AC81DCADB6700BB0E12 /* RxNotificationTest.m in Sources */,
 				635B259E1DCADB6400BB0E12 /* AndroidAnnotationNonNull.m in Sources */,
 				635B26B21DCADB6400BB0E12 /* RxAnnotationsExperimental.m in Sources */,
-				635B296C1DCADB6600BB0E12 /* RxDopplMockMObserver.m in Sources */,
-				63111F6B1DCC042000DE6670 /* RxDopplMockMAction1$Moxy.m in Sources */,
 				635B27761DCADB6500BB0E12 /* RxInternalOperatorsOnSubscribeReduce.m in Sources */,
 				635B29361DCADB6600BB0E12 /* RxSubjectsSerializedSubject.m in Sources */,
 				635B289E1DCADB6500BB0E12 /* RxInternalUtilObjectPool.m in Sources */,
@@ -6433,6 +6422,7 @@
 				635B26F81DCADB6400BB0E12 /* RxFunctionsFunc3.m in Sources */,
 				635B29861DCADB6600BB0E12 /* RxExceptionsExceptionsNullTest.m in Sources */,
 				635B2ADA1DCADB6700BB0E12 /* RxObserversCompletableSubscriberTest.m in Sources */,
+				63403ED21DD96FCC00607444 /* RxDopplMockMScheduler.m in Sources */,
 				635B25F61DCADB6400BB0E12 /* AndroidDatabaseSqliteSQLiteDatabaseLockedException.m in Sources */,
 				635B272E1DCADB6500BB0E12 /* RxInternalOperatorsCompletableOnSubscribeMergeDelayErrorIterable.m in Sources */,
 				635B29BA1DCADB6600BB0E12 /* RxInternalOperatorsOnSubscribeDoOnEachTest.m in Sources */,
@@ -6448,9 +6438,7 @@
 				635B29241DCADB6600BB0E12 /* RxSingle.m in Sources */,
 				635B27641DCADB6500BB0E12 /* RxInternalOperatorsOnSubscribeJoin.m in Sources */,
 				635B27401DCADB6500BB0E12 /* RxInternalOperatorsOnSubscribeAutoConnect.m in Sources */,
-				63111F6D1DCC042000DE6670 /* RxDopplMockMObserver$Moxy.m in Sources */,
 				635B28041DCADB6500BB0E12 /* RxInternalOperatorsOperatorTimeInterval.m in Sources */,
-				63403E5C1DD62E8F00607444 /* RxDopplMemoryAllocationTracker.m in Sources */,
 				635B266A1DCADB6400BB0E12 /* RenameOrgKxml2KdomDocument.m in Sources */,
 				635B2A041DCADB6600BB0E12 /* RxInternalOperatorsOperatorEagerConcatMapTest.m in Sources */,
 				635B27621DCADB6500BB0E12 /* RxInternalOperatorsOnSubscribeGroupJoin.m in Sources */,
@@ -6469,14 +6457,12 @@
 				635B26B41DCADB6400BB0E12 /* RxAnnotationspackage-info.m in Sources */,
 				635B272C1DCADB6500BB0E12 /* RxInternalOperatorsCompletableOnSubscribeMergeDelayErrorArray.m in Sources */,
 				635B26761DCADB6400BB0E12 /* CoTouchlabDoppelTestingDoppelHacks.m in Sources */,
-				635B29781DCADB6600BB0E12 /* RxDopplMockSingletestFuncReturn.m in Sources */,
 				635B2AAA1DCADB6700BB0E12 /* RxInternalUtilOpenHashSetTest.m in Sources */,
+				63403EC81DD96FCC00607444 /* RxDopplMockMAction0$Moxy.m in Sources */,
 				635B2A341DCADB6700BB0E12 /* RxInternalOperatorsOperatorRepeatTest.m in Sources */,
 				635B29E61DCADB6600BB0E12 /* RxInternalOperatorsOperatorAsObservableTest.m in Sources */,
 				635B26AC1DCADB6400BB0E12 /* OrgSkyscreamerJsonassertValueMatcher.m in Sources */,
-				635B29641DCADB6600BB0E12 /* RxDopplMiscLinkedBlockingQueueTest.m in Sources */,
 				635B28941DCADB6500BB0E12 /* RxInternalUtilBlockingUtils.m in Sources */,
-				635B297A1DCADB6600BB0E12 /* RxDopplMockSingletestFuncStart.m in Sources */,
 				635B268A1DCADB6400BB0E12 /* CoTouchlabDoppelTestingVisualJunitRunner.m in Sources */,
 				635B29F81DCADB6600BB0E12 /* RxInternalOperatorsOperatorDistinctTest.m in Sources */,
 				635B26061DCADB6400BB0E12 /* AndroidDatabaseSqliteSQLiteGlobal.m in Sources */,
@@ -6486,6 +6472,7 @@
 				635B29AE1DCADB6600BB0E12 /* RxInternalOperatorsOnSubscribeCombineLatestTest.m in Sources */,
 				635B2A1C1DCADB6700BB0E12 /* RxInternalOperatorsOperatorMergeTest.m in Sources */,
 				635B289A1DCADB6500BB0E12 /* RxInternalUtilInternalObservableUtils.m in Sources */,
+				63403EC41DD96FCC00607444 /* RxDopplMemorySubscriberAutomaticRemovalTest.m in Sources */,
 				635B27181DCADB6400BB0E12 /* RxInternalOperatorsBlockingOperatorToIterator.m in Sources */,
 				635B266E1DCADB6400BB0E12 /* RenameOrgKxml2KdomNode.m in Sources */,
 				635B28C21DCADB6500BB0E12 /* RxInternalUtilUnsafeMpscLinkedQueue.m in Sources */,
@@ -6496,11 +6483,14 @@
 				635B2AB61DCADB6700BB0E12 /* RxInternalUtilScalarSynchronousObservableTest.m in Sources */,
 				635B25EA1DCADB6400BB0E12 /* AndroidDatabaseSqliteSQLiteCursor.m in Sources */,
 				635B26481DCADB6400BB0E12 /* AndroidUtilLongSparseArray.m in Sources */,
+				63403E841DD95B7800607444 /* RxInternalOperatorsSafeSubscriberTest.m in Sources */,
 				635B2B001DCADB6700BB0E12 /* RxSchedulersIoSchedulerTest.m in Sources */,
 				635B28261DCADB6500BB0E12 /* RxInternalOperatorsSingleDelay.m in Sources */,
+				63403E9E1DD962C500607444 /* RxCompletableTestFunc1b$Moxy.m in Sources */,
 				635B2A441DCADB6700BB0E12 /* RxInternalOperatorsOperatorSingleTest.m in Sources */,
 				635B27A61DCADB6500BB0E12 /* RxInternalOperatorsOperatorDelayWithSelector.m in Sources */,
 				635B279A1DCADB6500BB0E12 /* RxInternalOperatorsOperatorBufferWithStartEndObservable.m in Sources */,
+				63403E801DD95B7800607444 /* RxDopplMockSingletestFuncStart$Moxy.m in Sources */,
 				635B297E1DCADB6600BB0E12 /* RxErrorHandlingTests.m in Sources */,
 				635B26B01DCADB6400BB0E12 /* RxAnnotationsBeta.m in Sources */,
 				635B289C1DCADB6500BB0E12 /* RxInternalUtilLinkedArrayList.m in Sources */,
@@ -6512,6 +6502,7 @@
 				635B29FE1DCADB6600BB0E12 /* RxInternalOperatorsOperatorDoOnRequestTest.m in Sources */,
 				635B27DC1DCADB6500BB0E12 /* RxInternalOperatorsOperatorScan.m in Sources */,
 				635B2AD61DCADB6700BB0E12 /* RxObservableWindowTests.m in Sources */,
+				63403EC01DD96FCC00607444 /* RxDopplMemoryAllocationTracker.m in Sources */,
 				635B269A1DCADB6400BB0E12 /* OrgSkyscreamerJsonassertCustomization.m in Sources */,
 				635B2AA41DCADB6700BB0E12 /* RxInternalUtilIndexedRingBufferTest.m in Sources */,
 				635B2AFA1DCADB6700BB0E12 /* RxSchedulersDeprecatedSchedulersTest.m in Sources */,
@@ -6535,10 +6526,8 @@
 				635B2A0A1DCADB6700BB0E12 /* RxInternalOperatorsOperatorFlatMapTest.m in Sources */,
 				635B29801DCADB6600BB0E12 /* RxEventStream.m in Sources */,
 				635B29841DCADB6600BB0E12 /* RxExceptionsCompositeExceptionTest.m in Sources */,
-				63111F7B1DCC042000DE6670 /* RxInternalOperatorsOperatorReplayTest__InprocessWorker$Moxy.m in Sources */,
 				635B290C1DCADB6600BB0E12 /* RxPluginsRxJavaSingleExecutionHook.m in Sources */,
 				635B2A081DCADB6600BB0E12 /* RxInternalOperatorsOperatorFirstTest.m in Sources */,
-				635B29761DCADB6600BB0E12 /* RxDopplMockSingletestFuncCreate.m in Sources */,
 				635B28881DCADB6500BB0E12 /* RxInternalUtilAtomicSpscAtomicArrayQueue.m in Sources */,
 				635B29481DCADB6600BB0E12 /* RxSubscriptionsMultipleAssignmentSubscription.m in Sources */,
 				635B263E1DCADB6400BB0E12 /* AndroidSupportAnnotationVisibleForTesting.m in Sources */,
@@ -6550,14 +6539,13 @@
 				635B28221DCADB6500BB0E12 /* RxInternalOperatorsOperatorZip.m in Sources */,
 				635B26701DCADB6400BB0E12 /* SQLiteConnectionNative.m in Sources */,
 				635B25CC1DCADB6400BB0E12 /* AndroidDatabaseDefaultDatabaseErrorHandler.m in Sources */,
+				63403EE61DDA401700607444 /* RxDopplWeakReferenceHelper.m in Sources */,
 				635B2AB81DCADB6700BB0E12 /* RxInternalUtilScalarSynchronousSingleTest.m in Sources */,
 				635B2B401DCADB6800BB0E12 /* RxThrottleLastTests.m in Sources */,
 				635B27321DCADB6500BB0E12 /* RxInternalOperatorsCompletableOnSubscribeTimeout.m in Sources */,
 				635B26EC1DCADB6400BB0E12 /* RxFunctionsActionN.m in Sources */,
 				635B28961DCADB6500BB0E12 /* RxInternalUtilExceptionsUtils.m in Sources */,
-				63403E5E1DD62E8F00607444 /* RxDopplMemoryBasicOperatorTest.m in Sources */,
 				635B29F41DCADB6600BB0E12 /* RxInternalOperatorsOperatorDelayTest.m in Sources */,
-				63111F6F1DCC042000DE6670 /* RxDopplMockMSubscriber$Moxy.m in Sources */,
 				635B265C1DCADB6400BB0E12 /* RenameComAndroidInternalUtilXmlUtils.m in Sources */,
 				635B26261DCADB6400BB0E12 /* AndroidOsHandler.m in Sources */,
 				635B27341DCADB6500BB0E12 /* RxInternalOperatorsDeferredScalarSubscriber.m in Sources */,
@@ -6568,7 +6556,6 @@
 				635B29AA1DCADB6600BB0E12 /* RxInternalOperatorsOnSubscribeAmbTest.m in Sources */,
 				635B286A1DCADB6500BB0E12 /* RxInternalSchedulersNewThreadWorker.m in Sources */,
 				635B28AC1DCADB6500BB0E12 /* RxInternalUtilScalarSynchronousSingle.m in Sources */,
-				635B29661DCADB6600BB0E12 /* RxDopplMockMAction0.m in Sources */,
 				635B2B461DCADB6800BB0E12 /* RxUtilAssertObservableTest.m in Sources */,
 				635B28701DCADB6500BB0E12 /* RxInternalSchedulersSchedulerWhen.m in Sources */,
 				635B2B201DCADB6800BB0E12 /* RxSubjectsPublishSubjectTest.m in Sources */,
@@ -6595,7 +6582,6 @@
 				635B2AA81DCADB6700BB0E12 /* RxInternalUtilLinkedArrayListTest.m in Sources */,
 				635B29421DCADB6600BB0E12 /* RxSubscription.m in Sources */,
 				635B2A581DCADB6700BB0E12 /* RxInternalOperatorsOperatorTakeLastOneTest.m in Sources */,
-				63111F711DCC042000DE6670 /* RxDopplMockMSubscription$Moxy.m in Sources */,
 				635B27E01DCADB6500BB0E12 /* RxInternalOperatorsOperatorSerialize.m in Sources */,
 				635B28C01DCADB6500BB0E12 /* RxInternalUtilUnsafeMpmcArrayQueue.m in Sources */,
 				635B26801DCADB6400BB0E12 /* CoTouchlabDoppelTestingElementTreeDebug.m in Sources */,
@@ -6614,9 +6600,10 @@
 				635B268E1DCADB6400BB0E12 /* OrgSkyscreamerJsonassertComparatorAbstractComparator.m in Sources */,
 				635B2A561DCADB6700BB0E12 /* RxInternalOperatorsOperatorSwitchTest.m in Sources */,
 				635B27281DCADB6500BB0E12 /* RxInternalOperatorsCompletableOnSubscribeMerge.m in Sources */,
+				63403E9C1DD962C500607444 /* RxCompletableTestFunc1b.m in Sources */,
+				63403E9A1DD962C500607444 /* RxCompletableTestFunc1a$Moxy.m in Sources */,
 				635B29301DCADB6600BB0E12 /* RxSubjectspackage-info.m in Sources */,
 				635B29161DCADB6600BB0E12 /* RxSchedulersNewThreadScheduler.m in Sources */,
-				635B29721DCADB6600BB0E12 /* RxDopplMockMSubscriber.m in Sources */,
 				635B2B441DCADB6800BB0E12 /* RxUtilAssertObservable.m in Sources */,
 				635B28F81DCADB6600BB0E12 /* RxObserversTestSubscriber.m in Sources */,
 				635B2A301DCADB6700BB0E12 /* RxInternalOperatorsOperatorPublishFunctionTest.m in Sources */,
@@ -6632,6 +6619,7 @@
 				635B28741DCADB6500BB0E12 /* RxInternalSchedulersTrampolineScheduler.m in Sources */,
 				635B2B1E1DCADB6800BB0E12 /* RxSubjectsBufferUntilSubscriberTest.m in Sources */,
 				635B27B81DCADB6500BB0E12 /* RxInternalOperatorsOperatorElementAt.m in Sources */,
+				63403ECE1DD96FCC00607444 /* RxDopplMockMObserver.m in Sources */,
 				635B280C1DCADB6500BB0E12 /* RxInternalOperatorsOperatorTimestamp.m in Sources */,
 				635B29401DCADB6600BB0E12 /* RxSubscriber.m in Sources */,
 				635B29C01DCADB6600BB0E12 /* RxInternalOperatorsOnSubscribeFromArrayTest.m in Sources */,
@@ -6652,10 +6640,8 @@
 				635B28A61DCADB6500BB0E12 /* RxInternalUtilRxRingBuffer.m in Sources */,
 				635B29E41DCADB6600BB0E12 /* RxInternalOperatorsOperatorAnyTest.m in Sources */,
 				635B2A7A1DCADB6700BB0E12 /* RxInternalOperatorsOperatorWindowWithSizeTest.m in Sources */,
-				635B297C1DCADB6600BB0E12 /* RxDopplSimpleBreakdownTest.m in Sources */,
 				635B28801DCADB6500BB0E12 /* RxInternalUtilAtomicAtomicReferenceArrayQueue.m in Sources */,
 				635B27961DCADB6500BB0E12 /* RxInternalOperatorsOperatorBufferWithSingleObservable.m in Sources */,
-				635B29741DCADB6600BB0E12 /* RxDopplMockMSubscription.m in Sources */,
 				635B293A1DCADB6600BB0E12 /* RxSubjectsSubjectSubscriptionManager.m in Sources */,
 				635B26881DCADB6400BB0E12 /* CoTouchlabDoppelTestingTestingContext.m in Sources */,
 				635B2A3E1DCADB6700BB0E12 /* RxInternalOperatorsOperatorScanTest.m in Sources */,
@@ -6675,6 +6661,7 @@
 				635B27001DCADB6400BB0E12 /* RxFunctionsFunc7.m in Sources */,
 				635B2B341DCADB6800BB0E12 /* RxSubscriptionsSerialSubscriptionTests.m in Sources */,
 				635B275A1DCADB6500BB0E12 /* RxInternalOperatorsOnSubscribeFromAsyncEmitter.m in Sources */,
+				63403ECC1DD96FCC00607444 /* RxDopplMockMAction1$Moxy.m in Sources */,
 				635B2A421DCADB6700BB0E12 /* RxInternalOperatorsOperatorSerializeTest.m in Sources */,
 				635B29E21DCADB6600BB0E12 /* RxInternalOperatorsOperatorAllTest.m in Sources */,
 				635B26181DCADB6400BB0E12 /* AndroidDatabaseSqliteSQLiteStatement.m in Sources */,
@@ -6723,13 +6710,13 @@
 				635B270C1DCADB6400BB0E12 /* RxFunctionspackage-info.m in Sources */,
 				635B28E81DCADB6600BB0E12 /* RxObserversObservers.m in Sources */,
 				635B273A1DCADB6500BB0E12 /* RxInternalOperatorsNeverObservableHolder.m in Sources */,
-				63111F7F1DCC042000DE6670 /* RxInternalSchedulersNewThreadWorkerTest__ScheduledExecutorServiceWithSetRemoveOnCancelPolicy$Moxy.m in Sources */,
 				635B26E61DCADB6400BB0E12 /* RxFunctionsAction7.m in Sources */,
 				635B284A1DCADB6500BB0E12 /* RxInternalOperatorsSingleTakeUntilSingle.m in Sources */,
 				635B2AEE1DCADB6700BB0E12 /* RxPluginsRxJavaSchedulersHookTest.m in Sources */,
 				635B2AA21DCADB6700BB0E12 /* RxInternalUtilExceptionUtilsTest.m in Sources */,
 				635B28EA1DCADB6600BB0E12 /* RxObserverspackage-info.m in Sources */,
 				635B288A1DCADB6500BB0E12 /* RxInternalUtilAtomicSpscExactAtomicArrayQueue.m in Sources */,
+				63403E7C1DD95B7800607444 /* RxDopplMockSingletestFuncCreate$Moxy.m in Sources */,
 				635B26EA1DCADB6400BB0E12 /* RxFunctionsAction9.m in Sources */,
 				635B279E1DCADB6500BB0E12 /* RxInternalOperatorsOperatorCast.m in Sources */,
 				635B28F41DCADB6600BB0E12 /* RxObserversSubscribers.m in Sources */,
@@ -6737,7 +6724,6 @@
 				635B265A1DCADB6400BB0E12 /* RenameComAndroidInternalUtilFastXmlSerializer.m in Sources */,
 				635B27661DCADB6500BB0E12 /* RxInternalOperatorsOnSubscribeLift.m in Sources */,
 				635B2AFC1DCADB6700BB0E12 /* RxSchedulersGenericScheduledExecutorServiceTest.m in Sources */,
-				635B2A9C1DCADB6700BB0E12 /* RxInternalSchedulersInternalGenericScheduledExecutorServiceTest.m in Sources */,
 				635B26A81DCADB6400BB0E12 /* OrgSkyscreamerJsonassertLocationAwareValueMatcher.m in Sources */,
 				635B2A661DCADB6700BB0E12 /* RxInternalOperatorsOperatorTakeWhileTest.m in Sources */,
 				635B2A781DCADB6700BB0E12 /* RxInternalOperatorsOperatorWindowWithObservableTest.m in Sources */,
@@ -6745,7 +6731,6 @@
 				635B29CC1DCADB6600BB0E12 /* RxInternalOperatorsOnSubscribeJoinTest.m in Sources */,
 				635B2A481DCADB6700BB0E12 /* RxInternalOperatorsOperatorSkipLastTimedTest.m in Sources */,
 				635B27CA1DCADB6500BB0E12 /* RxInternalOperatorsOperatorOnBackpressureBuffer.m in Sources */,
-				63111F751DCC042000DE6670 /* RxDopplMockSingletestFuncReturn$Moxy.m in Sources */,
 				635B29961DCADB6600BB0E12 /* RxInternalOperatorsBlockingOperatorLatestTest.m in Sources */,
 				635B29021DCADB6600BB0E12 /* RxPluginsRxJavaHooks.m in Sources */,
 				635B29B61DCADB6600BB0E12 /* RxInternalOperatorsOnSubscribeDelaySubscriptionOtherTest.m in Sources */,
@@ -6770,12 +6755,12 @@
 				635B2AA01DCADB6700BB0E12 /* RxInternalUtilBlockingUtilsTest.m in Sources */,
 				635B28461DCADB6500BB0E12 /* RxInternalOperatorsSingleTakeUntilCompletable.m in Sources */,
 				635B28DC1DCADB6600BB0E12 /* RxObservablesConnectableObservable.m in Sources */,
-				63111F671DCC042000DE6670 /* RxCompletableTestFunc1b$Moxy.m in Sources */,
 				635B292E1DCADB6600BB0E12 /* RxSubjectsBehaviorSubject.m in Sources */,
 				635B2A8A1DCADB6700BB0E12 /* RxInternalOperatorsSingleOnSubscribeDelaySubscriptionOtherTest.m in Sources */,
 				635B288E1DCADB6500BB0E12 /* RxInternalUtilAtomicSpscLinkedAtomicQueue.m in Sources */,
 				635B2B261DCADB6800BB0E12 /* RxSubjectsReplaySubjectTest.m in Sources */,
 				635B26A41DCADB6400BB0E12 /* OrgSkyscreamerJsonassertJSONCompareResult.m in Sources */,
+				63403ED81DD96FCC00607444 /* RxDopplMockMSubscription.m in Sources */,
 				635B25CE1DCADB6400BB0E12 /* AndroidDatabaseMatrixCursor.m in Sources */,
 				635B28581DCADB6500BB0E12 /* RxInternalProducersSingleDelayedProducer.m in Sources */,
 				635B27DE1DCADB6500BB0E12 /* RxInternalOperatorsOperatorSequenceEqual.m in Sources */,
@@ -6791,9 +6776,9 @@
 				635B26C01DCADB6400BB0E12 /* RxEmitter.m in Sources */,
 				635B2B2C1DCADB6800BB0E12 /* RxSubscriberTest.m in Sources */,
 				635B264A1DCADB6400BB0E12 /* AndroidUtilPatterns.m in Sources */,
+				63403E6A1DD946E900607444 /* RxDopplMockSingletestFuncCreate.m in Sources */,
 				635B27FA1DCADB6500BB0E12 /* RxInternalOperatorsOperatorTakeTimed.m in Sources */,
 				635B29C61DCADB6600BB0E12 /* RxInternalOperatorsOnSubscribeFromEmitterTest.m in Sources */,
-				635B296E1DCADB6600BB0E12 /* RxDopplMockMProducer.m in Sources */,
 				635B29E01DCADB6600BB0E12 /* RxInternalOperatorsOnSubscribeUsingTest.m in Sources */,
 				635B298C1DCADB6600BB0E12 /* RxExceptionsTestException.m in Sources */,
 				635B26E41DCADB6400BB0E12 /* RxFunctionsAction6.m in Sources */,
@@ -6806,6 +6791,7 @@
 				635B2A4C1DCADB6700BB0E12 /* RxInternalOperatorsOperatorSkipTimedTest.m in Sources */,
 				635B274C1DCADB6500BB0E12 /* RxInternalOperatorsOnSubscribeDelaySubscriptionOther.m in Sources */,
 				635B26641DCADB6400BB0E12 /* RenameLibcoreInternalStringPool.m in Sources */,
+				63403ED01DD96FCC00607444 /* RxDopplMockMObserver$Moxy.m in Sources */,
 				635B27D41DCADB6500BB0E12 /* RxInternalOperatorsOperatorReplay.m in Sources */,
 				635B2AE61DCADB6700BB0E12 /* RxObserversTestObserverTest.m in Sources */,
 				635B29D61DCADB6600BB0E12 /* RxInternalOperatorsOnSubscribeSingleTest.m in Sources */,
@@ -6813,7 +6799,6 @@
 				635B285E1DCADB6500BB0E12 /* RxInternalSchedulersEventLoopsScheduler.m in Sources */,
 				635B25D01DCADB6400BB0E12 /* AndroidDatabaseMergeCursor.m in Sources */,
 				635B26FE1DCADB6400BB0E12 /* RxFunctionsFunc6.m in Sources */,
-				63111F731DCC042000DE6670 /* RxDopplMockSingletestFuncCreate$Moxy.m in Sources */,
 				635B275E1DCADB6500BB0E12 /* RxInternalOperatorsOnSubscribeFromEmitter.m in Sources */,
 				635B27CC1DCADB6500BB0E12 /* RxInternalOperatorsOperatorOnBackpressureDrop.m in Sources */,
 				635B2A541DCADB6700BB0E12 /* RxInternalOperatorsOperatorSwitchIfEmptyTest.m in Sources */,
@@ -6837,19 +6822,21 @@
 				635B27461DCADB6500BB0E12 /* RxInternalOperatorsOnSubscribeConcatMap.m in Sources */,
 				635B2AC41DCADB6700BB0E12 /* RxIntervalDemo.m in Sources */,
 				635B26081DCADB6400BB0E12 /* AndroidDatabaseSqliteSQLiteMisuseException.m in Sources */,
-				635B29A61DCADB6600BB0E12 /* RxInternalOperatorsInternalSafeSubscriberTest.m in Sources */,
 				635B2A361DCADB6700BB0E12 /* RxInternalOperatorsOperatorReplayTest.m in Sources */,
 				635B26561DCADB6400BB0E12 /* ComAndroidInternalUtilGrowingArrayUtils.m in Sources */,
 				635B28AE1DCADB6500BB0E12 /* RxInternalUtilSubscriptionList.m in Sources */,
 				635B275C1DCADB6500BB0E12 /* RxInternalOperatorsOnSubscribeFromCallable.m in Sources */,
+				63403EC21DD96FCC00607444 /* RxDopplMemoryBasicOperatorTest.m in Sources */,
 				635B27801DCADB6500BB0E12 /* RxInternalOperatorsOnSubscribeTakeLastOne.m in Sources */,
 				635B26C21DCADB6400BB0E12 /* RxExceptionsAssemblyStackTraceException.m in Sources */,
 				635B2A981DCADB6700BB0E12 /* RxInternalProducersSingleProducerTest.m in Sources */,
 				635B292C1DCADB6600BB0E12 /* RxSubjectsAsyncSubject.m in Sources */,
-				63111F7D1DCC042000DE6670 /* RxInternalOperatorsOperatorScanTest__InnerProducer$Moxy.m in Sources */,
 				635B29FC1DCADB6600BB0E12 /* RxInternalOperatorsOperatorDoAfterTerminateTest.m in Sources */,
 				635B290E1DCADB6600BB0E12 /* RxPluginsRxJavaSingleExecutionHookDefault.m in Sources */,
 				635B25E81DCADB6400BB0E12 /* AndroidDatabaseSqliteSQLiteConstraintException.m in Sources */,
+				63403E981DD962C500607444 /* RxCompletableTestFunc1a.m in Sources */,
+				63403EC61DD96FCC00607444 /* RxDopplMockMAction0.m in Sources */,
+				63403E6C1DD946E900607444 /* RxDopplMockSingletestFuncReturn.m in Sources */,
 				635B2B321DCADB6800BB0E12 /* RxSubscriptionsRefCountSubscriptionTest.m in Sources */,
 				635B29821DCADB6600BB0E12 /* RxEventStreamTest.m in Sources */,
 				635B26EE1DCADB6400BB0E12 /* RxFunctionsActions.m in Sources */,
@@ -6859,7 +6846,6 @@
 				635B2B121DCADB6800BB0E12 /* RxSchedulerWorkerTest.m in Sources */,
 				635B25E41DCADB6400BB0E12 /* AndroidDatabaseSqliteSQLiteConnection.m in Sources */,
 				635B2B281DCADB6800BB0E12 /* RxSubjectsSerializedSubjectTest.m in Sources */,
-				63D8E9AC1DD11F1800103716 /* RxDopplMemorySubscriberAutomaticRemovalTest.m in Sources */,
 				635B282E1DCADB6500BB0E12 /* RxInternalOperatorsSingleDoOnUnsubscribe.m in Sources */,
 				635B28081DCADB6500BB0E12 /* RxInternalOperatorsOperatorTimeoutBase.m in Sources */,
 				635B29461DCADB6600BB0E12 /* RxSubscriptionsCompositeSubscription.m in Sources */,
@@ -6869,7 +6855,6 @@
 				635B28061DCADB6500BB0E12 /* RxInternalOperatorsOperatorTimeout.m in Sources */,
 				635B27D81DCADB6500BB0E12 /* RxInternalOperatorsOperatorSampleWithObservable.m in Sources */,
 				635B278A1DCADB6500BB0E12 /* RxInternalOperatorsOnSubscribeToMultimap.m in Sources */,
-				635B295C1DCADB6600BB0E12 /* RxCompletableTestFunc1a.m in Sources */,
 				635B25F01DCADB6400BB0E12 /* AndroidDatabaseSqliteSQLiteDatabase.m in Sources */,
 				635B2A5E1DCADB6700BB0E12 /* RxInternalOperatorsOperatorTakeTest.m in Sources */,
 				635B270E1DCADB6400BB0E12 /* RxInternalOperatorsBackpressureUtils.m in Sources */,
@@ -6909,7 +6894,6 @@
 				635B26B61DCADB6400BB0E12 /* RxAsyncEmitter.m in Sources */,
 				635B2A921DCADB6700BB0E12 /* RxInternalProducersProducerObserverArbiterTest.m in Sources */,
 				635B292A1DCADB6600BB0E12 /* RxSingleSubscriber.m in Sources */,
-				63111F651DCC042000DE6670 /* RxCompletableTestFunc1a$Moxy.m in Sources */,
 				635B29E81DCADB6600BB0E12 /* RxInternalOperatorsOperatorBufferTest.m in Sources */,
 				635B291A1DCADB6600BB0E12 /* RxSchedulersSchedulers.m in Sources */,
 				635B299E1DCADB6600BB0E12 /* RxInternalOperatorsBlockingOperatorToIteratorTest.m in Sources */,
@@ -6922,8 +6906,6 @@
 				635B27F21DCADB6500BB0E12 /* RxInternalOperatorsOperatorSwitchIfEmpty.m in Sources */,
 				635B2A821DCADB6700BB0E12 /* RxInternalOperatorsOperatorZipCompletionTest.m in Sources */,
 				635B27721DCADB6500BB0E12 /* RxInternalOperatorsOnSubscribeRange.m in Sources */,
-				63111F811DCC042000DE6670 /* ScheduledThreadPoolExecutor$Moxy.m in Sources */,
-				635B29681DCADB6600BB0E12 /* RxDopplMockMAction1.m in Sources */,
 				635B26BE1DCADB6400BB0E12 /* RxCompletableSubscriber.m in Sources */,
 				635B2A2A1DCADB6700BB0E12 /* RxInternalOperatorsOperatorOnErrorResumeNextViaObservableTest.m in Sources */,
 				635B26221DCADB6400BB0E12 /* AndroidOsBundle.m in Sources */,
@@ -6933,12 +6915,13 @@
 				635B2AE21DCADB6700BB0E12 /* RxObserversSerializedObserverTest.m in Sources */,
 				635B283A1DCADB6500BB0E12 /* RxInternalOperatorsSingleOnErrorReturn.m in Sources */,
 				635B26861DCADB6400BB0E12 /* CoTouchlabDoppelTestingRuntimeEnvironment.m in Sources */,
+				63403EE81DDA401700607444 /* RxInternalObserversAssertableSubscriberObservable.m in Sources */,
 				635B29EE1DCADB6600BB0E12 /* RxInternalOperatorsOperatorCountTest.m in Sources */,
 				635B2AEA1DCADB6700BB0E12 /* RxPluginsRxJavaHooksTest.m in Sources */,
 				635B27C01DCADB6500BB0E12 /* RxInternalOperatorsOperatorMapPair.m in Sources */,
-				635B29701DCADB6600BB0E12 /* RxDopplMockMScheduler.m in Sources */,
 				635B26DA1DCADB6400BB0E12 /* RxFunctionsAction1.m in Sources */,
 				635B28B41DCADB6500BB0E12 /* RxInternalUtilUnsafeBaseLinkedQueue.m in Sources */,
+				63403EDA1DD96FCC00607444 /* RxDopplMockMSubscription$Moxy.m in Sources */,
 				635B26A61DCADB6400BB0E12 /* OrgSkyscreamerJsonassertJSONParser.m in Sources */,
 				635B27A21DCADB6500BB0E12 /* RxInternalOperatorsOperatorDebounceWithTime.m in Sources */,
 				635B271E1DCADB6500BB0E12 /* RxInternalOperatorsCompletableFlatMapSingleToCompletable.m in Sources */,
@@ -6954,6 +6937,8 @@
 				635B2AF01DCADB6700BB0E12 /* RxReduceTests.m in Sources */,
 				635B26F41DCADB6400BB0E12 /* RxFunctionsFunc1.m in Sources */,
 				635B295A1DCADB6600BB0E12 /* RxCompletableTest.m in Sources */,
+				63403ED61DD96FCC00607444 /* RxDopplMockMSubscriber$Moxy.m in Sources */,
+				63403E8E1DD95E2A00607444 /* ScheduledThreadPoolExecutor$Moxy.m in Sources */,
 				635B29D81DCADB6600BB0E12 /* RxInternalOperatorsOnSubscribeTimerTest.m in Sources */,
 				635B26161DCADB6400BB0E12 /* AndroidDatabaseSqliteSQLiteSession.m in Sources */,
 				635B27261DCADB6500BB0E12 /* RxInternalOperatorsCompletableOnSubscribeConcatIterable.m in Sources */,
@@ -6976,7 +6961,6 @@
 				635B25A61DCADB6400BB0E12 /* AndroidAppSharedPreferencesImpl.m in Sources */,
 				635B2A761DCADB6700BB0E12 /* RxInternalOperatorsOperatorUnsubscribeOnTest.m in Sources */,
 				635B28901DCADB6500BB0E12 /* RxInternalUtilAtomicSpscUnboundedAtomicArrayQueue.m in Sources */,
-				635B296A1DCADB6600BB0E12 /* RxDopplMockMFunc1.m in Sources */,
 				635B274E1DCADB6500BB0E12 /* RxInternalOperatorsOnSubscribeDelaySubscriptionWithSelector.m in Sources */,
 				635B26521DCADB6400BB0E12 /* AndroidUtilTimeUtils.m in Sources */,
 				63403E621DD8D2F400607444 /* RxDopplJ2objcWeakReference.m in Sources */,
@@ -7033,6 +7017,7 @@
 				635B25D21DCADB6400BB0E12 /* AndroidDatabaseObservable.m in Sources */,
 				635B26841DCADB6400BB0E12 /* CoTouchlabDoppelTestingPlatformUtils.m in Sources */,
 				635B2A601DCADB6700BB0E12 /* RxInternalOperatorsOperatorTakeTimedTest.m in Sources */,
+				63403ECA1DD96FCC00607444 /* RxDopplMockMAction1.m in Sources */,
 				635B260A1DCADB6400BB0E12 /* AndroidDatabaseSqliteSQLiteOpenHelper.m in Sources */,
 				635B273C1DCADB6500BB0E12 /* RxInternalOperatorsNotificationLite.m in Sources */,
 				635B2AD81DCADB6700BB0E12 /* RxObserversAsyncCompletableSubscriberTest.m in Sources */,
@@ -7045,9 +7030,11 @@
 				635B26341DCADB6400BB0E12 /* AndroidProviderBaseColumns.m in Sources */,
 				635B2AC61DCADB6700BB0E12 /* RxMergeTests.m in Sources */,
 				635B28E41DCADB6600BB0E12 /* RxObserver.m in Sources */,
+				63403E821DD95B7800607444 /* RxInternalOperatorsOperatorScanTest__InnerProducer$Moxy.m in Sources */,
 				635B2AF61DCADB6700BB0E12 /* RxSchedulersAbstractSchedulerTests.m in Sources */,
 				635B26E81DCADB6400BB0E12 /* RxFunctionsAction8.m in Sources */,
 				635B28CC1DCADB6500BB0E12 /* RxInternalUtilUnsafeSpscLinkedQueue.m in Sources */,
+				63403E8C1DD95E2A00607444 /* RxInternalSchedulersNewThreadWorkerTest__ScheduledExecutorServiceWithSetRemoveOnCancelPolicy$Moxy.m in Sources */,
 				635B28B61DCADB6500BB0E12 /* RxInternalUtilUnsafeBaseLinkedQueueConsumerNodeRef.m in Sources */,
 				635B262A1DCADB6400BB0E12 /* AndroidOsLooper.m in Sources */,
 				635B27021DCADB6400BB0E12 /* RxFunctionsFunc8.m in Sources */,
@@ -7060,6 +7047,7 @@
 				635B29C21DCADB6600BB0E12 /* RxInternalOperatorsOnSubscribeFromAsyncEmitterTest.m in Sources */,
 				635B2A6A1DCADB6700BB0E12 /* RxInternalOperatorsOperatorTimeIntervalTest.m in Sources */,
 				635B2A841DCADB6700BB0E12 /* RxInternalOperatorsOperatorZipIterableTest.m in Sources */,
+				63403EEA1DDA401700607444 /* RxObserversAssertableSubscriber.m in Sources */,
 				635B29D21DCADB6600BB0E12 /* RxInternalOperatorsOnSubscribeReduceTest.m in Sources */,
 				635B270A1DCADB6400BB0E12 /* RxFunctionsFunctions.m in Sources */,
 				635B2A0E1DCADB6700BB0E12 /* RxInternalOperatorsOperatorIgnoreElementsTest.m in Sources */,
@@ -7068,7 +7056,6 @@
 				635B27221DCADB6500BB0E12 /* RxInternalOperatorsCompletableOnSubscribeConcat.m in Sources */,
 				635B29121DCADB6600BB0E12 /* RxScheduler.m in Sources */,
 				635B27E21DCADB6500BB0E12 /* RxInternalOperatorsOperatorSingle.m in Sources */,
-				63111F791DCC042000DE6670 /* RxDopplReflectionTest.m in Sources */,
 				635B2A9E1DCADB6700BB0E12 /* RxInternalSchedulersNewThreadWorkerTest.m in Sources */,
 				635B26461DCADB6400BB0E12 /* AndroidUtilEmptyArray.m in Sources */,
 				635B29C81DCADB6600BB0E12 /* RxInternalOperatorsOnSubscribeFromIterableTest.m in Sources */,
@@ -7076,12 +7063,14 @@
 				635B28021DCADB6500BB0E12 /* RxInternalOperatorsOperatorThrottleFirst.m in Sources */,
 				635B29CE1DCADB6600BB0E12 /* RxInternalOperatorsOnSubscribeMapTest.m in Sources */,
 				635B28F01DCADB6600BB0E12 /* RxObserversSerializedObserver.m in Sources */,
+				63403E861DD95B7800607444 /* RxInternalSchedulersGenericScheduledExecutorServiceTest.m in Sources */,
 				635B2A161DCADB6700BB0E12 /* RxInternalOperatorsOperatorMaterializeTest.m in Sources */,
 				635B29621DCADB6600BB0E12 /* RxCovarianceTest.m in Sources */,
 				635B2A281DCADB6700BB0E12 /* RxInternalOperatorsOperatorOnErrorResumeNextViaFunctionTest.m in Sources */,
 				635B29261DCADB6600BB0E12 /* RxSinglesBlockingSingle.m in Sources */,
 				635B28E21DCADB6600BB0E12 /* RxObservablesSyncOnSubscribe.m in Sources */,
 				635B2B241DCADB6800BB0E12 /* RxSubjectsReplaySubjectConcurrencyTest.m in Sources */,
+				63403E6E1DD946E900607444 /* RxDopplMockSingletestFuncStart.m in Sources */,
 				635B293C1DCADB6600BB0E12 /* RxSubjectsTestSubject.m in Sources */,
 				635B25C41DCADB6400BB0E12 /* AndroidDatabaseDatabaseErrorHandler.m in Sources */,
 				635B27101DCADB6400BB0E12 /* RxInternalOperatorsBlockingOperatorLatest.m in Sources */,
@@ -7089,16 +7078,19 @@
 				635B28BE1DCADB6500BB0E12 /* RxInternalUtilUnsafeMessagePassingQueue.m in Sources */,
 				635B26201DCADB6400BB0E12 /* AndroidDatabaseStaleDataException.m in Sources */,
 				635B27D21DCADB6500BB0E12 /* RxInternalOperatorsOperatorPublish.m in Sources */,
+				63403ED41DD96FCC00607444 /* RxDopplMockMSubscriber.m in Sources */,
 				635B26FA1DCADB6400BB0E12 /* RxFunctionsFunc4.m in Sources */,
 				635B2A461DCADB6700BB0E12 /* RxInternalOperatorsOperatorSkipLastTest.m in Sources */,
 				635B294C1DCADB6600BB0E12 /* RxSubscriptionsRefCountSubscription.m in Sources */,
 				635B269E1DCADB6400BB0E12 /* OrgSkyscreamerJsonassertJSONAssert.m in Sources */,
 				635B28161DCADB6500BB0E12 /* RxInternalOperatorsOperatorWindowWithObservableFactory.m in Sources */,
+				63403E7E1DD95B7800607444 /* RxDopplMockSingletestFuncReturn$Moxy.m in Sources */,
 				635B27781DCADB6500BB0E12 /* RxInternalOperatorsOnSubscribeReduceSeed.m in Sources */,
 				635B281C1DCADB6500BB0E12 /* RxInternalOperatorsOperatorWindowWithTime.m in Sources */,
 				635B265E1DCADB6400BB0E12 /* RenameComGoogleAndroidCollectLists.m in Sources */,
 				635B28661DCADB6500BB0E12 /* RxInternalSchedulersImmediateScheduler.m in Sources */,
 				635B26C41DCADB6400BB0E12 /* RxExceptionsCompositeException.m in Sources */,
+				63403EDE1DD96FCD00607444 /* RxInternalOperatorsOperatorReplayTest__InprocessWorker$Moxy.m in Sources */,
 				635B2B0E1DCADB6800BB0E12 /* RxSchedulersTimeXTest.m in Sources */,
 				635B2A641DCADB6700BB0E12 /* RxInternalOperatorsOperatorTakeUntilTest.m in Sources */,
 				635B294E1DCADB6600BB0E12 /* RxSubscriptionsSerialSubscription.m in Sources */,

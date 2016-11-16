@@ -160,10 +160,10 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
      * @param <T> the value type
      */
     static final class MergeSubscriber<T> extends Subscriber<Observable<? extends T>> {
-        @Weak
         final Subscriber<? super T> child;
         final boolean delayErrors;
         final int maxConcurrent;
+
         MergeProducer<T> producer;
 
         volatile Queue<Object> queue;
@@ -838,9 +838,7 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
             return false;
         }
     }
-
     static final class InnerSubscriber<T> extends Subscriber<T> {
-
         final MergeSubscriber<T> parent;
         final long id;
         volatile boolean done;

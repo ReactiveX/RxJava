@@ -34,7 +34,11 @@
 #include "RxSubscription.h"
 #include "RxSubscriptionsSubscriptions.h"
 #include "RxTestUtil.h"
+#include "java/io/PrintStream.h"
+#include "java/io/PrintWriter.h"
+#include "java/io/StringWriter.h"
 #include "java/lang/Integer.h"
+#include "java/lang/System.h"
 #include "java/lang/Thread.h"
 #include "java/lang/annotation/Annotation.h"
 #include "java/lang/reflect/Method.h"
@@ -1042,7 +1046,14 @@ __attribute__((unused)) static RxPluginsRxJavaHooksTest_$44 *create_RxPluginsRxJ
     NSException *ex = [((id<JavaUtilList>) nil_chk([ts getOnErrorEvents])) getWithInt:0];
     RxExceptionsAssemblyStackTraceException *aste = RxExceptionsAssemblyStackTraceException_findWithNSException_(ex);
     OrgJunitAssert_assertNotNullWithId_(aste);
-    OrgJunitAssert_assertTrueWithNSString_withBoolean_([((RxExceptionsAssemblyStackTraceException *) nil_chk(aste)) getMessage], [((NSString *) nil_chk([aste getMessage])) contains:@"createObservable"]);
+    JavaIoStringWriter *stringWriter = create_JavaIoStringWriter_init();
+    JavaIoPrintWriter *printWriter = create_JavaIoPrintWriter_initWithJavaIoWriter_(stringWriter);
+    [((RxExceptionsAssemblyStackTraceException *) nil_chk(aste)) printStackTraceWithJavaIoPrintWriter:printWriter];
+    [printWriter close];
+    NSString *stackTrace = [stringWriter description];
+    NSString *message = [aste getMessage];
+    [((JavaIoPrintStream *) nil_chk(JreLoadStatic(JavaLangSystem, out))) printlnWithNSString:JreStrcat("$$", @"Message: ", message)];
+    OrgJunitAssert_assertTrueWithNSString_withBoolean_(message, [((NSString *) nil_chk(message)) contains:@"createObservable"]);
     RxPluginsRxJavaHooks_clearAssemblyTracking();
     ts = RxObserversTestSubscriber_create();
     [((RxObservable *) nil_chk(RxPluginsRxJavaHooksTest_createObservable())) subscribeWithRxSubscriber:ts];

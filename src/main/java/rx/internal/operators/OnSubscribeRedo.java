@@ -41,7 +41,6 @@ import rx.Observable.Operator;
 import rx.Producer;
 import rx.Scheduler;
 import rx.Subscriber;
-import rx.doppl.SafeObservableUnsubscribe;
 import rx.functions.Action0;
 import rx.functions.Func1;
 import rx.functions.Func2;
@@ -56,11 +55,11 @@ import rx.subscriptions.SerialSubscription;
 import static rx.Observable.create;
 
 public final class OnSubscribeRedo<T> implements OnSubscribe<T> {
-    final         SafeObservableUnsubscribe                                                     source;
+    final Observable<T> source;
     private final Func1<? super Observable<? extends Notification<?>>, ? extends Observable<?>> controlHandlerFunction;
-    final         boolean                                                                       stopOnComplete;
-    final         boolean                                                                       stopOnError;
-    private final Scheduler                                                                     scheduler;
+    final boolean stopOnComplete;
+    final boolean stopOnError;
+    private final Scheduler scheduler;
 
     static final Func1<Observable<? extends Notification<?>>, Observable<?>> REDO_INFINITE = new Func1<Observable<? extends Notification<?>>, Observable<?>>() {
         @Override
@@ -187,7 +186,7 @@ public final class OnSubscribeRedo<T> implements OnSubscribe<T> {
 
     private OnSubscribeRedo(Observable<T> source, Func1<? super Observable<? extends Notification<?>>, ? extends Observable<?>> f, boolean stopOnComplete, boolean stopOnError,
             Scheduler scheduler) {
-        this.source = new SafeObservableUnsubscribe(source);
+        this.source = source;
         this.controlHandlerFunction = f;
         this.stopOnComplete = stopOnComplete;
         this.stopOnError = stopOnError;

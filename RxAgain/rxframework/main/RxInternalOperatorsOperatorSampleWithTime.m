@@ -132,7 +132,6 @@ J2OBJC_INITIALIZED_DEFN(RxInternalOperatorsOperatorSampleWithTime_SamplerSubscri
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOperatorSampleWithTime_SamplerSubscriber class]);
   RELEASE_(subscriber_SamplerSubscriber_);
   RELEASE_(value_);
   [super dealloc];

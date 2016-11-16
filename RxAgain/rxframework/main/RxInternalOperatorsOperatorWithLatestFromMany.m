@@ -195,7 +195,6 @@ id RxInternalOperatorsOperatorWithLatestFromMany_WithLatestMainSubscriber_EMPTY;
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOperatorWithLatestFromMany_WithLatestMainSubscriber class]);
   RELEASE_(actual_);
   RELEASE_(combiner_);
   RELEASE_(current_);
@@ -291,7 +290,6 @@ J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxInternalOperatorsOperatorWithLatestFromMany_W
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOperatorWithLatestFromMany_WithLatestOtherSubscriber class]);
   RELEASE_(parent_);
   [super dealloc];
 }

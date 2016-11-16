@@ -381,7 +381,6 @@ RxInternalOperatorsOperatorMulticast_$2 *create_RxInternalOperatorsOperatorMulti
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOperatorMulticast_$3 class]);
   RELEASE_(val$s_);
   [super dealloc];
 }

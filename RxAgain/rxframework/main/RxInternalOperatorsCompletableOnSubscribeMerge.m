@@ -211,7 +211,6 @@ J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxInternalOperatorsCompletableOnSubscribeMerge)
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsCompletableOnSubscribeMerge_CompletableMergeSubscriber class]);
   RELEASE_(actual_);
   RELEASE_(set_);
   RELEASE_(errors_);

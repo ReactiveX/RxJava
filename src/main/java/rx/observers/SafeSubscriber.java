@@ -63,7 +63,7 @@ import rx.plugins.RxJavaPlugins;
  */
 public class SafeSubscriber<T> extends Subscriber<T> {
 
-    private Subscriber<? super T> actual;
+    private final Subscriber<? super T> actual;
 
     boolean done;
 
@@ -100,13 +100,6 @@ public class SafeSubscriber<T> extends Subscriber<T> {
                 }
             }
         }
-    }
-
-    @Override
-    public void j2objcCleanup()
-    {
-        actual = null;
-        super.j2objcCleanup();
     }
 
     /**

@@ -185,7 +185,6 @@ J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxInternalOperatorsOperatorWithLatestFrom)
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOperatorWithLatestFrom_$1 class]);
   RELEASE_(this$0_);
   RELEASE_(val$current_);
   RELEASE_(val$s_);
@@ -258,7 +257,6 @@ RxInternalOperatorsOperatorWithLatestFrom_$1 *create_RxInternalOperatorsOperator
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOperatorWithLatestFrom_$2 class]);
   RELEASE_(val$current_);
   RELEASE_(val$s_);
   [super dealloc];

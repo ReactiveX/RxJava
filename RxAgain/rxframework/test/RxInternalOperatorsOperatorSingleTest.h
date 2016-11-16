@@ -22,7 +22,47 @@
 
 - (instancetype)init;
 
+- (void)defaultBackpressure;
+
+- (void)testIssue1527;
+
+- (void)testSingle;
+
+- (void)testSingleDoesNotRequestMoreThanItNeedsIf1Then2Requested;
+
+- (void)testSingleDoesNotRequestMoreThanItNeedsIf3Requested;
+
+- (void)testSingleDoesNotRequestMoreThanItNeedsToEmitErrorFromEmpty;
+
+- (void)testSingleDoesNotRequestMoreThanItNeedsToEmitErrorFromMoreThanOne;
+
+- (void)testSingleDoesNotRequestMoreThanItNeedsToEmitItem;
+
+- (void)testSingleOrDefault;
+
+- (void)testSingleOrDefaultWithEmpty;
+
+- (void)testSingleOrDefaultWithPredicate;
+
+- (void)testSingleOrDefaultWithPredicateAndEmpty;
+
+- (void)testSingleOrDefaultWithPredicateAndTooManyElements;
+
+- (void)testSingleOrDefaultWithTooManyElements;
+
+- (void)testSingleRequestsExactlyWhatItNeedsIf1Requested;
+
 - (void)testSingleWithBackpressure;
+
+- (void)testSingleWithEmpty;
+
+- (void)testSingleWithPredicate;
+
+- (void)testSingleWithPredicateAndEmpty;
+
+- (void)testSingleWithPredicateAndTooManyElements;
+
+- (void)testSingleWithTooManyElements;
 
 @end
 

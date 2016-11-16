@@ -69,7 +69,7 @@ __attribute__((unused)) static void RxInternalOperatorsOperatorMerge_MergeSubscr
 - (RxSubscriber *)callWithId:(RxSubscriber *)child {
   RxInternalOperatorsOperatorMerge_MergeSubscriber *subscriber = create_RxInternalOperatorsOperatorMerge_MergeSubscriber_initWithRxSubscriber_withBoolean_withInt_(child, delayErrors_, maxConcurrent_);
   RxInternalOperatorsOperatorMerge_MergeProducer *producer = create_RxInternalOperatorsOperatorMerge_MergeProducer_initWithRxInternalOperatorsOperatorMerge_MergeSubscriber_(subscriber);
-  JreStrongAssign(&subscriber->producer_, producer);
+  JreStrongAssign(&subscriber->producer_MergeSubscriber_, producer);
   [((RxSubscriber *) nil_chk(child)) addWithRxSubscription:subscriber];
   [child setProducerWithRxProducer:producer];
   return subscriber;
@@ -441,10 +441,10 @@ IOSObjectArray *RxInternalOperatorsOperatorMerge_MergeSubscriber_EMPTY;
 - (void)tryEmitWithRxInternalOperatorsOperatorMerge_InnerSubscriber:(RxInternalOperatorsOperatorMerge_InnerSubscriber *)subscriber
                                                              withId:(id)value {
   jboolean success = false;
-  jlong r = [((RxInternalOperatorsOperatorMerge_MergeProducer *) nil_chk(producer_)) get];
+  jlong r = [((RxInternalOperatorsOperatorMerge_MergeProducer *) nil_chk(producer_MergeSubscriber_)) get];
   if (r != 0LL) {
     @synchronized(self) {
-      r = [((RxInternalOperatorsOperatorMerge_MergeProducer *) nil_chk(producer_)) get];
+      r = [((RxInternalOperatorsOperatorMerge_MergeProducer *) nil_chk(producer_MergeSubscriber_)) get];
       if (!emitting_ && r != 0LL) {
         emitting_ = true;
         success = true;
@@ -509,7 +509,7 @@ IOSObjectArray *RxInternalOperatorsOperatorMerge_MergeSubscriber_EMPTY;
       [((id<JavaUtilQueue>) nil_chk([self getOrCreateErrorQueue])) offerWithId:t];
     }
     if (r != JavaLangLong_MAX_VALUE) {
-      [((RxInternalOperatorsOperatorMerge_MergeProducer *) nil_chk(producer_)) producedWithInt:1];
+      [((RxInternalOperatorsOperatorMerge_MergeProducer *) nil_chk(producer_MergeSubscriber_)) producedWithInt:1];
     }
     [((RxInternalOperatorsOperatorMerge_InnerSubscriber *) nil_chk(subscriber)) requestMoreWithLong:1];
     @synchronized(self) {
@@ -537,10 +537,10 @@ IOSObjectArray *RxInternalOperatorsOperatorMerge_MergeSubscriber_EMPTY;
 
 - (void)tryEmitWithId:(id)value {
   jboolean success = false;
-  jlong r = [((RxInternalOperatorsOperatorMerge_MergeProducer *) nil_chk(producer_)) get];
+  jlong r = [((RxInternalOperatorsOperatorMerge_MergeProducer *) nil_chk(producer_MergeSubscriber_)) get];
   if (r != 0LL) {
     @synchronized(self) {
-      r = [((RxInternalOperatorsOperatorMerge_MergeProducer *) nil_chk(producer_)) get];
+      r = [((RxInternalOperatorsOperatorMerge_MergeProducer *) nil_chk(producer_MergeSubscriber_)) get];
       if (!emitting_ && r != 0LL) {
         emitting_ = true;
         success = true;
@@ -609,7 +609,7 @@ IOSObjectArray *RxInternalOperatorsOperatorMerge_MergeSubscriber_EMPTY;
       [((id<JavaUtilQueue>) nil_chk([self getOrCreateErrorQueue])) offerWithId:t];
     }
     if (r != JavaLangLong_MAX_VALUE) {
-      [((RxInternalOperatorsOperatorMerge_MergeProducer *) nil_chk(producer_)) producedWithInt:1];
+      [((RxInternalOperatorsOperatorMerge_MergeProducer *) nil_chk(producer_MergeSubscriber_)) producedWithInt:1];
     }
     jint produced = scalarEmissionCount_ + 1;
     if (produced == scalarEmissionLimit_) {
@@ -659,7 +659,7 @@ IOSObjectArray *RxInternalOperatorsOperatorMerge_MergeSubscriber_EMPTY;
         return;
       }
       id<JavaUtilQueue> svq = JreLoadVolatileId(&queue_);
-      jlong r = [((RxInternalOperatorsOperatorMerge_MergeProducer *) nil_chk(producer_)) get];
+      jlong r = [((RxInternalOperatorsOperatorMerge_MergeProducer *) nil_chk(producer_MergeSubscriber_)) get];
       jboolean unbounded = r == JavaLangLong_MAX_VALUE;
       jint replenishMain = 0;
       if (svq != nil) {
@@ -698,7 +698,7 @@ IOSObjectArray *RxInternalOperatorsOperatorMerge_MergeSubscriber_EMPTY;
               r = JavaLangLong_MAX_VALUE;
             }
             else {
-              r = [((RxInternalOperatorsOperatorMerge_MergeProducer *) nil_chk(producer_)) producedWithInt:scalarEmission];
+              r = [((RxInternalOperatorsOperatorMerge_MergeProducer *) nil_chk(producer_MergeSubscriber_)) producedWithInt:scalarEmission];
             }
           }
           if (r == 0LL || o == nil) {
@@ -786,7 +786,7 @@ IOSObjectArray *RxInternalOperatorsOperatorMerge_MergeSubscriber_EMPTY;
             }
             if (produced > 0) {
               if (!unbounded) {
-                r = [((RxInternalOperatorsOperatorMerge_MergeProducer *) nil_chk(producer_)) producedWithInt:produced];
+                r = [((RxInternalOperatorsOperatorMerge_MergeProducer *) nil_chk(producer_MergeSubscriber_)) producedWithInt:produced];
               }
               else {
                 r = JavaLangLong_MAX_VALUE;
@@ -863,7 +863,6 @@ IOSObjectArray *RxInternalOperatorsOperatorMerge_MergeSubscriber_EMPTY;
 
 - (void)__javaClone:(RxInternalOperatorsOperatorMerge_MergeSubscriber *)original {
   [super __javaClone:original];
-  [child_ release];
   JreCloneVolatileStrong(&queue_, &original->queue_);
   JreCloneVolatileStrong(&subscriptions_MergeSubscriber_, &original->subscriptions_MergeSubscriber_);
   JreCloneVolatileStrong(&errors_, &original->errors_);
@@ -871,8 +870,8 @@ IOSObjectArray *RxInternalOperatorsOperatorMerge_MergeSubscriber_EMPTY;
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOperatorMerge_MergeSubscriber class]);
-  RELEASE_(producer_);
+  RELEASE_(child_);
+  RELEASE_(producer_MergeSubscriber_);
   JreReleaseVolatile(&queue_);
   JreReleaseVolatile(&subscriptions_MergeSubscriber_);
   JreReleaseVolatile(&errors_);
@@ -931,24 +930,24 @@ IOSObjectArray *RxInternalOperatorsOperatorMerge_MergeSubscriber_EMPTY;
     { "child_", "LRxSubscriber;", .constantValue.asLong = 0, 0x10, -1, -1, 25, -1 },
     { "delayErrors_", "Z", .constantValue.asLong = 0, 0x10, -1, -1, -1, -1 },
     { "maxConcurrent_", "I", .constantValue.asLong = 0, 0x10, -1, -1, -1, -1 },
-    { "producer_", "LRxInternalOperatorsOperatorMerge_MergeProducer;", .constantValue.asLong = 0, 0x0, -1, -1, 26, -1 },
-    { "queue_", "LJavaUtilQueue;", .constantValue.asLong = 0, 0x40, -1, -1, 27, -1 },
-    { "subscriptions_MergeSubscriber_", "LRxSubscriptionsCompositeSubscription;", .constantValue.asLong = 0, 0x40, 28, -1, -1, -1 },
-    { "errors_", "LJavaUtilConcurrentConcurrentLinkedQueue;", .constantValue.asLong = 0, 0x40, -1, -1, 29, -1 },
+    { "producer_MergeSubscriber_", "LRxInternalOperatorsOperatorMerge_MergeProducer;", .constantValue.asLong = 0, 0x0, 26, -1, 27, -1 },
+    { "queue_", "LJavaUtilQueue;", .constantValue.asLong = 0, 0x40, -1, -1, 28, -1 },
+    { "subscriptions_MergeSubscriber_", "LRxSubscriptionsCompositeSubscription;", .constantValue.asLong = 0, 0x40, 29, -1, -1, -1 },
+    { "errors_", "LJavaUtilConcurrentConcurrentLinkedQueue;", .constantValue.asLong = 0, 0x40, -1, -1, 30, -1 },
     { "done_", "Z", .constantValue.asLong = 0, 0x40, -1, -1, -1, -1 },
     { "emitting_", "Z", .constantValue.asLong = 0, 0x0, -1, -1, -1, -1 },
     { "missed_", "Z", .constantValue.asLong = 0, 0x0, -1, -1, -1, -1 },
     { "innerGuard_", "LNSObject;", .constantValue.asLong = 0, 0x10, -1, -1, -1, -1 },
-    { "innerSubscribers_", "[LRxInternalOperatorsOperatorMerge_InnerSubscriber;", .constantValue.asLong = 0, 0x40, -1, -1, 30, -1 },
+    { "innerSubscribers_", "[LRxInternalOperatorsOperatorMerge_InnerSubscriber;", .constantValue.asLong = 0, 0x40, -1, -1, 31, -1 },
     { "uniqueId_", "J", .constantValue.asLong = 0, 0x0, -1, -1, -1, -1 },
     { "lastId_", "J", .constantValue.asLong = 0, 0x0, -1, -1, -1, -1 },
     { "lastIndex_", "I", .constantValue.asLong = 0, 0x0, -1, -1, -1, -1 },
-    { "EMPTY", "[LRxInternalOperatorsOperatorMerge_InnerSubscriber;", .constantValue.asLong = 0, 0x18, -1, 31, 30, -1 },
+    { "EMPTY", "[LRxInternalOperatorsOperatorMerge_InnerSubscriber;", .constantValue.asLong = 0, 0x18, -1, 32, 31, -1 },
     { "scalarEmissionLimit_", "I", .constantValue.asLong = 0, 0x10, -1, -1, -1, -1 },
     { "scalarEmissionCount_", "I", .constantValue.asLong = 0, 0x0, -1, -1, -1, -1 },
   };
-  static const void *ptrTable[] = { "LRxSubscriber;ZI", "(Lrx/Subscriber<-TT;>;ZI)V", "()Ljava/util/Queue<Ljava/lang/Throwable;>;", "onNext", "LRxObservable;", "(Lrx/Observable<+TT;>;)V", "onError", "LNSException;", "addInner", "LRxInternalOperatorsOperatorMerge_InnerSubscriber;", "(Lrx/internal/operators/OperatorMerge$InnerSubscriber<TT;>;)V", "removeInner", "tryEmit", "LRxInternalOperatorsOperatorMerge_InnerSubscriber;LNSObject;", "(Lrx/internal/operators/OperatorMerge$InnerSubscriber<TT;>;TT;)V", "queueScalar", "emitScalar", "LRxInternalOperatorsOperatorMerge_InnerSubscriber;LNSObject;J", "(Lrx/internal/operators/OperatorMerge$InnerSubscriber<TT;>;TT;J)V", "requestMore", "J", "LNSObject;", "(TT;)V", "LNSObject;J", "(TT;J)V", "Lrx/Subscriber<-TT;>;", "Lrx/internal/operators/OperatorMerge$MergeProducer<TT;>;", "Ljava/util/Queue<Ljava/lang/Object;>;", "subscriptions", "Ljava/util/concurrent/ConcurrentLinkedQueue<Ljava/lang/Throwable;>;", "[Lrx/internal/operators/OperatorMerge$InnerSubscriber<*>;", &RxInternalOperatorsOperatorMerge_MergeSubscriber_EMPTY, "LRxInternalOperatorsOperatorMerge;", "<T:Ljava/lang/Object;>Lrx/Subscriber<Lrx/Observable<+TT;>;>;" };
-  static const J2ObjcClassInfo _RxInternalOperatorsOperatorMerge_MergeSubscriber = { "MergeSubscriber", "rx.internal.operators", ptrTable, methods, fields, 7, 0x18, 20, 18, 32, -1, -1, 33, -1 };
+  static const void *ptrTable[] = { "LRxSubscriber;ZI", "(Lrx/Subscriber<-TT;>;ZI)V", "()Ljava/util/Queue<Ljava/lang/Throwable;>;", "onNext", "LRxObservable;", "(Lrx/Observable<+TT;>;)V", "onError", "LNSException;", "addInner", "LRxInternalOperatorsOperatorMerge_InnerSubscriber;", "(Lrx/internal/operators/OperatorMerge$InnerSubscriber<TT;>;)V", "removeInner", "tryEmit", "LRxInternalOperatorsOperatorMerge_InnerSubscriber;LNSObject;", "(Lrx/internal/operators/OperatorMerge$InnerSubscriber<TT;>;TT;)V", "queueScalar", "emitScalar", "LRxInternalOperatorsOperatorMerge_InnerSubscriber;LNSObject;J", "(Lrx/internal/operators/OperatorMerge$InnerSubscriber<TT;>;TT;J)V", "requestMore", "J", "LNSObject;", "(TT;)V", "LNSObject;J", "(TT;J)V", "Lrx/Subscriber<-TT;>;", "producer", "Lrx/internal/operators/OperatorMerge$MergeProducer<TT;>;", "Ljava/util/Queue<Ljava/lang/Object;>;", "subscriptions", "Ljava/util/concurrent/ConcurrentLinkedQueue<Ljava/lang/Throwable;>;", "[Lrx/internal/operators/OperatorMerge$InnerSubscriber<*>;", &RxInternalOperatorsOperatorMerge_MergeSubscriber_EMPTY, "LRxInternalOperatorsOperatorMerge;", "<T:Ljava/lang/Object;>Lrx/Subscriber<Lrx/Observable<+TT;>;>;" };
+  static const J2ObjcClassInfo _RxInternalOperatorsOperatorMerge_MergeSubscriber = { "MergeSubscriber", "rx.internal.operators", ptrTable, methods, fields, 7, 0x18, 20, 18, 33, -1, -1, 34, -1 };
   return &_RxInternalOperatorsOperatorMerge_MergeSubscriber;
 }
 
@@ -963,7 +962,7 @@ IOSObjectArray *RxInternalOperatorsOperatorMerge_MergeSubscriber_EMPTY;
 
 void RxInternalOperatorsOperatorMerge_MergeSubscriber_initWithRxSubscriber_withBoolean_withInt_(RxInternalOperatorsOperatorMerge_MergeSubscriber *self, RxSubscriber *child, jboolean delayErrors, jint maxConcurrent) {
   RxSubscriber_init(self);
-  self->child_ = child;
+  JreStrongAssign(&self->child_, child);
   self->delayErrors_ = delayErrors;
   self->maxConcurrent_ = maxConcurrent;
   JreStrongAssignAndConsume(&self->innerGuard_, new_NSObject_init());
@@ -1049,7 +1048,6 @@ jint RxInternalOperatorsOperatorMerge_InnerSubscriber_LIMIT;
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOperatorMerge_InnerSubscriber class]);
   RELEASE_(parent_);
   JreReleaseVolatile(&queue_);
   [super dealloc];

@@ -181,7 +181,6 @@ J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxInternalOperatorsOperatorTakeLastTimed)
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOperatorTakeLastTimed_TakeLastTimedSubscriber class]);
   RELEASE_(actual_);
   RELEASE_(scheduler_);
   RELEASE_(requested_TakeLastTimedSubscriber_);

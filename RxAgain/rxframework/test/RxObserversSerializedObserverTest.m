@@ -37,6 +37,7 @@
 #include "java/util/concurrent/ExecutorService.h"
 #include "java/util/concurrent/Executors.h"
 #include "java/util/concurrent/Future.h"
+#include "java/util/concurrent/LinkedBlockingQueue.h"
 #include "java/util/concurrent/TimeUnit.h"
 #include "java/util/concurrent/atomic/AtomicInteger.h"
 #include "java/util/concurrent/atomic/AtomicReference.h"
@@ -172,7 +173,7 @@ J2OBJC_TYPE_LITERAL_HEADER(RxObserversSerializedObserverTest_TestConcurrencyObse
 
 @interface RxObserversSerializedObserverTest_TestConcurrencyObserver : RxSubscriber {
  @public
-  id<JavaUtilList> events_;
+  JavaUtilConcurrentLinkedBlockingQueue *events_;
   jint waitTime_;
 }
 
@@ -192,7 +193,7 @@ J2OBJC_TYPE_LITERAL_HEADER(RxObserversSerializedObserverTest_TestConcurrencyObse
 
 J2OBJC_EMPTY_STATIC_INIT(RxObserversSerializedObserverTest_TestConcurrencyObserver)
 
-J2OBJC_FIELD_SETTER(RxObserversSerializedObserverTest_TestConcurrencyObserver, events_, id<JavaUtilList>)
+J2OBJC_FIELD_SETTER(RxObserversSerializedObserverTest_TestConcurrencyObserver, events_, JavaUtilConcurrentLinkedBlockingQueue *)
 
 __attribute__((unused)) static void RxObserversSerializedObserverTest_TestConcurrencyObserver_initWithInt_(RxObserversSerializedObserverTest_TestConcurrencyObserver *self, jint waitTimeInNext);
 
@@ -1403,17 +1404,15 @@ J2OBJC_IGNORE_DESIGNATED_BEGIN
 J2OBJC_IGNORE_DESIGNATED_END
 
 - (void)onCompleted {
-  [((id<JavaUtilList>) nil_chk(events_)) addWithId:JreLoadEnum(RxObserversSerializedObserverTest_TestConcurrencyObserverEvent, onCompleted)];
+  [((JavaUtilConcurrentLinkedBlockingQueue *) nil_chk(events_)) addWithId:JreLoadEnum(RxObserversSerializedObserverTest_TestConcurrencyObserverEvent, onCompleted)];
 }
 
 - (void)onErrorWithNSException:(NSException *)e {
-  [((id<JavaUtilList>) nil_chk(events_)) addWithId:JreLoadEnum(RxObserversSerializedObserverTest_TestConcurrencyObserverEvent, onError)];
+  [((JavaUtilConcurrentLinkedBlockingQueue *) nil_chk(events_)) addWithId:JreLoadEnum(RxObserversSerializedObserverTest_TestConcurrencyObserverEvent, onError)];
 }
 
 - (void)onNextWithId:(NSString *)args {
-  @synchronized(events_) {
-    [((id<JavaUtilList>) nil_chk(events_)) addWithId:JreLoadEnum(RxObserversSerializedObserverTest_TestConcurrencyObserverEvent, onNext)];
-  }
+  [((JavaUtilConcurrentLinkedBlockingQueue *) nil_chk(events_)) addWithId:JreLoadEnum(RxObserversSerializedObserverTest_TestConcurrencyObserverEvent, onNext)];
   jint s = 0;
   for (jint i = 0; i < 20; i++) {
     s += s * i;
@@ -1460,7 +1459,6 @@ J2OBJC_IGNORE_DESIGNATED_END
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxObserversSerializedObserverTest_TestConcurrencyObserver class]);
   RELEASE_(events_);
   [super dealloc];
 }
@@ -1484,10 +1482,10 @@ J2OBJC_IGNORE_DESIGNATED_END
   methods[5].selector = @selector(assertEventsWithRxObserversSerializedObserverTest_TestConcurrencyObserverEvent:);
   #pragma clang diagnostic pop
   static const J2ObjcFieldInfo fields[] = {
-    { "events_", "LJavaUtilList;", .constantValue.asLong = 0, 0x12, -1, -1, 8, -1 },
+    { "events_", "LJavaUtilConcurrentLinkedBlockingQueue;", .constantValue.asLong = 0, 0x12, -1, -1, 8, -1 },
     { "waitTime_", "I", .constantValue.asLong = 0, 0x12, -1, -1, -1, -1 },
   };
-  static const void *ptrTable[] = { "I", "onError", "LNSException;", "onNext", "LNSString;", "assertEvents", "LRxObserversSerializedObserverTest_TestConcurrencyObserverEvent;", "LJavaLangIllegalStateException;", "Ljava/util/List<Lrx/observers/SerializedObserverTest$TestConcurrencyObserverEvent;>;", "LRxObserversSerializedObserverTest;", "Lrx/Subscriber<Ljava/lang/String;>;" };
+  static const void *ptrTable[] = { "I", "onError", "LNSException;", "onNext", "LNSString;", "assertEvents", "LRxObserversSerializedObserverTest_TestConcurrencyObserverEvent;", "LJavaLangIllegalStateException;", "Ljava/util/concurrent/LinkedBlockingQueue<Lrx/observers/SerializedObserverTest$TestConcurrencyObserverEvent;>;", "LRxObserversSerializedObserverTest;", "Lrx/Subscriber<Ljava/lang/String;>;" };
   static const J2ObjcClassInfo _RxObserversSerializedObserverTest_TestConcurrencyObserver = { "TestConcurrencyObserver", "rx.observers", ptrTable, methods, fields, 7, 0xa, 6, 2, 9, -1, -1, 10, -1 };
   return &_RxObserversSerializedObserverTest_TestConcurrencyObserver;
 }
@@ -1496,7 +1494,7 @@ J2OBJC_IGNORE_DESIGNATED_END
 
 void RxObserversSerializedObserverTest_TestConcurrencyObserver_initWithInt_(RxObserversSerializedObserverTest_TestConcurrencyObserver *self, jint waitTimeInNext) {
   RxSubscriber_init(self);
-  JreStrongAssignAndConsume(&self->events_, new_JavaUtilArrayList_initWithInt_(10000));
+  JreStrongAssignAndConsume(&self->events_, new_JavaUtilConcurrentLinkedBlockingQueue_init());
   self->waitTime_ = waitTimeInNext;
 }
 
@@ -1510,7 +1508,7 @@ RxObserversSerializedObserverTest_TestConcurrencyObserver *create_RxObserversSer
 
 void RxObserversSerializedObserverTest_TestConcurrencyObserver_init(RxObserversSerializedObserverTest_TestConcurrencyObserver *self) {
   RxSubscriber_init(self);
-  JreStrongAssignAndConsume(&self->events_, new_JavaUtilArrayList_initWithInt_(10000));
+  JreStrongAssignAndConsume(&self->events_, new_JavaUtilConcurrentLinkedBlockingQueue_init());
   self->waitTime_ = 0;
 }
 
@@ -1967,7 +1965,6 @@ J2OBJC_IGNORE_DESIGNATED_BEGIN
 J2OBJC_IGNORE_DESIGNATED_END
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxObserversSerializedObserverTest_BusyObserver class]);
   RELEASE_(onNextCount_);
   RELEASE_(threadsRunning_);
   RELEASE_(maxConcurrentThreads_);
@@ -2279,7 +2276,6 @@ RxObserversSerializedObserverTest_$3 *create_RxObserversSerializedObserverTest_$
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxObserversSerializedObserverTest_$4 class]);
   RELEASE_(val$serial_);
   [super dealloc];
 }
@@ -2330,11 +2326,6 @@ J2OBJC_IGNORE_DESIGNATED_BEGIN
 }
 J2OBJC_IGNORE_DESIGNATED_END
 
-- (void)dealloc {
-  JreCheckFinalize(self, [RxObserversSerializedObserverTest_$5 class]);
-  [super dealloc];
-}
-
 + (const J2ObjcClassInfo *)__metadata {
   static J2ObjcMethodInfo methods[] = {
     { NULL, "V", 0x1, 0, 1, -1, 2, -1, -1 },
@@ -2377,7 +2368,6 @@ RxObserversSerializedObserverTest_$5 *create_RxObserversSerializedObserverTest_$
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxObserversSerializedObserverTest_$6 class]);
   RELEASE_(val$serial_);
   [super dealloc];
 }
@@ -2428,7 +2418,6 @@ RxObserversSerializedObserverTest_$6 *create_RxObserversSerializedObserverTest_$
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxObserversSerializedObserverTest_$7 class]);
   RELEASE_(val$serial_);
   [super dealloc];
 }
@@ -2484,7 +2473,6 @@ RxObserversSerializedObserverTest_$7 *create_RxObserversSerializedObserverTest_$
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxObserversSerializedObserverTest_$8 class]);
   RELEASE_(val$serial_);
   [super dealloc];
 }
@@ -2536,7 +2524,6 @@ RxObserversSerializedObserverTest_$8 *create_RxObserversSerializedObserverTest_$
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxObserversSerializedObserverTest_$9 class]);
   RELEASE_(val$serial_);
   [super dealloc];
 }
@@ -2588,7 +2575,6 @@ RxObserversSerializedObserverTest_$9 *create_RxObserversSerializedObserverTest_$
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxObserversSerializedObserverTest_$10 class]);
   RELEASE_(val$serial_);
   [super dealloc];
 }

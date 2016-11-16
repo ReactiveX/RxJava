@@ -5,7 +5,6 @@
 
 #include "IOSClass.h"
 #include "J2ObjC_source.h"
-#include "RxDopplSafeObservableUnsubscribe.h"
 #include "RxFunctionsAction0.h"
 #include "RxFunctionsFunc1.h"
 #include "RxFunctionsFunc2.h"
@@ -476,15 +475,15 @@ id<RxFunctionsFunc1> RxInternalOperatorsOnSubscribeRedo_REDO_INFINITE;
   methods[12].selector = @selector(callWithId:);
   #pragma clang diagnostic pop
   static const J2ObjcFieldInfo fields[] = {
-    { "source_", "LRxDopplSafeObservableUnsubscribe;", .constantValue.asLong = 0, 0x10, -1, -1, -1, -1 },
-    { "controlHandlerFunction_", "LRxFunctionsFunc1;", .constantValue.asLong = 0, 0x12, -1, -1, 20, -1 },
+    { "source_", "LRxObservable;", .constantValue.asLong = 0, 0x10, -1, -1, 20, -1 },
+    { "controlHandlerFunction_", "LRxFunctionsFunc1;", .constantValue.asLong = 0, 0x12, -1, -1, 21, -1 },
     { "stopOnComplete_", "Z", .constantValue.asLong = 0, 0x10, -1, -1, -1, -1 },
     { "stopOnError_", "Z", .constantValue.asLong = 0, 0x10, -1, -1, -1, -1 },
     { "scheduler_", "LRxScheduler;", .constantValue.asLong = 0, 0x12, -1, -1, -1, -1 },
-    { "REDO_INFINITE", "LRxFunctionsFunc1;", .constantValue.asLong = 0, 0x18, -1, 21, 22, -1 },
+    { "REDO_INFINITE", "LRxFunctionsFunc1;", .constantValue.asLong = 0, 0x18, -1, 22, 23, -1 },
   };
-  static const void *ptrTable[] = { "retry", "LRxObservable;", "<T:Ljava/lang/Object;>(Lrx/Observable<TT;>;)Lrx/Observable<TT;>;", "LRxObservable;J", "<T:Ljava/lang/Object;>(Lrx/Observable<TT;>;J)Lrx/Observable<TT;>;", "LRxObservable;LRxFunctionsFunc1;", "<T:Ljava/lang/Object;>(Lrx/Observable<TT;>;Lrx/functions/Func1<+Lrx/Observable<+Lrx/Notification<*>;>;+Lrx/Observable<*>;>;)Lrx/Observable<TT;>;", "LRxObservable;LRxFunctionsFunc1;LRxScheduler;", "<T:Ljava/lang/Object;>(Lrx/Observable<TT;>;Lrx/functions/Func1<+Lrx/Observable<+Lrx/Notification<*>;>;+Lrx/Observable<*>;>;Lrx/Scheduler;)Lrx/Observable<TT;>;", "repeat", "LRxObservable;LRxScheduler;", "<T:Ljava/lang/Object;>(Lrx/Observable<TT;>;Lrx/Scheduler;)Lrx/Observable<TT;>;", "LRxObservable;JLRxScheduler;", "<T:Ljava/lang/Object;>(Lrx/Observable<TT;>;JLrx/Scheduler;)Lrx/Observable<TT;>;", "redo", "LRxObservable;LRxFunctionsFunc1;ZZLRxScheduler;", "(Lrx/Observable<TT;>;Lrx/functions/Func1<+Lrx/Observable<+Lrx/Notification<*>;>;+Lrx/Observable<*>;>;ZZLrx/Scheduler;)V", "call", "LRxSubscriber;", "(Lrx/Subscriber<-TT;>;)V", "Lrx/functions/Func1<+Lrx/Observable<+Lrx/Notification<*>;>;+Lrx/Observable<*>;>;", &RxInternalOperatorsOnSubscribeRedo_REDO_INFINITE, "Lrx/functions/Func1<Lrx/Observable<+Lrx/Notification<*>;>;Lrx/Observable<*>;>;", "LRxInternalOperatorsOnSubscribeRedo_RedoFinite;LRxInternalOperatorsOnSubscribeRedo_RetryWithPredicate;", "<T:Ljava/lang/Object;>Ljava/lang/Object;Lrx/Observable$OnSubscribe<TT;>;" };
-  static const J2ObjcClassInfo _RxInternalOperatorsOnSubscribeRedo = { "OnSubscribeRedo", "rx.internal.operators", ptrTable, methods, fields, 7, 0x11, 13, 6, -1, 23, -1, 24, -1 };
+  static const void *ptrTable[] = { "retry", "LRxObservable;", "<T:Ljava/lang/Object;>(Lrx/Observable<TT;>;)Lrx/Observable<TT;>;", "LRxObservable;J", "<T:Ljava/lang/Object;>(Lrx/Observable<TT;>;J)Lrx/Observable<TT;>;", "LRxObservable;LRxFunctionsFunc1;", "<T:Ljava/lang/Object;>(Lrx/Observable<TT;>;Lrx/functions/Func1<+Lrx/Observable<+Lrx/Notification<*>;>;+Lrx/Observable<*>;>;)Lrx/Observable<TT;>;", "LRxObservable;LRxFunctionsFunc1;LRxScheduler;", "<T:Ljava/lang/Object;>(Lrx/Observable<TT;>;Lrx/functions/Func1<+Lrx/Observable<+Lrx/Notification<*>;>;+Lrx/Observable<*>;>;Lrx/Scheduler;)Lrx/Observable<TT;>;", "repeat", "LRxObservable;LRxScheduler;", "<T:Ljava/lang/Object;>(Lrx/Observable<TT;>;Lrx/Scheduler;)Lrx/Observable<TT;>;", "LRxObservable;JLRxScheduler;", "<T:Ljava/lang/Object;>(Lrx/Observable<TT;>;JLrx/Scheduler;)Lrx/Observable<TT;>;", "redo", "LRxObservable;LRxFunctionsFunc1;ZZLRxScheduler;", "(Lrx/Observable<TT;>;Lrx/functions/Func1<+Lrx/Observable<+Lrx/Notification<*>;>;+Lrx/Observable<*>;>;ZZLrx/Scheduler;)V", "call", "LRxSubscriber;", "(Lrx/Subscriber<-TT;>;)V", "Lrx/Observable<TT;>;", "Lrx/functions/Func1<+Lrx/Observable<+Lrx/Notification<*>;>;+Lrx/Observable<*>;>;", &RxInternalOperatorsOnSubscribeRedo_REDO_INFINITE, "Lrx/functions/Func1<Lrx/Observable<+Lrx/Notification<*>;>;Lrx/Observable<*>;>;", "LRxInternalOperatorsOnSubscribeRedo_RedoFinite;LRxInternalOperatorsOnSubscribeRedo_RetryWithPredicate;", "<T:Ljava/lang/Object;>Ljava/lang/Object;Lrx/Observable$OnSubscribe<TT;>;" };
+  static const J2ObjcClassInfo _RxInternalOperatorsOnSubscribeRedo = { "OnSubscribeRedo", "rx.internal.operators", ptrTable, methods, fields, 7, 0x11, 13, 6, -1, 24, -1, 25, -1 };
   return &_RxInternalOperatorsOnSubscribeRedo;
 }
 
@@ -566,7 +565,7 @@ RxObservable *RxInternalOperatorsOnSubscribeRedo_redoWithRxObservable_withRxFunc
 
 void RxInternalOperatorsOnSubscribeRedo_initWithRxObservable_withRxFunctionsFunc1_withBoolean_withBoolean_withRxScheduler_(RxInternalOperatorsOnSubscribeRedo *self, RxObservable *source, id<RxFunctionsFunc1> f, jboolean stopOnComplete, jboolean stopOnError, RxScheduler *scheduler) {
   NSObject_init(self);
-  JreStrongAssignAndConsume(&self->source_, new_RxDopplSafeObservableUnsubscribe_initWithRxObservable_(source));
+  JreStrongAssign(&self->source_, source);
   JreStrongAssign(&self->controlHandlerFunction_, f);
   self->stopOnComplete_ = stopOnComplete;
   self->stopOnError_ = stopOnError;
@@ -887,7 +886,7 @@ RxInternalOperatorsOnSubscribeRedo_$1_$1 *create_RxInternalOperatorsOnSubscribeR
   }
   RxSubscriber *terminalDelegatingSubscriber = create_RxInternalOperatorsOnSubscribeRedo_$2_$1_initWithRxInternalOperatorsOnSubscribeRedo_$2_(self);
   [((RxSubscriptionsSerialSubscription *) nil_chk(val$sourceSubscriptions_)) setWithRxSubscription:terminalDelegatingSubscriber];
-  [((RxDopplSafeObservableUnsubscribe *) nil_chk(this$0_->source_)) unsafeSubscribeWithRxSubscriber:terminalDelegatingSubscriber];
+  [((RxObservable *) nil_chk(this$0_->source_)) unsafeSubscribeWithRxSubscriber:terminalDelegatingSubscriber];
 }
 
 - (instancetype)initWithRxInternalOperatorsOnSubscribeRedo:(RxInternalOperatorsOnSubscribeRedo *)outer$
@@ -993,7 +992,6 @@ RxInternalOperatorsOnSubscribeRedo_$2 *create_RxInternalOperatorsOnSubscribeRedo
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOnSubscribeRedo_$2_$1 class]);
   RELEASE_(this$0_);
   [super dealloc];
 }
@@ -1137,7 +1135,6 @@ RxInternalOperatorsOnSubscribeRedo_$3 *create_RxInternalOperatorsOnSubscribeRedo
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOnSubscribeRedo_$3_$1 class]);
   RELEASE_(this$0_);
   RELEASE_(val$filteredTerminals_);
   [super dealloc];
@@ -1285,7 +1282,6 @@ RxInternalOperatorsOnSubscribeRedo_$4 *create_RxInternalOperatorsOnSubscribeRedo
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOnSubscribeRedo_$4_$1 class]);
   RELEASE_(this$0_);
   [super dealloc];
 }

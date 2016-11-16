@@ -436,7 +436,6 @@ RxInternalOperatorsOnSubscribeFilterTest_$2 *create_RxInternalOperatorsOnSubscri
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOnSubscribeFilterTest_$3 class]);
   RELEASE_(val$latch_);
   [super dealloc];
 }
@@ -544,7 +543,6 @@ RxInternalOperatorsOnSubscribeFilterTest_$4 *create_RxInternalOperatorsOnSubscri
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOnSubscribeFilterTest_$5 class]);
   RELEASE_(val$latch_);
   [super dealloc];
 }

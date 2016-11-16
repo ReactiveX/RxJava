@@ -31,7 +31,7 @@
   jboolean emitting_;
   volatile_jboolean terminated_;
   NSException *exception_;
-  __unsafe_unretained id<RxInternalUtilBackpressureDrainManager_BackpressureQueueCallback> actual_;
+  id<RxInternalUtilBackpressureDrainManager_BackpressureQueueCallback> actual_;
 }
 
 #pragma mark Public
@@ -57,6 +57,7 @@
 J2OBJC_EMPTY_STATIC_INIT(RxInternalUtilBackpressureDrainManager)
 
 J2OBJC_FIELD_SETTER(RxInternalUtilBackpressureDrainManager, exception_, NSException *)
+J2OBJC_FIELD_SETTER(RxInternalUtilBackpressureDrainManager, actual_, id<RxInternalUtilBackpressureDrainManager_BackpressureQueueCallback>)
 
 FOUNDATION_EXPORT void RxInternalUtilBackpressureDrainManager_initWithRxInternalUtilBackpressureDrainManager_BackpressureQueueCallback_(RxInternalUtilBackpressureDrainManager *self, id<RxInternalUtilBackpressureDrainManager_BackpressureQueueCallback> actual);
 

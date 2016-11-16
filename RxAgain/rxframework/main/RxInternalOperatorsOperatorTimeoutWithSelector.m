@@ -243,7 +243,6 @@ RxInternalOperatorsOperatorTimeoutWithSelector_$1 *create_RxInternalOperatorsOpe
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOperatorTimeoutWithSelector_$1_$1 class]);
   RELEASE_(val$timeoutSubscriber_);
   RELEASE_(val$seqId_);
   [super dealloc];
@@ -369,7 +368,6 @@ RxInternalOperatorsOperatorTimeoutWithSelector_$2 *create_RxInternalOperatorsOpe
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOperatorTimeoutWithSelector_$2_$1 class]);
   RELEASE_(val$timeoutSubscriber_);
   RELEASE_(val$seqId_);
   [super dealloc];

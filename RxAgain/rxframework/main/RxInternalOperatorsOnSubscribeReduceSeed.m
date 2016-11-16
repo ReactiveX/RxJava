@@ -91,7 +91,6 @@ J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxInternalOperatorsOnSubscribeReduceSeed)
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOnSubscribeReduceSeed_ReduceSeedSubscriber class]);
   RELEASE_(reducer_);
   [super dealloc];
 }

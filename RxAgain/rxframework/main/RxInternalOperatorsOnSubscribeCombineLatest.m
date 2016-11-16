@@ -378,12 +378,8 @@ id RxInternalOperatorsOnSubscribeCombineLatest_LatestCoordinator_MISSING;
   }
 }
 
-- (void)__javaClone:(RxInternalOperatorsOnSubscribeCombineLatest_LatestCoordinator *)original {
-  [super __javaClone:original];
-  [actual_ release];
-}
-
 - (void)dealloc {
+  RELEASE_(actual_);
   RELEASE_(combiner_);
   RELEASE_(subscribers_);
   RELEASE_(latest_);
@@ -452,7 +448,7 @@ id RxInternalOperatorsOnSubscribeCombineLatest_LatestCoordinator_MISSING;
 
 void RxInternalOperatorsOnSubscribeCombineLatest_LatestCoordinator_initWithRxSubscriber_withRxFunctionsFuncN_withInt_withInt_withBoolean_(RxInternalOperatorsOnSubscribeCombineLatest_LatestCoordinator *self, RxSubscriber *actual, id<RxFunctionsFuncN> combiner, jint count, jint bufferSize, jboolean delayError) {
   JavaUtilConcurrentAtomicAtomicInteger_init(self);
-  self->actual_ = actual;
+  JreStrongAssign(&self->actual_, actual);
   JreStrongAssign(&self->combiner_, combiner);
   self->bufferSize_ = bufferSize;
   self->delayError_ = delayError;
@@ -511,13 +507,8 @@ J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxInternalOperatorsOnSubscribeCombineLatest_Lat
   [self requestWithLong:n];
 }
 
-- (void)__javaClone:(RxInternalOperatorsOnSubscribeCombineLatest_CombinerSubscriber *)original {
-  [super __javaClone:original];
-  [parent_ release];
-}
-
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOnSubscribeCombineLatest_CombinerSubscriber class]);
+  RELEASE_(parent_);
   [super dealloc];
 }
 
@@ -551,7 +542,7 @@ J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxInternalOperatorsOnSubscribeCombineLatest_Lat
 
 void RxInternalOperatorsOnSubscribeCombineLatest_CombinerSubscriber_initWithRxInternalOperatorsOnSubscribeCombineLatest_LatestCoordinator_withInt_(RxInternalOperatorsOnSubscribeCombineLatest_CombinerSubscriber *self, RxInternalOperatorsOnSubscribeCombineLatest_LatestCoordinator *parent, jint index) {
   RxSubscriber_init(self);
-  self->parent_ = parent;
+  JreStrongAssign(&self->parent_, parent);
   self->index_ = index;
   [self requestWithLong:((RxInternalOperatorsOnSubscribeCombineLatest_LatestCoordinator *) nil_chk(parent))->bufferSize_];
 }

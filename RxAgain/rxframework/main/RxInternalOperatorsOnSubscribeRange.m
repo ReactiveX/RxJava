@@ -22,12 +22,14 @@
 
 @interface RxInternalOperatorsOnSubscribeRange_RangeProducer () {
  @public
-  __unsafe_unretained RxSubscriber *childSubscriber_;
+  RxSubscriber *childSubscriber_;
   jint endOfRange_;
   jlong currentIndex_;
 }
 
 @end
+
+J2OBJC_FIELD_SETTER(RxInternalOperatorsOnSubscribeRange_RangeProducer, childSubscriber_, RxSubscriber *)
 
 inline jlong RxInternalOperatorsOnSubscribeRange_RangeProducer_get_serialVersionUID();
 #define RxInternalOperatorsOnSubscribeRange_RangeProducer_serialVersionUID 4114392207069098388LL
@@ -142,7 +144,7 @@ J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxInternalOperatorsOnSubscribeRange)
 
 - (void)javaFinalize {
   [super javaFinalize];
-  childSubscriber_ = nil;
+  JreStrongAssign(&childSubscriber_, nil);
 }
 
 - (void)fastPath {
@@ -159,13 +161,9 @@ J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxInternalOperatorsOnSubscribeRange)
   }
 }
 
-- (void)__javaClone:(RxInternalOperatorsOnSubscribeRange_RangeProducer *)original {
-  [super __javaClone:original];
-  [childSubscriber_ release];
-}
-
 - (void)dealloc {
   JreCheckFinalize(self, [RxInternalOperatorsOnSubscribeRange_RangeProducer class]);
+  RELEASE_(childSubscriber_);
   [super dealloc];
 }
 
@@ -200,7 +198,7 @@ J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxInternalOperatorsOnSubscribeRange)
 
 void RxInternalOperatorsOnSubscribeRange_RangeProducer_initWithRxSubscriber_withInt_withInt_(RxInternalOperatorsOnSubscribeRange_RangeProducer *self, RxSubscriber *childSubscriber, jint startIndex, jint endIndex) {
   JavaUtilConcurrentAtomicAtomicLong_init(self);
-  self->childSubscriber_ = childSubscriber;
+  JreStrongAssign(&self->childSubscriber_, childSubscriber);
   self->currentIndex_ = startIndex;
   self->endOfRange_ = endIndex;
 }

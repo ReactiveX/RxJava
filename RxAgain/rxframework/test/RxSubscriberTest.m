@@ -1071,11 +1071,6 @@ RxSubscriberTest_$3 *create_RxSubscriberTest_$3_init() {
   return self;
 }
 
-- (void)dealloc {
-  JreCheckFinalize(self, [RxSubscriberTest_$3_$1 class]);
-  [super dealloc];
-}
-
 + (const J2ObjcClassInfo *)__metadata {
   static J2ObjcMethodInfo methods[] = {
     { NULL, "V", 0x1, -1, -1, -1, -1, -1, -1 },
@@ -1217,11 +1212,6 @@ J2OBJC_IGNORE_DESIGNATED_BEGIN
   return self;
 }
 J2OBJC_IGNORE_DESIGNATED_END
-
-- (void)dealloc {
-  JreCheckFinalize(self, [RxSubscriberTest_$5_$1 class]);
-  [super dealloc];
-}
 
 + (const J2ObjcClassInfo *)__metadata {
   static J2ObjcMethodInfo methods[] = {
@@ -1423,11 +1413,6 @@ J2OBJC_IGNORE_DESIGNATED_BEGIN
   return self;
 }
 J2OBJC_IGNORE_DESIGNATED_END
-
-- (void)dealloc {
-  JreCheckFinalize(self, [RxSubscriberTest_$7_$2 class]);
-  [super dealloc];
-}
 
 + (const J2ObjcClassInfo *)__metadata {
   static J2ObjcMethodInfo methods[] = {
@@ -1968,7 +1953,6 @@ RxSubscriberTest_$13_$1 *create_RxSubscriberTest_$13_$1_initWithRxSubscriberTest
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxSubscriberTest_$14 class]);
   RELEASE_(val$c_);
   [super dealloc];
 }
@@ -2035,7 +2019,6 @@ RxSubscriberTest_$14 *create_RxSubscriberTest_$14_initWithJavaUtilConcurrentAtom
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxSubscriberTest_$15 class]);
   RELEASE_(val$c_);
   [super dealloc];
 }
@@ -2155,7 +2138,6 @@ RxSubscriberTest_$16 *create_RxSubscriberTest_$16_initWithJavaUtilConcurrentAtom
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxSubscriberTest_$16_$1 class]);
   RELEASE_(this$0_);
   RELEASE_(val$child_);
   [super dealloc];
@@ -2228,7 +2210,6 @@ RxSubscriberTest_$16_$1 *create_RxSubscriberTest_$16_$1_initWithRxSubscriberTest
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxSubscriberTest_$17 class]);
   RELEASE_(val$exception_);
   RELEASE_(val$latch_);
   [super dealloc];
@@ -2298,7 +2279,6 @@ RxSubscriberTest_$17 *create_RxSubscriberTest_$17_initWithJavaUtilConcurrentAtom
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxSubscriberTest_$18 class]);
   RELEASE_(val$list_);
   [super dealloc];
 }
@@ -2365,7 +2345,6 @@ RxSubscriberTest_$18 *create_RxSubscriberTest_$18_initWithJavaUtilList_(id<JavaU
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxSubscriberTest_$19 class]);
   RELEASE_(val$list_);
   [super dealloc];
 }

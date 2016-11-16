@@ -65,32 +65,26 @@ public abstract class AbstractSchedulerTests {
             final Action0 firstAction = new Action0() {
                 @Override
                 public void call() {
-                    System.out.println("firstAction start");
                     firstStepStart.call();
                     firstStepEnd.call();
                     latch.countDown();
-                    System.out.println("firstAction end");
                 }
             };
             final Action0 secondAction = new Action0() {
                 @Override
                 public void call() {
-                    System.out.println("secondAction start");
                     secondStepStart.call();
                     inner.schedule(firstAction);
                     secondStepEnd.call();
-                    System.out.println("secondAction end");
 
                 }
             };
             final Action0 thirdAction = new Action0() {
                 @Override
                 public void call() {
-                    System.out.println("thirdAction start");
                     thirdStepStart.call();
                     inner.schedule(secondAction);
                     thirdStepEnd.call();
-                    System.out.println("thirdAction end");
                 }
             };
 

@@ -42,7 +42,6 @@ import rx.plugins.RxJavaHooks;
 import rx.schedulers.*;
 import rx.subjects.PublishSubject;
 
-@DoppelHacks//Added unsubscribes
 public class OperatorTakeLastTimedTest {
 
     @Test(expected = IndexOutOfBoundsException.class)

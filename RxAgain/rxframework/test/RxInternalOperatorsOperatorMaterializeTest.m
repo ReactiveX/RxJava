@@ -427,7 +427,6 @@ J2OBJC_IGNORE_DESIGNATED_BEGIN
 J2OBJC_IGNORE_DESIGNATED_END
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOperatorMaterializeTest_TestObserver class]);
   RELEASE_(notifications_);
   [super dealloc];
 }

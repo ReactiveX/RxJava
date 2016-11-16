@@ -125,7 +125,6 @@ J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxInternalOperatorsOperatorDoOnRequest)
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOperatorDoOnRequest_ParentSubscriber class]);
   RELEASE_(child_);
   [super dealloc];
 }

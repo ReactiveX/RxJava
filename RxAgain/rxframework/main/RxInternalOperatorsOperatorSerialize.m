@@ -162,7 +162,6 @@ J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxInternalOperatorsOperatorSerialize_Holder)
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOperatorSerialize_$1 class]);
   RELEASE_(val$s_);
   [super dealloc];
 }

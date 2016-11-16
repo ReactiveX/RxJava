@@ -261,7 +261,6 @@ J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxInternalOperatorsOnSubscribeToMultimap)
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOnSubscribeToMultimap_ToMultimapSubscriber class]);
   RELEASE_(keySelector_);
   RELEASE_(valueSelector_);
   RELEASE_(collectionFactory_);

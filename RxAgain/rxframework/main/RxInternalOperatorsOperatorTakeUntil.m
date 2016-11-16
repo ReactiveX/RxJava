@@ -164,7 +164,6 @@ J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxInternalOperatorsOperatorTakeUntil)
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOperatorTakeUntil_$1 class]);
   RELEASE_(val$serial_);
   [super dealloc];
 }
@@ -230,7 +229,6 @@ RxInternalOperatorsOperatorTakeUntil_$1 *create_RxInternalOperatorsOperatorTakeU
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOperatorTakeUntil_$2 class]);
   RELEASE_(val$main_);
   [super dealloc];
 }

@@ -182,7 +182,6 @@ J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxInternalOperatorsBlockingOperatorToFuture)
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsBlockingOperatorToFuture_$1 class]);
   RELEASE_(val$finished_);
   RELEASE_(val$error_);
   RELEASE_(val$value_);

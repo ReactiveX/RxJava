@@ -45,7 +45,6 @@ import rx.schedulers.*;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.Subscriptions;
 
-@DoppelHacks//Lots of unsubscribe calls to release memory
 public class OperatorMergeTest {
 
     @Mock
@@ -498,7 +497,6 @@ public class OperatorMergeTest {
             List<Integer> onNextEvents = ts.getOnNextEvents();
             assertEquals(30000, onNextEvents.size());
             //            System.out.println("onNext: " + onNextEvents.size() + " onCompleted: " + ts.getCompletions().size());
-            ts.unsubscribe();
         }
     }
 
@@ -544,7 +542,6 @@ public class OperatorMergeTest {
             List<Integer> onNextEvents = ts.getOnNextEvents();
             assertEquals(300, onNextEvents.size());
             //            System.out.println("onNext: " + onNextEvents.size() + " onCompleted: " + ts.getCompletions().size());
-            ts.unsubscribe();
         }
     }
 
@@ -588,7 +585,6 @@ public class OperatorMergeTest {
             List<Integer> onNextEvents = ts.getOnNextEvents();
             assertEquals(30000, onNextEvents.size());
             //                System.out.println("onNext: " + onNextEvents.size() + " onCompleted: " + ts.getCompletions().size());
-            ts.unsubscribe();
         }
     }
 
@@ -658,7 +654,6 @@ public class OperatorMergeTest {
         assertEquals(RxRingBuffer.SIZE * 2 + 1, onNextEvents.size());
         // it should be between the take num and requested batch size across the async boundary
         assertTrue(generated1.get() >= RxRingBuffer.SIZE * 2 && generated1.get() <= RxRingBuffer.SIZE * 3);
-        testSubscriber.unsubscribe();
     }
 
     /**
@@ -799,8 +794,6 @@ public class OperatorMergeTest {
         System.out.println("done2 testBackpressureBothUpstreamAndDownstreamWithRegularObservables ");
         // we can't restrict this ... see comment above
         //        assertTrue(generated1.get() >= RxRingBuffer.SIZE && generated1.get() <= RxRingBuffer.SIZE * 4);
-
-        testSubscriber.unsubscribe();
     }
 
     @Test
@@ -811,7 +804,6 @@ public class OperatorMergeTest {
         ts.assertTerminalEvent();
         ts.assertNoErrors();
         ts.assertReceivedOnNext(Arrays.asList(null, "one", "two", null));
-        ts.unsubscribe();
     }
 
     @Test
@@ -831,7 +823,6 @@ public class OperatorMergeTest {
         Observable.merge(Observable.just(null, "one"), bad).subscribe(ts);
         ts.assertNoErrors();
         ts.assertReceivedOnNext(Arrays.asList(null, "one", "two"));
-        ts.unsubscribe();
     }
 
     @Test
@@ -840,7 +831,6 @@ public class OperatorMergeTest {
         Observable.merge(Observable.just("one"), null).subscribe(ts);
         ts.assertNoErrors();
         ts.assertReceivedOnNext(Arrays.asList("one"));
-        ts.unsubscribe();
     }
 
     @Test
@@ -850,7 +840,6 @@ public class OperatorMergeTest {
         ts.awaitTerminalEvent();
         ts.assertNoErrors();
         assertEquals(1, ts.getOnNextEvents().size());
-        ts.unsubscribe();
     }
 
     @Test
@@ -860,7 +849,6 @@ public class OperatorMergeTest {
         ts.awaitTerminalEvent();
         ts.assertNoErrors();
         assertEquals(1000, ts.getOnNextEvents().size());
-        ts.unsubscribe();
     }
 
     @Test
@@ -870,7 +858,6 @@ public class OperatorMergeTest {
         ts.awaitTerminalEvent();
         ts.assertNoErrors();
         assertEquals(10000, ts.getOnNextEvents().size());
-        ts.unsubscribe();
     }
 
     @Test
@@ -881,7 +868,6 @@ public class OperatorMergeTest {
         ts.awaitTerminalEvent();
         ts.assertNoErrors();
         assertEquals(1000000, ts.getOnNextEvents().size());
-        ts.unsubscribe();
     }
 
     @Test
@@ -892,7 +878,6 @@ public class OperatorMergeTest {
         ts.awaitTerminalEvent();
         ts.assertNoErrors();
         assertEquals(200000, ts.getOnNextEvents().size());
-        ts.unsubscribe();
     }
 
     @Test
@@ -903,9 +888,7 @@ public class OperatorMergeTest {
         ts.awaitTerminalEvent();
         ts.assertNoErrors();
         assertEquals(100, ts.getOnNextEvents().size());
-        ts.unsubscribe();
     }
-
 
     private Observable<Integer> mergeNAsyncStreamsOfN(final int outerSize, final int innerSize) {
         Observable<Observable<Integer>> os = Observable.range(1, outerSize).map(new Func1<Integer, Observable<Integer>>() {
@@ -926,7 +909,6 @@ public class OperatorMergeTest {
         ts.awaitTerminalEvent();
         ts.assertNoErrors();
         assertEquals(1, ts.getOnNextEvents().size());
-        ts.unsubscribe();
     }
 
     @Test
@@ -937,7 +919,6 @@ public class OperatorMergeTest {
         ts.awaitTerminalEvent();
         ts.assertNoErrors();
         assertEquals(1000000, ts.getOnNextEvents().size());
-        ts.unsubscribe();
     }
 
     @Test
@@ -948,7 +929,6 @@ public class OperatorMergeTest {
         ts.awaitTerminalEvent();
         ts.assertNoErrors();
         assertEquals(1000000, ts.getOnNextEvents().size());
-        ts.unsubscribe();
     }
 
     @Test
@@ -959,7 +939,6 @@ public class OperatorMergeTest {
         ts.awaitTerminalEvent();
         ts.assertNoErrors();
         assertEquals(100000, ts.getOnNextEvents().size());
-        ts.unsubscribe();
     }
 
     @Test
@@ -970,7 +949,6 @@ public class OperatorMergeTest {
         ts.awaitTerminalEvent();
         ts.assertNoErrors();
         assertEquals(1000000, ts.getOnNextEvents().size());
-        ts.unsubscribe();
     }
 
     private Observable<Integer> mergeNSyncStreamsOfN(final int outerSize, final int innerSize) {
@@ -1040,7 +1018,6 @@ public class OperatorMergeTest {
         ts.awaitTerminalEvent();
         ts.assertNoErrors();
         assertEquals(10000, ts.getOnNextEvents().size());
-        ts.unsubscribe();
     }
 
     @Test
@@ -1052,7 +1029,6 @@ public class OperatorMergeTest {
         subscriber.requestMore(3); // 1, 2, <complete> - with requestMore(2) we get the 1 and 2 but not the <complete>
         subscriber.assertReceivedOnNext(asList(1, 2));
         subscriber.assertTerminalEvent();
-        subscriber.unsubscribe();
     }
 
     @Test
@@ -1064,7 +1040,6 @@ public class OperatorMergeTest {
         subscriber.requestMore(2); // 1, <complete> - should work as per .._NormalPath above
         subscriber.assertReceivedOnNext(asList(1));
         subscriber.assertTerminalEvent();
-        subscriber.unsubscribe();
     }
 
     @Test
@@ -1376,7 +1351,6 @@ public class OperatorMergeTest {
         ts.awaitTerminalEvent(5000, TimeUnit.MILLISECONDS);
         ts.assertValue(0);
         ts.assertCompleted();
-        ts.unsubscribe();
     }
 
     @SuppressWarnings("unchecked")

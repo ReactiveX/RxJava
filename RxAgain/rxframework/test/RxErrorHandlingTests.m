@@ -177,7 +177,6 @@ J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxErrorHandlingTests)
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxErrorHandlingTests_$1 class]);
   RELEASE_(val$latch_);
   RELEASE_(val$caughtError_);
   [super dealloc];
@@ -246,7 +245,6 @@ RxErrorHandlingTests_$1 *create_RxErrorHandlingTests_$1_initWithJavaUtilConcurre
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxErrorHandlingTests_$2 class]);
   RELEASE_(val$latch_);
   RELEASE_(val$caughtError_);
   [super dealloc];

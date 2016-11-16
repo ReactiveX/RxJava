@@ -99,7 +99,6 @@ J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxInternalOperatorsOperatorTakeTimed)
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOperatorTakeTimed_TakeSubscriber class]);
   RELEASE_(child_);
   [super dealloc];
 }

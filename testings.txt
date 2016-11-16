@@ -1,0 +1,28 @@
+OnSubscribeDelaySubscription
+OnSubscribeDelaySubscriptionWithSelector
+
+SingleDelayedProducer - Checked all references to child are direct cycles, so this should be cool
+QueuedProducer - only used in tests?
+QueuedValueProducer - only used in tests?
+ProducerObserverArbiter  - only used in tests?
+
+rx.subjects.ReplaySubject
+rx.subjects.PublishSubject
+
+rx.internal.operators.OperatorZip - Broken reference is probably OK, but references are all over. Test this. May also not really kill cycle, but I think it does.
+
+----- RUN 3:20pm
+
+rx.internal.operators.OperatorTake - Looks to be a self contained loop
+OperatorTakeLast - Breaks cycle, but worried reference will get dropped somewhere
+OperatorTakeLastTimed - Breaks cycle, but worried about getting dropped
+
+rx.internal.operators.OperatorReplay - Different than original! Bad logic on last one. Direct cycle and break on this.
+rx.internal.operators.OperatorObserveOn - Ignore changes. Bad.
+rx.internal.operators.OperatorMerge - Original had extra "Weak", which looks dangerous at best, and unnecessary
+rx.internal.operators.OperatorGroupBy - Weak for obvious big, but not "state". Test this.
+
+
+----- RUN Archive_diff_1039pm (passed 6.07gb)
+
+

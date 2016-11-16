@@ -700,11 +700,6 @@ RxObserversSubscribersTest_$5 *create_RxObserversSubscribersTest_$5_initWithJava
   return self;
 }
 
-- (void)dealloc {
-  JreCheckFinalize(self, [RxObserversSubscribersTest_$6 class]);
-  [super dealloc];
-}
-
 + (const J2ObjcClassInfo *)__metadata {
   static J2ObjcMethodInfo methods[] = {
     { NULL, "V", 0x1, 0, 1, -1, -1, -1, -1 },

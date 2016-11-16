@@ -13,8 +13,6 @@
 
 package rx.internal.operators;
 
-import com.google.j2objc.annotations.Weak;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -96,7 +94,6 @@ public final class OnSubscribeCombineLatest<T, R> implements OnSubscribe<R> {
     static final class LatestCoordinator<T, R> extends AtomicInteger implements Producer, Subscription {
         /** */
         private static final long serialVersionUID = 8567835998786448817L;
-        @Weak
         final Subscriber<? super R> actual;
         final FuncN<? extends R> combiner;
         final CombinerSubscriber<T, R>[] subscribers;
@@ -366,7 +363,6 @@ public final class OnSubscribeCombineLatest<T, R> implements OnSubscribe<R> {
     }
 
     static final class CombinerSubscriber<T, R> extends Subscriber<T> {
-        @Weak
         final LatestCoordinator<T, R> parent;
         final int index;
 

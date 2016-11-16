@@ -409,7 +409,6 @@ withRxInternalOperatorsOnSubscribeAmb_Selection:(RxInternalOperatorsOnSubscribeA
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOnSubscribeAmb_AmbSubscriber class]);
   RELEASE_(subscriber_AmbSubscriber_);
   RELEASE_(selection_);
   [super dealloc];

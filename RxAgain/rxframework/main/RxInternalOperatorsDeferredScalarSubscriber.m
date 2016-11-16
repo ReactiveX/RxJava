@@ -5,6 +5,7 @@
 
 #include "IOSClass.h"
 #include "J2ObjC_source.h"
+#include "RxDopplWeakReferenceHelper.h"
 #include "RxInternalOperatorsDeferredScalarSubscriber.h"
 #include "RxObservable.h"
 #include "RxProducer.h"
@@ -69,7 +70,6 @@ __attribute__((unused)) static void RxInternalOperatorsDeferredScalarSubscriber_
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsDeferredScalarSubscriber class]);
   RELEASE_(actual_);
   RELEASE_(value_);
   RELEASE_(state_);
@@ -179,7 +179,7 @@ void RxInternalOperatorsDeferredScalarSubscriber_downstreamRequestWithLong_(RxIn
 void RxInternalOperatorsDeferredScalarSubscriber_setupDownstream(RxInternalOperatorsDeferredScalarSubscriber *self) {
   RxSubscriber *a = self->actual_;
   [((RxSubscriber *) nil_chk(a)) addWithRxSubscription:self];
-  [a setProducerWithRxProducer:create_RxInternalOperatorsDeferredScalarSubscriber_InnerProducer_initWithRxInternalOperatorsDeferredScalarSubscriber_(self)];
+  [a setProducerWithRxProducer:create_RxInternalOperatorsDeferredScalarSubscriber_InnerProducer_initWithRxInternalOperatorsDeferredScalarSubscriber_(RxDopplWeakReferenceHelper_wrapWeakProxyIfSameWithId_withId_(self, a))];
 }
 
 J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxInternalOperatorsDeferredScalarSubscriber)
@@ -195,9 +195,9 @@ J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxInternalOperatorsDeferredScalarSubscriber)
   RxInternalOperatorsDeferredScalarSubscriber_downstreamRequestWithLong_(nil_chk(parent_), n);
 }
 
-- (void)__javaClone:(RxInternalOperatorsDeferredScalarSubscriber_InnerProducer *)original {
-  [super __javaClone:original];
-  [parent_ release];
+- (void)dealloc {
+  RELEASE_(parent_);
+  [super dealloc];
 }
 
 + (const J2ObjcClassInfo *)__metadata {
@@ -222,7 +222,7 @@ J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxInternalOperatorsDeferredScalarSubscriber)
 
 void RxInternalOperatorsDeferredScalarSubscriber_InnerProducer_initWithRxInternalOperatorsDeferredScalarSubscriber_(RxInternalOperatorsDeferredScalarSubscriber_InnerProducer *self, RxInternalOperatorsDeferredScalarSubscriber *parent) {
   NSObject_init(self);
-  self->parent_ = parent;
+  JreStrongAssign(&self->parent_, parent);
 }
 
 RxInternalOperatorsDeferredScalarSubscriber_InnerProducer *new_RxInternalOperatorsDeferredScalarSubscriber_InnerProducer_initWithRxInternalOperatorsDeferredScalarSubscriber_(RxInternalOperatorsDeferredScalarSubscriber *parent) {

@@ -111,7 +111,6 @@ J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxInternalOperatorsOperatorTimestamp)
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOperatorTimestamp_$1 class]);
   RELEASE_(this$0_);
   RELEASE_(val$o_);
   [super dealloc];

@@ -969,19 +969,21 @@ J2OBJC_INITIALIZED_DEFN(RxInternalOperatorsOnSubscribeCombineLatestTest)
   jint n = 30;
   id<RxFunctionsFuncN> func = create_RxInternalOperatorsOnSubscribeCombineLatestTest_$7_init();
   for (jint i = 1; i <= n; i++) {
-    [((JavaIoPrintStream *) nil_chk(JreLoadStatic(JavaLangSystem, out))) printlnWithNSString:JreStrcat("$I$", @"test1ToNSources: ", i, @" sources")];
-    id<JavaUtilList> sources = create_JavaUtilArrayList_init();
-    id<JavaUtilList> values = create_JavaUtilArrayList_init();
-    for (jint j = 0; j < i; j++) {
-      [sources addWithId:RxObservable_justWithId_(JavaLangInteger_valueOfWithInt_(j))];
-      [values addWithId:JavaLangInteger_valueOfWithInt_(j)];
+    @autoreleasepool {
+      [((JavaIoPrintStream *) nil_chk(JreLoadStatic(JavaLangSystem, out))) printlnWithNSString:JreStrcat("$I$", @"test1ToNSources: ", i, @" sources")];
+      id<JavaUtilList> sources = create_JavaUtilArrayList_init();
+      id<JavaUtilList> values = create_JavaUtilArrayList_init();
+      for (jint j = 0; j < i; j++) {
+        [sources addWithId:RxObservable_justWithId_(JavaLangInteger_valueOfWithInt_(j))];
+        [values addWithId:JavaLangInteger_valueOfWithInt_(j)];
+      }
+      RxObservable *result = RxObservable_combineLatestWithJavaUtilList_withRxFunctionsFuncN_(sources, func);
+      id<RxObserver> o = OrgMockitoMockito_mockWithIOSClass_(RxObserver_class_());
+      [((RxObservable *) nil_chk(result)) subscribeWithRxObserver:o];
+      [((id<RxObserver>) nil_chk(OrgMockitoMockito_verifyWithId_(o))) onNextWithId:values];
+      [((id<RxObserver>) nil_chk(OrgMockitoMockito_verifyWithId_(o))) onCompleted];
+      [((id<RxObserver>) nil_chk(OrgMockitoMockito_verifyWithId_withOrgMockitoVerificationVerificationMode_(o, OrgMockitoMockito_never()))) onErrorWithNSException:OrgMockitoMatchers_anyWithIOSClass_(NSException_class_())];
     }
-    RxObservable *result = RxObservable_combineLatestWithJavaUtilList_withRxFunctionsFuncN_(sources, func);
-    id<RxObserver> o = OrgMockitoMockito_mockWithIOSClass_(RxObserver_class_());
-    [((RxObservable *) nil_chk(result)) subscribeWithRxObserver:o];
-    [((id<RxObserver>) nil_chk(OrgMockitoMockito_verifyWithId_(o))) onNextWithId:values];
-    [((id<RxObserver>) nil_chk(OrgMockitoMockito_verifyWithId_(o))) onCompleted];
-    [((id<RxObserver>) nil_chk(OrgMockitoMockito_verifyWithId_withOrgMockitoVerificationVerificationMode_(o, OrgMockitoMockito_never()))) onErrorWithNSException:OrgMockitoMatchers_anyWithIOSClass_(NSException_class_())];
   }
 }
 
@@ -989,22 +991,24 @@ J2OBJC_INITIALIZED_DEFN(RxInternalOperatorsOnSubscribeCombineLatestTest)
   jint n = 10;
   id<RxFunctionsFuncN> func = create_RxInternalOperatorsOnSubscribeCombineLatestTest_$8_init();
   for (jint i = 1; i <= n; i++) {
-    [((JavaIoPrintStream *) nil_chk(JreLoadStatic(JavaLangSystem, out))) printlnWithNSString:JreStrcat("$I$", @"test1ToNSourcesScheduled: ", i, @" sources")];
-    id<JavaUtilList> sources = create_JavaUtilArrayList_init();
-    id<JavaUtilList> values = create_JavaUtilArrayList_init();
-    for (jint j = 0; j < i; j++) {
-      [sources addWithId:[((RxObservable *) nil_chk(RxObservable_justWithId_(JavaLangInteger_valueOfWithInt_(j)))) subscribeOnWithRxScheduler:RxSchedulersSchedulers_io()]];
-      [values addWithId:JavaLangInteger_valueOfWithInt_(j)];
+    @autoreleasepool {
+      [((JavaIoPrintStream *) nil_chk(JreLoadStatic(JavaLangSystem, out))) printlnWithNSString:JreStrcat("$I$", @"test1ToNSourcesScheduled: ", i, @" sources")];
+      id<JavaUtilList> sources = create_JavaUtilArrayList_init();
+      id<JavaUtilList> values = create_JavaUtilArrayList_init();
+      for (jint j = 0; j < i; j++) {
+        [sources addWithId:[((RxObservable *) nil_chk(RxObservable_justWithId_(JavaLangInteger_valueOfWithInt_(j)))) subscribeOnWithRxScheduler:RxSchedulersSchedulers_io()]];
+        [values addWithId:JavaLangInteger_valueOfWithInt_(j)];
+      }
+      RxObservable *result = RxObservable_combineLatestWithJavaUtilList_withRxFunctionsFuncN_(sources, func);
+      id<RxObserver> o = OrgMockitoMockito_mockWithIOSClass_(RxObserver_class_());
+      JavaUtilConcurrentCountDownLatch *cdl = create_JavaUtilConcurrentCountDownLatch_initWithInt_(1);
+      RxSubscriber *s = create_RxInternalOperatorsOnSubscribeCombineLatestTest_$9_initWithRxObserver_withJavaUtilConcurrentCountDownLatch_(o, cdl);
+      [((RxObservable *) nil_chk(result)) subscribeWithRxSubscriber:s];
+      [cdl await];
+      [((id<RxObserver>) nil_chk(OrgMockitoMockito_verifyWithId_(o))) onNextWithId:values];
+      [((id<RxObserver>) nil_chk(OrgMockitoMockito_verifyWithId_(o))) onCompleted];
+      [((id<RxObserver>) nil_chk(OrgMockitoMockito_verifyWithId_withOrgMockitoVerificationVerificationMode_(o, OrgMockitoMockito_never()))) onErrorWithNSException:OrgMockitoMatchers_anyWithIOSClass_(NSException_class_())];
     }
-    RxObservable *result = RxObservable_combineLatestWithJavaUtilList_withRxFunctionsFuncN_(sources, func);
-    id<RxObserver> o = OrgMockitoMockito_mockWithIOSClass_(RxObserver_class_());
-    JavaUtilConcurrentCountDownLatch *cdl = create_JavaUtilConcurrentCountDownLatch_initWithInt_(1);
-    RxSubscriber *s = create_RxInternalOperatorsOnSubscribeCombineLatestTest_$9_initWithRxObserver_withJavaUtilConcurrentCountDownLatch_(o, cdl);
-    [((RxObservable *) nil_chk(result)) subscribeWithRxSubscriber:s];
-    [cdl await];
-    [((id<RxObserver>) nil_chk(OrgMockitoMockito_verifyWithId_(o))) onNextWithId:values];
-    [((id<RxObserver>) nil_chk(OrgMockitoMockito_verifyWithId_(o))) onCompleted];
-    [((id<RxObserver>) nil_chk(OrgMockitoMockito_verifyWithId_withOrgMockitoVerificationVerificationMode_(o, OrgMockitoMockito_never()))) onErrorWithNSException:OrgMockitoMatchers_anyWithIOSClass_(NSException_class_())];
   }
 }
 
@@ -1135,25 +1139,24 @@ J2OBJC_INITIALIZED_DEFN(RxInternalOperatorsOnSubscribeCombineLatestTest)
 
 - (void)testBackpressureLoop {
   for (jint i = 0; i < 5000; i++) {
-    [self testBackpressure];
+    @autoreleasepool {
+      [self testBackpressure];
+    }
   }
 }
 
 - (void)testBackpressure {
-  @autoreleasepool {
-    id<RxFunctionsFunc2> combineLatestFunction = RxInternalOperatorsOnSubscribeCombineLatestTest_getConcatStringIntegerCombineLatestFunction(self);
-    jint NUM = JreLoadStatic(RxInternalUtilRxRingBuffer, SIZE) * 4;
-    RxObserversTestSubscriber *ts = create_RxObserversTestSubscriber_init();
-    [((RxObservable *) nil_chk([((RxObservable *) nil_chk(RxObservable_combineLatestWithRxObservable_withRxObservable_withRxFunctionsFunc2_(RxObservable_justWithId_withId_(@"one", @"two"), RxObservable_rangeWithInt_withInt_(2, NUM), combineLatestFunction))) observeOnWithRxScheduler:RxSchedulersSchedulers_computation()])) subscribeWithRxSubscriber:ts];
-    [ts awaitTerminalEvent];
-    [ts assertNoErrors];
-    [ts unsubscribe];
-    id<JavaUtilList> events = [ts getOnNextEvents];
-    OrgJunitAssert_assertEqualsWithId_withId_(@"two2", [((id<JavaUtilList>) nil_chk(events)) getWithInt:0]);
-    OrgJunitAssert_assertEqualsWithId_withId_(@"two3", [events getWithInt:1]);
-    OrgJunitAssert_assertEqualsWithId_withId_(@"two4", [events getWithInt:2]);
-    OrgJunitAssert_assertEqualsWithLong_withLong_(NUM, [events size]);
-  }
+  id<RxFunctionsFunc2> combineLatestFunction = RxInternalOperatorsOnSubscribeCombineLatestTest_getConcatStringIntegerCombineLatestFunction(self);
+  jint NUM = JreLoadStatic(RxInternalUtilRxRingBuffer, SIZE) * 4;
+  RxObserversTestSubscriber *ts = create_RxObserversTestSubscriber_init();
+  [((RxObservable *) nil_chk([((RxObservable *) nil_chk(RxObservable_combineLatestWithRxObservable_withRxObservable_withRxFunctionsFunc2_(RxObservable_justWithId_withId_(@"one", @"two"), RxObservable_rangeWithInt_withInt_(2, NUM), combineLatestFunction))) observeOnWithRxScheduler:RxSchedulersSchedulers_computation()])) subscribeWithRxSubscriber:ts];
+  [ts awaitTerminalEvent];
+  [ts assertNoErrors];
+  id<JavaUtilList> events = [ts getOnNextEvents];
+  OrgJunitAssert_assertEqualsWithId_withId_(@"two2", [((id<JavaUtilList>) nil_chk(events)) getWithInt:0]);
+  OrgJunitAssert_assertEqualsWithId_withId_(@"two3", [events getWithInt:1]);
+  OrgJunitAssert_assertEqualsWithId_withId_(@"two4", [events getWithInt:2]);
+  OrgJunitAssert_assertEqualsWithLong_withLong_(NUM, [events size]);
 }
 
 - (void)testWithCombineLatestIssue1717 {
@@ -1896,7 +1899,6 @@ withJavaUtilConcurrentCountDownLatch:(JavaUtilConcurrentCountDownLatch *)capture
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOnSubscribeCombineLatestTest_$9 class]);
   RELEASE_(val$o_);
   RELEASE_(val$cdl_);
   [super dealloc];
@@ -2519,7 +2521,6 @@ RxInternalOperatorsOnSubscribeCombineLatestTest_$21 *create_RxInternalOperatorsO
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOnSubscribeCombineLatestTest_$22 class]);
   RELEASE_(val$latch_);
   [super dealloc];
 }

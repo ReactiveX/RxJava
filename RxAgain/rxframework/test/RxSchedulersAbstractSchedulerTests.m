@@ -958,7 +958,6 @@ J2OBJC_IGNORE_DESIGNATED_BEGIN
 J2OBJC_IGNORE_DESIGNATED_END
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxSchedulersAbstractSchedulerTests_ConcurrentObserverValidator class]);
   RELEASE_(concurrentCounter_);
   RELEASE_(error_);
   RELEASE_(completed_);
@@ -1011,11 +1010,9 @@ J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxSchedulersAbstractSchedulerTests_ConcurrentOb
 @implementation RxSchedulersAbstractSchedulerTests_$1
 
 - (void)call {
-  [((JavaIoPrintStream *) nil_chk(JreLoadStatic(JavaLangSystem, out))) printlnWithNSString:@"firstAction start"];
   [((id<RxFunctionsAction0>) nil_chk(val$firstStepStart_)) call];
   [((id<RxFunctionsAction0>) nil_chk(val$firstStepEnd_)) call];
   [((JavaUtilConcurrentCountDownLatch *) nil_chk(val$latch_)) countDown];
-  [JreLoadStatic(JavaLangSystem, out) printlnWithNSString:@"firstAction end"];
 }
 
 - (instancetype)initWithRxFunctionsAction0:(id<RxFunctionsAction0>)capture$0
@@ -1072,11 +1069,9 @@ RxSchedulersAbstractSchedulerTests_$1 *create_RxSchedulersAbstractSchedulerTests
 @implementation RxSchedulersAbstractSchedulerTests_$2
 
 - (void)call {
-  [((JavaIoPrintStream *) nil_chk(JreLoadStatic(JavaLangSystem, out))) printlnWithNSString:@"secondAction start"];
   [((id<RxFunctionsAction0>) nil_chk(val$secondStepStart_)) call];
   [((RxScheduler_Worker *) nil_chk(val$inner_)) scheduleWithRxFunctionsAction0:val$firstAction_];
   [((id<RxFunctionsAction0>) nil_chk(val$secondStepEnd_)) call];
-  [JreLoadStatic(JavaLangSystem, out) printlnWithNSString:@"secondAction end"];
 }
 
 - (instancetype)initWithRxFunctionsAction0:(id<RxFunctionsAction0>)capture$0
@@ -1137,11 +1132,9 @@ RxSchedulersAbstractSchedulerTests_$2 *create_RxSchedulersAbstractSchedulerTests
 @implementation RxSchedulersAbstractSchedulerTests_$3
 
 - (void)call {
-  [((JavaIoPrintStream *) nil_chk(JreLoadStatic(JavaLangSystem, out))) printlnWithNSString:@"thirdAction start"];
   [((id<RxFunctionsAction0>) nil_chk(val$thirdStepStart_)) call];
   [((RxScheduler_Worker *) nil_chk(val$inner_)) scheduleWithRxFunctionsAction0:val$secondAction_];
   [((id<RxFunctionsAction0>) nil_chk(val$thirdStepEnd_)) call];
-  [JreLoadStatic(JavaLangSystem, out) printlnWithNSString:@"thirdAction end"];
 }
 
 - (instancetype)initWithRxFunctionsAction0:(id<RxFunctionsAction0>)capture$0

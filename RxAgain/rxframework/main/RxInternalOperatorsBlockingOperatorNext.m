@@ -307,7 +307,6 @@ J2OBJC_IGNORE_DESIGNATED_BEGIN
 J2OBJC_IGNORE_DESIGNATED_END
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsBlockingOperatorNext_NextObserver class]);
   RELEASE_(buf_);
   RELEASE_(waiting_);
   [super dealloc];

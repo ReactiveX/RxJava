@@ -45,7 +45,6 @@ public final class OnSubscribeRange implements OnSubscribe<Integer> {
         /** */
         private static final long serialVersionUID = 4114392207069098388L;
 
-        @Weak
         private Subscriber<? super Integer> childSubscriber;
         private final int endOfRange;
         private long currentIndex;

@@ -667,10 +667,7 @@ public class OperatorRetryTest {
 
     @Test(timeout = 10000)
     @AutoreleasePool
-    @DoppelHacks//No idea
     public void testUnsubscribeAfterError() {
-        if(PlatformUtils.isJ2objc())
-            return;
 
         @SuppressWarnings("unchecked")
         Observer<Long> observer = mock(Observer.class);

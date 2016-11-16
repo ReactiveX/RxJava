@@ -97,7 +97,6 @@ public final class RxJavaHooks {
 
     /** Initialize with the default delegation to the original RxJavaPlugins. */
     static {
-        System.out.println("In init YYYYYYYYYYYYYYYYYY");
         init();
     }
 

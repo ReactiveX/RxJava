@@ -1111,7 +1111,6 @@ RxInternalOperatorsOnSubscribeGroupJoinTest_$6 *create_RxInternalOperatorsOnSubs
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOnSubscribeGroupJoinTest_$7 class]);
   RELEASE_(val$ugnMockito_);
   [super dealloc];
 }

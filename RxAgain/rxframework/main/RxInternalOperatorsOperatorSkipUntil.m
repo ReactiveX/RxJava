@@ -147,7 +147,6 @@ J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxInternalOperatorsOperatorSkipUntil)
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOperatorSkipUntil_$1 class]);
   RELEASE_(val$gate_);
   RELEASE_(val$s_);
   [super dealloc];
@@ -221,7 +220,6 @@ RxInternalOperatorsOperatorSkipUntil_$1 *create_RxInternalOperatorsOperatorSkipU
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOperatorSkipUntil_$2 class]);
   RELEASE_(val$gate_);
   RELEASE_(val$s_);
   [super dealloc];

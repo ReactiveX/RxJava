@@ -220,29 +220,6 @@ J2OBJC_IGNORE_DESIGNATED_END
   [super setProducerWithRxProducer:p];
 }
 
-- (void)j2objcCleanup {
-  @try {
-    if ($__handler_ == nil) {
-      [super j2objcCleanup];
-    }
-    else {
-      [$__handler_ invokeWithId:self withJavaLangReflectMethod:[[self java_getClass] getMethod:@"j2objcCleanup" parameterTypes:[IOSObjectArray arrayWithObjects:(id[]){  } count:0 type:IOSClass_class_()]] withNSObjectArray:[IOSObjectArray arrayWithObjects:(id[]){  } count:0 type:NSObject_class_()]];
-    }
-  }
-  @catch (NSException *__ttlive) {
-    if ([__ttlive isKindOfClass:[JavaLangRuntimeException class]]) {
-      @throw (JavaLangRuntimeException *) cast_chk(__ttlive, [JavaLangRuntimeException class]);
-    }
-    else {
-      @throw create_JavaLangRuntimeException_initWithNSException_(__ttlive);
-    }
-  }
-}
-
-- (void)super$j2objcCleanup {
-  [super j2objcCleanup];
-}
-
 - (void)onErrorWithNSException:(NSException *)e {
   @try {
     if ($__handler_ == nil) {
@@ -267,7 +244,6 @@ J2OBJC_IGNORE_DESIGNATED_END
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxDopplMockMSubscriber_Moxy class]);
   RELEASE_($__handler_);
   [super dealloc];
 }
@@ -293,8 +269,6 @@ J2OBJC_IGNORE_DESIGNATED_END
     { NULL, "V", 0x1, 10, 5, -1, -1, -1, -1 },
     { NULL, "V", 0x1, 11, 12, -1, -1, -1, -1 },
     { NULL, "V", 0x1, 13, 12, -1, -1, -1, -1 },
-    { NULL, "V", 0x1, -1, -1, -1, -1, -1, -1 },
-    { NULL, "V", 0x1, -1, -1, -1, -1, -1, -1 },
     { NULL, "V", 0x1, 14, 15, -1, -1, -1, -1 },
     { NULL, "V", 0x1, 16, 15, -1, -1, -1, -1 },
   };
@@ -319,16 +293,14 @@ J2OBJC_IGNORE_DESIGNATED_END
   methods[16].selector = @selector(super$onNextWithId:);
   methods[17].selector = @selector(setProducerWithRxProducer:);
   methods[18].selector = @selector(super$setProducerWithRxProducer:);
-  methods[19].selector = @selector(j2objcCleanup);
-  methods[20].selector = @selector(super$j2objcCleanup);
-  methods[21].selector = @selector(onErrorWithNSException:);
-  methods[22].selector = @selector(super$onErrorWithNSException:);
+  methods[19].selector = @selector(onErrorWithNSException:);
+  methods[20].selector = @selector(super$onErrorWithNSException:);
   #pragma clang diagnostic pop
   static const J2ObjcFieldInfo fields[] = {
     { "$__handler_", "LJavaLangReflectInvocationHandler;", .constantValue.asLong = 0, 0x0, -1, -1, -1, -1 },
   };
   static const void *ptrTable[] = { "setHandler", "LJavaLangReflectInvocationHandler;", "LJavaLangCloneNotSupportedException;", "hashCode", "equals", "LNSObject;", "super$equals", "toString", "onNext", "(Ljava/lang/Object;)V", "super$onNext", "setProducer", "LRxProducer;", "super$setProducer", "onError", "LNSException;", "super$onError" };
-  static const J2ObjcClassInfo _RxDopplMockMSubscriber_Moxy = { "MSubscriber$Moxy", "rx.doppl.mock", ptrTable, methods, fields, 7, 0x1, 23, 1, -1, -1, -1, -1, -1 };
+  static const J2ObjcClassInfo _RxDopplMockMSubscriber_Moxy = { "MSubscriber$Moxy", "rx.doppl.mock", ptrTable, methods, fields, 7, 0x1, 21, 1, -1, -1, -1, -1, -1 };
   return &_RxDopplMockMSubscriber_Moxy;
 }
 

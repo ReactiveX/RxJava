@@ -96,7 +96,7 @@ J2OBJC_TYPE_LITERAL_HEADER(RxInternalOperatorsOnSubscribeCombineLatest)
 
 @interface RxInternalOperatorsOnSubscribeCombineLatest_LatestCoordinator : JavaUtilConcurrentAtomicAtomicInteger < RxProducer, RxSubscription > {
  @public
-  __unsafe_unretained RxSubscriber *actual_;
+  RxSubscriber *actual_;
   id<RxFunctionsFuncN> combiner_;
   IOSObjectArray *subscribers_;
   jint bufferSize_;
@@ -148,6 +148,7 @@ J2OBJC_TYPE_LITERAL_HEADER(RxInternalOperatorsOnSubscribeCombineLatest)
 
 J2OBJC_STATIC_INIT(RxInternalOperatorsOnSubscribeCombineLatest_LatestCoordinator)
 
+J2OBJC_FIELD_SETTER(RxInternalOperatorsOnSubscribeCombineLatest_LatestCoordinator, actual_, RxSubscriber *)
 J2OBJC_FIELD_SETTER(RxInternalOperatorsOnSubscribeCombineLatest_LatestCoordinator, combiner_, id<RxFunctionsFuncN>)
 J2OBJC_FIELD_SETTER(RxInternalOperatorsOnSubscribeCombineLatest_LatestCoordinator, subscribers_, IOSObjectArray *)
 J2OBJC_FIELD_SETTER(RxInternalOperatorsOnSubscribeCombineLatest_LatestCoordinator, latest_, IOSObjectArray *)
@@ -181,7 +182,7 @@ J2OBJC_TYPE_LITERAL_HEADER(RxInternalOperatorsOnSubscribeCombineLatest_LatestCoo
 
 @interface RxInternalOperatorsOnSubscribeCombineLatest_CombinerSubscriber : RxSubscriber {
  @public
-  __unsafe_unretained RxInternalOperatorsOnSubscribeCombineLatest_LatestCoordinator *parent_;
+  RxInternalOperatorsOnSubscribeCombineLatest_LatestCoordinator *parent_;
   jint index_;
   jboolean done_;
 }
@@ -202,6 +203,8 @@ J2OBJC_TYPE_LITERAL_HEADER(RxInternalOperatorsOnSubscribeCombineLatest_LatestCoo
 @end
 
 J2OBJC_EMPTY_STATIC_INIT(RxInternalOperatorsOnSubscribeCombineLatest_CombinerSubscriber)
+
+J2OBJC_FIELD_SETTER(RxInternalOperatorsOnSubscribeCombineLatest_CombinerSubscriber, parent_, RxInternalOperatorsOnSubscribeCombineLatest_LatestCoordinator *)
 
 FOUNDATION_EXPORT void RxInternalOperatorsOnSubscribeCombineLatest_CombinerSubscriber_initWithRxInternalOperatorsOnSubscribeCombineLatest_LatestCoordinator_withInt_(RxInternalOperatorsOnSubscribeCombineLatest_CombinerSubscriber *self, RxInternalOperatorsOnSubscribeCombineLatest_LatestCoordinator *parent, jint index);
 

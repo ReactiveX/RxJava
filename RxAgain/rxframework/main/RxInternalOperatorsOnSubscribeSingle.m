@@ -4,22 +4,22 @@
 //
 
 #include "J2ObjC_source.h"
-#include "RxDopplSafeObservableUnsubscribe.h"
 #include "RxInternalOperatorsOnSubscribeSingle.h"
 #include "RxObservable.h"
 #include "RxSingleSubscriber.h"
 #include "RxSubscriber.h"
+#include "RxSubscription.h"
 #include "java/lang/IllegalArgumentException.h"
 #include "java/util/NoSuchElementException.h"
 
 @interface RxInternalOperatorsOnSubscribeSingle () {
  @public
-  RxDopplSafeObservableUnsubscribe *observable_;
+  RxObservable *observable_;
 }
 
 @end
 
-J2OBJC_FIELD_SETTER(RxInternalOperatorsOnSubscribeSingle, observable_, RxDopplSafeObservableUnsubscribe *)
+J2OBJC_FIELD_SETTER(RxInternalOperatorsOnSubscribeSingle, observable_, RxObservable *)
 
 @interface RxInternalOperatorsOnSubscribeSingle_$1 : RxSubscriber {
  @public
@@ -62,7 +62,7 @@ __attribute__((unused)) static RxInternalOperatorsOnSubscribeSingle_$1 *create_R
 - (void)callWithId:(RxSingleSubscriber *)child {
   RxSubscriber *parent = create_RxInternalOperatorsOnSubscribeSingle_$1_initWithRxSingleSubscriber_(child);
   [((RxSingleSubscriber *) nil_chk(child)) addWithRxSubscription:parent];
-  [((RxDopplSafeObservableUnsubscribe *) nil_chk(observable_)) unsafeSubscribeWithRxSubscriber:parent];
+  [((RxObservable *) nil_chk(observable_)) unsafeSubscribeWithRxSubscriber:parent];
 }
 
 + (RxInternalOperatorsOnSubscribeSingle *)createWithRxObservable:(RxObservable *)observable {
@@ -87,10 +87,10 @@ __attribute__((unused)) static RxInternalOperatorsOnSubscribeSingle_$1 *create_R
   methods[2].selector = @selector(createWithRxObservable:);
   #pragma clang diagnostic pop
   static const J2ObjcFieldInfo fields[] = {
-    { "observable_", "LRxDopplSafeObservableUnsubscribe;", .constantValue.asLong = 0, 0x12, -1, -1, -1, -1 },
+    { "observable_", "LRxObservable;", .constantValue.asLong = 0, 0x12, -1, -1, 7, -1 },
   };
-  static const void *ptrTable[] = { "LRxObservable;", "(Lrx/Observable<TT;>;)V", "call", "LRxSingleSubscriber;", "(Lrx/SingleSubscriber<-TT;>;)V", "create", "<T:Ljava/lang/Object;>(Lrx/Observable<TT;>;)Lrx/internal/operators/OnSubscribeSingle<TT;>;", "<T:Ljava/lang/Object;>Ljava/lang/Object;Lrx/Single$OnSubscribe<TT;>;" };
-  static const J2ObjcClassInfo _RxInternalOperatorsOnSubscribeSingle = { "OnSubscribeSingle", "rx.internal.operators", ptrTable, methods, fields, 7, 0x1, 3, 1, -1, -1, -1, 7, -1 };
+  static const void *ptrTable[] = { "LRxObservable;", "(Lrx/Observable<TT;>;)V", "call", "LRxSingleSubscriber;", "(Lrx/SingleSubscriber<-TT;>;)V", "create", "<T:Ljava/lang/Object;>(Lrx/Observable<TT;>;)Lrx/internal/operators/OnSubscribeSingle<TT;>;", "Lrx/Observable<TT;>;", "<T:Ljava/lang/Object;>Ljava/lang/Object;Lrx/Single$OnSubscribe<TT;>;" };
+  static const J2ObjcClassInfo _RxInternalOperatorsOnSubscribeSingle = { "OnSubscribeSingle", "rx.internal.operators", ptrTable, methods, fields, 7, 0x1, 3, 1, -1, -1, -1, 8, -1 };
   return &_RxInternalOperatorsOnSubscribeSingle;
 }
 
@@ -98,7 +98,7 @@ __attribute__((unused)) static RxInternalOperatorsOnSubscribeSingle_$1 *create_R
 
 void RxInternalOperatorsOnSubscribeSingle_initWithRxObservable_(RxInternalOperatorsOnSubscribeSingle *self, RxObservable *observable) {
   NSObject_init(self);
-  JreStrongAssignAndConsume(&self->observable_, new_RxDopplSafeObservableUnsubscribe_initWithRxObservable_(observable));
+  JreStrongAssign(&self->observable_, observable);
 }
 
 RxInternalOperatorsOnSubscribeSingle *new_RxInternalOperatorsOnSubscribeSingle_initWithRxObservable_(RxObservable *observable) {
@@ -158,7 +158,6 @@ J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxInternalOperatorsOnSubscribeSingle)
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOnSubscribeSingle_$1 class]);
   RELEASE_(emission_);
   RELEASE_(val$child_);
   [super dealloc];

@@ -28,7 +28,6 @@
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalUtilObserverSubscriber class]);
   RELEASE_(observer_);
   [super dealloc];
 }
@@ -48,7 +47,7 @@
   methods[3].selector = @selector(onCompleted);
   #pragma clang diagnostic pop
   static const J2ObjcFieldInfo fields[] = {
-    { "observer_", "LRxObserver;", .constantValue.asLong = 0, 0x0, -1, -1, 7, -1 },
+    { "observer_", "LRxObserver;", .constantValue.asLong = 0, 0x10, -1, -1, 7, -1 },
   };
   static const void *ptrTable[] = { "LRxObserver;", "(Lrx/Observer<-TT;>;)V", "onNext", "LNSObject;", "(TT;)V", "onError", "LNSException;", "Lrx/Observer<-TT;>;", "<T:Ljava/lang/Object;>Lrx/Subscriber<TT;>;" };
   static const J2ObjcClassInfo _RxInternalUtilObserverSubscriber = { "ObserverSubscriber", "rx.internal.util", ptrTable, methods, fields, 7, 0x11, 4, 1, -1, -1, -1, 8, -1 };

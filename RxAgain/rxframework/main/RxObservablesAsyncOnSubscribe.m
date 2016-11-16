@@ -906,7 +906,6 @@ J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxObservablesAsyncOnSubscribe_AsyncOuterManager
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxObservablesAsyncOnSubscribe_AsyncOuterManager_$1 class]);
   RELEASE_(this$0_);
   RELEASE_(val$buffer_);
   [super dealloc];
@@ -1420,7 +1419,6 @@ withRxObservablesAsyncOnSubscribe_AsyncOuterManager:(RxObservablesAsyncOnSubscri
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxObservablesAsyncOnSubscribe_$6 class]);
   RELEASE_(val$actualSubscriber_);
   RELEASE_(val$outerProducer_);
   [super dealloc];

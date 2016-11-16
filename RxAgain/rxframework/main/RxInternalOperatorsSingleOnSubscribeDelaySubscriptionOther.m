@@ -215,7 +215,6 @@ RxInternalOperatorsSingleOnSubscribeDelaySubscriptionOther_$1 *create_RxInternal
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsSingleOnSubscribeDelaySubscriptionOther_$2 class]);
   RELEASE_(this$0_);
   RELEASE_(val$child_);
   RELEASE_(val$serial_);

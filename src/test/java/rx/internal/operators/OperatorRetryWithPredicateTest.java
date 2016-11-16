@@ -232,11 +232,8 @@ public class OperatorRetryWithPredicateTest {
     }
 
     @Test(timeout = 10000)
-    @DoppelHacks//No idea. Too tired right now.
     public void testUnsubscribeAfterError() {
 
-        if(PlatformUtils.isJ2objc())
-            return;
         @SuppressWarnings("unchecked")
         Observer<Long> observer = mock(Observer.class);
 

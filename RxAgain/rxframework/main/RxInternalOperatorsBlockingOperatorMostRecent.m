@@ -163,7 +163,6 @@ J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxInternalOperatorsBlockingOperatorMostRecent)
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsBlockingOperatorMostRecent_MostRecentObserver class]);
   JreReleaseVolatile(&value_);
   [super dealloc];
 }

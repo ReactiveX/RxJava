@@ -270,7 +270,6 @@ RxInternalOperatorsOperatorSubscribeOn_$1 *create_RxInternalOperatorsOperatorSub
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOperatorSubscribeOn_$1_$1 class]);
   RELEASE_(this$0_);
   RELEASE_(val$t_);
   [super dealloc];

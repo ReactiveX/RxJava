@@ -17,6 +17,9 @@ package rx.plugins;
 
 import static org.junit.Assert.*;
 
+
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.lang.reflect.Method;
 import java.util.*;
@@ -69,7 +72,16 @@ public class RxJavaHooksTest {
 
             assertNotNull(aste);
 
-            assertTrue(aste.getMessage(), aste.getMessage().contains("createObservable"));
+            StringWriter stringWriter = new StringWriter();
+            PrintWriter printWriter = new PrintWriter(stringWriter);
+            aste.printStackTrace(printWriter);
+            printWriter.close();
+            String stackTrace = stringWriter.toString();
+
+            String message = aste.getMessage();
+            System.out.println("Message: "+ message);
+
+            assertTrue(message, message.contains("createObservable"));
 
             RxJavaHooks.clearAssemblyTracking();
 

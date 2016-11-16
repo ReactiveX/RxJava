@@ -1544,12 +1544,14 @@ __attribute__((unused)) static RxInternalOperatorsOperatorSwitchTest_$32 *create
 }
 
 - (void)asyncInner {
-  for (jint i = 0; i < 100; i++) {
-    JavaUtilConcurrentAtomicAtomicReference *error = create_JavaUtilConcurrentAtomicAtomicReference_init();
-    [((RxObservablesBlockingObservable *) nil_chk([((RxObservable *) nil_chk([((RxObservable *) nil_chk([((RxObservable *) nil_chk([((RxObservable *) nil_chk([((RxObservable *) nil_chk(RxObservable_justWithId_([((RxObservable *) nil_chk(RxObservable_rangeWithInt_withInt_(1, 1000 * 1000))) subscribeOnWithRxScheduler:RxSchedulersSchedulers_computation()]))) switchMapWithRxFunctionsFunc1:RxInternalUtilUtilityFunctions_identity()])) observeOnWithRxScheduler:RxSchedulersSchedulers_computation()])) ignoreElements])) timeoutWithLong:10 withJavaUtilConcurrentTimeUnit:JreLoadEnum(JavaUtilConcurrentTimeUnit, SECONDS)])) toBlocking])) subscribeWithRxFunctionsAction1:RxFunctionsActions_empty() withRxFunctionsAction1:create_RxInternalOperatorsOperatorSwitchTest_$32_initWithJavaUtilConcurrentAtomicAtomicReference_(error)];
-    NSException *ex = [error get];
-    if (ex != nil) {
-      @throw ex;
+  for (jint i = 0; i < 10; i++) {
+    @autoreleasepool {
+      JavaUtilConcurrentAtomicAtomicReference *error = create_JavaUtilConcurrentAtomicAtomicReference_init();
+      [((RxObservablesBlockingObservable *) nil_chk([((RxObservable *) nil_chk([((RxObservable *) nil_chk([((RxObservable *) nil_chk([((RxObservable *) nil_chk([((RxObservable *) nil_chk(RxObservable_justWithId_([((RxObservable *) nil_chk(RxObservable_rangeWithInt_withInt_(1, 1000 * 100))) subscribeOnWithRxScheduler:RxSchedulersSchedulers_computation()]))) switchMapWithRxFunctionsFunc1:RxInternalUtilUtilityFunctions_identity()])) observeOnWithRxScheduler:RxSchedulersSchedulers_computation()])) ignoreElements])) timeoutWithLong:15 withJavaUtilConcurrentTimeUnit:JreLoadEnum(JavaUtilConcurrentTimeUnit, SECONDS)])) toBlocking])) subscribeWithRxFunctionsAction1:RxFunctionsActions_empty() withRxFunctionsAction1:create_RxInternalOperatorsOperatorSwitchTest_$32_initWithJavaUtilConcurrentAtomicAtomicReference_(error)];
+      NSException *ex = [error get];
+      if (ex != nil) {
+        @throw ex;
+      }
     }
   }
 }
@@ -3439,7 +3441,6 @@ RxInternalOperatorsOperatorSwitchTest_$14 *create_RxInternalOperatorsOperatorSwi
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOperatorSwitchTest_$15 class]);
   RELEASE_(val$testSubscriber_);
   [super dealloc];
 }
@@ -3642,11 +3643,6 @@ J2OBJC_IGNORE_DESIGNATED_BEGIN
   return self;
 }
 J2OBJC_IGNORE_DESIGNATED_END
-
-- (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOperatorSwitchTest_$18 class]);
-  [super dealloc];
-}
 
 + (const J2ObjcClassInfo *)__metadata {
   static J2ObjcMethodInfo methods[] = {
@@ -4129,11 +4125,6 @@ J2OBJC_IGNORE_DESIGNATED_BEGIN
 }
 J2OBJC_IGNORE_DESIGNATED_END
 
-- (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOperatorSwitchTest_$29 class]);
-  [super dealloc];
-}
-
 + (const J2ObjcClassInfo *)__metadata {
   static J2ObjcMethodInfo methods[] = {
     { NULL, "V", 0x1, -1, -1, -1, -1, -1, -1 },
@@ -4186,7 +4177,6 @@ RxInternalOperatorsOperatorSwitchTest_$29 *create_RxInternalOperatorsOperatorSwi
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOperatorSwitchTest_$30 class]);
   RELEASE_(val$lastSeen_);
   [super dealloc];
 }

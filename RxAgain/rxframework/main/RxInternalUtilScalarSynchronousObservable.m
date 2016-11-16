@@ -3,9 +3,7 @@
 //  source: /Users/kgalligan/devel-doppl/RxJava/src/main/java/rx/internal/util/ScalarSynchronousObservable.java
 //
 
-#include "IOSClass.h"
 #include "J2ObjC_source.h"
-#include "RxDopplJ2objcWeakReference.h"
 #include "RxExceptionsExceptions.h"
 #include "RxFunctionsAction0.h"
 #include "RxFunctionsFunc1.h"
@@ -357,8 +355,7 @@ J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxInternalUtilScalarSynchronousObservable_Scala
 
 - (void)call {
   RxSubscriber *a = actual_;
-  if (a == nil || [a isUnsubscribed]) {
-    JreStrongAssign(&actual_, nil);
+  if ([((RxSubscriber *) nil_chk(a)) isUnsubscribed]) {
     return;
   }
   id v = value_ScalarAsyncProducer_;
@@ -370,13 +367,9 @@ J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxInternalUtilScalarSynchronousObservable_Scala
     return;
   }
   if ([a isUnsubscribed]) {
-    JreStrongAssign(&actual_, nil);
     return;
   }
   [a onCompleted];
-  if ([a isUnsubscribed]) {
-    JreStrongAssign(&actual_, nil);
-  }
 }
 
 - (NSString *)description {
@@ -406,7 +399,7 @@ J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxInternalUtilScalarSynchronousObservable_Scala
   #pragma clang diagnostic pop
   static const J2ObjcFieldInfo fields[] = {
     { "serialVersionUID", "J", .constantValue.asLong = RxInternalUtilScalarSynchronousObservable_ScalarAsyncProducer_serialVersionUID, 0x1a, -1, -1, -1, -1 },
-    { "actual_", "LRxSubscriber;", .constantValue.asLong = 0, 0x0, -1, -1, 5, -1 },
+    { "actual_", "LRxSubscriber;", .constantValue.asLong = 0, 0x10, -1, -1, 5, -1 },
     { "value_ScalarAsyncProducer_", "LNSObject;", .constantValue.asLong = 0, 0x10, 6, -1, 7, -1 },
     { "onSchedule_", "LRxFunctionsFunc1;", .constantValue.asLong = 0, 0x10, -1, -1, 8, -1 },
   };
@@ -453,8 +446,8 @@ J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxInternalUtilScalarSynchronousObservable_Scala
     return;
   }
   once_ = true;
-  RxSubscriber *a = [((RxDopplJ2objcWeakReference *) nil_chk(actual_)) get];
-  if (a == nil || [a isUnsubscribed]) {
+  RxSubscriber *a = actual_;
+  if ([((RxSubscriber *) nil_chk(a)) isUnsubscribed]) {
     return;
   }
   id v = value_;
@@ -488,11 +481,11 @@ J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxInternalUtilScalarSynchronousObservable_Scala
   methods[1].selector = @selector(requestWithLong:);
   #pragma clang diagnostic pop
   static const J2ObjcFieldInfo fields[] = {
-    { "actual_", "LRxDopplJ2objcWeakReference;", .constantValue.asLong = 0, 0x10, -1, -1, 4, -1 },
+    { "actual_", "LRxSubscriber;", .constantValue.asLong = 0, 0x10, -1, -1, 4, -1 },
     { "value_", "LNSObject;", .constantValue.asLong = 0, 0x10, -1, -1, 5, -1 },
     { "once_", "Z", .constantValue.asLong = 0, 0x0, -1, -1, -1, -1 },
   };
-  static const void *ptrTable[] = { "LRxSubscriber;LNSObject;", "(Lrx/Subscriber<-TT;>;TT;)V", "request", "J", "Lrx/doppl/J2objcWeakReference<Lrx/Subscriber<-TT;>;>;", "TT;", "LRxInternalUtilScalarSynchronousObservable;", "<T:Ljava/lang/Object;>Ljava/lang/Object;Lrx/Producer;" };
+  static const void *ptrTable[] = { "LRxSubscriber;LNSObject;", "(Lrx/Subscriber<-TT;>;TT;)V", "request", "J", "Lrx/Subscriber<-TT;>;", "TT;", "LRxInternalUtilScalarSynchronousObservable;", "<T:Ljava/lang/Object;>Ljava/lang/Object;Lrx/Producer;" };
   static const J2ObjcClassInfo _RxInternalUtilScalarSynchronousObservable_WeakSingleProducer = { "WeakSingleProducer", "rx.internal.util", ptrTable, methods, fields, 7, 0x18, 2, 3, 6, -1, -1, 7, -1 };
   return &_RxInternalUtilScalarSynchronousObservable_WeakSingleProducer;
 }
@@ -501,7 +494,7 @@ J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxInternalUtilScalarSynchronousObservable_Scala
 
 void RxInternalUtilScalarSynchronousObservable_WeakSingleProducer_initWithRxSubscriber_withId_(RxInternalUtilScalarSynchronousObservable_WeakSingleProducer *self, RxSubscriber *actual, id value) {
   NSObject_init(self);
-  JreStrongAssignAndConsume(&self->actual_, new_RxDopplJ2objcWeakReference_initWithId_(actual));
+  JreStrongAssign(&self->actual_, actual);
   JreStrongAssign(&self->value_, value);
 }
 

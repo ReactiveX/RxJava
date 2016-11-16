@@ -16,7 +16,7 @@
 
 @interface RxInternalOperatorsOperatorMaterialize_ParentSubscriber () {
  @public
-  __unsafe_unretained RxSubscriber *child_;
+  RxSubscriber *child_;
   volatile_id terminalNotification_;
   jboolean busy_;
   jboolean missed_;
@@ -29,6 +29,7 @@
 
 @end
 
+J2OBJC_FIELD_SETTER(RxInternalOperatorsOperatorMaterialize_ParentSubscriber, child_, RxSubscriber *)
 J2OBJC_VOLATILE_FIELD_SETTER(RxInternalOperatorsOperatorMaterialize_ParentSubscriber, terminalNotification_, RxNotification *)
 J2OBJC_FIELD_SETTER(RxInternalOperatorsOperatorMaterialize_ParentSubscriber, requested_ParentSubscriber_, JavaUtilConcurrentAtomicAtomicLong *)
 
@@ -212,12 +213,11 @@ J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxInternalOperatorsOperatorMaterialize_Holder)
 
 - (void)__javaClone:(RxInternalOperatorsOperatorMaterialize_ParentSubscriber *)original {
   [super __javaClone:original];
-  [child_ release];
   JreCloneVolatileStrong(&terminalNotification_, &original->terminalNotification_);
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOperatorMaterialize_ParentSubscriber class]);
+  RELEASE_(child_);
   JreReleaseVolatile(&terminalNotification_);
   RELEASE_(requested_ParentSubscriber_);
   [super dealloc];
@@ -262,7 +262,7 @@ J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxInternalOperatorsOperatorMaterialize_Holder)
 void RxInternalOperatorsOperatorMaterialize_ParentSubscriber_initWithRxSubscriber_(RxInternalOperatorsOperatorMaterialize_ParentSubscriber *self, RxSubscriber *child) {
   RxSubscriber_init(self);
   JreStrongAssignAndConsume(&self->requested_ParentSubscriber_, new_JavaUtilConcurrentAtomicAtomicLong_init());
-  self->child_ = child;
+  JreStrongAssign(&self->child_, child);
 }
 
 RxInternalOperatorsOperatorMaterialize_ParentSubscriber *new_RxInternalOperatorsOperatorMaterialize_ParentSubscriber_initWithRxSubscriber_(RxSubscriber *child) {

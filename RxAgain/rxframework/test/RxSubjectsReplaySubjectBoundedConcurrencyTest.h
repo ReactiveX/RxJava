@@ -16,17 +16,43 @@
 #if !defined (RxSubjectsReplaySubjectBoundedConcurrencyTest_) && (INCLUDE_ALL_RxSubjectsReplaySubjectBoundedConcurrencyTest || defined(INCLUDE_RxSubjectsReplaySubjectBoundedConcurrencyTest))
 #define RxSubjectsReplaySubjectBoundedConcurrencyTest_
 
+@class IOSObjectArray;
+
 @interface RxSubjectsReplaySubjectBoundedConcurrencyTest : NSObject
 
 #pragma mark Public
 
 - (instancetype)init;
 
++ (void)mainWithNSStringArray:(IOSObjectArray *)args;
+
+- (void)testConcurrentSizeAndHasAnyValue;
+
+- (void)testConcurrentSizeAndHasAnyValueBounded;
+
+- (void)testConcurrentSizeAndHasAnyValueTimeBounded;
+
+- (void)testRaceForTerminalState;
+
+- (void)testReplaySubjectConcurrentSubscribersDoingReplayDontBlockEachOther;
+
 - (void)testReplaySubjectEmissionSubscriptionRace;
+
+- (void)testSubscribeCompletionRaceCondition;
+
+- (void)unboundedReplaySubjectConcurrentSubscriptions;
+
+- (void)unboundedReplaySubjectConcurrentSubscriptionsLoop;
+
+- (void)unboundedTimeReplaySubjectConcurrentSubscriptions;
+
+- (void)unboundedTimeReplaySubjectConcurrentSubscriptionsLoop;
 
 @end
 
 J2OBJC_EMPTY_STATIC_INIT(RxSubjectsReplaySubjectBoundedConcurrencyTest)
+
+FOUNDATION_EXPORT void RxSubjectsReplaySubjectBoundedConcurrencyTest_mainWithNSStringArray_(IOSObjectArray *args);
 
 FOUNDATION_EXPORT void RxSubjectsReplaySubjectBoundedConcurrencyTest_init(RxSubjectsReplaySubjectBoundedConcurrencyTest *self);
 

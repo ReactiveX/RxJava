@@ -173,7 +173,6 @@ J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxInternalOperatorsOperatorBufferWithSize)
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOperatorBufferWithSize_BufferExact class]);
   RELEASE_(actual_);
   RELEASE_(buffer_);
   [super dealloc];
@@ -330,7 +329,6 @@ RxInternalOperatorsOperatorBufferWithSize_BufferExact_$1 *create_RxInternalOpera
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOperatorBufferWithSize_BufferSkip class]);
   RELEASE_(actual_);
   RELEASE_(buffer_);
   [super dealloc];
@@ -506,7 +504,6 @@ J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxInternalOperatorsOperatorBufferWithSize_Buffe
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOperatorBufferWithSize_BufferOverlap class]);
   RELEASE_(actual_);
   RELEASE_(queue_);
   RELEASE_(requested_BufferOverlap_);

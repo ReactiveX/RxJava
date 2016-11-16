@@ -1,27 +1,20 @@
 import com.google.j2objc.annotations.AutoreleasePool;
 
 import org.junit.runner.Description;
-import org.junit.runner.Result;
 import org.junit.runner.notification.RunListener;
 
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import co.touchlab.doppel.testing.DopplJunitTestRunner;
-import rx.internal.operators.InternalSafeSubscriberTest;
-import rx.internal.operators.OnSubscribeCollectTest;
-import rx.internal.operators.OnSubscribeRefCountTest;
-import rx.internal.operators.OperatorCastTest;
-import rx.internal.operators.OperatorCountTest;
-import rx.internal.schedulers.InternalGenericScheduledExecutorServiceTest;
+import rx.plugins.RxJavaHooksTest;
 import rx.subjects.ReplaySubjectBoundedConcurrencyTest;
+
+//import rx.internal.operators.InternalSafeSubscriberTest;
+//import rx.internal.schedulers.InternalGenericScheduledExecutorServiceTest;
 
 /*-[
 #import <mach/mach.h>
@@ -54,7 +47,7 @@ public class OneTest
         }
     }
 
-    public static void runTests()
+    public static void runTests(int count, int offset)
     {
 //        runDoppl();
         new Thread()
@@ -62,22 +55,24 @@ public class OneTest
             @Override
             public void run()
             {
-                runDoppl();
+                runDoppl(count, offset);
             }
         }.start();
     }
 
     @AutoreleasePool
-    private static void runDoppl()
+    private static void runDoppl(int count, int offset)
     {
-        List<Class> smoothClasses = new ArrayList<>(Arrays.asList(alltests));
+        List<Class> smoothClasses = new ArrayList<>(Arrays.asList(alltests2));
         smoothClasses.removeAll(Arrays.asList(bigmem));
         smoothClasses.removeAll(Arrays.asList(failing));
+
+        smoothClasses = smoothClasses.subList(offset, Math.min(offset + count, smoothClasses.size()));
 
         Class[] asdf = smoothClasses.toArray(new Class[smoothClasses.size()]);
 
         DopplJunitTestRunner.run(asdf,
-                new BigMemRunListener());
+                new BigMemRunListener(), new BigMemDopplRunListener());
 
 //        DopplJunitTestRunner.run(new Class[]{OperatorCountTest.class},
 //                new RunListener());
@@ -104,10 +99,34 @@ public class OneTest
     {
         run(a, b, c, d);
     }
+public static void runTests(String a, String b, String c, String d, String e)
+    {
+        run(a, b, c, d, e);
+    }
+public static void runTests(String a, String b, String c, String d, String e, String f)
+    {
+        run(a, b, c, d, e, f);
+    }
+public static void runTests(String a, String b, String c, String d, String e, String f, String g)
+    {
+        run(a, b, c, d, e, f, g);
+    }
+public static void runTests(String a, String b, String c, String d, String e, String f, String g, String h)
+    {
+        run(a, b, c, d, e, f, g, h);
+    }
+public static void runTests(String a, String b, String c, String d, String e, String f, String g, String h, String i)
+    {
+        run(a, b, c, d, e, f, g, h, i);
+    }
+public static void runTests(String a, String b, String c, String d, String e, String f, String g, String h, String i, String j)
+    {
+        run(a, b, c, d, e, f, g, h, i, j);
+    }
 
     private static void run(String... classNames)
     {
-        DopplJunitTestRunner.run(classNames, new BigMemRunListener());
+        DopplJunitTestRunner.run(classNames, new BigMemRunListener(), new BigMemDopplRunListener());
     }
 
     /*public static void runMethod(String className, String methodName)
@@ -123,6 +142,34 @@ public class OneTest
             throw new RuntimeException(e);
         }
     }*/
+
+    static class BigMemDopplRunListener implements DopplJunitTestRunner.DopplJunitListener
+    {
+        long memSize;
+
+        @Override
+        public void startRun(String s)
+        {
+            memSize = printMem();
+            System.out.println("\n\nTRACE RUN START **************** "+ s +" **************** \n\n" );
+        }
+
+        @Override
+        public void endRun(String s)
+        {
+            long endSize = printMem();
+
+            long megs = (long)Math.floor((double)(endSize-memSize)/(double)(1024*1024));
+            if(Math.abs(megs) > 0)
+            {
+                System.out.println("\n\nTRACE RUN END (big: "+ megs +"m) **************** "+ s +" **************** \n\n" );
+            }
+            else
+            {
+                System.out.println("\n\nTRACE RUN END **************** "+ s +" **************** \n\n" );
+            }
+        }
+    }
 
     static class BigMemRunListener extends RunListener
     {
@@ -192,6 +239,238 @@ public class OneTest
         }
     }
 
+    public static Class[] alltests2 = new Class[] {
+            //Moved to front. Fail later for some reason.
+            rx.schedulers.ComputationSchedulerTests.class,
+            rx.schedulers.IoSchedulerTest.class,
+            rx.schedulers.NewThreadSchedulerTest.class,
+            rx.internal.schedulers.ExecutorSchedulerTest.class,
+            rx.SchedulerWorkerTest.class,
+
+            //Normal order
+            rx.doppl.memory.SubscriberAutomaticRemovalTest.class,
+            rx.exceptions.CompositeExceptionTest.class,
+            rx.exceptions.ExceptionsNullTest.class,
+            rx.exceptions.ExceptionsTest.class,
+            rx.exceptions.OnNextValueTest.class,
+            rx.functions.ActionsTest.class,
+            rx.functions.FunctionsTest.class,
+            rx.internal.operators.BackpressureUtilsTest.class,
+            rx.internal.operators.BlockingOperatorLatestTest.class,
+            rx.internal.operators.BlockingOperatorMostRecentTest.class,
+            rx.internal.operators.BlockingOperatorNextTest.class,
+            rx.internal.operators.BlockingOperatorToFutureTest.class,
+            rx.internal.operators.BlockingOperatorToIteratorTest.class,
+            rx.internal.operators.CachedObservableTest.class,
+            rx.internal.operators.CompletableFromEmitterTest.class,
+            rx.internal.operators.DeferredScalarSubscriberTest.class,
+            rx.internal.operators.InternalSafeSubscriberTest.class,
+            rx.internal.operators.NotificationLiteTest.class,
+            rx.internal.operators.OnSubscribeAmbTest.class,
+            rx.internal.operators.OnSubscribeCollectTest.class,
+            rx.internal.operators.OnSubscribeCombineLatestTest.class,
+            rx.internal.operators.OnSubscribeCompletableTest.class,
+            rx.internal.operators.OnSubscribeConcatDelayErrorTest.class,
+            rx.internal.operators.OnSubscribeDeferTest.class,
+            rx.internal.operators.OnSubscribeDelaySubscriptionOtherTest.class,
+            rx.internal.operators.OnSubscribeDetachTest.class,
+            rx.internal.operators.OnSubscribeDoOnEachTest.class,
+            rx.internal.operators.OnSubscribeFilterTest.class,
+            rx.internal.operators.OnSubscribeFlattenIterableTest.class,
+            rx.internal.operators.OnSubscribeFromArrayTest.class,
+            rx.internal.operators.OnSubscribeFromAsyncEmitterTest.class,
+            rx.internal.operators.OnSubscribeFromCallableTest.class,
+            rx.internal.operators.OnSubscribeFromEmitterTest.class,
+            rx.internal.operators.OnSubscribeFromIterableTest.class,
+            rx.internal.operators.OnSubscribeGroupJoinTest.class,
+            rx.internal.operators.OnSubscribeJoinTest.class,
+            rx.internal.operators.OnSubscribeMapTest.class,
+            rx.internal.operators.OnSubscribeRangeTest.class,
+            rx.internal.operators.OnSubscribeReduceTest.class,
+            rx.internal.operators.OnSubscribeRefCountTest.class,
+            rx.internal.operators.OnSubscribeSingleTest.class,
+            rx.internal.operators.OnSubscribeTimerTest.class,
+            rx.internal.operators.OnSubscribeToMapTest.class,
+            rx.internal.operators.OnSubscribeToMultimapTest.class,
+            rx.internal.operators.OnSubscribeToObservableFutureTest.class,
+            rx.internal.operators.OnSubscribeUsingTest.class,
+            rx.internal.operators.OperatorAllTest.class,
+            rx.internal.operators.OperatorAnyTest.class,
+            rx.internal.operators.OperatorAsObservableTest.class,
+            rx.internal.operators.OperatorBufferTest.class,
+            rx.internal.operators.OperatorCastTest.class,
+            rx.internal.operators.OperatorConcatTest.class,
+            rx.internal.operators.OperatorCountTest.class,
+            rx.internal.operators.OperatorDebounceTest.class,
+            rx.internal.operators.OperatorDefaultIfEmptyTest.class,
+            rx.internal.operators.OperatorDelayTest.class,
+            rx.internal.operators.OperatorDematerializeTest.class,
+            rx.internal.operators.OperatorDistinctTest.class,
+            rx.internal.operators.OperatorDistinctUntilChangedTest.class,
+            rx.internal.operators.OperatorDoAfterTerminateTest.class,
+            rx.internal.operators.OperatorDoOnRequestTest.class,
+            rx.internal.operators.OperatorDoOnSubscribeTest.class,
+            rx.internal.operators.OperatorDoOnUnsubscribeTest.class,
+            rx.internal.operators.OperatorEagerConcatMapTest.class,
+            rx.internal.operators.OperatorElementAtTest.class,
+            rx.internal.operators.OperatorFirstTest.class,
+            rx.internal.operators.OperatorFlatMapTest.class,
+            rx.internal.operators.OperatorGroupByTest.class,
+            rx.internal.operators.OperatorIgnoreElementsTest.class,
+            rx.internal.operators.OperatorLastTest.class,
+            rx.internal.operators.OperatorMapNotificationTest.class,
+            rx.internal.operators.OperatorMapPairTest.class,
+            rx.internal.operators.OperatorMaterializeTest.class,
+            rx.internal.operators.OperatorMergeDelayErrorTest.class,
+            rx.internal.operators.OperatorMergeMaxConcurrentTest.class,
+            rx.internal.operators.OperatorMergeTest.class,
+            rx.internal.operators.OperatorMulticastTest.class,
+            rx.internal.operators.OperatorObserveOnTest.class,
+            rx.internal.operators.OperatorOnBackpressureBufferTest.class,
+            rx.internal.operators.OperatorOnBackpressureDropTest.class,
+            rx.internal.operators.OperatorOnBackpressureLatestTest.class,
+            rx.internal.operators.OperatorOnErrorResumeNextViaFunctionTest.class,
+            rx.internal.operators.OperatorOnErrorResumeNextViaObservableTest.class,
+            rx.internal.operators.OperatorOnErrorReturnTest.class,
+            rx.internal.operators.OperatorOnExceptionResumeNextViaObservableTest.class,
+            rx.internal.operators.OperatorPublishFunctionTest.class,
+            rx.internal.operators.OperatorPublishTest.class,
+            rx.internal.operators.OperatorRepeatTest.class,
+            rx.internal.operators.OperatorReplayTest.class,
+            rx.internal.operators.OperatorRetryTest.class,
+            rx.internal.operators.OperatorRetryWithPredicateTest.class,
+            rx.internal.operators.OperatorSampleTest.class,
+            rx.internal.operators.OperatorScanTest.class,
+            rx.internal.operators.OperatorSequenceEqualTest.class,
+            rx.internal.operators.OperatorSerializeTest.class,
+            rx.internal.operators.OperatorSingleTest.class,
+            rx.internal.operators.OperatorSkipLastTest.class,
+            rx.internal.operators.OperatorSkipLastTimedTest.class,
+            rx.internal.operators.OperatorSkipTest.class,
+            rx.internal.operators.OperatorSkipTimedTest.class,
+            rx.internal.operators.OperatorSkipUntilTest.class,
+            rx.internal.operators.OperatorSkipWhileTest.class,
+            rx.internal.operators.OperatorSubscribeOnTest.class,
+            rx.internal.operators.OperatorSwitchIfEmptyTest.class,
+            rx.internal.operators.OperatorSwitchTest.class,
+            rx.internal.operators.OperatorTakeLastOneTest.class,
+            rx.internal.operators.OperatorTakeLastTest.class,
+            rx.internal.operators.OperatorTakeLastTimedTest.class,
+            rx.internal.operators.OperatorTakeTest.class,
+            rx.internal.operators.OperatorTakeTimedTest.class,
+            rx.internal.operators.OperatorTakeUntilPredicateTest.class,
+            rx.internal.operators.OperatorTakeUntilTest.class,
+            rx.internal.operators.OperatorTakeWhileTest.class,
+            rx.internal.operators.OperatorThrottleFirstTest.class,
+            rx.internal.operators.OperatorTimeIntervalTest.class,
+            rx.internal.operators.OperatorTimeoutTests.class,
+            rx.internal.operators.OperatorTimeoutWithSelectorTest.class,
+            rx.internal.operators.OperatorTimestampTest.class,
+            rx.internal.operators.OperatorToObservableListTest.class,
+            rx.internal.operators.OperatorToObservableSortedListTest.class,
+            rx.internal.operators.OperatorUnsubscribeOnTest.class,
+            rx.internal.operators.OperatorWindowWithObservableTest.class,
+            rx.internal.operators.OperatorWindowWithSizeTest.class,
+            rx.internal.operators.OperatorWindowWithStartEndObservableTest.class,
+            rx.internal.operators.OperatorWindowWithTimeTest.class,
+            rx.internal.operators.OperatorWithLatestFromTest.class,
+            rx.internal.operators.OperatorZipCompletionTest.class,
+            rx.internal.operators.OperatorZipIterableTest.class,
+            rx.internal.operators.OperatorZipTest.class,
+            rx.internal.operators.SafeSubscriberTest.class,
+            rx.internal.operators.SingleDoAfterTerminateTest.class,
+            rx.internal.operators.SingleOnSubscribeDelaySubscriptionOtherTest.class,
+            rx.internal.operators.SingleOnSubscribeUsingTest.class,
+            rx.internal.operators.SingleOperatorZipTest.class,
+            rx.internal.producers.ProducerArbiterTest.class,
+            rx.internal.producers.ProducerObserverArbiterTest.class,
+            rx.internal.producers.ProducersTest.class,
+            rx.internal.producers.SingleDelayedProducerTest.class,
+            rx.internal.producers.SingleProducerTest.class,
+            rx.internal.schedulers.GenericScheduledExecutorServiceTest.class,
+            rx.internal.schedulers.NewThreadWorkerTest.class,
+            rx.internal.util.unsafe.Pow2Test.class,
+            rx.internal.util.unsafe.UnsafeAccessTest.class,
+            rx.internal.util.BlockingUtilsTest.class,
+            rx.internal.util.ExceptionUtilsTest.class,
+            rx.internal.util.IndexedRingBufferTest.class,
+            rx.internal.util.JCToolsQueueTests.class,
+            rx.internal.util.LinkedArrayListTest.class,
+            rx.internal.util.OpenHashSetTest.class,
+            rx.internal.util.PlatformDependentTest.class,
+            rx.internal.util.RxRingBufferSpmcTest.class,
+            rx.internal.util.RxRingBufferSpscTest.class,
+            rx.internal.util.RxRingBufferWithoutUnsafeTest.class,
+            rx.internal.util.ScalarSynchronousObservableTest.class,
+            rx.internal.util.ScalarSynchronousSingleTest.class,
+            rx.internal.util.SubscriptionListTest.class,
+            rx.internal.util.SynchronizedQueueTest.class,
+            rx.internal.util.UtilityFunctionsTest.class,
+            rx.observables.AsyncOnSubscribeTest.class,
+            rx.observables.BlockingObservableTest.class,
+            rx.observables.ConnectableObservableTest.class,
+            rx.observables.SyncOnSubscribeTest.class,
+            rx.observers.AsyncCompletableSubscriberTest.class,
+            rx.observers.CompletableSubscriberTest.class,
+            rx.observers.ObserversTest.class,
+            rx.observers.SafeObserverTest.class,
+            rx.observers.SafeSubscriberTest.class,
+            rx.observers.SerializedObserverTest.class,
+            rx.observers.SubscribersTest.class,
+            rx.observers.TestObserverTest.class,
+            rx.observers.TestSubscriberTest.class,
+            rx.plugins.RxJavaHooksTest.class,
+            rx.plugins.RxJavaPluginsTest.class,
+            rx.plugins.RxJavaSchedulersHookTest.class,
+            rx.schedulers.DeprecatedSchedulersTest.class,
+            rx.schedulers.GenericScheduledExecutorServiceTest.class,
+            rx.schedulers.ImmediateSchedulerTest.class,
+            rx.schedulers.ResetSchedulersTest.class,
+            rx.schedulers.SchedulerLifecycleTest.class,
+            rx.schedulers.SchedulerWhenTest.class,
+            rx.schedulers.TestSchedulerTest.class,
+            rx.schedulers.TimeXTest.class,
+            rx.schedulers.TrampolineSchedulerTest.class,
+            rx.singles.BlockingSingleTest.class,
+            rx.subjects.AsyncSubjectTest.class,
+            rx.subjects.BehaviorSubjectTest.class,
+            rx.subjects.BufferUntilSubscriberTest.class,
+            rx.subjects.PublishSubjectTest.class,
+            rx.subjects.ReplaySubjectBoundedConcurrencyTest.class,
+            rx.subjects.ReplaySubjectConcurrencyTest.class,
+            rx.subjects.ReplaySubjectTest.class,
+            rx.subjects.SerializedSubjectTest.class,
+            rx.subjects.TestSubjectTest.class,
+            rx.subscriptions.CompositeSubscriptionTest.class,
+            rx.subscriptions.MultipleAssignmentSubscriptionTest.class,
+            rx.subscriptions.RefCountSubscriptionTest.class,
+            rx.subscriptions.SerialSubscriptionTests.class,
+            rx.subscriptions.SubscriptionsTest.class,
+            rx.test.TestObstructionDetectionTest.class,
+            rx.util.AssertObservableTest.class,
+            rx.BackpressureTests.class,
+            rx.CombineLatestTests.class,
+            rx.CompletableTest.class,
+            rx.ConcatTests.class,
+            rx.CovarianceTest.class,
+            rx.ErrorHandlingTests.class,
+            rx.EventStreamTest.class,
+            rx.GroupByTests.class,
+            rx.MergeTests.class,
+            rx.NotificationTest.class,
+            rx.ObservableDoOnTest.class,
+            rx.ObservableTests.class,
+            rx.ObservableWindowTests.class,
+            rx.ReduceTests.class,
+            rx.ScanTests.class,
+            rx.SingleTest.class,
+            rx.StartWithTests.class,
+            rx.SubscriberTest.class,
+            rx.ThrottleLastTests.class,
+            rx.ThrottleWithTimeoutTests.class,
+            rx.ZipTests.class,
+    };
+
     public static Class[] alltests = new Class[] {
             rx.BackpressureTests.class,
             rx.CombineLatestTests.class,
@@ -252,7 +531,7 @@ public class OneTest
             rx.internal.operators.OperatorConcatTest.class,
             rx.internal.operators.OperatorDebounceTest.class,
             rx.internal.operators.OperatorDefaultIfEmptyTest.class,
-//            rx.internal.operators.OperatorDelayTest.class,
+            rx.internal.operators.OperatorDelayTest.class,
             rx.internal.operators.OperatorDematerializeTest.class,
             rx.internal.operators.OperatorDistinctTest.class,
             rx.internal.operators.OperatorDistinctUntilChangedTest.class,
@@ -398,7 +677,7 @@ public class OneTest
             rx.internal.producers.SingleDelayedProducerTest.class,
             rx.internal.producers.SingleProducerTest.class,
             rx.internal.schedulers.ExecutorSchedulerTest.class,
-            rx.internal.schedulers.InternalGenericScheduledExecutorServiceTest.class,
+//            rx.internal.schedulers.InternalGenericScheduledExecutorServiceTest.class,
             rx.internal.util.unsafe.Pow2Test.class,
             rx.internal.util.unsafe.UnsafeAccessTest.class,
             rx.internal.util.ExceptionUtilsTest.class,
@@ -418,54 +697,25 @@ public class OneTest
     };
 
     public static Class[] bigmem = new Class[] {
-//            rx.doppl.ReflectionTest.class,
-//            rx.BackpressureTests.class,
-//            rx.internal.operators.CachedObservableTest.class,
-
-//            rx.internal.operators.OnSubscribeCombineLatestTest.class, //Still leaking a couple megs
-
-//            rx.internal.operators.OnSubscribeFlattenIterableTest.class,
-//            rx.internal.operators.OperatorFlatMapTest.class,
-//            rx.internal.operators.OperatorGroupByTest.class,
-//            rx.internal.operators.OperatorMergeMaxConcurrentTest.class,
-//            rx.internal.operators.OperatorMergeTest.class,
-//            rx.internal.operators.OperatorObserveOnTest.class,
-//            rx.internal.operators.OperatorPublishTest.class,
-//            rx.internal.operators.OperatorReplayTest.class,
 
 
-
-//            rx.internal.operators.OperatorRetryTest.class,
-//            rx.internal.operators.OperatorSwitchTest.class,
-//            rx.internal.operators.OperatorTakeLastTest.class,
-//            rx.internal.operators.OperatorTakeLastTimedTest.class,
-            rx.internal.util.JCToolsQueueTests.class,
-
-            rx.internal.util.IndexedRingBufferTest.class,
-//            rx.subjects.BehaviorSubjectTest.class,
-
-            rx.subjects.ReplaySubjectConcurrencyTest.class,
-            ReplaySubjectBoundedConcurrencyTest.class,
-
-            rx.internal.operators.OperatorZipTest.class,
-
-//            rx.internal.schedulers.ExecutorSchedulerTest.class,
-
-            rx.observables.SyncOnSubscribeTest.class,
-            rx.internal.operators.OperatorDelayTest.class,
-
-//            rx.internal.operators.OnSubscribeCollectTest.class,
     };
 
     public static Class[] failing = new Class[]{
-            //testUnSubscribeForScheduler for both. Probably with 'unsubscribe'
-//            rx.schedulers.NewThreadSchedulerTest.class,
-//            rx.schedulers.IoSchedulerTest.class,
-            rx.schedulers.ImmediateSchedulerTest.class,
+            //Fails for release stack overflow
+            rx.subjects.ReplaySubjectBoundedConcurrencyTest.class,
+            rx.subjects.ReplaySubjectConcurrencyTest.class,
+            rx.internal.util.JCToolsQueueTests.class,
 
+            //Deadlock
+            rx.internal.operators.OperatorMergeTest.class,
 
-            //This is huge and runs forever. It fails on release pool
-            //Maybe a stack overflow, but thread stack doesn't show as that.
-            rx.internal.operators.OperatorSwitchTest.class,
+            //Weird message issues
+            rx.plugins.RxJavaHooksTest.class,
+
+            //???
+            rx.doppl.memory.SubscriberAutomaticRemovalTest.class,
+            rx.internal.operators.OnSubscribeGroupJoinTest.class,
+            rx.internal.operators.OnSubscribeRefCountTest.class,
     };
 }

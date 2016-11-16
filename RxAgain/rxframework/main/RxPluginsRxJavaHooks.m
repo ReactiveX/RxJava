@@ -841,7 +841,6 @@ J2OBJC_IGNORE_DESIGNATED_END
 + (void)initialize {
   if (self == [RxPluginsRxJavaHooks class]) {
     {
-      [((JavaIoPrintStream *) nil_chk(JreLoadStatic(JavaLangSystem, out))) printlnWithNSString:@"In init YYYYYYYYYYYYYYYYYY"];
       RxPluginsRxJavaHooks_init__();
     }
     J2OBJC_SET_INITIALIZED(RxPluginsRxJavaHooks)

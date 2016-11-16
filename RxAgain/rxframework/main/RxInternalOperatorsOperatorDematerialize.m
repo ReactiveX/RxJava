@@ -185,7 +185,6 @@ J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxInternalOperatorsOperatorDematerialize_Holder
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOperatorDematerialize_$1 class]);
   RELEASE_(val$child_);
   [super dealloc];
 }

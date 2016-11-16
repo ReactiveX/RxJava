@@ -150,7 +150,6 @@ J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxInternalOperatorsCompletableOnSubscribeConcat
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsCompletableOnSubscribeConcat_CompletableConcatSubscriber class]);
   RELEASE_(actual_);
   RELEASE_(sr_);
   RELEASE_(queue_);

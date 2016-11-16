@@ -230,7 +230,6 @@ J2OBJC_INTERFACE_TYPE_LITERAL_SOURCE(RxInternalOperatorsOperatorTimeoutBase_Time
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOperatorTimeoutBase_TimeoutSubscriber class]);
   RELEASE_(serial_);
   RELEASE_(serializedSubscriber_);
   RELEASE_(timeoutStub_);
@@ -319,7 +318,6 @@ J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxInternalOperatorsOperatorTimeoutBase_TimeoutS
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOperatorTimeoutBase_TimeoutSubscriber_$1 class]);
   RELEASE_(this$0_);
   [super dealloc];
 }

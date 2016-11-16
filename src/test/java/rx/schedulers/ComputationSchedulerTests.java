@@ -24,6 +24,7 @@ import java.util.concurrent.CountDownLatch;
 
 import org.junit.Test;
 
+import co.touchlab.doppel.testing.DoppelHacks;
 import rx.Observable;
 import rx.Scheduler;
 import rx.Scheduler.Worker;
@@ -40,9 +41,10 @@ public class ComputationSchedulerTests extends AbstractSchedulerConcurrencyTests
     }
 
     @Test
+    @DoppelHacks//Dropped NUM to save time. Increase when we're back in action
     public void testThreadSafetyWhenSchedulerIsHoppingBetweenThreads() {
 
-        final int NUM = 1000000;
+        final int NUM = 100000;
         final CountDownLatch latch = new CountDownLatch(1);
         final HashMap<String, Integer> map = new HashMap<String, Integer>();
 
@@ -65,10 +67,6 @@ public class ComputationSchedulerTests extends AbstractSchedulerConcurrencyTests
                         i++;
                         statefulMap.put("a", i);
                         statefulMap.put("b", i);
-                    }
-                    if(i % 1000 == 0)
-                    {
-                        System.out.println("Hey count: "+ i);
                     }
                     nonThreadSafeCounter++;
                     statefulMap.put("nonThreadSafeCounter", nonThreadSafeCounter);

@@ -438,7 +438,6 @@ RxInternalOperatorsOperatorOnErrorResumeNextViaFunction_$3 *create_RxInternalOpe
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOperatorOnErrorResumeNextViaFunction_$4 class]);
   RELEASE_(this$0_);
   RELEASE_(val$child_);
   RELEASE_(val$pa_);
@@ -517,7 +516,6 @@ RxInternalOperatorsOperatorOnErrorResumeNextViaFunction_$4 *create_RxInternalOpe
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOperatorOnErrorResumeNextViaFunction_$4_$1 class]);
   RELEASE_(this$0_);
   [super dealloc];
 }

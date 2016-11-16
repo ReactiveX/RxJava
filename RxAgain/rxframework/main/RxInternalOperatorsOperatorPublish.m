@@ -517,7 +517,6 @@ IOSObjectArray *RxInternalOperatorsOperatorPublish_PublishSubscriber_TERMINATED;
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOperatorPublish_PublishSubscriber class]);
   RELEASE_(queue_);
   RELEASE_(current_);
   JreReleaseVolatile(&terminalEvent_);
@@ -926,7 +925,6 @@ withRxInternalOperatorsOnSubscribePublishMulticast:(RxInternalOperatorsOnSubscri
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOperatorPublish_$2_$1 class]);
   RELEASE_(val$child_);
   RELEASE_(val$op_);
   [super dealloc];

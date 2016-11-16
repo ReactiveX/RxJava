@@ -15,6 +15,8 @@
  */
 package rx.internal.operators;
 
+import com.google.j2objc.annotations.Weak;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -28,7 +30,6 @@ import rx.Producer;
 import rx.Scheduler;
 import rx.Subscriber;
 import rx.Subscription;
-import rx.doppl.J2objcWeakReference;
 import rx.exceptions.Exceptions;
 import rx.exceptions.OnErrorThrowable;
 import rx.functions.Action0;
@@ -653,8 +654,9 @@ public final class OperatorReplay<T> extends ConnectableObservable<T> {
          * The parent subscriber-to-source used to allow removing the child in case of
          * child unsubscription.
          */
-        final J2objcWeakReference<ReplaySubscriber<T>> weakParent;
+        final ReplaySubscriber<T> parent;
         /** The actual child subscriber. */
+        @Weak
         Subscriber<? super T> child;
         /**
          * Holds an object that represents the current location in the buffer.
@@ -676,7 +678,7 @@ public final class OperatorReplay<T> extends ConnectableObservable<T> {
         static final long UNSUBSCRIBED = Long.MIN_VALUE;
 
         public InnerProducer(ReplaySubscriber<T> parent, Subscriber<? super T> child) {
-            this.weakParent = new J2objcWeakReference<ReplaySubscriber<T>>(parent);
+            this.parent = parent;
             this.child = child;
             this.totalRequested = new AtomicLong();
         }
@@ -687,10 +689,6 @@ public final class OperatorReplay<T> extends ConnectableObservable<T> {
             if (n < 0) {
                 return;
             }
-            ReplaySubscriber<T> parent = this.weakParent.get();
-            if(parent == null)
-                return;
-
             // In general, RxJava doesn't prevent concurrent requests (with each other or with
             // an unsubscribe) so we need a CAS-loop, but we need to handle
             // request overflow and unsubscribed/not requested state as well.
@@ -793,18 +791,13 @@ public final class OperatorReplay<T> extends ConnectableObservable<T> {
                 r = getAndSet(UNSUBSCRIBED);
                 // and only one of them will see a non-terminated value before the swap
                 if (r != UNSUBSCRIBED) {
-                    ReplaySubscriber<T> parent = this.weakParent.get();
-
-                    if(parent != null)
-                    {
-                        // remove this from the parent
-                        parent.remove(this);
-                        // After removal, we might have unblocked the other child subscribers:
-                        // let's assume this child had 0 requested before the unsubscription while
-                        // the others had non-zero. By removing this 'blocking' child, the others
-                        // are now free to receive events
-                        parent.manageRequests(this);
-                    }
+                    // remove this from the parent
+                    parent.remove(this);
+                    // After removal, we might have unblocked the other child subscribers:
+                    // let's assume this child had 0 requested before the unsubscription while
+                    // the others had non-zero. By removing this 'blocking' child, the others
+                    // are now free to receive events
+                    parent.manageRequests(this);
                     // break the reference
                     child = null;
                 }

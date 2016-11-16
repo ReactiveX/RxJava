@@ -951,7 +951,6 @@ RxInternalOperatorsOperatorWindowWithSizeTest_$6 *create_RxInternalOperatorsOper
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOperatorWindowWithSizeTest_$7 class]);
   RELEASE_(val$list_);
   RELEASE_(val$o_);
   [super dealloc];

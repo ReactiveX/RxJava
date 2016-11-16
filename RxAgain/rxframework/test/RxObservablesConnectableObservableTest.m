@@ -555,7 +555,6 @@ RxObservablesConnectableObservableTest_$5 *create_RxObservablesConnectableObserv
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxObservablesConnectableObservableTest_$6 class]);
   RELEASE_(val$conn_);
   [super dealloc];
 }

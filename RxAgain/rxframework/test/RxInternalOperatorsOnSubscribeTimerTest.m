@@ -438,7 +438,6 @@ J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxInternalOperatorsOnSubscribeTimerTest)
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOnSubscribeTimerTest_$1 class]);
   RELEASE_(this$0_);
   [super dealloc];
 }
@@ -503,7 +502,6 @@ RxInternalOperatorsOnSubscribeTimerTest_$1 *create_RxInternalOperatorsOnSubscrib
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOnSubscribeTimerTest_$2 class]);
   RELEASE_(this$0_);
   [super dealloc];
 }

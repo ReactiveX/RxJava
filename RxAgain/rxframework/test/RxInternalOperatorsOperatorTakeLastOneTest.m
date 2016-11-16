@@ -261,7 +261,6 @@ J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxInternalOperatorsOperatorTakeLastOneTest)
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOperatorTakeLastOneTest_MySubscriber class]);
   RELEASE_(list_);
   [super dealloc];
 }

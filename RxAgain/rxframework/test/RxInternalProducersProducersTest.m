@@ -857,7 +857,6 @@ RxInternalProducersProducersTest_SwitchTimer_$1 *create_RxInternalProducersProdu
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalProducersProducersTest_SwitchTimer_$1_$1 class]);
   RELEASE_(this$0_);
   [super dealloc];
 }
@@ -1017,7 +1016,6 @@ RxInternalProducersProducersTest_$2 *create_RxInternalProducersProducersTest_$2_
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalProducersProducersTest_$2_$1 class]);
   RELEASE_(val$poa_);
   [super dealloc];
 }
@@ -1075,11 +1073,6 @@ J2OBJC_IGNORE_DESIGNATED_BEGIN
   return self;
 }
 J2OBJC_IGNORE_DESIGNATED_END
-
-- (void)dealloc {
-  JreCheckFinalize(self, [RxInternalProducersProducersTest_$3 class]);
-  [super dealloc];
-}
 
 + (const J2ObjcClassInfo *)__metadata {
   static J2ObjcMethodInfo methods[] = {

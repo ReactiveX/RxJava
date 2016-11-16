@@ -142,11 +142,6 @@ J2OBJC_IGNORE_DESIGNATED_END
   }
 }
 
-- (void)j2objcCleanup {
-  [super j2objcCleanup];
-  JreStrongAssign(&delegate_, nil);
-}
-
 - (id<JavaUtilList>)getOnCompletedEvents {
   jint c = completions_;
   id<JavaUtilList> result = create_JavaUtilArrayList_initWithInt_(c != 0 ? c : 1);
@@ -396,7 +391,6 @@ J2OBJC_IGNORE_DESIGNATED_END
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxObserversTestSubscriber class]);
   RELEASE_(delegate_);
   RELEASE_(values_);
   RELEASE_(errors_);
@@ -417,7 +411,6 @@ J2OBJC_IGNORE_DESIGNATED_END
     { NULL, "LRxObserversTestSubscriber;", 0x9, 8, 1, -1, 10, -1, -1 },
     { NULL, "LRxObserversTestSubscriber;", 0x9, 8, 3, -1, 11, -1, -1 },
     { NULL, "LRxObserversTestSubscriber;", 0x9, 8, 5, -1, 12, -1, -1 },
-    { NULL, "V", 0x1, -1, -1, -1, -1, -1, -1 },
     { NULL, "V", 0x1, -1, -1, -1, -1, -1, -1 },
     { NULL, "LJavaUtilList;", 0x1, -1, -1, -1, 13, 14, -1 },
     { NULL, "I", 0x11, -1, -1, -1, -1, -1, -1 },
@@ -462,39 +455,38 @@ J2OBJC_IGNORE_DESIGNATED_END
   methods[8].selector = @selector(createWithRxSubscriber:);
   methods[9].selector = @selector(createWithRxObserver:);
   methods[10].selector = @selector(onCompleted);
-  methods[11].selector = @selector(j2objcCleanup);
-  methods[12].selector = @selector(getOnCompletedEvents);
-  methods[13].selector = @selector(getCompletions);
-  methods[14].selector = @selector(onErrorWithNSException:);
-  methods[15].selector = @selector(getOnErrorEvents);
-  methods[16].selector = @selector(onNextWithId:);
-  methods[17].selector = @selector(getValueCount);
-  methods[18].selector = @selector(requestMoreWithLong:);
-  methods[19].selector = @selector(getOnNextEvents);
-  methods[20].selector = @selector(assertReceivedOnNextWithJavaUtilList:);
-  methods[21].selector = @selector(assertItemWithId:withInt:);
-  methods[22].selector = @selector(awaitValueCountWithInt:withLong:withJavaUtilConcurrentTimeUnit:);
-  methods[23].selector = @selector(assertTerminalEvent);
-  methods[24].selector = @selector(assertUnsubscribed);
-  methods[25].selector = @selector(assertNoErrors);
-  methods[26].selector = @selector(awaitTerminalEvent);
-  methods[27].selector = @selector(awaitTerminalEventWithLong:withJavaUtilConcurrentTimeUnit:);
-  methods[28].selector = @selector(awaitTerminalEventAndUnsubscribeOnTimeoutWithLong:withJavaUtilConcurrentTimeUnit:);
-  methods[29].selector = @selector(getLastSeenThread);
-  methods[30].selector = @selector(assertCompleted);
-  methods[31].selector = @selector(assertNotCompleted);
-  methods[32].selector = @selector(assertErrorWithIOSClass:);
-  methods[33].selector = @selector(assertErrorWithNSException:);
-  methods[34].selector = @selector(assertNoTerminalEvent);
-  methods[35].selector = @selector(assertNoValues);
-  methods[36].selector = @selector(assertValueCountWithInt:);
-  methods[37].selector = @selector(assertValuesWithNSObjectArray:);
-  methods[38].selector = @selector(assertValueWithId:);
-  methods[39].selector = @selector(assertionErrorWithNSString:);
-  methods[40].selector = @selector(assertValuesAndClearWithId:withNSObjectArray:);
+  methods[11].selector = @selector(getOnCompletedEvents);
+  methods[12].selector = @selector(getCompletions);
+  methods[13].selector = @selector(onErrorWithNSException:);
+  methods[14].selector = @selector(getOnErrorEvents);
+  methods[15].selector = @selector(onNextWithId:);
+  methods[16].selector = @selector(getValueCount);
+  methods[17].selector = @selector(requestMoreWithLong:);
+  methods[18].selector = @selector(getOnNextEvents);
+  methods[19].selector = @selector(assertReceivedOnNextWithJavaUtilList:);
+  methods[20].selector = @selector(assertItemWithId:withInt:);
+  methods[21].selector = @selector(awaitValueCountWithInt:withLong:withJavaUtilConcurrentTimeUnit:);
+  methods[22].selector = @selector(assertTerminalEvent);
+  methods[23].selector = @selector(assertUnsubscribed);
+  methods[24].selector = @selector(assertNoErrors);
+  methods[25].selector = @selector(awaitTerminalEvent);
+  methods[26].selector = @selector(awaitTerminalEventWithLong:withJavaUtilConcurrentTimeUnit:);
+  methods[27].selector = @selector(awaitTerminalEventAndUnsubscribeOnTimeoutWithLong:withJavaUtilConcurrentTimeUnit:);
+  methods[28].selector = @selector(getLastSeenThread);
+  methods[29].selector = @selector(assertCompleted);
+  methods[30].selector = @selector(assertNotCompleted);
+  methods[31].selector = @selector(assertErrorWithIOSClass:);
+  methods[32].selector = @selector(assertErrorWithNSException:);
+  methods[33].selector = @selector(assertNoTerminalEvent);
+  methods[34].selector = @selector(assertNoValues);
+  methods[35].selector = @selector(assertValueCountWithInt:);
+  methods[36].selector = @selector(assertValuesWithNSObjectArray:);
+  methods[37].selector = @selector(assertValueWithId:);
+  methods[38].selector = @selector(assertionErrorWithNSString:);
+  methods[39].selector = @selector(assertValuesAndClearWithId:withNSObjectArray:);
   #pragma clang diagnostic pop
   static const J2ObjcFieldInfo fields[] = {
-    { "delegate_", "LRxObserver;", .constantValue.asLong = 0, 0x2, -1, -1, 47, -1 },
+    { "delegate_", "LRxObserver;", .constantValue.asLong = 0, 0x12, -1, -1, 47, -1 },
     { "values_", "LJavaUtilList;", .constantValue.asLong = 0, 0x12, -1, -1, 48, -1 },
     { "errors_", "LJavaUtilList;", .constantValue.asLong = 0, 0x12, -1, -1, 49, -1 },
     { "completions_", "I", .constantValue.asLong = 0, 0x2, -1, -1, -1, -1 },
@@ -504,7 +496,7 @@ J2OBJC_IGNORE_DESIGNATED_END
     { "INERT", "LRxObserver;", .constantValue.asLong = 0, 0x1a, -1, 50, 51, -1 },
   };
   static const void *ptrTable[] = { "J", "LRxObserver;J", "(Lrx/Observer<TT;>;J)V", "LRxSubscriber;", "(Lrx/Subscriber<TT;>;)V", "LRxObserver;", "(Lrx/Observer<TT;>;)V", "<T:Ljava/lang/Object;>()Lrx/observers/TestSubscriber<TT;>;", "create", "<T:Ljava/lang/Object;>(J)Lrx/observers/TestSubscriber<TT;>;", "<T:Ljava/lang/Object;>(Lrx/Observer<TT;>;J)Lrx/observers/TestSubscriber<TT;>;", "<T:Ljava/lang/Object;>(Lrx/Subscriber<TT;>;)Lrx/observers/TestSubscriber<TT;>;", "<T:Ljava/lang/Object;>(Lrx/Observer<TT;>;)Lrx/observers/TestSubscriber<TT;>;", "()Ljava/util/List<Lrx/Notification<TT;>;>;", (void *)&RxObserversTestSubscriber__Annotations$0, "onError", "LNSException;", "()Ljava/util/List<Ljava/lang/Throwable;>;", "onNext", "LNSObject;", "(TT;)V", "requestMore", "()Ljava/util/List<TT;>;", "assertReceivedOnNext", "LJavaUtilList;", "(Ljava/util/List<TT;>;)V", "assertItem", "LNSObject;I", "(TT;I)V", "awaitValueCount", "IJLJavaUtilConcurrentTimeUnit;", "awaitTerminalEvent", "JLJavaUtilConcurrentTimeUnit;", "awaitTerminalEventAndUnsubscribeOnTimeout", "assertError", "LIOSClass;", "(Ljava/lang/Class<+Ljava/lang/Throwable;>;)V", "assertValueCount", "I", "assertValues", "[LNSObject;", "assertValue", "assertionError", "LNSString;", "assertValuesAndClear", "LNSObject;[LNSObject;", "(TT;[TT;)V", "Lrx/Observer<TT;>;", "Ljava/util/List<TT;>;", "Ljava/util/List<Ljava/lang/Throwable;>;", &RxObserversTestSubscriber_INERT, "Lrx/Observer<Ljava/lang/Object;>;", "<T:Ljava/lang/Object;>Lrx/Subscriber<TT;>;" };
-  static const J2ObjcClassInfo _RxObserversTestSubscriber = { "TestSubscriber", "rx.observers", ptrTable, methods, fields, 7, 0x1, 41, 8, -1, -1, -1, 52, -1 };
+  static const J2ObjcClassInfo _RxObserversTestSubscriber = { "TestSubscriber", "rx.observers", ptrTable, methods, fields, 7, 0x1, 40, 8, -1, -1, -1, 52, -1 };
   return &_RxObserversTestSubscriber;
 }
 

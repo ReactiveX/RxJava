@@ -964,7 +964,6 @@ RxInternalOperatorsOperatorWindowWithObservableTest_$4 *create_RxInternalOperato
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOperatorWindowWithObservableTest_$5 class]);
   RELEASE_(val$source_);
   [super dealloc];
 }
@@ -1016,7 +1015,6 @@ RxInternalOperatorsOperatorWindowWithObservableTest_$5 *create_RxInternalOperato
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOperatorWindowWithObservableTest_$6 class]);
   RELEASE_(val$tsw_);
   [super dealloc];
 }
@@ -1348,7 +1346,6 @@ RxInternalOperatorsOperatorWindowWithObservableTest_$12 *create_RxInternalOperat
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOperatorWindowWithObservableTest_$13 class]);
   RELEASE_(val$ts_);
   [super dealloc];
 }

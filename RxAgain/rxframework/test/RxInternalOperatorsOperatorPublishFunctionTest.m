@@ -605,7 +605,6 @@ RxInternalOperatorsOperatorPublishFunctionTest_$4 *create_RxInternalOperatorsOpe
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOperatorPublishFunctionTest_$5 class]);
   RELEASE_(val$startCount_);
   [super dealloc];
 }

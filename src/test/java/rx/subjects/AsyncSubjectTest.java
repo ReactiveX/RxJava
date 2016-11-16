@@ -202,7 +202,7 @@ public class AsyncSubjectTest {
     /**
      * Can receive timeout if subscribe never receives an onError/onCompleted ... which reveals a race condition.
      */
-    @Test(timeout = 10000)
+    @Test(timeout = 20000)
     public void testSubscribeCompletionRaceCondition() {
         /*
          * With non-threadsafe code this fails most of the time on my dev laptop and is non-deterministic enough

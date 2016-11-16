@@ -1441,7 +1441,6 @@ J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxSubjectsReplaySubjectTest)
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxSubjectsReplaySubjectTest_$1 class]);
   RELEASE_(val$lastValueForObserver1_);
   [super dealloc];
 }
@@ -1517,7 +1516,6 @@ RxSubjectsReplaySubjectTest_$1 *create_RxSubjectsReplaySubjectTest_$1_initWithJa
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxSubjectsReplaySubjectTest_$2 class]);
   RELEASE_(val$completed_);
   RELEASE_(val$oneReceived_);
   RELEASE_(val$makeSlow_);
@@ -1692,7 +1690,6 @@ RxSubjectsReplaySubjectTest_$4 *create_RxSubjectsReplaySubjectTest_$4_initWithRx
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxSubjectsReplaySubjectTest_$5 class]);
   RELEASE_(val$o_);
   [super dealloc];
 }

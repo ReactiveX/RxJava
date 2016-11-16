@@ -31,8 +31,6 @@
 
 - (RxSubscriber *)getActual;
 
-- (void)j2objcCleanup;
-
 - (void)onCompleted;
 
 - (void)onErrorWithNSException:(NSException *)e;

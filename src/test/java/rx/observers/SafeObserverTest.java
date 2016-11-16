@@ -475,7 +475,6 @@ public class SafeObserverTest {
     }
 
     @Test
-    @DoppelHacks//Doppl using WeakProxy, so this fails
     public void testActual() {
         Subscriber<Integer> actual = new Subscriber<Integer>() {
             @Override

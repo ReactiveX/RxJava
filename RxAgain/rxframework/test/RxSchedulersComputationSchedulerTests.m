@@ -144,7 +144,7 @@ __attribute__((unused)) static RxSchedulersComputationSchedulerTests_$5 *create_
 }
 
 - (void)testThreadSafetyWhenSchedulerIsHoppingBetweenThreads {
-  jint NUM = 1000000;
+  jint NUM = 100000;
   JavaUtilConcurrentCountDownLatch *latch = create_JavaUtilConcurrentCountDownLatch_initWithInt_(1);
   JavaUtilHashMap *map = create_JavaUtilHashMap_init();
   RxScheduler_Worker *inner = [((RxScheduler *) nil_chk(RxSchedulersSchedulers_computation())) createWorker];
@@ -296,12 +296,9 @@ J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxSchedulersComputationSchedulerTests)
     [((JavaUtilHashMap *) nil_chk(statefulMap_)) putWithId:@"a" withId:i];
     [((JavaUtilHashMap *) nil_chk(statefulMap_)) putWithId:@"b" withId:i];
   }
-  if ([i intValue] % 1000 == 0) {
-    [((JavaIoPrintStream *) nil_chk(JreLoadStatic(JavaLangSystem, out))) printlnWithNSString:JreStrcat("$@", @"Hey count: ", i)];
-  }
   nonThreadSafeCounter_++;
   [((JavaUtilHashMap *) nil_chk(statefulMap_)) putWithId:@"nonThreadSafeCounter" withId:JavaLangInteger_valueOfWithInt_(nonThreadSafeCounter_)];
-  if ([i intValue] < 1000000) {
+  if ([i intValue] < 100000) {
     [((RxScheduler_Worker *) nil_chk(val$inner_)) scheduleWithRxFunctionsAction0:self];
   }
   else {

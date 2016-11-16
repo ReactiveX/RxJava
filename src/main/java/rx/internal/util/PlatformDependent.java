@@ -32,6 +32,8 @@ public final class PlatformDependent {
 
     private static final int ANDROID_API_VERSION = resolveAndroidApiVersion();
 
+    private static final boolean IS_ANDROID = ANDROID_API_VERSION != ANDROID_API_VERSION_IS_NOT_ANDROID;
+
     /** Utility class. */
     private PlatformDependent() {
         throw new IllegalStateException("No instances!");

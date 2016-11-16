@@ -342,7 +342,6 @@ J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxInternalOperatorsOperatorEagerConcatMap_Eager
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOperatorEagerConcatMap_EagerOuterSubscriber class]);
   RELEASE_(mapper_);
   RELEASE_(actual_);
   RELEASE_(subscribers_);
@@ -491,7 +490,6 @@ RxInternalOperatorsOperatorEagerConcatMap_EagerOuterSubscriber_$1 *create_RxInte
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOperatorEagerConcatMap_EagerInnerSubscriber class]);
   RELEASE_(parent_);
   RELEASE_(queue_);
   RELEASE_(error_);

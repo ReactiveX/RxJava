@@ -15,8 +15,6 @@
  */
 package rx.internal.util;
 
-import com.google.j2objc.annotations.Weak;
-
 import java.util.concurrent.atomic.AtomicLong;
 
 import rx.Producer;
@@ -40,7 +38,6 @@ public final class BackpressureDrainManager extends AtomicLong implements Produc
     /** Indicates an error state, barrier is provided via terminated. */
     Throwable exception;
     /** The callbacks to manage the drain. */
-    @Weak
     final BackpressureQueueCallback actual;
 
     /**

@@ -3,21 +3,369 @@
 //  source: /Users/kgalligan/devel-doppl/RxJava/src/test/java/rx/internal/operators/OperatorSingleTest.java
 //
 
+#include "CoTouchlabDoppelTestingPlatformUtils.h"
 #include "IOSClass.h"
 #include "IOSObjectArray.h"
 #include "J2ObjC_source.h"
 #include "RxDopplMockMSubscriber.h"
+#include "RxFunctionsAction1.h"
+#include "RxFunctionsFunc1.h"
+#include "RxFunctionsFunc2.h"
 #include "RxInternalOperatorsOperatorSingleTest.h"
 #include "RxObservable.h"
+#include "RxObservablesBlockingObservable.h"
+#include "RxObserver.h"
+#include "RxObserversTestSubscriber.h"
 #include "RxSubscriber.h"
 #include "RxSubscription.h"
+#include "java/lang/Boolean.h"
+#include "java/lang/IllegalArgumentException.h"
 #include "java/lang/Integer.h"
+#include "java/lang/Long.h"
 #include "java/lang/annotation/Annotation.h"
+#include "java/util/ArrayList.h"
+#include "java/util/Arrays.h"
+#include "java/util/List.h"
+#include "java/util/NoSuchElementException.h"
+#include "java/util/concurrent/atomic/AtomicLong.h"
+#include "org/junit/Assert.h"
 #include "org/junit/Test.h"
+#include "org/mockito/InOrder.h"
+#include "org/mockito/Matchers.h"
+#include "org/mockito/Mockito.h"
+#include "org/mockito/verification/VerificationMode.h"
 
 __attribute__((unused)) static IOSObjectArray *RxInternalOperatorsOperatorSingleTest__Annotations$0();
 
-@interface RxInternalOperatorsOperatorSingleTest_$1 : RxDopplMockMSubscriber
+__attribute__((unused)) static IOSObjectArray *RxInternalOperatorsOperatorSingleTest__Annotations$1();
+
+__attribute__((unused)) static IOSObjectArray *RxInternalOperatorsOperatorSingleTest__Annotations$2();
+
+__attribute__((unused)) static IOSObjectArray *RxInternalOperatorsOperatorSingleTest__Annotations$3();
+
+__attribute__((unused)) static IOSObjectArray *RxInternalOperatorsOperatorSingleTest__Annotations$4();
+
+__attribute__((unused)) static IOSObjectArray *RxInternalOperatorsOperatorSingleTest__Annotations$5();
+
+__attribute__((unused)) static IOSObjectArray *RxInternalOperatorsOperatorSingleTest__Annotations$6();
+
+__attribute__((unused)) static IOSObjectArray *RxInternalOperatorsOperatorSingleTest__Annotations$7();
+
+__attribute__((unused)) static IOSObjectArray *RxInternalOperatorsOperatorSingleTest__Annotations$8();
+
+__attribute__((unused)) static IOSObjectArray *RxInternalOperatorsOperatorSingleTest__Annotations$9();
+
+__attribute__((unused)) static IOSObjectArray *RxInternalOperatorsOperatorSingleTest__Annotations$10();
+
+__attribute__((unused)) static IOSObjectArray *RxInternalOperatorsOperatorSingleTest__Annotations$11();
+
+__attribute__((unused)) static IOSObjectArray *RxInternalOperatorsOperatorSingleTest__Annotations$12();
+
+__attribute__((unused)) static IOSObjectArray *RxInternalOperatorsOperatorSingleTest__Annotations$13();
+
+__attribute__((unused)) static IOSObjectArray *RxInternalOperatorsOperatorSingleTest__Annotations$14();
+
+__attribute__((unused)) static IOSObjectArray *RxInternalOperatorsOperatorSingleTest__Annotations$15();
+
+__attribute__((unused)) static IOSObjectArray *RxInternalOperatorsOperatorSingleTest__Annotations$16();
+
+__attribute__((unused)) static IOSObjectArray *RxInternalOperatorsOperatorSingleTest__Annotations$17();
+
+__attribute__((unused)) static IOSObjectArray *RxInternalOperatorsOperatorSingleTest__Annotations$18();
+
+__attribute__((unused)) static IOSObjectArray *RxInternalOperatorsOperatorSingleTest__Annotations$19();
+
+__attribute__((unused)) static IOSObjectArray *RxInternalOperatorsOperatorSingleTest__Annotations$20();
+
+@interface RxInternalOperatorsOperatorSingleTest_$1 : NSObject < RxFunctionsAction1 > {
+ @public
+  JavaUtilConcurrentAtomicAtomicLong *val$request_;
+}
+
+- (void)callWithId:(JavaLangLong *)n;
+
+- (instancetype)initWithJavaUtilConcurrentAtomicAtomicLong:(JavaUtilConcurrentAtomicAtomicLong *)capture$0;
+
+@end
+
+J2OBJC_EMPTY_STATIC_INIT(RxInternalOperatorsOperatorSingleTest_$1)
+
+J2OBJC_FIELD_SETTER(RxInternalOperatorsOperatorSingleTest_$1, val$request_, JavaUtilConcurrentAtomicAtomicLong *)
+
+__attribute__((unused)) static void RxInternalOperatorsOperatorSingleTest_$1_initWithJavaUtilConcurrentAtomicAtomicLong_(RxInternalOperatorsOperatorSingleTest_$1 *self, JavaUtilConcurrentAtomicAtomicLong *capture$0);
+
+__attribute__((unused)) static RxInternalOperatorsOperatorSingleTest_$1 *new_RxInternalOperatorsOperatorSingleTest_$1_initWithJavaUtilConcurrentAtomicAtomicLong_(JavaUtilConcurrentAtomicAtomicLong *capture$0) NS_RETURNS_RETAINED;
+
+__attribute__((unused)) static RxInternalOperatorsOperatorSingleTest_$1 *create_RxInternalOperatorsOperatorSingleTest_$1_initWithJavaUtilConcurrentAtomicAtomicLong_(JavaUtilConcurrentAtomicAtomicLong *capture$0);
+
+@interface RxInternalOperatorsOperatorSingleTest_$2 : NSObject < RxFunctionsAction1 > {
+ @public
+  JavaUtilConcurrentAtomicAtomicLong *val$request_;
+}
+
+- (void)callWithId:(JavaLangLong *)n;
+
+- (instancetype)initWithJavaUtilConcurrentAtomicAtomicLong:(JavaUtilConcurrentAtomicAtomicLong *)capture$0;
+
+@end
+
+J2OBJC_EMPTY_STATIC_INIT(RxInternalOperatorsOperatorSingleTest_$2)
+
+J2OBJC_FIELD_SETTER(RxInternalOperatorsOperatorSingleTest_$2, val$request_, JavaUtilConcurrentAtomicAtomicLong *)
+
+__attribute__((unused)) static void RxInternalOperatorsOperatorSingleTest_$2_initWithJavaUtilConcurrentAtomicAtomicLong_(RxInternalOperatorsOperatorSingleTest_$2 *self, JavaUtilConcurrentAtomicAtomicLong *capture$0);
+
+__attribute__((unused)) static RxInternalOperatorsOperatorSingleTest_$2 *new_RxInternalOperatorsOperatorSingleTest_$2_initWithJavaUtilConcurrentAtomicAtomicLong_(JavaUtilConcurrentAtomicAtomicLong *capture$0) NS_RETURNS_RETAINED;
+
+__attribute__((unused)) static RxInternalOperatorsOperatorSingleTest_$2 *create_RxInternalOperatorsOperatorSingleTest_$2_initWithJavaUtilConcurrentAtomicAtomicLong_(JavaUtilConcurrentAtomicAtomicLong *capture$0);
+
+@interface RxInternalOperatorsOperatorSingleTest_$3 : NSObject < RxFunctionsAction1 > {
+ @public
+  JavaUtilConcurrentAtomicAtomicLong *val$request_;
+}
+
+- (void)callWithId:(JavaLangLong *)n;
+
+- (instancetype)initWithJavaUtilConcurrentAtomicAtomicLong:(JavaUtilConcurrentAtomicAtomicLong *)capture$0;
+
+@end
+
+J2OBJC_EMPTY_STATIC_INIT(RxInternalOperatorsOperatorSingleTest_$3)
+
+J2OBJC_FIELD_SETTER(RxInternalOperatorsOperatorSingleTest_$3, val$request_, JavaUtilConcurrentAtomicAtomicLong *)
+
+__attribute__((unused)) static void RxInternalOperatorsOperatorSingleTest_$3_initWithJavaUtilConcurrentAtomicAtomicLong_(RxInternalOperatorsOperatorSingleTest_$3 *self, JavaUtilConcurrentAtomicAtomicLong *capture$0);
+
+__attribute__((unused)) static RxInternalOperatorsOperatorSingleTest_$3 *new_RxInternalOperatorsOperatorSingleTest_$3_initWithJavaUtilConcurrentAtomicAtomicLong_(JavaUtilConcurrentAtomicAtomicLong *capture$0) NS_RETURNS_RETAINED;
+
+__attribute__((unused)) static RxInternalOperatorsOperatorSingleTest_$3 *create_RxInternalOperatorsOperatorSingleTest_$3_initWithJavaUtilConcurrentAtomicAtomicLong_(JavaUtilConcurrentAtomicAtomicLong *capture$0);
+
+@interface RxInternalOperatorsOperatorSingleTest_$4 : NSObject < RxFunctionsAction1 > {
+ @public
+  id<JavaUtilList> val$requests_;
+}
+
+- (void)callWithId:(JavaLangLong *)n;
+
+- (instancetype)initWithJavaUtilList:(id<JavaUtilList>)capture$0;
+
+@end
+
+J2OBJC_EMPTY_STATIC_INIT(RxInternalOperatorsOperatorSingleTest_$4)
+
+J2OBJC_FIELD_SETTER(RxInternalOperatorsOperatorSingleTest_$4, val$requests_, id<JavaUtilList>)
+
+__attribute__((unused)) static void RxInternalOperatorsOperatorSingleTest_$4_initWithJavaUtilList_(RxInternalOperatorsOperatorSingleTest_$4 *self, id<JavaUtilList> capture$0);
+
+__attribute__((unused)) static RxInternalOperatorsOperatorSingleTest_$4 *new_RxInternalOperatorsOperatorSingleTest_$4_initWithJavaUtilList_(id<JavaUtilList> capture$0) NS_RETURNS_RETAINED;
+
+__attribute__((unused)) static RxInternalOperatorsOperatorSingleTest_$4 *create_RxInternalOperatorsOperatorSingleTest_$4_initWithJavaUtilList_(id<JavaUtilList> capture$0);
+
+@interface RxInternalOperatorsOperatorSingleTest_$5 : RxSubscriber
+
+- (void)onStart;
+
+- (void)onCompleted;
+
+- (void)onErrorWithNSException:(NSException *)e;
+
+- (void)onNextWithId:(JavaLangInteger *)t;
+
+- (instancetype)init;
+
+@end
+
+J2OBJC_EMPTY_STATIC_INIT(RxInternalOperatorsOperatorSingleTest_$5)
+
+__attribute__((unused)) static void RxInternalOperatorsOperatorSingleTest_$5_init(RxInternalOperatorsOperatorSingleTest_$5 *self);
+
+__attribute__((unused)) static RxInternalOperatorsOperatorSingleTest_$5 *new_RxInternalOperatorsOperatorSingleTest_$5_init() NS_RETURNS_RETAINED;
+
+__attribute__((unused)) static RxInternalOperatorsOperatorSingleTest_$5 *create_RxInternalOperatorsOperatorSingleTest_$5_init();
+
+@interface RxInternalOperatorsOperatorSingleTest_$6 : NSObject < RxFunctionsAction1 > {
+ @public
+  id<JavaUtilList> val$requests_;
+}
+
+- (void)callWithId:(JavaLangLong *)n;
+
+- (instancetype)initWithJavaUtilList:(id<JavaUtilList>)capture$0;
+
+@end
+
+J2OBJC_EMPTY_STATIC_INIT(RxInternalOperatorsOperatorSingleTest_$6)
+
+J2OBJC_FIELD_SETTER(RxInternalOperatorsOperatorSingleTest_$6, val$requests_, id<JavaUtilList>)
+
+__attribute__((unused)) static void RxInternalOperatorsOperatorSingleTest_$6_initWithJavaUtilList_(RxInternalOperatorsOperatorSingleTest_$6 *self, id<JavaUtilList> capture$0);
+
+__attribute__((unused)) static RxInternalOperatorsOperatorSingleTest_$6 *new_RxInternalOperatorsOperatorSingleTest_$6_initWithJavaUtilList_(id<JavaUtilList> capture$0) NS_RETURNS_RETAINED;
+
+__attribute__((unused)) static RxInternalOperatorsOperatorSingleTest_$6 *create_RxInternalOperatorsOperatorSingleTest_$6_initWithJavaUtilList_(id<JavaUtilList> capture$0);
+
+@interface RxInternalOperatorsOperatorSingleTest_$7 : RxSubscriber
+
+- (void)onStart;
+
+- (void)onCompleted;
+
+- (void)onErrorWithNSException:(NSException *)e;
+
+- (void)onNextWithId:(JavaLangInteger *)t;
+
+- (instancetype)init;
+
+@end
+
+J2OBJC_EMPTY_STATIC_INIT(RxInternalOperatorsOperatorSingleTest_$7)
+
+__attribute__((unused)) static void RxInternalOperatorsOperatorSingleTest_$7_init(RxInternalOperatorsOperatorSingleTest_$7 *self);
+
+__attribute__((unused)) static RxInternalOperatorsOperatorSingleTest_$7 *new_RxInternalOperatorsOperatorSingleTest_$7_init() NS_RETURNS_RETAINED;
+
+__attribute__((unused)) static RxInternalOperatorsOperatorSingleTest_$7 *create_RxInternalOperatorsOperatorSingleTest_$7_init();
+
+@interface RxInternalOperatorsOperatorSingleTest_$8 : NSObject < RxFunctionsAction1 > {
+ @public
+  id<JavaUtilList> val$requests_;
+}
+
+- (void)callWithId:(JavaLangLong *)n;
+
+- (instancetype)initWithJavaUtilList:(id<JavaUtilList>)capture$0;
+
+@end
+
+J2OBJC_EMPTY_STATIC_INIT(RxInternalOperatorsOperatorSingleTest_$8)
+
+J2OBJC_FIELD_SETTER(RxInternalOperatorsOperatorSingleTest_$8, val$requests_, id<JavaUtilList>)
+
+__attribute__((unused)) static void RxInternalOperatorsOperatorSingleTest_$8_initWithJavaUtilList_(RxInternalOperatorsOperatorSingleTest_$8 *self, id<JavaUtilList> capture$0);
+
+__attribute__((unused)) static RxInternalOperatorsOperatorSingleTest_$8 *new_RxInternalOperatorsOperatorSingleTest_$8_initWithJavaUtilList_(id<JavaUtilList> capture$0) NS_RETURNS_RETAINED;
+
+__attribute__((unused)) static RxInternalOperatorsOperatorSingleTest_$8 *create_RxInternalOperatorsOperatorSingleTest_$8_initWithJavaUtilList_(id<JavaUtilList> capture$0);
+
+@interface RxInternalOperatorsOperatorSingleTest_$9 : RxSubscriber
+
+- (void)onStart;
+
+- (void)onCompleted;
+
+- (void)onErrorWithNSException:(NSException *)e;
+
+- (void)onNextWithId:(JavaLangInteger *)t;
+
+- (instancetype)init;
+
+@end
+
+J2OBJC_EMPTY_STATIC_INIT(RxInternalOperatorsOperatorSingleTest_$9)
+
+__attribute__((unused)) static void RxInternalOperatorsOperatorSingleTest_$9_init(RxInternalOperatorsOperatorSingleTest_$9 *self);
+
+__attribute__((unused)) static RxInternalOperatorsOperatorSingleTest_$9 *new_RxInternalOperatorsOperatorSingleTest_$9_init() NS_RETURNS_RETAINED;
+
+__attribute__((unused)) static RxInternalOperatorsOperatorSingleTest_$9 *create_RxInternalOperatorsOperatorSingleTest_$9_init();
+
+@interface RxInternalOperatorsOperatorSingleTest_$10 : NSObject < RxFunctionsFunc1 >
+
+- (JavaLangBoolean *)callWithId:(JavaLangInteger *)t1;
+
+- (instancetype)init;
+
+@end
+
+J2OBJC_EMPTY_STATIC_INIT(RxInternalOperatorsOperatorSingleTest_$10)
+
+__attribute__((unused)) static void RxInternalOperatorsOperatorSingleTest_$10_init(RxInternalOperatorsOperatorSingleTest_$10 *self);
+
+__attribute__((unused)) static RxInternalOperatorsOperatorSingleTest_$10 *new_RxInternalOperatorsOperatorSingleTest_$10_init() NS_RETURNS_RETAINED;
+
+__attribute__((unused)) static RxInternalOperatorsOperatorSingleTest_$10 *create_RxInternalOperatorsOperatorSingleTest_$10_init();
+
+@interface RxInternalOperatorsOperatorSingleTest_$11 : NSObject < RxFunctionsFunc1 >
+
+- (JavaLangBoolean *)callWithId:(JavaLangInteger *)t1;
+
+- (instancetype)init;
+
+@end
+
+J2OBJC_EMPTY_STATIC_INIT(RxInternalOperatorsOperatorSingleTest_$11)
+
+__attribute__((unused)) static void RxInternalOperatorsOperatorSingleTest_$11_init(RxInternalOperatorsOperatorSingleTest_$11 *self);
+
+__attribute__((unused)) static RxInternalOperatorsOperatorSingleTest_$11 *new_RxInternalOperatorsOperatorSingleTest_$11_init() NS_RETURNS_RETAINED;
+
+__attribute__((unused)) static RxInternalOperatorsOperatorSingleTest_$11 *create_RxInternalOperatorsOperatorSingleTest_$11_init();
+
+@interface RxInternalOperatorsOperatorSingleTest_$12 : NSObject < RxFunctionsFunc1 >
+
+- (JavaLangBoolean *)callWithId:(JavaLangInteger *)t1;
+
+- (instancetype)init;
+
+@end
+
+J2OBJC_EMPTY_STATIC_INIT(RxInternalOperatorsOperatorSingleTest_$12)
+
+__attribute__((unused)) static void RxInternalOperatorsOperatorSingleTest_$12_init(RxInternalOperatorsOperatorSingleTest_$12 *self);
+
+__attribute__((unused)) static RxInternalOperatorsOperatorSingleTest_$12 *new_RxInternalOperatorsOperatorSingleTest_$12_init() NS_RETURNS_RETAINED;
+
+__attribute__((unused)) static RxInternalOperatorsOperatorSingleTest_$12 *create_RxInternalOperatorsOperatorSingleTest_$12_init();
+
+@interface RxInternalOperatorsOperatorSingleTest_$13 : NSObject < RxFunctionsFunc1 >
+
+- (JavaLangBoolean *)callWithId:(JavaLangInteger *)t1;
+
+- (instancetype)init;
+
+@end
+
+J2OBJC_EMPTY_STATIC_INIT(RxInternalOperatorsOperatorSingleTest_$13)
+
+__attribute__((unused)) static void RxInternalOperatorsOperatorSingleTest_$13_init(RxInternalOperatorsOperatorSingleTest_$13 *self);
+
+__attribute__((unused)) static RxInternalOperatorsOperatorSingleTest_$13 *new_RxInternalOperatorsOperatorSingleTest_$13_init() NS_RETURNS_RETAINED;
+
+__attribute__((unused)) static RxInternalOperatorsOperatorSingleTest_$13 *create_RxInternalOperatorsOperatorSingleTest_$13_init();
+
+@interface RxInternalOperatorsOperatorSingleTest_$14 : NSObject < RxFunctionsFunc1 >
+
+- (JavaLangBoolean *)callWithId:(JavaLangInteger *)t1;
+
+- (instancetype)init;
+
+@end
+
+J2OBJC_EMPTY_STATIC_INIT(RxInternalOperatorsOperatorSingleTest_$14)
+
+__attribute__((unused)) static void RxInternalOperatorsOperatorSingleTest_$14_init(RxInternalOperatorsOperatorSingleTest_$14 *self);
+
+__attribute__((unused)) static RxInternalOperatorsOperatorSingleTest_$14 *new_RxInternalOperatorsOperatorSingleTest_$14_init() NS_RETURNS_RETAINED;
+
+__attribute__((unused)) static RxInternalOperatorsOperatorSingleTest_$14 *create_RxInternalOperatorsOperatorSingleTest_$14_init();
+
+@interface RxInternalOperatorsOperatorSingleTest_$15 : NSObject < RxFunctionsFunc1 >
+
+- (JavaLangBoolean *)callWithId:(JavaLangInteger *)t1;
+
+- (instancetype)init;
+
+@end
+
+J2OBJC_EMPTY_STATIC_INIT(RxInternalOperatorsOperatorSingleTest_$15)
+
+__attribute__((unused)) static void RxInternalOperatorsOperatorSingleTest_$15_init(RxInternalOperatorsOperatorSingleTest_$15 *self);
+
+__attribute__((unused)) static RxInternalOperatorsOperatorSingleTest_$15 *new_RxInternalOperatorsOperatorSingleTest_$15_init() NS_RETURNS_RETAINED;
+
+__attribute__((unused)) static RxInternalOperatorsOperatorSingleTest_$15 *create_RxInternalOperatorsOperatorSingleTest_$15_init();
+
+@interface RxInternalOperatorsOperatorSingleTest_$16 : RxDopplMockMSubscriber
 
 - (void)onStart;
 
@@ -31,20 +379,215 @@ __attribute__((unused)) static IOSObjectArray *RxInternalOperatorsOperatorSingle
 
 @end
 
-J2OBJC_EMPTY_STATIC_INIT(RxInternalOperatorsOperatorSingleTest_$1)
+J2OBJC_EMPTY_STATIC_INIT(RxInternalOperatorsOperatorSingleTest_$16)
 
-__attribute__((unused)) static void RxInternalOperatorsOperatorSingleTest_$1_init(RxInternalOperatorsOperatorSingleTest_$1 *self);
+__attribute__((unused)) static void RxInternalOperatorsOperatorSingleTest_$16_init(RxInternalOperatorsOperatorSingleTest_$16 *self);
 
-__attribute__((unused)) static RxInternalOperatorsOperatorSingleTest_$1 *new_RxInternalOperatorsOperatorSingleTest_$1_init() NS_RETURNS_RETAINED;
+__attribute__((unused)) static RxInternalOperatorsOperatorSingleTest_$16 *new_RxInternalOperatorsOperatorSingleTest_$16_init() NS_RETURNS_RETAINED;
 
-__attribute__((unused)) static RxInternalOperatorsOperatorSingleTest_$1 *create_RxInternalOperatorsOperatorSingleTest_$1_init();
+__attribute__((unused)) static RxInternalOperatorsOperatorSingleTest_$16 *create_RxInternalOperatorsOperatorSingleTest_$16_init();
+
+@interface RxInternalOperatorsOperatorSingleTest_$17 : NSObject < RxFunctionsFunc2 >
+
+- (JavaLangInteger *)callWithId:(JavaLangInteger *)i1
+                         withId:(JavaLangInteger *)i2;
+
+- (instancetype)init;
+
+@end
+
+J2OBJC_EMPTY_STATIC_INIT(RxInternalOperatorsOperatorSingleTest_$17)
+
+__attribute__((unused)) static void RxInternalOperatorsOperatorSingleTest_$17_init(RxInternalOperatorsOperatorSingleTest_$17 *self);
+
+__attribute__((unused)) static RxInternalOperatorsOperatorSingleTest_$17 *new_RxInternalOperatorsOperatorSingleTest_$17_init() NS_RETURNS_RETAINED;
+
+__attribute__((unused)) static RxInternalOperatorsOperatorSingleTest_$17 *create_RxInternalOperatorsOperatorSingleTest_$17_init();
 
 @implementation RxInternalOperatorsOperatorSingleTest
 
-- (void)testSingleWithBackpressure {
+- (void)testSingle {
+  RxObservable *observable = [((RxObservable *) nil_chk(RxObservable_justWithId_(JavaLangInteger_valueOfWithInt_(1)))) single];
+  id<RxObserver> observer = OrgMockitoMockito_mockWithIOSClass_(RxObserver_class_());
+  [((RxObservable *) nil_chk(observable)) subscribeWithRxObserver:observer];
+  id<OrgMockitoInOrder> inOrder = OrgMockitoMockito_inOrderWithNSObjectArray_([IOSObjectArray arrayWithObjects:(id[]){ observer } count:1 type:NSObject_class_()]);
+  [((id<RxObserver>) nil_chk([((id<OrgMockitoInOrder>) nil_chk(inOrder)) verifyWithId:observer withOrgMockitoVerificationVerificationMode:OrgMockitoMockito_timesWithInt_(1)])) onNextWithId:JavaLangInteger_valueOfWithInt_(1)];
+  [((id<RxObserver>) nil_chk([inOrder verifyWithId:observer withOrgMockitoVerificationVerificationMode:OrgMockitoMockito_timesWithInt_(1)])) onCompleted];
+  [inOrder verifyNoMoreInteractions];
+}
+
+- (void)testSingleWithTooManyElements {
   RxObservable *observable = [((RxObservable *) nil_chk(RxObservable_justWithId_withId_(JavaLangInteger_valueOfWithInt_(1), JavaLangInteger_valueOfWithInt_(2)))) single];
-  RxSubscriber *subscriber = create_RxInternalOperatorsOperatorSingleTest_$1_init();
+  id<RxObserver> observer = OrgMockitoMockito_mockWithIOSClass_(RxObserver_class_());
+  [((RxObservable *) nil_chk(observable)) subscribeWithRxObserver:observer];
+  id<OrgMockitoInOrder> inOrder = OrgMockitoMockito_inOrderWithNSObjectArray_([IOSObjectArray arrayWithObjects:(id[]){ observer } count:1 type:NSObject_class_()]);
+  [((id<RxObserver>) nil_chk([((id<OrgMockitoInOrder>) nil_chk(inOrder)) verifyWithId:observer withOrgMockitoVerificationVerificationMode:OrgMockitoMockito_timesWithInt_(1)])) onErrorWithNSException:OrgMockitoMatchers_isAWithIOSClass_(JavaLangIllegalArgumentException_class_())];
+  [inOrder verifyNoMoreInteractions];
+}
+
+- (void)testSingleWithEmpty {
+  RxObservable *observable = [((RxObservable *) nil_chk(RxObservable_empty())) single];
+  id<RxObserver> observer = OrgMockitoMockito_mockWithIOSClass_(RxObserver_class_());
+  [((RxObservable *) nil_chk(observable)) subscribeWithRxObserver:observer];
+  id<OrgMockitoInOrder> inOrder = OrgMockitoMockito_inOrderWithNSObjectArray_([IOSObjectArray arrayWithObjects:(id[]){ observer } count:1 type:NSObject_class_()]);
+  [((id<RxObserver>) nil_chk([((id<OrgMockitoInOrder>) nil_chk(inOrder)) verifyWithId:observer withOrgMockitoVerificationVerificationMode:OrgMockitoMockito_timesWithInt_(1)])) onErrorWithNSException:OrgMockitoMatchers_isAWithIOSClass_(JavaUtilNoSuchElementException_class_())];
+  [inOrder verifyNoMoreInteractions];
+}
+
+- (void)testSingleDoesNotRequestMoreThanItNeedsToEmitItem {
+  JavaUtilConcurrentAtomicAtomicLong *request = create_JavaUtilConcurrentAtomicAtomicLong_init();
+  [((RxObservablesBlockingObservable *) nil_chk([((RxObservable *) nil_chk([((RxObservable *) nil_chk(RxObservable_justWithId_(JavaLangInteger_valueOfWithInt_(1)))) doOnRequestWithRxFunctionsAction1:create_RxInternalOperatorsOperatorSingleTest_$1_initWithJavaUtilConcurrentAtomicAtomicLong_(request)])) toBlocking])) single];
+  OrgJunitAssert_assertEqualsWithLong_withLong_(2, [request get]);
+}
+
+- (void)testSingleDoesNotRequestMoreThanItNeedsToEmitErrorFromEmpty {
+  JavaUtilConcurrentAtomicAtomicLong *request = create_JavaUtilConcurrentAtomicAtomicLong_init();
+  @try {
+    [((RxObservablesBlockingObservable *) nil_chk([((RxObservable *) nil_chk([((RxObservable *) nil_chk(RxObservable_empty())) doOnRequestWithRxFunctionsAction1:create_RxInternalOperatorsOperatorSingleTest_$2_initWithJavaUtilConcurrentAtomicAtomicLong_(request)])) toBlocking])) single];
+  }
+  @catch (JavaUtilNoSuchElementException *e) {
+    OrgJunitAssert_assertEqualsWithLong_withLong_(2, [request get]);
+  }
+}
+
+- (void)testSingleDoesNotRequestMoreThanItNeedsToEmitErrorFromMoreThanOne {
+  JavaUtilConcurrentAtomicAtomicLong *request = create_JavaUtilConcurrentAtomicAtomicLong_init();
+  @try {
+    [((RxObservablesBlockingObservable *) nil_chk([((RxObservable *) nil_chk([((RxObservable *) nil_chk(RxObservable_justWithId_withId_(JavaLangInteger_valueOfWithInt_(1), JavaLangInteger_valueOfWithInt_(2)))) doOnRequestWithRxFunctionsAction1:create_RxInternalOperatorsOperatorSingleTest_$3_initWithJavaUtilConcurrentAtomicAtomicLong_(request)])) toBlocking])) single];
+  }
+  @catch (JavaLangIllegalArgumentException *e) {
+    OrgJunitAssert_assertEqualsWithLong_withLong_(2, [request get]);
+  }
+}
+
+- (void)testSingleDoesNotRequestMoreThanItNeedsIf1Then2Requested {
+  id<JavaUtilList> requests = create_JavaUtilArrayList_init();
+  [((RxObservable *) nil_chk([((RxObservable *) nil_chk([((RxObservable *) nil_chk(RxObservable_justWithId_(JavaLangInteger_valueOfWithInt_(1)))) doOnRequestWithRxFunctionsAction1:create_RxInternalOperatorsOperatorSingleTest_$4_initWithJavaUtilList_(requests)])) single])) subscribeWithRxSubscriber:create_RxInternalOperatorsOperatorSingleTest_$5_init()];
+  OrgJunitAssert_assertEqualsWithId_withId_(JavaUtilArrays_asListWithNSObjectArray_([IOSObjectArray arrayWithObjects:(id[]){ JavaLangLong_valueOfWithLong_(2LL) } count:1 type:JavaLangLong_class_()]), requests);
+}
+
+- (void)testSingleDoesNotRequestMoreThanItNeedsIf3Requested {
+  id<JavaUtilList> requests = create_JavaUtilArrayList_init();
+  [((RxObservable *) nil_chk([((RxObservable *) nil_chk([((RxObservable *) nil_chk(RxObservable_justWithId_(JavaLangInteger_valueOfWithInt_(1)))) doOnRequestWithRxFunctionsAction1:create_RxInternalOperatorsOperatorSingleTest_$6_initWithJavaUtilList_(requests)])) single])) subscribeWithRxSubscriber:create_RxInternalOperatorsOperatorSingleTest_$7_init()];
+  OrgJunitAssert_assertEqualsWithId_withId_(JavaUtilArrays_asListWithNSObjectArray_([IOSObjectArray arrayWithObjects:(id[]){ JavaLangLong_valueOfWithLong_(2LL) } count:1 type:JavaLangLong_class_()]), requests);
+}
+
+- (void)testSingleRequestsExactlyWhatItNeedsIf1Requested {
+  id<JavaUtilList> requests = create_JavaUtilArrayList_init();
+  [((RxObservable *) nil_chk([((RxObservable *) nil_chk([((RxObservable *) nil_chk(RxObservable_justWithId_(JavaLangInteger_valueOfWithInt_(1)))) doOnRequestWithRxFunctionsAction1:create_RxInternalOperatorsOperatorSingleTest_$8_initWithJavaUtilList_(requests)])) single])) subscribeWithRxSubscriber:create_RxInternalOperatorsOperatorSingleTest_$9_init()];
+  OrgJunitAssert_assertEqualsWithId_withId_(JavaUtilArrays_asListWithNSObjectArray_([IOSObjectArray arrayWithObjects:(id[]){ JavaLangLong_valueOfWithLong_(2LL) } count:1 type:JavaLangLong_class_()]), requests);
+}
+
+- (void)testSingleWithPredicate {
+  RxObservable *observable = [((RxObservable *) nil_chk(RxObservable_justWithId_withId_(JavaLangInteger_valueOfWithInt_(1), JavaLangInteger_valueOfWithInt_(2)))) singleWithRxFunctionsFunc1:create_RxInternalOperatorsOperatorSingleTest_$10_init()];
+  id<RxObserver> observer = OrgMockitoMockito_mockWithIOSClass_(RxObserver_class_());
+  [((RxObservable *) nil_chk(observable)) subscribeWithRxObserver:observer];
+  id<OrgMockitoInOrder> inOrder = OrgMockitoMockito_inOrderWithNSObjectArray_([IOSObjectArray arrayWithObjects:(id[]){ observer } count:1 type:NSObject_class_()]);
+  [((id<RxObserver>) nil_chk([((id<OrgMockitoInOrder>) nil_chk(inOrder)) verifyWithId:observer withOrgMockitoVerificationVerificationMode:OrgMockitoMockito_timesWithInt_(1)])) onNextWithId:JavaLangInteger_valueOfWithInt_(2)];
+  [((id<RxObserver>) nil_chk([inOrder verifyWithId:observer withOrgMockitoVerificationVerificationMode:OrgMockitoMockito_timesWithInt_(1)])) onCompleted];
+  [inOrder verifyNoMoreInteractions];
+}
+
+- (void)testSingleWithPredicateAndTooManyElements {
+  RxObservable *observable = [((RxObservable *) nil_chk(RxObservable_justWithId_withId_withId_withId_(JavaLangInteger_valueOfWithInt_(1), JavaLangInteger_valueOfWithInt_(2), JavaLangInteger_valueOfWithInt_(3), JavaLangInteger_valueOfWithInt_(4)))) singleWithRxFunctionsFunc1:create_RxInternalOperatorsOperatorSingleTest_$11_init()];
+  id<RxObserver> observer = OrgMockitoMockito_mockWithIOSClass_(RxObserver_class_());
+  [((RxObservable *) nil_chk(observable)) subscribeWithRxObserver:observer];
+  id<OrgMockitoInOrder> inOrder = OrgMockitoMockito_inOrderWithNSObjectArray_([IOSObjectArray arrayWithObjects:(id[]){ observer } count:1 type:NSObject_class_()]);
+  [((id<RxObserver>) nil_chk([((id<OrgMockitoInOrder>) nil_chk(inOrder)) verifyWithId:observer withOrgMockitoVerificationVerificationMode:OrgMockitoMockito_timesWithInt_(1)])) onErrorWithNSException:OrgMockitoMatchers_isAWithIOSClass_(JavaLangIllegalArgumentException_class_())];
+  [inOrder verifyNoMoreInteractions];
+}
+
+- (void)testSingleWithPredicateAndEmpty {
+  RxObservable *observable = [((RxObservable *) nil_chk(RxObservable_justWithId_(JavaLangInteger_valueOfWithInt_(1)))) singleWithRxFunctionsFunc1:create_RxInternalOperatorsOperatorSingleTest_$12_init()];
+  id<RxObserver> observer = OrgMockitoMockito_mockWithIOSClass_(RxObserver_class_());
+  [((RxObservable *) nil_chk(observable)) subscribeWithRxObserver:observer];
+  id<OrgMockitoInOrder> inOrder = OrgMockitoMockito_inOrderWithNSObjectArray_([IOSObjectArray arrayWithObjects:(id[]){ observer } count:1 type:NSObject_class_()]);
+  [((id<RxObserver>) nil_chk([((id<OrgMockitoInOrder>) nil_chk(inOrder)) verifyWithId:observer withOrgMockitoVerificationVerificationMode:OrgMockitoMockito_timesWithInt_(1)])) onErrorWithNSException:OrgMockitoMatchers_isAWithIOSClass_(JavaUtilNoSuchElementException_class_())];
+  [inOrder verifyNoMoreInteractions];
+}
+
+- (void)testSingleOrDefault {
+  RxObservable *observable = [((RxObservable *) nil_chk(RxObservable_justWithId_(JavaLangInteger_valueOfWithInt_(1)))) singleOrDefaultWithId:JavaLangInteger_valueOfWithInt_(2)];
+  id<RxObserver> observer = OrgMockitoMockito_mockWithIOSClass_(RxObserver_class_());
+  [((RxObservable *) nil_chk(observable)) subscribeWithRxObserver:observer];
+  id<OrgMockitoInOrder> inOrder = OrgMockitoMockito_inOrderWithNSObjectArray_([IOSObjectArray arrayWithObjects:(id[]){ observer } count:1 type:NSObject_class_()]);
+  [((id<RxObserver>) nil_chk([((id<OrgMockitoInOrder>) nil_chk(inOrder)) verifyWithId:observer withOrgMockitoVerificationVerificationMode:OrgMockitoMockito_timesWithInt_(1)])) onNextWithId:JavaLangInteger_valueOfWithInt_(1)];
+  [((id<RxObserver>) nil_chk([inOrder verifyWithId:observer withOrgMockitoVerificationVerificationMode:OrgMockitoMockito_timesWithInt_(1)])) onCompleted];
+  [inOrder verifyNoMoreInteractions];
+}
+
+- (void)testSingleOrDefaultWithTooManyElements {
+  RxObservable *observable = [((RxObservable *) nil_chk(RxObservable_justWithId_withId_(JavaLangInteger_valueOfWithInt_(1), JavaLangInteger_valueOfWithInt_(2)))) singleOrDefaultWithId:JavaLangInteger_valueOfWithInt_(3)];
+  id<RxObserver> observer = OrgMockitoMockito_mockWithIOSClass_(RxObserver_class_());
+  [((RxObservable *) nil_chk(observable)) subscribeWithRxObserver:observer];
+  id<OrgMockitoInOrder> inOrder = OrgMockitoMockito_inOrderWithNSObjectArray_([IOSObjectArray arrayWithObjects:(id[]){ observer } count:1 type:NSObject_class_()]);
+  [((id<RxObserver>) nil_chk([((id<OrgMockitoInOrder>) nil_chk(inOrder)) verifyWithId:observer withOrgMockitoVerificationVerificationMode:OrgMockitoMockito_timesWithInt_(1)])) onErrorWithNSException:OrgMockitoMatchers_isAWithIOSClass_(JavaLangIllegalArgumentException_class_())];
+  [inOrder verifyNoMoreInteractions];
+}
+
+- (void)testSingleOrDefaultWithEmpty {
+  RxObservable *observable = [((RxObservable *) nil_chk(RxObservable_empty())) singleOrDefaultWithId:JavaLangInteger_valueOfWithInt_(1)];
+  id<RxObserver> observer = OrgMockitoMockito_mockWithIOSClass_(RxObserver_class_());
+  [((RxObservable *) nil_chk(observable)) subscribeWithRxObserver:observer];
+  id<OrgMockitoInOrder> inOrder = OrgMockitoMockito_inOrderWithNSObjectArray_([IOSObjectArray arrayWithObjects:(id[]){ observer } count:1 type:NSObject_class_()]);
+  [((id<RxObserver>) nil_chk([((id<OrgMockitoInOrder>) nil_chk(inOrder)) verifyWithId:observer withOrgMockitoVerificationVerificationMode:OrgMockitoMockito_timesWithInt_(1)])) onNextWithId:JavaLangInteger_valueOfWithInt_(1)];
+  [((id<RxObserver>) nil_chk([inOrder verifyWithId:observer withOrgMockitoVerificationVerificationMode:OrgMockitoMockito_timesWithInt_(1)])) onCompleted];
+  [inOrder verifyNoMoreInteractions];
+}
+
+- (void)testSingleOrDefaultWithPredicate {
+  RxObservable *observable = [((RxObservable *) nil_chk(RxObservable_justWithId_withId_(JavaLangInteger_valueOfWithInt_(1), JavaLangInteger_valueOfWithInt_(2)))) singleOrDefaultWithId:JavaLangInteger_valueOfWithInt_(4) withRxFunctionsFunc1:create_RxInternalOperatorsOperatorSingleTest_$13_init()];
+  id<RxObserver> observer = OrgMockitoMockito_mockWithIOSClass_(RxObserver_class_());
+  [((RxObservable *) nil_chk(observable)) subscribeWithRxObserver:observer];
+  id<OrgMockitoInOrder> inOrder = OrgMockitoMockito_inOrderWithNSObjectArray_([IOSObjectArray arrayWithObjects:(id[]){ observer } count:1 type:NSObject_class_()]);
+  [((id<RxObserver>) nil_chk([((id<OrgMockitoInOrder>) nil_chk(inOrder)) verifyWithId:observer withOrgMockitoVerificationVerificationMode:OrgMockitoMockito_timesWithInt_(1)])) onNextWithId:JavaLangInteger_valueOfWithInt_(2)];
+  [((id<RxObserver>) nil_chk([inOrder verifyWithId:observer withOrgMockitoVerificationVerificationMode:OrgMockitoMockito_timesWithInt_(1)])) onCompleted];
+  [inOrder verifyNoMoreInteractions];
+}
+
+- (void)testSingleOrDefaultWithPredicateAndTooManyElements {
+  RxObservable *observable = [((RxObservable *) nil_chk(RxObservable_justWithId_withId_withId_withId_(JavaLangInteger_valueOfWithInt_(1), JavaLangInteger_valueOfWithInt_(2), JavaLangInteger_valueOfWithInt_(3), JavaLangInteger_valueOfWithInt_(4)))) singleOrDefaultWithId:JavaLangInteger_valueOfWithInt_(6) withRxFunctionsFunc1:create_RxInternalOperatorsOperatorSingleTest_$14_init()];
+  id<RxObserver> observer = OrgMockitoMockito_mockWithIOSClass_(RxObserver_class_());
+  [((RxObservable *) nil_chk(observable)) subscribeWithRxObserver:observer];
+  id<OrgMockitoInOrder> inOrder = OrgMockitoMockito_inOrderWithNSObjectArray_([IOSObjectArray arrayWithObjects:(id[]){ observer } count:1 type:NSObject_class_()]);
+  [((id<RxObserver>) nil_chk([((id<OrgMockitoInOrder>) nil_chk(inOrder)) verifyWithId:observer withOrgMockitoVerificationVerificationMode:OrgMockitoMockito_timesWithInt_(1)])) onErrorWithNSException:OrgMockitoMatchers_isAWithIOSClass_(JavaLangIllegalArgumentException_class_())];
+  [inOrder verifyNoMoreInteractions];
+}
+
+- (void)testSingleOrDefaultWithPredicateAndEmpty {
+  RxObservable *observable = [((RxObservable *) nil_chk(RxObservable_justWithId_(JavaLangInteger_valueOfWithInt_(1)))) singleOrDefaultWithId:JavaLangInteger_valueOfWithInt_(2) withRxFunctionsFunc1:create_RxInternalOperatorsOperatorSingleTest_$15_init()];
+  id<RxObserver> observer = OrgMockitoMockito_mockWithIOSClass_(RxObserver_class_());
+  [((RxObservable *) nil_chk(observable)) subscribeWithRxObserver:observer];
+  id<OrgMockitoInOrder> inOrder = OrgMockitoMockito_inOrderWithNSObjectArray_([IOSObjectArray arrayWithObjects:(id[]){ observer } count:1 type:NSObject_class_()]);
+  [((id<RxObserver>) nil_chk([((id<OrgMockitoInOrder>) nil_chk(inOrder)) verifyWithId:observer withOrgMockitoVerificationVerificationMode:OrgMockitoMockito_timesWithInt_(1)])) onNextWithId:JavaLangInteger_valueOfWithInt_(2)];
+  [((id<RxObserver>) nil_chk([inOrder verifyWithId:observer withOrgMockitoVerificationVerificationMode:OrgMockitoMockito_timesWithInt_(1)])) onCompleted];
+  [inOrder verifyNoMoreInteractions];
+}
+
+- (void)testSingleWithBackpressure {
+  if (CoTouchlabDoppelTestingPlatformUtils_isJ2objc()) return;
+  RxObservable *observable = [((RxObservable *) nil_chk(RxObservable_justWithId_withId_(JavaLangInteger_valueOfWithInt_(1), JavaLangInteger_valueOfWithInt_(2)))) single];
+  RxSubscriber *subscriber = OrgMockitoMockito_spyWithId_(create_RxInternalOperatorsOperatorSingleTest_$16_init());
   [((RxObservable *) nil_chk(observable)) subscribeWithRxSubscriber:subscriber];
+  id<OrgMockitoInOrder> inOrder = OrgMockitoMockito_inOrderWithNSObjectArray_([IOSObjectArray arrayWithObjects:(id[]){ subscriber } count:1 type:NSObject_class_()]);
+  [((RxSubscriber *) nil_chk([((id<OrgMockitoInOrder>) nil_chk(inOrder)) verifyWithId:subscriber withOrgMockitoVerificationVerificationMode:OrgMockitoMockito_timesWithInt_(1)])) onErrorWithNSException:OrgMockitoMatchers_isAWithIOSClass_(JavaLangIllegalArgumentException_class_())];
+  [inOrder verifyNoMoreInteractions];
+}
+
+- (void)testIssue1527 {
+  RxObservable *source = RxObservable_justWithId_withId_withId_withId_withId_withId_(JavaLangInteger_valueOfWithInt_(1), JavaLangInteger_valueOfWithInt_(2), JavaLangInteger_valueOfWithInt_(3), JavaLangInteger_valueOfWithInt_(4), JavaLangInteger_valueOfWithInt_(5), JavaLangInteger_valueOfWithInt_(6));
+  RxObservable *reduced = [((RxObservable *) nil_chk(source)) reduceWithRxFunctionsFunc2:create_RxInternalOperatorsOperatorSingleTest_$17_init()];
+  JavaLangInteger *r = [((RxObservablesBlockingObservable *) nil_chk([((RxObservable *) nil_chk(reduced)) toBlocking])) first];
+  OrgJunitAssert_assertEqualsWithLong_withLong_(21, [((JavaLangInteger *) nil_chk(r)) intValue]);
+}
+
+- (void)defaultBackpressure {
+  RxObserversTestSubscriber *ts = RxObserversTestSubscriber_createWithLong_(0);
+  [((RxObservable *) nil_chk([((RxObservable *) nil_chk(RxObservable_empty())) singleOrDefaultWithId:JavaLangInteger_valueOfWithInt_(1)])) subscribeWithRxSubscriber:ts];
+  [((RxObserversTestSubscriber *) nil_chk(ts)) assertNoValues];
+  [ts requestMoreWithLong:1];
+  [ts assertCompleted];
+  [ts assertNoErrors];
 }
 
 J2OBJC_IGNORE_DESIGNATED_BEGIN
@@ -57,15 +600,55 @@ J2OBJC_IGNORE_DESIGNATED_END
 + (const J2ObjcClassInfo *)__metadata {
   static J2ObjcMethodInfo methods[] = {
     { NULL, "V", 0x1, -1, -1, -1, -1, 0, -1 },
+    { NULL, "V", 0x1, -1, -1, -1, -1, 1, -1 },
+    { NULL, "V", 0x1, -1, -1, -1, -1, 2, -1 },
+    { NULL, "V", 0x1, -1, -1, -1, -1, 3, -1 },
+    { NULL, "V", 0x1, -1, -1, -1, -1, 4, -1 },
+    { NULL, "V", 0x1, -1, -1, -1, -1, 5, -1 },
+    { NULL, "V", 0x1, -1, -1, -1, -1, 6, -1 },
+    { NULL, "V", 0x1, -1, -1, -1, -1, 7, -1 },
+    { NULL, "V", 0x1, -1, -1, -1, -1, 8, -1 },
+    { NULL, "V", 0x1, -1, -1, -1, -1, 9, -1 },
+    { NULL, "V", 0x1, -1, -1, -1, -1, 10, -1 },
+    { NULL, "V", 0x1, -1, -1, -1, -1, 11, -1 },
+    { NULL, "V", 0x1, -1, -1, -1, -1, 12, -1 },
+    { NULL, "V", 0x1, -1, -1, -1, -1, 13, -1 },
+    { NULL, "V", 0x1, -1, -1, -1, -1, 14, -1 },
+    { NULL, "V", 0x1, -1, -1, -1, -1, 15, -1 },
+    { NULL, "V", 0x1, -1, -1, -1, -1, 16, -1 },
+    { NULL, "V", 0x1, -1, -1, -1, -1, 17, -1 },
+    { NULL, "V", 0x1, -1, -1, -1, -1, 18, -1 },
+    { NULL, "V", 0x1, -1, -1, 19, -1, 20, -1 },
+    { NULL, "V", 0x1, -1, -1, -1, -1, 21, -1 },
     { NULL, NULL, 0x1, -1, -1, -1, -1, -1, -1 },
   };
   #pragma clang diagnostic push
   #pragma clang diagnostic ignored "-Wobjc-multiple-method-names"
-  methods[0].selector = @selector(testSingleWithBackpressure);
-  methods[1].selector = @selector(init);
+  methods[0].selector = @selector(testSingle);
+  methods[1].selector = @selector(testSingleWithTooManyElements);
+  methods[2].selector = @selector(testSingleWithEmpty);
+  methods[3].selector = @selector(testSingleDoesNotRequestMoreThanItNeedsToEmitItem);
+  methods[4].selector = @selector(testSingleDoesNotRequestMoreThanItNeedsToEmitErrorFromEmpty);
+  methods[5].selector = @selector(testSingleDoesNotRequestMoreThanItNeedsToEmitErrorFromMoreThanOne);
+  methods[6].selector = @selector(testSingleDoesNotRequestMoreThanItNeedsIf1Then2Requested);
+  methods[7].selector = @selector(testSingleDoesNotRequestMoreThanItNeedsIf3Requested);
+  methods[8].selector = @selector(testSingleRequestsExactlyWhatItNeedsIf1Requested);
+  methods[9].selector = @selector(testSingleWithPredicate);
+  methods[10].selector = @selector(testSingleWithPredicateAndTooManyElements);
+  methods[11].selector = @selector(testSingleWithPredicateAndEmpty);
+  methods[12].selector = @selector(testSingleOrDefault);
+  methods[13].selector = @selector(testSingleOrDefaultWithTooManyElements);
+  methods[14].selector = @selector(testSingleOrDefaultWithEmpty);
+  methods[15].selector = @selector(testSingleOrDefaultWithPredicate);
+  methods[16].selector = @selector(testSingleOrDefaultWithPredicateAndTooManyElements);
+  methods[17].selector = @selector(testSingleOrDefaultWithPredicateAndEmpty);
+  methods[18].selector = @selector(testSingleWithBackpressure);
+  methods[19].selector = @selector(testIssue1527);
+  methods[20].selector = @selector(defaultBackpressure);
+  methods[21].selector = @selector(init);
   #pragma clang diagnostic pop
-  static const void *ptrTable[] = { (void *)&RxInternalOperatorsOperatorSingleTest__Annotations$0 };
-  static const J2ObjcClassInfo _RxInternalOperatorsOperatorSingleTest = { "OperatorSingleTest", "rx.internal.operators", ptrTable, methods, NULL, 7, 0x1, 2, 0, -1, -1, -1, -1, -1 };
+  static const void *ptrTable[] = { (void *)&RxInternalOperatorsOperatorSingleTest__Annotations$0, (void *)&RxInternalOperatorsOperatorSingleTest__Annotations$1, (void *)&RxInternalOperatorsOperatorSingleTest__Annotations$2, (void *)&RxInternalOperatorsOperatorSingleTest__Annotations$3, (void *)&RxInternalOperatorsOperatorSingleTest__Annotations$4, (void *)&RxInternalOperatorsOperatorSingleTest__Annotations$5, (void *)&RxInternalOperatorsOperatorSingleTest__Annotations$6, (void *)&RxInternalOperatorsOperatorSingleTest__Annotations$7, (void *)&RxInternalOperatorsOperatorSingleTest__Annotations$8, (void *)&RxInternalOperatorsOperatorSingleTest__Annotations$9, (void *)&RxInternalOperatorsOperatorSingleTest__Annotations$10, (void *)&RxInternalOperatorsOperatorSingleTest__Annotations$11, (void *)&RxInternalOperatorsOperatorSingleTest__Annotations$12, (void *)&RxInternalOperatorsOperatorSingleTest__Annotations$13, (void *)&RxInternalOperatorsOperatorSingleTest__Annotations$14, (void *)&RxInternalOperatorsOperatorSingleTest__Annotations$15, (void *)&RxInternalOperatorsOperatorSingleTest__Annotations$16, (void *)&RxInternalOperatorsOperatorSingleTest__Annotations$17, (void *)&RxInternalOperatorsOperatorSingleTest__Annotations$18, "LJavaLangInterruptedException;", (void *)&RxInternalOperatorsOperatorSingleTest__Annotations$19, (void *)&RxInternalOperatorsOperatorSingleTest__Annotations$20 };
+  static const J2ObjcClassInfo _RxInternalOperatorsOperatorSingleTest = { "OperatorSingleTest", "rx.internal.operators", ptrTable, methods, NULL, 7, 0x1, 22, 0, -1, -1, -1, -1, -1 };
   return &_RxInternalOperatorsOperatorSingleTest;
 }
 
@@ -87,9 +670,807 @@ IOSObjectArray *RxInternalOperatorsOperatorSingleTest__Annotations$0() {
   return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
 }
 
+IOSObjectArray *RxInternalOperatorsOperatorSingleTest__Annotations$1() {
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+}
+
+IOSObjectArray *RxInternalOperatorsOperatorSingleTest__Annotations$2() {
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+}
+
+IOSObjectArray *RxInternalOperatorsOperatorSingleTest__Annotations$3() {
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+}
+
+IOSObjectArray *RxInternalOperatorsOperatorSingleTest__Annotations$4() {
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+}
+
+IOSObjectArray *RxInternalOperatorsOperatorSingleTest__Annotations$5() {
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+}
+
+IOSObjectArray *RxInternalOperatorsOperatorSingleTest__Annotations$6() {
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+}
+
+IOSObjectArray *RxInternalOperatorsOperatorSingleTest__Annotations$7() {
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+}
+
+IOSObjectArray *RxInternalOperatorsOperatorSingleTest__Annotations$8() {
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+}
+
+IOSObjectArray *RxInternalOperatorsOperatorSingleTest__Annotations$9() {
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+}
+
+IOSObjectArray *RxInternalOperatorsOperatorSingleTest__Annotations$10() {
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+}
+
+IOSObjectArray *RxInternalOperatorsOperatorSingleTest__Annotations$11() {
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+}
+
+IOSObjectArray *RxInternalOperatorsOperatorSingleTest__Annotations$12() {
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+}
+
+IOSObjectArray *RxInternalOperatorsOperatorSingleTest__Annotations$13() {
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+}
+
+IOSObjectArray *RxInternalOperatorsOperatorSingleTest__Annotations$14() {
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+}
+
+IOSObjectArray *RxInternalOperatorsOperatorSingleTest__Annotations$15() {
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+}
+
+IOSObjectArray *RxInternalOperatorsOperatorSingleTest__Annotations$16() {
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+}
+
+IOSObjectArray *RxInternalOperatorsOperatorSingleTest__Annotations$17() {
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+}
+
+IOSObjectArray *RxInternalOperatorsOperatorSingleTest__Annotations$18() {
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+}
+
+IOSObjectArray *RxInternalOperatorsOperatorSingleTest__Annotations$19() {
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 30000) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+}
+
+IOSObjectArray *RxInternalOperatorsOperatorSingleTest__Annotations$20() {
+  return [IOSObjectArray arrayWithObjects:(id[]){ create_OrgJunitTest(OrgJunitTest_None_class_(), 0) } count:1 type:JavaLangAnnotationAnnotation_class_()];
+}
+
 J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxInternalOperatorsOperatorSingleTest)
 
 @implementation RxInternalOperatorsOperatorSingleTest_$1
+
+- (void)callWithId:(JavaLangLong *)n {
+  [((JavaUtilConcurrentAtomicAtomicLong *) nil_chk(val$request_)) addAndGetWithLong:[((JavaLangLong *) nil_chk(n)) longLongValue]];
+}
+
+- (instancetype)initWithJavaUtilConcurrentAtomicAtomicLong:(JavaUtilConcurrentAtomicAtomicLong *)capture$0 {
+  RxInternalOperatorsOperatorSingleTest_$1_initWithJavaUtilConcurrentAtomicAtomicLong_(self, capture$0);
+  return self;
+}
+
+- (void)dealloc {
+  RELEASE_(val$request_);
+  [super dealloc];
+}
+
++ (const J2ObjcClassInfo *)__metadata {
+  static J2ObjcMethodInfo methods[] = {
+    { NULL, "V", 0x1, 0, 1, -1, -1, -1, -1 },
+    { NULL, NULL, 0x0, -1, 2, -1, -1, -1, -1 },
+  };
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Wobjc-multiple-method-names"
+  methods[0].selector = @selector(callWithId:);
+  methods[1].selector = @selector(initWithJavaUtilConcurrentAtomicAtomicLong:);
+  #pragma clang diagnostic pop
+  static const J2ObjcFieldInfo fields[] = {
+    { "val$request_", "LJavaUtilConcurrentAtomicAtomicLong;", .constantValue.asLong = 0, 0x1012, -1, -1, -1, -1 },
+  };
+  static const void *ptrTable[] = { "call", "LJavaLangLong;", "LJavaUtilConcurrentAtomicAtomicLong;", "LRxInternalOperatorsOperatorSingleTest;", "testSingleDoesNotRequestMoreThanItNeedsToEmitItem", "Ljava/lang/Object;Lrx/functions/Action1<Ljava/lang/Long;>;" };
+  static const J2ObjcClassInfo _RxInternalOperatorsOperatorSingleTest_$1 = { "", "rx.internal.operators", ptrTable, methods, fields, 7, 0x8008, 2, 1, 3, -1, 4, 5, -1 };
+  return &_RxInternalOperatorsOperatorSingleTest_$1;
+}
+
+@end
+
+void RxInternalOperatorsOperatorSingleTest_$1_initWithJavaUtilConcurrentAtomicAtomicLong_(RxInternalOperatorsOperatorSingleTest_$1 *self, JavaUtilConcurrentAtomicAtomicLong *capture$0) {
+  JreStrongAssign(&self->val$request_, capture$0);
+  NSObject_init(self);
+}
+
+RxInternalOperatorsOperatorSingleTest_$1 *new_RxInternalOperatorsOperatorSingleTest_$1_initWithJavaUtilConcurrentAtomicAtomicLong_(JavaUtilConcurrentAtomicAtomicLong *capture$0) {
+  J2OBJC_NEW_IMPL(RxInternalOperatorsOperatorSingleTest_$1, initWithJavaUtilConcurrentAtomicAtomicLong_, capture$0)
+}
+
+RxInternalOperatorsOperatorSingleTest_$1 *create_RxInternalOperatorsOperatorSingleTest_$1_initWithJavaUtilConcurrentAtomicAtomicLong_(JavaUtilConcurrentAtomicAtomicLong *capture$0) {
+  J2OBJC_CREATE_IMPL(RxInternalOperatorsOperatorSingleTest_$1, initWithJavaUtilConcurrentAtomicAtomicLong_, capture$0)
+}
+
+@implementation RxInternalOperatorsOperatorSingleTest_$2
+
+- (void)callWithId:(JavaLangLong *)n {
+  [((JavaUtilConcurrentAtomicAtomicLong *) nil_chk(val$request_)) addAndGetWithLong:[((JavaLangLong *) nil_chk(n)) longLongValue]];
+}
+
+- (instancetype)initWithJavaUtilConcurrentAtomicAtomicLong:(JavaUtilConcurrentAtomicAtomicLong *)capture$0 {
+  RxInternalOperatorsOperatorSingleTest_$2_initWithJavaUtilConcurrentAtomicAtomicLong_(self, capture$0);
+  return self;
+}
+
+- (void)dealloc {
+  RELEASE_(val$request_);
+  [super dealloc];
+}
+
++ (const J2ObjcClassInfo *)__metadata {
+  static J2ObjcMethodInfo methods[] = {
+    { NULL, "V", 0x1, 0, 1, -1, -1, -1, -1 },
+    { NULL, NULL, 0x0, -1, 2, -1, -1, -1, -1 },
+  };
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Wobjc-multiple-method-names"
+  methods[0].selector = @selector(callWithId:);
+  methods[1].selector = @selector(initWithJavaUtilConcurrentAtomicAtomicLong:);
+  #pragma clang diagnostic pop
+  static const J2ObjcFieldInfo fields[] = {
+    { "val$request_", "LJavaUtilConcurrentAtomicAtomicLong;", .constantValue.asLong = 0, 0x1012, -1, -1, -1, -1 },
+  };
+  static const void *ptrTable[] = { "call", "LJavaLangLong;", "LJavaUtilConcurrentAtomicAtomicLong;", "LRxInternalOperatorsOperatorSingleTest;", "testSingleDoesNotRequestMoreThanItNeedsToEmitErrorFromEmpty", "Ljava/lang/Object;Lrx/functions/Action1<Ljava/lang/Long;>;" };
+  static const J2ObjcClassInfo _RxInternalOperatorsOperatorSingleTest_$2 = { "", "rx.internal.operators", ptrTable, methods, fields, 7, 0x8008, 2, 1, 3, -1, 4, 5, -1 };
+  return &_RxInternalOperatorsOperatorSingleTest_$2;
+}
+
+@end
+
+void RxInternalOperatorsOperatorSingleTest_$2_initWithJavaUtilConcurrentAtomicAtomicLong_(RxInternalOperatorsOperatorSingleTest_$2 *self, JavaUtilConcurrentAtomicAtomicLong *capture$0) {
+  JreStrongAssign(&self->val$request_, capture$0);
+  NSObject_init(self);
+}
+
+RxInternalOperatorsOperatorSingleTest_$2 *new_RxInternalOperatorsOperatorSingleTest_$2_initWithJavaUtilConcurrentAtomicAtomicLong_(JavaUtilConcurrentAtomicAtomicLong *capture$0) {
+  J2OBJC_NEW_IMPL(RxInternalOperatorsOperatorSingleTest_$2, initWithJavaUtilConcurrentAtomicAtomicLong_, capture$0)
+}
+
+RxInternalOperatorsOperatorSingleTest_$2 *create_RxInternalOperatorsOperatorSingleTest_$2_initWithJavaUtilConcurrentAtomicAtomicLong_(JavaUtilConcurrentAtomicAtomicLong *capture$0) {
+  J2OBJC_CREATE_IMPL(RxInternalOperatorsOperatorSingleTest_$2, initWithJavaUtilConcurrentAtomicAtomicLong_, capture$0)
+}
+
+@implementation RxInternalOperatorsOperatorSingleTest_$3
+
+- (void)callWithId:(JavaLangLong *)n {
+  [((JavaUtilConcurrentAtomicAtomicLong *) nil_chk(val$request_)) addAndGetWithLong:[((JavaLangLong *) nil_chk(n)) longLongValue]];
+}
+
+- (instancetype)initWithJavaUtilConcurrentAtomicAtomicLong:(JavaUtilConcurrentAtomicAtomicLong *)capture$0 {
+  RxInternalOperatorsOperatorSingleTest_$3_initWithJavaUtilConcurrentAtomicAtomicLong_(self, capture$0);
+  return self;
+}
+
+- (void)dealloc {
+  RELEASE_(val$request_);
+  [super dealloc];
+}
+
++ (const J2ObjcClassInfo *)__metadata {
+  static J2ObjcMethodInfo methods[] = {
+    { NULL, "V", 0x1, 0, 1, -1, -1, -1, -1 },
+    { NULL, NULL, 0x0, -1, 2, -1, -1, -1, -1 },
+  };
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Wobjc-multiple-method-names"
+  methods[0].selector = @selector(callWithId:);
+  methods[1].selector = @selector(initWithJavaUtilConcurrentAtomicAtomicLong:);
+  #pragma clang diagnostic pop
+  static const J2ObjcFieldInfo fields[] = {
+    { "val$request_", "LJavaUtilConcurrentAtomicAtomicLong;", .constantValue.asLong = 0, 0x1012, -1, -1, -1, -1 },
+  };
+  static const void *ptrTable[] = { "call", "LJavaLangLong;", "LJavaUtilConcurrentAtomicAtomicLong;", "LRxInternalOperatorsOperatorSingleTest;", "testSingleDoesNotRequestMoreThanItNeedsToEmitErrorFromMoreThanOne", "Ljava/lang/Object;Lrx/functions/Action1<Ljava/lang/Long;>;" };
+  static const J2ObjcClassInfo _RxInternalOperatorsOperatorSingleTest_$3 = { "", "rx.internal.operators", ptrTable, methods, fields, 7, 0x8008, 2, 1, 3, -1, 4, 5, -1 };
+  return &_RxInternalOperatorsOperatorSingleTest_$3;
+}
+
+@end
+
+void RxInternalOperatorsOperatorSingleTest_$3_initWithJavaUtilConcurrentAtomicAtomicLong_(RxInternalOperatorsOperatorSingleTest_$3 *self, JavaUtilConcurrentAtomicAtomicLong *capture$0) {
+  JreStrongAssign(&self->val$request_, capture$0);
+  NSObject_init(self);
+}
+
+RxInternalOperatorsOperatorSingleTest_$3 *new_RxInternalOperatorsOperatorSingleTest_$3_initWithJavaUtilConcurrentAtomicAtomicLong_(JavaUtilConcurrentAtomicAtomicLong *capture$0) {
+  J2OBJC_NEW_IMPL(RxInternalOperatorsOperatorSingleTest_$3, initWithJavaUtilConcurrentAtomicAtomicLong_, capture$0)
+}
+
+RxInternalOperatorsOperatorSingleTest_$3 *create_RxInternalOperatorsOperatorSingleTest_$3_initWithJavaUtilConcurrentAtomicAtomicLong_(JavaUtilConcurrentAtomicAtomicLong *capture$0) {
+  J2OBJC_CREATE_IMPL(RxInternalOperatorsOperatorSingleTest_$3, initWithJavaUtilConcurrentAtomicAtomicLong_, capture$0)
+}
+
+@implementation RxInternalOperatorsOperatorSingleTest_$4
+
+- (void)callWithId:(JavaLangLong *)n {
+  [((id<JavaUtilList>) nil_chk(val$requests_)) addWithId:n];
+}
+
+- (instancetype)initWithJavaUtilList:(id<JavaUtilList>)capture$0 {
+  RxInternalOperatorsOperatorSingleTest_$4_initWithJavaUtilList_(self, capture$0);
+  return self;
+}
+
+- (void)dealloc {
+  RELEASE_(val$requests_);
+  [super dealloc];
+}
+
++ (const J2ObjcClassInfo *)__metadata {
+  static J2ObjcMethodInfo methods[] = {
+    { NULL, "V", 0x1, 0, 1, -1, -1, -1, -1 },
+    { NULL, NULL, 0x0, -1, 2, -1, 3, -1, -1 },
+  };
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Wobjc-multiple-method-names"
+  methods[0].selector = @selector(callWithId:);
+  methods[1].selector = @selector(initWithJavaUtilList:);
+  #pragma clang diagnostic pop
+  static const J2ObjcFieldInfo fields[] = {
+    { "val$requests_", "LJavaUtilList;", .constantValue.asLong = 0, 0x1012, -1, -1, 4, -1 },
+  };
+  static const void *ptrTable[] = { "call", "LJavaLangLong;", "LJavaUtilList;", "(Ljava/util/List<Ljava/lang/Long;>;)V", "Ljava/util/List<Ljava/lang/Long;>;", "LRxInternalOperatorsOperatorSingleTest;", "testSingleDoesNotRequestMoreThanItNeedsIf1Then2Requested", "Ljava/lang/Object;Lrx/functions/Action1<Ljava/lang/Long;>;" };
+  static const J2ObjcClassInfo _RxInternalOperatorsOperatorSingleTest_$4 = { "", "rx.internal.operators", ptrTable, methods, fields, 7, 0x8008, 2, 1, 5, -1, 6, 7, -1 };
+  return &_RxInternalOperatorsOperatorSingleTest_$4;
+}
+
+@end
+
+void RxInternalOperatorsOperatorSingleTest_$4_initWithJavaUtilList_(RxInternalOperatorsOperatorSingleTest_$4 *self, id<JavaUtilList> capture$0) {
+  JreStrongAssign(&self->val$requests_, capture$0);
+  NSObject_init(self);
+}
+
+RxInternalOperatorsOperatorSingleTest_$4 *new_RxInternalOperatorsOperatorSingleTest_$4_initWithJavaUtilList_(id<JavaUtilList> capture$0) {
+  J2OBJC_NEW_IMPL(RxInternalOperatorsOperatorSingleTest_$4, initWithJavaUtilList_, capture$0)
+}
+
+RxInternalOperatorsOperatorSingleTest_$4 *create_RxInternalOperatorsOperatorSingleTest_$4_initWithJavaUtilList_(id<JavaUtilList> capture$0) {
+  J2OBJC_CREATE_IMPL(RxInternalOperatorsOperatorSingleTest_$4, initWithJavaUtilList_, capture$0)
+}
+
+@implementation RxInternalOperatorsOperatorSingleTest_$5
+
+- (void)onStart {
+  [self requestWithLong:1];
+}
+
+- (void)onCompleted {
+}
+
+- (void)onErrorWithNSException:(NSException *)e {
+}
+
+- (void)onNextWithId:(JavaLangInteger *)t {
+  [self requestWithLong:2];
+}
+
+J2OBJC_IGNORE_DESIGNATED_BEGIN
+- (instancetype)init {
+  RxInternalOperatorsOperatorSingleTest_$5_init(self);
+  return self;
+}
+J2OBJC_IGNORE_DESIGNATED_END
+
++ (const J2ObjcClassInfo *)__metadata {
+  static J2ObjcMethodInfo methods[] = {
+    { NULL, "V", 0x1, -1, -1, -1, -1, -1, -1 },
+    { NULL, "V", 0x1, -1, -1, -1, -1, -1, -1 },
+    { NULL, "V", 0x1, 0, 1, -1, -1, -1, -1 },
+    { NULL, "V", 0x1, 2, 3, -1, -1, -1, -1 },
+    { NULL, NULL, 0x0, -1, -1, -1, -1, -1, -1 },
+  };
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Wobjc-multiple-method-names"
+  methods[0].selector = @selector(onStart);
+  methods[1].selector = @selector(onCompleted);
+  methods[2].selector = @selector(onErrorWithNSException:);
+  methods[3].selector = @selector(onNextWithId:);
+  methods[4].selector = @selector(init);
+  #pragma clang diagnostic pop
+  static const void *ptrTable[] = { "onError", "LNSException;", "onNext", "LJavaLangInteger;", "LRxInternalOperatorsOperatorSingleTest;", "testSingleDoesNotRequestMoreThanItNeedsIf1Then2Requested", "Lrx/Subscriber<Ljava/lang/Integer;>;" };
+  static const J2ObjcClassInfo _RxInternalOperatorsOperatorSingleTest_$5 = { "", "rx.internal.operators", ptrTable, methods, NULL, 7, 0x8008, 5, 0, 4, -1, 5, 6, -1 };
+  return &_RxInternalOperatorsOperatorSingleTest_$5;
+}
+
+@end
+
+void RxInternalOperatorsOperatorSingleTest_$5_init(RxInternalOperatorsOperatorSingleTest_$5 *self) {
+  RxSubscriber_init(self);
+}
+
+RxInternalOperatorsOperatorSingleTest_$5 *new_RxInternalOperatorsOperatorSingleTest_$5_init() {
+  J2OBJC_NEW_IMPL(RxInternalOperatorsOperatorSingleTest_$5, init)
+}
+
+RxInternalOperatorsOperatorSingleTest_$5 *create_RxInternalOperatorsOperatorSingleTest_$5_init() {
+  J2OBJC_CREATE_IMPL(RxInternalOperatorsOperatorSingleTest_$5, init)
+}
+
+@implementation RxInternalOperatorsOperatorSingleTest_$6
+
+- (void)callWithId:(JavaLangLong *)n {
+  [((id<JavaUtilList>) nil_chk(val$requests_)) addWithId:n];
+}
+
+- (instancetype)initWithJavaUtilList:(id<JavaUtilList>)capture$0 {
+  RxInternalOperatorsOperatorSingleTest_$6_initWithJavaUtilList_(self, capture$0);
+  return self;
+}
+
+- (void)dealloc {
+  RELEASE_(val$requests_);
+  [super dealloc];
+}
+
++ (const J2ObjcClassInfo *)__metadata {
+  static J2ObjcMethodInfo methods[] = {
+    { NULL, "V", 0x1, 0, 1, -1, -1, -1, -1 },
+    { NULL, NULL, 0x0, -1, 2, -1, 3, -1, -1 },
+  };
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Wobjc-multiple-method-names"
+  methods[0].selector = @selector(callWithId:);
+  methods[1].selector = @selector(initWithJavaUtilList:);
+  #pragma clang diagnostic pop
+  static const J2ObjcFieldInfo fields[] = {
+    { "val$requests_", "LJavaUtilList;", .constantValue.asLong = 0, 0x1012, -1, -1, 4, -1 },
+  };
+  static const void *ptrTable[] = { "call", "LJavaLangLong;", "LJavaUtilList;", "(Ljava/util/List<Ljava/lang/Long;>;)V", "Ljava/util/List<Ljava/lang/Long;>;", "LRxInternalOperatorsOperatorSingleTest;", "testSingleDoesNotRequestMoreThanItNeedsIf3Requested", "Ljava/lang/Object;Lrx/functions/Action1<Ljava/lang/Long;>;" };
+  static const J2ObjcClassInfo _RxInternalOperatorsOperatorSingleTest_$6 = { "", "rx.internal.operators", ptrTable, methods, fields, 7, 0x8008, 2, 1, 5, -1, 6, 7, -1 };
+  return &_RxInternalOperatorsOperatorSingleTest_$6;
+}
+
+@end
+
+void RxInternalOperatorsOperatorSingleTest_$6_initWithJavaUtilList_(RxInternalOperatorsOperatorSingleTest_$6 *self, id<JavaUtilList> capture$0) {
+  JreStrongAssign(&self->val$requests_, capture$0);
+  NSObject_init(self);
+}
+
+RxInternalOperatorsOperatorSingleTest_$6 *new_RxInternalOperatorsOperatorSingleTest_$6_initWithJavaUtilList_(id<JavaUtilList> capture$0) {
+  J2OBJC_NEW_IMPL(RxInternalOperatorsOperatorSingleTest_$6, initWithJavaUtilList_, capture$0)
+}
+
+RxInternalOperatorsOperatorSingleTest_$6 *create_RxInternalOperatorsOperatorSingleTest_$6_initWithJavaUtilList_(id<JavaUtilList> capture$0) {
+  J2OBJC_CREATE_IMPL(RxInternalOperatorsOperatorSingleTest_$6, initWithJavaUtilList_, capture$0)
+}
+
+@implementation RxInternalOperatorsOperatorSingleTest_$7
+
+- (void)onStart {
+  [self requestWithLong:3];
+}
+
+- (void)onCompleted {
+}
+
+- (void)onErrorWithNSException:(NSException *)e {
+}
+
+- (void)onNextWithId:(JavaLangInteger *)t {
+}
+
+J2OBJC_IGNORE_DESIGNATED_BEGIN
+- (instancetype)init {
+  RxInternalOperatorsOperatorSingleTest_$7_init(self);
+  return self;
+}
+J2OBJC_IGNORE_DESIGNATED_END
+
++ (const J2ObjcClassInfo *)__metadata {
+  static J2ObjcMethodInfo methods[] = {
+    { NULL, "V", 0x1, -1, -1, -1, -1, -1, -1 },
+    { NULL, "V", 0x1, -1, -1, -1, -1, -1, -1 },
+    { NULL, "V", 0x1, 0, 1, -1, -1, -1, -1 },
+    { NULL, "V", 0x1, 2, 3, -1, -1, -1, -1 },
+    { NULL, NULL, 0x0, -1, -1, -1, -1, -1, -1 },
+  };
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Wobjc-multiple-method-names"
+  methods[0].selector = @selector(onStart);
+  methods[1].selector = @selector(onCompleted);
+  methods[2].selector = @selector(onErrorWithNSException:);
+  methods[3].selector = @selector(onNextWithId:);
+  methods[4].selector = @selector(init);
+  #pragma clang diagnostic pop
+  static const void *ptrTable[] = { "onError", "LNSException;", "onNext", "LJavaLangInteger;", "LRxInternalOperatorsOperatorSingleTest;", "testSingleDoesNotRequestMoreThanItNeedsIf3Requested", "Lrx/Subscriber<Ljava/lang/Integer;>;" };
+  static const J2ObjcClassInfo _RxInternalOperatorsOperatorSingleTest_$7 = { "", "rx.internal.operators", ptrTable, methods, NULL, 7, 0x8008, 5, 0, 4, -1, 5, 6, -1 };
+  return &_RxInternalOperatorsOperatorSingleTest_$7;
+}
+
+@end
+
+void RxInternalOperatorsOperatorSingleTest_$7_init(RxInternalOperatorsOperatorSingleTest_$7 *self) {
+  RxSubscriber_init(self);
+}
+
+RxInternalOperatorsOperatorSingleTest_$7 *new_RxInternalOperatorsOperatorSingleTest_$7_init() {
+  J2OBJC_NEW_IMPL(RxInternalOperatorsOperatorSingleTest_$7, init)
+}
+
+RxInternalOperatorsOperatorSingleTest_$7 *create_RxInternalOperatorsOperatorSingleTest_$7_init() {
+  J2OBJC_CREATE_IMPL(RxInternalOperatorsOperatorSingleTest_$7, init)
+}
+
+@implementation RxInternalOperatorsOperatorSingleTest_$8
+
+- (void)callWithId:(JavaLangLong *)n {
+  [((id<JavaUtilList>) nil_chk(val$requests_)) addWithId:n];
+}
+
+- (instancetype)initWithJavaUtilList:(id<JavaUtilList>)capture$0 {
+  RxInternalOperatorsOperatorSingleTest_$8_initWithJavaUtilList_(self, capture$0);
+  return self;
+}
+
+- (void)dealloc {
+  RELEASE_(val$requests_);
+  [super dealloc];
+}
+
++ (const J2ObjcClassInfo *)__metadata {
+  static J2ObjcMethodInfo methods[] = {
+    { NULL, "V", 0x1, 0, 1, -1, -1, -1, -1 },
+    { NULL, NULL, 0x0, -1, 2, -1, 3, -1, -1 },
+  };
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Wobjc-multiple-method-names"
+  methods[0].selector = @selector(callWithId:);
+  methods[1].selector = @selector(initWithJavaUtilList:);
+  #pragma clang diagnostic pop
+  static const J2ObjcFieldInfo fields[] = {
+    { "val$requests_", "LJavaUtilList;", .constantValue.asLong = 0, 0x1012, -1, -1, 4, -1 },
+  };
+  static const void *ptrTable[] = { "call", "LJavaLangLong;", "LJavaUtilList;", "(Ljava/util/List<Ljava/lang/Long;>;)V", "Ljava/util/List<Ljava/lang/Long;>;", "LRxInternalOperatorsOperatorSingleTest;", "testSingleRequestsExactlyWhatItNeedsIf1Requested", "Ljava/lang/Object;Lrx/functions/Action1<Ljava/lang/Long;>;" };
+  static const J2ObjcClassInfo _RxInternalOperatorsOperatorSingleTest_$8 = { "", "rx.internal.operators", ptrTable, methods, fields, 7, 0x8008, 2, 1, 5, -1, 6, 7, -1 };
+  return &_RxInternalOperatorsOperatorSingleTest_$8;
+}
+
+@end
+
+void RxInternalOperatorsOperatorSingleTest_$8_initWithJavaUtilList_(RxInternalOperatorsOperatorSingleTest_$8 *self, id<JavaUtilList> capture$0) {
+  JreStrongAssign(&self->val$requests_, capture$0);
+  NSObject_init(self);
+}
+
+RxInternalOperatorsOperatorSingleTest_$8 *new_RxInternalOperatorsOperatorSingleTest_$8_initWithJavaUtilList_(id<JavaUtilList> capture$0) {
+  J2OBJC_NEW_IMPL(RxInternalOperatorsOperatorSingleTest_$8, initWithJavaUtilList_, capture$0)
+}
+
+RxInternalOperatorsOperatorSingleTest_$8 *create_RxInternalOperatorsOperatorSingleTest_$8_initWithJavaUtilList_(id<JavaUtilList> capture$0) {
+  J2OBJC_CREATE_IMPL(RxInternalOperatorsOperatorSingleTest_$8, initWithJavaUtilList_, capture$0)
+}
+
+@implementation RxInternalOperatorsOperatorSingleTest_$9
+
+- (void)onStart {
+  [self requestWithLong:1];
+}
+
+- (void)onCompleted {
+}
+
+- (void)onErrorWithNSException:(NSException *)e {
+}
+
+- (void)onNextWithId:(JavaLangInteger *)t {
+}
+
+J2OBJC_IGNORE_DESIGNATED_BEGIN
+- (instancetype)init {
+  RxInternalOperatorsOperatorSingleTest_$9_init(self);
+  return self;
+}
+J2OBJC_IGNORE_DESIGNATED_END
+
++ (const J2ObjcClassInfo *)__metadata {
+  static J2ObjcMethodInfo methods[] = {
+    { NULL, "V", 0x1, -1, -1, -1, -1, -1, -1 },
+    { NULL, "V", 0x1, -1, -1, -1, -1, -1, -1 },
+    { NULL, "V", 0x1, 0, 1, -1, -1, -1, -1 },
+    { NULL, "V", 0x1, 2, 3, -1, -1, -1, -1 },
+    { NULL, NULL, 0x0, -1, -1, -1, -1, -1, -1 },
+  };
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Wobjc-multiple-method-names"
+  methods[0].selector = @selector(onStart);
+  methods[1].selector = @selector(onCompleted);
+  methods[2].selector = @selector(onErrorWithNSException:);
+  methods[3].selector = @selector(onNextWithId:);
+  methods[4].selector = @selector(init);
+  #pragma clang diagnostic pop
+  static const void *ptrTable[] = { "onError", "LNSException;", "onNext", "LJavaLangInteger;", "LRxInternalOperatorsOperatorSingleTest;", "testSingleRequestsExactlyWhatItNeedsIf1Requested", "Lrx/Subscriber<Ljava/lang/Integer;>;" };
+  static const J2ObjcClassInfo _RxInternalOperatorsOperatorSingleTest_$9 = { "", "rx.internal.operators", ptrTable, methods, NULL, 7, 0x8008, 5, 0, 4, -1, 5, 6, -1 };
+  return &_RxInternalOperatorsOperatorSingleTest_$9;
+}
+
+@end
+
+void RxInternalOperatorsOperatorSingleTest_$9_init(RxInternalOperatorsOperatorSingleTest_$9 *self) {
+  RxSubscriber_init(self);
+}
+
+RxInternalOperatorsOperatorSingleTest_$9 *new_RxInternalOperatorsOperatorSingleTest_$9_init() {
+  J2OBJC_NEW_IMPL(RxInternalOperatorsOperatorSingleTest_$9, init)
+}
+
+RxInternalOperatorsOperatorSingleTest_$9 *create_RxInternalOperatorsOperatorSingleTest_$9_init() {
+  J2OBJC_CREATE_IMPL(RxInternalOperatorsOperatorSingleTest_$9, init)
+}
+
+@implementation RxInternalOperatorsOperatorSingleTest_$10
+
+- (JavaLangBoolean *)callWithId:(JavaLangInteger *)t1 {
+  return JavaLangBoolean_valueOfWithBoolean_([((JavaLangInteger *) nil_chk(t1)) intValue] % 2 == 0);
+}
+
+J2OBJC_IGNORE_DESIGNATED_BEGIN
+- (instancetype)init {
+  RxInternalOperatorsOperatorSingleTest_$10_init(self);
+  return self;
+}
+J2OBJC_IGNORE_DESIGNATED_END
+
++ (const J2ObjcClassInfo *)__metadata {
+  static J2ObjcMethodInfo methods[] = {
+    { NULL, "LJavaLangBoolean;", 0x1, 0, 1, -1, -1, -1, -1 },
+    { NULL, NULL, 0x0, -1, -1, -1, -1, -1, -1 },
+  };
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Wobjc-multiple-method-names"
+  methods[0].selector = @selector(callWithId:);
+  methods[1].selector = @selector(init);
+  #pragma clang diagnostic pop
+  static const void *ptrTable[] = { "call", "LJavaLangInteger;", "LRxInternalOperatorsOperatorSingleTest;", "testSingleWithPredicate", "Ljava/lang/Object;Lrx/functions/Func1<Ljava/lang/Integer;Ljava/lang/Boolean;>;" };
+  static const J2ObjcClassInfo _RxInternalOperatorsOperatorSingleTest_$10 = { "", "rx.internal.operators", ptrTable, methods, NULL, 7, 0x8008, 2, 0, 2, -1, 3, 4, -1 };
+  return &_RxInternalOperatorsOperatorSingleTest_$10;
+}
+
+@end
+
+void RxInternalOperatorsOperatorSingleTest_$10_init(RxInternalOperatorsOperatorSingleTest_$10 *self) {
+  NSObject_init(self);
+}
+
+RxInternalOperatorsOperatorSingleTest_$10 *new_RxInternalOperatorsOperatorSingleTest_$10_init() {
+  J2OBJC_NEW_IMPL(RxInternalOperatorsOperatorSingleTest_$10, init)
+}
+
+RxInternalOperatorsOperatorSingleTest_$10 *create_RxInternalOperatorsOperatorSingleTest_$10_init() {
+  J2OBJC_CREATE_IMPL(RxInternalOperatorsOperatorSingleTest_$10, init)
+}
+
+@implementation RxInternalOperatorsOperatorSingleTest_$11
+
+- (JavaLangBoolean *)callWithId:(JavaLangInteger *)t1 {
+  return JavaLangBoolean_valueOfWithBoolean_([((JavaLangInteger *) nil_chk(t1)) intValue] % 2 == 0);
+}
+
+J2OBJC_IGNORE_DESIGNATED_BEGIN
+- (instancetype)init {
+  RxInternalOperatorsOperatorSingleTest_$11_init(self);
+  return self;
+}
+J2OBJC_IGNORE_DESIGNATED_END
+
++ (const J2ObjcClassInfo *)__metadata {
+  static J2ObjcMethodInfo methods[] = {
+    { NULL, "LJavaLangBoolean;", 0x1, 0, 1, -1, -1, -1, -1 },
+    { NULL, NULL, 0x0, -1, -1, -1, -1, -1, -1 },
+  };
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Wobjc-multiple-method-names"
+  methods[0].selector = @selector(callWithId:);
+  methods[1].selector = @selector(init);
+  #pragma clang diagnostic pop
+  static const void *ptrTable[] = { "call", "LJavaLangInteger;", "LRxInternalOperatorsOperatorSingleTest;", "testSingleWithPredicateAndTooManyElements", "Ljava/lang/Object;Lrx/functions/Func1<Ljava/lang/Integer;Ljava/lang/Boolean;>;" };
+  static const J2ObjcClassInfo _RxInternalOperatorsOperatorSingleTest_$11 = { "", "rx.internal.operators", ptrTable, methods, NULL, 7, 0x8008, 2, 0, 2, -1, 3, 4, -1 };
+  return &_RxInternalOperatorsOperatorSingleTest_$11;
+}
+
+@end
+
+void RxInternalOperatorsOperatorSingleTest_$11_init(RxInternalOperatorsOperatorSingleTest_$11 *self) {
+  NSObject_init(self);
+}
+
+RxInternalOperatorsOperatorSingleTest_$11 *new_RxInternalOperatorsOperatorSingleTest_$11_init() {
+  J2OBJC_NEW_IMPL(RxInternalOperatorsOperatorSingleTest_$11, init)
+}
+
+RxInternalOperatorsOperatorSingleTest_$11 *create_RxInternalOperatorsOperatorSingleTest_$11_init() {
+  J2OBJC_CREATE_IMPL(RxInternalOperatorsOperatorSingleTest_$11, init)
+}
+
+@implementation RxInternalOperatorsOperatorSingleTest_$12
+
+- (JavaLangBoolean *)callWithId:(JavaLangInteger *)t1 {
+  return JavaLangBoolean_valueOfWithBoolean_([((JavaLangInteger *) nil_chk(t1)) intValue] % 2 == 0);
+}
+
+J2OBJC_IGNORE_DESIGNATED_BEGIN
+- (instancetype)init {
+  RxInternalOperatorsOperatorSingleTest_$12_init(self);
+  return self;
+}
+J2OBJC_IGNORE_DESIGNATED_END
+
++ (const J2ObjcClassInfo *)__metadata {
+  static J2ObjcMethodInfo methods[] = {
+    { NULL, "LJavaLangBoolean;", 0x1, 0, 1, -1, -1, -1, -1 },
+    { NULL, NULL, 0x0, -1, -1, -1, -1, -1, -1 },
+  };
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Wobjc-multiple-method-names"
+  methods[0].selector = @selector(callWithId:);
+  methods[1].selector = @selector(init);
+  #pragma clang diagnostic pop
+  static const void *ptrTable[] = { "call", "LJavaLangInteger;", "LRxInternalOperatorsOperatorSingleTest;", "testSingleWithPredicateAndEmpty", "Ljava/lang/Object;Lrx/functions/Func1<Ljava/lang/Integer;Ljava/lang/Boolean;>;" };
+  static const J2ObjcClassInfo _RxInternalOperatorsOperatorSingleTest_$12 = { "", "rx.internal.operators", ptrTable, methods, NULL, 7, 0x8008, 2, 0, 2, -1, 3, 4, -1 };
+  return &_RxInternalOperatorsOperatorSingleTest_$12;
+}
+
+@end
+
+void RxInternalOperatorsOperatorSingleTest_$12_init(RxInternalOperatorsOperatorSingleTest_$12 *self) {
+  NSObject_init(self);
+}
+
+RxInternalOperatorsOperatorSingleTest_$12 *new_RxInternalOperatorsOperatorSingleTest_$12_init() {
+  J2OBJC_NEW_IMPL(RxInternalOperatorsOperatorSingleTest_$12, init)
+}
+
+RxInternalOperatorsOperatorSingleTest_$12 *create_RxInternalOperatorsOperatorSingleTest_$12_init() {
+  J2OBJC_CREATE_IMPL(RxInternalOperatorsOperatorSingleTest_$12, init)
+}
+
+@implementation RxInternalOperatorsOperatorSingleTest_$13
+
+- (JavaLangBoolean *)callWithId:(JavaLangInteger *)t1 {
+  return JavaLangBoolean_valueOfWithBoolean_([((JavaLangInteger *) nil_chk(t1)) intValue] % 2 == 0);
+}
+
+J2OBJC_IGNORE_DESIGNATED_BEGIN
+- (instancetype)init {
+  RxInternalOperatorsOperatorSingleTest_$13_init(self);
+  return self;
+}
+J2OBJC_IGNORE_DESIGNATED_END
+
++ (const J2ObjcClassInfo *)__metadata {
+  static J2ObjcMethodInfo methods[] = {
+    { NULL, "LJavaLangBoolean;", 0x1, 0, 1, -1, -1, -1, -1 },
+    { NULL, NULL, 0x0, -1, -1, -1, -1, -1, -1 },
+  };
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Wobjc-multiple-method-names"
+  methods[0].selector = @selector(callWithId:);
+  methods[1].selector = @selector(init);
+  #pragma clang diagnostic pop
+  static const void *ptrTable[] = { "call", "LJavaLangInteger;", "LRxInternalOperatorsOperatorSingleTest;", "testSingleOrDefaultWithPredicate", "Ljava/lang/Object;Lrx/functions/Func1<Ljava/lang/Integer;Ljava/lang/Boolean;>;" };
+  static const J2ObjcClassInfo _RxInternalOperatorsOperatorSingleTest_$13 = { "", "rx.internal.operators", ptrTable, methods, NULL, 7, 0x8008, 2, 0, 2, -1, 3, 4, -1 };
+  return &_RxInternalOperatorsOperatorSingleTest_$13;
+}
+
+@end
+
+void RxInternalOperatorsOperatorSingleTest_$13_init(RxInternalOperatorsOperatorSingleTest_$13 *self) {
+  NSObject_init(self);
+}
+
+RxInternalOperatorsOperatorSingleTest_$13 *new_RxInternalOperatorsOperatorSingleTest_$13_init() {
+  J2OBJC_NEW_IMPL(RxInternalOperatorsOperatorSingleTest_$13, init)
+}
+
+RxInternalOperatorsOperatorSingleTest_$13 *create_RxInternalOperatorsOperatorSingleTest_$13_init() {
+  J2OBJC_CREATE_IMPL(RxInternalOperatorsOperatorSingleTest_$13, init)
+}
+
+@implementation RxInternalOperatorsOperatorSingleTest_$14
+
+- (JavaLangBoolean *)callWithId:(JavaLangInteger *)t1 {
+  return JavaLangBoolean_valueOfWithBoolean_([((JavaLangInteger *) nil_chk(t1)) intValue] % 2 == 0);
+}
+
+J2OBJC_IGNORE_DESIGNATED_BEGIN
+- (instancetype)init {
+  RxInternalOperatorsOperatorSingleTest_$14_init(self);
+  return self;
+}
+J2OBJC_IGNORE_DESIGNATED_END
+
++ (const J2ObjcClassInfo *)__metadata {
+  static J2ObjcMethodInfo methods[] = {
+    { NULL, "LJavaLangBoolean;", 0x1, 0, 1, -1, -1, -1, -1 },
+    { NULL, NULL, 0x0, -1, -1, -1, -1, -1, -1 },
+  };
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Wobjc-multiple-method-names"
+  methods[0].selector = @selector(callWithId:);
+  methods[1].selector = @selector(init);
+  #pragma clang diagnostic pop
+  static const void *ptrTable[] = { "call", "LJavaLangInteger;", "LRxInternalOperatorsOperatorSingleTest;", "testSingleOrDefaultWithPredicateAndTooManyElements", "Ljava/lang/Object;Lrx/functions/Func1<Ljava/lang/Integer;Ljava/lang/Boolean;>;" };
+  static const J2ObjcClassInfo _RxInternalOperatorsOperatorSingleTest_$14 = { "", "rx.internal.operators", ptrTable, methods, NULL, 7, 0x8008, 2, 0, 2, -1, 3, 4, -1 };
+  return &_RxInternalOperatorsOperatorSingleTest_$14;
+}
+
+@end
+
+void RxInternalOperatorsOperatorSingleTest_$14_init(RxInternalOperatorsOperatorSingleTest_$14 *self) {
+  NSObject_init(self);
+}
+
+RxInternalOperatorsOperatorSingleTest_$14 *new_RxInternalOperatorsOperatorSingleTest_$14_init() {
+  J2OBJC_NEW_IMPL(RxInternalOperatorsOperatorSingleTest_$14, init)
+}
+
+RxInternalOperatorsOperatorSingleTest_$14 *create_RxInternalOperatorsOperatorSingleTest_$14_init() {
+  J2OBJC_CREATE_IMPL(RxInternalOperatorsOperatorSingleTest_$14, init)
+}
+
+@implementation RxInternalOperatorsOperatorSingleTest_$15
+
+- (JavaLangBoolean *)callWithId:(JavaLangInteger *)t1 {
+  return JavaLangBoolean_valueOfWithBoolean_([((JavaLangInteger *) nil_chk(t1)) intValue] % 2 == 0);
+}
+
+J2OBJC_IGNORE_DESIGNATED_BEGIN
+- (instancetype)init {
+  RxInternalOperatorsOperatorSingleTest_$15_init(self);
+  return self;
+}
+J2OBJC_IGNORE_DESIGNATED_END
+
++ (const J2ObjcClassInfo *)__metadata {
+  static J2ObjcMethodInfo methods[] = {
+    { NULL, "LJavaLangBoolean;", 0x1, 0, 1, -1, -1, -1, -1 },
+    { NULL, NULL, 0x0, -1, -1, -1, -1, -1, -1 },
+  };
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Wobjc-multiple-method-names"
+  methods[0].selector = @selector(callWithId:);
+  methods[1].selector = @selector(init);
+  #pragma clang diagnostic pop
+  static const void *ptrTable[] = { "call", "LJavaLangInteger;", "LRxInternalOperatorsOperatorSingleTest;", "testSingleOrDefaultWithPredicateAndEmpty", "Ljava/lang/Object;Lrx/functions/Func1<Ljava/lang/Integer;Ljava/lang/Boolean;>;" };
+  static const J2ObjcClassInfo _RxInternalOperatorsOperatorSingleTest_$15 = { "", "rx.internal.operators", ptrTable, methods, NULL, 7, 0x8008, 2, 0, 2, -1, 3, 4, -1 };
+  return &_RxInternalOperatorsOperatorSingleTest_$15;
+}
+
+@end
+
+void RxInternalOperatorsOperatorSingleTest_$15_init(RxInternalOperatorsOperatorSingleTest_$15 *self) {
+  NSObject_init(self);
+}
+
+RxInternalOperatorsOperatorSingleTest_$15 *new_RxInternalOperatorsOperatorSingleTest_$15_init() {
+  J2OBJC_NEW_IMPL(RxInternalOperatorsOperatorSingleTest_$15, init)
+}
+
+RxInternalOperatorsOperatorSingleTest_$15 *create_RxInternalOperatorsOperatorSingleTest_$15_init() {
+  J2OBJC_CREATE_IMPL(RxInternalOperatorsOperatorSingleTest_$15, init)
+}
+
+@implementation RxInternalOperatorsOperatorSingleTest_$16
 
 - (void)onStart {
   [self requestWithLong:1];
@@ -107,15 +1488,10 @@ J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxInternalOperatorsOperatorSingleTest)
 
 J2OBJC_IGNORE_DESIGNATED_BEGIN
 - (instancetype)init {
-  RxInternalOperatorsOperatorSingleTest_$1_init(self);
+  RxInternalOperatorsOperatorSingleTest_$16_init(self);
   return self;
 }
 J2OBJC_IGNORE_DESIGNATED_END
-
-- (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOperatorSingleTest_$1 class]);
-  [super dealloc];
-}
 
 + (const J2ObjcClassInfo *)__metadata {
   static J2ObjcMethodInfo methods[] = {
@@ -134,20 +1510,63 @@ J2OBJC_IGNORE_DESIGNATED_END
   methods[4].selector = @selector(init);
   #pragma clang diagnostic pop
   static const void *ptrTable[] = { "onError", "LNSException;", "onNext", "LJavaLangInteger;", "(Ljava/lang/Integer;)V", "LRxInternalOperatorsOperatorSingleTest;", "testSingleWithBackpressure", "Lrx/doppl/mock/MSubscriber<Ljava/lang/Integer;>;" };
-  static const J2ObjcClassInfo _RxInternalOperatorsOperatorSingleTest_$1 = { "", "rx.internal.operators", ptrTable, methods, NULL, 7, 0x8008, 5, 0, 5, -1, 6, 7, -1 };
-  return &_RxInternalOperatorsOperatorSingleTest_$1;
+  static const J2ObjcClassInfo _RxInternalOperatorsOperatorSingleTest_$16 = { "", "rx.internal.operators", ptrTable, methods, NULL, 7, 0x8008, 5, 0, 5, -1, 6, 7, -1 };
+  return &_RxInternalOperatorsOperatorSingleTest_$16;
 }
 
 @end
 
-void RxInternalOperatorsOperatorSingleTest_$1_init(RxInternalOperatorsOperatorSingleTest_$1 *self) {
+void RxInternalOperatorsOperatorSingleTest_$16_init(RxInternalOperatorsOperatorSingleTest_$16 *self) {
   RxDopplMockMSubscriber_init(self);
 }
 
-RxInternalOperatorsOperatorSingleTest_$1 *new_RxInternalOperatorsOperatorSingleTest_$1_init() {
-  J2OBJC_NEW_IMPL(RxInternalOperatorsOperatorSingleTest_$1, init)
+RxInternalOperatorsOperatorSingleTest_$16 *new_RxInternalOperatorsOperatorSingleTest_$16_init() {
+  J2OBJC_NEW_IMPL(RxInternalOperatorsOperatorSingleTest_$16, init)
 }
 
-RxInternalOperatorsOperatorSingleTest_$1 *create_RxInternalOperatorsOperatorSingleTest_$1_init() {
-  J2OBJC_CREATE_IMPL(RxInternalOperatorsOperatorSingleTest_$1, init)
+RxInternalOperatorsOperatorSingleTest_$16 *create_RxInternalOperatorsOperatorSingleTest_$16_init() {
+  J2OBJC_CREATE_IMPL(RxInternalOperatorsOperatorSingleTest_$16, init)
+}
+
+@implementation RxInternalOperatorsOperatorSingleTest_$17
+
+- (JavaLangInteger *)callWithId:(JavaLangInteger *)i1
+                         withId:(JavaLangInteger *)i2 {
+  return JavaLangInteger_valueOfWithInt_([((JavaLangInteger *) nil_chk(i1)) intValue] + [((JavaLangInteger *) nil_chk(i2)) intValue]);
+}
+
+J2OBJC_IGNORE_DESIGNATED_BEGIN
+- (instancetype)init {
+  RxInternalOperatorsOperatorSingleTest_$17_init(self);
+  return self;
+}
+J2OBJC_IGNORE_DESIGNATED_END
+
++ (const J2ObjcClassInfo *)__metadata {
+  static J2ObjcMethodInfo methods[] = {
+    { NULL, "LJavaLangInteger;", 0x1, 0, 1, -1, -1, -1, -1 },
+    { NULL, NULL, 0x0, -1, -1, -1, -1, -1, -1 },
+  };
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Wobjc-multiple-method-names"
+  methods[0].selector = @selector(callWithId:withId:);
+  methods[1].selector = @selector(init);
+  #pragma clang diagnostic pop
+  static const void *ptrTable[] = { "call", "LJavaLangInteger;LJavaLangInteger;", "LRxInternalOperatorsOperatorSingleTest;", "testIssue1527", "Ljava/lang/Object;Lrx/functions/Func2<Ljava/lang/Integer;Ljava/lang/Integer;Ljava/lang/Integer;>;" };
+  static const J2ObjcClassInfo _RxInternalOperatorsOperatorSingleTest_$17 = { "", "rx.internal.operators", ptrTable, methods, NULL, 7, 0x8008, 2, 0, 2, -1, 3, 4, -1 };
+  return &_RxInternalOperatorsOperatorSingleTest_$17;
+}
+
+@end
+
+void RxInternalOperatorsOperatorSingleTest_$17_init(RxInternalOperatorsOperatorSingleTest_$17 *self) {
+  NSObject_init(self);
+}
+
+RxInternalOperatorsOperatorSingleTest_$17 *new_RxInternalOperatorsOperatorSingleTest_$17_init() {
+  J2OBJC_NEW_IMPL(RxInternalOperatorsOperatorSingleTest_$17, init)
+}
+
+RxInternalOperatorsOperatorSingleTest_$17 *create_RxInternalOperatorsOperatorSingleTest_$17_init() {
+  J2OBJC_CREATE_IMPL(RxInternalOperatorsOperatorSingleTest_$17, init)
 }

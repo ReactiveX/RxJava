@@ -362,9 +362,8 @@ jboolean RxInternalSchedulersNewThreadWorker_tryEnableCancelPolicyWithJavaUtilCo
 
 JavaLangReflectMethod *RxInternalSchedulersNewThreadWorker_findSetRemoveOnCancelPolicyMethodWithJavaUtilConcurrentScheduledExecutorService_(id<JavaUtilConcurrentScheduledExecutorService> executor) {
   RxInternalSchedulersNewThreadWorker_initialize();
-  IOSClass *executorClass = [((id<JavaUtilConcurrentScheduledExecutorService>) nil_chk(executor)) java_getClass];
   {
-    IOSObjectArray *a__ = [executorClass getMethods];
+    IOSObjectArray *a__ = [[((id<JavaUtilConcurrentScheduledExecutorService>) nil_chk(executor)) java_getClass] getMethods];
     JavaLangReflectMethod * const *b__ = ((IOSObjectArray *) nil_chk(a__))->buffer_;
     JavaLangReflectMethod * const *e__ = b__ + a__->size_;
     while (b__ < e__) {

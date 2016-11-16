@@ -1300,7 +1300,6 @@ __attribute__((unused)) static RxInternalOperatorsOperatorMergeTest_$30 *create_
       OrgJunitAssert_assertEqualsWithLong_withLong_(1, [ts getCompletions]);
       id<JavaUtilList> onNextEvents = [ts getOnNextEvents];
       OrgJunitAssert_assertEqualsWithLong_withLong_(30000, [((id<JavaUtilList>) nil_chk(onNextEvents)) size]);
-      [ts unsubscribe];
     }
   }
 }
@@ -1316,7 +1315,6 @@ __attribute__((unused)) static RxInternalOperatorsOperatorMergeTest_$30 *create_
       OrgJunitAssert_assertEqualsWithLong_withLong_(1, [ts getCompletions]);
       id<JavaUtilList> onNextEvents = [ts getOnNextEvents];
       OrgJunitAssert_assertEqualsWithLong_withLong_(300, [((id<JavaUtilList>) nil_chk(onNextEvents)) size]);
-      [ts unsubscribe];
     }
   }
 }
@@ -1334,7 +1332,6 @@ __attribute__((unused)) static RxInternalOperatorsOperatorMergeTest_$30 *create_
         OrgJunitAssert_assertEqualsWithLong_withLong_(1, [ts getCompletions]);
         id<JavaUtilList> onNextEvents = [ts getOnNextEvents];
         OrgJunitAssert_assertEqualsWithLong_withLong_(30000, [((id<JavaUtilList>) nil_chk(onNextEvents)) size]);
-        [ts unsubscribe];
       }
     }
   }
@@ -1385,7 +1382,6 @@ __attribute__((unused)) static RxInternalOperatorsOperatorMergeTest_$30 *create_
   [testSubscriber assertNoErrors];
   OrgJunitAssert_assertEqualsWithLong_withLong_(JreLoadStatic(RxInternalUtilRxRingBuffer, SIZE) * 2 + 1, [onNextEvents size]);
   OrgJunitAssert_assertTrueWithBoolean_([generated1 get] >= JreLoadStatic(RxInternalUtilRxRingBuffer, SIZE) * 2 && [generated1 get] <= JreLoadStatic(RxInternalUtilRxRingBuffer, SIZE) * 3);
-  [testSubscriber unsubscribe];
 }
 
 - (void)testBackpressureDownstreamWithConcurrentStreams {
@@ -1440,7 +1436,6 @@ __attribute__((unused)) static RxInternalOperatorsOperatorMergeTest_$30 *create_
     [JreLoadStatic(JavaLangSystem, out) printlnWithNSString:@"done1 testBackpressureBothUpstreamAndDownstreamWithRegularObservables "];
     OrgJunitAssert_assertEqualsWithLong_withLong_(JreLoadStatic(RxInternalUtilRxRingBuffer, SIZE) * 2, [((id<JavaUtilList>) nil_chk([testSubscriber getOnNextEvents])) size]);
     [JreLoadStatic(JavaLangSystem, out) printlnWithNSString:@"done2 testBackpressureBothUpstreamAndDownstreamWithRegularObservables "];
-    [testSubscriber unsubscribe];
   }
 }
 
@@ -1451,7 +1446,6 @@ __attribute__((unused)) static RxInternalOperatorsOperatorMergeTest_$30 *create_
   [ts assertTerminalEvent];
   [ts assertNoErrors];
   [ts assertReceivedOnNextWithJavaUtilList:JavaUtilArrays_asListWithNSObjectArray_([IOSObjectArray arrayWithObjects:(id[]){ nil, @"one", @"two", nil } count:4 type:NSString_class_()])];
-  [ts unsubscribe];
 }
 
 - (void)mergeWithTerminalEventAfterUnsubscribe {
@@ -1461,7 +1455,6 @@ __attribute__((unused)) static RxInternalOperatorsOperatorMergeTest_$30 *create_
   [((RxObservable *) nil_chk(RxObservable_mergeWithRxObservable_withRxObservable_(RxObservable_justWithId_withId_(nil, @"one"), bad))) subscribeWithRxSubscriber:ts];
   [ts assertNoErrors];
   [ts assertReceivedOnNextWithJavaUtilList:JavaUtilArrays_asListWithNSObjectArray_([IOSObjectArray arrayWithObjects:(id[]){ nil, @"one", @"two" } count:3 type:NSString_class_()])];
-  [ts unsubscribe];
 }
 
 - (void)mergingNullObservable {
@@ -1469,7 +1462,6 @@ __attribute__((unused)) static RxInternalOperatorsOperatorMergeTest_$30 *create_
   [((RxObservable *) nil_chk(RxObservable_mergeWithRxObservable_withRxObservable_(RxObservable_justWithId_(@"one"), nil))) subscribeWithRxSubscriber:ts];
   [ts assertNoErrors];
   [ts assertReceivedOnNextWithJavaUtilList:JavaUtilArrays_asListWithNSObjectArray_([IOSObjectArray arrayWithObjects:(id[]){ @"one" } count:1 type:NSString_class_()])];
-  [ts unsubscribe];
 }
 
 - (void)merge1AsyncStreamOf1 {
@@ -1478,7 +1470,6 @@ __attribute__((unused)) static RxInternalOperatorsOperatorMergeTest_$30 *create_
   [ts awaitTerminalEvent];
   [ts assertNoErrors];
   OrgJunitAssert_assertEqualsWithLong_withLong_(1, [((id<JavaUtilList>) nil_chk([ts getOnNextEvents])) size]);
-  [ts unsubscribe];
 }
 
 - (void)merge1AsyncStreamOf1000 {
@@ -1487,7 +1478,6 @@ __attribute__((unused)) static RxInternalOperatorsOperatorMergeTest_$30 *create_
   [ts awaitTerminalEvent];
   [ts assertNoErrors];
   OrgJunitAssert_assertEqualsWithLong_withLong_(1000, [((id<JavaUtilList>) nil_chk([ts getOnNextEvents])) size]);
-  [ts unsubscribe];
 }
 
 - (void)merge10AsyncStreamOf1000 {
@@ -1496,7 +1486,6 @@ __attribute__((unused)) static RxInternalOperatorsOperatorMergeTest_$30 *create_
   [ts awaitTerminalEvent];
   [ts assertNoErrors];
   OrgJunitAssert_assertEqualsWithLong_withLong_(10000, [((id<JavaUtilList>) nil_chk([ts getOnNextEvents])) size]);
-  [ts unsubscribe];
 }
 
 - (void)merge1000AsyncStreamOf1000 {
@@ -1506,7 +1495,6 @@ __attribute__((unused)) static RxInternalOperatorsOperatorMergeTest_$30 *create_
     [ts awaitTerminalEvent];
     [ts assertNoErrors];
     OrgJunitAssert_assertEqualsWithLong_withLong_(1000000, [((id<JavaUtilList>) nil_chk([ts getOnNextEvents])) size]);
-    [ts unsubscribe];
   }
 }
 
@@ -1517,7 +1505,6 @@ __attribute__((unused)) static RxInternalOperatorsOperatorMergeTest_$30 *create_
     [ts awaitTerminalEvent];
     [ts assertNoErrors];
     OrgJunitAssert_assertEqualsWithLong_withLong_(200000, [((id<JavaUtilList>) nil_chk([ts getOnNextEvents])) size]);
-    [ts unsubscribe];
   }
 }
 
@@ -1528,7 +1515,6 @@ __attribute__((unused)) static RxInternalOperatorsOperatorMergeTest_$30 *create_
     [ts awaitTerminalEvent];
     [ts assertNoErrors];
     OrgJunitAssert_assertEqualsWithLong_withLong_(100, [((id<JavaUtilList>) nil_chk([ts getOnNextEvents])) size]);
-    [ts unsubscribe];
   }
 }
 
@@ -1543,7 +1529,6 @@ __attribute__((unused)) static RxInternalOperatorsOperatorMergeTest_$30 *create_
   [ts awaitTerminalEvent];
   [ts assertNoErrors];
   OrgJunitAssert_assertEqualsWithLong_withLong_(1, [((id<JavaUtilList>) nil_chk([ts getOnNextEvents])) size]);
-  [ts unsubscribe];
 }
 
 - (void)merge1SyncStreamOf1000000 {
@@ -1553,7 +1538,6 @@ __attribute__((unused)) static RxInternalOperatorsOperatorMergeTest_$30 *create_
     [ts awaitTerminalEvent];
     [ts assertNoErrors];
     OrgJunitAssert_assertEqualsWithLong_withLong_(1000000, [((id<JavaUtilList>) nil_chk([ts getOnNextEvents])) size]);
-    [ts unsubscribe];
   }
 }
 
@@ -1564,7 +1548,6 @@ __attribute__((unused)) static RxInternalOperatorsOperatorMergeTest_$30 *create_
     [ts awaitTerminalEvent];
     [ts assertNoErrors];
     OrgJunitAssert_assertEqualsWithLong_withLong_(1000000, [((id<JavaUtilList>) nil_chk([ts getOnNextEvents])) size]);
-    [ts unsubscribe];
   }
 }
 
@@ -1575,7 +1558,6 @@ __attribute__((unused)) static RxInternalOperatorsOperatorMergeTest_$30 *create_
     [ts awaitTerminalEvent];
     [ts assertNoErrors];
     OrgJunitAssert_assertEqualsWithLong_withLong_(100000, [((id<JavaUtilList>) nil_chk([ts getOnNextEvents])) size]);
-    [ts unsubscribe];
   }
 }
 
@@ -1586,7 +1568,6 @@ __attribute__((unused)) static RxInternalOperatorsOperatorMergeTest_$30 *create_
     [ts awaitTerminalEvent];
     [ts assertNoErrors];
     OrgJunitAssert_assertEqualsWithLong_withLong_(1000000, [((id<JavaUtilList>) nil_chk([ts getOnNextEvents])) size]);
-    [ts unsubscribe];
   }
 }
 
@@ -1607,7 +1588,6 @@ __attribute__((unused)) static RxInternalOperatorsOperatorMergeTest_$30 *create_
     [ts awaitTerminalEvent];
     [ts assertNoErrors];
     OrgJunitAssert_assertEqualsWithLong_withLong_(10000, [((id<JavaUtilList>) nil_chk([ts getOnNextEvents])) size]);
-    [ts unsubscribe];
   }
 }
 
@@ -1619,7 +1599,6 @@ __attribute__((unused)) static RxInternalOperatorsOperatorMergeTest_$30 *create_
   [subscriber requestMoreWithLong:3];
   [subscriber assertReceivedOnNextWithJavaUtilList:JavaUtilArrays_asListWithNSObjectArray_([IOSObjectArray arrayWithObjects:(id[]){ JavaLangInteger_valueOfWithInt_(1), JavaLangInteger_valueOfWithInt_(2) } count:2 type:JavaLangInteger_class_()])];
   [subscriber assertTerminalEvent];
-  [subscriber unsubscribe];
 }
 
 - (void)shouldCompleteAfterApplyingBackpressure_FastPath {
@@ -1630,7 +1609,6 @@ __attribute__((unused)) static RxInternalOperatorsOperatorMergeTest_$30 *create_
   [subscriber requestMoreWithLong:2];
   [subscriber assertReceivedOnNextWithJavaUtilList:JavaUtilArrays_asListWithNSObjectArray_([IOSObjectArray arrayWithObjects:(id[]){ JavaLangInteger_valueOfWithInt_(1) } count:1 type:JavaLangInteger_class_()])];
   [subscriber assertTerminalEvent];
-  [subscriber unsubscribe];
 }
 
 - (void)shouldNotCompleteIfThereArePendingScalarSynchronousEmissionsWhenTheLastInnerSubscriberCompletes {
@@ -1811,7 +1789,6 @@ __attribute__((unused)) static RxInternalOperatorsOperatorMergeTest_$30 *create_
     [((RxObserversTestSubscriber *) nil_chk(ts)) awaitTerminalEventWithLong:5000 withJavaUtilConcurrentTimeUnit:JreLoadEnum(JavaUtilConcurrentTimeUnit, MILLISECONDS)];
     [ts assertValueWithId:JavaLangInteger_valueOfWithInt_(0)];
     [ts assertCompleted];
-    [ts unsubscribe];
   }
 }
 
@@ -1930,12 +1907,12 @@ __attribute__((unused)) static RxInternalOperatorsOperatorMergeTest_$30 *create_
 - (void)noInnerReordering {
   RxObserversTestSubscriber *ts = RxObserversTestSubscriber_createWithLong_(0);
   RxInternalOperatorsOperatorMerge_MergeSubscriber *ms = create_RxInternalOperatorsOperatorMerge_MergeSubscriber_initWithRxSubscriber_withBoolean_withInt_(ts, false, 128);
-  JreStrongAssignAndConsume(&ms->producer_, new_RxInternalOperatorsOperatorMerge_MergeProducer_initWithRxInternalOperatorsOperatorMerge_MergeSubscriber_(ms));
-  [((RxObserversTestSubscriber *) nil_chk(ts)) setProducerWithRxProducer:ms->producer_];
+  JreStrongAssignAndConsume(&ms->producer_MergeSubscriber_, new_RxInternalOperatorsOperatorMerge_MergeProducer_initWithRxInternalOperatorsOperatorMerge_MergeSubscriber_(ms));
+  [((RxObserversTestSubscriber *) nil_chk(ts)) setProducerWithRxProducer:ms->producer_MergeSubscriber_];
   RxSubjectsPublishSubject *ps = RxSubjectsPublishSubject_create();
   [ms onNextWithId:ps];
   [((RxSubjectsPublishSubject *) nil_chk(ps)) onNextWithId:JavaLangInteger_valueOfWithInt_(1)];
-  RxInternalOperatorsBackpressureUtils_getAndAddRequestWithJavaUtilConcurrentAtomicAtomicLong_withLong_(ms->producer_, 2);
+  RxInternalOperatorsBackpressureUtils_getAndAddRequestWithJavaUtilConcurrentAtomicAtomicLong_withLong_(ms->producer_MergeSubscriber_, 2);
   [ps onNextWithId:JavaLangInteger_valueOfWithInt_(2)];
   [ms emit];
   [ts assertValuesWithNSObjectArray:[IOSObjectArray arrayWithObjects:(id[]){ JavaLangInteger_valueOfWithInt_(1), JavaLangInteger_valueOfWithInt_(2) } count:2 type:JavaLangInteger_class_()]];
@@ -1944,10 +1921,10 @@ __attribute__((unused)) static RxInternalOperatorsOperatorMergeTest_$30 *create_
 - (void)noOuterScalarReordering {
   RxObserversTestSubscriber *ts = RxObserversTestSubscriber_createWithLong_(0);
   RxInternalOperatorsOperatorMerge_MergeSubscriber *ms = create_RxInternalOperatorsOperatorMerge_MergeSubscriber_initWithRxSubscriber_withBoolean_withInt_(ts, false, 128);
-  JreStrongAssignAndConsume(&ms->producer_, new_RxInternalOperatorsOperatorMerge_MergeProducer_initWithRxInternalOperatorsOperatorMerge_MergeSubscriber_(ms));
-  [((RxObserversTestSubscriber *) nil_chk(ts)) setProducerWithRxProducer:ms->producer_];
+  JreStrongAssignAndConsume(&ms->producer_MergeSubscriber_, new_RxInternalOperatorsOperatorMerge_MergeProducer_initWithRxInternalOperatorsOperatorMerge_MergeSubscriber_(ms));
+  [((RxObserversTestSubscriber *) nil_chk(ts)) setProducerWithRxProducer:ms->producer_MergeSubscriber_];
   [ms onNextWithId:RxObservable_justWithId_(JavaLangInteger_valueOfWithInt_(1))];
-  RxInternalOperatorsBackpressureUtils_getAndAddRequestWithJavaUtilConcurrentAtomicAtomicLong_withLong_(ms->producer_, 2);
+  RxInternalOperatorsBackpressureUtils_getAndAddRequestWithJavaUtilConcurrentAtomicAtomicLong_withLong_(ms->producer_MergeSubscriber_, 2);
   [ms onNextWithId:RxObservable_justWithId_(JavaLangInteger_valueOfWithInt_(2))];
   [ms emit];
   [ts assertValuesWithNSObjectArray:[IOSObjectArray arrayWithObjects:(id[]){ JavaLangInteger_valueOfWithInt_(1), JavaLangInteger_valueOfWithInt_(2) } count:2 type:JavaLangInteger_class_()]];
@@ -2969,7 +2946,6 @@ RxInternalOperatorsOperatorMergeTest_$5 *create_RxInternalOperatorsOperatorMerge
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOperatorMergeTest_$6 class]);
   RELEASE_(val$totalCounter_);
   RELEASE_(val$concurrentCounter_);
   RELEASE_(val$endLatch_);
@@ -3386,11 +3362,6 @@ J2OBJC_IGNORE_DESIGNATED_BEGIN
 }
 J2OBJC_IGNORE_DESIGNATED_END
 
-- (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOperatorMergeTest_$11 class]);
-  [super dealloc];
-}
-
 + (const J2ObjcClassInfo *)__metadata {
   static J2ObjcMethodInfo methods[] = {
     { NULL, "V", 0x1, 0, 1, -1, 2, -1, -1 },
@@ -3432,11 +3403,6 @@ J2OBJC_IGNORE_DESIGNATED_BEGIN
   return self;
 }
 J2OBJC_IGNORE_DESIGNATED_END
-
-- (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOperatorMergeTest_$12 class]);
-  [super dealloc];
-}
 
 + (const J2ObjcClassInfo *)__metadata {
   static J2ObjcMethodInfo methods[] = {
@@ -3485,11 +3451,6 @@ J2OBJC_IGNORE_DESIGNATED_BEGIN
   return self;
 }
 J2OBJC_IGNORE_DESIGNATED_END
-
-- (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOperatorMergeTest_$13 class]);
-  [super dealloc];
-}
 
 + (const J2ObjcClassInfo *)__metadata {
   static J2ObjcMethodInfo methods[] = {
@@ -3581,11 +3542,6 @@ J2OBJC_IGNORE_DESIGNATED_BEGIN
 }
 J2OBJC_IGNORE_DESIGNATED_END
 
-- (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOperatorMergeTest_$15 class]);
-  [super dealloc];
-}
-
 + (const J2ObjcClassInfo *)__metadata {
   static J2ObjcMethodInfo methods[] = {
     { NULL, "V", 0x1, 0, 1, -1, 2, -1, -1 },
@@ -3675,11 +3631,6 @@ J2OBJC_IGNORE_DESIGNATED_BEGIN
   return self;
 }
 J2OBJC_IGNORE_DESIGNATED_END
-
-- (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOperatorMergeTest_$17 class]);
-  [super dealloc];
-}
 
 + (const J2ObjcClassInfo *)__metadata {
   static J2ObjcMethodInfo methods[] = {
@@ -4300,7 +4251,6 @@ RxInternalOperatorsOperatorMergeTest_$24 *create_RxInternalOperatorsOperatorMerg
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOperatorMergeTest_$25 class]);
   RELEASE_(val$latch_);
   [super dealloc];
 }
@@ -4542,11 +4492,6 @@ RxInternalOperatorsOperatorMergeTest_$2 *create_RxInternalOperatorsOperatorMerge
   return self;
 }
 
-- (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOperatorMergeTest_$28 class]);
-  [super dealloc];
-}
-
 + (const J2ObjcClassInfo *)__metadata {
   static J2ObjcMethodInfo methods[] = {
     { NULL, "V", 0x1, -1, -1, -1, -1, -1, -1 },
@@ -4601,11 +4546,6 @@ RxInternalOperatorsOperatorMergeTest_$28 *create_RxInternalOperatorsOperatorMerg
 - (instancetype)initWithInt:(jint)capture$0 {
   RxInternalOperatorsOperatorMergeTest_$29_initWithInt_(self, capture$0);
   return self;
-}
-
-- (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOperatorMergeTest_$29 class]);
-  [super dealloc];
 }
 
 + (const J2ObjcClassInfo *)__metadata {

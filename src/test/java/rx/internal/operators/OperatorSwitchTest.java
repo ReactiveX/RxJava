@@ -894,16 +894,17 @@ public class OperatorSwitchTest {
     }
 
     @Test
+    @DoppelHacks//Extend timeout, cut down loops
     public void asyncInner() throws Throwable {
-        for (int i = 0; i < 100; i++) {
+        for (@AutoreleasePool int i = 0; i < 10; i++) {
 
             final AtomicReference<Throwable> error = new AtomicReference<Throwable>();
 
-            Observable.just(Observable.range(1, 1000 * 1000).subscribeOn(Schedulers.computation()))
+            Observable.just(Observable.range(1, 1000 * 100).subscribeOn(Schedulers.computation()))
             .switchMap(UtilityFunctions.<Observable<Integer>>identity())
             .observeOn(Schedulers.computation())
             .ignoreElements()
-            .timeout(10, TimeUnit.SECONDS)
+            .timeout(15, TimeUnit.SECONDS)
             .toBlocking()
             .subscribe(Actions.empty(), new Action1<Throwable>() {
                 @Override

@@ -3,7 +3,6 @@
 //  source: /Users/kgalligan/devel-doppl/RxJava/src/test/java/rx/internal/operators/OperatorRetryWithPredicateTest.java
 //
 
-#include "CoTouchlabDoppelTestingPlatformUtils.h"
 #include "IOSClass.h"
 #include "IOSObjectArray.h"
 #include "J2ObjC_source.h"
@@ -492,7 +491,6 @@ __attribute__((unused)) static RxInternalOperatorsOperatorRetryWithPredicateTest
 }
 
 - (void)testUnsubscribeAfterError {
-  if (CoTouchlabDoppelTestingPlatformUtils_isJ2objc()) return;
   id<RxObserver> observer = OrgMockitoMockito_mockWithIOSClass_(RxObserver_class_());
   RxInternalOperatorsOperatorRetryTest_SlowObservable *so = create_RxInternalOperatorsOperatorRetryTest_SlowObservable_initWithInt_withInt_(100, 0);
   RxObservable *o = [((RxObservable *) nil_chk(RxObservable_createWithRxObservable_OnSubscribe_(so))) retryWithRxFunctionsFunc2:retry5_];

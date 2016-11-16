@@ -29,7 +29,131 @@
 
 - (void)before;
 
+- (void)forEachWithError;
+
+- (void)forEachWithNull;
+
+- (void)fromArityArgs1;
+
+- (void)fromArityArgs3;
+
+- (void)fromArray;
+
+- (void)fromIterable;
+
+- (void)nullObserver;
+
+- (void)nullOnSubscribe;
+
+- (void)nullSubscriber;
+
+- (void)observableThrowsWhileOnErrorFails;
+
+- (void)observableThrowsWhileOnErrorFailsUnsafe;
+
+- (void)observableThrowsWhileSubscriberIsUnsubscribed;
+
+- (void)subscribeWithNull;
+
+- (void)testAmbWith;
+
+- (void)testCache;
+
+- (void)testCacheHint;
+
+- (void)testCacheWithCapacity;
+
+- (void)testCompose;
+
+- (void)testConcatWith;
+
+- (void)testContains;
+
+- (void)testContainsWithEmptyObservable;
+
+- (void)testContainsWithInexistence;
+
+- (void)testContainsWithNull;
+
+- (void)testCountAFewItems;
+
+- (void)testCountError;
+
+- (void)testCountZeroItems;
+
+- (void)testCreate;
+
+- (void)testCustomObservableWithErrorInObservableSynchronous;
+
+- (void)testCustomObservableWithErrorInObserverAsynchronous;
+
+- (void)testCustomObservableWithErrorInObserverSynchronous;
+
+- (void)testEmptyIdentity;
+
+- (void)testEmptyIsEmpty;
+
+- (void)testErrorThrownIssue1685;
+
+- (void)testErrorThrownWithoutErrorHandlerAsynchronous;
+
+- (void)testErrorThrownWithoutErrorHandlerSynchronous;
+
+- (void)testFirstOfNone;
+
+- (void)testFirstWithPredicateOfNoneMatchingThePredicate;
+
+- (void)testForEachWithError;
+
+- (void)testForEachWithNull;
+
+- (void)testIgnoreElements;
+
+- (void)testJustWithScheduler;
+
+- (void)testMaterializeDematerializeChaining;
+
+- (void)testMergeWith;
+
+- (void)testOfType;
+
+- (void)testOfTypeWithPolymorphism;
+
+- (void)testOnSubscribeFails;
+
+- (void)testPublishLast;
+
+- (void)testRangeWithScheduler;
+
+- (void)testReduce;
+
+- (void)testReduceWithEmptyObservable;
+
+- (void)testReduceWithEmptyObservableAndSeed;
+
+- (void)testReduceWithInitialValue;
+
 - (void)testReplay;
+
+- (void)testStartWithWithScheduler;
+
+- (void)testSubscribeWithoutOnError;
+
+- (void)testSubscribingSubscriberAsObserverMaintainsSubscriptionChain;
+
+- (void)testTakeFirstOfNone;
+
+- (void)testTakeFirstOfSome;
+
+- (void)testTakeFirstWithPredicateOfNoneMatchingThePredicate;
+
+- (void)testTakeFirstWithPredicateOfSome;
+
+- (void)testTakeWhileToList;
+
+- (void)testTakeWithErrorInObserver;
+
+- (void)toFunctionReceivesObservableReturnsResult;
 
 @end
 

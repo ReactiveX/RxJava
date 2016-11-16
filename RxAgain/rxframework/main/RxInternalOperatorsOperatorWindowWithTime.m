@@ -536,7 +536,6 @@ J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxInternalOperatorsOperatorWindowWithTime_State
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOperatorWindowWithTime_ExactSubscriber class]);
   RELEASE_(this$0_);
   RELEASE_(child_);
   RELEASE_(worker_);
@@ -879,7 +878,6 @@ J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxInternalOperatorsOperatorWindowWithTime_Count
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOperatorWindowWithTime_InexactSubscriber class]);
   RELEASE_(this$0_);
   RELEASE_(child_);
   RELEASE_(worker_);

@@ -109,7 +109,6 @@ J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxInternalOperatorsSingleFromObservable)
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsSingleFromObservable_WrapSingleIntoSubscriber class]);
   RELEASE_(actual_);
   RELEASE_(value_);
   [super dealloc];

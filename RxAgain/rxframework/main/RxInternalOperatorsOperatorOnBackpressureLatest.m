@@ -16,12 +16,12 @@ J2OBJC_STATIC_FIELD_CONSTANT(RxInternalOperatorsOperatorOnBackpressureLatest_Lat
 
 @interface RxInternalOperatorsOperatorOnBackpressureLatest_LatestSubscriber () {
  @public
-  RxInternalOperatorsOperatorOnBackpressureLatest_LatestEmitter *producer_;
+  RxInternalOperatorsOperatorOnBackpressureLatest_LatestEmitter *producer_LatestSubscriber_;
 }
 
 @end
 
-J2OBJC_FIELD_SETTER(RxInternalOperatorsOperatorOnBackpressureLatest_LatestSubscriber, producer_, RxInternalOperatorsOperatorOnBackpressureLatest_LatestEmitter *)
+J2OBJC_FIELD_SETTER(RxInternalOperatorsOperatorOnBackpressureLatest_LatestSubscriber, producer_LatestSubscriber_, RxInternalOperatorsOperatorOnBackpressureLatest_LatestEmitter *)
 
 @implementation RxInternalOperatorsOperatorOnBackpressureLatest
 
@@ -354,15 +354,15 @@ J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxInternalOperatorsOperatorOnBackpressureLatest
 }
 
 - (void)onNextWithId:(id)t {
-  [((RxInternalOperatorsOperatorOnBackpressureLatest_LatestEmitter *) nil_chk(producer_)) onNextWithId:t];
+  [((RxInternalOperatorsOperatorOnBackpressureLatest_LatestEmitter *) nil_chk(producer_LatestSubscriber_)) onNextWithId:t];
 }
 
 - (void)onErrorWithNSException:(NSException *)e {
-  [((RxInternalOperatorsOperatorOnBackpressureLatest_LatestEmitter *) nil_chk(producer_)) onErrorWithNSException:e];
+  [((RxInternalOperatorsOperatorOnBackpressureLatest_LatestEmitter *) nil_chk(producer_LatestSubscriber_)) onErrorWithNSException:e];
 }
 
 - (void)onCompleted {
-  [((RxInternalOperatorsOperatorOnBackpressureLatest_LatestEmitter *) nil_chk(producer_)) onCompleted];
+  [((RxInternalOperatorsOperatorOnBackpressureLatest_LatestEmitter *) nil_chk(producer_LatestSubscriber_)) onCompleted];
 }
 
 - (void)requestMoreWithLong:(jlong)n {
@@ -370,8 +370,7 @@ J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxInternalOperatorsOperatorOnBackpressureLatest
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOperatorOnBackpressureLatest_LatestSubscriber class]);
-  RELEASE_(producer_);
+  RELEASE_(producer_LatestSubscriber_);
   [super dealloc];
 }
 
@@ -394,10 +393,10 @@ J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxInternalOperatorsOperatorOnBackpressureLatest
   methods[5].selector = @selector(requestMoreWithLong:);
   #pragma clang diagnostic pop
   static const J2ObjcFieldInfo fields[] = {
-    { "producer_", "LRxInternalOperatorsOperatorOnBackpressureLatest_LatestEmitter;", .constantValue.asLong = 0, 0x12, -1, -1, 9, -1 },
+    { "producer_LatestSubscriber_", "LRxInternalOperatorsOperatorOnBackpressureLatest_LatestEmitter;", .constantValue.asLong = 0, 0x12, 9, -1, 10, -1 },
   };
-  static const void *ptrTable[] = { "LRxInternalOperatorsOperatorOnBackpressureLatest_LatestEmitter;", "(Lrx/internal/operators/OperatorOnBackpressureLatest$LatestEmitter<TT;>;)V", "onNext", "LNSObject;", "(TT;)V", "onError", "LNSException;", "requestMore", "J", "Lrx/internal/operators/OperatorOnBackpressureLatest$LatestEmitter<TT;>;", "LRxInternalOperatorsOperatorOnBackpressureLatest;", "<T:Ljava/lang/Object;>Lrx/Subscriber<TT;>;" };
-  static const J2ObjcClassInfo _RxInternalOperatorsOperatorOnBackpressureLatest_LatestSubscriber = { "LatestSubscriber", "rx.internal.operators", ptrTable, methods, fields, 7, 0x18, 6, 1, 10, -1, -1, 11, -1 };
+  static const void *ptrTable[] = { "LRxInternalOperatorsOperatorOnBackpressureLatest_LatestEmitter;", "(Lrx/internal/operators/OperatorOnBackpressureLatest$LatestEmitter<TT;>;)V", "onNext", "LNSObject;", "(TT;)V", "onError", "LNSException;", "requestMore", "J", "producer", "Lrx/internal/operators/OperatorOnBackpressureLatest$LatestEmitter<TT;>;", "LRxInternalOperatorsOperatorOnBackpressureLatest;", "<T:Ljava/lang/Object;>Lrx/Subscriber<TT;>;" };
+  static const J2ObjcClassInfo _RxInternalOperatorsOperatorOnBackpressureLatest_LatestSubscriber = { "LatestSubscriber", "rx.internal.operators", ptrTable, methods, fields, 7, 0x18, 6, 1, 11, -1, -1, 12, -1 };
   return &_RxInternalOperatorsOperatorOnBackpressureLatest_LatestSubscriber;
 }
 
@@ -405,7 +404,7 @@ J2OBJC_CLASS_TYPE_LITERAL_SOURCE(RxInternalOperatorsOperatorOnBackpressureLatest
 
 void RxInternalOperatorsOperatorOnBackpressureLatest_LatestSubscriber_initWithRxInternalOperatorsOperatorOnBackpressureLatest_LatestEmitter_(RxInternalOperatorsOperatorOnBackpressureLatest_LatestSubscriber *self, RxInternalOperatorsOperatorOnBackpressureLatest_LatestEmitter *producer) {
   RxSubscriber_init(self);
-  JreStrongAssign(&self->producer_, producer);
+  JreStrongAssign(&self->producer_LatestSubscriber_, producer);
 }
 
 RxInternalOperatorsOperatorOnBackpressureLatest_LatestSubscriber *new_RxInternalOperatorsOperatorOnBackpressureLatest_LatestSubscriber_initWithRxInternalOperatorsOperatorOnBackpressureLatest_LatestEmitter_(RxInternalOperatorsOperatorOnBackpressureLatest_LatestEmitter *producer) {

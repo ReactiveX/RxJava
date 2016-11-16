@@ -917,7 +917,6 @@ withJavaUtilConcurrentAtomicAtomicLong:(JavaUtilConcurrentAtomicAtomicLong *)cap
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOperatorSubscribeOnTest_$6_$2 class]);
   RELEASE_(val$child_);
   RELEASE_(val$requested_);
   [super dealloc];

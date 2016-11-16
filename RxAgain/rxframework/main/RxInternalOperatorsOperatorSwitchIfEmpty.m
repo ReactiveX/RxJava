@@ -3,7 +3,6 @@
 //  source: /Users/kgalligan/devel-doppl/RxJava/src/main/java/rx/internal/operators/OperatorSwitchIfEmpty.java
 //
 
-#include "IOSClass.h"
 #include "J2ObjC_source.h"
 #include "RxInternalOperatorsOperatorSwitchIfEmpty.h"
 #include "RxInternalProducersProducerArbiter.h"
@@ -148,7 +147,6 @@ withRxInternalProducersProducerArbiter:(RxInternalProducersProducerArbiter *)arb
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOperatorSwitchIfEmpty_ParentSubscriber class]);
   RELEASE_(child_);
   RELEASE_(serial_);
   RELEASE_(arbiter_);
@@ -226,17 +224,11 @@ withRxInternalProducersProducerArbiter:(RxInternalProducersProducerArbiter *)arb
 }
 
 - (void)onCompleted {
-  if (child_ != nil) {
-    [child_ onCompleted];
-    JreStrongAssign(&child_, nil);
-  }
+  [((RxSubscriber *) nil_chk(child_)) onCompleted];
 }
 
 - (void)onErrorWithNSException:(NSException *)e {
-  if (child_ != nil) {
-    [child_ onErrorWithNSException:e];
-    JreStrongAssign(&child_, nil);
-  }
+  [((RxSubscriber *) nil_chk(child_)) onErrorWithNSException:e];
 }
 
 - (void)onNextWithId:(id)t {
@@ -245,7 +237,6 @@ withRxInternalProducersProducerArbiter:(RxInternalProducersProducerArbiter *)arb
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOperatorSwitchIfEmpty_AlternateSubscriber class]);
   RELEASE_(arbiter_);
   RELEASE_(child_);
   [super dealloc];
@@ -269,7 +260,7 @@ withRxInternalProducersProducerArbiter:(RxInternalProducersProducerArbiter *)arb
   #pragma clang diagnostic pop
   static const J2ObjcFieldInfo fields[] = {
     { "arbiter_", "LRxInternalProducersProducerArbiter;", .constantValue.asLong = 0, 0x12, -1, -1, -1, -1 },
-    { "child_", "LRxSubscriber;", .constantValue.asLong = 0, 0x2, -1, -1, 9, -1 },
+    { "child_", "LRxSubscriber;", .constantValue.asLong = 0, 0x12, -1, -1, 9, -1 },
   };
   static const void *ptrTable[] = { "LRxSubscriber;LRxInternalProducersProducerArbiter;", "(Lrx/Subscriber<-TT;>;Lrx/internal/producers/ProducerArbiter;)V", "setProducer", "LRxProducer;", "onError", "LNSException;", "onNext", "LNSObject;", "(TT;)V", "Lrx/Subscriber<-TT;>;", "LRxInternalOperatorsOperatorSwitchIfEmpty;", "<T:Ljava/lang/Object;>Lrx/Subscriber<TT;>;" };
   static const J2ObjcClassInfo _RxInternalOperatorsOperatorSwitchIfEmpty_AlternateSubscriber = { "AlternateSubscriber", "rx.internal.operators", ptrTable, methods, fields, 7, 0x18, 5, 2, 10, -1, -1, 11, -1 };

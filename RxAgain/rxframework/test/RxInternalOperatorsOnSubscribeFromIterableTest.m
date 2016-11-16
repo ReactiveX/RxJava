@@ -978,7 +978,6 @@ RxInternalOperatorsOnSubscribeFromIterableTest_$1_$1 *create_RxInternalOperators
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOnSubscribeFromIterableTest_$2 class]);
   RELEASE_(val$latch_);
   [super dealloc];
 }
@@ -1044,7 +1043,6 @@ RxInternalOperatorsOnSubscribeFromIterableTest_$2 *create_RxInternalOperatorsOnS
 }
 
 - (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOnSubscribeFromIterableTest_$3 class]);
   RELEASE_(val$completed_);
   [super dealloc];
 }
@@ -1368,11 +1366,6 @@ J2OBJC_IGNORE_DESIGNATED_BEGIN
   return self;
 }
 J2OBJC_IGNORE_DESIGNATED_END
-
-- (void)dealloc {
-  JreCheckFinalize(self, [RxInternalOperatorsOnSubscribeFromIterableTest_$6 class]);
-  [super dealloc];
-}
 
 + (const J2ObjcClassInfo *)__metadata {
   static J2ObjcMethodInfo methods[] = {
