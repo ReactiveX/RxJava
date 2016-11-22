@@ -205,7 +205,8 @@ public class ObservableTakeUntilTest {
 
         assertFalse("Source still has observers", source.hasObservers());
         assertFalse("Until still has observers", until.hasObservers());
-        assertTrue("Not cancelled!", ts.isCancelled());
+        // 2.0.2 - not anymore
+//        assertTrue("Not cancelled!", ts.isCancelled());
     }
     @Test
     public void testMainCompletes() {
@@ -228,7 +229,8 @@ public class ObservableTakeUntilTest {
 
         assertFalse("Source still has observers", source.hasObservers());
         assertFalse("Until still has observers", until.hasObservers());
-        assertTrue("Not cancelled!", ts.isCancelled());
+        // 2.0.2 - not anymore
+//        assertTrue("Not cancelled!", ts.isCancelled());
     }
     @Test
     public void testDownstreamUnsubscribes() {
@@ -250,7 +252,8 @@ public class ObservableTakeUntilTest {
 
         assertFalse("Source still has observers", source.hasObservers());
         assertFalse("Until still has observers", until.hasObservers());
-        assertTrue("Not cancelled!", ts.isCancelled());
+        // 2.0.2 - not anymore
+//        assertTrue("Not cancelled!", ts.isCancelled());
     }
 
     @Test

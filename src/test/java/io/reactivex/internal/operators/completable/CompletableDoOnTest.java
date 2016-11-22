@@ -14,12 +14,14 @@
 package io.reactivex.internal.operators.completable;
 
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.junit.Test;
+import static org.junit.Assert.*;
+import org.junit.*;
 
 import io.reactivex.*;
 import io.reactivex.exceptions.*;
-import io.reactivex.functions.Consumer;
+import io.reactivex.functions.*;
 import io.reactivex.observers.TestObserver;
 
 public class CompletableDoOnTest {
@@ -51,5 +53,25 @@ public class CompletableDoOnTest {
 
         TestHelper.assertError(errors, 0, TestException.class, "Outer");
         TestHelper.assertError(errors, 1, TestException.class, "Inner");
+    }
+
+    @Test
+    public void doOnDisposeCalled() {
+        final AtomicBoolean atomicBoolean = new AtomicBoolean();
+
+        assertFalse(atomicBoolean.get());
+
+        Completable.complete()
+            .doOnDispose(new Action() {
+                @Override
+                public void run() throws Exception {
+                    atomicBoolean.set(true);
+                }
+            })
+            .test()
+            .assertResult()
+            .dispose();
+
+        assertTrue(atomicBoolean.get());
     }
 }

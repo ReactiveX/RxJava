@@ -1175,14 +1175,16 @@ public class TestObserverTest {
 
     @Test
     public void completedMeansDisposed() {
-        assertTrue(Observable.just(1)
+        // 2.0.2 - a terminated TestObserver no longer reports isDisposed
+        assertFalse(Observable.just(1)
                 .test()
                 .assertResult(1).isDisposed());
     }
 
     @Test
     public void errorMeansDisposed() {
-        assertTrue(Observable.error(new TestException())
+        // 2.0.2 - a terminated TestObserver no longer reports isDisposed
+        assertFalse(Observable.error(new TestException())
                 .test()
                 .assertFailure(TestException.class).isDisposed());
     }

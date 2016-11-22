@@ -173,8 +173,6 @@ implements Observer<T>, Disposable, MaybeObserver<T>, SingleObserver<T>, Complet
             }
 
             actual.onError(t);
-
-            subscription.lazySet(DisposableHelper.DISPOSED);
         } finally {
             done.countDown();
         }
@@ -194,8 +192,6 @@ implements Observer<T>, Disposable, MaybeObserver<T>, SingleObserver<T>, Complet
             completions++;
 
             actual.onComplete();
-
-            subscription.lazySet(DisposableHelper.DISPOSED);
         } finally {
             done.countDown();
         }
