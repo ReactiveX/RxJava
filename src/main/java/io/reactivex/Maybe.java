@@ -2606,7 +2606,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <U> Flowable<U> flattenAsFlowable(final Function<? super T, ? extends Iterable<? extends U>> mapper) {
-        return new MaybeFlatMapIterableFlowable<T, U>(this, mapper);
+        return RxJavaPlugins.onAssembly(new MaybeFlatMapIterableFlowable<T, U>(this, mapper));
     }
 
     /**
@@ -2628,7 +2628,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      */
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <U> Observable<U> flattenAsObservable(final Function<? super T, ? extends Iterable<? extends U>> mapper) {
-        return new MaybeFlatMapIterableObservable<T, U>(this, mapper);
+        return RxJavaPlugins.onAssembly(new MaybeFlatMapIterableObservable<T, U>(this, mapper));
     }
 
     /**
