@@ -1958,7 +1958,7 @@ public abstract class Single<T> implements SingleSource<T> {
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <U> Flowable<U> flattenAsFlowable(final Function<? super T, ? extends Iterable<? extends U>> mapper) {
-        return new SingleFlatMapIterableFlowable<T, U>(this, mapper);
+        return RxJavaPlugins.onAssembly(new SingleFlatMapIterableFlowable<T, U>(this, mapper));
     }
 
     /**
@@ -1980,7 +1980,7 @@ public abstract class Single<T> implements SingleSource<T> {
      */
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <U> Observable<U> flattenAsObservable(final Function<? super T, ? extends Iterable<? extends U>> mapper) {
-        return new SingleFlatMapIterableObservable<T, U>(this, mapper);
+        return RxJavaPlugins.onAssembly(new SingleFlatMapIterableObservable<T, U>(this, mapper));
     }
 
     /**

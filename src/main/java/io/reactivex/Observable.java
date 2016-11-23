@@ -6347,7 +6347,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     public final <K> Observable<T> distinct(Function<? super T, K> keySelector, Callable<? extends Collection<? super K>> collectionSupplier) {
         ObjectHelper.requireNonNull(keySelector, "keySelector is null");
         ObjectHelper.requireNonNull(collectionSupplier, "collectionSupplier is null");
-        return new ObservableDistinct<T, K>(this, keySelector, collectionSupplier);
+        return RxJavaPlugins.onAssembly(new ObservableDistinct<T, K>(this, keySelector, collectionSupplier));
     }
 
     /**
@@ -8387,7 +8387,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> Observable<R> publish(Function<? super Observable<T>, ? extends ObservableSource<R>> selector) {
         ObjectHelper.requireNonNull(selector, "selector is null");
-        return new ObservablePublishSelector<T, R>(this, selector);
+        return RxJavaPlugins.onAssembly(new ObservablePublishSelector<T, R>(this, selector));
     }
 
     /**
