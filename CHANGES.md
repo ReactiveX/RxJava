@@ -1,5 +1,28 @@
 # RxJava Releases #
 
+### Version 1.2.3 - November 23, 2016 ([Maven](http://search.maven.org/#artifactdetails%7Cio.reactivex%7Crxjava%7C1.2.3%7C))
+
+#### Documentation enhancements
+
+- [Pull 4846](https://github.com/ReactiveX/RxJava/pull/4846): Specify the system parameters configuring the schedulers in the `Schedulers` javadoc.
+
+#### API enhancements
+
+- [Pull 4777](https://github.com/ReactiveX/RxJava/pull/4777): add `AssertableSubscriber` to provide method chained version of `TestSubscriber` and support a `test()` method on the base reactive classes.
+- [Pull 4851](https://github.com/ReactiveX/RxJava/pull/4851): add `Single.fromEmitter`
+- [Pull 4852](https://github.com/ReactiveX/RxJava/pull/4852): `Single.takeUntil` `CancellationException` message enhancements
+
+#### Performance enhancements
+
+- [Pull 4846](https://github.com/ReactiveX/RxJava/pull/4846): remove ObjectPool, code style cleanups
+
+#### Bugfixes
+
+- [Pull 4826](https://github.com/ReactiveX/RxJava/pull/4826):   `Schedule.when()` bug fix
+- [Pull 4830](https://github.com/ReactiveX/RxJava/pull/4830): `Completable.doAfterTerminate` to run after `onError` as well.
+- [Pull 4841](https://github.com/ReactiveX/RxJava/pull/4841): replace non-serializable value of `OnNextValue` with its `toString`.
+- [Pull 4849](https://github.com/ReactiveX/RxJava/pull/4849): fix `Completable.concat` & `merge` hanging in async situations.
+
 ### Version 1.2.2 - November 3, 2016 ([Maven](http://search.maven.org/#artifactdetails%7Cio.reactivex%7Crxjava%7C1.2.2%7C))
 
 Note that the interface `Cancellable` has been moved to `rx.functions` affecting `CompletableEmitter` and  the experimental `Observable.fromEmitter(Action1<AsyncEmitter<T>> emitter, AsyncEmitter.BackpressureMode backpressure)` has been removed.
