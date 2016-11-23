@@ -25,6 +25,10 @@ public class OpenHashSetTest {
             return 1;
         }
 
+        @Override
+        public boolean equals(Object o) {
+            return this == o;
+        }
     }
 
     @Test
