@@ -38,7 +38,6 @@
  * <li>Observable == Observable (factory methods)</li>
  * <li>Flowable == IAsyncEnumerable (backpressure)</li>
  * <li>Subscriber == IAsyncEnumerator</li>
- * <li>
  * </ul>
  * The Single and Completable reactive base types have no equivalent in Rx.NET as of 3.x.
  * </p>
