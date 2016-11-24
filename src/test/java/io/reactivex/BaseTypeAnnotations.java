@@ -41,7 +41,7 @@ public class BaseTypeAnnotations {
                 continue;
             }
             if (m.getDeclaringClass() == clazz) {
-                boolean isSubscribeMethod = "subscribe".equals(m.getName()) && m.getParameterCount() == 0;
+                boolean isSubscribeMethod = "subscribe".equals(m.getName()) && m.getParameterTypes().length == 0;
                 boolean isAnnotationPresent = m.isAnnotationPresent(CheckReturnValue.class);
 
                 if (isSubscribeMethod) {
