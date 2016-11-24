@@ -15,7 +15,7 @@ package io.reactivex;
 
 import static org.junit.Assert.fail;
 
-import java.lang.reflect.Method;
+import java.lang.reflect.*;
 
 import org.junit.Test;
 import org.reactivestreams.Publisher;
@@ -25,12 +25,58 @@ import io.reactivex.annotations.*;
 /**
  * Verifies several properties.
  * <ul>
+ * <li>Certain public base type methods have the {@link CheckReturnValue} present</li>
  * <li>All public base type methods have the {@link SchedulerSupport} present</li>
  * <li>All public base type methods which return Flowable have the {@link BackpressureSupport} present</li>
  * <li>All public base types that don't return Flowable don't have the {@link BackpressureSupport} present (these are copy-paste errors)</li>
  * </ul>
  */
 public class BaseTypeAnnotations {
+
+    static void checkCheckReturnValueSupport(Class<?> clazz) {
+        StringBuilder b = new StringBuilder();
+
+        for (Method m : clazz.getMethods()) {
+            if (m.getName().equals("bufferSize")) {
+                continue;
+            }
+            if (m.getDeclaringClass() == clazz) {
+                boolean isSubscribeMethod = "subscribe".equals(m.getName()) && m.getParameterCount() == 0;
+                boolean isAnnotationPresent = m.isAnnotationPresent(CheckReturnValue.class);
+
+                if (isSubscribeMethod) {
+                    if (isAnnotationPresent) {
+                        b.append("subscribe() method has @CheckReturnValue: ").append(m).append("\r\n");
+                    }
+                    continue;
+                }
+
+                if (Modifier.isPrivate(m.getModifiers()) && isAnnotationPresent) {
+                    b.append("Private method has @CheckReturnValue: ").append(m).append("\r\n");
+                    continue;
+                }
+
+                if (m.getReturnType().equals(Void.TYPE)) {
+                    if (isAnnotationPresent) {
+                        b.append("Void method has @CheckReturnValue: ").append(m).append("\r\n");
+                    }
+                    continue;
+                }
+
+                if (!isAnnotationPresent) {
+                    b.append("Missing @CheckReturnValue: ").append(m).append("\r\n");
+                }
+            }
+        }
+
+        if (b.length() != 0) {
+            System.out.println(clazz);
+            System.out.println("------------------------");
+            System.out.println(b);
+
+            fail(b.toString());
+        }
+    }
 
     static void checkSchedulerSupport(Class<?> clazz) {
         StringBuilder b = new StringBuilder();
@@ -126,6 +172,31 @@ public class BaseTypeAnnotations {
 
             fail(b.toString());
         }
+    }
+
+    @Test
+    public void checkReturnValueFlowable() {
+        checkCheckReturnValueSupport(Flowable.class);
+    }
+
+    @Test
+    public void checkReturnValueObservable() {
+        checkCheckReturnValueSupport(Observable.class);
+    }
+
+    @Test
+    public void checkReturnValueSingle() {
+        checkCheckReturnValueSupport(Single.class);
+    }
+
+    @Test
+    public void checkReturnValueCompletable() {
+        checkCheckReturnValueSupport(Completable.class);
+    }
+
+    @Test
+    public void checkReturnValueMaybe() {
+        checkCheckReturnValueSupport(Maybe.class);
     }
 
     @Test

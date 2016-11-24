@@ -70,6 +70,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * @return the new Single instance
      * @since 2.0
      */
+    @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Single<T> amb(final Iterable<? extends SingleSource<? extends T>> sources) {
         ObjectHelper.requireNonNull(sources, "sources is null");
@@ -88,6 +89,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * @return the new Single instance
      * @since 2.0
      */
+    @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     @SuppressWarnings("unchecked")
     public static <T> Single<T> ambArray(final SingleSource<? extends T>... sources) {
@@ -114,6 +116,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * @return the new Flowable instance
      * @since 2.0
      */
+    @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     @BackpressureSupport(BackpressureKind.FULL)
     public static <T> Flowable<T> concat(Iterable<? extends SingleSource<? extends T>> sources) {
@@ -132,6 +135,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * @return the new Observable instance
      * @since 2.0
      */
+    @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public static <T> Observable<T> concat(ObservableSource<? extends SingleSource<? extends T>> sources) {
@@ -153,6 +157,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * @return the new Flowable instance
      * @since 2.0
      */
+    @CheckReturnValue
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Flowable<T> concat(Publisher<? extends SingleSource<? extends T>> sources) {
@@ -175,6 +180,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * @return the new Flowable instance
      * @since 2.0
      */
+    @CheckReturnValue
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     @SuppressWarnings({ "unchecked", "rawtypes" })
@@ -202,6 +208,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * @return a Flowable that emits items emitted by the two source Singles, one after the other.
      * @see <a href="http://reactivex.io/documentation/operators/concat.html">ReactiveX operators documentation: Concat</a>
      */
+    @CheckReturnValue
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     @SuppressWarnings("unchecked")
@@ -234,6 +241,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * @return a Flowable that emits items emitted by the three source Singles, one after the other.
      * @see <a href="http://reactivex.io/documentation/operators/concat.html">ReactiveX operators documentation: Concat</a>
      */
+    @CheckReturnValue
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     @SuppressWarnings("unchecked")
@@ -270,6 +278,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * @return a Flowable that emits items emitted by the four source Singles, one after the other.
      * @see <a href="http://reactivex.io/documentation/operators/concat.html">ReactiveX operators documentation: Concat</a>
      */
+    @CheckReturnValue
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     @SuppressWarnings("unchecked")
@@ -298,6 +307,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * @return the new Flowable instance
      * @since 2.0
      */
+    @CheckReturnValue
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     @SuppressWarnings({ "unchecked", "rawtypes" })
@@ -340,6 +350,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * @see SingleOnSubscribe
      * @see Cancellable
      */
+    @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Single<T> create(SingleOnSubscribe<T> source) {
         ObjectHelper.requireNonNull(source, "source is null");
@@ -358,6 +369,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * returns a SingleSource instance to subscribe to
      * @return the new Single instance
      */
+    @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Single<T> defer(final Callable<? extends SingleSource<? extends T>> singleSupplier) {
         ObjectHelper.requireNonNull(singleSupplier, "singleSupplier is null");
@@ -375,6 +387,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * returns a Throwable instance to be emitted.
      * @return the new Single instance
      */
+    @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Single<T> error(final Callable<? extends Throwable> errorSupplier) {
         ObjectHelper.requireNonNull(errorSupplier, "errorSupplier is null");
@@ -399,6 +412,7 @@ public abstract class Single<T> implements SingleSource<T> {
      *         the subscriber subscribes to it
      * @see <a href="http://reactivex.io/documentation/operators/empty-never-throw.html">ReactiveX operators documentation: Throw</a>
      */
+    @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Single<T> error(final Throwable exception) {
         ObjectHelper.requireNonNull(exception, "error is null");
@@ -422,6 +436,7 @@ public abstract class Single<T> implements SingleSource<T> {
      *         the type of the item emitted by the {@link Single}.
      * @return a {@link Single} whose {@link SingleObserver}s' subscriptions trigger an invocation of the given function.
      */
+    @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Single<T> fromCallable(final Callable<? extends T> callable) {
         ObjectHelper.requireNonNull(callable, "callable is null");
@@ -451,6 +466,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * @return a {@code Single} that emits the item from the source {@link Future}
      * @see <a href="http://reactivex.io/documentation/operators/from.html">ReactiveX operators documentation: From</a>
      */
+    @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Single<T> fromFuture(Future<? extends T> future) {
         return toSingle(Flowable.<T>fromFuture(future));
@@ -483,6 +499,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * @return a {@code Single} that emits the item from the source {@link Future}
      * @see <a href="http://reactivex.io/documentation/operators/from.html">ReactiveX operators documentation: From</a>
      */
+    @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Single<T> fromFuture(Future<? extends T> future, long timeout, TimeUnit unit) {
         return toSingle(Flowable.<T>fromFuture(future, timeout, unit));
@@ -517,6 +534,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * @return a {@code Single} that emits the item from the source {@link Future}
      * @see <a href="http://reactivex.io/documentation/operators/from.html">ReactiveX operators documentation: From</a>
      */
+    @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.CUSTOM)
     public static <T> Single<T> fromFuture(Future<? extends T> future, long timeout, TimeUnit unit, Scheduler scheduler) {
         return toSingle(Flowable.<T>fromFuture(future, timeout, unit, scheduler));
@@ -546,6 +564,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * @return a {@code Single} that emits the item from the source {@link Future}
      * @see <a href="http://reactivex.io/documentation/operators/from.html">ReactiveX operators documentation: From</a>
      */
+    @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.CUSTOM)
     public static <T> Single<T> fromFuture(Future<? extends T> future, Scheduler scheduler) {
         return toSingle(Flowable.<T>fromFuture(future, scheduler));
@@ -567,6 +586,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * @return the new Single instance
      */
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
+    @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Single<T> fromPublisher(final Publisher<? extends T> publisher) {
         ObjectHelper.requireNonNull(publisher, "publisher is null");
@@ -588,6 +608,7 @@ public abstract class Single<T> implements SingleSource<T> {
      *         the type of the item emitted by the {@link Single}.
      * @return the new Single instance
      */
+    @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Single<T> fromObservable(ObservableSource<? extends T> observableSource) {
         ObjectHelper.requireNonNull(observableSource, "observableSource is null");
@@ -613,6 +634,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * @return a {@code Single} that emits {@code item}
      * @see <a href="http://reactivex.io/documentation/operators/just.html">ReactiveX operators documentation: Just</a>
      */
+    @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Single<T> just(final T item) {
         ObjectHelper.requireNonNull(item, "value is null");
@@ -633,6 +655,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * @return the new Flowable instance
      * @since 2.0
      */
+    @CheckReturnValue
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Flowable<T> merge(Iterable<? extends SingleSource<? extends T>> sources) {
@@ -653,6 +676,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * @return the new Flowable instance
      * @since 2.0
      */
+    @CheckReturnValue
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     @SuppressWarnings({ "unchecked", "rawtypes" })
@@ -678,6 +702,7 @@ public abstract class Single<T> implements SingleSource<T> {
      *         by {@code source}
      * @see <a href="http://reactivex.io/documentation/operators/merge.html">ReactiveX operators documentation: Merge</a>
      */
+    @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public static <T> Single<T> merge(SingleSource<? extends SingleSource<? extends T>> source) {
@@ -707,6 +732,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * @return a Flowable that emits all of the items emitted by the source Singles
      * @see <a href="http://reactivex.io/documentation/operators/merge.html">ReactiveX operators documentation: Merge</a>
      */
+    @CheckReturnValue
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     @SuppressWarnings("unchecked")
@@ -742,6 +768,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * @return a Flowable that emits all of the items emitted by the source Singles
      * @see <a href="http://reactivex.io/documentation/operators/merge.html">ReactiveX operators documentation: Merge</a>
      */
+    @CheckReturnValue
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     @SuppressWarnings("unchecked")
@@ -781,6 +808,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * @return a Flowable that emits all of the items emitted by the source Singles
      * @see <a href="http://reactivex.io/documentation/operators/merge.html">ReactiveX operators documentation: Merge</a>
      */
+    @CheckReturnValue
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     @SuppressWarnings("unchecked")
@@ -805,6 +833,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * @return the singleton never instance
      * @since 2.0
      */
+    @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     @SuppressWarnings("unchecked")
     public static <T> Single<T> never() {
@@ -822,6 +851,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * @return the new Single instance
      * @since 2.0
      */
+    @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.COMPUTATION)
     public static Single<Long> timer(long delay, TimeUnit unit) {
         return timer(delay, unit, Schedulers.computation());
@@ -839,6 +869,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * @return the new Single instance
      * @since 2.0
      */
+    @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.CUSTOM)
     public static Single<Long> timer(final long delay, final TimeUnit unit, final Scheduler scheduler) {
         ObjectHelper.requireNonNull(unit, "unit is null");
@@ -858,6 +889,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * @return the new Single instance
      * @since 2.0
      */
+    @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Single<Boolean> equals(final SingleSource<? extends T> first, final SingleSource<? extends T> second) { // NOPMD
         ObjectHelper.requireNonNull(first, "first is null");
@@ -880,6 +912,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * instead.
      * @since 2.0
      */
+    @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Single<T> unsafeCreate(SingleSource<T> onSubscribe) {
         ObjectHelper.requireNonNull(onSubscribe, "onSubscribe is null");
@@ -908,6 +941,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * @return the new Single instance
      * @since 2.0
      */
+    @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T, U> Single<T> using(Callable<U> resourceSupplier,
                                          Function<? super U, ? extends SingleSource<? extends T>> singleFunction,
@@ -937,6 +971,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * @return the new Single instance
      * @since 2.0
      */
+    @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T, U> Single<T> using(
             final Callable<U> resourceSupplier,
@@ -961,6 +996,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * @param source the source to wrap
      * @return the Single wrapper or the source cast to Single (if possible)
      */
+    @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Single<T> wrap(SingleSource<T> source) {
         ObjectHelper.requireNonNull(source, "source is null");
@@ -996,6 +1032,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * @return the new Single instance
      * @since 2.0
      */
+    @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T, R> Single<R> zip(final Iterable<? extends SingleSource<? extends T>> sources, Function<? super Object[], ? extends R> zipper) {
         ObjectHelper.requireNonNull(sources, "sources is null");
@@ -1025,6 +1062,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * @return a Single that emits the zipped results
      * @see <a href="http://reactivex.io/documentation/operators/zip.html">ReactiveX operators documentation: Zip</a>
      */
+    @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     @SuppressWarnings("unchecked")
     public static <T1, T2, R> Single<R> zip(
@@ -1062,6 +1100,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * @return a Single that emits the zipped results
      * @see <a href="http://reactivex.io/documentation/operators/zip.html">ReactiveX operators documentation: Zip</a>
      */
+    @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     @SuppressWarnings("unchecked")
     public static <T1, T2, T3, R> Single<R> zip(
@@ -1104,6 +1143,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * @return a Single that emits the zipped results
      * @see <a href="http://reactivex.io/documentation/operators/zip.html">ReactiveX operators documentation: Zip</a>
      */
+    @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     @SuppressWarnings("unchecked")
     public static <T1, T2, T3, T4, R> Single<R> zip(
@@ -1150,6 +1190,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * @return a Single that emits the zipped results
      * @see <a href="http://reactivex.io/documentation/operators/zip.html">ReactiveX operators documentation: Zip</a>
      */
+    @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     @SuppressWarnings("unchecked")
     public static <T1, T2, T3, T4, T5, R> Single<R> zip(
@@ -1201,6 +1242,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * @return a Single that emits the zipped results
      * @see <a href="http://reactivex.io/documentation/operators/zip.html">ReactiveX operators documentation: Zip</a>
      */
+    @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     @SuppressWarnings("unchecked")
     public static <T1, T2, T3, T4, T5, T6, R> Single<R> zip(
@@ -1256,6 +1298,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * @return a Single that emits the zipped results
      * @see <a href="http://reactivex.io/documentation/operators/zip.html">ReactiveX operators documentation: Zip</a>
      */
+    @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     @SuppressWarnings("unchecked")
     public static <T1, T2, T3, T4, T5, T6, T7, R> Single<R> zip(
@@ -1316,6 +1359,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * @return a Single that emits the zipped results
      * @see <a href="http://reactivex.io/documentation/operators/zip.html">ReactiveX operators documentation: Zip</a>
      */
+    @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     @SuppressWarnings("unchecked")
     public static <T1, T2, T3, T4, T5, T6, T7, T8, R> Single<R> zip(
@@ -1380,6 +1424,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * @return a Single that emits the zipped results
      * @see <a href="http://reactivex.io/documentation/operators/zip.html">ReactiveX operators documentation: Zip</a>
      */
+    @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     @SuppressWarnings("unchecked")
     public static <T1, T2, T3, T4, T5, T6, T7, T8, T9, R> Single<R> zip(
@@ -1428,6 +1473,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * @return the new Single instance
      * @since 2.0
      */
+    @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     @SuppressWarnings({"rawtypes", "unchecked"})
     public static <T, R> Single<R> zipArray(Function<? super Object[], ? extends R> zipper, SingleSource<? extends T>... sources) {
@@ -1452,6 +1498,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * @return the new Single instance
      * @since 2.0
      */
+    @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     @SuppressWarnings("unchecked")
     public final Single<T> ambWith(SingleSource<? extends T> other) {
@@ -1469,6 +1516,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * @return the new Single instance
      * @since 2.0
      */
+    @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Single<T> hide() {
         return RxJavaPlugins.onAssembly(new SingleHide<T>(this));
@@ -1492,6 +1540,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * @return the source Single, transformed by the transformer function
      * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Implementing-Your-Own-Operators">RxJava wiki: Implementing Your Own Operators</a>
      */
+    @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> Single<R> compose(SingleTransformer<T, R> transformer) {
         return wrap(transformer.apply(this));
@@ -1509,6 +1558,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * @return the new Single instance
      * @since 2.0
      */
+    @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Single<T> cache() {
         return RxJavaPlugins.onAssembly(new SingleCache<T>(this));
@@ -1526,6 +1576,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * @return the new Single instance
      * @since 2.0
      */
+    @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <U> Single<U> cast(final Class<? extends U> clazz) {
         ObjectHelper.requireNonNull(clazz, "clazz is null");
@@ -1551,6 +1602,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * @see <a href="http://reactivex.io/documentation/operators/concat.html">ReactiveX operators documentation: Concat</a>
      */
     @BackpressureSupport(BackpressureKind.FULL)
+    @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> concatWith(SingleSource<? extends T> other) {
         return concat(this, other);
@@ -1569,6 +1621,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * @return the new Single instance
      * @since 2.0
      */
+    @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.COMPUTATION)
     public final Single<T> delay(long time, TimeUnit unit) {
         return delay(time, unit, Schedulers.computation());
@@ -1588,6 +1641,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * @return the new Single instance
      * @since 2.0
      */
+    @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.CUSTOM)
     public final Single<T> delay(final long time, final TimeUnit unit, final Scheduler scheduler) {
         ObjectHelper.requireNonNull(unit, "unit is null");
@@ -1609,6 +1663,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * @return the new Single instance
      * @since 2.0
      */
+    @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Single<T> delaySubscription(CompletableSource other) {
         return RxJavaPlugins.onAssembly(new SingleDelayWithCompletable<T>(this, other));
@@ -1629,6 +1684,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * @return the new Single instance
      * @since 2.0
      */
+    @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <U> Single<T> delaySubscription(SingleSource<U> other) {
         return RxJavaPlugins.onAssembly(new SingleDelayWithSingle<T, U>(this, other));
@@ -1649,6 +1705,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * @return the new Single instance
      * @since 2.0
      */
+    @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <U> Single<T> delaySubscription(ObservableSource<U> other) {
         return RxJavaPlugins.onAssembly(new SingleDelayWithObservable<T, U>(this, other));
@@ -1674,6 +1731,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * @since 2.0
      */
     @BackpressureSupport(BackpressureKind.FULL)
+    @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <U> Single<T> delaySubscription(Publisher<U> other) {
         return RxJavaPlugins.onAssembly(new SingleDelayWithPublisher<T, U>(this, other));
@@ -1692,6 +1750,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * @return the new Single instance
      * @since 2.0
      */
+    @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.COMPUTATION)
     public final <U> Single<T> delaySubscription(long time, TimeUnit unit) {
         return delaySubscription(time, unit, Schedulers.computation());
@@ -1711,6 +1770,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * @return the new Single instance
      * @since 2.0
      */
+    @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.CUSTOM)
     public final <U> Single<T> delaySubscription(long time, TimeUnit unit, Scheduler scheduler) {
         return delaySubscription(Observable.timer(time, unit, scheduler));
@@ -1728,6 +1788,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * @return the new Single instance
      * @since 2.0.1 - experimental
      */
+    @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     @Experimental
     public final Single<T> doAfterSuccess(Consumer<? super T> onAfterSuccess) {
@@ -1750,6 +1811,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * @return the new Single instance
      * @since 2.0.1 - experimental
      */
+    @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     @Experimental
     public final Single<T> doFinally(Action onFinally) {
@@ -1768,6 +1830,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * @return the new Single instance
      * @since 2.0
      */
+    @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Single<T> doOnSubscribe(final Consumer<? super Disposable> onSubscribe) {
         ObjectHelper.requireNonNull(onSubscribe, "onSubscribe is null");
@@ -1785,6 +1848,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * @return the new Single instance
      * @since 2.0
      */
+    @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Single<T> doOnSuccess(final Consumer<? super T> onSuccess) {
         ObjectHelper.requireNonNull(onSuccess, "onSuccess is null");
@@ -1802,6 +1866,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * @return the new Single instance
      * @since 2.0
      */
+    @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Single<T> doOnEvent(final BiConsumer<? super T, ? super Throwable> onEvent) {
         ObjectHelper.requireNonNull(onEvent, "onEvent is null");
@@ -1819,6 +1884,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * @return the new Single instance
      * @since 2.0
      */
+    @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Single<T> doOnError(final Consumer<? super Throwable> onError) {
         ObjectHelper.requireNonNull(onError, "onError is null");
@@ -1836,6 +1902,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * @return the new Single instance
      * @since 2.0
      */
+    @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Single<T> doOnDispose(final Action onDispose) {
         ObjectHelper.requireNonNull(onDispose, "onDispose is null");
@@ -1859,6 +1926,7 @@ public abstract class Single<T> implements SingleSource<T> {
      *         evaluates as {@code true}
      * @see <a href="http://reactivex.io/documentation/operators/filter.html">ReactiveX operators documentation: Filter</a>
      */
+    @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Maybe<T> filter(Predicate<? super T> predicate) {
         ObjectHelper.requireNonNull(predicate, "predicate is null");
@@ -1881,6 +1949,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * @return the Single returned from {@code mapper} when applied to the item emitted by the source Single
      * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
      */
+    @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> Single<R> flatMap(Function<? super T, ? extends SingleSource<? extends R>> mapper) {
         ObjectHelper.requireNonNull(mapper, "mapper is null");
@@ -1903,6 +1972,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * @return the Maybe returned from {@code mapper} when applied to the item emitted by the source Single
      * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
      */
+    @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> Maybe<R> flatMapMaybe(final Function<? super T, ? extends MaybeSource<? extends R>> mapper) {
         ObjectHelper.requireNonNull(mapper, "mapper is null");
@@ -1930,6 +2000,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
      */
     @BackpressureSupport(BackpressureKind.FULL)
+    @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> Flowable<R> flatMapPublisher(Function<? super T, ? extends Publisher<? extends R>> mapper) {
         return toFlowable().flatMap(mapper);
@@ -1956,6 +2027,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
      */
     @BackpressureSupport(BackpressureKind.FULL)
+    @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <U> Flowable<U> flattenAsFlowable(final Function<? super T, ? extends Iterable<? extends U>> mapper) {
         return RxJavaPlugins.onAssembly(new SingleFlatMapIterableFlowable<T, U>(this, mapper));
@@ -1978,6 +2050,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * @return the new Observable instance
      * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
      */
+    @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <U> Observable<U> flattenAsObservable(final Function<? super T, ? extends Iterable<? extends U>> mapper) {
         return RxJavaPlugins.onAssembly(new SingleFlatMapIterableObservable<T, U>(this, mapper));
@@ -1999,6 +2072,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * @return the Observable returned from {@code func} when applied to the item emitted by the source Single
      * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
      */
+    @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> Observable<R> flatMapObservable(Function<? super T, ? extends ObservableSource<? extends R>> mapper) {
         return toObservable().flatMap(mapper);
@@ -2021,6 +2095,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
      * @since 2.0
      */
+    @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Completable flatMapCompletable(final Function<? super T, ? extends Completable> mapper) {
         ObjectHelper.requireNonNull(mapper, "mapper is null");
@@ -2036,6 +2111,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * </dl>
      * @return the success value
      */
+    @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final T blockingGet() {
         BlockingMultiObserver<T> observer = new BlockingMultiObserver<T>();
@@ -2066,6 +2142,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * @return a Single that is the result of applying the lifted Operator to the source Single
      * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Implementing-Your-Own-Operators">RxJava wiki: Implementing Your Own Operators</a>
      */
+    @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> Single<R> lift(final SingleOperator<? extends R, ? super T> lift) {
         ObjectHelper.requireNonNull(lift, "onLift is null");
@@ -2088,6 +2165,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * @return a Single that emits the item from the source Single, transformed by the specified function
      * @see <a href="http://reactivex.io/documentation/operators/map.html">ReactiveX operators documentation: Map</a>
      */
+    @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> Single<R> map(Function<? super T, ? extends R> mapper) {
         return RxJavaPlugins.onAssembly(new SingleMap<T, R>(this, mapper));
@@ -2104,6 +2182,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * @return the new Single instance
      * @since 2.0
      */
+    @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Single<Boolean> contains(Object value) {
         return contains(value, ObjectHelper.equalsPredicate());
@@ -2122,6 +2201,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * @return the new Single instance
      * @since 2.0
      */
+    @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Single<Boolean> contains(final Object value, final BiPredicate<Object, Object> comparer) {
         ObjectHelper.requireNonNull(value, "value is null");
@@ -2149,6 +2229,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * @see <a href="http://reactivex.io/documentation/operators/merge.html">ReactiveX operators documentation: Merge</a>
      */
     @BackpressureSupport(BackpressureKind.FULL)
+    @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> mergeWith(SingleSource<? extends T> other) {
         return merge(this, other);
@@ -2172,6 +2253,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * @see <a href="http://www.grahamlea.com/2014/07/rxjava-threading-examples/">RxJava Threading Examples</a>
      * @see #subscribeOn
      */
+    @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.CUSTOM)
     public final Single<T> observeOn(final Scheduler scheduler) {
         ObjectHelper.requireNonNull(scheduler, "scheduler is null");
@@ -2204,6 +2286,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * @return the original Single with appropriately modified behavior
      * @see <a href="http://reactivex.io/documentation/operators/catch.html">ReactiveX operators documentation: Catch</a>
      */
+    @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Single<T> onErrorReturn(final Function<Throwable, ? extends T> resumeFunction) {
         ObjectHelper.requireNonNull(resumeFunction, "resumeFunction is null");
@@ -2220,6 +2303,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * @return the new Single instance
      * @since 2.0
      */
+    @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Single<T> onErrorReturnItem(final T value) {
         ObjectHelper.requireNonNull(value, "value is null");
@@ -2253,6 +2337,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * @return the original Single, with appropriately modified behavior.
      * @see <a href="http://reactivex.io/documentation/operators/catch.html">ReactiveX operators documentation: Catch</a>
      */
+    @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Single<T> onErrorResumeNext(final Single<? extends T> resumeSingleInCaseOfError) {
         ObjectHelper.requireNonNull(resumeSingleInCaseOfError, "resumeSingleInCaseOfError is null");
@@ -2287,6 +2372,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * @see <a href="http://reactivex.io/documentation/operators/catch.html">ReactiveX operators documentation: Catch</a>
      * @since .20
      */
+    @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Single<T> onErrorResumeNext(
             final Function<? super Throwable, ? extends SingleSource<? extends T>> resumeFunctionInCaseOfError) {
@@ -2306,6 +2392,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * @since 2.0
      */
     @BackpressureSupport(BackpressureKind.FULL)
+    @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> repeat() {
         return toFlowable().repeat();
@@ -2324,6 +2411,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * @since 2.0
      */
     @BackpressureSupport(BackpressureKind.FULL)
+    @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> repeat(long times) {
         return toFlowable().repeat(times);
@@ -2348,6 +2436,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * @since 2.0
      */
     @BackpressureSupport(BackpressureKind.FULL)
+    @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> repeatWhen(Function<? super Flowable<Object>, ? extends Publisher<Object>> handler) {
         return toFlowable().repeatWhen(handler);
@@ -2367,6 +2456,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * @since 2.0
      */
     @BackpressureSupport(BackpressureKind.FULL)
+    @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> repeatUntil(BooleanSupplier stop) {
         return toFlowable().repeatUntil(stop);
@@ -2381,6 +2471,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * @return the new Single instance
      * @since 2.0
      */
+    @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Single<T> retry() {
         return toSingle(toFlowable().retry());
@@ -2397,6 +2488,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * @return the new Single instance
      * @since 2.0
      */
+    @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Single<T> retry(long times) {
         return toSingle(toFlowable().retry(times));
@@ -2414,6 +2506,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * @return the new Single instance
      * @since 2.0
      */
+    @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Single<T> retry(BiPredicate<? super Integer, ? super Throwable> predicate) {
         return toSingle(toFlowable().retry(predicate));
@@ -2431,6 +2524,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * @return the new Single instance
      * @since 2.0
      */
+    @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Single<T> retry(Predicate<? super Throwable> predicate) {
         return toSingle(toFlowable().retry(predicate));
@@ -2452,6 +2546,7 @@ public abstract class Single<T> implements SingleSource<T> {
      *                be the output of the resulting Single
      * @return the new Single instance
      */
+    @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Single<T> retryWhen(Function<? super Flowable<Throwable>, ? extends Publisher<Object>> handler) {
         return toSingle(toFlowable().retryWhen(handler));
@@ -2488,6 +2583,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * @throws NullPointerException
      *             if {@code onCallback} is null
      */
+    @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Disposable subscribe(final BiConsumer<? super T, ? super Throwable> onCallback) {
         ObjectHelper.requireNonNull(onCallback, "onCallback is null");
@@ -2511,6 +2607,7 @@ public abstract class Single<T> implements SingleSource<T> {
      *             if {@code onSuccess} is null
      * @see <a href="http://reactivex.io/documentation/operators/subscribe.html">ReactiveX operators documentation: Subscribe</a>
      */
+    @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Disposable subscribe(Consumer<? super T> onSuccess) {
         return subscribe(onSuccess, Functions.ERROR_CONSUMER);
@@ -2535,6 +2632,7 @@ public abstract class Single<T> implements SingleSource<T> {
      *             if {@code onSuccess} is null, or
      *             if {@code onError} is null
      */
+    @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Disposable subscribe(final Consumer<? super T> onSuccess, final Consumer<? super Throwable> onError) {
         ObjectHelper.requireNonNull(onSuccess, "onSuccess is null");
@@ -2619,6 +2717,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * @see <a href="http://www.grahamlea.com/2014/07/rxjava-threading-examples/">RxJava Threading Examples</a>
      * @see #observeOn
      */
+    @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.CUSTOM)
     public final Single<T> subscribeOn(final Scheduler scheduler) {
         ObjectHelper.requireNonNull(scheduler, "scheduler is null");
@@ -2642,6 +2741,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * @return a Single that emits the item emitted by the source Single until such time as {@code other} terminates.
      * @see <a href="http://reactivex.io/documentation/operators/takeuntil.html">ReactiveX operators documentation: TakeUntil</a>
      */
+    @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Single<T> takeUntil(final CompletableSource other) {
         return takeUntil(new CompletableToFlowable<T>(other));
@@ -2671,6 +2771,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * @see <a href="http://reactivex.io/documentation/operators/takeuntil.html">ReactiveX operators documentation: TakeUntil</a>
      */
     @BackpressureSupport(BackpressureKind.FULL)
+    @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <E> Single<T> takeUntil(final Publisher<E> other) {
         return RxJavaPlugins.onAssembly(new SingleTakeUntil<T, E>(this, other));
@@ -2694,6 +2795,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * @return a Single that emits the item emitted by the source Single until such time as {@code other} emits its item
      * @see <a href="http://reactivex.io/documentation/operators/takeuntil.html">ReactiveX operators documentation: TakeUntil</a>
      */
+    @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <E> Single<T> takeUntil(final SingleSource<? extends E> other) {
         return takeUntil(new SingleToFlowable<E>(other));
@@ -2711,6 +2813,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * @return the new Single instance
      * @since 2.0
      */
+    @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.COMPUTATION)
     public final Single<T> timeout(long timeout, TimeUnit unit) {
         return timeout0(timeout, unit, Schedulers.computation(), null);
@@ -2730,6 +2833,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * @return the new Single instance
      * @since 2.0
      */
+    @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.CUSTOM)
     public final Single<T> timeout(long timeout, TimeUnit unit, Scheduler scheduler) {
         return timeout0(timeout, unit, scheduler, null);
@@ -2749,6 +2853,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * @return the new Single instance
      * @since 2.0
      */
+    @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.CUSTOM)
     public final Single<T> timeout(long timeout, TimeUnit unit, Scheduler scheduler, SingleSource<? extends T> other) {
         ObjectHelper.requireNonNull(other, "other is null");
@@ -2769,6 +2874,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * @return the new Single instance
      * @since 2.0
      */
+    @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.COMPUTATION)
     public final Single<T> timeout(long timeout, TimeUnit unit, SingleSource<? extends T> other) {
         ObjectHelper.requireNonNull(other, "other is null");
@@ -2794,6 +2900,7 @@ public abstract class Single<T> implements SingleSource<T> {
      *
      * @return the value returned by the convert function
      */
+    @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> R to(Function<? super Single<T>, R> convert) {
         try {
@@ -2822,6 +2929,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * @see <a href="http://reactivex.io/documentation/completable.html">ReactiveX documentation: Completable</a>
      * @since 2.0
      */
+    @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Completable toCompletable() {
         return RxJavaPlugins.onAssembly(new CompletableFromSingle<T>(this));
@@ -2841,6 +2949,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * @return a {@link Flowable} that emits a single item T or an error.
      */
     @BackpressureSupport(BackpressureKind.FULL)
+    @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     @SuppressWarnings("unchecked")
     public final Flowable<T> toFlowable() {
@@ -2862,6 +2971,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * @return a {@link Future} that expects a single item to be emitted by this {@code Single}
      * @see <a href="http://reactivex.io/documentation/operators/to.html">ReactiveX documentation: To</a>
      */
+    @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Future<T> toFuture() {
         return subscribeWith(new FutureSingleObserver<T>());
@@ -2878,6 +2988,7 @@ public abstract class Single<T> implements SingleSource<T> {
      *
      * @return a {@link Maybe} that emits a single item T or an error.
      */
+    @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     @SuppressWarnings("unchecked")
     public final Maybe<T> toMaybe() {
@@ -2897,6 +3008,7 @@ public abstract class Single<T> implements SingleSource<T> {
      *
      * @return an {@link Observable} that emits a single item T or an error.
      */
+    @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     @SuppressWarnings("unchecked")
     public final Observable<T> toObservable() {
@@ -2929,6 +3041,7 @@ public abstract class Single<T> implements SingleSource<T> {
      *         and emits the results of {@code zipFunction} applied to these pairs
      * @see <a href="http://reactivex.io/documentation/operators/zip.html">ReactiveX operators documentation: Zip</a>
      */
+    @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <U, R> Single<R> zipWith(SingleSource<U> other, BiFunction<? super T, ? super U, ? extends R> zipper) {
         return zip(this, other, zipper);
