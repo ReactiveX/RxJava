@@ -2596,6 +2596,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * @throws NullPointerException if {@code observer} is null
      * @since 2.0
      */
+    @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <E extends SingleObserver<? super T>> E subscribeWith(E observer) {
         subscribe(observer);
@@ -2946,6 +2947,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * @return the new TestObserver instance
      * @since 2.0
      */
+    @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final TestObserver<T> test() {
         TestObserver<T> ts = new TestObserver<T>();
@@ -2964,6 +2966,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * @return the new TestObserver instance
      * @since 2.0
      */
+    @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final TestObserver<T> test(boolean cancelled) {
         TestObserver<T> ts = new TestObserver<T>();

@@ -1555,6 +1555,7 @@ public abstract class Completable implements CompletableSource {
      * @throws NullPointerException if {@code observer} is null
      * @since 2.0
      */
+    @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <E extends CompletableObserver> E subscribeWith(E observer) {
         subscribe(observer);
@@ -1871,6 +1872,7 @@ public abstract class Completable implements CompletableSource {
      * @return the new TestObserver instance
      * @since 2.0
      */
+    @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final TestObserver<Void> test() {
         TestObserver<Void> ts = new TestObserver<Void>();
@@ -1889,6 +1891,7 @@ public abstract class Completable implements CompletableSource {
      * @return the new TestObserver instance
      * @since 2.0
      */
+    @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final TestObserver<Void> test(boolean cancelled) {
         TestObserver<Void> ts = new TestObserver<Void>();

@@ -3625,6 +3625,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * @return the input {@code subscriber}
      * @throws NullPointerException if {@code subscriber} is null
      */
+    @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <E extends MaybeObserver<? super T>> E subscribeWith(E observer) {
         subscribe(observer);
@@ -3954,6 +3955,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * </dl>
      * @return the new TestObserver instance
      */
+    @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final TestObserver<T> test() {
         TestObserver<T> ts = new TestObserver<T>();
@@ -3971,6 +3973,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * Maybe.
      * @return the new TestObserver instance
      */
+    @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final TestObserver<T> test(boolean cancelled) {
         TestObserver<T> ts = new TestObserver<T>();

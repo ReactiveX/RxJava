@@ -10224,6 +10224,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @throws NullPointerException if {@code observer} is null
      * @since 2.0
      */
+    @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <E extends Observer<? super T>> E subscribeWith(E observer) {
         subscribe(observer);
@@ -12872,6 +12873,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @return the new TestObserver instance
      * @since 2.0
      */
+    @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final TestObserver<T> test() { // NoPMD
         TestObserver<T> ts = new TestObserver<T>();
@@ -12891,6 +12893,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @return the new TestObserver instance
      * @since 2.0
      */
+    @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final TestObserver<T> test(boolean dispose) { // NoPMD
         TestObserver<T> ts = new TestObserver<T>();

@@ -12266,6 +12266,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @throws NullPointerException if {@code subscriber} is null
      * @since 2.0
      */
+    @CheckReturnValue
     @BackpressureSupport(BackpressureKind.SPECIAL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <E extends Subscriber<? super T>> E subscribeWith(E subscriber) {
@@ -15303,6 +15304,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @return the new TestSubscriber instance
      * @since 2.0
      */
+    @CheckReturnValue
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final TestSubscriber<T> test() { // NoPMD
@@ -15324,6 +15326,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @return the new TestSubscriber instance
      * @since 2.0
      */
+    @CheckReturnValue
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final TestSubscriber<T> test(long initialRequest) { // NoPMD
@@ -15347,6 +15350,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @return the new TestSubscriber instance
      * @since 2.0
      */
+    @CheckReturnValue
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final TestSubscriber<T> test(long initialRequest, boolean cancel) { // NoPMD
