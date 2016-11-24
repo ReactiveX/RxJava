@@ -13,28 +13,38 @@
 
 package io.reactivex.processors;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
-
-import java.util.Arrays;
-import java.util.concurrent.*;
-import java.util.concurrent.atomic.AtomicReference;
-
-import org.junit.Test;
-import org.mockito.*;
-import org.reactivestreams.*;
-
-import io.reactivex.*;
+import io.reactivex.Flowable;
+import io.reactivex.TestHelper;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
-import io.reactivex.schedulers.*;
-import io.reactivex.subscribers.*;
+import io.reactivex.schedulers.Schedulers;
+import io.reactivex.schedulers.TestScheduler;
+import io.reactivex.subscribers.DefaultSubscriber;
+import io.reactivex.subscribers.TestSubscriber;
+import org.junit.Test;
+import org.mockito.InOrder;
+import org.mockito.Mockito;
+import org.reactivestreams.Subscriber;
+import org.reactivestreams.Subscription;
 
-public class ReplayProcessorTest {
+import java.util.Arrays;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
+
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
+
+public class ReplayProcessorTest extends FlowableProcessorTest<Object> {
 
     private final Throwable testException = new Throwable();
+
+    @Override
+    protected FlowableProcessor<Object> create() {
+        return ReplayProcessor.create();
+    }
 
     @Test
     public void testCompleted() {
@@ -1016,30 +1026,6 @@ public class ReplayProcessorTest {
         assertEquals(0, rp.getValues().length);
 
         assertNull(rp.getValues(new Integer[2])[0]);
-    }
-
-    @Test
-    public void onNextNull() {
-        final ReplayProcessor<Object> p = ReplayProcessor.create();
-
-        p.onNext(null);
-
-        p.test()
-            .assertNoValues()
-            .assertError(NullPointerException.class)
-            .assertErrorMessage("onNext called with null. Null values are generally not allowed in 2.x operators and sources.");
-    }
-
-    @Test
-    public void onErrorNull() {
-        final ReplayProcessor<Object> p = ReplayProcessor.create();
-
-        p.onError(null);
-
-        p.test()
-            .assertNoValues()
-            .assertError(NullPointerException.class)
-            .assertErrorMessage("onError called with null. Null values are generally not allowed in 2.x operators and sources.");
     }
 
     @Test

@@ -13,24 +13,34 @@
 
 package io.reactivex.processors;
 
+import io.reactivex.Flowable;
+import io.reactivex.TestHelper;
+import io.reactivex.exceptions.MissingBackpressureException;
+import io.reactivex.exceptions.TestException;
+import io.reactivex.functions.Consumer;
+import io.reactivex.functions.Function;
+import io.reactivex.schedulers.Schedulers;
+import io.reactivex.subscribers.DefaultSubscriber;
+import io.reactivex.subscribers.TestSubscriber;
+import org.junit.Test;
+import org.mockito.InOrder;
+import org.mockito.Mockito;
+import org.reactivestreams.Subscriber;
+import org.reactivestreams.Subscription;
+
+import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
-import java.util.ArrayList;
-import java.util.concurrent.*;
-import java.util.concurrent.atomic.AtomicInteger;
+public class PublishProcessorTest extends FlowableProcessorTest<Object> {
 
-import org.junit.Test;
-import org.mockito.*;
-import org.reactivestreams.*;
-
-import io.reactivex.*;
-import io.reactivex.exceptions.*;
-import io.reactivex.functions.*;
-import io.reactivex.schedulers.Schedulers;
-import io.reactivex.subscribers.*;
-
-public class PublishProcessorTest {
+    @Override
+    protected FlowableProcessor<Object> create() {
+        return PublishProcessor.create();
+    }
 
     @Test
     public void testCompleted() {
@@ -615,27 +625,5 @@ public class PublishProcessorTest {
         }
     }
 
-    @Test
-    public void onNextNull() {
-        final PublishProcessor<Object> p = PublishProcessor.create();
 
-        p.onNext(null);
-
-        p.test()
-            .assertNoValues()
-            .assertError(NullPointerException.class)
-            .assertErrorMessage("onNext called with null. Null values are generally not allowed in 2.x operators and sources.");
-    }
-
-    @Test
-    public void onErrorNull() {
-        final PublishProcessor<Object> p = PublishProcessor.create();
-
-        p.onError(null);
-
-        p.test()
-            .assertNoValues()
-            .assertError(NullPointerException.class)
-            .assertErrorMessage("onError called with null. Null values are generally not allowed in 2.x operators and sources.");
-    }
 }
