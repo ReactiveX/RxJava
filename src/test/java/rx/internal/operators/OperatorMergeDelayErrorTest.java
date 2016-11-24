@@ -16,8 +16,6 @@
 package rx.internal.operators;
 
 import static org.junit.Assert.*;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyInt;
 import static org.mockito.Mockito.*;
 
 import java.lang.reflect.Method;
@@ -84,7 +82,7 @@ public class OperatorMergeDelayErrorTest {
         Observable<String> m = Observable.mergeDelayError(o1, o2, o3, o4);
         m.subscribe(stringObserver);
 
-        verify(stringObserver, times(1)).onError(any(NullPointerException.class));
+        verify(stringObserver, times(1)).onError(any(CompositeException.class));
         verify(stringObserver, never()).onCompleted();
         verify(stringObserver, times(1)).onNext("one");
         verify(stringObserver, times(1)).onNext("two");

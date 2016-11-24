@@ -16,7 +16,6 @@
 package rx.internal.operators;
 
 import static org.junit.Assert.*;
-import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 
 import java.util.*;
@@ -60,7 +59,7 @@ public class OnSubscribeCombineLatestTest {
 
         verify(w, never()).onNext(anyString());
         verify(w, never()).onCompleted();
-        verify(w, times(1)).onError(Matchers.<RuntimeException> any());
+        verify(w, times(1)).onError(Mockito.<RuntimeException> any());
     }
 
     @Test

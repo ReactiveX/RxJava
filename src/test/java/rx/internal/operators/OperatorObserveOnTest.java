@@ -16,7 +16,6 @@
 package rx.internal.operators;
 
 import static org.junit.Assert.*;
-import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 
 import java.util.*;
@@ -131,7 +130,8 @@ public class OperatorObserveOnTest {
         }
 
         verify(observer, never()).onError(any(Throwable.class));
-        verify(observer, times(5)).onNext(any(String.class));
+        verify(observer, times(1)).onNext(null);
+        verify(observer, times(4)).onNext(any(String.class));
         verify(observer, times(1)).onCompleted();
     }
 

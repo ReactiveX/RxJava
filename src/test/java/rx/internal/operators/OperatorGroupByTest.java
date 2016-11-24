@@ -16,7 +16,6 @@
 package rx.internal.operators;
 
 import static org.junit.Assert.*;
-import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 
 import java.util.*;
@@ -1003,8 +1002,8 @@ public class OperatorGroupByTest {
         stream.subscribe(o2);
 
         // check that subscriptions were successful
-        verify(o1, never()).onError(Matchers.<Throwable> any());
-        verify(o2, never()).onError(Matchers.<Throwable> any());
+        verify(o1, never()).onError(Mockito.<Throwable> any());
+        verify(o2, never()).onError(Mockito.<Throwable> any());
     }
 
     private static Func1<Long, Boolean> IS_EVEN = new Func1<Long, Boolean>() {

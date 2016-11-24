@@ -45,7 +45,7 @@ public class OperatorAnyTest {
         observable.subscribe(observer);
         verify(observer, never()).onNext(false);
         verify(observer, times(1)).onNext(true);
-        verify(observer, never()).onError(org.mockito.Matchers.any(Throwable.class));
+        verify(observer, never()).onError(any(Throwable.class));
         verify(observer, times(1)).onCompleted();
     }
 
@@ -59,7 +59,7 @@ public class OperatorAnyTest {
         observable.subscribe(observer);
         verify(observer, never()).onNext(true);
         verify(observer, times(1)).onNext(false);
-        verify(observer, never()).onError(org.mockito.Matchers.any(Throwable.class));
+        verify(observer, never()).onError(any(Throwable.class));
         verify(observer, times(1)).onCompleted();
     }
 
@@ -73,7 +73,7 @@ public class OperatorAnyTest {
         observable.subscribe(observer);
         verify(observer, never()).onNext(false);
         verify(observer, times(1)).onNext(true);
-        verify(observer, never()).onError(org.mockito.Matchers.any(Throwable.class));
+        verify(observer, never()).onError(any(Throwable.class));
         verify(observer, times(1)).onCompleted();
     }
 
@@ -87,7 +87,7 @@ public class OperatorAnyTest {
         observable.subscribe(observer);
         verify(observer, never()).onNext(true);
         verify(observer, times(1)).onNext(false);
-        verify(observer, never()).onError(org.mockito.Matchers.any(Throwable.class));
+        verify(observer, never()).onError(any(Throwable.class));
         verify(observer, times(1)).onCompleted();
     }
 
@@ -101,7 +101,7 @@ public class OperatorAnyTest {
         observable.subscribe(observer);
         verify(observer, times(1)).onNext(false);
         verify(observer, never()).onNext(true);
-        verify(observer, never()).onError(org.mockito.Matchers.any(Throwable.class));
+        verify(observer, never()).onError(any(Throwable.class));
         verify(observer, times(1)).onCompleted();
     }
 
@@ -115,7 +115,7 @@ public class OperatorAnyTest {
         observable.subscribe(observer);
         verify(observer, times(1)).onNext(true);
         verify(observer, never()).onNext(false);
-        verify(observer, never()).onError(org.mockito.Matchers.any(Throwable.class));
+        verify(observer, never()).onError(any(Throwable.class));
         verify(observer, times(1)).onCompleted();
     }
 
@@ -136,7 +136,7 @@ public class OperatorAnyTest {
         observable.subscribe(observer);
         verify(observer, never()).onNext(false);
         verify(observer, times(1)).onNext(true);
-        verify(observer, never()).onError(org.mockito.Matchers.any(Throwable.class));
+        verify(observer, never()).onError(any(Throwable.class));
         verify(observer, times(1)).onCompleted();
     }
 
@@ -157,7 +157,7 @@ public class OperatorAnyTest {
         observable.subscribe(observer);
         verify(observer, never()).onNext(false);
         verify(observer, times(1)).onNext(true);
-        verify(observer, never()).onError(org.mockito.Matchers.any(Throwable.class));
+        verify(observer, never()).onError(any(Throwable.class));
         verify(observer, times(1)).onCompleted();
     }
 
@@ -178,7 +178,7 @@ public class OperatorAnyTest {
         observable.subscribe(observer);
         verify(observer, times(1)).onNext(false);
         verify(observer, never()).onNext(true);
-        verify(observer, never()).onError(org.mockito.Matchers.any(Throwable.class));
+        verify(observer, never()).onError(any(Throwable.class));
         verify(observer, times(1)).onCompleted();
     }
 
@@ -200,7 +200,7 @@ public class OperatorAnyTest {
         observable.subscribe(observer);
         verify(observer, times(1)).onNext(false);
         verify(observer, never()).onNext(true);
-        verify(observer, never()).onError(org.mockito.Matchers.any(Throwable.class));
+        verify(observer, never()).onError(any(Throwable.class));
         verify(observer, times(1)).onCompleted();
     }
 

@@ -15,7 +15,6 @@
  */
 package rx.internal.operators;
 
-import static org.mockito.Matchers.isA;
 import static org.mockito.Mockito.*;
 
 import org.junit.Test;

@@ -79,7 +79,7 @@ public class OnSubscribeFromCallableTest {
 
         fromCallableObservable.subscribe(observer);
 
-        verify(observer, never()).onNext(anyObject());
+        verify(observer, never()).onNext(any());
         verify(observer, never()).onCompleted();
         verify(observer).onError(throwable);
     }
