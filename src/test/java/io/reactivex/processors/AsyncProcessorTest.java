@@ -13,28 +13,36 @@
 
 package io.reactivex.processors;
 
-import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
-
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicReference;
-
-import org.junit.*;
-import org.mockito.*;
-import org.reactivestreams.Subscriber;
-
 import io.reactivex.TestHelper;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.Consumer;
 import io.reactivex.internal.fuseable.QueueSubscription;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.schedulers.Schedulers;
-import io.reactivex.subscribers.*;
+import io.reactivex.subscribers.SubscriberFusion;
+import io.reactivex.subscribers.TestSubscriber;
+import org.junit.Ignore;
+import org.junit.Test;
+import org.mockito.InOrder;
+import org.mockito.Mockito;
+import org.reactivestreams.Subscriber;
 
-public class AsyncProcessorTest {
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
+
+import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.*;
+
+public class AsyncProcessorTest extends DelayedFlowableProcessorTest<Object> {
 
     private final Throwable testException = new Throwable();
+
+    @Override
+    protected FlowableProcessor<Object> create() {
+        return AsyncProcessor.create();
+    }
 
     @Test
     public void testNeverCompleted() {
@@ -420,58 +428,6 @@ public class AsyncProcessorTest {
         .assertOf(SubscriberFusion.<Integer>assertFuseable())
         .assertOf(SubscriberFusion.<Integer>assertFusionMode(QueueSubscription.ASYNC))
         .assertResult(1);
-    }
-
-    @Test
-    public void onNextNull() {
-        final AsyncProcessor<Object> p = AsyncProcessor.create();
-
-        p.onNext(null);
-
-        p.test()
-            .assertNoValues()
-            .assertError(NullPointerException.class)
-            .assertErrorMessage("onNext called with null. Null values are generally not allowed in 2.x operators and sources.");
-    }
-
-    @Test
-    public void onErrorNull() {
-        final AsyncProcessor<Object> p = AsyncProcessor.create();
-
-        p.onError(null);
-
-        p.test()
-            .assertNoValues()
-            .assertError(NullPointerException.class)
-            .assertErrorMessage("onError called with null. Null values are generally not allowed in 2.x operators and sources.");
-    }
-
-    @Test
-    public void onNextNullDelayed() {
-        final AsyncProcessor<Object> p = AsyncProcessor.create();
-
-        TestSubscriber<Object> ts = p.test();
-
-        p.onNext(null);
-
-        ts
-            .assertNoValues()
-            .assertError(NullPointerException.class)
-            .assertErrorMessage("onNext called with null. Null values are generally not allowed in 2.x operators and sources.");
-    }
-
-    @Test
-    public void onErrorNullDelayed() {
-        final AsyncProcessor<Object> p = AsyncProcessor.create();
-
-        TestSubscriber<Object> ts = p.test();
-
-        p.onError(null);
-
-        ts
-            .assertNoValues()
-            .assertError(NullPointerException.class)
-            .assertErrorMessage("onError called with null. Null values are generally not allowed in 2.x operators and sources.");
     }
 
     @Test

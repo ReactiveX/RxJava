@@ -13,24 +13,29 @@
 
 package io.reactivex.processors;
 
-import static org.junit.Assert.assertEquals;
-
-import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
-
-import static org.junit.Assert.*;
-import org.junit.Test;
-
-import io.reactivex.*;
+import io.reactivex.Observable;
+import io.reactivex.TestHelper;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.internal.fuseable.QueueSubscription;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.schedulers.Schedulers;
-import io.reactivex.subscribers.*;
+import io.reactivex.subscribers.SubscriberFusion;
+import io.reactivex.subscribers.TestSubscriber;
+import org.junit.Test;
 
-public class UnicastProcessorTest {
+import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
+
+import static org.junit.Assert.*;
+
+public class UnicastProcessorTest extends DelayedFlowableProcessorTest<Object> {
+
+    @Override
+    protected FlowableProcessor<Object> create() {
+        return UnicastProcessor.create();
+    }
 
     @Test
     public void fusionLive() {
@@ -131,64 +136,6 @@ public class UnicastProcessorTest {
     @Test(expected = IllegalArgumentException.class)
     public void zeroCapacityHint() {
         UnicastProcessor.create(0);
-    }
-
-    @Test
-    public void onNextNull() {
-        final UnicastProcessor<Object> p = UnicastProcessor.create();
-
-        p.onNext(null);
-
-        p.test()
-            .assertNoValues()
-            .assertError(NullPointerException.class)
-            .assertErrorMessage("onNext called with null. Null values are generally not allowed in 2.x operators and sources.");
-    }
-
-    @Test
-    public void onErrorNull() {
-        final UnicastProcessor<Object> p = UnicastProcessor.create();
-
-        p.onError(null);
-
-        p.test()
-            .assertNoValues()
-            .assertError(NullPointerException.class)
-            .assertErrorMessage("onError called with null. Null values are generally not allowed in 2.x operators and sources.");
-    }
-
-    @Test
-    public void onNextNullDelayed() {
-        final UnicastProcessor<Object> p = UnicastProcessor.create();
-
-        TestSubscriber<Object> ts = p.test();
-
-        p.onNext(null);
-
-        ts
-            .assertNoValues()
-            .assertError(NullPointerException.class)
-            .assertErrorMessage("onNext called with null. Null values are generally not allowed in 2.x operators and sources.");
-    }
-
-    @Test
-    public void onErrorNullDelayed() {
-        final UnicastProcessor<Object> p = UnicastProcessor.create();
-
-        assertFalse(p.hasSubscribers());
-
-        TestSubscriber<Object> ts = p.test();
-
-        assertTrue(p.hasSubscribers());
-
-        p.onError(null);
-
-        assertFalse(p.hasSubscribers());
-
-        ts
-            .assertNoValues()
-            .assertError(NullPointerException.class)
-            .assertErrorMessage("onError called with null. Null values are generally not allowed in 2.x operators and sources.");
     }
 
     @Test

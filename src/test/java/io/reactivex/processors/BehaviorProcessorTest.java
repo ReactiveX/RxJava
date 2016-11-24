@@ -13,29 +13,40 @@
 
 package io.reactivex.processors;
 
-import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
-
-import java.util.List;
-import java.util.concurrent.*;
-import java.util.concurrent.atomic.AtomicReference;
-
-import org.junit.*;
-import org.mockito.*;
-import org.reactivestreams.Subscriber;
-
-import io.reactivex.*;
-import io.reactivex.exceptions.*;
+import io.reactivex.Flowable;
+import io.reactivex.Scheduler;
+import io.reactivex.TestHelper;
+import io.reactivex.exceptions.MissingBackpressureException;
+import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.schedulers.Schedulers;
-import io.reactivex.subscribers.*;
+import io.reactivex.subscribers.DefaultSubscriber;
+import io.reactivex.subscribers.TestSubscriber;
+import org.junit.Assert;
+import org.junit.Test;
+import org.mockito.InOrder;
+import org.mockito.Mockito;
+import org.reactivestreams.Subscriber;
 
-public class BehaviorProcessorTest {
+import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
+
+import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
+
+public class BehaviorProcessorTest extends DelayedFlowableProcessorTest<Object> {
 
     private final Throwable testException = new Throwable();
+
+    @Override
+    protected FlowableProcessor<Object> create() {
+        return BehaviorProcessor.create();
+    }
 
     @Test
     public void testThatSubscriberReceivesDefaultValueAndSubsequentEvents() {
@@ -561,66 +572,6 @@ public class BehaviorProcessorTest {
         assertFalse(as.hasComplete());
         assertNull(as.getValue());
         assertTrue(as.getThrowable() instanceof TestException);
-    }
-
-    @Test
-    public void onNextNull() {
-        final BehaviorProcessor<Object> p = BehaviorProcessor.create();
-
-        p.onNext(null);
-
-        p.test()
-            .assertNoValues()
-            .assertError(NullPointerException.class)
-            .assertErrorMessage("onNext called with null. Null values are generally not allowed in 2.x operators and sources.");
-    }
-
-    @Test
-    public void onErrorNull() {
-        final BehaviorProcessor<Object> p = BehaviorProcessor.create();
-
-        p.onError(null);
-
-        p.test()
-            .assertNoValues()
-            .assertError(NullPointerException.class)
-            .assertErrorMessage("onError called with null. Null values are generally not allowed in 2.x operators and sources.");
-    }
-
-    @Test
-    public void onNextNullDelayed() {
-        final BehaviorProcessor<Object> p = BehaviorProcessor.create();
-
-        TestSubscriber<Object> ts = p.test();
-
-        assertTrue(p.hasSubscribers());
-
-        p.onNext(null);
-
-        assertFalse(p.hasSubscribers());
-
-        ts
-            .assertNoValues()
-            .assertError(NullPointerException.class)
-            .assertErrorMessage("onNext called with null. Null values are generally not allowed in 2.x operators and sources.");
-    }
-
-    @Test
-    public void onErrorNullDelayed() {
-        final BehaviorProcessor<Object> p = BehaviorProcessor.create();
-
-        TestSubscriber<Object> ts = p.test();
-
-        assertTrue(p.hasSubscribers());
-
-        p.onError(null);
-
-        assertFalse(p.hasSubscribers());
-
-        ts
-            .assertNoValues()
-            .assertError(NullPointerException.class)
-            .assertErrorMessage("onError called with null. Null values are generally not allowed in 2.x operators and sources.");
     }
 
     @Test
