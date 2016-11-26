@@ -8685,7 +8685,8 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Maybe<T> reduce(BiFunction<T, T, T> reducer) {
-        return scan(reducer).takeLast(1).singleElement();
+        ObjectHelper.requireNonNull(reducer, "reducer is null");
+        return RxJavaPlugins.onAssembly(new ObservableReduceMaybe<T>(this, reducer));
     }
 
     /**
@@ -8732,7 +8733,9 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> Single<R> reduce(R seed, BiFunction<R, ? super T, R> reducer) {
-        return RxJavaPlugins.onAssembly(new ObservableSingleSingle<R>(scan(seed, reducer).takeLast(1), null));
+        ObjectHelper.requireNonNull(seed, "seed is null");
+        ObjectHelper.requireNonNull(reducer, "reducer is null");
+        return RxJavaPlugins.onAssembly(new ObservableReduceSeedSingle<T, R>(this, seed, reducer));
     }
 
     /**
@@ -8779,7 +8782,9 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> Single<R> reduceWith(Callable<R> seedSupplier, BiFunction<R, ? super T, R> reducer) {
-        return RxJavaPlugins.onAssembly(new ObservableSingleSingle<R>(scanWith(seedSupplier, reducer).takeLast(1), null));
+        ObjectHelper.requireNonNull(seedSupplier, "seedSupplier is null");
+        ObjectHelper.requireNonNull(reducer, "reducer is null");
+        return RxJavaPlugins.onAssembly(new ObservableReduceWithSingle<T, R>(this, seedSupplier, reducer));
     }
 
     /**
