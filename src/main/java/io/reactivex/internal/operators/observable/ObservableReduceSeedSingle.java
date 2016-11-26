@@ -31,9 +31,9 @@ import io.reactivex.plugins.RxJavaPlugins;
 public final class ObservableReduceSeedSingle<T, R> extends Single<R> {
 
     final ObservableSource<T> source;
-    
+
     final R seed;
-    
+
     final BiFunction<R, ? super T, R> reducer;
 
     public ObservableReduceSeedSingle(ObservableSource<T> source, R seed, BiFunction<R, ? super T, R> reducer) {
@@ -41,27 +41,26 @@ public final class ObservableReduceSeedSingle<T, R> extends Single<R> {
         this.seed = seed;
         this.reducer = reducer;
     }
-    
+
     @Override
     protected void subscribeActual(SingleObserver<? super R> observer) {
         source.subscribe(new ReduceSeedObserver<T, R>(observer, reducer, seed));
     }
-    
+
     static final class ReduceSeedObserver<T, R> implements Observer<T>, Disposable {
-        
+
         final SingleObserver<? super R> actual;
-        
+
         final BiFunction<R, ? super T, R> reducer;
-        
+
         R value;
-        
+
         Disposable d;
 
         public ReduceSeedObserver(SingleObserver<? super R> actual, BiFunction<R, ? super T, R> reducer, R value) {
             this.actual = actual;
             this.value = value;
             this.reducer = reducer;
-            this.value = value;
         }
 
         @Override
@@ -76,7 +75,7 @@ public final class ObservableReduceSeedSingle<T, R> extends Single<R> {
         @Override
         public void onNext(T value) {
             R v = this.value;
-            
+
             try {
                 this.value = ObjectHelper.requireNonNull(reducer.apply(v, value), "The reducer returned a null value");
             } catch (Throwable ex) {
@@ -85,7 +84,7 @@ public final class ObservableReduceSeedSingle<T, R> extends Single<R> {
                 onError(ex);
             }
         }
-        
+
         @Override
         public void onError(Throwable e) {
             R v = value;
@@ -96,7 +95,7 @@ public final class ObservableReduceSeedSingle<T, R> extends Single<R> {
                 RxJavaPlugins.onError(e);
             }
         }
-        
+
         @Override
         public void onComplete() {
             R v = value;
@@ -105,12 +104,12 @@ public final class ObservableReduceSeedSingle<T, R> extends Single<R> {
                 actual.onSuccess(v);
             }
         }
-        
+
         @Override
         public void dispose() {
             d.dispose();
         }
-        
+
         @Override
         public boolean isDisposed() {
             return d.isDisposed();

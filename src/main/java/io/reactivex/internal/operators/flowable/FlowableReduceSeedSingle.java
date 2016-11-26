@@ -33,9 +33,9 @@ import io.reactivex.plugins.RxJavaPlugins;
 public final class FlowableReduceSeedSingle<T, R> extends Single<R> {
 
     final Publisher<T> source;
-    
+
     final R seed;
-    
+
     final BiFunction<R, ? super T, R> reducer;
 
     public FlowableReduceSeedSingle(Publisher<T> source, R seed, BiFunction<R, ? super T, R> reducer) {
@@ -43,27 +43,26 @@ public final class FlowableReduceSeedSingle<T, R> extends Single<R> {
         this.seed = seed;
         this.reducer = reducer;
     }
-    
+
     @Override
     protected void subscribeActual(SingleObserver<? super R> observer) {
         source.subscribe(new ReduceSeedObserver<T, R>(observer, reducer, seed));
     }
-    
+
     static final class ReduceSeedObserver<T, R> implements Subscriber<T>, Disposable {
-        
+
         final SingleObserver<? super R> actual;
-        
+
         final BiFunction<R, ? super T, R> reducer;
-        
+
         R value;
-        
+
         Subscription s;
 
         public ReduceSeedObserver(SingleObserver<? super R> actual, BiFunction<R, ? super T, R> reducer, R value) {
             this.actual = actual;
             this.value = value;
             this.reducer = reducer;
-            this.value = value;
         }
 
         @Override
@@ -72,7 +71,7 @@ public final class FlowableReduceSeedSingle<T, R> extends Single<R> {
                 this.s = s;
 
                 actual.onSubscribe(this);
-                
+
                 s.request(Long.MAX_VALUE);
             }
         }
@@ -80,7 +79,7 @@ public final class FlowableReduceSeedSingle<T, R> extends Single<R> {
         @Override
         public void onNext(T value) {
             R v = this.value;
-            
+
             try {
                 this.value = ObjectHelper.requireNonNull(reducer.apply(v, value), "The reducer returned a null value");
             } catch (Throwable ex) {
@@ -89,7 +88,7 @@ public final class FlowableReduceSeedSingle<T, R> extends Single<R> {
                 onError(ex);
             }
         }
-        
+
         @Override
         public void onError(Throwable e) {
             R v = value;
@@ -101,7 +100,7 @@ public final class FlowableReduceSeedSingle<T, R> extends Single<R> {
                 RxJavaPlugins.onError(e);
             }
         }
-        
+
         @Override
         public void onComplete() {
             R v = value;
@@ -111,13 +110,13 @@ public final class FlowableReduceSeedSingle<T, R> extends Single<R> {
                 actual.onSuccess(v);
             }
         }
-        
+
         @Override
         public void dispose() {
             s.cancel();
             s = SubscriptionHelper.CANCELLED;
         }
-        
+
         @Override
         public boolean isDisposed() {
             return s == SubscriptionHelper.CANCELLED;

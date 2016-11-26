@@ -32,9 +32,9 @@ import io.reactivex.internal.operators.observable.ObservableReduceSeedSingle.Red
 public final class ObservableReduceWithSingle<T, R> extends Single<R> {
 
     final ObservableSource<T> source;
-    
+
     final Callable<R> seedSupplier;
-    
+
     final BiFunction<R, ? super T, R> reducer;
 
     public ObservableReduceWithSingle(ObservableSource<T> source, Callable<R> seedSupplier, BiFunction<R, ? super T, R> reducer) {
@@ -42,11 +42,11 @@ public final class ObservableReduceWithSingle<T, R> extends Single<R> {
         this.seedSupplier = seedSupplier;
         this.reducer = reducer;
     }
-    
+
     @Override
     protected void subscribeActual(SingleObserver<? super R> observer) {
         R seed;
-        
+
         try {
             seed = ObjectHelper.requireNonNull(seedSupplier.call(), "The seedSupplier returned a null value");
         } catch (Throwable ex) {

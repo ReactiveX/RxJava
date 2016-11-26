@@ -30,50 +30,50 @@ import io.reactivex.plugins.RxJavaPlugins;
 public final class ObservableReduceMaybe<T> extends Maybe<T> {
 
     final ObservableSource<T> source;
-    
+
     final BiFunction<T, T, T> reducer;
 
     public ObservableReduceMaybe(ObservableSource<T> source, BiFunction<T, T, T> reducer) {
         this.source = source;
         this.reducer = reducer;
     }
-    
+
     @Override
     protected void subscribeActual(MaybeObserver<? super T> observer) {
         source.subscribe(new ReduceObserver<T>(observer, reducer));
     }
-    
+
     static final class ReduceObserver<T> implements Observer<T>, Disposable {
-        
+
         final MaybeObserver<? super T> actual;
-        
+
         final BiFunction<T, T, T> reducer;
-        
+
         boolean done;
-        
+
         T value;
-        
+
         Disposable d;
 
         public ReduceObserver(MaybeObserver<? super T> observer, BiFunction<T, T, T> reducer) {
             this.actual = observer;
             this.reducer = reducer;
         }
-        
+
         @Override
         public void onSubscribe(Disposable d) {
             if (DisposableHelper.validate(this.d, d)) {
                 this.d = d;
-                
+
                 actual.onSubscribe(this);
             }
         }
-        
+
         @Override
         public void onNext(T value) {
             if (!done) {
                 T v = this.value;
-                
+
                 if (v == null) {
                     this.value = value;
                 } else {
@@ -87,7 +87,7 @@ public final class ObservableReduceMaybe<T> extends Maybe<T> {
                 }
             }
         }
-        
+
         @Override
         public void onError(Throwable e) {
             if (done) {
@@ -97,7 +97,7 @@ public final class ObservableReduceMaybe<T> extends Maybe<T> {
             value = null;
             actual.onError(e);
         }
-        
+
         @Override
         public void onComplete() {
             T v = value;
@@ -108,12 +108,12 @@ public final class ObservableReduceMaybe<T> extends Maybe<T> {
                 actual.onComplete();
             }
         }
-        
+
         @Override
         public void dispose() {
             d.dispose();
         }
-        
+
         @Override
         public boolean isDisposed() {
             return d.isDisposed();

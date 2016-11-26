@@ -32,29 +32,29 @@ public class ReducePerf implements BiFunction<Integer, Integer, Integer> {
     public int times;
 
     Single<Integer> obsSingle;
-    
+
     Single<Integer> flowSingle;
-    
+
     Maybe<Integer> obsMaybe;
-    
+
     Maybe<Integer> flowMaybe;
-    
+
     @Override
     public Integer apply(Integer t1, Integer t2) throws Exception {
         return t1 + t2;
     }
-    
+
     @Setup
     public void setup() {
         Integer[] array = new Integer[times];
         Arrays.fill(array, 777);
 
         obsSingle = Observable.fromArray(array).reduce(0, this);
-        
+
         obsMaybe = Observable.fromArray(array).reduce(this);
-        
+
         flowSingle = Flowable.fromArray(array).reduce(0, this);
-        
+
         flowMaybe = Flowable.fromArray(array).reduce(this);
     }
 
@@ -67,7 +67,7 @@ public class ReducePerf implements BiFunction<Integer, Integer, Integer> {
     public void flowSingle(Blackhole bh) {
         flowSingle.subscribe(new PerfConsumer(bh));
     }
-    
+
     @Benchmark
     public void obsMaybe(Blackhole bh) {
         obsMaybe.subscribe(new PerfConsumer(bh));
