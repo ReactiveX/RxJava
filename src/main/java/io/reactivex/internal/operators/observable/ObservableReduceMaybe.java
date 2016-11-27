@@ -94,12 +94,17 @@ public final class ObservableReduceMaybe<T> extends Maybe<T> {
                 RxJavaPlugins.onError(e);
                 return;
             }
+            done = true;
             value = null;
             actual.onError(e);
         }
 
         @Override
         public void onComplete() {
+            if (done) {
+                return;
+            }
+            done = true;
             T v = value;
             value = null;
             if (v != null) {

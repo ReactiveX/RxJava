@@ -75,13 +75,14 @@ public final class ObservableReduceSeedSingle<T, R> extends Single<R> {
         @Override
         public void onNext(T value) {
             R v = this.value;
-
-            try {
-                this.value = ObjectHelper.requireNonNull(reducer.apply(v, value), "The reducer returned a null value");
-            } catch (Throwable ex) {
-                Exceptions.throwIfFatal(ex);
-                d.dispose();
-                onError(ex);
+            if (v != null) {
+                try {
+                    this.value = ObjectHelper.requireNonNull(reducer.apply(v, value), "The reducer returned a null value");
+                } catch (Throwable ex) {
+                    Exceptions.throwIfFatal(ex);
+                    d.dispose();
+                    onError(ex);
+                }
             }
         }
 
