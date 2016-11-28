@@ -273,7 +273,7 @@ This release contains mostly internal cleanups, reinforced Observable-protocol a
 
 #### Bugfixes
 
-  - [Pull 4231](https://github.com/ReactiveX/RxJava/pull/4213): `Schedulers.io()` workers now wait until a blocking task finishes before becoming available again.
+  - [Pull 4231](https://github.com/ReactiveX/RxJava/pull/4231): `Schedulers.io()` workers now wait until a blocking task finishes before becoming available again.
   - [Pull 4244](https://github.com/ReactiveX/RxJava/pull/4244): Fix `all` multiple terminal events.
   - [Pull 4241](https://github.com/ReactiveX/RxJava/pull/4241): Fix reentrancy bug in `repeatWhen` and `retryWhen` when the resubscription happens.
   - [Pull 4225](https://github.com/ReactiveX/RxJava/pull/4225): `PublishSubject` now checks for unsubscribed child while dispatching events.
