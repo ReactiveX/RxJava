@@ -1448,7 +1448,7 @@ public class ObservableGroupByTest {
     @Test
     public void keySelectorAndDelayError() {
         Observable.just(1).concatWith(Observable.<Integer>error(new TestException()))
-        .groupBy(Functions.identity(), true)
+        .groupBy(Functions.<Integer>identity(), true)
         .flatMap(new Function<GroupedObservable<Integer, Integer>, ObservableSource<Integer>>() {
             @Override
             public ObservableSource<Integer> apply(GroupedObservable<Integer, Integer> g) throws Exception {
@@ -1462,7 +1462,7 @@ public class ObservableGroupByTest {
     @Test
     public void keyAndValueSelectorAndDelayError() {
         Observable.just(1).concatWith(Observable.<Integer>error(new TestException()))
-        .groupBy(Functions.identity(), Functions.<Integer>identity(), true)
+        .groupBy(Functions.<Integer>identity(), Functions.<Integer>identity(), true)
         .flatMap(new Function<GroupedObservable<Integer, Integer>, ObservableSource<Integer>>() {
             @Override
             public ObservableSource<Integer> apply(GroupedObservable<Integer, Integer> g) throws Exception {

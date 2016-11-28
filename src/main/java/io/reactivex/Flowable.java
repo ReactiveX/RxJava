@@ -1886,6 +1886,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @return a Flowable that emits the item from the source {@link Future}
      * @see <a href="http://reactivex.io/documentation/operators/from.html">ReactiveX operators documentation: From</a>
      */
+    @SuppressWarnings({ "unchecked", "cast" })
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.CUSTOM)
@@ -1923,6 +1924,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @return a Flowable that emits the item from the source {@link Future}
      * @see <a href="http://reactivex.io/documentation/operators/from.html">ReactiveX operators documentation: From</a>
      */
+    @SuppressWarnings({ "cast", "unchecked" })
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.CUSTOM)
@@ -4145,6 +4147,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @return a Flowable that emits the zipped results
      * @see <a href="http://reactivex.io/documentation/operators/zip.html">ReactiveX operators documentation: Zip</a>
      */
+    @SuppressWarnings({ "rawtypes", "unchecked", "cast" })
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
