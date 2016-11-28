@@ -17,25 +17,18 @@ package rx.schedulers;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.anyLong;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Test;
-import org.mockito.InOrder;
-import org.mockito.Mockito;
+import org.mockito.*;
 
-import rx.Observable;
+import rx.*;
 import rx.Observable.OnSubscribe;
-import rx.Scheduler;
-import rx.Subscriber;
-import rx.Subscription;
-import rx.functions.Action0;
-import rx.functions.Func1;
+import rx.functions.*;
+import rx.observers.TestSubscriber;
 
 public class TestSchedulerTest {
 
@@ -220,6 +213,26 @@ public class TestSchedulerTest {
             inOrder.verify(calledOp, times(1)).call();
         } finally {
             inner.unsubscribe();
+        }
+    }
+    
+    @Test
+    public void resolution() {
+        for (final TimeUnit unit : TimeUnit.values()) {
+            TestScheduler scheduler = new TestScheduler();
+            TestSubscriber<String> testSubscriber = new TestSubscriber<String>();
+
+            Observable.interval(30, unit, scheduler)
+            .map(new Func1<Long, String>() {
+                @Override
+                public String call(Long v) {
+                    return v + "-" + unit;
+                }
+            })
+            .subscribe(testSubscriber);
+            scheduler.advanceTimeTo(60, unit);
+
+            testSubscriber.assertValues("0-" + unit, "1-" + unit);
         }
     }
 }

@@ -19,8 +19,7 @@ import java.util.concurrent.TimeUnit;
 
 import rx.annotations.Experimental;
 import rx.functions.*;
-import rx.internal.schedulers.SchedulerWhen;
-import rx.internal.subscriptions.SequentialSubscription;
+import rx.internal.schedulers.*;
 import rx.schedulers.Schedulers;
 
 /**
@@ -44,18 +43,6 @@ public abstract class Scheduler {
  *  : Without virtual extension methods even additive changes are breaking and thus severely impede library
  *    maintenance.
  */
-
-    /**
-     * The tolerance for a clock drift in nanoseconds where the periodic scheduler will rebase.
-     * <p>
-     * The associated system parameter, {@code rx.scheduler.drift-tolerance}, expects its value in minutes.
-     */
-    static final long CLOCK_DRIFT_TOLERANCE_NANOS;
-    static {
-        CLOCK_DRIFT_TOLERANCE_NANOS = TimeUnit.MINUTES.toNanos(
-                Long.getLong("rx.scheduler.drift-tolerance", 15));
-    }
-
     /**
      * Retrieves or creates a new {@link Scheduler.Worker} that represents serial execution of actions.
      * <p>
@@ -121,47 +108,8 @@ public abstract class Scheduler {
          * @return a subscription to be able to prevent or cancel the execution of the action
          */
         public Subscription schedulePeriodically(final Action0 action, long initialDelay, long period, TimeUnit unit) {
-            final long periodInNanos = unit.toNanos(period);
-            final long firstNowNanos = TimeUnit.MILLISECONDS.toNanos(now());
-            final long firstStartInNanos = firstNowNanos + unit.toNanos(initialDelay);
-
-            final SequentialSubscription first = new SequentialSubscription();
-            final SequentialSubscription mas = new SequentialSubscription(first);
-
-            final Action0 recursiveAction = new Action0() {
-                long count;
-                long lastNowNanos = firstNowNanos;
-                long startInNanos = firstStartInNanos;
-                @Override
-                public void call() {
-                    action.call();
-
-                    if (!mas.isUnsubscribed()) {
-
-                        long nextTick;
-
-                        long nowNanos = TimeUnit.MILLISECONDS.toNanos(now());
-                        // If the clock moved in a direction quite a bit, rebase the repetition period
-                        if (nowNanos + CLOCK_DRIFT_TOLERANCE_NANOS < lastNowNanos
-                                || nowNanos >= lastNowNanos + periodInNanos + CLOCK_DRIFT_TOLERANCE_NANOS) {
-                            nextTick = nowNanos + periodInNanos;
-                            /*
-                             * Shift the start point back by the drift as if the whole thing
-                             * started count periods ago.
-                             */
-                            startInNanos = nextTick - (periodInNanos * (++count));
-                        } else {
-                            nextTick = startInNanos + (++count * periodInNanos);
-                        }
-                        lastNowNanos = nowNanos;
-
-                        long delay = nextTick - nowNanos;
-                        mas.replace(schedule(this, delay, TimeUnit.NANOSECONDS));
-                    }
-                }
-            };
-            first.replace(schedule(recursiveAction, initialDelay, unit));
-            return mas;
+            return SchedulePeriodicHelper.schedulePeriodically(this, action,
+                    initialDelay, period, unit, null);
         }
 
         /**

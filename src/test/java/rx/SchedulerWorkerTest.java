@@ -23,6 +23,7 @@ import java.util.concurrent.TimeUnit;
 import org.junit.Test;
 
 import rx.functions.Action0;
+import rx.internal.schedulers.SchedulePeriodicHelper;
 import rx.schedulers.Schedulers;
 
 public class SchedulerWorkerTest {
@@ -85,7 +86,7 @@ public class SchedulerWorkerTest {
 
             Thread.sleep(150);
 
-            s.drift = -1000 - TimeUnit.NANOSECONDS.toMillis(Scheduler.CLOCK_DRIFT_TOLERANCE_NANOS);
+            s.drift = -1000 - TimeUnit.NANOSECONDS.toMillis(SchedulePeriodicHelper.CLOCK_DRIFT_TOLERANCE_NANOS);
 
             Thread.sleep(400);
 
@@ -127,7 +128,7 @@ public class SchedulerWorkerTest {
 
             Thread.sleep(150);
 
-            s.drift = 1000 + TimeUnit.NANOSECONDS.toMillis(Scheduler.CLOCK_DRIFT_TOLERANCE_NANOS);
+            s.drift = 1000 + TimeUnit.NANOSECONDS.toMillis(SchedulePeriodicHelper.CLOCK_DRIFT_TOLERANCE_NANOS);
 
             Thread.sleep(400);
 

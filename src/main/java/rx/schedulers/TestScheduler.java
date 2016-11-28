@@ -23,6 +23,8 @@ import java.util.concurrent.TimeUnit;
 import rx.Scheduler;
 import rx.Subscription;
 import rx.functions.Action0;
+import rx.internal.schedulers.SchedulePeriodicHelper;
+import rx.internal.schedulers.SchedulePeriodicHelper.NowNanoSupplier;
 import rx.subscriptions.BooleanSubscription;
 import rx.subscriptions.Subscriptions;
 
@@ -130,7 +132,7 @@ public class TestScheduler extends Scheduler {
         return new InnerTestScheduler();
     }
 
-    final class InnerTestScheduler extends Worker {
+    final class InnerTestScheduler extends Worker implements NowNanoSupplier {
 
         private final BooleanSubscription s = new BooleanSubscription();
 
@@ -173,8 +175,19 @@ public class TestScheduler extends Scheduler {
         }
 
         @Override
+        public Subscription schedulePeriodically(Action0 action, long initialDelay, long period, TimeUnit unit) {
+            return SchedulePeriodicHelper.schedulePeriodically(this, 
+                    action, initialDelay, period, unit, this);
+        }
+        
+        @Override
         public long now() {
             return TestScheduler.this.now();
+        }
+        
+        @Override
+        public long nowNanos() {
+            return TestScheduler.this.time;
         }
 
     }
