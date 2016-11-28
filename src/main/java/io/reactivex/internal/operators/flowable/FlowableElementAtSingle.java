@@ -42,7 +42,7 @@ public final class FlowableElementAtSingle<T> extends Single<T> implements FuseT
 
     @Override
     public Flowable<T> fuseToFlowable() {
-        return RxJavaPlugins.onAssembly(new FlowableElementAt<T>(source, index, defaultValue));
+        return RxJavaPlugins.onAssembly(new FlowableElementAt<T>(source, index, defaultValue, true));
     }
 
     static final class ElementAtSubscriber<T> implements Subscriber<T>, Disposable {

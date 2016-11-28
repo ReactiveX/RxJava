@@ -13,6 +13,8 @@
 
 package io.reactivex.internal.operators.flowable;
 
+import java.util.NoSuchElementException;
+
 import org.reactivestreams.*;
 
 import io.reactivex.internal.subscriptions.*;
@@ -21,15 +23,18 @@ import io.reactivex.plugins.RxJavaPlugins;
 public final class FlowableElementAt<T> extends AbstractFlowableWithUpstream<T, T> {
     final long index;
     final T defaultValue;
-    public FlowableElementAt(Publisher<T> source, long index, T defaultValue) {
+    final boolean errorOnFewer;
+
+    public FlowableElementAt(Publisher<T> source, long index, T defaultValue, boolean errorOnFewer) {
         super(source);
         this.index = index;
         this.defaultValue = defaultValue;
+        this.errorOnFewer = errorOnFewer;
     }
 
     @Override
     protected void subscribeActual(Subscriber<? super T> s) {
-        source.subscribe(new ElementAtSubscriber<T>(s, index, defaultValue));
+        source.subscribe(new ElementAtSubscriber<T>(s, index, defaultValue, errorOnFewer));
     }
 
     static final class ElementAtSubscriber<T> extends DeferredScalarSubscription<T> implements Subscriber<T> {
@@ -38,6 +43,7 @@ public final class FlowableElementAt<T> extends AbstractFlowableWithUpstream<T, 
 
         final long index;
         final T defaultValue;
+        final boolean errorOnFewer;
 
         Subscription s;
 
@@ -45,10 +51,11 @@ public final class FlowableElementAt<T> extends AbstractFlowableWithUpstream<T, 
 
         boolean done;
 
-        ElementAtSubscriber(Subscriber<? super T> actual, long index, T defaultValue) {
+        ElementAtSubscriber(Subscriber<? super T> actual, long index, T defaultValue, boolean errorOnFewer) {
             super(actual);
             this.index = index;
             this.defaultValue = defaultValue;
+            this.errorOnFewer = errorOnFewer;
         }
 
         @Override
@@ -91,7 +98,11 @@ public final class FlowableElementAt<T> extends AbstractFlowableWithUpstream<T, 
                 done = true;
                 T v = defaultValue;
                 if (v == null) {
-                    actual.onComplete();
+                    if (errorOnFewer) {
+                        actual.onError(new NoSuchElementException());
+                    } else {
+                        actual.onComplete();
+                    }
                 } else {
                     complete(v);
                 }

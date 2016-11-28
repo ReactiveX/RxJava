@@ -38,7 +38,7 @@ public final class FlowableElementAtMaybe<T> extends Maybe<T> implements FuseToF
 
     @Override
     public Flowable<T> fuseToFlowable() {
-        return RxJavaPlugins.onAssembly(new FlowableElementAt<T>(source, index, null));
+        return RxJavaPlugins.onAssembly(new FlowableElementAt<T>(source, index, null, false));
     }
 
     static final class ElementAtSubscriber<T> implements Subscriber<T>, Disposable {

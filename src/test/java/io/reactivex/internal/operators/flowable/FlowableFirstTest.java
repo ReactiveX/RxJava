@@ -544,4 +544,45 @@ public class FlowableFirstTest {
             .assertErrorMessage("error")
             .assertError(RuntimeException.class);
     }
+
+    @Test
+    public void firstOrErrorNoElementFlowable() {
+        Flowable.empty()
+            .firstOrError()
+            .toFlowable()
+            .test()
+            .assertNoValues()
+            .assertError(NoSuchElementException.class);
+    }
+
+    @Test
+    public void firstOrErrorOneElementFlowable() {
+        Flowable.just(1)
+            .firstOrError()
+            .toFlowable()
+            .test()
+            .assertNoErrors()
+            .assertValue(1);
+    }
+
+    @Test
+    public void firstOrErrorMultipleElementsFlowable() {
+        Flowable.just(1, 2, 3)
+            .firstOrError()
+            .toFlowable()
+            .test()
+            .assertNoErrors()
+            .assertValue(1);
+    }
+
+    @Test
+    public void firstOrErrorErrorFlowable() {
+        Flowable.error(new RuntimeException("error"))
+            .firstOrError()
+            .toFlowable()
+            .test()
+            .assertNoValues()
+            .assertErrorMessage("error")
+            .assertError(RuntimeException.class);
+    }
 }

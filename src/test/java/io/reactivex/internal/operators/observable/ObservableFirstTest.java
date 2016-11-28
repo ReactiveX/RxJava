@@ -541,4 +541,45 @@ public class ObservableFirstTest {
             .assertErrorMessage("error")
             .assertError(RuntimeException.class);
     }
+
+    @Test
+    public void firstOrErrorNoElementObservable() {
+        Observable.empty()
+            .firstOrError()
+            .toObservable()
+            .test()
+            .assertNoValues()
+            .assertError(NoSuchElementException.class);
+    }
+
+    @Test
+    public void firstOrErrorOneElementObservable() {
+        Observable.just(1)
+            .firstOrError()
+            .toObservable()
+            .test()
+            .assertNoErrors()
+            .assertValue(1);
+    }
+
+    @Test
+    public void firstOrErrorMultipleElementsObservable() {
+        Observable.just(1, 2, 3)
+            .firstOrError()
+            .toObservable()
+            .test()
+            .assertNoErrors()
+            .assertValue(1);
+    }
+
+    @Test
+    public void firstOrErrorErrorObservable() {
+        Observable.error(new RuntimeException("error"))
+            .firstOrError()
+            .toObservable()
+            .test()
+            .assertNoValues()
+            .assertErrorMessage("error")
+            .assertError(RuntimeException.class);
+    }
 }

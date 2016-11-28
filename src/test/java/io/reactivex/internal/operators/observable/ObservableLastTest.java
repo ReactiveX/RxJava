@@ -358,4 +358,22 @@ public class ObservableLastTest {
         .test()
         .assertFailure(TestException.class);
     }
+
+    @Test
+    public void errorLastOrErrorObservable() {
+        Observable.error(new TestException())
+        .lastOrError()
+        .toObservable()
+        .test()
+        .assertFailure(TestException.class);
+    }
+
+    @Test
+    public void emptyLastOrErrorObservable() {
+        Observable.empty()
+        .lastOrError()
+        .toObservable()
+        .test()
+        .assertFailure(NoSuchElementException.class);
+    }
 }

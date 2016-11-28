@@ -39,7 +39,7 @@ public final class ObservableElementAtSingle<T> extends Single<T> implements Fus
 
     @Override
     public Observable<T> fuseToObservable() {
-        return RxJavaPlugins.onAssembly(new ObservableElementAt<T>(source, index, defaultValue));
+        return RxJavaPlugins.onAssembly(new ObservableElementAt<T>(source, index, defaultValue, true));
     }
 
     static final class ElementAtObserver<T> implements Observer<T>, Disposable {

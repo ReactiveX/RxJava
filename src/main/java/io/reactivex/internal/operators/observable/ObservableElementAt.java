@@ -13,6 +13,8 @@
 
 package io.reactivex.internal.operators.observable;
 
+import java.util.NoSuchElementException;
+
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.disposables.DisposableHelper;
@@ -21,20 +23,24 @@ import io.reactivex.plugins.RxJavaPlugins;
 public final class ObservableElementAt<T> extends AbstractObservableWithUpstream<T, T> {
     final long index;
     final T defaultValue;
-    public ObservableElementAt(ObservableSource<T> source, long index, T defaultValue) {
+    final boolean errorOnFewer;
+
+    public ObservableElementAt(ObservableSource<T> source, long index, T defaultValue, boolean errorOnFewer) {
         super(source);
         this.index = index;
         this.defaultValue = defaultValue;
+        this.errorOnFewer = errorOnFewer;
     }
     @Override
     public void subscribeActual(Observer<? super T> t) {
-        source.subscribe(new ElementAtObserver<T>(t, index, defaultValue));
+        source.subscribe(new ElementAtObserver<T>(t, index, defaultValue, errorOnFewer));
     }
 
     static final class ElementAtObserver<T> implements Observer<T>, Disposable {
         final Observer<? super T> actual;
         final long index;
         final T defaultValue;
+        final boolean errorOnFewer;
 
         Disposable s;
 
@@ -42,10 +48,11 @@ public final class ObservableElementAt<T> extends AbstractObservableWithUpstream
 
         boolean done;
 
-        ElementAtObserver(Observer<? super T> actual, long index, T defaultValue) {
+        ElementAtObserver(Observer<? super T> actual, long index, T defaultValue, boolean errorOnFewer) {
             this.actual = actual;
             this.index = index;
             this.defaultValue = defaultValue;
+            this.errorOnFewer = errorOnFewer;
         }
 
         @Override
@@ -99,10 +106,14 @@ public final class ObservableElementAt<T> extends AbstractObservableWithUpstream
             if (!done) {
                 done = true;
                 T v = defaultValue;
-                if (v != null) {
-                    actual.onNext(v);
+                if (v == null && errorOnFewer) {
+                    actual.onError(new NoSuchElementException());
+                } else {
+                    if (v != null) {
+                        actual.onNext(v);
+                    }
+                    actual.onComplete();
                 }
-                actual.onComplete();
             }
         }
     }

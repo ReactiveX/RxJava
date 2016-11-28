@@ -357,4 +357,22 @@ public class FlowableLastTest {
         .test()
         .assertFailure(TestException.class);
     }
+
+    @Test
+    public void errorLastOrErrorFlowable() {
+        Flowable.error(new TestException())
+        .lastOrError()
+        .toFlowable()
+        .test()
+        .assertFailure(TestException.class);
+    }
+
+    @Test
+    public void emptyLastOrErrorFlowable() {
+        Flowable.empty()
+        .lastOrError()
+        .toFlowable()
+        .test()
+        .assertFailure(NoSuchElementException.class);
+    }
 }
