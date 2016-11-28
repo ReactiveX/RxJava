@@ -1891,7 +1891,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SchedulerSupport(SchedulerSupport.CUSTOM)
     public static <T> Flowable<T> fromFuture(Future<? extends T> future, long timeout, TimeUnit unit, Scheduler scheduler) {
         ObjectHelper.requireNonNull(scheduler, "scheduler is null");
-        return fromFuture(future, timeout, unit).subscribeOn(scheduler);
+        return fromFuture((Future<T>)future, timeout, unit).subscribeOn(scheduler);
     }
 
     /**
@@ -1928,7 +1928,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SchedulerSupport(SchedulerSupport.CUSTOM)
     public static <T> Flowable<T> fromFuture(Future<? extends T> future, Scheduler scheduler) {
         ObjectHelper.requireNonNull(scheduler, "scheduler is null");
-        return fromFuture(future).subscribeOn(scheduler);
+        return fromFuture((Future<T>)future).subscribeOn(scheduler);
     }
 
     /**
@@ -4151,7 +4151,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     public static <T, R> Flowable<R> zip(Publisher<? extends Publisher<? extends T>> sources,
             final Function<? super Object[], ? extends R> zipper) {
         ObjectHelper.requireNonNull(zipper, "zipper is null");
-        return fromPublisher(sources).toList().flatMapPublisher(FlowableInternalHelper.<T, R>zipIterable(zipper));
+        return fromPublisher(sources).toList().flatMapPublisher((Function)FlowableInternalHelper.<T, R>zipIterable(zipper));
     }
 
     /**
