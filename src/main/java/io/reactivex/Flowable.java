@@ -1886,12 +1886,13 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @return a Flowable that emits the item from the source {@link Future}
      * @see <a href="http://reactivex.io/documentation/operators/from.html">ReactiveX operators documentation: From</a>
      */
+    @SuppressWarnings({ "unchecked", "cast" })
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.CUSTOM)
     public static <T> Flowable<T> fromFuture(Future<? extends T> future, long timeout, TimeUnit unit, Scheduler scheduler) {
         ObjectHelper.requireNonNull(scheduler, "scheduler is null");
-        return fromFuture(future, timeout, unit).subscribeOn(scheduler);
+        return fromFuture((Future<T>)future, timeout, unit).subscribeOn(scheduler);
     }
 
     /**
@@ -1923,12 +1924,13 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @return a Flowable that emits the item from the source {@link Future}
      * @see <a href="http://reactivex.io/documentation/operators/from.html">ReactiveX operators documentation: From</a>
      */
+    @SuppressWarnings({ "cast", "unchecked" })
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.CUSTOM)
     public static <T> Flowable<T> fromFuture(Future<? extends T> future, Scheduler scheduler) {
         ObjectHelper.requireNonNull(scheduler, "scheduler is null");
-        return fromFuture(future).subscribeOn(scheduler);
+        return fromFuture((Future<T>)future).subscribeOn(scheduler);
     }
 
     /**
@@ -4145,13 +4147,14 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @return a Flowable that emits the zipped results
      * @see <a href="http://reactivex.io/documentation/operators/zip.html">ReactiveX operators documentation: Zip</a>
      */
+    @SuppressWarnings({ "rawtypes", "unchecked", "cast" })
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T, R> Flowable<R> zip(Publisher<? extends Publisher<? extends T>> sources,
             final Function<? super Object[], ? extends R> zipper) {
         ObjectHelper.requireNonNull(zipper, "zipper is null");
-        return fromPublisher(sources).toList().flatMapPublisher(FlowableInternalHelper.<T, R>zipIterable(zipper));
+        return fromPublisher(sources).toList().flatMapPublisher((Function)FlowableInternalHelper.<T, R>zipIterable(zipper));
     }
 
     /**

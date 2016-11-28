@@ -1638,10 +1638,10 @@ public class FlowableGroupByTest {
     @Test
     public void keySelectorAndDelayError() {
         Flowable.just(1).concatWith(Flowable.<Integer>error(new TestException()))
-        .groupBy(Functions.identity(), true)
-        .flatMap(new Function<GroupedFlowable<Object, Integer>, Flowable<Integer>>() {
+        .groupBy(Functions.<Integer>identity(), true)
+        .flatMap(new Function<GroupedFlowable<Integer, Integer>, Flowable<Integer>>() {
             @Override
-            public Flowable<Integer> apply(GroupedFlowable<Object, Integer> g) throws Exception {
+            public Flowable<Integer> apply(GroupedFlowable<Integer, Integer> g) throws Exception {
                 return g;
             }
         })
@@ -1652,10 +1652,10 @@ public class FlowableGroupByTest {
     @Test
     public void keyAndValueSelectorAndDelayError() {
         Flowable.just(1).concatWith(Flowable.<Integer>error(new TestException()))
-        .groupBy(Functions.identity(), Functions.<Integer>identity(), true)
-        .flatMap(new Function<GroupedFlowable<Object, Integer>, Flowable<Integer>>() {
+        .groupBy(Functions.<Integer>identity(), Functions.<Integer>identity(), true)
+        .flatMap(new Function<GroupedFlowable<Integer, Integer>, Flowable<Integer>>() {
             @Override
-            public Flowable<Integer> apply(GroupedFlowable<Object, Integer> g) throws Exception {
+            public Flowable<Integer> apply(GroupedFlowable<Integer, Integer> g) throws Exception {
                 return g;
             }
         })
