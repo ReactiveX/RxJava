@@ -55,7 +55,7 @@ public final class ObservableReduceMaybe<T> extends Maybe<T> {
 
         Disposable d;
 
-        public ReduceObserver(MaybeObserver<? super T> observer, BiFunction<T, T, T> reducer) {
+        ReduceObserver(MaybeObserver<? super T> observer, BiFunction<T, T, T> reducer) {
             this.actual = observer;
             this.reducer = reducer;
         }

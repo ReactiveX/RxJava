@@ -57,7 +57,7 @@ public final class ObservableReduceSeedSingle<T, R> extends Single<R> {
 
         Disposable d;
 
-        public ReduceSeedObserver(SingleObserver<? super R> actual, BiFunction<R, ? super T, R> reducer, R value) {
+        ReduceSeedObserver(SingleObserver<? super R> actual, BiFunction<R, ? super T, R> reducer, R value) {
             this.actual = actual;
             this.value = value;
             this.reducer = reducer;
