@@ -173,6 +173,8 @@ public class InternalWrongNaming {
                 "FlowableLastMaybe",
                 "FlowableIgnoreElementsCompletable",
                 "FlowableReduceMaybe",
+                "FlowableReduceWithSingle",
+                "FlowableReduceSeedSingle",
                 "FlowableFlatMapCompletable",
                 "FlowableFlatMapCompletableCompletable",
                 "FlowableFlatMapSingle",
