@@ -26,6 +26,11 @@ import io.reactivex.observables.ConnectableObservable;
 
 /**
  * Utility class to inject handlers to certain standard RxJava operations.
+ * <p>System parameters:
+ * <ul>
+ * <li>{@code rx2.onerror-nouncaught}: boolean, default false; if true, the default onError() handler
+ * won't call the current thread's uncaught exception handler (which crashes Android apps).</li>
+ * </ul>
  */
 public final class RxJavaPlugins {
 
@@ -86,6 +91,16 @@ public final class RxJavaPlugins {
     /** Prevents changing the plugins. */
     static volatile boolean lockdown;
 
+    /** 
+     * If true, the default onError handler won't call the current thread's uncaught
+     * exception handler.
+     */
+    static final boolean DONT_CALL_THREAD_UNCAUGHT_HANDLER;
+
+    static {
+        DONT_CALL_THREAD_UNCAUGHT_HANDLER = Boolean.getBoolean("rx2.onerror-nouncaught");
+    }
+    
     /**
      * Prevents changing the plugins from then on.
      * <p>This allows container-like environments to prevent clients
@@ -283,9 +298,11 @@ public final class RxJavaPlugins {
     }
 
     static void uncaught(Throwable error) {
-        Thread currentThread = Thread.currentThread();
-        UncaughtExceptionHandler handler = currentThread.getUncaughtExceptionHandler();
-        handler.uncaughtException(currentThread, error);
+        if (!DONT_CALL_THREAD_UNCAUGHT_HANDLER) {
+            Thread currentThread = Thread.currentThread();
+            UncaughtExceptionHandler handler = currentThread.getUncaughtExceptionHandler();
+            handler.uncaughtException(currentThread, error);
+        }
     }
 
     /**
