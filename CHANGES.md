@@ -2,6 +2,21 @@
 
 Version 1.x can be found at https://github.com/ReactiveX/RxJava/blob/1.x/CHANGES.md
 
+### Version 2.0.2 - December 2, 2016 ([Maven](http://search.maven.org/#artifactdetails%7Cio.reactivex.rxjava2%7Crxjava%7C2.0.2%7C))
+
+**API enhancements**
+- [Pull 4858](https://github.com/ReactiveX/RxJava/pull/4858): add `Maybe.flatMapSingleElement` returning `Maybe`
+- [Pull 4881](https://github.com/ReactiveX/RxJava/pull/4881): Add `@CheckReturnValue` annotation to aid static verification tools
+
+**Performance enhancements**
+- [Pull 4885](https://github.com/ReactiveX/RxJava/pull/4885): Dedicated `reduce()` op implementations
+
+**Bugfixes**
+- [Pull 4873](https://github.com/ReactiveX/RxJava/pull/4873): `TestObserver` shouldn't clear the upstream disposable on terminated
+- [Pull 4877](https://github.com/ReactiveX/RxJava/pull/4877): Apply missing `RxJavaPlugins.onAssembly` on ops
+- [Commit bf0c](https://github.com/ReactiveX/RxJava/commit/8429dc7671e2b26b6048ab47fa59e286dd77bf0c): Fix `firstOrError` converted back to `Observable`/`Flowable` not reporting `NoSuchElementException`.
+
+
 ### Version 2.0.1 - November 12, 2016 ([Maven](http://search.maven.org/#artifactdetails%7Cio.reactivex.rxjava2%7Crxjava%7C2.0.1%7C))
 
 **API enhancements**
