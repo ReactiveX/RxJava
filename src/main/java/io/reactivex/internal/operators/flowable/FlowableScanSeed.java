@@ -51,6 +51,8 @@ public final class FlowableScanSeed<T, R> extends AbstractFlowableWithUpstream<T
         private static final long serialVersionUID = -1776795561228106469L;
 
         final BiFunction<R, ? super T, R> accumulator;
+        
+        boolean done;
 
         ScanSeedSubscriber(Subscriber<? super R> actual, BiFunction<R, ? super T, R> accumulator, R value) {
             super(actual);
@@ -60,6 +62,10 @@ public final class FlowableScanSeed<T, R> extends AbstractFlowableWithUpstream<T
 
         @Override
         public void onNext(T t) {
+            if (done) {
+                return;
+            }
+            
             R v = value;
 
             R u;
@@ -80,12 +86,20 @@ public final class FlowableScanSeed<T, R> extends AbstractFlowableWithUpstream<T
 
         @Override
         public void onError(Throwable t) {
+            if (done) {
+                return;
+            }
+            done = true;
             value = null;
             actual.onError(t);
         }
 
         @Override
         public void onComplete() {
+            if (done) {
+                return;
+            }
+            done = true;
             complete(value);
         }
     }
