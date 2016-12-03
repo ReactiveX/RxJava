@@ -19,6 +19,7 @@ import org.reactivestreams.*;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.BiFunction;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
+import io.reactivex.plugins.RxJavaPlugins;
 
 public final class FlowableScan<T> extends AbstractFlowableWithUpstream<T, T> {
     final BiFunction<T, T, T> accumulator;
@@ -39,6 +40,8 @@ public final class FlowableScan<T> extends AbstractFlowableWithUpstream<T, T> {
         Subscription s;
 
         T value;
+        
+        boolean done;
 
         ScanSubscriber(Subscriber<? super T> actual, BiFunction<T, T, T> accumulator) {
             this.actual = actual;
@@ -55,6 +58,9 @@ public final class FlowableScan<T> extends AbstractFlowableWithUpstream<T, T> {
 
         @Override
         public void onNext(T t) {
+            if (done) {
+                return;
+            }
             final Subscriber<? super T> a = actual;
             T v = value;
             if (v == null) {
@@ -68,7 +74,7 @@ public final class FlowableScan<T> extends AbstractFlowableWithUpstream<T, T> {
                 } catch (Throwable e) {
                     Exceptions.throwIfFatal(e);
                     s.cancel();
-                    a.onError(e);
+                    onError(e);
                     return;
                 }
 
@@ -79,11 +85,20 @@ public final class FlowableScan<T> extends AbstractFlowableWithUpstream<T, T> {
 
         @Override
         public void onError(Throwable t) {
+            if (done) {
+                RxJavaPlugins.onError(t);
+                return;
+            }
+            done = true;
             actual.onError(t);
         }
 
         @Override
         public void onComplete() {
+            if (done) {
+                return;
+            }
+            done = true;
             actual.onComplete();
         }
 
