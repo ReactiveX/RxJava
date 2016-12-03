@@ -55,6 +55,9 @@ public final class FlowableDoAfterNext<T> extends AbstractFlowableWithUpstream<T
 
         @Override
         public void onNext(T t) {
+            if (done) {
+                return;
+            }
             actual.onNext(t);
 
             if (sourceMode == NONE) {
