@@ -21,6 +21,7 @@ import io.reactivex.functions.BiFunction;
 import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.internal.subscribers.SinglePostCompleteSubscriber;
 import io.reactivex.internal.subscriptions.EmptySubscription;
+import io.reactivex.plugins.RxJavaPlugins;
 
 public final class FlowableScanSeed<T, R> extends AbstractFlowableWithUpstream<T, R> {
     final BiFunction<R, ? super T, R> accumulator;
@@ -87,6 +88,7 @@ public final class FlowableScanSeed<T, R> extends AbstractFlowableWithUpstream<T
         @Override
         public void onError(Throwable t) {
             if (done) {
+                RxJavaPlugins.onError(t);
                 return;
             }
             done = true;
