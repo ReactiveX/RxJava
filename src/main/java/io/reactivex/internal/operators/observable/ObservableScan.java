@@ -19,6 +19,7 @@ import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.BiFunction;
 import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.internal.functions.ObjectHelper;
+import io.reactivex.plugins.RxJavaPlugins;
 
 public final class ObservableScan<T> extends AbstractObservableWithUpstream<T, T> {
     final BiFunction<T, T, T> accumulator;
@@ -39,6 +40,8 @@ public final class ObservableScan<T> extends AbstractObservableWithUpstream<T, T
         Disposable s;
 
         T value;
+        
+        boolean done;
 
         ScanObserver(Observer<? super T> actual, BiFunction<T, T, T> accumulator) {
             this.actual = actual;
@@ -67,6 +70,9 @@ public final class ObservableScan<T> extends AbstractObservableWithUpstream<T, T
 
         @Override
         public void onNext(T t) {
+            if (done) {
+                return;
+            }
             final Observer<? super T> a = actual;
             T v = value;
             if (v == null) {
@@ -80,7 +86,7 @@ public final class ObservableScan<T> extends AbstractObservableWithUpstream<T, T
                 } catch (Throwable e) {
                     Exceptions.throwIfFatal(e);
                     s.dispose();
-                    a.onError(e);
+                    onError(e);
                     return;
                 }
 
@@ -91,11 +97,20 @@ public final class ObservableScan<T> extends AbstractObservableWithUpstream<T, T
 
         @Override
         public void onError(Throwable t) {
+            if (done) {
+                RxJavaPlugins.onError(t);
+                return;
+            }
+            done = true;
             actual.onError(t);
         }
 
         @Override
         public void onComplete() {
+            if (done) {
+                return;
+            }
+            done = true;
             actual.onComplete();
         }
     }
