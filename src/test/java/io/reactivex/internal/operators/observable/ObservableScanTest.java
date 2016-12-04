@@ -19,6 +19,7 @@ import static org.mockito.Mockito.*;
 
 import java.util.*;
 import java.util.concurrent.Callable;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Test;
@@ -26,9 +27,12 @@ import org.junit.Test;
 import io.reactivex.*;
 import io.reactivex.Observable;
 import io.reactivex.Observer;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.disposables.Disposables;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.*;
 import io.reactivex.observers.*;
+import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.subjects.PublishSubject;
 
 public class ObservableScanTest {
@@ -299,5 +303,86 @@ public class ObservableScanTest {
                 });
             }
         }, false, 1, 1, 0, 0);
+    }
+    
+    @Test
+    public void testScanFunctionThrowsAndUpstreamErrorsDoesNotResultInTwoTerminalEvents() {
+        final RuntimeException err = new RuntimeException();
+        final RuntimeException err2 = new RuntimeException();
+        final List<Throwable> list = new CopyOnWriteArrayList<Throwable>();
+        final Consumer<Throwable> errorConsumer = new Consumer<Throwable>() {
+            @Override
+            public void accept(Throwable t) throws Exception {
+                list.add(t);
+            }};
+        try {
+            RxJavaPlugins.setErrorHandler(errorConsumer);
+            Observable.unsafeCreate(new ObservableSource<Integer>() {
+                @Override
+                public void subscribe(Observer<? super Integer> o) {
+                    Disposable d = Disposables.empty();
+                    o.onSubscribe(d);
+                    o.onNext(1);
+                    o.onNext(2);
+                    o.onError(err2);
+                }})
+            .scan(new BiFunction<Integer,Integer,Integer>() {
+                @Override
+                public Integer apply(Integer t1, Integer t2) throws Exception {
+                    throw err;
+                }})
+            .test()
+            .assertError(err)
+            .assertValue(1);
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
+    
+    @Test
+    public void testScanFunctionThrowsAndUpstreamCompletesDoesNotResultInTwoTerminalEvents() {
+        final RuntimeException err = new RuntimeException();
+        Observable.unsafeCreate(new ObservableSource<Integer>() {
+            @Override
+            public void subscribe(Observer<? super Integer> o) {
+                Disposable d = Disposables.empty();
+                o.onSubscribe(d);
+                o.onNext(1);
+                o.onNext(2);
+                o.onComplete();
+            }})
+        .scan(new BiFunction<Integer,Integer,Integer>() {
+            @Override
+            public Integer apply(Integer t1, Integer t2) throws Exception {
+                throw err;
+            }})
+        .test()
+        .assertError(err)
+        .assertValue(1);
+    }
+    
+    @Test
+    public void testScanFunctionThrowsAndUpstreamEmitsOnNextResultsInScanFunctionBeingCalledOnlyOnce() {
+        final RuntimeException err = new RuntimeException();
+        final AtomicInteger count = new AtomicInteger();
+        Observable.unsafeCreate(new ObservableSource<Integer>() {
+            @Override
+            public void subscribe(Observer<? super Integer> o) {
+                Disposable d = Disposables.empty();
+                o.onSubscribe(d);
+                o.onNext(1);
+                o.onNext(2);
+                o.onNext(3);
+            }})
+        .scan(new BiFunction<Integer,Integer,Integer>() {
+            @Override
+            public Integer apply(Integer t1, Integer t2) throws Exception {
+                count.incrementAndGet();
+                throw err;
+            }})
+        .test()
+        .assertError(err)
+        .assertValue(1);
+        assertEquals(1, count.get());
     }
 }
