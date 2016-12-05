@@ -304,7 +304,7 @@ public class ObservableScanTest {
             }
         }, false, 1, 1, 0, 0);
     }
-    
+
     @Test
     public void testScanFunctionThrowsAndUpstreamErrorsDoesNotResultInTwoTerminalEvents() {
         final RuntimeException err = new RuntimeException();
@@ -338,7 +338,7 @@ public class ObservableScanTest {
             RxJavaPlugins.reset();
         }
     }
-    
+
     @Test
     public void testScanFunctionThrowsAndUpstreamCompletesDoesNotResultInTwoTerminalEvents() {
         final RuntimeException err = new RuntimeException();
@@ -360,7 +360,7 @@ public class ObservableScanTest {
         .assertError(err)
         .assertValue(1);
     }
-    
+
     @Test
     public void testScanFunctionThrowsAndUpstreamEmitsOnNextResultsInScanFunctionBeingCalledOnlyOnce() {
         final RuntimeException err = new RuntimeException();

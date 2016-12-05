@@ -15,15 +15,10 @@ package io.reactivex.flowable;
 
 import static org.junit.Assert.assertEquals;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.concurrent.Callable;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.*;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicReference;
 
-import org.junit.Assert;
 import org.junit.Test;
 
 import io.reactivex.Flowable;
@@ -33,7 +28,6 @@ import io.reactivex.plugins.RxJavaPlugins;
 
 public class FlowableScanTests {
 
-    
     @Test
     public void testUnsubscribeScan() {
 
@@ -53,7 +47,7 @@ public class FlowableScanTests {
             }
         });
     }
-    
+
     @Test
     public void testScanWithSeedDoesNotEmitErrorTwiceIfScanFunctionThrows() {
         final List<Throwable> list = new CopyOnWriteArrayList<Throwable>();
@@ -76,7 +70,7 @@ public class FlowableScanTests {
             RxJavaPlugins.reset();
         }
     }
-    
+
     @Test
     public void testScanWithSeedDoesNotEmitTerminalEventTwiceIfScanFunctionThrows() {
         final RuntimeException e = new RuntimeException();
@@ -86,7 +80,7 @@ public class FlowableScanTests {
           .assertNoValues()
           .assertError(e);
     }
-    
+
     @Test
     public void testScanWithSeedDoesNotProcessOnNextAfterTerminalEventIfScanFunctionThrows() {
         final RuntimeException e = new RuntimeException();
@@ -103,7 +97,7 @@ public class FlowableScanTests {
           .assertError(e);
         assertEquals(1, count.get());
     }
-    
+
     @Test
     public void testScanWithSeedCompletesNormally() {
         Flowable.just(1,2,3).scan(0, SUM)
@@ -111,7 +105,7 @@ public class FlowableScanTests {
           .assertValues(0, 1, 3, 6)
           .assertComplete();
     }
-    
+
     @Test
     public void testScanWithSeedWhenScanSeedProviderThrows() {
         final RuntimeException e = new RuntimeException();
@@ -130,7 +124,7 @@ public class FlowableScanTests {
            .assertValues(1, 3, 6)
            .assertComplete();
     }
-    
+
     @Test
     public void testScanNoSeedDoesNotEmitErrorTwiceIfScanFunctionThrows() {
         final List<Throwable> list = new CopyOnWriteArrayList<Throwable>();
@@ -153,7 +147,7 @@ public class FlowableScanTests {
             RxJavaPlugins.reset();
         }
     }
-    
+
     @Test
     public void testScanNoSeedDoesNotEmitTerminalEventTwiceIfScanFunctionThrows() {
         final RuntimeException e = new RuntimeException();
@@ -163,7 +157,7 @@ public class FlowableScanTests {
           .assertValue(1)
           .assertError(e);
     }
-    
+
     @Test
     public void testScanNoSeedDoesNotProcessOnNextAfterTerminalEventIfScanFunctionThrows() {
         final RuntimeException e = new RuntimeException();
@@ -180,7 +174,7 @@ public class FlowableScanTests {
           .assertError(e);
         assertEquals(1, count.get());
     }
-    
+
     private static BiFunction<Integer,Integer, Integer> throwingBiFunction(final RuntimeException e) {
         return new BiFunction<Integer, Integer, Integer>() {
             @Override
@@ -197,7 +191,7 @@ public class FlowableScanTests {
             return t1 + t2;
         }
     };
-    
+
     private static Callable<Integer> throwingCallable(final RuntimeException e) {
         return new Callable<Integer>() {
             @Override

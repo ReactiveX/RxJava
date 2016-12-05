@@ -40,7 +40,7 @@ public final class ObservableScan<T> extends AbstractObservableWithUpstream<T, T
         Disposable s;
 
         T value;
-        
+
         boolean done;
 
         ScanObserver(Observer<? super T> actual, BiFunction<T, T, T> accumulator) {
