@@ -47,10 +47,10 @@ public interface SingleObserver<T> {
      * <p>
      * The {@link Single} will not call this method if it calls {@link #onError}.
      *
-     * @param value
+     * @param t
      *          the item emitted by the Single
      */
-    void onSuccess(T value);
+    void onSuccess(T t);
 
     /**
      * Notifies the SingleObserver that the {@link Single} has experienced an error condition.
