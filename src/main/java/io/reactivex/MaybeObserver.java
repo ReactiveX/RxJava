@@ -45,10 +45,10 @@ public interface MaybeObserver<T> {
      * <p>
      * The {@link Maybe} will not call this method if it calls {@link #onError}.
      *
-     * @param value
+     * @param t
      *          the item emitted by the Maybe
      */
-    void onSuccess(T value);
+    void onSuccess(T t);
 
     /**
      * Notifies the MaybeObserver that the {@link Maybe} has experienced an error condition.

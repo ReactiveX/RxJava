@@ -50,10 +50,10 @@ public interface Observer<T> {
      * The {@code Observable} will not call this method again after it calls either {@link #onComplete} or
      * {@link #onError}.
      *
-     * @param value
+     * @param t
      *          the item emitted by the Observable
      */
-    void onNext(T value);
+    void onNext(T t);
 
     /**
      * Notifies the Observer that the {@link Observable} has experienced an error condition.
