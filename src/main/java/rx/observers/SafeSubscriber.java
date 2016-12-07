@@ -124,14 +124,14 @@ public class SafeSubscriber<T> extends Subscriber<T> {
      * The {@code Observable} will not call this method again after it calls either {@link #onCompleted} or
      * {@link #onError}.
      *
-     * @param args
+     * @param t
      *          the item emitted by the Observable
      */
     @Override
-    public void onNext(T args) {
+    public void onNext(T t) {
         try {
             if (!done) {
-                actual.onNext(args);
+                actual.onNext(t);
             }
         } catch (Throwable e) {
             // we handle here instead of another method so we don't add stacks to the frame

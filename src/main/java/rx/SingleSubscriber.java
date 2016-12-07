@@ -43,10 +43,10 @@ public abstract class SingleSubscriber<T> implements Subscription {
      * <p>
      * The {@link Single} will not call this method if it calls {@link #onError}.
      *
-     * @param value
+     * @param t
      *          the item emitted by the Single
      */
-    public abstract void onSuccess(T value);
+    public abstract void onSuccess(T t);
 
     /**
      * Notifies the SingleSubscriber that the {@link Single} has experienced an error condition.
