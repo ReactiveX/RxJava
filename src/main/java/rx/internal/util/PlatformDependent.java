@@ -15,9 +15,6 @@
  */
 package rx.internal.util;
 
-import java.security.AccessController;
-import java.security.PrivilegedAction;
-
 /**
  * Allow platform dependent logic such as checks for Android.
  *
@@ -67,29 +64,13 @@ public final class PlatformDependent {
     private static int resolveAndroidApiVersion() {
         try {
             return (Integer) Class
-                    .forName("android.os.Build$VERSION", true, getSystemClassLoader())
+                    .forName("android.os.Build$VERSION")
                     .getField("SDK_INT")
                     .get(null);
         } catch (Exception e) { // NOPMD
             // Can not resolve version of Android API, maybe current platform is not Android
             // or API of resolving current Version of Android API has changed in some release of Android
             return ANDROID_API_VERSION_IS_NOT_ANDROID;
-        }
-    }
-
-    /**
-     * Return the system {@link ClassLoader}.
-     */
-    static ClassLoader getSystemClassLoader() {
-        if (System.getSecurityManager() == null) {
-            return ClassLoader.getSystemClassLoader();
-        } else {
-            return AccessController.doPrivileged(new PrivilegedAction<ClassLoader>() {
-                @Override
-                public ClassLoader run() {
-                    return ClassLoader.getSystemClassLoader();
-                }
-            });
         }
     }
 }
