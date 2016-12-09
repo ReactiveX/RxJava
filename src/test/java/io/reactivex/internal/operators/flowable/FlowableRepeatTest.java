@@ -343,4 +343,16 @@ public class FlowableRepeatTest {
         .awaitDone(5, TimeUnit.SECONDS)
         .assertFailure(TestException.class);
     }
+
+    @Test
+    public void whenTake() {
+        Flowable.range(1, 3).repeatWhen(new Function<Flowable<Object>, Flowable<Object>>() {
+            @Override
+            public Flowable<Object> apply(Flowable<Object> handler) throws Exception {
+                return handler.take(2);
+            }
+        })
+        .test()
+        .assertResult(1, 2, 3, 1, 2, 3);
+    }
 }
