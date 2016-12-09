@@ -19,9 +19,18 @@ import org.junit.Test;
 
 import rx.TestUtil;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+
 public class PlatformDependentTest {
     @Test
     public void constructorShouldBePrivate() {
         TestUtil.checkUtilityClass(PlatformDependent.class);
+    }
+
+    @Test
+    public void platformShouldNotBeAndroid() {
+        assertFalse(PlatformDependent.isAndroid());
+        assertEquals(0, PlatformDependent.getAndroidApiVersion());
     }
 }
