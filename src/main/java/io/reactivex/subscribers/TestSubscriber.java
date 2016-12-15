@@ -207,7 +207,7 @@ implements Subscriber<T>, Subscription, Disposable {
         values.add(t);
 
         if (t == null) {
-            errors.add(new NullPointerException("onNext received a null Subscription"));
+            errors.add(new NullPointerException("onNext received a null value"));
         }
 
         actual.onNext(t);
@@ -226,7 +226,7 @@ implements Subscriber<T>, Subscription, Disposable {
             errors.add(t);
 
             if (t == null) {
-                errors.add(new IllegalStateException("onError received a null Subscription"));
+                errors.add(new IllegalStateException("onError received a null Throwable"));
             }
 
             actual.onError(t);
