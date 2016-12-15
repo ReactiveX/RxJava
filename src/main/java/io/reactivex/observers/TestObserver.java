@@ -149,7 +149,7 @@ implements Observer<T>, Disposable, MaybeObserver<T>, SingleObserver<T>, Complet
         values.add(t);
 
         if (t == null) {
-            errors.add(new NullPointerException("onNext received a null Subscription"));
+            errors.add(new NullPointerException("onNext received a null value"));
         }
 
         actual.onNext(t);
