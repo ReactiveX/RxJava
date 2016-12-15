@@ -1,5 +1,13 @@
 # RxJava Releases #
 
+### Version 1.2.4 - December 15, 2016 ([Maven](http://search.maven.org/#artifactdetails%7Cio.reactivex%7Crxjava%7C1.2.4%7C))
+
+#### Other
+
+- [Pull 4912](https://github.com/ReactiveX/RxJava/pull/4912): Fix `resolveAndroidApiVersion` when running under Robolectric
+- [Pull 4908](https://github.com/ReactiveX/RxJava/pull/4908): Use `t` instead of value to allow for IDE naming.
+- [Pull 4884](https://github.com/ReactiveX/RxJava/pull/4884): enable `TestScheduler` with nanosecond periodic scheduling
+
 ### Version 1.2.3 - November 23, 2016 ([Maven](http://search.maven.org/#artifactdetails%7Cio.reactivex%7Crxjava%7C1.2.3%7C))
 
 #### Documentation enhancements
