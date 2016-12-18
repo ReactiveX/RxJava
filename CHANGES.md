@@ -10,6 +10,7 @@ Version 1.x can be found at https://github.com/ReactiveX/RxJava/blob/1.x/CHANGES
 - [Pull 4903](https://github.com/ReactiveX/RxJava/pull/4903): `doAfterNext` - prevent post-terminal emission
 - [Pull 4904](https://github.com/ReactiveX/RxJava/pull/4904): `Observable.scan` no seed fix post-terminal behaviour
 - [Pull 4911](https://github.com/ReactiveX/RxJava/pull/4911): fix & update `Observable.repeatWhen` and `retryWhen`
+- [Pull 4924](https://github.com/ReactiveX/RxJava/pull/4924): `flatMapCompletable` change `Completable` to `CompletableSource`
 
 **Other**
 - [Pull 4907](https://github.com/ReactiveX/RxJava/pull/4907): Use `t` instead of value to allow for IDE naming
