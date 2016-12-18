@@ -2,6 +2,18 @@
 
 Version 1.x can be found at https://github.com/ReactiveX/RxJava/blob/1.x/CHANGES.md
 
+### Version 2.0.3 - December 18, 2016 ([Maven](http://search.maven.org/#artifactdetails%7Cio.reactivex.rxjava2%7Crxjava%7C2.0.3%7C))
+
+**Bugfixes**
+- [Pull 4899](https://github.com/ReactiveX/RxJava/pull/4899): `FlowableScanSeed` - prevent post-terminal events
+- [Pull 4901](https://github.com/ReactiveX/RxJava/pull/4901): `FlowableScan` - prevent multiple terminal emissions
+- [Pull 4903](https://github.com/ReactiveX/RxJava/pull/4903): `doAfterNext` - prevent post-terminal emission
+- [Pull 4904](https://github.com/ReactiveX/RxJava/pull/4904): `Observable.scan` no seed fix post-terminal behaviour
+- [Pull 4911](https://github.com/ReactiveX/RxJava/pull/4911): fix & update `Observable.repeatWhen` and `retryWhen`
+
+**Other**
+- [Pull 4907](https://github.com/ReactiveX/RxJava/pull/4907): Use `t` instead of value to allow for IDE naming
+
 ### Version 2.0.2 - December 2, 2016 ([Maven](http://search.maven.org/#artifactdetails%7Cio.reactivex.rxjava2%7Crxjava%7C2.0.2%7C))
 
 **API enhancements**
