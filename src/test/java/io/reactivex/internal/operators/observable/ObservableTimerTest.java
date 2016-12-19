@@ -13,8 +13,10 @@
 
 package io.reactivex.internal.operators.observable;
 
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.*;
 
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.*;
@@ -24,6 +26,7 @@ import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.observables.ConnectableObservable;
 import io.reactivex.observers.*;
+import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.schedulers.TestScheduler;
 
 public class ObservableTimerTest {
@@ -285,5 +288,19 @@ public class ObservableTimerTest {
     @Test
     public void disposed() {
         TestHelper.checkDisposed(Observable.timer(1, TimeUnit.DAYS));
+    }
+
+    @Test
+    public void timerDelayZero() {
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            for (int i = 0; i < 1000; i++) {
+                Observable.timer(0, TimeUnit.MILLISECONDS).blockingFirst();
+            }
+
+            assertTrue(errors.toString(), errors.isEmpty());
+        } finally {
+            RxJavaPlugins.reset();
+        }
     }
 }

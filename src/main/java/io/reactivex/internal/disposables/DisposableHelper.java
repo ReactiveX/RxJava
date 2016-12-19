@@ -29,10 +29,21 @@ public enum DisposableHelper implements Disposable {
     DISPOSED
     ;
 
+    /**
+     * Checks if the given Disposable is the common {@link #DISPOSED} enum value.
+     * @param d the disposable to check
+     * @return true if d is {@link #DISPOSED}
+     */
     public static boolean isDisposed(Disposable d) {
         return d == DISPOSED;
     }
 
+    /**
+     * Atomically sets the field and disposes the old contents.
+     * @param field the target field
+     * @param d the new Disposable to set
+     * @return true if successful, false if the field contains the {@link #DISPOSED} instance.
+     */
     public static boolean set(AtomicReference<Disposable> field, Disposable d) {
         for (;;) {
             Disposable current = field.get();
@@ -142,6 +153,23 @@ public enum DisposableHelper implements Disposable {
      */
     public static void reportDisposableSet() {
         RxJavaPlugins.onError(new IllegalStateException("Disposable already set!"));
+    }
+
+    /**
+     * Atomically tries to set the given Disposable on the field if it is null or disposes it if
+     * the field contains {@link #DISPOSED}.
+     * @param field the target field
+     * @param d the disposable to set
+     * @return true if successful, false otherwise
+     */
+    public static boolean trySet(AtomicReference<Disposable> field, Disposable d) {
+        if (!field.compareAndSet(null, d)) {
+            if (field.get() == DISPOSED) {
+                d.dispose();
+            }
+            return false;
+        }
+        return true;
     }
 
     @Override
