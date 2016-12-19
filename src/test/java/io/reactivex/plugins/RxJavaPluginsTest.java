@@ -1038,6 +1038,7 @@ public class RxJavaPluginsTest {
     }
 
     @Test
+    @Ignore("RxJavaPlugins.onError no longer forwards to the uncaught exception handler")
     public void onErrorNoHandler() {
         try {
             final List<Throwable> list = new ArrayList<Throwable>();
@@ -1069,6 +1070,7 @@ public class RxJavaPluginsTest {
     }
 
     @Test
+    @Ignore("RxJavaPlugins.onError no longer forwards to the uncaught exception handler")
     public void onErrorCrashes() {
         try {
             final List<Throwable> list = new ArrayList<Throwable>();
@@ -1104,6 +1106,7 @@ public class RxJavaPluginsTest {
     }
 
     @Test
+    @Ignore("RxJavaPlugins.onError no longer forwards to the uncaught exception handler")
     public void onErrorWithNull() {
         try {
             final List<Throwable> list = new ArrayList<Throwable>();
