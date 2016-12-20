@@ -271,7 +271,7 @@ public class FlowableGenerateTest {
     }
 
     @Test
-    public void multipleOnComlete() {
+    public void multipleOnComplete() {
         Flowable.generate(new Consumer<Emitter<Object>>() {
             @Override
             public void accept(Emitter<Object> e) throws Exception {

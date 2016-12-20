@@ -182,7 +182,7 @@ public class ObservableGenerateTest {
     }
 
     @Test
-    public void multipleOnComlete() {
+    public void multipleOnComplete() {
         Observable.generate(new Consumer<Emitter<Object>>() {
             @Override
             public void accept(Emitter<Object> e) throws Exception {
