@@ -972,6 +972,27 @@ public abstract class Completable implements CompletableSource {
     }
 
     /**
+     * Subscribes to this Completable only once, when the first CompletableObserver
+     * subscribes to the result Completable, caches its terminal event
+     * and relays/replays it to observers.
+     * <p>
+     * Note that this operator doesn't allow disposing the connection
+     * of the upstream source.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code cache} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @return the new Completable instance
+     * @since 2.0.4 - experimental
+     */
+    @CheckReturnValue
+    @SchedulerSupport(SchedulerSupport.NONE)
+    @Experimental
+    public final Completable cache() {
+        return RxJavaPlugins.onAssembly(new CompletableCache(this));
+    }
+
+    /**
      * Calls the given transformer function with this instance and returns the function's resulting
      * Completable.
      * <dl>
