@@ -32,7 +32,7 @@ public final class ObservableTimer extends Observable<Long> {
 
     @Override
     public void subscribeActual(Observer<? super Long> s) {
-        IntervalOnceObserver ios = new IntervalOnceObserver(s);
+        TimerObserver ios = new TimerObserver(s);
         s.onSubscribe(ios);
 
         Disposable d = scheduler.scheduleDirect(ios, delay, unit);
@@ -40,14 +40,14 @@ public final class ObservableTimer extends Observable<Long> {
         ios.setResource(d);
     }
 
-    static final class IntervalOnceObserver extends AtomicReference<Disposable>
+    static final class TimerObserver extends AtomicReference<Disposable>
     implements Disposable, Runnable {
 
         private static final long serialVersionUID = -2809475196591179431L;
 
         final Observer<? super Long> actual;
 
-        IntervalOnceObserver(Observer<? super Long> actual) {
+        TimerObserver(Observer<? super Long> actual) {
             this.actual = actual;
         }
 
@@ -65,13 +65,13 @@ public final class ObservableTimer extends Observable<Long> {
         public void run() {
             if (!isDisposed()) {
                 actual.onNext(0L);
-                actual.onComplete();
                 lazySet(EmptyDisposable.INSTANCE);
+                actual.onComplete();
             }
         }
 
         public void setResource(Disposable d) {
-            DisposableHelper.setOnce(this, d);
+            DisposableHelper.trySet(this, d);
         }
     }
 }

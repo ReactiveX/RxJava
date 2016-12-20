@@ -36,7 +36,7 @@ public final class FlowableTimer extends Flowable<Long> {
 
     @Override
     public void subscribeActual(Subscriber<? super Long> s) {
-        IntervalOnceSubscriber ios = new IntervalOnceSubscriber(s);
+        TimerSubscriber ios = new TimerSubscriber(s);
         s.onSubscribe(ios);
 
         Disposable d = scheduler.scheduleDirect(ios, delay, unit);
@@ -44,7 +44,7 @@ public final class FlowableTimer extends Flowable<Long> {
         ios.setResource(d);
     }
 
-    static final class IntervalOnceSubscriber extends AtomicReference<Disposable>
+    static final class TimerSubscriber extends AtomicReference<Disposable>
     implements Subscription, Runnable {
 
         private static final long serialVersionUID = -2809475196591179431L;
@@ -53,7 +53,7 @@ public final class FlowableTimer extends Flowable<Long> {
 
         volatile boolean requested;
 
-        IntervalOnceSubscriber(Subscriber<? super Long> actual) {
+        TimerSubscriber(Subscriber<? super Long> actual) {
             this.actual = actual;
         }
 
@@ -74,16 +74,17 @@ public final class FlowableTimer extends Flowable<Long> {
             if (get() != DisposableHelper.DISPOSED) {
                 if (requested) {
                     actual.onNext(0L);
+                    lazySet(EmptyDisposable.INSTANCE);
                     actual.onComplete();
                 } else {
+                    lazySet(EmptyDisposable.INSTANCE);
                     actual.onError(new MissingBackpressureException("Can't deliver value due to lack of requests"));
                 }
-                lazySet(EmptyDisposable.INSTANCE);
             }
         }
 
         public void setResource(Disposable d) {
-            DisposableHelper.setOnce(this, d);
+            DisposableHelper.trySet(this, d);
         }
     }
 }
