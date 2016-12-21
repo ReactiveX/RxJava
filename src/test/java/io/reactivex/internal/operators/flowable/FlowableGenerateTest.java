@@ -236,4 +236,50 @@ public class FlowableGenerateTest {
             ts.assertValueCount(1000);
         }
     }
+
+    @Test
+    public void multipleOnNext() {
+        Flowable.generate(new Consumer<Emitter<Object>>() {
+            @Override
+            public void accept(Emitter<Object> e) throws Exception {
+                e.onNext(1);
+                e.onNext(2);
+            }
+        })
+        .test(1)
+        .assertFailure(IllegalStateException.class, 1);
+    }
+
+    @Test
+    public void multipleOnError() {
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            Flowable.generate(new Consumer<Emitter<Object>>() {
+                @Override
+                public void accept(Emitter<Object> e) throws Exception {
+                    e.onError(new TestException("First"));
+                    e.onError(new TestException("Second"));
+                }
+            })
+            .test(1)
+            .assertFailure(TestException.class);
+
+            TestHelper.assertError(errors, 0, TestException.class, "Second");
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
+
+    @Test
+    public void multipleOnComplete() {
+        Flowable.generate(new Consumer<Emitter<Object>>() {
+            @Override
+            public void accept(Emitter<Object> e) throws Exception {
+                e.onComplete();
+                e.onComplete();
+            }
+        })
+        .test(1)
+        .assertResult();
+    }
 }

@@ -147,4 +147,50 @@ public class ObservableGenerateTest {
 
         assertEquals(0, call[0]);
     }
+
+    @Test
+    public void multipleOnNext() {
+        Observable.generate(new Consumer<Emitter<Object>>() {
+            @Override
+            public void accept(Emitter<Object> e) throws Exception {
+                e.onNext(1);
+                e.onNext(2);
+            }
+        })
+        .test()
+        .assertFailure(IllegalStateException.class, 1);
+    }
+
+    @Test
+    public void multipleOnError() {
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            Observable.generate(new Consumer<Emitter<Object>>() {
+                @Override
+                public void accept(Emitter<Object> e) throws Exception {
+                    e.onError(new TestException("First"));
+                    e.onError(new TestException("Second"));
+                }
+            })
+            .test()
+            .assertFailure(TestException.class);
+
+            TestHelper.assertError(errors, 0, TestException.class, "Second");
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
+
+    @Test
+    public void multipleOnComplete() {
+        Observable.generate(new Consumer<Emitter<Object>>() {
+            @Override
+            public void accept(Emitter<Object> e) throws Exception {
+                e.onComplete();
+                e.onComplete();
+            }
+        })
+        .test()
+        .assertResult();
+    }
 }
