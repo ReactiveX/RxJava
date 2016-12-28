@@ -17,7 +17,7 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.disposables.DisposableHelper;
 
 /**
- * Wraps a Single and exposes it as a Flowable.
+ * Wraps a Single and exposes it as a Observable.
  *
  * @param <T> the value type
  */
