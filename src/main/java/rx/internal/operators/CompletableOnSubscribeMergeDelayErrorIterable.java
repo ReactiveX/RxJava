@@ -21,7 +21,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import rx.*;
 import rx.Completable.OnSubscribe;
-import rx.internal.util.unsafe.MpscLinkedQueue;
+import rx.internal.util.atomic.MpscLinkedAtomicQueue;
+import rx.internal.util.unsafe.*;
 import rx.subscriptions.CompositeSubscription;
 
 public final class CompletableOnSubscribeMergeDelayErrorIterable implements OnSubscribe {
@@ -53,7 +54,13 @@ public final class CompletableOnSubscribeMergeDelayErrorIterable implements OnSu
 
         final AtomicInteger wip = new AtomicInteger(1);
 
-        final Queue<Throwable> queue = new MpscLinkedQueue<Throwable>();
+        final Queue<Throwable> queue;
+
+        if (UnsafeAccess.isUnsafeAvailable()) {
+            queue = new MpscLinkedQueue<Throwable>();
+        } else {
+            queue = new MpscLinkedAtomicQueue<Throwable>();
+        }
 
         for (;;) {
             if (set.isUnsubscribed()) {
