@@ -137,6 +137,8 @@ public final class FlowablePublishMulticast<T, R> extends AbstractFlowableWithUp
         final AtomicReference<MulticastSubscription<T>[]> subscribers;
 
         final int prefetch;
+        
+        final int limit;
 
         final boolean delayError;
 
@@ -148,10 +150,13 @@ public final class FlowablePublishMulticast<T, R> extends AbstractFlowableWithUp
 
         volatile boolean done;
         Throwable error;
+        
+        int consumed;
 
         @SuppressWarnings("unchecked")
         MulticastProcessor(int prefetch, boolean delayError) {
             this.prefetch = prefetch;
+            this.limit = prefetch - (prefetch >> 2); // request after 75% consumption
             this.delayError = delayError;
             this.wip = new AtomicInteger();
             this.s = new AtomicReference<Subscription>();
@@ -314,7 +319,11 @@ public final class FlowablePublishMulticast<T, R> extends AbstractFlowableWithUp
             int missed = 1;
 
             SimpleQueue<T> q = queue;
-
+            
+            int upstreamConsumed = consumed;
+            int localLimit = limit;
+            boolean canRequest = sourceMode != QueueSubscription.SYNC;
+            
             for (;;) {
                 MulticastSubscription<T>[] array = subscribers.get();
 
@@ -383,6 +392,11 @@ public final class FlowablePublishMulticast<T, R> extends AbstractFlowableWithUp
                         }
 
                         e++;
+
+                        if (canRequest && ++upstreamConsumed == localLimit) {
+                            upstreamConsumed = 0;
+                            s.get().request(localLimit);
+                        }
                     }
 
                     if (e == r) {
@@ -417,6 +431,7 @@ public final class FlowablePublishMulticast<T, R> extends AbstractFlowableWithUp
                     }
                 }
 
+                consumed = upstreamConsumed;
                 missed = wip.addAndGet(-missed);
                 if (missed == 0) {
                     break;
@@ -472,8 +487,10 @@ public final class FlowablePublishMulticast<T, R> extends AbstractFlowableWithUp
 
         @Override
         public void cancel() {
-            getAndSet(Long.MIN_VALUE);
-            parent.remove(this);
+            if (getAndSet(Long.MIN_VALUE) != Long.MIN_VALUE) {
+                parent.remove(this);
+                parent.drain(); // unblock the others
+            }
         }
 
         public boolean isCancelled() {

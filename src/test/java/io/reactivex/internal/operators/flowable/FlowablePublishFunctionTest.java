@@ -26,7 +26,7 @@ import org.reactivestreams.*;
 
 import io.reactivex.*;
 import io.reactivex.exceptions.*;
-import io.reactivex.functions.Function;
+import io.reactivex.functions.*;
 import io.reactivex.internal.functions.Functions;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.processors.PublishProcessor;
@@ -408,7 +408,7 @@ public class FlowablePublishFunctionTest {
 
         for (int i = 0; i < 500; i++) {
             source.test()
-            .awaitDone(5, TimeUnit.MILLISECONDS)
+            .awaitDone(5, TimeUnit.SECONDS)
             .assertResult(1);
         }
     }
@@ -420,7 +420,7 @@ public class FlowablePublishFunctionTest {
 
         for (int i = 0; i < 500; i++) {
             source.test()
-            .awaitDone(5, TimeUnit.MILLISECONDS)
+            .awaitDone(5, TimeUnit.SECONDS)
             .assertResult(1);
         }
     }
@@ -458,5 +458,87 @@ public class FlowablePublishFunctionTest {
 
             ts1.assertResult(1);
         }
+    }
+
+    @Test
+    public void longFlow() {
+        Flowable.range(1, 1000000)
+        .publish(new Function<Flowable<Integer>, Publisher<Integer>>() {
+            @SuppressWarnings("unchecked")
+            @Override
+            public Publisher<Integer> apply(Flowable<Integer> v) throws Exception {
+                return Flowable.mergeArray(
+                        v.filter(new Predicate<Integer>() {
+                            @Override
+                            public boolean test(Integer w) throws Exception {
+                                return w % 2 == 0;
+                            }
+                        }), 
+                        v.filter(new Predicate<Integer>() {
+                            @Override
+                            public boolean test(Integer w) throws Exception {
+                                return w % 2 != 0;
+                            }
+                        }));
+            }
+        })
+        .takeLast(1)
+        .test()
+        .assertResult(1000000);
+    }
+
+    @Test
+    public void longFlow2() {
+        Flowable.range(1, 100000)
+        .publish(new Function<Flowable<Integer>, Publisher<Integer>>() {
+            @SuppressWarnings("unchecked")
+            @Override
+            public Publisher<Integer> apply(Flowable<Integer> v) throws Exception {
+                return Flowable.mergeArray(
+                        v.filter(new Predicate<Integer>() {
+                            @Override
+                            public boolean test(Integer w) throws Exception {
+                                return w % 2 == 0;
+                            }
+                        }), 
+                        v.filter(new Predicate<Integer>() {
+                            @Override
+                            public boolean test(Integer w) throws Exception {
+                                return w % 2 != 0;
+                            }
+                        }));
+            }
+        })
+        .test()
+        .assertValueCount(100000)
+        .assertNoErrors()
+        .assertComplete();
+    }
+
+    @Test
+    public void longFlowHidden() {
+        Flowable.range(1, 1000000).hide()
+        .publish(new Function<Flowable<Integer>, Publisher<Integer>>() {
+            @SuppressWarnings("unchecked")
+            @Override
+            public Publisher<Integer> apply(Flowable<Integer> v) throws Exception {
+                return Flowable.mergeArray(
+                        v.filter(new Predicate<Integer>() {
+                            @Override
+                            public boolean test(Integer w) throws Exception {
+                                return w % 2 == 0;
+                            }
+                        }), 
+                        v.filter(new Predicate<Integer>() {
+                            @Override
+                            public boolean test(Integer w) throws Exception {
+                                return w % 2 != 0;
+                            }
+                        }));
+            }
+        })
+        .takeLast(1)
+        .test()
+        .assertResult(1000000);
     }
 }
