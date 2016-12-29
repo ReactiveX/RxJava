@@ -481,4 +481,38 @@ public class ObservableTimeoutTests {
             RxJavaPlugins.reset();
         }
     }
+
+    @Test
+    public void timedTake() {
+        PublishSubject<Integer> ps = PublishSubject.create();
+
+        TestObserver<Integer> to = ps.timeout(1, TimeUnit.DAYS)
+        .take(1)
+        .test();
+
+        assertTrue(ps.hasObservers());
+
+        ps.onNext(1);
+
+        assertFalse(ps.hasObservers());
+
+        to.assertResult(1);
+    }
+
+    @Test
+    public void timedFallbackTake() {
+        PublishSubject<Integer> ps = PublishSubject.create();
+
+        TestObserver<Integer> to = ps.timeout(1, TimeUnit.DAYS, Observable.just(2))
+        .take(1)
+        .test();
+
+        assertTrue(ps.hasObservers());
+
+        ps.onNext(1);
+
+        assertFalse(ps.hasObservers());
+
+        to.assertResult(1);
+    }
 }

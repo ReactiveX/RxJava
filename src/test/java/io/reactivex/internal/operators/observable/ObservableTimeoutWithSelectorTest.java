@@ -13,7 +13,7 @@
 
 package io.reactivex.internal.operators.observable;
 
-import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
@@ -509,5 +509,41 @@ public class ObservableTimeoutWithSelectorTest {
         .take(1)
         .test()
         .assertResult(1);
+    }
+
+    @Test
+    public void selectorTake() {
+        PublishSubject<Integer> ps = PublishSubject.create();
+
+        TestObserver<Integer> to = ps
+        .timeout(Functions.justFunction(Observable.never()))
+        .take(1)
+        .test();
+
+        assertTrue(ps.hasObservers());
+
+        ps.onNext(1);
+
+        assertFalse(ps.hasObservers());
+
+        to.assertResult(1);
+    }
+
+    @Test
+    public void selectorFallbackTake() {
+        PublishSubject<Integer> ps = PublishSubject.create();
+
+        TestObserver<Integer> to = ps
+        .timeout(Functions.justFunction(Observable.never()), Observable.just(2))
+        .take(1)
+        .test();
+
+        assertTrue(ps.hasObservers());
+
+        ps.onNext(1);
+
+        assertFalse(ps.hasObservers());
+
+        to.assertResult(1);
     }
 }

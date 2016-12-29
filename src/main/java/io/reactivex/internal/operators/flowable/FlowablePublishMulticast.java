@@ -137,7 +137,7 @@ public final class FlowablePublishMulticast<T, R> extends AbstractFlowableWithUp
         final AtomicReference<MulticastSubscription<T>[]> subscribers;
 
         final int prefetch;
-        
+
         final int limit;
 
         final boolean delayError;
@@ -150,7 +150,7 @@ public final class FlowablePublishMulticast<T, R> extends AbstractFlowableWithUp
 
         volatile boolean done;
         Throwable error;
-        
+
         int consumed;
 
         @SuppressWarnings("unchecked")
@@ -319,11 +319,11 @@ public final class FlowablePublishMulticast<T, R> extends AbstractFlowableWithUp
             int missed = 1;
 
             SimpleQueue<T> q = queue;
-            
+
             int upstreamConsumed = consumed;
             int localLimit = limit;
             boolean canRequest = sourceMode != QueueSubscription.SYNC;
-            
+
             for (;;) {
                 MulticastSubscription<T>[] array = subscribers.get();
 

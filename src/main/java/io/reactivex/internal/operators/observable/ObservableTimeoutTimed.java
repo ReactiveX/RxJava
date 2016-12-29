@@ -174,6 +174,7 @@ public final class ObservableTimeoutTimed<T> extends AbstractObservableWithUpstr
         public void dispose() {
             worker.dispose();
             DisposableHelper.dispose(this);
+            s.dispose();
         }
 
         @Override

@@ -13,7 +13,7 @@
 
 package io.reactivex.internal.operators.flowable;
 
-import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
@@ -508,5 +508,41 @@ public class FlowableTimeoutWithSelectorTest {
         .take(1)
         .test()
         .assertResult(1);
+    }
+
+    @Test
+    public void selectorTake() {
+        PublishProcessor<Integer> ps = PublishProcessor.create();
+
+        TestSubscriber<Integer> to = ps
+        .timeout(Functions.justFunction(Flowable.never()))
+        .take(1)
+        .test();
+
+        assertTrue(ps.hasSubscribers());
+
+        ps.onNext(1);
+
+        assertFalse(ps.hasSubscribers());
+
+        to.assertResult(1);
+    }
+
+    @Test
+    public void selectorFallbackTake() {
+        PublishProcessor<Integer> ps = PublishProcessor.create();
+
+        TestSubscriber<Integer> to = ps
+        .timeout(Functions.justFunction(Flowable.never()), Flowable.just(2))
+        .take(1)
+        .test();
+
+        assertTrue(ps.hasSubscribers());
+
+        ps.onNext(1);
+
+        assertFalse(ps.hasSubscribers());
+
+        to.assertResult(1);
     }
 }

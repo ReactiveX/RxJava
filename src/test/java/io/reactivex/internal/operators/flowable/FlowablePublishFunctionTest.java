@@ -473,7 +473,7 @@ public class FlowablePublishFunctionTest {
                             public boolean test(Integer w) throws Exception {
                                 return w % 2 == 0;
                             }
-                        }), 
+                        }),
                         v.filter(new Predicate<Integer>() {
                             @Override
                             public boolean test(Integer w) throws Exception {
@@ -500,7 +500,7 @@ public class FlowablePublishFunctionTest {
                             public boolean test(Integer w) throws Exception {
                                 return w % 2 == 0;
                             }
-                        }), 
+                        }),
                         v.filter(new Predicate<Integer>() {
                             @Override
                             public boolean test(Integer w) throws Exception {
@@ -528,7 +528,7 @@ public class FlowablePublishFunctionTest {
                             public boolean test(Integer w) throws Exception {
                                 return w % 2 == 0;
                             }
-                        }), 
+                        }),
                         v.filter(new Predicate<Integer>() {
                             @Override
                             public boolean test(Integer w) throws Exception {

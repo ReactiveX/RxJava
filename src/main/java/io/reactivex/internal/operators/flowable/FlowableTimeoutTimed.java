@@ -174,6 +174,7 @@ public final class FlowableTimeoutTimed<T> extends AbstractFlowableWithUpstream<
         public void dispose() {
             worker.dispose();
             DisposableHelper.dispose(timer);
+            s.cancel();
         }
 
         @Override
