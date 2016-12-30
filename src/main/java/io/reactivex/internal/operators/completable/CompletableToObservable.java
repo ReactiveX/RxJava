@@ -16,6 +16,11 @@ package io.reactivex.internal.operators.completable;
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
 
+/**
+ * Wraps a Completable and exposes it as an Observable.
+ *
+ * @param <T> the value type
+ */
 public final class CompletableToObservable<T> extends Observable<T> {
 
     final CompletableSource source;
