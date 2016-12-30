@@ -45,7 +45,7 @@ public final class SchedulePeriodicHelper {
     }
 
     /**
-     * Return the current time in nanoseconds. 
+     * Return the current time in nanoseconds.
      */
     public interface NowNanoSupplier {
         long nowNanos();
@@ -53,7 +53,7 @@ public final class SchedulePeriodicHelper {
 
     public static Subscription schedulePeriodically(
             final Worker worker,
-            final Action0 action, 
+            final Action0 action,
             long initialDelay, long period, TimeUnit unit,
             final NowNanoSupplier nowNanoSupplier) {
         final long periodInNanos = unit.toNanos(period);
