@@ -215,7 +215,7 @@ public class TestSchedulerTest {
             inner.unsubscribe();
         }
     }
-    
+
     @Test
     public void resolution() {
         for (final TimeUnit unit : TimeUnit.values()) {

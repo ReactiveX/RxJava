@@ -176,15 +176,15 @@ public class TestScheduler extends Scheduler {
 
         @Override
         public Subscription schedulePeriodically(Action0 action, long initialDelay, long period, TimeUnit unit) {
-            return SchedulePeriodicHelper.schedulePeriodically(this, 
+            return SchedulePeriodicHelper.schedulePeriodically(this,
                     action, initialDelay, period, unit, this);
         }
-        
+
         @Override
         public long now() {
             return TestScheduler.this.now();
         }
-        
+
         @Override
         public long nowNanos() {
             return TestScheduler.this.time;
