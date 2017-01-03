@@ -34,15 +34,15 @@ import io.reactivex.plugins.RxJavaPlugins;
  * <p>
  * <pre> {@code
 
-  // observer will receive all events.
-  BehaviorSubject<Object> subject = BehaviorSubject.create("default");
+  // observer will receive all 4 events (including "default").
+  BehaviorSubject<Object> subject = BehaviorSubject.createDefault("default");
   subject.subscribe(observer);
   subject.onNext("one");
   subject.onNext("two");
   subject.onNext("three");
 
   // observer will receive the "one", "two" and "three" events, but not "zero"
-  BehaviorSubject<Object> subject = BehaviorSubject.create("default");
+  BehaviorSubject<Object> subject = BehaviorSubject.create();
   subject.onNext("zero");
   subject.onNext("one");
   subject.subscribe(observer);
@@ -50,14 +50,14 @@ import io.reactivex.plugins.RxJavaPlugins;
   subject.onNext("three");
 
   // observer will receive only onComplete
-  BehaviorSubject<Object> subject = BehaviorSubject.create("default");
+  BehaviorSubject<Object> subject = BehaviorSubject.create();
   subject.onNext("zero");
   subject.onNext("one");
   subject.onComplete();
   subject.subscribe(observer);
 
   // observer will receive only onError
-  BehaviorSubject<Object> subject = BehaviorSubject.create("default");
+  BehaviorSubject<Object> subject = BehaviorSubject.create();
   subject.onNext("zero");
   subject.onNext("one");
   subject.onError(new RuntimeException("error"));
