@@ -9612,6 +9612,37 @@ public abstract class Observable<T> implements ObservableSource<T> {
 
     /**
      * Returns an Observable that emits the most recently emitted item (if any) emitted by the source ObservableSource
+     * within periodic time intervals and optionally emit the very last upstream item when the upstream completes.
+     * <p>
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/sample.png" alt="">
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code sample} operates by default on the {@code computation} {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param period
+     *            the sampling rate
+     * @param unit
+     *            the {@link TimeUnit} in which {@code period} is defined
+     * @return an Observable that emits the results of sampling the items emitted by the source ObservableSource at
+     *         the specified time interval
+     * @param emitLast
+     *            if true and the upstream completes while there is still an unsampled item available,
+     *            that item is emitted to downstream before completion
+     *            if false, an unsampled last item is ignored.
+     * @see <a href="http://reactivex.io/documentation/operators/sample.html">ReactiveX operators documentation: Sample</a>
+     * @see #throttleLast(long, TimeUnit)
+     * @since 2.0.5 - experimental
+     */
+    @CheckReturnValue
+    @SchedulerSupport(SchedulerSupport.COMPUTATION)
+    @Experimental
+    public final Observable<T> sample(long period, TimeUnit unit, boolean emitLast) {
+        return sample(period, unit, Schedulers.computation(), emitLast);
+    }
+
+    /**
+     * Returns an Observable that emits the most recently emitted item (if any) emitted by the source ObservableSource
      * within periodic time intervals, where the intervals are defined on a particular Scheduler.
      * <p>
      * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/sample.s.png" alt="">
@@ -9636,7 +9667,43 @@ public abstract class Observable<T> implements ObservableSource<T> {
     public final Observable<T> sample(long period, TimeUnit unit, Scheduler scheduler) {
         ObjectHelper.requireNonNull(unit, "unit is null");
         ObjectHelper.requireNonNull(scheduler, "scheduler is null");
-        return RxJavaPlugins.onAssembly(new ObservableSampleTimed<T>(this, period, unit, scheduler));
+        return RxJavaPlugins.onAssembly(new ObservableSampleTimed<T>(this, period, unit, scheduler, false));
+    }
+
+    /**
+     * Returns an Observable that emits the most recently emitted item (if any) emitted by the source ObservableSource
+     * within periodic time intervals, where the intervals are defined on a particular Scheduler
+     *  and optionally emit the very last upstream item when the upstream completes.
+     * <p>
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/sample.s.png" alt="">
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>You specify which {@link Scheduler} this operator will use</dd>
+     * </dl>
+     *
+     * @param period
+     *            the sampling rate
+     * @param unit
+     *            the {@link TimeUnit} in which {@code period} is defined
+     * @param scheduler
+     *            the {@link Scheduler} to use when sampling
+     * @param emitLast
+     *            if true and the upstream completes while there is still an unsampled item available,
+     *            that item is emitted to downstream before completion
+     *            if false, an unsampled last item is ignored.
+     * @return an Observable that emits the results of sampling the items emitted by the source ObservableSource at
+     *         the specified time interval
+     * @see <a href="http://reactivex.io/documentation/operators/sample.html">ReactiveX operators documentation: Sample</a>
+     * @see #throttleLast(long, TimeUnit, Scheduler)
+     * @since 2.0.5 - experimental
+     */
+    @CheckReturnValue
+    @SchedulerSupport(SchedulerSupport.CUSTOM)
+    @Experimental
+    public final Observable<T> sample(long period, TimeUnit unit, Scheduler scheduler, boolean emitLast) {
+        ObjectHelper.requireNonNull(unit, "unit is null");
+        ObjectHelper.requireNonNull(scheduler, "scheduler is null");
+        return RxJavaPlugins.onAssembly(new ObservableSampleTimed<T>(this, period, unit, scheduler, emitLast));
     }
 
     /**
@@ -9662,7 +9729,40 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <U> Observable<T> sample(ObservableSource<U> sampler) {
         ObjectHelper.requireNonNull(sampler, "sampler is null");
-        return RxJavaPlugins.onAssembly(new ObservableSampleWithObservable<T>(this, sampler));
+        return RxJavaPlugins.onAssembly(new ObservableSampleWithObservable<T>(this, sampler, false));
+    }
+
+    /**
+     * Returns an Observable that, when the specified {@code sampler} ObservableSource emits an item or completes,
+     * emits the most recently emitted item (if any) emitted by the source ObservableSource since the previous
+     * emission from the {@code sampler} ObservableSource
+     * and optionally emit the very last upstream item when the upstream or other ObservableSource complete.
+     * <p>
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/sample.o.png" alt="">
+     * <dl>
+     *      ObservableSource to control data flow.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>This version of {@code sample} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param <U> the element type of the sampler ObservableSource
+     * @param sampler
+     *            the ObservableSource to use for sampling the source ObservableSource
+     * @param emitLast
+     *            if true and the upstream completes while there is still an unsampled item available,
+     *            that item is emitted to downstream before completion
+     *            if false, an unsampled last item is ignored.
+     * @return an Observable that emits the results of sampling the items emitted by this ObservableSource whenever
+     *         the {@code sampler} ObservableSource emits an item or completes
+     * @see <a href="http://reactivex.io/documentation/operators/sample.html">ReactiveX operators documentation: Sample</a>
+     * @since 2.0.5 - experimental
+     */
+    @CheckReturnValue
+    @SchedulerSupport(SchedulerSupport.NONE)
+    @Experimental
+    public final <U> Observable<T> sample(ObservableSource<U> sampler, boolean emitLast) {
+        ObjectHelper.requireNonNull(sampler, "sampler is null");
+        return RxJavaPlugins.onAssembly(new ObservableSampleWithObservable<T>(this, sampler, emitLast));
     }
 
     /**

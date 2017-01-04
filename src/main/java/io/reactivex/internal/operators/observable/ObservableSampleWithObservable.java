@@ -13,28 +13,36 @@
 
 package io.reactivex.internal.operators.observable;
 
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.atomic.*;
 
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.internal.disposables.*;
+import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.observers.SerializedObserver;
 
 public final class ObservableSampleWithObservable<T> extends AbstractObservableWithUpstream<T, T> {
+
     final ObservableSource<?> other;
 
-    public ObservableSampleWithObservable(ObservableSource<T> source, ObservableSource<?> other) {
+    final boolean emitLast;
+
+    public ObservableSampleWithObservable(ObservableSource<T> source, ObservableSource<?> other, boolean emitLast) {
         super(source);
         this.other = other;
+        this.emitLast = emitLast;
     }
 
     @Override
     public void subscribeActual(Observer<? super T> t) {
         SerializedObserver<T> serial = new SerializedObserver<T>(t);
-        source.subscribe(new SampleMainObserver<T>(serial, other));
+        if (emitLast) {
+            source.subscribe(new SampleMainEmitLast<T>(serial, other));
+        } else {
+            source.subscribe(new SampleMainNoLast<T>(serial, other));
+        }
     }
 
-    static final class SampleMainObserver<T> extends AtomicReference<T>
+    abstract static class SampleMainObserver<T> extends AtomicReference<T>
     implements Observer<T>, Disposable {
 
         private static final long serialVersionUID = -3517602651313910099L;
@@ -76,7 +84,7 @@ public final class ObservableSampleWithObservable<T> extends AbstractObservableW
         @Override
         public void onComplete() {
             DisposableHelper.dispose(other);
-            actual.onComplete();
+            completeMain();
         }
 
         boolean setOther(Disposable o) {
@@ -101,15 +109,21 @@ public final class ObservableSampleWithObservable<T> extends AbstractObservableW
 
         public void complete() {
             s.dispose();
-            actual.onComplete();
+            completeOther();
         }
 
-        public void emit() {
+        void emit() {
             T value = getAndSet(null);
             if (value != null) {
                 actual.onNext(value);
             }
         }
+
+        abstract void completeMain();
+
+        abstract void completeOther();
+
+        abstract void run();
     }
 
     static final class SamplerObserver<T> implements Observer<Object> {
@@ -126,7 +140,7 @@ public final class ObservableSampleWithObservable<T> extends AbstractObservableW
 
         @Override
         public void onNext(Object t) {
-            parent.emit();
+            parent.run();
         }
 
         @Override
@@ -137,6 +151,76 @@ public final class ObservableSampleWithObservable<T> extends AbstractObservableW
         @Override
         public void onComplete() {
             parent.complete();
+        }
+    }
+
+    static final class SampleMainNoLast<T> extends SampleMainObserver<T> {
+
+        private static final long serialVersionUID = -3029755663834015785L;
+
+        SampleMainNoLast(Observer<? super T> actual, ObservableSource<?> other) {
+            super(actual, other);
+        }
+
+        @Override
+        void completeMain() {
+            actual.onComplete();
+        }
+
+        @Override
+        void completeOther() {
+            actual.onComplete();
+        }
+
+        @Override
+        void run() {
+            emit();
+        }
+    }
+
+    static final class SampleMainEmitLast<T> extends SampleMainObserver<T> {
+
+        private static final long serialVersionUID = -3029755663834015785L;
+
+        final AtomicInteger wip;
+
+        volatile boolean done;
+
+        SampleMainEmitLast(Observer<? super T> actual, ObservableSource<?> other) {
+            super(actual, other);
+            this.wip = new AtomicInteger();
+        }
+
+        @Override
+        void completeMain() {
+            done = true;
+            if (wip.getAndIncrement() == 0) {
+                emit();
+                actual.onComplete();
+            }
+        }
+
+        @Override
+        void completeOther() {
+            done = true;
+            if (wip.getAndIncrement() == 0) {
+                emit();
+                actual.onComplete();
+            }
+        }
+
+        @Override
+        void run() {
+            if (wip.getAndIncrement() == 0) {
+                do {
+                    boolean d = done;
+                    emit();
+                    if (d) {
+                        actual.onComplete();
+                        return;
+                    }
+                } while (wip.decrementAndGet() != 0);
+            }
         }
     }
 }

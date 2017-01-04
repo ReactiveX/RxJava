@@ -14,7 +14,7 @@
 package io.reactivex.internal.operators.observable;
 
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.atomic.*;
 
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
@@ -26,21 +26,28 @@ public final class ObservableSampleTimed<T> extends AbstractObservableWithUpstre
     final TimeUnit unit;
     final Scheduler scheduler;
 
-    public ObservableSampleTimed(ObservableSource<T> source, long period, TimeUnit unit, Scheduler scheduler) {
+    final boolean emitLast;
+
+    public ObservableSampleTimed(ObservableSource<T> source, long period, TimeUnit unit, Scheduler scheduler, boolean emitLast) {
         super(source);
         this.period = period;
         this.unit = unit;
         this.scheduler = scheduler;
+        this.emitLast = emitLast;
     }
 
 
     @Override
     public void subscribeActual(Observer<? super T> t) {
         SerializedObserver<T> serial = new SerializedObserver<T>(t);
-        source.subscribe(new SampleTimedObserver<T>(serial, period, unit, scheduler));
+        if (emitLast) {
+            source.subscribe(new SampleTimedEmitLast<T>(serial, period, unit, scheduler));
+        } else {
+            source.subscribe(new SampleTimedNoLast<T>(serial, period, unit, scheduler));
+        }
     }
 
-    static final class SampleTimedObserver<T> extends AtomicReference<T> implements Observer<T>, Disposable, Runnable {
+    abstract static class SampleTimedObserver<T> extends AtomicReference<T> implements Observer<T>, Disposable, Runnable {
 
         private static final long serialVersionUID = -3517602651313910099L;
 
@@ -85,7 +92,7 @@ public final class ObservableSampleTimed<T> extends AbstractObservableWithUpstre
         @Override
         public void onComplete() {
             cancelTimer();
-            actual.onComplete();
+            complete();
         }
 
         void cancelTimer() {
@@ -98,15 +105,66 @@ public final class ObservableSampleTimed<T> extends AbstractObservableWithUpstre
             s.dispose();
         }
 
-        @Override public boolean isDisposed() {
+        @Override
+        public boolean isDisposed() {
             return s.isDisposed();
+        }
+
+        void emit() {
+            T value = getAndSet(null);
+            if (value != null) {
+                actual.onNext(value);
+            }
+        }
+
+        abstract void complete();
+    }
+
+    static final class SampleTimedNoLast<T> extends SampleTimedObserver<T> {
+
+        private static final long serialVersionUID = -7139995637533111443L;
+
+        SampleTimedNoLast(Observer<? super T> actual, long period, TimeUnit unit, Scheduler scheduler) {
+            super(actual, period, unit, scheduler);
+        }
+
+        @Override
+        void complete() {
+            actual.onComplete();
         }
 
         @Override
         public void run() {
-            T value = getAndSet(null);
-            if (value != null) {
-                actual.onNext(value);
+            emit();
+        }
+    }
+
+    static final class SampleTimedEmitLast<T> extends SampleTimedObserver<T> {
+
+        private static final long serialVersionUID = -7139995637533111443L;
+
+        final AtomicInteger wip;
+
+        SampleTimedEmitLast(Observer<? super T> actual, long period, TimeUnit unit, Scheduler scheduler) {
+            super(actual, period, unit, scheduler);
+            this.wip = new AtomicInteger(1);
+        }
+
+        @Override
+        void complete() {
+            emit();
+            if (wip.decrementAndGet() == 0) {
+                actual.onComplete();
+            }
+        }
+
+        @Override
+        public void run() {
+            if (wip.incrementAndGet() == 2) {
+                emit();
+                if (wip.decrementAndGet() == 0) {
+                    actual.onComplete();
+                }
             }
         }
     }

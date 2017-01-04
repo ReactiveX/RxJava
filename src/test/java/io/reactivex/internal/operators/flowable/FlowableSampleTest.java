@@ -26,7 +26,8 @@ import io.reactivex.*;
 import io.reactivex.exceptions.*;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.processors.*;
-import io.reactivex.schedulers.TestScheduler;
+import io.reactivex.schedulers.*;
+import io.reactivex.subscribers.TestSubscriber;
 
 public class FlowableSampleTest {
     private TestScheduler scheduler;
@@ -309,5 +310,138 @@ public class FlowableSampleTest {
         .test(0L)
         .awaitDone(5, TimeUnit.SECONDS)
         .assertFailure(MissingBackpressureException.class);
+    }
+
+    @Test
+    public void emitLastTimed() {
+        Flowable.just(1)
+        .sample(1, TimeUnit.DAYS, true)
+        .test()
+        .assertResult(1);
+    }
+
+    @Test
+    public void emitLastTimedEmpty() {
+        Flowable.empty()
+        .sample(1, TimeUnit.DAYS, true)
+        .test()
+        .assertResult();
+    }
+
+    @Test
+    public void emitLastTimedCustomScheduler() {
+        Flowable.just(1)
+        .sample(1, TimeUnit.DAYS, Schedulers.single(), true)
+        .test()
+        .assertResult(1);
+    }
+
+    @Test
+    public void emitLastTimedRunCompleteRace() {
+        for (int i = 0; i < 1000; i++) {
+            final TestScheduler scheduler = new TestScheduler();
+
+            final PublishProcessor<Integer> pp = PublishProcessor.create();
+
+            TestSubscriber<Integer> ts = pp.sample(1, TimeUnit.SECONDS, scheduler, true)
+            .test();
+
+            pp.onNext(1);
+
+            Runnable r1 = new Runnable() {
+                @Override
+                public void run() {
+                    pp.onComplete();
+                }
+            };
+
+            Runnable r2 = new Runnable() {
+                @Override
+                public void run() {
+                    scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
+                }
+            };
+
+            TestHelper.race(r1, r2);
+
+            ts.assertResult(1);
+        }
+    }
+
+    @Test
+    public void emitLastOther() {
+        Flowable.just(1)
+        .sample(Flowable.timer(1, TimeUnit.DAYS), true)
+        .test()
+        .assertResult(1);
+    }
+
+    @Test
+    public void emitLastOtherEmpty() {
+        Flowable.empty()
+        .sample(Flowable.timer(1, TimeUnit.DAYS), true)
+        .test()
+        .assertResult();
+    }
+
+    @Test
+    public void emitLastOtherRunCompleteRace() {
+        for (int i = 0; i < 1000; i++) {
+            final PublishProcessor<Integer> pp = PublishProcessor.create();
+            final PublishProcessor<Integer> sampler = PublishProcessor.create();
+
+            TestSubscriber<Integer> ts = pp.sample(sampler, true)
+            .test();
+
+            pp.onNext(1);
+
+            Runnable r1 = new Runnable() {
+                @Override
+                public void run() {
+                    pp.onComplete();
+                }
+            };
+
+            Runnable r2 = new Runnable() {
+                @Override
+                public void run() {
+                    sampler.onNext(1);
+                }
+            };
+
+            TestHelper.race(r1, r2);
+
+            ts.assertResult(1);
+        }
+    }
+
+    @Test
+    public void emitLastOtherCompleteCompleteRace() {
+        for (int i = 0; i < 1000; i++) {
+            final PublishProcessor<Integer> pp = PublishProcessor.create();
+            final PublishProcessor<Integer> sampler = PublishProcessor.create();
+
+            TestSubscriber<Integer> ts = pp.sample(sampler, true).test();
+
+            pp.onNext(1);
+
+            Runnable r1 = new Runnable() {
+                @Override
+                public void run() {
+                    pp.onComplete();
+                }
+            };
+
+            Runnable r2 = new Runnable() {
+                @Override
+                public void run() {
+                    sampler.onComplete();
+                }
+            };
+
+            TestHelper.race(r1, r2);
+
+            ts.assertResult(1);
+        }
     }
 }
