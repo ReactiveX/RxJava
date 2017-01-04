@@ -67,7 +67,7 @@ public final class LambdaObserver<T> extends AtomicReference<Disposable> impleme
     @Override
     public void onError(Throwable t) {
         if (!isDisposed()) {
-            dispose();
+            lazySet(DisposableHelper.DISPOSED);
             try {
                 onError.accept(t);
             } catch (Throwable e) {
@@ -80,7 +80,7 @@ public final class LambdaObserver<T> extends AtomicReference<Disposable> impleme
     @Override
     public void onComplete() {
         if (!isDisposed()) {
-            dispose();
+            lazySet(DisposableHelper.DISPOSED);
             try {
                 onComplete.run();
             } catch (Throwable e) {

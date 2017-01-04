@@ -15,11 +15,13 @@ package io.reactivex.internal.operators.observable;
 
 import static org.junit.Assert.*;
 
-import java.util.List;
+import java.util.*;
 
 import org.junit.Test;
 
-import io.reactivex.*;
+import io.reactivex.Observable;
+import io.reactivex.Observer;
+import io.reactivex.TestHelper;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.*;
@@ -442,4 +444,86 @@ public class ObservableDoFinallyTest implements Action {
 
         assertEquals(1, calls);
     }
+
+
+    @Test
+    public void eventOrdering() {
+        final List<String> list = new ArrayList<String>();
+
+        Observable.error(new TestException())
+        .doOnDispose(new Action() {
+            @Override
+            public void run() throws Exception {
+                list.add("dispose");
+            }
+        })
+        .doFinally(new Action() {
+            @Override
+            public void run() throws Exception {
+                list.add("finally");
+            }
+        })
+        .subscribe(
+                new Consumer<Object>() {
+                    @Override
+                    public void accept(Object v) throws Exception {
+                        list.add("onNext");
+                    }
+                },
+                new Consumer<Throwable>() {
+                    @Override
+                    public void accept(Throwable e) throws Exception {
+                        list.add("onError");
+                    }
+                },
+                new Action() {
+                    @Override
+                    public void run() throws Exception {
+                        list.add("onComplete");
+                    }
+                });
+
+        assertEquals(Arrays.asList("onError", "finally"), list);
+    }
+
+    @Test
+    public void eventOrdering2() {
+        final List<String> list = new ArrayList<String>();
+
+        Observable.just(1)
+        .doOnDispose(new Action() {
+            @Override
+            public void run() throws Exception {
+                list.add("dispose");
+            }
+        })
+        .doFinally(new Action() {
+            @Override
+            public void run() throws Exception {
+                list.add("finally");
+            }
+        })
+        .subscribe(
+                new Consumer<Object>() {
+                    @Override
+                    public void accept(Object v) throws Exception {
+                        list.add("onNext");
+                    }
+                },
+                new Consumer<Throwable>() {
+                    @Override
+                    public void accept(Throwable e) throws Exception {
+                        list.add("onError");
+                    }
+                },
+                new Action() {
+                    @Override
+                    public void run() throws Exception {
+                        list.add("onComplete");
+                    }
+                });
+
+        assertEquals(Arrays.asList("onNext", "onComplete", "finally"), list);
+    }
+
 }

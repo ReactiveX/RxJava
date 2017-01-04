@@ -91,6 +91,8 @@ public class FlowableIgnoreElementsTest {
             public void run() {
                 unsub.set(true);
             }})
+            .ignoreElements()
+            .toFlowable()
             .subscribe().dispose();
 
         assertTrue(unsub.get());
@@ -207,6 +209,7 @@ public class FlowableIgnoreElementsTest {
             public void run() {
                 unsub.set(true);
             }})
+            .ignoreElements()
             .subscribe().dispose();
 
         assertTrue(unsub.get());
