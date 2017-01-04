@@ -67,8 +67,13 @@ public class ObservableTakeLastOneTest {
                 unsubscribed.set(true);
             }
         };
-        Observable.just(1).doOnDispose(unsubscribeAction)
-                .takeLast(1).subscribe();
+        Observable.just(1)
+        .concatWith(Observable.<Integer>never())
+        .doOnDispose(unsubscribeAction)
+        .takeLast(1)
+        .subscribe()
+        .dispose();
+
         assertTrue(unsubscribed.get());
     }
 

@@ -82,12 +82,16 @@ public class ObservableIgnoreElementsTest {
     @Test
     public void testUnsubscribesFromUpstreamObservable() {
         final AtomicBoolean unsub = new AtomicBoolean();
-        Observable.range(1, 10).doOnDispose(new Action() {
+        Observable.range(1, 10).concatWith(Observable.<Integer>never())
+        .doOnDispose(new Action() {
             @Override
             public void run() {
                 unsub.set(true);
             }})
-            .subscribe();
+            .ignoreElements()
+            .toObservable()
+            .subscribe()
+            .dispose();
         assertTrue(unsub.get());
     }
 
@@ -145,12 +149,15 @@ public class ObservableIgnoreElementsTest {
     @Test
     public void testUnsubscribesFromUpstream() {
         final AtomicBoolean unsub = new AtomicBoolean();
-        Observable.range(1, 10).doOnDispose(new Action() {
+        Observable.range(1, 10).concatWith(Observable.<Integer>never())
+        .doOnDispose(new Action() {
             @Override
             public void run() {
                 unsub.set(true);
             }})
-            .subscribe();
+            .ignoreElements()
+            .subscribe()
+            .dispose();
         assertTrue(unsub.get());
     }
 
