@@ -557,7 +557,7 @@ public class ObservableReplayTest {
     /**
      * Specifically test interaction with a Scheduler with subscribeOn.
      *
-     * @throws Exception
+     * @throws Exception functional interfaces are declared with throws Exception
      */
     @SuppressWarnings("unchecked")
     @Test
@@ -610,7 +610,7 @@ public class ObservableReplayTest {
     /**
      * Specifically test interaction with a Scheduler with subscribeOn.
      *
-     * @throws Exception
+     * @throws Exception functional interfaces are declared with throws Exception
      */
     @SuppressWarnings("unchecked")
     @Test

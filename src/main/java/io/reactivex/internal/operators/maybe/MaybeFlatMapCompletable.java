@@ -24,7 +24,7 @@ import io.reactivex.internal.functions.ObjectHelper;
 
 /**
  * Maps the success value of the source MaybeSource into a Completable.
- * @param <T>
+ * @param <T> the value type of the source MaybeSource
  */
 public final class MaybeFlatMapCompletable<T> extends Completable {
 

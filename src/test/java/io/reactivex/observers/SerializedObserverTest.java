@@ -250,7 +250,7 @@ public class SerializedObserverTest {
     /**
      * Test that a notification does not get delayed in the queue waiting for the next event to push it through.
      *
-     * @throws InterruptedException
+     * @throws InterruptedException if the await is interrupted
      */
     @Ignore("this is non-deterministic ... haven't figured out what's wrong with the test yet (benjchristensen: July 2014)")
     @Test
@@ -340,7 +340,7 @@ public class SerializedObserverTest {
      * The real issue in this example is the async buffer-bloat, so we need backpressure.
      *
      *
-     * @throws InterruptedException
+     * @throws InterruptedException if the await is interrupted
      */
     @Ignore("Demonstrates thread starvation problem. Read JavaDoc")
     @Test
@@ -585,7 +585,7 @@ public class SerializedObserverTest {
         /**
          * Assert the order of events is correct and return the number of onNext executions.
          *
-         * @param expectedEndingEvent
+         * @param expectedEndingEvent the expected last event
          * @return int count of onNext calls
          * @throws IllegalStateException
          *             If order of events was invalid.

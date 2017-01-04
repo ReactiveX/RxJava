@@ -66,8 +66,9 @@ public final class FlowableEventStream {
         public final Map<String, Object> values;
 
         /**
-         * @param type
-         * @param instanceId
+         * Construct an event with the provided parameters.
+         * @param type the event type
+         * @param instanceId the instance identifier
          * @param values
          *            This does NOT deep-copy, so do not mutate this Map after passing it in.
          */

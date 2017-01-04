@@ -37,6 +37,7 @@ public abstract class DefaultSubscriber<T> implements Subscriber<T> {
 
     /**
      * Requests from the upstream Subscription.
+     * @param n the request amount, positive
      */
     protected final void request(long n) {
         Subscription s = this.s;

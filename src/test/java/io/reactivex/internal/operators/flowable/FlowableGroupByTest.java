@@ -171,7 +171,7 @@ public class FlowableGroupByTest {
     /**
      * Assert that only a single subscription to a stream occurs and that all events are received.
      *
-     * @throws Throwable
+     * @throws Throwable some method call is declared throws
      */
     @Test
     public void testGroupedEventStream() throws Throwable {

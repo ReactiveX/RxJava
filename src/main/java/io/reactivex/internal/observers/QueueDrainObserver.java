@@ -83,6 +83,7 @@ public abstract class QueueDrainObserver<T, U, V> extends QueueDrainSubscriberPa
      * Makes sure the fast-path emits in order.
      * @param value the value to emit or queue up
      * @param delayError if true, errors are delayed until the source has terminated
+     * @param disposable the resource to dispose if the drain terminates
      */
     protected final void fastPathOrderedEmit(U value, boolean delayError, Disposable disposable) {
         final Observer<? super V> s = actual;

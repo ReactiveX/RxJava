@@ -224,7 +224,7 @@ public class BlockingFlowableNextTest {
      * <p/>
      * This results in output such as => a: 1 b: 2 c: 89
      *
-     * @throws Throwable
+     * @throws Throwable some method call is declared throws
      */
     @Test
     public void testNoBufferingOrBlockingOfSequence() throws Throwable {

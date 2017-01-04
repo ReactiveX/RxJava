@@ -117,6 +117,7 @@ public abstract class BaseTestConsumer<T, U extends BaseTestConsumer<T, U>> impl
      * will capture those potential errors and report it along with the original failure.
      *
      * @param message the message to use
+     * @return AssertionError the prepared AssertionError instance
      */
     protected final AssertionError fail(String message) {
         StringBuilder b = new StringBuilder(64 + message.length());

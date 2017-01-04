@@ -836,7 +836,7 @@ public class FlowableMergeTest {
      * Thus, we must allow all Flowables to be sent. The ScalarSynchronousFlowable use case is an exception to this since
      * we can grab the value synchronously.
      *
-     * @throws InterruptedException
+     * @throws InterruptedException if the await is interrupted
      */
     @Test(timeout = 5000)
     public void testBackpressureBothUpstreamAndDownstreamWithRegularFlowables() throws InterruptedException {

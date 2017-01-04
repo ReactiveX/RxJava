@@ -719,7 +719,7 @@ public class ObservableTest {
      * to rethrow the exception on the thread that the message comes out from the Observable.
      * The OnCompleted behavior in this case is to do nothing."
      *
-     * @throws InterruptedException
+     * @throws InterruptedException if the await is interrupted
      */
     @Test
     @Ignore("Subscribers can't throw")

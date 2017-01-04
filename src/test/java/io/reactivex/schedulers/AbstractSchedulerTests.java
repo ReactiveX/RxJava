@@ -40,6 +40,7 @@ public abstract class AbstractSchedulerTests {
 
     /**
      * The scheduler to test.
+     * @return the Scheduler instance
      */
     protected abstract Scheduler getScheduler();
 
@@ -136,7 +137,7 @@ public abstract class AbstractSchedulerTests {
     /**
      * The order of execution is nondeterministic.
      *
-     * @throws InterruptedException
+     * @throws InterruptedException if the await is interrupted
      */
     @SuppressWarnings("rawtypes")
     @Test

@@ -35,7 +35,7 @@ import io.reactivex.internal.util.Pow2;
  * 2012 - Junchang- BQueue- Efficient and Practical Queuing.pdf <br>
  * </i> This implementation is wait free.
  *
- * @param <E>
+ * @param <E> the element type of the queue
  */
 public final class SpscArrayQueue<E> extends AtomicReferenceArray<E> implements SimplePlainQueue<E> {
     private static final long serialVersionUID = -1296597691183856449L;
