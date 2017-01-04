@@ -2,6 +2,17 @@
 
 Version 1.x can be found at https://github.com/ReactiveX/RxJava/blob/1.x/CHANGES.md
 
+### Version 2.0.4 - January 4, 2017 ([Maven](http://search.maven.org/#artifactdetails%7Cio.reactivex.rxjava2%7Crxjava%7C2.0.4%7C))
+
+**API enhancements**
+- [Pull 4930](https://github.com/ReactiveX/RxJava/pull/4930): Add `Completable.cache()` 
+
+**Bugfixes**
+- [Pull 4927](https://github.com/ReactiveX/RxJava/pull/4927): fix `timer()` `IllegalStateException` due to bad resource management
+- [Pull 4932](https://github.com/ReactiveX/RxJava/pull/4932): Add safeguards to `generate()` 
+- [Pull 4943](https://github.com/ReactiveX/RxJava/pull/4943): Fix `publish(Function)` not replenishing its internal queue 
+- [Pull 4945](https://github.com/ReactiveX/RxJava/pull/4945): Fix `timeout` with fallback not cancelling/disposing the main source connection. 
+
 ### Version 2.0.3 - December 18, 2016 ([Maven](http://search.maven.org/#artifactdetails%7Cio.reactivex.rxjava2%7Crxjava%7C2.0.3%7C))
 
 **Bugfixes**
