@@ -24,7 +24,8 @@ import org.mockito.InOrder;
 import io.reactivex.*;
 import io.reactivex.disposables.*;
 import io.reactivex.exceptions.TestException;
-import io.reactivex.schedulers.TestScheduler;
+import io.reactivex.observers.TestObserver;
+import io.reactivex.schedulers.*;
 import io.reactivex.subjects.PublishSubject;
 
 public class ObservableSampleTest {
@@ -291,4 +292,138 @@ public class ObservableSampleTest {
         .test()
         .assertFailure(TestException.class);
     }
+
+    @Test
+    public void emitLastTimed() {
+        Observable.just(1)
+        .sample(1, TimeUnit.DAYS, true)
+        .test()
+        .assertResult(1);
+    }
+
+    @Test
+    public void emitLastTimedEmpty() {
+        Observable.empty()
+        .sample(1, TimeUnit.DAYS, true)
+        .test()
+        .assertResult();
+    }
+
+    @Test
+    public void emitLastTimedCustomScheduler() {
+        Observable.just(1)
+        .sample(1, TimeUnit.DAYS, Schedulers.single(), true)
+        .test()
+        .assertResult(1);
+    }
+
+    @Test
+    public void emitLastTimedRunCompleteRace() {
+        for (int i = 0; i < 1000; i++) {
+            final TestScheduler scheduler = new TestScheduler();
+
+            final PublishSubject<Integer> pp = PublishSubject.create();
+
+            TestObserver<Integer> ts = pp.sample(1, TimeUnit.SECONDS, scheduler, true)
+            .test();
+
+            pp.onNext(1);
+
+            Runnable r1 = new Runnable() {
+                @Override
+                public void run() {
+                    pp.onComplete();
+                }
+            };
+
+            Runnable r2 = new Runnable() {
+                @Override
+                public void run() {
+                    scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
+                }
+            };
+
+            TestHelper.race(r1, r2);
+
+            ts.assertResult(1);
+        }
+    }
+
+    @Test
+    public void emitLastOther() {
+        Observable.just(1)
+        .sample(Observable.timer(1, TimeUnit.DAYS), true)
+        .test()
+        .assertResult(1);
+    }
+
+    @Test
+    public void emitLastOtherEmpty() {
+        Observable.empty()
+        .sample(Observable.timer(1, TimeUnit.DAYS), true)
+        .test()
+        .assertResult();
+    }
+
+    @Test
+    public void emitLastOtherRunCompleteRace() {
+        for (int i = 0; i < 1000; i++) {
+            final PublishSubject<Integer> pp = PublishSubject.create();
+            final PublishSubject<Integer> sampler = PublishSubject.create();
+
+            TestObserver<Integer> ts = pp.sample(sampler, true)
+            .test();
+
+            pp.onNext(1);
+
+            Runnable r1 = new Runnable() {
+                @Override
+                public void run() {
+                    pp.onComplete();
+                }
+            };
+
+            Runnable r2 = new Runnable() {
+                @Override
+                public void run() {
+                    sampler.onNext(1);
+                }
+            };
+
+            TestHelper.race(r1, r2);
+
+            ts.assertResult(1);
+        }
+    }
+
+    @Test
+    public void emitLastOtherCompleteCompleteRace() {
+        for (int i = 0; i < 1000; i++) {
+            final PublishSubject<Integer> pp = PublishSubject.create();
+            final PublishSubject<Integer> sampler = PublishSubject.create();
+
+            TestObserver<Integer> ts = pp.sample(sampler, true).test();
+
+            pp.onNext(1);
+
+            Runnable r1 = new Runnable() {
+                @Override
+                public void run() {
+                    pp.onComplete();
+                }
+            };
+
+            Runnable r2 = new Runnable() {
+                @Override
+                public void run() {
+                    sampler.onComplete();
+                }
+            };
+
+            TestHelper.race(r1, r2);
+
+            ts.assertResult(1);
+        }
+    }
+
 }
