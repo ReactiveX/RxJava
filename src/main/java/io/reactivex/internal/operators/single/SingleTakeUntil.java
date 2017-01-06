@@ -147,7 +147,7 @@ public final class SingleTakeUntil<T, U> extends Single<T> {
         @Override
         public void onNext(Object t) {
             if (SubscriptionHelper.cancel(this)) {
-                onComplete();
+                parent.otherError(new CancellationException());
             }
         }
 
@@ -158,7 +158,10 @@ public final class SingleTakeUntil<T, U> extends Single<T> {
 
         @Override
         public void onComplete() {
-            parent.otherError(new CancellationException());
+            if (get() != SubscriptionHelper.CANCELLED) {
+                lazySet(SubscriptionHelper.CANCELLED);
+                parent.otherError(new CancellationException());
+            }
         }
 
         public void dispose() {

@@ -184,4 +184,18 @@ public class MaybeTakeUntilPublisherTest {
             to.assertResult();
         }
     }
+
+    @Test
+    public void otherSignalsAndCompletes() {
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            Maybe.just(1).takeUntil(Flowable.just(1).take(1))
+            .test()
+            .assertResult();
+
+            assertTrue(errors.toString(), errors.isEmpty());
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
 }
