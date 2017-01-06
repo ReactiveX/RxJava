@@ -111,7 +111,7 @@ public class Observable<T> {
      * {@link Observable#create(AsyncOnSubscribe) asynchronous overload}.
      *
      * <p>
-     * <img width="640" height="200" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/create-sync.png" alt="">
+     * <img width="527" height="262" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/create-sync.png" alt="">
      * <p>
      * See <a href="http://go.microsoft.com/fwlink/?LinkID=205219">Rx Design Guidelines (PDF)</a> for detailed
      * information.
@@ -153,7 +153,7 @@ public class Observable<T> {
      * with the {@link Observable#create(SyncOnSubscribe) synchronous overload}.
      *
      * <p>
-     * <img width="640" height="200" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/create-async.png" alt="">
+     * <img width="527" height="262" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/create-async.png" alt="">
      * <p>
      * See <a href="http://go.microsoft.com/fwlink/?LinkID=205219">Rx Design Guidelines (PDF)</a> for detailed
      * information.
@@ -323,7 +323,7 @@ public class Observable<T> {
      * {@code ignoreAllElements()}) and calls onCompleted when this source observable calls
      * onCompleted. Error terminal events are propagated.
      * <p>
-     * <img width="640" height="295" src=
+     * <img width="470" height="176" src=
      * "https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Completable.toCompletable.png"
      * alt="">
      * <dl>
@@ -5390,6 +5390,8 @@ public class Observable<T> {
      * Returns an Observable that emits the items emitted by the source Observable or the items of an alternate
      * Observable if the source Observable is empty.
      * <p/>
+     * <p>
+     * <img width="410" height="164" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/switchifempty.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>If the source {@code Observable} is empty, the alternate {@code Observable} is expected to honor backpressure.
