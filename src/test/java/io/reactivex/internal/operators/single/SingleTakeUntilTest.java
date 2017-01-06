@@ -16,6 +16,7 @@ package io.reactivex.internal.operators.single;
 import java.util.List;
 import java.util.concurrent.CancellationException;
 
+import static org.junit.Assert.*;
 import org.junit.Test;
 
 import io.reactivex.*;
@@ -257,6 +258,20 @@ public class SingleTakeUntilTest {
             } finally {
                 RxJavaPlugins.reset();
             }
+        }
+    }
+
+    @Test
+    public void otherSignalsAndCompletes() {
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            Single.just(1).takeUntil(Flowable.just(1).take(1))
+            .test()
+            .assertFailure(CancellationException.class);
+
+            assertTrue(errors.toString(), errors.isEmpty());
+        } finally {
+            RxJavaPlugins.reset();
         }
     }
 }
