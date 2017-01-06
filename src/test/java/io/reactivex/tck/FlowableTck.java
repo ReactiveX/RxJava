@@ -13,101 +13,16 @@
 
 package io.reactivex.tck;
 
-import java.util.concurrent.atomic.AtomicInteger;
-
-import org.reactivestreams.*;
-
 import io.reactivex.Flowable;
-import io.reactivex.internal.functions.ObjectHelper;
-import io.reactivex.internal.subscriptions.SubscriptionHelper;
-import io.reactivex.internal.util.*;
 
-/**
- * Helper Flowable that makes sure invalid requests from downstream are reported
- * as onErrors (instead of RxJavaPlugins.onError). Since requests can be
- * async to  the onXXX method calls, we need half-serialization to ensure correct
- * operations.
- *
- * @param <T> the value type
- */
-public final class FlowableTck<T> extends Flowable<T> {
-
+public final class FlowableTck {
     /**
-     * Wraps a given Publisher and makes sure invalid requests trigger an onError(IllegalArgumentException).
+     * Enable strict mode.
      * @param <T> the value type
-     * @param source the source to wrap, not null
-     * @return the new Flowable instance
+     * @param f the input Flowable
+     * @return the output Flowable
      */
-    public static <T> Flowable<T> wrap(Publisher<T> source) {
-        return new FlowableTck<T>(ObjectHelper.requireNonNull(source, "source is null"));
-    }
-
-    final Publisher<T> source;
-
-    FlowableTck(Publisher<T> source) {
-        this.source = source;
-    }
-
-    @Override
-    protected void subscribeActual(Subscriber<? super T> s) {
-        source.subscribe(new TckSubscriber<T>(s));
-    }
-
-    static final class TckSubscriber<T>
-    extends AtomicInteger
-    implements Subscriber<T>, Subscription {
-
-        private static final long serialVersionUID = -4945028590049415624L;
-
-        final Subscriber<? super T> actual;
-
-        final AtomicThrowable error;
-
-        Subscription s;
-
-        TckSubscriber(Subscriber<? super T> actual) {
-            this.actual = actual;
-            this.error = new AtomicThrowable();
-        }
-
-
-        @Override
-        public void request(long n) {
-            if (n <= 0) {
-                s.cancel();
-                onError(new IllegalArgumentException("§3.9 violated: positive request amount required but it was " + n));
-            } else {
-                s.request(n);
-            }
-        }
-
-        @Override
-        public void cancel() {
-            s.cancel();
-        }
-
-        @Override
-        public void onSubscribe(Subscription s) {
-            if (SubscriptionHelper.validate(this.s, s)) {
-                this.s = s;
-
-                actual.onSubscribe(this);
-            }
-        }
-
-        @Override
-        public void onNext(T t) {
-            HalfSerializer.onNext(actual, t, this, error);
-        }
-
-        @Override
-        public void onError(Throwable t) {
-            HalfSerializer.onError(actual, t, this, error);
-        }
-
-        @Override
-        public void onComplete() {
-            HalfSerializer.onComplete(actual, this, error);
-        }
+    public static <T> Flowable<T> wrap(Flowable<T> f) {
+        return f.strict();
     }
 }
