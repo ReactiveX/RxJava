@@ -1,5 +1,15 @@
 # RxJava Releases #
 
+### Version 1.2.5 - January 6, 2017 ([Maven](http://search.maven.org/#artifactdetails%7Cio.reactivex%7Crxjava%7C1.2.5%7C))
+
+#### Documentation
+
+- [Pull 4963](https://github.com/ReactiveX/RxJava/pull/4963): Add missing marbles, fix image sizes
+
+#### Bugfixes
+
+- [Pull 4941](https://github.com/ReactiveX/RxJava/pull/4941): Fix `Completable.mergeDelayError` to check unsafe availability
+
 ### Version 1.2.4 - December 15, 2016 ([Maven](http://search.maven.org/#artifactdetails%7Cio.reactivex%7Crxjava%7C1.2.4%7C))
 
 #### Other
