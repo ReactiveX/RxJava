@@ -12525,7 +12525,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *  <dd>The operator doesn't interfere with backpressure which is determined by the source {@code Publisher}'s backpressure
      *  behavior.</dd>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code startWithArray} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dd>{@code strict} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * @return the new Flowable instance
      * @since 2.0.5 - experimental
@@ -12533,6 +12533,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
     @SchedulerSupport(SchedulerSupport.NONE)
     @Experimental
+    @CheckReturnValue
     public final Flowable<T> strict() {
         return RxJavaPlugins.onAssembly(new FlowableStrict<T>(this));
     }
