@@ -30,55 +30,55 @@ public class SingleSubjectTest {
 
     @Test
     public void success() {
-        SingleSubject<Integer> ms = SingleSubject.create();
+        SingleSubject<Integer> ss = SingleSubject.create();
 
-        assertFalse(ms.hasValue());
-        assertNull(ms.getValue());
-        assertFalse(ms.hasThrowable());
-        assertNull(ms.getThrowable());
-        assertFalse(ms.hasObservers());
-        assertEquals(0, ms.observerCount());
+        assertFalse(ss.hasValue());
+        assertNull(ss.getValue());
+        assertFalse(ss.hasThrowable());
+        assertNull(ss.getThrowable());
+        assertFalse(ss.hasObservers());
+        assertEquals(0, ss.observerCount());
 
-        TestObserver<Integer> to = ms.test();
+        TestObserver<Integer> to = ss.test();
 
         to.assertEmpty();
 
-        assertTrue(ms.hasObservers());
-        assertEquals(1, ms.observerCount());
+        assertTrue(ss.hasObservers());
+        assertEquals(1, ss.observerCount());
 
-        ms.onSuccess(1);
+        ss.onSuccess(1);
 
-        assertTrue(ms.hasValue());
-        assertEquals(1, ms.getValue().intValue());
-        assertFalse(ms.hasThrowable());
-        assertNull(ms.getThrowable());
-        assertFalse(ms.hasObservers());
-        assertEquals(0, ms.observerCount());
+        assertTrue(ss.hasValue());
+        assertEquals(1, ss.getValue().intValue());
+        assertFalse(ss.hasThrowable());
+        assertNull(ss.getThrowable());
+        assertFalse(ss.hasObservers());
+        assertEquals(0, ss.observerCount());
 
         to.assertResult(1);
 
-        ms.test().assertResult(1);
+        ss.test().assertResult(1);
 
-        assertTrue(ms.hasValue());
-        assertEquals(1, ms.getValue().intValue());
-        assertFalse(ms.hasThrowable());
-        assertNull(ms.getThrowable());
-        assertFalse(ms.hasObservers());
-        assertEquals(0, ms.observerCount());
+        assertTrue(ss.hasValue());
+        assertEquals(1, ss.getValue().intValue());
+        assertFalse(ss.hasThrowable());
+        assertNull(ss.getThrowable());
+        assertFalse(ss.hasObservers());
+        assertEquals(0, ss.observerCount());
     }
 
     @Test
     public void once() {
-        SingleSubject<Integer> ms = SingleSubject.create();
+        SingleSubject<Integer> ss = SingleSubject.create();
 
-        TestObserver<Integer> to = ms.test();
+        TestObserver<Integer> to = ss.test();
 
-        ms.onSuccess(1);
-        ms.onSuccess(2);
+        ss.onSuccess(1);
+        ss.onSuccess(2);
 
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
-            ms.onError(new IOException());
+            ss.onError(new IOException());
 
             TestHelper.assertError(errors, 0, IOException.class);
         } finally {
@@ -90,61 +90,61 @@ public class SingleSubjectTest {
 
     @Test
     public void error() {
-        SingleSubject<Integer> ms = SingleSubject.create();
+        SingleSubject<Integer> ss = SingleSubject.create();
 
-        assertFalse(ms.hasValue());
-        assertNull(ms.getValue());
-        assertFalse(ms.hasThrowable());
-        assertNull(ms.getThrowable());
-        assertFalse(ms.hasObservers());
-        assertEquals(0, ms.observerCount());
+        assertFalse(ss.hasValue());
+        assertNull(ss.getValue());
+        assertFalse(ss.hasThrowable());
+        assertNull(ss.getThrowable());
+        assertFalse(ss.hasObservers());
+        assertEquals(0, ss.observerCount());
 
-        TestObserver<Integer> to = ms.test();
+        TestObserver<Integer> to = ss.test();
 
         to.assertEmpty();
 
-        assertTrue(ms.hasObservers());
-        assertEquals(1, ms.observerCount());
+        assertTrue(ss.hasObservers());
+        assertEquals(1, ss.observerCount());
 
-        ms.onError(new IOException());
+        ss.onError(new IOException());
 
-        assertFalse(ms.hasValue());
-        assertNull(ms.getValue());
-        assertTrue(ms.hasThrowable());
-        assertTrue(ms.getThrowable().toString(), ms.getThrowable() instanceof IOException);
-        assertFalse(ms.hasObservers());
-        assertEquals(0, ms.observerCount());
+        assertFalse(ss.hasValue());
+        assertNull(ss.getValue());
+        assertTrue(ss.hasThrowable());
+        assertTrue(ss.getThrowable().toString(), ss.getThrowable() instanceof IOException);
+        assertFalse(ss.hasObservers());
+        assertEquals(0, ss.observerCount());
 
         to.assertFailure(IOException.class);
 
-        ms.test().assertFailure(IOException.class);
+        ss.test().assertFailure(IOException.class);
 
-        assertFalse(ms.hasValue());
-        assertNull(ms.getValue());
-        assertTrue(ms.hasThrowable());
-        assertTrue(ms.getThrowable().toString(), ms.getThrowable() instanceof IOException);
-        assertFalse(ms.hasObservers());
-        assertEquals(0, ms.observerCount());
+        assertFalse(ss.hasValue());
+        assertNull(ss.getValue());
+        assertTrue(ss.hasThrowable());
+        assertTrue(ss.getThrowable().toString(), ss.getThrowable() instanceof IOException);
+        assertFalse(ss.hasObservers());
+        assertEquals(0, ss.observerCount());
     }
 
     @Test
     public void nullValue() {
-        SingleSubject<Integer> ms = SingleSubject.create();
+        SingleSubject<Integer> ss = SingleSubject.create();
 
-        TestObserver<Integer> to = ms.test();
+        TestObserver<Integer> to = ss.test();
 
-        ms.onSuccess(null);
+        ss.onSuccess(null);
 
         to.assertFailure(NullPointerException.class);
     }
 
     @Test
     public void nullThrowable() {
-        SingleSubject<Integer> ms = SingleSubject.create();
+        SingleSubject<Integer> ss = SingleSubject.create();
 
-        TestObserver<Integer> to = ms.test();
+        TestObserver<Integer> to = ss.test();
 
-        ms.onError(null);
+        ss.onError(null);
 
         to.assertFailure(NullPointerException.class);
     }
@@ -158,11 +158,11 @@ public class SingleSubjectTest {
 
     @Test
     public void cancelOnArrival2() {
-        SingleSubject<Integer> ms = SingleSubject.create();
+        SingleSubject<Integer> ss = SingleSubject.create();
 
-        ms.test();
+        ss.test();
 
-        ms
+        ss
         .test(true)
         .assertEmpty();
     }
@@ -200,19 +200,19 @@ public class SingleSubjectTest {
 
     @Test
     public void onSubscribeDispose() {
-        SingleSubject<Integer> ms = SingleSubject.create();
+        SingleSubject<Integer> ss = SingleSubject.create();
 
         Disposable d = Disposables.empty();
 
-        ms.onSubscribe(d);
+        ss.onSubscribe(d);
 
         assertFalse(d.isDisposed());
 
-        ms.onSuccess(1);
+        ss.onSuccess(1);
 
         d = Disposables.empty();
 
-        ms.onSubscribe(d);
+        ss.onSubscribe(d);
 
         assertTrue(d.isDisposed());
     }
@@ -220,14 +220,14 @@ public class SingleSubjectTest {
     @Test
     public void addRemoveRace() {
         for (int i = 0; i < 500; i++) {
-            final SingleSubject<Integer> ms = SingleSubject.create();
+            final SingleSubject<Integer> ss = SingleSubject.create();
 
-            final TestObserver<Integer> to = ms.test();
+            final TestObserver<Integer> to = ss.test();
 
             Runnable r1 = new Runnable() {
                 @Override
                 public void run() {
-                    ms.test();
+                    ss.test();
                 }
             };
 

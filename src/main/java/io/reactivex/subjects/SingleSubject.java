@@ -16,7 +16,7 @@ package io.reactivex.subjects;
 import java.util.concurrent.atomic.*;
 
 import io.reactivex.*;
-import io.reactivex.annotations.Experimental;
+import io.reactivex.annotations.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.plugins.RxJavaPlugins;
 
@@ -52,6 +52,7 @@ public final class SingleSubject<T> extends Single<T> implements SingleObserver<
      * @param <T> the value type received and emitted
      * @return the new SingleSubject instance
      */
+    @CheckReturnValue
     public static <T> SingleSubject<T> create() {
         return new SingleSubject<T>();
     }

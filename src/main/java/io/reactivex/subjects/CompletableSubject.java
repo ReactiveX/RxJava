@@ -16,7 +16,7 @@ package io.reactivex.subjects;
 import java.util.concurrent.atomic.*;
 
 import io.reactivex.*;
-import io.reactivex.annotations.Experimental;
+import io.reactivex.annotations.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.plugins.RxJavaPlugins;
 
@@ -47,6 +47,7 @@ public final class CompletableSubject extends Completable implements Completable
      * Creates a fresh CompletableSubject.
      * @return the new CompletableSubject instance
      */
+    @CheckReturnValue
     public static CompletableSubject create() {
         return new CompletableSubject();
     }

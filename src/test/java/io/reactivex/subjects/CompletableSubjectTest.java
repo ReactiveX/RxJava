@@ -30,104 +30,104 @@ public class CompletableSubjectTest {
 
     @Test
     public void once() {
-        CompletableSubject ms = CompletableSubject.create();
+        CompletableSubject cs = CompletableSubject.create();
 
-        TestObserver<Void> to = ms.test();
+        TestObserver<Void> to = cs.test();
 
-        ms.onComplete();
+        cs.onComplete();
 
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
-            ms.onError(new IOException());
+            cs.onError(new IOException());
 
             TestHelper.assertError(errors, 0, IOException.class);
         } finally {
             RxJavaPlugins.reset();
         }
-        ms.onComplete();
+        cs.onComplete();
 
         to.assertResult();
     }
 
     @Test
     public void error() {
-        CompletableSubject ms = CompletableSubject.create();
+        CompletableSubject cs = CompletableSubject.create();
 
-        assertFalse(ms.hasComplete());
-        assertFalse(ms.hasThrowable());
-        assertNull(ms.getThrowable());
-        assertFalse(ms.hasObservers());
-        assertEquals(0, ms.observerCount());
+        assertFalse(cs.hasComplete());
+        assertFalse(cs.hasThrowable());
+        assertNull(cs.getThrowable());
+        assertFalse(cs.hasObservers());
+        assertEquals(0, cs.observerCount());
 
-        TestObserver<Void> to = ms.test();
+        TestObserver<Void> to = cs.test();
 
         to.assertEmpty();
 
-        assertTrue(ms.hasObservers());
-        assertEquals(1, ms.observerCount());
+        assertTrue(cs.hasObservers());
+        assertEquals(1, cs.observerCount());
 
-        ms.onError(new IOException());
+        cs.onError(new IOException());
 
-        assertFalse(ms.hasComplete());
-        assertTrue(ms.hasThrowable());
-        assertTrue(ms.getThrowable().toString(), ms.getThrowable() instanceof IOException);
-        assertFalse(ms.hasObservers());
-        assertEquals(0, ms.observerCount());
+        assertFalse(cs.hasComplete());
+        assertTrue(cs.hasThrowable());
+        assertTrue(cs.getThrowable().toString(), cs.getThrowable() instanceof IOException);
+        assertFalse(cs.hasObservers());
+        assertEquals(0, cs.observerCount());
 
         to.assertFailure(IOException.class);
 
-        ms.test().assertFailure(IOException.class);
+        cs.test().assertFailure(IOException.class);
 
-        assertFalse(ms.hasComplete());
-        assertTrue(ms.hasThrowable());
-        assertTrue(ms.getThrowable().toString(), ms.getThrowable() instanceof IOException);
-        assertFalse(ms.hasObservers());
-        assertEquals(0, ms.observerCount());
+        assertFalse(cs.hasComplete());
+        assertTrue(cs.hasThrowable());
+        assertTrue(cs.getThrowable().toString(), cs.getThrowable() instanceof IOException);
+        assertFalse(cs.hasObservers());
+        assertEquals(0, cs.observerCount());
     }
 
     @Test
     public void complete() {
-        CompletableSubject ms = CompletableSubject.create();
+        CompletableSubject cs = CompletableSubject.create();
 
-        assertFalse(ms.hasComplete());
-        assertFalse(ms.hasThrowable());
-        assertNull(ms.getThrowable());
-        assertFalse(ms.hasObservers());
-        assertEquals(0, ms.observerCount());
+        assertFalse(cs.hasComplete());
+        assertFalse(cs.hasThrowable());
+        assertNull(cs.getThrowable());
+        assertFalse(cs.hasObservers());
+        assertEquals(0, cs.observerCount());
 
-        TestObserver<Void> to = ms.test();
+        TestObserver<Void> to = cs.test();
 
         to.assertEmpty();
 
-        assertTrue(ms.hasObservers());
-        assertEquals(1, ms.observerCount());
+        assertTrue(cs.hasObservers());
+        assertEquals(1, cs.observerCount());
 
-        ms.onComplete();
+        cs.onComplete();
 
-        assertTrue(ms.hasComplete());
-        assertFalse(ms.hasThrowable());
-        assertNull(ms.getThrowable());
-        assertFalse(ms.hasObservers());
-        assertEquals(0, ms.observerCount());
+        assertTrue(cs.hasComplete());
+        assertFalse(cs.hasThrowable());
+        assertNull(cs.getThrowable());
+        assertFalse(cs.hasObservers());
+        assertEquals(0, cs.observerCount());
 
         to.assertResult();
 
-        ms.test().assertResult();
+        cs.test().assertResult();
 
-        assertTrue(ms.hasComplete());
-        assertFalse(ms.hasThrowable());
-        assertNull(ms.getThrowable());
-        assertFalse(ms.hasObservers());
-        assertEquals(0, ms.observerCount());
+        assertTrue(cs.hasComplete());
+        assertFalse(cs.hasThrowable());
+        assertNull(cs.getThrowable());
+        assertFalse(cs.hasObservers());
+        assertEquals(0, cs.observerCount());
     }
 
     @Test
     public void nullThrowable() {
-        CompletableSubject ms = CompletableSubject.create();
+        CompletableSubject cs = CompletableSubject.create();
 
-        TestObserver<Void> to = ms.test();
+        TestObserver<Void> to = cs.test();
 
-        ms.onError(null);
+        cs.onError(null);
 
         to.assertFailure(NullPointerException.class);
     }
@@ -141,11 +141,11 @@ public class CompletableSubjectTest {
 
     @Test
     public void cancelOnArrival2() {
-        CompletableSubject ms = CompletableSubject.create();
+        CompletableSubject cs = CompletableSubject.create();
 
-        ms.test();
+        cs.test();
 
-        ms
+        cs
         .test(true)
         .assertEmpty();
     }
@@ -183,19 +183,19 @@ public class CompletableSubjectTest {
 
     @Test
     public void onSubscribeDispose() {
-        CompletableSubject ms = CompletableSubject.create();
+        CompletableSubject cs = CompletableSubject.create();
 
         Disposable d = Disposables.empty();
 
-        ms.onSubscribe(d);
+        cs.onSubscribe(d);
 
         assertFalse(d.isDisposed());
 
-        ms.onComplete();
+        cs.onComplete();
 
         d = Disposables.empty();
 
-        ms.onSubscribe(d);
+        cs.onSubscribe(d);
 
         assertTrue(d.isDisposed());
     }
@@ -203,14 +203,14 @@ public class CompletableSubjectTest {
     @Test
     public void addRemoveRace() {
         for (int i = 0; i < 500; i++) {
-            final CompletableSubject ms = CompletableSubject.create();
+            final CompletableSubject cs = CompletableSubject.create();
 
-            final TestObserver<Void> to = ms.test();
+            final TestObserver<Void> to = cs.test();
 
             Runnable r1 = new Runnable() {
                 @Override
                 public void run() {
-                    ms.test();
+                    cs.test();
                 }
             };
 
