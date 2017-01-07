@@ -12510,6 +12510,35 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     /**
+     * Ensures that the event flow between the upstream and downstream follow
+     * the Reactive-Streams 1.0 specification by honoring the 3 additional rules
+     * (which are omitted in standard operators due to performance reasons).
+     * <ul>
+     * <li>§1.3: onNext should not be called concurrently until onSubscribe returns</li>
+     * <li>§2.3: onError or onComplete must not call cancel</li>
+     * <li>§3.9: negative requests should emit an onError(IllegalArgumentException)</li>
+     * </ul>
+     * In addition, if rule §2.12 (onSubscribe must be called at most once) is violated,
+     * the sequence is cancelled an onError(IllegalStateException) is emitted.
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The operator doesn't interfere with backpressure which is determined by the source {@code Publisher}'s backpressure
+     *  behavior.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code strict} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @return the new Flowable instance
+     * @since 2.0.5 - experimental
+     */
+    @BackpressureSupport(BackpressureKind.PASS_THROUGH)
+    @SchedulerSupport(SchedulerSupport.NONE)
+    @Experimental
+    @CheckReturnValue
+    public final Flowable<T> strict() {
+        return RxJavaPlugins.onAssembly(new FlowableStrict<T>(this));
+    }
+
+    /**
      * Subscribes to a Publisher and ignores {@code onNext} and {@code onComplete} emissions.
      * <p>
      * If the Flowable emits an error, it is routed to the RxJavaPlugins.onError handler.
