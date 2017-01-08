@@ -13,14 +13,14 @@
 
 package io.reactivex.internal.operators.flowable;
 
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.atomic.*;
 
 import org.reactivestreams.*;
 
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.BiFunction;
-import io.reactivex.internal.subscriptions.*;
-import io.reactivex.plugins.RxJavaPlugins;
+import io.reactivex.internal.functions.ObjectHelper;
+import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.subscribers.SerializedSubscriber;
 
 public final class FlowableWithLatestFrom<T, U, R> extends AbstractFlowableWithUpstream<T, R> {
@@ -36,6 +36,8 @@ public final class FlowableWithLatestFrom<T, U, R> extends AbstractFlowableWithU
     protected void subscribeActual(Subscriber<? super R> s) {
         final SerializedSubscriber<R> serial = new SerializedSubscriber<R>(s);
         final WithLatestFromSubscriber<T, U, R> wlf = new WithLatestFromSubscriber<T, U, R>(serial, combiner);
+
+        serial.onSubscribe(wlf);
 
         other.subscribe(new Subscriber<U>() {
             @Override
@@ -73,6 +75,8 @@ public final class FlowableWithLatestFrom<T, U, R> extends AbstractFlowableWithU
 
         final AtomicReference<Subscription> s = new AtomicReference<Subscription>();
 
+        final AtomicLong requested = new AtomicLong();
+
         final AtomicReference<Subscription> other = new AtomicReference<Subscription>();
 
         WithLatestFromSubscriber(Subscriber<? super R> actual, BiFunction<? super T, ? super U, ? extends R> combiner) {
@@ -81,9 +85,7 @@ public final class FlowableWithLatestFrom<T, U, R> extends AbstractFlowableWithU
         }
         @Override
         public void onSubscribe(Subscription s) {
-            if (SubscriptionHelper.setOnce(this.s, s)) {
-                actual.onSubscribe(this);
-            }
+            SubscriptionHelper.deferredSetOnce(this.s, requested, s);
         }
 
         @Override
@@ -92,7 +94,7 @@ public final class FlowableWithLatestFrom<T, U, R> extends AbstractFlowableWithU
             if (u != null) {
                 R r;
                 try {
-                    r = combiner.apply(t, u);
+                    r = ObjectHelper.requireNonNull(combiner.apply(t, u), "The combiner returned a null value");
                 } catch (Throwable e) {
                     Exceptions.throwIfFatal(e);
                     cancel();
@@ -117,12 +119,12 @@ public final class FlowableWithLatestFrom<T, U, R> extends AbstractFlowableWithU
 
         @Override
         public void request(long n) {
-            s.get().request(n);
+            SubscriptionHelper.deferredRequest(s, requested, n);
         }
 
         @Override
         public void cancel() {
-            s.get().cancel();
+            SubscriptionHelper.cancel(s);
             SubscriptionHelper.cancel(other);
         }
 
@@ -131,16 +133,8 @@ public final class FlowableWithLatestFrom<T, U, R> extends AbstractFlowableWithU
         }
 
         public void otherError(Throwable e) {
-            if (s.compareAndSet(null, SubscriptionHelper.CANCELLED)) {
-                EmptySubscription.error(e, actual);
-            } else {
-                if (s.get() != SubscriptionHelper.CANCELLED) {
-                    cancel();
-                    actual.onError(e);
-                } else {
-                    RxJavaPlugins.onError(e);
-                }
-            }
+            SubscriptionHelper.cancel(s);
+            actual.onError(e);
         }
     }
 }

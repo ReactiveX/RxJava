@@ -20,6 +20,7 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.BiFunction;
 import io.reactivex.internal.disposables.DisposableHelper;
+import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.observers.SerializedObserver;
 
 public final class ObservableWithLatestFrom<T, U, R> extends AbstractObservableWithUpstream<T, R> {
@@ -37,7 +38,7 @@ public final class ObservableWithLatestFrom<T, U, R> extends AbstractObservableW
         final SerializedObserver<R> serial = new SerializedObserver<R>(t);
         final WithLatestFromObserver<T, U, R> wlf = new WithLatestFromObserver<T, U, R>(serial, combiner);
 
-        t.onSubscribe(wlf);
+        serial.onSubscribe(wlf);
 
         other.subscribe(new Observer<U>() {
             @Override
@@ -91,7 +92,7 @@ public final class ObservableWithLatestFrom<T, U, R> extends AbstractObservableW
             if (u != null) {
                 R r;
                 try {
-                    r = combiner.apply(t, u);
+                    r = ObjectHelper.requireNonNull(combiner.apply(t, u), "The combiner returned a null value");
                 } catch (Throwable e) {
                     Exceptions.throwIfFatal(e);
                     dispose();
