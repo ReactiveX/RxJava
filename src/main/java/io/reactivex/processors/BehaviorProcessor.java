@@ -13,6 +13,7 @@
 
 package io.reactivex.processors;
 
+import io.reactivex.annotations.CheckReturnValue;
 import java.lang.reflect.Array;
 import java.util.concurrent.atomic.*;
 import java.util.concurrent.locks.*;
@@ -97,6 +98,7 @@ public final class BehaviorProcessor<T> extends FlowableProcessor<T> {
      *            the type of item the Subject will emit
      * @return the constructed {@link BehaviorProcessor}
      */
+    @CheckReturnValue
     public static <T> BehaviorProcessor<T> create() {
         return new BehaviorProcessor<T>();
     }
@@ -112,6 +114,7 @@ public final class BehaviorProcessor<T> extends FlowableProcessor<T> {
      *            {@link BehaviorProcessor} has not yet observed any items from its source {@code Observable}
      * @return the constructed {@link BehaviorProcessor}
      */
+    @CheckReturnValue
     public static <T> BehaviorProcessor<T> createDefault(T defaultValue) {
         ObjectHelper.requireNonNull(defaultValue, "defaultValue is null");
         return new BehaviorProcessor<T>(defaultValue);

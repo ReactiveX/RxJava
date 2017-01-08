@@ -13,6 +13,7 @@
 
 package io.reactivex.processors;
 
+import io.reactivex.annotations.CheckReturnValue;
 import java.util.concurrent.atomic.*;
 
 import org.reactivestreams.*;
@@ -65,6 +66,7 @@ public final class UnicastProcessor<T> extends FlowableProcessor<T> {
      * @param <T> the value type
      * @return an UnicastSubject instance
      */
+    @CheckReturnValue
     public static <T> UnicastProcessor<T> create() {
         return new UnicastProcessor<T>(bufferSize());
     }
@@ -75,6 +77,7 @@ public final class UnicastProcessor<T> extends FlowableProcessor<T> {
      * @param capacityHint the hint to size the internal unbounded buffer
      * @return an UnicastProcessor instance
      */
+    @CheckReturnValue
     public static <T> UnicastProcessor<T> create(int capacityHint) {
         return new UnicastProcessor<T>(capacityHint);
     }
@@ -91,6 +94,7 @@ public final class UnicastProcessor<T> extends FlowableProcessor<T> {
      * @param onCancelled the non null callback
      * @return an UnicastProcessor instance
      */
+    @CheckReturnValue
     public static <T> UnicastProcessor<T> create(int capacityHint, Runnable onCancelled) {
         return new UnicastProcessor<T>(capacityHint, onCancelled);
     }

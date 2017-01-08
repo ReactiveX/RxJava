@@ -13,6 +13,7 @@
 
 package io.reactivex.subjects;
 
+import io.reactivex.annotations.CheckReturnValue;
 import java.lang.reflect.Array;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.*;
@@ -96,6 +97,7 @@ public final class BehaviorSubject<T> extends Subject<T> {
      *            the type of item the Subject will emit
      * @return the constructed {@link BehaviorSubject}
      */
+    @CheckReturnValue
     public static <T> BehaviorSubject<T> create() {
         return new BehaviorSubject<T>();
     }
@@ -111,6 +113,7 @@ public final class BehaviorSubject<T> extends Subject<T> {
      *            {@link BehaviorSubject} has not yet observed any items from its source {@code Observable}
      * @return the constructed {@link BehaviorSubject}
      */
+    @CheckReturnValue
     public static <T> BehaviorSubject<T> createDefault(T defaultValue) {
         return new BehaviorSubject<T>(defaultValue);
     }

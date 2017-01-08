@@ -20,6 +20,7 @@ import java.util.concurrent.atomic.*;
 
 import io.reactivex.Observer;
 import io.reactivex.Scheduler;
+import io.reactivex.annotations.CheckReturnValue;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.internal.util.NotificationLite;
@@ -74,6 +75,7 @@ public final class ReplaySubject<T> extends Subject<T> {
      *          the type of items observed and emitted by the Subject
      * @return the created subject
      */
+    @CheckReturnValue
     public static <T> ReplaySubject<T> create() {
         return new ReplaySubject<T>(new UnboundedReplayBuffer<T>(16));
     }
@@ -93,6 +95,7 @@ public final class ReplaySubject<T> extends Subject<T> {
      *          the initial buffer capacity
      * @return the created subject
      */
+    @CheckReturnValue
     public static <T> ReplaySubject<T> create(int capacityHint) {
         return new ReplaySubject<T>(new UnboundedReplayBuffer<T>(capacityHint));
     }
@@ -117,6 +120,7 @@ public final class ReplaySubject<T> extends Subject<T> {
      *          the maximum number of buffered items
      * @return the created subject
      */
+    @CheckReturnValue
     public static <T> ReplaySubject<T> createWithSize(int maxSize) {
         return new ReplaySubject<T>(new SizeBoundReplayBuffer<T>(maxSize));
     }
@@ -170,6 +174,7 @@ public final class ReplaySubject<T> extends Subject<T> {
      *          the {@link Scheduler} that provides the current time
      * @return the created subject
      */
+    @CheckReturnValue
     public static <T> ReplaySubject<T> createWithTime(long maxAge, TimeUnit unit, Scheduler scheduler) {
         return new ReplaySubject<T>(new SizeAndTimeBoundReplayBuffer<T>(Integer.MAX_VALUE, maxAge, unit, scheduler));
     }
@@ -208,6 +213,7 @@ public final class ReplaySubject<T> extends Subject<T> {
      *          the {@link Scheduler} that provides the current time
      * @return the created subject
      */
+    @CheckReturnValue
     public static <T> ReplaySubject<T> createWithTimeAndSize(long maxAge, TimeUnit unit, Scheduler scheduler, int maxSize) {
         return new ReplaySubject<T>(new SizeAndTimeBoundReplayBuffer<T>(maxSize, maxAge, unit, scheduler));
     }

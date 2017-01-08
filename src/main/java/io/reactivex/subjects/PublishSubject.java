@@ -13,6 +13,7 @@
 
 package io.reactivex.subjects;
 
+import io.reactivex.annotations.CheckReturnValue;
 import java.util.concurrent.atomic.*;
 
 import io.reactivex.Observer;
@@ -63,6 +64,7 @@ public final class PublishSubject<T> extends Subject<T> {
      * @param <T> the value type
      * @return the new PublishSubject
      */
+    @CheckReturnValue
     public static <T> PublishSubject<T> create() {
         return new PublishSubject<T>();
     }
