@@ -1540,10 +1540,11 @@ public abstract class Single<T> implements SingleSource<T> {
      * @return the source Single, transformed by the transformer function
      * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Implementing-Your-Own-Operators">RxJava wiki: Implementing Your Own Operators</a>
      */
+    @SuppressWarnings("unchecked")
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final <R> Single<R> compose(SingleTransformer<T, R> transformer) {
-        return wrap(transformer.apply(this));
+    public final <R> Single<R> compose(SingleTransformer<? super T, ? extends R> transformer) {
+        return wrap(((SingleTransformer<T, R>) transformer).apply(this));
     }
 
     /**

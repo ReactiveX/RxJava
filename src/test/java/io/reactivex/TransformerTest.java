@@ -13,12 +13,11 @@
 
 package io.reactivex;
 
-import static org.junit.Assert.*;
-
+import io.reactivex.exceptions.TestException;
 import org.junit.Test;
 import org.reactivestreams.Publisher;
 
-import io.reactivex.exceptions.TestException;
+import static org.junit.Assert.*;
 
 public class TransformerTest {
 
@@ -83,7 +82,7 @@ public class TransformerTest {
     }
 
     @Test
-    public void completabeTransformerThrows() {
+    public void completableTransformerThrows() {
         try {
             Completable.complete().compose(new CompletableTransformer() {
                 @Override
@@ -95,5 +94,74 @@ public class TransformerTest {
         } catch (TestException ex) {
             assertEquals("Forced failure", ex.getMessage());
         }
+    }
+
+    // Test demos for signature generics in compose() methods. Just needs to compile.
+
+    @Test
+    public void observableGenericsSignatureTest() {
+        A<String, Integer> a = new A<String, Integer>() { };
+
+        Observable.just(a).compose(TransformerTest.<String>testObservableTransformerCreator());
+    }
+
+    @Test
+    public void singleGenericsSignatureTest() {
+        A<String, Integer> a = new A<String, Integer>() { };
+
+        Single.just(a).compose(TransformerTest.<String>testSingleTransformerCreator());
+    }
+
+    @Test
+    public void maybeGenericsSignatureTest() {
+        A<String, Integer> a = new A<String, Integer>() { };
+
+        Maybe.just(a).compose(TransformerTest.<String>testMaybeTransformerCreator());
+    }
+
+    @Test
+    public void flowableGenericsSignatureTest() {
+        A<String, Integer> a = new A<String, Integer>() { };
+
+        Flowable.just(a).compose(TransformerTest.<String>testFlowableTransformerCreator());
+    }
+
+    interface A<T, R> {}
+    interface B<T> {}
+
+    private static <T> ObservableTransformer<A<T, ?>, B<T>> testObservableTransformerCreator() {
+        return new ObservableTransformer<A<T, ?>, B<T>>() {
+            @Override
+            public ObservableSource<B<T>> apply(Observable<A<T, ?>> a) {
+                return Observable.empty();
+            }
+        };
+    }
+
+    private static <T> SingleTransformer<A<T, ?>, B<T>> testSingleTransformerCreator() {
+        return new SingleTransformer<A<T, ?>, B<T>>() {
+            @Override
+            public SingleSource<B<T>> apply(Single<A<T, ?>> a) {
+                return Single.never();
+            }
+        };
+    }
+
+    private static <T> MaybeTransformer<A<T, ?>, B<T>> testMaybeTransformerCreator() {
+        return new MaybeTransformer<A<T, ?>, B<T>>() {
+            @Override
+            public MaybeSource<B<T>> apply(Maybe<A<T, ?>> a) {
+                return Maybe.empty();
+            }
+        };
+    }
+
+    private static <T> FlowableTransformer<A<T, ?>, B<T>> testFlowableTransformerCreator() {
+        return new FlowableTransformer<A<T, ?>, B<T>>() {
+            @Override
+            public Publisher<B<T>> apply(Flowable<A<T, ?>> a) {
+                return Flowable.empty();
+            }
+        };
     }
 }

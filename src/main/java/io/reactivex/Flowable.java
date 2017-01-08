@@ -6483,11 +6483,12 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @return the source Publisher, transformed by the transformer function
      * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Implementing-Your-Own-Operators">RxJava wiki: Implementing Your Own Operators</a>
      */
+    @SuppressWarnings("unchecked")
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final <R> Flowable<R> compose(FlowableTransformer<T, R> composer) {
-        return fromPublisher(composer.apply(this));
+    public final <R> Flowable<R> compose(FlowableTransformer<? super T, ? extends R> composer) {
+        return fromPublisher(((FlowableTransformer<T, R>) composer).apply(this));
     }
 
     /**
