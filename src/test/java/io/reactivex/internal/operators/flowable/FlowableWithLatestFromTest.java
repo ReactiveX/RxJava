@@ -681,4 +681,31 @@ public class FlowableWithLatestFromTest {
             RxJavaPlugins.reset();
         }
     }
+
+    @Test
+    public void combineToNull1() {
+        Flowable.just(1)
+        .withLatestFrom(Flowable.just(2), new BiFunction<Integer, Integer, Object>() {
+            @Override
+            public Object apply(Integer a, Integer b) throws Exception {
+                return null;
+            }
+        })
+        .test()
+        .assertFailure(NullPointerException.class);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void combineToNull2() {
+        Flowable.just(1)
+        .withLatestFrom(Arrays.asList(Flowable.just(2), Flowable.just(3)), new Function<Object[], Object>() {
+            @Override
+            public Object apply(Object[] o) throws Exception {
+                return null;
+            }
+        })
+        .test()
+        .assertFailure(NullPointerException.class);
+    }
 }

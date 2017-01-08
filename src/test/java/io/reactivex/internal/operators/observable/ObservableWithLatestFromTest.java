@@ -21,9 +21,9 @@ import java.util.*;
 import org.junit.*;
 import org.mockito.InOrder;
 
+import io.reactivex.*;
 import io.reactivex.Observable;
 import io.reactivex.Observer;
-import io.reactivex.TestHelper;
 import io.reactivex.disposables.Disposables;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.*;
@@ -619,5 +619,32 @@ public class ObservableWithLatestFromTest {
         } finally {
             RxJavaPlugins.reset();
         }
+    }
+
+    @Test
+    public void combineToNull1() {
+        Observable.just(1)
+        .withLatestFrom(Observable.just(2), new BiFunction<Integer, Integer, Object>() {
+            @Override
+            public Object apply(Integer a, Integer b) throws Exception {
+                return null;
+            }
+        })
+        .test()
+        .assertFailure(NullPointerException.class);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void combineToNull2() {
+        Observable.just(1)
+        .withLatestFrom(Arrays.asList(Observable.just(2), Observable.just(3)), new Function<Object[], Object>() {
+            @Override
+            public Object apply(Object[] o) throws Exception {
+                return null;
+            }
+        })
+        .test()
+        .assertFailure(NullPointerException.class);
     }
 }
