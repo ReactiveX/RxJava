@@ -32,6 +32,7 @@ import io.reactivex.exceptions.*;
 import io.reactivex.functions.*;
 import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.internal.fuseable.*;
+import io.reactivex.internal.operators.completable.CompletableToFlowable;
 import io.reactivex.internal.operators.maybe.MaybeToFlowable;
 import io.reactivex.internal.operators.single.SingleToFlowable;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
@@ -1951,6 +1952,28 @@ public enum TestHelper {
 
         try {
             new MaybeToFlowable<U>(composer.apply(pp.singleElement())).subscribe(ts);
+        } catch (Throwable ex) {
+            throw ExceptionHelper.wrapOrThrow(ex);
+        }
+
+        assertTrue("Not subscribed to source!", pp.hasSubscribers());
+
+        ts.cancel();
+
+        assertFalse("Dispose not propagated!", pp.hasSubscribers());
+    }
+
+    /**
+     * Check if the operator applied to a Completable source propagates dispose properly.
+     * @param composer the function to apply an operator to the provided Completable source
+     */
+    public static void checkDisposedCompletable(Function<Completable, ? extends CompletableSource> composer) {
+        PublishProcessor<Integer> pp = PublishProcessor.create();
+
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+
+        try {
+            new CompletableToFlowable<Integer>(composer.apply(pp.ignoreElements())).subscribe(ts);
         } catch (Throwable ex) {
             throw ExceptionHelper.wrapOrThrow(ex);
         }
