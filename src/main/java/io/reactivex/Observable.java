@@ -5722,10 +5722,11 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @return the source ObservableSource, transformed by the transformer function
      * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Implementing-Your-Own-Operators">RxJava wiki: Implementing Your Own Operators</a>
      */
+    @SuppressWarnings("unchecked")
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final <R> Observable<R> compose(ObservableTransformer<T, R> composer) {
-        return wrap(composer.apply(this));
+    public final <R> Observable<R> compose(ObservableTransformer<? super T, ? extends R> composer) {
+        return wrap(((ObservableTransformer<T, R>) composer).apply(this));
     }
 
     /**
