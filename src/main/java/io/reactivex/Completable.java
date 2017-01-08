@@ -1587,6 +1587,24 @@ public abstract class Completable implements CompletableSource {
     }
 
     /**
+     * Hides the identity of this Completable and its Disposable.
+     * <p>Allows preventing certain identity-based
+     * optimizations (fusion).
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code hide} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @return the new Completable instance
+     * @since 2.0.5 - experimental
+     */
+    @Experimental
+    @CheckReturnValue
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final Completable hide() {
+        return RxJavaPlugins.onAssembly(new CompletableHide(this));
+    }
+
+    /**
      * Subscribes to this CompletableConsumable and returns a Disposable which can be used to cancel
      * the subscription.
      * <dl>
