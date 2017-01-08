@@ -17,6 +17,7 @@ import io.reactivex.plugins.RxJavaPlugins;
 import java.util.concurrent.atomic.*;
 
 import io.reactivex.Observer;
+import io.reactivex.annotations.CheckReturnValue;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.disposables.EmptyDisposable;
 import io.reactivex.internal.functions.ObjectHelper;
@@ -73,6 +74,7 @@ public final class UnicastSubject<T> extends Subject<T> {
      * @param <T> the value type
      * @return an UnicastSubject instance
      */
+    @CheckReturnValue
     public static <T> UnicastSubject<T> create() {
         return new UnicastSubject<T>(bufferSize());
     }
@@ -83,6 +85,7 @@ public final class UnicastSubject<T> extends Subject<T> {
      * @param capacityHint the hint to size the internal unbounded buffer
      * @return an UnicastSubject instance
      */
+    @CheckReturnValue
     public static <T> UnicastSubject<T> create(int capacityHint) {
         return new UnicastSubject<T>(capacityHint);
     }
@@ -99,6 +102,7 @@ public final class UnicastSubject<T> extends Subject<T> {
      * @param onCancelled the non null callback
      * @return an UnicastSubject instance
      */
+    @CheckReturnValue
     public static <T> UnicastSubject<T> create(int capacityHint, Runnable onCancelled) {
         return new UnicastSubject<T>(capacityHint, onCancelled);
     }

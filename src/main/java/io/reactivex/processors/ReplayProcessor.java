@@ -13,6 +13,7 @@
 
 package io.reactivex.processors;
 
+import io.reactivex.annotations.CheckReturnValue;
 import java.lang.reflect.Array;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
@@ -89,6 +90,7 @@ public final class ReplayProcessor<T> extends FlowableProcessor<T> {
      *          the type of items observed and emitted by the ReplayProcessor
      * @return the created ReplayProcessor
      */
+    @CheckReturnValue
     public static <T> ReplayProcessor<T> create() {
         return new ReplayProcessor<T>(new UnboundedReplayBuffer<T>(16));
     }
@@ -108,6 +110,7 @@ public final class ReplayProcessor<T> extends FlowableProcessor<T> {
      *          the initial buffer capacity
      * @return the created subject
      */
+    @CheckReturnValue
     public static <T> ReplayProcessor<T> create(int capacityHint) {
         return new ReplayProcessor<T>(new UnboundedReplayBuffer<T>(capacityHint));
     }
@@ -132,6 +135,7 @@ public final class ReplayProcessor<T> extends FlowableProcessor<T> {
      *          the maximum number of buffered items
      * @return the created subject
      */
+    @CheckReturnValue
     public static <T> ReplayProcessor<T> createWithSize(int maxSize) {
         return new ReplayProcessor<T>(new SizeBoundReplayBuffer<T>(maxSize));
     }
@@ -185,6 +189,7 @@ public final class ReplayProcessor<T> extends FlowableProcessor<T> {
      *          the {@link Scheduler} that provides the current time
      * @return the created subject
      */
+    @CheckReturnValue
     public static <T> ReplayProcessor<T> createWithTime(long maxAge, TimeUnit unit, Scheduler scheduler) {
         return new ReplayProcessor<T>(new SizeAndTimeBoundReplayBuffer<T>(Integer.MAX_VALUE, maxAge, unit, scheduler));
     }
@@ -223,6 +228,7 @@ public final class ReplayProcessor<T> extends FlowableProcessor<T> {
      *          the {@link Scheduler} that provides the current time
      * @return the created subject
      */
+    @CheckReturnValue
     public static <T> ReplayProcessor<T> createWithTimeAndSize(long maxAge, TimeUnit unit, Scheduler scheduler, int maxSize) {
         return new ReplayProcessor<T>(new SizeAndTimeBoundReplayBuffer<T>(maxSize, maxAge, unit, scheduler));
     }

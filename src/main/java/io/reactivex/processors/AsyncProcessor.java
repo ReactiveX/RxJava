@@ -12,6 +12,7 @@
  */
 package io.reactivex.processors;
 
+import io.reactivex.annotations.CheckReturnValue;
 import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -49,6 +50,7 @@ public final class AsyncProcessor<T> extends FlowableProcessor<T> {
      * @param <T> the value type to be received and emitted
      * @return the new AsyncProcessor instance
      */
+    @CheckReturnValue
     public static <T> AsyncProcessor<T> create() {
         return new AsyncProcessor<T>();
     }

@@ -13,6 +13,7 @@
 
 package io.reactivex.subjects;
 
+import io.reactivex.annotations.CheckReturnValue;
 import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -51,6 +52,7 @@ public final class AsyncSubject<T> extends Subject<T> {
      * @param <T> the value type to be received and emitted
      * @return the new AsyncProcessor instance
      */
+    @CheckReturnValue
     public static <T> AsyncSubject<T> create() {
         return new AsyncSubject<T>();
     }

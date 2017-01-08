@@ -12,6 +12,7 @@
  */
 package io.reactivex.processors;
 
+import io.reactivex.annotations.CheckReturnValue;
 import java.util.concurrent.atomic.*;
 
 import org.reactivestreams.*;
@@ -74,6 +75,7 @@ public final class PublishProcessor<T> extends FlowableProcessor<T> {
      * @param <T> the value type
      * @return the new PublishProcessor
      */
+    @CheckReturnValue
     public static <T> PublishProcessor<T> create() {
         return new PublishProcessor<T>();
     }
