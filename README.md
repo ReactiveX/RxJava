@@ -57,12 +57,12 @@ public class HelloWorld {
 If your platform doesn't support Java 8 lambdas (yet), you have to create an inner class of `Consumer` manually:
 
 ```java
-        Flowable.just("Hello world")
-        .subscribe(new Consumer<String>() {
-            @Override public void accept(String s) {
-                System.out.println(s);
-            }
-        );
+Flowable.just("Hello world")
+  .subscribe(new Consumer<String>() {
+      @Override public void accept(String s) {
+          System.out.println(s);
+      }
+  );
 ```
 
 RxJava 2 features several base classes you can discover operators on:
@@ -80,9 +80,9 @@ Flowable.fromCallable(() -> {
     Thread.sleep(1000); //  imitate expensive computation
     return "Done";
 })
-.subscribeOn(Schedulers.io())
-.observeOn(Schedulers.single())
-.subscribe(System.out::println, Throwable::printStackTrace);
+  .subscribeOn(Schedulers.io())
+  .observeOn(Schedulers.single())
+  .subscribe(System.out::println, Throwable::printStackTrace);
 
 Thread.sleep(2000); // <--- wait for the flow to finish
 ```
@@ -95,7 +95,7 @@ Flowable<String> source = Flowable.fromCallable(() -> {
     return "Done";
 });
 
-Flowabe<String> runBackground = source.subscribeOn(Schedulers.io());
+Flowable<String> runBackground = source.subscribeOn(Schedulers.io());
 
 Flowable<String> showForeground = runBackground.observeOn(Schedulers.single());
 
@@ -114,9 +114,9 @@ Flows in RxJava are sequential in nature split into processing stages that may r
 
 ```java
 Flowable.range(1, 10)
-.observeOn(Schedulers.computation())
-.map(v -> v * v)
-.blockingSubscribe(System.out::println);
+  .observeOn(Schedulers.computation())
+  .map(v -> v * v)
+  .blockingSubscribe(System.out::println);
 ```
 
 This example flow squares the numbers from 1 to 10 on the **computation** `Scheduler` and consumes the results on the "main" thread (more precisely, the caller thread of `blockingSubscribe`). However, the lambda `v -> v * v` doesn't run in parallel for this flow; it receives the values 1 to 10 on the same computation thread one after the other.
@@ -125,11 +125,11 @@ Processing the numbers 1 to 10 in parallel is a bit more involved:
 
 ```java
 Flowable.range(1, 10)
-.flatMap(v ->
-    Flowable.just(v)
-    .subscribeOn(Schedulers.computation())
-    .map(v -> v * v)
-)
+  .flatMap(v ->
+      Flowable.just(v)
+        .subscribeOn(Schedulers.computation())
+        .map(v -> v * v)
+  )
 .blockingSubscribe(System.out::println);
 ```
 
