@@ -983,4 +983,22 @@ public class ObservableConcatMapEagerTest {
             }
         });
     }
+
+    @Test
+    public void oneDelayed() {
+        Observable.just(1, 2, 3, 4, 5)
+        .concatMapEager(new Function<Integer, ObservableSource<Integer>>() {
+            @Override
+            public ObservableSource<Integer> apply(Integer i) throws Exception {
+                return i == 3 ? Observable.just(i) : Observable
+                        .just(i)
+                        .delay(1, TimeUnit.MILLISECONDS, Schedulers.io());
+            }
+        })
+        .observeOn(Schedulers.io())
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertResult(1, 2, 3, 4, 5)
+        ;
+    }
 }

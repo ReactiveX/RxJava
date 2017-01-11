@@ -14,7 +14,6 @@
 package io.reactivex.internal.operators.observable;
 
 import java.util.ArrayDeque;
-import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import io.reactivex.*;
@@ -218,7 +217,6 @@ public final class ObservableConcatMapEager<T, R> extends AbstractObservableWith
             drain();
         }
 
-        @SuppressWarnings("unchecked")
         @Override
         public void drain() {
             if (getAndIncrement() != 0) {
@@ -274,23 +272,6 @@ public final class ObservableConcatMapEager<T, R> extends AbstractObservableWith
                         error.addThrowable(ex);
                         a.onError(error.terminate());
                         return;
-                    }
-
-                    if (source instanceof Callable) {
-                        R w;
-
-                        try {
-                            w = ((Callable<R>)source).call();
-                        } catch (Throwable ex) {
-                            Exceptions.throwIfFatal(ex);
-                            error.addThrowable(ex);
-                            continue;
-                        }
-
-                        if (w != null) {
-                            a.onNext(w);
-                        }
-                        continue;
                     }
 
                     InnerQueuedObserver<R> inner = new InnerQueuedObserver<R>(this, prefetch);
