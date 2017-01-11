@@ -1182,7 +1182,6 @@ public class FlowableConcatMapEagerTest {
         .concatMapEager(new Function<Integer, Flowable<Integer>>() {
             @Override
             public Flowable<Integer> apply(Integer i) throws Exception {
-                System.out.println("Processing " + i);
                 return i == 3 ? Flowable.just(i) : Flowable
                         .just(i)
                         .delay(1, TimeUnit.MILLISECONDS, Schedulers.io());

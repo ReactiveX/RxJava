@@ -990,7 +990,6 @@ public class ObservableConcatMapEagerTest {
         .concatMapEager(new Function<Integer, ObservableSource<Integer>>() {
             @Override
             public ObservableSource<Integer> apply(Integer i) throws Exception {
-                System.out.println("Processing " + i);
                 return i == 3 ? Observable.just(i) : Observable
                         .just(i)
                         .delay(1, TimeUnit.MILLISECONDS, Schedulers.io());
