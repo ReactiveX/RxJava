@@ -133,6 +133,10 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * implementation of this operator has to create an {@code Object[]} instead. Unfortunately, a
      * {@code Function<Integer[], R>} passed to the method would trigger a {@code ClassCastException}.
      * <p>
+     * If any of the sources never produces an item but only terminates (normally or with an error), the
+     * resulting sequence terminates immediately (normally or with all the errors accumulated till that point).
+     * If that input source is also synchronous, other sources after it will not be subscribed to.
+     * <p>
      * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/combineLatest.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
@@ -168,6 +172,10 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * implementation of this operator has to create an {@code Object[]} instead. Unfortunately, a
      * {@code Function<Integer[], R>} passed to the method would trigger a {@code ClassCastException}.
      * <p>
+     * If any of the sources never produces an item but only terminates (normally or with an error), the
+     * resulting sequence terminates immediately (normally or with all the errors accumulated till that point).
+     * If that input source is also synchronous, other sources after it will not be subscribed to.
+     * <p>
      * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/combineLatest.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
@@ -202,6 +210,10 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * Note on method signature: since Java doesn't allow creating a generic array with {@code new T[]}, the
      * implementation of this operator has to create an {@code Object[]} instead. Unfortunately, a
      * {@code Function<Integer[], R>} passed to the method would trigger a {@code ClassCastException}.
+     * <p>
+     * If any of the sources never produces an item but only terminates (normally or with an error), the
+     * resulting sequence terminates immediately (normally or with all the errors accumulated till that point).
+     * If that input source is also synchronous, other sources after it will not be subscribed to.
      * <p>
      * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/combineLatest.png" alt="">
      * <dl>
@@ -245,6 +257,10 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * implementation of this operator has to create an {@code Object[]} instead. Unfortunately, a
      * {@code Function<Integer[], R>} passed to the method would trigger a {@code ClassCastException}.
      * <p>
+     * If any of the sources never produces an item but only terminates (normally or with an error), the
+     * resulting sequence terminates immediately (normally or with all the errors accumulated till that point).
+     * If that input source is also synchronous, other sources after it will not be subscribed to.
+     * <p>
      * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/combineLatest.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
@@ -278,6 +294,10 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * Note on method signature: since Java doesn't allow creating a generic array with {@code new T[]}, the
      * implementation of this operator has to create an {@code Object[]} instead. Unfortunately, a
      * {@code Function<Integer[], R>} passed to the method would trigger a {@code ClassCastException}.
+     * <p>
+     * If any of the sources never produces an item but only terminates (normally or with an error), the
+     * resulting sequence terminates immediately (normally or with all the errors accumulated till that point).
+     * If that input source is also synchronous, other sources after it will not be subscribed to.
      * <p>
      * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/combineLatest.png" alt="">
      * <dl>
@@ -320,6 +340,10 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * source ObservableSources each time an item is received from either of the source ObservableSources, where this
      * aggregation is defined by a specified function.
      * <p>
+     * If any of the sources never produces an item but only terminates (normally or with an error), the
+     * resulting sequence terminates immediately (normally or with all the errors accumulated till that point).
+     * If that input source is also synchronous, other sources after it will not be subscribed to.
+     * <p>
      * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/combineLatest.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
@@ -352,6 +376,10 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * Combines three source ObservableSources by emitting an item that aggregates the latest values of each of the
      * source ObservableSources each time an item is received from any of the source ObservableSources, where this
      * aggregation is defined by a specified function.
+     * <p>
+     * If any of the sources never produces an item but only terminates (normally or with an error), the
+     * resulting sequence terminates immediately (normally or with all the errors accumulated till that point).
+     * If that input source is also synchronous, other sources after it will not be subscribed to.
      * <p>
      * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/combineLatest.png" alt="">
      * <dl>
@@ -389,6 +417,10 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * Combines four source ObservableSources by emitting an item that aggregates the latest values of each of the
      * source ObservableSources each time an item is received from any of the source ObservableSources, where this
      * aggregation is defined by a specified function.
+     * <p>
+     * If any of the sources never produces an item but only terminates (normally or with an error), the
+     * resulting sequence terminates immediately (normally or with all the errors accumulated till that point).
+     * If that input source is also synchronous, other sources after it will not be subscribed to.
      * <p>
      * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/combineLatest.png" alt="">
      * <dl>
@@ -429,6 +461,10 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * Combines five source ObservableSources by emitting an item that aggregates the latest values of each of the
      * source ObservableSources each time an item is received from any of the source ObservableSources, where this
      * aggregation is defined by a specified function.
+     * <p>
+     * If any of the sources never produces an item but only terminates (normally or with an error), the
+     * resulting sequence terminates immediately (normally or with all the errors accumulated till that point).
+     * If that input source is also synchronous, other sources after it will not be subscribed to.
      * <p>
      * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/combineLatest.png" alt="">
      * <dl>
@@ -473,6 +509,10 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * Combines six source ObservableSources by emitting an item that aggregates the latest values of each of the
      * source ObservableSources each time an item is received from any of the source ObservableSources, where this
      * aggregation is defined by a specified function.
+     * <p>
+     * If any of the sources never produces an item but only terminates (normally or with an error), the
+     * resulting sequence terminates immediately (normally or with all the errors accumulated till that point).
+     * If that input source is also synchronous, other sources after it will not be subscribed to.
      * <p>
      * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/combineLatest.png" alt="">
      * <dl>
@@ -520,6 +560,10 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * Combines seven source ObservableSources by emitting an item that aggregates the latest values of each of the
      * source ObservableSources each time an item is received from any of the source ObservableSources, where this
      * aggregation is defined by a specified function.
+     * <p>
+     * If any of the sources never produces an item but only terminates (normally or with an error), the
+     * resulting sequence terminates immediately (normally or with all the errors accumulated till that point).
+     * If that input source is also synchronous, other sources after it will not be subscribed to.
      * <p>
      * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/combineLatest.png" alt="">
      * <dl>
@@ -571,6 +615,10 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * Combines eight source ObservableSources by emitting an item that aggregates the latest values of each of the
      * source ObservableSources each time an item is received from any of the source ObservableSources, where this
      * aggregation is defined by a specified function.
+     * <p>
+     * If any of the sources never produces an item but only terminates (normally or with an error), the
+     * resulting sequence terminates immediately (normally or with all the errors accumulated till that point).
+     * If that input source is also synchronous, other sources after it will not be subscribed to.
      * <p>
      * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/combineLatest.png" alt="">
      * <dl>
@@ -625,6 +673,10 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * Combines nine source ObservableSources by emitting an item that aggregates the latest values of each of the
      * source ObservableSources each time an item is received from any of the source ObservableSources, where this
      * aggregation is defined by a specified function.
+     * <p>
+     * If any of the sources never produces an item but only terminates (normally or with an error), the
+     * resulting sequence terminates immediately (normally or with all the errors accumulated till that point).
+     * If that input source is also synchronous, other sources after it will not be subscribed to.
      * <p>
      * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/combineLatest.png" alt="">
      * <dl>
@@ -687,6 +739,10 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * Note on method signature: since Java doesn't allow creating a generic array with {@code new T[]}, the
      * implementation of this operator has to create an {@code Object[]} instead. Unfortunately, a
      * {@code Function<Integer[], R>} passed to the method would trigger a {@code ClassCastException}.
+     * <p>
+     * If any of the sources never produces an item but only terminates (normally or with an error), the
+     * resulting sequence terminates immediately (normally or with all the errors accumulated till that point).
+     * If that input source is also synchronous, other sources after it will not be subscribed to.
      *
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
@@ -721,6 +777,10 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * Note on method signature: since Java doesn't allow creating a generic array with {@code new T[]}, the
      * implementation of this operator has to create an {@code Object[]} instead. Unfortunately, a
      * {@code Function<Integer[], R>} passed to the method would trigger a {@code ClassCastException}.
+     * <p>
+     * If any of the sources never produces an item but only terminates (normally or with an error), the
+     * resulting sequence terminates immediately (normally or with all the errors accumulated till that point).
+     * If that input source is also synchronous, other sources after it will not be subscribed to.
      *
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
@@ -757,6 +817,10 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * Note on method signature: since Java doesn't allow creating a generic array with {@code new T[]}, the
      * implementation of this operator has to create an {@code Object[]} instead. Unfortunately, a
      * {@code Function<Integer[], R>} passed to the method would trigger a {@code ClassCastException}.
+     * <p>
+     * If any of the sources never produces an item but only terminates (normally or with an error), the
+     * resulting sequence terminates immediately (normally or with all the errors accumulated till that point).
+     * If that input source is also synchronous, other sources after it will not be subscribed to.
      * <p>
      * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/combineLatestDelayError.png" alt="">
      * <dl>
@@ -802,6 +866,10 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * implementation of this operator has to create an {@code Object[]} instead. Unfortunately, a
      * {@code Function<Integer[], R>} passed to the method would trigger a {@code ClassCastException}.
      * <p>
+     * If any of the sources never produces an item but only terminates (normally or with an error), the
+     * resulting sequence terminates immediately (normally or with all the errors accumulated till that point).
+     * If that input source is also synchronous, other sources after it will not be subscribed to.
+     * <p>
      * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/combineLatestDelayError.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
@@ -836,6 +904,10 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * Note on method signature: since Java doesn't allow creating a generic array with {@code new T[]}, the
      * implementation of this operator has to create an {@code Object[]} instead. Unfortunately, a
      * {@code Function<Integer[], R>} passed to the method would trigger a {@code ClassCastException}.
+     * <p>
+     * If any of the sources never produces an item but only terminates (normally or with an error), the
+     * resulting sequence terminates immediately (normally or with all the errors accumulated till that point).
+     * If that input source is also synchronous, other sources after it will not be subscribed to.
      * <p>
      * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/combineLatestDelayError.png" alt="">
      * <dl>

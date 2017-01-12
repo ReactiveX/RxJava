@@ -143,6 +143,10 @@ public abstract class Flowable<T> implements Publisher<T> {
      * Note on method signature: since Java doesn't allow creating a generic array with {@code new T[]}, the
      * implementation of this operator has to create an {@code Object[]} instead. Unfortunately, a
      * {@code Function<Integer[], R>} passed to the method would trigger a {@code ClassCastException}.
+     * <p>
+     * If any of the sources never produces an item but only terminates (normally or with an error), the
+     * resulting sequence terminates immediately (normally or with all the errors accumulated till that point).
+     * If that input source is also synchronous, other sources after it will not be subscribed to.
      *
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
@@ -180,6 +184,10 @@ public abstract class Flowable<T> implements Publisher<T> {
      * Note on method signature: since Java doesn't allow creating a generic array with {@code new T[]}, the
      * implementation of this operator has to create an {@code Object[]} instead. Unfortunately, a
      * {@code Function<Integer[], R>} passed to the method would trigger a {@code ClassCastException}.
+     * <p>
+     * If any of the sources never produces an item but only terminates (normally or with an error), the
+     * resulting sequence terminates immediately (normally or with all the errors accumulated till that point).
+     * If that input source is also synchronous, other sources after it will not be subscribed to.
      *
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
@@ -217,6 +225,10 @@ public abstract class Flowable<T> implements Publisher<T> {
      * Note on method signature: since Java doesn't allow creating a generic array with {@code new T[]}, the
      * implementation of this operator has to create an {@code Object[]} instead. Unfortunately, a
      * {@code Function<Integer[], R>} passed to the method would trigger a {@code ClassCastException}.
+     * <p>
+     * If any of the sources never produces an item but only terminates (normally or with an error), the
+     * resulting sequence terminates immediately (normally or with all the errors accumulated till that point).
+     * If that input source is also synchronous, other sources after it will not be subscribed to.
      *
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
@@ -262,6 +274,10 @@ public abstract class Flowable<T> implements Publisher<T> {
      * Note on method signature: since Java doesn't allow creating a generic array with {@code new T[]}, the
      * implementation of this operator has to create an {@code Object[]} instead. Unfortunately, a
      * {@code Function<Integer[], R>} passed to the method would trigger a {@code ClassCastException}.
+     * <p>
+     * If any of the sources never produces an item but only terminates (normally or with an error), the
+     * resulting sequence terminates immediately (normally or with all the errors accumulated till that point).
+     * If that input source is also synchronous, other sources after it will not be subscribed to.
      *
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
@@ -300,6 +316,10 @@ public abstract class Flowable<T> implements Publisher<T> {
      * Note on method signature: since Java doesn't allow creating a generic array with {@code new T[]}, the
      * implementation of this operator has to create an {@code Object[]} instead. Unfortunately, a
      * {@code Function<Integer[], R>} passed to the method would trigger a {@code ClassCastException}.
+     * <p>
+     * If any of the sources never produces an item but only terminates (normally or with an error), the
+     * resulting sequence terminates immediately (normally or with all the errors accumulated till that point).
+     * If that input source is also synchronous, other sources after it will not be subscribed to.
      *
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
@@ -343,6 +363,10 @@ public abstract class Flowable<T> implements Publisher<T> {
      * Note on method signature: since Java doesn't allow creating a generic array with {@code new T[]}, the
      * implementation of this operator has to create an {@code Object[]} instead. Unfortunately, a
      * {@code Function<Integer[], R>} passed to the method would trigger a {@code ClassCastException}.
+     * <p>
+     * If any of the sources never produces an item but only terminates (normally or with an error), the
+     * resulting sequence terminates immediately (normally or with all the errors accumulated till that point).
+     * If that input source is also synchronous, other sources after it will not be subscribed to.
      *
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
@@ -382,6 +406,10 @@ public abstract class Flowable<T> implements Publisher<T> {
      * Note on method signature: since Java doesn't allow creating a generic array with {@code new T[]}, the
      * implementation of this operator has to create an {@code Object[]} instead. Unfortunately, a
      * {@code Function<Integer[], R>} passed to the method would trigger a {@code ClassCastException}.
+     * <p>
+     * If any of the sources never produces an item but only terminates (normally or with an error), the
+     * resulting sequence terminates immediately (normally or with all the errors accumulated till that point).
+     * If that input source is also synchronous, other sources after it will not be subscribed to.
      *
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
@@ -421,6 +449,10 @@ public abstract class Flowable<T> implements Publisher<T> {
      * Note on method signature: since Java doesn't allow creating a generic array with {@code new T[]}, the
      * implementation of this operator has to create an {@code Object[]} instead. Unfortunately, a
      * {@code Function<Integer[], R>} passed to the method would trigger a {@code ClassCastException}.
+     * <p>
+     * If any of the sources never produces an item but only terminates (normally or with an error), the
+     * resulting sequence terminates immediately (normally or with all the errors accumulated till that point).
+     * If that input source is also synchronous, other sources after it will not be subscribed to.
      *
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
@@ -462,6 +494,10 @@ public abstract class Flowable<T> implements Publisher<T> {
      * Note on method signature: since Java doesn't allow creating a generic array with {@code new T[]}, the
      * implementation of this operator has to create an {@code Object[]} instead. Unfortunately, a
      * {@code Function<Integer[], R>} passed to the method would trigger a {@code ClassCastException}.
+     * <p>
+     * If any of the sources never produces an item but only terminates (normally or with an error), the
+     * resulting sequence terminates immediately (normally or with all the errors accumulated till that point).
+     * If that input source is also synchronous, other sources after it will not be subscribed to.
      *
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
@@ -509,6 +545,10 @@ public abstract class Flowable<T> implements Publisher<T> {
      * Note on method signature: since Java doesn't allow creating a generic array with {@code new T[]}, the
      * implementation of this operator has to create an {@code Object[]} instead. Unfortunately, a
      * {@code Function<Integer[], R>} passed to the method would trigger a {@code ClassCastException}.
+     * <p>
+     * If any of the sources never produces an item but only terminates (normally or with an error), the
+     * resulting sequence terminates immediately (normally or with all the errors accumulated till that point).
+     * If that input source is also synchronous, other sources after it will not be subscribed to.
      *
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
@@ -548,6 +588,10 @@ public abstract class Flowable<T> implements Publisher<T> {
      * Note on method signature: since Java doesn't allow creating a generic array with {@code new T[]}, the
      * implementation of this operator has to create an {@code Object[]} instead. Unfortunately, a
      * {@code Function<Integer[], R>} passed to the method would trigger a {@code ClassCastException}.
+     * <p>
+     * If any of the sources never produces an item but only terminates (normally or with an error), the
+     * resulting sequence terminates immediately (normally or with all the errors accumulated till that point).
+     * If that input source is also synchronous, other sources after it will not be subscribed to.
      *
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
@@ -587,6 +631,10 @@ public abstract class Flowable<T> implements Publisher<T> {
      * Combines two source Publishers by emitting an item that aggregates the latest values of each of the
      * source Publishers each time an item is received from either of the source Publishers, where this
      * aggregation is defined by a specified function.
+     * <p>
+     * If any of the sources never produces an item but only terminates (normally or with an error), the
+     * resulting sequence terminates immediately (normally or with all the errors accumulated till that point).
+     * If that input source is also synchronous, other sources after it will not be subscribed to.
      * <p>
      * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/combineLatest.png" alt="">
      * <dl>
@@ -628,6 +676,10 @@ public abstract class Flowable<T> implements Publisher<T> {
      * Combines three source Publishers by emitting an item that aggregates the latest values of each of the
      * source Publishers each time an item is received from any of the source Publishers, where this
      * aggregation is defined by a specified function.
+     * <p>
+     * If any of the sources never produces an item but only terminates (normally or with an error), the
+     * resulting sequence terminates immediately (normally or with all the errors accumulated till that point).
+     * If that input source is also synchronous, other sources after it will not be subscribed to.
      * <p>
      * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/combineLatest.png" alt="">
      * <dl>
@@ -673,6 +725,10 @@ public abstract class Flowable<T> implements Publisher<T> {
      * Combines four source Publishers by emitting an item that aggregates the latest values of each of the
      * source Publishers each time an item is received from any of the source Publishers, where this
      * aggregation is defined by a specified function.
+     * <p>
+     * If any of the sources never produces an item but only terminates (normally or with an error), the
+     * resulting sequence terminates immediately (normally or with all the errors accumulated till that point).
+     * If that input source is also synchronous, other sources after it will not be subscribed to.
      * <p>
      * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/combineLatest.png" alt="">
      * <dl>
@@ -722,6 +778,10 @@ public abstract class Flowable<T> implements Publisher<T> {
      * Combines five source Publishers by emitting an item that aggregates the latest values of each of the
      * source Publishers each time an item is received from any of the source Publishers, where this
      * aggregation is defined by a specified function.
+     * <p>
+     * If any of the sources never produces an item but only terminates (normally or with an error), the
+     * resulting sequence terminates immediately (normally or with all the errors accumulated till that point).
+     * If that input source is also synchronous, other sources after it will not be subscribed to.
      * <p>
      * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/combineLatest.png" alt="">
      * <dl>
@@ -776,6 +836,10 @@ public abstract class Flowable<T> implements Publisher<T> {
      * Combines six source Publishers by emitting an item that aggregates the latest values of each of the
      * source Publishers each time an item is received from any of the source Publishers, where this
      * aggregation is defined by a specified function.
+     * <p>
+     * If any of the sources never produces an item but only terminates (normally or with an error), the
+     * resulting sequence terminates immediately (normally or with all the errors accumulated till that point).
+     * If that input source is also synchronous, other sources after it will not be subscribed to.
      * <p>
      * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/combineLatest.png" alt="">
      * <dl>
@@ -834,6 +898,10 @@ public abstract class Flowable<T> implements Publisher<T> {
      * Combines seven source Publishers by emitting an item that aggregates the latest values of each of the
      * source Publishers each time an item is received from any of the source Publishers, where this
      * aggregation is defined by a specified function.
+     * <p>
+     * If any of the sources never produces an item but only terminates (normally or with an error), the
+     * resulting sequence terminates immediately (normally or with all the errors accumulated till that point).
+     * If that input source is also synchronous, other sources after it will not be subscribed to.
      * <p>
      * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/combineLatest.png" alt="">
      * <dl>
@@ -897,6 +965,10 @@ public abstract class Flowable<T> implements Publisher<T> {
      * Combines eight source Publishers by emitting an item that aggregates the latest values of each of the
      * source Publishers each time an item is received from any of the source Publishers, where this
      * aggregation is defined by a specified function.
+     * <p>
+     * If any of the sources never produces an item but only terminates (normally or with an error), the
+     * resulting sequence terminates immediately (normally or with all the errors accumulated till that point).
+     * If that input source is also synchronous, other sources after it will not be subscribed to.
      * <p>
      * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/combineLatest.png" alt="">
      * <dl>
@@ -964,6 +1036,10 @@ public abstract class Flowable<T> implements Publisher<T> {
      * Combines nine source Publishers by emitting an item that aggregates the latest values of each of the
      * source Publishers each time an item is received from any of the source Publishers, where this
      * aggregation is defined by a specified function.
+     * <p>
+     * If any of the sources never produces an item but only terminates (normally or with an error), the
+     * resulting sequence terminates immediately (normally or with all the errors accumulated till that point).
+     * If that input source is also synchronous, other sources after it will not be subscribed to.
      * <p>
      * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/combineLatest.png" alt="">
      * <dl>

@@ -33,7 +33,7 @@ import io.reactivex.internal.functions.Functions;
 import io.reactivex.internal.operators.flowable.FlowableZipTest.ArgsToString;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.processors.PublishProcessor;
-import io.reactivex.schedulers.Schedulers;
+import io.reactivex.schedulers.*;
 import io.reactivex.subscribers.*;
 
 public class FlowableCombineLatestTest {
@@ -1369,5 +1369,152 @@ public class FlowableCombineLatestTest {
         )
         .test()
         .assertFailure(TestException.class);
+    }
+
+    @Test
+    public void dontSubscribeIfDone() {
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            final int[] count = { 0 };
+
+            Flowable.combineLatest(Flowable.empty(),
+                    Flowable.error(new TestException())
+                    .doOnSubscribe(new Consumer<Subscription>() {
+                        @Override
+                        public void accept(Subscription d) throws Exception {
+                            count[0]++;
+                        }
+                    }),
+                    new BiFunction<Object, Object, Object>() {
+                        @Override
+                        public Object apply(Object a, Object b) throws Exception {
+                            return 0;
+                        }
+                    })
+            .test()
+            .assertResult();
+
+            assertEquals(0, count[0]);
+
+            assertTrue(errors.toString(), errors.isEmpty());
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void dontSubscribeIfDone2() {
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            final int[] count = { 0 };
+
+            Flowable.combineLatestDelayError(
+                    Arrays.asList(Flowable.empty(),
+                        Flowable.error(new TestException())
+                        .doOnSubscribe(new Consumer<Subscription>() {
+                            @Override
+                            public void accept(Subscription d) throws Exception {
+                                count[0]++;
+                            }
+                        })
+                    ),
+                    new Function<Object[], Object>() {
+                        @Override
+                        public Object apply(Object[] a) throws Exception {
+                            return 0;
+                        }
+                    })
+            .test()
+            .assertResult();
+
+            assertEquals(0, count[0]);
+
+            assertTrue(errors.toString(), errors.isEmpty());
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void combine2Flowable2Errors() throws Exception {
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            TestSubscriber<Object> testObserver = TestSubscriber.create();
+
+            TestScheduler testScheduler = new TestScheduler();
+
+            Flowable<Integer> emptyFlowable = Flowable.timer(10, TimeUnit.MILLISECONDS, testScheduler)
+                    .flatMap(new Function<Long, Publisher<Integer>>() {
+                        @Override
+                        public Publisher<Integer> apply(Long aLong) throws Exception {
+                            return Flowable.error(new Exception());
+                        }
+                    });
+            Flowable<Object> errorFlowable = Flowable.timer(100, TimeUnit.MILLISECONDS, testScheduler).map(new Function<Long, Object>() {
+                @Override
+                public Object apply(Long aLong) throws Exception {
+                    throw new Exception();
+                }
+            });
+
+            Flowable.combineLatestDelayError(
+                    Arrays.asList(
+                            emptyFlowable
+                                    .doOnEach(new Consumer<Notification<Integer>>() {
+                                        @Override
+                                        public void accept(Notification<Integer> integerNotification) throws Exception {
+                                            System.out.println("emptyFlowable: " + integerNotification);
+                                        }
+                                    })
+                                    .doFinally(new Action() {
+                                        @Override
+                                        public void run() throws Exception {
+                                            System.out.println("emptyFlowable: doFinally");
+                                        }
+                                    }),
+                            errorFlowable
+                                    .doOnEach(new Consumer<Notification<Object>>() {
+                                        @Override
+                                        public void accept(Notification<Object> integerNotification) throws Exception {
+                                            System.out.println("errorFlowable: " + integerNotification);
+                                        }
+                                    })
+                                    .doFinally(new Action() {
+                                        @Override
+                                        public void run() throws Exception {
+                                            System.out.println("errorFlowable: doFinally");
+                                        }
+                                    })),
+                    new Function<Object[], Object>() {
+                        @Override
+                        public Object apply(Object[] objects) throws Exception {
+                            return 0;
+                        }
+                    }
+            )
+                    .doOnEach(new Consumer<Notification<Object>>() {
+                        @Override
+                        public void accept(Notification<Object> integerNotification) throws Exception {
+                            System.out.println("combineLatestDelayError: " + integerNotification);
+                        }
+                    })
+                    .doFinally(new Action() {
+                        @Override
+                        public void run() throws Exception {
+                            System.out.println("combineLatestDelayError: doFinally");
+                        }
+                    })
+                    .subscribe(testObserver);
+
+            testScheduler.advanceTimeBy(100, TimeUnit.MILLISECONDS);
+
+            testObserver.awaitTerminalEvent();
+
+            assertTrue(errors.toString(), errors.isEmpty());
+        } finally {
+            RxJavaPlugins.reset();
+        }
     }
 }
