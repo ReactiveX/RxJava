@@ -756,4 +756,32 @@ public class ObservableFlatMapTest {
 
         TestHelper.assertError(errors, 1, TestException.class);
     }
+
+    @Test
+    public void noCrossBoundaryFusion() {
+        for (int i = 0; i < 500; i++) {
+            TestObserver<Object> ts = Observable.merge(
+                    Observable.just(1).observeOn(Schedulers.single()).map(new Function<Integer, Object>() {
+                        @Override
+                        public Object apply(Integer v) throws Exception {
+                            return Thread.currentThread().getName().substring(0, 4);
+                        }
+                    }),
+                    Observable.just(1).observeOn(Schedulers.computation()).map(new Function<Integer, Object>() {
+                        @Override
+                        public Object apply(Integer v) throws Exception {
+                            return Thread.currentThread().getName().substring(0, 4);
+                        }
+                    })
+            )
+            .test()
+            .awaitDone(5, TimeUnit.SECONDS)
+            .assertValueCount(2);
+
+            List<Object> list = ts.values();
+
+            assertTrue(list.toString(), list.contains("RxSi"));
+            assertTrue(list.toString(), list.contains("RxCo"));
+        }
+    }
 }

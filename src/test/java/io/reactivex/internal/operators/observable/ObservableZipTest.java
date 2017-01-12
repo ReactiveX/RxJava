@@ -14,6 +14,7 @@
 package io.reactivex.internal.operators.observable;
 
 import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 import java.util.*;
@@ -999,8 +1000,8 @@ public class ObservableZipTest {
     public void testDownstreamBackpressureRequestsWithFiniteSyncObservables() {
         AtomicInteger generatedA = new AtomicInteger();
         AtomicInteger generatedB = new AtomicInteger();
-        Observable<Integer> o1 = createInfiniteObservable(generatedA).take(Flowable.bufferSize() * 2);
-        Observable<Integer> o2 = createInfiniteObservable(generatedB).take(Flowable.bufferSize() * 2);
+        Observable<Integer> o1 = createInfiniteObservable(generatedA).take(Observable.bufferSize() * 2);
+        Observable<Integer> o2 = createInfiniteObservable(generatedB).take(Observable.bufferSize() * 2);
 
         TestObserver<String> ts = new TestObserver<String>();
         Observable.zip(o1, o2, new BiFunction<Integer, Integer, String>() {
@@ -1010,14 +1011,14 @@ public class ObservableZipTest {
                 return t1 + "-" + t2;
             }
 
-        }).observeOn(Schedulers.computation()).take(Flowable.bufferSize() * 2).subscribe(ts);
+        }).observeOn(Schedulers.computation()).take(Observable.bufferSize() * 2).subscribe(ts);
 
         ts.awaitTerminalEvent();
         ts.assertNoErrors();
-        assertEquals(Flowable.bufferSize() * 2, ts.valueCount());
+        assertEquals(Observable.bufferSize() * 2, ts.valueCount());
         System.out.println("Generated => A: " + generatedA.get() + " B: " + generatedB.get());
-        assertTrue(generatedA.get() < (Flowable.bufferSize() * 3));
-        assertTrue(generatedB.get() < (Flowable.bufferSize() * 3));
+        assertTrue(generatedA.get() < (Observable.bufferSize() * 3));
+        assertTrue(generatedB.get() < (Observable.bufferSize() * 3));
     }
 
     private Observable<Integer> createInfiniteObservable(final AtomicInteger generated) {
@@ -1358,4 +1359,37 @@ public class ObservableZipTest {
             }
         }));
     }
-}
+
+    @Test
+    public void noCrossBoundaryFusion() {
+        for (int i = 0; i < 500; i++) {
+            TestObserver<List<Object>> ts = Observable.zip(
+                    Observable.just(1).observeOn(Schedulers.single()).map(new Function<Integer, Object>() {
+                        @Override
+                        public Object apply(Integer v) throws Exception {
+                            return Thread.currentThread().getName().substring(0, 4);
+                        }
+                    }),
+                    Observable.just(1).observeOn(Schedulers.computation()).map(new Function<Integer, Object>() {
+                        @Override
+                        public Object apply(Integer v) throws Exception {
+                            return Thread.currentThread().getName().substring(0, 4);
+                        }
+                    }),
+                    new BiFunction<Object, Object, List<Object>>() {
+                        @Override
+                        public List<Object> apply(Object t1, Object t2) throws Exception {
+                            return Arrays.asList(t1, t2);
+                        }
+                    }
+            )
+            .test()
+            .awaitDone(5, TimeUnit.SECONDS)
+            .assertValueCount(1);
+
+            List<Object> list = ts.values().get(0);
+
+            assertTrue(list.toString(), list.contains("RxSi"));
+            assertTrue(list.toString(), list.contains("RxCo"));
+        }
+    }}
