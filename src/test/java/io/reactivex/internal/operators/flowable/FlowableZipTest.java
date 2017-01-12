@@ -1767,4 +1767,38 @@ public class FlowableZipTest {
         .test(0L)
         .assertFailure(TestException.class);
     }
+
+    @Test
+    public void noCrossBoundaryFusion() {
+        for (int i = 0; i < 500; i++) {
+            TestSubscriber<List<Object>> ts = Flowable.zip(
+                    Flowable.just(1).observeOn(Schedulers.single()).map(new Function<Integer, Object>() {
+                        @Override
+                        public Object apply(Integer v) throws Exception {
+                            return Thread.currentThread().getName().substring(0, 4);
+                        }
+                    }),
+                    Flowable.just(1).observeOn(Schedulers.computation()).map(new Function<Integer, Object>() {
+                        @Override
+                        public Object apply(Integer v) throws Exception {
+                            return Thread.currentThread().getName().substring(0, 4);
+                        }
+                    }),
+                    new BiFunction<Object, Object, List<Object>>() {
+                        @Override
+                        public List<Object> apply(Object t1, Object t2) throws Exception {
+                            return Arrays.asList(t1, t2);
+                        }
+                    }
+            )
+            .test()
+            .awaitDone(5, TimeUnit.SECONDS)
+            .assertValueCount(1);
+
+            List<Object> list = ts.values().get(0);
+
+            assertTrue(list.toString(), list.contains("RxSi"));
+            assertTrue(list.toString(), list.contains("RxCo"));
+        }
+    }
 }

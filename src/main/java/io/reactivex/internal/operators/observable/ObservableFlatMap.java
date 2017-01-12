@@ -532,7 +532,7 @@ public final class ObservableFlatMap<T, U> extends AbstractObservableWithUpstrea
                     @SuppressWarnings("unchecked")
                     QueueDisposable<U> qd = (QueueDisposable<U>) s;
 
-                    int m = qd.requestFusion(QueueDisposable.ANY);
+                    int m = qd.requestFusion(QueueDisposable.ANY | QueueDisposable.BOUNDARY);
                     if (m == QueueDisposable.SYNC) {
                         fusionMode = m;
                         queue = qd;

@@ -357,7 +357,7 @@ public final class FlowableZip<T, R> extends Flowable<R> {
                 if (s instanceof QueueSubscription) {
                     QueueSubscription<T> f = (QueueSubscription<T>) s;
 
-                    int m = f.requestFusion(QueueSubscription.ANY);
+                    int m = f.requestFusion(QueueSubscription.ANY | QueueSubscription.BOUNDARY);
 
                     if (m == QueueSubscription.SYNC) {
                         sourceMode = m;
