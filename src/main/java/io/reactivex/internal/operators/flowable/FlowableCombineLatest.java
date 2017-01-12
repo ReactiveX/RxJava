@@ -420,6 +420,7 @@ extends Flowable<R> {
             if (d) {
                 if (delayErrors) {
                     if (empty) {
+                        cancelAll();
                         Throwable e = ExceptionHelper.terminate(error);
 
                         if (e != null && e != ExceptionHelper.TERMINATED) {
