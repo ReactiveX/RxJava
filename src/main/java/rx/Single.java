@@ -931,6 +931,110 @@ public class Single<T> {
     }
 
     /**
+     * Flattens any number of Singles into a single Observable, without any transformation.
+     * <p>
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.merge.png" alt="">
+     * <p>
+     * You can combine items emitted by multiple Singles so that they appear as a single Observable, by using
+     * the {@code merge} method.
+     * <dl>
+     * <dt><b>Scheduler:</b></dt>
+     * <dd>{@code merge} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param <T> the common value type
+     * @param source
+     *            an Observable of Singles to be merged
+     * @return an Observable that emits all of the items emitted by the source Singles
+     * @see <a href="http://reactivex.io/documentation/operators/merge.html">ReactiveX operators documentation: Merge</a>
+     */
+    public static <T> Observable<T> merge(Observable<? extends Single<T>> source) {
+        return source.lift(OperatorMergeSingle.<T> instance(false));
+    }
+
+    /**
+     * Flattens any number of Singles into a single Observable, without any transformation.
+     * <p>
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.merge.png" alt="">
+     * <p>
+     * You can combine items emitted by multiple Singles so that they appear as a single Observable, by using
+     * the {@code merge} method.
+     * <dl>
+     * <dt><b>Scheduler:</b></dt>
+     * <dd>{@code merge} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param <T> the common value type
+     * @param source
+     *            an Observable of Singles to be merged
+     * @param maxConcurrent
+     *            the maximum number of Singles that may be subscribed to concurrently
+     * @return an Observable that emits all of the items emitted by the source Singles
+     * @see <a href="http://reactivex.io/documentation/operators/merge.html">ReactiveX operators documentation: Merge</a>
+     */
+    public static <T> Observable<T> merge(Observable<? extends Single<T>> source, int maxConcurrent) {
+        return source.lift(OperatorMergeSingle.<T> instance(false, maxConcurrent));
+    }
+
+    /**
+     * Flattens any number of Singles into a single Observable, in a way that allows an Observer to
+     * receive all successfully emitted items from all of the source Singles without being interrupted by
+     * an error notification from one of them.
+     * <p>
+     * This behaves like {@link #merge(Observable)} except that if any of the merged Singles notify of an
+     * error via {@link SingleSubscriber#onError onError}, {@code mergeDelayError} will refrain from propagating that
+     * error notification until all of the merged Singles have finished emitting items.
+     * <p>
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.merge.png" alt="">
+     * <p>
+     * You can combine items emitted by multiple Singles so that they appear as a single Observable, by using
+     * the {@code merge} method.
+     * <dl>
+     * <dt><b>Scheduler:</b></dt>
+     * <dd>{@code merge} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param <T> the common value type
+     * @param source
+     *            an Observable of Singles to be merged
+     * @return an Observable that emits all of the items emitted by the source Singles
+     * @see <a href="http://reactivex.io/documentation/operators/merge.html">ReactiveX operators documentation: Merge</a>
+     */
+    public static <T> Observable<T> mergeDelayError(Observable<? extends Single<T>> source) {
+        return source.lift(OperatorMergeSingle.<T> instance(true));
+    }
+
+    /**
+     * Flattens any number of Singles into a single Observable, in a way that allows an Observer to
+     * receive all successfully emitted items from all of the source Singles without being interrupted by
+     * an error notification from one of them.
+     * <p>
+     * This behaves like {@link #merge(Observable)} except that if any of the merged Singles notify of an
+     * error via {@link SingleSubscriber#onError onError}, {@code mergeDelayError} will refrain from propagating that
+     * error notification until all of the merged Singles have finished emitting items.
+     * <p>
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.merge.png" alt="">
+     * <p>
+     * You can combine items emitted by multiple Singles so that they appear as a single Observable, by using
+     * the {@code merge} method.
+     * <dl>
+     * <dt><b>Scheduler:</b></dt>
+     * <dd>{@code merge} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param <T> the common value type
+     * @param source
+     *            an Observable of Singles to be merged
+     * @param maxConcurrent
+     *            the maximum number of Singles that may be subscribed to concurrently
+     * @return an Observable that emits all of the items emitted by the source Singles
+     * @see <a href="http://reactivex.io/documentation/operators/merge.html">ReactiveX operators documentation: Merge</a>
+     */
+    public static <T> Observable<T> mergeDelayError(Observable<? extends Single<T>> source, int maxConcurrent) {
+        return source.lift(OperatorMergeSingle.<T> instance(true, maxConcurrent));
+    }
+
+    /**
      * Returns a Single that emits the results of a specified combiner function applied to two items emitted by
      * two other Singles.
      * <p>
