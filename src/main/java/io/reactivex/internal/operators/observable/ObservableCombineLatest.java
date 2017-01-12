@@ -113,7 +113,7 @@ public final class ObservableCombineLatest<T, R> extends Observable<R> {
             lazySet(0); // release array contents
             actual.onSubscribe(this);
             for (int i = 0; i < len; i++) {
-                if (cancelled) {
+                if (done || cancelled) {
                     return;
                 }
                 sources[i].subscribe(as[i]);

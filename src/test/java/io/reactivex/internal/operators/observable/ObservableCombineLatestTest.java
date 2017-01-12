@@ -27,6 +27,7 @@ import org.mockito.*;
 import io.reactivex.*;
 import io.reactivex.Observable;
 import io.reactivex.Observer;
+import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.*;
 import io.reactivex.functions.*;
 import io.reactivex.internal.functions.Functions;
@@ -1014,6 +1015,71 @@ public class ObservableCombineLatestTest {
             } finally {
                 RxJavaPlugins.reset();
             }
+        }
+    }
+
+    @Test
+    public void dontSubscribeIfDone() {
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            final int[] count = { 0 };
+
+            Observable.combineLatest(Observable.empty(),
+                    Observable.error(new TestException())
+                    .doOnSubscribe(new Consumer<Disposable>() {
+                        @Override
+                        public void accept(Disposable d) throws Exception {
+                            count[0]++;
+                        }
+                    }),
+                    new BiFunction<Object, Object, Object>() {
+                        @Override
+                        public Object apply(Object a, Object b) throws Exception {
+                            return 0;
+                        }
+                    })
+            .test()
+            .assertResult();
+
+            assertEquals(0, count[0]);
+
+            assertTrue(errors.toString(), errors.isEmpty());
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void dontSubscribeIfDone2() {
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            final int[] count = { 0 };
+
+            Observable.combineLatestDelayError(
+                    Arrays.asList(Observable.empty(),
+                        Observable.error(new TestException())
+                        .doOnSubscribe(new Consumer<Disposable>() {
+                            @Override
+                            public void accept(Disposable d) throws Exception {
+                                count[0]++;
+                            }
+                        })
+                    ),
+                    new Function<Object[], Object>() {
+                        @Override
+                        public Object apply(Object[] a) throws Exception {
+                            return 0;
+                        }
+                    })
+            .test()
+            .assertResult();
+
+            assertEquals(0, count[0]);
+
+            assertTrue(errors.toString(), errors.isEmpty());
+        } finally {
+            RxJavaPlugins.reset();
         }
     }
 }

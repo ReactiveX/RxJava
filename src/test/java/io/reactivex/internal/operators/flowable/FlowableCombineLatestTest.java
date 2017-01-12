@@ -1370,4 +1370,69 @@ public class FlowableCombineLatestTest {
         .test()
         .assertFailure(TestException.class);
     }
+
+    @Test
+    public void dontSubscribeIfDone() {
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            final int[] count = { 0 };
+
+            Flowable.combineLatest(Flowable.empty(),
+                    Flowable.error(new TestException())
+                    .doOnSubscribe(new Consumer<Subscription>() {
+                        @Override
+                        public void accept(Subscription d) throws Exception {
+                            count[0]++;
+                        }
+                    }),
+                    new BiFunction<Object, Object, Object>() {
+                        @Override
+                        public Object apply(Object a, Object b) throws Exception {
+                            return 0;
+                        }
+                    })
+            .test()
+            .assertResult();
+
+            assertEquals(0, count[0]);
+
+            assertTrue(errors.toString(), errors.isEmpty());
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void dontSubscribeIfDone2() {
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            final int[] count = { 0 };
+
+            Flowable.combineLatestDelayError(
+                    Arrays.asList(Flowable.empty(),
+                        Flowable.error(new TestException())
+                        .doOnSubscribe(new Consumer<Subscription>() {
+                            @Override
+                            public void accept(Subscription d) throws Exception {
+                                count[0]++;
+                            }
+                        })
+                    ),
+                    new Function<Object[], Object>() {
+                        @Override
+                        public Object apply(Object[] a) throws Exception {
+                            return 0;
+                        }
+                    })
+            .test()
+            .assertResult();
+
+            assertEquals(0, count[0]);
+
+            assertTrue(errors.toString(), errors.isEmpty());
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
 }
