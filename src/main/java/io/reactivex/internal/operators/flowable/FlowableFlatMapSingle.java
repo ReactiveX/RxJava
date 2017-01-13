@@ -128,9 +128,9 @@ public final class FlowableFlatMapSingle<T, R> extends AbstractFlowableWithUpstr
 
             InnerObserver inner = new InnerObserver();
 
-            set.add(inner);
-
-            ms.subscribe(inner);
+            if (set.add(inner)) {
+                ms.subscribe(inner);
+            }
         }
 
         @Override

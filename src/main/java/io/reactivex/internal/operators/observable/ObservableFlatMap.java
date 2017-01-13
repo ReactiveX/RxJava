@@ -158,26 +158,27 @@ public final class ObservableFlatMap<T, U> extends AbstractObservableWithUpstrea
                     }
                 } else {
                     InnerObserver<T, U> inner = new InnerObserver<T, U>(this, uniqueId++);
-                    addInner(inner);
-                    p.subscribe(inner);
+                    if (addInner(inner)) {
+                        p.subscribe(inner);
+                    }
                     break;
                 }
             }
         }
 
-        void addInner(InnerObserver<T, U> inner) {
+        boolean addInner(InnerObserver<T, U> inner) {
             for (;;) {
                 InnerObserver<?, ?>[] a = observers.get();
                 if (a == CANCELLED) {
                     inner.dispose();
-                    return;
+                    return false;
                 }
                 int n = a.length;
                 InnerObserver<?, ?>[] b = new InnerObserver[n + 1];
                 System.arraycopy(a, 0, b, 0, n);
                 b[n] = inner;
                 if (observers.compareAndSet(a, b)) {
-                    return;
+                    return true;
                 }
             }
         }

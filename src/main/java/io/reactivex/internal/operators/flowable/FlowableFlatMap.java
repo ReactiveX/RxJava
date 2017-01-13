@@ -152,24 +152,25 @@ public final class FlowableFlatMap<T, U> extends AbstractFlowableWithUpstream<T,
                 }
             } else {
                 InnerSubscriber<T, U> inner = new InnerSubscriber<T, U>(this, uniqueId++);
-                addInner(inner);
-                p.subscribe(inner);
+                if (addInner(inner)) {
+                    p.subscribe(inner);
+                }
             }
         }
 
-        void addInner(InnerSubscriber<T, U> inner) {
+        boolean addInner(InnerSubscriber<T, U> inner) {
             for (;;) {
                 InnerSubscriber<?, ?>[] a = subscribers.get();
                 if (a == CANCELLED) {
                     inner.dispose();
-                    return;
+                    return false;
                 }
                 int n = a.length;
                 InnerSubscriber<?, ?>[] b = new InnerSubscriber[n + 1];
                 System.arraycopy(a, 0, b, 0, n);
                 b[n] = inner;
                 if (subscribers.compareAndSet(a, b)) {
-                    return;
+                    return true;
                 }
             }
         }

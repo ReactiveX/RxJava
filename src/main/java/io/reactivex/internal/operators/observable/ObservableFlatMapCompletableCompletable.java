@@ -104,9 +104,9 @@ public final class ObservableFlatMapCompletableCompletable<T> extends Completabl
 
             InnerObserver inner = new InnerObserver();
 
-            set.add(inner);
-
-            cs.subscribe(inner);
+            if (set.add(inner)) {
+                cs.subscribe(inner);
+            }
         }
 
         @Override
