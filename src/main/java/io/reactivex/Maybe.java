@@ -35,6 +35,8 @@ import io.reactivex.schedulers.Schedulers;
 /**
  * Represents a deferred computation and emission of a maybe value or exception.
  * <p>
+ * <img width="403" height="233" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/maybe.png" alt="">
+ * <p>
  * The main consumer type of Maybe is {@link MaybeObserver} whose methods are called
  * in a sequential fashion following this protocol:<br>
  * {@code onSubscribe (onSuccess | onError | onComplete)?}.
@@ -3768,6 +3770,8 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     /**
      * Returns a Maybe that emits the items emitted by the source Maybe or the items of an alternate
      * MaybeSource if the current Maybe is empty.
+     * <p>
+     * <img width="441" height="307" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/switchifempty.m.png" alt="">
      * <p/>
      * <dl>
      *  <dt><b>Scheduler:</b></dt>

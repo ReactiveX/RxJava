@@ -10764,6 +10764,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     /**
      * Returns an Observable that emits the items emitted by the source ObservableSource or the items of an alternate
      * ObservableSource if the source ObservableSource is empty.
+     * <img width="410" height="164" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/switchifempty.png" alt="">
      * <p/>
      * <dl>
      *  <dt><b>Scheduler:</b></dt>

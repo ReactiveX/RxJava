@@ -12877,6 +12877,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     /**
      * Returns a Flowable that emits the items emitted by the source Publisher or the items of an alternate
      * Publisher if the source Publisher is empty.
+     * <img width="410" height="164" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/switchifempty.png" alt="">
      * <p/>
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
