@@ -9687,7 +9687,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * Returns an Observable that emits the most recently emitted item (if any) emitted by the source ObservableSource
      * within periodic time intervals and optionally emit the very last upstream item when the upstream completes.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/sample.png" alt="">
+     * <img width="408" height="177" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/sample.emitlast.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code sample} operates by default on the {@code computation} {@link Scheduler}.</dd>
@@ -9748,7 +9748,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * within periodic time intervals, where the intervals are defined on a particular Scheduler
      *  and optionally emit the very last upstream item when the upstream completes.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/sample.s.png" alt="">
+     * <img width="408" height="177" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/sample.s.emitlast.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>You specify which {@link Scheduler} this operator will use</dd>
@@ -9784,9 +9784,8 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * emits the most recently emitted item (if any) emitted by the source ObservableSource since the previous
      * emission from the {@code sampler} ObservableSource.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/sample.o.png" alt="">
+     * <img width="437" height="198" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/sample.o.nolast.png" alt="">
      * <dl>
-     *      ObservableSource to control data flow.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>This version of {@code sample} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -9811,9 +9810,8 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * emission from the {@code sampler} ObservableSource
      * and optionally emit the very last upstream item when the upstream or other ObservableSource complete.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/sample.o.png" alt="">
+     * <img width="437" height="198" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/sample.o.emitlast.png" alt="">
      * <dl>
-     *      ObservableSource to control data flow.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>This version of {@code sample} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
