@@ -10015,7 +10015,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     }
 
     /**
-     * Returns an Observable that emits the single item emitted by this Observable if this Observable
+     * Returns a Maybe that emits the single item emitted by this Observable if this Observable
      * emits only a single item, otherwise if this Observable emits more than one item or no items, an
      * {@code IllegalArgumentException} or {@code NoSuchElementException} is signalled respectively.
      * <p>
@@ -10025,7 +10025,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *  <dd>{@code singleElement} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
-     * @return an Observable that emits the single item emitted by the source ObservableSource
+     * @return a {@link Maybe} that emits the single item emitted by the source ObservableSource
      * @see <a href="http://reactivex.io/documentation/operators/first.html">ReactiveX operators documentation: First</a>
      */
     @CheckReturnValue
