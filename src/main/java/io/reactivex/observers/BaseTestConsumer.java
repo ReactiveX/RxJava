@@ -304,6 +304,26 @@ public abstract class BaseTestConsumer<T, U extends BaseTestConsumer<T, U>> impl
     }
 
     /**
+     * Assert that this TestObserver/TestSubscriber did not receive an onNext value which is equal to
+     * the given value with respect to Objects.equals.
+     *
+     * @param value the value to expect not being received
+     * @return this;
+     */
+    @SuppressWarnings("unchecked")
+    public final U assertNever(T value) {
+        int s = values.size();
+
+        for (int i = 0; i < s; i++) {
+            T v = this.values.get(i);
+            if (ObjectHelper.equals(v, value)) {
+                throw fail("Value at position " + i + " is equal to " + valueAndClass(value) + "; Expected them to be different");
+            }
+        }
+        return (U) this;
+    }
+
+    /**
      * Asserts that this TestObserver/TestSubscriber received exactly one onNext value for which
      * the provided predicate returns true.
      * @param valuePredicate
@@ -319,6 +339,31 @@ public abstract class BaseTestConsumer<T, U extends BaseTestConsumer<T, U>> impl
             throw fail("Value present but other values as well");
         }
 
+        return (U)this;
+    }
+
+    /**
+     * Asserts that this TestObserver/TestSubscriber did not receive any onNext value for which
+     * the provided predicate returns true.
+     *
+     * @param valuePredicate the predicate that receives the onNext value
+     *                       and should return true for the expected value.
+     * @return this
+     */
+    @SuppressWarnings("unchecked")
+    public final U assertNever(Predicate<T> valuePredicate) {
+        int s = values.size();
+
+        for (int i = 0; i < s; i++) {
+            T v = this.values.get(i);
+            try {
+                if (valuePredicate.test(v)) {
+                    throw fail("Value at position " + i + " matches predicate " + valuePredicate.toString() + ", which was not expected.");
+                }
+            } catch (Exception ex) {
+                throw ExceptionHelper.wrapOrThrow(ex);
+            }
+        }
         return (U)this;
     }
 
