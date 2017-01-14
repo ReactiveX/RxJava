@@ -86,7 +86,7 @@ public class TestSubscriberTest {
     @Test
     public void assertNeverAtNotMatchingValue() {
         Flowable<Integer> oi = Flowable.fromIterable(Arrays.asList(1, 2));
-        TestSubscriber<Integer> o = new TestSubscriber<>();
+        TestSubscriber<Integer> o = new TestSubscriber<Integer>();
         oi.subscribe(o);
 
         o.assertNever(3);
@@ -97,7 +97,7 @@ public class TestSubscriberTest {
     @Test
     public void assertNeverAtMatchingValue() {
         Flowable<Integer> oi = Flowable.fromIterable(Arrays.asList(1, 2));
-        TestSubscriber<Integer> o = new TestSubscriber<>();
+        TestSubscriber<Integer> o = new TestSubscriber<Integer>();
         oi.subscribe(o);
 
         thrown.expect(AssertionError.class);
@@ -109,7 +109,7 @@ public class TestSubscriberTest {
 
     @Test
     public void assertNeverAtMatchingPredicate() {
-        TestSubscriber<Integer> ts = new TestSubscriber<>();
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
 
         Flowable.just(1, 2).subscribe(ts);
 
@@ -124,7 +124,7 @@ public class TestSubscriberTest {
 
     @Test
     public void assertNeverAtNotMatchingPredicate() {
-        TestSubscriber<Integer> ts = new TestSubscriber<>();
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
 
         Flowable.just(2, 3).subscribe(ts);
 
