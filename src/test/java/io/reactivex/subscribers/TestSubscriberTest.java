@@ -115,7 +115,11 @@ public class TestSubscriberTest {
 
         thrown.expect(AssertionError.class);
 
-        ts.assertNever(o -> o == 1);
+        ts.assertNever(new Predicate<Integer>() {
+            @Override public boolean test(final Integer o) throws Exception {
+                return o == 1;
+            }
+        });
     }
 
     @Test
@@ -124,7 +128,11 @@ public class TestSubscriberTest {
 
         Flowable.just(2, 3).subscribe(ts);
 
-        ts.assertNever(o -> o == 1);
+        ts.assertNever(new Predicate<Integer>() {
+            @Override public boolean test(final Integer o) throws Exception {
+                return o == 1;
+            }
+        });
     }
 
     @Test
