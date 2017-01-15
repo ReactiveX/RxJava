@@ -126,8 +126,8 @@ public class TransformerTest {
         Flowable.just(a).compose(TransformerTest.<String>testFlowableTransformerCreator());
     }
 
-    interface A<T, R> {}
-    interface B<T> {}
+    interface A<T, R> { }
+    interface B<T> { }
 
     private static <T> ObservableTransformer<A<T, ?>, B<T>> testObservableTransformerCreator() {
         return new ObservableTransformer<A<T, ?>, B<T>>() {

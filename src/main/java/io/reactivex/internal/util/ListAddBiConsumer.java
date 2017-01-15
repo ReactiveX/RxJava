@@ -11,23 +11,25 @@
  * the License for the specific language governing permissions and limitations under the License.
  */
 
-package io.reactivex.tck;
+package io.reactivex.internal.util;
 
-import io.reactivex.Flowable;
+import java.util.List;
 
-public final class FlowableTck {
-    /** Utility class (remnant).*/
-    private FlowableTck() {
-        throw new IllegalStateException("No instances!");
+import io.reactivex.functions.*;
+
+@SuppressWarnings("rawtypes")
+public enum ListAddBiConsumer implements BiFunction<List, Object, List> {
+    INSTANCE;
+
+    @SuppressWarnings("unchecked")
+    public static <T> BiFunction<List<T>, T, List<T>> instance() {
+        return (BiFunction)INSTANCE;
     }
 
-    /**
-     * Enable strict mode.
-     * @param <T> the value type
-     * @param f the input Flowable
-     * @return the output Flowable
-     */
-    public static <T> Flowable<T> wrap(Flowable<T> f) {
-        return f.strict();
+    @SuppressWarnings("unchecked")
+    @Override
+    public List apply(List t1, Object t2) throws Exception {
+        t1.add(t2);
+        return t1;
     }
 }

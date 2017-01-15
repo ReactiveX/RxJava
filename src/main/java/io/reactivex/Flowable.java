@@ -29,6 +29,7 @@ import io.reactivex.internal.operators.observable.ObservableFromPublisher;
 import io.reactivex.internal.schedulers.ImmediateThinScheduler;
 import io.reactivex.internal.subscribers.*;
 import io.reactivex.internal.util.*;
+import io.reactivex.parallel.ParallelFlowable;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.schedulers.*;
 import io.reactivex.subscribers.*;
@@ -10361,6 +10362,100 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> onTerminateDetach() {
         return RxJavaPlugins.onAssembly(new FlowableDetach<T>(this));
+    }
+
+    /**
+     * Parallelizes the flow by creating multiple 'rails' (equal to the number of CPUs)
+     * and dispatches the upstream items to them in a round-robin fashion.
+     * <p>
+     * Note that the rails don't execute in parallel on their own and one needs to
+     * apply {@link ParallelFlowable#runOn(Scheduler)} to specify the Scheduler where
+     * each rail will execute.
+     * <p>
+     * To merge the parallel 'rails' back into a single sequence, use {@link ParallelFlowable#sequential()}.
+     * <p>
+     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/flowable.parallel.png" alt="">
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The operator requires the upstream to honor backpressure and each 'rail' honors backpressure
+     *  as well.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code parallel} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @return the new ParallelFlowable instance
+     * @since 2.0.5 - experimental
+     */
+    @BackpressureSupport(BackpressureKind.FULL)
+    @SchedulerSupport(SchedulerSupport.NONE)
+    @CheckReturnValue
+    @Experimental
+    public final ParallelFlowable<T> parallel() {
+        return ParallelFlowable.from(this);
+    }
+
+    /**
+     * Parallelizes the flow by creating the specified number of 'rails'
+     * and dispatches the upstream items to them in a round-robin fashion.
+     * <p>
+     * Note that the rails don't execute in parallel on their own and one needs to
+     * apply {@link ParallelFlowable#runOn(Scheduler)} to specify the Scheduler where
+     * each rail will execute.
+     * <p>
+     * To merge the parallel 'rails' back into a single sequence, use {@link ParallelFlowable#sequential()}.
+     * <p>
+     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/flowable.parallel.png" alt="">
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The operator requires the upstream to honor backpressure and each 'rail' honors backpressure
+     *  as well.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code parallel} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param parallelism the number of 'rails' to use
+     * @return the new ParallelFlowable instance
+     * @since 2.0.5 - experimental
+     */
+    @BackpressureSupport(BackpressureKind.FULL)
+    @SchedulerSupport(SchedulerSupport.NONE)
+    @CheckReturnValue
+    @Experimental
+    public final ParallelFlowable<T> parallel(int parallelism) {
+        ObjectHelper.verifyPositive(parallelism, "parallelism");
+        return ParallelFlowable.from(this, parallelism);
+    }
+
+    /**
+     * Parallelizes the flow by creating the specified number of 'rails'
+     * and dispatches the upstream items to them in a round-robin fashion and
+     * uses the defined per-'rail' prefetch amount.
+     * <p>
+     * Note that the rails don't execute in parallel on their own and one needs to
+     * apply {@link ParallelFlowable#runOn(Scheduler)} to specify the Scheduler where
+     * each rail will execute.
+     * <p>
+     * To merge the parallel 'rails' back into a single sequence, use {@link ParallelFlowable#sequential()}.
+     * <p>
+     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/flowable.parallel.png" alt="">
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The operator requires the upstream to honor backpressure and each 'rail' honors backpressure
+     *  as well.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code parallel} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param parallelism the number of 'rails' to use
+     * @param prefetch the number of items each 'rail' should prefetch
+     * @return the new ParallelFlowable instance
+     * @since 2.0.5 - experimental
+     */
+    @BackpressureSupport(BackpressureKind.FULL)
+    @SchedulerSupport(SchedulerSupport.NONE)
+    @CheckReturnValue
+    @Experimental
+    public final ParallelFlowable<T> parallel(int parallelism, int prefetch) {
+        ObjectHelper.verifyPositive(parallelism, "parallelism");
+        ObjectHelper.verifyPositive(prefetch, "prefetch");
+        return ParallelFlowable.from(this, parallelism, prefetch);
     }
 
     /**
