@@ -100,6 +100,8 @@ public class TestSubscriberTest {
         TestSubscriber<Integer> o = new TestSubscriber<Integer>();
         oi.subscribe(o);
 
+        o.assertValues(1, 2);
+
         thrown.expect(AssertionError.class);
 
         o.assertNever(2);
@@ -113,10 +115,13 @@ public class TestSubscriberTest {
 
         Flowable.just(1, 2).subscribe(ts);
 
+        ts.assertValues(1, 2);
+
         thrown.expect(AssertionError.class);
 
         ts.assertNever(new Predicate<Integer>() {
-            @Override public boolean test(final Integer o) throws Exception {
+            @Override
+            public boolean test(final Integer o) throws Exception {
                 return o == 1;
             }
         });
@@ -129,7 +134,8 @@ public class TestSubscriberTest {
         Flowable.just(2, 3).subscribe(ts);
 
         ts.assertNever(new Predicate<Integer>() {
-            @Override public boolean test(final Integer o) throws Exception {
+            @Override
+            public boolean test(final Integer o) throws Exception {
                 return o == 1;
             }
         });

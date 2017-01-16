@@ -17,6 +17,7 @@ import java.util.*;
 import java.util.concurrent.*;
 
 import io.reactivex.Notification;
+import io.reactivex.annotations.Experimental;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.CompositeException;
 import io.reactivex.functions.Predicate;
@@ -310,6 +311,7 @@ public abstract class BaseTestConsumer<T, U extends BaseTestConsumer<T, U>> impl
      * @param value the value to expect not being received
      * @return this;
      */
+    @Experimental
     @SuppressWarnings("unchecked")
     public final U assertNever(T value) {
         int s = values.size();
@@ -350,6 +352,7 @@ public abstract class BaseTestConsumer<T, U extends BaseTestConsumer<T, U>> impl
      *                       and should return true for the expected value.
      * @return this
      */
+    @Experimental
     @SuppressWarnings("unchecked")
     public final U assertNever(Predicate<T> valuePredicate) {
         int s = values.size();
