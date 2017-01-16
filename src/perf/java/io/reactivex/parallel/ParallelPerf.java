@@ -73,9 +73,10 @@ public class ParallelPerf implements Function<Integer, Integer> {
         }, cpu);
 
         groupBy = source.groupBy(new Function<Integer, Integer>() {
+            int i;
             @Override
             public Integer apply(Integer v) throws Exception {
-                return v % cpu;
+                return (i++) % cpu;
             }
         })
         .flatMap(new Function<GroupedFlowable<Integer, Integer>, Publisher<Integer>>() {
