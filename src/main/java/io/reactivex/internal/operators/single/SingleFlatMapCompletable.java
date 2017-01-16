@@ -87,7 +87,9 @@ public final class SingleFlatMapCompletable<T> extends Completable {
                 return;
             }
 
-            cs.subscribe(this);
+            if (!isDisposed()) {
+                cs.subscribe(this);
+            }
         }
 
         @Override

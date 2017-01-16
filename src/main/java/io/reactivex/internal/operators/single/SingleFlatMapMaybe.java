@@ -85,7 +85,9 @@ public final class SingleFlatMapMaybe<T, R> extends Maybe<R> {
                 return;
             }
 
-            ms.subscribe(new FlatMapMaybeObserver<R>(this, actual));
+            if (!isDisposed()) {
+                ms.subscribe(new FlatMapMaybeObserver<R>(this, actual));
+            }
         }
 
         @Override

@@ -80,7 +80,9 @@ public final class SingleFlatMap<T, R> extends Single<R> {
                 return;
             }
 
-            o.subscribe(new FlatMapSingleObserver<R>(this, actual));
+            if (!isDisposed()) {
+                o.subscribe(new FlatMapSingleObserver<R>(this, actual));
+            }
         }
 
         @Override

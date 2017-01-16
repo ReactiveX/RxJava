@@ -87,7 +87,9 @@ public final class MaybeFlatMapCompletable<T> extends Completable {
                 return;
             }
 
-            cs.subscribe(this);
+            if (!isDisposed()) {
+                cs.subscribe(this);
+            }
         }
 
         @Override
