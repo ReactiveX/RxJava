@@ -63,7 +63,7 @@ public class Observable<T> {
 
     /**
      * <strong>This method requires advanced knowledge about building operators and data sources; please consider
-     * other standard methods first;</strong>
+     * other standard methods first, such as {@link Observable#fromEmitter(Action1, Emitter.BackpressureMode)};</strong>
      * Returns an Observable that will execute the specified function when a {@link Subscriber} subscribes to
      * it.
      * <p>
