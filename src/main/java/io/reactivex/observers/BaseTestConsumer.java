@@ -308,6 +308,7 @@ public abstract class BaseTestConsumer<T, U extends BaseTestConsumer<T, U>> impl
      * Assert that this TestObserver/TestSubscriber did not receive an onNext value which is equal to
      * the given value with respect to Objects.equals.
      *
+     * @since 2.0.5 - experimental
      * @param value the value to expect not being received
      * @return this;
      */
@@ -348,13 +349,14 @@ public abstract class BaseTestConsumer<T, U extends BaseTestConsumer<T, U>> impl
      * Asserts that this TestObserver/TestSubscriber did not receive any onNext value for which
      * the provided predicate returns true.
      *
+     * @since 2.0.5 - experimental
      * @param valuePredicate the predicate that receives the onNext value
      *                       and should return true for the expected value.
      * @return this
      */
     @Experimental
     @SuppressWarnings("unchecked")
-    public final U assertNever(Predicate<T> valuePredicate) {
+    public final U assertNever(Predicate<? super T> valuePredicate) {
         int s = values.size();
 
         for (int i = 0; i < s; i++) {
