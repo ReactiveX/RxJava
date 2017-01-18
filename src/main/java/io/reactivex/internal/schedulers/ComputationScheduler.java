@@ -15,12 +15,12 @@
  */
 package io.reactivex.internal.schedulers;
 
-import java.util.concurrent.*;
-import java.util.concurrent.atomic.AtomicReference;
-
 import io.reactivex.Scheduler;
 import io.reactivex.disposables.*;
 import io.reactivex.internal.disposables.*;
+
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Holds a fixed pool of worker threads and assigns them
@@ -28,7 +28,7 @@ import io.reactivex.internal.disposables.*;
  */
 public final class ComputationScheduler extends Scheduler {
     /** This will indicate no pool is active. */
-    static final FixedSchedulerPool NONE = new FixedSchedulerPool(0);
+    static final FixedSchedulerPool NONE;
     /** Manages a fixed number of workers. */
     private static final String THREAD_NAME_PREFIX = "RxComputationThreadPool";
     static final RxThreadFactory THREAD_FACTORY;
@@ -42,6 +42,7 @@ public final class ComputationScheduler extends Scheduler {
 
     static final PoolWorker SHUTDOWN_WORKER;
 
+    final ThreadFactory threadFactory;
     final AtomicReference<FixedSchedulerPool> pool;
     /** The name of the system property for setting the thread priority for this Scheduler. */
     private static final String KEY_COMPUTATION_PRIORITY = "rx2.computation-priority";
@@ -56,6 +57,9 @@ public final class ComputationScheduler extends Scheduler {
                 Integer.getInteger(KEY_COMPUTATION_PRIORITY, Thread.NORM_PRIORITY)));
 
         THREAD_FACTORY = new RxThreadFactory(THREAD_NAME_PREFIX, priority);
+
+        NONE = new FixedSchedulerPool(0, THREAD_FACTORY);
+        NONE.shutdown();
     }
 
     static int cap(int cpuCount, int paramThreads) {
@@ -68,12 +72,12 @@ public final class ComputationScheduler extends Scheduler {
         final PoolWorker[] eventLoops;
         long n;
 
-        FixedSchedulerPool(int maxThreads) {
+        FixedSchedulerPool(int maxThreads, ThreadFactory threadFactory) {
             // initialize event loops
             this.cores = maxThreads;
             this.eventLoops = new PoolWorker[maxThreads];
             for (int i = 0; i < maxThreads; i++) {
-                this.eventLoops[i] = new PoolWorker(THREAD_FACTORY);
+                this.eventLoops[i] = new PoolWorker(threadFactory);
             }
         }
 
@@ -98,6 +102,18 @@ public final class ComputationScheduler extends Scheduler {
      * count and using least-recent worker selection policy.
      */
     public ComputationScheduler() {
+        this(THREAD_FACTORY);
+    }
+
+    /**
+     * Create a scheduler with pool size equal to the available processor
+     * count and using least-recent worker selection policy.
+     *
+     * @param threadFactory thread factory to use for creating worker threads. Note that this takes precedence over any
+     *                      system properties for configuring new thread creation. Cannot be null.
+     */
+    public ComputationScheduler(ThreadFactory threadFactory) {
+        this.threadFactory = threadFactory;
         this.pool = new AtomicReference<FixedSchedulerPool>(NONE);
         start();
     }
@@ -121,7 +137,7 @@ public final class ComputationScheduler extends Scheduler {
 
     @Override
     public void start() {
-        FixedSchedulerPool update = new FixedSchedulerPool(MAX_THREADS);
+        FixedSchedulerPool update = new FixedSchedulerPool(MAX_THREADS, threadFactory);
         if (!pool.compareAndSet(NONE, update)) {
             update.shutdown();
         }

@@ -12,13 +12,14 @@
  */
 package io.reactivex.internal.schedulers;
 
-import java.util.concurrent.*;
-import java.util.concurrent.atomic.AtomicReference;
-
 import io.reactivex.Scheduler;
 import io.reactivex.disposables.*;
 import io.reactivex.internal.disposables.EmptyDisposable;
+import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.plugins.RxJavaPlugins;
+
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * A scheduler with a shared, single threaded underlying ScheduledExecutorService.
@@ -26,6 +27,7 @@ import io.reactivex.plugins.RxJavaPlugins;
  */
 public final class SingleScheduler extends Scheduler {
 
+    final ThreadFactory threadFactory;
     final AtomicReference<ScheduledExecutorService> executor = new AtomicReference<ScheduledExecutorService>();
 
     /** The name of the system property for setting the thread priority for this Scheduler. */
@@ -47,11 +49,20 @@ public final class SingleScheduler extends Scheduler {
     }
 
     public SingleScheduler() {
-        executor.lazySet(createExecutor());
+        this(SINGLE_THREAD_FACTORY);
     }
 
-    static ScheduledExecutorService createExecutor() {
-        return SchedulerPoolFactory.create(SINGLE_THREAD_FACTORY);
+    /**
+     * @param threadFactory thread factory to use for creating worker threads. Note that this takes precedence over any
+     *                      system properties for configuring new thread creation. Cannot be null.
+     */
+    public SingleScheduler(ThreadFactory threadFactory) {
+        this.threadFactory = ObjectHelper.requireNonNull(threadFactory, "threadFactory was null");
+        executor.lazySet(createExecutor(threadFactory));
+    }
+
+    static ScheduledExecutorService createExecutor(ThreadFactory threadFactory) {
+        return SchedulerPoolFactory.create(threadFactory);
     }
 
     @Override
@@ -66,7 +77,7 @@ public final class SingleScheduler extends Scheduler {
                 return;
             }
             if (next == null) {
-                next = createExecutor();
+                next = createExecutor(threadFactory);
             }
             if (executor.compareAndSet(current, next)) {
                 return;
