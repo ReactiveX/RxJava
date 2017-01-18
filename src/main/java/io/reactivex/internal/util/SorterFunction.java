@@ -11,23 +11,23 @@
  * the License for the specific language governing permissions and limitations under the License.
  */
 
-package io.reactivex.tck;
+package io.reactivex.internal.util;
 
-import io.reactivex.Flowable;
+import java.util.*;
 
-public final class FlowableTck {
-    /** Utility class (remnant).*/
-    private FlowableTck() {
-        throw new IllegalStateException("No instances!");
+import io.reactivex.functions.Function;
+
+public final class SorterFunction<T> implements Function<List<T>, List<T>> {
+
+    Comparator<? super T> comparator;
+
+    public SorterFunction(Comparator<? super T> comparator) {
+        this.comparator = comparator;
     }
 
-    /**
-     * Enable strict mode.
-     * @param <T> the value type
-     * @param f the input Flowable
-     * @return the output Flowable
-     */
-    public static <T> Flowable<T> wrap(Flowable<T> f) {
-        return f.strict();
+    @Override
+    public List<T> apply(List<T> t) throws Exception {
+        Collections.sort(t, comparator);
+        return t;
     }
 }
