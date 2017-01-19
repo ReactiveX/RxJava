@@ -15,7 +15,6 @@ package io.reactivex.internal.schedulers;
 import io.reactivex.Scheduler;
 import io.reactivex.disposables.*;
 import io.reactivex.internal.disposables.EmptyDisposable;
-import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.plugins.RxJavaPlugins;
 
 import java.util.concurrent.*;
@@ -57,7 +56,7 @@ public final class SingleScheduler extends Scheduler {
      *                      system properties for configuring new thread creation. Cannot be null.
      */
     public SingleScheduler(ThreadFactory threadFactory) {
-        this.threadFactory = ObjectHelper.requireNonNull(threadFactory, "threadFactory was null");
+        this.threadFactory = threadFactory;
         executor.lazySet(createExecutor(threadFactory));
     }
 
