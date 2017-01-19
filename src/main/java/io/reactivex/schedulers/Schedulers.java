@@ -183,6 +183,7 @@ public final class Schedulers {
     /**
      * Create an instance of the default {@link Scheduler} used for {@link Schedulers#computation()}.
      * @return the created Scheduler instance
+     * @since 2.0.5 - experimental
      */
     @Experimental
     public static Scheduler newComputation() {
@@ -195,6 +196,7 @@ public final class Schedulers {
      * @param threadFactory thread factory to use for creating worker threads. Note that this takes precedence over any
      *                      system properties for configuring new thread creation. Cannot be null.
      * @return the created Scheduler instance
+     * @since 2.0.5 - experimental
      */
     @Experimental
     public static Scheduler newComputation(ThreadFactory threadFactory) {
@@ -204,6 +206,7 @@ public final class Schedulers {
     /**
      * Create an instance of the default {@link Scheduler} used for {@link Schedulers#io()}.
      * @return the created Scheduler instance
+     * @since 2.0.5 - experimental
      */
     @Experimental
     public static Scheduler newIo() {
@@ -216,6 +219,7 @@ public final class Schedulers {
      * @param threadFactory thread factory to use for creating worker threads. Note that this takes precedence over any
      *                      system properties for configuring new thread creation. Cannot be null.
      * @return the created Scheduler instance
+     * @since 2.0.5 - experimental
      */
     @Experimental
     public static Scheduler newIo(ThreadFactory threadFactory) {
@@ -225,6 +229,7 @@ public final class Schedulers {
     /**
      * Create an instance of the default {@link Scheduler} used for {@link Schedulers#newThread()}.
      * @return the created Scheduler instance
+     * @since 2.0.5 - experimental
      */
     @Experimental
     public static Scheduler newNewThread() {
@@ -237,6 +242,7 @@ public final class Schedulers {
      * @param threadFactory thread factory to use for creating worker threads. Note that this takes precedence over any
      *                      system properties for configuring new thread creation. Cannot be null.
      * @return the created Scheduler instance
+     * @since 2.0.5 - experimental
      */
     @Experimental
     public static Scheduler newNewThread(ThreadFactory threadFactory) {
@@ -246,6 +252,7 @@ public final class Schedulers {
     /**
      * Create an instance of the default {@link Scheduler} used for {@link Schedulers#single()}.
      * @return the created Scheduler instance
+     * @since 2.0.5 - experimental
      */
     @Experimental
     public static Scheduler newSingle() {
@@ -258,6 +265,7 @@ public final class Schedulers {
      * @param threadFactory thread factory to use for creating worker threads. Note that this takes precedence over any
      *                      system properties for configuring new thread creation. Cannot be null.
      * @return the created Scheduler instance
+     * @since 2.0.5 - experimental
      */
     @Experimental
     public static Scheduler newSingle(ThreadFactory threadFactory) {
