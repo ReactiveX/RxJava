@@ -67,8 +67,9 @@ public abstract class ParallelFlowable<T> {
     protected final boolean validate(Subscriber<?>[] subscribers) {
         int p = parallelism();
         if (subscribers.length != p) {
+            Throwable iae = new IllegalArgumentException("parallelism = " + p + ", subscribers = " + subscribers.length);
             for (Subscriber<?> s : subscribers) {
-                EmptySubscription.error(new IllegalArgumentException("parallelism = " + p + ", subscribers = " + subscribers.length), s);
+                EmptySubscription.error(iae, s);
             }
             return false;
         }
@@ -225,7 +226,7 @@ public abstract class ParallelFlowable<T> {
      * @return the new ParallelFlowable instance
      */
     @CheckReturnValue
-    public final <R> ParallelFlowable<R> reduce(Callable<R> initialSupplier, BiFunction<R, T, R> reducer) {
+    public final <R> ParallelFlowable<R> reduce(Callable<R> initialSupplier, BiFunction<R, ? super T, R> reducer) {
         ObjectHelper.requireNonNull(initialSupplier, "initialSupplier");
         ObjectHelper.requireNonNull(reducer, "reducer");
         return new ParallelReduce<T, R>(this, initialSupplier, reducer);
@@ -513,7 +514,7 @@ public abstract class ParallelFlowable<T> {
      * @return the new ParallelFlowable instance
      */
     @CheckReturnValue
-    public final <C> ParallelFlowable<C> collect(Callable<C> collectionSupplier, BiConsumer<C, T> collector) {
+    public final <C> ParallelFlowable<C> collect(Callable<? extends C> collectionSupplier, BiConsumer<? super C, ? super T> collector) {
         return new ParallelCollect<T, C>(this, collectionSupplier, collector);
     }
 

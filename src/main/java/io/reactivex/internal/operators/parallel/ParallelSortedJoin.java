@@ -19,6 +19,7 @@ import java.util.concurrent.atomic.*;
 import org.reactivestreams.*;
 
 import io.reactivex.Flowable;
+import io.reactivex.exceptions.Exceptions;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.internal.util.*;
 import io.reactivex.parallel.ParallelFlowable;
@@ -73,7 +74,7 @@ public final class ParallelSortedJoin<T> extends Flowable<T> {
 
         final AtomicInteger remaining = new AtomicInteger();
 
-        final AtomicThrowable error = new AtomicThrowable();
+        final AtomicReference<Throwable> error = new AtomicReference<Throwable>();
 
         @SuppressWarnings("unchecked")
         SortedJoinSubscription(Subscriber<? super T> actual, int n, Comparator<? super T> comparator) {
@@ -126,10 +127,12 @@ public final class ParallelSortedJoin<T> extends Flowable<T> {
         }
 
         void innerError(Throwable e) {
-            if (error.addThrowable(e)) {
+            if (error.compareAndSet(null, e)) {
                 drain();
             } else {
-                RxJavaPlugins.onError(e);
+                if (e != error.get()) {
+                    RxJavaPlugins.onError(e);
+                }
             }
         }
 
@@ -159,7 +162,7 @@ public final class ParallelSortedJoin<T> extends Flowable<T> {
                     if (ex != null) {
                         cancelAll();
                         Arrays.fill(lists, null);
-                        a.onError(error.terminate());
+                        a.onError(ex);
                         return;
                     }
 
@@ -176,7 +179,22 @@ public final class ParallelSortedJoin<T> extends Flowable<T> {
                                 minIndex = i;
                             } else {
                                 T b = list.get(index);
-                                if (comparator.compare(min, b) > 0) {
+
+                                boolean smaller;
+
+                                try {
+                                    smaller = comparator.compare(min, b) > 0;
+                                } catch (Throwable exc) {
+                                    Exceptions.throwIfFatal(exc);
+                                    cancelAll();
+                                    Arrays.fill(lists, null);
+                                    if (!error.compareAndSet(null, exc)) {
+                                        RxJavaPlugins.onError(exc);
+                                    }
+                                    a.onError(error.get());
+                                    return;
+                                }
+                                if (smaller) {
                                     min = b;
                                     minIndex = i;
                                 }
@@ -207,7 +225,7 @@ public final class ParallelSortedJoin<T> extends Flowable<T> {
                     if (ex != null) {
                         cancelAll();
                         Arrays.fill(lists, null);
-                        a.onError(error.terminate());
+                        a.onError(ex);
                         return;
                     }
 

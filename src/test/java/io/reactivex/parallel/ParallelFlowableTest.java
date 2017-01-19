@@ -26,6 +26,7 @@ import io.reactivex.*;
 import io.reactivex.exceptions.*;
 import io.reactivex.functions.*;
 import io.reactivex.internal.functions.Functions;
+import io.reactivex.internal.util.*;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.processors.UnicastProcessor;
 import io.reactivex.schedulers.Schedulers;
@@ -1287,4 +1288,68 @@ public class ParallelFlowableTest {
         assertEquals(1, count[0]);
     }
 
+    public static void checkSubscriberCount(ParallelFlowable<?> source) {
+        int n = source.parallelism();
+
+        @SuppressWarnings("unchecked")
+        TestSubscriber<Object>[] consumers = new TestSubscriber[n + 1];
+
+        for (int i = 0; i <= n; i++) {
+            consumers[i] = new TestSubscriber<Object>();
+        }
+
+        source.subscribe(consumers);
+
+        for (int i = 0; i <= n; i++) {
+            consumers[i].awaitDone(5, TimeUnit.SECONDS)
+            .assertFailure(IllegalArgumentException.class);
+        }
+    }
+
+    @Test
+    public void checkAddBiConsumer() {
+        TestHelper.checkEnum(ListAddBiConsumer.class);
+    }
+
+    @Test
+    public void mergeBiFunction() throws Exception {
+        MergerBiFunction<Integer> f = new MergerBiFunction<Integer>(Functions.<Integer>naturalComparator());
+
+        assertEquals(0, f.apply(Collections.<Integer>emptyList(), Collections.<Integer>emptyList()).size());
+
+        assertEquals(Arrays.asList(1, 2), f.apply(Collections.<Integer>emptyList(), Arrays.asList(1, 2)));
+
+        for (int i = 0; i < 4; i++) {
+            int k = 0;
+            List<Integer> list1 = new ArrayList<Integer>();
+            for (int j = 0; j < i; j++) {
+                list1.add(k++);
+            }
+
+            List<Integer> list2 = new ArrayList<Integer>();
+            for (int j = i; j < 4; j++) {
+                list2.add(k++);
+            }
+
+            assertEquals(Arrays.asList(0, 1, 2, 3), f.apply(list1, list2));
+        }
+    }
+
+    @Test
+    public void concatMapSubscriberCount() {
+        ParallelFlowableTest.checkSubscriberCount(Flowable.range(1, 5).parallel()
+        .concatMap(Functions.justFunction(Flowable.just(1))));
+    }
+
+    @Test
+    public void flatMapSubscriberCount() {
+        ParallelFlowableTest.checkSubscriberCount(Flowable.range(1, 5).parallel()
+        .flatMap(Functions.justFunction(Flowable.just(1))));
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void fromArraySubscriberCount() {
+        ParallelFlowableTest.checkSubscriberCount(ParallelFlowable.fromArray(new Publisher[] { Flowable.just(1) }));
+    }
 }

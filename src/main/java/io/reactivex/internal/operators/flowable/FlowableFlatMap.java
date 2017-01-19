@@ -49,7 +49,13 @@ public final class FlowableFlatMap<T, U> extends AbstractFlowableWithUpstream<T,
         if (FlowableScalarXMap.tryScalarXMapSubscribe(source, s, mapper)) {
             return;
         }
-        source.subscribe(new MergeSubscriber<T, U>(s, mapper, delayErrors, maxConcurrency, bufferSize));
+        source.subscribe(subscribe(s, mapper, delayErrors, maxConcurrency, bufferSize));
+    }
+
+    public static <T, U> Subscriber<T> subscribe(Subscriber<? super U> s,
+            Function<? super T, ? extends Publisher<? extends U>> mapper,
+            boolean delayErrors, int maxConcurrency, int bufferSize) {
+        return new MergeSubscriber<T, U>(s, mapper, delayErrors, maxConcurrency, bufferSize);
     }
 
     static final class MergeSubscriber<T, U> extends AtomicInteger implements Subscription, Subscriber<T> {

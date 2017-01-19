@@ -67,24 +67,8 @@ public final class ParallelFlatMap<T, R> extends ParallelFlowable<R> {
         @SuppressWarnings("unchecked")
         final Subscriber<T>[] parents = new Subscriber[n];
 
-        // FIXME cheat until we have support from RxJava2 internals
-        Publisher<T> p = new Publisher<T>() {
-            int i;
-
-            @SuppressWarnings("unchecked")
-            @Override
-            public void subscribe(Subscriber<? super T> s) {
-                parents[i++] = (Subscriber<T>)s;
-            }
-        };
-
-        FlowableFlatMap<T, R> op = new FlowableFlatMap<T, R>(p, mapper, delayError, maxConcurrency, prefetch);
-
         for (int i = 0; i < n; i++) {
-
-            op.subscribe(subscribers[i]);
-// FIXME needs a FlatMap subscriber
-//            parents[i] = FlowableFlatMap.createSubscriber(s, mapper, delayError, maxConcurrency, prefetch);
+            parents[i] = FlowableFlatMap.subscribe(subscribers[i], mapper, delayError, maxConcurrency, prefetch);
         }
 
         source.subscribe(parents);

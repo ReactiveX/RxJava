@@ -18,6 +18,7 @@ import org.reactivestreams.*;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.functions.ObjectHelper;
+import io.reactivex.internal.fuseable.ConditionalSubscriber;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.parallel.ParallelFlowable;
 import io.reactivex.plugins.RxJavaPlugins;
@@ -50,7 +51,12 @@ public final class ParallelMap<T, R> extends ParallelFlowable<R> {
         Subscriber<? super T>[] parents = new Subscriber[n];
 
         for (int i = 0; i < n; i++) {
-            parents[i] = new ParallelMapSubscriber<T, R>(subscribers[i], mapper);
+            Subscriber<? super R> a = subscribers[i];
+            if (a instanceof ConditionalSubscriber) {
+                parents[i] = new ParallelMapConditionalSubscriber<T, R>((ConditionalSubscriber<? super R>)a, mapper);
+            } else {
+                parents[i] = new ParallelMapSubscriber<T, R>(a, mapper);
+            }
         }
 
         source.subscribe(parents);
@@ -112,6 +118,98 @@ public final class ParallelMap<T, R> extends ParallelFlowable<R> {
             }
 
             actual.onNext(v);
+        }
+
+        @Override
+        public void onError(Throwable t) {
+            if (done) {
+                RxJavaPlugins.onError(t);
+                return;
+            }
+            done = true;
+            actual.onError(t);
+        }
+
+        @Override
+        public void onComplete() {
+            if (done) {
+                return;
+            }
+            done = true;
+            actual.onComplete();
+        }
+
+    }
+    static final class ParallelMapConditionalSubscriber<T, R> implements ConditionalSubscriber<T>, Subscription {
+
+        final ConditionalSubscriber<? super R> actual;
+
+        final Function<? super T, ? extends R> mapper;
+
+        Subscription s;
+
+        boolean done;
+
+        ParallelMapConditionalSubscriber(ConditionalSubscriber<? super R> actual, Function<? super T, ? extends R> mapper) {
+            this.actual = actual;
+            this.mapper = mapper;
+        }
+
+        @Override
+        public void request(long n) {
+            s.request(n);
+        }
+
+        @Override
+        public void cancel() {
+            s.cancel();
+        }
+
+        @Override
+        public void onSubscribe(Subscription s) {
+            if (SubscriptionHelper.validate(this.s, s)) {
+                this.s = s;
+
+                actual.onSubscribe(this);
+            }
+        }
+
+        @Override
+        public void onNext(T t) {
+            if (done) {
+                return;
+            }
+            R v;
+
+            try {
+                v = ObjectHelper.requireNonNull(mapper.apply(t), "The mapper returned a null value");
+            } catch (Throwable ex) {
+                Exceptions.throwIfFatal(ex);
+                cancel();
+                onError(ex);
+                return;
+            }
+
+            actual.onNext(v);
+        }
+
+        @Override
+        public boolean tryOnNext(T t) {
+            if (done) {
+                return false;
+            }
+            R v;
+
+            try {
+                v = ObjectHelper.requireNonNull(mapper.apply(t), "The mapper returned a null value");
+            } catch (Throwable ex) {
+                Exceptions.throwIfFatal(ex);
+                cancel();
+                onError(ex);
+                return false;
+            }
+
+            return actual.tryOnNext(v);
         }
 
         @Override

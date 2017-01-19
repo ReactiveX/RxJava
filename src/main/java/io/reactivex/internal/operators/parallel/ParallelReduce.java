@@ -19,6 +19,7 @@ import org.reactivestreams.*;
 
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.BiFunction;
+import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.internal.subscribers.DeferredScalarSubscriber;
 import io.reactivex.internal.subscriptions.*;
 import io.reactivex.parallel.ParallelFlowable;
@@ -36,9 +37,9 @@ public final class ParallelReduce<T, R> extends ParallelFlowable<R> {
 
     final Callable<R> initialSupplier;
 
-    final BiFunction<R, T, R> reducer;
+    final BiFunction<R, ? super T, R> reducer;
 
-    public ParallelReduce(ParallelFlowable<? extends T> source, Callable<R> initialSupplier, BiFunction<R, T, R> reducer) {
+    public ParallelReduce(ParallelFlowable<? extends T> source, Callable<R> initialSupplier, BiFunction<R, ? super T, R> reducer) {
         this.source = source;
         this.initialSupplier = initialSupplier;
         this.reducer = reducer;
@@ -59,15 +60,10 @@ public final class ParallelReduce<T, R> extends ParallelFlowable<R> {
             R initialValue;
 
             try {
-                initialValue = initialSupplier.call();
+                initialValue = ObjectHelper.requireNonNull(initialSupplier.call(), "The initialSupplier returned a null value");
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
                 reportError(subscribers, ex);
-                return;
-            }
-
-            if (initialValue == null) {
-                reportError(subscribers, new NullPointerException("The initialSupplier returned a null value"));
                 return;
             }
 
@@ -93,13 +89,13 @@ public final class ParallelReduce<T, R> extends ParallelFlowable<R> {
 
         private static final long serialVersionUID = 8200530050639449080L;
 
-        final BiFunction<R, T, R> reducer;
+        final BiFunction<R, ? super T, R> reducer;
 
         R accumulator;
 
         boolean done;
 
-        ParallelReduceSubscriber(Subscriber<? super R> subscriber, R initialValue, BiFunction<R, T, R> reducer) {
+        ParallelReduceSubscriber(Subscriber<? super R> subscriber, R initialValue, BiFunction<R, ? super T, R> reducer) {
             super(subscriber);
             this.accumulator = initialValue;
             this.reducer = reducer;
@@ -118,28 +114,20 @@ public final class ParallelReduce<T, R> extends ParallelFlowable<R> {
 
         @Override
         public void onNext(T t) {
-            if (done) {
-                return;
+            if (!done) {
+                R v;
+
+                try {
+                    v = ObjectHelper.requireNonNull(reducer.apply(accumulator, t), "The reducer returned a null value");
+                } catch (Throwable ex) {
+                    Exceptions.throwIfFatal(ex);
+                    cancel();
+                    onError(ex);
+                    return;
+                }
+
+                accumulator = v;
             }
-
-            R v;
-
-            try {
-                v = reducer.apply(accumulator, t);
-            } catch (Throwable ex) {
-                Exceptions.throwIfFatal(ex);
-                cancel();
-                onError(ex);
-                return;
-            }
-
-            if (v == null) {
-                cancel();
-                onError(new NullPointerException("The reducer returned a null value"));
-                return;
-            }
-
-            accumulator = v;
         }
 
         @Override
@@ -155,14 +143,13 @@ public final class ParallelReduce<T, R> extends ParallelFlowable<R> {
 
         @Override
         public void onComplete() {
-            if (done) {
-                return;
-            }
-            done = true;
+            if (!done) {
+                done = true;
 
-            R a = accumulator;
-            accumulator = null;
-            complete(a);
+                R a = accumulator;
+                accumulator = null;
+                complete(a);
+            }
         }
 
         @Override
