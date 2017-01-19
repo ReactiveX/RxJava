@@ -929,16 +929,6 @@ public final class RxJavaPlugins {
     }
 
     /**
-     * Create an instance of the default {@link Scheduler} used for {@link Schedulers#computation()}.
-     * @return the created Scheduler instance
-     * @since 2.0.5 - experimental
-     */
-    @Experimental
-    public static Scheduler newComputation() {
-        return new ComputationScheduler();
-    }
-
-    /**
      * Create an instance of the default {@link Scheduler} used for {@link Schedulers#computation()}
      * except using {@code threadFactory} for thread creation.
      * @param threadFactory thread factory to use for creating worker threads. Note that this takes precedence over any
@@ -949,16 +939,6 @@ public final class RxJavaPlugins {
     @Experimental
     public static Scheduler newComputation(ThreadFactory threadFactory) {
         return new ComputationScheduler(ObjectHelper.requireNonNull(threadFactory, "threadFactory is null"));
-    }
-
-    /**
-     * Create an instance of the default {@link Scheduler} used for {@link Schedulers#io()}.
-     * @return the created Scheduler instance
-     * @since 2.0.5 - experimental
-     */
-    @Experimental
-    public static Scheduler newIo() {
-        return new IoScheduler();
     }
 
     /**
@@ -975,16 +955,6 @@ public final class RxJavaPlugins {
     }
 
     /**
-     * Create an instance of the default {@link Scheduler} used for {@link Schedulers#newThread()}.
-     * @return the created Scheduler instance
-     * @since 2.0.5 - experimental
-     */
-    @Experimental
-    public static Scheduler newNewThread() {
-        return new NewThreadScheduler();
-    }
-
-    /**
      * Create an instance of the default {@link Scheduler} used for {@link Schedulers#newThread()}
      * except using {@code threadFactory} for thread creation.
      * @param threadFactory thread factory to use for creating worker threads. Note that this takes precedence over any
@@ -995,16 +965,6 @@ public final class RxJavaPlugins {
     @Experimental
     public static Scheduler newNewThread(ThreadFactory threadFactory) {
         return new NewThreadScheduler(ObjectHelper.requireNonNull(threadFactory, "threadFactory is null"));
-    }
-
-    /**
-     * Create an instance of the default {@link Scheduler} used for {@link Schedulers#single()}.
-     * @return the created Scheduler instance
-     * @since 2.0.5 - experimental
-     */
-    @Experimental
-    public static Scheduler newSingle() {
-        return new SingleScheduler();
     }
 
     /**
