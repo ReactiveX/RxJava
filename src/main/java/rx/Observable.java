@@ -9100,7 +9100,7 @@ public class Observable<T> {
      * Returns an Observable that emits the most recently emitted item (if any) emitted by the source Observable
      * within periodic time intervals.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/sample.png" alt="">
+     * <img width="640" height="276" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/sample.emitlast.1x.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>This operator does not support backpressure as it uses time to control data flow.</dd>
@@ -9126,7 +9126,7 @@ public class Observable<T> {
      * Returns an Observable that emits the most recently emitted item (if any) emitted by the source Observable
      * within periodic time intervals, where the intervals are defined on a particular Scheduler.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/sample.s.png" alt="">
+     * <img width="640" height="276" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/sample.s.emitlast.1x.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>This operator does not support backpressure as it uses time to control data flow.</dd>
