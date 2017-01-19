@@ -937,7 +937,7 @@ public final class RxJavaPlugins {
      * @since 2.0.5 - experimental
      */
     @Experimental
-    public static Scheduler newComputation(ThreadFactory threadFactory) {
+    public static Scheduler createComputationScheduler(ThreadFactory threadFactory) {
         return new ComputationScheduler(ObjectHelper.requireNonNull(threadFactory, "threadFactory is null"));
     }
 
@@ -950,7 +950,7 @@ public final class RxJavaPlugins {
      * @since 2.0.5 - experimental
      */
     @Experimental
-    public static Scheduler newIo(ThreadFactory threadFactory) {
+    public static Scheduler createIoScheduler(ThreadFactory threadFactory) {
         return new IoScheduler(ObjectHelper.requireNonNull(threadFactory, "threadFactory is null"));
     }
 
@@ -963,7 +963,7 @@ public final class RxJavaPlugins {
      * @since 2.0.5 - experimental
      */
     @Experimental
-    public static Scheduler newNewThread(ThreadFactory threadFactory) {
+    public static Scheduler createNewThreadScheduler(ThreadFactory threadFactory) {
         return new NewThreadScheduler(ObjectHelper.requireNonNull(threadFactory, "threadFactory is null"));
     }
 
@@ -976,7 +976,7 @@ public final class RxJavaPlugins {
      * @since 2.0.5 - experimental
      */
     @Experimental
-    public static Scheduler newSingle(ThreadFactory threadFactory) {
+    public static Scheduler createSingleScheduler(ThreadFactory threadFactory) {
         return new SingleScheduler(ObjectHelper.requireNonNull(threadFactory, "threadFactory is null"));
     }
 
