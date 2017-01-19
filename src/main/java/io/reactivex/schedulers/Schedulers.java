@@ -200,7 +200,7 @@ public final class Schedulers {
      */
     @Experimental
     public static Scheduler newComputation(ThreadFactory threadFactory) {
-        return new ComputationScheduler(ObjectHelper.requireNonNull(threadFactory, "threadFactory == null"));
+        return new ComputationScheduler(ObjectHelper.requireNonNull(threadFactory, "threadFactory is null"));
     }
 
     /**
@@ -223,7 +223,7 @@ public final class Schedulers {
      */
     @Experimental
     public static Scheduler newIo(ThreadFactory threadFactory) {
-        return new IoScheduler(ObjectHelper.requireNonNull(threadFactory, "threadFactory == null"));
+        return new IoScheduler(ObjectHelper.requireNonNull(threadFactory, "threadFactory is null"));
     }
 
     /**
@@ -246,7 +246,7 @@ public final class Schedulers {
      */
     @Experimental
     public static Scheduler newNewThread(ThreadFactory threadFactory) {
-        return new NewThreadScheduler(ObjectHelper.requireNonNull(threadFactory, "threadFactory == null"));
+        return new NewThreadScheduler(ObjectHelper.requireNonNull(threadFactory, "threadFactory is null"));
     }
 
     /**
@@ -269,7 +269,7 @@ public final class Schedulers {
      */
     @Experimental
     public static Scheduler newSingle(ThreadFactory threadFactory) {
-        return new SingleScheduler(ObjectHelper.requireNonNull(threadFactory, "threadFactory == null"));
+        return new SingleScheduler(ObjectHelper.requireNonNull(threadFactory, "threadFactory is null"));
     }
 
     /**
