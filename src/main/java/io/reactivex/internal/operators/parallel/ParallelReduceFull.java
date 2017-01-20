@@ -63,7 +63,7 @@ public final class ParallelReduceFull<T> extends Flowable<T> {
 
         final AtomicInteger remaining = new AtomicInteger();
 
-        final AtomicBoolean once = new AtomicBoolean();
+        final AtomicReference<Throwable> error = new AtomicReference<Throwable>();
 
         ParallelReduceFullMainSubscriber(Subscriber<? super T> subscriber, int n, BiFunction<T, T, T> reducer) {
             super(subscriber);
@@ -115,11 +115,13 @@ public final class ParallelReduceFull<T> extends Flowable<T> {
         }
 
         void innerError(Throwable ex) {
-            if (once.compareAndSet(false, true)) {
+            if (error.compareAndSet(null, ex)) {
                 cancel();
                 actual.onError(ex);
             } else {
-                RxJavaPlugins.onError(ex);
+                if (ex != error.get()) {
+                    RxJavaPlugins.onError(ex);
+                }
             }
         }
 
@@ -131,17 +133,13 @@ public final class ParallelReduceFull<T> extends Flowable<T> {
                     if (sp != null) {
 
                         try {
-                            value = reducer.apply(sp.first, sp.second);
+                            value = ObjectHelper.requireNonNull(reducer.apply(sp.first, sp.second), "The reducer returned a null value");
                         } catch (Throwable ex) {
                             Exceptions.throwIfFatal(ex);
                             innerError(ex);
                             return;
                         }
 
-                        if (value == null) {
-                            innerError(new NullPointerException("The reducer returned a null value"));
-                            return;
-                        }
                     } else {
                         break;
                     }
@@ -189,25 +187,24 @@ public final class ParallelReduceFull<T> extends Flowable<T> {
 
         @Override
         public void onNext(T t) {
-            if (done) {
-                return;
-            }
-            T v = value;
+            if (!done) {
+                T v = value;
 
-            if (v == null) {
-                value = t;
-            } else {
+                if (v == null) {
+                    value = t;
+                } else {
 
-                try {
-                    v = ObjectHelper.requireNonNull(reducer.apply(v, t), "The reducer returned a null value");
-                } catch (Throwable ex) {
-                    Exceptions.throwIfFatal(ex);
-                    get().cancel();
-                    onError(ex);
-                    return;
+                    try {
+                        v = ObjectHelper.requireNonNull(reducer.apply(v, t), "The reducer returned a null value");
+                    } catch (Throwable ex) {
+                        Exceptions.throwIfFatal(ex);
+                        get().cancel();
+                        onError(ex);
+                        return;
+                    }
+
+                    value = v;
                 }
-
-                value = v;
             }
         }
 
@@ -223,11 +220,10 @@ public final class ParallelReduceFull<T> extends Flowable<T> {
 
         @Override
         public void onComplete() {
-            if (done) {
-                return;
+            if (!done) {
+                done = true;
+                parent.innerComplete(value);
             }
-            done = true;
-            parent.innerComplete(value);
         }
 
         void cancel() {
@@ -235,38 +231,31 @@ public final class ParallelReduceFull<T> extends Flowable<T> {
         }
     }
 
-    static final class SlotPair<T> {
+    static final class SlotPair<T> extends AtomicInteger {
+
+        private static final long serialVersionUID = 473971317683868662L;
 
         T first;
 
         T second;
 
-        volatile int acquireIndex;
-        @SuppressWarnings("rawtypes")
-        static final AtomicIntegerFieldUpdater<SlotPair> ACQ =
-                AtomicIntegerFieldUpdater.newUpdater(SlotPair.class, "acquireIndex");
-
-
-        volatile int releaseIndex;
-        @SuppressWarnings("rawtypes")
-        static final AtomicIntegerFieldUpdater<SlotPair> REL =
-                AtomicIntegerFieldUpdater.newUpdater(SlotPair.class, "releaseIndex");
+        final AtomicInteger releaseIndex = new AtomicInteger();
 
         int tryAcquireSlot() {
             for (;;) {
-                int acquired = acquireIndex;
+                int acquired = get();
                 if (acquired >= 2) {
                     return -1;
                 }
 
-                if (ACQ.compareAndSet(this, acquired, acquired + 1)) {
+                if (compareAndSet(acquired, acquired + 1)) {
                     return acquired;
                 }
             }
         }
 
         boolean releaseSlot() {
-            return REL.incrementAndGet(this) == 2;
+            return releaseIndex.incrementAndGet() == 2;
         }
     }
 }

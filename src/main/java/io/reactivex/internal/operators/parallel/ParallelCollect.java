@@ -19,6 +19,7 @@ import org.reactivestreams.*;
 
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.BiConsumer;
+import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.internal.subscribers.DeferredScalarSubscriber;
 import io.reactivex.internal.subscriptions.*;
 import io.reactivex.parallel.ParallelFlowable;
@@ -34,12 +35,12 @@ public final class ParallelCollect<T, C> extends ParallelFlowable<C> {
 
     final ParallelFlowable<? extends T> source;
 
-    final Callable<C> initialCollection;
+    final Callable<? extends C> initialCollection;
 
-    final BiConsumer<C, T> collector;
+    final BiConsumer<? super C, ? super T> collector;
 
     public ParallelCollect(ParallelFlowable<? extends T> source,
-            Callable<C> initialCollection, BiConsumer<C, T> collector) {
+            Callable<? extends C> initialCollection, BiConsumer<? super C, ? super T> collector) {
         this.source = source;
         this.initialCollection = initialCollection;
         this.collector = collector;
@@ -60,15 +61,10 @@ public final class ParallelCollect<T, C> extends ParallelFlowable<C> {
             C initialValue;
 
             try {
-                initialValue = initialCollection.call();
+                initialValue = ObjectHelper.requireNonNull(initialCollection.call(), "The initialSupplier returned a null value");
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
                 reportError(subscribers, ex);
-                return;
-            }
-
-            if (initialValue == null) {
-                reportError(subscribers, new NullPointerException("The initialSupplier returned a null value"));
                 return;
             }
 
@@ -94,14 +90,14 @@ public final class ParallelCollect<T, C> extends ParallelFlowable<C> {
 
         private static final long serialVersionUID = -4767392946044436228L;
 
-        final BiConsumer<C, T> collector;
+        final BiConsumer<? super C, ? super T> collector;
 
         C collection;
 
         boolean done;
 
         ParallelCollectSubscriber(Subscriber<? super C> subscriber,
-                C initialValue, BiConsumer<C, T> collector) {
+                C initialValue, BiConsumer<? super C, ? super T> collector) {
             super(subscriber);
             this.collection = initialValue;
             this.collector = collector;

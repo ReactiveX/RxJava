@@ -52,14 +52,14 @@ public final class ParallelPeek<T> extends ParallelFlowable<T> {
     ) {
         this.source = source;
 
-        this.onNext = ObjectHelper.requireNonNull(onNext, "onNext");
-        this.onAfterNext = ObjectHelper.requireNonNull(onAfterNext, "onAfterNext");
-        this.onError = ObjectHelper.requireNonNull(onError, "onError");
-        this.onComplete = ObjectHelper.requireNonNull(onComplete, "onComplete");
-        this.onAfterTerminated = ObjectHelper.requireNonNull(onAfterTerminated, "onAfterTerminated");
-        this.onSubscribe = ObjectHelper.requireNonNull(onSubscribe, "onSubscribe");
-        this.onRequest = ObjectHelper.requireNonNull(onRequest, "onRequest");
-        this.onCancel = ObjectHelper.requireNonNull(onCancel, "onCancel");
+        this.onNext = ObjectHelper.requireNonNull(onNext, "onNext is null");
+        this.onAfterNext = ObjectHelper.requireNonNull(onAfterNext, "onAfterNext is null");
+        this.onError = ObjectHelper.requireNonNull(onError, "onError is null");
+        this.onComplete = ObjectHelper.requireNonNull(onComplete, "onComplete is null");
+        this.onAfterTerminated = ObjectHelper.requireNonNull(onAfterTerminated, "onAfterTerminated is null");
+        this.onSubscribe = ObjectHelper.requireNonNull(onSubscribe, "onSubscribe is null");
+        this.onRequest = ObjectHelper.requireNonNull(onRequest, "onRequest is null");
+        this.onCancel = ObjectHelper.requireNonNull(onCancel, "onCancel is null");
     }
 
     @Override
@@ -142,26 +142,24 @@ public final class ParallelPeek<T> extends ParallelFlowable<T> {
 
         @Override
         public void onNext(T t) {
-            if (done) {
-                return;
-            }
+            if (!done) {
+                try {
+                    parent.onNext.accept(t);
+                } catch (Throwable ex) {
+                    Exceptions.throwIfFatal(ex);
+                    onError(ex);
+                    return;
+                }
 
-            try {
-                parent.onNext.accept(t);
-            } catch (Throwable ex) {
-                Exceptions.throwIfFatal(ex);
-                onError(ex);
-                return;
-            }
+                actual.onNext(t);
 
-            actual.onNext(t);
-
-            try {
-                parent.onAfterNext.accept(t);
-            } catch (Throwable ex) {
-                Exceptions.throwIfFatal(ex);
-                onError(ex);
-                return;
+                try {
+                    parent.onAfterNext.accept(t);
+                } catch (Throwable ex) {
+                    Exceptions.throwIfFatal(ex);
+                    onError(ex);
+                    return;
+                }
             }
         }
 
@@ -191,26 +189,24 @@ public final class ParallelPeek<T> extends ParallelFlowable<T> {
 
         @Override
         public void onComplete() {
-            if (done) {
-                return;
-            }
-            done = true;
-            try {
-                parent.onComplete.run();
-            } catch (Throwable ex) {
-                Exceptions.throwIfFatal(ex);
-                actual.onError(ex);
-                return;
-            }
-            actual.onComplete();
+            if (!done) {
+                done = true;
+                try {
+                    parent.onComplete.run();
+                } catch (Throwable ex) {
+                    Exceptions.throwIfFatal(ex);
+                    actual.onError(ex);
+                    return;
+                }
+                actual.onComplete();
 
-            try {
-                parent.onAfterTerminated.run();
-            } catch (Throwable ex) {
-                Exceptions.throwIfFatal(ex);
-                RxJavaPlugins.onError(ex);
+                try {
+                    parent.onAfterTerminated.run();
+                } catch (Throwable ex) {
+                    Exceptions.throwIfFatal(ex);
+                    RxJavaPlugins.onError(ex);
+                }
             }
         }
-
     }
 }

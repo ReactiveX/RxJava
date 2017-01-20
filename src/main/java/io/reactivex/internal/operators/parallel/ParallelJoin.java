@@ -28,7 +28,7 @@ import io.reactivex.plugins.RxJavaPlugins;
 
 /**
  * Merges the individual 'rails' of the source ParallelFlowable, unordered,
- * into a single regular Publisher sequence (exposed as Px).
+ * into a single regular Publisher sequence (exposed as Flowable).
  *
  * @param <T> the value type
  */
@@ -123,7 +123,7 @@ public final class ParallelJoin<T> extends Flowable<T> {
                     }
                     inner.request(1);
                 } else {
-                    SimpleQueue<T> q = inner.getQueue();
+                    SimplePlainQueue<T> q = inner.getQueue();
 
                     if (!q.offer(value)) {
                         cancelAll();
@@ -140,10 +140,13 @@ public final class ParallelJoin<T> extends Flowable<T> {
                     return;
                 }
             } else {
-                SimpleQueue<T> q = inner.getQueue();
+                SimplePlainQueue<T> q = inner.getQueue();
 
-                // FIXME overflow handling
-                q.offer(value);
+                if (!q.offer(value)) {
+                    cancelAll();
+                    onError(new MissingBackpressureException("Queue full?!"));
+                    return;
+                }
 
                 if (getAndIncrement() != 0) {
                     return;
