@@ -18,15 +18,17 @@ package io.reactivex.internal.schedulers;
 
 import io.reactivex.Scheduler;
 
+import java.util.concurrent.ThreadFactory;
+
 /**
  * Schedules work on a new thread.
  */
 public final class NewThreadScheduler extends Scheduler {
 
+    final ThreadFactory threadFactory;
+
     private static final String THREAD_NAME_PREFIX = "RxNewThreadScheduler";
     private static final RxThreadFactory THREAD_FACTORY;
-
-    private static final NewThreadScheduler INSTANCE = new NewThreadScheduler();
 
     /** The name of the system property for setting the thread priority for this Scheduler. */
     private static final String KEY_NEWTHREAD_PRIORITY = "rx2.newthread-priority";
@@ -38,16 +40,16 @@ public final class NewThreadScheduler extends Scheduler {
         THREAD_FACTORY = new RxThreadFactory(THREAD_NAME_PREFIX, priority);
     }
 
-    public static NewThreadScheduler instance() {
-        return INSTANCE;
+    public NewThreadScheduler() {
+        this(THREAD_FACTORY);
     }
 
-    private NewThreadScheduler() {
-
+    public NewThreadScheduler(ThreadFactory threadFactory) {
+        this.threadFactory = threadFactory;
     }
 
     @Override
     public Worker createWorker() {
-        return new NewThreadWorker(THREAD_FACTORY);
+        return new NewThreadWorker(threadFactory);
     }
 }

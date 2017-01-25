@@ -13,12 +13,11 @@
 
 package io.reactivex.schedulers;
 
-import java.util.concurrent.Callable;
-import java.util.concurrent.Executor;
-
 import io.reactivex.Scheduler;
 import io.reactivex.internal.schedulers.*;
 import io.reactivex.plugins.RxJavaPlugins;
+
+import java.util.concurrent.*;
 
 /**
  * Static factory methods for returning standard Scheduler instances.
@@ -58,7 +57,7 @@ public final class Schedulers {
     }
 
     static final class NewThreadHolder {
-        static final Scheduler DEFAULT = NewThreadScheduler.instance();
+        static final Scheduler DEFAULT = new NewThreadScheduler();
     }
 
     static {
