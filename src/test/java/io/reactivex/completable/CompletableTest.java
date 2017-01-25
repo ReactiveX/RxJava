@@ -3428,9 +3428,15 @@ public class CompletableTest {
     }
 
     private static void expectUncaughtTestException(Action action) {
-        Thread.UncaughtExceptionHandler originalHandler = Thread.getDefaultUncaughtExceptionHandler();
-        CapturingUncaughtExceptionHandler handler = new CapturingUncaughtExceptionHandler();
-        Thread.setDefaultUncaughtExceptionHandler(handler);
+
+        Consumer<Throwable> originalHandler = RxJavaPlugins.getErrorHandler();
+        final CapturingUncaughtExceptionHandler handler = new CapturingUncaughtExceptionHandler();
+        RxJavaPlugins.setErrorHandler(new Consumer<Throwable>() {
+            @Override
+            public void accept(Throwable e) throws Exception {
+                handler.uncaughtException(Thread.currentThread(), e);
+            }
+        });
         try {
             action.run();
             assertEquals("Should have received exactly 1 exception", 1, handler.count);
@@ -3445,7 +3451,7 @@ public class CompletableTest {
         } catch (Throwable ex) {
             throw ExceptionHelper.wrapOrThrow(ex);
         } finally {
-            Thread.setDefaultUncaughtExceptionHandler(originalHandler);
+            RxJavaPlugins.setErrorHandler(originalHandler);
         }
     }
 

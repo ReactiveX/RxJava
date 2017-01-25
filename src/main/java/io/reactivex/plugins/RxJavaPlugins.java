@@ -12,15 +12,14 @@
  */
 package io.reactivex.plugins;
 
-import java.lang.Thread.UncaughtExceptionHandler;
 import java.util.concurrent.Callable;
 
-import io.reactivex.internal.functions.ObjectHelper;
 import org.reactivestreams.Subscriber;
 
 import io.reactivex.*;
 import io.reactivex.flowables.ConnectableFlowable;
 import io.reactivex.functions.*;
+import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.internal.util.ExceptionHelper;
 import io.reactivex.observables.ConnectableObservable;
 
@@ -274,18 +273,10 @@ public final class RxJavaPlugins {
             } catch (Throwable e) {
                 // Exceptions.throwIfFatal(e); TODO decide
                 e.printStackTrace(); // NOPMD
-                uncaught(e);
             }
         }
 
         error.printStackTrace(); // NOPMD
-        uncaught(error);
-    }
-
-    static void uncaught(Throwable error) {
-        Thread currentThread = Thread.currentThread();
-        UncaughtExceptionHandler handler = currentThread.getUncaughtExceptionHandler();
-        handler.uncaughtException(currentThread, error);
     }
 
     /**
