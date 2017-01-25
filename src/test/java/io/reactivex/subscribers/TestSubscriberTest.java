@@ -84,6 +84,64 @@ public class TestSubscriberTest {
     }
 
     @Test
+    public void assertNeverAtNotMatchingValue() {
+        Flowable<Integer> oi = Flowable.fromIterable(Arrays.asList(1, 2));
+        TestSubscriber<Integer> o = new TestSubscriber<Integer>();
+        oi.subscribe(o);
+
+        o.assertNever(3);
+        o.assertValueCount(2);
+        o.assertTerminated();
+    }
+
+    @Test
+    public void assertNeverAtMatchingValue() {
+        Flowable<Integer> oi = Flowable.fromIterable(Arrays.asList(1, 2));
+        TestSubscriber<Integer> o = new TestSubscriber<Integer>();
+        oi.subscribe(o);
+
+        o.assertValues(1, 2);
+
+        thrown.expect(AssertionError.class);
+
+        o.assertNever(2);
+        o.assertValueCount(2);
+        o.assertTerminated();
+    }
+
+    @Test
+    public void assertNeverAtMatchingPredicate() {
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+
+        Flowable.just(1, 2).subscribe(ts);
+
+        ts.assertValues(1, 2);
+
+        thrown.expect(AssertionError.class);
+
+        ts.assertNever(new Predicate<Integer>() {
+            @Override
+            public boolean test(final Integer o) throws Exception {
+                return o == 1;
+            }
+        });
+    }
+
+    @Test
+    public void assertNeverAtNotMatchingPredicate() {
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+
+        Flowable.just(2, 3).subscribe(ts);
+
+        ts.assertNever(new Predicate<Integer>() {
+            @Override
+            public boolean test(final Integer o) throws Exception {
+                return o == 1;
+            }
+        });
+    }
+
+    @Test
     public void testAssertTerminalEventNotReceived() {
         PublishProcessor<Integer> p = PublishProcessor.create();
         TestSubscriber<Integer> o = new TestSubscriber<Integer>();

@@ -61,7 +61,7 @@ public final class ExecutorScheduler extends Scheduler {
     }
 
     @Override
-    public Disposable scheduleDirect(Runnable run, long delay, TimeUnit unit) {
+    public Disposable scheduleDirect(Runnable run, final long delay, final TimeUnit unit) {
         final Runnable decoratedRun = RxJavaPlugins.onSchedule(run);
         if (executor instanceof ScheduledExecutorService) {
             try {
@@ -72,20 +72,19 @@ public final class ExecutorScheduler extends Scheduler {
                 return EmptyDisposable.INSTANCE;
             }
         }
-        SequentialDisposable first = new SequentialDisposable();
 
-        final SequentialDisposable mar = new SequentialDisposable(first);
+        final DelayedRunnable dr = new DelayedRunnable(decoratedRun);
 
         Disposable delayed = HELPER.scheduleDirect(new Runnable() {
             @Override
             public void run() {
-                mar.replace(scheduleDirect(decoratedRun));
+                dr.direct.replace(scheduleDirect(dr));
             }
         }, delay, unit);
 
-        first.replace(delayed);
+        dr.timed.replace(delayed);
 
-        return mar;
+        return dr;
     }
 
     @Override
@@ -253,7 +252,11 @@ public final class ExecutorScheduler extends Scheduler {
                 if (get()) {
                     return;
                 }
-                actual.run();
+                try {
+                    actual.run();
+                } finally {
+                    lazySet(true);
+                }
             }
 
             @Override
@@ -264,6 +267,49 @@ public final class ExecutorScheduler extends Scheduler {
             @Override
             public boolean isDisposed() {
                 return get();
+            }
+        }
+
+    }
+
+    static final class DelayedRunnable extends AtomicReference<Runnable> implements Runnable, Disposable {
+
+        private static final long serialVersionUID = -4101336210206799084L;
+
+        final SequentialDisposable timed;
+
+        final SequentialDisposable direct;
+
+        DelayedRunnable(Runnable run) {
+            super(run);
+            this.timed = new SequentialDisposable();
+            this.direct = new SequentialDisposable();
+        }
+
+        @Override
+        public void run() {
+            Runnable r = get();
+            if (r != null) {
+                try {
+                    r.run();
+                } finally {
+                    lazySet(null);
+                    timed.lazySet(DisposableHelper.DISPOSED);
+                    direct.lazySet(DisposableHelper.DISPOSED);
+                }
+            }
+        }
+
+        @Override
+        public boolean isDisposed() {
+            return get() == null;
+        }
+
+        @Override
+        public void dispose() {
+            if (getAndSet(null) != null) {
+                timed.dispose();
+                direct.dispose();
             }
         }
     }

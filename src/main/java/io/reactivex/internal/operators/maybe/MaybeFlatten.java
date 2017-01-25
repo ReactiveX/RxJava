@@ -93,7 +93,9 @@ public final class MaybeFlatten<T, R> extends AbstractMaybeWithUpstream<T, R> {
                 return;
             }
 
-            source.subscribe(new InnerObserver());
+            if (!isDisposed()) {
+                source.subscribe(new InnerObserver());
+            }
         }
 
         @Override

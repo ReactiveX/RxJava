@@ -116,9 +116,9 @@ public final class FlowableFlatMapCompletable<T> extends AbstractFlowableWithUps
 
             InnerConsumer inner = new InnerConsumer();
 
-            set.add(inner);
-
-            cs.subscribe(inner);
+            if (set.add(inner)) {
+                cs.subscribe(inner);
+            }
         }
 
         @Override

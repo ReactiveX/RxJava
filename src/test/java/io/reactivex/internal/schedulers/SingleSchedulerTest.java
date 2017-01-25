@@ -15,14 +15,16 @@ package io.reactivex.internal.schedulers;
 
 import static org.junit.Assert.*;
 
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 import org.junit.Test;
 
 import io.reactivex.*;
 import io.reactivex.Scheduler.Worker;
-import io.reactivex.disposables.Disposables;
+import io.reactivex.disposables.*;
+import io.reactivex.internal.functions.Functions;
 import io.reactivex.internal.schedulers.SingleScheduler.ScheduledWorker;
+import io.reactivex.schedulers.Schedulers;
 
 public class SingleSchedulerTest {
 
@@ -76,6 +78,43 @@ public class SingleSchedulerTest {
             };
 
             TestHelper.race(r1, r1);
+        }
+    }
+
+    @Test(timeout = 1000)
+    public void runnableDisposedAsync() throws Exception {
+        final Scheduler s = Schedulers.single();
+        Disposable d = s.scheduleDirect(Functions.EMPTY_RUNNABLE);
+
+        while (!d.isDisposed()) {
+            Thread.sleep(1);
+        }
+    }
+
+    @Test(timeout = 1000)
+    public void runnableDisposedAsyncCrash() throws Exception {
+        final Scheduler s = Schedulers.single();
+
+        Disposable d = s.scheduleDirect(new Runnable() {
+            @Override
+            public void run() {
+                throw new IllegalStateException();
+            }
+        });
+
+        while (!d.isDisposed()) {
+            Thread.sleep(1);
+        }
+    }
+
+    @Test(timeout = 1000)
+    public void runnableDisposedAsyncTimed() throws Exception {
+        final Scheduler s = Schedulers.single();
+
+        Disposable d = s.scheduleDirect(Functions.EMPTY_RUNNABLE, 1, TimeUnit.MILLISECONDS);
+
+        while (!d.isDisposed()) {
+            Thread.sleep(1);
         }
     }
 }

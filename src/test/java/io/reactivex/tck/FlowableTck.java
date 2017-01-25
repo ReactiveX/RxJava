@@ -16,6 +16,11 @@ package io.reactivex.tck;
 import io.reactivex.Flowable;
 
 public final class FlowableTck {
+    /** Utility class (remnant).*/
+    private FlowableTck() {
+        throw new IllegalStateException("No instances!");
+    }
+
     /**
      * Enable strict mode.
      * @param <T> the value type

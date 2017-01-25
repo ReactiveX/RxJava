@@ -128,9 +128,9 @@ public final class FlowableFlatMapMaybe<T, R> extends AbstractFlowableWithUpstre
 
             InnerObserver inner = new InnerObserver();
 
-            set.add(inner);
-
-            ms.subscribe(inner);
+            if (set.add(inner)) {
+                ms.subscribe(inner);
+            }
         }
 
         @Override

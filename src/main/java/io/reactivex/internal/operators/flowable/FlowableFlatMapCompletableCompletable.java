@@ -124,9 +124,9 @@ public final class FlowableFlatMapCompletableCompletable<T> extends Completable 
 
             InnerObserver inner = new InnerObserver();
 
-            set.add(inner);
-
-            cs.subscribe(inner);
+            if (set.add(inner)) {
+                cs.subscribe(inner);
+            }
         }
 
         @Override

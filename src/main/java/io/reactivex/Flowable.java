@@ -29,6 +29,7 @@ import io.reactivex.internal.operators.observable.ObservableFromPublisher;
 import io.reactivex.internal.schedulers.ImmediateThinScheduler;
 import io.reactivex.internal.subscribers.*;
 import io.reactivex.internal.util.*;
+import io.reactivex.parallel.ParallelFlowable;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.schedulers.*;
 import io.reactivex.subscribers.*;
@@ -10364,6 +10365,100 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     /**
+     * Parallelizes the flow by creating multiple 'rails' (equal to the number of CPUs)
+     * and dispatches the upstream items to them in a round-robin fashion.
+     * <p>
+     * Note that the rails don't execute in parallel on their own and one needs to
+     * apply {@link ParallelFlowable#runOn(Scheduler)} to specify the Scheduler where
+     * each rail will execute.
+     * <p>
+     * To merge the parallel 'rails' back into a single sequence, use {@link ParallelFlowable#sequential()}.
+     * <p>
+     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/flowable.parallel.png" alt="">
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The operator requires the upstream to honor backpressure and each 'rail' honors backpressure
+     *  as well.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code parallel} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @return the new ParallelFlowable instance
+     * @since 2.0.5 - experimental
+     */
+    @BackpressureSupport(BackpressureKind.FULL)
+    @SchedulerSupport(SchedulerSupport.NONE)
+    @CheckReturnValue
+    @Experimental
+    public final ParallelFlowable<T> parallel() {
+        return ParallelFlowable.from(this);
+    }
+
+    /**
+     * Parallelizes the flow by creating the specified number of 'rails'
+     * and dispatches the upstream items to them in a round-robin fashion.
+     * <p>
+     * Note that the rails don't execute in parallel on their own and one needs to
+     * apply {@link ParallelFlowable#runOn(Scheduler)} to specify the Scheduler where
+     * each rail will execute.
+     * <p>
+     * To merge the parallel 'rails' back into a single sequence, use {@link ParallelFlowable#sequential()}.
+     * <p>
+     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/flowable.parallel.png" alt="">
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The operator requires the upstream to honor backpressure and each 'rail' honors backpressure
+     *  as well.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code parallel} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param parallelism the number of 'rails' to use
+     * @return the new ParallelFlowable instance
+     * @since 2.0.5 - experimental
+     */
+    @BackpressureSupport(BackpressureKind.FULL)
+    @SchedulerSupport(SchedulerSupport.NONE)
+    @CheckReturnValue
+    @Experimental
+    public final ParallelFlowable<T> parallel(int parallelism) {
+        ObjectHelper.verifyPositive(parallelism, "parallelism");
+        return ParallelFlowable.from(this, parallelism);
+    }
+
+    /**
+     * Parallelizes the flow by creating the specified number of 'rails'
+     * and dispatches the upstream items to them in a round-robin fashion and
+     * uses the defined per-'rail' prefetch amount.
+     * <p>
+     * Note that the rails don't execute in parallel on their own and one needs to
+     * apply {@link ParallelFlowable#runOn(Scheduler)} to specify the Scheduler where
+     * each rail will execute.
+     * <p>
+     * To merge the parallel 'rails' back into a single sequence, use {@link ParallelFlowable#sequential()}.
+     * <p>
+     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/flowable.parallel.png" alt="">
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The operator requires the upstream to honor backpressure and each 'rail' honors backpressure
+     *  as well.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code parallel} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param parallelism the number of 'rails' to use
+     * @param prefetch the number of items each 'rail' should prefetch
+     * @return the new ParallelFlowable instance
+     * @since 2.0.5 - experimental
+     */
+    @BackpressureSupport(BackpressureKind.FULL)
+    @SchedulerSupport(SchedulerSupport.NONE)
+    @CheckReturnValue
+    @Experimental
+    public final ParallelFlowable<T> parallel(int parallelism, int prefetch) {
+        ObjectHelper.verifyPositive(parallelism, "parallelism");
+        ObjectHelper.verifyPositive(prefetch, "prefetch");
+        return ParallelFlowable.from(this, parallelism, prefetch);
+    }
+
+    /**
      * Returns a {@link ConnectableFlowable}, which is a variety of Publisher that waits until its
      * {@link ConnectableFlowable#connect connect} method is called before it begins emitting items to those
      * {@link Subscriber}s that have subscribed to it.
@@ -11611,7 +11706,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * Returns a Flowable that emits the most recently emitted item (if any) emitted by the source Publisher
      * within periodic time intervals and optionally emit the very last upstream item when the upstream completes.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/sample.png" alt="">
+     * <img width="408" height="177" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/sample.emitlast.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>This operator does not support backpressure as it uses time to control data flow.</dd>
@@ -11680,7 +11775,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * within periodic time intervals, where the intervals are defined on a particular Scheduler
      * and optionally emit the very last upstream item when the upstream completes.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/sample.s.png" alt="">
+     * <img width="408" height="177" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/sample.s.emitlast.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>This operator does not support backpressure as it uses time to control data flow.</dd>
@@ -11720,7 +11815,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * emits the most recently emitted item (if any) emitted by the source Publisher since the previous
      * emission from the {@code sampler} Publisher.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/sample.o.png" alt="">
+     * <img width="437" height="198" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/sample.o.nolast.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>This operator does not support backpressure as it uses the emissions of the {@code sampler}
@@ -11751,7 +11846,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * emission from the {@code sampler} Publisher
      * and optionally emit the very last upstream item when the upstream or other Publisher complete.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/sample.o.png" alt="">
+     * <img width="437" height="198" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/sample.o.emitlast.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>This operator does not support backpressure as it uses the emissions of the {@code sampler}
@@ -12877,6 +12972,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     /**
      * Returns a Flowable that emits the items emitted by the source Publisher or the items of an alternate
      * Publisher if the source Publisher is empty.
+     * <img width="410" height="164" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/switchifempty.png" alt="">
      * <p/>
      * <dl>
      *  <dt><b>Backpressure:</b></dt>

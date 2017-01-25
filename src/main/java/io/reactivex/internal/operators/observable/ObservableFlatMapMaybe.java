@@ -109,9 +109,9 @@ public final class ObservableFlatMapMaybe<T, R> extends AbstractObservableWithUp
 
             InnerObserver inner = new InnerObserver();
 
-            set.add(inner);
-
-            ms.subscribe(inner);
+            if (set.add(inner)) {
+                ms.subscribe(inner);
+            }
         }
 
         @Override
