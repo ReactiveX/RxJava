@@ -1891,27 +1891,22 @@ public class RxJavaPluginsTest {
 
     private static void verifyThread(Worker w, Predicate<Thread> threadPredicate) {
         try {
-            try {
-                final AtomicReference<Thread> value = new AtomicReference<>();
-                final CountDownLatch cdl = new CountDownLatch(1);
+            final AtomicReference<Thread> value = new AtomicReference<Thread>();
+            final CountDownLatch cdl = new CountDownLatch(1);
 
-                w.schedule(new Runnable() {
-                    @Override
-                    public void run() {
-                        value.set(Thread.currentThread());
-                        cdl.countDown();
-                    }
-                });
+            w.schedule(new Runnable() {
+                @Override
+                public void run() {
+                    value.set(Thread.currentThread());
+                    cdl.countDown();
+                }
+            });
 
-                cdl.await();
+            cdl.await();
 
-                Thread t = value.get();
-                assertNotNull(t);
-                assertTrue(threadPredicate.test(t));
-
-            } catch (Exception e) {
-                fail();
-            }
+            Thread t = value.get();
+            assertNotNull(t);
+            assertTrue(threadPredicate.test(t));
         } catch (Exception e) {
             fail();
         } finally {
