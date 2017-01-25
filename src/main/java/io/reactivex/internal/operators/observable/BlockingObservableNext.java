@@ -18,7 +18,7 @@ import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import io.reactivex.*;
-import io.reactivex.internal.util.ExceptionHelper;
+import io.reactivex.internal.util.*;
 import io.reactivex.observers.DisposableObserver;
 import io.reactivex.plugins.RxJavaPlugins;
 
@@ -162,6 +162,7 @@ public final class BlockingObservableNext<T> implements Iterable<T> {
 
         public Notification<T> takeNext() throws InterruptedException {
             setWaiting();
+            BlockingHelper.verifyNonBlocking();
             return buf.take();
         }
         void setWaiting() {

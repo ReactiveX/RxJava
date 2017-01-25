@@ -17,7 +17,7 @@ import java.util.concurrent.*;
 
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.internal.util.ExceptionHelper;
+import io.reactivex.internal.util.*;
 
 /**
  * A combined Observer that awaits the success or error signal via a CountDownLatch.
@@ -79,6 +79,7 @@ implements SingleObserver<T>, CompletableObserver, MaybeObserver<T> {
     public T blockingGet() {
         if (getCount() != 0) {
             try {
+                BlockingHelper.verifyNonBlocking();
                 await();
             } catch (InterruptedException ex) {
                 dispose();
@@ -101,6 +102,7 @@ implements SingleObserver<T>, CompletableObserver, MaybeObserver<T> {
     public T blockingGet(T defaultValue) {
         if (getCount() != 0) {
             try {
+                BlockingHelper.verifyNonBlocking();
                 await();
             } catch (InterruptedException ex) {
                 dispose();
@@ -123,6 +125,7 @@ implements SingleObserver<T>, CompletableObserver, MaybeObserver<T> {
     public Throwable blockingGetError() {
         if (getCount() != 0) {
             try {
+                BlockingHelper.verifyNonBlocking();
                 await();
             } catch (InterruptedException ex) {
                 dispose();
@@ -142,6 +145,7 @@ implements SingleObserver<T>, CompletableObserver, MaybeObserver<T> {
     public Throwable blockingGetError(long timeout, TimeUnit unit) {
         if (getCount() != 0) {
             try {
+                BlockingHelper.verifyNonBlocking();
                 if (!await(timeout, unit)) {
                     dispose();
                     throw ExceptionHelper.wrapOrThrow(new TimeoutException());
@@ -164,6 +168,7 @@ implements SingleObserver<T>, CompletableObserver, MaybeObserver<T> {
     public boolean blockingAwait(long timeout, TimeUnit unit) {
         if (getCount() != 0) {
             try {
+                BlockingHelper.verifyNonBlocking();
                 if (!await(timeout, unit)) {
                     dispose();
                     return false;

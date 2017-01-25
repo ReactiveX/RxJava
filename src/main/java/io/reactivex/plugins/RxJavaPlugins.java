@@ -89,6 +89,12 @@ public final class RxJavaPlugins {
     static volatile boolean lockdown;
 
     /**
+     * If true, attempting to run a blockingX operation on a (by default)
+     * computation or single scheduler will throw an IllegalStateException.
+     */
+    static volatile boolean failNonBlockingScheduler;
+
+    /**
      * Prevents changing the plugins from then on.
      * <p>This allows container-like environments to prevent clients
      * messing with plugins.
@@ -103,6 +109,31 @@ public final class RxJavaPlugins {
      */
     public static boolean isLockdown() {
         return lockdown;
+    }
+
+    /**
+     * Enables or disables the blockingX operators to fail on a non-blocking
+     * scheduler such as computation or single.
+     * @param enable enable or disable the feature
+     * @since 2.0.5 - experimental
+     */
+    @Experimental
+    public static void setFailOnNonBlockingScheduler(boolean enable) {
+        if (lockdown) {
+            throw new IllegalStateException("Plugins can't be changed anymore");
+        }
+        failNonBlockingScheduler = enable;
+    }
+
+    /**
+     * Returns true if the blockingX operators fail on a non-blocking scheduler
+     * such as computation or single.
+     * @return true if the blockingX operators fail on a non-blocking scheduler
+     * @since 2.0.5 - experimental
+     */
+    @Experimental
+    public static boolean isFailOnNonBlockingScheduler() {
+        return failNonBlockingScheduler;
     }
 
     /**
@@ -378,6 +409,8 @@ public final class RxJavaPlugins {
 
         setOnMaybeAssembly(null);
         setOnMaybeSubscribe(null);
+
+        setFailOnNonBlockingScheduler(false);
     }
 
     /**

@@ -20,7 +20,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.reactivestreams.Publisher;
 
 import io.reactivex.*;
-import io.reactivex.internal.util.ExceptionHelper;
+import io.reactivex.internal.util.*;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.subscribers.DisposableSubscriber;
 
@@ -79,6 +79,7 @@ public final class BlockingFlowableLatest<T> implements Iterable<T> {
             if (iteratorNotification == null || iteratorNotification.isOnNext()) {
                 if (iteratorNotification == null) {
                     try {
+                        BlockingHelper.verifyNonBlocking();
                         notify.acquire();
                     } catch (InterruptedException ex) {
                         dispose();

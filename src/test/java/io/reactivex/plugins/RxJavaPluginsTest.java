@@ -226,11 +226,20 @@ public class RxJavaPluginsTest {
             for (Method m : RxJavaPlugins.class.getMethods()) {
                 if (m.getName().startsWith("set")) {
 
-                    Method getter = RxJavaPlugins.class.getMethod("get" + m.getName().substring(3));
+                    Method getter;
+
+                    if (m.getParameterTypes()[0] == Boolean.TYPE) {
+                        getter = RxJavaPlugins.class.getMethod("is" + m.getName().substring(3));
+                    } else {
+                        getter = RxJavaPlugins.class.getMethod("get" + m.getName().substring(3));
+                    }
 
                     Object before = getter.invoke(null);
 
                     try {
+                        if (m.getParameterTypes()[0].isAssignableFrom(Boolean.TYPE)) {
+                            m.invoke(null, true);
+                        } else
                         if (m.getParameterTypes()[0].isAssignableFrom(Callable.class)) {
                             m.invoke(null, f0);
                         } else
@@ -253,7 +262,11 @@ public class RxJavaPluginsTest {
 
                     Object after = getter.invoke(null);
 
-                    assertSame(m.toString(), before, after);
+                    if (m.getParameterTypes()[0].isPrimitive()) {
+                        assertEquals(m.toString(), before, after);
+                    } else {
+                        assertSame(m.toString(), before, after);
+                    }
                 }
             }
 
@@ -1918,7 +1931,7 @@ public class RxJavaPluginsTest {
     }
 
     @Test
-    public void testCreateComputationScheduler() {
+    public void createComputationScheduler() {
         final String name = "ComputationSchedulerTest";
         ThreadFactory factory = new ThreadFactory() {
             @Override
@@ -1944,7 +1957,7 @@ public class RxJavaPluginsTest {
     }
 
     @Test
-    public void testCreateIoScheduler() {
+    public void createIoScheduler() {
         final String name = "IoSchedulerTest";
         ThreadFactory factory = new ThreadFactory() {
             @Override
@@ -1970,7 +1983,7 @@ public class RxJavaPluginsTest {
     }
 
     @Test
-    public void testCreateNewThreadScheduler() {
+    public void createNewThreadScheduler() {
         final String name = "NewThreadSchedulerTest";
         ThreadFactory factory = new ThreadFactory() {
             @Override
@@ -1996,7 +2009,7 @@ public class RxJavaPluginsTest {
     }
 
     @Test
-    public void testCreateSingleScheduler() {
+    public void createSingleScheduler() {
         final String name = "SingleSchedulerTest";
         ThreadFactory factory = new ThreadFactory() {
             @Override

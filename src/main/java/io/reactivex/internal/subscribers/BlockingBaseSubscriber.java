@@ -17,7 +17,7 @@ import java.util.concurrent.CountDownLatch;
 import org.reactivestreams.*;
 
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
-import io.reactivex.internal.util.ExceptionHelper;
+import io.reactivex.internal.util.*;
 
 public abstract class BlockingBaseSubscriber<T> extends CountDownLatch
 implements Subscriber<T> {
@@ -60,6 +60,7 @@ implements Subscriber<T> {
     public final T blockingGet() {
         if (getCount() != 0) {
             try {
+                BlockingHelper.verifyNonBlocking();
                 await();
             } catch (InterruptedException ex) {
                 Subscription s = this.s;

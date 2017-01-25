@@ -57,6 +57,7 @@ public final class FlowableBlockingSubscribe {
                     if (bs.isCancelled()) {
                         break;
                     }
+                    BlockingHelper.verifyNonBlocking();
                     v = queue.take();
                 }
                 if (bs.isCancelled()) {

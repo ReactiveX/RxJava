@@ -56,7 +56,7 @@ public final class ComputationScheduler extends Scheduler {
         int priority = Math.max(Thread.MIN_PRIORITY, Math.min(Thread.MAX_PRIORITY,
                 Integer.getInteger(KEY_COMPUTATION_PRIORITY, Thread.NORM_PRIORITY)));
 
-        THREAD_FACTORY = new RxThreadFactory(THREAD_NAME_PREFIX, priority);
+        THREAD_FACTORY = new RxThreadFactory(THREAD_NAME_PREFIX, priority, true);
 
         NONE = new FixedSchedulerPool(0, THREAD_FACTORY);
         NONE.shutdown();
