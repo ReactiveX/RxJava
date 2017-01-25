@@ -1938,6 +1938,7 @@ public class RxJavaPluginsTest {
         try {
             verifyThread(Schedulers.computation(), name);
         } finally {
+            customScheduler.shutdown();
             RxJavaPlugins.reset();
         }
     }
@@ -1963,6 +1964,7 @@ public class RxJavaPluginsTest {
         try {
             verifyThread(Schedulers.io(), name);
         } finally {
+            customScheduler.shutdown();
             RxJavaPlugins.reset();
         }
     }
@@ -1988,6 +1990,7 @@ public class RxJavaPluginsTest {
         try {
             verifyThread(Schedulers.newThread(), name);
         } finally {
+            customScheduler.shutdown();
             RxJavaPlugins.reset();
         }
     }
@@ -2014,6 +2017,7 @@ public class RxJavaPluginsTest {
         try {
             verifyThread(Schedulers.single(), name);
         } finally {
+            customScheduler.shutdown();
             RxJavaPlugins.reset();
         }
     }
