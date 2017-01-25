@@ -30,6 +30,8 @@ import io.reactivex.subscribers.TestSubscriber;
 
 public class XFlatMapTest {
 
+    static final int SLEEP_AFTER_CANCEL = 200;
+
     final CyclicBarrier cb = new CyclicBarrier(2);
 
     void sleep() throws Exception {
@@ -62,7 +64,7 @@ public class XFlatMapTest {
 
             ts.cancel();
 
-            Thread.sleep(150);
+            Thread.sleep(SLEEP_AFTER_CANCEL);
 
             ts.assertEmpty();
 
@@ -93,7 +95,7 @@ public class XFlatMapTest {
 
             ts.cancel();
 
-            Thread.sleep(150);
+            Thread.sleep(SLEEP_AFTER_CANCEL);
 
             ts.assertEmpty();
 
@@ -124,7 +126,7 @@ public class XFlatMapTest {
 
             ts.cancel();
 
-            Thread.sleep(150);
+            Thread.sleep(SLEEP_AFTER_CANCEL);
 
             ts.assertEmpty();
 
@@ -155,7 +157,7 @@ public class XFlatMapTest {
 
             ts.cancel();
 
-            Thread.sleep(150);
+            Thread.sleep(SLEEP_AFTER_CANCEL);
 
             ts.assertEmpty();
 
@@ -187,7 +189,7 @@ public class XFlatMapTest {
 
             ts.cancel();
 
-            Thread.sleep(150);
+            Thread.sleep(SLEEP_AFTER_CANCEL);
 
             ts.assertEmpty();
 
@@ -218,7 +220,7 @@ public class XFlatMapTest {
 
             ts.cancel();
 
-            Thread.sleep(150);
+            Thread.sleep(SLEEP_AFTER_CANCEL);
 
             ts.assertEmpty();
 
@@ -249,7 +251,7 @@ public class XFlatMapTest {
 
             ts.cancel();
 
-            Thread.sleep(150);
+            Thread.sleep(SLEEP_AFTER_CANCEL);
 
             ts.assertEmpty();
 
@@ -280,7 +282,7 @@ public class XFlatMapTest {
 
             ts.cancel();
 
-            Thread.sleep(150);
+            Thread.sleep(SLEEP_AFTER_CANCEL);
 
             ts.assertEmpty();
 
@@ -311,7 +313,7 @@ public class XFlatMapTest {
 
             ts.cancel();
 
-            Thread.sleep(150);
+            Thread.sleep(SLEEP_AFTER_CANCEL);
 
             ts.assertEmpty();
 
@@ -343,7 +345,7 @@ public class XFlatMapTest {
 
             ts.cancel();
 
-            Thread.sleep(150);
+            Thread.sleep(SLEEP_AFTER_CANCEL);
 
             ts.assertEmpty();
 
@@ -374,7 +376,7 @@ public class XFlatMapTest {
 
             ts.cancel();
 
-            Thread.sleep(150);
+            Thread.sleep(SLEEP_AFTER_CANCEL);
 
             ts.assertEmpty();
 
@@ -405,7 +407,7 @@ public class XFlatMapTest {
 
             ts.cancel();
 
-            Thread.sleep(150);
+            Thread.sleep(SLEEP_AFTER_CANCEL);
 
             ts.assertEmpty();
 
@@ -436,7 +438,7 @@ public class XFlatMapTest {
 
             ts.cancel();
 
-            Thread.sleep(150);
+            Thread.sleep(SLEEP_AFTER_CANCEL);
 
             ts.assertEmpty();
 
@@ -468,7 +470,7 @@ public class XFlatMapTest {
 
             ts.cancel();
 
-            Thread.sleep(150);
+            Thread.sleep(SLEEP_AFTER_CANCEL);
 
             ts.assertEmpty();
 
@@ -499,7 +501,7 @@ public class XFlatMapTest {
 
             ts.cancel();
 
-            Thread.sleep(150);
+            Thread.sleep(SLEEP_AFTER_CANCEL);
 
             ts.assertEmpty();
 
@@ -530,7 +532,7 @@ public class XFlatMapTest {
 
             ts.cancel();
 
-            Thread.sleep(150);
+            Thread.sleep(SLEEP_AFTER_CANCEL);
 
             ts.assertEmpty();
 
@@ -561,7 +563,7 @@ public class XFlatMapTest {
 
             ts.cancel();
 
-            Thread.sleep(150);
+            Thread.sleep(SLEEP_AFTER_CANCEL);
 
             ts.assertEmpty();
 
@@ -593,7 +595,7 @@ public class XFlatMapTest {
 
             ts.cancel();
 
-            Thread.sleep(150);
+            Thread.sleep(SLEEP_AFTER_CANCEL);
 
             ts.assertEmpty();
 
