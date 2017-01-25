@@ -1889,7 +1889,10 @@ public class RxJavaPluginsTest {
         }
     }
 
-    private static void verifyThread(Worker w, Predicate<Thread> threadPredicate) {
+    private static void verifyThread(Scheduler scheduler, String expectedThreadName)
+            throws AssertionError {
+        assertNotNull(scheduler);
+        Worker w = scheduler.createWorker();
         try {
             final AtomicReference<Thread> value = new AtomicReference<Thread>();
             final CountDownLatch cdl = new CountDownLatch(1);
@@ -1906,7 +1909,7 @@ public class RxJavaPluginsTest {
 
             Thread t = value.get();
             assertNotNull(t);
-            assertTrue(threadPredicate.test(t));
+            assertTrue(expectedThreadName.equals(t.getName()));
         } catch (Exception e) {
             fail();
         } finally {
@@ -1916,73 +1919,102 @@ public class RxJavaPluginsTest {
 
     @Test
     public void testCreateComputationScheduler() {
+        final String name = "ComputationSchedulerTest";
         ThreadFactory factory = new ThreadFactory() {
             @Override
             public Thread newThread(Runnable r) {
-                return new Thread("Test");
+                return new Thread(r, name);
             }
         };
 
-        Scheduler scheduler = RxJavaPlugins.createComputationScheduler(factory);
-        verifyThread(scheduler.createWorker(), new Predicate<Thread>() {
+        final Scheduler customScheduler = RxJavaPlugins.createComputationScheduler(factory);
+        RxJavaPlugins.setComputationSchedulerHandler(new Function<Scheduler, Scheduler>() {
             @Override
-            public boolean test(Thread thread) throws Exception {
-                return "Test".equals(thread.getName());
+            public Scheduler apply(Scheduler scheduler) throws Exception {
+                return customScheduler;
             }
         });
+
+        try {
+            verifyThread(Schedulers.computation(), name);
+        } finally {
+            RxJavaPlugins.reset();
+        }
     }
 
     @Test
     public void testCreateIoScheduler() {
+        final String name = "IoSchedulerTest";
         ThreadFactory factory = new ThreadFactory() {
             @Override
             public Thread newThread(Runnable r) {
-                return new Thread("Test");
+                return new Thread(r, name);
             }
         };
 
-        Scheduler scheduler = RxJavaPlugins.createIoScheduler(factory);
-        verifyThread(scheduler.createWorker(), new Predicate<Thread>() {
+        final Scheduler customScheduler = RxJavaPlugins.createIoScheduler(factory);
+        RxJavaPlugins.setIoSchedulerHandler(new Function<Scheduler, Scheduler>() {
             @Override
-            public boolean test(Thread thread) throws Exception {
-                return "Test".equals(thread.getName());
+            public Scheduler apply(Scheduler scheduler) throws Exception {
+                return customScheduler;
             }
         });
+
+        try {
+            verifyThread(Schedulers.io(), name);
+        } finally {
+            RxJavaPlugins.reset();
+        }
     }
 
     @Test
     public void testCreateNewThreadScheduler() {
+        final String name = "NewThreadSchedulerTest";
         ThreadFactory factory = new ThreadFactory() {
             @Override
             public Thread newThread(Runnable r) {
-                return new Thread("Test");
+                return new Thread(r, name);
             }
         };
 
-        Scheduler scheduler = RxJavaPlugins.createNewThreadScheduler(factory);
-        verifyThread(scheduler.createWorker(), new Predicate<Thread>() {
+        final Scheduler customScheduler = RxJavaPlugins.createNewThreadScheduler(factory);
+        RxJavaPlugins.setNewThreadSchedulerHandler(new Function<Scheduler, Scheduler>() {
             @Override
-            public boolean test(Thread thread) throws Exception {
-                return "Test".equals(thread.getName());
+            public Scheduler apply(Scheduler scheduler) throws Exception {
+                return customScheduler;
             }
         });
+
+        try {
+            verifyThread(Schedulers.newThread(), name);
+        } finally {
+            RxJavaPlugins.reset();
+        }
     }
 
     @Test
     public void testCreateSingleScheduler() {
+        final String name = "SingleSchedulerTest";
         ThreadFactory factory = new ThreadFactory() {
             @Override
             public Thread newThread(Runnable r) {
-                return new Thread("Test");
+                return new Thread(r, name);
             }
         };
 
-        Scheduler scheduler = RxJavaPlugins.createSingleScheduler(factory);
-        verifyThread(scheduler.createWorker(), new Predicate<Thread>() {
+        final Scheduler customScheduler = RxJavaPlugins.createSingleScheduler(factory);
+
+        RxJavaPlugins.setSingleSchedulerHandler(new Function<Scheduler, Scheduler>() {
             @Override
-            public boolean test(Thread thread) throws Exception {
-                return "Test".equals(thread.getName());
+            public Scheduler apply(Scheduler scheduler) throws Exception {
+                return customScheduler;
             }
         });
+
+        try {
+            verifyThread(Schedulers.single(), name);
+        } finally {
+            RxJavaPlugins.reset();
+        }
     }
 }
