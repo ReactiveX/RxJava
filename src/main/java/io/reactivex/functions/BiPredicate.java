@@ -13,6 +13,8 @@
 
 package io.reactivex.functions;
 
+import io.reactivex.annotations.NonNull;
+
 /**
  * A functional interface (callback) that returns true or false for the given input values.
  * @param <T1> the first value
@@ -27,5 +29,5 @@ public interface BiPredicate<T1, T2> {
      * @return the boolean result
      * @throws Exception on error
      */
-    boolean test(T1 t1, T2 t2) throws Exception;
+    boolean test(@NonNull T1 t1, @NonNull T2 t2) throws Exception;
 }

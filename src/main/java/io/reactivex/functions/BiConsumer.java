@@ -13,6 +13,8 @@
 
 package io.reactivex.functions;
 
+import io.reactivex.annotations.NonNull;
+
 /**
  * A functional interface (callback) that accepts two values (of possibly different types).
  * @param <T1> the first value type
@@ -26,5 +28,5 @@ public interface BiConsumer<T1, T2> {
      * @param t2 the second value
      * @throws Exception on error
      */
-    void accept(T1 t1, T2 t2) throws Exception;
+    void accept(@NonNull T1 t1, @NonNull T2 t2) throws Exception;
 }
