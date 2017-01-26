@@ -13,7 +13,7 @@
 package io.reactivex.plugins;
 
 import io.reactivex.*;
-import io.reactivex.annotations.Experimental;
+import io.reactivex.annotations.*;
 import io.reactivex.flowables.ConnectableFlowable;
 import io.reactivex.functions.*;
 import io.reactivex.internal.functions.ObjectHelper;
@@ -85,6 +85,8 @@ public final class RxJavaPlugins {
 
     static volatile BiFunction<Completable, CompletableObserver, CompletableObserver> onCompletableSubscribe;
 
+    static volatile BooleanSupplier onBeforeBlocking;
+
     /** Prevents changing the plugins. */
     static volatile boolean lockdown;
 
@@ -112,7 +114,8 @@ public final class RxJavaPlugins {
     }
 
     /**
-     * Enables or disables the blockingX operators to fail on a non-blocking
+     * Enables or disables the blockingX operators to fail
+     * with an IllegalStateException on a non-blocking
      * scheduler such as computation or single.
      * @param enable enable or disable the feature
      * @since 2.0.5 - experimental
@@ -126,7 +129,8 @@ public final class RxJavaPlugins {
     }
 
     /**
-     * Returns true if the blockingX operators fail on a non-blocking scheduler
+     * Returns true if the blockingX operators fail
+     * with an IllegalStateException on a non-blocking scheduler
      * such as computation or single.
      * @return true if the blockingX operators fail on a non-blocking scheduler
      * @since 2.0.5 - experimental
@@ -411,6 +415,7 @@ public final class RxJavaPlugins {
         setOnMaybeSubscribe(null);
 
         setFailOnNonBlockingScheduler(false);
+        setOnBeforeBlocking(null);
     }
 
     /**
@@ -959,6 +964,56 @@ public final class RxJavaPlugins {
             return apply(f, source);
         }
         return source;
+    }
+
+    /**
+     * Called before an operator attempts a blocking operation
+     * such as awaiting a condition or signal
+     * and should return true to indicate the operator
+     * should not block but throw an IllegalArgumentException.
+     * @return true if the blocking should be prevented
+     * @see #setFailOnNonBlockingScheduler(boolean)
+     * @since 2.0.5 - experimental
+     */
+    @Experimental
+    public static boolean onBeforeBlocking() {
+        BooleanSupplier f = onBeforeBlocking;
+        if (f != null) {
+            try {
+                return f.getAsBoolean();
+            } catch (Throwable ex) {
+                throw ExceptionHelper.wrapOrThrow(ex);
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Set the handler that is called when an operator attemts a blocking
+     * await; the handler should return true to prevent the blocking
+     * and to signal an IllegalStateException instead.
+     * @param handler the handler to set, null resets to the default handler
+     * that always returns false
+     * @see #onBeforeBlocking()
+     * @since 2.0.5 - experimental
+     */
+    @Experimental
+    public static void setOnBeforeBlocking(BooleanSupplier handler) {
+        if (lockdown) {
+            throw new IllegalStateException("Plugins can't be changed anymore");
+        }
+        onBeforeBlocking = handler;
+    }
+
+    /**
+     * Returns the current blocking handler or null if no custom handler
+     * is set.
+     * @return the current blocking handler or null if not specified
+     * @since 2.0.5 - experimental
+     */
+    @Experimental
+    public static BooleanSupplier getOnBeforeBlocking() {
+        return onBeforeBlocking;
     }
 
     /**

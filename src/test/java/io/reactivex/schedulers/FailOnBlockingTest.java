@@ -639,4 +639,44 @@ public class FailOnBlockingTest {
 
     }
 
+    @Test
+    public void failWithCustomHandler() {
+        try {
+            RxJavaPlugins.setOnBeforeBlocking(new BooleanSupplier() {
+                @Override
+                public boolean getAsBoolean() throws Exception {
+                    return true;
+                }
+            });
+            RxJavaPlugins.setFailOnNonBlockingScheduler(true);
+
+            Flowable.just(1)
+            .map(new Function<Integer, Integer>() {
+                @Override
+                public Integer apply(Integer v) throws Exception {
+
+                    Flowable.just(1).delay(10, TimeUnit.SECONDS).blockingLast();
+
+                    return v;
+                }
+            })
+            .test()
+            .awaitDone(5, TimeUnit.SECONDS)
+            .assertFailure(IllegalStateException.class);
+
+        } finally {
+            RxJavaPlugins.reset();
+        }
+
+        Flowable.just(1)
+        .map(new Function<Integer, Integer>() {
+            @Override
+            public Integer apply(Integer v) throws Exception {
+                return Flowable.just(2).delay(100, TimeUnit.MILLISECONDS).blockingLast();
+            }
+        })
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertResult(2);
+    }
 }
