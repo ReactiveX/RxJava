@@ -11,20 +11,20 @@
  * the License for the specific language governing permissions and limitations under the License.
  */
 
-package io.reactivex.functions;
+package io.reactivex.annotations;
 
-import io.reactivex.annotations.NonNull;
+import java.lang.annotation.Documented;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
 
-/**
- * A functional interface (callback) that returns true or false for the given input value.
- * @param <T> the first value
- */
-public interface Predicate<T> {
-    /**
-     * Test the given input value and return a boolean.
-     * @param t the value
-     * @return the boolean result
-     * @throws Exception on error
-     */
-    boolean test(@NonNull T t) throws Exception;
-}
+import static java.lang.annotation.ElementType.FIELD;
+import static java.lang.annotation.ElementType.LOCAL_VARIABLE;
+import static java.lang.annotation.ElementType.METHOD;
+import static java.lang.annotation.ElementType.PARAMETER;
+import static java.lang.annotation.RetentionPolicy.CLASS;
+
+@Documented
+@Target(value = {FIELD, METHOD, PARAMETER, LOCAL_VARIABLE})
+@Retention(value = CLASS)
+public @interface NonNull { }
+

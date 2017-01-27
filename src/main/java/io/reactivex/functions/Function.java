@@ -13,6 +13,8 @@
 
 package io.reactivex.functions;
 
+import io.reactivex.annotations.NonNull;
+
 /**
  * A functional interface that takes a value and returns another value, possibly with a
  * different type and allows throwing a checked exception.
@@ -27,5 +29,6 @@ public interface Function<T, R> {
      * @return the output value
      * @throws Exception on error
      */
-    R apply(T t) throws Exception;
+    @NonNull
+    R apply(@NonNull T t) throws Exception;
 }

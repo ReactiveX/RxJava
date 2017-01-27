@@ -12,6 +12,8 @@
  */
 package io.reactivex.functions;
 
+import io.reactivex.annotations.NonNull;
+
 /**
  * A functional interface (callback) that takes a primitive value and return value of type T.
  * @param <T> the returned value type
@@ -23,5 +25,6 @@ public interface IntFunction<T> {
      * @return the result Object
      * @throws Exception on error
      */
+    @NonNull
     T apply(int i) throws Exception;
 }
