@@ -532,13 +532,26 @@ public class SingleNullTests {
 
     @SuppressWarnings("unchecked")
     @Test(expected = NullPointerException.class)
+    public void zipIterableTwoIsNull() {
+        Single.zip(Arrays.asList(just1, null), new Function<Object[], Object>() {
+            @Override
+            public Object apply(Object[] v) {
+                return 1;
+            }
+        })
+        .blockingGet();
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test(expected = NullPointerException.class)
     public void zipArrayOneIsNull() {
         Single.zipArray(new Function<Object[], Object>() {
             @Override
             public Object apply(Object[] v) {
                 return 1;
             }
-        }, just1, null);
+        }, just1, null)
+        .blockingGet();
     }
 
     @SuppressWarnings("unchecked")

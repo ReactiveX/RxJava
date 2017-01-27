@@ -13,6 +13,7 @@
 
 package io.reactivex;
 
+import java.util.NoSuchElementException;
 import java.util.concurrent.*;
 
 import org.reactivestreams.Publisher;
@@ -1035,8 +1036,9 @@ public abstract class Single<T> implements SingleSource<T> {
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T, R> Single<R> zip(final Iterable<? extends SingleSource<? extends T>> sources, Function<? super Object[], ? extends R> zipper) {
+        ObjectHelper.requireNonNull(zipper, "zipper is null");
         ObjectHelper.requireNonNull(sources, "sources is null");
-        return toSingle(Flowable.zipIterable(SingleInternalHelper.iterableToFlowable(sources), zipper, false, 1));
+        return RxJavaPlugins.onAssembly(new SingleZipIterable<T, R>(sources, zipper));
     }
 
     /**
@@ -1475,17 +1477,13 @@ public abstract class Single<T> implements SingleSource<T> {
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
-    @SuppressWarnings({"rawtypes", "unchecked"})
     public static <T, R> Single<R> zipArray(Function<? super Object[], ? extends R> zipper, SingleSource<? extends T>... sources) {
+        ObjectHelper.requireNonNull(zipper, "zipper is null");
         ObjectHelper.requireNonNull(sources, "sources is null");
-        Publisher[] sourcePublishers = new Publisher[sources.length];
-        int i = 0;
-        for (SingleSource<? extends T> s : sources) {
-            ObjectHelper.requireNonNull(s, "The " + i + "th source is null");
-            sourcePublishers[i] = RxJavaPlugins.onAssembly(new SingleToFlowable<T>(s));
-            i++;
+        if (sources.length == 0) {
+            return error(new NoSuchElementException());
         }
-        return toSingle(Flowable.zipArray(zipper, false, 1, sourcePublishers));
+        return RxJavaPlugins.onAssembly(new SingleZipArray<T, R>(sources, zipper));
     }
 
     /**
