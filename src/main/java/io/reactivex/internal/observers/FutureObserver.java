@@ -20,6 +20,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.disposables.DisposableHelper;
+import io.reactivex.internal.util.BlockingHelper;
 import io.reactivex.plugins.RxJavaPlugins;
 
 /**
@@ -72,6 +73,7 @@ implements Observer<T>, Future<T>, Disposable {
     @Override
     public T get() throws InterruptedException, ExecutionException {
         if (getCount() != 0) {
+            BlockingHelper.verifyNonBlocking();
             await();
         }
 
@@ -88,6 +90,7 @@ implements Observer<T>, Future<T>, Disposable {
     @Override
     public T get(long timeout, TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException {
         if (getCount() != 0) {
+            BlockingHelper.verifyNonBlocking();
             if (!await(timeout, unit)) {
                 throw new TimeoutException();
             }

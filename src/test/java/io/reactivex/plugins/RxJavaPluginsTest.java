@@ -223,22 +223,43 @@ public class RxJavaPluginsTest {
                 }
             };
 
+            BooleanSupplier bs = new BooleanSupplier() {
+                @Override
+                public boolean getAsBoolean() throws Exception {
+                    return true;
+                }
+            };
+
             for (Method m : RxJavaPlugins.class.getMethods()) {
                 if (m.getName().startsWith("set")) {
 
-                    Method getter = RxJavaPlugins.class.getMethod("get" + m.getName().substring(3));
+                    Method getter;
+
+                    Class<?> paramType = m.getParameterTypes()[0];
+
+                    if (paramType == Boolean.TYPE) {
+                        getter = RxJavaPlugins.class.getMethod("is" + m.getName().substring(3));
+                    } else {
+                        getter = RxJavaPlugins.class.getMethod("get" + m.getName().substring(3));
+                    }
 
                     Object before = getter.invoke(null);
 
                     try {
-                        if (m.getParameterTypes()[0].isAssignableFrom(Callable.class)) {
+                        if (paramType.isAssignableFrom(Boolean.TYPE)) {
+                            m.invoke(null, true);
+                        } else
+                        if (paramType.isAssignableFrom(Callable.class)) {
                             m.invoke(null, f0);
                         } else
-                        if (m.getParameterTypes()[0].isAssignableFrom(Function.class)) {
+                        if (paramType.isAssignableFrom(Function.class)) {
                             m.invoke(null, f1);
                         } else
-                        if (m.getParameterTypes()[0].isAssignableFrom(Consumer.class)) {
+                        if (paramType.isAssignableFrom(Consumer.class)) {
                             m.invoke(null, a1);
+                        } else
+                        if (paramType.isAssignableFrom(BooleanSupplier.class)) {
+                            m.invoke(null, bs);
                         } else {
                             m.invoke(null, f2);
                         }
@@ -253,7 +274,11 @@ public class RxJavaPluginsTest {
 
                     Object after = getter.invoke(null);
 
-                    assertSame(m.toString(), before, after);
+                    if (paramType.isPrimitive()) {
+                        assertEquals(m.toString(), before, after);
+                    } else {
+                        assertSame(m.toString(), before, after);
+                    }
                 }
             }
 
@@ -1918,7 +1943,7 @@ public class RxJavaPluginsTest {
     }
 
     @Test
-    public void testCreateComputationScheduler() {
+    public void createComputationScheduler() {
         final String name = "ComputationSchedulerTest";
         ThreadFactory factory = new ThreadFactory() {
             @Override
@@ -1944,7 +1969,7 @@ public class RxJavaPluginsTest {
     }
 
     @Test
-    public void testCreateIoScheduler() {
+    public void createIoScheduler() {
         final String name = "IoSchedulerTest";
         ThreadFactory factory = new ThreadFactory() {
             @Override
@@ -1970,7 +1995,7 @@ public class RxJavaPluginsTest {
     }
 
     @Test
-    public void testCreateNewThreadScheduler() {
+    public void createNewThreadScheduler() {
         final String name = "NewThreadSchedulerTest";
         ThreadFactory factory = new ThreadFactory() {
             @Override
@@ -1996,7 +2021,7 @@ public class RxJavaPluginsTest {
     }
 
     @Test
-    public void testCreateSingleScheduler() {
+    public void createSingleScheduler() {
         final String name = "SingleSchedulerTest";
         ThreadFactory factory = new ThreadFactory() {
             @Override

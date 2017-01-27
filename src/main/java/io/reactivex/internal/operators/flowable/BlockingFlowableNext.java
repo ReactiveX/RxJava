@@ -20,7 +20,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.reactivestreams.Publisher;
 
 import io.reactivex.*;
-import io.reactivex.internal.util.ExceptionHelper;
+import io.reactivex.internal.util.*;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.subscribers.DisposableSubscriber;
 
@@ -165,6 +165,7 @@ public final class BlockingFlowableNext<T> implements Iterable<T> {
 
         public Notification<T> takeNext() throws InterruptedException {
             setWaiting();
+            BlockingHelper.verifyNonBlocking();
             return buf.take();
         }
         void setWaiting() {

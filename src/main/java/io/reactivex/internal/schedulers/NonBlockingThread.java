@@ -11,26 +11,12 @@
  * the License for the specific language governing permissions and limitations under the License.
  */
 
-package io.reactivex.tck;
+package io.reactivex.internal.schedulers;
 
-import java.util.concurrent.TimeUnit;
+/**
+ * Marker interface to indicate blocking is not recommended while running
+ * on a Scheduler with a thread type implementing it.
+ */
+public interface NonBlockingThread {
 
-import org.reactivestreams.Publisher;
-import org.testng.annotations.Test;
-
-import io.reactivex.Flowable;
-
-@Test
-public class DelaySubscriptionTckTest extends BaseTck<Integer> {
-
-    public DelaySubscriptionTckTest() {
-        super(200L);
-    }
-
-    @Override
-    public Publisher<Integer> createPublisher(long elements) {
-        return FlowableTck.wrap(
-                Flowable.range(0, (int)elements).delaySubscription(1, TimeUnit.MILLISECONDS)
-        );
-    }
 }

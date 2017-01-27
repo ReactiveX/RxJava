@@ -19,7 +19,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import io.reactivex.*;
 import io.reactivex.Observable;
-import io.reactivex.internal.util.ExceptionHelper;
+import io.reactivex.internal.util.*;
 import io.reactivex.observers.DisposableObserver;
 import io.reactivex.plugins.RxJavaPlugins;
 
@@ -79,6 +79,7 @@ public final class BlockingObservableLatest<T> implements Iterable<T> {
             }
             if (iteratorNotification == null) {
                 try {
+                    BlockingHelper.verifyNonBlocking();
                     notify.acquire();
                 } catch (InterruptedException ex) {
                     dispose();
