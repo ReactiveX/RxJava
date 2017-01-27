@@ -13,6 +13,10 @@
 
 package io.reactivex.internal.operators.single;
 
+import java.util.Arrays;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import static org.junit.Assert.*;
 import org.junit.Test;
 
 import io.reactivex.Single;
@@ -135,4 +139,50 @@ public class SingleZipTest {
         .assertResult("123456789");
     }
 
+    @Test
+    public void noDisposeOnAllSuccess() {
+        final AtomicInteger counter = new AtomicInteger();
+
+        Single<Integer> source = Single.just(1).doOnDispose(new Action() {
+            @Override
+            public void run() throws Exception {
+                counter.getAndIncrement();
+            }
+        });
+
+        Single.zip(source, source, new BiFunction<Integer, Integer, Object>() {
+            @Override
+            public Integer apply(Integer a, Integer b) throws Exception {
+                return a + b;
+            }
+        })
+        .test()
+        .assertResult(2);
+
+        assertEquals(0, counter.get());
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void noDisposeOnAllSuccess2() {
+        final AtomicInteger counter = new AtomicInteger();
+
+        Single<Integer> source = Single.just(1).doOnDispose(new Action() {
+            @Override
+            public void run() throws Exception {
+                counter.getAndIncrement();
+            }
+        });
+
+        Single.zip(Arrays.asList(source, source), new Function<Object[], Object>() {
+            @Override
+            public Integer apply(Object[] o) throws Exception {
+                return (Integer)o[0] + (Integer)o[1];
+            }
+        })
+        .test()
+        .assertResult(2);
+
+        assertEquals(0, counter.get());
+    }
 }

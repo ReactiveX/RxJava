@@ -11,35 +11,35 @@
  * the License for the specific language governing permissions and limitations under the License.
  */
 
-package io.reactivex.internal.operators.maybe;
+package io.reactivex.internal.operators.single;
 
-import java.util.Arrays;
+import java.util.*;
 
 import io.reactivex.*;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.disposables.EmptyDisposable;
-import io.reactivex.internal.operators.maybe.MaybeZipArray.ZipCoordinator;
+import io.reactivex.internal.operators.single.SingleZipArray.ZipCoordinator;
 
-public final class MaybeZipIterable<T, R> extends Maybe<R> {
+public final class SingleZipIterable<T, R> extends Single<R> {
 
-    final Iterable<? extends MaybeSource<? extends T>> sources;
+    final Iterable<? extends SingleSource<? extends T>> sources;
 
     final Function<? super Object[], ? extends R> zipper;
 
-    public MaybeZipIterable(Iterable<? extends MaybeSource<? extends T>> sources, Function<? super Object[], ? extends R> zipper) {
+    public SingleZipIterable(Iterable<? extends SingleSource<? extends T>> sources, Function<? super Object[], ? extends R> zipper) {
         this.sources = sources;
         this.zipper = zipper;
     }
 
     @Override
-    protected void subscribeActual(MaybeObserver<? super R> observer) {
+    protected void subscribeActual(SingleObserver<? super R> observer) {
         @SuppressWarnings("unchecked")
-        MaybeSource<? extends T>[] a = new MaybeSource[8];
+        SingleSource<? extends T>[] a = new SingleSource[8];
         int n = 0;
 
         try {
-            for (MaybeSource<? extends T> source : sources) {
+            for (SingleSource<? extends T> source : sources) {
                 if (source == null) {
                     EmptyDisposable.error(new NullPointerException("One of the sources is null"), observer);
                     return;
@@ -56,12 +56,12 @@ public final class MaybeZipIterable<T, R> extends Maybe<R> {
         }
 
         if (n == 0) {
-            EmptyDisposable.complete(observer);
+            EmptyDisposable.error(new NoSuchElementException(), observer);
             return;
         }
 
         if (n == 1) {
-            a[0].subscribe(new MaybeMap.MapMaybeObserver<T, R>(observer, new Function<T, R>() {
+            a[0].subscribe(new SingleMap.MapSingleObserver<T, R>(observer, new Function<T, R>() {
                 @Override
                 public R apply(T t) throws Exception {
                     return zipper.apply(new Object[] { t });

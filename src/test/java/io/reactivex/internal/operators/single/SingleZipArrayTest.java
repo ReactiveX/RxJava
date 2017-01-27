@@ -11,7 +11,7 @@
  * the License for the specific language governing permissions and limitations under the License.
  */
 
-package io.reactivex.internal.operators.maybe;
+package io.reactivex.internal.operators.single;
 
 import static org.junit.Assert.*;
 
@@ -27,7 +27,7 @@ import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.Schedulers;
 
-public class MaybeZipArrayTest {
+public class SingleZipArrayTest {
 
     final BiFunction<Object, Object, Object> addString = new BiFunction<Object, Object, Object>() {
         @Override
@@ -46,14 +46,14 @@ public class MaybeZipArrayTest {
 
     @Test
     public void firstError() {
-        Maybe.zip(Maybe.error(new TestException()), Maybe.just(1), addString)
+        Single.zip(Single.error(new TestException()), Single.just(1), addString)
         .test()
         .assertFailure(TestException.class);
     }
 
     @Test
     public void secondError() {
-        Maybe.zip(Maybe.just(1), Maybe.<Integer>error(new TestException()), addString)
+        Single.zip(Single.just(1), Single.<Integer>error(new TestException()), addString)
         .test()
         .assertFailure(TestException.class);
     }
@@ -62,7 +62,7 @@ public class MaybeZipArrayTest {
     public void dispose() {
         PublishProcessor<Integer> pp = PublishProcessor.create();
 
-        TestObserver<Object> to = Maybe.zip(pp.singleElement(), pp.singleElement(), addString)
+        TestObserver<Object> to = Single.zip(pp.single(0), pp.single(0), addString)
         .test();
 
         assertTrue(pp.hasSubscribers());
@@ -74,7 +74,7 @@ public class MaybeZipArrayTest {
 
     @Test
     public void zipperThrows() {
-        Maybe.zip(Maybe.just(1), Maybe.just(2), new BiFunction<Integer, Integer, Object>() {
+        Single.zip(Single.just(1), Single.just(2), new BiFunction<Integer, Integer, Object>() {
             @Override
             public Object apply(Integer a, Integer b) throws Exception {
                 throw new TestException();
@@ -86,7 +86,7 @@ public class MaybeZipArrayTest {
 
     @Test
     public void zipperReturnsNull() {
-        Maybe.zip(Maybe.just(1), Maybe.just(2), new BiFunction<Integer, Integer, Object>() {
+        Single.zip(Single.just(1), Single.just(2), new BiFunction<Integer, Integer, Object>() {
             @Override
             public Object apply(Integer a, Integer b) throws Exception {
                 return null;
@@ -101,7 +101,7 @@ public class MaybeZipArrayTest {
         PublishProcessor<Integer> pp0 = PublishProcessor.create();
         PublishProcessor<Integer> pp1 = PublishProcessor.create();
 
-        TestObserver<Object> to = Maybe.zip(pp0.singleElement(), pp1.singleElement(), pp0.singleElement(), addString3)
+        TestObserver<Object> to = Single.zip(pp0.single(0), pp1.single(0), pp0.single(0), addString3)
         .test();
 
         pp1.onError(new TestException());
@@ -119,7 +119,7 @@ public class MaybeZipArrayTest {
                 final PublishProcessor<Integer> pp0 = PublishProcessor.create();
                 final PublishProcessor<Integer> pp1 = PublishProcessor.create();
 
-                final TestObserver<Object> to = Maybe.zip(pp0.singleElement(), pp1.singleElement(), addString)
+                final TestObserver<Object> to = Single.zip(pp0.single(0), pp1.single(0), addString)
                 .test();
 
                 final TestException ex = new TestException();
@@ -153,12 +153,38 @@ public class MaybeZipArrayTest {
     @SuppressWarnings("unchecked")
     @Test(expected = NullPointerException.class)
     public void zipArrayOneIsNull() {
-        Maybe.zipArray(new Function<Object[], Object>() {
+        Single.zipArray(new Function<Object[], Object>() {
             @Override
             public Object apply(Object[] v) {
                 return 1;
             }
-        }, Maybe.just(1), null)
+        }, Single.just(1), null)
         .blockingGet();
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void emptyArray() {
+        Single.zipArray(new Function<Object[], Object[]>() {
+            @Override
+            public Object[] apply(Object[] a) throws Exception {
+                return a;
+            }
+        }, new SingleSource[0])
+        .test()
+        .assertFailure(NoSuchElementException.class);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void oneArray() {
+        Single.zipArray(new Function<Object[], Object>() {
+            @Override
+            public Object apply(Object[] a) throws Exception {
+                return (Integer)a[0] + 1;
+            }
+        }, Single.just(1))
+        .test()
+        .assertResult(2);
     }
 }

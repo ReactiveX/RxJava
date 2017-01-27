@@ -11,7 +11,7 @@
  * the License for the specific language governing permissions and limitations under the License.
  */
 
-package io.reactivex.internal.operators.maybe;
+package io.reactivex.internal.operators.single;
 
 import java.util.concurrent.atomic.*;
 
@@ -23,25 +23,25 @@ import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.plugins.RxJavaPlugins;
 
-public final class MaybeZipArray<T, R> extends Maybe<R> {
+public final class SingleZipArray<T, R> extends Single<R> {
 
-    final MaybeSource<? extends T>[] sources;
+    final SingleSource<? extends T>[] sources;
 
     final Function<? super Object[], ? extends R> zipper;
 
-    public MaybeZipArray(MaybeSource<? extends T>[] sources, Function<? super Object[], ? extends R> zipper) {
+    public SingleZipArray(SingleSource<? extends T>[] sources, Function<? super Object[], ? extends R> zipper) {
         this.sources = sources;
         this.zipper = zipper;
     }
 
     @Override
-    protected void subscribeActual(MaybeObserver<? super R> observer) {
-        MaybeSource<? extends T>[] sources = this.sources;
+    protected void subscribeActual(SingleObserver<? super R> observer) {
+        SingleSource<? extends T>[] sources = this.sources;
         int n = sources.length;
 
 
         if (n == 1) {
-            sources[0].subscribe(new MaybeMap.MapMaybeObserver<T, R>(observer, new Function<T, R>() {
+            sources[0].subscribe(new SingleMap.MapSingleObserver<T, R>(observer, new Function<T, R>() {
                 @Override
                 public R apply(T t) throws Exception {
                     return zipper.apply(new Object[] { t });
@@ -59,12 +59,13 @@ public final class MaybeZipArray<T, R> extends Maybe<R> {
                 return;
             }
 
-            MaybeSource<? extends T> source = sources[i];
+            SingleSource<? extends T> source = sources[i];
 
             if (source == null) {
                 parent.innerError(new NullPointerException("One of the sources is null"), i);
                 return;
             }
+
             source.subscribe(parent.observers[i]);
         }
     }
@@ -74,22 +75,22 @@ public final class MaybeZipArray<T, R> extends Maybe<R> {
 
         private static final long serialVersionUID = -5556924161382950569L;
 
-        final MaybeObserver<? super R> actual;
+        final SingleObserver<? super R> actual;
 
         final Function<? super Object[], ? extends R> zipper;
 
-        final ZipMaybeObserver<T>[] observers;
+        final ZipSingleObserver<T>[] observers;
 
         final Object[] values;
 
         @SuppressWarnings("unchecked")
-        ZipCoordinator(MaybeObserver<? super R> observer, int n, Function<? super Object[], ? extends R> zipper) {
+        ZipCoordinator(SingleObserver<? super R> observer, int n, Function<? super Object[], ? extends R> zipper) {
             super(n);
             this.actual = observer;
             this.zipper = zipper;
-            ZipMaybeObserver<T>[] o = new ZipMaybeObserver[n];
+            ZipSingleObserver<T>[] o = new ZipSingleObserver[n];
             for (int i = 0; i < n; i++) {
-                o[i] = new ZipMaybeObserver<T>(this, i);
+                o[i] = new ZipSingleObserver<T>(this, i);
             }
             this.observers = o;
             this.values = new Object[n];
@@ -103,7 +104,7 @@ public final class MaybeZipArray<T, R> extends Maybe<R> {
         @Override
         public void dispose() {
             if (getAndSet(0) > 0) {
-                for (ZipMaybeObserver<?> d : observers) {
+                for (ZipSingleObserver<?> d : observers) {
                     d.dispose();
                 }
             }
@@ -127,7 +128,7 @@ public final class MaybeZipArray<T, R> extends Maybe<R> {
         }
 
         void disposeExcept(int index) {
-            ZipMaybeObserver<T>[] observers = this.observers;
+            ZipSingleObserver<T>[] observers = this.observers;
             int n = observers.length;
             for (int i = 0; i < index; i++) {
                 observers[i].dispose();
@@ -145,18 +146,11 @@ public final class MaybeZipArray<T, R> extends Maybe<R> {
                 RxJavaPlugins.onError(ex);
             }
         }
-
-        void innerComplete(int index) {
-            if (getAndSet(0) > 0) {
-                disposeExcept(index);
-                actual.onComplete();
-            }
-        }
     }
 
-    static final class ZipMaybeObserver<T>
+    static final class ZipSingleObserver<T>
     extends AtomicReference<Disposable>
-    implements MaybeObserver<T> {
+    implements SingleObserver<T> {
 
         private static final long serialVersionUID = 3323743579927613702L;
 
@@ -164,7 +158,7 @@ public final class MaybeZipArray<T, R> extends Maybe<R> {
 
         final int index;
 
-        ZipMaybeObserver(ZipCoordinator<T, ?> parent, int index) {
+        ZipSingleObserver(ZipCoordinator<T, ?> parent, int index) {
             this.parent = parent;
             this.index = index;
         }
@@ -186,11 +180,6 @@ public final class MaybeZipArray<T, R> extends Maybe<R> {
         @Override
         public void onError(Throwable e) {
             parent.innerError(e, index);
-        }
-
-        @Override
-        public void onComplete() {
-            parent.innerComplete(index);
         }
     }
 }
