@@ -2017,4 +2017,34 @@ public class OperatorGroupByTest {
                 throw exception;
             }};
     }
+    
+    @Test
+    public void outerConsumedInABoundedManner() {
+        final int[] counter = { 0 };
+        
+        Observable.range(1, 10000)
+        .doOnRequest(new Action1<Long>() {
+            @Override
+            public void call(Long v) {
+                counter[0] += v;
+            }
+        })
+        .groupBy(new Func1<Integer, Integer>() {
+            @Override
+            public Integer call(Integer v) {
+                return 1;
+            }
+        })
+        .flatMap(new Func1<GroupedObservable<Integer, Integer>, Observable<Integer>>() {
+            @Override
+            public Observable<Integer> call(GroupedObservable<Integer, Integer> v) {
+                return v;
+            }
+        })
+        .test(0);
+
+        int c = counter[0];
+        assertTrue("" + c, c > 0);
+        assertTrue("" + c, c < 10000);
+    }
 }
