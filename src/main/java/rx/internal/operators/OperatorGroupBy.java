@@ -202,7 +202,7 @@ public final class OperatorGroupBy<T, K, V> implements Operator<GroupedObservabl
                 return;
             }
 
-            boolean notNew = true;
+            boolean newGroup = false;
             Object mapKey = key != null ? key : NULL_KEY;
             GroupedUnicast<K, V> group = groups.get(mapKey);
             if (group == null) {
@@ -214,9 +214,7 @@ public final class OperatorGroupBy<T, K, V> implements Operator<GroupedObservabl
 
                     groupCount.getAndIncrement();
 
-                    notNew = false;
-                    q.offer(group);
-                    drain();
+                    newGroup = true;
                 } else {
                     return;
                 }
@@ -243,8 +241,9 @@ public final class OperatorGroupBy<T, K, V> implements Operator<GroupedObservabl
                 }
             }
 
-            if (notNew) {
-                s.request(1);
+            if (newGroup) {
+                q.offer(group);
+                drain();
             }
         }
 
