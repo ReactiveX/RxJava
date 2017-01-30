@@ -22,7 +22,7 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.mockito.Mockito;
+import org.mockito.*;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.reactivestreams.*;
@@ -66,6 +66,31 @@ public enum TestHelper {
                 return null;
             }
         }).when(w).onSubscribe((Subscription)any());
+
+        return w;
+    }
+
+    /**
+     * Mocks a conditional subscriber and prepares it to request Long.MAX_VALUE.
+     *
+     * The subscriber will accept all values.
+     *
+     * @param <T> the value type
+     * @return the mocked subscriber
+     */
+    @SuppressWarnings("unchecked")
+    public static <T> ConditionalSubscriber<T> mockConditionalSubscriber() {
+        ConditionalSubscriber<T> w = mock(ConditionalSubscriber.class);
+
+        Mockito.doAnswer(new Answer<Object>() {
+            @Override
+            public Object answer(InvocationOnMock a) throws Throwable {
+                Subscription s = a.getArgument(0);
+                s.request(Long.MAX_VALUE);
+                return null;
+            }
+        }).when(w).onSubscribe((Subscription)any());
+        Mockito.when(w.tryOnNext(ArgumentMatchers.<T>any())).thenReturn(true);
 
         return w;
     }
