@@ -17,9 +17,9 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import io.reactivex.CompletableObserver;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.exceptions.Exceptions;
+import io.reactivex.exceptions.*;
 import io.reactivex.functions.*;
-import io.reactivex.internal.disposables.*;
+import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.plugins.RxJavaPlugins;
 
 public final class CallbackCompletableObserver
@@ -43,7 +43,7 @@ extends AtomicReference<Disposable> implements CompletableObserver, Disposable, 
 
     @Override
     public void accept(Throwable e) {
-        RxJavaPlugins.onError(e);
+        RxJavaPlugins.onError(new OnErrorNotImplementedException(e));
     }
 
     @Override

@@ -1702,6 +1702,10 @@ public abstract class Completable implements CompletableSource {
      * Subscribes to this Completable and calls the given Action when this Completable
      * completes normally.
      * <p>
+     * If the Completable emits an error, it is wrapped into an
+     * {@link io.reactivex.exceptions.OnErrorNotImplementedException OnErrorNotImplementedException}
+     * and routed to the RxJavaPlugins.onError handler.
+     * <p>
      * If this Completable emits an error, it is sent to RxJavaPlugins.onError and gets swallowed.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>

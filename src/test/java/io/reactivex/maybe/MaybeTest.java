@@ -2214,7 +2214,9 @@ public class MaybeTest {
             assertTrue(Maybe.error(new TestException())
             .subscribe().isDisposed());
 
-            TestHelper.assertError(errors, 0, TestException.class);
+            TestHelper.assertError(errors, 0, OnErrorNotImplementedException.class);
+            Throwable c = errors.get(0).getCause();
+            assertTrue("" + c, c instanceof TestException);
         } finally {
             RxJavaPlugins.reset();
         }
