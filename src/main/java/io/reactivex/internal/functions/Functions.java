@@ -18,6 +18,7 @@ import java.util.concurrent.*;
 import org.reactivestreams.Subscription;
 
 import io.reactivex.*;
+import io.reactivex.exceptions.OnErrorNotImplementedException;
 import io.reactivex.functions.*;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.schedulers.Timed;
@@ -215,6 +216,17 @@ public final class Functions {
         @Override
         public void accept(Throwable error) {
             RxJavaPlugins.onError(error);
+        }
+    };
+
+    /**
+     * Wraps the consumed Throwable into an OnErrorNotImplementedException and
+     * signals it to the plugin error handler.
+     */
+    public static final Consumer<Throwable> ON_ERROR_MISSING = new Consumer<Throwable>() {
+        @Override
+        public void accept(Throwable error) {
+            RxJavaPlugins.onError(new OnErrorNotImplementedException(error));
         }
     };
 

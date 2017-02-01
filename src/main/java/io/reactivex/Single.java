@@ -2553,6 +2553,10 @@ public abstract class Single<T> implements SingleSource<T> {
 
     /**
      * Subscribes to a Single but ignore its emission or notification.
+     * <p>
+     * If the Single emits an error, it is wrapped into an
+     * {@link io.reactivex.exceptions.OnErrorNotImplementedException OnErrorNotImplementedException}
+     * and routed to the RxJavaPlugins.onError handler.
      * <dl>
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code subscribe} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -2563,7 +2567,7 @@ public abstract class Single<T> implements SingleSource<T> {
      */
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Disposable subscribe() {
-        return subscribe(Functions.emptyConsumer(), Functions.ERROR_CONSUMER);
+        return subscribe(Functions.emptyConsumer(), Functions.ON_ERROR_MISSING);
     }
 
     /**
@@ -2594,6 +2598,10 @@ public abstract class Single<T> implements SingleSource<T> {
 
     /**
      * Subscribes to a Single and provides a callback to handle the item it emits.
+     * <p>
+     * If the Single emits an error, it is wrapped into an
+     * {@link io.reactivex.exceptions.OnErrorNotImplementedException OnErrorNotImplementedException}
+     * and routed to the RxJavaPlugins.onError handler.
      * <dl>
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code subscribe} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -2609,7 +2617,7 @@ public abstract class Single<T> implements SingleSource<T> {
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Disposable subscribe(Consumer<? super T> onSuccess) {
-        return subscribe(onSuccess, Functions.ERROR_CONSUMER);
+        return subscribe(onSuccess, Functions.ON_ERROR_MISSING);
     }
 
     /**
