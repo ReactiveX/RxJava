@@ -29,10 +29,12 @@ import io.reactivex.internal.operators.completable.CompletableError;
 import io.reactivex.internal.operators.flowable.FlowableRange;
 import io.reactivex.internal.operators.maybe.MaybeError;
 import io.reactivex.internal.operators.observable.ObservableRange;
+import io.reactivex.internal.operators.parallel.ParallelFromPublisher;
 import io.reactivex.internal.operators.single.SingleJust;
 import io.reactivex.internal.schedulers.ImmediateThinScheduler;
 import io.reactivex.internal.subscriptions.ScalarSubscription;
 import io.reactivex.observables.ConnectableObservable;
+import io.reactivex.parallel.ParallelFlowable;
 import io.reactivex.schedulers.Schedulers;
 import org.junit.*;
 import org.reactivestreams.*;
@@ -2045,5 +2047,53 @@ public class RxJavaPluginsTest {
             customScheduler.shutdown();
             RxJavaPlugins.reset();
         }
+    }
+
+    @Test
+    public void onBeforeBlocking() {
+        try {
+            RxJavaPlugins.setOnBeforeBlocking(new BooleanSupplier() {
+                @Override
+                public boolean getAsBoolean() throws Exception {
+                    throw new IllegalArgumentException();
+                }
+            });
+
+            try {
+                RxJavaPlugins.onBeforeBlocking();
+                fail("Should have thrown");
+            } catch (IllegalArgumentException ex) {
+                // expected
+            }
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
+
+    @SuppressWarnings("rawtypes")
+    @Test
+    public void onParallelAssembly() {
+        try {
+            RxJavaPlugins.setOnParallelAssembly(new Function<ParallelFlowable, ParallelFlowable>() {
+                @Override
+                public ParallelFlowable apply(ParallelFlowable pf) throws Exception {
+                    return new ParallelFromPublisher<Integer>(Flowable.just(2), 2, 2);
+                }
+            });
+
+            Flowable.just(1)
+            .parallel()
+            .sequential()
+            .test()
+            .assertResult(2);
+        } finally {
+            RxJavaPlugins.reset();
+        }
+
+        Flowable.just(1)
+        .parallel()
+        .sequential()
+        .test()
+        .assertResult(1);
     }
 }

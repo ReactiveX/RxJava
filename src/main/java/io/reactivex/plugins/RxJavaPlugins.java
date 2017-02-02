@@ -12,19 +12,21 @@
  */
 package io.reactivex.plugins;
 
+import java.lang.Thread.UncaughtExceptionHandler;
+import java.util.concurrent.*;
+
+import org.reactivestreams.Subscriber;
+
 import io.reactivex.*;
-import io.reactivex.annotations.*;
+import io.reactivex.annotations.Experimental;
 import io.reactivex.flowables.ConnectableFlowable;
 import io.reactivex.functions.*;
 import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.internal.schedulers.*;
 import io.reactivex.internal.util.ExceptionHelper;
 import io.reactivex.observables.ConnectableObservable;
+import io.reactivex.parallel.ParallelFlowable;
 import io.reactivex.schedulers.Schedulers;
-import org.reactivestreams.Subscriber;
-
-import java.lang.Thread.UncaughtExceptionHandler;
-import java.util.concurrent.*;
 
 /**
  * Utility class to inject handlers to certain standard RxJava operations.
@@ -70,6 +72,9 @@ public final class RxJavaPlugins {
     static volatile Function<Single, Single> onSingleAssembly;
 
     static volatile Function<Completable, Completable> onCompletableAssembly;
+
+    @SuppressWarnings("rawtypes")
+    static volatile Function<ParallelFlowable, ParallelFlowable> onParallelAssembly;
 
     @SuppressWarnings("rawtypes")
     static volatile BiFunction<Flowable, Subscriber, Subscriber> onFlowableSubscribe;
@@ -413,6 +418,8 @@ public final class RxJavaPlugins {
 
         setOnMaybeAssembly(null);
         setOnMaybeSubscribe(null);
+
+        setOnParallelAssembly(null);
 
         setFailOnNonBlockingScheduler(false);
         setOnBeforeBlocking(null);
@@ -960,6 +967,48 @@ public final class RxJavaPlugins {
      */
     public static Completable onAssembly(Completable source) {
         Function<Completable, Completable> f = onCompletableAssembly;
+        if (f != null) {
+            return apply(f, source);
+        }
+        return source;
+    }
+
+    /**
+     * Sets the specific hook function.
+     * @param handler the hook function to set, null allowed
+     * @since 2.0.6 - experimental
+     */
+    @Experimental
+    @SuppressWarnings("rawtypes")
+    public static void setOnParallelAssembly(Function<ParallelFlowable, ParallelFlowable> handler) {
+        if (lockdown) {
+            throw new IllegalStateException("Plugins can't be changed anymore");
+        }
+        onParallelAssembly = handler;
+    }
+
+    /**
+     * Returns the current hook function.
+     * @return the hook function, may be null
+     * @since 2.0.6 - experimental
+     */
+    @Experimental
+    @SuppressWarnings("rawtypes")
+    public static Function<ParallelFlowable, ParallelFlowable> getOnParallelAssembly() {
+        return onParallelAssembly;
+    }
+
+    /**
+     * Calls the associated hook function.
+     * @param <T> the value type of the source
+     * @param source the hook's input value
+     * @return the value returned by the hook
+     * @since 2.0.6 - experimental
+     */
+    @Experimental
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    public static <T> ParallelFlowable<T> onAssembly(ParallelFlowable<T> source) {
+        Function<ParallelFlowable, ParallelFlowable> f = onParallelAssembly;
         if (f != null) {
             return apply(f, source);
         }
