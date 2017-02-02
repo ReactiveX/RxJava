@@ -35,14 +35,14 @@ import rx.subjects.SubjectSubscriptionManager.SubjectObserver;
  * <p>
  * <pre> {@code
 
-  // observer will receive all events.
+  // observer will receive all 4 events (including "default").
   BehaviorSubject<Object> subject = BehaviorSubject.create("default");
   subject.subscribe(observer);
   subject.onNext("one");
   subject.onNext("two");
   subject.onNext("three");
 
-  // observer will receive the "one", "two" and "three" events, but not "zero"
+  // observer will receive the "one", "two" and "three" events, but not "default" and "zero"
   BehaviorSubject<Object> subject = BehaviorSubject.create("default");
   subject.onNext("zero");
   subject.onNext("one");
