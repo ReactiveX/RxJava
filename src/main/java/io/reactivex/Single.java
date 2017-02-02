@@ -67,7 +67,8 @@ public abstract class Single<T> implements SingleSource<T> {
      * <dd>{@code amb} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * @param <T> the value type
-     * @param sources the Iterable sequence of sources
+     * @param sources the Iterable sequence of sources. A subscription to each source will
+     *            occur in the same order as in this Iterable.
      * @return the new Single instance
      * @since 2.0
      */
@@ -86,7 +87,8 @@ public abstract class Single<T> implements SingleSource<T> {
      * <dd>{@code ambArray} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * @param <T> the value type
-     * @param sources the array of sources
+     * @param sources the array of sources. A subscription to each source will
+     *            occur in the same order as in this array.
      * @return the new Single instance
      * @since 2.0
      */
@@ -1493,7 +1495,8 @@ public abstract class Single<T> implements SingleSource<T> {
      * <dd>{@code ambWith} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * @param other the other SingleSource to race for the first emission of success or error
-     * @return the new Single instance
+     * @return the new Single instance. A subscription to this provided source will occur after subscribing
+     *            to the current source.
      * @since 2.0
      */
     @CheckReturnValue

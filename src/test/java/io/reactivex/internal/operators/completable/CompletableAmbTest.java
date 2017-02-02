@@ -145,4 +145,22 @@ public class CompletableAmbTest {
         }
     }
 
+    @Test
+    public void ambWithOrder() {
+        Completable error = Completable.error(new RuntimeException());
+        Completable.complete().ambWith(error).test().assertComplete();
+    }
+
+    @Test
+    public void ambIterableOrder() {
+        Completable error = Completable.error(new RuntimeException());
+        Completable.amb(Arrays.asList(Completable.complete(), error)).test().assertComplete();
+    }
+
+    @Test
+    public void ambArrayOrder() {
+        Completable error = Completable.error(new RuntimeException());
+        Completable.ambArray(Completable.complete(), error).test().assertComplete();
+    }
+
 }

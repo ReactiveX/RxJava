@@ -46,7 +46,8 @@ public abstract class Completable implements CompletableSource {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code ambArray} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * @param sources the array of source Completables
+     * @param sources the array of source Completables. A subscription to each source will
+     *            occur in the same order as in this array.
      * @return the new Completable instance
      * @throws NullPointerException if sources is null
      */
@@ -71,7 +72,8 @@ public abstract class Completable implements CompletableSource {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code amb} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * @param sources the array of source Completables
+     * @param sources the array of source Completables. A subscription to each source will
+     *            occur in the same order as in this Iterable.
      * @return the new Completable instance
      * @throws NullPointerException if sources is null
      */
@@ -776,7 +778,8 @@ public abstract class Completable implements CompletableSource {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code ambWith} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * @param other the other Completable, not null
+     * @param other the other Completable, not null. A subscription to this provided source will occur after subscribing
+     *            to the current source.
      * @return the new Completable instance
      * @throws NullPointerException if other is null
      */

@@ -363,4 +363,24 @@ public class ObservableAmbTest {
             }
         }
     }
+
+    @Test
+    public void ambWithOrder() {
+        Observable<Integer> error = Observable.error(new RuntimeException());
+        Observable.just(1).ambWith(error).test().assertValue(1).assertComplete();
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void ambIterableOrder() {
+        Observable<Integer> error = Observable.error(new RuntimeException());
+        Observable.amb(Arrays.asList(Observable.just(1), error)).test().assertValue(1).assertComplete();
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void ambArrayOrder() {
+        Observable<Integer> error = Observable.error(new RuntimeException());
+        Observable.ambArray(Observable.just(1), error).test().assertValue(1).assertComplete();
+    }
 }
