@@ -49,7 +49,7 @@ import java.util.concurrent.ThreadFactory;
  */
 public final class RxJavaPlugins {
     @Nullable
-    static volatile Consumer<Throwable> errorHandler;
+    static volatile Consumer<? super Throwable> errorHandler;
 
     @Nullable
     static volatile Function<Runnable, Runnable> onScheduleHandler;
@@ -197,7 +197,7 @@ public final class RxJavaPlugins {
      * @return the hook consumer, may be null
      */
     @Nullable
-    public static Consumer<Throwable> getErrorHandler() {
+    public static Consumer<? super Throwable> getErrorHandler() {
         return errorHandler;
     }
 
@@ -356,7 +356,7 @@ public final class RxJavaPlugins {
      * @param error the error to report
      */
     public static void onError(@NonNull Throwable error) {
-        Consumer<Throwable> f = errorHandler;
+        Consumer<? super Throwable> f = errorHandler;
 
         if (error == null) {
             error = new NullPointerException("onError called with null. Null values are generally not allowed in 2.x operators and sources.");
@@ -497,7 +497,7 @@ public final class RxJavaPlugins {
      * Sets the specific hook function.
      * @param handler the hook function to set, null allowed
      */
-    public static void setErrorHandler(@Nullable Consumer<Throwable> handler) {
+    public static void setErrorHandler(@Nullable Consumer<? super Throwable> handler) {
         if (lockdown) {
             throw new IllegalStateException("Plugins can't be changed anymore");
         }
