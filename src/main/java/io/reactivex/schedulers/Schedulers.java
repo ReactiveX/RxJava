@@ -14,6 +14,7 @@
 package io.reactivex.schedulers;
 
 import io.reactivex.Scheduler;
+import io.reactivex.annotations.NonNull;
 import io.reactivex.internal.schedulers.*;
 import io.reactivex.plugins.RxJavaPlugins;
 
@@ -34,14 +35,19 @@ import java.util.concurrent.*;
  * </ul>
  */
 public final class Schedulers {
+    @NonNull
     static final Scheduler SINGLE;
 
+    @NonNull
     static final Scheduler COMPUTATION;
 
+    @NonNull
     static final Scheduler IO;
 
+    @NonNull
     static final Scheduler TRAMPOLINE;
 
+    @NonNull
     static final Scheduler NEW_THREAD;
 
     static final class SingleHolder {
@@ -108,6 +114,7 @@ public final class Schedulers {
      *
      * @return a {@link Scheduler} meant for computation-bound work
      */
+    @NonNull
     public static Scheduler computation() {
         return RxJavaPlugins.onComputationScheduler(COMPUTATION);
     }
@@ -125,6 +132,7 @@ public final class Schedulers {
      *
      * @return a {@link Scheduler} meant for IO-bound work
      */
+    @NonNull
     public static Scheduler io() {
         return RxJavaPlugins.onIoScheduler(IO);
     }
@@ -135,6 +143,7 @@ public final class Schedulers {
      *
      * @return a {@link Scheduler} that queues work on the current thread
      */
+    @NonNull
     public static Scheduler trampoline() {
         return TRAMPOLINE;
     }
@@ -146,6 +155,7 @@ public final class Schedulers {
      *
      * @return a {@link Scheduler} that creates new threads
      */
+    @NonNull
     public static Scheduler newThread() {
         return RxJavaPlugins.onNewThreadScheduler(NEW_THREAD);
     }
@@ -163,6 +173,7 @@ public final class Schedulers {
      * @return a {@link Scheduler} that shares a single backing thread.
      * @since 2.0
      */
+    @NonNull
     public static Scheduler single() {
         return RxJavaPlugins.onSingleScheduler(SINGLE);
     }
@@ -174,7 +185,8 @@ public final class Schedulers {
      *          the executor to wrap
      * @return the new Scheduler wrapping the Executor
      */
-    public static Scheduler from(Executor executor) {
+    @NonNull
+    public static Scheduler from(@NonNull Executor executor) {
         return new ExecutorScheduler(executor);
     }
 

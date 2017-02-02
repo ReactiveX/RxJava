@@ -17,6 +17,7 @@ import java.util.Queue;
 import java.util.concurrent.*;
 
 import io.reactivex.Scheduler;
+import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.*;
 import io.reactivex.internal.disposables.EmptyDisposable;
 import io.reactivex.internal.functions.ObjectHelper;
@@ -63,7 +64,7 @@ public final class TestScheduler extends Scheduler {
     }
 
     @Override
-    public long now(TimeUnit unit) {
+    public long now(@NonNull TimeUnit unit) {
         return unit.convert(time, TimeUnit.NANOSECONDS);
     }
 
@@ -118,6 +119,7 @@ public final class TestScheduler extends Scheduler {
         time = targetTimeInNanoseconds;
     }
 
+    @NonNull
     @Override
     public Worker createWorker() {
         return new TestWorker();
@@ -137,8 +139,9 @@ public final class TestScheduler extends Scheduler {
             return disposed;
         }
 
+        @NonNull
         @Override
-        public Disposable schedule(Runnable run, long delayTime, TimeUnit unit) {
+        public Disposable schedule(@NonNull Runnable run, long delayTime, @NonNull TimeUnit unit) {
             if (disposed) {
                 return EmptyDisposable.INSTANCE;
             }
@@ -153,8 +156,9 @@ public final class TestScheduler extends Scheduler {
             });
         }
 
+        @NonNull
         @Override
-        public Disposable schedule(Runnable run) {
+        public Disposable schedule(@NonNull Runnable run) {
             if (disposed) {
                 return EmptyDisposable.INSTANCE;
             }
@@ -169,7 +173,7 @@ public final class TestScheduler extends Scheduler {
         }
 
         @Override
-        public long now(TimeUnit unit) {
+        public long now(@NonNull TimeUnit unit) {
             return TestScheduler.this.now(unit);
         }
 

@@ -17,6 +17,7 @@
 package io.reactivex.internal.schedulers;
 
 import io.reactivex.Scheduler;
+import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.*;
 import io.reactivex.internal.disposables.EmptyDisposable;
 
@@ -180,6 +181,7 @@ public final class IoScheduler extends Scheduler {
         }
     }
 
+    @NonNull
     @Override
     public Worker createWorker() {
         return new EventLoopWorker(pool.get());
@@ -223,8 +225,9 @@ public final class IoScheduler extends Scheduler {
             return once.get();
         }
 
+        @NonNull
         @Override
-        public Disposable schedule(Runnable action, long delayTime, TimeUnit unit) {
+        public Disposable schedule(@NonNull Runnable action, long delayTime, @NonNull TimeUnit unit) {
             if (tasks.isDisposed()) {
                 // don't schedule, we are unsubscribed
                 return EmptyDisposable.INSTANCE;

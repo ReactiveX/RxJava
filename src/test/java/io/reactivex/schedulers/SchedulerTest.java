@@ -18,6 +18,7 @@ import static org.junit.Assert.*;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import io.reactivex.annotations.NonNull;
 import org.junit.Test;
 
 import io.reactivex.*;
@@ -248,11 +249,13 @@ public class SchedulerTest {
     @Test
     public void defaultSchedulePeriodicallyDirectRejects() {
         Scheduler s = new Scheduler() {
+            @NonNull
             @Override
             public Worker createWorker() {
                 return new Worker() {
+                    @NonNull
                     @Override
-                    public Disposable schedule(Runnable run, long delay, TimeUnit unit) {
+                    public Disposable schedule(@NonNull Runnable run, long delay, @NonNull TimeUnit unit) {
                         return EmptyDisposable.INSTANCE;
                     }
 

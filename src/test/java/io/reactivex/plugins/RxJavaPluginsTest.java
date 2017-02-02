@@ -1349,14 +1349,6 @@ public class RxJavaPluginsTest {
 //
 //            assertSame(cop, RxJavaPlugins.onCompletableLift(cop));
 
-            assertNull(RxJavaPlugins.onComputationScheduler(null));
-
-            assertNull(RxJavaPlugins.onIoScheduler(null));
-
-            assertNull(RxJavaPlugins.onNewThreadScheduler(null));
-
-            assertNull(RxJavaPlugins.onSingleScheduler(null));
-
             final Scheduler s = ImmediateThinScheduler.INSTANCE;
             Callable<Scheduler> c = new Callable<Scheduler>() {
                 @Override

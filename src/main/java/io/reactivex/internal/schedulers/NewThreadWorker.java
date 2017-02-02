@@ -16,6 +16,7 @@ package io.reactivex.internal.schedulers;
 import java.util.concurrent.*;
 
 import io.reactivex.Scheduler;
+import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.*;
 import io.reactivex.internal.disposables.*;
 import io.reactivex.plugins.RxJavaPlugins;
@@ -34,13 +35,15 @@ public class NewThreadWorker extends Scheduler.Worker implements Disposable {
         executor = SchedulerPoolFactory.create(threadFactory);
     }
 
+    @NonNull
     @Override
-    public Disposable schedule(final Runnable run) {
+    public Disposable schedule(@NonNull final Runnable run) {
         return schedule(run, 0, null);
     }
 
+    @NonNull
     @Override
-    public Disposable schedule(final Runnable action, long delayTime, TimeUnit unit) {
+    public Disposable schedule(@NonNull final Runnable action, long delayTime, @NonNull TimeUnit unit) {
         if (disposed) {
             return EmptyDisposable.INSTANCE;
         }

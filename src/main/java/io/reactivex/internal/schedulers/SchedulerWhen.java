@@ -25,6 +25,7 @@ import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.Scheduler;
 import io.reactivex.annotations.Experimental;
+import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.disposables.Disposables;
 import io.reactivex.exceptions.Exceptions;
@@ -129,6 +130,7 @@ public class SchedulerWhen extends Scheduler implements Disposable {
         return disposable.isDisposed();
     }
 
+    @NonNull
     @Override
     public Worker createWorker() {
         final Worker actualWorker = actualScheduler.createWorker();
@@ -168,16 +170,18 @@ public class SchedulerWhen extends Scheduler implements Disposable {
                 return unsubscribed.get();
             }
 
+            @NonNull
             @Override
-            public Disposable schedule(final Runnable action, final long delayTime, final TimeUnit unit) {
+            public Disposable schedule(@NonNull final Runnable action, final long delayTime, @NonNull final TimeUnit unit) {
                 // send a scheduled action to the actionQueue
                 DelayedAction delayedAction = new DelayedAction(action, delayTime, unit);
                 actionProcessor.onNext(delayedAction);
                 return delayedAction;
             }
 
+            @NonNull
             @Override
-            public Disposable schedule(final Runnable action) {
+            public Disposable schedule(@NonNull final Runnable action) {
                 // send a scheduled action to the actionQueue
                 ImmediateAction immediateAction = new ImmediateAction(action);
                 actionProcessor.onNext(immediateAction);
