@@ -261,4 +261,24 @@ public class SingleAmbTest {
         .test()
         .assertResult(31);
     }
+
+    @Test
+    public void ambWithOrder() {
+        Single<Integer> error = Single.error(new RuntimeException());
+        Single.just(1).ambWith(error).test().assertValue(1);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void ambIterableOrder() {
+        Single<Integer> error = Single.error(new RuntimeException());
+        Single.amb(Arrays.asList(Single.just(1), error)).test().assertValue(1);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void ambArrayOrder() {
+        Single<Integer> error = Single.error(new RuntimeException());
+        Single.ambArray(Single.just(1), error).test().assertValue(1);
+    }
 }

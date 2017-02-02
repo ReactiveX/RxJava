@@ -54,7 +54,8 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * <dd>{@code amb} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * @param <T> the value type
-     * @param sources the Iterable sequence of sources
+     * @param sources the Iterable sequence of sources. A subscription to each source will
+     *            occur in the same order as in the Iterable.
      * @return the new Maybe instance
      */
     @CheckReturnValue
@@ -72,7 +73,8 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * <dd>{@code ambArray} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * @param <T> the value type
-     * @param sources the array of sources
+     * @param sources the array of sources. A subscription to each source will
+     *            occur in the same order as in the array.
      * @return the new Maybe instance
      */
     @CheckReturnValue
@@ -1966,7 +1968,8 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * </dl>
      *
      * @param other
-     *            a MaybeSource competing to react first
+     *            a MaybeSource competing to react first. A subscription to this provided source will occur after
+     *            subscribing to the current source.
      * @return a Maybe that emits the same sequence as whichever of the source MaybeSources first
      *         signalled
      * @see <a href="http://reactivex.io/documentation/operators/amb.html">ReactiveX operators documentation: Amb</a>
