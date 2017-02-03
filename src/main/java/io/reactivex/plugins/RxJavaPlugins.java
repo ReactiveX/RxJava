@@ -52,7 +52,7 @@ public final class RxJavaPlugins {
     static volatile Consumer<? super Throwable> errorHandler;
 
     @Nullable
-    static volatile Function<Runnable, Runnable> onScheduleHandler;
+    static volatile Function<? super Runnable, ? extends Runnable> onScheduleHandler;
 
     @Nullable
     static volatile Function<Callable<Scheduler>, Scheduler> onInitComputationHandler;
@@ -260,7 +260,7 @@ public final class RxJavaPlugins {
      * @return the hook function, may be null
      */
     @Nullable
-    public static Function<Runnable, Runnable> getScheduleHandler() {
+    public static Function<? super Runnable, ? extends Runnable> getScheduleHandler() {
         return onScheduleHandler;
     }
 
@@ -418,7 +418,7 @@ public final class RxJavaPlugins {
      */
     @NonNull
     public static Runnable onSchedule(@NonNull Runnable run) {
-        Function<Runnable, Runnable> f = onScheduleHandler;
+        Function<? super Runnable, ? extends Runnable> f = onScheduleHandler;
         if (f == null) {
             return run;
         }
