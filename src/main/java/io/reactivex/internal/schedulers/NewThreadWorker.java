@@ -127,7 +127,9 @@ public class NewThreadWorker extends Scheduler.Worker implements Disposable {
             }
             sr.setFuture(f);
         } catch (RejectedExecutionException ex) {
-            parent.remove(sr);
+            if (parent != null) {
+                parent.remove(sr);
+            }
             RxJavaPlugins.onError(ex);
         }
 
