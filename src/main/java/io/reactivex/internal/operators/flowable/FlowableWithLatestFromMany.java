@@ -50,7 +50,7 @@ public final class FlowableWithLatestFromMany<T, R> extends AbstractFlowableWith
         this.combiner = combiner;
     }
 
-    public FlowableWithLatestFromMany(@NonNull Publisher<T> source, @NonNull Iterable<? extends Publisher<?>> otherIterable, Function<? super Object[], R> combiner) {
+    public FlowableWithLatestFromMany(@NonNull Publisher<T> source, @NonNull Iterable<? extends Publisher<?>> otherIterable, @NonNull Function<? super Object[], R> combiner) {
         super(source);
         this.otherArray = null;
         this.otherIterable = otherIterable;
