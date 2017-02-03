@@ -1,5 +1,17 @@
 # RxJava Releases #
 
+### Version 1.2.6 - February 3, 2017 ([Maven](http://search.maven.org/#artifactdetails%7Cio.reactivex%7Crxjava%7C1.2.6%7C))
+
+#### Documentation
+
+- [Pull 5000](https://github.com/ReactiveX/RxJava/pull/5000): Add which are the other stardard methods of create
+- [Pull 5007](https://github.com/ReactiveX/RxJava/pull/5007): update `sample(time)` diagram to indicate emission of last
+- [Pull 5048](https://github.com/ReactiveX/RxJava/pull/5048): Improve the javadoc of `BehaviorSubject`
+
+#### Bugfixes
+
+- [Pull 5030](https://github.com/ReactiveX/RxJava/pull/5030): fix `groupBy` consuming the upstream in an unbounded manner
+
 ### Version 1.2.5 - January 6, 2017 ([Maven](http://search.maven.org/#artifactdetails%7Cio.reactivex%7Crxjava%7C1.2.5%7C))
 
 #### Documentation
