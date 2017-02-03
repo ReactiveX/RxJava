@@ -13,6 +13,7 @@
 package io.reactivex.internal.schedulers;
 
 import io.reactivex.Scheduler;
+import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.*;
 import io.reactivex.internal.disposables.EmptyDisposable;
 import io.reactivex.plugins.RxJavaPlugins;
@@ -96,13 +97,15 @@ public final class SingleScheduler extends Scheduler {
         }
     }
 
+    @NonNull
     @Override
     public Worker createWorker() {
         return new ScheduledWorker(executor.get());
     }
 
+    @NonNull
     @Override
-    public Disposable scheduleDirect(Runnable run, long delay, TimeUnit unit) {
+    public Disposable scheduleDirect(@NonNull Runnable run, long delay, TimeUnit unit) {
         Runnable decoratedRun = RxJavaPlugins.onSchedule(run);
         try {
             Future<?> f;
@@ -118,8 +121,9 @@ public final class SingleScheduler extends Scheduler {
         }
     }
 
+    @NonNull
     @Override
-    public Disposable schedulePeriodicallyDirect(Runnable run, long initialDelay, long period, TimeUnit unit) {
+    public Disposable schedulePeriodicallyDirect(@NonNull Runnable run, long initialDelay, long period, TimeUnit unit) {
         Runnable decoratedRun = RxJavaPlugins.onSchedule(run);
         try {
             Future<?> f = executor.get().scheduleAtFixedRate(decoratedRun, initialDelay, period, unit);
@@ -143,8 +147,9 @@ public final class SingleScheduler extends Scheduler {
             this.tasks = new CompositeDisposable();
         }
 
+        @NonNull
         @Override
-        public Disposable schedule(Runnable run, long delay, TimeUnit unit) {
+        public Disposable schedule(@NonNull Runnable run, long delay, @NonNull TimeUnit unit) {
             if (disposed) {
                 return EmptyDisposable.INSTANCE;
             }

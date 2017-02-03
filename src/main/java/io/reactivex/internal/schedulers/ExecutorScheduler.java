@@ -17,6 +17,7 @@ import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 
 import io.reactivex.Scheduler;
+import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.*;
 import io.reactivex.internal.disposables.*;
 import io.reactivex.internal.queue.MpscLinkedQueue;
@@ -29,21 +30,24 @@ import io.reactivex.schedulers.Schedulers;
  */
 public final class ExecutorScheduler extends Scheduler {
 
+    @NonNull
     final Executor executor;
 
     static final Scheduler HELPER = Schedulers.single();
 
-    public ExecutorScheduler(Executor executor) {
+    public ExecutorScheduler(@NonNull Executor executor) {
         this.executor = executor;
     }
 
+    @NonNull
     @Override
     public Worker createWorker() {
         return new ExecutorWorker(executor);
     }
 
+    @NonNull
     @Override
-    public Disposable scheduleDirect(Runnable run) {
+    public Disposable scheduleDirect(@NonNull Runnable run) {
         Runnable decoratedRun = RxJavaPlugins.onSchedule(run);
         try {
             if (executor instanceof ExecutorService) {
@@ -60,8 +64,9 @@ public final class ExecutorScheduler extends Scheduler {
         }
     }
 
+    @NonNull
     @Override
-    public Disposable scheduleDirect(Runnable run, final long delay, final TimeUnit unit) {
+    public Disposable scheduleDirect(@NonNull Runnable run, final long delay, final TimeUnit unit) {
         final Runnable decoratedRun = RxJavaPlugins.onSchedule(run);
         if (executor instanceof ScheduledExecutorService) {
             try {
@@ -87,8 +92,9 @@ public final class ExecutorScheduler extends Scheduler {
         return dr;
     }
 
+    @NonNull
     @Override
-    public Disposable schedulePeriodicallyDirect(Runnable run, long initialDelay, long period, TimeUnit unit) {
+    public Disposable schedulePeriodicallyDirect(@NonNull Runnable run, long initialDelay, long period, TimeUnit unit) {
         if (executor instanceof ScheduledExecutorService) {
             Runnable decoratedRun = RxJavaPlugins.onSchedule(run);
             try {
@@ -118,8 +124,9 @@ public final class ExecutorScheduler extends Scheduler {
             this.queue = new MpscLinkedQueue<Runnable>();
         }
 
+        @NonNull
         @Override
-        public Disposable schedule(Runnable run) {
+        public Disposable schedule(@NonNull Runnable run) {
             if (disposed) {
                 return EmptyDisposable.INSTANCE;
             }
@@ -143,8 +150,9 @@ public final class ExecutorScheduler extends Scheduler {
             return br;
         }
 
+        @NonNull
         @Override
-        public Disposable schedule(Runnable run, long delay, TimeUnit unit) {
+        public Disposable schedule(@NonNull Runnable run, long delay, @NonNull TimeUnit unit) {
             if (delay <= 0) {
                 return schedule(run);
             }

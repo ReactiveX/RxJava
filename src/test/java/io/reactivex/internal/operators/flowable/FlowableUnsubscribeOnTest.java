@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicReference;
 
+import io.reactivex.annotations.NonNull;
 import org.junit.Test;
 import org.reactivestreams.*;
 
@@ -177,6 +178,7 @@ public class FlowableUnsubscribeOnTest {
             }
         }
 
+        @NonNull
         @Override
         public Worker createWorker() {
             return eventLoop.createWorker();
