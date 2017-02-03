@@ -17,6 +17,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import io.reactivex.*;
+import io.reactivex.annotations.Nullable;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.disposables.EmptyDisposable;
@@ -202,6 +203,7 @@ public final class ObservableScalarXMap {
             throw new UnsupportedOperationException("Should not be called!");
         }
 
+        @Nullable
         @Override
         public T poll() throws Exception {
             if (get() == FUSED) {

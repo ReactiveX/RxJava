@@ -13,6 +13,7 @@
 
 package io.reactivex.internal.observers;
 
+import io.reactivex.annotations.Nullable;
 import org.junit.Test;
 
 public class BasicQueueDisposableTest {
@@ -29,6 +30,7 @@ public class BasicQueueDisposableTest {
 
         }
 
+        @Nullable
         @Override
         public Integer poll() throws Exception {
             return null;

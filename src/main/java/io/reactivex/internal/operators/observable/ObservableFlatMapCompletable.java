@@ -16,6 +16,7 @@ package io.reactivex.internal.operators.observable;
 import java.util.concurrent.atomic.AtomicReference;
 
 import io.reactivex.*;
+import io.reactivex.annotations.Nullable;
 import io.reactivex.disposables.*;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.Function;
@@ -148,6 +149,7 @@ public final class ObservableFlatMapCompletable<T> extends AbstractObservableWit
             return d.isDisposed();
         }
 
+        @Nullable
         @Override
         public T poll() throws Exception {
             return null; // always empty

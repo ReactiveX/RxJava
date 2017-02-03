@@ -21,6 +21,7 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 
+import io.reactivex.annotations.Nullable;
 import org.junit.Test;
 import org.mockito.InOrder;
 import org.reactivestreams.*;
@@ -1363,6 +1364,7 @@ public class FlowableObserveOnTest {
                         return false;
                     }
 
+                    @Nullable
                     @Override
                     public Integer poll() throws Exception {
                         throw new TestException();
@@ -1413,6 +1415,7 @@ public class FlowableObserveOnTest {
                         return false;
                     }
 
+                    @Nullable
                     @Override
                     public Integer poll() throws Exception {
                         throw new TestException();
@@ -1464,6 +1467,7 @@ public class FlowableObserveOnTest {
                         return false;
                     }
 
+                    @Nullable
                     @Override
                     public Integer poll() throws Exception {
                         throw new TestException();
@@ -1514,6 +1518,7 @@ public class FlowableObserveOnTest {
                         return false;
                     }
 
+                    @Nullable
                     @Override
                     public Integer poll() throws Exception {
                         throw new TestException();

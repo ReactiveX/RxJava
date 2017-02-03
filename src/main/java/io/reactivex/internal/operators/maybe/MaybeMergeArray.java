@@ -16,6 +16,7 @@ package io.reactivex.internal.operators.maybe;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.*;
 
+import io.reactivex.annotations.Nullable;
 import org.reactivestreams.Subscriber;
 
 import io.reactivex.*;
@@ -107,6 +108,7 @@ public final class MaybeMergeArray<T> extends Flowable<T> {
             return NONE;
         }
 
+        @Nullable
         @SuppressWarnings("unchecked")
         @Override
         public T poll() throws Exception {
@@ -299,6 +301,7 @@ public final class MaybeMergeArray<T> extends Flowable<T> {
 
     interface SimpleQueueWithConsumerIndex<T> extends SimpleQueue<T> {
 
+        @Nullable
         @Override
         T poll();
 
@@ -342,6 +345,7 @@ public final class MaybeMergeArray<T> extends Flowable<T> {
             throw new UnsupportedOperationException();
         }
 
+        @Nullable
         @Override
         public T poll() {
             int ci = consumerIndex;
@@ -422,6 +426,7 @@ public final class MaybeMergeArray<T> extends Flowable<T> {
             return super.offer(e);
         }
 
+        @Nullable
         @Override
         public T poll() {
             T v = super.poll();

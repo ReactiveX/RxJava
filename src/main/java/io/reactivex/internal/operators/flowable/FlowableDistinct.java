@@ -16,6 +16,7 @@ package io.reactivex.internal.operators.flowable;
 import java.util.Collection;
 import java.util.concurrent.Callable;
 
+import io.reactivex.annotations.Nullable;
 import org.reactivestreams.*;
 
 import io.reactivex.exceptions.Exceptions;
@@ -117,6 +118,7 @@ public final class FlowableDistinct<T, K> extends AbstractFlowableWithUpstream<T
             return transitiveBoundaryFusion(mode);
         }
 
+        @Nullable
         @Override
         public T poll() throws Exception {
             for (;;) {

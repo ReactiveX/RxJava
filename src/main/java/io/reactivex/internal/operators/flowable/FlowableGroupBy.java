@@ -17,6 +17,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.*;
 
+import io.reactivex.annotations.Nullable;
 import org.reactivestreams.*;
 
 import io.reactivex.exceptions.Exceptions;
@@ -353,6 +354,7 @@ public final class FlowableGroupBy<T, K, V> extends AbstractFlowableWithUpstream
             return NONE;
         }
 
+        @Nullable
         @Override
         public GroupedFlowable<K, V> poll() {
             return queue.poll();
@@ -627,6 +629,7 @@ public final class FlowableGroupBy<T, K, V> extends AbstractFlowableWithUpstream
             return NONE;
         }
 
+        @Nullable
         @Override
         public T poll() {
             T v = queue.poll();

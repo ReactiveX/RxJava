@@ -13,6 +13,7 @@
 
 package io.reactivex.internal.operators.flowable;
 
+import io.reactivex.annotations.Nullable;
 import org.reactivestreams.Subscriber;
 
 import io.reactivex.Flowable;
@@ -55,6 +56,7 @@ public final class FlowableFromArray<T> extends Flowable<T> {
             return mode & SYNC;
         }
 
+        @Nullable
         @Override
         public final T poll() {
             int i = index;

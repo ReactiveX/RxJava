@@ -15,6 +15,7 @@ package io.reactivex.internal.subscriptions;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
+import io.reactivex.annotations.Nullable;
 import org.reactivestreams.Subscriber;
 
 import io.reactivex.internal.fuseable.QueueSubscription;
@@ -82,6 +83,7 @@ public final class ScalarSubscription<T> extends AtomicInteger implements QueueS
         throw new UnsupportedOperationException("Should not be called!");
     }
 
+    @Nullable
     @Override
     public T poll() {
         if (get() == NO_REQUEST) {

@@ -17,6 +17,7 @@ import java.util.Iterator;
 import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.*;
 
+import io.reactivex.annotations.Nullable;
 import org.reactivestreams.*;
 
 import io.reactivex.exceptions.*;
@@ -413,6 +414,7 @@ public final class FlowableFlattenIterable<T, R> extends AbstractFlowableWithUps
             return (it != null && !it.hasNext()) || queue.isEmpty();
         }
 
+        @Nullable
         @Override
         public R poll() throws Exception {
             Iterator<? extends R> it = current;

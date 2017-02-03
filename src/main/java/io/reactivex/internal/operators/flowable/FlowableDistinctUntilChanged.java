@@ -13,6 +13,7 @@
 
 package io.reactivex.internal.operators.flowable;
 
+import io.reactivex.annotations.Nullable;
 import org.reactivestreams.*;
 
 import io.reactivex.functions.*;
@@ -106,6 +107,7 @@ public final class FlowableDistinctUntilChanged<T, K> extends AbstractFlowableWi
             return transitiveBoundaryFusion(mode);
         }
 
+        @Nullable
         @Override
         public T poll() throws Exception {
             for (;;) {
@@ -195,6 +197,7 @@ public final class FlowableDistinctUntilChanged<T, K> extends AbstractFlowableWi
             return transitiveBoundaryFusion(mode);
         }
 
+        @Nullable
         @Override
         public T poll() throws Exception {
             for (;;) {

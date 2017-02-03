@@ -16,6 +16,7 @@ package io.reactivex.internal.operators.flowable;
 import java.util.Iterator;
 import java.util.concurrent.atomic.*;
 
+import io.reactivex.annotations.Nullable;
 import org.reactivestreams.*;
 
 import io.reactivex.Flowable;
@@ -466,6 +467,7 @@ extends Flowable<R> {
             return m;
         }
 
+        @Nullable
         @SuppressWarnings("unchecked")
         @Override
         public R poll() throws Exception {

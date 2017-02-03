@@ -13,6 +13,7 @@
 
 package io.reactivex.internal.operators.flowable;
 
+import io.reactivex.annotations.Nullable;
 import org.reactivestreams.*;
 
 import io.reactivex.internal.fuseable.QueueSubscription;
@@ -72,6 +73,7 @@ public final class FlowableIgnoreElements<T> extends AbstractFlowableWithUpstrea
             throw new UnsupportedOperationException("Should not be called!");
         }
 
+        @Nullable
         @Override
         public T poll() {
             return null; // empty, always

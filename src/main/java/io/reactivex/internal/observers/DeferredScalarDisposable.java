@@ -14,6 +14,7 @@
 package io.reactivex.internal.observers;
 
 import io.reactivex.Observer;
+import io.reactivex.annotations.Nullable;
 import io.reactivex.plugins.RxJavaPlugins;
 
 /**
@@ -110,6 +111,7 @@ public class DeferredScalarDisposable<T> extends BasicIntQueueDisposable<T> {
         actual.onComplete();
     }
 
+    @Nullable
     @Override
     public final T poll() throws Exception {
         if (get() == FUSED_READY) {
