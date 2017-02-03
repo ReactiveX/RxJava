@@ -115,4 +115,18 @@ public class NewThreadSchedulerTest extends AbstractSchedulerConcurrencyTests {
 
         assertEquals(0, calls[0]);
     }
+
+    @Test
+    public void npe() throws Exception {
+        Scheduler s = getScheduler();
+        NewThreadWorker w = (NewThreadWorker) s.createWorker();
+        w.dispose();
+
+        w.scheduleActual(new Runnable() {
+            @Override
+            public void run() {
+            }
+        }, 0, null, null);
+
+    }
 }
