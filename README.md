@@ -135,6 +135,17 @@ Flowable.range(1, 10)
 
 Practically, paralellism in RxJava means running independent flows and merging their results back into a single flow. The operator `flatMap` does this by first mapping each number from 1 to 10 into its own individual `Flowable`, runs them and merges the computed squares.
 
+Starting from 2.0.5, there is an *experimental* operator `parallel()` and type `ParallelFlowable` that helps achieve the same parallel processing pattern:
+
+```java
+Flowable.range(1, 10)
+.parallel()
+.runOn(Schedulers.computation())
+.map(v -> v * v)
+.sequential()
+.blockingSubscribe(System.out::println);
+```
+
 `flatMap` is a powerful operator and helps in a lot of situations. For example, given a service that returns a `Flowable`, we'd like to call another service with values emitted by the first service:
 
 ```java
