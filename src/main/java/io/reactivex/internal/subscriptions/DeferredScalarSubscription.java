@@ -13,6 +13,7 @@
 
 package io.reactivex.internal.subscriptions;
 
+import io.reactivex.annotations.Nullable;
 import org.reactivestreams.Subscriber;
 
 /**
@@ -156,6 +157,7 @@ public class DeferredScalarSubscription<T> extends BasicIntQueueSubscription<T> 
         return NONE;
     }
 
+    @Nullable
     @Override
     public final T poll() {
         if (get() == FUSED_READY) {

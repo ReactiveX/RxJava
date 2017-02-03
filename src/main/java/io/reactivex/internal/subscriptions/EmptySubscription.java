@@ -13,6 +13,7 @@
 
 package io.reactivex.internal.subscriptions;
 
+import io.reactivex.annotations.Nullable;
 import org.reactivestreams.Subscriber;
 
 import io.reactivex.internal.fuseable.QueueSubscription;
@@ -66,6 +67,7 @@ public enum EmptySubscription implements QueueSubscription<Object> {
         s.onSubscribe(INSTANCE);
         s.onComplete();
     }
+    @Nullable
     @Override
     public Object poll() {
         return null; // always empty

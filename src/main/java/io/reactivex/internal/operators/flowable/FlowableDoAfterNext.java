@@ -13,6 +13,7 @@
 
 package io.reactivex.internal.operators.flowable;
 
+import io.reactivex.annotations.Nullable;
 import org.reactivestreams.*;
 
 import io.reactivex.annotations.Experimental;
@@ -74,6 +75,7 @@ public final class FlowableDoAfterNext<T> extends AbstractFlowableWithUpstream<T
             return transitiveBoundaryFusion(mode);
         }
 
+        @Nullable
         @Override
         public T poll() throws Exception {
             T v = qs.poll();
@@ -122,6 +124,7 @@ public final class FlowableDoAfterNext<T> extends AbstractFlowableWithUpstream<T
             return transitiveBoundaryFusion(mode);
         }
 
+        @Nullable
         @Override
         public T poll() throws Exception {
             T v = qs.poll();

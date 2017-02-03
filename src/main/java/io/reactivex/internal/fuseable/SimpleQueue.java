@@ -13,6 +13,8 @@
 
 package io.reactivex.internal.fuseable;
 
+import io.reactivex.annotations.Nullable;
+
 /**
  * A minimalist queue interface without the method bloat of java.util.Collection and java.util.Queue.
  *
@@ -24,6 +26,10 @@ public interface SimpleQueue<T> {
 
     boolean offer(T v1, T v2);
 
+    /**
+     * @return null to indicate an empty queue
+     */
+    @Nullable
     T poll() throws Exception;
 
     boolean isEmpty();

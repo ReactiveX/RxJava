@@ -15,6 +15,7 @@ package io.reactivex.internal.operators.flowable;
 
 import java.util.concurrent.atomic.AtomicLong;
 
+import io.reactivex.annotations.Nullable;
 import org.reactivestreams.*;
 
 import io.reactivex.Scheduler;
@@ -457,6 +458,7 @@ final Scheduler scheduler;
             }
         }
 
+        @Nullable
         @Override
         public T poll() throws Exception {
             T v = queue.poll();
@@ -695,6 +697,7 @@ final Scheduler scheduler;
             }
         }
 
+        @Nullable
         @Override
         public T poll() throws Exception {
             T v = queue.poll();

@@ -15,6 +15,7 @@ package io.reactivex.internal.operators.flowable;
 
 import java.util.concurrent.atomic.AtomicReference;
 
+import io.reactivex.annotations.Nullable;
 import org.reactivestreams.*;
 
 import io.reactivex.*;
@@ -174,6 +175,7 @@ public final class FlowableFlatMapCompletable<T> extends AbstractFlowableWithUps
             // ignored, no values emitted
         }
 
+        @Nullable
         @Override
         public T poll() throws Exception {
             return null; // always empty

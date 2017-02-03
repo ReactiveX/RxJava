@@ -13,6 +13,7 @@
 
 package io.reactivex.internal.operators.flowable;
 
+import io.reactivex.annotations.Nullable;
 import org.reactivestreams.*;
 
 import io.reactivex.annotations.Experimental;
@@ -130,6 +131,7 @@ public final class FlowableDoFinally<T> extends AbstractFlowableWithUpstream<T, 
             return qs.isEmpty();
         }
 
+        @Nullable
         @Override
         public T poll() throws Exception {
             T v = qs.poll();
@@ -239,6 +241,7 @@ public final class FlowableDoFinally<T> extends AbstractFlowableWithUpstream<T, 
             return qs.isEmpty();
         }
 
+        @Nullable
         @Override
         public T poll() throws Exception {
             T v = qs.poll();

@@ -16,6 +16,7 @@ package io.reactivex.internal.operators.single;
 import java.util.Iterator;
 
 import io.reactivex.*;
+import io.reactivex.annotations.Nullable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.Function;
@@ -181,6 +182,7 @@ public final class SingleFlatMapIterableObservable<T, R> extends Observable<R> {
             return it == null;
         }
 
+        @Nullable
         @Override
         public R poll() throws Exception {
             Iterator<? extends R> iter = it;

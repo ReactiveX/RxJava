@@ -15,6 +15,7 @@ package io.reactivex.internal.subscribers;
 
 import static org.junit.Assert.*;
 
+import io.reactivex.annotations.Nullable;
 import org.junit.Test;
 import org.reactivestreams.Subscription;
 
@@ -66,6 +67,7 @@ public class BasicFuseableConditionalSubscriberTest {
                 return 0;
             }
 
+            @Nullable
             @Override
             public Integer poll() throws Exception {
                 return null;

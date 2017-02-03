@@ -20,6 +20,7 @@ package io.reactivex.internal.queue;
 
 import java.util.concurrent.atomic.*;
 
+import io.reactivex.annotations.Nullable;
 import io.reactivex.internal.fuseable.SimplePlainQueue;
 import io.reactivex.internal.util.Pow2;
 
@@ -82,6 +83,7 @@ public final class SpscArrayQueue<E> extends AtomicReferenceArray<E> implements 
         return offer(v1) && offer(v2);
     }
 
+    @Nullable
     @Override
     public E poll() {
         final long index = consumerIndex.get();

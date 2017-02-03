@@ -14,6 +14,7 @@
 
 package io.reactivex.internal.operators.flowable;
 
+import io.reactivex.annotations.Nullable;
 import org.reactivestreams.*;
 
 import io.reactivex.functions.Function;
@@ -72,6 +73,7 @@ public final class FlowableMap<T, U> extends AbstractFlowableWithUpstream<T, U> 
             return transitiveBoundaryFusion(mode);
         }
 
+        @Nullable
         @Override
         public U poll() throws Exception {
             T t = qs.poll();
@@ -131,6 +133,7 @@ public final class FlowableMap<T, U> extends AbstractFlowableWithUpstream<T, U> 
             return transitiveBoundaryFusion(mode);
         }
 
+        @Nullable
         @Override
         public U poll() throws Exception {
             T t = qs.poll();

@@ -20,6 +20,7 @@ package io.reactivex.internal.queue;
 
 import java.util.concurrent.atomic.AtomicReference;
 
+import io.reactivex.annotations.Nullable;
 import io.reactivex.internal.fuseable.SimplePlainQueue;
 
 /**
@@ -81,6 +82,7 @@ public final class MpscLinkedQueue<T> implements SimplePlainQueue<T> {
      *
      * @see java.util.Queue#poll()
      */
+    @Nullable
     @Override
     public T poll() {
         LinkedQueueNode<T> currConsumerNode = lpConsumerNode(); // don't load twice, it's alright

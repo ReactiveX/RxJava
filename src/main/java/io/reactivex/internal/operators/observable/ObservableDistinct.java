@@ -17,6 +17,7 @@ import java.util.Collection;
 import java.util.concurrent.Callable;
 
 import io.reactivex.*;
+import io.reactivex.annotations.Nullable;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.disposables.EmptyDisposable;
@@ -113,6 +114,7 @@ public final class ObservableDistinct<T, K> extends AbstractObservableWithUpstre
             return transitiveBoundaryFusion(mode);
         }
 
+        @Nullable
         @Override
         public T poll() throws Exception {
             for (;;) {

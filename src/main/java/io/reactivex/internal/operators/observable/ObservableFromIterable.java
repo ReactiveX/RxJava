@@ -16,6 +16,7 @@ package io.reactivex.internal.operators.observable;
 import java.util.Iterator;
 
 import io.reactivex.*;
+import io.reactivex.annotations.Nullable;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.internal.disposables.EmptyDisposable;
 import io.reactivex.internal.functions.ObjectHelper;
@@ -122,6 +123,7 @@ public final class ObservableFromIterable<T> extends Observable<T> {
             return NONE;
         }
 
+        @Nullable
         @Override
         public T poll() {
             if (done) {

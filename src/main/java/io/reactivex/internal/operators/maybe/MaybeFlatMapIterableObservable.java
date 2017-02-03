@@ -16,6 +16,7 @@ package io.reactivex.internal.operators.maybe;
 import java.util.Iterator;
 
 import io.reactivex.*;
+import io.reactivex.annotations.Nullable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.Function;
@@ -187,6 +188,7 @@ public final class MaybeFlatMapIterableObservable<T, R> extends Observable<R> {
             return it == null;
         }
 
+        @Nullable
         @Override
         public R poll() throws Exception {
             Iterator<? extends R> iter = it;

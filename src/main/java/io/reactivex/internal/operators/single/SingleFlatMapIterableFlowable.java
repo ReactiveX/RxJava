@@ -16,6 +16,7 @@ package io.reactivex.internal.operators.single;
 import java.util.Iterator;
 import java.util.concurrent.atomic.AtomicLong;
 
+import io.reactivex.annotations.Nullable;
 import org.reactivestreams.Subscriber;
 
 import io.reactivex.*;
@@ -271,6 +272,7 @@ public final class SingleFlatMapIterableFlowable<T, R> extends Flowable<R> {
             return it == null;
         }
 
+        @Nullable
         @Override
         public R poll() throws Exception {
             Iterator<? extends R> iter = it;
