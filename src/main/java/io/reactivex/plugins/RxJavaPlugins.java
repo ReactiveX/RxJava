@@ -1215,7 +1215,7 @@ public final class RxJavaPlugins {
      * @return the result of the function call
      */
     @NonNull
-    static <T, R> R apply(@NonNull Function<T, R> f, @NonNull T t) {
+    static <T, R> R apply(@NonNull Function<? super T, ? extends R> f, @NonNull T t) {
         try {
             return f.apply(t);
         } catch (Throwable ex) {
