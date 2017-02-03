@@ -246,6 +246,7 @@ public final class FlowableWindow<T> extends AbstractFlowableWithUpstream<T, Flo
 
             if (i == size) {
                 window = null;
+                assert w != null;
                 w.onComplete();
             }
 
