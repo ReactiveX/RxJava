@@ -101,7 +101,7 @@ public final class MaybeFlatMapIterableObservable<T, R> extends Observable<R> {
 
             this.it = iter;
 
-            if (outputFused && iter != null) {
+            if (outputFused) {
                 a.onNext(null);
                 a.onComplete();
                 return;
