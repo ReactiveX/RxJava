@@ -23,6 +23,9 @@ import static java.lang.annotation.ElementType.METHOD;
 import static java.lang.annotation.ElementType.PARAMETER;
 import static java.lang.annotation.RetentionPolicy.CLASS;
 
+/**
+ * Indicates that a field/parameter/variable/return type may be null.
+ */
 @Documented
 @Target(value = {FIELD, METHOD, PARAMETER, LOCAL_VARIABLE})
 @Retention(value = CLASS)
