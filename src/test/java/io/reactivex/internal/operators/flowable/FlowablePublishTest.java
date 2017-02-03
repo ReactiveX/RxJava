@@ -873,4 +873,25 @@ public class FlowablePublishTest {
         .test(0L)
         .assertFailure(MissingBackpressureException.class);
     }
+
+    @Test
+    public void delayedUpstreamOnSubscribe() {
+        final Subscriber<?>[] sub = { null };
+
+        new Flowable<Integer>() {
+            @Override
+            protected void subscribeActual(Subscriber<? super Integer> s) {
+                sub[0] = s;
+            }
+        }
+        .publish()
+        .connect()
+        .dispose();
+
+        BooleanSubscription bs = new BooleanSubscription();
+
+        sub[0].onSubscribe(bs);
+
+        assertTrue(bs.isCancelled());
+    }
 }
