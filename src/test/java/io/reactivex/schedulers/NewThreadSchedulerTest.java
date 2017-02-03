@@ -126,7 +126,7 @@ public class NewThreadSchedulerTest extends AbstractSchedulerConcurrencyTests {
             @Override
             public void run() {
             }
-        }, 0, null, null);
+        }, 0, TimeUnit.MILLISECONDS, null);
 
     }
 }
