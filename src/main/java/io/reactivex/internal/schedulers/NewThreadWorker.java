@@ -17,6 +17,7 @@ import java.util.concurrent.*;
 
 import io.reactivex.Scheduler;
 import io.reactivex.annotations.NonNull;
+import io.reactivex.annotations.Nullable;
 import io.reactivex.disposables.*;
 import io.reactivex.internal.disposables.*;
 import io.reactivex.plugins.RxJavaPlugins;
@@ -106,7 +107,8 @@ public class NewThreadWorker extends Scheduler.Worker implements Disposable {
      * @param parent the optional tracker parent to add the created ScheduledRunnable instance to before it gets scheduled
      * @return the ScheduledRunnable instance
      */
-    public ScheduledRunnable scheduleActual(final Runnable run, long delayTime, TimeUnit unit, DisposableContainer parent) {
+    @NonNull
+    public ScheduledRunnable scheduleActual(final Runnable run, long delayTime, @NonNull TimeUnit unit, @Nullable DisposableContainer parent) {
         Runnable decoratedRun = RxJavaPlugins.onSchedule(run);
 
         ScheduledRunnable sr = new ScheduledRunnable(decoratedRun, parent);
@@ -126,7 +128,9 @@ public class NewThreadWorker extends Scheduler.Worker implements Disposable {
             }
             sr.setFuture(f);
         } catch (RejectedExecutionException ex) {
-            parent.remove(sr);
+            if (parent != null) {
+                parent.remove(sr);
+            }
             RxJavaPlugins.onError(ex);
         }
 

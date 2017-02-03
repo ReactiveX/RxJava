@@ -199,7 +199,7 @@ public final class ComputationScheduler extends Scheduler {
                 return EmptyDisposable.INSTANCE;
             }
 
-            return poolWorker.scheduleActual(action, 0, null, serial);
+            return poolWorker.scheduleActual(action, 0, TimeUnit.MILLISECONDS, serial);
         }
         @NonNull
         @Override
