@@ -62,7 +62,6 @@ public final class FlowableWithLatestFromMany<T, R> extends AbstractFlowableWith
         Publisher<?>[] others = otherArray;
         int n = 0;
         if (others == null) {
-            assert otherIterable != null;
             others = new Publisher[8];
 
             try {

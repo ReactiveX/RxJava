@@ -63,7 +63,6 @@ public final class ObservableWithLatestFromMany<T, R> extends AbstractObservable
         ObservableSource<?>[] others = otherArray;
         int n = 0;
         if (others == null) {
-            assert otherIterable!=null;
             others = new ObservableSource[8];
 
             try {

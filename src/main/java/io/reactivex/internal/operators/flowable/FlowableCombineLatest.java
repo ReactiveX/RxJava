@@ -76,7 +76,6 @@ extends Flowable<R> {
         Publisher<? extends T>[] a = array;
         int n;
         if (a == null) {
-            assert iterable != null; //either array or iterable are initialized with non null values
             n = 0;
             a = new Publisher[8];
 
