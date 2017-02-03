@@ -336,7 +336,10 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
     }
 
     @SuppressWarnings("rawtypes")
-    static final class ReplaySubscriber<T> implements Subscriber<T>, Disposable {
+    static final class ReplaySubscriber<T>
+    extends AtomicReference<Subscription>
+    implements Subscriber<T>, Disposable {
+        private static final long serialVersionUID = 7224554242710036740L;
         /** Holds notifications from upstream. */
         final ReplayBuffer<T> buffer;
         /** Indicates this Subscriber received a terminal event. */
@@ -361,8 +364,6 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
         long maxChildRequested;
         /** Counts the outstanding upstream requests until the producer arrives. */
         long maxUpstreamRequested;
-        /** The upstream producer. */
-        volatile Subscription subscription;
 
         @SuppressWarnings("unchecked")
         ReplaySubscriber(ReplayBuffer<T> buffer) {
@@ -386,7 +387,7 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
             // current.compareAndSet(ReplaySubscriber.this, null);
             // we don't care if it fails because it means the current has
             // been replaced in the meantime
-            subscription.cancel();
+            SubscriptionHelper.cancel(this);
         }
 
         /**
@@ -476,8 +477,7 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
 
         @Override
         public void onSubscribe(Subscription p) {
-            if (SubscriptionHelper.validate(subscription, p)) {
-                subscription = p;
+            if (SubscriptionHelper.setOnce(this, p)) {
                 manageRequests();
                 for (InnerSubscription<T> rp : subscribers.get()) {
                     buffer.replay(rp);
@@ -548,7 +548,7 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
                 }
 
                 long ur = maxUpstreamRequested;
-                Subscription p = subscription;
+                Subscription p = get();
 
                 long diff = maxTotalRequests - ri;
                 if (diff != 0L) {
