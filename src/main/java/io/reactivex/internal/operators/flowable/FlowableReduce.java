@@ -29,9 +29,9 @@ import io.reactivex.plugins.RxJavaPlugins;
  */
 public final class FlowableReduce<T> extends AbstractFlowableWithUpstream<T, T> {
 
-    final BiFunction<T, T, T> reducer;
+    final BiFunction<? super T, ? super T, ? extends T> reducer;
 
-    public FlowableReduce(Publisher<T> source, BiFunction<T, T, T> reducer) {
+    public FlowableReduce(Publisher<T> source, BiFunction<? super T, ? super T, ? extends T> reducer) {
         super(source);
         this.reducer = reducer;
     }
@@ -45,11 +45,11 @@ public final class FlowableReduce<T> extends AbstractFlowableWithUpstream<T, T> 
 
         private static final long serialVersionUID = -4663883003264602070L;
 
-        final BiFunction<T, T, T> reducer;
+        final BiFunction<? super T, ? super T, ? extends T> reducer;
 
         Subscription s;
 
-        ReduceSubscriber(Subscriber<? super T> actual, BiFunction<T, T, T> reducer) {
+        ReduceSubscriber(Subscriber<? super T> actual, BiFunction<? super T, ? super T, ? extends T> reducer) {
             super(actual);
             this.reducer = reducer;
         }

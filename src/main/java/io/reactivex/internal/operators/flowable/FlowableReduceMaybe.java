@@ -35,9 +35,9 @@ implements HasUpstreamPublisher<T>, FuseToFlowable<T> {
 
     final Flowable<T> source;
 
-    final BiFunction<T, T, T> reducer;
+    final BiFunction<? super T, ? super T, ? extends T> reducer;
 
-    public FlowableReduceMaybe(Flowable<T> source, BiFunction<T, T, T> reducer) {
+    public FlowableReduceMaybe(Flowable<T> source, BiFunction<? super T, ? super T, ? extends T> reducer) {
         this.source = source;
         this.reducer = reducer;
     }
@@ -60,7 +60,7 @@ implements HasUpstreamPublisher<T>, FuseToFlowable<T> {
     static final class ReduceSubscriber<T> implements Subscriber<T>, Disposable {
         final MaybeObserver<? super T> actual;
 
-        final BiFunction<T, T, T> reducer;
+        final BiFunction<? super T, ? super T, ? extends T> reducer;
 
         T value;
 
@@ -68,7 +68,7 @@ implements HasUpstreamPublisher<T>, FuseToFlowable<T> {
 
         boolean done;
 
-        ReduceSubscriber(MaybeObserver<? super T> actual, BiFunction<T, T, T> reducer) {
+        ReduceSubscriber(MaybeObserver<? super T> actual, BiFunction<? super T, ? super T, ? extends T> reducer) {
             this.actual = actual;
             this.reducer = reducer;
         }

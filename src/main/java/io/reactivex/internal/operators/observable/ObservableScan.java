@@ -22,8 +22,8 @@ import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.plugins.RxJavaPlugins;
 
 public final class ObservableScan<T> extends AbstractObservableWithUpstream<T, T> {
-    final BiFunction<T, T, T> accumulator;
-    public ObservableScan(ObservableSource<T> source, BiFunction<T, T, T> accumulator) {
+    final BiFunction<? super T, ? super T, ? extends T> accumulator;
+    public ObservableScan(ObservableSource<T> source, BiFunction<? super T, ? super T, ? extends T> accumulator) {
         super(source);
         this.accumulator = accumulator;
     }
@@ -35,7 +35,7 @@ public final class ObservableScan<T> extends AbstractObservableWithUpstream<T, T
 
     static final class ScanObserver<T> implements Observer<T>, Disposable {
         final Observer<? super T> actual;
-        final BiFunction<T, T, T> accumulator;
+        final BiFunction<? super T, ? super T, ? extends T> accumulator;
 
         Disposable s;
 
@@ -43,7 +43,7 @@ public final class ObservableScan<T> extends AbstractObservableWithUpstream<T, T
 
         boolean done;
 
-        ScanObserver(Observer<? super T> actual, BiFunction<T, T, T> accumulator) {
+        ScanObserver(Observer<? super T> actual, BiFunction<? super T, ? super T, ? extends T> accumulator) {
             this.actual = actual;
             this.accumulator = accumulator;
         }
