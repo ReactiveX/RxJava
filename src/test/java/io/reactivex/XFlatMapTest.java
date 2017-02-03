@@ -30,7 +30,7 @@ import io.reactivex.subscribers.TestSubscriber;
 
 public class XFlatMapTest {
 
-    static final int SLEEP_AFTER_CANCEL = 200;
+    static final int SLEEP_AFTER_CANCEL = 500;
 
     final CyclicBarrier cb = new CyclicBarrier(2);
 
