@@ -35,9 +35,9 @@ public final class ParallelReduceFull<T> extends Flowable<T> {
 
     final ParallelFlowable<? extends T> source;
 
-    final BiFunction<T, T, T> reducer;
+    final BiFunction<? super T, ? super T, ? extends T> reducer;
 
-    public ParallelReduceFull(ParallelFlowable<? extends T> source, BiFunction<T, T, T> reducer) {
+    public ParallelReduceFull(ParallelFlowable<? extends T> source, BiFunction<? super T, ? super T, ? extends T> reducer) {
         this.source = source;
         this.reducer = reducer;
     }
@@ -57,7 +57,7 @@ public final class ParallelReduceFull<T> extends Flowable<T> {
 
         final ParallelReduceFullInnerSubscriber<T>[] subscribers;
 
-        final BiFunction<T, T, T> reducer;
+        final BiFunction<? super T, ? super T, ? extends T> reducer;
 
         final AtomicReference<SlotPair<T>> current = new AtomicReference<SlotPair<T>>();
 
@@ -65,7 +65,7 @@ public final class ParallelReduceFull<T> extends Flowable<T> {
 
         final AtomicReference<Throwable> error = new AtomicReference<Throwable>();
 
-        ParallelReduceFullMainSubscriber(Subscriber<? super T> subscriber, int n, BiFunction<T, T, T> reducer) {
+        ParallelReduceFullMainSubscriber(Subscriber<? super T> subscriber, int n, BiFunction<? super T, ? super T, ? extends T> reducer) {
             super(subscriber);
             @SuppressWarnings("unchecked")
             ParallelReduceFullInnerSubscriber<T>[] a = new ParallelReduceFullInnerSubscriber[n];
@@ -167,13 +167,13 @@ public final class ParallelReduceFull<T> extends Flowable<T> {
 
         final ParallelReduceFullMainSubscriber<T> parent;
 
-        final BiFunction<T, T, T> reducer;
+        final BiFunction<? super T, ? super T, ? extends T> reducer;
 
         T value;
 
         boolean done;
 
-        ParallelReduceFullInnerSubscriber(ParallelReduceFullMainSubscriber<T> parent, BiFunction<T, T, T> reducer) {
+        ParallelReduceFullInnerSubscriber(ParallelReduceFullMainSubscriber<T> parent, BiFunction<? super T, ? super T, ? extends T> reducer) {
             this.parent = parent;
             this.reducer = reducer;
         }

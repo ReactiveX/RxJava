@@ -209,7 +209,7 @@ public abstract class ParallelFlowable<T> {
      * @return the new Flowable instance emitting the reduced value or empty if the ParallelFlowable was empty
      */
     @CheckReturnValue
-    public final Flowable<T> reduce(BiFunction<T, T, T> reducer) {
+    public final Flowable<T> reduce(BiFunction<? super T, ? super T, ? extends T> reducer) {
         ObjectHelper.requireNonNull(reducer, "reducer");
         return RxJavaPlugins.onAssembly(new ParallelReduceFull<T>(this, reducer));
     }

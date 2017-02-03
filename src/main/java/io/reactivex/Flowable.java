@@ -10650,7 +10650,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Maybe<T> reduce(BiFunction<T, T, T> reducer) {
+    public final Maybe<T> reduce(BiFunction<? super T, ? super  T, ? extends T> reducer) {
         ObjectHelper.requireNonNull(reducer, "reducer is null");
         return RxJavaPlugins.onAssembly(new FlowableReduceMaybe<T>(this, reducer));
     }
@@ -11916,7 +11916,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Flowable<T> scan(BiFunction<T, T, T> accumulator) {
+    public final Flowable<T> scan(BiFunction<? super T, ? super T, ? extends T> accumulator) {
         ObjectHelper.requireNonNull(accumulator, "accumulator is null");
         return RxJavaPlugins.onAssembly(new FlowableScan<T>(this, accumulator));
     }

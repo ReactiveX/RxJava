@@ -1235,7 +1235,7 @@ public final class RxJavaPlugins {
      * @return the result of the function call
      */
     @NonNull
-    static <T, U, R> R apply(@NonNull BiFunction<T, U, R> f, @NonNull T t, @NonNull U u) {
+    static <T, U, R> R apply(@NonNull BiFunction<? super T, ? super U, ? extends R> f, @NonNull T t, @NonNull U u) {
         try {
             return f.apply(t, u);
         } catch (Throwable ex) {

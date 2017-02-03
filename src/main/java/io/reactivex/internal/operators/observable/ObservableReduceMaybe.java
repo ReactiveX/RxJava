@@ -31,9 +31,9 @@ public final class ObservableReduceMaybe<T> extends Maybe<T> {
 
     final ObservableSource<T> source;
 
-    final BiFunction<T, T, T> reducer;
+    final BiFunction<? super T, ? super T, ? extends T> reducer;
 
-    public ObservableReduceMaybe(ObservableSource<T> source, BiFunction<T, T, T> reducer) {
+    public ObservableReduceMaybe(ObservableSource<T> source, BiFunction<? super T, ? super T, ? extends T> reducer) {
         this.source = source;
         this.reducer = reducer;
     }
@@ -47,7 +47,7 @@ public final class ObservableReduceMaybe<T> extends Maybe<T> {
 
         final MaybeObserver<? super T> actual;
 
-        final BiFunction<T, T, T> reducer;
+        final BiFunction<? super T, ? super T, ? extends T> reducer;
 
         boolean done;
 
@@ -55,7 +55,7 @@ public final class ObservableReduceMaybe<T> extends Maybe<T> {
 
         Disposable d;
 
-        ReduceObserver(MaybeObserver<? super T> observer, BiFunction<T, T, T> reducer) {
+        ReduceObserver(MaybeObserver<? super T> observer, BiFunction<? super T, ? super T, ? extends T> reducer) {
             this.actual = observer;
             this.reducer = reducer;
         }
