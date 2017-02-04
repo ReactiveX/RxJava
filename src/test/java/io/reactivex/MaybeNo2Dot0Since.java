@@ -40,13 +40,16 @@ public class MaybeNo2Dot0Since {
 
 //        System.out.println(path);
 
-        int i = path.indexOf("/RxJava/");
+        int i = path.indexOf("/RxJava");
         if (i < 0) {
             System.out.println("Can't find the base RxJava directory");
             return null;
         }
 
-        String p = path.substring(0, i + 8) + "src/main/java/io/reactivex/" + baseClassName + ".java";
+        // find end of any potential postfix to /RxJava
+        int j = path.indexOf("/", i + 6);
+
+        String p = path.substring(0, j + 1) + "src/main/java/io/reactivex/" + baseClassName + ".java";
 
         File f = new File(p);
 
