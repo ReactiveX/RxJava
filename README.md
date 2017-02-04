@@ -128,7 +128,7 @@ Flowable.range(1, 10)
   .flatMap(v ->
       Flowable.just(v)
         .subscribeOn(Schedulers.computation())
-        .map(v -> v * v)
+        .map(w -> v * v)
   )
 .blockingSubscribe(System.out::println);
 ```
