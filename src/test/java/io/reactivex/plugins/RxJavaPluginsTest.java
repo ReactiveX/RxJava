@@ -16,18 +16,8 @@
 
 package io.reactivex.plugins;
 
-import io.reactivex.Completable;
-import io.reactivex.CompletableObserver;
-import io.reactivex.Flowable;
-import io.reactivex.Maybe;
-import io.reactivex.MaybeObserver;
-import io.reactivex.Observable;
-import io.reactivex.Observer;
-import io.reactivex.Scheduler;
+import io.reactivex.*;
 import io.reactivex.Scheduler.Worker;
-import io.reactivex.Single;
-import io.reactivex.SingleObserver;
-import io.reactivex.TestHelper;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.disposables.Disposables;
 import io.reactivex.exceptions.TestException;
