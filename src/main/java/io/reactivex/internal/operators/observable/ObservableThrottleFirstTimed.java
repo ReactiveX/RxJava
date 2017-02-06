@@ -102,8 +102,8 @@ public final class ObservableThrottleFirstTimed<T> extends AbstractObservableWit
                 RxJavaPlugins.onError(t);
             } else {
                 done = true;
-                DisposableHelper.dispose(this);
                 actual.onError(t);
+                worker.dispose();
             }
         }
 
@@ -111,22 +111,20 @@ public final class ObservableThrottleFirstTimed<T> extends AbstractObservableWit
         public void onComplete() {
             if (!done) {
                 done = true;
-                DisposableHelper.dispose(this);
-                worker.dispose();
                 actual.onComplete();
+                worker.dispose();
             }
         }
 
         @Override
         public void dispose() {
-            DisposableHelper.dispose(this);
-            worker.dispose();
             s.dispose();
+            worker.dispose();
         }
 
         @Override
         public boolean isDisposed() {
-            return DisposableHelper.isDisposed(get());
+            return worker.isDisposed();
         }
     }
 }

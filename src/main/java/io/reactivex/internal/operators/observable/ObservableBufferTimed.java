@@ -143,16 +143,15 @@ extends AbstractObservableWithUpstream<T, U> {
 
         @Override
         public void onError(Throwable t) {
-            DisposableHelper.dispose(timer);
             synchronized (this) {
                 buffer = null;
             }
             actual.onError(t);
+            DisposableHelper.dispose(timer);
         }
 
         @Override
         public void onComplete() {
-            DisposableHelper.dispose(timer);
             U b;
             synchronized (this) {
                 b = buffer;
@@ -165,6 +164,7 @@ extends AbstractObservableWithUpstream<T, U> {
                     QueueDrainHelper.drainLoop(queue, actual, false, this, this);
                 }
             }
+            DisposableHelper.dispose(timer);
         }
 
         @Override
@@ -186,8 +186,8 @@ extends AbstractObservableWithUpstream<T, U> {
                 next = ObjectHelper.requireNonNull(bufferSupplier.call(), "The bufferSupplier returned a null buffer");
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
-                dispose();
                 actual.onError(e);
+                dispose();
                 return;
             }
 
@@ -249,9 +249,9 @@ extends AbstractObservableWithUpstream<T, U> {
                     b = ObjectHelper.requireNonNull(bufferSupplier.call(), "The buffer supplied is null");
                 } catch (Throwable e) {
                     Exceptions.throwIfFatal(e);
-                    w.dispose();
                     s.dispose();
                     EmptyDisposable.error(e, actual);
+                    w.dispose();
                     return;
                 }
 
@@ -286,9 +286,9 @@ extends AbstractObservableWithUpstream<T, U> {
         @Override
         public void onError(Throwable t) {
             done = true;
-            w.dispose();
             clear();
             actual.onError(t);
+            w.dispose();
         }
 
         @Override
@@ -312,9 +312,9 @@ extends AbstractObservableWithUpstream<T, U> {
         public void dispose() {
             if (!cancelled) {
                 cancelled = true;
-                w.dispose();
                 clear();
                 s.dispose();
+                w.dispose();
             }
         }
 
@@ -340,8 +340,8 @@ extends AbstractObservableWithUpstream<T, U> {
                 b = ObjectHelper.requireNonNull(bufferSupplier.call(), "The bufferSupplier returned a null buffer");
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
-                dispose();
                 actual.onError(e);
+                dispose();
                 return;
             }
 
@@ -414,9 +414,9 @@ extends AbstractObservableWithUpstream<T, U> {
                     b = ObjectHelper.requireNonNull(bufferSupplier.call(), "The buffer supplied is null");
                 } catch (Throwable e) {
                     Exceptions.throwIfFatal(e);
-                    w.dispose();
                     s.dispose();
                     EmptyDisposable.error(e, actual);
+                    w.dispose();
                     return;
                 }
 
@@ -457,8 +457,8 @@ extends AbstractObservableWithUpstream<T, U> {
                 b = ObjectHelper.requireNonNull(bufferSupplier.call(), "The buffer supplied is null");
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
-                dispose();
                 actual.onError(e);
+                dispose();
                 return;
             }
 
@@ -478,11 +478,11 @@ extends AbstractObservableWithUpstream<T, U> {
 
         @Override
         public void onError(Throwable t) {
-            w.dispose();
             synchronized (this) {
                 buffer = null;
             }
             actual.onError(t);
+            w.dispose();
         }
 
         @Override
@@ -512,11 +512,11 @@ extends AbstractObservableWithUpstream<T, U> {
         public void dispose() {
             if (!cancelled) {
                 cancelled = true;
+                s.dispose();
                 w.dispose();
                 synchronized (this) {
                     buffer = null;
                 }
-                s.dispose();
             }
         }
 

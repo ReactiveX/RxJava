@@ -158,8 +158,8 @@ public class SchedulerWhen extends Scheduler implements Disposable {
                 // complete the actionQueue when worker is unsubscribed to make
                 // room for the next worker in the workerQueue.
                 if (unsubscribed.compareAndSet(false, true)) {
-                    actualWorker.dispose();
                     actionProcessor.onComplete();
+                    actualWorker.dispose();
                 }
             }
 

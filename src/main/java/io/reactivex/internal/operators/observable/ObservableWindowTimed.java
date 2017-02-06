@@ -367,8 +367,8 @@ public final class ObservableWindowTimed<T> extends AbstractObservableWithUpstre
                 drainLoop();
             }
 
-            disposeTimer();
             actual.onError(t);
+            disposeTimer();
         }
 
         @Override
@@ -378,8 +378,8 @@ public final class ObservableWindowTimed<T> extends AbstractObservableWithUpstre
                 drainLoop();
             }
 
-            disposeTimer();
             actual.onComplete();
+            disposeTimer();
         }
 
         @Override
@@ -588,8 +588,8 @@ public final class ObservableWindowTimed<T> extends AbstractObservableWithUpstre
                 drainLoop();
             }
 
-            disposeWorker();
             actual.onError(t);
+            disposeWorker();
         }
 
         @Override
@@ -599,8 +599,8 @@ public final class ObservableWindowTimed<T> extends AbstractObservableWithUpstre
                 drainLoop();
             }
 
-            disposeWorker();
             actual.onComplete();
+            disposeWorker();
         }
 
         @Override
@@ -652,7 +652,6 @@ public final class ObservableWindowTimed<T> extends AbstractObservableWithUpstre
 
                     if (d && (empty || sw)) {
                         q.clear();
-                        disposeWorker();
                         Throwable e = error;
                         if (e != null) {
                             for (UnicastSubject<T> w : ws) {
@@ -663,6 +662,7 @@ public final class ObservableWindowTimed<T> extends AbstractObservableWithUpstre
                                 w.onComplete();
                             }
                         }
+                        disposeWorker();
                         ws.clear();
                         return;
                     }

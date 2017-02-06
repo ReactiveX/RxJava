@@ -101,8 +101,8 @@ public final class ObservableDebounceTimed<T> extends AbstractObservableWithUpst
                 return;
             }
             done = true;
-            DisposableHelper.dispose(timer);
             actual.onError(t);
+            worker.dispose();
         }
 
         @Override
@@ -119,22 +119,20 @@ public final class ObservableDebounceTimed<T> extends AbstractObservableWithUpst
                 if (de != null) {
                     de.run();
                 }
-                DisposableHelper.dispose(timer);
-                worker.dispose();
                 actual.onComplete();
+                worker.dispose();
             }
         }
 
         @Override
         public void dispose() {
-            DisposableHelper.dispose(timer);
-            worker.dispose();
             s.dispose();
+            worker.dispose();
         }
 
         @Override
         public boolean isDisposed() {
-            return timer.get() == DisposableHelper.DISPOSED;
+            return worker.isDisposed();
         }
 
         void emit(long idx, T t, DebounceEmitter<T> emitter) {

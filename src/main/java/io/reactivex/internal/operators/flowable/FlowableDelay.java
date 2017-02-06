@@ -121,8 +121,8 @@ public final class FlowableDelay<T> extends AbstractFlowableWithUpstream<T, T> {
 
         @Override
         public void cancel() {
-            w.dispose();
             s.cancel();
+            w.dispose();
         }
 
     }

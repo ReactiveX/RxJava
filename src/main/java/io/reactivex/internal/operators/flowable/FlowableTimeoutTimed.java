@@ -154,9 +154,8 @@ public final class FlowableTimeoutTimed<T> extends AbstractFlowableWithUpstream<
                 return;
             }
             done = true;
-            worker.dispose();
-            DisposableHelper.dispose(timer);
             arbiter.onError(t, s);
+            worker.dispose();
         }
 
         @Override
@@ -165,16 +164,14 @@ public final class FlowableTimeoutTimed<T> extends AbstractFlowableWithUpstream<
                 return;
             }
             done = true;
-            worker.dispose();
-            DisposableHelper.dispose(timer);
             arbiter.onComplete(s);
+            worker.dispose();
         }
 
         @Override
         public void dispose() {
-            worker.dispose();
-            DisposableHelper.dispose(timer);
             s.cancel();
+            worker.dispose();
         }
 
         @Override
@@ -256,9 +253,9 @@ public final class FlowableTimeoutTimed<T> extends AbstractFlowableWithUpstream<
                 return;
             }
             done = true;
-            dispose();
 
             actual.onError(t);
+            worker.dispose();
         }
 
         @Override
@@ -267,16 +264,15 @@ public final class FlowableTimeoutTimed<T> extends AbstractFlowableWithUpstream<
                 return;
             }
             done = true;
-            dispose();
 
             actual.onComplete();
+            worker.dispose();
         }
 
         @Override
         public void dispose() {
-            worker.dispose();
-            DisposableHelper.dispose(timer);
             s.cancel();
+            worker.dispose();
         }
 
         @Override

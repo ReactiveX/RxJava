@@ -177,9 +177,9 @@ public final class FlowableBufferTimed<T, U extends Collection<? super T>> exten
 
         @Override
         public void cancel() {
-            DisposableHelper.dispose(timer);
-
             s.cancel();
+
+            DisposableHelper.dispose(timer);
         }
 
         @Override
@@ -333,9 +333,9 @@ public final class FlowableBufferTimed<T, U extends Collection<? super T>> exten
 
         @Override
         public void cancel() {
-            w.dispose();
             clear();
             s.cancel();
+            w.dispose();
         }
 
         void clear() {
@@ -497,17 +497,15 @@ public final class FlowableBufferTimed<T, U extends Collection<? super T>> exten
 
         @Override
         public void onError(Throwable t) {
-            w.dispose();
             synchronized (this) {
                 buffer = null;
             }
             actual.onError(t);
+            w.dispose();
         }
 
         @Override
         public void onComplete() {
-            w.dispose();
-
             U b;
             synchronized (this) {
                 b = buffer;
@@ -519,6 +517,8 @@ public final class FlowableBufferTimed<T, U extends Collection<? super T>> exten
             if (enter()) {
                 QueueDrainHelper.drainMaxLoop(queue, actual, false, this, this);
             }
+
+            w.dispose();
         }
 
         @Override
@@ -543,11 +543,11 @@ public final class FlowableBufferTimed<T, U extends Collection<? super T>> exten
 
         @Override
         public void dispose() {
-            w.dispose();
             synchronized (this) {
                 buffer = null;
             }
             s.cancel();
+            w.dispose();
         }
 
         @Override

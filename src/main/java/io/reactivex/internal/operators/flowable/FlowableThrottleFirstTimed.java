@@ -123,8 +123,8 @@ public final class FlowableThrottleFirstTimed<T> extends AbstractFlowableWithUps
                 return;
             }
             done = true;
-            DisposableHelper.dispose(timer);
             actual.onError(t);
+            worker.dispose();
         }
 
         @Override
@@ -133,9 +133,8 @@ public final class FlowableThrottleFirstTimed<T> extends AbstractFlowableWithUps
                 return;
             }
             done = true;
-            DisposableHelper.dispose(timer);
-            worker.dispose();
             actual.onComplete();
+            worker.dispose();
         }
 
         @Override
@@ -147,9 +146,8 @@ public final class FlowableThrottleFirstTimed<T> extends AbstractFlowableWithUps
 
         @Override
         public void cancel() {
-            DisposableHelper.dispose(timer);
-            worker.dispose();
             s.cancel();
+            worker.dispose();
         }
     }
 }
