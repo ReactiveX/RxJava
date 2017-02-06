@@ -52,80 +52,80 @@ public final class RxJavaPlugins {
     static volatile Consumer<? super Throwable> errorHandler;
 
     @Nullable
-    static volatile Function<Runnable, Runnable> onScheduleHandler;
+    static volatile Function<? super Runnable, ? extends Runnable> onScheduleHandler;
 
     @Nullable
-    static volatile Function<Callable<Scheduler>, Scheduler> onInitComputationHandler;
+    static volatile Function<? super Callable<Scheduler>, ? extends Scheduler> onInitComputationHandler;
 
     @Nullable
-    static volatile Function<Callable<Scheduler>, Scheduler> onInitSingleHandler;
+    static volatile Function<? super Callable<Scheduler>, ? extends Scheduler> onInitSingleHandler;
 
     @Nullable
-    static volatile Function<Callable<Scheduler>, Scheduler> onInitIoHandler;
+    static volatile Function<? super Callable<Scheduler>, ? extends Scheduler> onInitIoHandler;
 
     @Nullable
-    static volatile Function<Callable<Scheduler>, Scheduler> onInitNewThreadHandler;
+    static volatile Function<? super Callable<Scheduler>, ? extends Scheduler> onInitNewThreadHandler;
 
     @Nullable
-    static volatile Function<Scheduler, Scheduler> onComputationHandler;
+    static volatile Function<? super Scheduler, ? extends Scheduler> onComputationHandler;
 
     @Nullable
-    static volatile Function<Scheduler, Scheduler> onSingleHandler;
+    static volatile Function<? super Scheduler, ? extends Scheduler> onSingleHandler;
 
     @Nullable
-    static volatile Function<Scheduler, Scheduler> onIoHandler;
+    static volatile Function<? super Scheduler, ? extends Scheduler> onIoHandler;
 
     @Nullable
-    static volatile Function<Scheduler, Scheduler> onNewThreadHandler;
+    static volatile Function<? super Scheduler, ? extends Scheduler> onNewThreadHandler;
 
     @SuppressWarnings("rawtypes")
     @Nullable
-    static volatile Function<Flowable, Flowable> onFlowableAssembly;
+    static volatile Function<? super Flowable, ? extends Flowable> onFlowableAssembly;
 
     @SuppressWarnings("rawtypes")
     @Nullable
-    static volatile Function<ConnectableFlowable, ConnectableFlowable> onConnectableFlowableAssembly;
+    static volatile Function<? super ConnectableFlowable, ? extends ConnectableFlowable> onConnectableFlowableAssembly;
 
     @SuppressWarnings("rawtypes")
     @Nullable
-    static volatile Function<Observable, Observable> onObservableAssembly;
+    static volatile Function<? super Observable, ? extends Observable> onObservableAssembly;
 
     @SuppressWarnings("rawtypes")
     @Nullable
-    static volatile Function<ConnectableObservable, ConnectableObservable> onConnectableObservableAssembly;
+    static volatile Function<? super ConnectableObservable, ? extends ConnectableObservable> onConnectableObservableAssembly;
 
     @SuppressWarnings("rawtypes")
     @Nullable
-    static volatile Function<Maybe, Maybe> onMaybeAssembly;
+    static volatile Function<? super Maybe, ? extends Maybe> onMaybeAssembly;
 
     @SuppressWarnings("rawtypes")
     @Nullable
-    static volatile Function<Single, Single> onSingleAssembly;
+    static volatile Function<? super Single, ? extends Single> onSingleAssembly;
 
-    static volatile Function<Completable, Completable> onCompletableAssembly;
-
-    @SuppressWarnings("rawtypes")
-    @Nullable
-    static volatile Function<ParallelFlowable, ParallelFlowable> onParallelAssembly;
+    static volatile Function<? super Completable, ? extends Completable> onCompletableAssembly;
 
     @SuppressWarnings("rawtypes")
     @Nullable
-    static volatile BiFunction<Flowable, Subscriber, Subscriber> onFlowableSubscribe;
+    static volatile Function<? super ParallelFlowable, ? extends ParallelFlowable> onParallelAssembly;
 
     @SuppressWarnings("rawtypes")
     @Nullable
-    static volatile BiFunction<Maybe, MaybeObserver, MaybeObserver> onMaybeSubscribe;
+    static volatile BiFunction<? super Flowable, ? super Subscriber, ? extends Subscriber> onFlowableSubscribe;
 
     @SuppressWarnings("rawtypes")
     @Nullable
-    static volatile BiFunction<Observable, Observer, Observer> onObservableSubscribe;
+    static volatile BiFunction<? super Maybe, ? super MaybeObserver, ? extends MaybeObserver> onMaybeSubscribe;
 
     @SuppressWarnings("rawtypes")
     @Nullable
-    static volatile BiFunction<Single, SingleObserver, SingleObserver> onSingleSubscribe;
+    static volatile BiFunction<? super Observable, ? super Observer, ? extends Observer> onObservableSubscribe;
+
+    @SuppressWarnings("rawtypes")
+    @Nullable
+    static volatile BiFunction<? super Single, ? super SingleObserver, ? extends SingleObserver> onSingleSubscribe;
 
     @Nullable
-    static volatile BiFunction<Completable, CompletableObserver, CompletableObserver> onCompletableSubscribe;
+    static volatile BiFunction<? super Completable, ? super CompletableObserver, ? extends CompletableObserver> onCompletableSubscribe;
 
     @Nullable
     static volatile BooleanSupplier onBeforeBlocking;
@@ -188,7 +188,7 @@ public final class RxJavaPlugins {
      * @return the hook function, may be null
      */
     @Nullable
-    public static Function<Scheduler, Scheduler> getComputationSchedulerHandler() {
+    public static Function<? super Scheduler, ? extends Scheduler> getComputationSchedulerHandler() {
         return onComputationHandler;
     }
 
@@ -206,7 +206,7 @@ public final class RxJavaPlugins {
      * @return the hook function, may be null
      */
     @Nullable
-    public static Function<Callable<Scheduler>, Scheduler> getInitComputationSchedulerHandler() {
+    public static Function<? super Callable<Scheduler>, ? extends Scheduler> getInitComputationSchedulerHandler() {
         return onInitComputationHandler;
     }
 
@@ -215,7 +215,7 @@ public final class RxJavaPlugins {
      * @return the hook function, may be null
      */
     @Nullable
-    public static Function<Callable<Scheduler>, Scheduler> getInitIoSchedulerHandler() {
+    public static Function<? super Callable<Scheduler>, ? extends Scheduler> getInitIoSchedulerHandler() {
         return onInitIoHandler;
     }
 
@@ -224,7 +224,7 @@ public final class RxJavaPlugins {
      * @return the hook function, may be null
      */
     @Nullable
-    public static Function<Callable<Scheduler>, Scheduler> getInitNewThreadSchedulerHandler() {
+    public static Function<? super Callable<Scheduler>, ? extends Scheduler> getInitNewThreadSchedulerHandler() {
         return onInitNewThreadHandler;
     }
 
@@ -233,7 +233,7 @@ public final class RxJavaPlugins {
      * @return the hook function, may be null
      */
     @Nullable
-    public static Function<Callable<Scheduler>, Scheduler> getInitSingleSchedulerHandler() {
+    public static Function<? super Callable<Scheduler>, ? extends Scheduler> getInitSingleSchedulerHandler() {
         return onInitSingleHandler;
     }
 
@@ -242,7 +242,7 @@ public final class RxJavaPlugins {
      * @return the hook function, may be null
      */
     @Nullable
-    public static Function<Scheduler, Scheduler> getIoSchedulerHandler() {
+    public static Function<? super Scheduler, ? extends Scheduler> getIoSchedulerHandler() {
         return onIoHandler;
     }
 
@@ -251,7 +251,7 @@ public final class RxJavaPlugins {
      * @return the hook function, may be null
      */
     @Nullable
-    public static Function<Scheduler, Scheduler> getNewThreadSchedulerHandler() {
+    public static Function<? super Scheduler, ? extends Scheduler> getNewThreadSchedulerHandler() {
         return onNewThreadHandler;
     }
 
@@ -260,7 +260,7 @@ public final class RxJavaPlugins {
      * @return the hook function, may be null
      */
     @Nullable
-    public static Function<Runnable, Runnable> getScheduleHandler() {
+    public static Function<? super Runnable, ? extends Runnable> getScheduleHandler() {
         return onScheduleHandler;
     }
 
@@ -269,7 +269,7 @@ public final class RxJavaPlugins {
      * @return the hook function, may be null
      */
     @Nullable
-    public static Function<Scheduler, Scheduler> getSingleSchedulerHandler() {
+    public static Function<? super Scheduler, ? extends Scheduler> getSingleSchedulerHandler() {
         return onSingleHandler;
     }
 
@@ -282,7 +282,7 @@ public final class RxJavaPlugins {
     @NonNull
     public static Scheduler initComputationScheduler(@NonNull Callable<Scheduler> defaultScheduler) {
         ObjectHelper.requireNonNull(defaultScheduler, "Scheduler Callable can't be null");
-        Function<Callable<Scheduler>, Scheduler> f = onInitComputationHandler;
+        Function<? super Callable<Scheduler>, ? extends Scheduler> f = onInitComputationHandler;
         if (f == null) {
             return callRequireNonNull(defaultScheduler);
         }
@@ -298,7 +298,7 @@ public final class RxJavaPlugins {
     @NonNull
     public static Scheduler initIoScheduler(@NonNull Callable<Scheduler> defaultScheduler) {
         ObjectHelper.requireNonNull(defaultScheduler, "Scheduler Callable can't be null");
-        Function<Callable<Scheduler>, Scheduler> f = onInitIoHandler;
+        Function<? super Callable<Scheduler>, ? extends Scheduler> f = onInitIoHandler;
         if (f == null) {
             return callRequireNonNull(defaultScheduler);
         }
@@ -314,7 +314,7 @@ public final class RxJavaPlugins {
     @NonNull
     public static Scheduler initNewThreadScheduler(@NonNull Callable<Scheduler> defaultScheduler) {
         ObjectHelper.requireNonNull(defaultScheduler, "Scheduler Callable can't be null");
-        Function<Callable<Scheduler>, Scheduler> f = onInitNewThreadHandler;
+        Function<? super Callable<Scheduler>, ? extends Scheduler> f = onInitNewThreadHandler;
         if (f == null) {
             return callRequireNonNull(defaultScheduler);
         }
@@ -330,7 +330,7 @@ public final class RxJavaPlugins {
     @NonNull
     public static Scheduler initSingleScheduler(@NonNull Callable<Scheduler> defaultScheduler) {
         ObjectHelper.requireNonNull(defaultScheduler, "Scheduler Callable can't be null");
-        Function<Callable<Scheduler>, Scheduler> f = onInitSingleHandler;
+        Function<? super Callable<Scheduler>, ? extends Scheduler> f = onInitSingleHandler;
         if (f == null) {
             return callRequireNonNull(defaultScheduler);
         }
@@ -344,7 +344,7 @@ public final class RxJavaPlugins {
      */
     @NonNull
     public static Scheduler onComputationScheduler(@NonNull Scheduler defaultScheduler) {
-        Function<Scheduler, Scheduler> f = onComputationHandler;
+        Function<? super Scheduler, ? extends Scheduler> f = onComputationHandler;
         if (f == null) {
             return defaultScheduler;
         }
@@ -390,7 +390,7 @@ public final class RxJavaPlugins {
      */
     @NonNull
     public static Scheduler onIoScheduler(@NonNull Scheduler defaultScheduler) {
-        Function<Scheduler, Scheduler> f = onIoHandler;
+        Function<? super Scheduler, ? extends Scheduler> f = onIoHandler;
         if (f == null) {
             return defaultScheduler;
         }
@@ -404,7 +404,7 @@ public final class RxJavaPlugins {
      */
     @NonNull
     public static Scheduler onNewThreadScheduler(@NonNull Scheduler defaultScheduler) {
-        Function<Scheduler, Scheduler> f = onNewThreadHandler;
+        Function<? super Scheduler, ? extends Scheduler> f = onNewThreadHandler;
         if (f == null) {
             return defaultScheduler;
         }
@@ -418,7 +418,7 @@ public final class RxJavaPlugins {
      */
     @NonNull
     public static Runnable onSchedule(@NonNull Runnable run) {
-        Function<Runnable, Runnable> f = onScheduleHandler;
+        Function<? super Runnable, ? extends Runnable> f = onScheduleHandler;
         if (f == null) {
             return run;
         }
@@ -432,7 +432,7 @@ public final class RxJavaPlugins {
      */
     @NonNull
     public static Scheduler onSingleScheduler(@NonNull Scheduler defaultScheduler) {
-        Function<Scheduler, Scheduler> f = onSingleHandler;
+        Function<? super Scheduler, ? extends Scheduler> f = onSingleHandler;
         if (f == null) {
             return defaultScheduler;
         }
@@ -486,7 +486,7 @@ public final class RxJavaPlugins {
      * Sets the specific hook function.
      * @param handler the hook function to set, null allowed
      */
-    public static void setComputationSchedulerHandler(@Nullable Function<Scheduler, Scheduler> handler) {
+    public static void setComputationSchedulerHandler(@Nullable Function<? super Scheduler, ? extends Scheduler> handler) {
         if (lockdown) {
             throw new IllegalStateException("Plugins can't be changed anymore");
         }
@@ -508,7 +508,7 @@ public final class RxJavaPlugins {
      * Sets the specific hook function.
      * @param handler the hook function to set, null allowed, but the function may not return null
      */
-    public static void setInitComputationSchedulerHandler(@Nullable Function<Callable<Scheduler>, Scheduler> handler) {
+    public static void setInitComputationSchedulerHandler(@Nullable Function<? super Callable<Scheduler>, ? extends Scheduler> handler) {
         if (lockdown) {
             throw new IllegalStateException("Plugins can't be changed anymore");
         }
@@ -519,7 +519,7 @@ public final class RxJavaPlugins {
      * Sets the specific hook function.
      * @param handler the hook function to set, null allowed, but the function may not return null
      */
-    public static void setInitIoSchedulerHandler(@Nullable Function<Callable<Scheduler>, Scheduler> handler) {
+    public static void setInitIoSchedulerHandler(@Nullable Function<? super Callable<Scheduler>, ? extends Scheduler> handler) {
         if (lockdown) {
             throw new IllegalStateException("Plugins can't be changed anymore");
         }
@@ -530,7 +530,7 @@ public final class RxJavaPlugins {
      * Sets the specific hook function.
      * @param handler the hook function to set, null allowed, but the function may not return null
      */
-    public static void setInitNewThreadSchedulerHandler(@Nullable Function<Callable<Scheduler>, Scheduler> handler) {
+    public static void setInitNewThreadSchedulerHandler(@Nullable Function<? super Callable<Scheduler>, ? extends Scheduler> handler) {
         if (lockdown) {
             throw new IllegalStateException("Plugins can't be changed anymore");
         }
@@ -541,7 +541,7 @@ public final class RxJavaPlugins {
      * Sets the specific hook function.
      * @param handler the hook function to set, null allowed, but the function may not return null
      */
-    public static void setInitSingleSchedulerHandler(@Nullable Function<Callable<Scheduler>, Scheduler> handler) {
+    public static void setInitSingleSchedulerHandler(@Nullable Function<? super Callable<Scheduler>, ? extends Scheduler> handler) {
         if (lockdown) {
             throw new IllegalStateException("Plugins can't be changed anymore");
         }
@@ -552,7 +552,7 @@ public final class RxJavaPlugins {
      * Sets the specific hook function.
      * @param handler the hook function to set, null allowed
      */
-    public static void setIoSchedulerHandler(@Nullable Function<Scheduler, Scheduler> handler) {
+    public static void setIoSchedulerHandler(@Nullable Function<? super Scheduler, ? extends Scheduler> handler) {
         if (lockdown) {
             throw new IllegalStateException("Plugins can't be changed anymore");
         }
@@ -563,7 +563,7 @@ public final class RxJavaPlugins {
      * Sets the specific hook function.
      * @param handler the hook function to set, null allowed
      */
-    public static void setNewThreadSchedulerHandler(@Nullable Function<Scheduler, Scheduler> handler) {
+    public static void setNewThreadSchedulerHandler(@Nullable Function<? super Scheduler, ? extends Scheduler> handler) {
         if (lockdown) {
             throw new IllegalStateException("Plugins can't be changed anymore");
         }
@@ -574,7 +574,7 @@ public final class RxJavaPlugins {
      * Sets the specific hook function.
      * @param handler the hook function to set, null allowed
      */
-    public static void setScheduleHandler(@Nullable Function<Runnable, Runnable> handler) {
+    public static void setScheduleHandler(@Nullable Function<? super Runnable, ? extends Runnable> handler) {
         if (lockdown) {
             throw new IllegalStateException("Plugins can't be changed anymore");
         }
@@ -585,7 +585,7 @@ public final class RxJavaPlugins {
      * Sets the specific hook function.
      * @param handler the hook function to set, null allowed
      */
-    public static void setSingleSchedulerHandler(@Nullable Function<Scheduler, Scheduler> handler) {
+    public static void setSingleSchedulerHandler(@Nullable Function<? super Scheduler, ? extends Scheduler> handler) {
         if (lockdown) {
             throw new IllegalStateException("Plugins can't be changed anymore");
         }
@@ -604,7 +604,7 @@ public final class RxJavaPlugins {
      * @return the hook function, may be null
      */
     @Nullable
-    public static Function<Completable, Completable> getOnCompletableAssembly() {
+    public static Function<? super Completable, ? extends Completable> getOnCompletableAssembly() {
         return onCompletableAssembly;
     }
 
@@ -613,7 +613,7 @@ public final class RxJavaPlugins {
      * @return the hook function, may be null
      */
     @Nullable
-    public static BiFunction<Completable, CompletableObserver, CompletableObserver> getOnCompletableSubscribe() {
+    public static BiFunction<? super Completable, ? super CompletableObserver, ? extends CompletableObserver> getOnCompletableSubscribe() {
         return onCompletableSubscribe;
     }
 
@@ -623,7 +623,7 @@ public final class RxJavaPlugins {
      */
     @SuppressWarnings("rawtypes")
     @Nullable
-    public static Function<Flowable, Flowable> getOnFlowableAssembly() {
+    public static Function<? super Flowable, ? extends Flowable> getOnFlowableAssembly() {
         return onFlowableAssembly;
     }
 
@@ -633,7 +633,7 @@ public final class RxJavaPlugins {
      */
     @SuppressWarnings("rawtypes")
     @Nullable
-    public static Function<ConnectableFlowable, ConnectableFlowable> getOnConnectableFlowableAssembly() {
+    public static Function<? super ConnectableFlowable, ? extends ConnectableFlowable> getOnConnectableFlowableAssembly() {
         return onConnectableFlowableAssembly;
     }
 
@@ -643,7 +643,7 @@ public final class RxJavaPlugins {
      */
     @Nullable
     @SuppressWarnings("rawtypes")
-    public static BiFunction<Flowable, Subscriber, Subscriber> getOnFlowableSubscribe() {
+    public static BiFunction<? super Flowable, ? super Subscriber, ? extends Subscriber> getOnFlowableSubscribe() {
         return onFlowableSubscribe;
     }
 
@@ -653,7 +653,7 @@ public final class RxJavaPlugins {
      */
     @Nullable
     @SuppressWarnings("rawtypes")
-    public static BiFunction<Maybe, MaybeObserver, MaybeObserver> getOnMaybeSubscribe() {
+    public static BiFunction<? super Maybe, ? super MaybeObserver, ? extends MaybeObserver> getOnMaybeSubscribe() {
         return onMaybeSubscribe;
     }
 
@@ -663,7 +663,7 @@ public final class RxJavaPlugins {
      */
     @Nullable
     @SuppressWarnings("rawtypes")
-    public static Function<Maybe, Maybe> getOnMaybeAssembly() {
+    public static Function<? super Maybe, ? extends Maybe> getOnMaybeAssembly() {
         return onMaybeAssembly;
     }
 
@@ -673,7 +673,7 @@ public final class RxJavaPlugins {
      */
     @Nullable
     @SuppressWarnings("rawtypes")
-    public static Function<Single, Single> getOnSingleAssembly() {
+    public static Function<? super Single, ? extends Single> getOnSingleAssembly() {
         return onSingleAssembly;
     }
 
@@ -683,7 +683,7 @@ public final class RxJavaPlugins {
      */
     @Nullable
     @SuppressWarnings("rawtypes")
-    public static BiFunction<Single, SingleObserver, SingleObserver> getOnSingleSubscribe() {
+    public static BiFunction<? super Single, ? super SingleObserver, ? extends SingleObserver> getOnSingleSubscribe() {
         return onSingleSubscribe;
     }
 
@@ -693,7 +693,7 @@ public final class RxJavaPlugins {
      */
     @Nullable
     @SuppressWarnings("rawtypes")
-    public static Function<Observable, Observable> getOnObservableAssembly() {
+    public static Function<? super Observable, ? extends Observable> getOnObservableAssembly() {
         return onObservableAssembly;
     }
 
@@ -703,7 +703,7 @@ public final class RxJavaPlugins {
      */
     @Nullable
     @SuppressWarnings("rawtypes")
-    public static Function<ConnectableObservable, ConnectableObservable> getOnConnectableObservableAssembly() {
+    public static Function<? super ConnectableObservable, ? extends ConnectableObservable> getOnConnectableObservableAssembly() {
         return onConnectableObservableAssembly;
     }
 
@@ -713,7 +713,7 @@ public final class RxJavaPlugins {
      */
     @Nullable
     @SuppressWarnings("rawtypes")
-    public static BiFunction<Observable, Observer, Observer> getOnObservableSubscribe() {
+    public static BiFunction<? super Observable, ? super Observer, ? extends Observer> getOnObservableSubscribe() {
         return onObservableSubscribe;
     }
 
@@ -721,7 +721,7 @@ public final class RxJavaPlugins {
      * Sets the specific hook function.
      * @param onCompletableAssembly the hook function to set, null allowed
      */
-    public static void setOnCompletableAssembly(@Nullable Function<Completable, Completable> onCompletableAssembly) {
+    public static void setOnCompletableAssembly(@Nullable Function<? super Completable, ? extends Completable> onCompletableAssembly) {
         if (lockdown) {
             throw new IllegalStateException("Plugins can't be changed anymore");
         }
@@ -733,7 +733,7 @@ public final class RxJavaPlugins {
      * @param onCompletableSubscribe the hook function to set, null allowed
      */
     public static void setOnCompletableSubscribe(
-            @Nullable BiFunction<Completable, CompletableObserver, CompletableObserver> onCompletableSubscribe) {
+            @Nullable BiFunction<? super Completable, ? super CompletableObserver, ? extends CompletableObserver> onCompletableSubscribe) {
         if (lockdown) {
             throw new IllegalStateException("Plugins can't be changed anymore");
         }
@@ -745,7 +745,7 @@ public final class RxJavaPlugins {
      * @param onFlowableAssembly the hook function to set, null allowed
      */
     @SuppressWarnings("rawtypes")
-    public static void setOnFlowableAssembly(@Nullable Function<Flowable, Flowable> onFlowableAssembly) {
+    public static void setOnFlowableAssembly(@Nullable Function<? super Flowable, ? extends Flowable> onFlowableAssembly) {
         if (lockdown) {
             throw new IllegalStateException("Plugins can't be changed anymore");
         }
@@ -757,7 +757,7 @@ public final class RxJavaPlugins {
      * @param onMaybeAssembly the hook function to set, null allowed
      */
     @SuppressWarnings("rawtypes")
-    public static void setOnMaybeAssembly(@Nullable Function<Maybe, Maybe> onMaybeAssembly) {
+    public static void setOnMaybeAssembly(@Nullable Function<? super Maybe, ? extends Maybe> onMaybeAssembly) {
         if (lockdown) {
             throw new IllegalStateException("Plugins can't be changed anymore");
         }
@@ -769,7 +769,7 @@ public final class RxJavaPlugins {
      * @param onConnectableFlowableAssembly the hook function to set, null allowed
      */
     @SuppressWarnings("rawtypes")
-    public static void setOnConnectableFlowableAssembly(@Nullable Function<ConnectableFlowable, ConnectableFlowable> onConnectableFlowableAssembly) {
+    public static void setOnConnectableFlowableAssembly(@Nullable Function<? super ConnectableFlowable, ? extends ConnectableFlowable> onConnectableFlowableAssembly) {
         if (lockdown) {
             throw new IllegalStateException("Plugins can't be changed anymore");
         }
@@ -781,7 +781,7 @@ public final class RxJavaPlugins {
      * @param onFlowableSubscribe the hook function to set, null allowed
      */
     @SuppressWarnings("rawtypes")
-    public static void setOnFlowableSubscribe(@Nullable BiFunction<Flowable, Subscriber, Subscriber> onFlowableSubscribe) {
+    public static void setOnFlowableSubscribe(@Nullable BiFunction<? super Flowable, ? super Subscriber, ? extends Subscriber> onFlowableSubscribe) {
         if (lockdown) {
             throw new IllegalStateException("Plugins can't be changed anymore");
         }
@@ -793,7 +793,7 @@ public final class RxJavaPlugins {
      * @param onMaybeSubscribe the hook function to set, null allowed
      */
     @SuppressWarnings("rawtypes")
-    public static void setOnMaybeSubscribe(@Nullable BiFunction<Maybe, MaybeObserver, MaybeObserver> onMaybeSubscribe) {
+    public static void setOnMaybeSubscribe(@Nullable BiFunction<? super Maybe, MaybeObserver, ? extends MaybeObserver> onMaybeSubscribe) {
         if (lockdown) {
             throw new IllegalStateException("Plugins can't be changed anymore");
         }
@@ -805,7 +805,7 @@ public final class RxJavaPlugins {
      * @param onObservableAssembly the hook function to set, null allowed
      */
     @SuppressWarnings("rawtypes")
-    public static void setOnObservableAssembly(@Nullable Function<Observable, Observable> onObservableAssembly) {
+    public static void setOnObservableAssembly(@Nullable Function<? super Observable, ? extends Observable> onObservableAssembly) {
         if (lockdown) {
             throw new IllegalStateException("Plugins can't be changed anymore");
         }
@@ -817,7 +817,7 @@ public final class RxJavaPlugins {
      * @param onConnectableObservableAssembly the hook function to set, null allowed
      */
     @SuppressWarnings("rawtypes")
-    public static void setOnConnectableObservableAssembly(@Nullable Function<ConnectableObservable, ConnectableObservable> onConnectableObservableAssembly) {
+    public static void setOnConnectableObservableAssembly(@Nullable Function<? super ConnectableObservable, ? extends ConnectableObservable> onConnectableObservableAssembly) {
         if (lockdown) {
             throw new IllegalStateException("Plugins can't be changed anymore");
         }
@@ -830,7 +830,7 @@ public final class RxJavaPlugins {
      */
     @SuppressWarnings("rawtypes")
     public static void setOnObservableSubscribe(
-            @Nullable BiFunction<Observable, Observer, Observer> onObservableSubscribe) {
+            @Nullable BiFunction<? super Observable, ? super Observer, ? extends Observer> onObservableSubscribe) {
         if (lockdown) {
             throw new IllegalStateException("Plugins can't be changed anymore");
         }
@@ -842,7 +842,7 @@ public final class RxJavaPlugins {
      * @param onSingleAssembly the hook function to set, null allowed
      */
     @SuppressWarnings("rawtypes")
-    public static void setOnSingleAssembly(@Nullable Function<Single, Single> onSingleAssembly) {
+    public static void setOnSingleAssembly(@Nullable Function<? super Single, ? extends Single> onSingleAssembly) {
         if (lockdown) {
             throw new IllegalStateException("Plugins can't be changed anymore");
         }
@@ -854,7 +854,7 @@ public final class RxJavaPlugins {
      * @param onSingleSubscribe the hook function to set, null allowed
      */
     @SuppressWarnings("rawtypes")
-    public static void setOnSingleSubscribe(@Nullable BiFunction<Single, SingleObserver, SingleObserver> onSingleSubscribe) {
+    public static void setOnSingleSubscribe(@Nullable BiFunction<? super Single, ? super SingleObserver, ? extends SingleObserver> onSingleSubscribe) {
         if (lockdown) {
             throw new IllegalStateException("Plugins can't be changed anymore");
         }
@@ -871,7 +871,7 @@ public final class RxJavaPlugins {
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @NonNull
     public static <T> Subscriber<? super T> onSubscribe(@NonNull Flowable<T> source, @NonNull Subscriber<? super T> subscriber) {
-        BiFunction<Flowable, Subscriber, Subscriber> f = onFlowableSubscribe;
+        BiFunction<? super Flowable, ? super Subscriber, ? extends Subscriber> f = onFlowableSubscribe;
         if (f != null) {
             return apply(f, source, subscriber);
         }
@@ -888,7 +888,7 @@ public final class RxJavaPlugins {
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @NonNull
     public static <T> Observer<? super T> onSubscribe(@NonNull Observable<T> source, @NonNull Observer<? super T> observer) {
-        BiFunction<Observable, Observer, Observer> f = onObservableSubscribe;
+        BiFunction<? super Observable, ? super Observer, ? extends Observer> f = onObservableSubscribe;
         if (f != null) {
             return apply(f, source, observer);
         }
@@ -905,7 +905,7 @@ public final class RxJavaPlugins {
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @NonNull
     public static <T> SingleObserver<? super T> onSubscribe(@NonNull Single<T> source, @NonNull SingleObserver<? super T> observer) {
-        BiFunction<Single, SingleObserver, SingleObserver> f = onSingleSubscribe;
+        BiFunction<? super Single, ? super SingleObserver, ? extends SingleObserver> f = onSingleSubscribe;
         if (f != null) {
             return apply(f, source, observer);
         }
@@ -920,7 +920,7 @@ public final class RxJavaPlugins {
      */
     @NonNull
     public static CompletableObserver onSubscribe(@NonNull Completable source, @NonNull CompletableObserver observer) {
-        BiFunction<Completable, CompletableObserver, CompletableObserver> f = onCompletableSubscribe;
+        BiFunction<? super Completable, ? super CompletableObserver, ? extends CompletableObserver> f = onCompletableSubscribe;
         if (f != null) {
             return apply(f, source, observer);
         }
@@ -937,7 +937,7 @@ public final class RxJavaPlugins {
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @NonNull
     public static <T> MaybeObserver<? super T> onSubscribe(@NonNull Maybe<T> source, @NonNull MaybeObserver<? super T> subscriber) {
-        BiFunction<Maybe, MaybeObserver, MaybeObserver> f = onMaybeSubscribe;
+        BiFunction<? super Maybe, ? super MaybeObserver, ? extends MaybeObserver> f = onMaybeSubscribe;
         if (f != null) {
             return apply(f, source, subscriber);
         }
@@ -953,7 +953,7 @@ public final class RxJavaPlugins {
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @NonNull
     public static <T> Maybe<T> onAssembly(@NonNull Maybe<T> source) {
-        Function<Maybe, Maybe> f = onMaybeAssembly;
+        Function<? super Maybe, ? extends Maybe> f = onMaybeAssembly;
         if (f != null) {
             return apply(f, source);
         }
@@ -969,7 +969,7 @@ public final class RxJavaPlugins {
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @NonNull
     public static <T> Flowable<T> onAssembly(@NonNull Flowable<T> source) {
-        Function<Flowable, Flowable> f = onFlowableAssembly;
+        Function<? super Flowable, ? extends Flowable> f = onFlowableAssembly;
         if (f != null) {
             return apply(f, source);
         }
@@ -985,7 +985,7 @@ public final class RxJavaPlugins {
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @NonNull
     public static <T> ConnectableFlowable<T> onAssembly(@NonNull ConnectableFlowable<T> source) {
-        Function<ConnectableFlowable, ConnectableFlowable> f = onConnectableFlowableAssembly;
+        Function<? super ConnectableFlowable, ? extends ConnectableFlowable> f = onConnectableFlowableAssembly;
         if (f != null) {
             return apply(f, source);
         }
@@ -1001,7 +1001,7 @@ public final class RxJavaPlugins {
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @NonNull
     public static <T> Observable<T> onAssembly(@NonNull Observable<T> source) {
-        Function<Observable, Observable> f = onObservableAssembly;
+        Function<? super Observable, ? extends Observable> f = onObservableAssembly;
         if (f != null) {
             return apply(f, source);
         }
@@ -1017,7 +1017,7 @@ public final class RxJavaPlugins {
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @NonNull
     public static <T> ConnectableObservable<T> onAssembly(@NonNull ConnectableObservable<T> source) {
-        Function<ConnectableObservable, ConnectableObservable> f = onConnectableObservableAssembly;
+        Function<? super ConnectableObservable, ? extends ConnectableObservable> f = onConnectableObservableAssembly;
         if (f != null) {
             return apply(f, source);
         }
@@ -1033,7 +1033,7 @@ public final class RxJavaPlugins {
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @NonNull
     public static <T> Single<T> onAssembly(@NonNull Single<T> source) {
-        Function<Single, Single> f = onSingleAssembly;
+        Function<? super Single, ? extends Single> f = onSingleAssembly;
         if (f != null) {
             return apply(f, source);
         }
@@ -1047,7 +1047,7 @@ public final class RxJavaPlugins {
      */
     @NonNull
     public static Completable onAssembly(@NonNull Completable source) {
-        Function<Completable, Completable> f = onCompletableAssembly;
+        Function<? super Completable, ? extends Completable> f = onCompletableAssembly;
         if (f != null) {
             return apply(f, source);
         }
@@ -1061,7 +1061,7 @@ public final class RxJavaPlugins {
      */
     @Experimental
     @SuppressWarnings("rawtypes")
-    public static void setOnParallelAssembly(@Nullable Function<ParallelFlowable, ParallelFlowable> handler) {
+    public static void setOnParallelAssembly(@Nullable Function<? super ParallelFlowable, ? extends ParallelFlowable> handler) {
         if (lockdown) {
             throw new IllegalStateException("Plugins can't be changed anymore");
         }
@@ -1076,7 +1076,7 @@ public final class RxJavaPlugins {
     @Experimental
     @SuppressWarnings("rawtypes")
     @Nullable
-    public static Function<ParallelFlowable, ParallelFlowable> getOnParallelAssembly() {
+    public static Function<? super ParallelFlowable, ? extends ParallelFlowable> getOnParallelAssembly() {
         return onParallelAssembly;
     }
 
@@ -1091,7 +1091,7 @@ public final class RxJavaPlugins {
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @NonNull
     public static <T> ParallelFlowable<T> onAssembly(@NonNull ParallelFlowable<T> source) {
-        Function<ParallelFlowable, ParallelFlowable> f = onParallelAssembly;
+        Function<? super ParallelFlowable, ? extends ParallelFlowable> f = onParallelAssembly;
         if (f != null) {
             return apply(f, source);
         }
@@ -1268,7 +1268,7 @@ public final class RxJavaPlugins {
      * @throws NullPointerException if the function parameter returns null
      */
     @NonNull
-    static Scheduler applyRequireNonNull(@NonNull Function<Callable<Scheduler>, Scheduler> f, Callable<Scheduler> s) {
+    static Scheduler applyRequireNonNull(@NonNull Function<? super Callable<Scheduler>, ? extends Scheduler> f, Callable<Scheduler> s) {
         return ObjectHelper.requireNonNull(apply(f, s), "Scheduler Callable result can't be null");
     }
 
