@@ -116,8 +116,8 @@ public final class ObservableDelay<T> extends AbstractObservableWithUpstream<T, 
 
         @Override
         public void dispose() {
-            w.dispose();
             s.dispose();
+            w.dispose();
         }
 
         @Override

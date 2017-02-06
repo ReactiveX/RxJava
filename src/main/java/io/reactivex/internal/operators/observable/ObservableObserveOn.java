@@ -184,6 +184,7 @@ public final class ObservableObserveOn<T> extends AbstractObservableWithUpstream
                         s.dispose();
                         q.clear();
                         a.onError(ex);
+                        worker.dispose();
                         return;
                     }
                     boolean empty = v == null;

@@ -108,8 +108,8 @@ public final class FlowableDebounceTimed<T> extends AbstractFlowableWithUpstream
                 return;
             }
             done = true;
-            DisposableHelper.dispose(timer);
             actual.onError(t);
+            worker.dispose();
         }
 
         @Override
@@ -127,8 +127,8 @@ public final class FlowableDebounceTimed<T> extends AbstractFlowableWithUpstream
                     de.emit();
                 }
                 DisposableHelper.dispose(timer);
-                worker.dispose();
                 actual.onComplete();
+                worker.dispose();
             }
         }
 
@@ -141,9 +141,8 @@ public final class FlowableDebounceTimed<T> extends AbstractFlowableWithUpstream
 
         @Override
         public void cancel() {
-            DisposableHelper.dispose(timer);
-            worker.dispose();
             s.cancel();
+            worker.dispose();
         }
 
         void emit(long idx, T t, DebounceEmitter<T> emitter) {

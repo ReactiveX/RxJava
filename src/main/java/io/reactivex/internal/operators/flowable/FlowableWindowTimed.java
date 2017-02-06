@@ -159,8 +159,8 @@ public final class FlowableWindowTimed<T> extends AbstractFlowableWithUpstream<T
                 drainLoop();
             }
 
-            dispose();
             actual.onError(t);
+            dispose();
         }
 
         @Override
@@ -170,8 +170,8 @@ public final class FlowableWindowTimed<T> extends AbstractFlowableWithUpstream<T
                 drainLoop();
             }
 
-            dispose();
             actual.onComplete();
+            dispose();
         }
 
         @Override
@@ -396,8 +396,8 @@ public final class FlowableWindowTimed<T> extends AbstractFlowableWithUpstream<T
                     } else {
                         window = null;
                         s.cancel();
-                        dispose();
                         actual.onError(new MissingBackpressureException("Could not deliver window due to lack of requests"));
+                        dispose();
                         return;
                     }
                 } else {
@@ -424,8 +424,8 @@ public final class FlowableWindowTimed<T> extends AbstractFlowableWithUpstream<T
                 drainLoop();
             }
 
-            dispose();
             actual.onError(t);
+            dispose();
         }
 
         @Override
@@ -435,8 +435,8 @@ public final class FlowableWindowTimed<T> extends AbstractFlowableWithUpstream<T
                 drainLoop();
             }
 
-            dispose();
             actual.onComplete();
+            dispose();
         }
 
         @Override
@@ -479,13 +479,13 @@ public final class FlowableWindowTimed<T> extends AbstractFlowableWithUpstream<T
                     if (d && (empty || isHolder)) {
                         window = null;
                         q.clear();
-                        dispose();
                         Throwable err = error;
                         if (err != null) {
                             w.onError(err);
                         } else {
                             w.onComplete();
                         }
+                        dispose();
                         return;
                     }
 
@@ -509,8 +509,8 @@ public final class FlowableWindowTimed<T> extends AbstractFlowableWithUpstream<T
                                 window = null;
                                 queue.clear();
                                 s.cancel();
-                                dispose();
                                 a.onError(new MissingBackpressureException("Could not deliver first window due to lack of requests."));
+                                dispose();
                                 return;
                             }
                         }
@@ -550,8 +550,8 @@ public final class FlowableWindowTimed<T> extends AbstractFlowableWithUpstream<T
                         } else {
                             window = null;
                             s.cancel();
-                            dispose();
                             actual.onError(new MissingBackpressureException("Could not deliver window due to lack of requests"));
+                            dispose();
                             return;
                         }
                     } else {
@@ -683,8 +683,8 @@ public final class FlowableWindowTimed<T> extends AbstractFlowableWithUpstream<T
                 drainLoop();
             }
 
-            dispose();
             actual.onError(t);
+            dispose();
         }
 
         @Override
@@ -694,8 +694,8 @@ public final class FlowableWindowTimed<T> extends AbstractFlowableWithUpstream<T
                 drainLoop();
             }
 
-            dispose();
             actual.onComplete();
+            dispose();
         }
 
         @Override
@@ -747,7 +747,6 @@ public final class FlowableWindowTimed<T> extends AbstractFlowableWithUpstream<T
 
                     if (d && (empty || sw)) {
                         q.clear();
-                        dispose();
                         Throwable e = error;
                         if (e != null) {
                             for (UnicastProcessor<T> w : ws) {
@@ -759,6 +758,7 @@ public final class FlowableWindowTimed<T> extends AbstractFlowableWithUpstream<T
                             }
                         }
                         ws.clear();
+                        dispose();
                         return;
                     }
 
