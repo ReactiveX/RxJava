@@ -1,0 +1,13 @@
+coverage:
+  status:
+    project: 
+      default:
+        target: 95%
+        threshold: 1%
+
+    patch: 
+      default:
+        target: 95%
+        threshold: 1%
+  
+    changes: no

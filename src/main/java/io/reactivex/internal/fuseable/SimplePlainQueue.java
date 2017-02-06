@@ -13,13 +13,16 @@
 
 package io.reactivex.internal.fuseable;
 
+import io.reactivex.annotations.Nullable;
+
 /**
- * Override of the SimpleQueue interface with no throws Exception on poll.
+ * Override of the SimpleQueue interface with no throws Exception on poll().
  *
  * @param <T> the value type to enqueue and dequeue, not null
  */
 public interface SimplePlainQueue<T> extends SimpleQueue<T> {
 
+    @Nullable
     @Override
     T poll();
 }

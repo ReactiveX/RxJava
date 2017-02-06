@@ -14,6 +14,7 @@
 package io.reactivex.internal.operators.flowable;
 
 import io.reactivex.Flowable;
+import io.reactivex.annotations.Nullable;
 import io.reactivex.internal.fuseable.ConditionalSubscriber;
 import io.reactivex.internal.subscriptions.BasicQueueSubscription;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
@@ -62,6 +63,7 @@ public final class FlowableRangeLong extends Flowable<Long> {
             return mode & SYNC;
         }
 
+        @Nullable
         @Override
         public final Long poll() {
             long i = index;

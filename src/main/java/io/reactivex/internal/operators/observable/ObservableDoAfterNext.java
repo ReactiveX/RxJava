@@ -15,6 +15,7 @@ package io.reactivex.internal.operators.observable;
 
 import io.reactivex.*;
 import io.reactivex.annotations.Experimental;
+import io.reactivex.annotations.Nullable;
 import io.reactivex.functions.Consumer;
 import io.reactivex.internal.observers.BasicFuseableObserver;
 
@@ -65,6 +66,7 @@ public final class ObservableDoAfterNext<T> extends AbstractObservableWithUpstre
             return transitiveBoundaryFusion(mode);
         }
 
+        @Nullable
         @Override
         public T poll() throws Exception {
             T v = qs.poll();

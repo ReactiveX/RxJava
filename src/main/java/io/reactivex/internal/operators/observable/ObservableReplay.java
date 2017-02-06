@@ -316,7 +316,10 @@ public final class ObservableReplay<T> extends ConnectableObservable<T> implemen
     }
 
     @SuppressWarnings("rawtypes")
-    static final class ReplayObserver<T> implements Observer<T>, Disposable {
+    static final class ReplayObserver<T>
+    extends AtomicReference<Disposable>
+    implements Observer<T>, Disposable {
+        private static final long serialVersionUID = -533785617179540163L;
         /** Holds notifications from upstream. */
         final ReplayBuffer<T> buffer;
         /** Indicates this Observer received a terminal event. */
@@ -334,9 +337,6 @@ public final class ObservableReplay<T> extends ConnectableObservable<T> implemen
          * connection is only performed by one thread.
          */
         final AtomicBoolean shouldConnect;
-
-        /** The upstream producer. */
-        volatile Disposable subscription;
 
         ReplayObserver(ReplayBuffer<T> buffer) {
             this.buffer = buffer;
@@ -358,7 +358,7 @@ public final class ObservableReplay<T> extends ConnectableObservable<T> implemen
             // current.compareAndSet(ReplayObserver.this, null);
             // we don't care if it fails because it means the current has
             // been replaced in the meantime
-            subscription.dispose();
+            DisposableHelper.dispose(this);
         }
 
         /**
@@ -444,8 +444,7 @@ public final class ObservableReplay<T> extends ConnectableObservable<T> implemen
 
         @Override
         public void onSubscribe(Disposable p) {
-            if (DisposableHelper.validate(this.subscription, p)) {
-                subscription = p;
+            if (DisposableHelper.setOnce(this, p)) {
                 replay();
             }
         }

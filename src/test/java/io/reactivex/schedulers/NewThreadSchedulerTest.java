@@ -115,4 +115,22 @@ public class NewThreadSchedulerTest extends AbstractSchedulerConcurrencyTests {
 
         assertEquals(0, calls[0]);
     }
+
+    /**
+     * Regression test to ensure there is no NPE when the worker has been disposed
+     */
+    @Test
+    public void npeRegression() throws Exception {
+        Scheduler s = getScheduler();
+        NewThreadWorker w = (NewThreadWorker) s.createWorker();
+        w.dispose();
+
+        //This method used to throw a NPE when the worker has been disposed and the parent is null
+        w.scheduleActual(new Runnable() {
+            @Override
+            public void run() {
+            }
+        }, 0, TimeUnit.MILLISECONDS, null);
+
+    }
 }

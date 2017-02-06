@@ -78,7 +78,8 @@ public abstract class Flowable<T> implements Publisher<T> {
      *
      * @param <T> the common element type
      * @param sources
-     *            an Iterable of Publishers sources competing to react first
+     *            an Iterable of Publishers sources competing to react first. A subscription to each Publisher will
+     *            occur in the same order as in this Iterable.
      * @return a Flowable that emits the same sequence as whichever of the source Publishers first
      *         emitted an item or sent a termination notification
      * @see <a href="http://reactivex.io/documentation/operators/amb.html">ReactiveX operators documentation: Amb</a>
@@ -106,7 +107,8 @@ public abstract class Flowable<T> implements Publisher<T> {
      *
      * @param <T> the common element type
      * @param sources
-     *            an array of Publisher sources competing to react first
+     *            an array of Publisher sources competing to react first. A subscription to each Publisher will
+     *            occur in the same order as in this Iterable.
      * @return a Flowable that emits the same sequence as whichever of the source Publishers first
      *         emitted an item or sent a termination notification
      * @see <a href="http://reactivex.io/documentation/operators/amb.html">ReactiveX operators documentation: Amb</a>
@@ -5131,7 +5133,8 @@ public abstract class Flowable<T> implements Publisher<T> {
      * </dl>
      *
      * @param other
-     *            a Publisher competing to react first
+     *            a Publisher competing to react first. A subscription to this provided Publisher will occur after subscribing
+     *            to the current Publisher.
      * @return a Flowable that emits the same sequence as whichever of the source Publishers first
      *         emitted an item or sent a termination notification
      * @see <a href="http://reactivex.io/documentation/operators/amb.html">ReactiveX operators documentation: Amb</a>

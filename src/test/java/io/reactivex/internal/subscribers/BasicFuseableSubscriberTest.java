@@ -15,6 +15,7 @@ package io.reactivex.internal.subscribers;
 
 import static org.junit.Assert.*;
 
+import io.reactivex.annotations.Nullable;
 import org.junit.Test;
 
 import io.reactivex.TestHelper;
@@ -36,6 +37,7 @@ public class BasicFuseableSubscriberTest {
                 return 0;
             }
 
+            @Nullable
             @Override
             public Integer poll() throws Exception {
                 return null;

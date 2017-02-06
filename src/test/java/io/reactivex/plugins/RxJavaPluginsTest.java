@@ -1168,7 +1168,28 @@ public class RxJavaPluginsTest {
         }
     }
 
-    @SuppressWarnings({ "rawtypes", "unchecked" })
+    /**
+     * Ensure setErrorHandler() accepts a consumer with "? super Throwable"
+     */
+    @Test
+    public void onErrorWithSuper() throws Exception {
+        try {
+            Consumer<? super Throwable> errorHandler = new Consumer<Throwable>() {
+                @Override
+                public void accept(Throwable t) {
+                    throw new TestException("Forced failure 2");
+                }
+            };
+            RxJavaPlugins.setErrorHandler(errorHandler);
+
+            Consumer<? super Throwable> errorHandler1 = RxJavaPlugins.getErrorHandler();
+            assertSame(errorHandler, errorHandler1);
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
+
+    @SuppressWarnings({"rawtypes", "unchecked" })
     @Test
     public void clearIsPassthrough() {
         try {
@@ -1348,14 +1369,6 @@ public class RxJavaPluginsTest {
 //            assertNull(RxJavaPlugins.onCompletableLift(null));
 //
 //            assertSame(cop, RxJavaPlugins.onCompletableLift(cop));
-
-            assertNull(RxJavaPlugins.onComputationScheduler(null));
-
-            assertNull(RxJavaPlugins.onIoScheduler(null));
-
-            assertNull(RxJavaPlugins.onNewThreadScheduler(null));
-
-            assertNull(RxJavaPlugins.onSingleScheduler(null));
 
             final Scheduler s = ImmediateThinScheduler.INSTANCE;
             Callable<Scheduler> c = new Callable<Scheduler>() {

@@ -16,6 +16,8 @@ package io.reactivex.internal.operators.flowable;
 import java.util.Iterator;
 import java.util.concurrent.atomic.*;
 
+import io.reactivex.annotations.NonNull;
+import io.reactivex.annotations.Nullable;
 import org.reactivestreams.*;
 
 import io.reactivex.Flowable;
@@ -36,8 +38,10 @@ import io.reactivex.plugins.RxJavaPlugins;
 public final class FlowableCombineLatest<T, R>
 extends Flowable<R> {
 
+    @Nullable
     final Publisher<? extends T>[] array;
 
+    @Nullable
     final Iterable<? extends Publisher<? extends T>> iterable;
 
     final Function<? super Object[], ? extends R> combiner;
@@ -46,8 +50,8 @@ extends Flowable<R> {
 
     final boolean delayErrors;
 
-    public FlowableCombineLatest(Publisher<? extends T>[] array,
-            Function<? super Object[], ? extends R> combiner,
+    public FlowableCombineLatest(@NonNull Publisher<? extends T>[] array,
+                    @NonNull Function<? super Object[], ? extends R> combiner,
                     int bufferSize, boolean delayErrors) {
         this.array = array;
         this.iterable = null;
@@ -56,8 +60,8 @@ extends Flowable<R> {
         this.delayErrors = delayErrors;
     }
 
-    public FlowableCombineLatest(Iterable<? extends Publisher<? extends T>> iterable,
-            Function<? super Object[], ? extends R> combiner,
+    public FlowableCombineLatest(@NonNull Iterable<? extends Publisher<? extends T>> iterable,
+                    @NonNull Function<? super Object[], ? extends R> combiner,
                     int bufferSize, boolean delayErrors) {
         this.array = null;
         this.iterable = iterable;
@@ -466,6 +470,7 @@ extends Flowable<R> {
             return m;
         }
 
+        @Nullable
         @SuppressWarnings("unchecked")
         @Override
         public R poll() throws Exception {

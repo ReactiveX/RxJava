@@ -20,6 +20,7 @@ import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import io.reactivex.Scheduler;
+import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.*;
 import io.reactivex.internal.disposables.EmptyDisposable;
 import io.reactivex.internal.functions.ObjectHelper;
@@ -36,6 +37,7 @@ public final class TrampolineScheduler extends Scheduler {
         return INSTANCE;
     }
 
+    @NonNull
     @Override
     public Worker createWorker() {
         return new TrampolineWorker();
@@ -44,14 +46,16 @@ public final class TrampolineScheduler extends Scheduler {
     /* package accessible for unit tests */TrampolineScheduler() {
     }
 
+    @NonNull
     @Override
-    public Disposable scheduleDirect(Runnable run) {
+    public Disposable scheduleDirect(@NonNull Runnable run) {
         run.run();
         return EmptyDisposable.INSTANCE;
     }
 
+    @NonNull
     @Override
-    public Disposable scheduleDirect(Runnable run, long delay, TimeUnit unit) {
+    public Disposable scheduleDirect(@NonNull Runnable run, long delay, TimeUnit unit) {
         try {
             unit.sleep(delay);
             run.run();
@@ -71,13 +75,15 @@ public final class TrampolineScheduler extends Scheduler {
 
         volatile boolean disposed;
 
+        @NonNull
         @Override
-        public Disposable schedule(Runnable action) {
+        public Disposable schedule(@NonNull Runnable action) {
             return enqueue(action, now(TimeUnit.MILLISECONDS));
         }
 
+        @NonNull
         @Override
-        public Disposable schedule(Runnable action, long delayTime, TimeUnit unit) {
+        public Disposable schedule(@NonNull Runnable action, long delayTime, @NonNull TimeUnit unit) {
             long execTime = now(TimeUnit.MILLISECONDS) + unit.toMillis(delayTime);
 
             return enqueue(new SleepingRunnable(action, this, execTime), execTime);

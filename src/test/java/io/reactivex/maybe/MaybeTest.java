@@ -1580,6 +1580,26 @@ public class MaybeTest {
         assertSame(Maybe.never(), Maybe.ambArray(Maybe.never()));
     }
 
+    @Test
+    public void ambWithOrder() {
+        Maybe<Integer> error = Maybe.error(new RuntimeException());
+        Maybe.just(1).ambWith(error).test().assertValue(1);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void ambIterableOrder() {
+        Maybe<Integer> error = Maybe.error(new RuntimeException());
+        Maybe.amb(Arrays.asList(Maybe.just(1), error)).test().assertValue(1);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void ambArrayOrder() {
+        Maybe<Integer> error = Maybe.error(new RuntimeException());
+        Maybe.ambArray(Maybe.just(1), error).test().assertValue(1);
+    }
+
     @SuppressWarnings("unchecked")
     @Test
     public void ambArray1SignalsSuccess() {

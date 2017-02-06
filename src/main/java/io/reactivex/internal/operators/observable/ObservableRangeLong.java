@@ -13,6 +13,7 @@
 package io.reactivex.internal.operators.observable;
 
 import io.reactivex.*;
+import io.reactivex.annotations.Nullable;
 import io.reactivex.internal.observers.BasicIntQueueDisposable;
 
 public final class ObservableRangeLong extends Observable<Long> {
@@ -65,6 +66,7 @@ public final class ObservableRangeLong extends Observable<Long> {
             }
         }
 
+        @Nullable
         @Override
         public Long poll() throws Exception {
             long i = index;

@@ -16,6 +16,7 @@ package io.reactivex;
 import java.util.concurrent.TimeUnit;
 
 import io.reactivex.annotations.Experimental;
+import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.Function;
@@ -61,6 +62,7 @@ public abstract class Scheduler {
      *
      * @return a Worker representing a serial queue of actions to be executed
      */
+    @NonNull
     public abstract Worker createWorker();
 
     /**
@@ -69,7 +71,7 @@ public abstract class Scheduler {
      * @return the 'current time'
      * @since 2.0
      */
-    public long now(TimeUnit unit) {
+    public long now(@NonNull TimeUnit unit) {
         return unit.convert(System.currentTimeMillis(), TimeUnit.MILLISECONDS);
     }
 
@@ -105,7 +107,8 @@ public abstract class Scheduler {
      * @return the Disposable instance that let's one cancel this particular task.
      * @since 2.0
      */
-    public Disposable scheduleDirect(Runnable run) {
+    @NonNull
+    public Disposable scheduleDirect(@NonNull Runnable run) {
         return scheduleDirect(run, 0L, TimeUnit.NANOSECONDS);
     }
 
@@ -122,7 +125,8 @@ public abstract class Scheduler {
      * @return the Disposable that let's one cancel this particular delayed task.
      * @since 2.0
      */
-    public Disposable scheduleDirect(Runnable run, long delay, TimeUnit unit) {
+    @NonNull
+    public Disposable scheduleDirect(@NonNull Runnable run, long delay, @NonNull TimeUnit unit) {
         final Worker w = createWorker();
 
         final Runnable decoratedRun = RxJavaPlugins.onSchedule(run);
@@ -159,7 +163,8 @@ public abstract class Scheduler {
      * @return the Disposable that let's one cancel this particular delayed task.
      * @since 2.0
      */
-    public Disposable schedulePeriodicallyDirect(Runnable run, long initialDelay, long period, TimeUnit unit) {
+    @NonNull
+    public Disposable schedulePeriodicallyDirect(@NonNull Runnable run, long initialDelay, long period, @NonNull TimeUnit unit) {
         final Worker w = createWorker();
 
         final Runnable decoratedRun = RxJavaPlugins.onSchedule(run);
@@ -249,7 +254,8 @@ public abstract class Scheduler {
      */
     @SuppressWarnings("unchecked")
     @Experimental
-    public <S extends Scheduler & Disposable> S when(Function<Flowable<Flowable<Completable>>, Completable> combine) {
+    @NonNull
+    public <S extends Scheduler & Disposable> S when(@NonNull Function<Flowable<Flowable<Completable>>, Completable> combine) {
         return (S) new SchedulerWhen(combine, this);
     }
 
@@ -268,7 +274,8 @@ public abstract class Scheduler {
          *            Runnable to schedule
          * @return a Disposable to be able to unsubscribe the action (cancel it if not executed)
          */
-        public Disposable schedule(Runnable run) {
+        @NonNull
+        public Disposable schedule(@NonNull Runnable run) {
             return schedule(run, 0L, TimeUnit.NANOSECONDS);
         }
 
@@ -287,7 +294,8 @@ public abstract class Scheduler {
          *            the time unit of {@code delayTime}
          * @return a Disposable to be able to unsubscribe the action (cancel it if not executed)
          */
-        public abstract Disposable schedule(Runnable run, long delay, TimeUnit unit);
+        @NonNull
+        public abstract Disposable schedule(@NonNull Runnable run, long delay, @NonNull TimeUnit unit);
 
         /**
          * Schedules a cancelable action to be executed periodically. This default implementation schedules
@@ -309,7 +317,8 @@ public abstract class Scheduler {
          *            the time unit of {@code period}
          * @return a Disposable to be able to unsubscribe the action (cancel it if not executed)
          */
-        public Disposable schedulePeriodically(Runnable run, final long initialDelay, final long period, final TimeUnit unit) {
+        @NonNull
+        public Disposable schedulePeriodically(@NonNull Runnable run, final long initialDelay, final long period, @NonNull final TimeUnit unit) {
             final SequentialDisposable first = new SequentialDisposable();
 
             final SequentialDisposable sd = new SequentialDisposable(first);
@@ -337,7 +346,7 @@ public abstract class Scheduler {
          * @return the 'current time'
          * @since 2.0
          */
-        public long now(TimeUnit unit) {
+        public long now(@NonNull TimeUnit unit) {
             return unit.convert(System.currentTimeMillis(), TimeUnit.MILLISECONDS);
         }
 
@@ -346,15 +355,17 @@ public abstract class Scheduler {
          * of this task has to happen (accounting for clock drifts).
          */
         final class PeriodicTask implements Runnable {
+            @NonNull
             final Runnable decoratedRun;
+            @NonNull
             final SequentialDisposable sd;
             final long periodInNanoseconds;
             long count;
             long lastNowNanoseconds;
             long startInNanoseconds;
 
-            PeriodicTask(long firstStartInNanoseconds, Runnable decoratedRun,
-                    long firstNowNanoseconds, SequentialDisposable sd, long periodInNanoseconds) {
+            PeriodicTask(long firstStartInNanoseconds, @NonNull Runnable decoratedRun,
+                    long firstNowNanoseconds, @NonNull SequentialDisposable sd, long periodInNanoseconds) {
                 this.decoratedRun = decoratedRun;
                 this.sd = sd;
                 this.periodInNanoseconds = periodInNanoseconds;
@@ -395,12 +406,12 @@ public abstract class Scheduler {
     static class PeriodicDirectTask
     implements Runnable, Disposable {
         final Runnable run;
-
+        @NonNull
         final Worker worker;
-
+        @NonNull
         volatile boolean disposed;
 
-        PeriodicDirectTask(Runnable run, Worker worker) {
+        PeriodicDirectTask(@NonNull Runnable run, @NonNull Worker worker) {
             this.run = run;
             this.worker = worker;
         }

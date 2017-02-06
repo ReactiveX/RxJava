@@ -14,6 +14,7 @@
 package io.reactivex.internal.disposables;
 
 import io.reactivex.*;
+import io.reactivex.annotations.Nullable;
 import io.reactivex.internal.fuseable.QueueDisposable;
 
 /**
@@ -93,6 +94,7 @@ public enum EmptyDisposable implements QueueDisposable<Object> {
         throw new UnsupportedOperationException("Should not be called!");
     }
 
+    @Nullable
     @Override
     public Object poll() throws Exception {
         return null; // always empty

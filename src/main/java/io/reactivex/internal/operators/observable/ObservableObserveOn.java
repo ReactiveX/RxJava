@@ -14,6 +14,7 @@
 package io.reactivex.internal.operators.observable;
 
 import io.reactivex.*;
+import io.reactivex.annotations.Nullable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.internal.disposables.DisposableHelper;
@@ -295,6 +296,7 @@ public final class ObservableObserveOn<T> extends AbstractObservableWithUpstream
             return NONE;
         }
 
+        @Nullable
         @Override
         public T poll() throws Exception {
             return queue.poll();

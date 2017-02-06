@@ -69,7 +69,8 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *
      * @param <T> the common element type
      * @param sources
-     *            an Iterable of ObservableSources sources competing to react first
+     *            an Iterable of ObservableSource sources competing to react first. A subscription to each source will
+     *            occur in the same order as in the Iterable.
      * @return an Observable that emits the same sequence as whichever of the source ObservableSources first
      *         emitted an item or sent a termination notification
      * @see <a href="http://reactivex.io/documentation/operators/amb.html">ReactiveX operators documentation: Amb</a>
@@ -93,7 +94,8 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *
      * @param <T> the common element type
      * @param sources
-     *            an array of ObservableSource sources competing to react first
+     *            an array of ObservableSource sources competing to react first. A subscription to each source will
+     *            occur in the same order as in the array.
      * @return an Observable that emits the same sequence as whichever of the source ObservableSources first
      *         emitted an item or sent a termination notification
      * @see <a href="http://reactivex.io/documentation/operators/amb.html">ReactiveX operators documentation: Amb</a>
@@ -4547,7 +4549,8 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * </dl>
      *
      * @param other
-     *            an ObservableSource competing to react first
+     *            an ObservableSource competing to react first. A subscription to this provided source will occur after
+     *            subscribing to the current source.
      * @return an Observable that emits the same sequence as whichever of the source ObservableSources first
      *         emitted an item or sent a termination notification
      * @see <a href="http://reactivex.io/documentation/operators/amb.html">ReactiveX operators documentation: Amb</a>

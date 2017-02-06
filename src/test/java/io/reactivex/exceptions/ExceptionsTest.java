@@ -141,7 +141,7 @@ public class ExceptionsTest {
             }
         });
         a.onNext(1);
-        assertTrue(depth.get() > MAX_STACK_DEPTH);
+        assertTrue(depth.get() >= MAX_STACK_DEPTH);
     }
 
     @Test(expected = StackOverflowError.class)

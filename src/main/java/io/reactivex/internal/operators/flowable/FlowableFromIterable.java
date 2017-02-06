@@ -15,6 +15,7 @@ package io.reactivex.internal.operators.flowable;
 
 import java.util.Iterator;
 
+import io.reactivex.annotations.Nullable;
 import org.reactivestreams.Subscriber;
 
 import io.reactivex.Flowable;
@@ -87,6 +88,7 @@ public final class FlowableFromIterable<T> extends Flowable<T> {
             return mode & SYNC;
         }
 
+        @Nullable
         @Override
         public final T poll() {
             if (it == null) {

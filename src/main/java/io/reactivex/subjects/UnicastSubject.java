@@ -13,6 +13,7 @@
 
 package io.reactivex.subjects;
 
+import io.reactivex.annotations.Nullable;
 import io.reactivex.plugins.RxJavaPlugins;
 import java.util.concurrent.atomic.*;
 
@@ -348,6 +349,7 @@ public final class UnicastSubject<T> extends Subject<T> {
             return NONE;
         }
 
+        @Nullable
         @Override
         public T poll() throws Exception {
             return queue.poll();

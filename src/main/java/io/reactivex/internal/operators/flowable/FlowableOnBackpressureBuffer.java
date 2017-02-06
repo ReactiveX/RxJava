@@ -15,6 +15,7 @@ package io.reactivex.internal.operators.flowable;
 
 import java.util.concurrent.atomic.AtomicLong;
 
+import io.reactivex.annotations.Nullable;
 import org.reactivestreams.*;
 
 import io.reactivex.exceptions.*;
@@ -251,6 +252,7 @@ public final class FlowableOnBackpressureBuffer<T> extends AbstractFlowableWithU
             return NONE;
         }
 
+        @Nullable
         @Override
         public T poll() throws Exception {
             return queue.poll();

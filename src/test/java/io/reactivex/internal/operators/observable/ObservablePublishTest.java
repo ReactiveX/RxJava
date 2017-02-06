@@ -699,4 +699,25 @@ public class ObservablePublishTest {
 
         assertFalse(ps.hasObservers());
     }
+
+    @Test
+    public void delayedUpstreamOnSubscribe() {
+        final Observer<?>[] sub = { null };
+
+        new Observable<Integer>() {
+            @Override
+            protected void subscribeActual(Observer<? super Integer> s) {
+                sub[0] = s;
+            }
+        }
+        .publish()
+        .connect()
+        .dispose();
+
+        Disposable bs = Disposables.empty();
+
+        sub[0].onSubscribe(bs);
+
+        assertTrue(bs.isDisposed());
+    }
 }

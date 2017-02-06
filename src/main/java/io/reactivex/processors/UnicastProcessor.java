@@ -16,6 +16,7 @@ package io.reactivex.processors;
 import io.reactivex.annotations.CheckReturnValue;
 import java.util.concurrent.atomic.*;
 
+import io.reactivex.annotations.Nullable;
 import org.reactivestreams.*;
 
 import io.reactivex.internal.functions.ObjectHelper;
@@ -340,6 +341,7 @@ public final class UnicastProcessor<T> extends FlowableProcessor<T> {
 
         private static final long serialVersionUID = -4896760517184205454L;
 
+        @Nullable
         @Override
         public T poll() {
             return queue.poll();

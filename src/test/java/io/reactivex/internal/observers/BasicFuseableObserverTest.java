@@ -13,6 +13,7 @@
 
 package io.reactivex.internal.observers;
 
+import io.reactivex.annotations.Nullable;
 import org.junit.Test;
 
 import io.reactivex.disposables.Disposables;
@@ -24,6 +25,7 @@ public class BasicFuseableObserverTest {
     public void offer() {
         TestObserver<Integer> to = new TestObserver<Integer>();
         BasicFuseableObserver<Integer, Integer> o = new BasicFuseableObserver<Integer, Integer>(to) {
+            @Nullable
             @Override
             public Integer poll() throws Exception {
                 return null;
@@ -51,6 +53,7 @@ public class BasicFuseableObserverTest {
     @Test(expected = UnsupportedOperationException.class)
     public void offer2() {
         BasicFuseableObserver<Integer, Integer> o = new BasicFuseableObserver<Integer, Integer>(new TestObserver<Integer>()) {
+            @Nullable
             @Override
             public Integer poll() throws Exception {
                 return null;

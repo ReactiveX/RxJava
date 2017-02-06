@@ -13,6 +13,7 @@
 
 package io.reactivex.internal.subscriptions;
 
+import io.reactivex.annotations.Nullable;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -28,6 +29,7 @@ public class QueueSubscriptionTest {
             return 0;
         }
 
+        @Nullable
         @Override
         public Integer poll() throws Exception {
             return null;
@@ -64,6 +66,7 @@ public class QueueSubscriptionTest {
             return 0;
         }
 
+        @Nullable
         @Override
         public Integer poll() throws Exception {
             return null;
