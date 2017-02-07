@@ -976,7 +976,7 @@ public class FlowableSwitchTest {
             .test()
             .assertResult();
 
-            TestHelper.assertError(errors, 0, TestException.class);
+            TestHelper.assertUndeliverable(errors, 0, TestException.class);
         } finally {
             RxJavaPlugins.reset();
         }
@@ -1016,7 +1016,7 @@ public class FlowableSwitchTest {
             .test()
             .assertFailure(TestException.class);
 
-            TestHelper.assertError(errors, 0, TestException.class);
+            TestHelper.assertUndeliverable(errors, 0, TestException.class);
         } finally {
             RxJavaPlugins.reset();
         }

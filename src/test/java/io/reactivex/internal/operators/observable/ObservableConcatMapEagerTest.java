@@ -851,7 +851,7 @@ public class ObservableConcatMapEagerTest {
                 } else {
                     to.assertError(TestException.class);
                     if (!errors.isEmpty()) {
-                        TestHelper.assertError(errors, 0, TestException.class);
+                        TestHelper.assertUndeliverable(errors, 0, TestException.class);
                     }
                 }
             } finally {

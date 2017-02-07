@@ -87,7 +87,7 @@ public class FutureSubscriberTest {
                 assertEquals("One", ex.getCause().getMessage());
             }
 
-            TestHelper.assertError(errors, 0, TestException.class, "Two");
+            TestHelper.assertUndeliverable(errors, 0, TestException.class, "Two");
         } finally {
             RxJavaPlugins.reset();
         }

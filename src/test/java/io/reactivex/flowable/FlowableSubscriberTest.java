@@ -688,7 +688,7 @@ public class FlowableSubscriberTest {
 
             s.onError(new TestException("Outer"));
 
-            TestHelper.assertError(list, 0, CompositeException.class);
+            TestHelper.assertUndeliverable(list, 0, CompositeException.class);
             List<Throwable> cel = TestHelper.compositeList(list.get(0));
             TestHelper.assertError(cel, 0, TestException.class, "Outer");
             TestHelper.assertError(cel, 1, TestException.class, "Inner");
@@ -722,7 +722,7 @@ public class FlowableSubscriberTest {
 
             s.onComplete();
 
-            TestHelper.assertError(list, 0, TestException.class, "Inner");
+            TestHelper.assertUndeliverable(list, 0, TestException.class, "Inner");
         } finally {
             RxJavaPlugins.reset();
         }

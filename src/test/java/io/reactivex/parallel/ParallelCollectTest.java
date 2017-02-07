@@ -161,7 +161,7 @@ public class ParallelCollectTest {
 
             assertFalse(errors.isEmpty());
             for (Throwable ex : errors) {
-                assertTrue(ex.toString(), ex instanceof TestException);
+                assertTrue(ex.toString(), ex.getCause() instanceof TestException);
             }
         } finally {
             RxJavaPlugins.reset();

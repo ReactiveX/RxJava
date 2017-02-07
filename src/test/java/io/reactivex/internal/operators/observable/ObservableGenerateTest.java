@@ -107,7 +107,7 @@ public class ObservableGenerateTest {
             .test()
             .assertResult();
 
-            TestHelper.assertError(errors, 0, TestException.class);
+            TestHelper.assertUndeliverable(errors, 0, TestException.class);
         } finally {
             RxJavaPlugins.reset();
         }
@@ -175,7 +175,7 @@ public class ObservableGenerateTest {
             .test()
             .assertFailure(TestException.class);
 
-            TestHelper.assertError(errors, 0, TestException.class, "Second");
+            TestHelper.assertUndeliverable(errors, 0, TestException.class, "Second");
         } finally {
             RxJavaPlugins.reset();
         }

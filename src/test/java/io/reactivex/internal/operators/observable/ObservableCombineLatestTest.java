@@ -1010,7 +1010,7 @@ public class ObservableCombineLatestTest {
                 }
 
                 for (Throwable e : errors) {
-                    assertTrue(e.toString(), e instanceof TestException);
+                    assertTrue(e.toString(), e.getCause() instanceof TestException);
                 }
             } finally {
                 RxJavaPlugins.reset();

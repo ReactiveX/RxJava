@@ -89,7 +89,7 @@ public class FullArbiterTest {
         try {
             fa.onError(new TestException(), bs);
 
-            TestHelper.assertError(errors, 0, TestException.class);
+            TestHelper.assertUndeliverable(errors, 0, TestException.class);
         } finally {
             RxJavaPlugins.reset();
         }
@@ -106,7 +106,7 @@ public class FullArbiterTest {
             fa.cancel();
 
             fa.drain();
-            TestHelper.assertError(errors, 0, TestException.class);
+            TestHelper.assertUndeliverable(errors, 0, TestException.class);
         } finally {
             RxJavaPlugins.reset();
         }

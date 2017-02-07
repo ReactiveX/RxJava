@@ -345,9 +345,9 @@ public class ExecutorSchedulerTest extends AbstractSchedulerConcurrencyTests {
 
             assertSame(EmptyDisposable.INSTANCE, s.schedulePeriodicallyDirect(Functions.EMPTY_RUNNABLE, 10, 10, TimeUnit.MILLISECONDS));
 
-            TestHelper.assertError(errors, 0, RejectedExecutionException.class);
-            TestHelper.assertError(errors, 1, RejectedExecutionException.class);
-            TestHelper.assertError(errors, 2, RejectedExecutionException.class);
+            TestHelper.assertUndeliverable(errors, 0, RejectedExecutionException.class);
+            TestHelper.assertUndeliverable(errors, 1, RejectedExecutionException.class);
+            TestHelper.assertUndeliverable(errors, 2, RejectedExecutionException.class);
         } finally {
             RxJavaPlugins.reset();
         }
@@ -370,9 +370,9 @@ public class ExecutorSchedulerTest extends AbstractSchedulerConcurrencyTests {
             s = Schedulers.from(exec).createWorker();
             assertSame(EmptyDisposable.INSTANCE, s.schedulePeriodically(Functions.EMPTY_RUNNABLE, 10, 10, TimeUnit.MILLISECONDS));
 
-            TestHelper.assertError(errors, 0, RejectedExecutionException.class);
-            TestHelper.assertError(errors, 1, RejectedExecutionException.class);
-            TestHelper.assertError(errors, 2, RejectedExecutionException.class);
+            TestHelper.assertUndeliverable(errors, 0, RejectedExecutionException.class);
+            TestHelper.assertUndeliverable(errors, 1, RejectedExecutionException.class);
+            TestHelper.assertUndeliverable(errors, 2, RejectedExecutionException.class);
         } finally {
             RxJavaPlugins.reset();
         }

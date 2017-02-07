@@ -261,7 +261,7 @@ public class FlowableReduceTest {
             .test()
             .assertFailureAndMessage(TestException.class, "Reducer");
 
-            TestHelper.assertError(errors, 0, TestException.class, "Source");
+            TestHelper.assertUndeliverable(errors, 0, TestException.class, "Source");
         } finally {
             RxJavaPlugins.reset();
         }

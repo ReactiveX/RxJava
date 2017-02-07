@@ -337,7 +337,7 @@ public class FlowableDistinctUntilChangedTest {
             .test()
             .assertFailure(TestException.class, 1);
 
-            TestHelper.assertError(errors, 0, IOException.class);
+            TestHelper.assertUndeliverable(errors, 0, IOException.class);
         } finally {
             RxJavaPlugins.reset();
         }

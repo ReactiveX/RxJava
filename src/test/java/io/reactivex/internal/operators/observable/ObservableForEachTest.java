@@ -131,7 +131,7 @@ public class ObservableForEachTest {
                 }
             });
 
-            TestHelper.assertError(errors, 0, CompositeException.class);
+            TestHelper.assertUndeliverable(errors, 0, CompositeException.class);
 
             List<Throwable> ce = TestHelper.compositeList(errors.get(0));
 
@@ -154,7 +154,7 @@ public class ObservableForEachTest {
                         }
                     });
 
-            TestHelper.assertError(errors, 0, TestException.class);
+            TestHelper.assertUndeliverable(errors, 0, TestException.class);
         } finally {
             RxJavaPlugins.reset();
         }

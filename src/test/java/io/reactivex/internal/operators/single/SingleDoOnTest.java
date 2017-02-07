@@ -147,7 +147,7 @@ public class SingleDoOnTest {
             .test()
             .assertFailureAndMessage(TestException.class, "Inner");
 
-            TestHelper.assertError(errors, 0, TestException.class, "Outer");
+            TestHelper.assertUndeliverable(errors, 0, TestException.class, "Outer");
         } finally {
             RxJavaPlugins.reset();
         }
@@ -292,7 +292,7 @@ public class SingleDoOnTest {
             .test()
             .cancel();
 
-            TestHelper.assertError(errors, 0, TestException.class);
+            TestHelper.assertUndeliverable(errors, 0, TestException.class);
         } finally {
             RxJavaPlugins.reset();
         }

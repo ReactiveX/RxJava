@@ -1032,7 +1032,7 @@ public class RxJavaPluginsTest {
             RxJavaPlugins.onError(new TestException("Forced failure"));
 
             assertEquals(1, list.size());
-            assertTestException(list, 0, "Forced failure");
+            assertUndeliverableTestException(list, 0, "Forced failure");
         } finally {
             RxJavaPlugins.reset();
         }
@@ -1087,7 +1087,7 @@ public class RxJavaPluginsTest {
             RxJavaPlugins.onError(new TestException("Forced failure 3"));
 
             assertEquals(1, list.size());
-            assertTestException(list, 0, "Forced failure");
+            assertUndeliverableTestException(list, 0, "Forced failure");
         } finally {
             RxJavaPlugins.reset();
             Thread.currentThread().setUncaughtExceptionHandler(null);
@@ -1119,7 +1119,7 @@ public class RxJavaPluginsTest {
 
             assertEquals(2, list.size());
             assertTestException(list, 0, "Forced failure 2");
-            assertTestException(list, 1, "Forced failure");
+            assertUndeliverableTestException(list, 1, "Forced failure");
 
             Thread.currentThread().setUncaughtExceptionHandler(null);
 
@@ -1525,6 +1525,11 @@ public class RxJavaPluginsTest {
     static void assertTestException(List<Throwable> list, int index, String message) {
         assertTrue(list.get(index).toString(), list.get(index) instanceof TestException);
         assertEquals(message, list.get(index).getMessage());
+    }
+
+    static void assertUndeliverableTestException(List<Throwable> list, int index, String message) {
+        assertTrue(list.get(index).toString(), list.get(index).getCause() instanceof TestException);
+        assertEquals(message, list.get(index).getCause().getMessage());
     }
 
     static void assertNPE(List<Throwable> list, int index) {

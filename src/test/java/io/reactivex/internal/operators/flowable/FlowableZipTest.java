@@ -1654,7 +1654,7 @@ public class FlowableZipTest {
 
             sub[0].onError(new TestException("Second"));
 
-            TestHelper.assertError(errors, 0, TestException.class, "Second");
+            TestHelper.assertUndeliverable(errors, 0, TestException.class, "Second");
         } finally {
             RxJavaPlugins.reset();
         }

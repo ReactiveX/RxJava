@@ -31,7 +31,7 @@ public class SingleEqualsTest {
             .test()
             .assertFailureAndMessage(TestException.class, "One");
 
-            TestHelper.assertError(errors, 0, TestException.class, "Two");
+            TestHelper.assertUndeliverable(errors, 0, TestException.class, "Two");
         } finally {
             RxJavaPlugins.reset();
         }

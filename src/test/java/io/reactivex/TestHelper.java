@@ -154,11 +154,46 @@ public enum TestHelper {
         }
     }
 
+    public static void assertUndeliverable(List<Throwable> list, int index, Class<? extends Throwable> clazz) {
+        Throwable ex = list.get(index);
+        if (!(ex instanceof UndeliverableException)) {
+            AssertionError err = new AssertionError("Outer exception UndeliverableException expected but got " + list.get(index));
+            err.initCause(list.get(index));
+            throw err;
+        }
+        ex = ex.getCause();
+        if (!clazz.isInstance(ex)) {
+            AssertionError err = new AssertionError("Inner exception " + clazz + " expected but got " + list.get(index));
+            err.initCause(list.get(index));
+            throw err;
+        }
+    }
+
     public static void assertError(List<Throwable> list, int index, Class<? extends Throwable> clazz, String message) {
         Throwable ex = list.get(index);
         if (!clazz.isInstance(ex)) {
             AssertionError err = new AssertionError("Type " + clazz + " expected but got " + ex);
             err.initCause(ex);
+            throw err;
+        }
+        if (!ObjectHelper.equals(message, ex.getMessage())) {
+            AssertionError err = new AssertionError("Message " + message + " expected but got " + ex.getMessage());
+            err.initCause(ex);
+            throw err;
+        }
+    }
+
+    public static void assertUndeliverable(List<Throwable> list, int index, Class<? extends Throwable> clazz, String message) {
+        Throwable ex = list.get(index);
+        if (!(ex instanceof UndeliverableException)) {
+            AssertionError err = new AssertionError("Outer exception UndeliverableException expected but got " + list.get(index));
+            err.initCause(list.get(index));
+            throw err;
+        }
+        ex = ex.getCause();
+        if (!clazz.isInstance(ex)) {
+            AssertionError err = new AssertionError("Inner exception " + clazz + " expected but got " + list.get(index));
+            err.initCause(list.get(index));
             throw err;
         }
         if (!ObjectHelper.equals(message, ex.getMessage())) {
@@ -386,6 +421,9 @@ public enum TestHelper {
      * @return the list of Throwables
      */
     public static List<Throwable> compositeList(Throwable ex) {
+        if (ex instanceof UndeliverableException) {
+            ex = ex.getCause();
+        }
         return ((CompositeException)ex).getExceptions();
     }
 
@@ -2428,7 +2466,7 @@ public enum TestHelper {
                 }
             }
 
-            assertError(errors, 0, TestException.class, "second");
+            assertUndeliverable(errors, 0, TestException.class, "second");
         } catch (AssertionError ex) {
             throw ex;
         } catch (Throwable ex) {
@@ -2587,7 +2625,7 @@ public enum TestHelper {
                 }
             }
 
-            assertError(errors, 0, TestException.class, "second");
+            assertUndeliverable(errors, 0, TestException.class, "second");
         } catch (AssertionError ex) {
             throw ex;
         } catch (Throwable ex) {

@@ -242,7 +242,7 @@ public class CompletableUsingTest {
             .test()
             .assertFailureAndMessage(TestException.class, "Main");
 
-            TestHelper.assertError(errors, 0, TestException.class, "Disposer");
+            TestHelper.assertUndeliverable(errors, 0, TestException.class, "Disposer");
         } finally {
             RxJavaPlugins.reset();
         }
@@ -299,7 +299,7 @@ public class CompletableUsingTest {
 
             to.cancel();
 
-            TestHelper.assertError(errors, 0, TestException.class);
+            TestHelper.assertUndeliverable(errors, 0, TestException.class);
         } finally {
             RxJavaPlugins.reset();
         }

@@ -212,7 +212,7 @@ public class ScheduledRunnableTest {
 
             assertEquals(0, set.size());
 
-            TestHelper.assertError(errors, 0, TestException.class, "First");
+            TestHelper.assertUndeliverable(errors, 0, TestException.class, "First");
         } finally {
             RxJavaPlugins.reset();
         }

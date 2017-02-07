@@ -170,8 +170,8 @@ public class FlowableDematerializeTest {
             .test()
             .assertResult();
 
-            TestHelper.assertError(errors, 0, TestException.class, "First");
-            TestHelper.assertError(errors, 1, TestException.class, "Second");
+            TestHelper.assertUndeliverable(errors, 0, TestException.class, "First");
+            TestHelper.assertUndeliverable(errors, 1, TestException.class, "Second");
         } finally {
             RxJavaPlugins.reset();
         }

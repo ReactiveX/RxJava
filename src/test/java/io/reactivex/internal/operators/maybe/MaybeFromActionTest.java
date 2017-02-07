@@ -151,7 +151,7 @@ public class MaybeFromActionTest {
                 Thread.sleep(100);
             }
 
-            TestHelper.assertError(errors, 0, InterruptedException.class);
+            TestHelper.assertUndeliverable(errors, 0, InterruptedException.class);
         } finally {
             RxJavaPlugins.reset();
         }

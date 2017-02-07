@@ -140,7 +140,7 @@ public class SingleSubscribeTest {
                 }
             });
 
-            TestHelper.assertError(list, 0, TestException.class);
+            TestHelper.assertUndeliverable(list, 0, TestException.class);
         } finally {
             RxJavaPlugins.reset();
         }
@@ -160,7 +160,7 @@ public class SingleSubscribeTest {
                 }
             });
 
-            TestHelper.assertError(list, 0, CompositeException.class);
+            TestHelper.assertUndeliverable(list, 0, CompositeException.class);
             List<Throwable> cel = TestHelper.compositeList(list.get(0));
             TestHelper.assertError(cel, 0, TestException.class, "Outer failure");
             TestHelper.assertError(cel, 1, TestException.class, "Inner failure");
@@ -181,7 +181,7 @@ public class SingleSubscribeTest {
                 }
             });
 
-            TestHelper.assertError(list, 0, TestException.class);
+            TestHelper.assertUndeliverable(list, 0, TestException.class);
         } finally {
             RxJavaPlugins.reset();
         }
@@ -200,7 +200,7 @@ public class SingleSubscribeTest {
                 }
             });
 
-            TestHelper.assertError(list, 0, CompositeException.class);
+            TestHelper.assertUndeliverable(list, 0, CompositeException.class);
             List<Throwable> cel = TestHelper.compositeList(list.get(0));
             TestHelper.assertError(cel, 0, TestException.class, "Outer failure");
             TestHelper.assertError(cel, 1, TestException.class, "Inner failure");

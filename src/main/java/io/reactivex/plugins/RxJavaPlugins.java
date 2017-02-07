@@ -25,6 +25,7 @@ import io.reactivex.SingleObserver;
 import io.reactivex.annotations.Experimental;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.annotations.Nullable;
+import io.reactivex.exceptions.*;
 import io.reactivex.flowables.ConnectableFlowable;
 import io.reactivex.functions.BiFunction;
 import io.reactivex.functions.BooleanSupplier;
@@ -360,6 +361,10 @@ public final class RxJavaPlugins {
 
         if (error == null) {
             error = new NullPointerException("onError called with null. Null values are generally not allowed in 2.x operators and sources.");
+        } else {
+            if (!isBug(error)) {
+                error = new UndeliverableException(error);
+            }
         }
 
         if (f != null) {
@@ -375,6 +380,42 @@ public final class RxJavaPlugins {
 
         error.printStackTrace(); // NOPMD
         uncaught(error);
+    }
+
+    /**
+     * Checks if the given error is one of the already named
+     * bug cases that should pass through {@link #onError(Throwable)}
+     * as is.
+     * @param error the error to check
+     * @return true if the error should pass throug, false if
+     * it may be wrapped into an UndeliverableException
+     */
+    static boolean isBug(Throwable error) {
+        // user forgot to add the onError handler in subscribe
+        if (error instanceof OnErrorNotImplementedException) {
+            return true;
+        }
+        // the sender didn't honor the request amount
+        // it's either due to an operator bug or concurrent onNext
+        if (error instanceof MissingBackpressureException) {
+            return true;
+        }
+        // general protocol violations
+        // it's either due to an operator bug or concurrent onNext
+        if (error instanceof IllegalStateException) {
+            return true;
+        }
+        // nulls are generally not allowed
+        // likely an operator bug or missing null-check
+        if (error instanceof NullPointerException) {
+            return true;
+        }
+        // bad arguments, likely invalid user input
+        if (error instanceof IllegalArgumentException) {
+            return true;
+        }
+        // everything else is probably due to lifecycle limits
+        return false;
     }
 
     static void uncaught(@NonNull Throwable error) {

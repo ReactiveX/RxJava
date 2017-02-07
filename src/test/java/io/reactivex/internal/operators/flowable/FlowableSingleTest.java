@@ -721,7 +721,7 @@ public class FlowableSingleTest {
                 }
             }).singleElement().test().assertComplete();
 
-            assertSame(exception, error.get());
+            assertSame(exception, error.get().getCause());
         } finally {
             RxJavaPlugins.reset();
         }

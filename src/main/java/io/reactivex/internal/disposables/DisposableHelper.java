@@ -16,6 +16,7 @@ package io.reactivex.internal.disposables;
 import java.util.concurrent.atomic.AtomicReference;
 
 import io.reactivex.disposables.Disposable;
+import io.reactivex.exceptions.ProtocolViolationException;
 import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.plugins.RxJavaPlugins;
 
@@ -152,7 +153,7 @@ public enum DisposableHelper implements Disposable {
      * Reports that the disposable is already set to the RxJavaPlugins error handler.
      */
     public static void reportDisposableSet() {
-        RxJavaPlugins.onError(new IllegalStateException("Disposable already set!"));
+        RxJavaPlugins.onError(new ProtocolViolationException("Disposable already set!"));
     }
 
     /**

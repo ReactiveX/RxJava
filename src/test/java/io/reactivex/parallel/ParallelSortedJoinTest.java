@@ -92,7 +92,7 @@ public class ParallelSortedJoinTest {
             .test()
             .assertFailure(IOException.class);
 
-            TestHelper.assertError(errors, 0, TestException.class);
+            TestHelper.assertUndeliverable(errors, 0, TestException.class);
         } finally {
             RxJavaPlugins.reset();
         }

@@ -68,7 +68,7 @@ public class MaybePeekTest {
             })
             .test();
 
-            TestHelper.assertError(errors, 0, TestException.class, "Second");
+            TestHelper.assertUndeliverable(errors, 0, TestException.class, "Second");
 
             assertTrue("" + err, err[0] instanceof TestException);
             assertEquals("First", err[0].getMessage());
@@ -139,7 +139,7 @@ public class MaybePeekTest {
             .test()
             .assertResult(1);
 
-            TestHelper.assertError(errors, 0, TestException.class);
+            TestHelper.assertUndeliverable(errors, 0, TestException.class);
         } finally {
             RxJavaPlugins.reset();
         }
