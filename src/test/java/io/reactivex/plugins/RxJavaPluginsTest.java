@@ -1170,7 +1170,7 @@ public class RxJavaPluginsTest {
     }
 
     /**
-     * Ensure set*() accepts a consumers/functions with wider bounds
+     * Ensure set*() accepts a consumers/functions with wider bounds.
      * @throws Exception on error
      */
     @Test

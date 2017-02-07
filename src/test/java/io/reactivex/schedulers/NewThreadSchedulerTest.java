@@ -117,7 +117,7 @@ public class NewThreadSchedulerTest extends AbstractSchedulerConcurrencyTests {
     }
 
     /**
-     * Regression test to ensure there is no NPE when the worker has been disposed
+     * Regression test to ensure there is no NPE when the worker has been disposed.
      * @throws Exception on error
      */
     @Test
