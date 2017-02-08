@@ -140,7 +140,7 @@ public class LambdaSubscriberTest {
 
             assertTrue(o.isDisposed());
 
-            TestHelper.assertUndeliverable(errors, 0, CompositeException.class);
+            TestHelper.assertError(errors, 0, CompositeException.class);
             List<Throwable> ce = TestHelper.compositeList(errors.get(0));
             TestHelper.assertError(ce, 0, TestException.class, "Outer");
             TestHelper.assertError(ce, 1, TestException.class, "Inner");

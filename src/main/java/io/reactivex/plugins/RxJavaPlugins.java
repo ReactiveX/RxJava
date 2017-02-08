@@ -414,6 +414,10 @@ public final class RxJavaPlugins {
         if (error instanceof IllegalArgumentException) {
             return true;
         }
+        // Crash while handling an exception
+        if (error instanceof CompositeException) {
+            return true;
+        }
         // everything else is probably due to lifecycle limits
         return false;
     }

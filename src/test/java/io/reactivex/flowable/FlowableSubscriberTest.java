@@ -688,7 +688,7 @@ public class FlowableSubscriberTest {
 
             s.onError(new TestException("Outer"));
 
-            TestHelper.assertUndeliverable(list, 0, CompositeException.class);
+            TestHelper.assertError(list, 0, CompositeException.class);
             List<Throwable> cel = TestHelper.compositeList(list.get(0));
             TestHelper.assertError(cel, 0, TestException.class, "Outer");
             TestHelper.assertError(cel, 1, TestException.class, "Inner");

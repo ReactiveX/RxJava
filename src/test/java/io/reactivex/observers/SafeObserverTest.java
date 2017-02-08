@@ -689,7 +689,7 @@ public class SafeObserverTest {
 
             so.onNext(1);
 
-            TestHelper.assertUndeliverable(list, 0, CompositeException.class);
+            TestHelper.assertError(list, 0, CompositeException.class);
             List<Throwable> ce = TestHelper.compositeList(list.get(0));
             TestHelper.assertError(ce, 0, TestException.class, "onNext(1)");
             TestHelper.assertError(ce, 1, TestException.class, "onError(io.reactivex.exceptions.TestException: onNext(1))");
@@ -751,7 +751,7 @@ public class SafeObserverTest {
             SafeObserver<Object> so = cd.toSafe();
             so.onSubscribe(cd);
 
-            TestHelper.assertUndeliverable(list, 0, CompositeException.class);
+            TestHelper.assertError(list, 0, CompositeException.class);
             List<Throwable> ce = TestHelper.compositeList(list.get(0));
             TestHelper.assertError(ce, 0, TestException.class, "onSubscribe()");
             TestHelper.assertError(ce, 1, TestException.class, "dispose()");
@@ -770,7 +770,7 @@ public class SafeObserverTest {
 
             so.onNext(1);
 
-            TestHelper.assertUndeliverable(list, 0, CompositeException.class);
+            TestHelper.assertError(list, 0, CompositeException.class);
             List<Throwable> ce = TestHelper.compositeList(list.get(0));
             TestHelper.assertError(ce, 0, NullPointerException.class, "Subscription not set!");
             TestHelper.assertError(ce, 1, TestException.class, "onSubscribe()");
@@ -801,7 +801,7 @@ public class SafeObserverTest {
 
             so.onNext(1);
 
-            TestHelper.assertUndeliverable(list, 0, CompositeException.class);
+            TestHelper.assertError(list, 0, CompositeException.class);
             List<Throwable> ce = TestHelper.compositeList(list.get(0));
             TestHelper.assertError(ce, 0, NullPointerException.class, "Subscription not set!");
             TestHelper.assertError(ce, 1, TestException.class, "onError(java.lang.NullPointerException: Subscription not set!)");
@@ -831,7 +831,7 @@ public class SafeObserverTest {
 
             so.onError(new TestException());
 
-            TestHelper.assertUndeliverable(list, 0, CompositeException.class);
+            TestHelper.assertError(list, 0, CompositeException.class);
             List<Throwable> ce = TestHelper.compositeList(list.get(0));
             TestHelper.assertError(ce, 0, TestException.class);
             TestHelper.assertError(ce, 1, NullPointerException.class, "Subscription not set!");
@@ -850,7 +850,7 @@ public class SafeObserverTest {
 
             so.onError(new TestException());
 
-            TestHelper.assertUndeliverable(list, 0, CompositeException.class);
+            TestHelper.assertError(list, 0, CompositeException.class);
             List<Throwable> ce = TestHelper.compositeList(list.get(0));
             TestHelper.assertError(ce, 0, TestException.class);
             TestHelper.assertError(ce, 1, NullPointerException.class, "Subscription not set!");
@@ -888,7 +888,7 @@ public class SafeObserverTest {
 
             so.onComplete();
 
-            TestHelper.assertUndeliverable(list, 0, CompositeException.class);
+            TestHelper.assertError(list, 0, CompositeException.class);
             List<Throwable> ce = TestHelper.compositeList(list.get(0));
             TestHelper.assertError(ce, 0, NullPointerException.class, "Subscription not set!");
             TestHelper.assertError(ce, 1, TestException.class, "onSubscribe()");
@@ -907,7 +907,7 @@ public class SafeObserverTest {
 
             so.onComplete();
 
-            TestHelper.assertUndeliverable(list, 0, CompositeException.class);
+            TestHelper.assertError(list, 0, CompositeException.class);
             List<Throwable> ce = TestHelper.compositeList(list.get(0));
             TestHelper.assertError(ce, 0, NullPointerException.class, "Subscription not set!");
             TestHelper.assertError(ce, 1, TestException.class);

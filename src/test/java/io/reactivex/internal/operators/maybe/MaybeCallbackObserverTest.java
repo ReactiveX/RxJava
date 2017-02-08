@@ -87,7 +87,7 @@ public class MaybeCallbackObserverTest {
 
             mo.onError(new TestException("Outer"));
 
-            TestHelper.assertUndeliverable(errors, 0, CompositeException.class);
+            TestHelper.assertError(errors, 0, CompositeException.class);
 
             List<Throwable> ce = TestHelper.compositeList(errors.get(0));
 

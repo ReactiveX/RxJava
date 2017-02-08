@@ -18,7 +18,7 @@ package io.reactivex.plugins;
 
 import static org.junit.Assert.*;
 
-import java.io.IOException;
+import java.io.*;
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.lang.reflect.*;
 import java.util.*;
@@ -33,7 +33,7 @@ import io.reactivex.Observable;
 import io.reactivex.Observer;
 import io.reactivex.Scheduler.Worker;
 import io.reactivex.disposables.*;
-import io.reactivex.exceptions.TestException;
+import io.reactivex.exceptions.*;
 import io.reactivex.flowables.ConnectableFlowable;
 import io.reactivex.functions.*;
 import io.reactivex.internal.functions.Functions;
@@ -2237,5 +2237,22 @@ public class RxJavaPluginsTest {
         .sequential()
         .test()
         .assertResult(1);
+    }
+
+    @Test
+    public void isBug() {
+        assertFalse(RxJavaPlugins.isBug(new RuntimeException()));
+        assertFalse(RxJavaPlugins.isBug(new IOException()));
+        assertFalse(RxJavaPlugins.isBug(new InterruptedException()));
+        assertFalse(RxJavaPlugins.isBug(new InterruptedIOException()));
+
+        assertTrue(RxJavaPlugins.isBug(new NullPointerException()));
+        assertTrue(RxJavaPlugins.isBug(new IllegalArgumentException()));
+        assertTrue(RxJavaPlugins.isBug(new IllegalStateException()));
+        assertTrue(RxJavaPlugins.isBug(new MissingBackpressureException()));
+        assertTrue(RxJavaPlugins.isBug(new ProtocolViolationException("")));
+        assertTrue(RxJavaPlugins.isBug(new UndeliverableException(new TestException())));
+        assertTrue(RxJavaPlugins.isBug(new CompositeException(new TestException())));
+        assertTrue(RxJavaPlugins.isBug(new OnErrorNotImplementedException(new TestException())));
     }
 }
