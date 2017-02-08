@@ -17,6 +17,7 @@ import java.util.concurrent.atomic.*;
 
 import org.reactivestreams.Subscription;
 
+import io.reactivex.exceptions.ProtocolViolationException;
 import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.internal.util.BackpressureHelper;
 import io.reactivex.plugins.RxJavaPlugins;
@@ -67,7 +68,7 @@ public enum SubscriptionHelper implements Subscription {
      * which is an indication of a onSubscribe management bug.
      */
     public static void reportSubscriptionSet() {
-        RxJavaPlugins.onError(new IllegalStateException("Subscription already set!"));
+        RxJavaPlugins.onError(new ProtocolViolationException("Subscription already set!"));
     }
 
     /**
@@ -89,7 +90,7 @@ public enum SubscriptionHelper implements Subscription {
      * @param n the overproduction amount
      */
     public static void reportMoreProduced(long n) {
-        RxJavaPlugins.onError(new IllegalStateException("More produced than requested: " + n));
+        RxJavaPlugins.onError(new ProtocolViolationException("More produced than requested: " + n));
     }
     /**
      * Check if the given subscription is the common cancelled subscription.

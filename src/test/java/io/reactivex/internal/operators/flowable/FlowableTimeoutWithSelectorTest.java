@@ -447,7 +447,7 @@ public class FlowableTimeoutWithSelectorTest {
 
             to.assertFailureAndMessage(TestException.class, "First", 1);
 
-            TestHelper.assertError(errors, 0, TestException.class, "Second");
+            TestHelper.assertUndeliverable(errors, 0, TestException.class, "Second");
         } finally {
             RxJavaPlugins.reset();
         }
@@ -476,7 +476,7 @@ public class FlowableTimeoutWithSelectorTest {
 
             to.assertFailureAndMessage(TestException.class, "First", 1);
 
-            TestHelper.assertError(errors, 0, TestException.class, "Second");
+            TestHelper.assertUndeliverable(errors, 0, TestException.class, "Second");
         } finally {
             RxJavaPlugins.reset();
         }

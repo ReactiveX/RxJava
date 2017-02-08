@@ -66,7 +66,7 @@ public class ParallelFilterTest {
 
             assertFalse(errors.isEmpty());
             for (Throwable ex : errors) {
-                assertTrue(ex.toString(), ex instanceof TestException);
+                assertTrue(ex.toString(), ex.getCause() instanceof TestException);
             }
         } finally {
             RxJavaPlugins.reset();
@@ -86,7 +86,7 @@ public class ParallelFilterTest {
 
             assertFalse(errors.isEmpty());
             for (Throwable ex : errors) {
-                assertTrue(ex.toString(), ex instanceof TestException);
+                assertTrue(ex.toString(), ex.getCause() instanceof TestException);
             }
         } finally {
             RxJavaPlugins.reset();

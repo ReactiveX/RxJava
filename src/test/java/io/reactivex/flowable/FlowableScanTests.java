@@ -13,7 +13,7 @@
 
 package io.reactivex.flowable;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 import java.util.*;
 import java.util.concurrent.*;
@@ -21,7 +21,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Test;
 
-import io.reactivex.Flowable;
+import io.reactivex.*;
+import io.reactivex.exceptions.UndeliverableException;
 import io.reactivex.flowable.FlowableEventStream.Event;
 import io.reactivex.functions.*;
 import io.reactivex.plugins.RxJavaPlugins;
@@ -65,7 +66,10 @@ public class FlowableScanTests {
               .test()
               .assertNoValues()
               .assertError(e);
-            assertEquals(Arrays.asList(e2), list);
+
+            assertEquals("" + list, 1, list.size());
+            assertTrue("" + list, list.get(0) instanceof UndeliverableException);
+            assertEquals(e2, list.get(0).getCause());
         } finally {
             RxJavaPlugins.reset();
         }
@@ -142,7 +146,10 @@ public class FlowableScanTests {
               .test()
               .assertValue(1)
               .assertError(e);
-            assertEquals(Arrays.asList(e2), list);
+
+            assertEquals("" + list, 1, list.size());
+            assertTrue("" + list, list.get(0) instanceof UndeliverableException);
+            assertEquals(e2, list.get(0).getCause());
         } finally {
             RxJavaPlugins.reset();
         }

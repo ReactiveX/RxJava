@@ -121,7 +121,7 @@ public class SingleUsingTest {
             .test()
             .assertFailureAndMessage(TestException.class, "Mapper");
 
-            TestHelper.assertError(errors, 0, TestException.class, "Disposer");
+            TestHelper.assertUndeliverable(errors, 0, TestException.class, "Disposer");
         } finally {
             RxJavaPlugins.reset();
         }
@@ -175,7 +175,7 @@ public class SingleUsingTest {
             Single.using(Functions.justCallable(Disposables.empty()), mapper, disposerThrows, false)
             .test()
             .assertResult(1);
-            TestHelper.assertError(errors, 0, TestException.class, "Disposer");
+            TestHelper.assertUndeliverable(errors, 0, TestException.class, "Disposer");
         } finally {
             RxJavaPlugins.reset();
         }
@@ -212,7 +212,7 @@ public class SingleUsingTest {
             }, disposerThrows, false)
             .test()
             .assertFailure(TestException.class);
-            TestHelper.assertError(errors, 0, TestException.class, "Disposer");
+            TestHelper.assertUndeliverable(errors, 0, TestException.class, "Disposer");
         } finally {
             RxJavaPlugins.reset();
         }

@@ -221,7 +221,7 @@ public class BlockingObservableLatestTest {
         try {
             ((Observer<Object>)it).onError(new TestException());
 
-            TestHelper.assertError(errors, 0, TestException.class);
+            TestHelper.assertUndeliverable(errors, 0, TestException.class);
         } finally {
             RxJavaPlugins.reset();
         }

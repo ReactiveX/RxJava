@@ -202,7 +202,7 @@ public class SingleAmbTest {
                 TestHelper.race(r1, r2, Schedulers.single());
 
                 if (!errors.isEmpty()) {
-                    TestHelper.assertError(errors, 0, TestException.class);
+                    TestHelper.assertUndeliverable(errors, 0, TestException.class);
                 }
             } finally {
                 RxJavaPlugins.reset();
@@ -243,7 +243,7 @@ public class SingleAmbTest {
                 TestHelper.race(r1, r2, Schedulers.single());
 
                 if (!errors.isEmpty()) {
-                    TestHelper.assertError(errors, 0, TestException.class);
+                    TestHelper.assertUndeliverable(errors, 0, TestException.class);
                 }
             } finally {
                 RxJavaPlugins.reset();

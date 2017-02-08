@@ -73,7 +73,7 @@ public class ObserverFullArbiterTest {
         try {
             fa.onError(new TestException(), bs);
 
-            TestHelper.assertError(errors, 0, TestException.class);
+            TestHelper.assertUndeliverable(errors, 0, TestException.class);
         } finally {
             RxJavaPlugins.reset();
         }
@@ -90,7 +90,7 @@ public class ObserverFullArbiterTest {
             fa.dispose();
 
             fa.drain();
-            TestHelper.assertError(errors, 0, TestException.class);
+            TestHelper.assertUndeliverable(errors, 0, TestException.class);
         } finally {
             RxJavaPlugins.reset();
         }

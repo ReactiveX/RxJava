@@ -18,7 +18,7 @@ package io.reactivex.plugins;
 
 import static org.junit.Assert.*;
 
-import java.io.IOException;
+import java.io.*;
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.lang.reflect.*;
 import java.util.*;
@@ -33,7 +33,7 @@ import io.reactivex.Observable;
 import io.reactivex.Observer;
 import io.reactivex.Scheduler.Worker;
 import io.reactivex.disposables.*;
-import io.reactivex.exceptions.TestException;
+import io.reactivex.exceptions.*;
 import io.reactivex.flowables.ConnectableFlowable;
 import io.reactivex.functions.*;
 import io.reactivex.internal.functions.Functions;
@@ -1032,7 +1032,7 @@ public class RxJavaPluginsTest {
             RxJavaPlugins.onError(new TestException("Forced failure"));
 
             assertEquals(1, list.size());
-            assertTestException(list, 0, "Forced failure");
+            assertUndeliverableTestException(list, 0, "Forced failure");
         } finally {
             RxJavaPlugins.reset();
         }
@@ -1087,7 +1087,7 @@ public class RxJavaPluginsTest {
             RxJavaPlugins.onError(new TestException("Forced failure 3"));
 
             assertEquals(1, list.size());
-            assertTestException(list, 0, "Forced failure");
+            assertUndeliverableTestException(list, 0, "Forced failure");
         } finally {
             RxJavaPlugins.reset();
             Thread.currentThread().setUncaughtExceptionHandler(null);
@@ -1119,7 +1119,7 @@ public class RxJavaPluginsTest {
 
             assertEquals(2, list.size());
             assertTestException(list, 0, "Forced failure 2");
-            assertTestException(list, 1, "Forced failure");
+            assertUndeliverableTestException(list, 1, "Forced failure");
 
             Thread.currentThread().setUncaughtExceptionHandler(null);
 
@@ -1525,6 +1525,11 @@ public class RxJavaPluginsTest {
     static void assertTestException(List<Throwable> list, int index, String message) {
         assertTrue(list.get(index).toString(), list.get(index) instanceof TestException);
         assertEquals(message, list.get(index).getMessage());
+    }
+
+    static void assertUndeliverableTestException(List<Throwable> list, int index, String message) {
+        assertTrue(list.get(index).toString(), list.get(index).getCause() instanceof TestException);
+        assertEquals(message, list.get(index).getCause().getMessage());
     }
 
     static void assertNPE(List<Throwable> list, int index) {
@@ -2232,5 +2237,22 @@ public class RxJavaPluginsTest {
         .sequential()
         .test()
         .assertResult(1);
+    }
+
+    @Test
+    public void isBug() {
+        assertFalse(RxJavaPlugins.isBug(new RuntimeException()));
+        assertFalse(RxJavaPlugins.isBug(new IOException()));
+        assertFalse(RxJavaPlugins.isBug(new InterruptedException()));
+        assertFalse(RxJavaPlugins.isBug(new InterruptedIOException()));
+
+        assertTrue(RxJavaPlugins.isBug(new NullPointerException()));
+        assertTrue(RxJavaPlugins.isBug(new IllegalArgumentException()));
+        assertTrue(RxJavaPlugins.isBug(new IllegalStateException()));
+        assertTrue(RxJavaPlugins.isBug(new MissingBackpressureException()));
+        assertTrue(RxJavaPlugins.isBug(new ProtocolViolationException("")));
+        assertTrue(RxJavaPlugins.isBug(new UndeliverableException(new TestException())));
+        assertTrue(RxJavaPlugins.isBug(new CompositeException(new TestException())));
+        assertTrue(RxJavaPlugins.isBug(new OnErrorNotImplementedException(new TestException())));
     }
 }

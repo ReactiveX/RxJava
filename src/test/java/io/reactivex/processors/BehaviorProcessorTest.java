@@ -614,7 +614,7 @@ public class BehaviorProcessorTest extends DelayedFlowableProcessorTest<Object> 
         try {
             p.onError(new TestException());
 
-            TestHelper.assertError(errors, 0, TestException.class);
+            TestHelper.assertUndeliverable(errors, 0, TestException.class);
         } finally {
             RxJavaPlugins.reset();
         }

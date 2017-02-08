@@ -234,7 +234,7 @@ public class SchedulerTest {
             Thread.sleep(250);
 
             assertEquals(1, list.size());
-            TestHelper.assertError(list, 0, TestException.class, null);
+            TestHelper.assertUndeliverable(list, 0, TestException.class, null);
 
         } finally {
             RxJavaPlugins.reset();

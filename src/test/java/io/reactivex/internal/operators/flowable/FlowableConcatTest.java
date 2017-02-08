@@ -1413,7 +1413,7 @@ public class FlowableConcatTest {
         try {
             ts0[0].onError(new TestException("Second"));
 
-            TestHelper.assertError(errors, 0, TestException.class);
+            TestHelper.assertUndeliverable(errors, 0, TestException.class);
         } finally {
             RxJavaPlugins.reset();
         }
@@ -1439,7 +1439,7 @@ public class FlowableConcatTest {
         try {
             ts0[0].onError(new TestException("Second"));
 
-            TestHelper.assertError(errors, 0, TestException.class);
+            TestHelper.assertUndeliverable(errors, 0, TestException.class);
         } finally {
             RxJavaPlugins.reset();
         }

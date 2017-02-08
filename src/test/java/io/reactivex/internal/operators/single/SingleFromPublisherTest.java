@@ -101,7 +101,7 @@ public class SingleFromPublisherTest {
             .assertResult(1);
 
             TestHelper.assertError(errors, 0, IllegalStateException.class, "Subscription already set!");
-            TestHelper.assertError(errors, 1, TestException.class);
+            TestHelper.assertUndeliverable(errors, 1, TestException.class);
         } finally {
             RxJavaPlugins.reset();
         }

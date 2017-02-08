@@ -95,7 +95,9 @@ public final class ObservableCollectTest {
                     .test() //
                     .assertError(e1) //
                     .assertNotComplete();
-            assertEquals(Arrays.asList(e2), list);
+
+            assertEquals(1, list.size());
+            assertEquals(e2, list.get(0).getCause());
         } finally {
             RxJavaPlugins.reset();
         }
@@ -218,7 +220,9 @@ public final class ObservableCollectTest {
                     .test() //
                     .assertError(e1) //
                     .assertNotComplete();
-            assertEquals(Arrays.asList(e2), list);
+
+            assertEquals(1, list.size());
+            assertEquals(e2, list.get(0).getCause());
         } finally {
             RxJavaPlugins.reset();
         }

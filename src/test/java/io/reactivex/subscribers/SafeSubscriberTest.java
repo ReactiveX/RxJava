@@ -871,7 +871,7 @@ public class SafeSubscriberTest {
             SafeSubscriber<Object> so = cd.toSafe();
             so.onSubscribe(cd);
 
-            TestHelper.assertError(list, 0, TestException.class, "onSubscribe()");
+            TestHelper.assertUndeliverable(list, 0, TestException.class, "onSubscribe()");
         } finally {
             RxJavaPlugins.reset();
         }
@@ -1007,7 +1007,7 @@ public class SafeSubscriberTest {
 
             so.onComplete();
 
-            TestHelper.assertError(list, 0, TestException.class, "onComplete()");
+            TestHelper.assertUndeliverable(list, 0, TestException.class, "onComplete()");
         } finally {
             RxJavaPlugins.reset();
         }
@@ -1062,7 +1062,7 @@ public class SafeSubscriberTest {
 
             so.request(1);
 
-            TestHelper.assertError(list, 0, TestException.class);
+            TestHelper.assertUndeliverable(list, 0, TestException.class);
         } finally {
             RxJavaPlugins.reset();
         }
@@ -1079,7 +1079,7 @@ public class SafeSubscriberTest {
 
             so.cancel();
 
-            TestHelper.assertError(list, 0, TestException.class);
+            TestHelper.assertUndeliverable(list, 0, TestException.class);
         } finally {
             RxJavaPlugins.reset();
         }

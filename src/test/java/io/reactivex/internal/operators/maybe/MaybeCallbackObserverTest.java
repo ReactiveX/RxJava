@@ -63,7 +63,7 @@ public class MaybeCallbackObserverTest {
 
             mo.onSuccess(1);
 
-            TestHelper.assertError(errors, 0, TestException.class);
+            TestHelper.assertUndeliverable(errors, 0, TestException.class);
         } finally {
             RxJavaPlugins.reset();
         }
@@ -116,7 +116,7 @@ public class MaybeCallbackObserverTest {
 
             mo.onComplete();
 
-            TestHelper.assertError(errors, 0, TestException.class);
+            TestHelper.assertUndeliverable(errors, 0, TestException.class);
         } finally {
             RxJavaPlugins.reset();
         }

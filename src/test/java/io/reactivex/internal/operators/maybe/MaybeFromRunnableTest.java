@@ -153,9 +153,9 @@ public class MaybeFromRunnableTest {
                 Thread.sleep(100);
             }
 
-            TestHelper.assertError(errors, 0, RuntimeException.class);
+            TestHelper.assertUndeliverable(errors, 0, RuntimeException.class);
 
-            assertTrue(errors.get(0).toString(), errors.get(0).getCause() instanceof InterruptedException);
+            assertTrue(errors.get(0).toString(), errors.get(0).getCause().getCause() instanceof InterruptedException);
         } finally {
             RxJavaPlugins.reset();
         }

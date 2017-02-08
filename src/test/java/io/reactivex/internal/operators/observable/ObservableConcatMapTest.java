@@ -164,7 +164,7 @@ public class ObservableConcatMapTest {
             .test()
             .assertResult(1, 2);
 
-            TestHelper.assertError(errors, 0, TestException.class);
+            TestHelper.assertUndeliverable(errors, 0, TestException.class);
         } finally {
             RxJavaPlugins.reset();
         }
@@ -195,7 +195,7 @@ public class ObservableConcatMapTest {
             .test()
             .assertResult(1, 2);
 
-            TestHelper.assertError(errors, 0, TestException.class);
+            TestHelper.assertUndeliverable(errors, 0, TestException.class);
         } finally {
             RxJavaPlugins.reset();
         }
@@ -362,7 +362,7 @@ public class ObservableConcatMapTest {
 
             o[0].onError(new TestException());
 
-            TestHelper.assertError(errors, 0, TestException.class);
+            TestHelper.assertUndeliverable(errors, 0, TestException.class);
         } finally {
             RxJavaPlugins.reset();
         }

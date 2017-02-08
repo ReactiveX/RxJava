@@ -72,7 +72,7 @@ public class CancellableDisposableTest {
             cd.dispose();
             cd.dispose();
 
-            TestHelper.assertError(list, 0, TestException.class);
+            TestHelper.assertUndeliverable(list, 0, TestException.class);
         } finally {
             RxJavaPlugins.reset();
         }

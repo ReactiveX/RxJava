@@ -722,7 +722,7 @@ public class FlowableSubscriberTest {
 
             s.onComplete();
 
-            TestHelper.assertError(list, 0, TestException.class, "Inner");
+            TestHelper.assertUndeliverable(list, 0, TestException.class, "Inner");
         } finally {
             RxJavaPlugins.reset();
         }
