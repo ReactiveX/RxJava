@@ -24,7 +24,7 @@ import org.junit.*;
 import io.reactivex.*;
 import io.reactivex.Observable;
 import io.reactivex.Observer;
-import io.reactivex.disposables.Disposables;
+import io.reactivex.disposables.*;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.internal.operators.observable.BlockingObservableNext.NextObserver;
 import io.reactivex.plugins.RxJavaPlugins;
@@ -234,67 +234,81 @@ public class BlockingObservableNextTest {
      */
     @Test
     public void testNoBufferingOrBlockingOfSequence() throws Throwable {
-        final CountDownLatch finished = new CountDownLatch(1);
-        final int COUNT = 30;
-        final CountDownLatch timeHasPassed = new CountDownLatch(COUNT);
-        final AtomicBoolean running = new AtomicBoolean(true);
-        final AtomicInteger count = new AtomicInteger(0);
-        final Observable<Integer> obs = Observable.unsafeCreate(new ObservableSource<Integer>() {
-
-            @Override
-            public void subscribe(final Observer<? super Integer> o) {
-                o.onSubscribe(Disposables.empty());
-                new Thread(new Runnable() {
+        int repeat = 0;
+        for (;;) {
+            final SerialDisposable task = new SerialDisposable();
+            try {
+                final CountDownLatch finished = new CountDownLatch(1);
+                final int COUNT = 30;
+                final CountDownLatch timeHasPassed = new CountDownLatch(COUNT);
+                final AtomicBoolean running = new AtomicBoolean(true);
+                final AtomicInteger count = new AtomicInteger(0);
+                final Observable<Integer> obs = Observable.unsafeCreate(new ObservableSource<Integer>() {
 
                     @Override
-                    public void run() {
-                        try {
-                            while (running.get()) {
-                                o.onNext(count.incrementAndGet());
-                                timeHasPassed.countDown();
+                    public void subscribe(final Observer<? super Integer> o) {
+                        o.onSubscribe(Disposables.empty());
+                        task.replace(Schedulers.single().scheduleDirect(new Runnable() {
+
+                            @Override
+                            public void run() {
+                                try {
+                                    while (running.get() && !task.isDisposed()) {
+                                        o.onNext(count.incrementAndGet());
+                                        timeHasPassed.countDown();
+                                    }
+                                    o.onComplete();
+                                } catch (Throwable e) {
+                                    o.onError(e);
+                                } finally {
+                                    finished.countDown();
+                                }
                             }
-                            o.onComplete();
-                        } catch (Throwable e) {
-                            o.onError(e);
-                        } finally {
-                            finished.countDown();
-                        }
+                        }));
                     }
-                }).start();
+
+                });
+
+                Iterator<Integer> it = next(obs).iterator();
+
+                assertTrue(it.hasNext());
+                int a = it.next();
+                assertTrue(it.hasNext());
+                int b = it.next();
+                // we should have a different value
+                assertTrue("a and b should be different", a != b);
+
+                // wait for some time (if times out we are blocked somewhere so fail ... set very high for very slow, constrained machines)
+                timeHasPassed.await(8000, TimeUnit.MILLISECONDS);
+
+                assertTrue(it.hasNext());
+                int c = it.next();
+
+                assertTrue("c should not just be the next in sequence", c != (b + 1));
+                assertTrue("expected that c [" + c + "] is higher than or equal to " + COUNT, c >= COUNT);
+
+                assertTrue(it.hasNext());
+                int d = it.next();
+                assertTrue(d > c);
+
+                // shut down the thread
+                running.set(false);
+
+                finished.await();
+
+                assertFalse(it.hasNext());
+
+                System.out.println("a: " + a + " b: " + b + " c: " + c);
+                break;
+            } catch (AssertionError ex) {
+                if (++repeat == 3) {
+                    throw ex;
+                }
+                Thread.sleep((int)(1000 * Math.pow(2, repeat - 1)));
+            } finally {
+                task.dispose();
             }
-
-        });
-
-        Iterator<Integer> it = next(obs).iterator();
-
-        assertTrue(it.hasNext());
-        int a = it.next();
-        assertTrue(it.hasNext());
-        int b = it.next();
-        // we should have a different value
-        assertTrue("a and b should be different", a != b);
-
-        // wait for some time (if times out we are blocked somewhere so fail ... set very high for very slow, constrained machines)
-        timeHasPassed.await(8000, TimeUnit.MILLISECONDS);
-
-        assertTrue(it.hasNext());
-        int c = it.next();
-
-        assertTrue("c should not just be the next in sequence", c != (b + 1));
-        assertTrue("expected that c [" + c + "] is higher than or equal to " + COUNT, c >= COUNT);
-
-        assertTrue(it.hasNext());
-        int d = it.next();
-        assertTrue(d > c);
-
-        // shut down the thread
-        running.set(false);
-
-        finished.await();
-
-        assertFalse(it.hasNext());
-
-        System.out.println("a: " + a + " b: " + b + " c: " + c);
+        }
     }
 
     @Test /* (timeout = 8000) */
