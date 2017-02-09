@@ -31,7 +31,7 @@ import io.reactivex.plugins.RxJavaPlugins;
  * Processor that emits the most recent item it has observed and all subsequent observed items to each subscribed
  * {@link Subscriber}.
  * <p>
- * <img width="640" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/S.BehaviorProcessor.png" alt="">
+ * <img width="640" height="460" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/S.BehaviorProcessor.png" alt="">
  * <p>
  * Example usage:
  * <p>

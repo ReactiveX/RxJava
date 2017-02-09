@@ -47,7 +47,7 @@ import io.reactivex.schedulers.*;
  * <p>
  * The documentation for this class makes use of marble diagrams. The following legend explains these diagrams:
  * <p>
- * <img width="640" height="301" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/legend.png" alt="">
+ * <img width="640" height="317" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/legend.png" alt="">
  * <p>
  * For more information see the <a href="http://reactivex.io/documentation/ObservableSource.html">ReactiveX
  * documentation</a>.
@@ -1559,7 +1559,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * Returns an Observable that, when an observer subscribes to it, invokes a function you specify and then
      * emits the value returned from that function.
      * <p>
-     * <img width="640" height="195" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/fromCallable.png" alt="">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/fromCallable.png" alt="">
      * <p>
      * This allows you to defer the execution of the function you specify until an observer subscribes to the
      * ObservableSource. That is to say, it makes the function "lazy."
@@ -9088,7 +9088,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * emitted by a {@link ConnectableObservable} that shares a single subscription to the source ObservableSource,
      * replaying no more than {@code bufferSize} items that were emitted within a specified time window.
      * <p>
-     * <img width="640" height="445" height="440" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/replay.fnts.png" alt="">
+     * <img width="640" height="445" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/replay.fnts.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>You specify which {@link Scheduler} this operator will use</dd>
@@ -9698,7 +9698,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * Returns an Observable that emits the most recently emitted item (if any) emitted by the source ObservableSource
      * within periodic time intervals and optionally emit the very last upstream item when the upstream completes.
      * <p>
-     * <img width="408" height="177" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/sample.emitlast.png" alt="">
+     * <img width="640" height="276" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/sample.emitlast.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code sample} operates by default on the {@code computation} {@link Scheduler}.</dd>
@@ -9759,7 +9759,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * within periodic time intervals, where the intervals are defined on a particular Scheduler
      *  and optionally emit the very last upstream item when the upstream completes.
      * <p>
-     * <img width="408" height="177" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/sample.s.emitlast.png" alt="">
+     * <img width="640" height="276" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/sample.s.emitlast.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>You specify which {@link Scheduler} this operator will use</dd>
@@ -9795,7 +9795,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * emits the most recently emitted item (if any) emitted by the source ObservableSource since the previous
      * emission from the {@code sampler} ObservableSource.
      * <p>
-     * <img width="437" height="198" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/sample.o.nolast.png" alt="">
+     * <img width="640" height="289" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/sample.o.nolast.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>This version of {@code sample} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -9821,7 +9821,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * emission from the {@code sampler} ObservableSource
      * and optionally emit the very last upstream item when the upstream or other ObservableSource complete.
      * <p>
-     * <img width="437" height="198" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/sample.o.emitlast.png" alt="">
+     * <img width="640" height="289" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/sample.o.emitlast.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>This version of {@code sample} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -10779,7 +10779,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     /**
      * Returns an Observable that emits the items emitted by the source ObservableSource or the items of an alternate
      * ObservableSource if the source ObservableSource is empty.
-     * <img width="410" height="164" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/switchifempty.png" alt="">
+     * <img width="640" height="255" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/switchifempty.png" alt="">
      * <p/>
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
@@ -13041,7 +13041,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * ObservableSource emits connected, non-overlapping windows. It emits the current window and opens a new one
      * whenever the ObservableSource produced by the specified {@code closingIndicator} emits an item.
      * <p>
-     * <img width="640" height="460" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/window1.png" alt="">
+     * <img width="640" height="455" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/window1.png" alt="">
      * <dl>
      *  if left unconsumed.</dd>
      *  <dt><b>Scheduler:</b></dt>
@@ -13068,7 +13068,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * ObservableSource emits connected, non-overlapping windows. It emits the current window and opens a new one
      * whenever the ObservableSource produced by the specified {@code closingIndicator} emits an item.
      * <p>
-     * <img width="640" height="460" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/window1.png" alt="">
+     * <img width="640" height="455" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/window1.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>This version of {@code window} does not operate by default on a particular {@link Scheduler}.</dd>

@@ -26,7 +26,7 @@ import io.reactivex.plugins.RxJavaPlugins;
  * A Subject that multicasts events to Subscribers that are currently subscribed to it.
  *
  * <p>
- * <img width="640" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/S.PublishSubject.png" alt="">
+ * <img width="640" height="405" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/S.PublishSubject.png" alt="">
  *
  * <p>The subject does not coordinate backpressure for its subscribers and implements a weaker onSubscribe which
  * calls requests Long.MAX_VALUE from the incoming Subscriptions. This makes it possible to subscribe the PublishSubject

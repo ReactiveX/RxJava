@@ -29,7 +29,7 @@ import io.reactivex.plugins.RxJavaPlugins;
  * Subject that emits the most recent item it has observed and all subsequent observed items to each subscribed
  * {@link Observer}.
  * <p>
- * <img width="640" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/S.BehaviorSubject.png" alt="">
+ * <img width="640" height="415" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/S.BehaviorSubject.png" alt="">
  * <p>
  * Example usage:
  * <p>

@@ -48,7 +48,7 @@ import io.reactivex.schedulers.Schedulers;
  * <p>
  * The documentation for this class makes use of marble diagrams. The following legend explains these diagrams:
  * <p>
- * <img width="605" height="285" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.legend.png" alt="">
+ * <img width="640" height="301" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.legend.png" alt="">
  * <p>
  * For more information see the <a href="http://reactivex.io/documentation/observable.html">ReactiveX
  * documentation</a>.
@@ -1962,7 +1962,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * Returns a Maybe that is based on applying a specified function to the item emitted by the source Single,
      * where that function returns a MaybeSource.
      * <p>
-     * <img width="640" height="300" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.flatMapMaybe.png" alt="">
+     * <img width="640" height="191" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.flatMapMaybe.png" alt="">
      * <dl>
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code flatMapMaybe} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -2084,7 +2084,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * Returns a {@link Completable} that completes based on applying a specified function to the item emitted by the
      * source {@link Single}, where that function returns a {@link Completable}.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.flatMapCompletable.png" alt="">
+     * <img width="640" height="267" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.flatMapCompletable.png" alt="">
      * <dl>
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code flatMapCompletable} does not operate by default on a particular {@link Scheduler}.</dd>

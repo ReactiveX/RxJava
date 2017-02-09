@@ -24,7 +24,7 @@ import io.reactivex.plugins.RxJavaPlugins;
  * Subject that, once an {@link Observer} has subscribed, emits all subsequently observed items to the
  * subscriber.
  * <p>
- * <img width="640" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/S.PublishSubject.png" alt="">
+ * <img width="640" height="405" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/S.PublishSubject.png" alt="">
  * <p>
  * Example usage:
  * <p>
