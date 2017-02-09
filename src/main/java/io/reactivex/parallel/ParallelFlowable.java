@@ -238,7 +238,7 @@ public abstract class ParallelFlowable<T> {
      * for the rails.
      * <p>
      * This operator uses the default prefetch size returned by {@code Flowable.bufferSize()}.
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/parallelflowable.sequential.png" alt="">
+     * <img width="640" height="602" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/parallelflowable.sequential.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure.</dd>
@@ -259,7 +259,7 @@ public abstract class ParallelFlowable<T> {
      * Merges the values from each 'rail' in a round-robin or same-order fashion and
      * exposes it as a regular Publisher sequence, running with a give prefetch value
      * for the rails.
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/parallelflowable.sequential.png" alt="">
+     * <img width="640" height="602" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/parallelflowable.sequential.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure.</dd>

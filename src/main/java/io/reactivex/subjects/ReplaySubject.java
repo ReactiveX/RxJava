@@ -29,7 +29,7 @@ import io.reactivex.plugins.RxJavaPlugins;
 /**
  * Replays events to Observers.
  * <p>
- * <img width="640" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/S.ReplaySubject.png" alt="">
+ * <img width="640" height="405" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/S.ReplaySubject.png" alt="">
  * <p>
  * Example usage:
  * <p>

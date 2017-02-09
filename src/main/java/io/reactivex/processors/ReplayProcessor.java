@@ -30,7 +30,7 @@ import io.reactivex.plugins.RxJavaPlugins;
 /**
  * Replays events to Subscribers.
  * <p>
- * <img width="640" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/S.ReplaySubject.png" alt="">
+ * <img width="640" height="405" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/S.ReplaySubject.png" alt="">
  *
  * <p>
  * The ReplayProcessor can be created in bounded and unbounded mode. It can be bounded by
