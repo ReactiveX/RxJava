@@ -76,7 +76,7 @@ public class OperatorDoOnSubscribeTest {
         final AtomicInteger countBefore = new AtomicInteger();
         final AtomicInteger countAfter = new AtomicInteger();
         final AtomicReference<Subscriber<? super Integer>> sref = new AtomicReference<Subscriber<? super Integer>>();
-        Observable<Integer> o = Observable.create(new OnSubscribe<Integer>() {
+        Observable<Integer> o = Observable.unsafeCreate(new OnSubscribe<Integer>() {
 
             @Override
             public void call(Subscriber<? super Integer> s) {

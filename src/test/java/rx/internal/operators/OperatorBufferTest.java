@@ -52,7 +52,7 @@ public class OperatorBufferTest {
 
     @Test
     public void testComplete() {
-        Observable<String> source = Observable.create(new Observable.OnSubscribe<String>() {
+        Observable<String> source = Observable.unsafeCreate(new Observable.OnSubscribe<String>() {
             @Override
             public void call(Subscriber<? super String> observer) {
                 observer.onCompleted();
@@ -69,7 +69,7 @@ public class OperatorBufferTest {
 
     @Test
     public void testSkipAndCountOverlappingBuffers() {
-        Observable<String> source = Observable.create(new Observable.OnSubscribe<String>() {
+        Observable<String> source = Observable.unsafeCreate(new Observable.OnSubscribe<String>() {
             @Override
             public void call(Subscriber<? super String> observer) {
                 observer.onNext("one");
@@ -94,7 +94,7 @@ public class OperatorBufferTest {
 
     @Test
     public void testSkipAndCountGaplessBuffers() {
-        Observable<String> source = Observable.create(new Observable.OnSubscribe<String>() {
+        Observable<String> source = Observable.unsafeCreate(new Observable.OnSubscribe<String>() {
             @Override
             public void call(Subscriber<? super String> observer) {
                 observer.onNext("one");
@@ -119,7 +119,7 @@ public class OperatorBufferTest {
 
     @Test
     public void testSkipAndCountBuffersWithGaps() {
-        Observable<String> source = Observable.create(new Observable.OnSubscribe<String>() {
+        Observable<String> source = Observable.unsafeCreate(new Observable.OnSubscribe<String>() {
             @Override
             public void call(Subscriber<? super String> observer) {
                 observer.onNext("one");
@@ -144,7 +144,7 @@ public class OperatorBufferTest {
 
     @Test
     public void testTimedAndCount() {
-        Observable<String> source = Observable.create(new Observable.OnSubscribe<String>() {
+        Observable<String> source = Observable.unsafeCreate(new Observable.OnSubscribe<String>() {
             @Override
             public void call(Subscriber<? super String> observer) {
                 push(observer, "one", 10);
@@ -175,7 +175,7 @@ public class OperatorBufferTest {
 
     @Test
     public void testTimed() {
-        Observable<String> source = Observable.create(new Observable.OnSubscribe<String>() {
+        Observable<String> source = Observable.unsafeCreate(new Observable.OnSubscribe<String>() {
             @Override
             public void call(Subscriber<? super String> observer) {
                 push(observer, "one", 97);
@@ -208,7 +208,7 @@ public class OperatorBufferTest {
 
     @Test
     public void testObservableBasedOpenerAndCloser() {
-        Observable<String> source = Observable.create(new Observable.OnSubscribe<String>() {
+        Observable<String> source = Observable.unsafeCreate(new Observable.OnSubscribe<String>() {
             @Override
             public void call(Subscriber<? super String> observer) {
                 push(observer, "one", 10);
@@ -220,7 +220,7 @@ public class OperatorBufferTest {
             }
         });
 
-        Observable<Object> openings = Observable.create(new Observable.OnSubscribe<Object>() {
+        Observable<Object> openings = Observable.unsafeCreate(new Observable.OnSubscribe<Object>() {
             @Override
             public void call(Subscriber<Object> observer) {
                 push(observer, new Object(), 50);
@@ -232,7 +232,7 @@ public class OperatorBufferTest {
         Func1<Object, Observable<Object>> closer = new Func1<Object, Observable<Object>>() {
             @Override
             public Observable<Object> call(Object opening) {
-                return Observable.create(new Observable.OnSubscribe<Object>() {
+                return Observable.unsafeCreate(new Observable.OnSubscribe<Object>() {
                     @Override
                     public void call(Subscriber<? super Object> observer) {
                         push(observer, new Object(), 100);
@@ -256,7 +256,7 @@ public class OperatorBufferTest {
 
     @Test
     public void testObservableBasedCloser() {
-        Observable<String> source = Observable.create(new Observable.OnSubscribe<String>() {
+        Observable<String> source = Observable.unsafeCreate(new Observable.OnSubscribe<String>() {
             @Override
             public void call(Subscriber<? super String> observer) {
                 push(observer, "one", 10);
@@ -271,7 +271,7 @@ public class OperatorBufferTest {
         Func0<Observable<Object>> closer = new Func0<Observable<Object>>() {
             @Override
             public Observable<Object> call() {
-                return Observable.create(new Observable.OnSubscribe<Object>() {
+                return Observable.unsafeCreate(new Observable.OnSubscribe<Object>() {
                     @Override
                     public void call(Subscriber<? super Object> observer) {
                         push(observer, new Object(), 100);
@@ -786,7 +786,7 @@ public class OperatorBufferTest {
         TestSubscriber<List<Integer>> ts = new TestSubscriber<List<Integer>>();
         ts.requestMore(3);
         final AtomicLong requested = new AtomicLong();
-        Observable.create(new Observable.OnSubscribe<Integer>() {
+        Observable.unsafeCreate(new Observable.OnSubscribe<Integer>() {
 
             @Override
             public void call(Subscriber<? super Integer> s) {
@@ -811,7 +811,7 @@ public class OperatorBufferTest {
     public void testProducerRequestThroughBufferWithSize2() {
         TestSubscriber<List<Integer>> ts = new TestSubscriber<List<Integer>>();
         final AtomicLong requested = new AtomicLong();
-        Observable.create(new Observable.OnSubscribe<Integer>() {
+        Observable.unsafeCreate(new Observable.OnSubscribe<Integer>() {
 
             @Override
             public void call(Subscriber<? super Integer> s) {
@@ -834,7 +834,7 @@ public class OperatorBufferTest {
         TestSubscriber<List<Integer>> ts = new TestSubscriber<List<Integer>>();
         ts.requestMore(3);
         final AtomicLong requested = new AtomicLong();
-        Observable.create(new Observable.OnSubscribe<Integer>() {
+        Observable.unsafeCreate(new Observable.OnSubscribe<Integer>() {
 
             @Override
             public void call(Subscriber<? super Integer> s) {
@@ -858,7 +858,7 @@ public class OperatorBufferTest {
     public void testProducerRequestThroughBufferWithSize4() {
         TestSubscriber<List<Integer>> ts = new TestSubscriber<List<Integer>>();
         final AtomicLong requested = new AtomicLong();
-        Observable.create(new Observable.OnSubscribe<Integer>() {
+        Observable.unsafeCreate(new Observable.OnSubscribe<Integer>() {
 
             @Override
             public void call(Subscriber<? super Integer> s) {
@@ -882,7 +882,7 @@ public class OperatorBufferTest {
         TestSubscriber<List<Integer>> ts = new TestSubscriber<List<Integer>>();
         ts.requestMore(Long.MAX_VALUE / 2);
         final AtomicLong requested = new AtomicLong();
-        Observable.create(new Observable.OnSubscribe<Integer>() {
+        Observable.unsafeCreate(new Observable.OnSubscribe<Integer>() {
 
             @Override
             public void call(Subscriber<? super Integer> s) {
@@ -905,7 +905,7 @@ public class OperatorBufferTest {
         TestSubscriber<List<Integer>> ts = new TestSubscriber<List<Integer>>();
         ts.requestMore(Long.MAX_VALUE / 2);
         final AtomicLong requested = new AtomicLong();
-        Observable.create(new Observable.OnSubscribe<Integer>() {
+        Observable.unsafeCreate(new Observable.OnSubscribe<Integer>() {
 
             @Override
             public void call(Subscriber<? super Integer> s) {
@@ -926,7 +926,7 @@ public class OperatorBufferTest {
     @Test
     public void testProducerRequestOverflowThroughBufferWithSize3() {
         final AtomicLong requested = new AtomicLong();
-        Observable.create(new Observable.OnSubscribe<Integer>() {
+        Observable.unsafeCreate(new Observable.OnSubscribe<Integer>() {
 
             @Override
             public void call(final Subscriber<? super Integer> s) {

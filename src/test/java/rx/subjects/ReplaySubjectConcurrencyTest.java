@@ -52,7 +52,7 @@ public class ReplaySubjectConcurrencyTest {
 
             @Override
             public void run() {
-                Observable.create(new OnSubscribe<Long>() {
+                Observable.unsafeCreate(new OnSubscribe<Long>() {
 
                     @Override
                     public void call(Subscriber<? super Long> o) {
@@ -174,7 +174,7 @@ public class ReplaySubjectConcurrencyTest {
 
             @Override
             public void run() {
-                Observable.create(new OnSubscribe<Long>() {
+                Observable.unsafeCreate(new OnSubscribe<Long>() {
 
                     @Override
                     public void call(Subscriber<? super Long> o) {

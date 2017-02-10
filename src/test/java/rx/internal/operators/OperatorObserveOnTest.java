@@ -526,7 +526,7 @@ public class OperatorObserveOnTest {
     @Test
     public void testQueueFullEmitsError() {
         final CountDownLatch latch = new CountDownLatch(1);
-        Observable<Integer> observable = Observable.create(new OnSubscribe<Integer>() {
+        Observable<Integer> observable = Observable.unsafeCreate(new OnSubscribe<Integer>() {
 
             @Override
             public void call(Subscriber<? super Integer> o) {

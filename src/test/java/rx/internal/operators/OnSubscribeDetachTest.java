@@ -138,7 +138,7 @@ public class OnSubscribeDetachTest {
 
         TestSubscriber<Object> ts = new TestSubscriber<Object>(0);
 
-        Observable.create(new OnSubscribe<Object>() {
+        Observable.unsafeCreate(new OnSubscribe<Object>() {
             @Override
             public void call(Subscriber<? super Object> t) {
                 subscriber.set(t);

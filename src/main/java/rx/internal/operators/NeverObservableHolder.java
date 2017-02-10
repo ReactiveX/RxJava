@@ -28,7 +28,7 @@ public enum NeverObservableHolder implements OnSubscribe<Object> {
     ;
 
     /** The singleton instance. */
-    static final Observable<Object> NEVER = Observable.create(INSTANCE);
+    static final Observable<Object> NEVER = Observable.unsafeCreate(INSTANCE);
 
     /**
      * Returns a type-corrected singleton instance of the never Observable.

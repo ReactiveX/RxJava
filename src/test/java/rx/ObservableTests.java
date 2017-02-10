@@ -94,7 +94,7 @@ public class ObservableTests {
     @Test
     public void testCreate() {
 
-        Observable<String> observable = Observable.create(new OnSubscribe<String>() {
+        Observable<String> observable = Observable.unsafeCreate(new OnSubscribe<String>() {
 
             @Override
             public void call(Subscriber<? super String> Observer) {
@@ -140,7 +140,7 @@ public class ObservableTests {
 
     @Test
     public void testCountError() {
-        Observable<String> o = Observable.create(new OnSubscribe<String>() {
+        Observable<String> o = Observable.unsafeCreate(new OnSubscribe<String>() {
             @Override
             public void call(Subscriber<? super String> obsv) {
                 obsv.onError(new RuntimeException());
@@ -289,7 +289,7 @@ public class ObservableTests {
         @SuppressWarnings("unchecked")
         Observer<String> observer = mock(Observer.class);
         final RuntimeException re = new RuntimeException("bad impl");
-        Observable<String> o = Observable.create(new OnSubscribe<String>() {
+        Observable<String> o = Observable.unsafeCreate(new OnSubscribe<String>() {
 
             @Override
             public void call(Subscriber<? super String> t1) {
@@ -330,7 +330,7 @@ public class ObservableTests {
         final CountDownLatch latch = new CountDownLatch(1);
         final AtomicInteger count = new AtomicInteger();
         final AtomicReference<Throwable> error = new AtomicReference<Throwable>();
-        Observable.create(new OnSubscribe<String>() {
+        Observable.unsafeCreate(new OnSubscribe<String>() {
 
             @Override
             public void call(final Subscriber<? super String> observer) {
@@ -395,7 +395,7 @@ public class ObservableTests {
     public void testCustomObservableWithErrorInObserverSynchronous() {
         final AtomicInteger count = new AtomicInteger();
         final AtomicReference<Throwable> error = new AtomicReference<Throwable>();
-        Observable.create(new OnSubscribe<String>() {
+        Observable.unsafeCreate(new OnSubscribe<String>() {
 
             @Override
             public void call(Subscriber<? super String> observer) {
@@ -445,7 +445,7 @@ public class ObservableTests {
     public void testCustomObservableWithErrorInObservableSynchronous() {
         final AtomicInteger count = new AtomicInteger();
         final AtomicReference<Throwable> error = new AtomicReference<Throwable>();
-        Observable.create(new OnSubscribe<String>() {
+        Observable.unsafeCreate(new OnSubscribe<String>() {
 
             @Override
             public void call(Subscriber<? super String> observer) {
@@ -484,7 +484,7 @@ public class ObservableTests {
     @Test
     public void testPublishLast() throws InterruptedException {
         final AtomicInteger count = new AtomicInteger();
-        ConnectableObservable<String> connectable = Observable.create(new OnSubscribe<String>() {
+        ConnectableObservable<String> connectable = Observable.unsafeCreate(new OnSubscribe<String>() {
             @Override
             public void call(final Subscriber<? super String> observer) {
                 count.incrementAndGet();
@@ -522,7 +522,7 @@ public class ObservableTests {
     @Test
     public void testReplay() throws InterruptedException {
         final AtomicInteger counter = new AtomicInteger();
-        ConnectableObservable<String> o = Observable.create(new OnSubscribe<String>() {
+        ConnectableObservable<String> o = Observable.unsafeCreate(new OnSubscribe<String>() {
 
             @Override
             public void call(final Subscriber<? super String> observer) {
@@ -577,7 +577,7 @@ public class ObservableTests {
     @Test
     public void testCache() throws InterruptedException {
         final AtomicInteger counter = new AtomicInteger();
-        Observable<String> o = Observable.create(new OnSubscribe<String>() {
+        Observable<String> o = Observable.unsafeCreate(new OnSubscribe<String>() {
 
             @Override
             public void call(final Subscriber<? super String> observer) {
@@ -625,7 +625,7 @@ public class ObservableTests {
     @Test
     public void testCacheWithCapacity() throws InterruptedException {
         final AtomicInteger counter = new AtomicInteger();
-        Observable<String> o = Observable.create(new OnSubscribe<String>() {
+        Observable<String> o = Observable.unsafeCreate(new OnSubscribe<String>() {
 
             @Override
             public void call(final Subscriber<? super String> observer) {
@@ -711,7 +711,7 @@ public class ObservableTests {
     public void testErrorThrownWithoutErrorHandlerAsynchronous() throws InterruptedException {
         final CountDownLatch latch = new CountDownLatch(1);
         final AtomicReference<Throwable> exception = new AtomicReference<Throwable>();
-        Observable.create(new OnSubscribe<String>() {
+        Observable.unsafeCreate(new OnSubscribe<String>() {
 
             @Override
             public void call(final Subscriber<? super String> observer) {
@@ -1109,7 +1109,7 @@ public class ObservableTests {
 
     @Test
     public void nullOnSubscribe() {
-        Observable<Integer> source = Observable.create((OnSubscribe<Integer>)null);
+        Observable<Integer> source = Observable.unsafeCreate((OnSubscribe<Integer>)null);
 
         try {
             source.subscribe();
@@ -1147,7 +1147,7 @@ public class ObservableTests {
     @Test
     public void testCacheHint() throws InterruptedException {
         final AtomicInteger counter = new AtomicInteger();
-        Observable<String> o = Observable.create(new OnSubscribe<String>() {
+        Observable<String> o = Observable.unsafeCreate(new OnSubscribe<String>() {
 
             @Override
             public void call(final Subscriber<? super String> observer) {

@@ -334,7 +334,7 @@ public class OperatorTimeoutWithSelectorTest {
             public Observable<Integer> call(Integer t1) {
                 if (t1 == 1) {
                     // Force "unsubscribe" run on another thread
-                    return Observable.create(new OnSubscribe<Integer>() {
+                    return Observable.unsafeCreate(new OnSubscribe<Integer>() {
                         @Override
                         public void call(Subscriber<? super Integer> subscriber) {
                             enteredTimeoutOne.countDown();

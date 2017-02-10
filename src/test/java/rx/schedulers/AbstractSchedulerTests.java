@@ -322,7 +322,7 @@ public abstract class AbstractSchedulerTests {
 
     @Test
     public final void testRecursiveSchedulerInObservable() {
-        Observable<Integer> obs = Observable.create(new OnSubscribe<Integer>() {
+        Observable<Integer> obs = Observable.unsafeCreate(new OnSubscribe<Integer>() {
             @Override
             public void call(final Subscriber<? super Integer> observer) {
                 final Scheduler.Worker inner = getScheduler().createWorker();
@@ -362,7 +362,7 @@ public abstract class AbstractSchedulerTests {
     public final void testConcurrentOnNextFailsValidation() throws InterruptedException {
         final int count = 10;
         final CountDownLatch latch = new CountDownLatch(count);
-        Observable<String> o = Observable.create(new OnSubscribe<String>() {
+        Observable<String> o = Observable.unsafeCreate(new OnSubscribe<String>() {
 
             @Override
             public void call(final Subscriber<? super String> observer) {
@@ -423,7 +423,7 @@ public abstract class AbstractSchedulerTests {
 
                     @Override
                     public Observable<String> call(final String v) {
-                        return Observable.create(new OnSubscribe<String>() {
+                        return Observable.unsafeCreate(new OnSubscribe<String>() {
 
                             @Override
                             public void call(Subscriber<? super String> observer) {

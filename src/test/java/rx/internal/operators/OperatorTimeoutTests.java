@@ -234,7 +234,7 @@ public class OperatorTimeoutTests {
 
             @Override
             public void run() {
-                Observable.create(new OnSubscribe<String>() {
+                Observable.unsafeCreate(new OnSubscribe<String>() {
 
                     @Override
                     public void call(Subscriber<? super String> subscriber) {
@@ -268,7 +268,7 @@ public class OperatorTimeoutTests {
         // From https://github.com/ReactiveX/RxJava/pull/951
         final Subscription s = mock(Subscription.class);
 
-        Observable<String> never = Observable.create(new OnSubscribe<String>() {
+        Observable<String> never = Observable.unsafeCreate(new OnSubscribe<String>() {
             @Override
             public void call(Subscriber<? super String> subscriber) {
                 subscriber.add(s);
@@ -296,7 +296,7 @@ public class OperatorTimeoutTests {
         // From https://github.com/ReactiveX/RxJava/pull/951
         final Subscription s = mock(Subscription.class);
 
-        Observable<String> immediatelyComplete = Observable.create(new OnSubscribe<String>() {
+        Observable<String> immediatelyComplete = Observable.unsafeCreate(new OnSubscribe<String>() {
             @Override
             public void call(Subscriber<? super String> subscriber) {
                 subscriber.add(s);
@@ -326,7 +326,7 @@ public class OperatorTimeoutTests {
         // From https://github.com/ReactiveX/RxJava/pull/951
         final Subscription s = mock(Subscription.class);
 
-        Observable<String> immediatelyError = Observable.create(new OnSubscribe<String>() {
+        Observable<String> immediatelyError = Observable.unsafeCreate(new OnSubscribe<String>() {
             @Override
             public void call(Subscriber<? super String> subscriber) {
                 subscriber.add(s);

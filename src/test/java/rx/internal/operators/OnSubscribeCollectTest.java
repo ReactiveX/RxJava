@@ -130,7 +130,7 @@ public class OnSubscribeCollectTest {
             final RuntimeException e1 = new RuntimeException();
             final RuntimeException e2 = new RuntimeException();
             TestSubscriber<List<Integer>> ts = TestSubscriber.create();
-            Observable.create(new OnSubscribe<Integer>() {
+            Observable.unsafeCreate(new OnSubscribe<Integer>() {
 
                 @Override
                 public void call(final Subscriber<? super Integer> sub) {
@@ -171,7 +171,7 @@ public class OnSubscribeCollectTest {
     public void testCollectorFailureDoesNotResultInErrorAndCompletedEmissions() {
         final RuntimeException e1 = new RuntimeException();
         TestSubscriber<List<Integer>> ts = TestSubscriber.create();
-        Observable.create(new OnSubscribe<Integer>() {
+        Observable.unsafeCreate(new OnSubscribe<Integer>() {
 
             @Override
             public void call(final Subscriber<? super Integer> sub) {
@@ -209,7 +209,7 @@ public class OnSubscribeCollectTest {
         final RuntimeException e1 = new RuntimeException();
         TestSubscriber<List<Integer>> ts = TestSubscriber.create();
         final AtomicBoolean added = new AtomicBoolean();
-        Observable.create(new OnSubscribe<Integer>() {
+        Observable.unsafeCreate(new OnSubscribe<Integer>() {
 
             @Override
             public void call(final Subscriber<? super Integer> sub) {

@@ -52,7 +52,7 @@ public class SyncOnSubscribeTest {
 
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
 
-        Observable.create(os).subscribe(ts);
+        Observable.unsafeCreate(os).subscribe(ts);
 
         ts.assertNoErrors();
         ts.assertTerminalEvent();
@@ -82,7 +82,7 @@ public class SyncOnSubscribeTest {
 
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
 
-        Observable.create(os).subscribe(ts);
+        Observable.unsafeCreate(os).subscribe(ts);
 
         ts.assertNoErrors();
         ts.assertTerminalEvent();
@@ -103,7 +103,7 @@ public class SyncOnSubscribeTest {
         @SuppressWarnings("unchecked")
         Observer<Object> o = mock(Observer.class);
 
-        Observable.create(os).subscribe(o);
+        Observable.unsafeCreate(os).subscribe(o);
 
         verify(o, times(1)).onNext(1);
         verify(o, never()).onNext(2);
@@ -124,7 +124,7 @@ public class SyncOnSubscribeTest {
         @SuppressWarnings("unchecked")
         Observer<Object> o = mock(Observer.class);
 
-        Observable.create(os).subscribe(o);
+        Observable.unsafeCreate(os).subscribe(o);
 
         verify(o, times(1)).onNext(1);
         verify(o, times(1)).onCompleted();
@@ -144,7 +144,7 @@ public class SyncOnSubscribeTest {
         @SuppressWarnings("unchecked")
         Observer<Object> o = mock(Observer.class);
 
-        Observable.create(os).subscribe(o);
+        Observable.unsafeCreate(os).subscribe(o);
 
         verify(o, times(1)).onNext(1);
         verify(o, times(1)).onCompleted();
@@ -171,7 +171,7 @@ public class SyncOnSubscribeTest {
         @SuppressWarnings("unchecked")
         Observer<Object> o = mock(Observer.class);
 
-        Observable.create(os).subscribe(o);
+        Observable.unsafeCreate(os).subscribe(o);
 
         verify(o, times(1)).onNext(1);
         verify(o, never()).onCompleted();
@@ -190,7 +190,7 @@ public class SyncOnSubscribeTest {
         @SuppressWarnings("unchecked")
         Observer<Object> o = mock(Observer.class);
 
-        Observable.create(os).subscribe(o);
+        Observable.unsafeCreate(os).subscribe(o);
 
         verify(o, never()).onNext(any(Integer.class));
         verify(o, never()).onError(any(Throwable.class));
@@ -206,7 +206,7 @@ public class SyncOnSubscribeTest {
             }});
 
 
-        Observable<Integer> neverObservable = Observable.create(os).subscribeOn(Schedulers.newThread());
+        Observable<Integer> neverObservable = Observable.unsafeCreate(os).subscribeOn(Schedulers.newThread());
         Observable<? extends Number> merged = Observable.amb(neverObservable, Observable.timer(100, TimeUnit.MILLISECONDS).subscribeOn(Schedulers.newThread()));
         Iterator<? extends Number> values = merged.toBlocking().toIterable().iterator();
 
@@ -225,7 +225,7 @@ public class SyncOnSubscribeTest {
         @SuppressWarnings("unchecked")
         Observer<Object> o = mock(Observer.class);
 
-        Observable.create(os).subscribe(o);
+        Observable.unsafeCreate(os).subscribe(o);
 
         verify(o, never()).onNext(any(Integer.class));
         verify(o, never()).onCompleted();
@@ -243,7 +243,7 @@ public class SyncOnSubscribeTest {
         @SuppressWarnings("unchecked")
         Observer<Object> o = mock(Observer.class);
 
-        Observable.create(os).subscribe(o);
+        Observable.unsafeCreate(os).subscribe(o);
 
         verify(o, never()).onNext(any(Integer.class));
         verify(o, times(1)).onCompleted();
@@ -268,7 +268,7 @@ public class SyncOnSubscribeTest {
             }
         };
 
-        Observable.create(os).subscribe(ts);
+        Observable.unsafeCreate(os).subscribe(ts);
 
         ts.requestMore(1);
 
@@ -288,7 +288,7 @@ public class SyncOnSubscribeTest {
         @SuppressWarnings("unchecked")
         Observer<Object> o = mock(Observer.class);
 
-        Observable.create(os).subscribe(o);
+        Observable.unsafeCreate(os).subscribe(o);
 
         verify(o, never()).onNext(any(Integer.class));
         verify(o).onError(any(TestException.class));
@@ -319,7 +319,7 @@ public class SyncOnSubscribeTest {
         Observer<Object> o = mock(Observer.class);
         InOrder inOrder = inOrder(o);
 
-        Observable.create(os).subscribe(o);
+        Observable.unsafeCreate(os).subscribe(o);
 
         verify(o, never()).onError(any(TestException.class));
         inOrder.verify(o, times(count)).onNext(any(Integer.class));
@@ -357,7 +357,7 @@ public class SyncOnSubscribeTest {
         Observer<Object> o = mock(Observer.class);
         InOrder inOrder = inOrder(o);
 
-        Observable.create(os).subscribe(o);
+        Observable.unsafeCreate(os).subscribe(o);
 
         verify(o, never()).onError(any(TestException.class));
         inOrder.verify(o, times(n)).onNext(any());
@@ -385,7 +385,7 @@ public class SyncOnSubscribeTest {
         Observer<Object> o = mock(Observer.class);
         InOrder inOrder = inOrder(o);
 
-        Observable.create(os).take(finalCount).subscribe(o);
+        Observable.unsafeCreate(os).take(finalCount).subscribe(o);
 
         verify(o, never()).onError(any(Throwable.class));
         inOrder.verify(o, times(finalCount)).onNext(any());
@@ -416,7 +416,7 @@ public class SyncOnSubscribeTest {
                 onUnSubscribe);
 
         TestSubscriber<Object> ts = new TestSubscriber<Object>(0);
-        Observable.create(os).subscribe(ts);
+        Observable.unsafeCreate(os).subscribe(ts);
 
         ts.requestMore(finalCount);
 
@@ -451,7 +451,7 @@ public class SyncOnSubscribeTest {
 
         TestSubscriber<Object> ts = new TestSubscriber<Object>(o);
 
-        Observable.create(os).take(1).subscribe(ts);
+        Observable.unsafeCreate(os).take(1).subscribe(ts);
 
         verify(o, never()).onError(any(Throwable.class));
         verify(onUnSubscribe, times(1)).call(any(Integer.class));
@@ -521,7 +521,7 @@ public class SyncOnSubscribeTest {
         InOrder inOrder = inOrder(o);
 
         final TestSubscriber<Object> ts = new TestSubscriber<Object>(o);
-        Observable.create(os).subscribeOn(Schedulers.newThread()).subscribe(ts);
+        Observable.unsafeCreate(os).subscribeOn(Schedulers.newThread()).subscribe(ts);
 
         // wait until the first request has started processing
         if (!l2.await(2, TimeUnit.SECONDS)) {
@@ -569,7 +569,7 @@ public class SyncOnSubscribeTest {
 
         final CountDownLatch latch = new CountDownLatch(1);
         final TestSubscriber<Object> ts = new TestSubscriber<Object>(o);
-        Observable.create(os).lift(new Operator<Void, Void>() {
+        Observable.unsafeCreate(os).lift(new Operator<Void, Void>() {
             @Override
             public Subscriber<? super Void> call(final Subscriber<? super Void> subscriber) {
                 return new Subscriber<Void>(subscriber) {
@@ -634,7 +634,7 @@ public class SyncOnSubscribeTest {
                 }},
             onUnSubscribe);
 
-        Observable<Integer> source = Observable.create(os);
+        Observable<Integer> source = Observable.unsafeCreate(os);
         for (int i = 0; i < count; i++) {
             source.subscribe();
         }
@@ -678,7 +678,7 @@ public class SyncOnSubscribeTest {
             subs.add(ts);
         }
         TestScheduler scheduler = new TestScheduler();
-        Observable<Integer> o2 = Observable.create(os).subscribeOn(scheduler);
+        Observable<Integer> o2 = Observable.unsafeCreate(os).subscribeOn(scheduler);
         for (Subscriber<Object> ts : subs) {
             o2.subscribe(ts);
         }
@@ -719,7 +719,7 @@ public class SyncOnSubscribeTest {
         TestSubscriber<Object> ts = new TestSubscriber<Object>();
 
         TestScheduler scheduler = new TestScheduler();
-        Observable.create(os).observeOn(scheduler).subscribe(ts);
+        Observable.unsafeCreate(os).observeOn(scheduler).subscribe(ts);
 
         scheduler.triggerActions();
         ts.awaitTerminalEvent();
@@ -748,7 +748,7 @@ public class SyncOnSubscribeTest {
                     }},
                 onUnSubscribe);
         final AtomicReference<Throwable> exception = new AtomicReference<Throwable>();
-        Observable.create(os).subscribe(new Subscriber<Integer>() {
+        Observable.unsafeCreate(os).subscribe(new Subscriber<Integer>() {
             @Override
             public void onCompleted() {
 

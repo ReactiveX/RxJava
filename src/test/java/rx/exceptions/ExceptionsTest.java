@@ -254,10 +254,10 @@ public class ExceptionsTest {
 
     @Test(expected = OnErrorFailedException.class)
     public void testOnErrorExceptionIsThrownFromSubscribe() {
-        Observable.create(new Observable.OnSubscribe<Integer>() {
+        Observable.unsafeCreate(new Observable.OnSubscribe<Integer>() {
                               @Override
                               public void call(Subscriber<? super Integer> s1) {
-                                  Observable.create(new Observable.OnSubscribe<Integer>() {
+                                  Observable.unsafeCreate(new Observable.OnSubscribe<Integer>() {
                                       @Override
                                       public void call(Subscriber<? super Integer> s2) {
                                           throw new IllegalArgumentException("original exception");
@@ -270,10 +270,10 @@ public class ExceptionsTest {
 
     @Test(expected = OnErrorFailedException.class)
     public void testOnErrorExceptionIsThrownFromUnsafeSubscribe() {
-        Observable.create(new Observable.OnSubscribe<Integer>() {
+        Observable.unsafeCreate(new Observable.OnSubscribe<Integer>() {
                               @Override
                               public void call(Subscriber<? super Integer> s1) {
-                                  Observable.create(new Observable.OnSubscribe<Integer>() {
+                                  Observable.unsafeCreate(new Observable.OnSubscribe<Integer>() {
                                       @Override
                                       public void call(Subscriber<? super Integer> s2) {
                                           throw new IllegalArgumentException("original exception");

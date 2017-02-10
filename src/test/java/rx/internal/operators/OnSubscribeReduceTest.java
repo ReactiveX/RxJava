@@ -145,7 +145,7 @@ public class OnSubscribeReduceTest {
     @Test
     public void testNoInitialValueDoesNotEmitMultipleTerminalEvents() {
         TestSubscriber<Integer> ts = TestSubscriber.create();
-        Observable.create(new OnSubscribe<Integer>() {
+        Observable.unsafeCreate(new OnSubscribe<Integer>() {
 
             @Override
             public void call(final Subscriber<? super Integer> sub) {
@@ -176,7 +176,7 @@ public class OnSubscribeReduceTest {
     @Test
     public void testNoInitialValueUpstreamEmitsMoreOnNextDespiteUnsubscription() {
         TestSubscriber<Integer> ts = TestSubscriber.create();
-        Observable.create(new OnSubscribe<Integer>() {
+        Observable.unsafeCreate(new OnSubscribe<Integer>() {
 
             @Override
             public void call(final Subscriber<? super Integer> sub) {
@@ -226,7 +226,7 @@ public class OnSubscribeReduceTest {
             TestSubscriber<Integer> ts = TestSubscriber.create();
             final RuntimeException e1 = new RuntimeException("e1");
             final Throwable e2 = new RuntimeException("e2");
-            Observable.create(new OnSubscribe<Integer>() {
+            Observable.unsafeCreate(new OnSubscribe<Integer>() {
 
                 @Override
                 public void call(final Subscriber<? super Integer> sub) {

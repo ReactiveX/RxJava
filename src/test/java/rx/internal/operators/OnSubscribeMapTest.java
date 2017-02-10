@@ -299,7 +299,7 @@ public class OnSubscribeMapTest {
         };
 
         try {
-            Observable.create(creator).flatMap(manyMapper).map(mapper).subscribe(onNext);
+            Observable.unsafeCreate(creator).flatMap(manyMapper).map(mapper).subscribe(onNext);
         } catch (RuntimeException e) {
             e.printStackTrace();
             throw e;

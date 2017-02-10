@@ -202,7 +202,7 @@ public class Single<T> {
      */
     private static <T> Observable<T> asObservable(Single<T> t) {
         // is this sufficient, or do I need to keep the outer Single and subscribe to it?
-        return Observable.create(new SingleToObservable<T>(t.onSubscribe));
+        return Observable.unsafeCreate(new SingleToObservable<T>(t.onSubscribe));
     }
 
     /* *********************************************************************************************************

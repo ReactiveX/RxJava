@@ -42,7 +42,7 @@ public class OperatorOnErrorResumeNextViaObservableTest {
         Subscription s = mock(Subscription.class);
         // Trigger failure on second element
         TestObservable f = new TestObservable(s, "one", "fail", "two", "three");
-        Observable<String> w = Observable.create(f);
+        Observable<String> w = Observable.unsafeCreate(f);
         Observable<String> resume = Observable.just("twoResume", "threeResume");
         Observable<String> observable = w.onErrorResumeNext(resume);
 
@@ -72,7 +72,7 @@ public class OperatorOnErrorResumeNextViaObservableTest {
         Observable<String> w = Observable.just("one", "fail", "two", "three", "fail");
         // Resume Observable is async
         TestObservable f = new TestObservable(sr, "twoResume", "threeResume");
-        Observable<String> resume = Observable.create(f);
+        Observable<String> resume = Observable.unsafeCreate(f);
 
         // Introduce map function that fails intermittently (Map does not prevent this when the observer is a
         //  rx.operator incl onErrorResumeNextViaObservable)
@@ -110,7 +110,7 @@ public class OperatorOnErrorResumeNextViaObservableTest {
 
     @Test
     public void testResumeNextWithFailedOnSubscribe() {
-        Observable<String> testObservable = Observable.create(new OnSubscribe<String>() {
+        Observable<String> testObservable = Observable.unsafeCreate(new OnSubscribe<String>() {
 
             @Override
             public void call(Subscriber<? super String> t1) {
@@ -132,7 +132,7 @@ public class OperatorOnErrorResumeNextViaObservableTest {
 
     @Test
     public void testResumeNextWithFailedOnSubscribeAsync() {
-        Observable<String> testObservable = Observable.create(new OnSubscribe<String>() {
+        Observable<String> testObservable = Observable.unsafeCreate(new OnSubscribe<String>() {
 
             @Override
             public void call(Subscriber<? super String> t1) {

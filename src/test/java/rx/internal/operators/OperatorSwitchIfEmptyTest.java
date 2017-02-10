@@ -58,7 +58,7 @@ public class OperatorSwitchIfEmptyTest {
     @Test
     public void testSwitchWithProducer() throws Exception {
         final AtomicBoolean emitted = new AtomicBoolean(false);
-        Observable<Long> withProducer = Observable.create(new Observable.OnSubscribe<Long>() {
+        Observable<Long> withProducer = Observable.unsafeCreate(new Observable.OnSubscribe<Long>() {
             @Override
             public void call(final Subscriber<? super Long> subscriber) {
                 subscriber.setProducer(new Producer() {
@@ -82,7 +82,7 @@ public class OperatorSwitchIfEmptyTest {
     public void testSwitchTriggerUnsubscribe() throws Exception {
         final Subscription empty = Subscriptions.empty();
 
-        Observable<Long> withProducer = Observable.create(new Observable.OnSubscribe<Long>() {
+        Observable<Long> withProducer = Observable.unsafeCreate(new Observable.OnSubscribe<Long>() {
             @Override
             public void call(final Subscriber<? super Long> subscriber) {
                 subscriber.add(empty);
@@ -121,7 +121,7 @@ public class OperatorSwitchIfEmptyTest {
     public void testSwitchShouldTriggerUnsubscribe() {
         final Subscription s = Subscriptions.empty();
 
-        Observable.create(new Observable.OnSubscribe<Long>() {
+        Observable.unsafeCreate(new Observable.OnSubscribe<Long>() {
             @Override
             public void call(final Subscriber<? super Long> subscriber) {
                 subscriber.add(s);
@@ -176,7 +176,7 @@ public class OperatorSwitchIfEmptyTest {
     @Test(timeout = 10000)
     public void testRequestsNotLost() throws InterruptedException {
         final TestSubscriber<Long> ts = new TestSubscriber<Long>(0);
-        Observable.create(new OnSubscribe<Long>() {
+        Observable.unsafeCreate(new OnSubscribe<Long>() {
 
             @Override
             public void call(final Subscriber<? super Long> subscriber) {

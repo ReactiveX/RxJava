@@ -229,7 +229,7 @@ public class SubscriberTest {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         ts.request(3);
         final AtomicLong requested = new AtomicLong();
-        Observable.create(new OnSubscribe<Integer>() {
+        Observable.unsafeCreate(new OnSubscribe<Integer>() {
 
             @Override
             public void call(Subscriber<? super Integer> s) {
@@ -252,7 +252,7 @@ public class SubscriberTest {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         ts.request(3);
         final AtomicLong requested = new AtomicLong();
-        Observable.create(new OnSubscribe<Integer>() {
+        Observable.unsafeCreate(new OnSubscribe<Integer>() {
 
             @Override
             public void call(Subscriber<? super Integer> s) {
@@ -282,7 +282,7 @@ public class SubscriberTest {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         ts.request(3);
         final AtomicLong requested = new AtomicLong();
-        Observable.create(new OnSubscribe<Integer>() {
+        Observable.unsafeCreate(new OnSubscribe<Integer>() {
 
             @Override
             public void call(Subscriber<? super Integer> s) {
@@ -305,7 +305,7 @@ public class SubscriberTest {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         ts.request(3);
         final AtomicLong requested = new AtomicLong();
-        Observable.create(new OnSubscribe<Integer>() {
+        Observable.unsafeCreate(new OnSubscribe<Integer>() {
 
             @Override
             public void call(Subscriber<? super Integer> s) {

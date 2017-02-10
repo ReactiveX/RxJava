@@ -51,7 +51,7 @@ public class Observable<T> {
     /**
      * Creates an Observable with a Function to execute when it is subscribed to.
      * <p>
-     * <em>Note:</em> Use {@link #create(OnSubscribe)} to create an Observable, instead of this constructor,
+     * <em>Note:</em> Use {@link #unsafeCreate(OnSubscribe)} to create an Observable, instead of this constructor,
      * unless you specifically have a need for inheritance.
      *
      * @param f
@@ -62,10 +62,72 @@ public class Observable<T> {
     }
 
     /**
-     * <strong>This method requires advanced knowledge about building operators and data sources; please consider
-     * other standard methods first, such as {@link Observable#fromEmitter(Action1, Emitter.BackpressureMode)};</strong>
-     * Returns an Observable that will execute the specified function when a {@link Subscriber} subscribes to
-     * it.
+     * Constructs an Observable in an unsafe manner, that is, unsubscription and backpressure handling
+     * is the responsibility of the OnSubscribe implementation.
+     * @param <T> the value type emitted
+     * @param f the callback to execute for each individual Subscriber that subscribes to the
+     *          returned Observable
+     * @return the new Observable instance
+     * @deprecated 1.2.7 - inherently unsafe, use the other create() methods for basic cases or
+     * see {@link #unsafeCreate(OnSubscribe)} for advanced cases (such as custom operators)
+     * @see #create(SyncOnSubscribe)
+     * @see #create(AsyncOnSubscribe)
+     * @see #create(Action1, rx.Emitter.BackpressureMode)
+     */
+    @Deprecated
+    public static <T> Observable<T> create(OnSubscribe<T> f) {
+        return new Observable<T>(RxJavaHooks.onCreate(f));
+    }
+
+    /**
+     * Provides an API (via a cold Observable) that bridges the reactive world with the callback-style,
+     * generally non-backpressured world.
+     * <p>
+     * Example:
+     * <pre><code>
+     * Observable.&lt;Event&gt;create(emitter -&gt; {
+     *     Callback listener = new Callback() {
+     *         &#64;Override
+     *         public void onEvent(Event e) {
+     *             emitter.onNext(e);
+     *             if (e.isLast()) {
+     *                 emitter.onCompleted();
+     *             }
+     *         }
+     *
+     *         &#64;Override
+     *         public void onFailure(Exception e) {
+     *             emitter.onError(e);
+     *         }
+     *     };
+     *
+     *     AutoCloseable c = api.someMethod(listener);
+     *
+     *     emitter.setCancellation(c::close);
+     *
+     * }, BackpressureMode.BUFFER);
+     * </code></pre>
+     * <p>
+     * You should call the Emitter's onNext, onError and onCompleted methods in a serialized fashion. The
+     * rest of its methods are thread-safe.
+     *
+     * @param <T> the element type
+     * @param emitter the emitter that is called when a Subscriber subscribes to the returned {@code Observable}
+     * @param backpressure the backpressure mode to apply if the downstream Subscriber doesn't request (fast) enough
+     * @return the new Observable instance
+     * @see Emitter
+     * @see Emitter.BackpressureMode
+     * @see rx.functions.Cancellable
+     * @since 1.2.7 - experimental
+     */
+    @Experimental
+    public static <T> Observable<T> create(Action1<Emitter<T>> emitter, Emitter.BackpressureMode backpressure) {
+        return unsafeCreate(new OnSubscribeCreate<T>(emitter, backpressure));
+    }
+
+    /**
+     * Returns an Observable that executes the given OnSubscribe action for each individual Subscriber
+     * that subscribes; <strong>unsubscription and backpressure must be implemented manually.</strong>
      * <p>
      * <img width="640" height="200" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/create.png" alt="">
      * <p>
@@ -84,7 +146,7 @@ public class Observable<T> {
      *  document the fact that the consumer of the returned {@code Observable} has to apply one of
      *  the {@code onBackpressureXXX} operators.</dd>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code create} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dd>{@code unsafeCreate} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
      * @param <T>
@@ -95,8 +157,10 @@ public class Observable<T> {
      * @return an Observable that, when a {@link Subscriber} subscribes to it, will execute the specified
      *         function
      * @see <a href="http://reactivex.io/documentation/operators/create.html">ReactiveX operators documentation: Create</a>
+     * @since 1.2.7 - experimental
      */
-    public static <T> Observable<T> create(OnSubscribe<T> f) {
+    @Experimental
+    public static <T> Observable<T> unsafeCreate(OnSubscribe<T> f) {
         return new Observable<T>(RxJavaHooks.onCreate(f));
     }
 
@@ -140,7 +204,7 @@ public class Observable<T> {
      * @since 1.2
      */
     public static <S, T> Observable<T> create(SyncOnSubscribe<S, T> syncOnSubscribe) {
-        return create((OnSubscribe<T>)syncOnSubscribe);
+        return unsafeCreate(syncOnSubscribe);
     }
 
     /**
@@ -183,7 +247,7 @@ public class Observable<T> {
      */
     @Experimental
     public static <S, T> Observable<T> create(AsyncOnSubscribe<S, T> asyncOnSubscribe) {
-        return create((OnSubscribe<T>)asyncOnSubscribe);
+        return unsafeCreate(asyncOnSubscribe);
     }
 
     /**
@@ -234,7 +298,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Implementing-Your-Own-Operators">RxJava wiki: Implementing Your Own Operators</a>
      */
     public final <R> Observable<R> lift(final Operator<? extends R, ? super T> operator) {
-        return create(new OnSubscribeLift<T, R>(onSubscribe, operator));
+        return unsafeCreate(new OnSubscribeLift<T, R>(onSubscribe, operator));
     }
 
     /**
@@ -373,7 +437,7 @@ public class Observable<T> {
      * @see <a href="http://reactivex.io/documentation/operators/amb.html">ReactiveX operators documentation: Amb</a>
      */
     public static <T> Observable<T> amb(Iterable<? extends Observable<? extends T>> sources) {
-        return create(OnSubscribeAmb.amb(sources));
+        return unsafeCreate(OnSubscribeAmb.amb(sources));
     }
 
     /**
@@ -399,7 +463,7 @@ public class Observable<T> {
      * @see <a href="http://reactivex.io/documentation/operators/amb.html">ReactiveX operators documentation: Amb</a>
      */
     public static <T> Observable<T> amb(Observable<? extends T> o1, Observable<? extends T> o2) {
-        return create(OnSubscribeAmb.amb(o1, o2));
+        return unsafeCreate(OnSubscribeAmb.amb(o1, o2));
     }
 
     /**
@@ -427,7 +491,7 @@ public class Observable<T> {
      * @see <a href="http://reactivex.io/documentation/operators/amb.html">ReactiveX operators documentation: Amb</a>
      */
     public static <T> Observable<T> amb(Observable<? extends T> o1, Observable<? extends T> o2, Observable<? extends T> o3) {
-        return create(OnSubscribeAmb.amb(o1, o2, o3));
+        return unsafeCreate(OnSubscribeAmb.amb(o1, o2, o3));
     }
 
     /**
@@ -457,7 +521,7 @@ public class Observable<T> {
      * @see <a href="http://reactivex.io/documentation/operators/amb.html">ReactiveX operators documentation: Amb</a>
      */
     public static <T> Observable<T> amb(Observable<? extends T> o1, Observable<? extends T> o2, Observable<? extends T> o3, Observable<? extends T> o4) {
-        return create(OnSubscribeAmb.amb(o1, o2, o3, o4));
+        return unsafeCreate(OnSubscribeAmb.amb(o1, o2, o3, o4));
     }
 
     /**
@@ -489,7 +553,7 @@ public class Observable<T> {
      * @see <a href="http://reactivex.io/documentation/operators/amb.html">ReactiveX operators documentation: Amb</a>
      */
     public static <T> Observable<T> amb(Observable<? extends T> o1, Observable<? extends T> o2, Observable<? extends T> o3, Observable<? extends T> o4, Observable<? extends T> o5) {
-        return create(OnSubscribeAmb.amb(o1, o2, o3, o4, o5));
+        return unsafeCreate(OnSubscribeAmb.amb(o1, o2, o3, o4, o5));
     }
 
     /**
@@ -523,7 +587,7 @@ public class Observable<T> {
      * @see <a href="http://reactivex.io/documentation/operators/amb.html">ReactiveX operators documentation: Amb</a>
      */
     public static <T> Observable<T> amb(Observable<? extends T> o1, Observable<? extends T> o2, Observable<? extends T> o3, Observable<? extends T> o4, Observable<? extends T> o5, Observable<? extends T> o6) {
-        return create(OnSubscribeAmb.amb(o1, o2, o3, o4, o5, o6));
+        return unsafeCreate(OnSubscribeAmb.amb(o1, o2, o3, o4, o5, o6));
     }
 
     /**
@@ -559,7 +623,7 @@ public class Observable<T> {
      * @see <a href="http://reactivex.io/documentation/operators/amb.html">ReactiveX operators documentation: Amb</a>
      */
     public static <T> Observable<T> amb(Observable<? extends T> o1, Observable<? extends T> o2, Observable<? extends T> o3, Observable<? extends T> o4, Observable<? extends T> o5, Observable<? extends T> o6, Observable<? extends T> o7) {
-        return create(OnSubscribeAmb.amb(o1, o2, o3, o4, o5, o6, o7));
+        return unsafeCreate(OnSubscribeAmb.amb(o1, o2, o3, o4, o5, o6, o7));
     }
 
     /**
@@ -597,7 +661,7 @@ public class Observable<T> {
      * @see <a href="http://reactivex.io/documentation/operators/amb.html">ReactiveX operators documentation: Amb</a>
      */
     public static <T> Observable<T> amb(Observable<? extends T> o1, Observable<? extends T> o2, Observable<? extends T> o3, Observable<? extends T> o4, Observable<? extends T> o5, Observable<? extends T> o6, Observable<? extends T> o7, Observable<? extends T> o8) {
-        return create(OnSubscribeAmb.amb(o1, o2, o3, o4, o5, o6, o7, o8));
+        return unsafeCreate(OnSubscribeAmb.amb(o1, o2, o3, o4, o5, o6, o7, o8));
     }
 
     /**
@@ -637,7 +701,7 @@ public class Observable<T> {
      * @see <a href="http://reactivex.io/documentation/operators/amb.html">ReactiveX operators documentation: Amb</a>
      */
     public static <T> Observable<T> amb(Observable<? extends T> o1, Observable<? extends T> o2, Observable<? extends T> o3, Observable<? extends T> o4, Observable<? extends T> o5, Observable<? extends T> o6, Observable<? extends T> o7, Observable<? extends T> o8, Observable<? extends T> o9) {
-        return create(OnSubscribeAmb.amb(o1, o2, o3, o4, o5, o6, o7, o8, o9));
+        return unsafeCreate(OnSubscribeAmb.amb(o1, o2, o3, o4, o5, o6, o7, o8, o9));
     }
 
     /**
@@ -1020,7 +1084,7 @@ public class Observable<T> {
      * @see <a href="http://reactivex.io/documentation/operators/combinelatest.html">ReactiveX operators documentation: CombineLatest</a>
      */
     public static <T, R> Observable<R> combineLatest(List<? extends Observable<? extends T>> sources, FuncN<? extends R> combineFunction) {
-        return create(new OnSubscribeCombineLatest<T, R>(sources, combineFunction));
+        return unsafeCreate(new OnSubscribeCombineLatest<T, R>(sources, combineFunction));
     }
 
     /**
@@ -1049,7 +1113,7 @@ public class Observable<T> {
      * @see <a href="http://reactivex.io/documentation/operators/combinelatest.html">ReactiveX operators documentation: CombineLatest</a>
      */
     public static <T, R> Observable<R> combineLatest(Iterable<? extends Observable<? extends T>> sources, FuncN<? extends R> combineFunction) {
-        return create(new OnSubscribeCombineLatest<T, R>(sources, combineFunction));
+        return unsafeCreate(new OnSubscribeCombineLatest<T, R>(sources, combineFunction));
     }
 
     /**
@@ -1080,7 +1144,7 @@ public class Observable<T> {
      * @see <a href="http://reactivex.io/documentation/operators/combinelatest.html">ReactiveX operators documentation: CombineLatest</a>
      */
     public static <T, R> Observable<R> combineLatestDelayError(Iterable<? extends Observable<? extends T>> sources, FuncN<? extends R> combineFunction) {
-        return create(new OnSubscribeCombineLatest<T, R>(null, sources, combineFunction, RxRingBuffer.SIZE, true));
+        return unsafeCreate(new OnSubscribeCombineLatest<T, R>(null, sources, combineFunction, RxRingBuffer.SIZE, true));
     }
 
     /**
@@ -1762,7 +1826,7 @@ public class Observable<T> {
      * @see <a href="http://reactivex.io/documentation/operators/defer.html">ReactiveX operators documentation: Defer</a>
      */
     public static <T> Observable<T> defer(Func0<Observable<T>> observableFactory) {
-        return create(new OnSubscribeDefer<T>(observableFactory));
+        return unsafeCreate(new OnSubscribeDefer<T>(observableFactory));
     }
 
     /**
@@ -1808,7 +1872,7 @@ public class Observable<T> {
      * @see <a href="http://reactivex.io/documentation/operators/empty-never-throw.html">ReactiveX operators documentation: Throw</a>
      */
     public static <T> Observable<T> error(Throwable exception) {
-        return create(new OnSubscribeThrow<T>(exception));
+        return unsafeCreate(new OnSubscribeThrow<T>(exception));
     }
 
     /**
@@ -1838,7 +1902,7 @@ public class Observable<T> {
      */
     @SuppressWarnings("cast")
     public static <T> Observable<T> from(Future<? extends T> future) {
-        return (Observable<T>)create(OnSubscribeToObservableFuture.toObservableFuture(future));
+        return (Observable<T>)unsafeCreate(OnSubscribeToObservableFuture.toObservableFuture(future));
     }
 
     /**
@@ -1872,7 +1936,7 @@ public class Observable<T> {
      */
     @SuppressWarnings("cast")
     public static <T> Observable<T> from(Future<? extends T> future, long timeout, TimeUnit unit) {
-        return (Observable<T>)create(OnSubscribeToObservableFuture.toObservableFuture(future, timeout, unit));
+        return (Observable<T>)unsafeCreate(OnSubscribeToObservableFuture.toObservableFuture(future, timeout, unit));
     }
 
     /**
@@ -1904,7 +1968,7 @@ public class Observable<T> {
     public static <T> Observable<T> from(Future<? extends T> future, Scheduler scheduler) {
         // TODO in a future revision the Scheduler will become important because we'll start polling instead of blocking on the Future
         @SuppressWarnings("cast")
-        Observable<T> o = (Observable<T>)create(OnSubscribeToObservableFuture.toObservableFuture(future));
+        Observable<T> o = (Observable<T>)unsafeCreate(OnSubscribeToObservableFuture.toObservableFuture(future));
         return o.subscribeOn(scheduler);
     }
 
@@ -1929,7 +1993,7 @@ public class Observable<T> {
      * @see <a href="http://reactivex.io/documentation/operators/from.html">ReactiveX operators documentation: From</a>
      */
     public static <T> Observable<T> from(Iterable<? extends T> iterable) {
-        return create(new OnSubscribeFromIterable<T>(iterable));
+        return unsafeCreate(new OnSubscribeFromIterable<T>(iterable));
     }
 
     /**
@@ -1959,7 +2023,7 @@ public class Observable<T> {
         if (n == 1) {
             return just(array[0]);
         }
-        return create(new OnSubscribeFromArray<T>(array));
+        return unsafeCreate(new OnSubscribeFromArray<T>(array));
     }
 
     /**
@@ -2002,10 +2066,12 @@ public class Observable<T> {
      * @see Emitter.BackpressureMode
      * @see rx.functions.Cancellable
      * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
+     * @deprecated 1.2.7 - aliased to {@link #create(Action1, rx.Emitter.BackpressureMode)}, will be removed in 1.3.0
      */
     @Experimental
+    @Deprecated
     public static <T> Observable<T> fromEmitter(Action1<Emitter<T>> emitter, Emitter.BackpressureMode backpressure) {
-        return create(new OnSubscribeFromEmitter<T>(emitter, backpressure));
+        return unsafeCreate(new OnSubscribeCreate<T>(emitter, backpressure));
     }
 
     /**
@@ -2033,7 +2099,7 @@ public class Observable<T> {
      * @since 1.2
      */
     public static <T> Observable<T> fromCallable(Callable<? extends T> func) {
-        return create(new OnSubscribeFromCallable<T>(func));
+        return unsafeCreate(new OnSubscribeFromCallable<T>(func));
     }
 
     /**
@@ -2140,7 +2206,7 @@ public class Observable<T> {
      * @since 1.0.12
      */
     public static Observable<Long> interval(long initialDelay, long period, TimeUnit unit, Scheduler scheduler) {
-        return create(new OnSubscribeTimerPeriodically(initialDelay, period, unit, scheduler));
+        return unsafeCreate(new OnSubscribeTimerPeriodically(initialDelay, period, unit, scheduler));
     }
 
     /**
@@ -3473,7 +3539,7 @@ public class Observable<T> {
         if (count == 1) {
             return Observable.just(start);
         }
-        return Observable.create(new OnSubscribeRange(start, start + (count - 1)));
+        return Observable.unsafeCreate(new OnSubscribeRange(start, start + (count - 1)));
     }
 
     /**
@@ -3733,7 +3799,7 @@ public class Observable<T> {
      * @see <a href="http://reactivex.io/documentation/operators/timer.html">ReactiveX operators documentation: Timer</a>
      */
     public static Observable<Long> timer(long delay, TimeUnit unit, Scheduler scheduler) {
-        return create(new OnSubscribeTimerOnce(delay, unit, scheduler));
+        return unsafeCreate(new OnSubscribeTimerOnce(delay, unit, scheduler));
     }
 
     /**
@@ -3803,7 +3869,7 @@ public class Observable<T> {
             final Func0<Resource> resourceFactory,
             final Func1<? super Resource, ? extends Observable<? extends T>> observableFactory,
             final Action1<? super Resource> disposeAction, boolean disposeEagerly) {
-        return create(new OnSubscribeUsing<T, Resource>(resourceFactory, observableFactory, disposeAction, disposeEagerly));
+        return unsafeCreate(new OnSubscribeUsing<T, Resource>(resourceFactory, observableFactory, disposeAction, disposeEagerly));
     }
 
     /**
@@ -5070,7 +5136,7 @@ public class Observable<T> {
          *
          * It should use last() not takeLast(1) since it needs to emit an error if the sequence is empty.
          */
-        return create(new OnSubscribeCollect<T, R>(this, stateFactory, collector));
+        return unsafeCreate(new OnSubscribeCollect<T, R>(this, stateFactory, collector));
     }
 
     /**
@@ -5103,7 +5169,7 @@ public class Observable<T> {
             ScalarSynchronousObservable<T> scalar = (ScalarSynchronousObservable<T>) this;
             return scalar.scalarFlatMap(func);
         }
-        return create(new OnSubscribeConcatMap<T, R>(this, func, 2, OnSubscribeConcatMap.IMMEDIATE));
+        return unsafeCreate(new OnSubscribeConcatMap<T, R>(this, func, 2, OnSubscribeConcatMap.IMMEDIATE));
     }
 
     /**
@@ -5134,7 +5200,7 @@ public class Observable<T> {
             ScalarSynchronousObservable<T> scalar = (ScalarSynchronousObservable<T>) this;
             return scalar.scalarFlatMap(func);
         }
-        return create(new OnSubscribeConcatMap<T, R>(this, func, 2, OnSubscribeConcatMap.END));
+        return unsafeCreate(new OnSubscribeConcatMap<T, R>(this, func, 2, OnSubscribeConcatMap.END));
     }
 
     /**
@@ -5580,7 +5646,7 @@ public class Observable<T> {
      * @see <a href="http://reactivex.io/documentation/operators/delay.html">ReactiveX operators documentation: Delay</a>
      */
     public final Observable<T> delaySubscription(long delay, TimeUnit unit, Scheduler scheduler) {
-        return create(new OnSubscribeDelaySubscription<T>(this, delay, unit, scheduler));
+        return unsafeCreate(new OnSubscribeDelaySubscription<T>(this, delay, unit, scheduler));
     }
 
     /**
@@ -5606,7 +5672,7 @@ public class Observable<T> {
      * @see <a href="http://reactivex.io/documentation/operators/delay.html">ReactiveX operators documentation: Delay</a>
      */
     public final <U> Observable<T> delaySubscription(Func0<? extends Observable<U>> subscriptionDelay) {
-        return create(new OnSubscribeDelaySubscriptionWithSelector<T, U>(this, subscriptionDelay));
+        return unsafeCreate(new OnSubscribeDelaySubscriptionWithSelector<T, U>(this, subscriptionDelay));
     }
 
     /**
@@ -5633,7 +5699,7 @@ public class Observable<T> {
         if (other == null) {
             throw new NullPointerException();
         }
-        return create(new OnSubscribeDelaySubscriptionOther<T, U>(this, other));
+        return unsafeCreate(new OnSubscribeDelaySubscriptionOther<T, U>(this, other));
     }
 
     /**
@@ -5800,7 +5866,7 @@ public class Observable<T> {
         Action1<Throwable> onError = Actions.empty();
         Observer<T> observer = new ActionObserver<T>(onNext, onError, onCompleted);
 
-        return create(new OnSubscribeDoOnEach<T>(this, observer));
+        return unsafeCreate(new OnSubscribeDoOnEach<T>(this, observer));
     }
 
     /**
@@ -5822,7 +5888,7 @@ public class Observable<T> {
      */
     public final Observable<T> doOnEach(final Action1<Notification<? super T>> onNotification) {
         Observer<T> observer = new ActionNotificationObserver<T>(onNotification);
-        return create(new OnSubscribeDoOnEach<T>(this, observer));
+        return unsafeCreate(new OnSubscribeDoOnEach<T>(this, observer));
     }
 
     /**
@@ -5849,7 +5915,7 @@ public class Observable<T> {
      * @see <a href="http://reactivex.io/documentation/operators/do.html">ReactiveX operators documentation: Do</a>
      */
     public final Observable<T> doOnEach(Observer<? super T> observer) {
-        return create(new OnSubscribeDoOnEach<T>(this, observer));
+        return unsafeCreate(new OnSubscribeDoOnEach<T>(this, observer));
     }
 
     /**
@@ -5877,7 +5943,7 @@ public class Observable<T> {
         Action0 onCompleted = Actions.empty();
         Observer<T> observer = new ActionObserver<T>(onNext, onError, onCompleted);
 
-        return create(new OnSubscribeDoOnEach<T>(this, observer));
+        return unsafeCreate(new OnSubscribeDoOnEach<T>(this, observer));
     }
 
     /**
@@ -5902,7 +5968,7 @@ public class Observable<T> {
         Action0 onCompleted = Actions.empty();
         Observer<T> observer = new ActionObserver<T>(onNext, onError, onCompleted);
 
-        return create(new OnSubscribeDoOnEach<T>(this, observer));
+        return unsafeCreate(new OnSubscribeDoOnEach<T>(this, observer));
     }
 
     /**
@@ -5983,7 +6049,7 @@ public class Observable<T> {
 
         Observer<T> observer = new ActionObserver<T>(onNext, onError, onTerminate);
 
-        return create(new OnSubscribeDoOnEach<T>(this, observer));
+        return unsafeCreate(new OnSubscribeDoOnEach<T>(this, observer));
     }
 
     /**
@@ -6559,7 +6625,7 @@ public class Observable<T> {
      * @see <a href="http://reactivex.io/documentation/operators/filter.html">ReactiveX operators documentation: Filter</a>
      */
     public final Observable<T> filter(Func1<? super T, Boolean> predicate) {
-        return create(new OnSubscribeFilter<T>(this, predicate));
+        return unsafeCreate(new OnSubscribeFilter<T>(this, predicate));
     }
 
     /**
@@ -7301,7 +7367,7 @@ public class Observable<T> {
     public final <T2, D1, D2, R> Observable<R> groupJoin(Observable<T2> right, Func1<? super T, ? extends Observable<D1>> leftDuration,
             Func1<? super T2, ? extends Observable<D2>> rightDuration,
             Func2<? super T, ? super Observable<T2>, ? extends R> resultSelector) {
-        return create(new OnSubscribeGroupJoin<T, T2, D1, D2, R>(this, right, leftDuration, rightDuration, resultSelector));
+        return unsafeCreate(new OnSubscribeGroupJoin<T, T2, D1, D2, R>(this, right, leftDuration, rightDuration, resultSelector));
     }
 
     /**
@@ -7383,7 +7449,7 @@ public class Observable<T> {
     public final <TRight, TLeftDuration, TRightDuration, R> Observable<R> join(Observable<TRight> right, Func1<T, Observable<TLeftDuration>> leftDurationSelector,
             Func1<TRight, Observable<TRightDuration>> rightDurationSelector,
             Func2<T, TRight, R> resultSelector) {
-        return create(new OnSubscribeJoin<T, TRight, TLeftDuration, TRightDuration, R>(this, right, leftDurationSelector, rightDurationSelector, resultSelector));
+        return unsafeCreate(new OnSubscribeJoin<T, TRight, TLeftDuration, TRightDuration, R>(this, right, leftDurationSelector, rightDurationSelector, resultSelector));
     }
 
     /**
@@ -7531,7 +7597,7 @@ public class Observable<T> {
      * @see <a href="http://reactivex.io/documentation/operators/map.html">ReactiveX operators documentation: Map</a>
      */
     public final <R> Observable<R> map(Func1<? super T, ? extends R> func) {
-        return create(new OnSubscribeMap<T, R>(this, func));
+        return unsafeCreate(new OnSubscribeMap<T, R>(this, func));
     }
 
     private <R> Observable<R> mapNotification(Func1<? super T, ? extends R> onNext, Func1<? super Throwable, ? extends R> onError, Func0<? extends R> onCompleted) {
@@ -8108,7 +8174,7 @@ public class Observable<T> {
      */
     @Experimental
     public final Observable<T> onTerminateDetach() {
-        return create(new OnSubscribeDetach<T>(this));
+        return unsafeCreate(new OnSubscribeDetach<T>(this));
     }
 
     /**
@@ -8225,7 +8291,7 @@ public class Observable<T> {
          *
          * It should use last() not takeLast(1) since it needs to emit an error if the sequence is empty.
          */
-        return create(new OnSubscribeReduce<T>(this, accumulator));
+        return unsafeCreate(new OnSubscribeReduce<T>(this, accumulator));
     }
 
     /**
@@ -8273,7 +8339,7 @@ public class Observable<T> {
      * @see <a href="http://en.wikipedia.org/wiki/Fold_(higher-order_function)">Wikipedia: Fold (higher-order function)</a>
      */
     public final <R> Observable<R> reduce(R initialValue, Func2<R, ? super T, R> accumulator) {
-        return create(new OnSubscribeReduceSeed<T, R>(this, initialValue, accumulator));
+        return unsafeCreate(new OnSubscribeReduceSeed<T, R>(this, initialValue, accumulator));
     }
 
     /**
@@ -9486,7 +9552,7 @@ public class Observable<T> {
      * @see <a href="http://reactivex.io/documentation/operators/skip.html">ReactiveX operators documentation: Skip</a>
      */
     public final Observable<T> skip(long time, TimeUnit unit, Scheduler scheduler) {
-        return create(new OnSubscribeSkipTimed<T>(this, time, unit, scheduler));
+        return unsafeCreate(new OnSubscribeSkipTimed<T>(this, time, unit, scheduler));
     }
 
     /**
@@ -10288,7 +10354,7 @@ public class Observable<T> {
         if (this instanceof ScalarSynchronousObservable) {
             return ((ScalarSynchronousObservable<T>)this).scalarScheduleOn(scheduler);
         }
-        return create(new OperatorSubscribeOn<T>(this, scheduler));
+        return unsafeCreate(new OperatorSubscribeOn<T>(this, scheduler));
     }
 
     /**
@@ -10483,7 +10549,7 @@ public class Observable<T> {
         if (count == 0) {
             return ignoreElements();
         } else if (count == 1) {
-            return create(new OnSubscribeTakeLastOne<T>(this));
+            return unsafeCreate(new OnSubscribeTakeLastOne<T>(this));
         } else {
             return lift(new OperatorTakeLast<T>(count));
         }
@@ -11441,7 +11507,7 @@ public class Observable<T> {
      * @see <a href="http://reactivex.io/documentation/operators/to.html">ReactiveX operators documentation: To</a>
      */
     public final <K> Observable<Map<K, T>> toMap(Func1<? super T, ? extends K> keySelector) {
-        return create(new OnSubscribeToMap<T, K, T>(this, keySelector, UtilityFunctions.<T>identity()));
+        return unsafeCreate(new OnSubscribeToMap<T, K, T>(this, keySelector, UtilityFunctions.<T>identity()));
     }
 
     /**
@@ -11471,7 +11537,7 @@ public class Observable<T> {
      * @see <a href="http://reactivex.io/documentation/operators/to.html">ReactiveX operators documentation: To</a>
      */
     public final <K, V> Observable<Map<K, V>> toMap(Func1<? super T, ? extends K> keySelector, Func1<? super T, ? extends V> valueSelector) {
-        return create(new OnSubscribeToMap<T, K, V>(this, keySelector, valueSelector));
+        return unsafeCreate(new OnSubscribeToMap<T, K, V>(this, keySelector, valueSelector));
     }
 
     /**
@@ -11500,7 +11566,7 @@ public class Observable<T> {
      * @see <a href="http://reactivex.io/documentation/operators/to.html">ReactiveX operators documentation: To</a>
      */
     public final <K, V> Observable<Map<K, V>> toMap(Func1<? super T, ? extends K> keySelector, Func1<? super T, ? extends V> valueSelector, Func0<? extends Map<K, V>> mapFactory) {
-        return create(new OnSubscribeToMap<T, K, V>(this, keySelector, valueSelector, mapFactory));
+        return unsafeCreate(new OnSubscribeToMap<T, K, V>(this, keySelector, valueSelector, mapFactory));
     }
 
     /**
@@ -11523,7 +11589,7 @@ public class Observable<T> {
      * @see <a href="http://reactivex.io/documentation/operators/to.html">ReactiveX operators documentation: To</a>
      */
     public final <K> Observable<Map<K, Collection<T>>> toMultimap(Func1<? super T, ? extends K> keySelector) {
-        return create(new OnSubscribeToMultimap<T, K, T>(this, keySelector, UtilityFunctions.<T>identity()));
+        return unsafeCreate(new OnSubscribeToMultimap<T, K, T>(this, keySelector, UtilityFunctions.<T>identity()));
     }
 
     /**
@@ -11551,7 +11617,7 @@ public class Observable<T> {
      * @see <a href="http://reactivex.io/documentation/operators/to.html">ReactiveX operators documentation: To</a>
      */
     public final <K, V> Observable<Map<K, Collection<V>>> toMultimap(Func1<? super T, ? extends K> keySelector, Func1<? super T, ? extends V> valueSelector) {
-        return create(new OnSubscribeToMultimap<T, K, V>(this, keySelector, valueSelector));
+        return unsafeCreate(new OnSubscribeToMultimap<T, K, V>(this, keySelector, valueSelector));
     }
 
     /**
@@ -11581,7 +11647,7 @@ public class Observable<T> {
      * @see <a href="http://reactivex.io/documentation/operators/to.html">ReactiveX operators documentation: To</a>
      */
     public final <K, V> Observable<Map<K, Collection<V>>> toMultimap(Func1<? super T, ? extends K> keySelector, Func1<? super T, ? extends V> valueSelector, Func0<? extends Map<K, Collection<V>>> mapFactory) {
-        return create(new OnSubscribeToMultimap<T, K, V>(this, keySelector, valueSelector, mapFactory));
+        return unsafeCreate(new OnSubscribeToMultimap<T, K, V>(this, keySelector, valueSelector, mapFactory));
     }
 
     /**
@@ -11613,7 +11679,7 @@ public class Observable<T> {
      * @see <a href="http://reactivex.io/documentation/operators/to.html">ReactiveX operators documentation: To</a>
      */
     public final <K, V> Observable<Map<K, Collection<V>>> toMultimap(Func1<? super T, ? extends K> keySelector, Func1<? super T, ? extends V> valueSelector, Func0<? extends Map<K, Collection<V>>> mapFactory, Func1<? super K, ? extends Collection<V>> collectionFactory) {
-        return create(new OnSubscribeToMultimap<T, K, V>(this, keySelector, valueSelector, mapFactory, collectionFactory));
+        return unsafeCreate(new OnSubscribeToMultimap<T, K, V>(this, keySelector, valueSelector, mapFactory, collectionFactory));
     }
 
     /**
@@ -11857,7 +11923,7 @@ public class Observable<T> {
      */
     @Experimental
     public final <T1, T2, R> Observable<R> withLatestFrom(Observable<T1> o1, Observable<T2> o2, Func3<? super T, ? super T1, ? super T2, R> combiner) {
-        return create(new OperatorWithLatestFromMany<T, R>(this, new Observable<?>[] { o1, o2 }, null, Functions.fromFunc(combiner)));
+        return unsafeCreate(new OperatorWithLatestFromMany<T, R>(this, new Observable<?>[] { o1, o2 }, null, Functions.fromFunc(combiner)));
     }
 
     /**
@@ -11894,7 +11960,7 @@ public class Observable<T> {
             Observable<T1> o1, Observable<T2> o2,
             Observable<T3> o3,
             Func4<? super T, ? super T1, ? super T2, ? super T3, R> combiner) {
-        return create(new OperatorWithLatestFromMany<T, R>(this,
+        return unsafeCreate(new OperatorWithLatestFromMany<T, R>(this,
                 new Observable<?>[] { o1, o2, o3 }, null, Functions.fromFunc(combiner)));
     }
 
@@ -11934,7 +12000,7 @@ public class Observable<T> {
             Observable<T1> o1, Observable<T2> o2,
             Observable<T3> o3, Observable<T4> o4,
             Func5<? super T, ? super T1, ? super T2, ? super T3, ? super T4, R> combiner) {
-        return create(new OperatorWithLatestFromMany<T, R>(this,
+        return unsafeCreate(new OperatorWithLatestFromMany<T, R>(this,
                 new Observable<?>[] { o1, o2, o3, o4 }, null, Functions.fromFunc(combiner)));
     }
     /**
@@ -11976,7 +12042,7 @@ public class Observable<T> {
             Observable<T3> o3, Observable<T4> o4,
             Observable<T5> o5,
             Func6<? super T, ? super T1, ? super T2, ? super T3, ? super T4, ? super T5, R> combiner) {
-        return create(new OperatorWithLatestFromMany<T, R>(this,
+        return unsafeCreate(new OperatorWithLatestFromMany<T, R>(this,
                 new Observable<?>[] { o1, o2, o3, o4, o5 }, null, Functions.fromFunc(combiner)));
     }
 
@@ -12021,7 +12087,7 @@ public class Observable<T> {
             Observable<T3> o3, Observable<T4> o4,
             Observable<T5> o5, Observable<T6> o6,
             Func7<? super T, ? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, R> combiner) {
-        return create(new OperatorWithLatestFromMany<T, R>(this,
+        return unsafeCreate(new OperatorWithLatestFromMany<T, R>(this,
                 new Observable<?>[] { o1, o2, o3, o4, o5, o6 }, null, Functions.fromFunc(combiner)));
     }
 
@@ -12069,7 +12135,7 @@ public class Observable<T> {
             Observable<T5> o5, Observable<T6> o6,
             Observable<T7> o7,
             Func8<? super T, ? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, R> combiner) {
-        return create(new OperatorWithLatestFromMany<T, R>(this,
+        return unsafeCreate(new OperatorWithLatestFromMany<T, R>(this,
                 new Observable<?>[] { o1, o2, o3, o4, o5, o6, o7 }, null, Functions.fromFunc(combiner)));
     }
 
@@ -12119,7 +12185,7 @@ public class Observable<T> {
             Observable<T5> o5, Observable<T6> o6,
             Observable<T7> o7, Observable<T8> o8,
             Func9<? super T, ? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, R> combiner) {
-        return create(new OperatorWithLatestFromMany<T, R>(this,
+        return unsafeCreate(new OperatorWithLatestFromMany<T, R>(this,
                 new Observable<?>[] { o1, o2, o3, o4, o5, o6, o7, o8 }, null, Functions.fromFunc(combiner)));
     }
 
@@ -12149,7 +12215,7 @@ public class Observable<T> {
      */
     @Experimental
     public final <R> Observable<R> withLatestFrom(Observable<?>[] others, FuncN<R> combiner) {
-        return create(new OperatorWithLatestFromMany<T, R>(this, others, null, combiner));
+        return unsafeCreate(new OperatorWithLatestFromMany<T, R>(this, others, null, combiner));
     }
 
     /**
@@ -12178,7 +12244,7 @@ public class Observable<T> {
      */
     @Experimental
     public final <R> Observable<R> withLatestFrom(Iterable<Observable<?>> others, FuncN<R> combiner) {
-        return create(new OperatorWithLatestFromMany<T, R>(this, null, others, combiner));
+        return unsafeCreate(new OperatorWithLatestFromMany<T, R>(this, null, others, combiner));
     }
 
     /**

@@ -38,12 +38,12 @@ public class OnSubscribeFromIterableTest {
 
     @Test(expected = NullPointerException.class)
     public void testNull() {
-        Observable.create(new OnSubscribeFromIterable<String>(null));
+        Observable.unsafeCreate(new OnSubscribeFromIterable<String>(null));
     }
 
     @Test
     public void testListIterable() {
-        Observable<String> observable = Observable.create(new OnSubscribeFromIterable<String>(Arrays.<String> asList("one", "two", "three")));
+        Observable<String> observable = Observable.unsafeCreate(new OnSubscribeFromIterable<String>(Arrays.<String> asList("one", "two", "three")));
 
         @SuppressWarnings("unchecked")
         Observer<String> observer = mock(Observer.class);
@@ -86,7 +86,7 @@ public class OnSubscribeFromIterableTest {
             }
 
         };
-        Observable<String> observable = Observable.create(new OnSubscribeFromIterable<String>(it));
+        Observable<String> observable = Observable.unsafeCreate(new OnSubscribeFromIterable<String>(it));
 
         @SuppressWarnings("unchecked")
         Observer<String> observer = mock(Observer.class);

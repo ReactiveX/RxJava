@@ -55,8 +55,8 @@ public class OperatorMergeDelayErrorTest {
 
     @Test
     public void testErrorDelayed1() {
-        final Observable<String> o1 = Observable.create(new TestErrorObservable("four", null, "six")); // we expect to lose "six" from the source (and it should never be sent by the source since onError was called
-        final Observable<String> o2 = Observable.create(new TestErrorObservable("one", "two", "three"));
+        final Observable<String> o1 = Observable.unsafeCreate(new TestErrorObservable("four", null, "six")); // we expect to lose "six" from the source (and it should never be sent by the source since onError was called
+        final Observable<String> o2 = Observable.unsafeCreate(new TestErrorObservable("one", "two", "three"));
 
         Observable<String> m = Observable.mergeDelayError(o1, o2);
         m.subscribe(stringObserver);
@@ -76,10 +76,10 @@ public class OperatorMergeDelayErrorTest {
 
     @Test
     public void testErrorDelayed2() {
-        final Observable<String> o1 = Observable.create(new TestErrorObservable("one", "two", "three"));
-        final Observable<String> o2 = Observable.create(new TestErrorObservable("four", null, "six")); // we expect to lose "six" from the source (and it should never be sent by the source since onError was called
-        final Observable<String> o3 = Observable.create(new TestErrorObservable("seven", "eight", null));
-        final Observable<String> o4 = Observable.create(new TestErrorObservable("nine"));
+        final Observable<String> o1 = Observable.unsafeCreate(new TestErrorObservable("one", "two", "three"));
+        final Observable<String> o2 = Observable.unsafeCreate(new TestErrorObservable("four", null, "six")); // we expect to lose "six" from the source (and it should never be sent by the source since onError was called
+        final Observable<String> o3 = Observable.unsafeCreate(new TestErrorObservable("seven", "eight", null));
+        final Observable<String> o4 = Observable.unsafeCreate(new TestErrorObservable("nine"));
 
         Observable<String> m = Observable.mergeDelayError(o1, o2, o3, o4);
         m.subscribe(stringObserver);
@@ -101,10 +101,10 @@ public class OperatorMergeDelayErrorTest {
 
     @Test
     public void testErrorDelayed3() {
-        final Observable<String> o1 = Observable.create(new TestErrorObservable("one", "two", "three"));
-        final Observable<String> o2 = Observable.create(new TestErrorObservable("four", "five", "six"));
-        final Observable<String> o3 = Observable.create(new TestErrorObservable("seven", "eight", null));
-        final Observable<String> o4 = Observable.create(new TestErrorObservable("nine"));
+        final Observable<String> o1 = Observable.unsafeCreate(new TestErrorObservable("one", "two", "three"));
+        final Observable<String> o2 = Observable.unsafeCreate(new TestErrorObservable("four", "five", "six"));
+        final Observable<String> o3 = Observable.unsafeCreate(new TestErrorObservable("seven", "eight", null));
+        final Observable<String> o4 = Observable.unsafeCreate(new TestErrorObservable("nine"));
 
         Observable<String> m = Observable.mergeDelayError(o1, o2, o3, o4);
         m.subscribe(stringObserver);
@@ -124,10 +124,10 @@ public class OperatorMergeDelayErrorTest {
 
     @Test
     public void testErrorDelayed4() {
-        final Observable<String> o1 = Observable.create(new TestErrorObservable("one", "two", "three"));
-        final Observable<String> o2 = Observable.create(new TestErrorObservable("four", "five", "six"));
-        final Observable<String> o3 = Observable.create(new TestErrorObservable("seven", "eight"));
-        final Observable<String> o4 = Observable.create(new TestErrorObservable("nine", null));
+        final Observable<String> o1 = Observable.unsafeCreate(new TestErrorObservable("one", "two", "three"));
+        final Observable<String> o2 = Observable.unsafeCreate(new TestErrorObservable("four", "five", "six"));
+        final Observable<String> o3 = Observable.unsafeCreate(new TestErrorObservable("seven", "eight"));
+        final Observable<String> o4 = Observable.unsafeCreate(new TestErrorObservable("nine", null));
 
         Observable<String> m = Observable.mergeDelayError(o1, o2, o3, o4);
         m.subscribe(stringObserver);
@@ -153,7 +153,7 @@ public class OperatorMergeDelayErrorTest {
         // throw the error at the very end so no onComplete will be called after it
         final TestAsyncErrorObservable o4 = new TestAsyncErrorObservable("nine", null);
 
-        Observable<String> m = Observable.mergeDelayError(Observable.create(o1), Observable.create(o2), Observable.create(o3), Observable.create(o4));
+        Observable<String> m = Observable.mergeDelayError(Observable.unsafeCreate(o1), Observable.unsafeCreate(o2), Observable.unsafeCreate(o3), Observable.unsafeCreate(o4));
         m.subscribe(stringObserver);
 
         try {
@@ -180,8 +180,8 @@ public class OperatorMergeDelayErrorTest {
 
     @Test
     public void testCompositeErrorDelayed1() {
-        final Observable<String> o1 = Observable.create(new TestErrorObservable("four", null, "six")); // we expect to lose "six" from the source (and it should never be sent by the source since onError was called
-        final Observable<String> o2 = Observable.create(new TestErrorObservable("one", "two", null));
+        final Observable<String> o1 = Observable.unsafeCreate(new TestErrorObservable("four", null, "six")); // we expect to lose "six" from the source (and it should never be sent by the source since onError was called
+        final Observable<String> o2 = Observable.unsafeCreate(new TestErrorObservable("one", "two", null));
 
         Observable<String> m = Observable.mergeDelayError(o1, o2);
         m.subscribe(stringObserver);
@@ -200,8 +200,8 @@ public class OperatorMergeDelayErrorTest {
 
     @Test
     public void testCompositeErrorDelayed2() {
-        final Observable<String> o1 = Observable.create(new TestErrorObservable("four", null, "six")); // we expect to lose "six" from the source (and it should never be sent by the source since onError was called
-        final Observable<String> o2 = Observable.create(new TestErrorObservable("one", "two", null));
+        final Observable<String> o1 = Observable.unsafeCreate(new TestErrorObservable("four", null, "six")); // we expect to lose "six" from the source (and it should never be sent by the source since onError was called
+        final Observable<String> o2 = Observable.unsafeCreate(new TestErrorObservable("one", "two", null));
 
         Observable<String> m = Observable.mergeDelayError(o1, o2);
         CaptureObserver w = new CaptureObserver();
@@ -223,10 +223,10 @@ public class OperatorMergeDelayErrorTest {
 
     @Test
     public void testMergeObservableOfObservables() {
-        final Observable<String> o1 = Observable.create(new TestSynchronousObservable());
-        final Observable<String> o2 = Observable.create(new TestSynchronousObservable());
+        final Observable<String> o1 = Observable.unsafeCreate(new TestSynchronousObservable());
+        final Observable<String> o2 = Observable.unsafeCreate(new TestSynchronousObservable());
 
-        Observable<Observable<String>> observableOfObservables = Observable.create(new Observable.OnSubscribe<Observable<String>>() {
+        Observable<Observable<String>> observableOfObservables = Observable.unsafeCreate(new Observable.OnSubscribe<Observable<String>>() {
 
             @Override
             public void call(Subscriber<? super Observable<String>> observer) {
@@ -247,8 +247,8 @@ public class OperatorMergeDelayErrorTest {
 
     @Test
     public void testMergeArray() {
-        final Observable<String> o1 = Observable.create(new TestSynchronousObservable());
-        final Observable<String> o2 = Observable.create(new TestSynchronousObservable());
+        final Observable<String> o1 = Observable.unsafeCreate(new TestSynchronousObservable());
+        final Observable<String> o2 = Observable.unsafeCreate(new TestSynchronousObservable());
 
         Observable<String> m = Observable.mergeDelayError(o1, o2);
         m.subscribe(stringObserver);
@@ -260,8 +260,8 @@ public class OperatorMergeDelayErrorTest {
 
     @Test
     public void testMergeList() {
-        final Observable<String> o1 = Observable.create(new TestSynchronousObservable());
-        final Observable<String> o2 = Observable.create(new TestSynchronousObservable());
+        final Observable<String> o1 = Observable.unsafeCreate(new TestSynchronousObservable());
+        final Observable<String> o2 = Observable.unsafeCreate(new TestSynchronousObservable());
         List<Observable<String>> listOfObservables = new ArrayList<Observable<String>>();
         listOfObservables.add(o1);
         listOfObservables.add(o2);
@@ -277,8 +277,8 @@ public class OperatorMergeDelayErrorTest {
     // This is pretty much a clone of testMergeList but with the overloaded MergeDelayError for Iterables
     @Test
     public void mergeIterable() {
-        final Observable<String> o1 = Observable.create(new TestSynchronousObservable());
-        final Observable<String> o2 = Observable.create(new TestSynchronousObservable());
+        final Observable<String> o1 = Observable.unsafeCreate(new TestSynchronousObservable());
+        final Observable<String> o2 = Observable.unsafeCreate(new TestSynchronousObservable());
         List<Observable<String>> listOfObservables = new ArrayList<Observable<String>>();
         listOfObservables.add(o1);
         listOfObservables.add(o2);
@@ -296,7 +296,7 @@ public class OperatorMergeDelayErrorTest {
         final TestASynchronousObservable o1 = new TestASynchronousObservable();
         final TestASynchronousObservable o2 = new TestASynchronousObservable();
 
-        Observable<String> m = Observable.mergeDelayError(Observable.create(o1), Observable.create(o2));
+        Observable<String> m = Observable.mergeDelayError(Observable.unsafeCreate(o1), Observable.unsafeCreate(o2));
         m.subscribe(stringObserver);
 
         try {
@@ -455,7 +455,7 @@ public class OperatorMergeDelayErrorTest {
     }
     @Test
     public void testMergeSourceWhichDoesntPropagateExceptionBack() {
-        Observable<Integer> source = Observable.create(new OnSubscribe<Integer>() {
+        Observable<Integer> source = Observable.unsafeCreate(new OnSubscribe<Integer>() {
             @Override
             public void call(Subscriber<? super Integer> t1) {
                 try {
@@ -527,11 +527,11 @@ public class OperatorMergeDelayErrorTest {
         for (int i = 0; i < 50; i++) {
             final TestASynchronous1sDelayedObservable o1 = new TestASynchronous1sDelayedObservable();
             final TestASynchronous1sDelayedObservable o2 = new TestASynchronous1sDelayedObservable();
-            Observable<Observable<String>> parentObservable = Observable.create(new Observable.OnSubscribe<Observable<String>>() {
+            Observable<Observable<String>> parentObservable = Observable.unsafeCreate(new Observable.OnSubscribe<Observable<String>>() {
                 @Override
                 public void call(Subscriber<? super Observable<String>> op) {
-                    op.onNext(Observable.create(o1));
-                    op.onNext(Observable.create(o2));
+                    op.onNext(Observable.unsafeCreate(o1));
+                    op.onNext(Observable.unsafeCreate(o2));
                     op.onError(new NullPointerException("throwing exception in parent"));
                 }
             });

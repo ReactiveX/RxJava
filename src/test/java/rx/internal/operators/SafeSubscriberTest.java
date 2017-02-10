@@ -38,7 +38,7 @@ public class SafeSubscriberTest {
     @Test
     public void testOnNextAfterOnError() {
         TestObservable t = new TestObservable();
-        Observable<String> st = Observable.create(t);
+        Observable<String> st = Observable.unsafeCreate(t);
 
         @SuppressWarnings("unchecked")
         Observer<String> w = mock(Observer.class);
@@ -60,7 +60,7 @@ public class SafeSubscriberTest {
     @Test
     public void testOnCompletedAfterOnError() {
         TestObservable t = new TestObservable();
-        Observable<String> st = Observable.create(t);
+        Observable<String> st = Observable.unsafeCreate(t);
 
         @SuppressWarnings("unchecked")
         Observer<String> w = mock(Observer.class);
@@ -82,7 +82,7 @@ public class SafeSubscriberTest {
     @Test
     public void testOnNextAfterOnCompleted() {
         TestObservable t = new TestObservable();
-        Observable<String> st = Observable.create(t);
+        Observable<String> st = Observable.unsafeCreate(t);
 
         @SuppressWarnings("unchecked")
         Observer<String> w = mock(Observer.class);
@@ -105,7 +105,7 @@ public class SafeSubscriberTest {
     @Test
     public void testOnErrorAfterOnCompleted() {
         TestObservable t = new TestObservable();
-        Observable<String> st = Observable.create(t);
+        Observable<String> st = Observable.unsafeCreate(t);
 
         @SuppressWarnings("unchecked")
         Observer<String> w = mock(Observer.class);

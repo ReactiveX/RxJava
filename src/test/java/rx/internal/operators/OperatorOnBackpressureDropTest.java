@@ -151,7 +151,7 @@ public class OperatorOnBackpressureDropTest {
         final List<Integer> list = new ArrayList<Integer>();
         // request 0
         TestSubscriber<Integer> ts = TestSubscriber.create(0);
-        Observable.create(new OnSubscribe<Integer>() {
+        Observable.unsafeCreate(new OnSubscribe<Integer>() {
 
             @Override
             public void call(final Subscriber<? super Integer> sub) {
@@ -180,7 +180,7 @@ public class OperatorOnBackpressureDropTest {
     public void testUpstreamEmitsOnCompletedAfterFailureWithoutCheckingSubscription() {
         TestSubscriber<Integer> ts = TestSubscriber.create(0);
         final RuntimeException e = new RuntimeException();
-        Observable.create(new OnSubscribe<Integer>() {
+        Observable.unsafeCreate(new OnSubscribe<Integer>() {
 
             @Override
             public void call(final Subscriber<? super Integer> sub) {
@@ -221,7 +221,7 @@ public class OperatorOnBackpressureDropTest {
             TestSubscriber<Integer> ts = TestSubscriber.create(0);
             final RuntimeException e1 = new RuntimeException();
             final RuntimeException e2 = new RuntimeException();
-            Observable.create(new OnSubscribe<Integer>() {
+            Observable.unsafeCreate(new OnSubscribe<Integer>() {
 
                 @Override
                 public void call(final Subscriber<? super Integer> sub) {
@@ -255,7 +255,7 @@ public class OperatorOnBackpressureDropTest {
     public void testUpstreamEmitsOnNextAfterFailureWithoutCheckingSubscription() {
         TestSubscriber<Integer> ts = TestSubscriber.create(0);
         final RuntimeException e = new RuntimeException();
-        Observable.create(new OnSubscribe<Integer>() {
+        Observable.unsafeCreate(new OnSubscribe<Integer>() {
 
             @Override
             public void call(final Subscriber<? super Integer> sub) {
@@ -291,7 +291,7 @@ public class OperatorOnBackpressureDropTest {
         }
     };
 
-    static final Observable<Long> infinite = Observable.create(new OnSubscribe<Long>() {
+    static final Observable<Long> infinite = Observable.unsafeCreate(new OnSubscribe<Long>() {
 
         @Override
         public void call(Subscriber<? super Long> s) {
@@ -304,7 +304,7 @@ public class OperatorOnBackpressureDropTest {
     });
 
     private static final Observable<Long> range(final long n) {
-        return Observable.create(new OnSubscribe<Long>() {
+        return Observable.unsafeCreate(new OnSubscribe<Long>() {
 
             @Override
             public void call(Subscriber<? super Long> s) {

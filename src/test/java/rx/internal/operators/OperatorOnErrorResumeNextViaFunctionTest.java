@@ -44,7 +44,7 @@ public class OperatorOnErrorResumeNextViaFunctionTest {
     @Test
     public void testResumeNextWithSynchronousExecution() {
         final AtomicReference<Throwable> receivedException = new AtomicReference<Throwable>();
-        Observable<String> w = Observable.create(new Observable.OnSubscribe<String>() {
+        Observable<String> w = Observable.unsafeCreate(new Observable.OnSubscribe<String>() {
 
             @Override
             public void call(Subscriber<? super String> observer) {
@@ -94,7 +94,7 @@ public class OperatorOnErrorResumeNextViaFunctionTest {
             }
 
         };
-        Observable<String> observable = Observable.create(w).onErrorResumeNext(resume);
+        Observable<String> observable = Observable.unsafeCreate(w).onErrorResumeNext(resume);
 
         @SuppressWarnings("unchecked")
         Observer<String> observer = mock(Observer.class);
@@ -131,7 +131,7 @@ public class OperatorOnErrorResumeNextViaFunctionTest {
             }
 
         };
-        Observable<String> observable = Observable.create(w).onErrorResumeNext(resume);
+        Observable<String> observable = Observable.unsafeCreate(w).onErrorResumeNext(resume);
 
         @SuppressWarnings("unchecked")
         Observer<String> observer = mock(Observer.class);

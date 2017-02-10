@@ -55,7 +55,7 @@ public class OperatorThrottleFirstTest {
 
     @Test
     public void testThrottlingWithCompleted() {
-        Observable<String> source = Observable.create(new OnSubscribe<String>() {
+        Observable<String> source = Observable.unsafeCreate(new OnSubscribe<String>() {
             @Override
             public void call(Subscriber<? super String> observer) {
                 publishNext(observer, 100, "one");    // publish as it's first
@@ -82,7 +82,7 @@ public class OperatorThrottleFirstTest {
 
     @Test
     public void testThrottlingWithError() {
-        Observable<String> source = Observable.create(new OnSubscribe<String>() {
+        Observable<String> source = Observable.unsafeCreate(new OnSubscribe<String>() {
             @Override
             public void call(Subscriber<? super String> observer) {
                 Exception error = new TestException();

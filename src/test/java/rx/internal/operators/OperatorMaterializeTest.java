@@ -43,7 +43,7 @@ public class OperatorMaterializeTest {
                 "three");
 
         TestObserver Observer = new TestObserver();
-        Observable<Notification<String>> m = Observable.create(o1).materialize();
+        Observable<Notification<String>> m = Observable.unsafeCreate(o1).materialize();
         m.subscribe(Observer);
 
         try {
@@ -69,7 +69,7 @@ public class OperatorMaterializeTest {
         final TestAsyncErrorObservable o1 = new TestAsyncErrorObservable("one", "two", "three");
 
         TestObserver Observer = new TestObserver();
-        Observable<Notification<String>> m = Observable.create(o1).materialize();
+        Observable<Notification<String>> m = Observable.unsafeCreate(o1).materialize();
         m.subscribe(Observer);
 
         try {
@@ -94,7 +94,7 @@ public class OperatorMaterializeTest {
     public void testMultipleSubscribes() throws InterruptedException, ExecutionException {
         final TestAsyncErrorObservable o = new TestAsyncErrorObservable("one", "two", null, "three");
 
-        Observable<Notification<String>> m = Observable.create(o).materialize();
+        Observable<Notification<String>> m = Observable.unsafeCreate(o).materialize();
 
         assertEquals(3, m.toList().toBlocking().toFuture().get().size());
         assertEquals(3, m.toList().toBlocking().toFuture().get().size());

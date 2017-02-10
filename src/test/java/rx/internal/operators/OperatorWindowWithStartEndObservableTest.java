@@ -46,7 +46,7 @@ public class OperatorWindowWithStartEndObservableTest {
         final List<String> list = new ArrayList<String>();
         final List<List<String>> lists = new ArrayList<List<String>>();
 
-        Observable<String> source = Observable.create(new Observable.OnSubscribe<String>() {
+        Observable<String> source = Observable.unsafeCreate(new Observable.OnSubscribe<String>() {
             @Override
             public void call(Subscriber<? super String> observer) {
                 push(observer, "one", 10);
@@ -58,7 +58,7 @@ public class OperatorWindowWithStartEndObservableTest {
             }
         });
 
-        Observable<Object> openings = Observable.create(new Observable.OnSubscribe<Object>() {
+        Observable<Object> openings = Observable.unsafeCreate(new Observable.OnSubscribe<Object>() {
             @Override
             public void call(Subscriber<? super Object> observer) {
                 push(observer, new Object(), 50);
@@ -70,7 +70,7 @@ public class OperatorWindowWithStartEndObservableTest {
         Func1<Object, Observable<Object>> closer = new Func1<Object, Observable<Object>>() {
             @Override
             public Observable<Object> call(Object opening) {
-                return Observable.create(new Observable.OnSubscribe<Object>() {
+                return Observable.unsafeCreate(new Observable.OnSubscribe<Object>() {
                     @Override
                     public void call(Subscriber<? super Object> observer) {
                         push(observer, new Object(), 100);
@@ -94,7 +94,7 @@ public class OperatorWindowWithStartEndObservableTest {
         final List<String> list = new ArrayList<String>();
         final List<List<String>> lists = new ArrayList<List<String>>();
 
-        Observable<String> source = Observable.create(new Observable.OnSubscribe<String>() {
+        Observable<String> source = Observable.unsafeCreate(new Observable.OnSubscribe<String>() {
             @Override
             public void call(Subscriber<? super String> observer) {
                 push(observer, "one", 10);
@@ -110,7 +110,7 @@ public class OperatorWindowWithStartEndObservableTest {
             int calls;
             @Override
             public Observable<Object> call() {
-                return Observable.create(new Observable.OnSubscribe<Object>() {
+                return Observable.unsafeCreate(new Observable.OnSubscribe<Object>() {
                     @Override
                     public void call(Subscriber<? super Object> observer) {
                         int c = calls++;

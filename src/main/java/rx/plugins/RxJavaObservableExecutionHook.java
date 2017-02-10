@@ -41,7 +41,7 @@ import rx.functions.Func1;
  */
 public abstract class RxJavaObservableExecutionHook { // NOPMD
     /**
-     * Invoked during the construction by {@link Observable#create(OnSubscribe)}
+     * Invoked during the construction by {@link Observable#unsafeCreate(OnSubscribe)}
      * <p>
      * This can be used to decorate or replace the <code>onSubscribe</code> function or just perform extra
      * logging, metrics and other such things and pass through the function.

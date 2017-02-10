@@ -59,7 +59,7 @@ public class OperatorSerializePerf {
     @Benchmark
     public void serializedTwoStreamsHighlyContended(final Input input) throws InterruptedException {
         LatchedObserver<Integer> o = input.newLatchedObserver();
-        Observable.create(new OnSubscribe<Integer>() {
+        Observable.unsafeCreate(new OnSubscribe<Integer>() {
 
             @Override
             public void call(Subscriber<? super Integer> s) {
@@ -101,7 +101,7 @@ public class OperatorSerializePerf {
     @Benchmark
     public void serializedTwoStreamsSlightlyContended(final InputWithInterval input) throws InterruptedException {
         LatchedObserver<Integer> o = input.newLatchedObserver();
-        Observable.create(new OnSubscribe<Integer>() {
+        Observable.unsafeCreate(new OnSubscribe<Integer>() {
 
             @Override
             public void call(Subscriber<? super Integer> s) {
@@ -118,7 +118,7 @@ public class OperatorSerializePerf {
     @Benchmark
     public void serializedTwoStreamsOneFastOneSlow(final InputWithInterval input) throws InterruptedException {
         LatchedObserver<Integer> o = input.newLatchedObserver();
-        Observable.create(new OnSubscribe<Integer>() {
+        Observable.unsafeCreate(new OnSubscribe<Integer>() {
 
             @Override
             public void call(final Subscriber<? super Integer> s) {

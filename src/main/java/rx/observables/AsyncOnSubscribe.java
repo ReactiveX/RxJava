@@ -33,7 +33,7 @@ import rx.subscriptions.CompositeSubscription;
 /**
  * A utility class to create {@code OnSubscribe<T>} functions that respond correctly to back
  * pressure requests from subscribers. This is an improvement over
- * {@link rx.Observable#create(OnSubscribe) Observable.create(OnSubscribe)} which does not provide
+ * {@link rx.Observable#unsafeCreate(OnSubscribe) Observable.create(OnSubscribe)} which does not provide
  * any means of managing back pressure requests out-of-the-box. This variant of an OnSubscribe
  * function allows for the asynchronous processing of requests.
  *

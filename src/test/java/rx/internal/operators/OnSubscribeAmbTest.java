@@ -51,7 +51,7 @@ public class OnSubscribeAmbTest {
 
     private Observable<String> createObservable(final String[] values,
             final long interval, final Throwable e) {
-        return Observable.create(new OnSubscribe<String>() {
+        return Observable.unsafeCreate(new OnSubscribe<String>() {
 
             @Override
             public void call(final Subscriber<? super String> subscriber) {
@@ -90,7 +90,7 @@ public class OnSubscribeAmbTest {
         Observable<String> observable3 = createObservable(new String[] {
                 "3", "33", "333", "3333" }, 3000, null);
 
-        Observable<String> o = Observable.create(amb(observable1,
+        Observable<String> o = Observable.unsafeCreate(amb(observable1,
                 observable2, observable3));
 
         @SuppressWarnings("unchecked")
@@ -119,7 +119,7 @@ public class OnSubscribeAmbTest {
         Observable<String> observable3 = createObservable(new String[] {},
                 3000, new IOException("fake exception"));
 
-        Observable<String> o = Observable.create(amb(observable1,
+        Observable<String> o = Observable.unsafeCreate(amb(observable1,
                 observable2, observable3));
 
         @SuppressWarnings("unchecked")
@@ -146,7 +146,7 @@ public class OnSubscribeAmbTest {
         Observable<String> observable3 = createObservable(new String[] {
                 "3" }, 3000, null);
 
-        Observable<String> o = Observable.create(amb(observable1,
+        Observable<String> o = Observable.unsafeCreate(amb(observable1,
                 observable2, observable3));
 
         @SuppressWarnings("unchecked")
@@ -165,7 +165,7 @@ public class OnSubscribeAmbTest {
         ts.requestMore(3);
         final AtomicLong requested1 = new AtomicLong();
         final AtomicLong requested2 = new AtomicLong();
-        Observable<Integer> o1 = Observable.create(new OnSubscribe<Integer>() {
+        Observable<Integer> o1 = Observable.unsafeCreate(new OnSubscribe<Integer>() {
 
             @Override
             public void call(Subscriber<? super Integer> s) {
@@ -181,7 +181,7 @@ public class OnSubscribeAmbTest {
             }
 
         });
-        Observable<Integer> o2 = Observable.create(new OnSubscribe<Integer>() {
+        Observable<Integer> o2 = Observable.unsafeCreate(new OnSubscribe<Integer>() {
 
             @Override
             public void call(Subscriber<? super Integer> s) {

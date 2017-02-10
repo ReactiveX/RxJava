@@ -29,7 +29,7 @@ public class OnSubscribeFromArrayTest {
         for (int i = 0; i < n; i++) {
             array[i] = i;
         }
-        return Observable.create(new OnSubscribeFromArray<Integer>(array));
+        return Observable.unsafeCreate(new OnSubscribeFromArray<Integer>(array));
     }
     @Test
     public void simple() {

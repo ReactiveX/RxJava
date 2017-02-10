@@ -254,7 +254,7 @@ public class OnSubscribeUsingTest {
         Func1<Subscription, Observable<Integer>> observableFactory = new Func1<Subscription, Observable<Integer>>() {
             @Override
             public Observable<Integer> call(Subscription subscription) {
-                return Observable.create(new OnSubscribe<Integer>() {
+                return Observable.unsafeCreate(new OnSubscribe<Integer>() {
                     @Override
                     public void call(Subscriber<? super Integer> t1) {
                         throw new TestException();

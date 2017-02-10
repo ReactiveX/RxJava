@@ -57,7 +57,7 @@ public class OperatorDebounceTest {
 
     @Test
     public void testDebounceWithCompleted() {
-        Observable<String> source = Observable.create(new Observable.OnSubscribe<String>() {
+        Observable<String> source = Observable.unsafeCreate(new Observable.OnSubscribe<String>() {
             @Override
             public void call(Subscriber<? super String> observer) {
                 publishNext(observer, 100, "one");    // Should be skipped since "two" will arrive before the timeout expires.
@@ -82,7 +82,7 @@ public class OperatorDebounceTest {
 
     @Test
     public void testDebounceNeverEmits() {
-        Observable<String> source = Observable.create(new Observable.OnSubscribe<String>() {
+        Observable<String> source = Observable.unsafeCreate(new Observable.OnSubscribe<String>() {
             @Override
             public void call(Subscriber<? super String> observer) {
                 // all should be skipped since they are happening faster than the 200ms timeout
@@ -111,7 +111,7 @@ public class OperatorDebounceTest {
 
     @Test
     public void testDebounceWithError() {
-        Observable<String> source = Observable.create(new Observable.OnSubscribe<String>() {
+        Observable<String> source = Observable.unsafeCreate(new Observable.OnSubscribe<String>() {
             @Override
             public void call(Subscriber<? super String> observer) {
                 Exception error = new TestException();

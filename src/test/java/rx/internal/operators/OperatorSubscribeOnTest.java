@@ -50,7 +50,7 @@ public class OperatorSubscribeOnTest {
         TestSubscriber<Integer> observer = new TestSubscriber<Integer>();
 
         final Subscription subscription = Observable
-                .create(new Observable.OnSubscribe<Integer>() {
+                .unsafeCreate(new Observable.OnSubscribe<Integer>() {
                     @Override
                     public void call(
                             final Subscriber<? super Integer> subscriber) {
@@ -85,7 +85,7 @@ public class OperatorSubscribeOnTest {
     @Test
     public void testThrownErrorHandling() {
         TestSubscriber<String> ts = new TestSubscriber<String>();
-        Observable.create(new OnSubscribe<String>() {
+        Observable.unsafeCreate(new OnSubscribe<String>() {
 
             @Override
             public void call(Subscriber<? super String> s) {
@@ -100,7 +100,7 @@ public class OperatorSubscribeOnTest {
     @Test
     public void testOnError() {
         TestSubscriber<String> ts = new TestSubscriber<String>();
-        Observable.create(new OnSubscribe<String>() {
+        Observable.unsafeCreate(new OnSubscribe<String>() {
 
             @Override
             public void call(Subscriber<? super String> s) {
@@ -170,7 +170,7 @@ public class OperatorSubscribeOnTest {
     public void testUnsubscribeInfiniteStream() throws InterruptedException {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         final AtomicInteger count = new AtomicInteger();
-        Observable.create(new OnSubscribe<Integer>() {
+        Observable.unsafeCreate(new OnSubscribe<Integer>() {
 
             @Override
             public void call(Subscriber<? super Integer> sub) {

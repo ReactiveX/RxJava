@@ -181,7 +181,7 @@ public class TestSchedulerTest {
             final Action0 calledOp = mock(Action0.class);
 
             Observable<Object> poller;
-            poller = Observable.create(new OnSubscribe<Object>() {
+            poller = Observable.unsafeCreate(new OnSubscribe<Object>() {
                 @Override
                 public void call(final Subscriber<? super Object> aSubscriber) {
                     inner.schedule(new Action0() {

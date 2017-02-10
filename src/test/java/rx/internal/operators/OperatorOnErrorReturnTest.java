@@ -41,7 +41,7 @@ public class OperatorOnErrorReturnTest {
     @Test
     public void testResumeNext() {
         TestObservable f = new TestObservable("one");
-        Observable<String> w = Observable.create(f);
+        Observable<String> w = Observable.unsafeCreate(f);
         final AtomicReference<Throwable> capturedException = new AtomicReference<Throwable>();
 
         Observable<String> observable = w.onErrorReturn(new Func1<Throwable, String>() {
@@ -77,7 +77,7 @@ public class OperatorOnErrorReturnTest {
     @Test
     public void testFunctionThrowsError() {
         TestObservable f = new TestObservable("one");
-        Observable<String> w = Observable.create(f);
+        Observable<String> w = Observable.unsafeCreate(f);
         final AtomicReference<Throwable> capturedException = new AtomicReference<Throwable>();
 
         Observable<String> observable = w.onErrorReturn(new Func1<Throwable, String>() {
