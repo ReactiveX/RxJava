@@ -26,16 +26,12 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import org.junit.Test;
 
-import rx.Observable;
+import rx.*;
 import rx.Observable.OnSubscribe;
 import rx.Observable.Operator;
-import rx.Observer;
-import rx.Producer;
-import rx.Scheduler;
-import rx.Subscriber;
-import rx.Subscription;
-import rx.functions.Action0;
-import rx.observers.TestSubscriber;
+import rx.functions.*;
+import rx.internal.util.*;
+import rx.observers.*;
 import rx.schedulers.Schedulers;
 
 public class OperatorSubscribeOnTest {
@@ -267,4 +263,85 @@ public class OperatorSubscribeOnTest {
         ts.assertNoErrors();
     }
 
+    @Test
+    public void noSamepoolDeadlock() {
+        final int n = 4 * RxRingBuffer.SIZE;
+
+        Observable.create(new Action1<Emitter<Object>>() {
+            @Override
+            public void call(Emitter<Object> e) {
+                for (int i = 0; i < n; i++) {
+                    e.onNext(i);
+                    try {
+                        Thread.sleep(1);
+                    } catch (InterruptedException e1) {
+                        e1.printStackTrace();
+                    }
+                }
+                e.onCompleted();
+            }
+        }, Emitter.BackpressureMode.DROP)
+        .map(UtilityFunctions.identity())
+        .subscribeOn(Schedulers.io(), false)
+        .observeOn(Schedulers.computation())
+        .test()
+        .awaitTerminalEvent(5, TimeUnit.SECONDS)
+        .assertValueCount(n)
+        .assertNoErrors()
+        .assertCompleted();
+    }
+
+    @Test
+    public void noSamepoolDeadlockRequestOn() {
+        final int n = 4 * RxRingBuffer.SIZE;
+
+        Observable.create(new Action1<Emitter<Object>>() {
+            @Override
+            public void call(Emitter<Object> e) {
+                for (int i = 0; i < n; i++) {
+                    e.onNext(i);
+                    try {
+                        Thread.sleep(1);
+                    } catch (InterruptedException e1) {
+                        e1.printStackTrace();
+                    }
+                }
+                e.onCompleted();
+            }
+        }, Emitter.BackpressureMode.DROP)
+        .subscribeOn(Schedulers.io())
+        .observeOn(Schedulers.computation())
+        .test()
+        .awaitTerminalEvent(5, TimeUnit.SECONDS)
+        .assertValueCount(n)
+        .assertNoErrors()
+        .assertCompleted();
+    }
+
+    @Test
+    public void noSamepoolDeadlockRequestOn2() {
+        final int n = 4 * RxRingBuffer.SIZE;
+
+        Observable.create(new Action1<Emitter<Object>>() {
+            @Override
+            public void call(Emitter<Object> e) {
+                for (int i = 0; i < n; i++) {
+                    e.onNext(i);
+                    try {
+                        Thread.sleep(1);
+                    } catch (InterruptedException e1) {
+                        e1.printStackTrace();
+                    }
+                }
+                e.onCompleted();
+            }
+        }, Emitter.BackpressureMode.DROP)
+        .subscribeOn(Schedulers.io(), true)
+        .observeOn(Schedulers.computation())
+        .test()
+        .awaitTerminalEvent(5, TimeUnit.SECONDS)
+        .assertValueCount(RxRingBuffer.SIZE)
+        .assertNoErrors()
+        .assertCompleted();
+    }
 }

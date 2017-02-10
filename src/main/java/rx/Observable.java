@@ -10333,11 +10333,15 @@ public class Observable<T> {
     /**
      * Asynchronously subscribes Observers to this Observable on the specified {@link Scheduler}.
      * <p>
+     * If there is a {@link #create(Action1, rx.Emitter.BackpressureMode)} type source up in the
+     * chain, it is recommended to use {@code subscribeOn(scheduler, false)} instead
+     * to avoid same-pool deadlock because requests pile up behind a eager/blocking emitter.
+     * <p>
      * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/subscribeOn.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator doesn't interfere with backpressure which is determined by the source {@code Observable}'s backpressure
-     *  behavior.</dd>
+     *  <dd>The operator doesn't interfere with backpressure amount which is determined by the source {@code Observable}'s backpressure
+     *  behavior. However, the upstream is requested from the given scheduler thread.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>you specify which {@link Scheduler} this operator will use</dd>
      * </dl>
@@ -10349,12 +10353,48 @@ public class Observable<T> {
      * @see <a href="http://reactivex.io/documentation/operators/subscribeon.html">ReactiveX operators documentation: SubscribeOn</a>
      * @see <a href="http://www.grahamlea.com/2014/07/rxjava-threading-examples/">RxJava Threading Examples</a>
      * @see #observeOn
+     * @see #subscribeOn(Scheduler, boolean)
      */
     public final Observable<T> subscribeOn(Scheduler scheduler) {
+        return subscribeOn(scheduler, !(this.onSubscribe instanceof OnSubscribeCreate));
+    }
+
+    /**
+     * Asynchronously subscribes Observers to this Observable on the specified {@link Scheduler} and
+     * optionally reroutes requests from other threads to the same {@link Scheduler} thread.
+     * <p>
+     * If there is a {@link #create(Action1, rx.Emitter.BackpressureMode)} type source up in the
+     * chain, it is recommended to have {@code requestOn} false to avoid same-pool deadlock
+     * because requests pile up behind a eager/blocking emitter.
+     * <p>
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/subscribeOn.png" alt="">
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The operator doesn't interfere with backpressure amount which is determined by the source {@code Observable}'s backpressure
+     *  behavior. However, the upstream is requested from the given scheduler if requestOn is true.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>you specify which {@link Scheduler} this operator will use</dd>
+     * </dl>
+     *
+     * @param scheduler
+     *            the {@link Scheduler} to perform subscription actions on
+     * @param requestOn if true, requests are rerouted to the given Scheduler as well (strong pipelining)
+     *                  if false, requests coming from any thread are simply forwarded to
+     *                  the upstream on the same thread (weak pipelining)
+     * @return the source Observable modified so that its subscriptions happen on the
+     *         specified {@link Scheduler}
+     * @see <a href="http://reactivex.io/documentation/operators/subscribeon.html">ReactiveX operators documentation: SubscribeOn</a>
+     * @see <a href="http://www.grahamlea.com/2014/07/rxjava-threading-examples/">RxJava Threading Examples</a>
+     * @see #observeOn
+     * @see #subscribeOn(Scheduler)
+     * @since 1.2.7 - experimental
+     */
+    @Experimental
+    public final Observable<T> subscribeOn(Scheduler scheduler, boolean requestOn) {
         if (this instanceof ScalarSynchronousObservable) {
             return ((ScalarSynchronousObservable<T>)this).scalarScheduleOn(scheduler);
         }
-        return unsafeCreate(new OperatorSubscribeOn<T>(this, scheduler));
+        return unsafeCreate(new OperatorSubscribeOn<T>(this, scheduler, requestOn));
     }
 
     /**
