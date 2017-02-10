@@ -39,7 +39,7 @@ public class OperatorUnsubscribeOnTest {
         try {
             final ThreadSubscription subscription = new ThreadSubscription();
             final AtomicReference<Thread> subscribeThread = new AtomicReference<Thread>();
-            Observable<Integer> w = Observable.create(new OnSubscribe<Integer>() {
+            Observable<Integer> w = Observable.unsafeCreate(new OnSubscribe<Integer>() {
 
                 @Override
                 public void call(Subscriber<? super Integer> t1) {
@@ -84,7 +84,7 @@ public class OperatorUnsubscribeOnTest {
         try {
             final ThreadSubscription subscription = new ThreadSubscription();
             final AtomicReference<Thread> subscribeThread = new AtomicReference<Thread>();
-            Observable<Integer> w = Observable.create(new OnSubscribe<Integer>() {
+            Observable<Integer> w = Observable.unsafeCreate(new OnSubscribe<Integer>() {
 
                 @Override
                 public void call(Subscriber<? super Integer> t1) {

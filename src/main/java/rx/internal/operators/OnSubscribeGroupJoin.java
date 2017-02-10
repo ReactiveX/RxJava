@@ -170,7 +170,7 @@ public final class OnSubscribeGroupJoin<T1, T2, D1, D2, R> implements OnSubscrib
                         leftMap().put(id, subjSerial);
                     }
 
-                    Observable<T2> window = Observable.create(new WindowObservableFunc<T2>(subj, cancel));
+                    Observable<T2> window = Observable.unsafeCreate(new WindowObservableFunc<T2>(subj, cancel));
 
                     Observable<D1> duration = leftDuration.call(args);
 

@@ -58,7 +58,7 @@ public final class OperatorReplay<T> extends ConnectableObservable<T> {
     public static <T, U, R> Observable<R> multicastSelector(
             final Func0<? extends ConnectableObservable<U>> connectableFactory,
             final Func1<? super Observable<U>, ? extends Observable<R>> selector) {
-        return Observable.create(new OnSubscribe<R>() {
+        return Observable.unsafeCreate(new OnSubscribe<R>() {
             @Override
             public void call(final Subscriber<? super R> child) {
                 ConnectableObservable<U> co;

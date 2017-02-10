@@ -70,7 +70,7 @@ public class OneItemPerf {
     @Setup
     public void setup() {
         scalar = Observable.just(1);
-        one = Observable.create(new OnSubscribe<Integer>() {
+        one = Observable.unsafeCreate(new OnSubscribe<Integer>() {
             @Override
             public void call(Subscriber<? super Integer> t) {
                 t.setProducer(new SingleProducer<Integer>(t, 1));

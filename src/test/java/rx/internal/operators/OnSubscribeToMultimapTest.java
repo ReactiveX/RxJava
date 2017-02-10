@@ -395,7 +395,7 @@ public class OnSubscribeToMultimapTest {
     public void testKeySelectorFailureDoesNotAllowErrorAndCompletedEmissions() {
         TestSubscriber<Map<Integer, Collection<Integer>>> ts = TestSubscriber.create(0);
         final RuntimeException e = new RuntimeException();
-        Observable.create(new OnSubscribe<Integer>() {
+        Observable.unsafeCreate(new OnSubscribe<Integer>() {
 
             @Override
             public void call(final Subscriber<? super Integer> sub) {
@@ -436,7 +436,7 @@ public class OnSubscribeToMultimapTest {
             TestSubscriber<Map<Integer, Collection<Integer>>> ts = TestSubscriber.create(0);
             final RuntimeException e1 = new RuntimeException();
             final RuntimeException e2 = new RuntimeException();
-            Observable.create(new OnSubscribe<Integer>() {
+            Observable.unsafeCreate(new OnSubscribe<Integer>() {
 
                 @Override
                 public void call(final Subscriber<? super Integer> sub) {
@@ -471,7 +471,7 @@ public class OnSubscribeToMultimapTest {
     public void testFactoryFailureDoesNotAllowErrorThenOnNextEmissions() {
         TestSubscriber<Map<Integer, Collection<Integer>>> ts = TestSubscriber.create(0);
         final RuntimeException e = new RuntimeException();
-        Observable.create(new OnSubscribe<Integer>() {
+        Observable.unsafeCreate(new OnSubscribe<Integer>() {
 
             @Override
             public void call(final Subscriber<? super Integer> sub) {

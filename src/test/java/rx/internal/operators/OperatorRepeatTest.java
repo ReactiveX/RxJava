@@ -40,7 +40,7 @@ public class OperatorRepeatTest {
     public void testRepetition() {
         int NUM = 10;
         final AtomicInteger count = new AtomicInteger();
-        int value = Observable.create(new OnSubscribe<Integer>() {
+        int value = Observable.unsafeCreate(new OnSubscribe<Integer>() {
 
             @Override
             public void call(final Subscriber<? super Integer> o) {
@@ -68,7 +68,7 @@ public class OperatorRepeatTest {
     public void testRepeatTakeWithSubscribeOn() throws InterruptedException {
 
         final AtomicInteger counter = new AtomicInteger();
-        Observable<Integer> oi = Observable.create(new OnSubscribe<Integer>() {
+        Observable<Integer> oi = Observable.unsafeCreate(new OnSubscribe<Integer>() {
 
             @Override
             public void call(Subscriber<? super Integer> sub) {

@@ -365,7 +365,7 @@ public class ProducersTest {
                 .map(plus(40))
         );
 
-        Observable<Long> source = Observable.create(
+        Observable<Long> source = Observable.unsafeCreate(
             new SwitchTimer<Long>(timers, 550,
             TimeUnit.MILLISECONDS, test));
 

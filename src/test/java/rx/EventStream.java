@@ -32,7 +32,7 @@ public final class EventStream {
         throw new IllegalStateException("No instances!");
     }
     public static Observable<Event> getEventStream(final String type, final int numInstances) {
-        return Observable.create(new OnSubscribe<Event>() {
+        return Observable.unsafeCreate(new OnSubscribe<Event>() {
 
             @Override
             public void call(final Subscriber<? super Event> subscriber) {

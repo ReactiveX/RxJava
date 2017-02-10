@@ -107,7 +107,7 @@ public class OperatorTakeWhileTest {
 
     @Test
     public void testTakeWhileDoesntLeakErrors() {
-        Observable<String> source = Observable.create(new OnSubscribe<String>() {
+        Observable<String> source = Observable.unsafeCreate(new OnSubscribe<String>() {
             @Override
             public void call(Subscriber<? super String> observer) {
                 observer.onNext("one");
@@ -130,7 +130,7 @@ public class OperatorTakeWhileTest {
 
         @SuppressWarnings("unchecked")
         Observer<String> observer = mock(Observer.class);
-        Observable<String> take = Observable.create(source).takeWhile(new Func1<String, Boolean>() {
+        Observable<String> take = Observable.unsafeCreate(source).takeWhile(new Func1<String, Boolean>() {
             @Override
             public Boolean call(String s) {
                 throw testException;
@@ -157,7 +157,7 @@ public class OperatorTakeWhileTest {
 
         @SuppressWarnings("unchecked")
         Observer<String> observer = mock(Observer.class);
-        Observable<String> take = Observable.create(w).takeWhile(new Func1<String, Boolean>() {
+        Observable<String> take = Observable.unsafeCreate(w).takeWhile(new Func1<String, Boolean>() {
             int index;
 
             @Override

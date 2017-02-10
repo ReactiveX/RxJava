@@ -81,7 +81,7 @@ public class OperatorRetryWithPredicateTest {
     }
     @Test
     public void testRetryTwice() {
-        Observable<Integer> source = Observable.create(new OnSubscribe<Integer>() {
+        Observable<Integer> source = Observable.unsafeCreate(new OnSubscribe<Integer>() {
             int count;
             @Override
             public void call(Subscriber<? super Integer> t1) {
@@ -116,7 +116,7 @@ public class OperatorRetryWithPredicateTest {
     }
     @Test
     public void testRetryTwiceAndGiveUp() {
-        Observable<Integer> source = Observable.create(new OnSubscribe<Integer>() {
+        Observable<Integer> source = Observable.unsafeCreate(new OnSubscribe<Integer>() {
             @Override
             public void call(Subscriber<? super Integer> t1) {
                 t1.onNext(0);
@@ -143,7 +143,7 @@ public class OperatorRetryWithPredicateTest {
     }
     @Test
     public void testRetryOnSpecificException() {
-        Observable<Integer> source = Observable.create(new OnSubscribe<Integer>() {
+        Observable<Integer> source = Observable.unsafeCreate(new OnSubscribe<Integer>() {
             int count;
             @Override
             public void call(Subscriber<? super Integer> t1) {
@@ -179,7 +179,7 @@ public class OperatorRetryWithPredicateTest {
     public void testRetryOnSpecificExceptionAndNotOther() {
         final IOException ioe = new IOException();
         final TestException te = new TestException();
-        Observable<Integer> source = Observable.create(new OnSubscribe<Integer>() {
+        Observable<Integer> source = Observable.unsafeCreate(new OnSubscribe<Integer>() {
             int count;
             @Override
             public void call(Subscriber<? super Integer> t1) {
@@ -238,7 +238,7 @@ public class OperatorRetryWithPredicateTest {
         // Observable that always fails after 100ms
         OperatorRetryTest.SlowObservable so = new OperatorRetryTest.SlowObservable(100, 0);
         Observable<Long> o = Observable
-                .create(so)
+                .unsafeCreate(so)
                 .retry(retry5);
 
         OperatorRetryTest.AsyncObserver<Long> async = new OperatorRetryTest.AsyncObserver<Long>(observer);
@@ -265,7 +265,7 @@ public class OperatorRetryWithPredicateTest {
         // Observable that sends every 100ms (timeout fails instead)
         OperatorRetryTest.SlowObservable so = new OperatorRetryTest.SlowObservable(100, 10);
         Observable<Long> o = Observable
-                .create(so)
+                .unsafeCreate(so)
                 .timeout(80, TimeUnit.MILLISECONDS)
                 .retry(retry5);
 

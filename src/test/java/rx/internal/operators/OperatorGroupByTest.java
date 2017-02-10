@@ -189,7 +189,7 @@ public class OperatorGroupByTest {
         final int count = 100;
         final int groupCount = 2;
 
-        Observable<Event> es = Observable.create(new Observable.OnSubscribe<Event>() {
+        Observable<Event> es = Observable.unsafeCreate(new Observable.OnSubscribe<Event>() {
 
             @Override
             public void call(final Subscriber<? super Event> observer) {
@@ -602,7 +602,7 @@ public class OperatorGroupByTest {
     public void testFirstGroupsCompleteAndParentSlowToThenEmitFinalGroupsAndThenComplete() throws InterruptedException {
         final CountDownLatch first = new CountDownLatch(2); // there are two groups to first complete
         final ArrayList<String> results = new ArrayList<String>();
-        Observable.create(new OnSubscribe<Integer>() {
+        Observable.unsafeCreate(new OnSubscribe<Integer>() {
 
             @Override
             public void call(Subscriber<? super Integer> sub) {
@@ -680,7 +680,7 @@ public class OperatorGroupByTest {
         System.err.println("----------------------------------------------------------------------------------------------");
         final CountDownLatch first = new CountDownLatch(2); // there are two groups to first complete
         final ArrayList<String> results = new ArrayList<String>();
-        Observable.create(new OnSubscribe<Integer>() {
+        Observable.unsafeCreate(new OnSubscribe<Integer>() {
 
             @Override
             public void call(Subscriber<? super Integer> sub) {
@@ -771,7 +771,7 @@ public class OperatorGroupByTest {
     public void testFirstGroupsCompleteAndParentSlowToThenEmitFinalGroupsWhichThenObservesOnAndDelaysAndThenCompletes() throws InterruptedException {
         final CountDownLatch first = new CountDownLatch(2); // there are two groups to first complete
         final ArrayList<String> results = new ArrayList<String>();
-        Observable.create(new OnSubscribe<Integer>() {
+        Observable.unsafeCreate(new OnSubscribe<Integer>() {
 
             @Override
             public void call(Subscriber<? super Integer> sub) {
@@ -847,7 +847,7 @@ public class OperatorGroupByTest {
     @Test
     public void testGroupsWithNestedSubscribeOn() throws InterruptedException {
         final ArrayList<String> results = new ArrayList<String>();
-        Observable.create(new OnSubscribe<Integer>() {
+        Observable.unsafeCreate(new OnSubscribe<Integer>() {
 
             @Override
             public void call(Subscriber<? super Integer> sub) {
@@ -903,7 +903,7 @@ public class OperatorGroupByTest {
     @Test
     public void testGroupsWithNestedObserveOn() throws InterruptedException {
         final ArrayList<String> results = new ArrayList<String>();
-        Observable.create(new OnSubscribe<Integer>() {
+        Observable.unsafeCreate(new OnSubscribe<Integer>() {
 
             @Override
             public void call(Subscriber<? super Integer> sub) {
@@ -963,7 +963,7 @@ public class OperatorGroupByTest {
     }
 
     Observable<Event> SYNC_INFINITE_OBSERVABLE_OF_EVENT(final int numGroups, final AtomicInteger subscribeCounter, final AtomicInteger sentEventCounter) {
-        return Observable.create(new OnSubscribe<Event>() {
+        return Observable.unsafeCreate(new OnSubscribe<Event>() {
 
             @Override
             public void call(final Subscriber<? super Event> op) {
@@ -1375,7 +1375,7 @@ public class OperatorGroupByTest {
     @Test
     public void testGroupByUnsubscribe() {
         final Subscription s = mock(Subscription.class);
-        Observable<Integer> o = Observable.create(
+        Observable<Integer> o = Observable.unsafeCreate(
                 new OnSubscribe<Integer>() {
                     @Override
                     public void call(Subscriber<? super Integer> subscriber) {
@@ -1419,7 +1419,7 @@ public class OperatorGroupByTest {
                 }
             }
         });
-        Observable.create(
+        Observable.unsafeCreate(
                 new OnSubscribe<Integer>() {
                     @Override
                     public void call(Subscriber<? super Integer> subscriber) {

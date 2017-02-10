@@ -43,7 +43,7 @@ public class OperatorRangePerf {
 
         @Setup
         public void setup(final Blackhole bh) {
-            observable = Observable.create(new OnSubscribeRange(0, size));
+            observable = Observable.unsafeCreate(new OnSubscribeRange(0, size));
             this.bh = bh;
         }
 
@@ -91,7 +91,7 @@ public class OperatorRangePerf {
 
         @Setup
         public void setup(final Blackhole bh) {
-            observable = Observable.create(new OnSubscribeRange(0, size));
+            observable = Observable.unsafeCreate(new OnSubscribeRange(0, size));
             this.bh = bh;
 
         }

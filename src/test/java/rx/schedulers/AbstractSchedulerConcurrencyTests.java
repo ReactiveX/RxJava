@@ -297,7 +297,7 @@ public abstract class AbstractSchedulerConcurrencyTests extends AbstractSchedule
         final CountDownLatch completionLatch = new CountDownLatch(1);
         final Worker inner = getScheduler().createWorker();
         try {
-            Observable<Integer> obs = Observable.create(new OnSubscribe<Integer>() {
+            Observable<Integer> obs = Observable.unsafeCreate(new OnSubscribe<Integer>() {
                 @Override
                 public void call(final Subscriber<? super Integer> observer) {
                     inner.schedule(new Action0() {

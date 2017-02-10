@@ -249,7 +249,7 @@ public class OperatorWindowWithSizeTest {
     }
 
     public static Observable<Integer> hotStream() {
-        return Observable.create(new OnSubscribe<Integer>() {
+        return Observable.unsafeCreate(new OnSubscribe<Integer>() {
             @Override
             public void call(Subscriber<? super Integer> s) {
                 while (!s.isUnsubscribed()) {

@@ -178,7 +178,7 @@ public class OnSubscribeDoOnEachTest {
                     .flatMap(new Func1<Integer, Observable<?>>() {
                         @Override
                         public Observable<?> call(Integer integer) {
-                            return Observable.create(new Observable.OnSubscribe<Object>() {
+                            return Observable.unsafeCreate(new Observable.OnSubscribe<Object>() {
                                 @Override
                                 public void call(Subscriber<Object> o) {
                                     throw new NullPointerException("Test NPE");
@@ -229,7 +229,7 @@ public class OnSubscribeDoOnEachTest {
     public void testIfOnNextActionFailsEmitsErrorAndDoesNotFollowWithCompleted() {
         TestSubscriber<Integer> ts = TestSubscriber.create();
         final RuntimeException e1 = new RuntimeException();
-        Observable.create(new OnSubscribe<Integer>() {
+        Observable.unsafeCreate(new OnSubscribe<Integer>() {
 
             @Override
             public void call(final Subscriber<? super Integer> subscriber) {
@@ -259,7 +259,7 @@ public class OnSubscribeDoOnEachTest {
     public void testIfOnNextActionFailsEmitsErrorAndDoesNotFollowWithOnNext() {
         TestSubscriber<Integer> ts = TestSubscriber.create();
         final RuntimeException e1 = new RuntimeException();
-        Observable.create(new OnSubscribe<Integer>() {
+        Observable.unsafeCreate(new OnSubscribe<Integer>() {
 
             @Override
             public void call(final Subscriber<? super Integer> subscriber) {
@@ -298,7 +298,7 @@ public class OnSubscribeDoOnEachTest {
             TestSubscriber<Integer> ts = TestSubscriber.create();
             final RuntimeException e1 = new RuntimeException();
             final RuntimeException e2 = new RuntimeException();
-            Observable.create(new OnSubscribe<Integer>() {
+            Observable.unsafeCreate(new OnSubscribe<Integer>() {
 
                 @Override
                 public void call(final Subscriber<? super Integer> subscriber) {

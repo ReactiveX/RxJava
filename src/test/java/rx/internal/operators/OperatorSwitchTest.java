@@ -53,10 +53,10 @@ public class OperatorSwitchTest {
 
     @Test
     public void testSwitchWhenOuterCompleteBeforeInner() {
-        Observable<Observable<String>> source = Observable.create(new Observable.OnSubscribe<Observable<String>>() {
+        Observable<Observable<String>> source = Observable.unsafeCreate(new Observable.OnSubscribe<Observable<String>>() {
             @Override
             public void call(Subscriber<? super Observable<String>> observer) {
-                publishNext(observer, 50, Observable.create(new Observable.OnSubscribe<String>() {
+                publishNext(observer, 50, Observable.unsafeCreate(new Observable.OnSubscribe<String>() {
                     @Override
                     public void call(Subscriber<? super String> observer) {
                         publishNext(observer, 70, "one");
@@ -80,10 +80,10 @@ public class OperatorSwitchTest {
 
     @Test
     public void testSwitchWhenInnerCompleteBeforeOuter() {
-        Observable<Observable<String>> source = Observable.create(new Observable.OnSubscribe<Observable<String>>() {
+        Observable<Observable<String>> source = Observable.unsafeCreate(new Observable.OnSubscribe<Observable<String>>() {
             @Override
             public void call(Subscriber<? super Observable<String>> observer) {
-                publishNext(observer, 10, Observable.create(new Observable.OnSubscribe<String>() {
+                publishNext(observer, 10, Observable.unsafeCreate(new Observable.OnSubscribe<String>() {
                     @Override
                     public void call(Subscriber<? super String> observer) {
                         publishNext(observer, 0, "one");
@@ -92,7 +92,7 @@ public class OperatorSwitchTest {
                     }
                 }));
 
-                publishNext(observer, 100, Observable.create(new Observable.OnSubscribe<String>() {
+                publishNext(observer, 100, Observable.unsafeCreate(new Observable.OnSubscribe<String>() {
                     @Override
                     public void call(Subscriber<? super String> observer) {
                         publishNext(observer, 0, "three");
@@ -123,10 +123,10 @@ public class OperatorSwitchTest {
 
     @Test
     public void testSwitchWithComplete() {
-        Observable<Observable<String>> source = Observable.create(new Observable.OnSubscribe<Observable<String>>() {
+        Observable<Observable<String>> source = Observable.unsafeCreate(new Observable.OnSubscribe<Observable<String>>() {
             @Override
             public void call(Subscriber<? super Observable<String>> observer) {
-                publishNext(observer, 50, Observable.create(new Observable.OnSubscribe<String>() {
+                publishNext(observer, 50, Observable.unsafeCreate(new Observable.OnSubscribe<String>() {
                     @Override
                     public void call(final Subscriber<? super String> observer) {
                         publishNext(observer, 60, "one");
@@ -134,7 +134,7 @@ public class OperatorSwitchTest {
                     }
                 }));
 
-                publishNext(observer, 200, Observable.create(new Observable.OnSubscribe<String>() {
+                publishNext(observer, 200, Observable.unsafeCreate(new Observable.OnSubscribe<String>() {
                     @Override
                     public void call(final Subscriber<? super String> observer) {
                         publishNext(observer, 0, "three");
@@ -179,10 +179,10 @@ public class OperatorSwitchTest {
 
     @Test
     public void testSwitchWithError() {
-        Observable<Observable<String>> source = Observable.create(new Observable.OnSubscribe<Observable<String>>() {
+        Observable<Observable<String>> source = Observable.unsafeCreate(new Observable.OnSubscribe<Observable<String>>() {
             @Override
             public void call(Subscriber<? super Observable<String>> observer) {
-                publishNext(observer, 50, Observable.create(new Observable.OnSubscribe<String>() {
+                publishNext(observer, 50, Observable.unsafeCreate(new Observable.OnSubscribe<String>() {
                     @Override
                     public void call(final Subscriber<? super String> observer) {
                         publishNext(observer, 50, "one");
@@ -190,7 +190,7 @@ public class OperatorSwitchTest {
                     }
                 }));
 
-                publishNext(observer, 200, Observable.create(new Observable.OnSubscribe<String>() {
+                publishNext(observer, 200, Observable.unsafeCreate(new Observable.OnSubscribe<String>() {
                     @Override
                     public void call(Subscriber<? super String> observer) {
                         publishNext(observer, 0, "three");
@@ -235,10 +235,10 @@ public class OperatorSwitchTest {
 
     @Test
     public void testSwitchWithSubsequenceComplete() {
-        Observable<Observable<String>> source = Observable.create(new Observable.OnSubscribe<Observable<String>>() {
+        Observable<Observable<String>> source = Observable.unsafeCreate(new Observable.OnSubscribe<Observable<String>>() {
             @Override
             public void call(Subscriber<? super Observable<String>> observer) {
-                publishNext(observer, 50, Observable.create(new Observable.OnSubscribe<String>() {
+                publishNext(observer, 50, Observable.unsafeCreate(new Observable.OnSubscribe<String>() {
                     @Override
                     public void call(Subscriber<? super String> observer) {
                         publishNext(observer, 50, "one");
@@ -246,14 +246,14 @@ public class OperatorSwitchTest {
                     }
                 }));
 
-                publishNext(observer, 130, Observable.create(new Observable.OnSubscribe<String>() {
+                publishNext(observer, 130, Observable.unsafeCreate(new Observable.OnSubscribe<String>() {
                     @Override
                     public void call(Subscriber<? super String> observer) {
                         publishCompleted(observer, 0);
                     }
                 }));
 
-                publishNext(observer, 150, Observable.create(new Observable.OnSubscribe<String>() {
+                publishNext(observer, 150, Observable.unsafeCreate(new Observable.OnSubscribe<String>() {
                     @Override
                     public void call(Subscriber<? super String> observer) {
                         publishNext(observer, 50, "three");
@@ -285,10 +285,10 @@ public class OperatorSwitchTest {
 
     @Test
     public void testSwitchWithSubsequenceError() {
-        Observable<Observable<String>> source = Observable.create(new Observable.OnSubscribe<Observable<String>>() {
+        Observable<Observable<String>> source = Observable.unsafeCreate(new Observable.OnSubscribe<Observable<String>>() {
             @Override
             public void call(Subscriber<? super Observable<String>> observer) {
-                publishNext(observer, 50, Observable.create(new Observable.OnSubscribe<String>() {
+                publishNext(observer, 50, Observable.unsafeCreate(new Observable.OnSubscribe<String>() {
                     @Override
                     public void call(Subscriber<? super String> observer) {
                         publishNext(observer, 50, "one");
@@ -296,14 +296,14 @@ public class OperatorSwitchTest {
                     }
                 }));
 
-                publishNext(observer, 130, Observable.create(new Observable.OnSubscribe<String>() {
+                publishNext(observer, 130, Observable.unsafeCreate(new Observable.OnSubscribe<String>() {
                     @Override
                     public void call(Subscriber<? super String> observer) {
                         publishError(observer, 0, new TestException());
                     }
                 }));
 
-                publishNext(observer, 150, Observable.create(new Observable.OnSubscribe<String>() {
+                publishNext(observer, 150, Observable.unsafeCreate(new Observable.OnSubscribe<String>() {
                     @Override
                     public void call(Subscriber<? super String> observer) {
                         publishNext(observer, 50, "three");
@@ -364,10 +364,10 @@ public class OperatorSwitchTest {
     @Test
     public void testSwitchIssue737() {
         // https://github.com/ReactiveX/RxJava/issues/737
-        Observable<Observable<String>> source = Observable.create(new Observable.OnSubscribe<Observable<String>>() {
+        Observable<Observable<String>> source = Observable.unsafeCreate(new Observable.OnSubscribe<Observable<String>>() {
             @Override
             public void call(Subscriber<? super Observable<String>> observer) {
-                publishNext(observer, 0, Observable.create(new Observable.OnSubscribe<String>() {
+                publishNext(observer, 0, Observable.unsafeCreate(new Observable.OnSubscribe<String>() {
                     @Override
                     public void call(Subscriber<? super String> observer) {
                         publishNext(observer, 10, "1-one");
@@ -377,7 +377,7 @@ public class OperatorSwitchTest {
                         publishCompleted(observer, 40);
                     }
                 }));
-                publishNext(observer, 25, Observable.create(new Observable.OnSubscribe<String>() {
+                publishNext(observer, 25, Observable.unsafeCreate(new Observable.OnSubscribe<String>() {
                     @Override
                     public void call(Subscriber<? super String> observer) {
                         publishNext(observer, 10, "2-one");
@@ -407,7 +407,7 @@ public class OperatorSwitchTest {
 
     @Test
     public void testBackpressure() {
-        final Observable<String> o1 = Observable.create(new Observable.OnSubscribe<String>() {
+        final Observable<String> o1 = Observable.unsafeCreate(new Observable.OnSubscribe<String>() {
             @Override
             public void call(final Subscriber<? super String> observer) {
                 observer.setProducer(new Producer() {
@@ -428,7 +428,7 @@ public class OperatorSwitchTest {
                 });
             }
         });
-        final Observable<String> o2 = Observable.create(new Observable.OnSubscribe<String>() {
+        final Observable<String> o2 = Observable.unsafeCreate(new Observable.OnSubscribe<String>() {
             @Override
             public void call(final Subscriber<? super String> observer) {
                 observer.setProducer(new Producer() {
@@ -449,7 +449,7 @@ public class OperatorSwitchTest {
                 });
             }
         });
-        final Observable<String> o3 = Observable.create(new Observable.OnSubscribe<String>() {
+        final Observable<String> o3 = Observable.unsafeCreate(new Observable.OnSubscribe<String>() {
             @Override
             public void call(final Subscriber<? super String> observer) {
                 observer.setProducer(new Producer() {
@@ -469,7 +469,7 @@ public class OperatorSwitchTest {
                 });
             }
         });
-        Observable<Observable<String>> o = Observable.create(new Observable.OnSubscribe<Observable<String>>() {
+        Observable<Observable<String>> o = Observable.unsafeCreate(new Observable.OnSubscribe<Observable<String>>() {
             @Override
             public void call(Subscriber<? super Observable<String>> observer) {
                 publishNext(observer, 10, o1);
@@ -519,7 +519,7 @@ public class OperatorSwitchTest {
     public void testUnsubscribe() {
         final AtomicBoolean isUnsubscribed = new AtomicBoolean();
         Observable.switchOnNext(
-                Observable.create(new Observable.OnSubscribe<Observable<Integer>>() {
+                Observable.unsafeCreate(new Observable.OnSubscribe<Observable<Integer>>() {
                     @Override
                     public void call(final Subscriber<? super Observable<Integer>> subscriber) {
                         subscriber.onNext(Observable.just(1));

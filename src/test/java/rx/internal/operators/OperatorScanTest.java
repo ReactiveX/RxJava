@@ -306,7 +306,7 @@ public class OperatorScanTest {
     @Test
     public void testScanShouldNotRequestZero() {
         final AtomicReference<Producer> producer = new AtomicReference<Producer>();
-        Observable<Integer> o = Observable.create(new Observable.OnSubscribe<Integer>() {
+        Observable<Integer> o = Observable.unsafeCreate(new Observable.OnSubscribe<Integer>() {
             @Override
             public void call(final Subscriber<? super Integer> subscriber) {
                 Producer p = spy(new Producer() {
@@ -371,7 +371,7 @@ public class OperatorScanTest {
 
     @Test
     public void testInitialValueEmittedWithProducer() {
-        Observable<Integer> source = Observable.create(new OnSubscribe<Integer>() {
+        Observable<Integer> source = Observable.unsafeCreate(new OnSubscribe<Integer>() {
             @Override
             public void call(Subscriber<? super Integer> t) {
                 t.setProducer(new Producer() {

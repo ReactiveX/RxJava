@@ -70,9 +70,9 @@ public final class OnSubscribeFlattenIterable<T, R> implements OnSubscribe<R> {
             Func1<? super T, ? extends Iterable<? extends R>> mapper, int prefetch) {
         if (source instanceof ScalarSynchronousObservable) {
             T scalar = ((ScalarSynchronousObservable<? extends T>) source).get();
-            return Observable.create(new OnSubscribeScalarFlattenIterable<T, R>(scalar, mapper));
+            return Observable.unsafeCreate(new OnSubscribeScalarFlattenIterable<T, R>(scalar, mapper));
         }
-        return Observable.create(new OnSubscribeFlattenIterable<T, R>(source, mapper, prefetch));
+        return Observable.unsafeCreate(new OnSubscribeFlattenIterable<T, R>(source, mapper, prefetch));
     }
 
     static final class FlattenIterableSubscriber<T, R> extends Subscriber<T> {

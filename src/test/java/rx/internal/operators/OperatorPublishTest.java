@@ -37,7 +37,7 @@ public class OperatorPublishTest {
     @Test
     public void testPublish() throws InterruptedException {
         final AtomicInteger counter = new AtomicInteger();
-        ConnectableObservable<String> o = Observable.create(new OnSubscribe<String>() {
+        ConnectableObservable<String> o = Observable.unsafeCreate(new OnSubscribe<String>() {
 
             @Override
             public void call(final Subscriber<? super String> observer) {
@@ -368,7 +368,7 @@ public class OperatorPublishTest {
     @Test
     public void testConnectIsIdempotent() {
         final AtomicInteger calls = new AtomicInteger();
-        Observable<Integer> source = Observable.create(new OnSubscribe<Integer>() {
+        Observable<Integer> source = Observable.unsafeCreate(new OnSubscribe<Integer>() {
             @Override
             public void call(Subscriber<? super Integer> t) {
                 calls.getAndIncrement();

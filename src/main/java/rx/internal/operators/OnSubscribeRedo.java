@@ -31,7 +31,7 @@ package rx.internal.operators;
  * limitations under the License.
  */
 
-import static rx.Observable.create; // NOPMD
+import static rx.Observable.unsafeCreate; // NOPMD
 
 import java.util.concurrent.atomic.*;
 
@@ -133,11 +133,11 @@ public final class OnSubscribeRedo<T> implements OnSubscribe<T> {
     }
 
     public static <T> Observable<T> retry(Observable<T> source, Func1<? super Observable<? extends Notification<?>>, ? extends Observable<?>> notificationHandler) {
-        return create(new OnSubscribeRedo<T>(source, notificationHandler, true, false, Schedulers.trampoline()));
+        return unsafeCreate(new OnSubscribeRedo<T>(source, notificationHandler, true, false, Schedulers.trampoline()));
     }
 
     public static <T> Observable<T> retry(Observable<T> source, Func1<? super Observable<? extends Notification<?>>, ? extends Observable<?>> notificationHandler, Scheduler scheduler) {
-        return create(new OnSubscribeRedo<T>(source, notificationHandler, true, false, scheduler));
+        return unsafeCreate(new OnSubscribeRedo<T>(source, notificationHandler, true, false, scheduler));
     }
 
     public static <T> Observable<T> repeat(Observable<T> source) {
@@ -163,15 +163,15 @@ public final class OnSubscribeRedo<T> implements OnSubscribe<T> {
     }
 
     public static <T> Observable<T> repeat(Observable<T> source, Func1<? super Observable<? extends Notification<?>>, ? extends Observable<?>> notificationHandler) {
-        return create(new OnSubscribeRedo<T>(source, notificationHandler, false, true, Schedulers.trampoline()));
+        return unsafeCreate(new OnSubscribeRedo<T>(source, notificationHandler, false, true, Schedulers.trampoline()));
     }
 
     public static <T> Observable<T> repeat(Observable<T> source, Func1<? super Observable<? extends Notification<?>>, ? extends Observable<?>> notificationHandler, Scheduler scheduler) {
-        return create(new OnSubscribeRedo<T>(source, notificationHandler, false, true, scheduler));
+        return unsafeCreate(new OnSubscribeRedo<T>(source, notificationHandler, false, true, scheduler));
     }
 
     public static <T> Observable<T> redo(Observable<T> source, Func1<? super Observable<? extends Notification<?>>, ? extends Observable<?>> notificationHandler, Scheduler scheduler) {
-        return create(new OnSubscribeRedo<T>(source, notificationHandler, false, false, scheduler));
+        return unsafeCreate(new OnSubscribeRedo<T>(source, notificationHandler, false, false, scheduler));
     }
 
     private OnSubscribeRedo(Observable<T> source, Func1<? super Observable<? extends Notification<?>>, ? extends Observable<?>> f, boolean stopOnComplete, boolean stopOnError,

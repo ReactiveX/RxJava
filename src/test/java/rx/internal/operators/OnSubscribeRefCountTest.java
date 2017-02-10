@@ -322,7 +322,7 @@ public class OnSubscribeRefCountTest {
     }
 
     private Observable<Long> synchronousInterval() {
-        return Observable.create(new OnSubscribe<Long>() {
+        return Observable.unsafeCreate(new OnSubscribe<Long>() {
 
             @Override
             public void call(Subscriber<? super Long> subscriber) {
@@ -341,7 +341,7 @@ public class OnSubscribeRefCountTest {
     public void onlyFirstShouldSubscribeAndLastUnsubscribe() {
         final AtomicInteger subscriptionCount = new AtomicInteger();
         final AtomicInteger unsubscriptionCount = new AtomicInteger();
-        Observable<Integer> observable = Observable.create(new OnSubscribe<Integer>() {
+        Observable<Integer> observable = Observable.unsafeCreate(new OnSubscribe<Integer>() {
             @Override
             public void call(Subscriber<? super Integer> observer) {
                 subscriptionCount.incrementAndGet();

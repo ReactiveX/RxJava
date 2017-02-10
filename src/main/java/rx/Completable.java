@@ -2249,7 +2249,7 @@ public class Completable {
      * @return the new Observable created
      */
     public final <T> Observable<T> toObservable() {
-        return Observable.create(new Observable.OnSubscribe<T>() {
+        return Observable.unsafeCreate(new Observable.OnSubscribe<T>() {
             @Override
             public void call(Subscriber<? super T> s) {
                 unsafeSubscribe(s);

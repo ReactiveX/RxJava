@@ -391,7 +391,7 @@ public class CompletableTest {
                     cs.onError(e);
                 }
             })
-            .andThen(Observable.<String>create(new Observable.OnSubscribe<String>() {
+            .andThen(Observable.<String>unsafeCreate(new Observable.OnSubscribe<String>() {
                 @Override
                 public void call(Subscriber<? super String> s) {
                     hasRun.set(true);

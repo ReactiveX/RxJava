@@ -123,7 +123,7 @@ public final class OperatorPublish<T> extends ConnectableObservable<T> {
 
     public static <T, R> Observable<R> create(final Observable<? extends T> source,
             final Func1<? super Observable<T>, ? extends Observable<R>> selector, final boolean delayError) {
-        return create(new OnSubscribe<R>() {
+        return unsafeCreate(new OnSubscribe<R>() {
             @Override
             public void call(final Subscriber<? super R> child) {
                 final OnSubscribePublishMulticast<T> op = new OnSubscribePublishMulticast<T>(RxRingBuffer.SIZE, delayError);
@@ -155,7 +155,7 @@ public final class OperatorPublish<T> extends ConnectableObservable<T> {
                 child.add(op);
                 child.add(subscriber);
 
-                selector.call(Observable.create(op)).unsafeSubscribe(subscriber);
+                selector.call(Observable.unsafeCreate(op)).unsafeSubscribe(subscriber);
 
                 source.unsafeSubscribe(op.subscriber());
             }

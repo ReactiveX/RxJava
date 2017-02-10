@@ -45,7 +45,7 @@ public class OperatorWindowWithTimeTest {
         final List<String> list = new ArrayList<String>();
         final List<List<String>> lists = new ArrayList<List<String>>();
 
-        Observable<String> source = Observable.create(new Observable.OnSubscribe<String>() {
+        Observable<String> source = Observable.unsafeCreate(new Observable.OnSubscribe<String>() {
             @Override
             public void call(Subscriber<? super String> observer) {
                 push(observer, "one", 10);
@@ -78,7 +78,7 @@ public class OperatorWindowWithTimeTest {
         final List<String> list = new ArrayList<String>();
         final List<List<String>> lists = new ArrayList<List<String>>();
 
-        Observable<String> source = Observable.create(new Observable.OnSubscribe<String>() {
+        Observable<String> source = Observable.unsafeCreate(new Observable.OnSubscribe<String>() {
             @Override
             public void call(Subscriber<? super String> observer) {
                 push(observer, "one", 98);

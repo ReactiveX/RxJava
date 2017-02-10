@@ -99,7 +99,7 @@ public class OperatorDoOnRequestTest {
 
         final AtomicReference<Producer> producer = new AtomicReference<Producer>();
 
-        Observable.create(new OnSubscribe<Integer>() {
+        Observable.unsafeCreate(new OnSubscribe<Integer>() {
             @Override
             public void call(Subscriber<? super Integer> t) {
                 t.setProducer(new Producer() {

@@ -49,8 +49,8 @@ public class FromComparison {
 
         Arrays.fill(array, 1);
 
-        iterableSource = Observable.create(new OnSubscribeFromIterable<Integer>(Arrays.asList(array)));
-        arraySource = Observable.create(new OnSubscribeFromArray<Integer>(array));
+        iterableSource = Observable.unsafeCreate(new OnSubscribeFromIterable<Integer>(Arrays.asList(array)));
+        arraySource = Observable.unsafeCreate(new OnSubscribeFromArray<Integer>(array));
     }
 
     @Benchmark

@@ -80,7 +80,7 @@ public class MergeTests {
     @Test
     public void testMergeCovariance4() {
 
-        Observable<Movie> o1 = Observable.create(new OnSubscribe<Movie>() {
+        Observable<Movie> o1 = Observable.unsafeCreate(new OnSubscribe<Movie>() {
 
             @Override
             public void call(Subscriber<? super Movie> o) {

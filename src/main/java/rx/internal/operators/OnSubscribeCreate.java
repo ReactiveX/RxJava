@@ -29,13 +29,13 @@ import rx.internal.util.unsafe.*;
 import rx.plugins.RxJavaHooks;
 import rx.subscriptions.SerialSubscription;
 
-public final class OnSubscribeFromEmitter<T> implements OnSubscribe<T> {
+public final class OnSubscribeCreate<T> implements OnSubscribe<T> {
 
     final Action1<Emitter<T>> Emitter;
 
     final Emitter.BackpressureMode backpressure;
 
-    public OnSubscribeFromEmitter(Action1<Emitter<T>> Emitter, Emitter.BackpressureMode backpressure) {
+    public OnSubscribeCreate(Action1<Emitter<T>> Emitter, Emitter.BackpressureMode backpressure) {
         this.Emitter = Emitter;
         this.backpressure = backpressure;
     }
@@ -268,7 +268,7 @@ public final class OnSubscribeFromEmitter<T> implements OnSubscribe<T> {
 
         @Override
         void onOverflow() {
-            onError(new MissingBackpressureException("fromEmitter: could not emit value due to lack of requests"));
+            onError(new MissingBackpressureException("create: could not emit value due to lack of requests"));
         }
 
     }

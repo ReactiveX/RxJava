@@ -278,7 +278,7 @@ public class OperatorAnyTest {
     @Test
     public void testUpstreamEmitsOnNextAfterFailureWithoutCheckingSubscription() {
         TestSubscriber<Boolean> ts = TestSubscriber.create();
-        Observable.create(new OnSubscribe<Integer>() {
+        Observable.unsafeCreate(new OnSubscribe<Integer>() {
 
             @Override
             public void call(final Subscriber<? super Integer> sub) {
@@ -314,7 +314,7 @@ public class OperatorAnyTest {
     @Test
     public void testUpstreamEmitsOnNextWithoutCheckingSubscription() {
         TestSubscriber<Boolean> ts = TestSubscriber.create();
-        Observable.create(new OnSubscribe<Integer>() {
+        Observable.unsafeCreate(new OnSubscribe<Integer>() {
 
             @Override
             public void call(final Subscriber<? super Integer> sub) {
@@ -356,7 +356,7 @@ public class OperatorAnyTest {
             TestSubscriber<Boolean> ts = TestSubscriber.create();
             final RuntimeException e1 = new RuntimeException();
             final Throwable e2 = new RuntimeException();
-            Observable.create(new OnSubscribe<Integer>() {
+            Observable.unsafeCreate(new OnSubscribe<Integer>() {
 
                 @Override
                 public void call(final Subscriber<? super Integer> sub) {

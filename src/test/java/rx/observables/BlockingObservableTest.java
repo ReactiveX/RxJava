@@ -259,7 +259,7 @@ public class BlockingObservableTest {
 
     @Test(expected = TestException.class)
     public void testToIterableWithException() {
-        BlockingObservable<String> obs = BlockingObservable.from(Observable.create(new Observable.OnSubscribe<String>() {
+        BlockingObservable<String> obs = BlockingObservable.from(Observable.unsafeCreate(new Observable.OnSubscribe<String>() {
 
             @Override
             public void call(Subscriber<? super String> observer) {
@@ -281,7 +281,7 @@ public class BlockingObservableTest {
     @Test
     public void testForEachWithError() {
         try {
-            BlockingObservable.from(Observable.create(new Observable.OnSubscribe<String>() {
+            BlockingObservable.from(Observable.unsafeCreate(new Observable.OnSubscribe<String>() {
 
                 @Override
                 public void call(final Subscriber<? super String> observer) {
@@ -382,7 +382,7 @@ public class BlockingObservableTest {
     @Test
     public void testSingleOrDefaultUnsubscribe() throws InterruptedException {
         final CountDownLatch unsubscribe = new CountDownLatch(1);
-        Observable<Integer> o = Observable.create(new OnSubscribe<Integer>() {
+        Observable<Integer> o = Observable.unsafeCreate(new OnSubscribe<Integer>() {
             @Override
             public void call(Subscriber<? super Integer> subscriber) {
                 subscriber.add(Subscriptions.create(new Action0() {

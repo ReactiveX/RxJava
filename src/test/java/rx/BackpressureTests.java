@@ -593,7 +593,7 @@ public class BackpressureTests {
     }
 
     private static Observable<Integer> incrementingIntegers(final AtomicInteger counter, final ConcurrentLinkedQueue<Thread> threadsSeen) {
-        return Observable.create(new OnSubscribe<Integer>() {
+        return Observable.unsafeCreate(new OnSubscribe<Integer>() {
 
             final AtomicLong requested = new AtomicLong();
 
@@ -637,7 +637,7 @@ public class BackpressureTests {
      * @return
      */
     private static Observable<Integer> firehose(final AtomicInteger counter) {
-        return Observable.create(new OnSubscribe<Integer>() {
+        return Observable.unsafeCreate(new OnSubscribe<Integer>() {
 
             int i;
 

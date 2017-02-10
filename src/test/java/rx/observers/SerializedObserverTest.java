@@ -50,7 +50,7 @@ public class SerializedObserverTest {
     @Test
     public void testSingleThreadedBasic() {
         TestSingleThreadedObservable onSubscribe = new TestSingleThreadedObservable("one", "two", "three");
-        Observable<String> w = Observable.create(onSubscribe);
+        Observable<String> w = Observable.unsafeCreate(onSubscribe);
 
         Observer<String> aw = serializedObserver(observer);
 
@@ -70,7 +70,7 @@ public class SerializedObserverTest {
     @Test
     public void testMultiThreadedBasic() {
         TestMultiThreadedObservable onSubscribe = new TestMultiThreadedObservable("one", "two", "three");
-        Observable<String> w = Observable.create(onSubscribe);
+        Observable<String> w = Observable.unsafeCreate(onSubscribe);
 
         BusyObserver busyObserver = new BusyObserver();
         Observer<String> aw = serializedObserver(busyObserver);
@@ -94,7 +94,7 @@ public class SerializedObserverTest {
     @Test(timeout = 1000)
     public void testMultiThreadedWithNPE() throws InterruptedException {
         TestMultiThreadedObservable onSubscribe = new TestMultiThreadedObservable("one", "two", "three", null);
-        Observable<String> w = Observable.create(onSubscribe);
+        Observable<String> w = Observable.unsafeCreate(onSubscribe);
 
         BusyObserver busyObserver = new BusyObserver();
         Observer<String> aw = serializedObserver(busyObserver);
@@ -128,7 +128,7 @@ public class SerializedObserverTest {
         for (int i = 0; i < n; i++) {
             TestMultiThreadedObservable onSubscribe = new TestMultiThreadedObservable("one", "two", "three", null,
                     "four", "five", "six", "seven", "eight", "nine");
-            Observable<String> w = Observable.create(onSubscribe);
+            Observable<String> w = Observable.unsafeCreate(onSubscribe);
 
             BusyObserver busyObserver = new BusyObserver();
             Observer<String> aw = serializedObserver(busyObserver);
@@ -391,7 +391,7 @@ public class SerializedObserverTest {
     }
 
     private static Observable<String> infinite(final AtomicInteger produced) {
-        return Observable.create(new OnSubscribe<String>() {
+        return Observable.unsafeCreate(new OnSubscribe<String>() {
 
             @Override
             public void call(Subscriber<? super String> s) {

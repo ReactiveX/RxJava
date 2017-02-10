@@ -65,7 +65,7 @@ public class BlockingOperatorToFutureTest {
 
     @Test
     public void testToFutureWithException() {
-        Observable<String> obs = Observable.create(new OnSubscribe<String>() {
+        Observable<String> obs = Observable.unsafeCreate(new OnSubscribe<String>() {
 
             @Override
             public void call(Subscriber<? super String> observer) {
@@ -85,7 +85,7 @@ public class BlockingOperatorToFutureTest {
 
     @Test(expected = CancellationException.class)
     public void testGetAfterCancel() throws Exception {
-        Observable<String> obs = Observable.create(new OperationNeverComplete<String>());
+        Observable<String> obs = Observable.unsafeCreate(new OperationNeverComplete<String>());
         Future<String> f = toFuture(obs);
         boolean cancelled = f.cancel(true);
         assertTrue(cancelled);  // because OperationNeverComplete never does
@@ -94,7 +94,7 @@ public class BlockingOperatorToFutureTest {
 
     @Test(expected = CancellationException.class)
     public void testGetWithTimeoutAfterCancel() throws Exception {
-        Observable<String> obs = Observable.create(new OperationNeverComplete<String>());
+        Observable<String> obs = Observable.unsafeCreate(new OperationNeverComplete<String>());
         Future<String> f = toFuture(obs);
         boolean cancelled = f.cancel(true);
         assertTrue(cancelled);  // because OperationNeverComplete never does

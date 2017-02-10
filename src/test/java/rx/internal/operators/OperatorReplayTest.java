@@ -915,7 +915,7 @@ public class OperatorReplayTest {
     @Test
     public void testCache() throws InterruptedException {
         final AtomicInteger counter = new AtomicInteger();
-        Observable<String> o = Observable.create(new Observable.OnSubscribe<String>() {
+        Observable<String> o = Observable.unsafeCreate(new Observable.OnSubscribe<String>() {
 
             @Override
             public void call(final Subscriber<? super String> observer) {
@@ -1055,7 +1055,7 @@ public class OperatorReplayTest {
             m = 4 * 1000 * 1000;
         }
 
-        Observable<Integer> firehose = Observable.create(new OnSubscribe<Integer>() {
+        Observable<Integer> firehose = Observable.unsafeCreate(new OnSubscribe<Integer>() {
             @Override
             public void call(Subscriber<? super Integer> t) {
                 for (int i = 0; i < m; i++) {

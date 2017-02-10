@@ -227,7 +227,7 @@ public class OperatorOnBackpressureBufferTest {
         });
     }
 
-    static final Observable<Long> infinite = Observable.create(new OnSubscribe<Long>() {
+    static final Observable<Long> infinite = Observable.unsafeCreate(new OnSubscribe<Long>() {
 
         @Override
         public void call(Subscriber<? super Long> s) {

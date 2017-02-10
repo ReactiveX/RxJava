@@ -45,7 +45,7 @@ public class OperatorRetryTest {
     public void iterativeBackoff() {
         @SuppressWarnings("unchecked")
         Observer<String> consumer = mock(Observer.class);
-        Observable<String> producer = Observable.create(new OnSubscribe<String>() {
+        Observable<String> producer = Observable.unsafeCreate(new OnSubscribe<String>() {
 
             private AtomicInteger count = new AtomicInteger(4);
             long last = System.currentTimeMillis();
@@ -116,7 +116,7 @@ public class OperatorRetryTest {
         @SuppressWarnings("unchecked")
         Observer<String> observer = mock(Observer.class);
         int NUM_RETRIES = 20;
-        Observable<String> origin = Observable.create(new FuncWithErrors(NUM_RETRIES));
+        Observable<String> origin = Observable.unsafeCreate(new FuncWithErrors(NUM_RETRIES));
         origin.retry().unsafeSubscribe(new TestSubscriber<String>(observer));
 
         InOrder inOrder = inOrder(observer);
@@ -136,7 +136,7 @@ public class OperatorRetryTest {
         @SuppressWarnings("unchecked")
         Observer<String> observer = mock(Observer.class);
         int NUM_RETRIES = 2;
-        Observable<String> origin = Observable.create(new FuncWithErrors(NUM_RETRIES));
+        Observable<String> origin = Observable.unsafeCreate(new FuncWithErrors(NUM_RETRIES));
         TestSubscriber<String> subscriber = new TestSubscriber<String>(observer);
         origin.retryWhen(new Func1<Observable<? extends Throwable>, Observable<?>>() {
             @Override
@@ -168,7 +168,7 @@ public class OperatorRetryTest {
         @SuppressWarnings("unchecked")
         Observer<String> observer = mock(Observer.class);
         int NUM_RETRIES = 2;
-        Observable<String> origin = Observable.create(new FuncWithErrors(NUM_RETRIES));
+        Observable<String> origin = Observable.unsafeCreate(new FuncWithErrors(NUM_RETRIES));
         origin.retryWhen(new Func1<Observable<? extends Throwable>, Observable<?>>() {
             @Override
             public Observable<?> call(Observable<? extends Throwable> t1) {
@@ -198,7 +198,7 @@ public class OperatorRetryTest {
     public void testOnCompletedFromNotificationHandler() {
         @SuppressWarnings("unchecked")
         Observer<String> observer = mock(Observer.class);
-        Observable<String> origin = Observable.create(new FuncWithErrors(1));
+        Observable<String> origin = Observable.unsafeCreate(new FuncWithErrors(1));
         TestSubscriber<String> subscriber = new TestSubscriber<String>(observer);
         origin.retryWhen(new Func1<Observable<? extends Throwable>, Observable<?>>() {
             @Override
@@ -219,7 +219,7 @@ public class OperatorRetryTest {
     public void testOnErrorFromNotificationHandler() {
         @SuppressWarnings("unchecked")
         Observer<String> observer = mock(Observer.class);
-        Observable<String> origin = Observable.create(new FuncWithErrors(2));
+        Observable<String> origin = Observable.unsafeCreate(new FuncWithErrors(2));
         origin.retryWhen(new Func1<Observable<? extends Throwable>, Observable<?>>() {
             @Override
             public Observable<?> call(Observable<? extends Throwable> t1) {
@@ -247,7 +247,7 @@ public class OperatorRetryTest {
             }
         };
 
-        int first = Observable.create(onSubscribe)
+        int first = Observable.unsafeCreate(onSubscribe)
                 .retryWhen(new Func1<Observable<? extends Throwable>, Observable<?>>() {
                     @Override
                     public Observable<?> call(Observable<? extends Throwable> attempt) {
@@ -270,7 +270,7 @@ public class OperatorRetryTest {
     public void testOriginFails() {
         @SuppressWarnings("unchecked")
         Observer<String> observer = mock(Observer.class);
-        Observable<String> origin = Observable.create(new FuncWithErrors(1));
+        Observable<String> origin = Observable.unsafeCreate(new FuncWithErrors(1));
         origin.subscribe(observer);
 
         InOrder inOrder = inOrder(observer);
@@ -286,7 +286,7 @@ public class OperatorRetryTest {
         int NUM_FAILURES = 2;
         @SuppressWarnings("unchecked")
         Observer<String> observer = mock(Observer.class);
-        Observable<String> origin = Observable.create(new FuncWithErrors(NUM_FAILURES));
+        Observable<String> origin = Observable.unsafeCreate(new FuncWithErrors(NUM_FAILURES));
         origin.retry(NUM_RETRIES).subscribe(observer);
 
         InOrder inOrder = inOrder(observer);
@@ -305,7 +305,7 @@ public class OperatorRetryTest {
         int NUM_FAILURES = 1;
         @SuppressWarnings("unchecked")
         Observer<String> observer = mock(Observer.class);
-        Observable<String> origin = Observable.create(new FuncWithErrors(NUM_FAILURES));
+        Observable<String> origin = Observable.unsafeCreate(new FuncWithErrors(NUM_FAILURES));
         origin.retry(3).subscribe(observer);
 
         InOrder inOrder = inOrder(observer);
@@ -325,7 +325,7 @@ public class OperatorRetryTest {
         int NUM_FAILURES = 20;
         @SuppressWarnings("unchecked")
         Observer<String> observer = mock(Observer.class);
-        Observable<String> origin = Observable.create(new FuncWithErrors(NUM_FAILURES));
+        Observable<String> origin = Observable.unsafeCreate(new FuncWithErrors(NUM_FAILURES));
         origin.retry().subscribe(observer);
 
         InOrder inOrder = inOrder(observer);
@@ -478,7 +478,7 @@ public class OperatorRetryTest {
                 });
             }
         };
-        Observable<String> stream = Observable.create(onSubscribe);
+        Observable<String> stream = Observable.unsafeCreate(onSubscribe);
         Observable<String> streamWithRetry = stream.retry();
         Subscription sub = streamWithRetry.subscribe();
         assertEquals(1, subsCount.get());
@@ -512,7 +512,7 @@ public class OperatorRetryTest {
             }
         };
 
-        Observable.create(onSubscribe).retry(3).subscribe(ts);
+        Observable.unsafeCreate(onSubscribe).retry(3).subscribe(ts);
         assertEquals(4, subsCount.get()); // 1 + 3 retries
     }
 
@@ -530,7 +530,7 @@ public class OperatorRetryTest {
             }
         };
 
-        Observable.create(onSubscribe).retry(1).subscribe(ts);
+        Observable.unsafeCreate(onSubscribe).retry(1).subscribe(ts);
         assertEquals(2, subsCount.get());
     }
 
@@ -548,7 +548,7 @@ public class OperatorRetryTest {
             }
         };
 
-        Observable.create(onSubscribe).retry(0).subscribe(ts);
+        Observable.unsafeCreate(onSubscribe).retry(0).subscribe(ts);
         assertEquals(1, subsCount.get());
     }
 
@@ -651,7 +651,7 @@ public class OperatorRetryTest {
 
         // Observable that always fails after 100ms
         SlowObservable so = new SlowObservable(100, 0);
-        Observable<Long> o = Observable.create(so).retry(5);
+        Observable<Long> o = Observable.unsafeCreate(so).retry(5);
 
         AsyncObserver<Long> async = new AsyncObserver<Long>(observer);
 
@@ -676,7 +676,7 @@ public class OperatorRetryTest {
 
         // Observable that sends every 100ms (timeout fails instead)
         SlowObservable so = new SlowObservable(100, 10);
-        Observable<Long> o = Observable.create(so).timeout(80, TimeUnit.MILLISECONDS).retry(5);
+        Observable<Long> o = Observable.unsafeCreate(so).timeout(80, TimeUnit.MILLISECONDS).retry(5);
 
         AsyncObserver<Long> async = new AsyncObserver<Long>(observer);
 
@@ -700,7 +700,7 @@ public class OperatorRetryTest {
             for (int i = 0; i < 400; i++) {
                 @SuppressWarnings("unchecked")
                 Observer<String> observer = mock(Observer.class);
-                Observable<String> origin = Observable.create(new FuncWithErrors(NUM_RETRIES));
+                Observable<String> origin = Observable.unsafeCreate(new FuncWithErrors(NUM_RETRIES));
                 TestSubscriber<String> ts = new TestSubscriber<String>(observer);
                 origin.retry().observeOn(Schedulers.computation()).unsafeSubscribe(ts);
                 ts.awaitTerminalEvent(5, TimeUnit.SECONDS);
@@ -743,7 +743,7 @@ public class OperatorRetryTest {
                         public void run() {
                             final AtomicInteger nexts = new AtomicInteger();
                             try {
-                                Observable<String> origin = Observable.create(new FuncWithErrors(NUM_RETRIES));
+                                Observable<String> origin = Observable.unsafeCreate(new FuncWithErrors(NUM_RETRIES));
                                 TestSubscriber<String> ts = new TestSubscriber<String>();
                                 origin.retry()
                                 .observeOn(Schedulers.computation()).unsafeSubscribe(ts);
@@ -866,7 +866,7 @@ public class OperatorRetryTest {
         final int NUM_MSG = 1034;
         final AtomicInteger count = new AtomicInteger();
 
-        Observable<String> origin = Observable.create(new Observable.OnSubscribe<String>() {
+        Observable<String> origin = Observable.unsafeCreate(new Observable.OnSubscribe<String>() {
 
             @Override
             public void call(Subscriber<? super String> o) {

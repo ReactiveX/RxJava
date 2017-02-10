@@ -122,7 +122,7 @@ public final class ScalarSynchronousObservable<T> extends Observable<T> {
             };
         }
 
-        return create(new ScalarAsyncOnSubscribe<T>(t, onSchedule));
+        return unsafeCreate(new ScalarAsyncOnSubscribe<T>(t, onSchedule));
     }
 
     /** The OnSubscribe callback for the Observable constructor. */
@@ -225,7 +225,7 @@ public final class ScalarSynchronousObservable<T> extends Observable<T> {
      * @return the new observable
      */
     public <R> Observable<R> scalarFlatMap(final Func1<? super T, ? extends Observable<? extends R>> func) {
-        return create(new OnSubscribe<R>() {
+        return unsafeCreate(new OnSubscribe<R>() {
             @Override
             public void call(final Subscriber<? super R> child) {
                 Observable<? extends R> o = func.call(t);

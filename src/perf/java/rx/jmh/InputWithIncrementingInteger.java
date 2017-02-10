@@ -44,7 +44,7 @@ public abstract class InputWithIncrementingInteger {
         final int size = getSize();
         observable = Observable.range(0, size);
 
-        firehose = Observable.create(new OnSubscribe<Integer>() {
+        firehose = Observable.unsafeCreate(new OnSubscribe<Integer>() {
 
             @Override
             public void call(Subscriber<? super Integer> s) {

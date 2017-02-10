@@ -46,7 +46,7 @@ public class OperatorTakeLastOnePerf {
 
     @Benchmark
     public void takeLastOneUsingTakeLastOne(Input input) {
-       Observable.create(new OnSubscribeTakeLastOne<Integer>(input.observable)).subscribe(input.observer);
+       Observable.unsafeCreate(new OnSubscribeTakeLastOne<Integer>(input.observable)).subscribe(input.observer);
     }
 
 }

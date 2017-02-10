@@ -112,7 +112,7 @@ public class OperatorTakeTest {
 
     @Test
     public void testTakeDoesntLeakErrors() {
-        Observable<String> source = Observable.create(new Observable.OnSubscribe<String>() {
+        Observable<String> source = Observable.unsafeCreate(new Observable.OnSubscribe<String>() {
             @Override
             public void call(Subscriber<? super String> observer) {
                 observer.onNext("one");
@@ -136,7 +136,7 @@ public class OperatorTakeTest {
     public void testTakeZeroDoesntLeakError() {
         final AtomicBoolean subscribed = new AtomicBoolean(false);
         final AtomicBoolean unSubscribed = new AtomicBoolean(false);
-        Observable<String> source = Observable.create(new Observable.OnSubscribe<String>() {
+        Observable<String> source = Observable.unsafeCreate(new Observable.OnSubscribe<String>() {
             @Override
             public void call(Subscriber<? super String> observer) {
                 subscribed.set(true);
@@ -173,7 +173,7 @@ public class OperatorTakeTest {
     public void testUnsubscribeAfterTake() {
         final Subscription s = mock(Subscription.class);
         TestObservableFunc f = new TestObservableFunc("one", "two", "three");
-        Observable<String> w = Observable.create(f);
+        Observable<String> w = Observable.unsafeCreate(f);
 
         @SuppressWarnings("unchecked")
         Observer<String> observer = mock(Observer.class);
@@ -218,7 +218,7 @@ public class OperatorTakeTest {
     @Test(timeout = 2000)
     public void testMultiTake() {
         final AtomicInteger count = new AtomicInteger();
-        Observable.create(new OnSubscribe<Integer>() {
+        Observable.unsafeCreate(new OnSubscribe<Integer>() {
 
             @Override
             public void call(Subscriber<? super Integer> s) {
@@ -277,7 +277,7 @@ public class OperatorTakeTest {
         }
     }
 
-    private static Observable<Long> INFINITE_OBSERVABLE = Observable.create(new OnSubscribe<Long>() {
+    private static Observable<Long> INFINITE_OBSERVABLE = Observable.unsafeCreate(new OnSubscribe<Long>() {
 
         @Override
         public void call(Subscriber<? super Long> op) {
@@ -311,7 +311,7 @@ public class OperatorTakeTest {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         ts.requestMore(3);
         final AtomicLong requested = new AtomicLong();
-        Observable.create(new OnSubscribe<Integer>() {
+        Observable.unsafeCreate(new OnSubscribe<Integer>() {
 
             @Override
             public void call(Subscriber<? super Integer> s) {
@@ -334,7 +334,7 @@ public class OperatorTakeTest {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         ts.requestMore(3);
         final AtomicLong requested = new AtomicLong();
-        Observable.create(new OnSubscribe<Integer>() {
+        Observable.unsafeCreate(new OnSubscribe<Integer>() {
 
             @Override
             public void call(Subscriber<? super Integer> s) {

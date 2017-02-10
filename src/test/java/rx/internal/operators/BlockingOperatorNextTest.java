@@ -239,7 +239,7 @@ public class BlockingOperatorNextTest {
         final CountDownLatch timeHasPassed = new CountDownLatch(COUNT);
         final AtomicBoolean running = new AtomicBoolean(true);
         final AtomicInteger count = new AtomicInteger(0);
-        final Observable<Integer> obs = Observable.create(new Observable.OnSubscribe<Integer>() {
+        final Observable<Integer> obs = Observable.unsafeCreate(new Observable.OnSubscribe<Integer>() {
 
             @Override
             public void call(final Subscriber<? super Integer> o) {

@@ -50,7 +50,7 @@ public class OperatorSampleTest {
 
     @Test
     public void testSample() {
-        Observable<Long> source = Observable.create(new OnSubscribe<Long>() {
+        Observable<Long> source = Observable.unsafeCreate(new OnSubscribe<Long>() {
             @Override
             public void call(final Subscriber<? super Long> observer1) {
                 innerScheduler.schedule(new Action0() {
@@ -111,7 +111,7 @@ public class OperatorSampleTest {
 
     @Test
     public void sampleWithTimeEmitAndTerminate() {
-        Observable<Long> source = Observable.create(new OnSubscribe<Long>() {
+        Observable<Long> source = Observable.unsafeCreate(new OnSubscribe<Long>() {
             @Override
             public void call(final Subscriber<? super Long> observer1) {
                 innerScheduler.schedule(new Action0() {
@@ -303,7 +303,7 @@ public class OperatorSampleTest {
     @Test
     public void testSampleUnsubscribe() {
         final Subscription s = mock(Subscription.class);
-        Observable<Integer> o = Observable.create(
+        Observable<Integer> o = Observable.unsafeCreate(
                 new OnSubscribe<Integer>() {
                     @Override
                     public void call(Subscriber<? super Integer> subscriber) {
@@ -387,7 +387,7 @@ public class OperatorSampleTest {
 
     @Test
     public void neverSetProducer() {
-        Observable<Integer> neverBackpressure = Observable.create(new OnSubscribe<Integer>() {
+        Observable<Integer> neverBackpressure = Observable.unsafeCreate(new OnSubscribe<Integer>() {
             @Override
             public void call(Subscriber<? super Integer> t) {
                 t.setProducer(new Producer() {
@@ -430,7 +430,7 @@ public class OperatorSampleTest {
     public void unsubscribeMainAfterCompleted() {
         final AtomicBoolean unsubscribed = new AtomicBoolean();
 
-        Observable<Integer> source = Observable.create(new OnSubscribe<Integer>() {
+        Observable<Integer> source = Observable.unsafeCreate(new OnSubscribe<Integer>() {
             @Override
             public void call(Subscriber<? super Integer> t) {
                 t.add(Subscriptions.create(new Action0() {
@@ -467,7 +467,7 @@ public class OperatorSampleTest {
     public void unsubscribeSamplerAfterCompleted() {
         final AtomicBoolean unsubscribed = new AtomicBoolean();
 
-        Observable<Integer> source = Observable.create(new OnSubscribe<Integer>() {
+        Observable<Integer> source = Observable.unsafeCreate(new OnSubscribe<Integer>() {
             @Override
             public void call(Subscriber<? super Integer> t) {
                 t.add(Subscriptions.create(new Action0() {

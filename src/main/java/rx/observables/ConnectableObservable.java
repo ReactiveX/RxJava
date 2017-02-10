@@ -76,7 +76,7 @@ public abstract class ConnectableObservable<T> extends Observable<T> {
      * @see <a href="http://reactivex.io/documentation/operators/refcount.html">ReactiveX documentation: RefCount</a>
      */
     public Observable<T> refCount() {
-        return create(new OnSubscribeRefCount<T>(this));
+        return unsafeCreate(new OnSubscribeRefCount<T>(this));
     }
 
     /**
@@ -125,6 +125,6 @@ public abstract class ConnectableObservable<T> extends Observable<T> {
             this.connect(connection);
             return this;
         }
-        return create(new OnSubscribeAutoConnect<T>(this, numberOfSubscribers, connection));
+        return unsafeCreate(new OnSubscribeAutoConnect<T>(this, numberOfSubscribers, connection));
     }
 }

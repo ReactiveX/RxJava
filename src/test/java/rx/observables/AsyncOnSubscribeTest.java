@@ -110,7 +110,7 @@ public class AsyncOnSubscribeTest {
             public void call(Long requested, Observer<Observable<? extends Integer>> observer) {
                 observer.onNext(Observable.range(1, requested.intValue()));
             }});
-        Observable.create(os).observeOn(scheduler).subscribe(subscriber);
+        Observable.unsafeCreate(os).observeOn(scheduler).subscribe(subscriber);
         subscriber.requestMore(RxRingBuffer.SIZE);
         scheduler.advanceTimeBy(10, TimeUnit.DAYS);
         subscriber.assertNoErrors();
@@ -141,7 +141,7 @@ public class AsyncOnSubscribeTest {
             public void call(Integer t) {
                 lastState.set(t);
             }});
-        Observable.create(os).subscribe(subscriber);
+        Observable.unsafeCreate(os).subscribe(subscriber);
         subscriber.requestMore(1); // [[1]], state = 1
         subscriber.requestMore(2); // [[1]], state = 2
         subscriber.requestMore(3); // onComplete, state = 3
@@ -158,7 +158,7 @@ public class AsyncOnSubscribeTest {
             public void call(Long requested, Observer<Observable<? extends Integer>> observer) {
                 observer.onCompleted();
             }});
-        Observable.create(os).subscribe(subscriber);
+        Observable.unsafeCreate(os).subscribe(subscriber);
         subscriber.requestMore(1);
         subscriber.assertNoErrors();
         subscriber.assertCompleted();
@@ -174,7 +174,7 @@ public class AsyncOnSubscribeTest {
                 observer.onNext(Observable.just(2));
             }
         });
-        Observable.create(os).subscribe(subscriber);
+        Observable.unsafeCreate(os).subscribe(subscriber);
         subscriber.requestMore(1);
         subscriber.assertError(IllegalStateException.class);
         subscriber.assertNotCompleted();
@@ -189,7 +189,7 @@ public class AsyncOnSubscribeTest {
             public void call(Long requested, Observer<Observable<? extends Integer>> observer) {
                 throw new TestException();
             }});
-        Observable.create(os).subscribe(subscriber);
+        Observable.unsafeCreate(os).subscribe(subscriber);
         subscriber.requestMore(1);
         subscriber.assertError(TestException.class);
         subscriber.assertNotCompleted();
@@ -209,7 +209,7 @@ public class AsyncOnSubscribeTest {
                 observer.onCompleted();
                 throw new TestException();
             }});
-        Observable.create(os).subscribe(subscriber);
+        Observable.unsafeCreate(os).subscribe(subscriber);
         subscriber.requestMore(1);
         subscriber.assertNoErrors();
         subscriber.assertCompleted();
@@ -230,7 +230,7 @@ public class AsyncOnSubscribeTest {
                 observer.onNext(Observable.just(1));
                 return 1;
             }});
-        Observable.create(os).subscribe(subscriber);
+        Observable.unsafeCreate(os).subscribe(subscriber);
         subscriber.requestMore(1);
         subscriber.assertNoErrors();
         subscriber.assertCompleted();
@@ -251,7 +251,7 @@ public class AsyncOnSubscribeTest {
                 observer.onNext(Observable.just(1));
                 return 1;
             }});
-        Observable.create(os).subscribe(subscriber);
+        Observable.unsafeCreate(os).subscribe(subscriber);
         subscriber.requestMore(1);
         subscriber.assertError(TestException.class);
         subscriber.assertNotCompleted();
@@ -272,7 +272,7 @@ public class AsyncOnSubscribeTest {
                 observer.onCompleted();
                 return state;
             }});
-        Observable.create(os).subscribe(subscriber);
+        Observable.unsafeCreate(os).subscribe(subscriber);
         subscriber.requestMore(1);
         subscriber.assertNoErrors();
         subscriber.assertCompleted();
@@ -293,7 +293,7 @@ public class AsyncOnSubscribeTest {
                 return state;
             }
         });
-        Observable.create(os).subscribe(subscriber);
+        Observable.unsafeCreate(os).subscribe(subscriber);
         subscriber.requestMore(1);
         subscriber.assertError(TestException.class);
         subscriber.assertNotCompleted();
@@ -315,7 +315,7 @@ public class AsyncOnSubscribeTest {
                 return state;
             }
         });
-        Observable.create(os).subscribe(subscriber);
+        Observable.unsafeCreate(os).subscribe(subscriber);
         subscriber.requestMore(1);
         subscriber.assertCompleted();
         subscriber.assertNoErrors();
@@ -359,7 +359,7 @@ public class AsyncOnSubscribeTest {
                 observer.onNext(o1);
                 return state + 1;
             }});
-        Observable.create(os).subscribe(subscriber);
+        Observable.unsafeCreate(os).subscribe(subscriber);
         subscriber.requestMore(1); // [[1]]
         subscriber.requestMore(2); // [[2]]
         subscriber.requestMore(2); // onCompleted
@@ -413,7 +413,7 @@ public class AsyncOnSubscribeTest {
                     }
                     return state + 1;
                 }});
-        Subscription subscription = Observable.create(os)
+        Subscription subscription = Observable.unsafeCreate(os)
             .observeOn(scheduler, 1)
             .subscribe(subscriber);
         sub.set(subscription);
@@ -465,7 +465,7 @@ public class AsyncOnSubscribeTest {
                 }
                 return state + 1;
             }});
-        Observable.create(os).subscribe(subscriber);
+        Observable.unsafeCreate(os).subscribe(subscriber);
 
         subscriber.assertNoErrors();
         subscriber.assertNotCompleted();

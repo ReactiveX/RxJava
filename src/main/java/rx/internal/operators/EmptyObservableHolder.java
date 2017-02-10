@@ -28,7 +28,7 @@ public enum EmptyObservableHolder implements OnSubscribe<Object> {
     ;
 
     /** The singleton instance. */
-    static final Observable<Object> EMPTY = Observable.create(INSTANCE);
+    static final Observable<Object> EMPTY = Observable.unsafeCreate(INSTANCE);
 
 
     /**

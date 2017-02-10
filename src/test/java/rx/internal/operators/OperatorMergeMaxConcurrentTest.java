@@ -72,7 +72,7 @@ public class OperatorMergeMaxConcurrentTest {
             for (int i = 0; i < observableCount; i++) {
                 SubscriptionCheckObservable sco = new SubscriptionCheckObservable(subscriptionCount, maxConcurrent);
                 scos.add(sco);
-                os.add(Observable.create(sco));
+                os.add(Observable.unsafeCreate(sco));
             }
 
             Iterator<String> iter = Observable.merge(os, maxConcurrent).toBlocking().toIterable().iterator();
