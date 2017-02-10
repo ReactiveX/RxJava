@@ -37,7 +37,7 @@ public class XFlatMapTest {
     void sleep() throws Exception {
         cb.await();
         try {
-            Thread.sleep(1000);
+            Thread.sleep(5000);
         } catch (InterruptedException ex) {
             // ignored here
         }
