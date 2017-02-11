@@ -2017,11 +2017,11 @@ public class OperatorGroupByTest {
                 throw exception;
             }};
     }
-    
+
     @Test
     public void outerConsumedInABoundedManner() {
         final int[] counter = { 0 };
-        
+
         Observable.range(1, 10000)
         .doOnRequest(new Action1<Long>() {
             @Override
