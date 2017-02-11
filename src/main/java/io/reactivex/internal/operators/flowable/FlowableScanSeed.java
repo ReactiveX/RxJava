@@ -13,14 +13,17 @@
 package io.reactivex.internal.operators.flowable;
 
 import java.util.concurrent.Callable;
+import java.util.concurrent.atomic.*;
 
 import org.reactivestreams.*;
 
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.BiFunction;
 import io.reactivex.internal.functions.ObjectHelper;
-import io.reactivex.internal.subscribers.SinglePostCompleteSubscriber;
-import io.reactivex.internal.subscriptions.EmptySubscription;
+import io.reactivex.internal.fuseable.SimplePlainQueue;
+import io.reactivex.internal.queue.SpscArrayQueue;
+import io.reactivex.internal.subscriptions.*;
+import io.reactivex.internal.util.BackpressureHelper;
 import io.reactivex.plugins.RxJavaPlugins;
 
 public final class FlowableScanSeed<T, R> extends AbstractFlowableWithUpstream<T, R> {
@@ -45,20 +48,57 @@ public final class FlowableScanSeed<T, R> extends AbstractFlowableWithUpstream<T
             return;
         }
 
-        source.subscribe(new ScanSeedSubscriber<T, R>(s, accumulator, r));
+        source.subscribe(new ScanSeedSubscriber<T, R>(s, accumulator, r, bufferSize()));
     }
 
-    static final class ScanSeedSubscriber<T, R> extends SinglePostCompleteSubscriber<T, R> {
+    static final class ScanSeedSubscriber<T, R>
+    extends AtomicInteger
+    implements Subscriber<T>, Subscription {
         private static final long serialVersionUID = -1776795561228106469L;
+
+        final Subscriber<? super R> actual;
 
         final BiFunction<R, ? super T, R> accumulator;
 
-        boolean done;
+        final SimplePlainQueue<R> queue;
 
-        ScanSeedSubscriber(Subscriber<? super R> actual, BiFunction<R, ? super T, R> accumulator, R value) {
-            super(actual);
+        final AtomicLong requested;
+
+        final int prefetch;
+
+        final int limit;
+
+        volatile boolean cancelled;
+
+        volatile boolean done;
+        Throwable error;
+
+        Subscription s;
+
+        R value;
+
+        int consumed;
+
+        ScanSeedSubscriber(Subscriber<? super R> actual, BiFunction<R, ? super T, R> accumulator, R value, int prefetch) {
+            this.actual = actual;
             this.accumulator = accumulator;
             this.value = value;
+            this.prefetch = prefetch;
+            this.limit = prefetch - (prefetch >> 2);
+            this.queue = new SpscArrayQueue<R>(prefetch);
+            this.queue.offer(value);
+            this.requested = new AtomicLong();
+        }
+
+        @Override
+        public void onSubscribe(Subscription s) {
+            if (SubscriptionHelper.validate(this.s, s)) {
+                this.s = s;
+
+                actual.onSubscribe(this);
+
+                s.request(prefetch - 1);
+            }
         }
 
         @Override
@@ -68,21 +108,18 @@ public final class FlowableScanSeed<T, R> extends AbstractFlowableWithUpstream<T
             }
 
             R v = value;
-
-            R u;
-
             try {
-                u = ObjectHelper.requireNonNull(accumulator.apply(v, t), "The accumulator returned a null value");
-            } catch (Throwable e) {
-                Exceptions.throwIfFatal(e);
+                v = ObjectHelper.requireNonNull(accumulator.apply(v, t), "The accumulator returned a null value");
+            } catch (Throwable ex) {
+                Exceptions.throwIfFatal(ex);
                 s.cancel();
-                onError(e);
+                onError(ex);
                 return;
             }
 
-            value = u;
-            produced++;
-            actual.onNext(v);
+            value = v;
+            queue.offer(v);
+            drain();
         }
 
         @Override
@@ -91,9 +128,9 @@ public final class FlowableScanSeed<T, R> extends AbstractFlowableWithUpstream<T
                 RxJavaPlugins.onError(t);
                 return;
             }
+            error = t;
             done = true;
-            value = null;
-            actual.onError(t);
+            drain();
         }
 
         @Override
@@ -102,7 +139,104 @@ public final class FlowableScanSeed<T, R> extends AbstractFlowableWithUpstream<T
                 return;
             }
             done = true;
-            complete(value);
+            drain();
+        }
+
+        @Override
+        public void cancel() {
+            cancelled = true;
+            s.cancel();
+            if (getAndIncrement() == 0) {
+                queue.clear();
+            }
+        }
+
+        @Override
+        public void request(long n) {
+            if (SubscriptionHelper.validate(n)) {
+                BackpressureHelper.add(requested, n);
+                drain();
+            }
+        }
+
+        void drain() {
+            if (getAndIncrement() != 0) {
+                return;
+            }
+
+            int missed = 1;
+            Subscriber<? super R> a = actual;
+            SimplePlainQueue<R> q = queue;
+            int lim = limit;
+            int c = consumed;
+
+            for (;;) {
+
+                long r = requested.get();
+                long e = 0L;
+
+                while (e != r) {
+                    if (cancelled) {
+                        q.clear();
+                        return;
+                    }
+                    boolean d = done;
+
+                    if (d) {
+                        Throwable ex = error;
+                        if (ex != null) {
+                            q.clear();
+                            a.onError(ex);
+                            return;
+                        }
+                    }
+
+                    R v = q.poll();
+                    boolean empty = v == null;
+
+                    if (d && empty) {
+                        a.onComplete();
+                        return;
+                    }
+
+                    if (empty) {
+                        break;
+                    }
+
+                    a.onNext(v);
+
+                    e++;
+                    if (++c == lim) {
+                        c = 0;
+                        s.request(lim);
+                    }
+                }
+
+                if (e == r) {
+                    if (done) {
+                        Throwable ex = error;
+                        if (ex != null) {
+                            q.clear();
+                            a.onError(ex);
+                            return;
+                        }
+                        if (q.isEmpty()) {
+                            a.onComplete();
+                            return;
+                        }
+                    }
+                }
+
+                if (e != 0L) {
+                    BackpressureHelper.produced(requested, e);
+                }
+
+                consumed = c;
+                missed = addAndGet(-missed);
+                if (missed == 0) {
+                    break;
+                }
+            }
         }
     }
 }
