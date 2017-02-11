@@ -93,7 +93,7 @@ public class CompletableTest {
     /**
      * A class containing a completable instance and counts the number of subscribers.
      */
-    static final class NormalCompletable extends AtomicInteger {
+    public static final class NormalCompletable extends AtomicInteger {
         /** */
         private static final long serialVersionUID = 7192337844700923752L;
 
@@ -119,7 +119,7 @@ public class CompletableTest {
      * A class containing a completable instance that emits a TestException and counts
      * the number of subscribers.
      */
-    static final class ErrorCompletable extends AtomicInteger {
+    public static final class ErrorCompletable extends AtomicInteger {
         /** */
         private static final long serialVersionUID = 7192337844700923752L;
 

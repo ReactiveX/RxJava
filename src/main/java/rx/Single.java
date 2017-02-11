@@ -931,6 +931,97 @@ public class Single<T> {
     }
 
     /**
+     * Merges all Singles emitted by the Observable and runs them together until the source
+     * Observable and all inner Singles complete normally.
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The operator consumes items from the Observable in an unbounded manner and honors downstream backpressure.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code merge} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param <T> the value type of the inner Singles and the resulting Observable
+     * @param sources the Observable that emits Singles to be merged
+     * @return the new Observable instance
+     * @see #merge(Observable, int)
+     * @see #mergeDelayError(Observable)
+     * @see #mergeDelayError(Observable, int)
+     * @since 1.2.7 - experimental
+     */
+    @Experimental
+    public static <T> Observable<T> merge(Observable<? extends Single<? extends T>> sources) {
+        return merge(sources, Integer.MAX_VALUE);
+    }
+
+    /**
+     * Merges the Singles emitted by the Observable and runs up to the given number of them together at a time,
+     * until the Observable and all inner Singles terminate.
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The operator consumes at most maxConcurrent items from the Observable and one-by-one after as the inner
+     *  Singles terminate. The operator ignores downstream backpressure as it doesn't emit items but
+     *  only the terminal event.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code flatMapSingle} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param <T> the value type of the inner Singles and the resulting Observable
+     * @param sources the Observable that emits Singles to be merged
+     * @param maxConcurrency the maximum number of inner Singles to run at a time
+     * @return the new Observable instance
+     * @since 1.2.7 - experimental
+     */
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @Experimental
+    public static <T> Observable<T> merge(Observable<? extends Single<? extends T>> sources, int maxConcurrency) {
+        return sources.flatMapSingle((Func1)UtilityFunctions.identity(), false, maxConcurrency);
+    }
+
+    /**
+     * Merges all Singles emitted by the Observable and runs them together,
+     * delaying errors from them and the Observable, until the source
+     * Observable and all inner Singles complete normally.
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The operator consumes items from the Observable in an unbounded manner and honors downstream backpressure.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code merge} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param <T> the value type of the inner Singles and the resulting Observable
+     * @param sources the Observable that emits Singles to be merged
+     * @return the new Observable instance
+     * @see #mergeDelayError(Observable, int)
+     * @see #merge(Observable)
+     * @see #merge(Observable, int)
+     * @since 1.2.7 - experimental
+     */
+    @Experimental
+    public static <T> Observable<T> mergeDelayError(Observable<? extends Single<? extends T>> sources) {
+        return merge(sources, Integer.MAX_VALUE);
+    }
+
+    /**
+     * Merges the Singles emitted by the Observable and runs up to the given number of them together at a time,
+     * delaying errors from them and the Observable, until the Observable and all inner Singles terminate.
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The operator consumes at most maxConcurrent items from the Observable and one-by-one after as the inner
+     *  Singles terminate. The operator ignores downstream backpressure as it doesn't emit items but
+     *  only the terminal event.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code flatMapSingle} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param <T> the value type of the inner Singles and the resulting Observable
+     * @param sources the Observable that emits Singles to be merged
+     * @param maxConcurrency the maximum number of inner Singles to run at a time
+     * @return the new Observable instance
+     * @since 1.2.7 - experimental
+     */
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @Experimental
+    public static <T> Observable<T> mergeDelayError(Observable<? extends Single<? extends T>> sources, int maxConcurrency) {
+        return sources.flatMapSingle((Func1)UtilityFunctions.identity(), true, maxConcurrency);
+    }
+
+    /**
      * Returns a Single that emits the results of a specified combiner function applied to two items emitted by
      * two other Singles.
      * <p>
