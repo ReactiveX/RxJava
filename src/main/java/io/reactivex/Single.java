@@ -1814,6 +1814,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * @return a Single that emits the same items as the source Single, then invokes the
      *         {@link Action}
      * @see <a href="http://reactivex.io/documentation/operators/do.html">ReactiveX operators documentation: Do</a>
+     * @since 2.0.6 - experimental
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
