@@ -1799,6 +1799,32 @@ public abstract class Single<T> implements SingleSource<T> {
     }
 
     /**
+     * Registers an {@link Action} to be called after this Single invokes either onSuccess or onError.
+     * * <p>Note that the {@code doAfterSuccess} action is shared between subscriptions and as such
+     * should be thread-safe.</p>
+     * <p>
+     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/doAfterTerminate.png" alt="">
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code doAfterTerminate} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param onAfterTerminate
+     *            an {@link Action} to be invoked when the source Single finishes
+     * @return a Single that emits the same items as the source Single, then invokes the
+     *         {@link Action}
+     * @see <a href="http://reactivex.io/documentation/operators/do.html">ReactiveX operators documentation: Do</a>
+     * @since 2.0.6 - experimental
+     */
+    @CheckReturnValue
+    @SchedulerSupport(SchedulerSupport.NONE)
+    @Experimental
+    public final Single<T> doAfterTerminate(Action onAfterTerminate) {
+        ObjectHelper.requireNonNull(onAfterTerminate, "onAfterTerminate is null");
+        return RxJavaPlugins.onAssembly(new SingleDoAfterTerminate<T>(this, onAfterTerminate));
+    }
+
+    /**
      * Calls the specified action after this Single signals onSuccess or onError or gets disposed by
      * the downstream.
      * <p>In case of a race between a terminal event and a dispose call, the provided {@code onFinally} action
