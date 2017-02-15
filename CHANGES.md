@@ -2,6 +2,65 @@
 
 Version 1.x can be found at https://github.com/ReactiveX/RxJava/blob/1.x/CHANGES.md
 
+### Version 2.0.6 - February 15, 2017 ([Maven](http://search.maven.org/#artifactdetails%7Cio.reactivex.rxjava2%7Crxjava%7C2.0.6%7C))
+
+**Undeliverable exceptions**
+
+One of the design goals of 2.x was that no errors can be lost. Sometimes, the sequence ends or gets cancelled before the source could emit an `onError` which has nowhere to go at that point and gets routed to the `RxJavaPlugins.onError`. 
+
+Unlike 1.x, 2.x by default calls `Thread.currentThread().getUncaughtExceptionHandler().uncaughtException()` which crashes an Android app. Many developers have noticed the increased number of app crashes when porting to 2.x due to this behavior change. Note that this doesn't mean RxJava 2 is unstable but it means you likely had these exceptions all along but they were silently dropped.
+
+Unfortunately, RxJava can't tell which of these out-of-lifecycle, undeliverable exceptions should or shouldn't crash your app. Identifying the source and reason for these exceptions can be tiresome, especially if they originate from a source and get routed to `RxJavaPlugins.onError` somewhere lower the chain.
+
+Therefore, 2.0.6 introduces specific exception wrappers to help distinguish and track down what was happening the time of the error:
+
+  - `OnErrorNotImplementedException`: reintroduced to detect when the user forgot to add error handling to `subscribe()`.
+  - `ProtocolViolationException`: indicates a bug in an operator
+  - `UndeliverableException`: wraps the original exception that can't be delivered due to lifecycle restrictions on a `Subscriber`/`Observer`. It is automatically applied by `RxJavaPlugins.onError` with intact stacktrace that may help find which exact operator rerouted the original error.
+
+If an undeliverable exception is an instance/descendant of `NullPointerException`, `IllegalStateException` (`UndeliverableException` and `ProtocolViolationException` extend this), `IllegalArgumentException`, `CompositeException`, `MissingBackpressureException` or `OnErrorNotImplementedException`, the `UndeliverableException` wrapping doesn't happen.
+
+In addition, some 3rd party libraries/code throw when they get interrupted by a cancel/dispose call which leads to an undeliverable exception most of the time. Internal changes in 2.0.6 now consistently cancel or dispose a `Subscription`/`Disposable` before cancelling/disposing a task or worker (which causes the interrupt on the target thread).
+
+```java
+// in some library
+try {
+   doSomethingBlockingly()
+} catch (InterruptedException ex) {
+   // check if the interrupt is due to cancellation
+   // if so, no need to signal the InterruptedException
+   if (!disposable.isDisposed()) {
+      observer.onError(ex);
+   }
+}
+```
+
+If the library/code already did this, the undeliverable `InterruptedException`s should stop now. If this pattern was not employed before, we encourage updating the code/library in question.
+
+
+**API enhancements**
+- [Pull 5036](https://github.com/ReactiveX/RxJava/pull/5036): Reintroduce `OnErrorNotImplementedException` for 0-1 arg subscribe.
+- [Pull 5043](https://github.com/ReactiveX/RxJava/pull/5043): Add parallel hooks to `RxJavaPlugins`, add missing params validation
+- [Pull 5080](https://github.com/ReactiveX/RxJava/pull/5080): Wrap undeliverable errors.
+- [Pull 5093](https://github.com/ReactiveX/RxJava/pull/5093): Add `Single.doAfterTerminate`
+
+**Bugfixes**
+- [Pull 5064](https://github.com/ReactiveX/RxJava/pull/5064): Fix `replay()` cancel/dispose `NullPointerException`.
+- [Pull 5090](https://github.com/ReactiveX/RxJava/pull/5090): fix `scan(seed, f)` to emit accumulated values without delay.
+
+**Other**
+- [Pull 5027](https://github.com/ReactiveX/RxJava/pull/5027): Dedicated `Single.zip` implementation, no dispose on all-success.
+- [Pull 5023](https://github.com/ReactiveX/RxJava/pull/5023): Annotate function interfaces.
+- [Pull 5047](https://github.com/ReactiveX/RxJava/pull/5047): Document and test `amb` subscription ordering.
+- [Pull 5051](https://github.com/ReactiveX/RxJava/pull/5051): More `@Nonnull` annotations.
+- [Pull 5054](https://github.com/ReactiveX/RxJava/pull/5054): Add `@Nullable` annotation to `SimpleQueue`.
+- [Pull 5055](https://github.com/ReactiveX/RxJava/pull/5055): More null checks.
+- [Pull 5049](https://github.com/ReactiveX/RxJava/pull/5049): Use bounded wildcards for `errorHandler`.
+- [Pull 5075](https://github.com/ReactiveX/RxJava/pull/5075): Cancel upstream first, dispose worker last.
+- [Pull 5058](https://github.com/ReactiveX/RxJava/pull/5058): More generics in `RxJavaPlugins`.
+- [Pull 5076](https://github.com/ReactiveX/RxJava/pull/5076): Removed documentation leftover of `Completable.subscribe`.
+- [Pull 5087](https://github.com/ReactiveX/RxJava/pull/5087): Correct marble diagram dimensions.
+
 ### Version 2.0.5 - January 27, 2017 ([Maven](http://search.maven.org/#artifactdetails%7Cio.reactivex.rxjava2%7Crxjava%7C2.0.5%7C))
 
 The most notable enhancement of this version is the inclusion of the `ParallelFlowable` API that allows parallel execution of a few select operators such as `map`, `filter`, `concatMap`, `flatMap`, `collect`, `reduce` and so on. Note that is a **parallel mode** for `Flowable` (a sub-domain specific language) instead of a new reactive base type. 
