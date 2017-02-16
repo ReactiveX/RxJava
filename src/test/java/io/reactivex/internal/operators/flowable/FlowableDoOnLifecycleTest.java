@@ -13,9 +13,10 @@
 
 package io.reactivex.internal.operators.flowable;
 
+import static org.junit.Assert.*;
+
 import java.util.List;
 
-import static org.junit.Assert.*;
 import org.junit.Test;
 import org.reactivestreams.*;
 
@@ -23,6 +24,7 @@ import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.*;
 import io.reactivex.internal.functions.Functions;
+import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.plugins.RxJavaPlugins;
 
 public class FlowableDoOnLifecycleTest {
@@ -128,6 +130,37 @@ public class FlowableDoOnLifecycleTest {
             .assertResult(1);
 
             TestHelper.assertUndeliverable(errors, 0, TestException.class);
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
+
+    @Test
+    public void onSubscribeCrash() {
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            final BooleanSubscription bs = new BooleanSubscription();
+
+            new Flowable<Integer>() {
+                @Override
+                protected void subscribeActual(Subscriber<? super Integer> s) {
+                    s.onSubscribe(bs);
+                    s.onError(new TestException("Second"));
+                    s.onComplete();
+                }
+            }
+            .doOnSubscribe(new Consumer<Subscription>() {
+                @Override
+                public void accept(Subscription s) throws Exception {
+                    throw new TestException("First");
+                }
+            })
+            .test()
+            .assertFailureAndMessage(TestException.class, "First");
+
+            assertTrue(bs.isCancelled());
+
+            TestHelper.assertUndeliverable(errors, 0, TestException.class, "Second");
         } finally {
             RxJavaPlugins.reset();
         }

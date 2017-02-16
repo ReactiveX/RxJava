@@ -43,8 +43,7 @@ public final class DisposableLambdaObserver<T> implements Observer<T>, Disposabl
         } catch (Throwable e) {
             Exceptions.throwIfFatal(e);
             s.dispose();
-            RxJavaPlugins.onError(e);
-
+            this.s = DisposableHelper.DISPOSED;
             EmptyDisposable.error(e, actual);
             return;
         }
@@ -61,12 +60,18 @@ public final class DisposableLambdaObserver<T> implements Observer<T>, Disposabl
 
     @Override
     public void onError(Throwable t) {
-        actual.onError(t);
+        if (s != DisposableHelper.DISPOSED) {
+            actual.onError(t);
+        } else {
+            RxJavaPlugins.onError(t);
+        }
     }
 
     @Override
     public void onComplete() {
-        actual.onComplete();
+        if (s != DisposableHelper.DISPOSED) {
+            actual.onComplete();
+        }
     }
 
 

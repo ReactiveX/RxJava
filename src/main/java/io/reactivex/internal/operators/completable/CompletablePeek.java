@@ -14,10 +14,10 @@
 package io.reactivex.internal.operators.completable;
 
 import io.reactivex.*;
-import io.reactivex.disposables.*;
+import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.*;
 import io.reactivex.functions.*;
-import io.reactivex.internal.disposables.EmptyDisposable;
+import io.reactivex.internal.disposables.*;
 import io.reactivex.plugins.RxJavaPlugins;
 
 public final class CompletablePeek extends Completable {
@@ -48,77 +48,99 @@ public final class CompletablePeek extends Completable {
     @Override
     protected void subscribeActual(final CompletableObserver s) {
 
-        source.subscribe(new CompletableObserver() {
-
-            @Override
-            public void onComplete() {
-                try {
-                    onComplete.run();
-                    onTerminate.run();
-                } catch (Throwable e) {
-                    Exceptions.throwIfFatal(e);
-                    s.onError(e);
-                    return;
-                }
-
-                s.onComplete();
-
-                doAfter();
-            }
-
-            @Override
-            public void onError(Throwable e) {
-                try {
-                    onError.accept(e);
-                    onTerminate.run();
-                } catch (Throwable ex) {
-                    Exceptions.throwIfFatal(ex);
-                    e = new CompositeException(e, ex);
-                }
-
-                s.onError(e);
-
-                doAfter();
-            }
-
-            @Override
-            public void onSubscribe(final Disposable d) {
-
-                try {
-                    onSubscribe.accept(d);
-                } catch (Throwable ex) {
-                    Exceptions.throwIfFatal(ex);
-                    d.dispose();
-                    EmptyDisposable.error(ex, s);
-                    return;
-                }
-
-                s.onSubscribe(Disposables.fromRunnable(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            onDispose.run();
-                        } catch (Throwable e) {
-                            Exceptions.throwIfFatal(e);
-                            RxJavaPlugins.onError(e);
-                        }
-                        d.dispose();
-                    }
-                }));
-            }
-
-            void doAfter() {
-
-                try {
-                    onAfterTerminate.run();
-                } catch (Throwable ex) {
-                    Exceptions.throwIfFatal(ex);
-                    RxJavaPlugins.onError(ex);
-                }
-
-            }
-        });
+        source.subscribe(new CompletableObserverImplementation(s));
     }
 
+    final class CompletableObserverImplementation implements CompletableObserver, Disposable {
 
+        final CompletableObserver actual;
+
+        Disposable d;
+
+        private CompletableObserverImplementation(CompletableObserver actual) {
+            this.actual = actual;
+        }
+
+
+        @Override
+        public void onSubscribe(final Disposable d) {
+            try {
+                onSubscribe.accept(d);
+            } catch (Throwable ex) {
+                Exceptions.throwIfFatal(ex);
+                d.dispose();
+                this.d = DisposableHelper.DISPOSED;
+                EmptyDisposable.error(ex, actual);
+                return;
+            }
+            if (DisposableHelper.validate(this.d, d)) {
+                this.d = d;
+                actual.onSubscribe(this);
+            }
+        }
+
+        @Override
+        public void onError(Throwable e) {
+            if (d == DisposableHelper.DISPOSED) {
+                RxJavaPlugins.onError(e);
+                return;
+            }
+            try {
+                onError.accept(e);
+                onTerminate.run();
+            } catch (Throwable ex) {
+                Exceptions.throwIfFatal(ex);
+                e = new CompositeException(e, ex);
+            }
+
+            actual.onError(e);
+
+            doAfter();
+        }
+
+        @Override
+        public void onComplete() {
+            if (d == DisposableHelper.DISPOSED) {
+                return;
+            }
+
+            try {
+                onComplete.run();
+                onTerminate.run();
+            } catch (Throwable e) {
+                Exceptions.throwIfFatal(e);
+                actual.onError(e);
+                return;
+            }
+
+            actual.onComplete();
+
+            doAfter();
+        }
+
+        void doAfter() {
+            try {
+                onAfterTerminate.run();
+            } catch (Throwable ex) {
+                Exceptions.throwIfFatal(ex);
+                RxJavaPlugins.onError(ex);
+            }
+        }
+
+        @Override
+        public void dispose() {
+            try {
+                onDispose.run();
+            } catch (Throwable e) {
+                Exceptions.throwIfFatal(e);
+                RxJavaPlugins.onError(e);
+            }
+            d.dispose();
+        }
+
+        @Override
+        public boolean isDisposed() {
+            return d.isDisposed();
+        }
+    }
 }
