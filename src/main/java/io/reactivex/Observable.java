@@ -7193,7 +7193,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *            the default item to emit if nothing passed through the predicate
      * @param predicate
      *            the condition that an item emitted by the source Observable has to satisfy
-     * @return an Single that emits only the very first item emitted by the source Observable that satisfies
+     * @return a Single that emits only the very first item emitted by the source Observable that satisfies
      *         the {@code predicate}, or a default item if the source Observable completes without emitting any items.
      * @see <a href="http://reactivex.io/documentation/operators/first.html">ReactiveX operators documentation: First</a>
      */
@@ -7230,12 +7230,12 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/firstN.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code first} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dd>{@code firstOrError} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
      * @param predicate
      *            the condition that an item emitted by the source Observable has to satisfy
-     * @return an Single that emits only the very first item emitted by the source Observable that satisfies
+     * @return a Single that emits only the very first item emitted by the source Observable that satisfies
      *         the {@code predicate}, or raises an {@code NoSuchElementException} if no such items are emitted.
      * @see <a href="http://reactivex.io/documentation/operators/first.html">ReactiveX operators documentation: First</a>
      */
