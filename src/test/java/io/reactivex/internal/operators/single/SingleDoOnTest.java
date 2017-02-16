@@ -20,7 +20,7 @@ import java.util.List;
 import org.junit.Test;
 
 import io.reactivex.*;
-import io.reactivex.disposables.Disposable;
+import io.reactivex.disposables.*;
 import io.reactivex.exceptions.*;
 import io.reactivex.functions.*;
 import io.reactivex.internal.functions.Functions;
@@ -326,5 +326,36 @@ public class SingleDoOnTest {
         })
         .test()
         .assertFailure(TestException.class);
+    }
+
+    @Test
+    public void onSubscribeCrash() {
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            final Disposable bs = Disposables.empty();
+
+            new Single<Integer>() {
+                @Override
+                protected void subscribeActual(SingleObserver<? super Integer> s) {
+                    s.onSubscribe(bs);
+                    s.onError(new TestException("Second"));
+                    s.onSuccess(1);
+                }
+            }
+            .doOnSubscribe(new Consumer<Disposable>() {
+                @Override
+                public void accept(Disposable s) throws Exception {
+                    throw new TestException("First");
+                }
+            })
+            .test()
+            .assertFailureAndMessage(TestException.class, "First");
+
+            assertTrue(bs.isDisposed());
+
+            TestHelper.assertUndeliverable(errors, 0, TestException.class, "Second");
+        } finally {
+            RxJavaPlugins.reset();
+        }
     }
 }

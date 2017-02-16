@@ -64,7 +64,7 @@ public final class FlowableDoOnLifecycle<T> extends AbstractFlowableWithUpstream
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 s.cancel();
-                RxJavaPlugins.onError(e);
+                this.s = SubscriptionHelper.CANCELLED;
                 EmptySubscription.error(e, actual);
                 return;
             }
@@ -81,12 +81,18 @@ public final class FlowableDoOnLifecycle<T> extends AbstractFlowableWithUpstream
 
         @Override
         public void onError(Throwable t) {
-            actual.onError(t);
+            if (s != SubscriptionHelper.CANCELLED) {
+                actual.onError(t);
+            } else {
+                RxJavaPlugins.onError(t);
+            }
         }
 
         @Override
         public void onComplete() {
-            actual.onComplete();
+            if (s != SubscriptionHelper.CANCELLED) {
+                actual.onComplete();
+            }
         }
 
         @Override

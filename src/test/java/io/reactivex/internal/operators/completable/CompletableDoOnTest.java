@@ -20,9 +20,11 @@ import static org.junit.Assert.*;
 import org.junit.*;
 
 import io.reactivex.*;
+import io.reactivex.disposables.*;
 import io.reactivex.exceptions.*;
 import io.reactivex.functions.*;
 import io.reactivex.observers.TestObserver;
+import io.reactivex.plugins.RxJavaPlugins;
 
 public class CompletableDoOnTest {
 
@@ -73,5 +75,36 @@ public class CompletableDoOnTest {
             .dispose();
 
         assertTrue(atomicBoolean.get());
+    }
+
+    @Test
+    public void onSubscribeCrash() {
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            final Disposable bs = Disposables.empty();
+
+            new Completable() {
+                @Override
+                protected void subscribeActual(CompletableObserver s) {
+                    s.onSubscribe(bs);
+                    s.onError(new TestException("Second"));
+                    s.onComplete();
+                }
+            }
+            .doOnSubscribe(new Consumer<Disposable>() {
+                @Override
+                public void accept(Disposable s) throws Exception {
+                    throw new TestException("First");
+                }
+            })
+            .test()
+            .assertFailureAndMessage(TestException.class, "First");
+
+            assertTrue(bs.isDisposed());
+
+            TestHelper.assertUndeliverable(errors, 0, TestException.class, "Second");
+        } finally {
+            RxJavaPlugins.reset();
+        }
     }
 }
