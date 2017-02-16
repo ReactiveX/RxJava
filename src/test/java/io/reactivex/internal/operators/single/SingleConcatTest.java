@@ -13,6 +13,8 @@
 
 package io.reactivex.internal.operators.single;
 
+import static org.junit.Assert.assertEquals;
+
 import java.util.Arrays;
 
 import org.junit.Test;
@@ -80,5 +82,46 @@ public class SingleConcatTest {
             .assertNoErrors()
             .assertComplete();
         }
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void noSubsequentSubscription() {
+        final int[] calls = { 0 };
+
+        Single<Integer> source = Single.create(new SingleOnSubscribe<Integer>() {
+            @Override
+            public void subscribe(SingleEmitter<Integer> s) throws Exception {
+                calls[0]++;
+                s.onSuccess(1);
+            }
+        });
+
+        Single.concatArray(source, source).firstElement()
+        .test()
+        .assertResult(1);
+
+        assertEquals(1, calls[0]);
+    }
+
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void noSubsequentSubscriptionIterable() {
+        final int[] calls = { 0 };
+
+        Single<Integer> source = Single.create(new SingleOnSubscribe<Integer>() {
+            @Override
+            public void subscribe(SingleEmitter<Integer> s) throws Exception {
+                calls[0]++;
+                s.onSuccess(1);
+            }
+        });
+
+        Single.concat(Arrays.asList(source, source)).firstElement()
+        .test()
+        .assertResult(1);
+
+        assertEquals(1, calls[0]);
     }
 }
