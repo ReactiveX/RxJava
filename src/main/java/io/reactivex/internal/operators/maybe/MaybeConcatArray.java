@@ -114,9 +114,10 @@ public final class MaybeConcatArray<T> extends Flowable<T> {
 
             AtomicReference<Object> c = current;
             Subscriber<? super T> a = actual;
+            Disposable cancelled = disposables;
 
             for (;;) {
-                if (disposables.isDisposed()) {
+                if (cancelled.isDisposed()) {
                     c.lazySet(null);
                     return;
                 }
@@ -141,7 +142,7 @@ public final class MaybeConcatArray<T> extends Flowable<T> {
                         c.lazySet(null);
                     }
 
-                    if (goNextSource) {
+                    if (goNextSource && !cancelled.isDisposed()) {
                         int i = index;
                         if (i == sources.length) {
                             a.onComplete();
