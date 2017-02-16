@@ -7197,6 +7197,8 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *         the {@code predicate}, or a default item if the source Observable completes without emitting any items.
      * @see <a href="http://reactivex.io/documentation/operators/first.html">ReactiveX operators documentation: First</a>
      */
+    @CheckReturnValue
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final Single<T> first(T defaultItem, Predicate<? super T> predicate) {
         ObjectHelper.requireNonNull(predicate, "predicate is null");
         return filter(predicate).first(defaultItem);
@@ -7237,6 +7239,8 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *         the {@code predicate}, or raises an {@code NoSuchElementException} if no such items are emitted.
      * @see <a href="http://reactivex.io/documentation/operators/first.html">ReactiveX operators documentation: First</a>
      */
+    @CheckReturnValue
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final Single<T> firstOrError(Predicate<? super T> predicate) {
         ObjectHelper.requireNonNull(predicate, "predicate is null");
         return filter(predicate).firstOrError();
