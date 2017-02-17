@@ -585,4 +585,22 @@ public class ObservableWindowWithTimeTest {
         .awaitDone(1, TimeUnit.SECONDS)
         .assertResult(1, 2);
     }
+
+    @Test
+    public void sizeTimeTimeout() {
+        TestScheduler scheduler = new TestScheduler();
+        Subject<Integer> ps = PublishSubject.<Integer>create();
+
+        TestObserver<Observable<Integer>> ts = ps.window(5, TimeUnit.MILLISECONDS, scheduler, 100)
+        .test()
+        .assertValueCount(1);
+
+        scheduler.advanceTimeBy(5, TimeUnit.MILLISECONDS);
+
+        ts.assertValueCount(2)
+        .assertNoErrors()
+        .assertNotComplete();
+
+        ts.values().get(0).test().assertResult();
+    }
 }

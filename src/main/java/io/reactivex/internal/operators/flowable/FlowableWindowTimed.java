@@ -496,6 +496,8 @@ public final class FlowableWindowTimed<T> extends AbstractFlowableWithUpstream<T
                     if (isHolder) {
                         ConsumerIndexHolder consumerIndexHolder = (ConsumerIndexHolder) o;
                         if (producerIndex == consumerIndexHolder.index) {
+                            w.onComplete();
+
                             w = UnicastProcessor.<T>create(bufferSize);
                             window = w;
 
