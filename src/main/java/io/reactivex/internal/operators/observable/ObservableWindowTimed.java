@@ -439,6 +439,8 @@ public final class ObservableWindowTimed<T> extends AbstractObservableWithUpstre
                     if (isHolder) {
                         ConsumerIndexHolder consumerIndexHolder = (ConsumerIndexHolder) o;
                         if (producerIndex == consumerIndexHolder.index) {
+                            w.onComplete();
+
                             w = UnicastSubject.create(bufferSize);
                             window = w;
 

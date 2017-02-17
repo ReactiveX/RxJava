@@ -686,4 +686,22 @@ public class FlowableWindowWithTimeTest {
         .awaitDone(1, TimeUnit.SECONDS)
         .assertResult(1, 2);
     }
+
+    @Test
+    public void sizeTimeTimeout() {
+        TestScheduler scheduler = new TestScheduler();
+        PublishProcessor<Integer> ps = PublishProcessor.<Integer>create();
+
+        TestSubscriber<Flowable<Integer>> ts = ps.window(5, TimeUnit.MILLISECONDS, scheduler, 100)
+        .test()
+        .assertValueCount(1);
+
+        scheduler.advanceTimeBy(5, TimeUnit.MILLISECONDS);
+
+        ts.assertValueCount(2)
+        .assertNoErrors()
+        .assertNotComplete();
+
+        ts.values().get(0).test().assertResult();
+    }
 }
