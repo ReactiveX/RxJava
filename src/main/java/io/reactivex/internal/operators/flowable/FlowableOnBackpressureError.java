@@ -13,20 +13,20 @@
 
 package io.reactivex.internal.operators.flowable;
 
+import java.util.concurrent.atomic.AtomicLong;
+
+import org.reactivestreams.*;
+
+import io.reactivex.*;
 import io.reactivex.exceptions.MissingBackpressureException;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.internal.util.BackpressureHelper;
 import io.reactivex.plugins.RxJavaPlugins;
-import org.reactivestreams.Publisher;
-import org.reactivestreams.Subscriber;
-import org.reactivestreams.Subscription;
-
-import java.util.concurrent.atomic.AtomicLong;
 
 public final class FlowableOnBackpressureError<T> extends AbstractFlowableWithUpstream<T, T> {
 
 
-    public FlowableOnBackpressureError(Publisher<T> source) {
+    public FlowableOnBackpressureError(Flowable<T> source) {
         super(source);
     }
 
@@ -37,7 +37,7 @@ public final class FlowableOnBackpressureError<T> extends AbstractFlowableWithUp
     }
 
     static final class BackpressureErrorSubscriber<T>
-            extends AtomicLong implements Subscriber<T>, Subscription {
+            extends AtomicLong implements FlowableSubscriber<T>, Subscription {
         private static final long serialVersionUID = -3176480756392482682L;
 
         final Subscriber<? super T> actual;

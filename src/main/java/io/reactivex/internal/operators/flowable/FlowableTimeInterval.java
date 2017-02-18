@@ -25,7 +25,7 @@ public final class FlowableTimeInterval<T> extends AbstractFlowableWithUpstream<
     final Scheduler scheduler;
     final TimeUnit unit;
 
-    public FlowableTimeInterval(Publisher<T> source, TimeUnit unit, Scheduler scheduler) {
+    public FlowableTimeInterval(Flowable<T> source, TimeUnit unit, Scheduler scheduler) {
         super(source);
         this.scheduler = scheduler;
         this.unit = unit;
@@ -37,7 +37,7 @@ public final class FlowableTimeInterval<T> extends AbstractFlowableWithUpstream<
         source.subscribe(new TimeIntervalSubscriber<T>(s, unit, scheduler));
     }
 
-    static final class TimeIntervalSubscriber<T> implements Subscriber<T>, Subscription {
+    static final class TimeIntervalSubscriber<T> implements FlowableSubscriber<T>, Subscription {
         final Subscriber<? super Timed<T>> actual;
         final TimeUnit unit;
         final Scheduler scheduler;

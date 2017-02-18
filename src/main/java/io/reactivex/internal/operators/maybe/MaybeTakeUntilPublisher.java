@@ -120,7 +120,7 @@ public final class MaybeTakeUntilPublisher<T, U> extends AbstractMaybeWithUpstre
         }
 
         static final class TakeUntilOtherMaybeObserver<U>
-        extends AtomicReference<Subscription> implements Subscriber<U> {
+        extends AtomicReference<Subscription> implements FlowableSubscriber<U> {
 
             private static final long serialVersionUID = -1266041316834525931L;
 

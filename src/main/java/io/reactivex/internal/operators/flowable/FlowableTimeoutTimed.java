@@ -43,7 +43,7 @@ public final class FlowableTimeoutTimed<T> extends AbstractFlowableWithUpstream<
         }
     };
 
-    public FlowableTimeoutTimed(Publisher<T> source,
+    public FlowableTimeoutTimed(Flowable<T> source,
             long timeout, TimeUnit unit, Scheduler scheduler, Publisher<? extends T> other) {
         super(source);
         this.timeout = timeout;
@@ -65,7 +65,7 @@ public final class FlowableTimeoutTimed<T> extends AbstractFlowableWithUpstream<
         }
     }
 
-    static final class TimeoutTimedOtherSubscriber<T> implements Subscriber<T>, Disposable {
+    static final class TimeoutTimedOtherSubscriber<T> implements FlowableSubscriber<T>, Disposable {
         final Subscriber<? super T> actual;
         final long timeout;
         final TimeUnit unit;
@@ -180,7 +180,7 @@ public final class FlowableTimeoutTimed<T> extends AbstractFlowableWithUpstream<
         }
     }
 
-    static final class TimeoutTimedSubscriber<T> implements Subscriber<T>, Disposable, Subscription {
+    static final class TimeoutTimedSubscriber<T> implements FlowableSubscriber<T>, Disposable, Subscription {
         final Subscriber<? super T> actual;
         final long timeout;
         final TimeUnit unit;

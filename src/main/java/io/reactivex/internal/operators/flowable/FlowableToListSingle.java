@@ -13,16 +13,16 @@
 
 package io.reactivex.internal.operators.flowable;
 
-import io.reactivex.internal.functions.ObjectHelper;
 import java.util.Collection;
 import java.util.concurrent.Callable;
 
-import org.reactivestreams.*;
+import org.reactivestreams.Subscription;
 
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.internal.disposables.EmptyDisposable;
+import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.internal.fuseable.FuseToFlowable;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.internal.util.ArrayListSupplier;
@@ -30,16 +30,16 @@ import io.reactivex.plugins.RxJavaPlugins;
 
 public final class FlowableToListSingle<T, U extends Collection<? super T>> extends Single<U> implements FuseToFlowable<U> {
 
-    final Publisher<T> source;
+    final Flowable<T> source;
 
     final Callable<U> collectionSupplier;
 
     @SuppressWarnings("unchecked")
-    public FlowableToListSingle(Publisher<T> source) {
+    public FlowableToListSingle(Flowable<T> source) {
         this(source, (Callable<U>)ArrayListSupplier.asCallable());
     }
 
-    public FlowableToListSingle(Publisher<T> source, Callable<U> collectionSupplier) {
+    public FlowableToListSingle(Flowable<T> source, Callable<U> collectionSupplier) {
         this.source = source;
         this.collectionSupplier = collectionSupplier;
     }
@@ -63,7 +63,7 @@ public final class FlowableToListSingle<T, U extends Collection<? super T>> exte
     }
 
     static final class ToListSubscriber<T, U extends Collection<? super T>>
-    implements Subscriber<T>, Disposable {
+    implements FlowableSubscriber<T>, Disposable {
 
         final SingleObserver<? super U> actual;
 

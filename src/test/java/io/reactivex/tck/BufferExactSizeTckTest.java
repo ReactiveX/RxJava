@@ -25,9 +25,9 @@ public class BufferExactSizeTckTest extends BaseTck<List<Long>> {
 
     @Override
     public Publisher<List<Long>> createPublisher(long elements) {
-        return FlowableTck.wrap(
+        return
             Flowable.fromIterable(iterate(elements * 2))
             .buffer(2)
-        );
+        ;
     }
 }

@@ -105,7 +105,7 @@ public class FlowableDoOnRequestTest {
 //                    }
 //                });
 //            }
-//        }).doOnRequest(empty).subscribe(new Subscriber<Object>() {
+//        }).doOnRequest(empty).subscribe(new FlowableSubscriber<Object>() {
 //            @Override
 //            public void onNext(Object t) {
 //

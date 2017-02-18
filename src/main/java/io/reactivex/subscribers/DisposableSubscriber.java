@@ -15,8 +15,9 @@ package io.reactivex.subscribers;
 
 import java.util.concurrent.atomic.AtomicReference;
 
-import org.reactivestreams.*;
+import org.reactivestreams.Subscription;
 
+import io.reactivex.FlowableSubscriber;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 
@@ -25,7 +26,7 @@ import io.reactivex.internal.subscriptions.SubscriptionHelper;
  *
  * @param <T> the received value type.
  */
-public abstract class DisposableSubscriber<T> implements Subscriber<T>, Disposable {
+public abstract class DisposableSubscriber<T> implements FlowableSubscriber<T>, Disposable {
     final AtomicReference<Subscription> s = new AtomicReference<Subscription>();
 
     @Override

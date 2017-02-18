@@ -24,7 +24,7 @@ public class ZipWithTckTest extends BaseTck<Integer> {
 
     @Override
     public Publisher<Integer> createPublisher(long elements) {
-        return FlowableTck.wrap(
+        return
                 Flowable.range(0, (int)elements)
                 .zipWith(Flowable.range((int)elements, (int)elements), new BiFunction<Integer, Integer, Integer>() {
                     @Override
@@ -32,6 +32,6 @@ public class ZipWithTckTest extends BaseTck<Integer> {
                         return a + b;
                     }
                 })
-        );
+        ;
     }
 }

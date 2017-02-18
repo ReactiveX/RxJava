@@ -13,8 +13,7 @@
 
 package io.reactivex.internal.operators.parallel;
 
-import org.reactivestreams.Publisher;
-import org.reactivestreams.Subscriber;
+import org.reactivestreams.*;
 
 import io.reactivex.parallel.ParallelFlowable;
 

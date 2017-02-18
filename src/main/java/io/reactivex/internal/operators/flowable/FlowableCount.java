@@ -15,11 +15,12 @@ package io.reactivex.internal.operators.flowable;
 
 import org.reactivestreams.*;
 
+import io.reactivex.*;
 import io.reactivex.internal.subscriptions.*;
 
 public final class FlowableCount<T> extends AbstractFlowableWithUpstream<T, Long> {
 
-    public FlowableCount(Publisher<T> source) {
+    public FlowableCount(Flowable<T> source) {
         super(source);
     }
 
@@ -29,7 +30,7 @@ public final class FlowableCount<T> extends AbstractFlowableWithUpstream<T, Long
     }
 
     static final class CountSubscriber extends DeferredScalarSubscription<Long>
-    implements Subscriber<Object> {
+    implements FlowableSubscriber<Object> {
 
 
         private static final long serialVersionUID = 4973004223787171406L;

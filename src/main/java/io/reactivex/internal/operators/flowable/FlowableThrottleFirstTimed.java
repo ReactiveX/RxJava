@@ -18,11 +18,11 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import org.reactivestreams.*;
 
-import io.reactivex.Scheduler;
+import io.reactivex.*;
 import io.reactivex.Scheduler.Worker;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.MissingBackpressureException;
-import io.reactivex.internal.disposables.*;
+import io.reactivex.internal.disposables.SequentialDisposable;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.internal.util.BackpressureHelper;
 import io.reactivex.plugins.RxJavaPlugins;
@@ -33,7 +33,7 @@ public final class FlowableThrottleFirstTimed<T> extends AbstractFlowableWithUps
     final TimeUnit unit;
     final Scheduler scheduler;
 
-    public FlowableThrottleFirstTimed(Publisher<T> source, long timeout, TimeUnit unit, Scheduler scheduler) {
+    public FlowableThrottleFirstTimed(Flowable<T> source, long timeout, TimeUnit unit, Scheduler scheduler) {
         super(source);
         this.timeout = timeout;
         this.unit = unit;
@@ -49,7 +49,7 @@ public final class FlowableThrottleFirstTimed<T> extends AbstractFlowableWithUps
 
     static final class DebounceTimedSubscriber<T>
     extends AtomicLong
-    implements Subscriber<T>, Subscription, Runnable {
+    implements FlowableSubscriber<T>, Subscription, Runnable {
 
         private static final long serialVersionUID = -9102637559663639004L;
         final Subscriber<? super T> actual;

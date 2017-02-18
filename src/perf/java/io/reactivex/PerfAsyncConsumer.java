@@ -23,7 +23,7 @@ import io.reactivex.disposables.Disposable;
 /**
  * A multi-type asynchronous consumer.
  */
-public final class PerfAsyncConsumer extends CountDownLatch implements Subscriber<Object>, Observer<Object>,
+public final class PerfAsyncConsumer extends CountDownLatch implements FlowableSubscriber<Object>, Observer<Object>,
 SingleObserver<Object>, CompletableObserver, MaybeObserver<Object> {
 
     final Blackhole bh;

@@ -77,7 +77,7 @@ public final class FlowableInternalHelper {
 
         @Override
         public Publisher<T> apply(final T v) throws Exception {
-            return new FlowableTake<U>(itemDelay.apply(v), 1).map(Functions.justFunction(v)).defaultIfEmpty(v);
+            return new FlowableTakePublisher<U>(itemDelay.apply(v), 1).map(Functions.justFunction(v)).defaultIfEmpty(v);
         }
     }
 
@@ -165,7 +165,7 @@ public final class FlowableInternalHelper {
         public Publisher<R> apply(final T t) throws Exception {
             @SuppressWarnings("unchecked")
             Publisher<U> u = (Publisher<U>)mapper.apply(t);
-            return new FlowableMap<U, R>(u, new FlatMapWithCombinerInner<U, R, T>(combiner, t));
+            return new FlowableMapPublisher<U, R>(u, new FlatMapWithCombinerInner<U, R, T>(combiner, t));
         }
     }
 

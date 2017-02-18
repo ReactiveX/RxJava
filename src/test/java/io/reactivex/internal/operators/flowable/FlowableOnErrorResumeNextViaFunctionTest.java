@@ -190,7 +190,7 @@ public class FlowableOnErrorResumeNextViaFunctionTest {
 
             @Override
             public Subscriber<? super Integer> apply(final Subscriber<? super String> t1) {
-                return new Subscriber<Integer>() {
+                return new FlowableSubscriber<Integer>() {
 
                     @Override
                     public void onSubscribe(Subscription s) {

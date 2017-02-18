@@ -14,6 +14,7 @@ package io.reactivex.subscribers;
 
 import org.reactivestreams.*;
 
+import io.reactivex.FlowableSubscriber;
 import io.reactivex.exceptions.*;
 import io.reactivex.internal.subscriptions.*;
 import io.reactivex.plugins.RxJavaPlugins;
@@ -24,7 +25,7 @@ import io.reactivex.plugins.RxJavaPlugins;
  *
  * @param <T> the value type
  */
-public final class SafeSubscriber<T> implements Subscriber<T>, Subscription {
+public final class SafeSubscriber<T> implements FlowableSubscriber<T>, Subscription {
     /** The actual Subscriber. */
     final Subscriber<? super T> actual;
     /** The subscription. */

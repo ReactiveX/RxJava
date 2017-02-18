@@ -28,11 +28,11 @@ public class WindowBoundaryTckTest extends BaseTck<List<Long>> {
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @Override
     public Publisher<List<Long>> createPublisher(long elements) {
-        return FlowableTck.wrap(
+        return
             Flowable.fromIterable(iterate(elements))
             .window(Flowable.just(1).concatWith(Flowable.<Integer>never()))
             .onBackpressureBuffer()
             .flatMap((Function)Functions.identity())
-        );
+        ;
     }
 }

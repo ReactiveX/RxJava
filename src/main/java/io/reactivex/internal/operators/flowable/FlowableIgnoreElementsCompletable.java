@@ -23,9 +23,9 @@ import io.reactivex.plugins.RxJavaPlugins;
 
 public final class FlowableIgnoreElementsCompletable<T> extends Completable implements FuseToFlowable<T> {
 
-    final Publisher<T> source;
+    final Flowable<T> source;
 
-    public FlowableIgnoreElementsCompletable(Publisher<T> source) {
+    public FlowableIgnoreElementsCompletable(Flowable<T> source) {
         this.source = source;
     }
 
@@ -39,7 +39,7 @@ public final class FlowableIgnoreElementsCompletable<T> extends Completable impl
         return RxJavaPlugins.onAssembly(new FlowableIgnoreElements<T>(source));
     }
 
-    static final class IgnoreElementsSubscriber<T> implements Subscriber<T>, Disposable {
+    static final class IgnoreElementsSubscriber<T> implements FlowableSubscriber<T>, Disposable {
         final CompletableObserver actual;
 
         Subscription s;

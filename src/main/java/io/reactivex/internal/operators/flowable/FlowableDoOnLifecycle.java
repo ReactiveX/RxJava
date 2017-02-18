@@ -14,7 +14,7 @@ package io.reactivex.internal.operators.flowable;
 
 import org.reactivestreams.*;
 
-import io.reactivex.Flowable;
+import io.reactivex.*;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.*;
 import io.reactivex.internal.subscriptions.*;
@@ -38,7 +38,7 @@ public final class FlowableDoOnLifecycle<T> extends AbstractFlowableWithUpstream
         source.subscribe(new SubscriptionLambdaSubscriber<T>(s, onSubscribe, onRequest, onCancel));
     }
 
-    static final class SubscriptionLambdaSubscriber<T> implements Subscriber<T>, Subscription {
+    static final class SubscriptionLambdaSubscriber<T> implements FlowableSubscriber<T>, Subscription {
         final Subscriber<? super T> actual;
         final Consumer<? super Subscription> onSubscribe;
         final LongConsumer onRequest;

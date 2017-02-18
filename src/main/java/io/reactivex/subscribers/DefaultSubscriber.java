@@ -13,8 +13,9 @@
 
 package io.reactivex.subscribers;
 
-import org.reactivestreams.*;
+import org.reactivestreams.Subscription;
 
+import io.reactivex.FlowableSubscriber;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 
 /**
@@ -25,7 +26,7 @@ import io.reactivex.internal.subscriptions.SubscriptionHelper;
  *
  * @param <T> the value type
  */
-public abstract class DefaultSubscriber<T> implements Subscriber<T> {
+public abstract class DefaultSubscriber<T> implements FlowableSubscriber<T> {
     private Subscription s;
     @Override
     public final void onSubscribe(Subscription s) {

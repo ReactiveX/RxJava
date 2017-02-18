@@ -39,7 +39,7 @@ public final class FlowableWindowBoundarySelector<T, B, V> extends AbstractFlowa
     final int bufferSize;
 
     public FlowableWindowBoundarySelector(
-            Publisher<T> source,
+            Flowable<T> source,
             Publisher<B> open, Function<? super B, ? extends Publisher<V>> close,
             int bufferSize) {
         super(source);

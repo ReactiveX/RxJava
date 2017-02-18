@@ -516,7 +516,7 @@ public class FlowableMergeTest {
             public void subscribe(final Subscriber<? super Long> child) {
                 Flowable.interval(1, TimeUnit.SECONDS, scheduler)
                 .take(5)
-                .subscribe(new Subscriber<Long>() {
+                .subscribe(new FlowableSubscriber<Long>() {
                     @Override
                     public void onSubscribe(final Subscription s) {
                         child.onSubscribe(new Subscription() {

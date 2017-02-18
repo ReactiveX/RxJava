@@ -24,10 +24,10 @@ public class SwitchMapDelayErrorTckTest extends BaseTck<Long> {
 
     @Override
     public Publisher<Long> createPublisher(long elements) {
-        return FlowableTck.wrap(
+        return
             Flowable.just(1).switchMapDelayError(Functions.justFunction(
                     Flowable.fromIterable(iterate(elements)))
             )
-        );
+        ;
     }
 }

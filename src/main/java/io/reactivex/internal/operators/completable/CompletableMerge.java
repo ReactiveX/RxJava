@@ -43,7 +43,7 @@ public final class CompletableMerge extends Completable {
 
     static final class CompletableMergeSubscriber
     extends AtomicInteger
-    implements Subscriber<CompletableSource>, Disposable {
+    implements FlowableSubscriber<CompletableSource>, Disposable {
 
         private static final long serialVersionUID = -2108443387387077490L;
 

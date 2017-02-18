@@ -23,11 +23,11 @@ public class MergeTckTest extends BaseTck<Long> {
 
     @Override
     public Publisher<Long> createPublisher(long elements) {
-        return FlowableTck.wrap(
+        return
             Flowable.merge(
                 Flowable.fromIterable(iterate(elements / 2)),
                 Flowable.fromIterable(iterate(elements - elements / 2))
             )
-        );
+        ;
     }
 }

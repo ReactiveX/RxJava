@@ -24,11 +24,11 @@ public class UsingTckTest extends BaseTck<Long> {
 
     @Override
     public Publisher<Long> createPublisher(long elements) {
-        return FlowableTck.wrap(
+        return
             Flowable.using(Functions.justCallable(1),
                     Functions.justFunction(Flowable.fromIterable(iterate(elements))),
                     Functions.emptyConsumer()
             )
-        );
+        ;
     }
 }

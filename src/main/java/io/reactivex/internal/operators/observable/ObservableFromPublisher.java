@@ -32,7 +32,7 @@ public final class ObservableFromPublisher<T> extends Observable<T> {
     }
 
     static final class PublisherSubscriber<T>
-    implements Subscriber<T>, Disposable {
+    implements FlowableSubscriber<T>, Disposable {
 
         final Observer<? super T> actual;
         Subscription s;

@@ -23,7 +23,7 @@ public class CreateTckTest extends BaseTck<Long> {
 
     @Override
     public Publisher<Long> createPublisher(final long elements) {
-        return FlowableTck.wrap(
+        return
             Flowable.create(new FlowableOnSubscribe<Long>() {
                 @Override
                 public void subscribe(FlowableEmitter<Long> e) throws Exception {
@@ -33,6 +33,6 @@ public class CreateTckTest extends BaseTck<Long> {
                     e.onComplete();
                 }
             }, BackpressureStrategy.BUFFER)
-        );
+        ;
     }
 }

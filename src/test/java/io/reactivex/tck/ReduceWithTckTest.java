@@ -25,7 +25,7 @@ public class ReduceWithTckTest extends BaseTck<Integer> {
 
     @Override
     public Publisher<Integer> createPublisher(final long elements) {
-        return FlowableTck.wrap(
+        return
                 Flowable.range(1, 1000).reduceWith(Functions.justCallable(0),
                 new BiFunction<Integer, Integer, Integer>() {
                     @Override
@@ -33,7 +33,7 @@ public class ReduceWithTckTest extends BaseTck<Integer> {
                         return a + b;
                     }
                 }).toFlowable()
-            );
+            ;
     }
 
     @Override

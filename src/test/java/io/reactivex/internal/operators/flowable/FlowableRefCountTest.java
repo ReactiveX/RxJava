@@ -577,7 +577,7 @@ public class FlowableRefCountTest {
         assertEquals(6, intervalSubscribed.get());
     }
 
-    private enum CancelledSubscriber implements Subscriber<Integer> {
+    private enum CancelledSubscriber implements FlowableSubscriber<Integer> {
         INSTANCE;
 
         @Override public void onSubscribe(Subscription s) {

@@ -43,7 +43,7 @@ public final class MaybeDelaySubscriptionOtherPublisher<T, U> extends AbstractMa
         other.subscribe(new OtherSubscriber<T>(observer, source));
     }
 
-    static final class OtherSubscriber<T> implements Subscriber<Object>, Disposable {
+    static final class OtherSubscriber<T> implements FlowableSubscriber<Object>, Disposable {
         final DelayMaybeObserver<T> main;
 
         MaybeSource<T> source;

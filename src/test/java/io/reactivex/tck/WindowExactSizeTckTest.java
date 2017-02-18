@@ -28,10 +28,10 @@ public class WindowExactSizeTckTest extends BaseTck<List<Long>> {
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @Override
     public Publisher<List<Long>> createPublisher(long elements) {
-        return FlowableTck.wrap(
+        return
             Flowable.fromIterable(iterate(elements))
             .window(2)
             .flatMap((Function)Functions.identity())
-        );
+        ;
     }
 }

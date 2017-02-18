@@ -17,7 +17,7 @@ import java.util.concurrent.atomic.*;
 
 import org.reactivestreams.*;
 
-import io.reactivex.Flowable;
+import io.reactivex.*;
 import io.reactivex.exceptions.MissingBackpressureException;
 import io.reactivex.internal.fuseable.*;
 import io.reactivex.internal.queue.SpscArrayQueue;
@@ -290,7 +290,7 @@ public final class ParallelJoin<T> extends Flowable<T> {
 
     static final class JoinInnerSubscriber<T>
     extends AtomicReference<Subscription>
-    implements Subscriber<T> {
+    implements FlowableSubscriber<T> {
 
 
         private static final long serialVersionUID = 8410034718427740355L;

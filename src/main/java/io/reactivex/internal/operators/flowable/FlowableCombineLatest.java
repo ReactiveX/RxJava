@@ -16,14 +16,14 @@ package io.reactivex.internal.operators.flowable;
 import java.util.Iterator;
 import java.util.concurrent.atomic.*;
 
-import io.reactivex.annotations.NonNull;
-import io.reactivex.annotations.Nullable;
 import org.reactivestreams.*;
 
-import io.reactivex.Flowable;
+import io.reactivex.*;
+import io.reactivex.annotations.*;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.functions.ObjectHelper;
+import io.reactivex.internal.operators.flowable.FlowableMap.MapSubscriber;
 import io.reactivex.internal.queue.SpscLinkedArrayQueue;
 import io.reactivex.internal.subscriptions.*;
 import io.reactivex.internal.util.*;
@@ -132,12 +132,12 @@ extends Flowable<R> {
             return;
         }
         if (n == 1) {
-            new FlowableMap<T, R>((Publisher<T>)a[0], new Function<T, R>() {
+            ((Publisher<T>)a[0]).subscribe(new MapSubscriber<T, R>(s, new Function<T, R>() {
                 @Override
                 public R apply(T t) throws Exception {
                     return combiner.apply(new Object[] { t });
                 }
-            }).subscribe(s);
+            }));
             return;
         }
 
@@ -497,7 +497,7 @@ extends Flowable<R> {
 
     static final class CombineLatestInnerSubscriber<T>
     extends AtomicReference<Subscription>
-            implements Subscriber<T> {
+            implements FlowableSubscriber<T> {
 
 
         private static final long serialVersionUID = -8730235182291002949L;

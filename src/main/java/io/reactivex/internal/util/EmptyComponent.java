@@ -22,7 +22,7 @@ import io.reactivex.plugins.RxJavaPlugins;
 /**
  * Singleton implementing many interfaces as empty.
  */
-public enum EmptyComponent implements Subscriber<Object>, Observer<Object>, MaybeObserver<Object>,
+public enum EmptyComponent implements FlowableSubscriber<Object>, Observer<Object>, MaybeObserver<Object>,
 SingleObserver<Object>, CompletableObserver, Subscription, Disposable {
     INSTANCE;
 

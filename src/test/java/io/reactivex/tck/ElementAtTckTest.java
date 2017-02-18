@@ -23,9 +23,9 @@ public class ElementAtTckTest extends BaseTck<Integer> {
 
     @Override
     public Publisher<Integer> createPublisher(final long elements) {
-        return FlowableTck.wrap(
+        return
                 Flowable.range(1, 10).elementAt(5).toFlowable()
-            );
+            ;
     }
 
     @Override

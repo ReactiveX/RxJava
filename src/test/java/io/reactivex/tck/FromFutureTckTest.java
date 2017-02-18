@@ -33,9 +33,7 @@ public class FromFutureTckTest extends BaseTck<Long> {
         });
 
         ft.run();
-        return FlowableTck.wrap(
-                Flowable.fromFuture(ft)
-            );
+        return Flowable.fromFuture(ft);
     }
 
     @Override

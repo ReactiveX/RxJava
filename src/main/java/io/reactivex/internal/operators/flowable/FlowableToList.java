@@ -13,19 +13,20 @@
 
 package io.reactivex.internal.operators.flowable;
 
-import io.reactivex.internal.functions.ObjectHelper;
 import java.util.Collection;
 import java.util.concurrent.Callable;
 
 import org.reactivestreams.*;
 
+import io.reactivex.*;
 import io.reactivex.exceptions.Exceptions;
+import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.internal.subscriptions.*;
 
 public final class FlowableToList<T, U extends Collection<? super T>> extends AbstractFlowableWithUpstream<T, U> {
     final Callable<U> collectionSupplier;
 
-    public FlowableToList(Publisher<T> source, Callable<U> collectionSupplier) {
+    public FlowableToList(Flowable<T> source, Callable<U> collectionSupplier) {
         super(source);
         this.collectionSupplier = collectionSupplier;
     }
@@ -46,7 +47,7 @@ public final class FlowableToList<T, U extends Collection<? super T>> extends Ab
 
     static final class ToListSubscriber<T, U extends Collection<? super T>>
     extends DeferredScalarSubscription<U>
-    implements Subscriber<T>, Subscription {
+    implements FlowableSubscriber<T>, Subscription {
 
 
         private static final long serialVersionUID = -8134157938864266736L;

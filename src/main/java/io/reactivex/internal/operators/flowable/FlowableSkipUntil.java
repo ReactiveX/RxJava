@@ -17,13 +17,14 @@ import java.util.concurrent.atomic.*;
 
 import org.reactivestreams.*;
 
+import io.reactivex.*;
 import io.reactivex.internal.fuseable.ConditionalSubscriber;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.internal.util.*;
 
 public final class FlowableSkipUntil<T, U> extends AbstractFlowableWithUpstream<T, T> {
     final Publisher<U> other;
-    public FlowableSkipUntil(Publisher<T> source, Publisher<U> other) {
+    public FlowableSkipUntil(Flowable<T> source, Publisher<U> other) {
         super(source);
         this.other = other;
     }
@@ -107,7 +108,7 @@ public final class FlowableSkipUntil<T, U> extends AbstractFlowableWithUpstream<
         }
 
         final class OtherSubscriber extends AtomicReference<Subscription>
-        implements Subscriber<Object> {
+        implements FlowableSubscriber<Object> {
 
             private static final long serialVersionUID = -5592042965931999169L;
 

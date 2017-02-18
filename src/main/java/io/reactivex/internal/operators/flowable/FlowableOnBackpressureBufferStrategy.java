@@ -18,7 +18,7 @@ import java.util.concurrent.atomic.*;
 
 import org.reactivestreams.*;
 
-import io.reactivex.BackpressureOverflowStrategy;
+import io.reactivex.*;
 import io.reactivex.exceptions.*;
 import io.reactivex.functions.Action;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
@@ -38,7 +38,7 @@ public final class FlowableOnBackpressureBufferStrategy<T> extends AbstractFlowa
 
     final BackpressureOverflowStrategy strategy;
 
-    public FlowableOnBackpressureBufferStrategy(Publisher<T> source,
+    public FlowableOnBackpressureBufferStrategy(Flowable<T> source,
             long bufferSize, Action onOverflow, BackpressureOverflowStrategy strategy) {
         super(source);
         this.bufferSize = bufferSize;
@@ -53,7 +53,7 @@ public final class FlowableOnBackpressureBufferStrategy<T> extends AbstractFlowa
 
     static final class OnBackpressureBufferStrategySubscriber<T>
     extends AtomicInteger
-    implements Subscriber<T>, Subscription {
+    implements FlowableSubscriber<T>, Subscription {
 
         private static final long serialVersionUID = 3240706908776709697L;
 

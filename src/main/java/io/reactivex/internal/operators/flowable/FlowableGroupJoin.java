@@ -21,7 +21,7 @@ import java.util.concurrent.atomic.*;
 
 import org.reactivestreams.*;
 
-import io.reactivex.Flowable;
+import io.reactivex.*;
 import io.reactivex.disposables.*;
 import io.reactivex.exceptions.*;
 import io.reactivex.functions.*;
@@ -44,7 +44,7 @@ public final class FlowableGroupJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> exte
     final BiFunction<? super TLeft, ? super Flowable<TRight>, ? extends R> resultSelector;
 
     public FlowableGroupJoin(
-            Publisher<TLeft> source,
+            Flowable<TLeft> source,
             Publisher<? extends TRight> other,
             Function<? super TLeft, ? extends Publisher<TLeftEnd>> leftEnd,
             Function<? super TRight, ? extends Publisher<TRightEnd>> rightEnd,
@@ -392,7 +392,7 @@ public final class FlowableGroupJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> exte
 
     static final class LeftRightSubscriber
     extends AtomicReference<Subscription>
-    implements Subscriber<Object>, Disposable {
+    implements FlowableSubscriber<Object>, Disposable {
 
         private static final long serialVersionUID = 1883890389173668373L;
 
@@ -441,7 +441,7 @@ public final class FlowableGroupJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> exte
 
     static final class LeftRightEndSubscriber
     extends AtomicReference<Subscription>
-    implements Subscriber<Object>, Disposable {
+    implements FlowableSubscriber<Object>, Disposable {
 
         private static final long serialVersionUID = 1883890389173668373L;
 

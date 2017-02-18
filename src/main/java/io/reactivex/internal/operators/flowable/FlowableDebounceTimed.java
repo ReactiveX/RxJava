@@ -18,7 +18,7 @@ import java.util.concurrent.atomic.*;
 
 import org.reactivestreams.*;
 
-import io.reactivex.Scheduler;
+import io.reactivex.*;
 import io.reactivex.Scheduler.Worker;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.MissingBackpressureException;
@@ -33,7 +33,7 @@ public final class FlowableDebounceTimed<T> extends AbstractFlowableWithUpstream
     final TimeUnit unit;
     final Scheduler scheduler;
 
-    public FlowableDebounceTimed(Publisher<T> source, long timeout, TimeUnit unit, Scheduler scheduler) {
+    public FlowableDebounceTimed(Flowable<T> source, long timeout, TimeUnit unit, Scheduler scheduler) {
         super(source);
         this.timeout = timeout;
         this.unit = unit;
@@ -48,7 +48,7 @@ public final class FlowableDebounceTimed<T> extends AbstractFlowableWithUpstream
     }
 
     static final class DebounceTimedSubscriber<T> extends AtomicLong
-    implements Subscriber<T>, Subscription {
+    implements FlowableSubscriber<T>, Subscription {
 
         private static final long serialVersionUID = -9102637559663639004L;
         final Subscriber<? super T> actual;

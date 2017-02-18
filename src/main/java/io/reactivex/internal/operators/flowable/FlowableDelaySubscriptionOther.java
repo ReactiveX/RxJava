@@ -14,7 +14,7 @@ package io.reactivex.internal.operators.flowable;
 
 import org.reactivestreams.*;
 
-import io.reactivex.Flowable;
+import io.reactivex.*;
 import io.reactivex.internal.subscriptions.SubscriptionArbiter;
 import io.reactivex.plugins.RxJavaPlugins;
 
@@ -38,7 +38,7 @@ public final class FlowableDelaySubscriptionOther<T, U> extends Flowable<T> {
         final SubscriptionArbiter serial = new SubscriptionArbiter();
         child.onSubscribe(serial);
 
-        Subscriber<U> otherSubscriber = new Subscriber<U>() {
+        FlowableSubscriber<U> otherSubscriber = new FlowableSubscriber<U>() {
             boolean done;
 
             @Override
@@ -79,7 +79,7 @@ public final class FlowableDelaySubscriptionOther<T, U> extends Flowable<T> {
                 }
                 done = true;
 
-                main.subscribe(new Subscriber<T>() {
+                main.subscribe(new FlowableSubscriber<T>() {
                     @Override
                     public void onSubscribe(Subscription s) {
                         serial.setSubscription(s);

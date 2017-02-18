@@ -17,6 +17,7 @@ import java.util.concurrent.atomic.*;
 
 import org.reactivestreams.*;
 
+import io.reactivex.*;
 import io.reactivex.exceptions.*;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.functions.ObjectHelper;
@@ -37,12 +38,11 @@ public final class FlowableConcatMapEager<T, R> extends AbstractFlowableWithUpst
 
     final ErrorMode errorMode;
 
-    public FlowableConcatMapEager(Publisher<T> source,
+    public FlowableConcatMapEager(Flowable<T> source,
             Function<? super T, ? extends Publisher<? extends R>> mapper,
             int maxConcurrency,
             int prefetch,
-            ErrorMode errorMode
-                    ) {
+            ErrorMode errorMode) {
         super(source);
         this.mapper = mapper;
         this.maxConcurrency = maxConcurrency;
@@ -58,7 +58,7 @@ public final class FlowableConcatMapEager<T, R> extends AbstractFlowableWithUpst
 
     static final class ConcatMapEagerDelayErrorSubscriber<T, R>
     extends AtomicInteger
-    implements Subscriber<T>, Subscription, InnerQueuedSubscriberSupport<R> {
+    implements FlowableSubscriber<T>, Subscription, InnerQueuedSubscriberSupport<R> {
 
         private static final long serialVersionUID = -4255299542215038287L;
 

@@ -127,7 +127,7 @@ public final class SingleTakeUntil<T, U> extends Single<T> {
 
     static final class TakeUntilOtherSubscriber
     extends AtomicReference<Subscription>
-    implements Subscriber<Object> {
+    implements FlowableSubscriber<Object> {
 
         private static final long serialVersionUID = 5170026210238877381L;
 

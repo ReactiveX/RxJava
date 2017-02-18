@@ -23,12 +23,12 @@ public class ConcatPublisherEagerTckTest extends BaseTck<Long> {
 
     @Override
     public Publisher<Long> createPublisher(long elements) {
-        return FlowableTck.wrap(
+        return
             Flowable.concatEager(Flowable.just(
                     Flowable.fromIterable(iterate(elements / 2)),
                     Flowable.fromIterable(iterate(elements - elements / 2))
                 )
             )
-        );
+        ;
     }
 }

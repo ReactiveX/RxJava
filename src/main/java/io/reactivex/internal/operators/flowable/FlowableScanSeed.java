@@ -17,6 +17,7 @@ import java.util.concurrent.atomic.*;
 
 import org.reactivestreams.*;
 
+import io.reactivex.*;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.BiFunction;
 import io.reactivex.internal.functions.ObjectHelper;
@@ -30,7 +31,7 @@ public final class FlowableScanSeed<T, R> extends AbstractFlowableWithUpstream<T
     final BiFunction<R, ? super T, R> accumulator;
     final Callable<R> seedSupplier;
 
-    public FlowableScanSeed(Publisher<T> source, Callable<R> seedSupplier, BiFunction<R, ? super T, R> accumulator) {
+    public FlowableScanSeed(Flowable<T> source, Callable<R> seedSupplier, BiFunction<R, ? super T, R> accumulator) {
         super(source);
         this.accumulator = accumulator;
         this.seedSupplier = seedSupplier;
@@ -53,7 +54,7 @@ public final class FlowableScanSeed<T, R> extends AbstractFlowableWithUpstream<T
 
     static final class ScanSeedSubscriber<T, R>
     extends AtomicInteger
-    implements Subscriber<T>, Subscription {
+    implements FlowableSubscriber<T>, Subscription {
         private static final long serialVersionUID = -1776795561228106469L;
 
         final Subscriber<? super R> actual;

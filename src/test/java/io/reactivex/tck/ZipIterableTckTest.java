@@ -27,7 +27,7 @@ public class ZipIterableTckTest extends BaseTck<Long> {
     @SuppressWarnings("unchecked")
     @Override
     public Publisher<Long> createPublisher(long elements) {
-        return FlowableTck.wrap(
+        return
             Flowable.zip(Arrays.asList(
                     Flowable.fromIterable(iterate(elements)),
                     Flowable.fromIterable(iterate(elements))
@@ -39,6 +39,6 @@ public class ZipIterableTckTest extends BaseTck<Long> {
                     }
                 }
             )
-        );
+        ;
     }
 }

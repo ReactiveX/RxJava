@@ -388,7 +388,7 @@ public class ExceptionsTest {
                                   public void subscribe(SingleObserver<? super Integer> s2) {
                                       throw new IllegalArgumentException("original exception");
                                   }
-                              }).toFlowable().subscribe(new Subscriber<Integer>() {
+                              }).toFlowable().subscribe(new FlowableSubscriber<Integer>() {
 
                                   @Override
                                   public void onSubscribe(Subscription s) {

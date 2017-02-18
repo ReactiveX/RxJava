@@ -32,7 +32,7 @@ public final class CompletableFromPublisher<T> extends Completable {
         flowable.subscribe(new FromPublisherSubscriber<T>(cs));
     }
 
-    static final class FromPublisherSubscriber<T> implements Subscriber<T>, Disposable {
+    static final class FromPublisherSubscriber<T> implements FlowableSubscriber<T>, Disposable {
 
         final CompletableObserver cs;
 

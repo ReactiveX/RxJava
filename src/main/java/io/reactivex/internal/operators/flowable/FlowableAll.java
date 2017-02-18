@@ -14,6 +14,7 @@ package io.reactivex.internal.operators.flowable;
 
 import org.reactivestreams.*;
 
+import io.reactivex.*;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.Predicate;
 import io.reactivex.internal.subscriptions.*;
@@ -23,7 +24,7 @@ public final class FlowableAll<T> extends AbstractFlowableWithUpstream<T, Boolea
 
     final Predicate<? super T> predicate;
 
-    public FlowableAll(Publisher<T> source, Predicate<? super T> predicate) {
+    public FlowableAll(Flowable<T> source, Predicate<? super T> predicate) {
         super(source);
         this.predicate = predicate;
     }
@@ -33,7 +34,7 @@ public final class FlowableAll<T> extends AbstractFlowableWithUpstream<T, Boolea
         source.subscribe(new AllSubscriber<T>(s, predicate));
     }
 
-    static final class AllSubscriber<T> extends DeferredScalarSubscription<Boolean> implements Subscriber<T> {
+    static final class AllSubscriber<T> extends DeferredScalarSubscription<Boolean> implements FlowableSubscriber<T> {
 
         private static final long serialVersionUID = -3521127104134758517L;
         final Predicate<? super T> predicate;

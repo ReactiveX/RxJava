@@ -13,15 +13,16 @@
 
 package io.reactivex.internal.operators.flowable;
 
-import io.reactivex.internal.functions.ObjectHelper;
 import java.util.*;
 import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.*;
 
 import org.reactivestreams.*;
 
+import io.reactivex.*;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.BooleanSupplier;
+import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.internal.util.*;
 import io.reactivex.plugins.RxJavaPlugins;
@@ -33,7 +34,7 @@ public final class FlowableBuffer<T, C extends Collection<? super T>> extends Ab
 
     final Callable<C> bufferSupplier;
 
-    public FlowableBuffer(Publisher<T> source, int size, int skip, Callable<C> bufferSupplier) {
+    public FlowableBuffer(Flowable<T> source, int size, int skip, Callable<C> bufferSupplier) {
         super(source);
         this.size = size;
         this.skip = skip;
@@ -52,7 +53,7 @@ public final class FlowableBuffer<T, C extends Collection<? super T>> extends Ab
     }
 
     static final class PublisherBufferExactSubscriber<T, C extends Collection<? super T>>
-      implements Subscriber<T>, Subscription {
+      implements FlowableSubscriber<T>, Subscription {
 
         final Subscriber<? super C> actual;
 
@@ -156,7 +157,7 @@ public final class FlowableBuffer<T, C extends Collection<? super T>> extends Ab
 
     static final class PublisherBufferSkipSubscriber<T, C extends Collection<? super T>>
     extends AtomicInteger
-    implements Subscriber<T>, Subscription {
+    implements FlowableSubscriber<T>, Subscription {
 
 
         private static final long serialVersionUID = -5616169793639412593L;
@@ -288,7 +289,7 @@ public final class FlowableBuffer<T, C extends Collection<? super T>> extends Ab
 
     static final class PublisherBufferOverlappingSubscriber<T, C extends Collection<? super T>>
     extends AtomicLong
-    implements Subscriber<T>, Subscription, BooleanSupplier {
+    implements FlowableSubscriber<T>, Subscription, BooleanSupplier {
 
         private static final long serialVersionUID = -7370244972039324525L;
 

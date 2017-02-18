@@ -13,12 +13,11 @@
 
 package io.reactivex.subscribers;
 
-import org.reactivestreams.Subscriber;
+import java.util.concurrent.atomic.*;
+
 import org.reactivestreams.Subscription;
 
-import java.util.concurrent.atomic.AtomicLong;
-import java.util.concurrent.atomic.AtomicReference;
-
+import io.reactivex.FlowableSubscriber;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.disposables.ListCompositeDisposable;
 import io.reactivex.internal.functions.ObjectHelper;
@@ -34,7 +33,7 @@ import io.reactivex.internal.subscriptions.SubscriptionHelper;
  *
  * @param <T> the value type
  */
-public abstract class ResourceSubscriber<T> implements Subscriber<T>, Disposable {
+public abstract class ResourceSubscriber<T> implements FlowableSubscriber<T>, Disposable {
     /** The active subscription. */
     private final AtomicReference<Subscription> s = new AtomicReference<Subscription>();
 

@@ -15,10 +15,10 @@ package io.reactivex.internal.operators.flowable;
 import java.util.Arrays;
 import java.util.concurrent.atomic.*;
 
-import io.reactivex.annotations.NonNull;
-import io.reactivex.annotations.Nullable;
 import org.reactivestreams.*;
 
+import io.reactivex.*;
+import io.reactivex.annotations.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.Function;
@@ -43,14 +43,14 @@ public final class FlowableWithLatestFromMany<T, R> extends AbstractFlowableWith
 
     final Function<? super Object[], R> combiner;
 
-    public FlowableWithLatestFromMany(@NonNull Publisher<T> source, @NonNull Publisher<?>[] otherArray, Function<? super Object[], R> combiner) {
+    public FlowableWithLatestFromMany(@NonNull Flowable<T> source, @NonNull Publisher<?>[] otherArray, Function<? super Object[], R> combiner) {
         super(source);
         this.otherArray = otherArray;
         this.otherIterable = null;
         this.combiner = combiner;
     }
 
-    public FlowableWithLatestFromMany(@NonNull Publisher<T> source, @NonNull Iterable<? extends Publisher<?>> otherIterable, @NonNull Function<? super Object[], R> combiner) {
+    public FlowableWithLatestFromMany(@NonNull Flowable<T> source, @NonNull Iterable<? extends Publisher<?>> otherIterable, @NonNull Function<? super Object[], R> combiner) {
         super(source);
         this.otherArray = null;
         this.otherIterable = otherIterable;
@@ -100,7 +100,7 @@ public final class FlowableWithLatestFromMany<T, R> extends AbstractFlowableWith
 
     static final class WithLatestFromSubscriber<T, R>
     extends AtomicInteger
-    implements Subscriber<T>, Subscription {
+    implements FlowableSubscriber<T>, Subscription {
 
         private static final long serialVersionUID = 1577321883966341961L;
 
@@ -248,7 +248,7 @@ public final class FlowableWithLatestFromMany<T, R> extends AbstractFlowableWith
 
     static final class WithLatestInnerSubscriber
     extends AtomicReference<Subscription>
-    implements Subscriber<Object>, Disposable {
+    implements FlowableSubscriber<Object>, Disposable {
 
         private static final long serialVersionUID = 3256684027868224024L;
 

@@ -55,8 +55,8 @@ public enum TestHelper {
      * @return the mocked subscriber
      */
     @SuppressWarnings("unchecked")
-    public static <T> Subscriber<T> mockSubscriber() {
-        Subscriber<T> w = mock(Subscriber.class);
+    public static <T> FlowableSubscriber<T> mockSubscriber() {
+        FlowableSubscriber<T> w = mock(FlowableSubscriber.class);
 
         Mockito.doAnswer(new Answer<Object>() {
             @Override
@@ -295,7 +295,7 @@ public enum TestHelper {
         try {
             final CountDownLatch cdl = new CountDownLatch(1);
 
-            source.subscribe(new Subscriber<Object>() {
+            source.subscribe(new FlowableSubscriber<Object>() {
 
                 @Override
                 public void onSubscribe(Subscription s) {
@@ -646,7 +646,7 @@ public enum TestHelper {
      */
     public static void checkDisposed(Flowable<?> source) {
         final TestSubscriber<Object> ts = new TestSubscriber<Object>(0L);
-        source.subscribe(new Subscriber<Object>() {
+        source.subscribe(new FlowableSubscriber<Object>() {
             @Override
             public void onSubscribe(Subscription s) {
                 ts.onSubscribe(new BooleanSubscription());
@@ -870,7 +870,7 @@ public enum TestHelper {
     /**
      * Consumer for all base reactive types.
      */
-    enum NoOpConsumer implements Subscriber<Object>, Observer<Object>, MaybeObserver<Object>, SingleObserver<Object>, CompletableObserver {
+    enum NoOpConsumer implements FlowableSubscriber<Object>, Observer<Object>, MaybeObserver<Object>, SingleObserver<Object>, CompletableObserver {
         INSTANCE;
 
         @Override
@@ -2237,7 +2237,7 @@ public enum TestHelper {
 
         final Boolean[] state = { null, null, null, null };
 
-        source.subscribe(new Subscriber<T>() {
+        source.subscribe(new FlowableSubscriber<T>() {
             @Override
             public void onSubscribe(Subscription d) {
                 try {

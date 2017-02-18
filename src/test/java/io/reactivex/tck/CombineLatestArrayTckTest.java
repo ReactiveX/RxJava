@@ -25,7 +25,7 @@ public class CombineLatestArrayTckTest extends BaseTck<Long> {
     @SuppressWarnings("unchecked")
     @Override
     public Publisher<Long> createPublisher(long elements) {
-        return FlowableTck.wrap(
+        return
             Flowable.combineLatest(
                 new Function<Object[], Long>() {
                     @Override
@@ -36,6 +36,6 @@ public class CombineLatestArrayTckTest extends BaseTck<Long> {
                 Flowable.just(1L),
                 Flowable.fromIterable(iterate(elements))
             )
-        );
+        ;
     }
 }

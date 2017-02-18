@@ -26,7 +26,7 @@ public class ConcatMapIterableTckTest extends BaseTck<Integer> {
 
     @Override
     public Publisher<Integer> createPublisher(long elements) {
-        return FlowableTck.wrap(
+        return
                 Flowable.range(0, (int)elements)
                 .concatMapIterable(new Function<Integer, Iterable<Integer>>() {
                     @Override
@@ -34,6 +34,6 @@ public class ConcatMapIterableTckTest extends BaseTck<Integer> {
                         return Collections.singletonList(v);
                     }
                 })
-            );
+            ;
     }
 }

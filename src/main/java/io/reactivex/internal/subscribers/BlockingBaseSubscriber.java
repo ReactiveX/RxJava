@@ -14,13 +14,14 @@ package io.reactivex.internal.subscribers;
 
 import java.util.concurrent.CountDownLatch;
 
-import org.reactivestreams.*;
+import org.reactivestreams.Subscription;
 
+import io.reactivex.FlowableSubscriber;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.internal.util.*;
 
 public abstract class BlockingBaseSubscriber<T> extends CountDownLatch
-implements Subscriber<T> {
+implements FlowableSubscriber<T> {
 
     T value;
     Throwable error;

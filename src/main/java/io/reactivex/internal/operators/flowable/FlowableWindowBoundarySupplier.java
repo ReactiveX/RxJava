@@ -36,7 +36,7 @@ public final class FlowableWindowBoundarySupplier<T, B> extends AbstractFlowable
     final Callable<? extends Publisher<B>> other;
     final int bufferSize;
 
-    public FlowableWindowBoundarySupplier(Publisher<T> source,
+    public FlowableWindowBoundarySupplier(Flowable<T> source,
             Callable<? extends Publisher<B>> other, int bufferSize) {
         super(source);
         this.other = other;

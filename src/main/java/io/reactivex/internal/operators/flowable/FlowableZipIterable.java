@@ -13,26 +13,25 @@
 
 package io.reactivex.internal.operators.flowable;
 
-import io.reactivex.internal.functions.ObjectHelper;
 import java.util.Iterator;
 
 import org.reactivestreams.*;
 
-import io.reactivex.Flowable;
+import io.reactivex.*;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.BiFunction;
+import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.internal.subscriptions.*;
 import io.reactivex.plugins.RxJavaPlugins;
 
-public final class FlowableZipIterable<T, U, V> extends Flowable<V> {
-    final Publisher<? extends T> source;
+public final class FlowableZipIterable<T, U, V> extends AbstractFlowableWithUpstream<T, V> {
     final Iterable<U> other;
     final BiFunction<? super T, ? super U, ? extends V> zipper;
 
     public FlowableZipIterable(
-            Publisher<? extends T> source,
+            Flowable<T> source,
             Iterable<U> other, BiFunction<? super T, ? super U, ? extends V> zipper) {
-        this.source = source;
+        super(source);
         this.other = other;
         this.zipper = zipper;
     }
@@ -67,7 +66,7 @@ public final class FlowableZipIterable<T, U, V> extends Flowable<V> {
         source.subscribe(new ZipIterableSubscriber<T, U, V>(t, it, zipper));
     }
 
-    static final class ZipIterableSubscriber<T, U, V> implements Subscriber<T>, Subscription {
+    static final class ZipIterableSubscriber<T, U, V> implements FlowableSubscriber<T>, Subscription {
         final Subscriber<? super V> actual;
         final Iterator<U> iterator;
         final BiFunction<? super T, ? super U, ? extends V> zipper;

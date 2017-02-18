@@ -673,7 +673,7 @@ public class FlowableCreateTest {
                     assertTrue(d.isDisposed());
                 }
             }, m)
-            .subscribe(new Subscriber<Object>() {
+            .subscribe(new FlowableSubscriber<Object>() {
                 @Override
                 public void onSubscribe(Subscription d) {
                 }
@@ -711,7 +711,7 @@ public class FlowableCreateTest {
                     assertTrue(d.isDisposed());
                 }
             }, m)
-            .subscribe(new Subscriber<Object>() {
+            .subscribe(new FlowableSubscriber<Object>() {
                 @Override
                 public void onSubscribe(Subscription d) {
                 }

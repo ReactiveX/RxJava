@@ -142,7 +142,7 @@ public final class MaybeTimeoutPublisher<T, U> extends AbstractMaybeWithUpstream
 
     static final class TimeoutOtherMaybeObserver<T, U>
     extends AtomicReference<Subscription>
-    implements Subscriber<Object> {
+    implements FlowableSubscriber<Object> {
 
 
         private static final long serialVersionUID = 8663801314800248617L;

@@ -17,7 +17,7 @@ import java.util.concurrent.atomic.*;
 
 import org.reactivestreams.*;
 
-import io.reactivex.Flowable;
+import io.reactivex.*;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.internal.util.*;
 import io.reactivex.plugins.RxJavaPlugins;
@@ -91,7 +91,7 @@ public final class FlowableCache<T> extends AbstractFlowableWithUpstream<T, T> {
      *
      * @param <T> the value type of the cached items
      */
-    static final class CacheState<T> extends LinkedArrayList implements Subscriber<T> {
+    static final class CacheState<T> extends LinkedArrayList implements FlowableSubscriber<T> {
         /** The source observable to connect to. */
         final Flowable<? extends T> source;
         /** Holds onto the subscriber connected to source. */

@@ -123,7 +123,7 @@ public class InternalWrongNaming {
 
     @Test
     public void observableNoFlowable() throws Exception {
-        checkInternalOperatorNaming("Observable", "Flowable");
+        checkInternalOperatorNaming("Observable", "Flowable", "ObservableFromPublisher");
     }
 
     @Test

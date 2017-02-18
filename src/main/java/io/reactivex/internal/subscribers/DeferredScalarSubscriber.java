@@ -15,6 +15,7 @@ package io.reactivex.internal.subscribers;
 
 import org.reactivestreams.*;
 
+import io.reactivex.FlowableSubscriber;
 import io.reactivex.internal.subscriptions.*;
 
 /**
@@ -24,7 +25,7 @@ import io.reactivex.internal.subscriptions.*;
  * @param <R> the output value type
  */
 public abstract class DeferredScalarSubscriber<T, R> extends DeferredScalarSubscription<R>
-implements Subscriber<T> {
+implements FlowableSubscriber<T> {
 
     private static final long serialVersionUID = 2984505488220891551L;
 

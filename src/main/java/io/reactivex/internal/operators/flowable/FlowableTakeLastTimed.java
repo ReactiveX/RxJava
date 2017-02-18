@@ -31,7 +31,7 @@ public final class FlowableTakeLastTimed<T> extends AbstractFlowableWithUpstream
     final int bufferSize;
     final boolean delayError;
 
-    public FlowableTakeLastTimed(Publisher<T> source,
+    public FlowableTakeLastTimed(Flowable<T> source,
             long count, long time, TimeUnit unit, Scheduler scheduler,
             int bufferSize, boolean delayError) {
         super(source);
@@ -48,7 +48,7 @@ public final class FlowableTakeLastTimed<T> extends AbstractFlowableWithUpstream
         source.subscribe(new TakeLastTimedSubscriber<T>(s, count, time, unit, scheduler, bufferSize, delayError));
     }
 
-    static final class TakeLastTimedSubscriber<T> extends AtomicInteger implements Subscriber<T>, Subscription {
+    static final class TakeLastTimedSubscriber<T> extends AtomicInteger implements FlowableSubscriber<T>, Subscription {
 
         private static final long serialVersionUID = -5677354903406201275L;
         final Subscriber<? super T> actual;

@@ -18,10 +18,10 @@ import java.util.concurrent.atomic.*;
 
 import org.reactivestreams.*;
 
-import io.reactivex.Flowable;
+import io.reactivex.*;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
-import io.reactivex.internal.util.*;
+import io.reactivex.internal.util.BackpressureHelper;
 import io.reactivex.parallel.ParallelFlowable;
 import io.reactivex.plugins.RxJavaPlugins;
 
@@ -264,7 +264,7 @@ public final class ParallelSortedJoin<T> extends Flowable<T> {
 
     static final class SortedJoinInnerSubscriber<T>
     extends AtomicReference<Subscription>
-    implements Subscriber<List<T>> {
+    implements FlowableSubscriber<List<T>> {
 
 
         private static final long serialVersionUID = 6751017204873808094L;

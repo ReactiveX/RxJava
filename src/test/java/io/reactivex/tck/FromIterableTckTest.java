@@ -23,8 +23,6 @@ public class FromIterableTckTest extends BaseTck<Long> {
 
     @Override
     public Publisher<Long> createPublisher(long elements) {
-        return FlowableTck.wrap(
-                Flowable.fromIterable(iterate(elements))
-        );
+        return Flowable.fromIterable(iterate(elements));
     }
 }

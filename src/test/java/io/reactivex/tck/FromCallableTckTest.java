@@ -25,7 +25,7 @@ public class FromCallableTckTest extends BaseTck<Long> {
 
     @Override
     public Publisher<Long> createPublisher(final long elements) {
-        return FlowableTck.wrap(
+        return
                 Flowable.fromCallable(new Callable<Long>() {
                     @Override
                     public Long call() throws Exception {
@@ -33,7 +33,7 @@ public class FromCallableTckTest extends BaseTck<Long> {
                     }
                 }
                 )
-            );
+            ;
     }
 
     @Override

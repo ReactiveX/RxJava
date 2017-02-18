@@ -15,13 +15,14 @@ package io.reactivex.internal.operators.flowable;
 
 import org.reactivestreams.*;
 
+import io.reactivex.*;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.Predicate;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 
 public final class FlowableSkipWhile<T> extends AbstractFlowableWithUpstream<T, T> {
     final Predicate<? super T> predicate;
-    public FlowableSkipWhile(Publisher<T> source, Predicate<? super T> predicate) {
+    public FlowableSkipWhile(Flowable<T> source, Predicate<? super T> predicate) {
         super(source);
         this.predicate = predicate;
     }
@@ -31,7 +32,7 @@ public final class FlowableSkipWhile<T> extends AbstractFlowableWithUpstream<T, 
         source.subscribe(new SkipWhileSubscriber<T>(s, predicate));
     }
 
-    static final class SkipWhileSubscriber<T> implements Subscriber<T>, Subscription {
+    static final class SkipWhileSubscriber<T> implements FlowableSubscriber<T>, Subscription {
         final Subscriber<? super T> actual;
         final Predicate<? super T> predicate;
         Subscription s;

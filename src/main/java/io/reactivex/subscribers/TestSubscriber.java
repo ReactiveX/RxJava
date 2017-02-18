@@ -16,6 +16,7 @@ import java.util.concurrent.atomic.*;
 
 import org.reactivestreams.*;
 
+import io.reactivex.FlowableSubscriber;
 import io.reactivex.annotations.Experimental;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
@@ -39,7 +40,7 @@ import io.reactivex.observers.BaseTestConsumer;
  */
 public class TestSubscriber<T>
 extends BaseTestConsumer<T, TestSubscriber<T>>
-implements Subscriber<T>, Subscription, Disposable {
+implements FlowableSubscriber<T>, Subscription, Disposable {
     /** The actual subscriber to forward events to. */
     private final Subscriber<? super T> actual;
 
@@ -419,7 +420,7 @@ implements Subscriber<T>, Subscription, Disposable {
     /**
      * A subscriber that ignores all events and does not report errors.
      */
-    enum EmptySubscriber implements Subscriber<Object> {
+    enum EmptySubscriber implements FlowableSubscriber<Object> {
         INSTANCE;
 
         @Override

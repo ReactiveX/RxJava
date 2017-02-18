@@ -23,8 +23,6 @@ public class HideTckTest extends BaseTck<Integer> {
 
     @Override
     public Publisher<Integer> createPublisher(long elements) {
-        return FlowableTck.wrap(
-                Flowable.range(0, (int)elements).hide()
-        );
+        return Flowable.range(0, (int)elements).hide();
     }
 }

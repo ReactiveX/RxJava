@@ -23,9 +23,9 @@ public class JustTckTest extends BaseTck<Long> {
 
     @Override
     public Publisher<Long> createPublisher(long elements) {
-        return FlowableTck.wrap(
+        return
                 Flowable.just(0L)
-        );
+        ;
     }
 
     @Override

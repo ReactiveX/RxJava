@@ -49,7 +49,7 @@ public final class FlowableReduceSeedSingle<T, R> extends Single<R> {
         source.subscribe(new ReduceSeedObserver<T, R>(observer, reducer, seed));
     }
 
-    static final class ReduceSeedObserver<T, R> implements Subscriber<T>, Disposable {
+    static final class ReduceSeedObserver<T, R> implements FlowableSubscriber<T>, Disposable {
 
         final SingleObserver<? super R> actual;
 

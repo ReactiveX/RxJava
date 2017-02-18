@@ -13,9 +13,9 @@
 
 package io.reactivex.internal.operators.flowable;
 
-import org.reactivestreams.*;
+import org.reactivestreams.Subscriber;
 
-import io.reactivex.FlowableOperator;
+import io.reactivex.*;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.plugins.RxJavaPlugins;
 
@@ -32,7 +32,7 @@ public final class FlowableLift<R, T> extends AbstractFlowableWithUpstream<T, R>
     /** The actual operator. */
     final FlowableOperator<? extends R, ? super T> operator;
 
-    public FlowableLift(Publisher<T> source, FlowableOperator<? extends R, ? super T> operator) {
+    public FlowableLift(Flowable<T> source, FlowableOperator<? extends R, ? super T> operator) {
         super(source);
         this.operator = operator;
     }

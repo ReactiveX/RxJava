@@ -15,6 +15,7 @@ package io.reactivex.internal.operators.flowable;
 
 import org.reactivestreams.*;
 
+import io.reactivex.*;
 import io.reactivex.exceptions.*;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.subscriptions.SubscriptionArbiter;
@@ -24,7 +25,7 @@ public final class FlowableOnErrorNext<T> extends AbstractFlowableWithUpstream<T
     final Function<? super Throwable, ? extends Publisher<? extends T>> nextSupplier;
     final boolean allowFatal;
 
-    public FlowableOnErrorNext(Publisher<T> source,
+    public FlowableOnErrorNext(Flowable<T> source,
             Function<? super Throwable, ? extends Publisher<? extends T>> nextSupplier, boolean allowFatal) {
         super(source);
         this.nextSupplier = nextSupplier;
@@ -38,7 +39,7 @@ public final class FlowableOnErrorNext<T> extends AbstractFlowableWithUpstream<T
         source.subscribe(parent);
     }
 
-    static final class OnErrorNextSubscriber<T> implements Subscriber<T> {
+    static final class OnErrorNextSubscriber<T> implements FlowableSubscriber<T> {
         final Subscriber<? super T> actual;
         final Function<? super Throwable, ? extends Publisher<? extends T>> nextSupplier;
         final boolean allowFatal;

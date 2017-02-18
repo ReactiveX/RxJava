@@ -28,12 +28,12 @@ import io.reactivex.plugins.RxJavaPlugins;
 
 public final class FlowableCollectSingle<T, U> extends Single<U> implements FuseToFlowable<U> {
 
-    final Publisher<T> source;
+    final Flowable<T> source;
 
     final Callable<? extends U> initialSupplier;
     final BiConsumer<? super U, ? super T> collector;
 
-    public FlowableCollectSingle(Publisher<T> source, Callable<? extends U> initialSupplier, BiConsumer<? super U, ? super T> collector) {
+    public FlowableCollectSingle(Flowable<T> source, Callable<? extends U> initialSupplier, BiConsumer<? super U, ? super T> collector) {
         this.source = source;
         this.initialSupplier = initialSupplier;
         this.collector = collector;
@@ -57,7 +57,7 @@ public final class FlowableCollectSingle<T, U> extends Single<U> implements Fuse
         return RxJavaPlugins.onAssembly(new FlowableCollect<T, U>(source, initialSupplier, collector));
     }
 
-    static final class CollectSubscriber<T, U> implements Subscriber<T>, Disposable {
+    static final class CollectSubscriber<T, U> implements FlowableSubscriber<T>, Disposable {
 
         final SingleObserver<? super U> actual;
 

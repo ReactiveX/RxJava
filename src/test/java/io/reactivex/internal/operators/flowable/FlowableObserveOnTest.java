@@ -1306,7 +1306,7 @@ public class FlowableObserveOnTest {
         final CountDownLatch cdl = new CountDownLatch(1);
 
         us.observeOn(Schedulers.single())
-        .subscribe(new Subscriber<Integer>() {
+        .subscribe(new FlowableSubscriber<Integer>() {
             Subscription d;
             int count;
             @Override

@@ -23,8 +23,9 @@ import io.reactivex.exceptions.Exceptions;
 import io.reactivex.flowables.*;
 import io.reactivex.functions.*;
 import io.reactivex.internal.functions.*;
-import io.reactivex.internal.fuseable.ScalarCallable;
+import io.reactivex.internal.fuseable.*;
 import io.reactivex.internal.operators.flowable.*;
+import io.reactivex.internal.operators.flowable.FlowableStrict.StrictSubscriber;
 import io.reactivex.internal.operators.observable.ObservableFromPublisher;
 import io.reactivex.internal.schedulers.ImmediateThinScheduler;
 import io.reactivex.internal.subscribers.*;
@@ -1557,7 +1558,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public static <T> Flowable<T> concatEager(Publisher<? extends Publisher<? extends T>> sources, int maxConcurrency, int prefetch) {
-        return RxJavaPlugins.onAssembly(new FlowableConcatMapEager(sources, Functions.identity(), maxConcurrency, prefetch, ErrorMode.IMMEDIATE));
+        return RxJavaPlugins.onAssembly(new FlowableConcatMapEagerPublisher(sources, Functions.identity(), maxConcurrency, prefetch, ErrorMode.IMMEDIATE));
     }
 
     /**
@@ -11679,7 +11680,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     public final void safeSubscribe(Subscriber<? super T> s) {
         ObjectHelper.requireNonNull(s, "s is null");
         if (s instanceof SafeSubscriber) {
-            subscribe(s);
+            subscribe((SafeSubscriber<? super T>)s);
         } else {
             subscribe(new SafeSubscriber<T>(s));
         }
@@ -12713,13 +12714,15 @@ public abstract class Flowable<T> implements Publisher<T> {
      * </dl>
      * @return the new Flowable instance
      * @since 2.0.5 - experimental
+     * @deprecated 2.0.7, will be removed in 2.1.0; by default, the Publisher interface is always strict
      */
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
     @SchedulerSupport(SchedulerSupport.NONE)
     @Experimental
     @CheckReturnValue
+    @Deprecated
     public final Flowable<T> strict() {
-        return RxJavaPlugins.onAssembly(new FlowableStrict<T>(this));
+        return this;
     }
 
     /**
@@ -12892,13 +12895,61 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     @Override
     public final void subscribe(Subscriber<? super T> s) {
+        if (s instanceof FlowableSubscriber) {
+            subscribe((FlowableSubscriber<? super T>)s);
+        } else {
+            ObjectHelper.requireNonNull(s, "s is null");
+            subscribe(new StrictSubscriber<T>(s));
+        }
+    }
+
+    /**
+     * Establish a connection between this Flowable and the given FlowableSubscriber and
+     * start streaming events based on the demand of the FlowableSubscriber.
+     * <p>
+     * This is a "factory method" and can be called multiple times, each time starting a new {@link Subscription}.
+     * <p>
+     * Each {@link Subscription} will work for only a single {@link FlowableSubscriber}.
+     * <p>
+     * If the same {@link FlowableSubscriber} instance is subscribed to multiple {@link Flowable}s and/or the
+     * same {@link Flowable} multiple times, it must ensure the serialization over its {@code onXXX}
+     * methods manually.
+     * <p>
+     * If the {@link Flowable} rejects the subscription attempt or otherwise fails it will signal
+     * the error via {@link FlowableSubscriber#onError(Throwable)}.
+     * <p>
+     * This subscribe method relaxes the following Reactive-Streams rules:
+     * <ul>
+     * <li>§1.3: onNext should not be called concurrently until onSubscribe returns.
+     *     <b>FlowableSubscriber.onSubscribe should make sure a sync or async call triggered by request() is safe.</b></li>
+     * <li>§2.3: onError or onComplete must not call cancel.
+     *     <b>Calling request() or cancel() is NOP at this point.</b></li>
+     * <li>§2.12: onSubscribe must be called at most once on the same instance.
+     *     <b>FlowableSubscriber reuse is not checked and if happens, it is the responsibility of
+     *     the FlowableSubscriber to ensure proper serialization of its onXXX methods.</b></li>
+     * <li>§3.9: negative requests should emit an onError(IllegalArgumentException).
+     *     <b>Non-positive requests signal via RxJavaPlugins.onError and the stream is not affected.</b></li>
+     * </ul>
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The backpressure behavior/expectation is determined by the supplied {@code FlowableSubscriber}.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code subscribe} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param s the FlowableSubscriber that will consume signals from this Flowable
+     * @since 2.0.7 - experimental
+     */
+    @BackpressureSupport(BackpressureKind.SPECIAL)
+    @SchedulerSupport(SchedulerSupport.NONE)
+    @Experimental
+    public final void subscribe(FlowableSubscriber<? super T> s) {
         ObjectHelper.requireNonNull(s, "s is null");
         try {
-            s = RxJavaPlugins.onSubscribe(this, s);
+            Subscriber<? super T> z = RxJavaPlugins.onSubscribe(this, s);
 
-            ObjectHelper.requireNonNull(s, "Plugin returned null Subscriber");
+            ObjectHelper.requireNonNull(z, "Plugin returned null Subscriber");
 
-            subscribeActual(s);
+            subscribeActual(z);
         } catch (NullPointerException e) { // NOPMD
             throw e;
         } catch (Throwable e) {

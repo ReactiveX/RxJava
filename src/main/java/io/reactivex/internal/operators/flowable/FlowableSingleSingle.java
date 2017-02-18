@@ -14,7 +14,8 @@
 package io.reactivex.internal.operators.flowable;
 
 import java.util.NoSuchElementException;
-import org.reactivestreams.*;
+
+import org.reactivestreams.Subscription;
 
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
@@ -24,11 +25,11 @@ import io.reactivex.plugins.RxJavaPlugins;
 
 public final class FlowableSingleSingle<T> extends Single<T> implements FuseToFlowable<T> {
 
-    final Publisher<T> source;
+    final Flowable<T> source;
 
     final T defaultValue;
 
-    public FlowableSingleSingle(Publisher<T> source, T defaultValue) {
+    public FlowableSingleSingle(Flowable<T> source, T defaultValue) {
         this.source = source;
         this.defaultValue = defaultValue;
     }
@@ -44,7 +45,7 @@ public final class FlowableSingleSingle<T> extends Single<T> implements FuseToFl
     }
 
     static final class SingleElementSubscriber<T>
-    implements Subscriber<T>, Disposable {
+    implements FlowableSubscriber<T>, Disposable {
 
         final SingleObserver<? super T> actual;
 

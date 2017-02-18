@@ -172,7 +172,7 @@ public class FlowableGroupJoinTest {
                 });
 
         q.subscribe(
-                new Subscriber<PPF>() {
+                new FlowableSubscriber<PPF>() {
                     @Override
                     public void onNext(final PPF ppf) {
                         ppf.fruits.filter(new Predicate<PersonFruit>() {
