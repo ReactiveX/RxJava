@@ -289,4 +289,40 @@ public class ParallelJoinTest {
         .requestMore(1)
         .assertResult(1, 2, 3);
     }
+
+    @Test
+    public void failedRailIsIgnored() {
+        Flowable.range(1, 4)
+        .parallel(2)
+        .map(new Function<Integer, Integer>() {
+            @Override
+            public Integer apply(Integer v) throws Exception {
+                if (v == 1) {
+                    throw new TestException();
+                }
+                return v;
+            }
+        })
+        .sequentialDelayError()
+        .test()
+        .assertFailure(TestException.class, 2, 3, 4);
+    }
+
+    @Test
+    public void failedRailIsIgnoredHidden() {
+        Flowable.range(1, 4).hide()
+        .parallel(2)
+        .map(new Function<Integer, Integer>() {
+            @Override
+            public Integer apply(Integer v) throws Exception {
+                if (v == 1) {
+                    throw new TestException();
+                }
+                return v;
+            }
+        })
+        .sequentialDelayError()
+        .test()
+        .assertFailure(TestException.class, 2, 3, 4);
+    }
 }

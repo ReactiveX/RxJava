@@ -102,8 +102,8 @@ public final class ParallelFromPublisher<T> extends ParallelFlowable<T> {
             this.prefetch = prefetch;
             this.limit = prefetch - (prefetch >> 2);
             int m = subscribers.length;
-            this.requests = new AtomicLongArray(m + 1);
-            this.requests.lazySet(m, m);
+            this.requests = new AtomicLongArray(m + m + 1);
+            this.requests.lazySet(m + m, m);
             this.emissions = new long[m];
         }
 
@@ -161,9 +161,7 @@ public final class ParallelFromPublisher<T> extends ParallelFlowable<T> {
             }
         }
 
-        final class RailSubscription extends AtomicBoolean implements Subscription {
-
-            private static final long serialVersionUID = 7289979168658050255L;
+        final class RailSubscription implements Subscription {
 
             final int j;
 
@@ -196,8 +194,8 @@ public final class ParallelFromPublisher<T> extends ParallelFlowable<T> {
 
             @Override
             public void cancel() {
-                if (compareAndSet(false, true)) {
-                    ParallelDispatcher.this.cancel(m);
+                if (requests.compareAndSet(m + j, 0L, 1L)) {
+                    ParallelDispatcher.this.cancel(m + m);
                 }
             }
         }
@@ -228,7 +226,7 @@ public final class ParallelFromPublisher<T> extends ParallelFlowable<T> {
         }
 
         void cancel(int m) {
-            if (requests.decrementAndGet(m) == 0) {
+            if (requests.decrementAndGet(m) == 0L) {
                 cancelled = true;
                 this.s.cancel();
 
@@ -286,7 +284,7 @@ public final class ParallelFromPublisher<T> extends ParallelFlowable<T> {
 
                     long ridx = r.get(idx);
                     long eidx = e[idx];
-                    if (ridx != eidx) {
+                    if (ridx != eidx && r.get(n + idx) == 0) {
 
                         T v;
 
@@ -374,7 +372,7 @@ public final class ParallelFromPublisher<T> extends ParallelFlowable<T> {
 
                     long ridx = r.get(idx);
                     long eidx = e[idx];
-                    if (ridx != eidx) {
+                    if (ridx != eidx && r.get(n + idx) == 0) {
 
                         T v;
 

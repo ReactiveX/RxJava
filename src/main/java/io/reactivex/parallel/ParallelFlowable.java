@@ -291,7 +291,7 @@ public abstract class ParallelFlowable<T> {
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure.</dd>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code sequential} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dd>{@code sequentialDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * @return the new Flowable instance
      * @see ParallelFlowable#sequentialDelayError(int)
@@ -315,7 +315,7 @@ public abstract class ParallelFlowable<T> {
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure.</dd>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code sequential} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dd>{@code sequentialDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * @param prefetch the prefetch amount to use for each rail
      * @return the new Flowable instance
