@@ -185,7 +185,9 @@ public class ParallelPeekTest {
             assertFalse(errors.isEmpty());
 
             for (Throwable ex : errors) {
-                assertTrue(ex.toString(), ex.getCause() instanceof TestException);
+                Throwable exc = ex.getCause();
+                assertTrue(ex.toString(), exc instanceof TestException
+                        || exc instanceof IOException);
             }
         } finally {
             RxJavaPlugins.reset();

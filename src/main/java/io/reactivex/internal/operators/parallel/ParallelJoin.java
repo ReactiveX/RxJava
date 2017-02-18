@@ -22,7 +22,7 @@ import io.reactivex.exceptions.MissingBackpressureException;
 import io.reactivex.internal.fuseable.*;
 import io.reactivex.internal.queue.SpscArrayQueue;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
-import io.reactivex.internal.util.BackpressureHelper;
+import io.reactivex.internal.util.*;
 import io.reactivex.parallel.ParallelFlowable;
 import io.reactivex.plugins.RxJavaPlugins;
 
@@ -38,20 +38,27 @@ public final class ParallelJoin<T> extends Flowable<T> {
 
     final int prefetch;
 
-    public ParallelJoin(ParallelFlowable<? extends T> source, int prefetch) {
+    final boolean delayErrors;
+
+    public ParallelJoin(ParallelFlowable<? extends T> source, int prefetch, boolean delayErrors) {
         this.source = source;
         this.prefetch = prefetch;
+        this.delayErrors = delayErrors;
     }
 
     @Override
     protected void subscribeActual(Subscriber<? super T> s) {
-        JoinSubscription<T> parent = new JoinSubscription<T>(s, source.parallelism(), prefetch);
+        JoinSubscriptionBase<T> parent;
+        if (delayErrors) {
+            parent = new JoinSubscriptionDelayError<T>(s, source.parallelism(), prefetch);
+        } else {
+            parent = new JoinSubscription<T>(s, source.parallelism(), prefetch);
+        }
         s.onSubscribe(parent);
         source.subscribe(parent.subscribers);
     }
 
-    static final class JoinSubscription<T>
-    extends AtomicInteger
+    abstract static class JoinSubscriptionBase<T> extends AtomicInteger
     implements Subscription {
 
         private static final long serialVersionUID = 3100232009247827843L;
@@ -60,7 +67,7 @@ public final class ParallelJoin<T> extends Flowable<T> {
 
         final JoinInnerSubscriber<T>[] subscribers;
 
-        final AtomicReference<Throwable> error = new AtomicReference<Throwable>();
+        final AtomicThrowable errors = new AtomicThrowable();
 
         final AtomicLong requested = new AtomicLong();
 
@@ -68,7 +75,7 @@ public final class ParallelJoin<T> extends Flowable<T> {
 
         final AtomicInteger done = new AtomicInteger();
 
-        JoinSubscription(Subscriber<? super T> actual, int n, int prefetch) {
+        JoinSubscriptionBase(Subscriber<? super T> actual, int n, int prefetch) {
             this.actual = actual;
             @SuppressWarnings("unchecked")
             JoinInnerSubscriber<T>[] a = new JoinInnerSubscriber[n];
@@ -114,7 +121,25 @@ public final class ParallelJoin<T> extends Flowable<T> {
             }
         }
 
-        void onNext(JoinInnerSubscriber<T> inner, T value) {
+        abstract void onNext(JoinInnerSubscriber<T> inner, T value);
+
+        abstract void onError(Throwable e);
+
+        abstract void onComplete();
+
+        abstract void drain();
+    }
+
+    static final class JoinSubscription<T> extends JoinSubscriptionBase<T> {
+
+        private static final long serialVersionUID = 6312374661811000451L;
+
+        JoinSubscription(Subscriber<? super T> actual, int n, int prefetch) {
+            super(actual, n, prefetch);
+        }
+
+        @Override
+        public void onNext(JoinInnerSubscriber<T> inner, T value) {
             if (get() == 0 && compareAndSet(0, 1)) {
                 if (requested.get() != 0) {
                     actual.onNext(value);
@@ -128,7 +153,7 @@ public final class ParallelJoin<T> extends Flowable<T> {
                     if (!q.offer(value)) {
                         cancelAll();
                         Throwable mbe = new MissingBackpressureException("Queue full?!");
-                        if (error.compareAndSet(null, mbe)) {
+                        if (errors.compareAndSet(null, mbe)) {
                             actual.onError(mbe);
                         } else {
                             RxJavaPlugins.onError(mbe);
@@ -156,18 +181,20 @@ public final class ParallelJoin<T> extends Flowable<T> {
             drainLoop();
         }
 
-        void onError(Throwable e) {
-            if (error.compareAndSet(null, e)) {
+        @Override
+        public void onError(Throwable e) {
+            if (errors.compareAndSet(null, e)) {
                 cancelAll();
                 drain();
             } else {
-                if (e != error.get()) {
+                if (e != errors.get()) {
                     RxJavaPlugins.onError(e);
                 }
             }
         }
 
-        void onComplete() {
+        @Override
+        public void onComplete() {
             done.decrementAndGet();
             drain();
         }
@@ -199,7 +226,7 @@ public final class ParallelJoin<T> extends Flowable<T> {
                         return;
                     }
 
-                    Throwable ex = error.get();
+                    Throwable ex = errors.get();
                     if (ex != null) {
                         cleanup();
                         a.onError(ex);
@@ -244,7 +271,7 @@ public final class ParallelJoin<T> extends Flowable<T> {
                         return;
                     }
 
-                    Throwable ex = error.get();
+                    Throwable ex = errors.get();
                     if (ex != null) {
                         cleanup();
                         a.onError(ex);
@@ -288,14 +315,184 @@ public final class ParallelJoin<T> extends Flowable<T> {
         }
     }
 
+    static final class JoinSubscriptionDelayError<T> extends JoinSubscriptionBase<T> {
+
+        private static final long serialVersionUID = -5737965195918321883L;
+
+        JoinSubscriptionDelayError(Subscriber<? super T> actual, int n, int prefetch) {
+            super(actual, n, prefetch);
+        }
+
+        void onNext(JoinInnerSubscriber<T> inner, T value) {
+            if (get() == 0 && compareAndSet(0, 1)) {
+                if (requested.get() != 0) {
+                    actual.onNext(value);
+                    if (requested.get() != Long.MAX_VALUE) {
+                        requested.decrementAndGet();
+                    }
+                    inner.request(1);
+                } else {
+                    SimplePlainQueue<T> q = inner.getQueue();
+
+                    if (!q.offer(value)) {
+                        inner.cancel();
+                        errors.addThrowable(new MissingBackpressureException("Queue full?!"));
+                        done.decrementAndGet();
+                        drainLoop();
+                        return;
+                    }
+                }
+                if (decrementAndGet() == 0) {
+                    return;
+                }
+            } else {
+                SimplePlainQueue<T> q = inner.getQueue();
+
+                if (!q.offer(value)) {
+                    if (inner.cancel()) {
+                        errors.addThrowable(new MissingBackpressureException("Queue full?!"));
+                        done.decrementAndGet();
+                    }
+                }
+
+                if (getAndIncrement() != 0) {
+                    return;
+                }
+            }
+
+            drainLoop();
+        }
+
+        void onError(Throwable e) {
+            errors.addThrowable(e);
+            done.decrementAndGet();
+            drain();
+        }
+
+        void onComplete() {
+            done.decrementAndGet();
+            drain();
+        }
+
+        void drain() {
+            if (getAndIncrement() != 0) {
+                return;
+            }
+
+            drainLoop();
+        }
+
+        void drainLoop() {
+            int missed = 1;
+
+            JoinInnerSubscriber<T>[] s = this.subscribers;
+            int n = s.length;
+            Subscriber<? super T> a = this.actual;
+
+            for (;;) {
+
+                long r = requested.get();
+                long e = 0;
+
+                middle:
+                while (e != r) {
+                    if (cancelled) {
+                        cleanup();
+                        return;
+                    }
+
+                    boolean d = done.get() == 0;
+
+                    boolean empty = true;
+
+                    for (int i = 0; i < n; i++) {
+                        JoinInnerSubscriber<T> inner = s[i];
+
+                        SimplePlainQueue<T> q = inner.queue;
+                        if (q != null) {
+                            T v = q.poll();
+
+                            if (v != null) {
+                                empty = false;
+                                a.onNext(v);
+                                inner.requestOne();
+                                if (++e == r) {
+                                    break middle;
+                                }
+                            }
+                        }
+                    }
+
+                    if (d && empty) {
+                        Throwable ex = errors.get();
+                        if (ex != null) {
+                            a.onError(errors.terminate());
+                        } else {
+                            a.onComplete();
+                        }
+                        return;
+                    }
+
+                    if (empty) {
+                        break;
+                    }
+                }
+
+                if (e == r) {
+                    if (cancelled) {
+                        cleanup();
+                        return;
+                    }
+
+                    boolean d = done.get() == 0;
+
+                    boolean empty = true;
+
+                    for (int i = 0; i < n; i++) {
+                        JoinInnerSubscriber<T> inner = s[i];
+
+                        SimpleQueue<T> q = inner.queue;
+                        if (q != null && !q.isEmpty()) {
+                            empty = false;
+                            break;
+                        }
+                    }
+
+                    if (d && empty) {
+                        Throwable ex = errors.get();
+                        if (ex != null) {
+                            a.onError(errors.terminate());
+                        } else {
+                            a.onComplete();
+                        }
+                        return;
+                    }
+                }
+
+                if (e != 0 && r != Long.MAX_VALUE) {
+                    requested.addAndGet(-e);
+                }
+
+                int w = get();
+                if (w == missed) {
+                    missed = addAndGet(-missed);
+                    if (missed == 0) {
+                        break;
+                    }
+                } else {
+                    missed = w;
+                }
+            }
+        }
+    }
+
     static final class JoinInnerSubscriber<T>
     extends AtomicReference<Subscription>
     implements FlowableSubscriber<T> {
 
-
         private static final long serialVersionUID = 8410034718427740355L;
 
-        final JoinSubscription<T> parent;
+        final JoinSubscriptionBase<T> parent;
 
         final int prefetch;
 
@@ -305,9 +502,7 @@ public final class ParallelJoin<T> extends Flowable<T> {
 
         volatile SimplePlainQueue<T> queue;
 
-        volatile boolean done;
-
-        JoinInnerSubscriber(JoinSubscription<T> parent, int prefetch) {
+        JoinInnerSubscriber(JoinSubscriptionBase<T> parent, int prefetch) {
             this.parent = parent;
             this.prefetch = prefetch ;
             this.limit = prefetch - (prefetch >> 2);
@@ -355,8 +550,8 @@ public final class ParallelJoin<T> extends Flowable<T> {
             }
         }
 
-        public void cancel() {
-            SubscriptionHelper.cancel(this);
+        public boolean cancel() {
+            return SubscriptionHelper.cancel(this);
         }
 
         SimplePlainQueue<T> getQueue() {
