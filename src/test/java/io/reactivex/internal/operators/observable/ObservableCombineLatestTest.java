@@ -1165,4 +1165,37 @@ public class ObservableCombineLatestTest {
         }
     }
 
+    @Test
+    public void eagerDispose() {
+        final PublishSubject<Integer> ps1 = PublishSubject.create();
+        final PublishSubject<Integer> ps2 = PublishSubject.create();
+
+        TestObserver<Integer> ts = new TestObserver<Integer>() {
+            @Override
+            public void onNext(Integer t) {
+                super.onNext(t);
+                cancel();
+                if (ps1.hasObservers()) {
+                    onError(new IllegalStateException("ps1 not disposed"));
+                } else
+                if (ps2.hasObservers()) {
+                    onError(new IllegalStateException("ps2 not disposed"));
+                } else {
+                    onComplete();
+                }
+            }
+        };
+
+        Observable.combineLatest(ps1, ps2, new BiFunction<Integer, Integer, Integer>() {
+            @Override
+            public Integer apply(Integer t1, Integer t2) throws Exception {
+                return t1 + t2;
+            }
+        })
+        .subscribe(ts);
+
+        ps1.onNext(1);
+        ps2.onNext(2);
+        ts.assertResult(3);
+    }
 }

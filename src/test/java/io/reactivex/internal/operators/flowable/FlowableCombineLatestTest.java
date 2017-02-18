@@ -1517,4 +1517,38 @@ public class FlowableCombineLatestTest {
             RxJavaPlugins.reset();
         }
     }
+
+    @Test
+    public void eagerDispose() {
+        final PublishProcessor<Integer> pp1 = PublishProcessor.create();
+        final PublishProcessor<Integer> pp2 = PublishProcessor.create();
+
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>() {
+            @Override
+            public void onNext(Integer t) {
+                super.onNext(t);
+                cancel();
+                if (pp1.hasSubscribers()) {
+                    onError(new IllegalStateException("pp1 not disposed"));
+                } else
+                if (pp2.hasSubscribers()) {
+                    onError(new IllegalStateException("pp2 not disposed"));
+                } else {
+                    onComplete();
+                }
+            }
+        };
+
+        Flowable.combineLatest(pp1, pp2, new BiFunction<Integer, Integer, Integer>() {
+            @Override
+            public Integer apply(Integer t1, Integer t2) throws Exception {
+                return t1 + t2;
+            }
+        })
+        .subscribe(ts);
+
+        pp1.onNext(1);
+        pp2.onNext(2);
+        ts.assertResult(3);
+    }
 }
