@@ -18,6 +18,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.openjdk.jmh.annotations.*;
 import org.openjdk.jmh.infra.Blackhole;
+import org.reactivestreams.*;
 
 @BenchmarkMode(Mode.Throughput)
 @Warmup(iterations = 5)
@@ -28,6 +29,9 @@ import org.openjdk.jmh.infra.Blackhole;
 public class StrictPerf {
     @Param({ "1", "10", "100", "1000", "10000", "100000", "1000000" })
     public int count;
+
+    @Param({ "1", "10", "100", "1000", "10000" })
+    public int cpu;
 
     Flowable<Integer> source;
 
@@ -41,11 +45,75 @@ public class StrictPerf {
 
     @Benchmark
     public void internal(Blackhole bh) {
-        source.subscribe(new PerfConsumer(bh));
+        source.subscribe(new InternalConsumer(bh, cpu));
     }
 
     @Benchmark
     public void external(Blackhole bh) {
-        source.subscribe(new PerfInteropConsumer(bh));
+        source.subscribe(new ExternalConsumer(bh, cpu));
+    }
+
+    static final class InternalConsumer implements FlowableSubscriber<Object> {
+        final Blackhole bh;
+
+        final int cycles;
+
+        InternalConsumer(Blackhole bh, int cycles) {
+            this.bh = bh;
+            this.cycles = cycles;
+        }
+
+        @Override
+        public void onNext(Object t) {
+            bh.consume(t);
+            Blackhole.consumeCPU(cycles);
+        }
+
+        @Override
+        public void onError(Throwable t) {
+            bh.consume(t);
+        }
+
+        @Override
+        public void onComplete() {
+            bh.consume(true);
+        }
+
+        @Override
+        public void onSubscribe(Subscription s) {
+            s.request(Long.MAX_VALUE);
+        }
+    }
+
+    static final class ExternalConsumer implements Subscriber<Object> {
+        final Blackhole bh;
+
+        final int cycles;
+
+        ExternalConsumer(Blackhole bh, int cycles) {
+            this.bh = bh;
+            this.cycles = cycles;
+        }
+
+        @Override
+        public void onNext(Object t) {
+            bh.consume(t);
+            Blackhole.consumeCPU(cycles);
+        }
+
+        @Override
+        public void onError(Throwable t) {
+            bh.consume(t);
+        }
+
+        @Override
+        public void onComplete() {
+            bh.consume(true);
+        }
+
+        @Override
+        public void onSubscribe(Subscription s) {
+            s.request(Long.MAX_VALUE);
+        }
     }
 }
