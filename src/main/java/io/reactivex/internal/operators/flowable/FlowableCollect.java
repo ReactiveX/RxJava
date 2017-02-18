@@ -12,13 +12,14 @@
  */
 package io.reactivex.internal.operators.flowable;
 
-import io.reactivex.internal.functions.ObjectHelper;
 import java.util.concurrent.Callable;
 
 import org.reactivestreams.*;
 
+import io.reactivex.*;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.BiConsumer;
+import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.internal.subscriptions.*;
 import io.reactivex.plugins.RxJavaPlugins;
 
@@ -27,7 +28,7 @@ public final class FlowableCollect<T, U> extends AbstractFlowableWithUpstream<T,
     final Callable<? extends U> initialSupplier;
     final BiConsumer<? super U, ? super T> collector;
 
-    public FlowableCollect(Publisher<T> source, Callable<? extends U> initialSupplier, BiConsumer<? super U, ? super T> collector) {
+    public FlowableCollect(Flowable<T> source, Callable<? extends U> initialSupplier, BiConsumer<? super U, ? super T> collector) {
         super(source);
         this.initialSupplier = initialSupplier;
         this.collector = collector;
@@ -46,7 +47,7 @@ public final class FlowableCollect<T, U> extends AbstractFlowableWithUpstream<T,
         source.subscribe(new CollectSubscriber<T, U>(s, u, collector));
     }
 
-    static final class CollectSubscriber<T, U> extends DeferredScalarSubscription<U> implements Subscriber<T> {
+    static final class CollectSubscriber<T, U> extends DeferredScalarSubscription<U> implements FlowableSubscriber<T> {
 
         private static final long serialVersionUID = -3589550218733891694L;
 

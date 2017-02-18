@@ -15,8 +15,7 @@ package io.reactivex.internal.operators.flowable;
 
 import java.util.*;
 
-import org.reactivestreams.Publisher;
-
+import io.reactivex.Flowable;
 import io.reactivex.internal.util.*;
 import io.reactivex.subscribers.DefaultSubscriber;
 
@@ -30,11 +29,11 @@ import io.reactivex.subscribers.DefaultSubscriber;
  */
 public final class BlockingFlowableMostRecent<T> implements Iterable<T> {
 
-    final Publisher<? extends T> source;
+    final Flowable<? extends T> source;
 
     final T initialValue;
 
-    public BlockingFlowableMostRecent(Publisher<? extends T> source, T initialValue) {
+    public BlockingFlowableMostRecent(Flowable<? extends T> source, T initialValue) {
         this.source = source;
         this.initialValue = initialValue;
     }

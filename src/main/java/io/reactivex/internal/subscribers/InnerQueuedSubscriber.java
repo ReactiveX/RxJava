@@ -15,8 +15,9 @@ package io.reactivex.internal.subscribers;
 
 import java.util.concurrent.atomic.AtomicReference;
 
-import org.reactivestreams.*;
+import org.reactivestreams.Subscription;
 
+import io.reactivex.FlowableSubscriber;
 import io.reactivex.internal.fuseable.*;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.internal.util.QueueDrainHelper;
@@ -29,7 +30,7 @@ import io.reactivex.internal.util.QueueDrainHelper;
  */
 public final class InnerQueuedSubscriber<T>
 extends AtomicReference<Subscription>
-implements Subscriber<T>, Subscription {
+implements FlowableSubscriber<T>, Subscription {
 
 
     private static final long serialVersionUID = 22876611072430776L;

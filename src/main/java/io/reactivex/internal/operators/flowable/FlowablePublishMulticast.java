@@ -20,7 +20,7 @@ import java.util.concurrent.atomic.*;
 
 import org.reactivestreams.*;
 
-import io.reactivex.Flowable;
+import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.*;
 import io.reactivex.functions.Function;
@@ -44,7 +44,7 @@ public final class FlowablePublishMulticast<T, R> extends AbstractFlowableWithUp
 
     final boolean delayError;
 
-    public FlowablePublishMulticast(Publisher<T> source,
+    public FlowablePublishMulticast(Flowable<T> source,
             Function<? super Flowable<T>, ? extends Publisher<? extends R>> selector, int prefetch,
             boolean delayError) {
         super(source);
@@ -74,7 +74,7 @@ public final class FlowablePublishMulticast<T, R> extends AbstractFlowableWithUp
         source.subscribe(mp);
     }
 
-    static final class OutputCanceller<R> implements Subscriber<R>, Subscription {
+    static final class OutputCanceller<R> implements FlowableSubscriber<R>, Subscription {
         final Subscriber<? super R> actual;
 
         final MulticastProcessor<?> processor;
@@ -124,7 +124,7 @@ public final class FlowablePublishMulticast<T, R> extends AbstractFlowableWithUp
         }
     }
 
-    static final class MulticastProcessor<T> extends Flowable<T> implements Subscriber<T>, Disposable {
+    static final class MulticastProcessor<T> extends Flowable<T> implements FlowableSubscriber<T>, Disposable {
 
         @SuppressWarnings("rawtypes")
         static final MulticastSubscription[] EMPTY = new MulticastSubscription[0];

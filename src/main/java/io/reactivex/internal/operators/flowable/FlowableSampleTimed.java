@@ -18,7 +18,7 @@ import java.util.concurrent.atomic.*;
 
 import org.reactivestreams.*;
 
-import io.reactivex.Scheduler;
+import io.reactivex.*;
 import io.reactivex.exceptions.MissingBackpressureException;
 import io.reactivex.internal.disposables.*;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
@@ -32,7 +32,7 @@ public final class FlowableSampleTimed<T> extends AbstractFlowableWithUpstream<T
 
     final boolean emitLast;
 
-    public FlowableSampleTimed(Publisher<T> source, long period, TimeUnit unit, Scheduler scheduler, boolean emitLast) {
+    public FlowableSampleTimed(Flowable<T> source, long period, TimeUnit unit, Scheduler scheduler, boolean emitLast) {
         super(source);
         this.period = period;
         this.unit = unit;
@@ -50,7 +50,7 @@ public final class FlowableSampleTimed<T> extends AbstractFlowableWithUpstream<T
         }
     }
 
-    abstract static class SampleTimedSubscriber<T> extends AtomicReference<T> implements Subscriber<T>, Subscription, Runnable {
+    abstract static class SampleTimedSubscriber<T> extends AtomicReference<T> implements FlowableSubscriber<T>, Subscription, Runnable {
 
         private static final long serialVersionUID = -3517602651313910099L;
 

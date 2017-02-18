@@ -31,14 +31,14 @@ abstract class AbstractFlowableWithUpstream<T, R> extends Flowable<R> implements
     /**
      * The upstream source Publisher.
      */
-    protected final Publisher<T> source;
+    protected final Flowable<T> source;
 
     /**
      * Constructs a FlowableSource wrapping the given non-null (verified)
      * source Publisher.
      * @param source the source (upstream) Publisher instance, not null (verified)
      */
-    AbstractFlowableWithUpstream(Publisher<T> source) {
+    AbstractFlowableWithUpstream(Flowable<T> source) {
         this.source = ObjectHelper.requireNonNull(source, "source is null");
     }
 

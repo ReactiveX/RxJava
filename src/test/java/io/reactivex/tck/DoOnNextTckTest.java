@@ -24,8 +24,8 @@ public class DoOnNextTckTest extends BaseTck<Integer> {
 
     @Override
     public Publisher<Integer> createPublisher(long elements) {
-        return FlowableTck.wrap(
+        return
                 Flowable.range(0, (int)elements).doOnNext(Functions.emptyConsumer())
-        );
+        ;
     }
 }

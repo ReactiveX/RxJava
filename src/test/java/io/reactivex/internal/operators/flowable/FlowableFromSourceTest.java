@@ -620,7 +620,7 @@ public class FlowableFromSourceTest {
         ts1.assertNotComplete();
     }
 
-    static final class PublishAsyncEmitter implements FlowableOnSubscribe<Integer>, Subscriber<Integer> {
+    static final class PublishAsyncEmitter implements FlowableOnSubscribe<Integer>, FlowableSubscriber<Integer> {
 
         final PublishProcessor<Integer> subject;
 
@@ -689,7 +689,7 @@ public class FlowableFromSourceTest {
         }
     }
 
-    static final class PublishAsyncEmitterNoCancel implements FlowableOnSubscribe<Integer>, Subscriber<Integer> {
+    static final class PublishAsyncEmitterNoCancel implements FlowableOnSubscribe<Integer>, FlowableSubscriber<Integer> {
 
         final PublishProcessor<Integer> subject;
 
@@ -700,7 +700,7 @@ public class FlowableFromSourceTest {
         @Override
         public void subscribe(final FlowableEmitter<Integer> t) {
 
-            subject.subscribe(new Subscriber<Integer>() {
+            subject.subscribe(new FlowableSubscriber<Integer>() {
 
                 @Override
                 public void onSubscribe(Subscription s) {

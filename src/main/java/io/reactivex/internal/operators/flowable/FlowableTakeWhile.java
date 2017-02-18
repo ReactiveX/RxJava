@@ -13,16 +13,17 @@
 
 package io.reactivex.internal.operators.flowable;
 
-import io.reactivex.plugins.RxJavaPlugins;
 import org.reactivestreams.*;
 
+import io.reactivex.*;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.Predicate;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
+import io.reactivex.plugins.RxJavaPlugins;
 
 public final class FlowableTakeWhile<T> extends AbstractFlowableWithUpstream<T, T> {
     final Predicate<? super T> predicate;
-    public FlowableTakeWhile(Publisher<T> source, Predicate<? super T> predicate) {
+    public FlowableTakeWhile(Flowable<T> source, Predicate<? super T> predicate) {
         super(source);
         this.predicate = predicate;
     }
@@ -32,7 +33,7 @@ public final class FlowableTakeWhile<T> extends AbstractFlowableWithUpstream<T, 
         source.subscribe(new TakeWhileSubscriber<T>(s, predicate));
     }
 
-    static final class TakeWhileSubscriber<T> implements Subscriber<T>, Subscription {
+    static final class TakeWhileSubscriber<T> implements FlowableSubscriber<T>, Subscription {
         final Subscriber<? super T> actual;
         final Predicate<? super T> predicate;
 

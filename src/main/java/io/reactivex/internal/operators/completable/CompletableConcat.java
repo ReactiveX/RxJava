@@ -42,7 +42,7 @@ public final class CompletableConcat extends Completable {
 
     static final class CompletableConcatSubscriber
     extends AtomicInteger
-    implements Subscriber<CompletableSource>, Disposable {
+    implements FlowableSubscriber<CompletableSource>, Disposable {
         private static final long serialVersionUID = 9032184911934499404L;
 
         final CompletableObserver actual;

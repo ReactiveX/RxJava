@@ -25,9 +25,9 @@ public class IntervalRangeTckTest extends BaseTck<Long> {
 
     @Override
     public Publisher<Long> createPublisher(long elements) {
-        return FlowableTck.wrap(
+        return
             Flowable.intervalRange(0, elements, 0, 1, TimeUnit.MILLISECONDS)
             .onBackpressureBuffer()
-        );
+        ;
     }
 }

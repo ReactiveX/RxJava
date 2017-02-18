@@ -13,7 +13,7 @@
 
 package io.reactivex.internal.fuseable;
 
-import org.reactivestreams.Subscriber;
+import io.reactivex.FlowableSubscriber;
 
 /**
  * A Subscriber with an additional onNextIf(T) method that
@@ -25,7 +25,7 @@ import org.reactivestreams.Subscriber;
  *
  * @param <T> the value type
  */
-public interface ConditionalSubscriber<T> extends Subscriber<T> {
+public interface ConditionalSubscriber<T> extends FlowableSubscriber<T> {
     /**
      * Conditionally takes the value.
      * @param t the value to deliver

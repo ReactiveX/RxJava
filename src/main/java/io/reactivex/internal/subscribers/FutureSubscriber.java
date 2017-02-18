@@ -17,8 +17,9 @@ import java.util.NoSuchElementException;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicReference;
 
-import org.reactivestreams.*;
+import org.reactivestreams.Subscription;
 
+import io.reactivex.FlowableSubscriber;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.internal.util.BlockingHelper;
 import io.reactivex.plugins.RxJavaPlugins;
@@ -30,7 +31,7 @@ import io.reactivex.plugins.RxJavaPlugins;
  * @param <T> the value type
  */
 public final class FutureSubscriber<T> extends CountDownLatch
-implements Subscriber<T>, Future<T>, Subscription {
+implements FlowableSubscriber<T>, Future<T>, Subscription {
 
     T value;
     Throwable error;

@@ -13,9 +13,9 @@
 
 package io.reactivex.internal.operators.flowable;
 
-import org.reactivestreams.Subscriber;
-
 import java.util.concurrent.atomic.AtomicInteger;
+
+import org.reactivestreams.Subscriber;
 
 import io.reactivex.Flowable;
 import io.reactivex.disposables.Disposable;

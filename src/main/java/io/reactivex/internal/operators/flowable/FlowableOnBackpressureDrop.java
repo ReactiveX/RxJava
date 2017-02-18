@@ -13,26 +13,27 @@
 
 package io.reactivex.internal.operators.flowable;
 
-import io.reactivex.plugins.RxJavaPlugins;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.reactivestreams.*;
 
+import io.reactivex.*;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.Consumer;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.internal.util.BackpressureHelper;
+import io.reactivex.plugins.RxJavaPlugins;
 
 public final class FlowableOnBackpressureDrop<T> extends AbstractFlowableWithUpstream<T, T> implements Consumer<T> {
 
     final Consumer<? super T> onDrop;
 
-    public FlowableOnBackpressureDrop(Publisher<T> source) {
+    public FlowableOnBackpressureDrop(Flowable<T> source) {
         super(source);
         this.onDrop = this;
     }
 
-    public FlowableOnBackpressureDrop(Publisher<T> source, Consumer<? super T> onDrop) {
+    public FlowableOnBackpressureDrop(Flowable<T> source, Consumer<? super T> onDrop) {
         super(source);
         this.onDrop = onDrop;
     }
@@ -48,7 +49,7 @@ public final class FlowableOnBackpressureDrop<T> extends AbstractFlowableWithUps
     }
 
     static final class BackpressureDropSubscriber<T>
-    extends AtomicLong implements Subscriber<T>, Subscription {
+    extends AtomicLong implements FlowableSubscriber<T>, Subscription {
 
         private static final long serialVersionUID = -6246093802440953054L;
 

@@ -12,14 +12,15 @@
  */
 package io.reactivex.internal.operators.flowable;
 
-import io.reactivex.internal.functions.ObjectHelper;
 import java.util.concurrent.Callable;
-import java.util.concurrent.atomic.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.reactivestreams.*;
 
+import io.reactivex.*;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.Function;
+import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.internal.fuseable.*;
 import io.reactivex.internal.queue.SpscArrayQueue;
 import io.reactivex.internal.subscriptions.*;
@@ -34,7 +35,7 @@ public final class FlowableConcatMap<T, R> extends AbstractFlowableWithUpstream<
 
     final ErrorMode errorMode;
 
-    public FlowableConcatMap(Publisher<T> source,
+    public FlowableConcatMap(Flowable<T> source,
             Function<? super T, ? extends Publisher<? extends R>> mapper,
             int prefetch, ErrorMode errorMode) {
         super(source);
@@ -67,7 +68,7 @@ public final class FlowableConcatMap<T, R> extends AbstractFlowableWithUpstream<
 
     abstract static class BaseConcatMapSubscriber<T, R>
     extends AtomicInteger
-    implements Subscriber<T>, ConcatMapSupport<R>, Subscription {
+    implements FlowableSubscriber<T>, ConcatMapSupport<R>, Subscription {
 
         private static final long serialVersionUID = -3511336836796789179L;
 
@@ -567,7 +568,7 @@ public final class FlowableConcatMap<T, R> extends AbstractFlowableWithUpstream<
 
     static final class ConcatMapInner<R>
     extends SubscriptionArbiter
-    implements Subscriber<R> {
+    implements FlowableSubscriber<R> {
 
 
         private static final long serialVersionUID = 897683679971470653L;

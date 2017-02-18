@@ -18,6 +18,7 @@ import java.util.concurrent.atomic.*;
 
 import org.reactivestreams.*;
 
+import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.*;
 import io.reactivex.functions.Function;
@@ -34,7 +35,7 @@ public final class FlowableFlatMap<T, U> extends AbstractFlowableWithUpstream<T,
     final int maxConcurrency;
     final int bufferSize;
 
-    public FlowableFlatMap(Publisher<T> source,
+    public FlowableFlatMap(Flowable<T> source,
             Function<? super T, ? extends Publisher<? extends U>> mapper,
             boolean delayErrors, int maxConcurrency, int bufferSize) {
         super(source);
@@ -52,13 +53,13 @@ public final class FlowableFlatMap<T, U> extends AbstractFlowableWithUpstream<T,
         source.subscribe(subscribe(s, mapper, delayErrors, maxConcurrency, bufferSize));
     }
 
-    public static <T, U> Subscriber<T> subscribe(Subscriber<? super U> s,
+    public static <T, U> FlowableSubscriber<T> subscribe(Subscriber<? super U> s,
             Function<? super T, ? extends Publisher<? extends U>> mapper,
             boolean delayErrors, int maxConcurrency, int bufferSize) {
         return new MergeSubscriber<T, U>(s, mapper, delayErrors, maxConcurrency, bufferSize);
     }
 
-    static final class MergeSubscriber<T, U> extends AtomicInteger implements Subscription, Subscriber<T> {
+    static final class MergeSubscriber<T, U> extends AtomicInteger implements FlowableSubscriber<T>, Subscription {
 
         private static final long serialVersionUID = -2117620485640801370L;
 
@@ -581,7 +582,7 @@ public final class FlowableFlatMap<T, U> extends AbstractFlowableWithUpstream<T,
     }
 
     static final class InnerSubscriber<T, U> extends AtomicReference<Subscription>
-    implements Subscriber<U>, Disposable {
+    implements FlowableSubscriber<U>, Disposable {
 
         private static final long serialVersionUID = -4606175640614850599L;
         final long id;

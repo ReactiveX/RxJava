@@ -17,11 +17,12 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.reactivestreams.*;
 
+import io.reactivex.*;
 import io.reactivex.internal.subscriptions.*;
 
 public final class FlowableTake<T> extends AbstractFlowableWithUpstream<T, T> {
     final long limit;
-    public FlowableTake(Publisher<T> source, long limit) {
+    public FlowableTake(Flowable<T> source, long limit) {
         super(source);
         this.limit = limit;
     }
@@ -31,7 +32,7 @@ public final class FlowableTake<T> extends AbstractFlowableWithUpstream<T, T> {
         source.subscribe(new TakeSubscriber<T>(s, limit));
     }
 
-    static final class TakeSubscriber<T> extends AtomicBoolean implements Subscriber<T>, Subscription {
+    static final class TakeSubscriber<T> extends AtomicBoolean implements FlowableSubscriber<T>, Subscription {
 
         private static final long serialVersionUID = -5636543848937116287L;
         boolean done;

@@ -34,7 +34,7 @@ public final class FlowableWindowBoundary<T, B> extends AbstractFlowableWithUpst
     final Publisher<B> other;
     final int bufferSize;
 
-    public FlowableWindowBoundary(Publisher<T> source, Publisher<B> other, int bufferSize) {
+    public FlowableWindowBoundary(Flowable<T> source, Publisher<B> other, int bufferSize) {
         super(source);
         this.other = other;
         this.bufferSize = bufferSize;

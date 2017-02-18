@@ -14,6 +14,7 @@
 package io.reactivex.internal.operators.flowable;
 
 import java.util.NoSuchElementException;
+
 import org.reactivestreams.*;
 
 import io.reactivex.*;
@@ -44,7 +45,7 @@ public final class FlowableLastSingle<T> extends Single<T> {
         source.subscribe(new LastSubscriber<T>(observer, defaultItem));
     }
 
-    static final class LastSubscriber<T> implements Subscriber<T>, Disposable {
+    static final class LastSubscriber<T> implements FlowableSubscriber<T>, Disposable {
 
         final SingleObserver<? super T> actual;
 

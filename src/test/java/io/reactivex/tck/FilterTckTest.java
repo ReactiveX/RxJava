@@ -24,13 +24,13 @@ public class FilterTckTest extends BaseTck<Integer> {
 
     @Override
     public Publisher<Integer> createPublisher(long elements) {
-        return FlowableTck.wrap(
+        return
                 Flowable.range(0, (int)elements * 2).filter(new Predicate<Integer>() {
                     @Override
                     public boolean test(Integer v) throws Exception {
                         return (v & 1) == 0;
                     }
                 })
-        );
+        ;
     }
 }

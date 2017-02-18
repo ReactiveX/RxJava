@@ -12,12 +12,10 @@
  */
 package io.reactivex.internal.operators.flowable;
 
-import io.reactivex.Flowable;
-import io.reactivex.Observable;
-import io.reactivex.Observer;
+import org.reactivestreams.*;
+
+import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
-import org.reactivestreams.Subscriber;
-import org.reactivestreams.Subscription;
 
 public final class FlowableFromObservable<T> extends Flowable<T> {
     private final Observable<T> upstream;

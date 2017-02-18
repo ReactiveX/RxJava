@@ -13,8 +13,9 @@
 
 package io.reactivex.internal.subscribers;
 
-import org.reactivestreams.*;
+import org.reactivestreams.Subscription;
 
+import io.reactivex.FlowableSubscriber;
 import io.reactivex.internal.subscriptions.*;
 
 /**
@@ -22,7 +23,7 @@ import io.reactivex.internal.subscriptions.*;
  *
  * @param <T> the value type
  */
-public final class FullArbiterSubscriber<T> implements Subscriber<T> {
+public final class FullArbiterSubscriber<T> implements FlowableSubscriber<T> {
     final FullArbiter<T> arbiter;
 
     Subscription s;

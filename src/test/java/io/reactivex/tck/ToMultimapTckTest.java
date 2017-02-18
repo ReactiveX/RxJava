@@ -26,9 +26,9 @@ public class ToMultimapTckTest extends BaseTck<Map<Integer, Collection<Integer>>
 
     @Override
     public Publisher<Map<Integer, Collection<Integer>>> createPublisher(final long elements) {
-        return FlowableTck.wrap(
+        return
                 Flowable.range(1, 1000).toMultimap(Functions.<Integer>identity()).toFlowable()
-            );
+            ;
     }
 
     @Override

@@ -17,7 +17,7 @@ import java.util.concurrent.atomic.*;
 
 import org.reactivestreams.*;
 
-import io.reactivex.Flowable;
+import io.reactivex.*;
 import io.reactivex.exceptions.MissingBackpressureException;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.internal.util.BackpressureHelper;
@@ -45,7 +45,7 @@ public final class FlowableSamplePublisher<T> extends Flowable<T> {
         }
     }
 
-    abstract static class SamplePublisherSubscriber<T> extends AtomicReference<T> implements Subscriber<T>, Subscription {
+    abstract static class SamplePublisherSubscriber<T> extends AtomicReference<T> implements FlowableSubscriber<T>, Subscription {
 
         private static final long serialVersionUID = -3517602651313910099L;
 
@@ -141,7 +141,7 @@ public final class FlowableSamplePublisher<T> extends Flowable<T> {
         abstract void run();
     }
 
-    static final class SamplerSubscriber<T> implements Subscriber<Object> {
+    static final class SamplerSubscriber<T> implements FlowableSubscriber<Object> {
         final SamplePublisherSubscriber<T> parent;
         SamplerSubscriber(SamplePublisherSubscriber<T> parent) {
             this.parent = parent;

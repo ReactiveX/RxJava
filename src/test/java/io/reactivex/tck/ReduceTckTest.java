@@ -24,14 +24,14 @@ public class ReduceTckTest extends BaseTck<Integer> {
 
     @Override
     public Publisher<Integer> createPublisher(final long elements) {
-        return FlowableTck.wrap(
+        return
                 Flowable.range(1, 1000).reduce(new BiFunction<Integer, Integer, Integer>() {
                     @Override
                     public Integer apply(Integer a, Integer b) throws Exception {
                         return a + b;
                     }
                 }).toFlowable()
-            );
+            ;
     }
 
     @Override

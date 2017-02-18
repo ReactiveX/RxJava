@@ -25,7 +25,7 @@ public class DeferTckTest extends BaseTck<Long> {
 
     @Override
     public Publisher<Long> createPublisher(final long elements) {
-        return FlowableTck.wrap(
+        return
                 Flowable.defer(new Callable<Publisher<Long>>() {
                     @Override
                     public Publisher<Long> call() throws Exception {
@@ -33,6 +33,6 @@ public class DeferTckTest extends BaseTck<Long> {
                     }
                 }
                 )
-            );
+            ;
     }
 }

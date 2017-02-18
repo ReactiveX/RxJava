@@ -30,7 +30,7 @@ public final class FlowableSkipLastTimed<T> extends AbstractFlowableWithUpstream
     final int bufferSize;
     final boolean delayError;
 
-    public FlowableSkipLastTimed(Publisher<T> source, long time, TimeUnit unit, Scheduler scheduler, int bufferSize, boolean delayError) {
+    public FlowableSkipLastTimed(Flowable<T> source, long time, TimeUnit unit, Scheduler scheduler, int bufferSize, boolean delayError) {
         super(source);
         this.time = time;
         this.unit = unit;
@@ -44,7 +44,7 @@ public final class FlowableSkipLastTimed<T> extends AbstractFlowableWithUpstream
         source.subscribe(new SkipLastTimedSubscriber<T>(s, time, unit, scheduler, bufferSize, delayError));
     }
 
-    static final class SkipLastTimedSubscriber<T> extends AtomicInteger implements Subscriber<T>, Subscription {
+    static final class SkipLastTimedSubscriber<T> extends AtomicInteger implements FlowableSubscriber<T>, Subscription {
 
         private static final long serialVersionUID = -5677354903406201275L;
         final Subscriber<? super T> actual;

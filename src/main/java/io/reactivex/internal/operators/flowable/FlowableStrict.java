@@ -17,6 +17,7 @@ import java.util.concurrent.atomic.*;
 
 import org.reactivestreams.*;
 
+import io.reactivex.*;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.internal.util.*;
 
@@ -35,7 +36,7 @@ import io.reactivex.internal.util.*;
  */
 public final class FlowableStrict<T> extends AbstractFlowableWithUpstream<T, T> {
 
-    public FlowableStrict(Publisher<T> source) {
+    public FlowableStrict(Flowable<T> source) {
         super(source);
     }
 
@@ -44,9 +45,9 @@ public final class FlowableStrict<T> extends AbstractFlowableWithUpstream<T, T> 
         source.subscribe(new StrictSubscriber<T>(s));
     }
 
-    static final class StrictSubscriber<T>
+    public static final class StrictSubscriber<T>
     extends AtomicInteger
-    implements Subscriber<T>, Subscription {
+    implements FlowableSubscriber<T>, Subscription {
 
         private static final long serialVersionUID = -4945028590049415624L;
 
@@ -62,7 +63,7 @@ public final class FlowableStrict<T> extends AbstractFlowableWithUpstream<T, T> 
 
         volatile boolean done;
 
-        StrictSubscriber(Subscriber<? super T> actual) {
+        public StrictSubscriber(Subscriber<? super T> actual) {
             this.actual = actual;
             this.error = new AtomicThrowable();
             this.requested = new AtomicLong();

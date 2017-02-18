@@ -14,14 +14,14 @@
 package io.reactivex;
 
 import org.openjdk.jmh.infra.Blackhole;
-import org.reactivestreams.*;
+import org.reactivestreams.Subscription;
 
 import io.reactivex.disposables.Disposable;
 
 /**
  * A multi-type synchronous consumer.
  */
-public final class PerfConsumer implements Subscriber<Object>, Observer<Object>,
+public final class PerfConsumer implements FlowableSubscriber<Object>, Observer<Object>,
 SingleObserver<Object>, CompletableObserver, MaybeObserver<Object> {
 
     final Blackhole bh;

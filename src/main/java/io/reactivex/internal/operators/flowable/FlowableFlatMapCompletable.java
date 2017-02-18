@@ -15,10 +15,10 @@ package io.reactivex.internal.operators.flowable;
 
 import java.util.concurrent.atomic.AtomicReference;
 
-import io.reactivex.annotations.Nullable;
 import org.reactivestreams.*;
 
 import io.reactivex.*;
+import io.reactivex.annotations.Nullable;
 import io.reactivex.disposables.*;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.Function;
@@ -40,7 +40,7 @@ public final class FlowableFlatMapCompletable<T> extends AbstractFlowableWithUps
 
     final boolean delayErrors;
 
-    public FlowableFlatMapCompletable(Publisher<T> source,
+    public FlowableFlatMapCompletable(Flowable<T> source,
             Function<? super T, ? extends CompletableSource> mapper, boolean delayErrors,
             int maxConcurrency) {
         super(source);
@@ -55,7 +55,7 @@ public final class FlowableFlatMapCompletable<T> extends AbstractFlowableWithUps
     }
 
     static final class FlatMapCompletableMainSubscriber<T> extends BasicIntQueueSubscription<T>
-    implements Subscriber<T> {
+    implements FlowableSubscriber<T> {
         private static final long serialVersionUID = 8443155186132538303L;
 
         final Subscriber<? super T> actual;

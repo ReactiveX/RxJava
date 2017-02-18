@@ -76,11 +76,11 @@ public class FlowableConversionTest {
         }
 
         public final CylonDetectorObservable<T> beep(Predicate<? super T> predicate) {
-            return new CylonDetectorObservable<T>(new FlowableFilter<T>(onSubscribe, predicate));
+            return new CylonDetectorObservable<T>(new FlowableFilter<T>(Flowable.fromPublisher(onSubscribe), predicate));
         }
 
         public final <R> CylonDetectorObservable<R> boop(Function<? super T, ? extends R> func) {
-            return new CylonDetectorObservable<R>(new FlowableMap<T, R>(onSubscribe, func));
+            return new CylonDetectorObservable<R>(new FlowableMap<T, R>(Flowable.fromPublisher(onSubscribe), func));
         }
 
         public CylonDetectorObservable<String> DESTROY() {

@@ -14,11 +14,12 @@ package io.reactivex.internal.operators.flowable;
 
 import org.reactivestreams.*;
 
+import io.reactivex.*;
 import io.reactivex.internal.subscriptions.*;
 
 public final class FlowableTakeLastOne<T> extends AbstractFlowableWithUpstream<T, T> {
 
-    public FlowableTakeLastOne(Publisher<T> source) {
+    public FlowableTakeLastOne(Flowable<T> source) {
         super(source);
     }
 
@@ -28,7 +29,7 @@ public final class FlowableTakeLastOne<T> extends AbstractFlowableWithUpstream<T
     }
 
     static final class TakeLastOneSubscriber<T> extends DeferredScalarSubscription<T>
-    implements Subscriber<T> {
+    implements FlowableSubscriber<T> {
 
         private static final long serialVersionUID = -5467847744262967226L;
 

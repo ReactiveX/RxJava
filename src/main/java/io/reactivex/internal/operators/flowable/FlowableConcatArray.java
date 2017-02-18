@@ -17,7 +17,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.reactivestreams.*;
 
-import io.reactivex.Flowable;
+import io.reactivex.*;
 import io.reactivex.exceptions.CompositeException;
 import io.reactivex.internal.subscriptions.SubscriptionArbiter;
 
@@ -40,7 +40,7 @@ public final class FlowableConcatArray<T> extends Flowable<T> {
         parent.onComplete();
     }
 
-    static final class ConcatArraySubscriber<T> extends SubscriptionArbiter implements Subscriber<T> {
+    static final class ConcatArraySubscriber<T> extends SubscriptionArbiter implements FlowableSubscriber<T> {
 
         private static final long serialVersionUID = -8158322871608889516L;
 

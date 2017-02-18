@@ -17,7 +17,7 @@ import java.util.concurrent.atomic.*;
 
 import org.reactivestreams.*;
 
-import io.reactivex.Scheduler;
+import io.reactivex.*;
 import io.reactivex.Scheduler.Worker;
 import io.reactivex.exceptions.MissingBackpressureException;
 import io.reactivex.internal.fuseable.ConditionalSubscriber;
@@ -82,7 +82,7 @@ public final class ParallelRunOn<T> extends ParallelFlowable<T> {
     }
 
     abstract static class BaseRunOnSubscriber<T> extends AtomicInteger
-    implements  Subscriber<T>, Subscription, Runnable {
+    implements FlowableSubscriber<T>, Subscription, Runnable {
 
         private static final long serialVersionUID = 9222303586456402150L;
 

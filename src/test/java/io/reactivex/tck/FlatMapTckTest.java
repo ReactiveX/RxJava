@@ -24,7 +24,7 @@ public class FlatMapTckTest extends BaseTck<Integer> {
 
     @Override
     public Publisher<Integer> createPublisher(long elements) {
-        return FlowableTck.wrap(
+        return
                 Flowable.range(0, (int)elements)
                 .flatMap(new Function<Integer, Publisher<Integer>>() {
                     @Override
@@ -32,6 +32,6 @@ public class FlatMapTckTest extends BaseTck<Integer> {
                         return Flowable.just(v);
                     }
                 })
-            );
+            ;
     }
 }

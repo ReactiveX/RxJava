@@ -17,12 +17,13 @@ import java.util.concurrent.atomic.*;
 
 import org.reactivestreams.*;
 
+import io.reactivex.*;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.internal.util.BackpressureHelper;
 
 public final class FlowableOnBackpressureLatest<T> extends AbstractFlowableWithUpstream<T, T> {
 
-    public FlowableOnBackpressureLatest(Publisher<T> source) {
+    public FlowableOnBackpressureLatest(Flowable<T> source) {
         super(source);
     }
 
@@ -31,7 +32,7 @@ public final class FlowableOnBackpressureLatest<T> extends AbstractFlowableWithU
         source.subscribe(new BackpressureLatestSubscriber<T>(s));
     }
 
-    static final class BackpressureLatestSubscriber<T> extends AtomicInteger implements Subscriber<T>, Subscription {
+    static final class BackpressureLatestSubscriber<T> extends AtomicInteger implements FlowableSubscriber<T>, Subscription {
 
         private static final long serialVersionUID = 163080509307634843L;
 

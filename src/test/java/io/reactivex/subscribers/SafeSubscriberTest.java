@@ -720,7 +720,7 @@ public class SafeSubscriberTest {
         ts.assertResult(1);
     }
 
-    static final class CrashDummy implements Subscriber<Object>, Subscription {
+    static final class CrashDummy implements FlowableSubscriber<Object>, Subscription {
         final boolean crashOnSubscribe;
 
         int crashOnNext;

@@ -35,7 +35,7 @@ public final class SingleFromPublisher<T> extends Single<T> {
         publisher.subscribe(new ToSingleObserver<T>(s));
     }
 
-    static final class ToSingleObserver<T> implements Subscriber<T>, Disposable {
+    static final class ToSingleObserver<T> implements FlowableSubscriber<T>, Disposable {
         final SingleObserver<? super T> actual;
 
         Subscription s;

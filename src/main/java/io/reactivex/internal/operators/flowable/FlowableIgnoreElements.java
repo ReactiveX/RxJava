@@ -13,15 +13,16 @@
 
 package io.reactivex.internal.operators.flowable;
 
-import io.reactivex.annotations.Nullable;
 import org.reactivestreams.*;
 
+import io.reactivex.*;
+import io.reactivex.annotations.Nullable;
 import io.reactivex.internal.fuseable.QueueSubscription;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 
 public final class FlowableIgnoreElements<T> extends AbstractFlowableWithUpstream<T, T> {
 
-    public FlowableIgnoreElements(Publisher<T> source) {
+    public FlowableIgnoreElements(Flowable<T> source) {
         super(source);
     }
 
@@ -30,7 +31,7 @@ public final class FlowableIgnoreElements<T> extends AbstractFlowableWithUpstrea
         source.subscribe(new IgnoreElementsSubscriber<T>(t));
     }
 
-    static final class IgnoreElementsSubscriber<T> implements QueueSubscription<T>, Subscriber<T> {
+    static final class IgnoreElementsSubscriber<T> implements FlowableSubscriber<T>, QueueSubscription<T> {
         final Subscriber<? super T> actual;
 
         Subscription s;

@@ -13,14 +13,15 @@
 
 package io.reactivex.internal.operators.flowable;
 
-import io.reactivex.internal.functions.ObjectHelper;
 import java.util.Collection;
 import java.util.concurrent.Callable;
 
 import org.reactivestreams.*;
 
+import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.Exceptions;
+import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.internal.queue.MpscLinkedQueue;
 import io.reactivex.internal.subscribers.QueueDrainSubscriber;
 import io.reactivex.internal.subscriptions.*;
@@ -32,7 +33,7 @@ extends AbstractFlowableWithUpstream<T, U> {
     final Publisher<B> boundary;
     final Callable<U> bufferSupplier;
 
-    public FlowableBufferExactBoundary(Publisher<T> source, Publisher<B> boundary, Callable<U> bufferSupplier) {
+    public FlowableBufferExactBoundary(Flowable<T> source, Publisher<B> boundary, Callable<U> bufferSupplier) {
         super(source);
         this.boundary = boundary;
         this.bufferSupplier = bufferSupplier;
@@ -44,7 +45,7 @@ extends AbstractFlowableWithUpstream<T, U> {
     }
 
     static final class BufferExactBoundarySubscriber<T, U extends Collection<? super T>, B>
-    extends QueueDrainSubscriber<T, U, U> implements Subscriber<T>, Subscription, Disposable {
+    extends QueueDrainSubscriber<T, U, U> implements FlowableSubscriber<T>, Subscription, Disposable {
 
         final Callable<U> bufferSupplier;
         final Publisher<B> boundary;

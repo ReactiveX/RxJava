@@ -808,7 +808,7 @@ public class FlowableTests {
     public void testContainsFlowable() {
         Flowable<Boolean> observable = Flowable.just("a", "b", "c").contains("b").toFlowable();
 
-        Subscriber<Boolean> observer = TestHelper.mockSubscriber();
+        FlowableSubscriber<Boolean> observer = TestHelper.mockSubscriber();
 
         observable.subscribe(observer);
 
@@ -854,7 +854,7 @@ public class FlowableTests {
     public void testContainsWithEmptyObservableFlowable() {
         Flowable<Boolean> observable = Flowable.<String> empty().contains("a").toFlowable();
 
-        Subscriber<Object> observer = TestHelper.mockSubscriber();
+        FlowableSubscriber<Object> observer = TestHelper.mockSubscriber();
 
         observable.subscribe(observer);
 

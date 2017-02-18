@@ -17,7 +17,7 @@ import java.util.concurrent.atomic.*;
 
 import org.reactivestreams.*;
 
-import io.reactivex.Flowable;
+import io.reactivex.*;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.BiFunction;
 import io.reactivex.internal.functions.ObjectHelper;
@@ -161,7 +161,7 @@ public final class ParallelReduceFull<T> extends Flowable<T> {
 
     static final class ParallelReduceFullInnerSubscriber<T>
     extends AtomicReference<Subscription>
-    implements Subscriber<T> {
+    implements FlowableSubscriber<T> {
 
         private static final long serialVersionUID = -7954444275102466525L;
 

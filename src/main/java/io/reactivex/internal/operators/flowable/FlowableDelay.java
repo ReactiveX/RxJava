@@ -28,7 +28,7 @@ public final class FlowableDelay<T> extends AbstractFlowableWithUpstream<T, T> {
     final Scheduler scheduler;
     final boolean delayError;
 
-    public FlowableDelay(Publisher<T> source, long delay, TimeUnit unit, Scheduler scheduler, boolean delayError) {
+    public FlowableDelay(Flowable<T> source, long delay, TimeUnit unit, Scheduler scheduler, boolean delayError) {
         super(source);
         this.delay = delay;
         this.unit = unit;
@@ -50,7 +50,7 @@ public final class FlowableDelay<T> extends AbstractFlowableWithUpstream<T, T> {
         source.subscribe(new DelaySubscriber<T>(s, delay, unit, w, delayError));
     }
 
-    static final class DelaySubscriber<T> implements Subscriber<T>, Subscription {
+    static final class DelaySubscriber<T> implements FlowableSubscriber<T>, Subscription {
         final Subscriber<? super T> actual;
         final long delay;
         final TimeUnit unit;

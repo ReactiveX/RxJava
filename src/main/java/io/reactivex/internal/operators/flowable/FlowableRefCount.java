@@ -18,6 +18,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import org.reactivestreams.*;
 
+import io.reactivex.FlowableSubscriber;
 import io.reactivex.disposables.*;
 import io.reactivex.flowables.ConnectableFlowable;
 import io.reactivex.functions.Consumer;
@@ -42,7 +43,7 @@ public final class FlowableRefCount<T> extends AbstractFlowableWithUpstream<T, T
 
     final class ConnectionSubscriber
     extends AtomicReference<Subscription>
-    implements Subscriber<T>, Subscription {
+    implements FlowableSubscriber<T>, Subscription {
 
         private static final long serialVersionUID = 152064694420235350L;
         final Subscriber<? super T> subscriber;

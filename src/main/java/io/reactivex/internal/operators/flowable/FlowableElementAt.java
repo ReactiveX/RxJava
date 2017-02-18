@@ -17,6 +17,7 @@ import java.util.NoSuchElementException;
 
 import org.reactivestreams.*;
 
+import io.reactivex.*;
 import io.reactivex.internal.subscriptions.*;
 import io.reactivex.plugins.RxJavaPlugins;
 
@@ -25,7 +26,7 @@ public final class FlowableElementAt<T> extends AbstractFlowableWithUpstream<T, 
     final T defaultValue;
     final boolean errorOnFewer;
 
-    public FlowableElementAt(Publisher<T> source, long index, T defaultValue, boolean errorOnFewer) {
+    public FlowableElementAt(Flowable<T> source, long index, T defaultValue, boolean errorOnFewer) {
         super(source);
         this.index = index;
         this.defaultValue = defaultValue;
@@ -37,7 +38,7 @@ public final class FlowableElementAt<T> extends AbstractFlowableWithUpstream<T, 
         source.subscribe(new ElementAtSubscriber<T>(s, index, defaultValue, errorOnFewer));
     }
 
-    static final class ElementAtSubscriber<T> extends DeferredScalarSubscription<T> implements Subscriber<T> {
+    static final class ElementAtSubscriber<T> extends DeferredScalarSubscription<T> implements FlowableSubscriber<T> {
 
         private static final long serialVersionUID = 4066607327284737757L;
 

@@ -26,7 +26,7 @@ public class GroupByTckTest extends BaseTck<Integer> {
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @Override
     public Publisher<Integer> createPublisher(long elements) {
-        return FlowableTck.wrap(
+        return
                 Flowable.range(0, (int)elements).groupBy(new Function<Integer, Integer>() {
                     @Override
                     public Integer apply(Integer v) throws Exception {
@@ -34,6 +34,6 @@ public class GroupByTckTest extends BaseTck<Integer> {
                     }
                 })
                 .flatMap((Function)Functions.identity())
-        );
+        ;
     }
 }

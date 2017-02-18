@@ -18,7 +18,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.reactivestreams.*;
 
-import io.reactivex.Flowable;
+import io.reactivex.*;
 import io.reactivex.exceptions.*;
 import io.reactivex.functions.*;
 import io.reactivex.internal.subscriptions.*;
@@ -73,7 +73,7 @@ public final class FlowableUsing<T, D> extends Flowable<T> {
         source.subscribe(us);
     }
 
-    static final class UsingSubscriber<T, D> extends AtomicBoolean implements Subscriber<T>, Subscription {
+    static final class UsingSubscriber<T, D> extends AtomicBoolean implements FlowableSubscriber<T>, Subscription {
 
         private static final long serialVersionUID = 5904473792286235046L;
 

@@ -1539,7 +1539,7 @@ public class TestSubscriberTest {
 
     @Test
     public void completeDelegateThrows() {
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>(new Subscriber<Integer>() {
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>(new FlowableSubscriber<Integer>() {
 
             @Override
             public void onSubscribe(Subscription d) {
@@ -1575,7 +1575,7 @@ public class TestSubscriberTest {
 
     @Test
     public void errorDelegateThrows() {
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>(new Subscriber<Integer>() {
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>(new FlowableSubscriber<Integer>() {
 
             @Override
             public void onSubscribe(Subscription d) {

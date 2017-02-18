@@ -27,7 +27,7 @@ public class CombineLatestIterableDelayErrorTckTest extends BaseTck<Long> {
     @SuppressWarnings("unchecked")
     @Override
     public Publisher<Long> createPublisher(long elements) {
-        return FlowableTck.wrap(
+        return
             Flowable.combineLatestDelayError(Arrays.asList(
                     Flowable.just(1L),
                     Flowable.fromIterable(iterate(elements))
@@ -39,6 +39,6 @@ public class CombineLatestIterableDelayErrorTckTest extends BaseTck<Long> {
                     }
                 }
             )
-        );
+        ;
     }
 }

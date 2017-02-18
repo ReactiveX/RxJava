@@ -23,8 +23,8 @@ public class SwitchIfEmptyTckTest extends BaseTck<Integer> {
 
     @Override
     public Publisher<Integer> createPublisher(long elements) {
-        return FlowableTck.wrap(
+        return
                 Flowable.<Integer>empty().switchIfEmpty(Flowable.range(1, (int)elements))
-            );
+            ;
     }
 }

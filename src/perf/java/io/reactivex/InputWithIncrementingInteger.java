@@ -82,7 +82,7 @@ public abstract class InputWithIncrementingInteger {
         return new PerfSubscriber(bh);
     }
 
-    public Subscriber<Integer> newSubscriber() {
+    public FlowableSubscriber<Integer> newSubscriber() {
         return new DefaultSubscriber<Integer>() {
 
             @Override

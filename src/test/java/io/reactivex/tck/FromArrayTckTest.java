@@ -23,9 +23,9 @@ public class FromArrayTckTest extends BaseTck<Long> {
 
     @Override
     public Publisher<Long> createPublisher(long elements) {
-        return FlowableTck.wrap(
+        return
                 Flowable.fromArray(array(elements))
-        );
+        ;
     }
 
     @Override

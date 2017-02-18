@@ -419,7 +419,7 @@ public class FlowableFlatMapCompletableTest {
             }
         })
         .toFlowable()
-        .subscribe(new Subscriber<Object>() {
+        .subscribe(new FlowableSubscriber<Object>() {
             @Override
             public void onSubscribe(Subscription d) {
                 QueueSubscription<?> qd = (QueueSubscription<?>)d;

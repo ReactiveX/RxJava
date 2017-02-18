@@ -15,8 +15,9 @@ package io.reactivex.internal.subscribers;
 
 import java.util.concurrent.atomic.AtomicReference;
 
-import org.reactivestreams.*;
+import org.reactivestreams.Subscription;
 
+import io.reactivex.FlowableSubscriber;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.*;
 import io.reactivex.functions.*;
@@ -25,7 +26,7 @@ import io.reactivex.plugins.RxJavaPlugins;
 
 public final class ForEachWhileSubscriber<T>
 extends AtomicReference<Subscription>
-implements Subscriber<T>, Disposable {
+implements FlowableSubscriber<T>, Disposable {
 
 
     private static final long serialVersionUID = -4403180040475402120L;

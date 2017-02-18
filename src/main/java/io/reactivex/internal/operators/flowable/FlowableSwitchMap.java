@@ -17,6 +17,7 @@ import java.util.concurrent.atomic.*;
 
 import org.reactivestreams.*;
 
+import io.reactivex.*;
 import io.reactivex.exceptions.*;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.functions.ObjectHelper;
@@ -31,7 +32,7 @@ public final class FlowableSwitchMap<T, R> extends AbstractFlowableWithUpstream<
     final int bufferSize;
     final boolean delayErrors;
 
-    public FlowableSwitchMap(Publisher<T> source,
+    public FlowableSwitchMap(Flowable<T> source,
             Function<? super T, ? extends Publisher<? extends R>> mapper, int bufferSize,
                     boolean delayErrors) {
         super(source);
@@ -48,7 +49,7 @@ public final class FlowableSwitchMap<T, R> extends AbstractFlowableWithUpstream<
         source.subscribe(new SwitchMapSubscriber<T, R>(s, mapper, bufferSize, delayErrors));
     }
 
-    static final class SwitchMapSubscriber<T, R> extends AtomicInteger implements Subscriber<T>, Subscription {
+    static final class SwitchMapSubscriber<T, R> extends AtomicInteger implements FlowableSubscriber<T>, Subscription {
 
         private static final long serialVersionUID = -3491074160481096299L;
         final Subscriber<? super R> actual;
@@ -332,7 +333,7 @@ public final class FlowableSwitchMap<T, R> extends AbstractFlowableWithUpstream<
     }
 
     static final class SwitchMapInnerSubscriber<T, R>
-    extends AtomicReference<Subscription> implements Subscriber<R> {
+    extends AtomicReference<Subscription> implements FlowableSubscriber<R> {
 
         private static final long serialVersionUID = 3837284832786408377L;
         final SwitchMapSubscriber<T, R> parent;

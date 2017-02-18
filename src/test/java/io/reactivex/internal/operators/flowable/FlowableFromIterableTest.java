@@ -569,7 +569,7 @@ public class FlowableFromIterableTest {
     @Test
     public void fusedAPICalls() {
         Flowable.fromIterable(Arrays.asList(1, 2, 3))
-        .subscribe(new Subscriber<Integer>() {
+        .subscribe(new FlowableSubscriber<Integer>() {
 
             @Override
             public void onSubscribe(Subscription s) {
@@ -880,7 +880,7 @@ public class FlowableFromIterableTest {
     @Test
     public void fusionClear() {
         Flowable.fromIterable(Arrays.asList(1, 2, 3))
-        .subscribe(new Subscriber<Integer>() {
+        .subscribe(new FlowableSubscriber<Integer>() {
             @Override
             public void onSubscribe(Subscription d) {
                 @SuppressWarnings("unchecked")

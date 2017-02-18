@@ -15,7 +15,7 @@ package io.reactivex.processors;
 
 import org.reactivestreams.Processor;
 
-import io.reactivex.Flowable;
+import io.reactivex.*;
 
 /**
  * Represents a Subscriber and a Flowable (Publisher) at the same time, allowing
@@ -25,7 +25,7 @@ import io.reactivex.Flowable;
  *
  * @param <T> the item value type
  */
-public abstract class FlowableProcessor<T> extends Flowable<T> implements Processor<T, T> {
+public abstract class FlowableProcessor<T> extends Flowable<T> implements Processor<T, T>, FlowableSubscriber<T> {
 
     /**
      * Returns true if the subject has subscribers.

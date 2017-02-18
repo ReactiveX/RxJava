@@ -17,6 +17,7 @@ import java.util.concurrent.atomic.*;
 
 import org.reactivestreams.*;
 
+import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.*;
 import io.reactivex.functions.Function;
@@ -30,7 +31,7 @@ import io.reactivex.subscribers.*;
 public final class FlowableDebounce<T, U> extends AbstractFlowableWithUpstream<T, T> {
     final Function<? super T, ? extends Publisher<U>> debounceSelector;
 
-    public FlowableDebounce(Publisher<T> source, Function<? super T, ? extends Publisher<U>> debounceSelector) {
+    public FlowableDebounce(Flowable<T> source, Function<? super T, ? extends Publisher<U>> debounceSelector) {
         super(source);
         this.debounceSelector = debounceSelector;
     }
@@ -41,7 +42,7 @@ public final class FlowableDebounce<T, U> extends AbstractFlowableWithUpstream<T
     }
 
     static final class DebounceSubscriber<T, U> extends AtomicLong
-    implements Subscriber<T>, Subscription {
+    implements FlowableSubscriber<T>, Subscription {
 
         private static final long serialVersionUID = 6725975399620862591L;
         final Subscriber<? super T> actual;

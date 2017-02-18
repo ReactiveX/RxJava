@@ -26,12 +26,12 @@ public class ConcatArrayEagerTckTest extends BaseTck<Long> {
     @SuppressWarnings("unchecked")
     @Override
     public Publisher<Long> createPublisher(long elements) {
-        return FlowableTck.wrap(
+        return
             Flowable.concatEager(Arrays.asList(
                     Flowable.fromIterable(iterate(elements / 2)),
                     Flowable.fromIterable(iterate(elements - elements / 2))
                 )
             )
-        );
+        ;
     }
 }

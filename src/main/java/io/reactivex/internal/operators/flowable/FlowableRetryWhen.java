@@ -27,7 +27,7 @@ import io.reactivex.subscribers.SerializedSubscriber;
 public final class FlowableRetryWhen<T> extends AbstractFlowableWithUpstream<T, T> {
     final Function<? super Flowable<Throwable>, ? extends Publisher<?>> handler;
 
-    public FlowableRetryWhen(Publisher<T> source,
+    public FlowableRetryWhen(Flowable<T> source,
             Function<? super Flowable<Throwable>, ? extends Publisher<?>> handler) {
         super(source);
         this.handler = handler;

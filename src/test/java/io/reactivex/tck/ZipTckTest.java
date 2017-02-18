@@ -24,7 +24,7 @@ public class ZipTckTest extends BaseTck<Long> {
 
     @Override
     public Publisher<Long> createPublisher(long elements) {
-        return FlowableTck.wrap(
+        return
             Flowable.zip(
                     Flowable.fromIterable(iterate(elements)),
                     Flowable.fromIterable(iterate(elements)),
@@ -35,6 +35,6 @@ public class ZipTckTest extends BaseTck<Long> {
                         }
                     }
             )
-        );
+        ;
     }
 }

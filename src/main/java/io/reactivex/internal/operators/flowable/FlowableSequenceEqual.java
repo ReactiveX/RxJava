@@ -17,7 +17,7 @@ import java.util.concurrent.atomic.*;
 
 import org.reactivestreams.*;
 
-import io.reactivex.Flowable;
+import io.reactivex.*;
 import io.reactivex.exceptions.*;
 import io.reactivex.functions.BiPredicate;
 import io.reactivex.internal.fuseable.*;
@@ -244,7 +244,7 @@ public final class FlowableSequenceEqual<T> extends Flowable<Boolean> {
 
     static final class EqualSubscriber<T>
     extends AtomicReference<Subscription>
-    implements Subscriber<T> {
+    implements FlowableSubscriber<T> {
 
         private static final long serialVersionUID = 4804128302091633067L;
 

@@ -26,12 +26,12 @@ public class AmbTckTest extends BaseTck<Long> {
     @SuppressWarnings("unchecked")
     @Override
     public Publisher<Long> createPublisher(long elements) {
-        return FlowableTck.wrap(
+        return
             Flowable.amb(Arrays.asList(
                     Flowable.fromIterable(iterate(elements)),
                     Flowable.<Long>never()
                 )
             )
-        );
+        ;
     }
 }

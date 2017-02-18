@@ -26,12 +26,12 @@ public class MergeIterableTckTest extends BaseTck<Long> {
     @SuppressWarnings("unchecked")
     @Override
     public Publisher<Long> createPublisher(long elements) {
-        return FlowableTck.wrap(
+        return
             Flowable.merge(Arrays.asList(
                     Flowable.fromIterable(iterate(elements / 2)),
                     Flowable.fromIterable(iterate(elements - elements / 2))
                 )
             )
-        );
+        ;
     }
 }

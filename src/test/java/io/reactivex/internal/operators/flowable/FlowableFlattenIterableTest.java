@@ -609,7 +609,7 @@ public class FlowableFlattenIterableTest {
     public void fusionMethods() {
         Flowable.just(1, 2)
         .flatMapIterable(Functions.justFunction(Arrays.asList(1, 2, 3)))
-        .subscribe(new Subscriber<Integer>() {
+        .subscribe(new FlowableSubscriber<Integer>() {
             @Override
             public void onSubscribe(Subscription s) {
                 @SuppressWarnings("unchecked")
@@ -737,7 +737,7 @@ public class FlowableFlattenIterableTest {
                 return Arrays.asList(v);
             }
         })
-        .subscribe(new Subscriber<Integer>() {
+        .subscribe(new FlowableSubscriber<Integer>() {
             @Override
             public void onSubscribe(Subscription s) {
                 @SuppressWarnings("unchecked")

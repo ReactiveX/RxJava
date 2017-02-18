@@ -16,9 +16,10 @@ package io.reactivex.internal.operators.flowable;
 import java.util.Collection;
 import java.util.concurrent.Callable;
 
-import io.reactivex.annotations.Nullable;
-import org.reactivestreams.*;
+import org.reactivestreams.Subscriber;
 
+import io.reactivex.Flowable;
+import io.reactivex.annotations.Nullable;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.functions.ObjectHelper;
@@ -33,7 +34,7 @@ public final class FlowableDistinct<T, K> extends AbstractFlowableWithUpstream<T
 
     final Callable<? extends Collection<? super K>> collectionSupplier;
 
-    public FlowableDistinct(Publisher<T> source, Function<? super T, K> keySelector, Callable<? extends Collection<? super K>> collectionSupplier) {
+    public FlowableDistinct(Flowable<T> source, Function<? super T, K> keySelector, Callable<? extends Collection<? super K>> collectionSupplier) {
         super(source);
         this.keySelector = keySelector;
         this.collectionSupplier = collectionSupplier;

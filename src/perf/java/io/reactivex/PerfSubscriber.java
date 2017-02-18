@@ -16,9 +16,9 @@ package io.reactivex;
 import java.util.concurrent.CountDownLatch;
 
 import org.openjdk.jmh.infra.Blackhole;
-import org.reactivestreams.*;
+import org.reactivestreams.Subscription;
 
-public class PerfSubscriber implements Subscriber<Object> {
+public class PerfSubscriber implements FlowableSubscriber<Object> {
 
     public CountDownLatch latch = new CountDownLatch(1);
     private final Blackhole bh;

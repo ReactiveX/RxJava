@@ -15,6 +15,7 @@ package io.reactivex.internal.operators.parallel;
 
 import org.reactivestreams.*;
 
+import io.reactivex.FlowableSubscriber;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.functions.ObjectHelper;
@@ -67,7 +68,7 @@ public final class ParallelMap<T, R> extends ParallelFlowable<R> {
         return source.parallelism();
     }
 
-    static final class ParallelMapSubscriber<T, R> implements Subscriber<T>, Subscription {
+    static final class ParallelMapSubscriber<T, R> implements FlowableSubscriber<T>, Subscription {
 
         final Subscriber<? super R> actual;
 

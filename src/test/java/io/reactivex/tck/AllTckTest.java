@@ -24,14 +24,14 @@ public class AllTckTest extends BaseTck<Boolean> {
 
     @Override
     public Publisher<Boolean> createPublisher(final long elements) {
-        return FlowableTck.wrap(
+        return
                 Flowable.range(1, 1000).all(new Predicate<Integer>() {
                     @Override
                     public boolean test(Integer e) throws Exception {
                         return e < 800;
                     }
                 }).toFlowable()
-            );
+            ;
     }
 
     @Override

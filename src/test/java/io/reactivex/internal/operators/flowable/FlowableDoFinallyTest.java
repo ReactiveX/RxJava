@@ -350,7 +350,7 @@ public class FlowableDoFinallyTest implements Action {
     public void clearIsEmpty() {
         Flowable.range(1, 5)
         .doFinally(this)
-        .subscribe(new Subscriber<Integer>() {
+        .subscribe(new FlowableSubscriber<Integer>() {
 
             @Override
             public void onSubscribe(Subscription s) {
@@ -397,7 +397,7 @@ public class FlowableDoFinallyTest implements Action {
         Flowable.range(1, 5)
         .doFinally(this)
         .filter(Functions.alwaysTrue())
-        .subscribe(new Subscriber<Integer>() {
+        .subscribe(new FlowableSubscriber<Integer>() {
 
             @Override
             public void onSubscribe(Subscription s) {

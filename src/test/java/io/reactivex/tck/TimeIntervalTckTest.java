@@ -24,8 +24,8 @@ public class TimeIntervalTckTest extends BaseTck<Timed<Integer>> {
 
     @Override
     public Publisher<Timed<Integer>> createPublisher(long elements) {
-        return FlowableTck.wrap(
+        return
                 Flowable.range(0, (int)elements).timeInterval()
-        );
+        ;
     }
 }

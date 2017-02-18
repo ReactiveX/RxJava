@@ -17,13 +17,13 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.reactivestreams.*;
 
-import io.reactivex.Scheduler;
+import io.reactivex.*;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.plugins.RxJavaPlugins;
 
 public final class FlowableUnsubscribeOn<T> extends AbstractFlowableWithUpstream<T, T> {
     final Scheduler scheduler;
-    public FlowableUnsubscribeOn(Publisher<T> source, Scheduler scheduler) {
+    public FlowableUnsubscribeOn(Flowable<T> source, Scheduler scheduler) {
         super(source);
         this.scheduler = scheduler;
     }
@@ -33,7 +33,7 @@ public final class FlowableUnsubscribeOn<T> extends AbstractFlowableWithUpstream
         source.subscribe(new UnsubscribeSubscriber<T>(s, scheduler));
     }
 
-    static final class UnsubscribeSubscriber<T> extends AtomicBoolean implements Subscriber<T>, Subscription {
+    static final class UnsubscribeSubscriber<T> extends AtomicBoolean implements FlowableSubscriber<T>, Subscription {
 
         private static final long serialVersionUID = 1015244841293359600L;
 

@@ -273,7 +273,7 @@ public class FlowableIgnoreElementsTest {
     @Test
     public void fusedAPICalls() {
         Flowable.just(1).hide().ignoreElements().<Integer>toFlowable()
-        .subscribe(new Subscriber<Integer>() {
+        .subscribe(new FlowableSubscriber<Integer>() {
 
             @Override
             public void onSubscribe(Subscription s) {

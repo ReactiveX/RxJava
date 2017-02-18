@@ -13,16 +13,17 @@
 
 package io.reactivex.internal.operators.flowable;
 
-import io.reactivex.internal.functions.ObjectHelper;
-import java.util.concurrent.*;
+import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.reactivestreams.*;
 
+import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.disposables.DisposableHelper;
+import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.internal.subscribers.FullArbiterSubscriber;
 import io.reactivex.internal.subscriptions.*;
 import io.reactivex.plugins.RxJavaPlugins;
@@ -34,7 +35,7 @@ public final class FlowableTimeout<T, U, V> extends AbstractFlowableWithUpstream
     final Publisher<? extends T> other;
 
     public FlowableTimeout(
-            Publisher<T> source,
+            Flowable<T> source,
             Publisher<U> firstTimeoutIndicator,
             Function<? super T, ? extends Publisher<V>> itemTimeoutIndicator,
             Publisher<? extends T> other) {
@@ -56,7 +57,7 @@ public final class FlowableTimeout<T, U, V> extends AbstractFlowableWithUpstream
         }
     }
 
-    static final class TimeoutSubscriber<T, U, V> implements Subscriber<T>, Subscription, OnTimeout {
+    static final class TimeoutSubscriber<T, U, V> implements FlowableSubscriber<T>, Subscription, OnTimeout {
         final Subscriber<? super T> actual;
         final Publisher<U> firstTimeoutIndicator;
         final Function<? super T, ? extends Publisher<V>> itemTimeoutIndicator;
@@ -214,7 +215,7 @@ public final class FlowableTimeout<T, U, V> extends AbstractFlowableWithUpstream
         }
     }
 
-    static final class TimeoutOtherSubscriber<T, U, V> implements Subscriber<T>, Disposable, OnTimeout {
+    static final class TimeoutOtherSubscriber<T, U, V> implements FlowableSubscriber<T>, Disposable, OnTimeout {
         final Subscriber<? super T> actual;
         final Publisher<U> firstTimeoutIndicator;
         final Function<? super T, ? extends Publisher<V>> itemTimeoutIndicator;

@@ -13,16 +13,17 @@
 
 package io.reactivex.internal.operators.flowable;
 
-import io.reactivex.plugins.RxJavaPlugins;
 import org.reactivestreams.*;
 
+import io.reactivex.*;
 import io.reactivex.internal.subscriptions.*;
+import io.reactivex.plugins.RxJavaPlugins;
 
 public final class FlowableSingle<T> extends AbstractFlowableWithUpstream<T, T> {
 
     final T defaultValue;
 
-    public FlowableSingle(Publisher<T> source, T defaultValue) {
+    public FlowableSingle(Flowable<T> source, T defaultValue) {
         super(source);
         this.defaultValue = defaultValue;
     }
@@ -33,7 +34,7 @@ public final class FlowableSingle<T> extends AbstractFlowableWithUpstream<T, T> 
     }
 
     static final class SingleElementSubscriber<T> extends DeferredScalarSubscription<T>
-    implements Subscriber<T> {
+    implements FlowableSubscriber<T> {
 
         private static final long serialVersionUID = -5526049321428043809L;
 

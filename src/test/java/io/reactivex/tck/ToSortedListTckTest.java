@@ -25,9 +25,9 @@ public class ToSortedListTckTest extends BaseTck<List<Integer>> {
 
     @Override
     public Publisher<List<Integer>> createPublisher(final long elements) {
-        return FlowableTck.wrap(
+        return
                 Flowable.range(1, 1000).toSortedList().toFlowable()
-            );
+            ;
     }
 
     @Override

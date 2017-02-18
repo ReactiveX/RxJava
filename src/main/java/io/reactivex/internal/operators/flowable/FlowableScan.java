@@ -13,17 +13,18 @@
 
 package io.reactivex.internal.operators.flowable;
 
-import io.reactivex.internal.functions.ObjectHelper;
 import org.reactivestreams.*;
 
+import io.reactivex.*;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.BiFunction;
+import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.plugins.RxJavaPlugins;
 
 public final class FlowableScan<T> extends AbstractFlowableWithUpstream<T, T> {
     final BiFunction<T, T, T> accumulator;
-    public FlowableScan(Publisher<T> source, BiFunction<T, T, T> accumulator) {
+    public FlowableScan(Flowable<T> source, BiFunction<T, T, T> accumulator) {
         super(source);
         this.accumulator = accumulator;
     }
@@ -33,7 +34,7 @@ public final class FlowableScan<T> extends AbstractFlowableWithUpstream<T, T> {
         source.subscribe(new ScanSubscriber<T>(s, accumulator));
     }
 
-    static final class ScanSubscriber<T> implements Subscriber<T>, Subscription {
+    static final class ScanSubscriber<T> implements FlowableSubscriber<T>, Subscription {
         final Subscriber<? super T> actual;
         final BiFunction<T, T, T> accumulator;
 

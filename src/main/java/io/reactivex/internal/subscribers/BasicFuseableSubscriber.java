@@ -15,6 +15,7 @@ package io.reactivex.internal.subscribers;
 
 import org.reactivestreams.*;
 
+import io.reactivex.FlowableSubscriber;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.internal.fuseable.QueueSubscription;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
@@ -25,7 +26,7 @@ import io.reactivex.plugins.RxJavaPlugins;
  * @param <T> the upstream value type
  * @param <R> the downstream value type
  */
-public abstract class BasicFuseableSubscriber<T, R> implements Subscriber<T>, QueueSubscription<R> {
+public abstract class BasicFuseableSubscriber<T, R> implements FlowableSubscriber<T>, QueueSubscription<R> {
 
     /** The downstream subscriber. */
     protected final Subscriber<? super R> actual;

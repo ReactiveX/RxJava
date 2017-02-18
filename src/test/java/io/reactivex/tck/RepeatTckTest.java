@@ -23,8 +23,6 @@ public class RepeatTckTest extends BaseTck<Integer> {
 
     @Override
     public Publisher<Integer> createPublisher(long elements) {
-        return FlowableTck.wrap(
-                Flowable.just(1).repeat(elements)
-        );
+        return Flowable.just(1).repeat(elements);
     }
 }

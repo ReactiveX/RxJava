@@ -41,7 +41,7 @@ public final class FlowableFlatMapMaybe<T, R> extends AbstractFlowableWithUpstre
 
     final int maxConcurrency;
 
-    public FlowableFlatMapMaybe(Publisher<T> source, Function<? super T, ? extends MaybeSource<? extends R>> mapper,
+    public FlowableFlatMapMaybe(Flowable<T> source, Function<? super T, ? extends MaybeSource<? extends R>> mapper,
             boolean delayError, int maxConcurrency) {
         super(source);
         this.mapper = mapper;
@@ -56,7 +56,7 @@ public final class FlowableFlatMapMaybe<T, R> extends AbstractFlowableWithUpstre
 
     static final class FlatMapMaybeSubscriber<T, R>
     extends AtomicInteger
-    implements Subscriber<T>, Subscription {
+    implements FlowableSubscriber<T>, Subscription {
 
         private static final long serialVersionUID = 8600231336733376951L;
 

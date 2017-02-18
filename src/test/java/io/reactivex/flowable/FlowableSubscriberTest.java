@@ -88,7 +88,7 @@ public class FlowableSubscriberTest {
         FlowableOperator<String, String> o = new FlowableOperator<String, String>() {
             @Override
             public Subscriber<? super String> apply(final Subscriber<? super String> s1) {
-                return new Subscriber<String>() {
+                return new FlowableSubscriber<String>() {
 
                     @Override
                     public void onSubscribe(Subscription a) {
@@ -140,7 +140,7 @@ public class FlowableSubscriberTest {
         FlowableOperator<String, String> o = new FlowableOperator<String, String>() {
             @Override
             public Subscriber<? super String> apply(final Subscriber<? super String> s1) {
-                return new Subscriber<String>() {
+                return new FlowableSubscriber<String>() {
 
                     @Override
                     public void onSubscribe(Subscription a) {

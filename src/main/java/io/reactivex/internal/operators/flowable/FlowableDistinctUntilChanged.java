@@ -13,9 +13,10 @@
 
 package io.reactivex.internal.operators.flowable;
 
-import io.reactivex.annotations.Nullable;
-import org.reactivestreams.*;
+import org.reactivestreams.Subscriber;
 
+import io.reactivex.Flowable;
+import io.reactivex.annotations.Nullable;
 import io.reactivex.functions.*;
 import io.reactivex.internal.fuseable.ConditionalSubscriber;
 import io.reactivex.internal.subscribers.*;
@@ -26,7 +27,7 @@ public final class FlowableDistinctUntilChanged<T, K> extends AbstractFlowableWi
 
     final BiPredicate<? super K, ? super K> comparer;
 
-    public FlowableDistinctUntilChanged(Publisher<T> source, Function<? super T, K> keySelector, BiPredicate<? super K, ? super K> comparer) {
+    public FlowableDistinctUntilChanged(Flowable<T> source, Function<? super T, K> keySelector, BiPredicate<? super K, ? super K> comparer) {
         super(source);
         this.keySelector = keySelector;
         this.comparer = comparer;

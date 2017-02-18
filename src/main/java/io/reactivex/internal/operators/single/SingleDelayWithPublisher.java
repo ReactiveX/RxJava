@@ -42,7 +42,7 @@ public final class SingleDelayWithPublisher<T, U> extends Single<T> {
 
     static final class OtherSubscriber<T, U>
     extends AtomicReference<Disposable>
-    implements Subscriber<U>, Disposable {
+    implements FlowableSubscriber<U>, Disposable {
 
 
         private static final long serialVersionUID = -8565274649390031272L;

@@ -21,7 +21,7 @@ import io.reactivex.plugins.RxJavaPlugins;
 
 public final class FlowableDematerialize<T> extends AbstractFlowableWithUpstream<Notification<T>, T> {
 
-    public FlowableDematerialize(Publisher<Notification<T>> source) {
+    public FlowableDematerialize(Flowable<Notification<T>> source) {
         super(source);
     }
 
@@ -30,7 +30,7 @@ public final class FlowableDematerialize<T> extends AbstractFlowableWithUpstream
         source.subscribe(new DematerializeSubscriber<T>(s));
     }
 
-    static final class DematerializeSubscriber<T> implements Subscriber<Notification<T>>, Subscription {
+    static final class DematerializeSubscriber<T> implements FlowableSubscriber<Notification<T>>, Subscription {
         final Subscriber<? super T> actual;
 
         boolean done;

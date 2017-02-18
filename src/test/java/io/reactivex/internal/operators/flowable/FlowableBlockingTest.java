@@ -127,7 +127,7 @@ public class FlowableBlockingTest {
 
         Flowable.range(1, 5)
         .subscribeOn(Schedulers.computation())
-        .blockingSubscribe(new Subscriber<Object>() {
+        .blockingSubscribe(new FlowableSubscriber<Object>() {
 
             @Override
             public void onSubscribe(Subscription d) {
@@ -162,7 +162,7 @@ public class FlowableBlockingTest {
 
         Flowable.range(1, 5).concatWith(Flowable.<Integer>error(ex))
         .subscribeOn(Schedulers.computation())
-        .blockingSubscribe(new Subscriber<Object>() {
+        .blockingSubscribe(new FlowableSubscriber<Object>() {
 
             @Override
             public void onSubscribe(Subscription d) {

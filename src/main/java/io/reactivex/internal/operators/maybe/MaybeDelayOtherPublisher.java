@@ -104,7 +104,7 @@ public final class MaybeDelayOtherPublisher<T, U> extends AbstractMaybeWithUpstr
 
     static final class OtherSubscriber<T> extends
     AtomicReference<Subscription>
-    implements Subscriber<Object> {
+    implements FlowableSubscriber<Object> {
 
         private static final long serialVersionUID = -1215060610805418006L;
 

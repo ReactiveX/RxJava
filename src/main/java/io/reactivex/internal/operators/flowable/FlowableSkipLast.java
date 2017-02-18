@@ -17,12 +17,13 @@ import java.util.ArrayDeque;
 
 import org.reactivestreams.*;
 
+import io.reactivex.*;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 
 public final class FlowableSkipLast<T> extends AbstractFlowableWithUpstream<T, T> {
     final int skip;
 
-    public FlowableSkipLast(Publisher<T> source, int skip) {
+    public FlowableSkipLast(Flowable<T> source, int skip) {
         super(source);
         this.skip = skip;
     }
@@ -32,7 +33,7 @@ public final class FlowableSkipLast<T> extends AbstractFlowableWithUpstream<T, T
         source.subscribe(new SkipLastSubscriber<T>(s, skip));
     }
 
-    static final class SkipLastSubscriber<T> extends ArrayDeque<T> implements Subscriber<T>, Subscription {
+    static final class SkipLastSubscriber<T> extends ArrayDeque<T> implements FlowableSubscriber<T>, Subscription {
 
         private static final long serialVersionUID = -3807491841935125653L;
         final Subscriber<? super T> actual;

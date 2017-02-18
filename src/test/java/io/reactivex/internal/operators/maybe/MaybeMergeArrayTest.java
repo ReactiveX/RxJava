@@ -62,7 +62,7 @@ public class MaybeMergeArrayTest {
     @Test
     public void fusedEmptyCheck() {
         Maybe.mergeArray(Maybe.just(1), Maybe.<Integer>empty(), Maybe.just(2))
-        .subscribe(new Subscriber<Integer>() {
+        .subscribe(new FlowableSubscriber<Integer>() {
             QueueSubscription<Integer> qd;
             @Override
             public void onSubscribe(Subscription d) {
@@ -192,7 +192,7 @@ public class MaybeMergeArrayTest {
     @Test
     public void smallOffer2Throws() {
         Maybe.mergeArray(Maybe.never(), Maybe.never())
-        .subscribe(new Subscriber<Object>() {
+        .subscribe(new FlowableSubscriber<Object>() {
 
             @SuppressWarnings("rawtypes")
             @Override
@@ -227,7 +227,7 @@ public class MaybeMergeArrayTest {
         Maybe<Integer>[] a = new Maybe[1024];
         Arrays.fill(a, Maybe.never());
         Maybe.mergeArray(a)
-        .subscribe(new Subscriber<Object>() {
+        .subscribe(new FlowableSubscriber<Object>() {
 
             @SuppressWarnings("rawtypes")
             @Override

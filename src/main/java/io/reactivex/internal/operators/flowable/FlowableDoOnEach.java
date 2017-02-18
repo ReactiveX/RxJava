@@ -13,9 +13,10 @@
 
 package io.reactivex.internal.operators.flowable;
 
-import io.reactivex.annotations.Nullable;
-import org.reactivestreams.*;
+import org.reactivestreams.Subscriber;
 
+import io.reactivex.Flowable;
+import io.reactivex.annotations.Nullable;
 import io.reactivex.exceptions.*;
 import io.reactivex.functions.*;
 import io.reactivex.internal.fuseable.ConditionalSubscriber;
@@ -28,7 +29,7 @@ public final class FlowableDoOnEach<T> extends AbstractFlowableWithUpstream<T, T
     final Action onComplete;
     final Action onAfterTerminate;
 
-    public FlowableDoOnEach(Publisher<T> source, Consumer<? super T> onNext,
+    public FlowableDoOnEach(Flowable<T> source, Consumer<? super T> onNext,
             Consumer<? super Throwable> onError,
             Action onComplete,
             Action onAfterTerminate) {

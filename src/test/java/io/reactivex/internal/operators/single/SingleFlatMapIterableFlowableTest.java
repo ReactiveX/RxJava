@@ -285,7 +285,7 @@ public class SingleFlatMapIterableFlowableTest {
                     public Iterable<Integer> apply(Object v) throws Exception {
                         return Arrays.asList(1, 2, 3);
                     }
-        }).subscribe(new Subscriber<Integer>() {
+        }).subscribe(new FlowableSubscriber<Integer>() {
             QueueSubscription<Integer> qd;
             @SuppressWarnings("unchecked")
             @Override

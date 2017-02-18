@@ -17,7 +17,7 @@ import java.util.concurrent.atomic.*;
 
 import org.reactivestreams.*;
 
-import io.reactivex.Flowable;
+import io.reactivex.*;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.functions.ObjectHelper;
@@ -28,7 +28,7 @@ import io.reactivex.subscribers.SerializedSubscriber;
 public final class FlowableRepeatWhen<T> extends AbstractFlowableWithUpstream<T, T> {
     final Function<? super Flowable<Object>, ? extends Publisher<?>> handler;
 
-    public FlowableRepeatWhen(Publisher<T> source,
+    public FlowableRepeatWhen(Flowable<T> source,
             Function<? super Flowable<Object>, ? extends Publisher<?>> handler) {
         super(source);
         this.handler = handler;
@@ -66,7 +66,7 @@ public final class FlowableRepeatWhen<T> extends AbstractFlowableWithUpstream<T,
 
     static final class WhenReceiver<T, U>
     extends AtomicInteger
-    implements Subscriber<Object>, Subscription {
+    implements FlowableSubscriber<Object>, Subscription {
 
 
         private static final long serialVersionUID = 2827772011130406689L;
@@ -130,7 +130,7 @@ public final class FlowableRepeatWhen<T> extends AbstractFlowableWithUpstream<T,
         }
     }
 
-    abstract static class WhenSourceSubscriber<T, U> extends SubscriptionArbiter implements Subscriber<T> {
+    abstract static class WhenSourceSubscriber<T, U> extends SubscriptionArbiter implements FlowableSubscriber<T> {
 
         private static final long serialVersionUID = -5604623027276966720L;
 

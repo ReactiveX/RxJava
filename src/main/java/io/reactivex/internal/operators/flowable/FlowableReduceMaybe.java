@@ -57,7 +57,7 @@ implements HasUpstreamPublisher<T>, FuseToFlowable<T> {
         source.subscribe(new ReduceSubscriber<T>(observer, reducer));
     }
 
-    static final class ReduceSubscriber<T> implements Subscriber<T>, Disposable {
+    static final class ReduceSubscriber<T> implements FlowableSubscriber<T>, Disposable {
         final MaybeObserver<? super T> actual;
 
         final BiFunction<T, T, T> reducer;
