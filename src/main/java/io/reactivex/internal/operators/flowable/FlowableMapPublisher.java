@@ -18,8 +18,7 @@ import org.reactivestreams.*;
 
 import io.reactivex.Flowable;
 import io.reactivex.functions.Function;
-import io.reactivex.internal.fuseable.ConditionalSubscriber;
-import io.reactivex.internal.operators.flowable.FlowableMap.*;
+import io.reactivex.internal.operators.flowable.FlowableMap.MapSubscriber;
 
 /**
  * Map working with an arbitrary Publisher source.
@@ -40,10 +39,6 @@ public final class FlowableMapPublisher<T, U> extends Flowable<U> {
 
     @Override
     protected void subscribeActual(Subscriber<? super U> s) {
-        if (s instanceof ConditionalSubscriber) {
-            source.subscribe(new MapConditionalSubscriber<T, U>((ConditionalSubscriber<? super U>)s, mapper));
-        } else {
-            source.subscribe(new MapSubscriber<T, U>(s, mapper));
-        }
+        source.subscribe(new MapSubscriber<T, U>(s, mapper));
     }
 }
