@@ -23,7 +23,9 @@ import org.reactivestreams.*;
 
 import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
+import io.reactivex.internal.subscribers.StrictSubscriber;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
+import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.TestSubscriber;
 
@@ -257,5 +259,50 @@ public class FlowableStrictTest {
         });
 
         assertFalse(bs.isCancelled());
+    }
+
+    @Test
+    public void normal() {
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+
+        Flowable.range(1, 5)
+        .subscribe(new StrictSubscriber<Integer>(ts));
+
+        ts.assertResult(1, 2, 3, 4, 5);
+    }
+
+    @Test
+    public void badRequestOnNextRace() {
+        for (int i = 0; i < 500; i++) {
+            TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+
+            final PublishProcessor<Integer> pp = PublishProcessor.create();
+
+            final StrictSubscriber<Integer> s = new StrictSubscriber<Integer>(ts);
+
+            s.onSubscribe(new BooleanSubscription());
+
+            Runnable r1 = new Runnable() {
+                @Override
+                public void run() {
+                    pp.onNext(1);
+                }
+            };
+
+            Runnable r2 = new Runnable() {
+                @Override
+                public void run() {
+                    s.request(0);
+                }
+            };
+
+            TestHelper.race(r1, r2);
+
+            if (ts.valueCount() == 0) {
+                ts.assertFailure(IllegalArgumentException.class);
+            } else {
+                ts.assertValue(1).assertNoErrors().assertNotComplete();
+            }
+        }
     }
 }

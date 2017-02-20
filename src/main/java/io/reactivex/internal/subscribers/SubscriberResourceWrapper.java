@@ -36,21 +36,8 @@ public final class SubscriberResourceWrapper<T> extends AtomicReference<Disposab
 
     @Override
     public void onSubscribe(Subscription s) {
-        for (;;) {
-            Subscription current = subscription.get();
-            if (current == SubscriptionHelper.CANCELLED) {
-                s.cancel();
-                return;
-            }
-            if (current != null) {
-                s.cancel();
-                SubscriptionHelper.reportSubscriptionSet();
-                return;
-            }
-            if (subscription.compareAndSet(null, s)) {
-                actual.onSubscribe(this);
-                return;
-            }
+        if (SubscriptionHelper.setOnce(subscription, s)) {
+            actual.onSubscribe(this);
         }
     }
 
@@ -61,13 +48,13 @@ public final class SubscriberResourceWrapper<T> extends AtomicReference<Disposab
 
     @Override
     public void onError(Throwable t) {
-        dispose();
+        DisposableHelper.dispose(this);
         actual.onError(t);
     }
 
     @Override
     public void onComplete() {
-        dispose();
+        DisposableHelper.dispose(this);
         actual.onComplete();
     }
 

@@ -8,7 +8,7 @@ RxJava is a Java VM implementation of [Reactive Extensions](http://reactivex.io)
 
 It extends the [observer pattern](http://en.wikipedia.org/wiki/Observer_pattern) to support sequences of data/events and adds operators that allow you to compose sequences together declaratively while abstracting away concerns about things like low-level threading, synchronization, thread-safety and concurrent data structures.
 
-#### Version 1.x
+#### Version 1.x ([Javadoc](http://reactivex.io/RxJava/1.x/javadoc/))
 
 Looking for version 1.x? Jump [to the 1.x branch](https://github.com/ReactiveX/RxJava/tree/1.x).
 
@@ -17,7 +17,7 @@ Timeline plans for the 1.x line:
   - **June 1, 2017** - feature freeze (no new operators), only bugfixes
   - **March 31, 2018** - end of life, no further development
 
-#### Version 2.x
+#### Version 2.x ([Javadoc](http://reactivex.io/RxJava/2.x/javadoc/))
 
 - single dependency: [Reactive-Streams](https://github.com/reactive-streams/reactive-streams-jvm)  
 - continued support for Java 6+ & [Android](https://github.com/ReactiveX/RxAndroid) 2.3+
@@ -26,7 +26,6 @@ Timeline plans for the 1.x line:
 - non-opinionated about source of concurrency (threads, pools, event loops, fibers, actors, etc)
 - async or synchronous execution
 - virtual time and schedulers for parameterized concurrency
-
 
 Version 2.x and 1.x will live side-by-side for several years. They will have different group ids (`io.reactivex.rxjava2` vs `io.reactivex`) and namespaces (`io.reactivex` vs `rx`). 
 

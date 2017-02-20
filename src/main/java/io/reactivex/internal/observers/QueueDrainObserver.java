@@ -17,7 +17,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.internal.fuseable.SimpleQueue;
+import io.reactivex.internal.fuseable.*;
 import io.reactivex.internal.util.*;
 
 /**
@@ -30,14 +30,14 @@ import io.reactivex.internal.util.*;
  */
 public abstract class QueueDrainObserver<T, U, V> extends QueueDrainSubscriberPad2 implements Observer<T>, ObservableQueueDrain<U, V> {
     protected final Observer<? super V> actual;
-    protected final SimpleQueue<U> queue;
+    protected final SimplePlainQueue<U> queue;
 
     protected volatile boolean cancelled;
 
     protected volatile boolean done;
     protected Throwable error;
 
-    public QueueDrainObserver(Observer<? super V> actual, SimpleQueue<U> queue) {
+    public QueueDrainObserver(Observer<? super V> actual, SimplePlainQueue<U> queue) {
         this.actual = actual;
         this.queue = queue;
     }
@@ -63,7 +63,7 @@ public abstract class QueueDrainObserver<T, U, V> extends QueueDrainSubscriberPa
 
     protected final void fastPathEmit(U value, boolean delayError, Disposable dispose) {
         final Observer<? super V> s = actual;
-        final SimpleQueue<U> q = queue;
+        final SimplePlainQueue<U> q = queue;
 
         if (wip.get() == 0 && wip.compareAndSet(0, 1)) {
             accept(s, value);
@@ -87,7 +87,7 @@ public abstract class QueueDrainObserver<T, U, V> extends QueueDrainSubscriberPa
      */
     protected final void fastPathOrderedEmit(U value, boolean delayError, Disposable disposable) {
         final Observer<? super V> s = actual;
-        final SimpleQueue<U> q = queue;
+        final SimplePlainQueue<U> q = queue;
 
         if (wip.get() == 0 && wip.compareAndSet(0, 1)) {
             if (q.isEmpty()) {
@@ -115,12 +115,6 @@ public abstract class QueueDrainObserver<T, U, V> extends QueueDrainSubscriberPa
     @Override
     public final int leave(int m) {
         return wip.addAndGet(m);
-    }
-
-    public void drain(boolean delayError, Disposable dispose) {
-        if (enter()) {
-            QueueDrainHelper.drainLoop(queue, actual, delayError, dispose, this);
-        }
     }
 
     @Override

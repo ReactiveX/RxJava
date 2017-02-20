@@ -21,7 +21,7 @@ import java.util.concurrent.atomic.*;
 import org.junit.Test;
 
 import io.reactivex.*;
-import io.reactivex.Flowable;
+import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.*;
 import io.reactivex.subscribers.*;
 
@@ -153,4 +153,11 @@ public class FlowableTakeLastOneTest {
         });
     }
 
+    @Test
+    public void error() {
+        Flowable.error(new TestException())
+        .takeLast(1)
+        .test()
+        .assertFailure(TestException.class);
+    }
 }
