@@ -18,7 +18,7 @@ import static org.junit.Assert.assertTrue;
 import java.util.List;
 import java.util.concurrent.CyclicBarrier;
 
-import org.junit.Test;
+import org.junit.*;
 import org.reactivestreams.Publisher;
 
 import io.reactivex.exceptions.TestException;
@@ -29,6 +29,9 @@ import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.TestSubscriber;
 
 public class XFlatMapTest {
+
+    @Rule
+    public Retry retry = new Retry(3, 1000, true);
 
     static final int SLEEP_AFTER_CANCEL = 500;
 

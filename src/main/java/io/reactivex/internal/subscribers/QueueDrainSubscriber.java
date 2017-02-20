@@ -96,7 +96,7 @@ public abstract class QueueDrainSubscriber<T, U, V> extends QueueDrainSubscriber
 
     protected final void fastPathOrderedEmitMax(U value, boolean delayError, Disposable dispose) {
         final Subscriber<? super V> s = actual;
-        final SimpleQueue<U> q = queue;
+        final SimplePlainQueue<U> q = queue;
 
         if (wip.get() == 0 && wip.compareAndSet(0, 1)) {
             long r = requested.get();
@@ -159,11 +159,6 @@ public abstract class QueueDrainSubscriber<T, U, V> extends QueueDrainSubscriber
         }
     }
 
-    public void drain(boolean delayError) {
-        if (enter()) {
-            QueueDrainHelper.drainLoop(queue, actual, delayError, this);
-        }
-    }
 }
 
 // -------------------------------------------------------------------
