@@ -5481,7 +5481,7 @@ public class Observable<T> {
         if (alternate == null) {
             throw new NullPointerException("alternate is null");
         }
-        return lift(new OperatorSwitchIfEmpty<T>(alternate));
+        return unsafeCreate(new OnSubscribeSwitchIfEmpty<T>(this, alternate));
     }
 
     /**
