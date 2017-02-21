@@ -199,6 +199,7 @@ public final class ParallelJoin<T> extends Flowable<T> {
             drain();
         }
 
+        @Override
         void drain() {
             if (getAndIncrement() != 0) {
                 return;
@@ -323,6 +324,7 @@ public final class ParallelJoin<T> extends Flowable<T> {
             super(actual, n, prefetch);
         }
 
+        @Override
         void onNext(JoinInnerSubscriber<T> inner, T value) {
             if (get() == 0 && compareAndSet(0, 1)) {
                 if (requested.get() != 0) {
@@ -363,17 +365,20 @@ public final class ParallelJoin<T> extends Flowable<T> {
             drainLoop();
         }
 
+        @Override
         void onError(Throwable e) {
             errors.addThrowable(e);
             done.decrementAndGet();
             drain();
         }
 
+        @Override
         void onComplete() {
             done.decrementAndGet();
             drain();
         }
 
+        @Override
         void drain() {
             if (getAndIncrement() != 0) {
                 return;
