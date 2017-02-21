@@ -247,6 +247,7 @@ public abstract class ParallelFlowable<T> {
      * </dl>
      * @return the new Flowable instance
      * @see ParallelFlowable#sequential(int)
+     * @see ParallelFlowable#sequentialDelayError()
      */
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -269,13 +270,65 @@ public abstract class ParallelFlowable<T> {
      * @param prefetch the prefetch amount to use for each rail
      * @return the new Flowable instance
      * @see ParallelFlowable#sequential()
+     * @see ParallelFlowable#sequentialDelayError(int)
      */
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     @CheckReturnValue
     public final Flowable<T> sequential(int prefetch) {
         ObjectHelper.verifyPositive(prefetch, "prefetch");
-        return RxJavaPlugins.onAssembly(new ParallelJoin<T>(this, prefetch));
+        return RxJavaPlugins.onAssembly(new ParallelJoin<T>(this, prefetch, false));
+    }
+
+    /**
+     * Merges the values from each 'rail' in a round-robin or same-order fashion and
+     * exposes it as a regular Flowable sequence, running with a default prefetch value
+     * for the rails and delaying errors from all rails till all terminate.
+     * <p>
+     * This operator uses the default prefetch size returned by {@code Flowable.bufferSize()}.
+     * <img width="640" height="602" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/parallelflowable.sequential.png" alt="">
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The operator honors backpressure.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code sequentialDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @return the new Flowable instance
+     * @see ParallelFlowable#sequentialDelayError(int)
+     * @see ParallelFlowable#sequential()
+     * @since 2.0.7 - experimental
+     */
+    @BackpressureSupport(BackpressureKind.FULL)
+    @SchedulerSupport(SchedulerSupport.NONE)
+    @CheckReturnValue
+    @Experimental
+    public final Flowable<T> sequentialDelayError() {
+        return sequentialDelayError(Flowable.bufferSize());
+    }
+
+    /**
+     * Merges the values from each 'rail' in a round-robin or same-order fashion and
+     * exposes it as a regular Publisher sequence, running with a give prefetch value
+     * for the rails and delaying errors from all rails till all terminate.
+     * <img width="640" height="602" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/parallelflowable.sequential.png" alt="">
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The operator honors backpressure.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code sequentialDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param prefetch the prefetch amount to use for each rail
+     * @return the new Flowable instance
+     * @see ParallelFlowable#sequential()
+     * @see ParallelFlowable#sequentialDelayError()
+     * @since 2.0.7 - experimental
+     */
+    @BackpressureSupport(BackpressureKind.FULL)
+    @SchedulerSupport(SchedulerSupport.NONE)
+    @CheckReturnValue
+    public final Flowable<T> sequentialDelayError(int prefetch) {
+        ObjectHelper.verifyPositive(prefetch, "prefetch");
+        return RxJavaPlugins.onAssembly(new ParallelJoin<T>(this, prefetch, true));
     }
 
     /**

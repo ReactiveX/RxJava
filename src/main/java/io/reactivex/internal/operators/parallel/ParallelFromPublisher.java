@@ -101,8 +101,10 @@ public final class ParallelFromPublisher<T> extends ParallelFlowable<T> {
             this.subscribers = subscribers;
             this.prefetch = prefetch;
             this.limit = prefetch - (prefetch >> 2);
-            this.requests = new AtomicLongArray(subscribers.length);
-            this.emissions = new long[subscribers.length];
+            int m = subscribers.length;
+            this.requests = new AtomicLongArray(m + m + 1);
+            this.requests.lazySet(m + m, m);
+            this.emissions = new long[m];
         }
 
         @Override
@@ -145,42 +147,56 @@ public final class ParallelFromPublisher<T> extends ParallelFlowable<T> {
         }
 
         void setupSubscribers() {
-            final int m = subscribers.length;
+            Subscriber<? super T>[] subs = subscribers;
+            final int m = subs.length;
 
             for (int i = 0; i < m; i++) {
                 if (cancelled) {
                     return;
                 }
-                final int j = i;
 
                 subscriberCount.lazySet(i + 1);
 
-                subscribers[i].onSubscribe(new Subscription() {
-                    @Override
-                    public void request(long n) {
-                        if (SubscriptionHelper.validate(n)) {
-                            AtomicLongArray ra = requests;
-                            for (;;) {
-                                long r = ra.get(j);
-                                if (r == Long.MAX_VALUE) {
-                                    return;
-                                }
-                                long u = BackpressureHelper.addCap(r, n);
-                                if (ra.compareAndSet(j, r, u)) {
-                                    break;
-                                }
-                            }
-                            if (subscriberCount.get() == m) {
-                                drain();
-                            }
+                subs[i].onSubscribe(new RailSubscription(i, m));
+            }
+        }
+
+        final class RailSubscription implements Subscription {
+
+            final int j;
+
+            final int m;
+
+            RailSubscription(int j, int m) {
+                this.j = j;
+                this.m = m;
+            }
+
+            @Override
+            public void request(long n) {
+                if (SubscriptionHelper.validate(n)) {
+                    AtomicLongArray ra = requests;
+                    for (;;) {
+                        long r = ra.get(j);
+                        if (r == Long.MAX_VALUE) {
+                            return;
+                        }
+                        long u = BackpressureHelper.addCap(r, n);
+                        if (ra.compareAndSet(j, r, u)) {
+                            break;
                         }
                     }
-
-                    @Override
-                    public void cancel() {
-                        ParallelDispatcher.this.cancel();
+                    if (subscriberCount.get() == m) {
+                        drain();
                     }
-                });
+                }
+            }
+
+            @Override
+            public void cancel() {
+                if (requests.compareAndSet(m + j, 0L, 1L)) {
+                    ParallelDispatcher.this.cancel(m + m);
+                }
             }
         }
 
@@ -209,8 +225,8 @@ public final class ParallelFromPublisher<T> extends ParallelFlowable<T> {
             drain();
         }
 
-        void cancel() {
-            if (!cancelled) {
+        void cancel(int m) {
+            if (requests.decrementAndGet(m) == 0L) {
                 cancelled = true;
                 this.s.cancel();
 
@@ -268,7 +284,7 @@ public final class ParallelFromPublisher<T> extends ParallelFlowable<T> {
 
                     long ridx = r.get(idx);
                     long eidx = e[idx];
-                    if (ridx != eidx) {
+                    if (ridx != eidx && r.get(n + idx) == 0) {
 
                         T v;
 
@@ -356,7 +372,7 @@ public final class ParallelFromPublisher<T> extends ParallelFlowable<T> {
 
                     long ridx = r.get(idx);
                     long eidx = e[idx];
-                    if (ridx != eidx) {
+                    if (ridx != eidx && r.get(n + idx) == 0) {
 
                         T v;
 

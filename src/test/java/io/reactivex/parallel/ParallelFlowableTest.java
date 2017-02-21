@@ -803,7 +803,7 @@ public class ParallelFlowableTest {
     @Test
     public void filterThrows() throws Exception {
         final boolean[] cancelled = { false };
-        Flowable.range(1, 20)
+        Flowable.range(1, 20).concatWith(Flowable.<Integer>never())
         .doOnCancel(new Action() {
             @Override
             public void run() throws Exception {
@@ -912,6 +912,9 @@ public class ParallelFlowableTest {
 
             Thread.sleep(300);
 
+            for (Throwable ex : errors) {
+                ex.printStackTrace();
+            }
             assertTrue(errors.toString(), errors.isEmpty());
         } finally {
             RxJavaPlugins.reset();
