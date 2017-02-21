@@ -62,7 +62,6 @@ public final class OnSubscribeSwitchIfEmpty<T> implements Observable.OnSubscribe
 
         final AtomicInteger wip;
         volatile boolean active;
-        boolean secondary;
 
         ParentSubscriber(Subscriber<? super T> child, final SerialSubscription serial, ProducerArbiter arbiter, Observable<? extends T> alternate) {
             this.child = child;
@@ -95,15 +94,15 @@ public final class OnSubscribeSwitchIfEmpty<T> implements Observable.OnSubscribe
                     }
 
                     if (!active) {
-                        if (secondary) {
+                        if (source == null) {
                             AlternateSubscriber<T> as = new AlternateSubscriber<T>(child, arbiter);
                             serial.set(as);
                             active = true;
                             alternate.unsafeSubscribe(as);
                         } else {
-                            secondary = true;
                             active = true;
                             source.unsafeSubscribe(this);
+                            source = null;
                         }
                     }
 
