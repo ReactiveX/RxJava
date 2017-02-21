@@ -16,6 +16,8 @@
 package rx.internal.operators;
 
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 import rx.*;
 import rx.internal.producers.ProducerArbiter;
 import rx.subscriptions.SerialSubscription;
@@ -26,22 +28,28 @@ import rx.subscriptions.SerialSubscription;
  * empty, the results of the given Observable will be emitted.
  * @param <T> the value type
  */
-public final class OperatorSwitchIfEmpty<T> implements Observable.Operator<T, T> {
-    private final Observable<? extends T> alternate;
+public final class OnSubscribeSwitchIfEmpty<T> implements Observable.OnSubscribe<T> {
 
-    public OperatorSwitchIfEmpty(Observable<? extends T> alternate) {
+    final Observable<? extends T> source;
+
+    final Observable<? extends T> alternate;
+
+    public OnSubscribeSwitchIfEmpty(Observable<? extends T> source, Observable<? extends T> alternate) {
+        this.source = source;
         this.alternate = alternate;
     }
 
     @Override
-    public Subscriber<? super T> call(Subscriber<? super T> child) {
+    public void call(Subscriber<? super T> child) {
         final SerialSubscription serial = new SerialSubscription();
         ProducerArbiter arbiter = new ProducerArbiter();
         final ParentSubscriber<T> parent = new ParentSubscriber<T>(child, serial, arbiter, alternate);
+
         serial.set(parent);
         child.add(serial);
         child.setProducer(arbiter);
-        return parent;
+
+        parent.subscribe(source);
     }
 
     static final class ParentSubscriber<T> extends Subscriber<T> {
@@ -52,11 +60,15 @@ public final class OperatorSwitchIfEmpty<T> implements Observable.Operator<T, T>
         private final ProducerArbiter arbiter;
         private final Observable<? extends T> alternate;
 
+        final AtomicInteger wip;
+        volatile boolean active;
+
         ParentSubscriber(Subscriber<? super T> child, final SerialSubscription serial, ProducerArbiter arbiter, Observable<? extends T> alternate) {
             this.child = child;
             this.serial = serial;
             this.arbiter = arbiter;
             this.alternate = alternate;
+            this.wip = new AtomicInteger();
         }
 
         @Override
@@ -69,14 +81,33 @@ public final class OperatorSwitchIfEmpty<T> implements Observable.Operator<T, T>
             if (!empty) {
                 child.onCompleted();
             } else if (!child.isUnsubscribed()) {
-                subscribeToAlternate();
+                active = false;
+                subscribe(null);
             }
         }
 
-        private void subscribeToAlternate() {
-            AlternateSubscriber<T> as = new AlternateSubscriber<T>(child, arbiter);
-            serial.set(as);
-            alternate.unsafeSubscribe(as);
+        void subscribe(Observable<? extends T> source) {
+            if (wip.getAndIncrement() == 0) {
+                do {
+                    if (child.isUnsubscribed()) {
+                        break;
+                    }
+
+                    if (!active) {
+                        if (source == null) {
+                            AlternateSubscriber<T> as = new AlternateSubscriber<T>(child, arbiter);
+                            serial.set(as);
+                            active = true;
+                            alternate.unsafeSubscribe(as);
+                        } else {
+                            active = true;
+                            source.unsafeSubscribe(this);
+                            source = null;
+                        }
+                    }
+
+                } while (wip.decrementAndGet() != 0);
+            }
         }
 
         @Override
