@@ -16,26 +16,18 @@
 package rx.internal.operators;
 
 import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.inOrder;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.*;
 
 import java.util.concurrent.TimeUnit;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.*;
 import org.mockito.InOrder;
 
-import rx.Observable;
+import rx.*;
 import rx.Observable.OnSubscribe;
-import rx.Observer;
-import rx.Scheduler;
-import rx.Subscriber;
 import rx.exceptions.TestException;
 import rx.functions.Action0;
-import rx.observers.TestSubscriber;
+import rx.observers.*;
 import rx.schedulers.TestScheduler;
 import rx.subjects.PublishSubject;
 
@@ -213,5 +205,29 @@ public class OperatorThrottleFirstTest {
         verify(observer).onNext(1);
         verify(observer).onCompleted();
         verifyNoMoreInteractions(observer);
+    }
+
+    @Test
+    public void nowDrift() {
+        TestScheduler s = new TestScheduler();
+        s.advanceTimeBy(2, TimeUnit.SECONDS);
+
+        PublishSubject<Integer> o = PublishSubject.create();
+
+        AssertableSubscriber<Integer> as = o.throttleFirst(500, TimeUnit.MILLISECONDS, s)
+        .test();
+
+        o.onNext(1);
+        s.advanceTimeBy(100, TimeUnit.MILLISECONDS);
+        o.onNext(2);
+        s.advanceTimeBy(100, TimeUnit.MILLISECONDS);
+        o.onNext(3);
+        s.advanceTimeBy(-1000, TimeUnit.MILLISECONDS);
+        o.onNext(4);
+        s.advanceTimeBy(100, TimeUnit.MILLISECONDS);
+        o.onNext(5);
+        o.onCompleted();
+
+        as.assertResult(1, 4);
     }
 }
