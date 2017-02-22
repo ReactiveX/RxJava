@@ -8216,9 +8216,10 @@ public abstract class Flowable<T> implements Publisher<T> {
      * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/flatMap.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator honors backpressure from downstream. The outer {@code Publisher} is consumed
-     *  in unbounded mode (i.e., no backpressure is applied to it). The inner {@code Publisher}s are expected to honor
-     *  backpressure; if violated, the operator <em>may</em> signal {@code MissingBackpressureException}.</dd>
+     *  <dd>The operator honors backpressure from downstream. The upstream Flowable is consumed
+     *  in a bounded manner (up to {@link #bufferSize()} outstanding request amount for items). 
+     *  The inner {@code Publisher}s are expected to honor backpressure; if violated, 
+     *  the operator <em>may</em> signal {@code MissingBackpressureException}.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code flatMap} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -8247,9 +8248,10 @@ public abstract class Flowable<T> implements Publisher<T> {
      * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/flatMap.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator honors backpressure from downstream. The outer {@code Publisher} is consumed
-     *  in unbounded mode (i.e., no backpressure is applied to it). The inner {@code Publisher}s are expected to honor
-     *  backpressure; if violated, the operator <em>may</em> signal {@code MissingBackpressureException}.</dd>
+     *  <dd>The operator honors backpressure from downstream. The upstream Flowable is consumed
+     *  in a bounded manner (up to {@link #bufferSize()} outstanding request amount for items). 
+     *  The inner {@code Publisher}s are expected to honor backpressure; if violated, 
+     *  the operator <em>may</em> signal {@code MissingBackpressureException}.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code flatMap} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -8282,8 +8284,10 @@ public abstract class Flowable<T> implements Publisher<T> {
      * <!-- <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/flatMap.png" alt=""> -->
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator honors backpressure from downstream. Both the outer and inner {@code Publisher}s are expected to honor
-     *  backpressure; if violated, the operator <em>may</em> signal {@code MissingBackpressureException}.</dd>
+     *  <dd>The operator honors backpressure from downstream. The upstream Flowable is consumed
+     *  in a bounded manner (up to {@code maxConcurrency} outstanding request amount for items). 
+     *  The inner {@code Publisher}s are expected to honor backpressure; if violated, 
+     *  the operator <em>may</em> signal {@code MissingBackpressureException}.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code flatMap} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -8316,8 +8320,10 @@ public abstract class Flowable<T> implements Publisher<T> {
      * <!-- <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/flatMap.png" alt=""> -->
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator honors backpressure from downstream. Both the outer and inner {@code Publisher}s are expected to honor
-     *  backpressure; if violated, the operator <em>may</em> signal {@code MissingBackpressureException}.</dd>
+     *  <dd>The operator honors backpressure from downstream. The upstream Flowable is consumed
+     *  in a bounded manner (up to {@code maxConcurrency} outstanding request amount for items). 
+     *  The inner {@code Publisher}s are expected to honor backpressure; if violated, 
+     *  the operator <em>may</em> signal {@code MissingBackpressureException}.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code flatMap} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -8353,8 +8359,10 @@ public abstract class Flowable<T> implements Publisher<T> {
      * <!-- <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/flatMap.png" alt=""> -->
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator honors backpressure from downstream. Both the outer and inner {@code Publisher}s are expected to honor
-     *  backpressure; if violated, the operator <em>may</em> signal {@code MissingBackpressureException}.</dd>
+     *  <dd>The operator honors backpressure from downstream. The upstream Flowable is consumed
+     *  in a bounded manner (up to {@code maxConcurrency} outstanding request amount for items). 
+     *  The inner {@code Publisher}s are expected to honor backpressure; if violated, 
+     *  the operator <em>may</em> signal {@code MissingBackpressureException}.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code flatMap} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -8402,9 +8410,10 @@ public abstract class Flowable<T> implements Publisher<T> {
      * <img width="640" height="410" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/mergeMap.nce.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator honors backpressure from downstream. The outer {@code Publisher} is consumed
-     *  in unbounded mode (i.e., no backpressure is applied to it). The inner {@code Publisher}s are expected to honor
-     *  backpressure; if violated, the operator <em>may</em> signal {@code MissingBackpressureException}.</dd>
+     *  <dd>The operator honors backpressure from downstream. The upstream Flowable is consumed
+     *  in a bounded manner (up to {@link #bufferSize()} outstanding request amount for items). 
+     *  The inner {@code Publisher}s are expected to honor backpressure; if violated, 
+     *  the operator <em>may</em> signal {@code MissingBackpressureException}.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code flatMap} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -8444,8 +8453,10 @@ public abstract class Flowable<T> implements Publisher<T> {
      * <!-- <img width="640" height="410" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/mergeMap.nce.png" alt=""> -->
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator honors backpressure from downstream. Both the outer and inner {@code Publisher}s are expected to honor
-     *  backpressure; if violated, the operator <em>may</em> signal {@code MissingBackpressureException}.</dd>
+     *  <dd>The operator honors backpressure from downstream. The upstream Flowable is consumed
+     *  in a bounded manner (up to {@code maxConcurrency} outstanding request amount for items). 
+     *  The inner {@code Publisher}s are expected to honor backpressure; if violated, 
+     *  the operator <em>may</em> signal {@code MissingBackpressureException}.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code flatMap} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -8489,20 +8500,21 @@ public abstract class Flowable<T> implements Publisher<T> {
      * <img width="640" height="390" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/mergeMap.r.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator honors backpressure from downstream. The outer {@code Publisher} is consumed
-     *  in unbounded mode (i.e., no backpressure is applied to it). The inner {@code Publisher}s are expected to honor
-     *  backpressure; if violated, the operator <em>may</em> signal {@code MissingBackpressureException}.</dd>
+     *  <dd>The operator honors backpressure from downstream. The upstream Flowable is consumed
+     *  in a bounded manner (up to {@code maxConcurrency} outstanding request amount for items). 
+     *  The inner {@code Publisher}s are expected to honor backpressure; if violated, 
+     *  the operator <em>may</em> signal {@code MissingBackpressureException}.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code flatMap} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
      * @param <U>
-     *            the type of items emitted by the collection Publisher
+     *            the type of items emitted by the inner Publishers
      * @param <R>
-     *            the type of items emitted by the resulting Publisher
+     *            the type of items emitted by the combiner function
      * @param mapper
      *            a function that returns a Publisher for each item emitted by the source Publisher
-     * @param resultSelector
+     * @param combiner
      *            a function that combines one item emitted by each of the source and collection Publishers and
      *            returns an item to be emitted by the resulting Publisher
      * @return a Flowable that emits the results of applying a function to a pair of values emitted by the
@@ -8513,8 +8525,8 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <U, R> Flowable<R> flatMap(Function<? super T, ? extends Publisher<? extends U>> mapper,
-            BiFunction<? super T, ? super U, ? extends R> resultSelector) {
-        return flatMap(mapper, resultSelector, false, bufferSize(), bufferSize());
+            BiFunction<? super T, ? super U, ? extends R> combiner) {
+        return flatMap(mapper, combiner, false, bufferSize(), bufferSize());
     }
 
     /**
@@ -8524,17 +8536,18 @@ public abstract class Flowable<T> implements Publisher<T> {
      * <img width="640" height="390" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/mergeMap.r.png" alt="">
      * <dl>
      * <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator honors backpressure from downstream. The outer {@code Publisher} is consumed
-     *  in unbounded mode (i.e., no backpressure is applied to it). The inner {@code Publisher}s are expected to honor
-     *  backpressure; if violated, the operator <em>may</em> signal {@code MissingBackpressureException}.</dd>
+     *  <dd>The operator honors backpressure from downstream. The upstream Flowable is consumed
+     *  in a bounded manner (up to {@link #bufferSize()} outstanding request amount for items). 
+     *  The inner {@code Publisher}s are expected to honor backpressure; if violated, 
+     *  the operator <em>may</em> signal {@code MissingBackpressureException}.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code flatMap} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
      * @param <U>
-     *            the type of items emitted by the collection Publisher
+     *            the type of items emitted by the inner Publishers
      * @param <R>
-     *            the type of items emitted by the resulting Publisher
+     *            the type of items emitted by the combiner functions
      * @param mapper
      *            a function that returns a Publisher for each item emitted by the source Publisher
      * @param combiner
@@ -8563,16 +8576,18 @@ public abstract class Flowable<T> implements Publisher<T> {
      * <!-- <img width="640" height="390" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/mergeMap.r.png" alt=""> -->
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator honors backpressure from downstream. Both the outer and inner {@code Publisher}s are expected to honor
-     *  backpressure; if violated, the operator <em>may</em> signal {@code MissingBackpressureException}.</dd>
+     *  <dd>The operator honors backpressure from downstream. The upstream Flowable is consumed
+     *  in a bounded manner (up to {@code maxConcurrency} outstanding request amount for items). 
+     *  The inner {@code Publisher}s are expected to honor backpressure; if violated, 
+     *  the operator <em>may</em> signal {@code MissingBackpressureException}.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code flatMap} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
      * @param <U>
-     *            the type of items emitted by the collection Publisher
+     *            the type of items emitted by the inner Publishers
      * @param <R>
-     *            the type of items emitted by the resulting Publisher
+     *            the type of items emitted by the combiner function
      * @param mapper
      *            a function that returns a Publisher for each item emitted by the source Publisher
      * @param combiner
@@ -8604,16 +8619,18 @@ public abstract class Flowable<T> implements Publisher<T> {
      * <!-- <img width="640" height="390" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/mergeMap.r.png" alt=""> -->
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator honors backpressure from downstream. Both the outer and inner {@code Publisher}s are expected to honor
-     *  backpressure; if violated, the operator <em>may</em> signal {@code MissingBackpressureException}.</dd>
+     *  <dd>The operator honors backpressure from downstream. The upstream Flowable is consumed
+     *  in a bounded manner (up to {@code maxConcurrency} outstanding request amount for items). 
+     *  The inner {@code Publisher}s are expected to honor backpressure; if violated, 
+     *  the operator <em>may</em> signal {@code MissingBackpressureException}.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code flatMap} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
      * @param <U>
-     *            the type of items emitted by the collection Publisher
+     *            the type of items emitted by the inner Publishers
      * @param <R>
-     *            the type of items emitted by the resulting Publisher
+     *            the type of items emitted by the combiner function
      * @param mapper
      *            a function that returns a Publisher for each item emitted by the source Publisher
      * @param combiner
@@ -8649,16 +8666,18 @@ public abstract class Flowable<T> implements Publisher<T> {
      * <!-- <img width="640" height="390" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/mergeMap.r.png" alt=""> -->
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator honors backpressure from downstream. Both the outer and inner {@code Publisher}s are expected to honor
-     *  backpressure; if violated, the operator <em>may</em> signal {@code MissingBackpressureException}.</dd>
+     *  <dd>The operator honors backpressure from downstream. The upstream Flowable is consumed
+     *  in a bounded manner (up to {@link #bufferSize()} outstanding request amount for items). 
+     *  The inner {@code Publisher}s are expected to honor backpressure; if violated, 
+     *  the operator <em>may</em> signal {@code MissingBackpressureException}.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code flatMap} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
      * @param <U>
-     *            the type of items emitted by the collection Publisher
+     *            the type of items emitted by the inner Publishers
      * @param <R>
-     *            the type of items emitted by the resulting Publisher
+     *            the type of items emitted by the combiner function
      * @param mapper
      *            a function that returns a Publisher for each item emitted by the source Publisher
      * @param combiner
