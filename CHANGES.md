@@ -1,5 +1,40 @@
 # RxJava Releases #
 
+### Version 1.2.7 - February 24, 2017 ([Maven](http://search.maven.org/#artifactdetails%7Cio.reactivex%7Crxjava%7C1.2.7%7C))
+
+#### Deprecation of `create(OnSubscribe)`
+
+The method started out in RxJava 0.x as a simple and direct way for implementing custom operators because 0.x had a much simpler protocol requirements. Over the years, as the `Observable` protocol evolved and `create` became a powerful and complicated extension point of RxJava that required users to implement the `Observable` protocol, including cancellation and backpressure manually.
+
+Unfortunately, guides, blogs, StackOverflow answers and mere typical user behavior still leads to this `create` method and lots of confusion, unstoppable sequences and `MissingBackpressureException`. We tried remedying the situation by introducing `fromEmitter` with limited discoverability success.
+
+**Therefore, as of 1.2.7 the `create()` method is now deprecated** (but won't be removed due to binary compatibility requirements). In addition `fromEmitter` has been deprecate-renamed to `create(Action1, BackpressureMode)` and the experimental-marked `fromEmitter` itself will be removed in 1.3.0.
+
+Since the functionality of `create()` was useful for writing (custom) operators inside and outside of RxJava, the new `unsafeCreate(OnSubscribe)` method was introduced as the replacement.
+
+The new `create()` and `unsafeCreate()` methods will be fast-tracked to become standard in 1.3.0.
+
+#### API enhancements
+
+- [Pull 5086](https://github.com/ReactiveX/RxJava/pull/5086): Deprecate `create()`, add alternatives
+- [Pull 5092](https://github.com/ReactiveX/RxJava/pull/5092): Add `Single.merge(Observable<Single<T>>)`, `Observable.flatMapSingle()` & `Observable.flatMapCompletable`.
+- [Pull 5091](https://github.com/ReactiveX/RxJava/pull/5091): Add `subscribeOn(Scheduler, boolean)` avoid same-pool deadlock.
+
+#### API deprecations
+
+- [Pull 5086](https://github.com/ReactiveX/RxJava/pull/5086): 
+  - Deprecate `Observable.create(OnSubscribe)`, 
+  - Deprecate `fromEmitter` in favor of `Observable.create(Action1, BackpressureMode)`. 
+
+#### Bugfixes
+
+- [Pull 5091](https://github.com/ReactiveX/RxJava/pull/5091): `create(Action1, BackpressureMode)`+`subscribeOn` avoid same-pool deadlock.
+- [Pull 5123](https://github.com/ReactiveX/RxJava/pull/5123): `throttleFirst` detecting clock-drift backwards to open the gate
+
+#### Other
+
+- [Pull 5125](https://github.com/ReactiveX/RxJava/pull/5125): reduce stack depth with `switchIfEmpty`
+
 ### Version 1.2.6 - February 3, 2017 ([Maven](http://search.maven.org/#artifactdetails%7Cio.reactivex%7Crxjava%7C1.2.6%7C))
 
 #### Documentation
