@@ -551,17 +551,22 @@ public final class FlowableFlatMap<T, U> extends AbstractFlowableWithUpstream<T,
 
         boolean checkTerminate() {
             if (cancelled) {
-                SimpleQueue<U> q = queue;
-                if (q != null) {
-                    q.clear();
-                }
+                clearScalarQueue();
                 return true;
             }
             if (!delayErrors && errs.get() != null) {
+                clearScalarQueue();
                 actual.onError(errs.terminate());
                 return true;
             }
             return false;
+        }
+
+        void clearScalarQueue() {
+            SimpleQueue<U> q = queue;
+            if (q != null) {
+                q.clear();
+            }
         }
 
         void disposeAll() {
@@ -577,6 +582,21 @@ public final class FlowableFlatMap<T, U> extends AbstractFlowableWithUpstream<T,
                         RxJavaPlugins.onError(ex);
                     }
                 }
+            }
+        }
+
+        void innerError(InnerSubscriber<T, U> inner, Throwable t) {
+            if (errs.addThrowable(t)) {
+                inner.done = true;
+                if (!delayErrors) {
+                    s.cancel();
+                    for (InnerSubscriber<?, ?> a : subscribers.getAndSet(CANCELLED)) {
+                        a.dispose();
+                    }
+                }
+                drain();
+            } else {
+                RxJavaPlugins.onError(t);
             }
         }
     }
@@ -636,12 +656,8 @@ public final class FlowableFlatMap<T, U> extends AbstractFlowableWithUpstream<T,
         }
         @Override
         public void onError(Throwable t) {
-            if (parent.errs.addThrowable(t)) {
-                done = true;
-                parent.drain();
-            } else {
-                RxJavaPlugins.onError(t);
-            }
+            lazySet(SubscriptionHelper.CANCELLED);
+            parent.innerError(this, t);
         }
         @Override
         public void onComplete() {
