@@ -13,9 +13,15 @@
 
 package io.reactivex.internal.operators.single;
 
+import static org.junit.Assert.assertTrue;
+
+import java.util.List;
+
 import org.junit.Test;
 
-import io.reactivex.Single;
+import io.reactivex.*;
+import io.reactivex.exceptions.TestException;
+import io.reactivex.plugins.RxJavaPlugins;
 
 public class SingleMergeTest {
 
@@ -48,4 +54,20 @@ public class SingleMergeTest {
         .assertResult(1, 2, 3, 4);
     }
 
+    @Test
+    public void mergeErrors() {
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            Single<Integer> source1 = Single.error(new TestException("First"));
+            Single<Integer> source2 = Single.error(new TestException("Second"));
+
+            Single.merge(source1, source2)
+            .test()
+            .assertFailureAndMessage(TestException.class, "First");
+
+            assertTrue(errors.toString(), errors.isEmpty());
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
 }

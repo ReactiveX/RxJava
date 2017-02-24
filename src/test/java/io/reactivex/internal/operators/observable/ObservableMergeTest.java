@@ -27,8 +27,10 @@ import io.reactivex.Observable;
 import io.reactivex.Observer;
 import io.reactivex.Scheduler.Worker;
 import io.reactivex.disposables.*;
+import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.*;
 import io.reactivex.observers.*;
+import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.schedulers.*;
 
 public class ObservableMergeTest {
@@ -1124,5 +1126,22 @@ public class ObservableMergeTest {
         Observable.mergeArray(Observable.just(1), Observable.just(2))
         .test()
         .assertResult(1, 2);
+    }
+
+    @Test
+    public void mergeErrors() {
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            Observable<Integer> source1 = Observable.error(new TestException("First"));
+            Observable<Integer> source2 = Observable.error(new TestException("Second"));
+
+            Observable.merge(source1, source2)
+            .test()
+            .assertFailureAndMessage(TestException.class, "First");
+
+            assertTrue(errors.toString(), errors.isEmpty());
+        } finally {
+            RxJavaPlugins.reset();
+        }
     }
 }

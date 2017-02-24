@@ -28,10 +28,12 @@ import org.reactivestreams.*;
 
 import io.reactivex.*;
 import io.reactivex.Scheduler.Worker;
+import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.*;
 import io.reactivex.internal.functions.Functions;
 import io.reactivex.internal.subscriptions.*;
 import io.reactivex.internal.util.*;
+import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.*;
 import io.reactivex.subscribers.*;
@@ -1629,5 +1631,22 @@ public class FlowableMergeTest {
         Flowable.mergeArray(Flowable.just(1), Flowable.just(2))
         .test()
         .assertResult(1, 2);
+    }
+
+    @Test
+    public void mergeErrors() {
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            Flowable<Integer> source1 = Flowable.error(new TestException("First"));
+            Flowable<Integer> source2 = Flowable.error(new TestException("Second"));
+
+            Flowable.merge(source1, source2)
+            .test()
+            .assertFailureAndMessage(TestException.class, "First");
+
+            assertTrue(errors.toString(), errors.isEmpty());
+        } finally {
+            RxJavaPlugins.reset();
+        }
     }
 }
