@@ -8217,8 +8217,8 @@ public abstract class Flowable<T> implements Publisher<T> {
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream. The upstream Flowable is consumed
-     *  in a bounded manner (up to {@link #bufferSize()} outstanding request amount for items). 
-     *  The inner {@code Publisher}s are expected to honor backpressure; if violated, 
+     *  in a bounded manner (up to {@link #bufferSize()} outstanding request amount for items).
+     *  The inner {@code Publisher}s are expected to honor backpressure; if violated,
      *  the operator <em>may</em> signal {@code MissingBackpressureException}.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code flatMap} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -8249,8 +8249,8 @@ public abstract class Flowable<T> implements Publisher<T> {
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream. The upstream Flowable is consumed
-     *  in a bounded manner (up to {@link #bufferSize()} outstanding request amount for items). 
-     *  The inner {@code Publisher}s are expected to honor backpressure; if violated, 
+     *  in a bounded manner (up to {@link #bufferSize()} outstanding request amount for items).
+     *  The inner {@code Publisher}s are expected to honor backpressure; if violated,
      *  the operator <em>may</em> signal {@code MissingBackpressureException}.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code flatMap} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -8285,8 +8285,8 @@ public abstract class Flowable<T> implements Publisher<T> {
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream. The upstream Flowable is consumed
-     *  in a bounded manner (up to {@code maxConcurrency} outstanding request amount for items). 
-     *  The inner {@code Publisher}s are expected to honor backpressure; if violated, 
+     *  in a bounded manner (up to {@code maxConcurrency} outstanding request amount for items).
+     *  The inner {@code Publisher}s are expected to honor backpressure; if violated,
      *  the operator <em>may</em> signal {@code MissingBackpressureException}.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code flatMap} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -8321,8 +8321,8 @@ public abstract class Flowable<T> implements Publisher<T> {
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream. The upstream Flowable is consumed
-     *  in a bounded manner (up to {@code maxConcurrency} outstanding request amount for items). 
-     *  The inner {@code Publisher}s are expected to honor backpressure; if violated, 
+     *  in a bounded manner (up to {@code maxConcurrency} outstanding request amount for items).
+     *  The inner {@code Publisher}s are expected to honor backpressure; if violated,
      *  the operator <em>may</em> signal {@code MissingBackpressureException}.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code flatMap} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -8360,8 +8360,8 @@ public abstract class Flowable<T> implements Publisher<T> {
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream. The upstream Flowable is consumed
-     *  in a bounded manner (up to {@code maxConcurrency} outstanding request amount for items). 
-     *  The inner {@code Publisher}s are expected to honor backpressure; if violated, 
+     *  in a bounded manner (up to {@code maxConcurrency} outstanding request amount for items).
+     *  The inner {@code Publisher}s are expected to honor backpressure; if violated,
      *  the operator <em>may</em> signal {@code MissingBackpressureException}.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code flatMap} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -8411,8 +8411,8 @@ public abstract class Flowable<T> implements Publisher<T> {
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream. The upstream Flowable is consumed
-     *  in a bounded manner (up to {@link #bufferSize()} outstanding request amount for items). 
-     *  The inner {@code Publisher}s are expected to honor backpressure; if violated, 
+     *  in a bounded manner (up to {@link #bufferSize()} outstanding request amount for items).
+     *  The inner {@code Publisher}s are expected to honor backpressure; if violated,
      *  the operator <em>may</em> signal {@code MissingBackpressureException}.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code flatMap} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -8454,8 +8454,8 @@ public abstract class Flowable<T> implements Publisher<T> {
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream. The upstream Flowable is consumed
-     *  in a bounded manner (up to {@code maxConcurrency} outstanding request amount for items). 
-     *  The inner {@code Publisher}s are expected to honor backpressure; if violated, 
+     *  in a bounded manner (up to {@code maxConcurrency} outstanding request amount for items).
+     *  The inner {@code Publisher}s are expected to honor backpressure; if violated,
      *  the operator <em>may</em> signal {@code MissingBackpressureException}.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code flatMap} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -8501,8 +8501,8 @@ public abstract class Flowable<T> implements Publisher<T> {
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream. The upstream Flowable is consumed
-     *  in a bounded manner (up to {@code maxConcurrency} outstanding request amount for items). 
-     *  The inner {@code Publisher}s are expected to honor backpressure; if violated, 
+     *  in a bounded manner (up to {@code maxConcurrency} outstanding request amount for items).
+     *  The inner {@code Publisher}s are expected to honor backpressure; if violated,
      *  the operator <em>may</em> signal {@code MissingBackpressureException}.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code flatMap} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -8537,8 +8537,8 @@ public abstract class Flowable<T> implements Publisher<T> {
      * <dl>
      * <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream. The upstream Flowable is consumed
-     *  in a bounded manner (up to {@link #bufferSize()} outstanding request amount for items). 
-     *  The inner {@code Publisher}s are expected to honor backpressure; if violated, 
+     *  in a bounded manner (up to {@link #bufferSize()} outstanding request amount for items).
+     *  The inner {@code Publisher}s are expected to honor backpressure; if violated,
      *  the operator <em>may</em> signal {@code MissingBackpressureException}.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code flatMap} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -8577,8 +8577,8 @@ public abstract class Flowable<T> implements Publisher<T> {
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream. The upstream Flowable is consumed
-     *  in a bounded manner (up to {@code maxConcurrency} outstanding request amount for items). 
-     *  The inner {@code Publisher}s are expected to honor backpressure; if violated, 
+     *  in a bounded manner (up to {@code maxConcurrency} outstanding request amount for items).
+     *  The inner {@code Publisher}s are expected to honor backpressure; if violated,
      *  the operator <em>may</em> signal {@code MissingBackpressureException}.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code flatMap} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -8620,8 +8620,8 @@ public abstract class Flowable<T> implements Publisher<T> {
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream. The upstream Flowable is consumed
-     *  in a bounded manner (up to {@code maxConcurrency} outstanding request amount for items). 
-     *  The inner {@code Publisher}s are expected to honor backpressure; if violated, 
+     *  in a bounded manner (up to {@code maxConcurrency} outstanding request amount for items).
+     *  The inner {@code Publisher}s are expected to honor backpressure; if violated,
      *  the operator <em>may</em> signal {@code MissingBackpressureException}.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code flatMap} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -8667,8 +8667,8 @@ public abstract class Flowable<T> implements Publisher<T> {
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream. The upstream Flowable is consumed
-     *  in a bounded manner (up to {@link #bufferSize()} outstanding request amount for items). 
-     *  The inner {@code Publisher}s are expected to honor backpressure; if violated, 
+     *  in a bounded manner (up to {@link #bufferSize()} outstanding request amount for items).
+     *  The inner {@code Publisher}s are expected to honor backpressure; if violated,
      *  the operator <em>may</em> signal {@code MissingBackpressureException}.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code flatMap} does not operate by default on a particular {@link Scheduler}.</dd>
