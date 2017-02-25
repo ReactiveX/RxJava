@@ -1441,7 +1441,7 @@ public abstract class Completable implements CompletableSource {
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Completable repeatWhen(Function<? super Flowable<Object>, ? extends Publisher<Object>> handler) {
+    public final Completable repeatWhen(Function<? super Flowable<Object>, ? extends Publisher<?>> handler) {
         return fromPublisher(toFlowable().repeatWhen(handler));
     }
 
@@ -1526,7 +1526,7 @@ public abstract class Completable implements CompletableSource {
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Completable retryWhen(Function<? super Flowable<Throwable>, ? extends Publisher<Object>> handler) {
+    public final Completable retryWhen(Function<? super Flowable<Throwable>, ? extends Publisher<?>> handler) {
         return fromPublisher(toFlowable().retryWhen(handler));
     }
 
