@@ -48,6 +48,8 @@ public abstract class BaseTestConsumer<T, U extends BaseTestConsumer<T, U>> impl
 
     protected int establishedFusionMode;
 
+    protected CharSequence tag;
+
     public BaseTestConsumer() {
         this.values = new ArrayList<T>();
         this.errors = new ArrayList<Throwable>();
@@ -129,6 +131,15 @@ public abstract class BaseTestConsumer<T, U extends BaseTestConsumer<T, U>> impl
         .append("values = ").append(values.size()).append(", ")
         .append("errors = ").append(errors.size()).append(", ")
         .append("completions = ").append(completions)
+        ;
+
+        CharSequence tag = this.tag;
+        if (tag != null) {
+            b.append(", tag = ")
+            .append(tag);
+        }
+
+        b
         .append(')')
         ;
 
@@ -746,5 +757,19 @@ public abstract class BaseTestConsumer<T, U extends BaseTestConsumer<T, U>> impl
                 .assertNoValues()
                 .assertNoErrors()
                 .assertNotComplete();
+    }
+
+    /**
+     * Set the tag displayed along with an assertion failure's
+     * other state information.
+     * @param tag the string to display (null won't print any tag)
+     * @return this
+     * @since 2.0.7 - experimental
+     */
+    @SuppressWarnings("unchecked")
+    @Experimental
+    public final U withTag(CharSequence tag) {
+        this.tag = tag;
+        return (U)this;
     }
 }

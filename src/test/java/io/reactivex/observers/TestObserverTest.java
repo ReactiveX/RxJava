@@ -1381,4 +1381,20 @@ public class TestObserverTest {
             }
         });
     }
+
+    @Test
+    public void withTag() {
+        try {
+            for (int i = 1; i < 3; i++) {
+                Observable.just(i)
+                .test()
+                .withTag("testing with item=" + i)
+                .assertResult(1)
+                ;
+            }
+            fail("Should have thrown!");
+        } catch (AssertionError ex) {
+            assertTrue(ex.toString(), ex.toString().contains("testing with item=2"));
+        }
+    }
 }
