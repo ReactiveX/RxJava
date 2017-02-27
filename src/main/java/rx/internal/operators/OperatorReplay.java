@@ -1239,9 +1239,18 @@ public final class OperatorReplay<T> extends ConnectableObservable<T> {
             Node prev = get();
 
             Node next = prev.get();
-            while (next != null && ((Timestamped<?>)next.value).getTimestampMillis() <= timeLimit) {
-                prev = next;
-                next = next.get();
+            while (next != null) {
+                Object o = next.value;
+                Object v = leaveTransform(o);
+                if (NotificationLite.isCompleted(v) || NotificationLite.isError(v)) {
+                    break;
+                }
+                if (((Timestamped<?>)o).getTimestampMillis() <= timeLimit) {
+                    prev = next;
+                    next = next.get();
+                } else {
+                    break;
+                }
             }
 
             return prev;

@@ -1175,4 +1175,22 @@ public class ReplaySubjectTest {
         ts2.assertValues(1, 2, 3, 6, 7);
     }
 
+    @Test
+    public void noOldEntries() {
+        TestScheduler scheduler = new TestScheduler();
+
+        ReplaySubject<Integer> source = ReplaySubject.createWithTime(2, TimeUnit.SECONDS, scheduler);
+
+        source.onNext(1);
+        source.onCompleted();
+        
+        source.test().assertResult(1);
+
+        source.test().assertResult(1);
+
+        scheduler.advanceTimeBy(3, TimeUnit.SECONDS);
+
+        source.test().assertResult();
+    }
+
 }
