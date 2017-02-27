@@ -1577,4 +1577,20 @@ public class OperatorReplayTest {
         });
     }
 
+    @Test
+    public void noOldEntries() {
+        TestScheduler scheduler = new TestScheduler();
+
+        Observable<Integer> source = Observable.just(1)
+        .replay(2, TimeUnit.SECONDS, scheduler)
+        .autoConnect();
+        
+        source.test().assertResult(1);
+
+        source.test().assertResult(1);
+
+        scheduler.advanceTimeBy(3, TimeUnit.SECONDS);
+
+        source.test().assertResult();
+    }
 }
