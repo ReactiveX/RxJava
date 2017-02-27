@@ -492,7 +492,7 @@ public class ReplaySubjectTest {
 
         verify(o, never()).onNext(1);
         verify(o, never()).onNext(2);
-        verify(o).onNext(3);
+        verify(o, never()).onNext(3);
         verify(o).onComplete();
         verify(o, never()).onError(any(Throwable.class));
     }
@@ -782,9 +782,11 @@ public class ReplaySubjectTest {
 
         for (int i = 0; i < 1000; i++) {
             rs.onNext(i);
-            ts.advanceTimeBy(2, TimeUnit.SECONDS);
             assertEquals(1, rs.size());
             assertTrue(rs.hasValue());
+            ts.advanceTimeBy(2, TimeUnit.SECONDS);
+            assertEquals(0, rs.size());
+            assertFalse(rs.hasValue());
         }
 
         rs.onComplete();
@@ -1163,5 +1165,22 @@ public class ReplaySubjectTest {
         TestHelper.checkDisposed(ReplaySubject.createWithSize(10));
 
         TestHelper.checkDisposed(ReplaySubject.createWithTimeAndSize(1, TimeUnit.SECONDS, Schedulers.single(), 10));
+    }
+
+    @Test
+    public void timedNoOutdatedData() {
+        TestScheduler scheduler = new TestScheduler();
+
+        ReplaySubject<Integer> source = ReplaySubject.createWithTime(2, TimeUnit.SECONDS, scheduler);
+        source.onNext(1);
+        source.onComplete();
+
+        source.test().assertResult(1);
+
+        source.test().assertResult(1);
+
+        scheduler.advanceTimeBy(3, TimeUnit.SECONDS);
+
+        source.test().assertResult();
     }
 }

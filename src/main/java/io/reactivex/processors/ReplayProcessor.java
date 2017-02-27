@@ -1066,8 +1066,8 @@ public final class ReplayProcessor<T> extends FlowableProcessor<T> {
         @Override
         @SuppressWarnings("unchecked")
         public T[] getValues(T[] array) {
-            TimedNode<Object> h = head;
-            int s = size();
+            TimedNode<Object> h = getHead();
+            int s = size(h);
 
             if (s == 0) {
                 if (array.length != 0) {
@@ -1093,6 +1093,22 @@ public final class ReplayProcessor<T> extends FlowableProcessor<T> {
             return array;
         }
 
+        TimedNode<Object> getHead() {
+            TimedNode<Object> index = head;
+            // skip old entries
+            long limit = scheduler.now(unit) - maxAge;
+            TimedNode<Object> next = index.get();
+            while (next != null) {
+                long ts = next.time;
+                if (ts > limit) {
+                    break;
+                }
+                index = next;
+                next = index.get();
+            }
+            return index;
+        }
+
         @Override
         @SuppressWarnings("unchecked")
         public void replay(ReplaySubscription<T> rs) {
@@ -1105,20 +1121,7 @@ public final class ReplayProcessor<T> extends FlowableProcessor<T> {
 
             TimedNode<Object> index = (TimedNode<Object>)rs.index;
             if (index == null) {
-                index = head;
-                if (!done) {
-                    // skip old entries
-                    long limit = scheduler.now(unit) - maxAge;
-                    TimedNode<Object> next = index.get();
-                    while (next != null) {
-                        long ts = next.time;
-                        if (ts > limit) {
-                            break;
-                        }
-                        index = next;
-                        next = index.get();
-                    }
-                }
+                index = getHead();
             }
 
             for (;;) {
@@ -1185,8 +1188,11 @@ public final class ReplayProcessor<T> extends FlowableProcessor<T> {
 
         @Override
         public int size() {
+            return size(getHead());
+        }
+
+        int size(TimedNode<Object> h) {
             int s = 0;
-            TimedNode<Object> h = head;
             while (s != Integer.MAX_VALUE) {
                 TimedNode<Object> next = h.get();
                 if (next == null) {

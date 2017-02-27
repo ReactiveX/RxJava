@@ -503,7 +503,7 @@ public class ReplayProcessorTest extends FlowableProcessorTest<Object> {
 
         verify(o, never()).onNext(1);
         verify(o, never()).onNext(2);
-        verify(o).onNext(3);
+        verify(o, never()).onNext(3);
         verify(o).onComplete();
         verify(o, never()).onError(any(Throwable.class));
     }
@@ -793,9 +793,11 @@ public class ReplayProcessorTest extends FlowableProcessorTest<Object> {
 
         for (int i = 0; i < 1000; i++) {
             rs.onNext(i);
-            ts.advanceTimeBy(2, TimeUnit.SECONDS);
             assertEquals(1, rs.size());
             assertTrue(rs.hasValue());
+            ts.advanceTimeBy(2, TimeUnit.SECONDS);
+            assertEquals(0, rs.size());
+            assertFalse(rs.hasValue());
         }
 
         rs.onComplete();
@@ -1278,5 +1280,22 @@ public class ReplayProcessorTest extends FlowableProcessorTest<Object> {
         ts.request(1);
 
         ts.assertResult(1, 2);
+    }
+
+    @Test
+    public void timedNoOutdatedData() {
+        TestScheduler scheduler = new TestScheduler();
+
+        ReplayProcessor<Integer> source = ReplayProcessor.createWithTime(2, TimeUnit.SECONDS, scheduler);
+        source.onNext(1);
+        source.onComplete();
+
+        source.test().assertResult(1);
+
+        source.test().assertResult(1);
+
+        scheduler.advanceTimeBy(3, TimeUnit.SECONDS);
+
+        source.test().assertResult();
     }
 }
