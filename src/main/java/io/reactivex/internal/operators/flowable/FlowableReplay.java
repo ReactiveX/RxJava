@@ -947,7 +947,7 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
 
                 Node node = output.index();
                 if (node == null) {
-                    node = get();
+                    node = getHead();
                     output.index = node;
 
                     BackpressureHelper.add(output.totalRequested, node.index);
@@ -1033,7 +1033,7 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
 
         }
         /* test */ final  void collect(Collection<? super T> output) {
-            Node n = get();
+            Node n = getHead();
             for (;;) {
                 Node next = n.get();
                 if (next != null) {
@@ -1054,6 +1054,10 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
         }
         /* test */ boolean hasCompleted() {
             return tail.value != null && NotificationLite.isComplete(leaveTransform(tail.value));
+        }
+
+        Node getHead() {
+            return get();
         }
     }
 
@@ -1171,6 +1175,29 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
             if (e != 0) {
                 setFirst(prev);
             }
+        }
+
+        @Override
+        Node getHead() {
+            long timeLimit = scheduler.now(unit) - maxAge;
+            Node prev = get();
+            Node next = prev.get();
+            for (;;) {
+                if (next == null) {
+                    break;
+                }
+                Timed<?> v = (Timed<?>)next.value;
+                if (NotificationLite.isComplete(v.value()) || NotificationLite.isError(v.value())) {
+                    break;
+                }
+                if (v.time() <= timeLimit) {
+                    prev = next;
+                    next = next.get();
+                } else {
+                    break;
+                }
+            }
+            return prev;
         }
     }
 }
