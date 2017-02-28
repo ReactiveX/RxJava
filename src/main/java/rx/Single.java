@@ -2808,6 +2808,50 @@ public class Single<T> {
         return create(new SingleOnSubscribeDelaySubscriptionOther<T>(this, other));
     }
 
+    /**
+     * Returns a Single which makes sure when a subscriber cancels the subscription,
+     * the dispose is called on the specified scheduler
+     * @param scheduler the target scheduler where to execute the cancellation
+     * @return the new Single instance
+     */
+    public final Single<T> unsubscribeOn(final Scheduler scheduler) {
+        return create(new OnSubscribe<T>() {
+            @Override
+            public void call(final SingleSubscriber<? super T> t) {
+                final SingleSubscriber<T> single = new SingleSubscriber<T>() {
+                    @Override
+                    public void onSuccess(T value) {
+                        t.onSuccess(value);
+                    }
+
+                    @Override
+                    public void onError(Throwable error) {
+                        t.onError(error);
+                    }
+                };
+
+                t.add(Subscriptions.create(new Action0() {
+                    @Override
+                    public void call() {
+                        final Scheduler.Worker w = scheduler.createWorker();
+                        w.schedule(new Action0() {
+                            @Override
+                            public void call() {
+                                try {
+                                    single.unsubscribe();
+                                } finally {
+                                    w.unsubscribe();
+                                }
+                            }
+                        });
+                    }
+                }));
+
+                Single.this.subscribe(single);
+            }
+        });
+    }
+
     // -------------------------------------------------------------------------
     // Fluent test support, super handy and reduces test preparation boilerplate
     // -------------------------------------------------------------------------
