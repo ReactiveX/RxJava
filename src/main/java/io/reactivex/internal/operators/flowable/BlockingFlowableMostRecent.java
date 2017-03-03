@@ -29,11 +29,11 @@ import io.reactivex.subscribers.DefaultSubscriber;
  */
 public final class BlockingFlowableMostRecent<T> implements Iterable<T> {
 
-    final Flowable<? extends T> source;
+    final Flowable<T> source;
 
     final T initialValue;
 
-    public BlockingFlowableMostRecent(Flowable<? extends T> source, T initialValue) {
+    public BlockingFlowableMostRecent(Flowable<T> source, T initialValue) {
         this.source = source;
         this.initialValue = initialValue;
     }
