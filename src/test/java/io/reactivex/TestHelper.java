@@ -644,7 +644,7 @@ public enum TestHelper {
      * isCancelled properly before and after calling dispose.
      * @param source the source to test
      */
-    public static void checkDisposed(Flowable<?> source) {
+    public static <T> void checkDisposed(Flowable<T> source) {
         final TestSubscriber<Object> ts = new TestSubscriber<Object>(0L);
         source.subscribe(new FlowableSubscriber<Object>() {
             @Override

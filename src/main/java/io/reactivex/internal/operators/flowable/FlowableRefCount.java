@@ -32,7 +32,7 @@ import io.reactivex.internal.subscriptions.SubscriptionHelper;
  *            the value type
  */
 public final class FlowableRefCount<T> extends AbstractFlowableWithUpstream<T, T> {
-    final ConnectableFlowable<? extends T> source;
+    final ConnectableFlowable<T> source;
     volatile CompositeDisposable baseDisposable = new CompositeDisposable();
     final AtomicInteger subscriptionCount = new AtomicInteger();
 
