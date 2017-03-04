@@ -1956,4 +1956,45 @@ public class TestSubscriberTest {
             assertTrue(ex.toString(), ex.getMessage().contains("Timeout?!"));
         }
     }
+
+    @Test
+    public void assertNeverPredicateThrows() {
+        try {
+            Flowable.just(1)
+            .test()
+            .assertNever(new Predicate<Integer>() {
+                @Override
+                public boolean test(Integer t) throws Exception {
+                    throw new IllegalArgumentException();
+                }
+            });
+            fail("Should have thrown!");
+        } catch (IllegalArgumentException ex) {
+            // expected
+        }
+    }
+
+    @Test
+    public void assertValueAtPredicateThrows() {
+        try {
+            Flowable.just(1)
+            .test()
+            .assertValueAt(0, new Predicate<Integer>() {
+                @Override
+                public boolean test(Integer t) throws Exception {
+                    throw new IllegalArgumentException();
+                }
+            });
+            fail("Should have thrown!");
+        } catch (IllegalArgumentException ex) {
+            // expected
+        }
+    }
+
+    @Test
+    public void waitStrategyRuns() {
+        for (TestWaitStrategy ws : TestWaitStrategy.values()) {
+            ws.run();
+        }
+    }
 }
