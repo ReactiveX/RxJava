@@ -12,6 +12,8 @@
  */
 package io.reactivex;
 
+import io.reactivex.annotations.NonNull;
+
 /**
  * Base interface for emitting signals in a push-fashion in various generator-like source
  * operators (create, generate).
@@ -24,13 +26,13 @@ public interface Emitter<T> {
      * Signal a normal value.
      * @param value the value to signal, not null
      */
-    void onNext(T value);
+    void onNext(@NonNull T value);
 
     /**
      * Signal a Throwable exception.
      * @param error the Throwable to signal, not null
      */
-    void onError(Throwable error);
+    void onError(@NonNull Throwable error);
 
     /**
      * Signal a completion.
