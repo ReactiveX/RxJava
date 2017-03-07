@@ -642,6 +642,7 @@ public enum TestHelper {
     /**
      * Checks if the upstream's Subscription sent through the onSubscribe reports
      * isCancelled properly before and after calling dispose.
+     * @param <T> the input value type
      * @param source the source to test
      */
     public static <T> void checkDisposed(Flowable<T> source) {
