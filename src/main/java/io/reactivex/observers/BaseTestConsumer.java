@@ -21,9 +21,8 @@ import io.reactivex.annotations.Experimental;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.CompositeException;
 import io.reactivex.functions.Predicate;
-import io.reactivex.internal.functions.Functions;
-import io.reactivex.internal.functions.ObjectHelper;
-import io.reactivex.internal.util.ExceptionHelper;
+import io.reactivex.internal.functions.*;
+import io.reactivex.internal.util.*;
 
 /**
  * Base class with shared infrastructure to support TestSubscriber and TestObserver.
@@ -48,11 +47,21 @@ public abstract class BaseTestConsumer<T, U extends BaseTestConsumer<T, U>> impl
 
     protected int establishedFusionMode;
 
+    /**
+     * The optional tag associated with this test consumer.
+     * @since 2.0.7
+     */
     protected CharSequence tag;
 
+    /**
+     * Indicates that one of the awaitX method has timed out.
+     * @since 2.0.7
+     */
+    protected boolean timeout;
+
     public BaseTestConsumer() {
-        this.values = new ArrayList<T>();
-        this.errors = new ArrayList<Throwable>();
+        this.values = new VolatileSizeArrayList<T>();
+        this.errors = new VolatileSizeArrayList<Throwable>();
         this.done = new CountDownLatch(1);
     }
 
@@ -133,6 +142,14 @@ public abstract class BaseTestConsumer<T, U extends BaseTestConsumer<T, U>> impl
         .append("completions = ").append(completions)
         ;
 
+        if (timeout) {
+            b.append(", timeout!");
+        }
+
+        if (isDisposed()) {
+            b.append(", disposed!");
+        }
+
         CharSequence tag = this.tag;
         if (tag != null) {
             b.append(", tag = ")
@@ -181,7 +198,9 @@ public abstract class BaseTestConsumer<T, U extends BaseTestConsumer<T, U>> impl
      * @see #awaitTerminalEvent(long, TimeUnit)
      */
     public final boolean await(long time, TimeUnit unit) throws InterruptedException {
-        return done.getCount() == 0 || done.await(time, unit);
+        boolean d = done.getCount() == 0 || (done.await(time, unit));
+        timeout = !d;
+        return d;
     }
 
     // assertion methods
@@ -738,6 +757,7 @@ public abstract class BaseTestConsumer<T, U extends BaseTestConsumer<T, U>> impl
     public final U awaitDone(long time, TimeUnit unit) {
         try {
             if (!done.await(time, unit)) {
+                timeout = true;
                 dispose();
             }
         } catch (InterruptedException ex) {
@@ -749,7 +769,7 @@ public abstract class BaseTestConsumer<T, U extends BaseTestConsumer<T, U>> impl
 
 
     /**
-     * Assert that the TestObserver/TestSubscriber/TestSubscriber has received a Disposable but no other events.
+     * Assert that the TestObserver/TestSubscriber has received a Disposable but no other events.
      * @return this
      */
     public final U assertEmpty() {
@@ -770,6 +790,190 @@ public abstract class BaseTestConsumer<T, U extends BaseTestConsumer<T, U>> impl
     @Experimental
     public final U withTag(CharSequence tag) {
         this.tag = tag;
+        return (U)this;
+    }
+
+    /**
+     * Enumeration of default wait strategies when waiting for a specific number of
+     * items in {@link BaseTestConsumer#awaitCount(int, Runnable)}.
+     * @since 2.0.7 - experimental
+     */
+    @Experimental
+    public enum TestWaitStrategy implements Runnable {
+        /** The wait loop will spin as fast as possible. */
+        SPIN {
+            @Override
+            public void run() {
+                // nothing to do
+            }
+        },
+        /** The current thread will be yielded. */
+        YIELD {
+            @Override
+            public void run() {
+                Thread.yield();
+            }
+        },
+        /** The current thread sleeps for 1 millisecond. */
+        SLEEP_1MS {
+            @Override
+            public void run() {
+                sleep(1);
+            }
+        },
+        /** The current thread sleeps for 10 milliseconds. */
+        SLEEP_10MS {
+            @Override
+            public void run() {
+                sleep(10);
+            }
+        },
+        /** The current thread sleeps for 100 milliseconds. */
+        SLEEP_100MS {
+            @Override
+            public void run() {
+                sleep(100);
+            }
+        },
+        /** The current thread sleeps for 1000 milliseconds. */
+        SLEEP_1000MS {
+            @Override
+            public void run() {
+                sleep(1000);
+            }
+        }
+        ;
+
+        @Override
+        public abstract void run();
+
+        static void sleep(int millis) {
+            try {
+                Thread.sleep(millis);
+            } catch (InterruptedException ex) {
+                throw new RuntimeException(ex);
+            }
+        }
+    }
+
+
+    /**
+     * Await until the TestObserver/TestSubscriber receives the given
+     * number of items or terminates by sleeping 10 milliseconds at a time
+     * up to 5000 milliseconds of timeout.
+     * @param atLeast the number of items expected at least
+     * @return this
+     * @see #awaitCount(int, Runnable, long)
+     * @since 2.0.7 - experimental
+     */
+    @Experimental
+    public final U awaitCount(int atLeast) {
+        return awaitCount(atLeast, TestWaitStrategy.SLEEP_10MS, 5000);
+    }
+
+    /**
+     * Await until the TestObserver/TestSubscriber receives the given
+     * number of items or terminates by waiting according to the wait
+     * strategy and up to 5000 milliseconds of timeout.
+     * @param atLeast the number of items expected at least
+     * @param waitStrategy a Runnable called when the current received count
+     *                     hasn't reached the expected value and there was
+     *                     no terminal event either, see {@link TestWaitStrategy}
+     *                     for examples
+     * @return this
+     * @see #awaitCount(int, Runnable, long)
+     * @since 2.0.7 - experimental
+     */
+    @Experimental
+    public final U awaitCount(int atLeast, Runnable waitStrategy) {
+        return awaitCount(atLeast, waitStrategy, 5000);
+    }
+
+    /**
+     * Await until the TestObserver/TestSubscriber receives the given
+     * number of items or terminates.
+     * @param atLeast the number of items expected at least
+     * @param waitStrategy a Runnable called when the current received count
+     *                     hasn't reached the expected value and there was
+     *                     no terminal event either, see {@link TestWaitStrategy}
+     *                     for examples
+     * @param timeoutMillis if positive, the await ends if the specified amount of
+     *                      time has passed no matter how many items were received
+     * @return this
+     * @since 2.0.7 - experimental
+     */
+    @SuppressWarnings("unchecked")
+    @Experimental
+    public final U awaitCount(int atLeast, Runnable waitStrategy, long timeoutMillis) {
+        long start = System.currentTimeMillis();
+        for (;;) {
+            if (timeoutMillis > 0L && System.currentTimeMillis() - start >= timeoutMillis) {
+                timeout = true;
+                break;
+            }
+            if (done.getCount() == 0L) {
+                break;
+            }
+            if (values.size() >= atLeast) {
+                break;
+            }
+
+            waitStrategy.run();
+        }
+        return (U)this;
+    }
+
+    /**
+     * @return true if one of the timeout-based await methods has timed out.
+     * @see #clearTimeout()
+     * @see #assertTimeout()
+     * @see #assertNoTimeout()
+     * @since 2.0.7 - experimental
+     */
+    @Experimental
+    public final boolean isTimeout() {
+        return timeout;
+    }
+
+    /**
+     * Clears the timeout flag set by the await methods when they timed out.
+     * @return this
+     * @since 2.0.7 - experimental
+     * @see #isTimeout()
+     */
+    @SuppressWarnings("unchecked")
+    @Experimental
+    public final U clearTimeout() {
+        timeout = false;
+        return (U)this;
+    }
+
+    /**
+     * Asserts that some awaitX method has timed out.
+     * @return this
+     * @since 2.0.7 - experimental
+     */
+    @SuppressWarnings("unchecked")
+    @Experimental
+    public final U assertTimeout() {
+        if (!timeout) {
+            throw fail("No timeout?!");
+        }
+        return (U)this;
+    }
+
+
+    /**
+     * Asserts that some awaitX method has not timed out.
+     * @return this
+     * @since 2.0.7 - experimental
+     */
+    @SuppressWarnings("unchecked")
+    @Experimental
+    public final U assertNoTimeout() {
+        if (timeout) {
+            throw fail("Timeout?!");
+        }
         return (U)this;
     }
 }

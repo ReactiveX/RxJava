@@ -33,6 +33,8 @@ import io.reactivex.functions.*;
 import io.reactivex.internal.functions.Functions;
 import io.reactivex.internal.fuseable.QueueSubscription;
 import io.reactivex.internal.subscriptions.*;
+import io.reactivex.observers.BaseTestConsumer;
+import io.reactivex.observers.BaseTestConsumer.TestWaitStrategy;
 import io.reactivex.processors.*;
 import io.reactivex.schedulers.Schedulers;
 
@@ -1791,6 +1793,208 @@ public class TestSubscriberTest {
             fail("Should have thrown!");
         } catch (AssertionError ex) {
             assertTrue(ex.toString(), ex.toString().contains("testing with item=2"));
+        }
+    }
+
+    @Test
+    public void timeoutIndicated() throws InterruptedException {
+        Thread.interrupted(); // clear flag
+
+        TestSubscriber<Object> ts = Flowable.never()
+        .test();
+        assertFalse(ts.await(1, TimeUnit.MILLISECONDS));
+
+        try {
+            ts.assertResult(1);
+            fail("Should have thrown!");
+        } catch (AssertionError ex) {
+            assertTrue(ex.toString(), ex.toString().contains("timeout!"));
+        }
+    }
+
+    @Test
+    public void timeoutIndicated2() throws InterruptedException {
+        try {
+            Flowable.never()
+            .test()
+            .awaitDone(1, TimeUnit.MILLISECONDS)
+            .assertResult(1);
+
+            fail("Should have thrown!");
+        } catch (AssertionError ex) {
+            assertTrue(ex.toString(), ex.toString().contains("timeout!"));
+        }
+    }
+
+
+    @Test
+    public void timeoutIndicated3() throws InterruptedException {
+        TestSubscriber<Object> ts = Flowable.never()
+        .test();
+        assertFalse(ts.awaitTerminalEvent(1, TimeUnit.MILLISECONDS));
+
+        try {
+            ts.assertResult(1);
+            fail("Should have thrown!");
+        } catch (AssertionError ex) {
+            assertTrue(ex.toString(), ex.toString().contains("timeout!"));
+        }
+    }
+
+    @Test
+    public void disposeIndicated() {
+        TestSubscriber<Object> ts = new TestSubscriber<Object>();
+        ts.cancel();
+
+        try {
+            ts.assertResult(1);
+            fail("Should have thrown!");
+        } catch (Throwable ex) {
+            assertTrue(ex.toString(), ex.toString().contains("disposed!"));
+        }
+    }
+
+    @Test
+    public void checkTestWaitStrategyEnum() {
+        TestHelper.checkEnum(BaseTestConsumer.TestWaitStrategy.class);
+    }
+
+    @Test
+    public void awaitCount() {
+        Flowable.range(1, 10).delay(100, TimeUnit.MILLISECONDS)
+        .test(5)
+        .awaitCount(5)
+        .assertValues(1, 2, 3, 4, 5)
+        .requestMore(5)
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertResult(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
+    }
+
+    @Test
+    public void awaitCountLess() {
+        Flowable.range(1, 4)
+        .test()
+        .awaitCount(5)
+        .assertResult(1, 2, 3, 4);
+    }
+
+    @Test
+    public void awaitCountLess2() {
+        Flowable.range(1, 4)
+        .test()
+        .awaitCount(5, TestWaitStrategy.YIELD)
+        .assertResult(1, 2, 3, 4);
+    }
+
+    @Test
+    public void awaitCountLess3() {
+        Flowable.range(1, 4).delay(50, TimeUnit.MILLISECONDS)
+        .test()
+        .awaitCount(5, TestWaitStrategy.SLEEP_1MS)
+        .assertResult(1, 2, 3, 4);
+    }
+
+    @Test
+    public void interruptTestWaitStrategy() {
+        try {
+            Thread.currentThread().interrupt();
+            TestWaitStrategy.SLEEP_1000MS.run();
+        } catch (RuntimeException ex) {
+            assertTrue(ex.toString(), ex.getCause() instanceof InterruptedException);
+        }
+    }
+
+    @Test
+    public void awaitCountTimeout() {
+        TestSubscriber<Object> ts = Flowable.never()
+        .test()
+        .awaitCount(1, TestWaitStrategy.SLEEP_1MS, 50);
+
+        assertTrue(ts.isTimeout());
+        ts.clearTimeout();
+        assertFalse(ts.isTimeout());
+    }
+
+    @Test
+    public void assertTimeout() {
+        Flowable.never()
+        .test()
+        .awaitCount(1, TestWaitStrategy.SLEEP_1MS, 50)
+        .assertTimeout();
+    }
+
+    @Test
+    public void assertTimeout2() {
+        try {
+            Flowable.empty()
+            .test()
+            .awaitCount(1, TestWaitStrategy.SLEEP_1MS, 50)
+            .assertTimeout();
+            fail("Should have thrown!");
+        } catch (AssertionError ex) {
+            assertTrue(ex.toString(), ex.getMessage().contains("No timeout?!"));
+        }
+    }
+
+    @Test
+    public void assertNoTimeout() {
+        Flowable.just(1)
+        .test()
+        .awaitCount(1, TestWaitStrategy.SLEEP_1MS, 50)
+        .assertNoTimeout();
+    }
+
+    @Test
+    public void assertNoTimeout2() {
+        try {
+            Flowable.never()
+            .test()
+            .awaitCount(1, TestWaitStrategy.SLEEP_1MS, 50)
+            .assertNoTimeout();
+            fail("Should have thrown!");
+        } catch (AssertionError ex) {
+            assertTrue(ex.toString(), ex.getMessage().contains("Timeout?!"));
+        }
+    }
+
+    @Test
+    public void assertNeverPredicateThrows() {
+        try {
+            Flowable.just(1)
+            .test()
+            .assertNever(new Predicate<Integer>() {
+                @Override
+                public boolean test(Integer t) throws Exception {
+                    throw new IllegalArgumentException();
+                }
+            });
+            fail("Should have thrown!");
+        } catch (IllegalArgumentException ex) {
+            // expected
+        }
+    }
+
+    @Test
+    public void assertValueAtPredicateThrows() {
+        try {
+            Flowable.just(1)
+            .test()
+            .assertValueAt(0, new Predicate<Integer>() {
+                @Override
+                public boolean test(Integer t) throws Exception {
+                    throw new IllegalArgumentException();
+                }
+            });
+            fail("Should have thrown!");
+        } catch (IllegalArgumentException ex) {
+            // expected
+        }
+    }
+
+    @Test
+    public void waitStrategyRuns() {
+        for (TestWaitStrategy ws : TestWaitStrategy.values()) {
+            ws.run();
         }
     }
 }
