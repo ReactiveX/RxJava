@@ -2,6 +2,49 @@
 
 Version 1.x can be found at https://github.com/ReactiveX/RxJava/blob/1.x/CHANGES.md
 
+### Version 2.0.7 - March 7, 2017 ([Maven](http://search.maven.org/#artifactdetails%7Cio.reactivex.rxjava2%7Crxjava%7C2.0.7%7C))
+
+**Reactive-Streams compliance** 
+
+*[Related issue 5110](https://github.com/ReactiveX/RxJava/issues/5110), [related pull 5112](https://github.com/ReactiveX/RxJava/pull/5112).*
+
+RxJava 2's `Flowable` was designed with Reactive-Streams compliance in mind but didn't follow all rules to the letter. A temporary workaround was the introduction of the `strict()` operator to enable full compliance. Unfortunately, according to the clarified stance from the specification leads, implementors of `Publisher` must honor the specification (despite its shortcomings) without excuses or workarounds. 
+
+Honoring the specification adds a per-item cost of two atomic increments, manifesting in between the `Flowable` and an arbitrary `Reactive-Streams` compliant `org.reactivestreams.Subscriber`. See [Pull 5115](https://github.com/ReactiveX/RxJava/pull/5115) for the benchmark comparison.
+
+Starting from 2.0.7, the `Flowable.subscribe(org.reactivestreams.Subscriber)` now follows the spec by wrapping via the `StrictSubscriber` of the `strict()` operator unless the consuming instance implements a new interface specific to RxJava 2: `FlowableSubscriber`. 
+
+The `FlowableSubscriber` extends `org.reactivestreams.Subscriber` but doesn't add any new methods and only overrides four of the textual rules of the specification to enable a relaxed operation within RxJava 2. All internal operators have been converted to use this new interface and thus don't have suffer the per-item overhead required by the specification, including the standard `DisposableSubscriber`, `TestSubscriber` and `ResourceSubscriber`. The lambda-based `subscribe()` operators were also retrofitted.
+
+If you were implementing a `Subscriber` (directly or anonymously), you may want to change the interface to `FlowableSubscriber`. In order to avoid some of the runtime checks when subscribing to `Flowable` the new `subscribe(FlowableSubscriber)` has been introduced.
+
+Note that the other reactive base types, `Observable`, `Single`, `Maybe` and `Completable` are not affected as these were never intended to implement the Reactive-Streams specification (they were only inspired by the spec and are RxJava 2 only to begin with).
+
+**API enhancements**
+- [Pull 5117](https://github.com/ReactiveX/RxJava/pull/5117): Add `ParallelFlowable.sequentialDelayError`.
+- [Pull 5137](https://github.com/ReactiveX/RxJava/pull/5137): Add `TestSubscriber.withTag`.
+- [Pull 5140](https://github.com/ReactiveX/RxJava/pull/5140): Fix timed replay-like components replaying outdated items.
+- [Pull 5155](https://github.com/ReactiveX/RxJava/pull/5155): Add `TestSubscriber.awaitCount`, `assertTimeout` & `assertNoTimeout`, improve assertion error message
+
+**API deprecations**
+- [Pull 5112](https://github.com/ReactiveX/RxJava/pull/5112): `Flowable.strict()` deprecated and will be removed in 2.1.0 - the default `Flowable` behavior is now strict.
+
+**Bugfixes**
+- [Pull 5101](https://github.com/ReactiveX/RxJava/pull/5101): Fix `Maybe.concat()` subscribe-after-cancel, verify others.
+- [Pull 5103](https://github.com/ReactiveX/RxJava/pull/5103): Fix `doOnSubscribe` signalling `UndeliverableException` instead of `onError`.
+- [Pull 5106](https://github.com/ReactiveX/RxJava/pull/5106): Fix `window(time, size)` not completing windows on timeout.
+- [Pull 5114](https://github.com/ReactiveX/RxJava/pull/5114): Fix `Observable.combineLatest` to dispose eagerly.
+- [Pull 5121](https://github.com/ReactiveX/RxJava/pull/5121): Fix `Observable.zip` to dispose eagerly.
+- [Pull 5133](https://github.com/ReactiveX/RxJava/pull/5133): Fix `flatMap` not cancelling the upstream eagerly.
+- [Pull 5136](https://github.com/ReactiveX/RxJava/pull/5136): Fix `repeatWhen` and `retryWhen` signatures.
+
+**Other**
+- [Pull 5102](https://github.com/ReactiveX/RxJava/pull/5102): Added missing `@NonNull` attribute to `Function7`.
+- [Pull 5112](https://github.com/ReactiveX/RxJava/pull/5112): `Flowable` as a `Publisher` to be fully RS compliant.
+- [Pull 5127](https://github.com/ReactiveX/RxJava/pull/5127): Update javadoc of `flatMap()` overloads.
+- [Pull 5153](https://github.com/ReactiveX/RxJava/pull/5153): Java 9 compatibility fixes
+- [Pull 5156](https://github.com/ReactiveX/RxJava/pull/5156): Add `@NonNull` to the methods of `Emitter`
+
 ### Version 2.0.6 - February 15, 2017 ([Maven](http://search.maven.org/#artifactdetails%7Cio.reactivex.rxjava2%7Crxjava%7C2.0.6%7C))
 
 **Undeliverable exceptions**
