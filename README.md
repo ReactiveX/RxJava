@@ -226,7 +226,7 @@ and for Ivy:
 <dependency org="io.reactivex.rxjava2" name="rxjava" rev="x.y.z" />
 ```
 
-Snapshots are available via [JFrog](https://oss.jfrog.org/webapp/search/artifact/?5&q=rxjava):
+Snapshots are available via [JFrog](https://oss.jfrog.org/webapp/#/home):
 
 ```groovy
 repositories {
