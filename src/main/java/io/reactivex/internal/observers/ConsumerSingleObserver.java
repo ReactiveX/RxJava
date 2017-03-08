@@ -40,6 +40,7 @@ implements SingleObserver<T>, Disposable {
 
     @Override
     public void onError(Throwable e) {
+        lazySet(DisposableHelper.DISPOSED);
         try {
             onError.accept(e);
         } catch (Throwable ex) {
@@ -55,6 +56,7 @@ implements SingleObserver<T>, Disposable {
 
     @Override
     public void onSuccess(T value) {
+        lazySet(DisposableHelper.DISPOSED);
         try {
             onSuccess.accept(value);
         } catch (Throwable ex) {
