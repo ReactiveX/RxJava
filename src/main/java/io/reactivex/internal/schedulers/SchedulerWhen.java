@@ -138,56 +138,10 @@ public class SchedulerWhen extends Scheduler implements Disposable {
         // the subscribe to off the workerQueue.
         final FlowableProcessor<ScheduledAction> actionProcessor = UnicastProcessor.<ScheduledAction>create().toSerialized();
         // convert the work of scheduling all the actions into a completable
-        Flowable<Completable> actions = actionProcessor.map(new Function<ScheduledAction, Completable>() {
-            @Override
-            public Completable apply(final ScheduledAction action) {
-                return new Completable() {
-                    @Override
-                    protected void subscribeActual(CompletableObserver actionCompletable) {
-                        actionCompletable.onSubscribe(action);
-                        action.call(actualWorker, actionCompletable);
-                    }
-                };
-            }
-        });
+        Flowable<Completable> actions = actionProcessor.map(new WorkerFunction(actualWorker));
 
         // a worker that queues the action to the actionQueue subject.
-        Worker worker = new Worker() {
-            private final AtomicBoolean unsubscribed = new AtomicBoolean();
-
-            @Override
-            public void dispose() {
-                // complete the actionQueue when worker is unsubscribed to make
-                // room for the next worker in the workerQueue.
-                if (unsubscribed.compareAndSet(false, true)) {
-                    actionProcessor.onComplete();
-                    actualWorker.dispose();
-                }
-            }
-
-            @Override
-            public boolean isDisposed() {
-                return unsubscribed.get();
-            }
-
-            @NonNull
-            @Override
-            public Disposable schedule(@NonNull final Runnable action, final long delayTime, @NonNull final TimeUnit unit) {
-                // send a scheduled action to the actionQueue
-                DelayedAction delayedAction = new DelayedAction(action, delayTime, unit);
-                actionProcessor.onNext(delayedAction);
-                return delayedAction;
-            }
-
-            @NonNull
-            @Override
-            public Disposable schedule(@NonNull final Runnable action) {
-                // send a scheduled action to the actionQueue
-                ImmediateAction immediateAction = new ImmediateAction(action);
-                actionProcessor.onNext(immediateAction);
-                return immediateAction;
-            }
-        };
+        Worker worker = new QueueWorker(actionProcessor, actualWorker);
 
         // enqueue the completable that process actions put in reply subject
         workerProcessor.onNext(actions);
@@ -196,16 +150,7 @@ public class SchedulerWhen extends Scheduler implements Disposable {
         return worker;
     }
 
-    static final Disposable SUBSCRIBED = new Disposable() {
-        @Override
-        public void dispose() {
-        }
-
-        @Override
-        public boolean isDisposed() {
-            return false;
-        }
-    };
+    static final Disposable SUBSCRIBED = new EmptyDisposable();
 
     static final Disposable DISPOSED = Disposables.disposed();
 
@@ -315,6 +260,89 @@ public class SchedulerWhen extends Scheduler implements Disposable {
             } finally {
                 actionCompletable.onComplete();
             }
+        }
+    }
+
+    static final class WorkerFunction implements Function<ScheduledAction, Completable> {
+        private final Worker actualWorker;
+
+        public WorkerFunction(Worker actualWorker) {
+            this.actualWorker = actualWorker;
+        }
+
+        @Override
+        public Completable apply(final ScheduledAction action) {
+            return new WorkerCompletable(action);
+        }
+
+        private class WorkerCompletable extends Completable {
+            private final ScheduledAction action;
+
+            WorkerCompletable(ScheduledAction action) {
+                this.action = action;
+            }
+
+            @Override
+            protected void subscribeActual(CompletableObserver actionCompletable) {
+                actionCompletable.onSubscribe(action);
+                action.call(actualWorker, actionCompletable);
+            }
+        }
+    }
+
+    static final class QueueWorker extends Worker {
+        private final AtomicBoolean unsubscribed;
+        private final FlowableProcessor<ScheduledAction> actionProcessor;
+        private final Worker actualWorker;
+
+        public QueueWorker(FlowableProcessor<ScheduledAction> actionProcessor, Worker actualWorker) {
+            this.actionProcessor = actionProcessor;
+            this.actualWorker = actualWorker;
+            unsubscribed = new AtomicBoolean();
+        }
+
+        @Override
+        public void dispose() {
+            // complete the actionQueue when worker is unsubscribed to make
+            // room for the next worker in the workerQueue.
+            if (unsubscribed.compareAndSet(false, true)) {
+                actionProcessor.onComplete();
+                actualWorker.dispose();
+            }
+        }
+
+        @Override
+        public boolean isDisposed() {
+            return unsubscribed.get();
+        }
+
+        @NonNull
+        @Override
+        public Disposable schedule(@NonNull final Runnable action, final long delayTime, @NonNull final TimeUnit unit) {
+            // send a scheduled action to the actionQueue
+            DelayedAction delayedAction = new DelayedAction(action, delayTime, unit);
+            actionProcessor.onNext(delayedAction);
+            return delayedAction;
+        }
+
+        @NonNull
+        @Override
+        public Disposable schedule(@NonNull final Runnable action) {
+            // send a scheduled action to the actionQueue
+            ImmediateAction immediateAction = new ImmediateAction(action);
+            actionProcessor.onNext(immediateAction);
+            return immediateAction;
+        }
+    }
+
+    static final class EmptyDisposable implements Disposable {
+        @Override
+        public void dispose() {
+        }
+
+        @Override
+        public boolean isDisposed() {
+            return false;
         }
     }
 }

@@ -33,76 +33,90 @@ public final class FlowableDelaySubscriptionOther<T, U> extends Flowable<T> {
         this.other = other;
     }
 
-    @Override
-    public void subscribeActual(final Subscriber<? super T> child) {
-        final SubscriptionArbiter serial = new SubscriptionArbiter();
-        child.onSubscribe(serial);
+    private final class FlowableDelaySubscriber implements FlowableSubscriber<U>{
+        final Subscriber<? super T> child;
+        final SubscriptionArbiter serial;
+        boolean done;
 
-        FlowableSubscriber<U> otherSubscriber = new FlowableSubscriber<U>() {
-            boolean done;
+        private FlowableDelaySubscriber(Subscriber<? super T> child) {
+            this.child = child;
+            this.serial = new SubscriptionArbiter();
+        }
 
+        @Override
+        public void onSubscribe(final Subscription s) {
+            serial.setSubscription(new DelaySubscription(s));
+            s.request(Long.MAX_VALUE);
+        }
+
+        @Override
+        public void onNext(U t) {
+            onComplete();
+        }
+
+        @Override
+        public void onError(Throwable e) {
+            if (done) {
+                RxJavaPlugins.onError(e);
+                return;
+            }
+            done = true;
+            child.onError(e);
+        }
+
+        @Override
+        public void onComplete() {
+            if (done) {
+                return;
+            }
+            done = true;
+
+            main.subscribe(new CompletionFlowableSubscriber());
+        }
+
+        private class CompletionFlowableSubscriber implements FlowableSubscriber<T> {
             @Override
-            public void onSubscribe(final Subscription s) {
-                serial.setSubscription(new Subscription() {
-                    @Override
-                    public void request(long n) {
-                        // ignored
-                    }
-
-                    @Override
-                    public void cancel() {
-                        s.cancel();
-                    }
-                });
-                s.request(Long.MAX_VALUE);
+            public void onSubscribe(Subscription s) {
+                serial.setSubscription(s);
             }
 
             @Override
-            public void onNext(U t) {
-                onComplete();
+            public void onNext(T t) {
+                child.onNext(t);
             }
 
             @Override
-            public void onError(Throwable e) {
-                if (done) {
-                    RxJavaPlugins.onError(e);
-                    return;
-                }
-                done = true;
-                child.onError(e);
+            public void onError(Throwable t) {
+                child.onError(t);
             }
 
             @Override
             public void onComplete() {
-                if (done) {
-                    return;
-                }
-                done = true;
-
-                main.subscribe(new FlowableSubscriber<T>() {
-                    @Override
-                    public void onSubscribe(Subscription s) {
-                        serial.setSubscription(s);
-                    }
-
-                    @Override
-                    public void onNext(T t) {
-                        child.onNext(t);
-                    }
-
-                    @Override
-                    public void onError(Throwable t) {
-                        child.onError(t);
-                    }
-
-                    @Override
-                    public void onComplete() {
-                        child.onComplete();
-                    }
-                });
+                child.onComplete();
             }
-        };
+        }
 
+        private class DelaySubscription implements Subscription {
+            private final Subscription subscription;
+
+            public DelaySubscription(Subscription subscription) {
+                this.subscription = subscription;
+            }
+
+            @Override
+            public void request(long n) {
+                // ignored
+            }
+
+            @Override
+            public void cancel() {
+                subscription.cancel();
+            }
+        }
+    }
+    @Override
+    public void subscribeActual(final Subscriber<? super T> child) {
+        FlowableSubscriber<U> otherSubscriber = new FlowableDelaySubscriber(child);
         other.subscribe(otherSubscriber);
     }
 }

@@ -80,43 +80,44 @@ public final class BlockingObservableMostRecent<T> implements Iterable<T> {
          * @return the Iterator
          */
         public Iterator<T> getIterable() {
-            return new Iterator<T>() {
-                /**
-                 * buffer to make sure that the state of the iterator doesn't change between calling hasNext() and next().
-                 */
-                private Object buf;
+            return new MostRecentSubscriberIterator();
+        }
 
-                @Override
-                public boolean hasNext() {
-                    buf = value;
-                    return !NotificationLite.isComplete(buf);
-                }
+        private final class MostRecentSubscriberIterator implements Iterator<T> {
+            /**
+             * buffer to make sure that the state of the iterator doesn't change between calling hasNext() and next().
+             */
+            private Object buf;
 
-                @Override
-                public T next() {
-                    try {
-                        // if hasNext wasn't called before calling next.
-                        if (buf == null) {
-                            buf = value;
-                        }
-                        if (NotificationLite.isComplete(buf)) {
-                            throw new NoSuchElementException();
-                        }
-                        if (NotificationLite.isError(buf)) {
-                            throw ExceptionHelper.wrapOrThrow(NotificationLite.getError(buf));
-                        }
-                        return NotificationLite.getValue(buf);
+            @Override
+            public boolean hasNext() {
+                buf = value;
+                return !NotificationLite.isComplete(buf);
+            }
+
+            @Override
+            public T next() {
+                try {
+                    // if hasNext wasn't called before calling next.
+                    if (buf == null) {
+                        buf = value;
                     }
-                    finally {
-                        buf = null;
+                    if (NotificationLite.isComplete(buf)) {
+                        throw new NoSuchElementException();
                     }
+                    if (NotificationLite.isError(buf)) {
+                        throw ExceptionHelper.wrapOrThrow(NotificationLite.getError(buf));
+                    }
+                    return NotificationLite.getValue(buf);
+                } finally {
+                    buf = null;
                 }
+            }
 
-                @Override
-                public void remove() {
-                    throw new UnsupportedOperationException("Read only iterator");
-                }
-            };
+            @Override
+            public void remove() {
+                throw new UnsupportedOperationException("Read only iterator");
+            }
         }
     }
 }

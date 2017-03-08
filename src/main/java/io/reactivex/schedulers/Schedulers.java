@@ -67,35 +67,15 @@ public final class Schedulers {
     }
 
     static {
-        SINGLE = RxJavaPlugins.initSingleScheduler(new Callable<Scheduler>() {
-            @Override
-            public Scheduler call() throws Exception {
-                return SingleHolder.DEFAULT;
-            }
-        });
+        SINGLE = RxJavaPlugins.initSingleScheduler(new SingleHolderCallable());
 
-        COMPUTATION = RxJavaPlugins.initComputationScheduler(new Callable<Scheduler>() {
-            @Override
-            public Scheduler call() throws Exception {
-                return ComputationHolder.DEFAULT;
-            }
-        });
+        COMPUTATION = RxJavaPlugins.initComputationScheduler(new ComputationHolderCallable());
 
-        IO = RxJavaPlugins.initIoScheduler(new Callable<Scheduler>() {
-            @Override
-            public Scheduler call() throws Exception {
-                return IoHolder.DEFAULT;
-            }
-        });
+        IO = RxJavaPlugins.initIoScheduler(new IoHolderCallable());
 
         TRAMPOLINE = TrampolineScheduler.instance();
 
-        NEW_THREAD = RxJavaPlugins.initNewThreadScheduler(new Callable<Scheduler>() {
-            @Override
-            public Scheduler call() throws Exception {
-                return NewThreadHolder.DEFAULT;
-            }
-        });
+        NEW_THREAD = RxJavaPlugins.initNewThreadScheduler(new NewThreadHolderCallable());
     }
 
     /** Utility class. */
@@ -214,5 +194,33 @@ public final class Schedulers {
         single().start();
         trampoline().start();
         SchedulerPoolFactory.start();
+    }
+
+    static final class SingleHolderCallable implements Callable<Scheduler> {
+        @Override
+        public Scheduler call() throws Exception {
+            return SingleHolder.DEFAULT;
+        }
+    }
+
+    static final class ComputationHolderCallable implements Callable<Scheduler> {
+        @Override
+        public Scheduler call() throws Exception {
+            return ComputationHolder.DEFAULT;
+        }
+    }
+
+    static final class IoHolderCallable implements Callable<Scheduler> {
+        @Override
+        public Scheduler call() throws Exception {
+            return IoHolder.DEFAULT;
+        }
+    }
+
+    static final class NewThreadHolderCallable implements Callable<Scheduler> {
+        @Override
+        public Scheduler call() throws Exception {
+            return NewThreadHolder.DEFAULT;
+        }
     }
 }

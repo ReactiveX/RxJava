@@ -41,12 +41,7 @@ public final class SingleZipArray<T, R> extends Single<R> {
 
 
         if (n == 1) {
-            sources[0].subscribe(new SingleMap.MapSingleObserver<T, R>(observer, new Function<T, R>() {
-                @Override
-                public R apply(T t) throws Exception {
-                    return zipper.apply(new Object[] { t });
-                }
-            }));
+            sources[0].subscribe(new SingleMap.MapSingleObserver<T, R>(observer, new SingletonZipperFunction()));
             return;
         }
 
@@ -180,6 +175,13 @@ public final class SingleZipArray<T, R> extends Single<R> {
         @Override
         public void onError(Throwable e) {
             parent.innerError(e, index);
+        }
+    }
+
+    private final class SingletonZipperFunction implements Function<T, R> {
+        @Override
+        public R apply(T t) throws Exception {
+            return zipper.apply(new Object[] { t });
         }
     }
 }

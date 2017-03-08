@@ -43,12 +43,7 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
     final Publisher<T> onSubscribe;
 
     @SuppressWarnings("rawtypes")
-    static final Callable DEFAULT_UNBOUNDED_FACTORY = new Callable() {
-        @Override
-        public Object call() {
-            return new UnboundedReplayBuffer<Object>(16);
-        }
-    };
+    static final Callable DEFAULT_UNBOUNDED_FACTORY = new UnboundedReplayBufferCallable();
 
     /**
      * Given a connectable observable factory, it multicasts over the generated
@@ -62,39 +57,7 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
     public static <U, R> Flowable<R> multicastSelector(
             final Callable<? extends ConnectableFlowable<U>> connectableFactory,
             final Function<? super Flowable<U>, ? extends Publisher<R>> selector) {
-        return Flowable.unsafeCreate(new Publisher<R>() {
-            @Override
-            public void subscribe(Subscriber<? super R> child) {
-                ConnectableFlowable<U> co;
-                try {
-                    co = ObjectHelper.requireNonNull(connectableFactory.call(), "The connectableFactory returned null");
-                } catch (Throwable e) {
-                    Exceptions.throwIfFatal(e);
-                    EmptySubscription.error(e, child);
-                    return;
-                }
-
-                Publisher<R> observable;
-                try {
-                    observable = ObjectHelper.requireNonNull(selector.apply(co), "The selector returned a null Publisher");
-                } catch (Throwable e) {
-                    Exceptions.throwIfFatal(e);
-                    EmptySubscription.error(e, child);
-                    return;
-                }
-
-                final SubscriberResourceWrapper<R> srw = new SubscriberResourceWrapper<R>(child);
-
-                observable.subscribe(srw);
-
-                co.connect(new Consumer<Disposable>() {
-                    @Override
-                    public void accept(Disposable r) {
-                        srw.setResource(r);
-                    }
-                });
-            }
-        });
+        return Flowable.unsafeCreate(new MultiCastPublisher<U,R>(connectableFactory, selector));
     }
 
     /**
@@ -106,18 +69,27 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
      * @return the new ConnectableObservable instance
      */
     public static <T> ConnectableFlowable<T> observeOn(final ConnectableFlowable<T> co, final Scheduler scheduler) {
-        final Flowable<T> observable = co.observeOn(scheduler);
-        return RxJavaPlugins.onAssembly(new ConnectableFlowable<T>() {
-            @Override
-            public void connect(Consumer<? super Disposable> connection) {
-                co.connect(connection);
-            }
+        return RxJavaPlugins.onAssembly(new ConnectableObserver<T>(co, scheduler));
+    }
 
-            @Override
-            protected void subscribeActual(Subscriber<? super T> s) {
-                observable.subscribe(s);
-            }
-        });
+    static final class ConnectableObserver<T> extends ConnectableFlowable<T>{
+        final ConnectableFlowable<T> connectableFlowable;
+        final Flowable<T> observable;
+
+        ConnectableObserver(ConnectableFlowable<T> connectableFlowable, Scheduler scheduler) {
+            this.connectableFlowable = connectableFlowable;
+            this.observable = connectableFlowable.observeOn(scheduler);
+        }
+
+        @Override
+        public void connect(Consumer<? super Disposable> connection) {
+            this.connectableFlowable.connect(connection);
+        }
+
+        @Override
+        protected void subscribeActual(Subscriber<? super T> s) {
+            this.observable.subscribe(s);
+        }
     }
 
     /**
@@ -143,14 +115,21 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
         if (bufferSize == Integer.MAX_VALUE) {
             return createFrom(source);
         }
-        return create(source, new Callable<ReplayBuffer<T>>() {
-            @Override
-            public ReplayBuffer<T> call() {
-                return new SizeBoundReplayBuffer<T>(bufferSize);
-            }
-        });
+        return create(source, new ReplayBufferTask<T>(bufferSize));
     }
 
+    private static class ReplayBufferTask<T> implements Callable<ReplayBuffer<T>>{
+        final int bufferSize;
+
+        private ReplayBufferTask(int bufferSize) {
+            this.bufferSize = bufferSize;
+        }
+
+        @Override
+        public ReplayBuffer<T> call() throws Exception {
+            return new SizeBoundReplayBuffer<T>(bufferSize);
+        }
+    }
     /**
      * Creates a replaying ConnectableObservable with a time bound buffer.
      * @param <T> the value type
@@ -177,12 +156,7 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
      */
     public static <T> ConnectableFlowable<T> create(Flowable<T> source,
             final long maxAge, final TimeUnit unit, final Scheduler scheduler, final int bufferSize) {
-        return create(source, new Callable<ReplayBuffer<T>>() {
-            @Override
-            public ReplayBuffer<T> call() {
-                return new SizeAndTimeBoundReplayBuffer<T>(bufferSize, maxAge, unit, scheduler);
-            }
-        });
+        return create(source, new ReplayBufferCallable<T>(bufferSize, maxAge, unit, scheduler));
     }
 
     /**
@@ -195,62 +169,7 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
             final Callable<? extends ReplayBuffer<T>> bufferFactory) {
         // the current connection to source needs to be shared between the operator and its onSubscribe call
         final AtomicReference<ReplaySubscriber<T>> curr = new AtomicReference<ReplaySubscriber<T>>();
-        Publisher<T> onSubscribe = new Publisher<T>() {
-            @Override
-            public void subscribe(Subscriber<? super T> child) {
-                // concurrent connection/disconnection may change the state,
-                // we loop to be atomic while the child subscribes
-                for (;;) {
-                    // get the current subscriber-to-source
-                    ReplaySubscriber<T> r = curr.get();
-                    // if there isn't one
-                    if (r == null) {
-                        ReplayBuffer<T> buf;
-
-                        try {
-                            buf = bufferFactory.call();
-                        } catch (Throwable ex) {
-                            Exceptions.throwIfFatal(ex);
-                            throw ExceptionHelper.wrapOrThrow(ex);
-                        }
-                        // create a new subscriber to source
-                        ReplaySubscriber<T> u = new ReplaySubscriber<T>(buf);
-                        // let's try setting it as the current subscriber-to-source
-                        if (!curr.compareAndSet(null, u)) {
-                            // didn't work, maybe someone else did it or the current subscriber
-                            // to source has just finished
-                            continue;
-                        }
-                        // we won, let's use it going onwards
-                        r = u;
-                    }
-
-                    // create the backpressure-managing producer for this child
-                    InnerSubscription<T> inner = new InnerSubscription<T>(r, child);
-                    // the producer has been registered with the current subscriber-to-source so
-                    // at least it will receive the next terminal event
-                    // setting the producer will trigger the first request to be considered by
-                    // the subscriber-to-source.
-                    child.onSubscribe(inner);
-                    // we try to add it to the array of subscribers
-                    // if it fails, no worries because we will still have its buffer
-                    // so it is going to replay it for us
-                    r.add(inner);
-
-                    if (inner.isDisposed()) {
-                        r.remove(inner);
-                        return;
-                    }
-
-                    r.manageRequests();
-
-                    // trigger the capturing of the current node and total requested
-                    r.buffer.replay(inner);
-
-                    break; // NOPMD
-                }
-            }
-        };
+        Publisher<T> onSubscribe = new OperatorReplayPublisher<T>(curr, bufferFactory);
         return RxJavaPlugins.onAssembly(new FlowableReplay<T>(onSubscribe, source, curr, bufferFactory));
     }
 
@@ -1198,6 +1117,148 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
                 }
             }
             return prev;
+        }
+    }
+
+    static final class MultiCastPublisher<U,R> implements Publisher<R>{
+        final Callable<? extends ConnectableFlowable<U>> connectableFactory;
+        final Function<? super Flowable<U>, ? extends Publisher<R>> selector;
+
+        private MultiCastPublisher(Callable<? extends ConnectableFlowable<U>> connectableFactory, Function<? super Flowable<U>, ? extends Publisher<R>> selector) {
+            this.connectableFactory = connectableFactory;
+            this.selector = selector;
+        }
+
+        @Override
+        public void subscribe(Subscriber<? super R> child) {
+            ConnectableFlowable<U> co;
+            try {
+                co = ObjectHelper.requireNonNull(connectableFactory.call(), "The connectableFactory returned null");
+            } catch (Throwable e) {
+                Exceptions.throwIfFatal(e);
+                EmptySubscription.error(e, child);
+                return;
+            }
+
+            Publisher<R> observable;
+            try {
+                observable = ObjectHelper.requireNonNull(selector.apply(co), "The selector returned a null Publisher");
+            } catch (Throwable e) {
+                Exceptions.throwIfFatal(e);
+                EmptySubscription.error(e, child);
+                return;
+            }
+
+            final SubscriberResourceWrapper<R> srw = new SubscriberResourceWrapper<R>(child);
+
+            observable.subscribe(srw);
+
+            co.connect(new DisposeConsumer(srw));
+        }
+
+
+        private class DisposeConsumer implements Consumer<Disposable> {
+            private final SubscriberResourceWrapper<R> srw;
+
+            DisposeConsumer(SubscriberResourceWrapper<R> srw) {
+                this.srw = srw;
+            }
+
+            @Override
+            public void accept(Disposable r) {
+                srw.setResource(r);
+            }
+        }
+    }
+
+    private static class UnboundedReplayBufferCallable implements Callable {
+        @Override
+        public Object call() {
+            return new UnboundedReplayBuffer<Object>(16);
+        }
+    }
+
+    static final class ReplayBufferCallable<T> implements Callable<ReplayBuffer<T>> {
+        private final int bufferSize;
+        private final long maxAge;
+        private final TimeUnit unit;
+        private final Scheduler scheduler;
+
+        public ReplayBufferCallable(int bufferSize, long maxAge, TimeUnit unit, Scheduler scheduler) {
+            this.bufferSize = bufferSize;
+            this.maxAge = maxAge;
+            this.unit = unit;
+            this.scheduler = scheduler;
+        }
+
+        @Override
+        public ReplayBuffer<T> call() {
+            return new SizeAndTimeBoundReplayBuffer<T>(bufferSize, maxAge, unit, scheduler);
+        }
+    }
+
+    static final class OperatorReplayPublisher<T> implements Publisher<T> {
+        private final AtomicReference<ReplaySubscriber<T>> current;
+        private final Callable<? extends ReplayBuffer<T>> bufferFactory;
+
+        public OperatorReplayPublisher(AtomicReference<ReplaySubscriber<T>> current, Callable<? extends ReplayBuffer<T>> bufferFactory) {
+            this.current = current;
+            this.bufferFactory = bufferFactory;
+        }
+
+        @Override
+        public void subscribe(Subscriber<? super T> child) {
+            // concurrent connection/disconnection may change the state,
+            // we loop to be atomic while the child subscribes
+            for (;;) {
+                // get the current subscriber-to-source
+                ReplaySubscriber<T> r = current.get();
+                // if there isn't one
+                if (r == null) {
+                    ReplayBuffer<T> buf;
+
+                    try {
+                        buf = bufferFactory.call();
+                    } catch (Throwable ex) {
+                        Exceptions.throwIfFatal(ex);
+                        throw ExceptionHelper.wrapOrThrow(ex);
+                    }
+                    // create a new subscriber to source
+                    ReplaySubscriber<T> u = new ReplaySubscriber<T>(buf);
+                    // let's try setting it as the current subscriber-to-source
+                    if (!current.compareAndSet(null, u)) {
+                        // didn't work, maybe someone else did it or the current subscriber
+                        // to source has just finished
+                        continue;
+                    }
+                    // we won, let's use it going onwards
+                    r = u;
+                }
+
+                // create the backpressure-managing producer for this child
+                InnerSubscription<T> inner = new InnerSubscription<T>(r, child);
+                // the producer has been registered with the current subscriber-to-source so
+                // at least it will receive the next terminal event
+                // setting the producer will trigger the first request to be considered by
+                // the subscriber-to-source.
+                child.onSubscribe(inner);
+                // we try to add it to the array of subscribers
+                // if it fails, no worries because we will still have its buffer
+                // so it is going to replay it for us
+                r.add(inner);
+
+                if (inner.isDisposed()) {
+                    r.remove(inner);
+                    return;
+                }
+
+                r.manageRequests();
+
+                // trigger the capturing of the current node and total requested
+                r.buffer.replay(inner);
+
+                break; // NOPMD
+            }
         }
     }
 }

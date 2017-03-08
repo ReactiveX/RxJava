@@ -61,12 +61,7 @@ public final class MaybeZipIterable<T, R> extends Maybe<R> {
         }
 
         if (n == 1) {
-            a[0].subscribe(new MaybeMap.MapMaybeObserver<T, R>(observer, new Function<T, R>() {
-                @Override
-                public R apply(T t) throws Exception {
-                    return zipper.apply(new Object[] { t });
-                }
-            }));
+            a[0].subscribe(new MaybeMap.MapMaybeObserver<T, R>(observer, new ArrayZipFunction()));
             return;
         }
 
@@ -80,6 +75,13 @@ public final class MaybeZipIterable<T, R> extends Maybe<R> {
             }
 
             a[i].subscribe(parent.observers[i]);
+        }
+    }
+
+    private final class ArrayZipFunction implements Function<T, R> {
+        @Override
+        public R apply(T t) throws Exception {
+            return zipper.apply(new Object[] { t });
         }
     }
 

@@ -193,48 +193,82 @@ public final class FlowableInternalHelper {
     }
 
     public static <T> Callable<ConnectableFlowable<T>> replayCallable(final Flowable<T> parent) {
-        return new Callable<ConnectableFlowable<T>>() {
-            @Override
-            public ConnectableFlowable<T> call() {
-                return parent.replay();
-            }
-        };
+        return new ReplayCallable<T>(parent, 0);
     }
 
     public static <T> Callable<ConnectableFlowable<T>> replayCallable(final Flowable<T> parent, final int bufferSize) {
-        return new Callable<ConnectableFlowable<T>>() {
-            @Override
-            public ConnectableFlowable<T> call() {
-                return parent.replay(bufferSize);
-            }
-        };
+        return new ReplayCallable<T>(parent, bufferSize);
     }
 
     public static <T> Callable<ConnectableFlowable<T>> replayCallable(final Flowable<T> parent, final int bufferSize, final long time, final TimeUnit unit, final Scheduler scheduler) {
-        return new Callable<ConnectableFlowable<T>>() {
-            @Override
-            public ConnectableFlowable<T> call() {
-                return parent.replay(bufferSize, time, unit, scheduler);
-            }
-        };
+        return new ScheduledReplayCallable<T>(parent, bufferSize, time, unit, scheduler);
     }
 
     public static <T> Callable<ConnectableFlowable<T>> replayCallable(final Flowable<T> parent, final long time, final TimeUnit unit, final Scheduler scheduler) {
-        return new Callable<ConnectableFlowable<T>>() {
-            @Override
-            public ConnectableFlowable<T> call() {
-                return parent.replay(time, unit, scheduler);
-            }
-        };
+        return new ScheduledReplayCallable<T>(parent, 0, time, unit, scheduler);
     }
 
     public static <T, R> Function<Flowable<T>, Publisher<R>> replayFunction(final Function<? super Flowable<T>, ? extends Publisher<R>> selector, final Scheduler scheduler) {
-        return new Function<Flowable<T>, Publisher<R>>() {
-            @Override
-            public Publisher<R> apply(Flowable<T> t) throws Exception {
-                return Flowable.fromPublisher(selector.apply(t)).observeOn(scheduler);
+        return new ReplayFunction<T,R>(selector, scheduler);
+    }
+
+    static final class ReplayCallable<T> implements Callable<ConnectableFlowable<T>>{
+        final Flowable<T> parent;
+        final int bufferSize;
+
+        ReplayCallable(Flowable<T> parent, int bufferSize) {
+            this.parent = parent;
+            this.bufferSize = bufferSize;
+        }
+
+        @Override
+        public ConnectableFlowable<T> call() {
+            if(bufferSize == 0){
+                return parent.replay();
+            }else{
+                return parent.replay(bufferSize);
             }
-        };
+        }
+    }
+
+    static final class ScheduledReplayCallable<T> implements Callable<ConnectableFlowable<T>>{
+        final Flowable<T> parent;
+        final int bufferSize;
+        final long time;
+        final TimeUnit unit;
+        final Scheduler scheduler;
+
+        private ScheduledReplayCallable(Flowable<T> parent, int bufferSize, long time, TimeUnit unit, Scheduler scheduler) {
+            this.parent = parent;
+            this.bufferSize = bufferSize;
+            this.time = time;
+            this.unit = unit;
+            this.scheduler = scheduler;
+        }
+
+        @Override
+        public ConnectableFlowable<T> call() {
+            if(bufferSize == 0){
+                return parent.replay(time, unit, scheduler);
+            }else{
+                return parent.replay(bufferSize, time, unit, scheduler);
+            }
+        }
+    }
+
+    static final class ReplayFunction<T,R> implements Function<Flowable<T>, Publisher<R>>{
+        final Function<? super Flowable<T>, ? extends Publisher<R>> selector;
+        final Scheduler scheduler;
+
+        ReplayFunction(Function<? super Flowable<T>, ? extends Publisher<R>> selector, Scheduler scheduler) {
+            this.selector = selector;
+            this.scheduler = scheduler;
+        }
+
+        @Override
+        public Publisher<R> apply(Flowable<T> t) throws Exception {
+            return Flowable.fromPublisher(selector.apply(t)).observeOn(scheduler);
+        }
     }
 
     public enum RequestMax implements Consumer<Subscription> {
