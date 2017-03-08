@@ -432,7 +432,7 @@ public abstract class Scheduler {
         }
     }
 
-    private static class DelegationTask implements Runnable {
+    static final class DelegationTask implements Runnable {
         private final Runnable decoratedRun;
         private final Worker work;
 

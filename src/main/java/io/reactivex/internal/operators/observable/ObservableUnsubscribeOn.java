@@ -89,7 +89,7 @@ public final class ObservableUnsubscribeOn<T> extends AbstractObservableWithUpst
             return get();
         }
 
-        private class DisposeTask implements Runnable {
+        private final class DisposeTask implements Runnable {
             @Override
             public void run() {
                 s.dispose();

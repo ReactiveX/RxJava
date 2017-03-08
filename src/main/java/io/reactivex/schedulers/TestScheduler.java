@@ -166,7 +166,7 @@ public final class TestScheduler extends Scheduler {
             return TestScheduler.this.now(unit);
         }
 
-        private class DisposeTask implements Runnable {
+        private final class DisposeTask implements Runnable {
             private final TimedRunnable timedAction;
 
             public DisposeTask(TimedRunnable timedAction) {

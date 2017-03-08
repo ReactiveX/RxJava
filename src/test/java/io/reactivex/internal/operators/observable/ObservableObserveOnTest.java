@@ -258,7 +258,7 @@ public class ObservableObserveOnTest {
             @Override
             public void accept(Integer t1) {
                 assertEquals(count.incrementAndGet() * _multiple, t1.intValue());
-                // FIXME toBlocking methods run on the caller'disposable thread
+                // FIXME toBlocking methods run on the caller's thread
                 String name = Thread.currentThread().getName();
                 assertFalse("Wrong thread name: " + name, name.startsWith("Rx"));
             }

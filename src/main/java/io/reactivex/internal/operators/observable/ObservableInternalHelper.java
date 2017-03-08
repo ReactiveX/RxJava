@@ -290,7 +290,7 @@ public final class ObservableInternalHelper {
         return new ZipIterableFunction<T, R>(zipper);
     }
 
-    private static class ReplayCallable<T> implements Callable<ConnectableObservable<T>> {
+    static final class ReplayCallable<T> implements Callable<ConnectableObservable<T>> {
         private final Observable<T> parent;
 
         ReplayCallable(Observable<T> parent) {
@@ -303,7 +303,7 @@ public final class ObservableInternalHelper {
         }
     }
 
-    private static class BufferedReplayCallable<T> implements Callable<ConnectableObservable<T>> {
+    static final class BufferedReplayCallable<T> implements Callable<ConnectableObservable<T>> {
         private final Observable<T> parent;
         private final int bufferSize;
 
@@ -318,7 +318,7 @@ public final class ObservableInternalHelper {
         }
     }
 
-    private static class ScheduledBufferedReplayedCallable<T> implements Callable<ConnectableObservable<T>> {
+    static final class ScheduledBufferedReplayedCallable<T> implements Callable<ConnectableObservable<T>> {
         private final Observable<T> parent;
         private final int bufferSize;
         private final long time;
@@ -339,7 +339,7 @@ public final class ObservableInternalHelper {
         }
     }
 
-    private static class ScheduledBufferedReplayCallable<T> implements Callable<ConnectableObservable<T>> {
+    static final class ScheduledBufferedReplayCallable<T> implements Callable<ConnectableObservable<T>> {
         private final Observable<T> parent;
         private final long time;
         private final TimeUnit unit;
@@ -358,7 +358,7 @@ public final class ObservableInternalHelper {
         }
     }
 
-    private static class ReplayFunction<T, R> implements Function<Observable<T>, ObservableSource<R>> {
+    static final class ReplayFunction<T, R> implements Function<Observable<T>, ObservableSource<R>> {
         private final Function<? super Observable<T>, ? extends ObservableSource<R>> selector;
         private final Scheduler scheduler;
 

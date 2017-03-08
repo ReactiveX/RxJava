@@ -84,7 +84,7 @@ public final class ObservableSubscribeOn<T> extends AbstractObservableWithUpstre
         }
     }
 
-    private class DisposeTask implements Runnable {
+    private final class DisposeTask implements Runnable {
         private final SubscribeOnObserver<T> parent;
 
         public DisposeTask(SubscribeOnObserver<T> parent) {

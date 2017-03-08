@@ -514,7 +514,7 @@ public final class Functions {
 
     public static final Consumer<Subscription> REQUEST_MAX = new MaxRequestConsumer();
 
-    private static class FunArray3<R, T1, T2, T3> implements Function<Object[], R> {
+    static final class FunArray3<R, T1, T2, T3> implements Function<Object[], R> {
         private final Function3<T1, T2, T3, R> f;
 
         public FunArray3(Function3<T1, T2, T3, R> f) {
@@ -531,7 +531,7 @@ public final class Functions {
         }
     }
 
-    private static class FunArray4<R, T1, T2, T3, T4> implements Function<Object[], R> {
+    static final class FunArray4<R, T1, T2, T3, T4> implements Function<Object[], R> {
         private final Function4<T1, T2, T3, T4, R> f;
 
         public FunArray4(Function4<T1, T2, T3, T4, R> f) {
@@ -548,7 +548,7 @@ public final class Functions {
         }
     }
 
-    private static class FunArray5<R, T1, T2, T3, T4, T5> implements Function<Object[], R> {
+    static final class FunArray5<R, T1, T2, T3, T4, T5> implements Function<Object[], R> {
         private final Function5<T1, T2, T3, T4, T5, R> f;
 
         public FunArray5(Function5<T1, T2, T3, T4, T5, R> f) {
@@ -565,7 +565,7 @@ public final class Functions {
         }
     }
 
-    private static class FunArray6<R, T1, T2, T3, T4, T5, T6> implements Function<Object[], R> {
+    static final class FunArray6<R, T1, T2, T3, T4, T5, T6> implements Function<Object[], R> {
         private final Function6<T1, T2, T3, T4, T5, T6, R> f;
 
         public FunArray6(Function6<T1, T2, T3, T4, T5, T6, R> f) {
@@ -582,7 +582,7 @@ public final class Functions {
         }
     }
 
-    private static class FunArray7<R, T1, T2, T3, T4, T5, T6, T7> implements Function<Object[], R> {
+    static final class FunArray7<R, T1, T2, T3, T4, T5, T6, T7> implements Function<Object[], R> {
         private final Function7<T1, T2, T3, T4, T5, T6, T7, R> f;
 
         public FunArray7(Function7<T1, T2, T3, T4, T5, T6, T7, R> f) {
@@ -599,7 +599,7 @@ public final class Functions {
         }
     }
 
-    private static class FunArray8<R, T1, T2, T3, T4, T5, T6, T7, T8> implements Function<Object[], R> {
+    static final class FunArray8<R, T1, T2, T3, T4, T5, T6, T7, T8> implements Function<Object[], R> {
         private final Function8<T1, T2, T3, T4, T5, T6, T7, T8, R> f;
 
         public FunArray8(Function8<T1, T2, T3, T4, T5, T6, T7, T8, R> f) {
@@ -616,7 +616,7 @@ public final class Functions {
         }
     }
 
-    private static class FunArray9<R, T1, T2, T3, T4, T5, T6, T7, T8, T9> implements Function<Object[], R> {
+    static final class FunArray9<R, T1, T2, T3, T4, T5, T6, T7, T8, T9> implements Function<Object[], R> {
         private final Function9<T1, T2, T3, T4, T5, T6, T7, T8, T9, R> f;
 
         public FunArray9(Function9<T1, T2, T3, T4, T5, T6, T7, T8, T9, R> f) {
@@ -633,7 +633,7 @@ public final class Functions {
         }
     }
 
-    private static class ObjectIdentity implements Function<Object, Object> {
+    static final class ObjectIdentity implements Function<Object, Object> {
         @Override
         public Object apply(Object v) {
             return v;
@@ -645,7 +645,7 @@ public final class Functions {
         }
     }
 
-    private static class EmptyRunnable implements Runnable {
+    static final class EmptyRunnable implements Runnable {
         @Override
         public void run() { }
 
@@ -655,7 +655,7 @@ public final class Functions {
         }
     }
 
-    private static class EmptyAction implements Action {
+    static final class EmptyAction implements Action {
         @Override
         public void run() { }
 
@@ -665,7 +665,7 @@ public final class Functions {
         }
     }
 
-    private static class EmptyConsumer implements Consumer<Object> {
+    static final class EmptyConsumer implements Consumer<Object> {
         @Override
         public void accept(Object v) { }
 
@@ -675,54 +675,54 @@ public final class Functions {
         }
     }
 
-    private static class ErrorConsumer implements Consumer<Throwable> {
+    static final class ErrorConsumer implements Consumer<Throwable> {
         @Override
         public void accept(Throwable error) {
             RxJavaPlugins.onError(error);
         }
     }
 
-    private static class NotImplementedErrorConsumer implements Consumer<Throwable> {
+    static final class NotImplementedErrorConsumer implements Consumer<Throwable> {
         @Override
         public void accept(Throwable error) {
             RxJavaPlugins.onError(new OnErrorNotImplementedException(error));
         }
     }
 
-    private static class EmptyLongConsumer implements LongConsumer {
+    static final class EmptyLongConsumer implements LongConsumer {
         @Override
         public void accept(long v) { }
     }
 
-    private static class TruePredicate implements Predicate<Object> {
+    static final class TruePredicate implements Predicate<Object> {
         @Override
         public boolean test(Object o) {
             return true;
         }
     }
 
-    private static class FalsePredicate implements Predicate<Object> {
+    static final class FalsePredicate implements Predicate<Object> {
         @Override
         public boolean test(Object o) {
             return false;
         }
     }
 
-    private static class NullSupplier implements Callable<Object> {
+    static final class NullSupplier implements Callable<Object> {
         @Override
         public Object call() {
             return null;
         }
     }
 
-    private static class MaxRequestConsumer implements Consumer<Subscription> {
+    static final class MaxRequestConsumer implements Consumer<Subscription> {
         @Override
         public void accept(Subscription t) throws Exception {
             t.request(Long.MAX_VALUE);
         }
     }
 
-    private static class BiArrayFunction<T1, T2, R> implements Function<Object[], R> {
+    static final class BiArrayFunction<T1, T2, R> implements Function<Object[], R> {
         private final BiFunction<? super T1, ? super T2, ? extends R> function;
 
         public BiArrayFunction(BiFunction<? super T1, ? super T2, ? extends R> function) {

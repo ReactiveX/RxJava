@@ -34,7 +34,7 @@ public final class CompletableOnErrorComplete extends Completable {
         source.subscribe(new OnErrorObserver(s));
     }
 
-    private class OnErrorObserver implements CompletableObserver {
+    private final class OnErrorObserver implements CompletableObserver {
 
         private final CompletableObserver observer;
 

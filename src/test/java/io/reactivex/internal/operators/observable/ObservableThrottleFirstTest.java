@@ -47,8 +47,8 @@ public class ObservableThrottleFirstTest {
             @Override
             public void subscribe(Observer<? super String> innerObserver) {
                 innerObserver.onSubscribe(Disposables.empty());
-                publishNext(innerObserver, 100, "one");    // publish as it'disposable first
-                publishNext(innerObserver, 300, "two");    // skip as it'disposable last within the first 400
+                publishNext(innerObserver, 100, "one");    // publish as it's first
+                publishNext(innerObserver, 300, "two");    // skip as it's last within the first 400
                 publishNext(innerObserver, 900, "three");   // publish
                 publishNext(innerObserver, 905, "four");   // skip
                 publishCompleted(innerObserver, 1000);     // Should be published as soon as the timeout expires.

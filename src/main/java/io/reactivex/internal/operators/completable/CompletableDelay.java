@@ -79,7 +79,7 @@ public final class CompletableDelay extends Completable {
             }
         }
 
-        private class OnError implements Runnable {
+        private final class OnError implements Runnable {
             private final Throwable throwable;
 
             public OnError(Throwable throwable) {

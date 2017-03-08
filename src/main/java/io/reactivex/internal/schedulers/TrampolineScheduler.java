@@ -131,7 +131,7 @@ public final class TrampolineScheduler extends Scheduler {
             return disposed;
         }
 
-        private class DisposeTask implements Runnable {
+        private final class DisposeTask implements Runnable {
             private final TimedRunnable timedRunnable;
 
             public DisposeTask(TimedRunnable timedRunnable) {

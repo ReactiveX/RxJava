@@ -83,7 +83,7 @@ public final class BlockingObservableMostRecent<T> implements Iterable<T> {
             return new MostRecentSubscriberIterator();
         }
 
-        private class MostRecentSubscriberIterator implements Iterator<T> {
+        private final class MostRecentSubscriberIterator implements Iterator<T> {
             /**
              * buffer to make sure that the state of the iterator doesn't change between calling hasNext() and next().
              */

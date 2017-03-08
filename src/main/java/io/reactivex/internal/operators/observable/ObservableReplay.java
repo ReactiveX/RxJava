@@ -892,14 +892,14 @@ public final class ObservableReplay<T> extends ConnectableObservable<T> implemen
         }
     }
 
-    private static class UnboundedBufferSupplier implements BufferSupplier {
+    static final class UnboundedBufferSupplier implements BufferSupplier {
         @Override
         public ReplayBuffer call() {
             return new UnboundedReplayBuffer<Object>(16);
         }
     }
 
-    private static class OnAssemblyObservable<R, U> extends Observable<R> {
+    static final class OnAssemblyObservable<R, U> extends Observable<R> {
         private final Callable<? extends ConnectableObservable<U>> connectableFactory;
         private final Function<? super Observable<U>, ? extends ObservableSource<R>> selector;
 
@@ -942,7 +942,7 @@ public final class ObservableReplay<T> extends ConnectableObservable<T> implemen
         }
     }
 
-    private static class BoundReplayBufferSupplier<T> implements BufferSupplier<T> {
+    static final class BoundReplayBufferSupplier<T> implements BufferSupplier<T> {
         private final int bufferSize;
 
         public BoundReplayBufferSupplier(int bufferSize) {
@@ -955,7 +955,7 @@ public final class ObservableReplay<T> extends ConnectableObservable<T> implemen
         }
     }
 
-    private static class SizeAndTimeBoundBufferSupplier<T> implements BufferSupplier<T> {
+    static final class SizeAndTimeBoundBufferSupplier<T> implements BufferSupplier<T> {
         private final int bufferSize;
         private final long maxAge;
         private final TimeUnit unit;
@@ -974,7 +974,7 @@ public final class ObservableReplay<T> extends ConnectableObservable<T> implemen
         }
     }
 
-    private static class SubscriptionObservable<T> implements ObservableSource<T> {
+    static final class SubscriptionObservable<T> implements ObservableSource<T> {
         private final AtomicReference<ReplayObserver<T>> current;
         private final BufferSupplier<T> bufferFactory;
 
@@ -1031,7 +1031,7 @@ public final class ObservableReplay<T> extends ConnectableObservable<T> implemen
         }
     }
 
-    private static class OnSubscribeObservable<T> extends ConnectableObservable<T> {
+    static final class OnSubscribeObservable<T> extends ConnectableObservable<T> {
         private final ConnectableObservable<T> co;
         private final Observable<T> observable;
 

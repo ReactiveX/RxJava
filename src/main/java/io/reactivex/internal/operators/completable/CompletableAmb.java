@@ -90,7 +90,7 @@ public final class CompletableAmb extends Completable {
         }
     }
 
-    private static class CompletableAmbObserver implements CompletableObserver {
+    static final class CompletableAmbObserver implements CompletableObserver {
         private final AtomicBoolean once;
         private final CompositeDisposable disposable;
         private final CompletableObserver observer;

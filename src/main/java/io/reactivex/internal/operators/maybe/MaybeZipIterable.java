@@ -78,7 +78,7 @@ public final class MaybeZipIterable<T, R> extends Maybe<R> {
         }
     }
 
-    private class ArrayZipFunction implements Function<T, R> {
+    private final class ArrayZipFunction implements Function<T, R> {
         @Override
         public R apply(T t) throws Exception {
             return zipper.apply(new Object[] { t });

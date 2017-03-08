@@ -263,7 +263,7 @@ public class SchedulerWhen extends Scheduler implements Disposable {
         }
     }
 
-    private static class WorkerFunction implements Function<ScheduledAction, Completable> {
+    static final class WorkerFunction implements Function<ScheduledAction, Completable> {
         private final Worker actualWorker;
 
         public WorkerFunction(Worker actualWorker) {
@@ -290,7 +290,7 @@ public class SchedulerWhen extends Scheduler implements Disposable {
         }
     }
 
-    private static class QueueWorker extends Worker {
+    static final class QueueWorker extends Worker {
         private final AtomicBoolean unsubscribed;
         private final FlowableProcessor<ScheduledAction> actionProcessor;
         private final Worker actualWorker;
@@ -335,7 +335,7 @@ public class SchedulerWhen extends Scheduler implements Disposable {
         }
     }
 
-    private static class EmptyDisposable implements Disposable {
+    static final class EmptyDisposable implements Disposable {
         @Override
         public void dispose() {
         }

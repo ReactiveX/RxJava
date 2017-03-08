@@ -40,7 +40,7 @@ public final class SingleOnErrorReturn<T> extends Single<T> {
         source.subscribe(new OnSubscribeObserver(s));
     }
 
-    private class OnSubscribeObserver implements SingleObserver<T> {
+    private final class OnSubscribeObserver implements SingleObserver<T> {
 
         private final SingleObserver<? super T> s;
 

@@ -79,7 +79,7 @@ public final class SingleDelay<T> extends Single<T> {
             }
         }
 
-        private class OnError implements Runnable {
+        private final class OnError implements Runnable {
             private final Throwable e;
 
             public OnError(Throwable e) {

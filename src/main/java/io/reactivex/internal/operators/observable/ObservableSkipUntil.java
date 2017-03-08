@@ -88,7 +88,7 @@ public final class ObservableSkipUntil<T, U> extends AbstractObservableWithUpstr
         }
     }
 
-    private class OnSubscribeObserver implements Observer<U> {
+    private final class OnSubscribeObserver implements Observer<U> {
         private final ArrayCompositeDisposable frc;
         private final SkipUntilObserver<T> sus;
         private final SerializedObserver<T> serial;

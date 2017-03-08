@@ -115,7 +115,7 @@ public final class ObservableWithLatestFrom<T, U, R> extends AbstractObservableW
         }
     }
 
-    private class OnSubscribeObserver<U> implements Observer<U> {
+    private final class OnSubscribeObserver<U> implements Observer<U> {
         private final WithLatestFromObserver<T, U, R> wlf;
 
         public OnSubscribeObserver(WithLatestFromObserver<T, U, R> wlf) {

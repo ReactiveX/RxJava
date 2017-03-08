@@ -43,7 +43,7 @@ public final class ObservableDelaySubscriptionOther<T, U> extends Observable<T> 
         other.subscribe(otherObserver);
     }
 
-    private class UnderlyingObserver implements Observer<U> {
+    private final class UnderlyingObserver implements Observer<U> {
         private final SequentialDisposable serial;
         private final Observer<? super T> child;
         boolean done;
@@ -83,7 +83,7 @@ public final class ObservableDelaySubscriptionOther<T, U> extends Observable<T> 
             main.subscribe(new CompletionObserver());
         }
 
-        private class CompletionObserver implements Observer<T> {
+        private final class CompletionObserver implements Observer<T> {
             @Override
             public void onSubscribe(Disposable d) {
                 serial.update(d);

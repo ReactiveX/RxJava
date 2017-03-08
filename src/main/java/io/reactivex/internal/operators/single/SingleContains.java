@@ -38,7 +38,7 @@ public final class SingleContains<T> extends Single<Boolean> {
         source.subscribe(new OnSubscribeObserver(s));
     }
 
-    private class OnSubscribeObserver implements SingleObserver<T> {
+    private final class OnSubscribeObserver implements SingleObserver<T> {
 
         private final SingleObserver<? super Boolean> s;
 

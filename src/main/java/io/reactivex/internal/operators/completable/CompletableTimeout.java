@@ -51,7 +51,7 @@ public final class CompletableTimeout extends Completable {
         source.subscribe(new TimeoutObserverObserver(set, once, s));
     }
 
-    private static class TimeoutObserverObserver implements CompletableObserver {
+    static final class TimeoutObserverObserver implements CompletableObserver {
 
         private final CompositeDisposable disposable;
         private final AtomicBoolean once;

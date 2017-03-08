@@ -72,7 +72,7 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
         return RxJavaPlugins.onAssembly(new ConnectableObserver<T>(co, scheduler));
     }
 
-    private static final class ConnectableObserver<T> extends ConnectableFlowable<T>{
+    static final class ConnectableObserver<T> extends ConnectableFlowable<T>{
         final ConnectableFlowable<T> connectableFlowable;
         final Flowable<T> observable;
 
@@ -1120,7 +1120,7 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
         }
     }
 
-    private static final class MultiCastPublisher<U,R> implements Publisher<R>{
+    static final class MultiCastPublisher<U,R> implements Publisher<R>{
         final Callable<? extends ConnectableFlowable<U>> connectableFactory;
         final Function<? super Flowable<U>, ? extends Publisher<R>> selector;
 
@@ -1178,7 +1178,7 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
         }
     }
 
-    private static class ReplayBufferCallable<T> implements Callable<ReplayBuffer<T>> {
+    static final class ReplayBufferCallable<T> implements Callable<ReplayBuffer<T>> {
         private final int bufferSize;
         private final long maxAge;
         private final TimeUnit unit;
@@ -1197,7 +1197,7 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
         }
     }
 
-    private static class OperatorReplayPublisher<T> implements Publisher<T> {
+    static final class OperatorReplayPublisher<T> implements Publisher<T> {
         private final AtomicReference<ReplaySubscriber<T>> current;
         private final Callable<? extends ReplayBuffer<T>> bufferFactory;
 

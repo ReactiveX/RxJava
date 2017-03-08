@@ -51,7 +51,7 @@ public final class BlockingFlowableMostRecent<T> implements Iterable<T> {
         return mostRecentSubscriber.getIterable();
     }
 
-    final class MostRecentSubscriber<T> extends DefaultSubscriber<T> {
+    static final class MostRecentSubscriber<T> extends DefaultSubscriber<T> {
         volatile Object value;
 
         MostRecentSubscriber(T value) {
@@ -73,7 +73,6 @@ public final class BlockingFlowableMostRecent<T> implements Iterable<T> {
             value = NotificationLite.next(args);
         }
 
-
         /**
          * The {@link Iterator} return is not thread safe. In other words don't call {@link Iterator#hasNext()} in one
          * thread expect {@link Iterator#next()} called from a different thread to work.
@@ -82,7 +81,7 @@ public final class BlockingFlowableMostRecent<T> implements Iterable<T> {
         public Iterator<T> getIterable() {
             return new MostRecentSubscriberIterator();
         }
-        private class MostRecentSubscriberIterator implements Iterator<T> {
+        private final class MostRecentSubscriberIterator implements Iterator<T> {
             /**
              * buffer to make sure that the state of the iterator doesn't change between calling hasNext() and next().
              */

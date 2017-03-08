@@ -102,7 +102,7 @@ public final class FlowableDelay<T> extends AbstractFlowableWithUpstream<T, T> {
             w.dispose();
         }
 
-        private class OnNextTask implements Runnable {
+        private final class OnNextTask implements Runnable {
             private final T t;
 
             public OnNextTask(T t) {
@@ -132,7 +132,7 @@ public final class FlowableDelay<T> extends AbstractFlowableWithUpstream<T, T> {
             }
         }
 
-        private class CompletionTask implements Runnable {
+        private final class CompletionTask implements Runnable {
             @Override
             public void run() {
                 try {

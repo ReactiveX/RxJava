@@ -142,7 +142,7 @@ public final class FlowableSubscribeOn<T> extends AbstractFlowableWithUpstream<T
             worker.dispose();
         }
 
-        private static class RequestTask implements Runnable {
+        static final class RequestTask implements Runnable {
             private final Subscription subscription;
             private final long size;
 

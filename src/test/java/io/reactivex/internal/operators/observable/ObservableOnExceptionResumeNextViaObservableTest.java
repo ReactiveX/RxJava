@@ -166,7 +166,7 @@ public class ObservableOnExceptionResumeNextViaObservableTest {
         observable.subscribe(observer);
 
         try {
-            // if the thread gets started (which it shouldn't if it'disposable working correctly)
+            // if the thread gets started (which it shouldn't if it's working correctly)
             if (f.t != null) {
                 f.t.join();
             }

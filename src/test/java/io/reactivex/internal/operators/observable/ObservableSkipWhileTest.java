@@ -33,7 +33,7 @@ public class ObservableSkipWhileTest {
         @Override
         public boolean test(Integer v) {
             if (v == 42) {
-                throw new RuntimeException("that'disposable not the answer to everything!");
+                throw new RuntimeException("that's not the answer to everything!");
             }
             return v < 5;
         }

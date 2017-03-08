@@ -102,7 +102,7 @@ public final class ObservableDelay<T> extends AbstractObservableWithUpstream<T, 
             return w.isDisposed();
         }
 
-        private class OnNextTask implements Runnable {
+        private final class OnNextTask implements Runnable {
             private final T t;
 
             public OnNextTask(T t) {
@@ -132,7 +132,7 @@ public final class ObservableDelay<T> extends AbstractObservableWithUpstream<T, 
             }
         }
 
-        private class OnCompleteTask implements Runnable {
+        private final class OnCompleteTask implements Runnable {
             @Override
             public void run() {
                 try {

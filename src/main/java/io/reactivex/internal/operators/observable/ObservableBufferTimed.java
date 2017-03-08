@@ -351,7 +351,7 @@ extends AbstractObservableWithUpstream<T, U> {
             a.onNext(v);
         }
 
-        private class RemoveFromBufferTask implements Runnable {
+        private final class RemoveFromBufferTask implements Runnable {
             private final U b;
 
             public RemoveFromBufferTask(U b) {

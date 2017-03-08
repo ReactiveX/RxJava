@@ -106,7 +106,7 @@ public final class ExceptionHelper {
         return list;
     }
 
-    private static class TerminalThrowable extends Throwable {
+    static final class TerminalThrowable extends Throwable {
 
         private static final long serialVersionUID = -4649703670690200604L;
 

@@ -35,7 +35,7 @@ public final class CompletableDoOnEvent extends Completable {
         source.subscribe(new DoOnEventObserver(s));
     }
 
-    private class DoOnEventObserver implements CompletableObserver {
+    private final class DoOnEventObserver implements CompletableObserver {
         private final CompletableObserver observer;
 
         DoOnEventObserver(CompletableObserver observer) {

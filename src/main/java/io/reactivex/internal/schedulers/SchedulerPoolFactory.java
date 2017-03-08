@@ -116,7 +116,7 @@ public final class SchedulerPoolFactory {
         return exec;
     }
 
-    private static class PurgeTask implements Runnable {
+    static final class PurgeTask implements Runnable {
         @Override
         public void run() {
             try {

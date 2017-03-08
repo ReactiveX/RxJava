@@ -267,7 +267,7 @@ public final class ExecutorScheduler extends Scheduler {
             }
         }
 
-        private class ReplaceTask implements Runnable {
+        private final class ReplaceTask implements Runnable {
             private final SequentialDisposable mar;
             private final Runnable decoratedRun;
 

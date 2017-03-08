@@ -190,7 +190,7 @@ public final class FullArbiter<T> extends FullArbiterPad2 implements Subscriptio
         }
     }
 
-    private static class VoidSubscription implements Subscription {
+    static final class VoidSubscription implements Subscription {
         @Override
         public void request(long n) {
             // deliberately no op

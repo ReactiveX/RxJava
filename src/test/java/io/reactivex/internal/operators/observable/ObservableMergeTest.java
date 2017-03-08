@@ -724,7 +724,7 @@ public class ObservableMergeTest {
     /**
      * This is the same as the upstreams ones, but now adds the downstream as well by using observeOn.
      *
-     * This requires merge to also obey the Product.request values coming from it'disposable child Observer.
+     * This requires merge to also obey the Product.request values coming from it's child Observer.
      * @throws InterruptedException if the test is interrupted
      */
     @Test(timeout = 10000)
@@ -768,7 +768,7 @@ public class ObservableMergeTest {
      * Currently there is no solution to this ... we can't exert backpressure on the outer Observable if we
      * can't know if the ones we've received so far are going to emit or not, otherwise we could starve the system.
      *
-     * For example, 10,000 Observables are being merged (bad use case to begin with, but ...) and it'disposable only one of them
+     * For example, 10,000 Observables are being merged (bad use case to begin with, but ...) and it's only one of them
      * that will ever emit. If backpressure only allowed the first 1,000 to be sent, we would hang and never receive an event.
      *
      * Thus, we must allow all Observables to be sent. The ScalarSynchronousObservable use case is an exception to this since
@@ -843,8 +843,8 @@ public class ObservableMergeTest {
             public void subscribe(Observer<? super String> s) {
                 s.onNext("two");
                 // FIXME can't cancel downstream
-//                disposable.unsubscribe();
-//                disposable.onComplete();
+//                s.unsubscribe();
+//                s.onComplete();
             }
 
         });

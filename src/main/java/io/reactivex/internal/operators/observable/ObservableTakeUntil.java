@@ -80,7 +80,7 @@ public final class ObservableTakeUntil<T, U> extends AbstractObservableWithUpstr
         }
     }
 
-    private static class SubscriptionObserver<T,U> implements Observer<U> {
+    static final class SubscriptionObserver<T,U> implements Observer<U> {
         private final ArrayCompositeDisposable frc;
         private final SerializedObserver<T> serial;
 

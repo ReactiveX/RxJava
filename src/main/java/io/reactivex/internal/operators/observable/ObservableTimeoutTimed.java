@@ -157,7 +157,7 @@ public final class ObservableTimeoutTimed<T> extends AbstractObservableWithUpstr
             return worker.isDisposed();
         }
 
-        private class TimeoutTask implements Runnable {
+        private final class TimeoutTask implements Runnable {
             private final long idx;
 
             public TimeoutTask(long idx) {
@@ -272,7 +272,7 @@ public final class ObservableTimeoutTimed<T> extends AbstractObservableWithUpstr
             return worker.isDisposed();
         }
 
-        private class TimeoutTask implements Runnable {
+        private final class TimeoutTask implements Runnable {
             private final long idx;
 
             public TimeoutTask(long idx) {
@@ -294,7 +294,7 @@ public final class ObservableTimeoutTimed<T> extends AbstractObservableWithUpstr
         }
     }
 
-    private static class EmptyDisposable implements Disposable {
+    static final class EmptyDisposable implements Disposable {
         @Override
         public void dispose() { }
 

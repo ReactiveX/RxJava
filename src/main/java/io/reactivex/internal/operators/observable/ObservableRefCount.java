@@ -172,7 +172,7 @@ public final class ObservableRefCount<T> extends AbstractObservableWithUpstream<
         }
     }
 
-    private class DisposeConsumer implements Consumer<Disposable> {
+    private final class DisposeConsumer implements Consumer<Disposable> {
         private final Observer<? super T> observer;
         private final AtomicBoolean writeLocked;
 
@@ -195,7 +195,7 @@ public final class ObservableRefCount<T> extends AbstractObservableWithUpstream<
         }
     }
 
-    private class DisconnectionTask implements Runnable {
+    private final class DisconnectionTask implements Runnable {
         private final CompositeDisposable current;
 
         public DisconnectionTask(CompositeDisposable current) {

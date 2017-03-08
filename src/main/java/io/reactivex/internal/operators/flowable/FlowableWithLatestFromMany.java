@@ -294,7 +294,7 @@ public final class FlowableWithLatestFromMany<T, R> extends AbstractFlowableWith
         }
     }
 
-    private class SingletonArray implements Function<T, R> {
+    private final class SingletonArray implements Function<T, R> {
         @Override
         public R apply(T t) throws Exception {
             return combiner.apply(new Object[] { t });

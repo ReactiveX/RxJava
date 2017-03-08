@@ -212,7 +212,7 @@ public final class FlowableInternalHelper {
         return new ReplayFunction<T,R>(selector, scheduler);
     }
 
-    private static final class ReplayCallable<T> implements Callable<ConnectableFlowable<T>>{
+    static final class ReplayCallable<T> implements Callable<ConnectableFlowable<T>>{
         final Flowable<T> parent;
         final int bufferSize;
 
@@ -231,7 +231,7 @@ public final class FlowableInternalHelper {
         }
     }
 
-    private static final class ScheduledReplayCallable<T> implements Callable<ConnectableFlowable<T>>{
+    static final class ScheduledReplayCallable<T> implements Callable<ConnectableFlowable<T>>{
         final Flowable<T> parent;
         final int bufferSize;
         final long time;

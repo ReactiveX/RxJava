@@ -122,7 +122,7 @@ public final class ObjectHelper {
         return value;
     }
 
-    private static class ObjectBiPredicate implements BiPredicate<Object, Object> {
+    static final class ObjectBiPredicate implements BiPredicate<Object, Object> {
         @Override
         public boolean test(Object o1, Object o2) {
             return ObjectHelper.equals(o1, o2);

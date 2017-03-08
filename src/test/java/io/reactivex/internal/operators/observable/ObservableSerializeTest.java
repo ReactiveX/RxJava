@@ -49,7 +49,7 @@ public class ObservableSerializeTest {
         verify(observer, times(1)).onComplete();
         // non-deterministic because unsubscribe happens after 'waitToFinish' releases
         // so commenting out for now as this is not a critical thing to test here
-        //            verify(disposable, times(1)).unsubscribe();
+        //            verify(s, times(1)).unsubscribe();
     }
 
     @Test
@@ -67,7 +67,7 @@ public class ObservableSerializeTest {
         assertTrue(busyobserver.onComplete);
         // non-deterministic because unsubscribe happens after 'waitToFinish' releases
         // so commenting out for now as this is not a critical thing to test here
-        //            verify(disposable, times(1)).unsubscribe();
+        //            verify(s, times(1)).unsubscribe();
 
         // we can have concurrency ...
         assertTrue(onSubscribe.maxConcurrentThreads.get() > 1);
@@ -96,7 +96,7 @@ public class ObservableSerializeTest {
         assertFalse(busyobserver.onComplete);
         // non-deterministic because unsubscribe happens after 'waitToFinish' releases
         // so commenting out for now as this is not a critical thing to test here
-        //verify(disposable, times(1)).unsubscribe();
+        //verify(s, times(1)).unsubscribe();
 
         // we can have concurrency ...
         assertTrue(onSubscribe.maxConcurrentThreads.get() > 1);
@@ -128,7 +128,7 @@ public class ObservableSerializeTest {
             assertFalse(busyobserver.onComplete);
             // non-deterministic because unsubscribe happens after 'waitToFinish' releases
             // so commenting out for now as this is not a critical thing to test here
-            // verify(disposable, times(1)).unsubscribe();
+            // verify(s, times(1)).unsubscribe();
 
             // we can have concurrency ...
             int n = onSubscribe.maxConcurrentThreads.get();

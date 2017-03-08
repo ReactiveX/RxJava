@@ -622,7 +622,7 @@ public final class FlowablePublish<T> extends ConnectableFlowable<T> implements 
         }
     }
 
-    private static final class OperatorPublisher<T> implements Publisher<T>{
+    static final class OperatorPublisher<T> implements Publisher<T>{
         private final int bufferSize;
         private final AtomicReference<PublishSubscriber<T>> curr;
 

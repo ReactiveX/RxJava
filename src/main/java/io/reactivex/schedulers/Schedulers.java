@@ -196,28 +196,28 @@ public final class Schedulers {
         SchedulerPoolFactory.start();
     }
 
-    private static class SingleHolderCallable implements Callable<Scheduler> {
+    static final class SingleHolderCallable implements Callable<Scheduler> {
         @Override
         public Scheduler call() throws Exception {
             return SingleHolder.DEFAULT;
         }
     }
 
-    private static class ComputationHolderCallable implements Callable<Scheduler> {
+    static final class ComputationHolderCallable implements Callable<Scheduler> {
         @Override
         public Scheduler call() throws Exception {
             return ComputationHolder.DEFAULT;
         }
     }
 
-    private static class IoHolderCallable implements Callable<Scheduler> {
+    static final class IoHolderCallable implements Callable<Scheduler> {
         @Override
         public Scheduler call() throws Exception {
             return IoHolder.DEFAULT;
         }
     }
 
-    private static class NewThreadHolderCallable implements Callable<Scheduler> {
+    static final class NewThreadHolderCallable implements Callable<Scheduler> {
         @Override
         public Scheduler call() throws Exception {
             return NewThreadHolder.DEFAULT;

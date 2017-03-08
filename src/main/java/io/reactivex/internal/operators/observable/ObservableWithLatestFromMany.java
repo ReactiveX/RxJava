@@ -30,7 +30,7 @@ import io.reactivex.plugins.RxJavaPlugins;
  * Combines a main sequence of values with the latest from multiple other sequences via
  * a selector function.
  *
- * @param <T> the main sequence'disposable type
+ * @param <T> the main sequence's type
  * @param <R> the output type
  */
 public final class ObservableWithLatestFromMany<T, R> extends AbstractObservableWithUpstream<T, R> {
@@ -283,7 +283,7 @@ public final class ObservableWithLatestFromMany<T, R> extends AbstractObservable
         }
     }
 
-    private class SingletonArrayFunction implements Function<T, R> {
+    private final class SingletonArrayFunction implements Function<T, R> {
         @Override
         public R apply(T t) throws Exception {
             return combiner.apply(new Object[] { t });

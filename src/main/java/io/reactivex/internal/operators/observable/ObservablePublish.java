@@ -316,7 +316,7 @@ public final class ObservablePublish<T> extends ConnectableObservable<T> impleme
         }
     }
 
-    private static class OnSubscribeObservableSource<T> implements ObservableSource<T> {
+    static final class OnSubscribeObservableSource<T> implements ObservableSource<T> {
         private final AtomicReference<PublishObserver<T>> curr;
 
         public OnSubscribeObservableSource(AtomicReference<PublishObserver<T>> curr) {

@@ -726,7 +726,7 @@ public final class ObservableWindowTimed<T> extends AbstractObservableWithUpstre
             }
         }
 
-        private class CompletionTask implements Runnable {
+        private final class CompletionTask implements Runnable {
             private final UnicastSubject<T> w;
 
             CompletionTask(UnicastSubject<T> w) {

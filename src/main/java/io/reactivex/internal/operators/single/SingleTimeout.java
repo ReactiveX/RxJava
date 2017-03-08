@@ -56,7 +56,7 @@ public final class SingleTimeout<T> extends Single<T> {
 
     }
 
-    private class OnSubscribeTask implements Runnable {
+    private final class OnSubscribeTask implements Runnable {
         private final AtomicBoolean once;
         private final CompositeDisposable set;
         private final SingleObserver<? super T> s;
@@ -102,7 +102,7 @@ public final class SingleTimeout<T> extends Single<T> {
         }
     }
 
-    private class OnSubscribeObserver implements SingleObserver<T> {
+    private final class OnSubscribeObserver implements SingleObserver<T> {
 
         private final AtomicBoolean once;
         private final CompositeDisposable set;

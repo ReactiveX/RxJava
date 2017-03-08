@@ -178,7 +178,7 @@ public final class SingleZipArray<T, R> extends Single<R> {
         }
     }
 
-    private class SingletonZipperFunction implements Function<T, R> {
+    private final class SingletonZipperFunction implements Function<T, R> {
         @Override
         public R apply(T t) throws Exception {
             return zipper.apply(new Object[] { t });
