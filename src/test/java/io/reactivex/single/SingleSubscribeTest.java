@@ -217,4 +217,14 @@ public class SingleSubscribeTest {
 
         assertTrue(ps.hasObservers());
     }
+
+    @Test
+    public void successIsDisposed() {
+        assertTrue(Single.just(1).subscribe().isDisposed());
+    }
+
+    @Test
+    public void errorIsDisposed() {
+        assertTrue(Single.error(new TestException()).subscribe(Functions.emptyConsumer(), Functions.emptyConsumer()).isDisposed());
+    }
 }
