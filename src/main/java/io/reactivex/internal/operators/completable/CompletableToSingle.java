@@ -35,42 +35,49 @@ public final class CompletableToSingle<T> extends Single<T> {
 
     @Override
     protected void subscribeActual(final SingleObserver<? super T> s) {
-        source.subscribe(new CompletableObserver() {
+        source.subscribe(new SingleCompletableObserver(s));
+    }
 
-            @Override
-            public void onComplete() {
-                T v;
+    private final class SingleCompletableObserver implements CompletableObserver{
+        final SingleObserver<? super T> s;
 
-                if (completionValueSupplier != null) {
-                    try {
-                        v = completionValueSupplier.call();
-                    } catch (Throwable e) {
-                        Exceptions.throwIfFatal(e);
-                        s.onError(e);
-                        return;
-                    }
-                } else {
-                    v = completionValue;
+        private SingleCompletableObserver(SingleObserver<? super T> s) {
+            this.s = s;
+        }
+
+        @Override
+        public void onComplete() {
+            T v;
+
+            if (completionValueSupplier != null) {
+                try {
+                    v = completionValueSupplier.call();
+                } catch (Throwable e) {
+                    Exceptions.throwIfFatal(e);
+                    s.onError(e);
+                    return;
                 }
-
-                if (v == null) {
-                    s.onError(new NullPointerException("The value supplied is null"));
-                } else {
-                    s.onSuccess(v);
-                }
+            } else {
+                v = completionValue;
             }
 
-            @Override
-            public void onError(Throwable e) {
-                s.onError(e);
+            if (v == null) {
+                s.onError(new NullPointerException("The value supplied is null"));
+            } else {
+                s.onSuccess(v);
             }
+        }
 
-            @Override
-            public void onSubscribe(Disposable d) {
-                s.onSubscribe(d);
-            }
+        @Override
+        public void onError(Throwable e) {
+            s.onError(e);
+        }
 
-        });
+        @Override
+        public void onSubscribe(Disposable d) {
+            s.onSubscribe(d);
+        }
+
     }
 
 }

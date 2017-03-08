@@ -63,31 +63,7 @@ public final class CompletableAmb extends Completable {
 
         final AtomicBoolean once = new AtomicBoolean();
 
-        CompletableObserver inner = new CompletableObserver() {
-            @Override
-            public void onComplete() {
-                if (once.compareAndSet(false, true)) {
-                    set.dispose();
-                    s.onComplete();
-                }
-            }
-
-            @Override
-            public void onError(Throwable e) {
-                if (once.compareAndSet(false, true)) {
-                    set.dispose();
-                    s.onError(e);
-                } else {
-                    RxJavaPlugins.onError(e);
-                }
-            }
-
-            @Override
-            public void onSubscribe(Disposable d) {
-                set.add(d);
-            }
-
-        };
+        CompletableObserver inner = new CompletableAmbObserver(once, set, s);
 
         for (int i = 0; i < count; i++) {
             CompletableSource c = sources[i];
@@ -112,5 +88,41 @@ public final class CompletableAmb extends Completable {
         if (count == 0) {
             s.onComplete();
         }
+    }
+
+    private static class CompletableAmbObserver implements CompletableObserver {
+        private final AtomicBoolean once;
+        private final CompositeDisposable disposable;
+        private final CompletableObserver observer;
+
+        public CompletableAmbObserver(AtomicBoolean once, CompositeDisposable disposable, CompletableObserver observer) {
+            this.once = once;
+            this.disposable = disposable;
+            this.observer = observer;
+        }
+
+        @Override
+        public void onComplete() {
+            if (once.compareAndSet(false, true)) {
+                disposable.dispose();
+                observer.onComplete();
+            }
+        }
+
+        @Override
+        public void onError(Throwable e) {
+            if (once.compareAndSet(false, true)) {
+                disposable.dispose();
+                observer.onError(e);
+            } else {
+                RxJavaPlugins.onError(e);
+            }
+        }
+
+        @Override
+        public void onSubscribe(Disposable d) {
+            disposable.add(d);
+        }
+
     }
 }

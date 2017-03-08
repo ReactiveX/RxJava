@@ -31,65 +31,71 @@ public final class CompletableResumeNext extends Completable {
         this.errorMapper = errorMapper;
     }
 
-
-
     @Override
     protected void subscribeActual(final CompletableObserver s) {
+        source.subscribe(new CompletableResumeNextObserver(s));
+    }
 
-        final SequentialDisposable sd = new SequentialDisposable();
-        s.onSubscribe(sd);
-        source.subscribe(new CompletableObserver() {
+    private final class CompletableResumeNextObserver implements CompletableObserver{
+
+        final CompletableObserver completableObserver;
+        final SequentialDisposable sequentialDisposable;
+
+        CompletableResumeNextObserver(CompletableObserver s) {
+            this.completableObserver = s;
+            sequentialDisposable = new SequentialDisposable();
+        }
+
+        @Override
+        public void onComplete() {
+            completableObserver.onComplete();
+        }
+
+        @Override
+        public void onError(Throwable e) {
+            CompletableSource c;
+
+            try {
+                c = errorMapper.apply(e);
+            } catch (Throwable ex) {
+                Exceptions.throwIfFatal(ex);
+                completableObserver.onError(new CompositeException(ex, e));
+                return;
+            }
+
+            if (c == null) {
+                NullPointerException npe = new NullPointerException("The CompletableConsumable returned is null");
+                npe.initCause(e);
+                completableObserver.onError(npe);
+                return;
+            }
+
+            c.subscribe(new OnErrorObserver());
+        }
+
+        @Override
+        public void onSubscribe(Disposable d) {
+            sequentialDisposable.update(d);
+        }
+
+        private class OnErrorObserver implements CompletableObserver {
 
             @Override
             public void onComplete() {
-                s.onComplete();
+                completableObserver.onComplete();
             }
 
             @Override
             public void onError(Throwable e) {
-                CompletableSource c;
-
-                try {
-                    c = errorMapper.apply(e);
-                } catch (Throwable ex) {
-                    Exceptions.throwIfFatal(ex);
-                    s.onError(new CompositeException(ex, e));
-                    return;
-                }
-
-                if (c == null) {
-                    NullPointerException npe = new NullPointerException("The CompletableConsumable returned is null");
-                    npe.initCause(e);
-                    s.onError(npe);
-                    return;
-                }
-
-                c.subscribe(new CompletableObserver() {
-
-                    @Override
-                    public void onComplete() {
-                        s.onComplete();
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        s.onError(e);
-                    }
-
-                    @Override
-                    public void onSubscribe(Disposable d) {
-                        sd.update(d);
-                    }
-
-                });
+                completableObserver.onError(e);
             }
 
             @Override
             public void onSubscribe(Disposable d) {
-                sd.update(d);
+                sequentialDisposable.update(d);
             }
 
-        });
+        }
     }
 
 }

@@ -131,16 +131,7 @@ public abstract class Scheduler {
 
         final Runnable decoratedRun = RxJavaPlugins.onSchedule(run);
 
-        w.schedule(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    decoratedRun.run();
-                } finally {
-                    w.dispose();
-                }
-            }
-        }, delay, unit);
+        w.schedule(new DelegationTask(decoratedRun, w), delay, unit);
 
         return w;
     }
@@ -438,6 +429,25 @@ public abstract class Scheduler {
         @Override
         public boolean isDisposed() {
             return disposed;
+        }
+    }
+
+    private static class DelegationTask implements Runnable {
+        private final Runnable decoratedRun;
+        private final Worker work;
+
+        public DelegationTask(Runnable decoratedRun, Worker work) {
+            this.decoratedRun = decoratedRun;
+            this.work = work;
+        }
+
+        @Override
+        public void run() {
+            try {
+                decoratedRun.run();
+            } finally {
+                work.dispose();
+            }
         }
     }
 }

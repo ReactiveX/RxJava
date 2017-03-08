@@ -132,12 +132,7 @@ extends Flowable<R> {
             return;
         }
         if (n == 1) {
-            ((Publisher<T>)a[0]).subscribe(new MapSubscriber<T, R>(s, new Function<T, R>() {
-                @Override
-                public R apply(T t) throws Exception {
-                    return combiner.apply(new Object[] { t });
-                }
-            }));
+            ((Publisher<T>)a[0]).subscribe(new MapSubscriber<T, R>(s,new SingletonCombiner()));
             return;
         }
 
@@ -148,6 +143,13 @@ extends Flowable<R> {
         s.onSubscribe(coordinator);
 
         coordinator.subscribe(a, n);
+    }
+
+    private final class SingletonCombiner implements Function<T,R>{
+        @Override
+        public R apply(T t) throws Exception {
+            return combiner.apply(new Object[] { t });
+        }
     }
 
     static final class CombineLatestCoordinator<T, R>

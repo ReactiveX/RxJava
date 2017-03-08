@@ -280,16 +280,7 @@ public final class FlowableBufferTimed<T, U extends Collection<? super T>> exten
 
             w.schedulePeriodically(this, timeskip, timeskip, unit);
 
-            w.schedule(new Runnable() {
-                @Override
-                public void run() {
-                    synchronized (BufferSkipBoundedSubscriber.this) {
-                        buffers.remove(b);
-                    }
-
-                    fastPathOrderedEmitMax(b, false, w);
-                }
-            }, timespan, unit);
+            w.schedule(new RemoveFromBufferTask(b), timespan, unit);
         }
 
         @Override
@@ -367,6 +358,7 @@ public final class FlowableBufferTimed<T, U extends Collection<? super T>> exten
                 buffers.add(b);
             }
 
+            //noinspection AnonymousInnerClass
             w.schedule(new Runnable() {
                 @Override
                 public void run() {
@@ -383,6 +375,23 @@ public final class FlowableBufferTimed<T, U extends Collection<? super T>> exten
         public boolean accept(Subscriber<? super U> a, U v) {
             a.onNext(v);
             return true;
+        }
+
+        private class RemoveFromBufferTask implements Runnable {
+            private final U b;
+
+            public RemoveFromBufferTask(U b) {
+                this.b = b;
+            }
+
+            @Override
+            public void run() {
+                synchronized (BufferSkipBoundedSubscriber.this) {
+                    buffers.remove(b);
+                }
+
+                fastPathOrderedEmitMax(b, false, w);
+            }
         }
     }
 

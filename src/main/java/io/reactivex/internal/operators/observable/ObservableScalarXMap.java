@@ -36,7 +36,7 @@ public final class ObservableScalarXMap {
     }
 
     /**
-     * Tries to subscribe to a possibly Callable source's mapped ObservableSource.
+     * Tries to subscribe to a possibly Callable source'disposable mapped ObservableSource.
      * @param <T> the input value type
      * @param <R> the output value type
      * @param source the source ObservableSource
@@ -120,7 +120,7 @@ public final class ObservableScalarXMap {
      * Maps a scalar value to an ObservableSource and subscribes to it.
      *
      * @param <T> the scalar value type
-     * @param <R> the mapped ObservableSource's element type.
+     * @param <R> the mapped ObservableSource'disposable element type.
      */
     static final class ScalarXMapObservable<T, R> extends Observable<R> {
 

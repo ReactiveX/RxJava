@@ -191,7 +191,7 @@ public class ObservableFlatMapMaybeTest {
         Observable.fromArray(new String[]{"1","a","2"}).flatMapMaybe(new Function<String, MaybeSource<Integer>>() {
             @Override
             public MaybeSource<Integer> apply(final String s) throws NumberFormatException {
-                //return Single.just(Integer.valueOf(s)); //This works
+                //return Single.just(Integer.valueOf(disposable)); //This works
                 return Maybe.fromCallable(new Callable<Integer>() {
                     @Override
                     public Integer call() throws NumberFormatException {

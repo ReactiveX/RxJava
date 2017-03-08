@@ -31,15 +31,7 @@ public final class ObservableTimeoutTimed<T> extends AbstractObservableWithUpstr
     final ObservableSource<? extends T> other;
 
 
-    static final Disposable NEW_TIMER = new Disposable() {
-        @Override
-        public void dispose() { }
-
-        @Override
-        public boolean isDisposed() {
-            return true;
-        }
-    };
+    static final Disposable NEW_TIMER = new EmptyDisposable();
 
     public ObservableTimeoutTimed(ObservableSource<T> source,
             long timeout, TimeUnit unit, Scheduler scheduler, ObservableSource<? extends T> other) {
@@ -124,21 +116,7 @@ public final class ObservableTimeoutTimed<T> extends AbstractObservableWithUpstr
             }
 
             if (compareAndSet(d, NEW_TIMER)) {
-                d = worker.schedule(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (idx == index) {
-                            done = true;
-                            s.dispose();
-                            DisposableHelper.dispose(TimeoutTimedOtherObserver.this);
-
-                            subscribeNext();
-
-                            worker.dispose();
-                        }
-                    }
-                }, timeout, unit);
-
+                d = worker.schedule(new TimeoutTask(idx), timeout, unit);
                 DisposableHelper.replace(this, d);
             }
         }
@@ -177,6 +155,27 @@ public final class ObservableTimeoutTimed<T> extends AbstractObservableWithUpstr
         @Override
         public boolean isDisposed() {
             return worker.isDisposed();
+        }
+
+        private class TimeoutTask implements Runnable {
+            private final long idx;
+
+            public TimeoutTask(long idx) {
+                this.idx = idx;
+            }
+
+            @Override
+            public void run() {
+                if (idx == index) {
+                    done = true;
+                    s.dispose();
+                    DisposableHelper.dispose(TimeoutTimedOtherObserver.this);
+
+                    subscribeNext();
+
+                    worker.dispose();
+                }
+            }
         }
     }
 
@@ -233,20 +232,7 @@ public final class ObservableTimeoutTimed<T> extends AbstractObservableWithUpstr
             }
 
             if (compareAndSet(d, NEW_TIMER)) {
-                d = worker.schedule(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (idx == index) {
-                            done = true;
-                            s.dispose();
-                            DisposableHelper.dispose(TimeoutTimedObserver.this);
-
-                            actual.onError(new TimeoutException());
-
-                            worker.dispose();
-                        }
-                    }
-                }, timeout, unit);
+                d = worker.schedule(new TimeoutTask(idx), timeout, unit);
 
                 DisposableHelper.replace(this, d);
             }
@@ -284,6 +270,37 @@ public final class ObservableTimeoutTimed<T> extends AbstractObservableWithUpstr
         @Override
         public boolean isDisposed() {
             return worker.isDisposed();
+        }
+
+        private class TimeoutTask implements Runnable {
+            private final long idx;
+
+            public TimeoutTask(long idx) {
+                this.idx = idx;
+            }
+
+            @Override
+            public void run() {
+                if (idx == index) {
+                    done = true;
+                    s.dispose();
+                    DisposableHelper.dispose(TimeoutTimedObserver.this);
+
+                    actual.onError(new TimeoutException());
+
+                    worker.dispose();
+                }
+            }
+        }
+    }
+
+    private static class EmptyDisposable implements Disposable {
+        @Override
+        public void dispose() { }
+
+        @Override
+        public boolean isDisposed() {
+            return true;
         }
     }
 }

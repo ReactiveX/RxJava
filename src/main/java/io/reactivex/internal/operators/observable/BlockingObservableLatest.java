@@ -47,11 +47,11 @@ public final class BlockingObservableLatest<T> implements Iterable<T> {
     }
 
     static final class BlockingObservableLatestIterator<T> extends DisposableObserver<Notification<T>> implements Iterator<T> {
-        // iterator's notification
+        // iterator'disposable notification
         Notification<T> iteratorNotification;
 
         final Semaphore notify = new Semaphore(0);
-        // observer's notification
+        // observer'disposable notification
         final AtomicReference<Notification<T>> value = new AtomicReference<Notification<T>>();
 
         @Override

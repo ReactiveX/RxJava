@@ -40,28 +40,7 @@ public final class ObservableWithLatestFrom<T, U, R> extends AbstractObservableW
 
         serial.onSubscribe(wlf);
 
-        other.subscribe(new Observer<U>() {
-            @Override
-            public void onSubscribe(Disposable s) {
-                wlf.setOther(s);
-            }
-
-            @Override
-            public void onNext(U t) {
-                wlf.lazySet(t);
-            }
-
-            @Override
-            public void onError(Throwable t) {
-                wlf.otherError(t);
-            }
-
-            @Override
-            public void onComplete() {
-                // nothing to do, the wlf will complete on its own pace
-            }
-        });
-
+        other.subscribe(new OnSubscribeObserver<U>(wlf));
         source.subscribe(wlf);
     }
 
@@ -133,6 +112,34 @@ public final class ObservableWithLatestFrom<T, U, R> extends AbstractObservableW
         public void otherError(Throwable e) {
             DisposableHelper.dispose(s);
             actual.onError(e);
+        }
+    }
+
+    private class OnSubscribeObserver<U> implements Observer<U> {
+        private final WithLatestFromObserver<T, U, R> wlf;
+
+        public OnSubscribeObserver(WithLatestFromObserver<T, U, R> wlf) {
+            this.wlf = wlf;
+        }
+
+        @Override
+        public void onSubscribe(Disposable s) {
+            wlf.setOther(s);
+        }
+
+        @Override
+        public void onNext(U t) {
+            wlf.lazySet(t);
+        }
+
+        @Override
+        public void onError(Throwable t) {
+            wlf.otherError(t);
+        }
+
+        @Override
+        public void onComplete() {
+            // nothing to do, the wlf will complete on its own pace
         }
     }
 }

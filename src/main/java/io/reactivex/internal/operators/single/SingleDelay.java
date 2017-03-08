@@ -39,33 +39,57 @@ public final class SingleDelay<T> extends Single<T> {
 
         final SequentialDisposable sd = new SequentialDisposable();
         s.onSubscribe(sd);
-        source.subscribe(new SingleObserver<T>() {
-            @Override
-            public void onSubscribe(Disposable d) {
-                sd.replace(d);
-            }
-
-            @Override
-            public void onSuccess(final T value) {
-                sd.replace(scheduler.scheduleDirect(new Runnable() {
-                    @Override
-                    public void run() {
-                        s.onSuccess(value);
-                    }
-                }, time, unit));
-            }
-
-            @Override
-            public void onError(final Throwable e) {
-                sd.replace(scheduler.scheduleDirect(new Runnable() {
-                    @Override
-                    public void run() {
-                        s.onError(e);
-                    }
-                }, 0, unit));
-            }
-
-        });
+        source.subscribe(new OnSubscribeObserver(sd, s));
     }
 
+    private class OnSubscribeObserver implements SingleObserver<T> {
+        private final SequentialDisposable sd;
+        private final SingleObserver<? super T> s;
+
+        public OnSubscribeObserver(SequentialDisposable sd, SingleObserver<? super T> s) {
+            this.sd = sd;
+            this.s = s;
+        }
+
+        @Override
+        public void onSubscribe(Disposable d) {
+            sd.replace(d);
+        }
+
+        @Override
+        public void onSuccess(final T value) {
+            sd.replace(scheduler.scheduleDirect(new OnSuccessTask(value), time, unit));
+        }
+
+        @Override
+        public void onError(final Throwable e) {
+            sd.replace(scheduler.scheduleDirect(new OnError(e), 0, unit));
+        }
+
+        private class OnSuccessTask implements Runnable {
+            private final T value;
+
+            public OnSuccessTask(T value) {
+                this.value = value;
+            }
+
+            @Override
+            public void run() {
+                s.onSuccess(value);
+            }
+        }
+
+        private class OnError implements Runnable {
+            private final Throwable e;
+
+            public OnError(Throwable e) {
+                this.e = e;
+            }
+
+            @Override
+            public void run() {
+                s.onError(e);
+            }
+        }
+    }
 }

@@ -78,40 +78,17 @@ public final class FlowableDelay<T> extends AbstractFlowableWithUpstream<T, T> {
 
         @Override
         public void onNext(final T t) {
-            w.schedule(new Runnable() {
-                @Override
-                public void run() {
-                    actual.onNext(t);
-                }
-            }, delay, unit);
+            w.schedule(new OnNextTask(t), delay, unit);
         }
 
         @Override
         public void onError(final Throwable t) {
-            w.schedule(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        actual.onError(t);
-                    } finally {
-                        w.dispose();
-                    }
-                }
-            }, delayError ? delay : 0, unit);
+            w.schedule(new OnErrorTask(t), delayError ? delay : 0, unit);
         }
 
         @Override
         public void onComplete() {
-            w.schedule(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        actual.onComplete();
-                    } finally {
-                        w.dispose();
-                    }
-                }
-            }, delay, unit);
+            w.schedule(new CompletionTask(), delay, unit);
         }
 
         @Override
@@ -125,5 +102,45 @@ public final class FlowableDelay<T> extends AbstractFlowableWithUpstream<T, T> {
             w.dispose();
         }
 
+        private class OnNextTask implements Runnable {
+            private final T t;
+
+            public OnNextTask(T t) {
+                this.t = t;
+            }
+
+            @Override
+            public void run() {
+                actual.onNext(t);
+            }
+        }
+
+        private class OnErrorTask implements Runnable {
+            private final Throwable throwable;
+
+            public OnErrorTask(Throwable throwable) {
+                this.throwable = throwable;
+            }
+
+            @Override
+            public void run() {
+                try {
+                    actual.onError(throwable);
+                } finally {
+                    w.dispose();
+                }
+            }
+        }
+
+        private class CompletionTask implements Runnable {
+            @Override
+            public void run() {
+                try {
+                    actual.onComplete();
+                } finally {
+                    w.dispose();
+                }
+            }
+        }
     }
 }

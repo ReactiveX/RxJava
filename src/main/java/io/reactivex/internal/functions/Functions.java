@@ -36,131 +36,50 @@ public final class Functions {
     @SuppressWarnings("unchecked")
     public static <T1, T2, R> Function<Object[], R> toFunction(final BiFunction<? super T1, ? super T2, ? extends R> f) {
         ObjectHelper.requireNonNull(f, "f is null");
-        return new Function<Object[], R>() {
-            @Override
-            public R apply(Object[] a) throws Exception {
-                if (a.length != 2) {
-                    throw new IllegalArgumentException("Array of size 2 expected but got " + a.length);
-                }
-                return ((BiFunction<Object, Object, R>)f).apply(a[0], a[1]);
-            }
-        };
+        return new BiArrayFunction<T1,T2,R>(f);
     }
 
     public static <T1, T2, T3, R> Function<Object[], R> toFunction(final Function3<T1, T2, T3, R> f) {
         ObjectHelper.requireNonNull(f, "f is null");
-        return new Function<Object[], R>() {
-            @SuppressWarnings("unchecked")
-            @Override
-            public R apply(Object[] a) throws Exception {
-                if (a.length != 3) {
-                    throw new IllegalArgumentException("Array of size 3 expected but got " + a.length);
-                }
-                return f.apply((T1)a[0], (T2)a[1], (T3)a[2]);
-            }
-        };
+        return new FunArray3<R, T1, T2, T3>(f);
     }
 
     public static <T1, T2, T3, T4, R> Function<Object[], R> toFunction(final Function4<T1, T2, T3, T4, R> f) {
         ObjectHelper.requireNonNull(f, "f is null");
-        return new Function<Object[], R>() {
-            @SuppressWarnings("unchecked")
-            @Override
-            public R apply(Object[] a) throws Exception {
-                if (a.length != 4) {
-                    throw new IllegalArgumentException("Array of size 4 expected but got " + a.length);
-                }
-                return f.apply((T1)a[0], (T2)a[1], (T3)a[2], (T4)a[3]);
-            }
-        };
+        return new FunArray4<R, T1, T2, T3, T4>(f);
     }
 
     public static <T1, T2, T3, T4, T5, R> Function<Object[], R> toFunction(final Function5<T1, T2, T3, T4, T5, R> f) {
         ObjectHelper.requireNonNull(f, "f is null");
-        return new Function<Object[], R>() {
-            @SuppressWarnings("unchecked")
-            @Override
-            public R apply(Object[] a) throws Exception {
-                if (a.length != 5) {
-                    throw new IllegalArgumentException("Array of size 5 expected but got " + a.length);
-                }
-                return f.apply((T1)a[0], (T2)a[1], (T3)a[2], (T4)a[3], (T5)a[4]);
-            }
-        };
+        return new FunArray5<R, T1, T2, T3, T4, T5>(f);
     }
 
     public static <T1, T2, T3, T4, T5, T6, R> Function<Object[], R> toFunction(
             final Function6<T1, T2, T3, T4, T5, T6, R> f) {
         ObjectHelper.requireNonNull(f, "f is null");
-        return new Function<Object[], R>() {
-            @SuppressWarnings("unchecked")
-            @Override
-            public R apply(Object[] a) throws Exception {
-                if (a.length != 6) {
-                    throw new IllegalArgumentException("Array of size 6 expected but got " + a.length);
-                }
-                return f.apply((T1)a[0], (T2)a[1], (T3)a[2], (T4)a[3], (T5)a[4], (T6)a[5]);
-            }
-        };
+        return new FunArray6<R, T1, T2, T3, T4, T5, T6>(f);
     }
 
     public static <T1, T2, T3, T4, T5, T6, T7, R> Function<Object[], R> toFunction(
             final Function7<T1, T2, T3, T4, T5, T6, T7, R> f) {
         ObjectHelper.requireNonNull(f, "f is null");
-        return new Function<Object[], R>() {
-            @SuppressWarnings("unchecked")
-            @Override
-            public R apply(Object[] a) throws Exception {
-                if (a.length != 7) {
-                    throw new IllegalArgumentException("Array of size 7 expected but got " + a.length);
-                }
-                return f.apply((T1)a[0], (T2)a[1], (T3)a[2], (T4)a[3], (T5)a[4], (T6)a[5], (T7)a[6]);
-            }
-        };
+        return new FunArray7<R, T1, T2, T3, T4, T5, T6, T7>(f);
     }
 
     public static <T1, T2, T3, T4, T5, T6, T7, T8, R> Function<Object[], R> toFunction(
             final Function8<T1, T2, T3, T4, T5, T6, T7, T8, R> f) {
         ObjectHelper.requireNonNull(f, "f is null");
-        return new Function<Object[], R>() {
-            @SuppressWarnings("unchecked")
-            @Override
-            public R apply(Object[] a) throws Exception {
-                if (a.length != 8) {
-                    throw new IllegalArgumentException("Array of size 8 expected but got " + a.length);
-                }
-                return f.apply((T1)a[0], (T2)a[1], (T3)a[2], (T4)a[3], (T5)a[4], (T6)a[5], (T7)a[6], (T8)a[7]);
-            }
-        };
+        return new FunArray8<R, T1, T2, T3, T4, T5, T6, T7, T8>(f);
     }
 
     public static <T1, T2, T3, T4, T5, T6, T7, T8, T9, R> Function<Object[], R> toFunction(
             final Function9<T1, T2, T3, T4, T5, T6, T7, T8, T9, R> f) {
         ObjectHelper.requireNonNull(f, "f is null");
-        return new Function<Object[], R>() {
-            @SuppressWarnings("unchecked")
-            @Override
-            public R apply(Object[] a) throws Exception {
-                if (a.length != 9) {
-                    throw new IllegalArgumentException("Array of size 9 expected but got " + a.length);
-                }
-                return f.apply((T1)a[0], (T2)a[1], (T3)a[2], (T4)a[3], (T5)a[4], (T6)a[5], (T7)a[6], (T8)a[7], (T9)a[8]);
-            }
-        };
+        return new FunArray9<R, T1, T2, T3, T4, T5, T6, T7, T8, T9>(f);
     }
 
     /** A singleton identity function. */
-    static final Function<Object, Object> IDENTITY = new Function<Object, Object>() {
-        @Override
-        public Object apply(Object v) {
-            return v;
-        }
-
-        @Override
-        public String toString() {
-            return "IdentityFunction";
-        }
-    };
+    static final Function<Object, Object> IDENTITY = new ObjectIdentity();
 
     /**
      * Returns an identity function that simply returns its argument.
@@ -172,35 +91,11 @@ public final class Functions {
         return (Function<T, T>)IDENTITY;
     }
 
-    public static final Runnable EMPTY_RUNNABLE = new Runnable() {
-        @Override
-        public void run() { }
+    public static final Runnable EMPTY_RUNNABLE = new EmptyRunnable();
 
-        @Override
-        public String toString() {
-            return "EmptyRunnable";
-        }
-    };
+    public static final Action EMPTY_ACTION = new EmptyAction();
 
-    public static final Action EMPTY_ACTION = new Action() {
-        @Override
-        public void run() { }
-
-        @Override
-        public String toString() {
-            return "EmptyAction";
-        }
-    };
-
-    static final Consumer<Object> EMPTY_CONSUMER = new Consumer<Object>() {
-        @Override
-        public void accept(Object v) { }
-
-        @Override
-        public String toString() {
-            return "EmptyConsumer";
-        }
-    };
+    static final Consumer<Object> EMPTY_CONSUMER = new EmptyConsumer();
 
     /**
      * Returns an empty consumer that does nothing.
@@ -212,57 +107,23 @@ public final class Functions {
         return (Consumer<T>)EMPTY_CONSUMER;
     }
 
-    public static final Consumer<Throwable> ERROR_CONSUMER = new Consumer<Throwable>() {
-        @Override
-        public void accept(Throwable error) {
-            RxJavaPlugins.onError(error);
-        }
-    };
+    public static final Consumer<Throwable> ERROR_CONSUMER = new ErrorConsumer();
 
     /**
      * Wraps the consumed Throwable into an OnErrorNotImplementedException and
      * signals it to the plugin error handler.
      */
-    public static final Consumer<Throwable> ON_ERROR_MISSING = new Consumer<Throwable>() {
-        @Override
-        public void accept(Throwable error) {
-            RxJavaPlugins.onError(new OnErrorNotImplementedException(error));
-        }
-    };
+    public static final Consumer<Throwable> ON_ERROR_MISSING = new NotImplementedErrorConsumer();
 
-    public static final LongConsumer EMPTY_LONG_CONSUMER = new LongConsumer() {
-        @Override
-        public void accept(long v) { }
-    };
+    public static final LongConsumer EMPTY_LONG_CONSUMER = new EmptyLongConsumer();
 
-    static final Predicate<Object> ALWAYS_TRUE = new Predicate<Object>() {
-        @Override
-        public boolean test(Object o) {
-            return true;
-        }
-    };
+    static final Predicate<Object> ALWAYS_TRUE = new TruePredicate();
 
-    static final Predicate<Object> ALWAYS_FALSE = new Predicate<Object>() {
-        @Override
-        public boolean test(Object o) {
-            return false;
-        }
-    };
+    static final Predicate<Object> ALWAYS_FALSE = new FalsePredicate();
 
-    static final Callable<Object> NULL_SUPPLIER = new Callable<Object>() {
-        @Override
-        public Object call() {
-            return null;
-        }
-    };
+    static final Callable<Object> NULL_SUPPLIER = new NullSupplier();
 
-    static final Comparator<Object> NATURAL_COMPARATOR = new Comparator<Object>() {
-        @SuppressWarnings({ "unchecked", "rawtypes" })
-        @Override
-        public int compare(Object a, Object b) {
-            return ((Comparable)a).compareTo(b);
-        }
-    };
+    static final Comparator<Object> NATURAL_COMPARATOR = NaturalComparator.INSTANCE;
 
     @SuppressWarnings("unchecked")
     public static <T> Predicate<T> alwaysTrue() {
@@ -651,10 +512,229 @@ public final class Functions {
         return new ListSorter<T>(comparator);
     }
 
-    public static final Consumer<Subscription> REQUEST_MAX = new Consumer<Subscription>() {
+    public static final Consumer<Subscription> REQUEST_MAX = new MaxRequestConsumer();
+
+    private static class FunArray3<R, T1, T2, T3> implements Function<Object[], R> {
+        private final Function3<T1, T2, T3, R> f;
+
+        public FunArray3(Function3<T1, T2, T3, R> f) {
+            this.f = f;
+        }
+
+        @SuppressWarnings("unchecked")
+        @Override
+        public R apply(Object[] a) throws Exception {
+            if (a.length != 3) {
+                throw new IllegalArgumentException("Array of size 3 expected but got " + a.length);
+            }
+            return f.apply((T1)a[0], (T2)a[1], (T3)a[2]);
+        }
+    }
+
+    private static class FunArray4<R, T1, T2, T3, T4> implements Function<Object[], R> {
+        private final Function4<T1, T2, T3, T4, R> f;
+
+        public FunArray4(Function4<T1, T2, T3, T4, R> f) {
+            this.f = f;
+        }
+
+        @SuppressWarnings("unchecked")
+        @Override
+        public R apply(Object[] a) throws Exception {
+            if (a.length != 4) {
+                throw new IllegalArgumentException("Array of size 4 expected but got " + a.length);
+            }
+            return f.apply((T1)a[0], (T2)a[1], (T3)a[2], (T4)a[3]);
+        }
+    }
+
+    private static class FunArray5<R, T1, T2, T3, T4, T5> implements Function<Object[], R> {
+        private final Function5<T1, T2, T3, T4, T5, R> f;
+
+        public FunArray5(Function5<T1, T2, T3, T4, T5, R> f) {
+            this.f = f;
+        }
+
+        @SuppressWarnings("unchecked")
+        @Override
+        public R apply(Object[] a) throws Exception {
+            if (a.length != 5) {
+                throw new IllegalArgumentException("Array of size 5 expected but got " + a.length);
+            }
+            return f.apply((T1)a[0], (T2)a[1], (T3)a[2], (T4)a[3], (T5)a[4]);
+        }
+    }
+
+    private static class FunArray6<R, T1, T2, T3, T4, T5, T6> implements Function<Object[], R> {
+        private final Function6<T1, T2, T3, T4, T5, T6, R> f;
+
+        public FunArray6(Function6<T1, T2, T3, T4, T5, T6, R> f) {
+            this.f = f;
+        }
+
+        @SuppressWarnings("unchecked")
+        @Override
+        public R apply(Object[] a) throws Exception {
+            if (a.length != 6) {
+                throw new IllegalArgumentException("Array of size 6 expected but got " + a.length);
+            }
+            return f.apply((T1)a[0], (T2)a[1], (T3)a[2], (T4)a[3], (T5)a[4], (T6)a[5]);
+        }
+    }
+
+    private static class FunArray7<R, T1, T2, T3, T4, T5, T6, T7> implements Function<Object[], R> {
+        private final Function7<T1, T2, T3, T4, T5, T6, T7, R> f;
+
+        public FunArray7(Function7<T1, T2, T3, T4, T5, T6, T7, R> f) {
+            this.f = f;
+        }
+
+        @SuppressWarnings("unchecked")
+        @Override
+        public R apply(Object[] a) throws Exception {
+            if (a.length != 7) {
+                throw new IllegalArgumentException("Array of size 7 expected but got " + a.length);
+            }
+            return f.apply((T1)a[0], (T2)a[1], (T3)a[2], (T4)a[3], (T5)a[4], (T6)a[5], (T7)a[6]);
+        }
+    }
+
+    private static class FunArray8<R, T1, T2, T3, T4, T5, T6, T7, T8> implements Function<Object[], R> {
+        private final Function8<T1, T2, T3, T4, T5, T6, T7, T8, R> f;
+
+        public FunArray8(Function8<T1, T2, T3, T4, T5, T6, T7, T8, R> f) {
+            this.f = f;
+        }
+
+        @SuppressWarnings("unchecked")
+        @Override
+        public R apply(Object[] a) throws Exception {
+            if (a.length != 8) {
+                throw new IllegalArgumentException("Array of size 8 expected but got " + a.length);
+            }
+            return f.apply((T1)a[0], (T2)a[1], (T3)a[2], (T4)a[3], (T5)a[4], (T6)a[5], (T7)a[6], (T8)a[7]);
+        }
+    }
+
+    private static class FunArray9<R, T1, T2, T3, T4, T5, T6, T7, T8, T9> implements Function<Object[], R> {
+        private final Function9<T1, T2, T3, T4, T5, T6, T7, T8, T9, R> f;
+
+        public FunArray9(Function9<T1, T2, T3, T4, T5, T6, T7, T8, T9, R> f) {
+            this.f = f;
+        }
+
+        @SuppressWarnings("unchecked")
+        @Override
+        public R apply(Object[] a) throws Exception {
+            if (a.length != 9) {
+                throw new IllegalArgumentException("Array of size 9 expected but got " + a.length);
+            }
+            return f.apply((T1)a[0], (T2)a[1], (T3)a[2], (T4)a[3], (T5)a[4], (T6)a[5], (T7)a[6], (T8)a[7], (T9)a[8]);
+        }
+    }
+
+    private static class ObjectIdentity implements Function<Object, Object> {
+        @Override
+        public Object apply(Object v) {
+            return v;
+        }
+
+        @Override
+        public String toString() {
+            return "IdentityFunction";
+        }
+    }
+
+    private static class EmptyRunnable implements Runnable {
+        @Override
+        public void run() { }
+
+        @Override
+        public String toString() {
+            return "EmptyRunnable";
+        }
+    }
+
+    private static class EmptyAction implements Action {
+        @Override
+        public void run() { }
+
+        @Override
+        public String toString() {
+            return "EmptyAction";
+        }
+    }
+
+    private static class EmptyConsumer implements Consumer<Object> {
+        @Override
+        public void accept(Object v) { }
+
+        @Override
+        public String toString() {
+            return "EmptyConsumer";
+        }
+    }
+
+    private static class ErrorConsumer implements Consumer<Throwable> {
+        @Override
+        public void accept(Throwable error) {
+            RxJavaPlugins.onError(error);
+        }
+    }
+
+    private static class NotImplementedErrorConsumer implements Consumer<Throwable> {
+        @Override
+        public void accept(Throwable error) {
+            RxJavaPlugins.onError(new OnErrorNotImplementedException(error));
+        }
+    }
+
+    private static class EmptyLongConsumer implements LongConsumer {
+        @Override
+        public void accept(long v) { }
+    }
+
+    private static class TruePredicate implements Predicate<Object> {
+        @Override
+        public boolean test(Object o) {
+            return true;
+        }
+    }
+
+    private static class FalsePredicate implements Predicate<Object> {
+        @Override
+        public boolean test(Object o) {
+            return false;
+        }
+    }
+
+    private static class NullSupplier implements Callable<Object> {
+        @Override
+        public Object call() {
+            return null;
+        }
+    }
+
+    private static class MaxRequestConsumer implements Consumer<Subscription> {
         @Override
         public void accept(Subscription t) throws Exception {
             t.request(Long.MAX_VALUE);
         }
-    };
+    }
+
+    private static class BiArrayFunction<T1, T2, R> implements Function<Object[], R> {
+        private final BiFunction<? super T1, ? super T2, ? extends R> function;
+
+        public BiArrayFunction(BiFunction<? super T1, ? super T2, ? extends R> function) {
+            this.function = function;
+        }
+
+        @Override
+        public R apply(Object[] a) throws Exception {
+            if (a.length != 2) {
+                throw new IllegalArgumentException("Array of size 2 expected but got " + a.length);
+            }
+            return ((BiFunction<Object, Object, R>) function).apply(a[0], a[1]);
+        }
+    }
 }

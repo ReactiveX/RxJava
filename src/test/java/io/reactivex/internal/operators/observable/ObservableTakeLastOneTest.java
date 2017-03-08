@@ -33,7 +33,7 @@ public class ObservableTakeLastOneTest {
         s.assertNoErrors();
         s.assertTerminated();
         // NO longer assertable
-//        s.assertUnsubscribed();
+//        disposable.assertUnsubscribed();
     }
 
     @Test
@@ -44,7 +44,7 @@ public class ObservableTakeLastOneTest {
         s.assertNoErrors();
         s.assertTerminated();
         // NO longer assertable
-//      s.assertUnsubscribed();
+//      disposable.assertUnsubscribed();
     }
 
     @Test
@@ -55,7 +55,7 @@ public class ObservableTakeLastOneTest {
         s.assertNoErrors();
         s.assertTerminated();
         // NO longer assertable
-//      s.assertUnsubscribed();
+//      disposable.assertUnsubscribed();
     }
 
     @Test

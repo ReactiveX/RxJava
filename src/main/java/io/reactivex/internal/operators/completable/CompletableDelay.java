@@ -42,36 +42,54 @@ public final class CompletableDelay extends Completable {
     protected void subscribeActual(final CompletableObserver s) {
         final CompositeDisposable set = new CompositeDisposable();
 
-        source.subscribe(new CompletableObserver() {
-
-
-            @Override
-            public void onComplete() {
-                set.add(scheduler.scheduleDirect(new Runnable() {
-                    @Override
-                    public void run() {
-                        s.onComplete();
-                    }
-                }, delay, unit));
-            }
-
-            @Override
-            public void onError(final Throwable e) {
-                set.add(scheduler.scheduleDirect(new Runnable() {
-                    @Override
-                    public void run() {
-                        s.onError(e);
-                    }
-                }, delayError ? delay : 0, unit));
-            }
-
-            @Override
-            public void onSubscribe(Disposable d) {
-                set.add(d);
-                s.onSubscribe(set);
-            }
-
-        });
+        source.subscribe(new DelayedObserver(set, s));
     }
 
+    private class DelayedObserver implements CompletableObserver {
+
+
+        private final CompositeDisposable disposable;
+        private final CompletableObserver observer;
+
+        public DelayedObserver(CompositeDisposable disposable, CompletableObserver observer) {
+            this.disposable = disposable;
+            this.observer = observer;
+        }
+
+        @Override
+        public void onComplete() {
+            disposable.add(scheduler.scheduleDirect(new OnComplete(), delay, unit));
+        }
+
+        @Override
+        public void onError(final Throwable e) {
+            disposable.add(scheduler.scheduleDirect(new OnError(e), delayError ? delay : 0, unit));
+        }
+
+        @Override
+        public void onSubscribe(Disposable d) {
+            disposable.add(d);
+            observer.onSubscribe(disposable);
+        }
+
+        private class OnComplete implements Runnable {
+            @Override
+            public void run() {
+                observer.onComplete();
+            }
+        }
+
+        private class OnError implements Runnable {
+            private final Throwable throwable;
+
+            public OnError(Throwable throwable) {
+                this.throwable = throwable;
+            }
+
+            @Override
+            public void run() {
+                observer.onError(throwable);
+            }
+        }
+    }
 }

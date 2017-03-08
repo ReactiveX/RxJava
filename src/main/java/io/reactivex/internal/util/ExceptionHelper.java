@@ -49,15 +49,7 @@ public final class ExceptionHelper {
      * A singleton instance of a Throwable indicating a terminal state for exceptions,
      * don't leak this.
      */
-    public static final Throwable TERMINATED = new Throwable("No further exceptions") {
-
-        private static final long serialVersionUID = -4649703670690200604L;
-
-        @Override
-        public Throwable fillInStackTrace() {
-            return this;
-        }
-    };
+    public static final Throwable TERMINATED = new TerminalThrowable();
 
     public static <T> boolean addThrowable(AtomicReference<Throwable> field, Throwable exception) {
         for (;;) {
@@ -112,5 +104,19 @@ public final class ExceptionHelper {
         }
 
         return list;
+    }
+
+    private static class TerminalThrowable extends Throwable {
+
+        private static final long serialVersionUID = -4649703670690200604L;
+
+        TerminalThrowable() {
+            super("No further exceptions");
+        }
+
+        @Override
+        public Throwable fillInStackTrace() {
+            return this;
+        }
     }
 }

@@ -33,12 +33,7 @@ public final class ObservableSubscribeOn<T> extends AbstractObservableWithUpstre
 
         s.onSubscribe(parent);
 
-        parent.setDisposable(scheduler.scheduleDirect(new Runnable() {
-            @Override
-            public void run() {
-                source.subscribe(parent);
-            }
-        }));
+        parent.setDisposable(scheduler.scheduleDirect(new DisposeTask(parent)));
     }
 
     static final class SubscribeOnObserver<T> extends AtomicReference<Disposable> implements Observer<T>, Disposable {
@@ -86,6 +81,19 @@ public final class ObservableSubscribeOn<T> extends AbstractObservableWithUpstre
 
         void setDisposable(Disposable d) {
             DisposableHelper.setOnce(this, d);
+        }
+    }
+
+    private class DisposeTask implements Runnable {
+        private final SubscribeOnObserver<T> parent;
+
+        public DisposeTask(SubscribeOnObserver<T> parent) {
+            this.parent = parent;
+        }
+
+        @Override
+        public void run() {
+            source.subscribe(parent);
         }
     }
 }

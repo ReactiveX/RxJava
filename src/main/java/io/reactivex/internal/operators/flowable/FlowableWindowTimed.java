@@ -641,12 +641,7 @@ public final class FlowableWindowTimed<T> extends AbstractFlowableWithUpstream<T
                     if (r != Long.MAX_VALUE) {
                         produced(1);
                     }
-                    worker.schedule(new Runnable() {
-                        @Override
-                        public void run() {
-                            complete(w);
-                        }
-                    }, timespan, unit);
+                    worker.schedule(new Completion(w), timespan, unit);
 
                     worker.schedulePeriodically(this, timeskip, timeskip, unit);
 
@@ -785,12 +780,7 @@ public final class FlowableWindowTimed<T> extends AbstractFlowableWithUpstream<T
                                     produced(1);
                                 }
 
-                                worker.schedule(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        complete(w);
-                                    }
-                                }, timespan, unit);
+                                worker.schedule(new Completion(w), timespan, unit);
                             } else {
                                 a.onError(new MissingBackpressureException("Can't emit window due to lack of requests"));
                                 continue;
@@ -837,6 +827,19 @@ public final class FlowableWindowTimed<T> extends AbstractFlowableWithUpstream<T
             SubjectWork(UnicastProcessor<T> w, boolean open) {
                 this.w = w;
                 this.open = open;
+            }
+        }
+
+        private class Completion implements Runnable {
+            private final UnicastProcessor<T> w;
+
+            public Completion(UnicastProcessor<T> w) {
+                this.w = w;
+            }
+
+            @Override
+            public void run() {
+                complete(w);
             }
         }
     }

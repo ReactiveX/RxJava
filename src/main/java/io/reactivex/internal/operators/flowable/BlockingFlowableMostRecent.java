@@ -51,7 +51,7 @@ public final class BlockingFlowableMostRecent<T> implements Iterable<T> {
         return mostRecentSubscriber.getIterable();
     }
 
-    static final class MostRecentSubscriber<T> extends DefaultSubscriber<T> {
+    final class MostRecentSubscriber<T> extends DefaultSubscriber<T> {
         volatile Object value;
 
         MostRecentSubscriber(T value) {
@@ -73,49 +73,51 @@ public final class BlockingFlowableMostRecent<T> implements Iterable<T> {
             value = NotificationLite.next(args);
         }
 
+
         /**
          * The {@link Iterator} return is not thread safe. In other words don't call {@link Iterator#hasNext()} in one
          * thread expect {@link Iterator#next()} called from a different thread to work.
          * @return the Iterator
          */
         public Iterator<T> getIterable() {
-            return new Iterator<T>() {
-                /**
-                 * buffer to make sure that the state of the iterator doesn't change between calling hasNext() and next().
-                 */
-                private Object buf;
-
-                @Override
-                public boolean hasNext() {
-                    buf = value;
-                    return !NotificationLite.isComplete(buf);
-                }
-
-                @Override
-                public T next() {
-                    try {
-                        // if hasNext wasn't called before calling next.
-                        if (buf == null) {
-                            buf = value;
-                        }
-                        if (NotificationLite.isComplete(buf)) {
-                            throw new NoSuchElementException();
-                        }
-                        if (NotificationLite.isError(buf)) {
-                            throw ExceptionHelper.wrapOrThrow(NotificationLite.getError(buf));
-                        }
-                        return NotificationLite.getValue(buf);
-                    }
-                    finally {
-                        buf = null;
-                    }
-                }
-
-                @Override
-                public void remove() {
-                    throw new UnsupportedOperationException("Read only iterator");
-                }
-            };
+            return new MostRecentSubscriberIterator();
         }
+        private class MostRecentSubscriberIterator implements Iterator<T> {
+            /**
+             * buffer to make sure that the state of the iterator doesn't change between calling hasNext() and next().
+             */
+            private Object buf;
+
+            @Override
+            public boolean hasNext() {
+                buf = value;
+                return !NotificationLite.isComplete(buf);
+            }
+
+            @Override
+            public T next() {
+                try {
+                    // if hasNext wasn't called before calling next.
+                    if (buf == null) {
+                        buf = value;
+                    }
+                    if (NotificationLite.isComplete(buf)) {
+                        throw new NoSuchElementException();
+                    }
+                    if (NotificationLite.isError(buf)) {
+                        throw ExceptionHelper.wrapOrThrow(NotificationLite.getError(buf));
+                    }
+                    return NotificationLite.getValue(buf);
+                } finally {
+                    buf = null;
+                }
+            }
+
+            @Override
+            public void remove() {
+                throw new UnsupportedOperationException("Read only iterator");
+            }
+        }
+
     }
 }

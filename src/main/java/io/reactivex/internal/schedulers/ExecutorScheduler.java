@@ -80,13 +80,7 @@ public final class ExecutorScheduler extends Scheduler {
 
         final DelayedRunnable dr = new DelayedRunnable(decoratedRun);
 
-        Disposable delayed = HELPER.scheduleDirect(new Runnable() {
-            @Override
-            public void run() {
-                dr.direct.replace(scheduleDirect(dr));
-            }
-        }, delay, unit);
-
+        Disposable delayed = HELPER.scheduleDirect(new ReplaceRunnable(dr), delay, unit);
         dr.timed.replace(delayed);
 
         return dr;
@@ -167,12 +161,7 @@ public final class ExecutorScheduler extends Scheduler {
 
             final Runnable decoratedRun = RxJavaPlugins.onSchedule(run);
 
-            ScheduledRunnable sr = new ScheduledRunnable(new Runnable() {
-                @Override
-                public void run() {
-                    mar.replace(schedule(decoratedRun));
-                }
-            }, tasks);
+            ScheduledRunnable sr = new ScheduledRunnable(new ReplaceTask(mar, decoratedRun), tasks);
             tasks.add(sr);
 
             if (executor instanceof ScheduledExecutorService) {
@@ -278,6 +267,20 @@ public final class ExecutorScheduler extends Scheduler {
             }
         }
 
+        private class ReplaceTask implements Runnable {
+            private final SequentialDisposable mar;
+            private final Runnable decoratedRun;
+
+            public ReplaceTask(SequentialDisposable mar, Runnable decoratedRun) {
+                this.mar = mar;
+                this.decoratedRun = decoratedRun;
+            }
+
+            @Override
+            public void run() {
+                mar.replace(schedule(decoratedRun));
+            }
+        }
     }
 
     static final class DelayedRunnable extends AtomicReference<Runnable> implements Runnable, Disposable {
@@ -322,4 +325,16 @@ public final class ExecutorScheduler extends Scheduler {
         }
     }
 
+    private final class ReplaceRunnable implements Runnable{
+
+        final DelayedRunnable dr;
+        ReplaceRunnable(DelayedRunnable dr) {
+            this.dr = dr;
+        }
+
+        @Override
+        public void run() {
+            dr.direct.replace(scheduleDirect(dr));
+        }
+    }
 }

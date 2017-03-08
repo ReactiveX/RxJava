@@ -552,12 +552,7 @@ public final class ObservableWindowTimed<T> extends AbstractObservableWithUpstre
                 windows.add(w);
 
                 actual.onNext(w);
-                worker.schedule(new Runnable() {
-                    @Override
-                    public void run() {
-                        complete(w);
-                    }
-                }, timespan, unit);
+                worker.schedule(new CompletionTask(w), timespan, unit);
 
                 worker.schedulePeriodically(this, timeskip, timeskip, unit);
             }
@@ -685,12 +680,7 @@ public final class ObservableWindowTimed<T> extends AbstractObservableWithUpstre
                             ws.add(w);
                             a.onNext(w);
 
-                            worker.schedule(new Runnable() {
-                                @Override
-                                public void run() {
-                                    complete(w);
-                                }
-                            }, timespan, unit);
+                            worker.schedule(new CompletionTask(w), timespan, unit);
                         } else {
                             ws.remove(work.w);
                             work.w.onComplete();
@@ -733,6 +723,19 @@ public final class ObservableWindowTimed<T> extends AbstractObservableWithUpstre
             SubjectWork(UnicastSubject<T> w, boolean open) {
                 this.w = w;
                 this.open = open;
+            }
+        }
+
+        private class CompletionTask implements Runnable {
+            private final UnicastSubject<T> w;
+
+            CompletionTask(UnicastSubject<T> w) {
+                this.w = w;
+            }
+
+            @Override
+            public void run() {
+                complete(w);
             }
         }
     }

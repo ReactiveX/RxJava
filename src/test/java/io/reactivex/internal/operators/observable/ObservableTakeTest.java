@@ -180,7 +180,7 @@ public class ObservableTakeTest {
         verify(observer, never()).onNext("three");
         verify(observer, times(1)).onComplete();
         // FIXME no longer assertable
-//        verify(s, times(1)).unsubscribe();
+//        verify(disposable, times(1)).unsubscribe();
         verifyNoMoreInteractions(observer);
     }
 

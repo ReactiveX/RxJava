@@ -466,7 +466,7 @@ public class ObservableRetryTest {
                     // this simulates various error/completion scenarios that could occur
                     // or just a source that proactively triggers cleanup
                     // FIXME can't unsubscribe child
-//                    s.unsubscribe();
+//                    disposable.unsubscribe();
                     bs.cancel();
                 } else {
                     s.onError(new RuntimeException());

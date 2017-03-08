@@ -300,7 +300,7 @@ public class ObservableTimeoutTests {
     }
 
     @Test
-    @Ignore("s should be considered cancelled upon executing onComplete and not expect downstream to call cancel")
+    @Ignore("disposable should be considered cancelled upon executing onComplete and not expect downstream to call cancel")
     public void shouldUnsubscribeFromUnderlyingSubscriptionOnImmediatelyComplete() {
         // From https://github.com/ReactiveX/RxJava/pull/951
         final Disposable s = mock(Disposable.class);
@@ -331,7 +331,7 @@ public class ObservableTimeoutTests {
     }
 
     @Test
-    @Ignore("s should be considered cancelled upon executing onError and not expect downstream to call cancel")
+    @Ignore("disposable should be considered cancelled upon executing onError and not expect downstream to call cancel")
     public void shouldUnsubscribeFromUnderlyingSubscriptionOnImmediatelyErrored() throws InterruptedException {
         // From https://github.com/ReactiveX/RxJava/pull/951
         final Disposable s = mock(Disposable.class);

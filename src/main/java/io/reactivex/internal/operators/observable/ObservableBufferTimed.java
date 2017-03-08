@@ -261,16 +261,7 @@ extends AbstractObservableWithUpstream<T, U> {
 
                 w.schedulePeriodically(this, timeskip, timeskip, unit);
 
-                w.schedule(new Runnable() {
-                    @Override
-                    public void run() {
-                        synchronized (BufferSkipBoundedObserver.this) {
-                            buffers.remove(b);
-                        }
-
-                        fastPathOrderedEmit(b, false, w);
-                    }
-                }, timespan, unit);
+                w.schedule(new RemoveFromBufferTask(b), timespan, unit);
             }
         }
 
@@ -352,21 +343,29 @@ extends AbstractObservableWithUpstream<T, U> {
                 buffers.add(b);
             }
 
-            w.schedule(new Runnable() {
-                @Override
-                public void run() {
-                    synchronized (BufferSkipBoundedObserver.this) {
-                        buffers.remove(b);
-                    }
-
-                    fastPathOrderedEmit(b, false, w);
-                }
-            }, timespan, unit);
+            w.schedule(new RemoveFromBufferTask(b), timespan, unit);
         }
 
         @Override
         public void accept(Observer<? super U> a, U v) {
             a.onNext(v);
+        }
+
+        private class RemoveFromBufferTask implements Runnable {
+            private final U b;
+
+            public RemoveFromBufferTask(U b) {
+                this.b = b;
+            }
+
+            @Override
+            public void run() {
+                synchronized (BufferSkipBoundedObserver.this) {
+                    buffers.remove(b);
+                }
+
+                fastPathOrderedEmit(b, false, w);
+            }
         }
     }
 

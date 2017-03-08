@@ -316,18 +316,18 @@ public class ObservableMapTest {
 //    public void testShouldNotSwallowOnErrorNotImplementedException() {
 //        Observable.just("a", "b").flatMap(new Function<String, Observable<String>>() {
 //            @Override
-//            public Observable<String> apply(String s) {
-//                return Observable.just(s + "1", s + "2");
+//            public Observable<String> apply(String disposable) {
+//                return Observable.just(disposable + "1", disposable + "2");
 //            }
 //        }).flatMap(new Function<String, Observable<String>>() {
 //            @Override
-//            public Observable<String> apply(String s) {
+//            public Observable<String> apply(String disposable) {
 //                return Observable.error(new Exception("test"));
 //            }
 //        }).forEach(new Consumer<String>() {
 //            @Override
-//            public void accept(String s) {
-//                System.out.println(s);
+//            public void accept(String disposable) {
+//                System.out.println(disposable);
 //            }
 //        });
 //    }

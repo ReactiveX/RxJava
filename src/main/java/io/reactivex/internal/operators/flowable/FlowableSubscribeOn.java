@@ -132,12 +132,7 @@ public final class FlowableSubscribeOn<T> extends AbstractFlowableWithUpstream<T
             if (nonScheduledRequests || Thread.currentThread() == get()) {
                 s.request(n);
             } else {
-                worker.schedule(new Runnable() {
-                    @Override
-                    public void run() {
-                        s.request(n);
-                    }
-                });
+                worker.schedule(new RequestTask(s, n));
             }
         }
 
@@ -145,6 +140,21 @@ public final class FlowableSubscribeOn<T> extends AbstractFlowableWithUpstream<T
         public void cancel() {
             SubscriptionHelper.cancel(s);
             worker.dispose();
+        }
+
+        private static class RequestTask implements Runnable {
+            private final Subscription subscription;
+            private final long size;
+
+            public RequestTask(Subscription subscription, long size) {
+                this.subscription = subscription;
+                this.size = size;
+            }
+
+            @Override
+            public void run() {
+                subscription.request(size);
+            }
         }
     }
 }
