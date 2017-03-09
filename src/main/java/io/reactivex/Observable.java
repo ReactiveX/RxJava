@@ -10867,6 +10867,67 @@ public abstract class Observable<T> implements ObservableSource<T> {
 
     /**
      * Returns a new ObservableSource by applying a function that you supply to each item emitted by the source
+     * ObservableSource that returns a SingleSource, and then emitting the item emitted by the most recently emitted
+     * of these SingleSources.
+     * <p>
+     * The resulting ObservableSource completes if both the upstream ObservableSource and the last inner SingleSource, if any, complete.
+     * If the upstream ObservableSource signals an onError, the inner SingleSource is unsubscribed and the error delivered in-sequence.
+     * <p>
+     * <img width="640" height="350" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/switchMap.png" alt="">
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code switchMapSingle} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param <R> the element type of the inner SingleSources and the output
+     * @param mapper
+     *            a function that, when applied to an item emitted by the source ObservableSource, returns a
+     *            SingleSource
+     * @return an Observable that emits the item emitted by the SingleSource returned from applying {@code func} to the most recently emitted item emitted by the source ObservableSource
+     * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
+     * @since 2.0.8
+     */
+    @Experimental
+    @CheckReturnValue
+    @SchedulerSupport(SchedulerSupport.NONE)
+    @NonNull
+    public final <R> Observable<R> switchMapSingle(@NonNull Function<? super T, ? extends SingleSource<? extends R>> mapper) {
+        return ObservableInternalHelper.switchMapSingle(this, mapper);
+    }
+    
+    /**
+     * Returns a new ObservableSource by applying a function that you supply to each item emitted by the source
+     * ObservableSource that returns a SingleSource, and then emitting the item emitted by the most recently emitted
+     * of these SingleSources and delays any error until all SingleSources terminate.
+     * <p>
+     * The resulting ObservableSource completes if both the upstream ObservableSource and the last inner SingleSource, if any, complete.
+     * If the upstream ObservableSource signals an onError, the termination of the last inner SingleSource will emit that error as is
+     * or wrapped into a CompositeException along with the other possible errors the former inner SingleSources signalled.
+     * <p>
+     * <img width="640" height="350" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/switchMap.png" alt="">
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code switchMapSingleDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param <R> the element type of the inner SingleSources and the output
+     * @param mapper
+     *            a function that, when applied to an item emitted by the source ObservableSource, returns a
+     *            SingleSource
+     * @return an Observable that emits the item emitted by the SingleSource returned from applying {@code func} to the most recently emitted item emitted by the source ObservableSource
+     * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
+     * @since 2.0.8
+     */
+    @Experimental
+    @CheckReturnValue
+    @SchedulerSupport(SchedulerSupport.NONE)
+    @NonNull
+    public final <R> Observable<R> switchMapSingleDelayError(@NonNull Function<? super T, ? extends SingleSource<? extends R>> mapper) {
+        return ObservableInternalHelper.switchMapSingleDelayError(this, mapper);
+    }
+    
+    /**
+     * Returns a new ObservableSource by applying a function that you supply to each item emitted by the source
      * ObservableSource that returns an ObservableSource, and then emitting the items emitted by the most recently emitted
      * of these ObservableSources and delays any error until all ObservableSources terminate.
      * <p>
