@@ -10894,7 +10894,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     public final <R> Observable<R> switchMapSingle(@NonNull Function<? super T, ? extends SingleSource<? extends R>> mapper) {
         return ObservableInternalHelper.switchMapSingle(this, mapper);
     }
-    
+
     /**
      * Returns a new ObservableSource by applying a function that you supply to each item emitted by the source
      * ObservableSource that returns a SingleSource, and then emitting the item emitted by the most recently emitted
@@ -10925,7 +10925,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     public final <R> Observable<R> switchMapSingleDelayError(@NonNull Function<? super T, ? extends SingleSource<? extends R>> mapper) {
         return ObservableInternalHelper.switchMapSingleDelayError(this, mapper);
     }
-    
+
     /**
      * Returns a new ObservableSource by applying a function that you supply to each item emitted by the source
      * ObservableSource that returns an ObservableSource, and then emitting the items emitted by the most recently emitted

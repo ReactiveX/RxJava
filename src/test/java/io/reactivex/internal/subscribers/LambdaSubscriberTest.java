@@ -25,6 +25,7 @@ import io.reactivex.exceptions.*;
 import io.reactivex.functions.*;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.plugins.RxJavaPlugins;
+import io.reactivex.processors.PublishProcessor;
 
 public class LambdaSubscriberTest {
 
@@ -284,5 +285,66 @@ public class LambdaSubscriberTest {
         source.subscribe(o);
 
         assertEquals(Arrays.asList(1, 100), received);
+    }
+
+    @Test
+    public void onNextThrowsCancelsUpstream() {
+        PublishProcessor<Integer> ps = PublishProcessor.create();
+
+        final List<Throwable> errors = new ArrayList<Throwable>();
+
+        ps.subscribe(new Consumer<Integer>() {
+            @Override
+            public void accept(Integer v) throws Exception {
+                throw new TestException();
+            }
+        }, new Consumer<Throwable>() {
+            @Override
+            public void accept(Throwable e) throws Exception {
+                errors.add(e);
+            }
+        });
+
+        assertTrue("No observers?!", ps.hasSubscribers());
+        assertTrue("Has errors already?!", errors.isEmpty());
+
+        ps.onNext(1);
+
+        assertFalse("Has observers?!", ps.hasSubscribers());
+        assertFalse("No errors?!", errors.isEmpty());
+
+        assertTrue(errors.toString(), errors.get(0) instanceof TestException);
+    }
+
+    @Test
+    public void onSubscribeThrowsCancelsUpstream() {
+        PublishProcessor<Integer> ps = PublishProcessor.create();
+
+        final List<Throwable> errors = new ArrayList<Throwable>();
+
+        ps.subscribe(new Consumer<Integer>() {
+            @Override
+            public void accept(Integer v) throws Exception {
+            }
+        }, new Consumer<Throwable>() {
+            @Override
+            public void accept(Throwable e) throws Exception {
+                errors.add(e);
+            }
+        }, new Action() {
+            @Override
+            public void run() throws Exception {
+            }
+        }, new Consumer<Subscription>() {
+            @Override
+            public void accept(Subscription s) throws Exception {
+                throw new TestException();
+            }
+        });
+
+        assertFalse("Has observers?!", ps.hasSubscribers());
+        assertFalse("No errors?!", errors.isEmpty());
+
+        assertTrue(errors.toString(), errors.get(0) instanceof TestException);
     }
 }

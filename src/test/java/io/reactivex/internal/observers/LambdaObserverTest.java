@@ -26,6 +26,7 @@ import io.reactivex.disposables.*;
 import io.reactivex.exceptions.*;
 import io.reactivex.functions.*;
 import io.reactivex.plugins.RxJavaPlugins;
+import io.reactivex.subjects.PublishSubject;
 
 public class LambdaObserverTest {
 
@@ -279,5 +280,66 @@ public class LambdaObserverTest {
         source.subscribe(o);
 
         assertEquals(Arrays.asList(1, 100), received);
+    }
+
+    @Test
+    public void onNextThrowsCancelsUpstream() {
+        PublishSubject<Integer> ps = PublishSubject.create();
+
+        final List<Throwable> errors = new ArrayList<Throwable>();
+
+        ps.subscribe(new Consumer<Integer>() {
+            @Override
+            public void accept(Integer v) throws Exception {
+                throw new TestException();
+            }
+        }, new Consumer<Throwable>() {
+            @Override
+            public void accept(Throwable e) throws Exception {
+                errors.add(e);
+            }
+        });
+
+        assertTrue("No observers?!", ps.hasObservers());
+        assertTrue("Has errors already?!", errors.isEmpty());
+
+        ps.onNext(1);
+
+        assertFalse("Has observers?!", ps.hasObservers());
+        assertFalse("No errors?!", errors.isEmpty());
+
+        assertTrue(errors.toString(), errors.get(0) instanceof TestException);
+    }
+
+    @Test
+    public void onSubscribeThrowsCancelsUpstream() {
+        PublishSubject<Integer> ps = PublishSubject.create();
+
+        final List<Throwable> errors = new ArrayList<Throwable>();
+
+        ps.subscribe(new Consumer<Integer>() {
+            @Override
+            public void accept(Integer v) throws Exception {
+            }
+        }, new Consumer<Throwable>() {
+            @Override
+            public void accept(Throwable e) throws Exception {
+                errors.add(e);
+            }
+        }, new Action() {
+            @Override
+            public void run() throws Exception {
+            }
+        }, new Consumer<Disposable>() {
+            @Override
+            public void accept(Disposable s) throws Exception {
+                throw new TestException();
+            }
+        });
+
+        assertFalse("Has observers?!", ps.hasObservers());
+        assertFalse("No errors?!", errors.isEmpty());
+
+        assertTrue(errors.toString(), errors.get(0) instanceof TestException);
     }
 }

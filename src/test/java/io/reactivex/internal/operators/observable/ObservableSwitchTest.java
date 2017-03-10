@@ -622,7 +622,7 @@ public class ObservableSwitchTest {
 
         assertFalse(pp.hasObservers());
     }
-    
+
     @Test
     public void switchMapSingleJustSource() {
         Observable.just(0)
@@ -635,7 +635,7 @@ public class ObservableSwitchTest {
         .test()
         .assertResult(1);
     }
-    
+
     @Test
     public void switchMapSingleMapperReturnsNull() {
         Observable.just(0)
@@ -648,13 +648,13 @@ public class ObservableSwitchTest {
         .test()
         .assertError(NullPointerException.class);
     }
-    
-    @Test(expected=NullPointerException.class)
+
+    @Test(expected = NullPointerException.class)
     public void switchMapSingleMapperIsNull() {
         Observable.just(0)
         .switchMapSingle(null);
     }
-    
+
     @Test
     public void switchMapSingleFunctionDoesntReturnSingle() {
         Observable.just(0)
@@ -698,7 +698,7 @@ public class ObservableSwitchTest {
         .assertError(RuntimeException.class);
         assertTrue(completed.get());
     }
-    
+
     @Test
     public void scalarMap() {
         Observable.switchOnNext(Observable.just(Observable.just(1)))
