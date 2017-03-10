@@ -326,27 +326,27 @@ public final class ObservableInternalHelper {
             Function<? super T, ? extends SingleSource<? extends R>> mapper) {
         return source.switchMapDelayError(convertSingleMapperToObservableMapper(mapper), 1);
     }
-    
+
     private static <T, R> Function<T, Observable<R>> convertSingleMapperToObservableMapper(
             final Function<? super T, ? extends SingleSource<? extends R>> mapper) {
         ObjectHelper.requireNonNull(mapper, "mapper is null");
         return new ObservableMapper<T,R>(mapper);
     }
-    
+
     static final class ObservableMapper<T,R> implements Function<T,Observable<R>> {
-        
+
         final Function<? super T, ? extends SingleSource<? extends R>> mapper;
 
         ObservableMapper(Function<? super T, ? extends SingleSource<? extends R>> mapper) {
             this.mapper = mapper;
         }
-        
+
         @Override
         public Observable<R> apply(T t) throws Exception {
             return RxJavaPlugins.onAssembly(new SingleToObservable<R>(
                 ObjectHelper.requireNonNull(mapper.apply(t), "The mapper returned a null value")));
         }
-        
+
     }
 
 }

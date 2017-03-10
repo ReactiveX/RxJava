@@ -47,6 +47,7 @@ public final class LambdaObserver<T> extends AtomicReference<Disposable> impleme
                 onSubscribe.accept(this);
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
+                s.dispose();
                 onError(ex);
             }
         }
@@ -59,6 +60,7 @@ public final class LambdaObserver<T> extends AtomicReference<Disposable> impleme
                 onNext.accept(t);
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
+                get().dispose();
                 onError(e);
             }
         }
