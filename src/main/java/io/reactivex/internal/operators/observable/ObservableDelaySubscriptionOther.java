@@ -44,8 +44,8 @@ public final class ObservableDelaySubscriptionOther<T, U> extends Observable<T> 
     }
 
     final class DelayObserver implements Observer<U> {
-        private final SequentialDisposable serial;
-        private final Observer<? super T> child;
+        final SequentialDisposable serial;
+        final Observer<? super T> child;
         boolean done;
 
         DelayObserver(SequentialDisposable serial, Observer<? super T> child) {

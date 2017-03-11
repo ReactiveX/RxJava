@@ -1256,7 +1256,7 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
         }
     }
 
-    static final class DefaultUnboundedFactory implements Callable {
+    static final class DefaultUnboundedFactory implements Callable<Object> {
         @Override
         public Object call() {
             return new UnboundedReplayBuffer<Object>(16);

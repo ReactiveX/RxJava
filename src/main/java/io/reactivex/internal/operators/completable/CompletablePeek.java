@@ -57,7 +57,7 @@ public final class CompletablePeek extends Completable {
 
         Disposable d;
 
-        private CompletableObserverImplementation(CompletableObserver actual) {
+        CompletableObserverImplementation(CompletableObserver actual) {
             this.actual = actual;
         }
 

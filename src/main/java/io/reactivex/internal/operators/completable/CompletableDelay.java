@@ -48,7 +48,7 @@ public final class CompletableDelay extends Completable {
     final class Delay implements CompletableObserver {
 
         private final CompositeDisposable set;
-        private final CompletableObserver s;
+        final CompletableObserver s;
 
         Delay(CompositeDisposable set, CompletableObserver s) {
             this.set = set;

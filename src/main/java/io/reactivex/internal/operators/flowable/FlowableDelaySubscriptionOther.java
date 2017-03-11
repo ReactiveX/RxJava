@@ -44,8 +44,8 @@ public final class FlowableDelaySubscriptionOther<T, U> extends Flowable<T> {
     }
 
     final class DelaySubscriber implements FlowableSubscriber<U> {
-        private final SubscriptionArbiter serial;
-        private final Subscriber<? super T> child;
+        final SubscriptionArbiter serial;
+        final Subscriber<? super T> child;
         boolean done;
 
         DelaySubscriber(SubscriptionArbiter serial, Subscriber<? super T> child) {

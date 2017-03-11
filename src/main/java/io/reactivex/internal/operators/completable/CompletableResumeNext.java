@@ -43,8 +43,8 @@ public final class CompletableResumeNext extends Completable {
 
     final class ResumeNext implements CompletableObserver {
 
-        private final CompletableObserver s;
-        private final SequentialDisposable sd;
+        final CompletableObserver s;
+        final SequentialDisposable sd;
 
         ResumeNext(CompletableObserver s, SequentialDisposable sd) {
             this.s = s;
