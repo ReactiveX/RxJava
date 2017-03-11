@@ -34,35 +34,43 @@ public final class SingleDoOnEvent<T> extends Single<T> {
     @Override
     protected void subscribeActual(final SingleObserver<? super T> s) {
 
-        source.subscribe(new SingleObserver<T>() {
-            @Override
-            public void onSubscribe(Disposable d) {
-                s.onSubscribe(d);
+        source.subscribe(new DoOnEvent(s));
+    }
+
+    final class DoOnEvent implements SingleObserver<T> {
+        private final SingleObserver<? super T> s;
+
+        DoOnEvent(SingleObserver<? super T> s) {
+            this.s = s;
+        }
+
+        @Override
+        public void onSubscribe(Disposable d) {
+            s.onSubscribe(d);
+        }
+
+        @Override
+        public void onSuccess(T value) {
+            try {
+                onEvent.accept(value, null);
+            } catch (Throwable ex) {
+                Exceptions.throwIfFatal(ex);
+                s.onError(ex);
+                return;
             }
 
-            @Override
-            public void onSuccess(T value) {
-                try {
-                    onEvent.accept(value, null);
-                } catch (Throwable ex) {
-                    Exceptions.throwIfFatal(ex);
-                    s.onError(ex);
-                    return;
-                }
+            s.onSuccess(value);
+        }
 
-                s.onSuccess(value);
+        @Override
+        public void onError(Throwable e) {
+            try {
+                onEvent.accept(null, e);
+            } catch (Throwable ex) {
+                Exceptions.throwIfFatal(ex);
+                e = new CompositeException(e, ex);
             }
-
-            @Override
-            public void onError(Throwable e) {
-                try {
-                    onEvent.accept(null, e);
-                } catch (Throwable ex) {
-                    Exceptions.throwIfFatal(ex);
-                    e = new CompositeException(e, ex);
-                }
-                s.onError(e);
-            }
-        });
+            s.onError(e);
+        }
     }
 }

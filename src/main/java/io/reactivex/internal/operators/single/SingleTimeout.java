@@ -48,50 +48,44 @@ public final class SingleTimeout<T> extends Single<T> {
 
         final AtomicBoolean once = new AtomicBoolean();
 
-        Disposable timer = scheduler.scheduleDirect(new Runnable() {
-            @Override
-            public void run() {
-                if (once.compareAndSet(false, true)) {
-                    if (other != null) {
-                        set.clear();
-                        other.subscribe(new SingleObserver<T>() {
-
-                            @Override
-                            public void onError(Throwable e) {
-                                set.dispose();
-                                s.onError(e);
-                            }
-
-                            @Override
-                            public void onSubscribe(Disposable d) {
-                                set.add(d);
-                            }
-
-                            @Override
-                            public void onSuccess(T value) {
-                                set.dispose();
-                                s.onSuccess(value);
-                            }
-
-                        });
-                    } else {
-                        set.dispose();
-                        s.onError(new TimeoutException());
-                    }
-                }
-            }
-        }, timeout, unit);
+        Disposable timer = scheduler.scheduleDirect(new TimeoutDispose(once, set, s), timeout, unit);
 
         set.add(timer);
 
-        source.subscribe(new SingleObserver<T>() {
+        source.subscribe(new TimeoutObserver(once, set, s));
+
+    }
+
+    final class TimeoutDispose implements Runnable {
+        private final AtomicBoolean once;
+        private final CompositeDisposable set;
+        private final SingleObserver<? super T> s;
+
+        TimeoutDispose(AtomicBoolean once, CompositeDisposable set, SingleObserver<? super T> s) {
+            this.once = once;
+            this.set = set;
+            this.s = s;
+        }
+
+        @Override
+        public void run() {
+            if (once.compareAndSet(false, true)) {
+                if (other != null) {
+                    set.clear();
+                    other.subscribe(new TimeoutObserver());
+                } else {
+                    set.dispose();
+                    s.onError(new TimeoutException());
+                }
+            }
+        }
+
+        final class TimeoutObserver implements SingleObserver<T> {
 
             @Override
             public void onError(Throwable e) {
-                if (once.compareAndSet(false, true)) {
-                    set.dispose();
-                    s.onError(e);
-                }
+                set.dispose();
+                s.onError(e);
             }
 
             @Override
@@ -101,14 +95,45 @@ public final class SingleTimeout<T> extends Single<T> {
 
             @Override
             public void onSuccess(T value) {
-                if (once.compareAndSet(false, true)) {
-                    set.dispose();
-                    s.onSuccess(value);
-                }
+                set.dispose();
+                s.onSuccess(value);
             }
 
-        });
-
+        }
     }
 
+    final class TimeoutObserver implements SingleObserver<T> {
+
+        private final AtomicBoolean once;
+        private final CompositeDisposable set;
+        private final SingleObserver<? super T> s;
+
+        TimeoutObserver(AtomicBoolean once, CompositeDisposable set, SingleObserver<? super T> s) {
+            this.once = once;
+            this.set = set;
+            this.s = s;
+        }
+
+        @Override
+        public void onError(Throwable e) {
+            if (once.compareAndSet(false, true)) {
+                set.dispose();
+                s.onError(e);
+            }
+        }
+
+        @Override
+        public void onSubscribe(Disposable d) {
+            set.add(d);
+        }
+
+        @Override
+        public void onSuccess(T value) {
+            if (once.compareAndSet(false, true)) {
+                set.dispose();
+                s.onSuccess(value);
+            }
+        }
+
+    }
 }

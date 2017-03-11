@@ -115,10 +115,10 @@ public final class FlowableDelay<T> extends AbstractFlowableWithUpstream<T, T> {
             }
         }
 
-        private class OnError implements Runnable {
+        final class OnError implements Runnable {
             private final Throwable t;
 
-            public OnError(Throwable t) {
+            OnError(Throwable t) {
                 this.t = t;
             }
 
@@ -132,7 +132,7 @@ public final class FlowableDelay<T> extends AbstractFlowableWithUpstream<T, T> {
             }
         }
 
-        private class OnComplete implements Runnable {
+        final class OnComplete implements Runnable {
             @Override
             public void run() {
                 try {
