@@ -35,42 +35,49 @@ public final class CompletableToSingle<T> extends Single<T> {
 
     @Override
     protected void subscribeActual(final SingleObserver<? super T> s) {
-        source.subscribe(new CompletableObserver() {
-
-            @Override
-            public void onComplete() {
-                T v;
-
-                if (completionValueSupplier != null) {
-                    try {
-                        v = completionValueSupplier.call();
-                    } catch (Throwable e) {
-                        Exceptions.throwIfFatal(e);
-                        s.onError(e);
-                        return;
-                    }
-                } else {
-                    v = completionValue;
-                }
-
-                if (v == null) {
-                    s.onError(new NullPointerException("The value supplied is null"));
-                } else {
-                    s.onSuccess(v);
-                }
-            }
-
-            @Override
-            public void onError(Throwable e) {
-                s.onError(e);
-            }
-
-            @Override
-            public void onSubscribe(Disposable d) {
-                s.onSubscribe(d);
-            }
-
-        });
+        source.subscribe(new ToSingle(s));
     }
 
+    final class ToSingle implements CompletableObserver {
+
+        private final SingleObserver<? super T> observer;
+
+        ToSingle(SingleObserver<? super T> observer) {
+            this.observer = observer;
+        }
+
+        @Override
+        public void onComplete() {
+            T v;
+
+            if (completionValueSupplier != null) {
+                try {
+                    v = completionValueSupplier.call();
+                } catch (Throwable e) {
+                    Exceptions.throwIfFatal(e);
+                    observer.onError(e);
+                    return;
+                }
+            } else {
+                v = completionValue;
+            }
+
+            if (v == null) {
+                observer.onError(new NullPointerException("The value supplied is null"));
+            } else {
+                observer.onSuccess(v);
+            }
+        }
+
+        @Override
+        public void onError(Throwable e) {
+            observer.onError(e);
+        }
+
+        @Override
+        public void onSubscribe(Disposable d) {
+            observer.onSubscribe(d);
+        }
+
+    }
 }

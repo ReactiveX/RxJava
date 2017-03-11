@@ -80,18 +80,20 @@ public final class ObservableUnsubscribeOn<T> extends AbstractObservableWithUpst
         @Override
         public void dispose() {
             if (compareAndSet(false, true)) {
-                scheduler.scheduleDirect(new Runnable() {
-                    @Override
-                    public void run() {
-                        s.dispose();
-                    }
-                });
+                scheduler.scheduleDirect(new DisposeTask());
             }
         }
 
         @Override
         public boolean isDisposed() {
             return get();
+        }
+
+        final class DisposeTask implements Runnable {
+            @Override
+            public void run() {
+                s.dispose();
+            }
         }
     }
 }

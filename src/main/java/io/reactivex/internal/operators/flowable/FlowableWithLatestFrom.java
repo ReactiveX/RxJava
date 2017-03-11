@@ -40,29 +40,7 @@ public final class FlowableWithLatestFrom<T, U, R> extends AbstractFlowableWithU
 
         serial.onSubscribe(wlf);
 
-        other.subscribe(new FlowableSubscriber<U>() {
-            @Override
-            public void onSubscribe(Subscription s) {
-                if (wlf.setOther(s)) {
-                    s.request(Long.MAX_VALUE);
-                }
-            }
-
-            @Override
-            public void onNext(U t) {
-                wlf.lazySet(t);
-            }
-
-            @Override
-            public void onError(Throwable t) {
-                wlf.otherError(t);
-            }
-
-            @Override
-            public void onComplete() {
-                // nothing to do, the wlf will complete on its own pace
-            }
-        });
+        other.subscribe(new FlowableWithLatestSubscriber<U>(wlf));
 
         source.subscribe(wlf);
     }
@@ -136,6 +114,36 @@ public final class FlowableWithLatestFrom<T, U, R> extends AbstractFlowableWithU
         public void otherError(Throwable e) {
             SubscriptionHelper.cancel(s);
             actual.onError(e);
+        }
+    }
+
+    final class FlowableWithLatestSubscriber<U> implements FlowableSubscriber<U> {
+        private final WithLatestFromSubscriber<T, U, R> wlf;
+
+        FlowableWithLatestSubscriber(WithLatestFromSubscriber<T, U, R> wlf) {
+            this.wlf = wlf;
+        }
+
+        @Override
+        public void onSubscribe(Subscription s) {
+            if (wlf.setOther(s)) {
+                s.request(Long.MAX_VALUE);
+            }
+        }
+
+        @Override
+        public void onNext(U t) {
+            wlf.lazySet(t);
+        }
+
+        @Override
+        public void onError(Throwable t) {
+            wlf.otherError(t);
+        }
+
+        @Override
+        public void onComplete() {
+            // nothing to do, the wlf will complete on its own pace
         }
     }
 }

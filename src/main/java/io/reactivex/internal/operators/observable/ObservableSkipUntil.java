@@ -36,33 +36,7 @@ public final class ObservableSkipUntil<T, U> extends AbstractObservableWithUpstr
 
         final SkipUntilObserver<T> sus = new SkipUntilObserver<T>(serial, frc);
 
-        other.subscribe(new Observer<U>() {
-            Disposable s;
-            @Override
-            public void onSubscribe(Disposable s) {
-                if (DisposableHelper.validate(this.s, s)) {
-                    this.s = s;
-                    frc.setResource(1, s);
-                }
-            }
-
-            @Override
-            public void onNext(U t) {
-                s.dispose();
-                sus.notSkipping = true;
-            }
-
-            @Override
-            public void onError(Throwable t) {
-                frc.dispose();
-                serial.onError(t);
-            }
-
-            @Override
-            public void onComplete() {
-                sus.notSkipping = true;
-            }
-        });
+        other.subscribe(new SkipUntil(frc, sus, serial));
 
         source.subscribe(sus);
     }
@@ -111,6 +85,44 @@ public final class ObservableSkipUntil<T, U> extends AbstractObservableWithUpstr
         public void onComplete() {
             frc.dispose();
             actual.onComplete();
+        }
+    }
+
+    final class SkipUntil implements Observer<U> {
+        private final ArrayCompositeDisposable frc;
+        private final SkipUntilObserver<T> sus;
+        private final SerializedObserver<T> serial;
+        Disposable s;
+
+        SkipUntil(ArrayCompositeDisposable frc, SkipUntilObserver<T> sus, SerializedObserver<T> serial) {
+            this.frc = frc;
+            this.sus = sus;
+            this.serial = serial;
+        }
+
+        @Override
+        public void onSubscribe(Disposable s) {
+            if (DisposableHelper.validate(this.s, s)) {
+                this.s = s;
+                frc.setResource(1, s);
+            }
+        }
+
+        @Override
+        public void onNext(U t) {
+            s.dispose();
+            sus.notSkipping = true;
+        }
+
+        @Override
+        public void onError(Throwable t) {
+            frc.dispose();
+            serial.onError(t);
+        }
+
+        @Override
+        public void onComplete() {
+            sus.notSkipping = true;
         }
     }
 }

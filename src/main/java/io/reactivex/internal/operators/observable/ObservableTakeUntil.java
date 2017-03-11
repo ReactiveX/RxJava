@@ -36,27 +36,7 @@ public final class ObservableTakeUntil<T, U> extends AbstractObservableWithUpstr
 
         child.onSubscribe(frc);
 
-        other.subscribe(new Observer<U>() {
-            @Override
-            public void onSubscribe(Disposable s) {
-                frc.setResource(1, s);
-            }
-            @Override
-            public void onNext(U t) {
-                frc.dispose();
-                serial.onComplete();
-            }
-            @Override
-            public void onError(Throwable t) {
-                frc.dispose();
-                serial.onError(t);
-            }
-            @Override
-            public void onComplete() {
-                frc.dispose();
-                serial.onComplete();
-            }
-        });
+        other.subscribe(new TakeUntil(frc, serial));
 
         source.subscribe(tus);
     }
@@ -97,6 +77,39 @@ public final class ObservableTakeUntil<T, U> extends AbstractObservableWithUpstr
         public void onComplete() {
             frc.dispose();
             actual.onComplete();
+        }
+    }
+
+    final class TakeUntil implements Observer<U> {
+        private final ArrayCompositeDisposable frc;
+        private final SerializedObserver<T> serial;
+
+        TakeUntil(ArrayCompositeDisposable frc, SerializedObserver<T> serial) {
+            this.frc = frc;
+            this.serial = serial;
+        }
+
+        @Override
+        public void onSubscribe(Disposable s) {
+            frc.setResource(1, s);
+        }
+
+        @Override
+        public void onNext(U t) {
+            frc.dispose();
+            serial.onComplete();
+        }
+
+        @Override
+        public void onError(Throwable t) {
+            frc.dispose();
+            serial.onError(t);
+        }
+
+        @Override
+        public void onComplete() {
+            frc.dispose();
+            serial.onComplete();
         }
     }
 }

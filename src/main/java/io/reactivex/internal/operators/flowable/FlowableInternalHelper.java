@@ -193,48 +193,23 @@ public final class FlowableInternalHelper {
     }
 
     public static <T> Callable<ConnectableFlowable<T>> replayCallable(final Flowable<T> parent) {
-        return new Callable<ConnectableFlowable<T>>() {
-            @Override
-            public ConnectableFlowable<T> call() {
-                return parent.replay();
-            }
-        };
+        return new ReplayCallable<T>(parent);
     }
 
     public static <T> Callable<ConnectableFlowable<T>> replayCallable(final Flowable<T> parent, final int bufferSize) {
-        return new Callable<ConnectableFlowable<T>>() {
-            @Override
-            public ConnectableFlowable<T> call() {
-                return parent.replay(bufferSize);
-            }
-        };
+        return new BufferedReplayCallable<T>(parent, bufferSize);
     }
 
     public static <T> Callable<ConnectableFlowable<T>> replayCallable(final Flowable<T> parent, final int bufferSize, final long time, final TimeUnit unit, final Scheduler scheduler) {
-        return new Callable<ConnectableFlowable<T>>() {
-            @Override
-            public ConnectableFlowable<T> call() {
-                return parent.replay(bufferSize, time, unit, scheduler);
-            }
-        };
+        return new BufferedTimedReplay<T>(parent, bufferSize, time, unit, scheduler);
     }
 
     public static <T> Callable<ConnectableFlowable<T>> replayCallable(final Flowable<T> parent, final long time, final TimeUnit unit, final Scheduler scheduler) {
-        return new Callable<ConnectableFlowable<T>>() {
-            @Override
-            public ConnectableFlowable<T> call() {
-                return parent.replay(time, unit, scheduler);
-            }
-        };
+        return new TimedReplay<T>(parent, time, unit, scheduler);
     }
 
     public static <T, R> Function<Flowable<T>, Publisher<R>> replayFunction(final Function<? super Flowable<T>, ? extends Publisher<R>> selector, final Scheduler scheduler) {
-        return new Function<Flowable<T>, Publisher<R>>() {
-            @Override
-            public Publisher<R> apply(Flowable<T> t) throws Exception {
-                return Flowable.fromPublisher(selector.apply(t)).observeOn(scheduler);
-            }
-        };
+        return new ReplayFunction<T, R>(selector, scheduler);
     }
 
     public enum RequestMax implements Consumer<Subscription> {
@@ -263,4 +238,86 @@ public final class FlowableInternalHelper {
         return new ZipIterableFunction<T, R>(zipper);
     }
 
+    static final class ReplayCallable<T> implements Callable<ConnectableFlowable<T>> {
+        private final Flowable<T> parent;
+
+        public ReplayCallable(Flowable<T> parent) {
+            this.parent = parent;
+        }
+
+        @Override
+        public ConnectableFlowable<T> call() {
+            return parent.replay();
+        }
+    }
+
+    static final class BufferedReplayCallable<T> implements Callable<ConnectableFlowable<T>> {
+        private final Flowable<T> parent;
+        private final int bufferSize;
+
+        BufferedReplayCallable(Flowable<T> parent, int bufferSize) {
+            this.parent = parent;
+            this.bufferSize = bufferSize;
+        }
+
+        @Override
+        public ConnectableFlowable<T> call() {
+            return parent.replay(bufferSize);
+        }
+    }
+
+    static final class BufferedTimedReplay<T> implements Callable<ConnectableFlowable<T>> {
+        private final Flowable<T> parent;
+        private final int bufferSize;
+        private final long time;
+        private final TimeUnit unit;
+        private final Scheduler scheduler;
+
+        BufferedTimedReplay(Flowable<T> parent, int bufferSize, long time, TimeUnit unit, Scheduler scheduler) {
+            this.parent = parent;
+            this.bufferSize = bufferSize;
+            this.time = time;
+            this.unit = unit;
+            this.scheduler = scheduler;
+        }
+
+        @Override
+        public ConnectableFlowable<T> call() {
+            return parent.replay(bufferSize, time, unit, scheduler);
+        }
+    }
+
+    static final class TimedReplay<T> implements Callable<ConnectableFlowable<T>> {
+        private final Flowable<T> parent;
+        private final long time;
+        private final TimeUnit unit;
+        private final Scheduler scheduler;
+
+        TimedReplay(Flowable<T> parent, long time, TimeUnit unit, Scheduler scheduler) {
+            this.parent = parent;
+            this.time = time;
+            this.unit = unit;
+            this.scheduler = scheduler;
+        }
+
+        @Override
+        public ConnectableFlowable<T> call() {
+            return parent.replay(time, unit, scheduler);
+        }
+    }
+
+    static final class ReplayFunction<T, R> implements Function<Flowable<T>, Publisher<R>> {
+        private final Function<? super Flowable<T>, ? extends Publisher<R>> selector;
+        private final Scheduler scheduler;
+
+        public ReplayFunction(Function<? super Flowable<T>, ? extends Publisher<R>> selector, Scheduler scheduler) {
+            this.selector = selector;
+            this.scheduler = scheduler;
+        }
+
+        @Override
+        public Publisher<R> apply(Flowable<T> t) throws Exception {
+            return Flowable.fromPublisher(selector.apply(t)).observeOn(scheduler);
+        }
+    }
 }

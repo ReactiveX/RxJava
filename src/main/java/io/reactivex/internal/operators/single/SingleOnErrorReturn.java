@@ -37,45 +37,52 @@ public final class SingleOnErrorReturn<T> extends Single<T> {
     @Override
     protected void subscribeActual(final SingleObserver<? super T> s) {
 
-        source.subscribe(new SingleObserver<T>() {
-
-            @Override
-            public void onError(Throwable e) {
-                T v;
-
-                if (valueSupplier != null) {
-                    try {
-                        v = valueSupplier.apply(e);
-                    } catch (Throwable ex) {
-                        Exceptions.throwIfFatal(ex);
-                        s.onError(new CompositeException(e, ex));
-                        return;
-                    }
-                } else {
-                    v = value;
-                }
-
-                if (v == null) {
-                    NullPointerException npe = new NullPointerException("Value supplied was null");
-                    npe.initCause(e);
-                    s.onError(npe);
-                    return;
-                }
-
-                s.onSuccess(v);
-            }
-
-            @Override
-            public void onSubscribe(Disposable d) {
-                s.onSubscribe(d);
-            }
-
-            @Override
-            public void onSuccess(T value) {
-                s.onSuccess(value);
-            }
-
-        });
+        source.subscribe(new OnErrorReturn(s));
     }
 
+    final class OnErrorReturn implements SingleObserver<T> {
+
+        private final SingleObserver<? super T> observer;
+
+        OnErrorReturn(SingleObserver<? super T> observer) {
+            this.observer = observer;
+        }
+
+        @Override
+        public void onError(Throwable e) {
+            T v;
+
+            if (valueSupplier != null) {
+                try {
+                    v = valueSupplier.apply(e);
+                } catch (Throwable ex) {
+                    Exceptions.throwIfFatal(ex);
+                    observer.onError(new CompositeException(e, ex));
+                    return;
+                }
+            } else {
+                v = value;
+            }
+
+            if (v == null) {
+                NullPointerException npe = new NullPointerException("Value supplied was null");
+                npe.initCause(e);
+                observer.onError(npe);
+                return;
+            }
+
+            observer.onSuccess(v);
+        }
+
+        @Override
+        public void onSubscribe(Disposable d) {
+            observer.onSubscribe(d);
+        }
+
+        @Override
+        public void onSuccess(T value) {
+            observer.onSuccess(value);
+        }
+
+    }
 }

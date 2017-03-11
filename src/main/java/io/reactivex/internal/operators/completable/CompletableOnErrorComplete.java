@@ -32,38 +32,45 @@ public final class CompletableOnErrorComplete extends Completable {
     @Override
     protected void subscribeActual(final CompletableObserver s) {
 
-        source.subscribe(new CompletableObserver() {
-
-            @Override
-            public void onComplete() {
-                s.onComplete();
-            }
-
-            @Override
-            public void onError(Throwable e) {
-                boolean b;
-
-                try {
-                    b = predicate.test(e);
-                } catch (Throwable ex) {
-                    Exceptions.throwIfFatal(ex);
-                    s.onError(new CompositeException(e, ex));
-                    return;
-                }
-
-                if (b) {
-                    s.onComplete();
-                } else {
-                    s.onError(e);
-                }
-            }
-
-            @Override
-            public void onSubscribe(Disposable d) {
-                s.onSubscribe(d);
-            }
-
-        });
+        source.subscribe(new OnError(s));
     }
 
+    final class OnError implements CompletableObserver {
+
+        private final CompletableObserver s;
+
+        OnError(CompletableObserver s) {
+            this.s = s;
+        }
+
+        @Override
+        public void onComplete() {
+            s.onComplete();
+        }
+
+        @Override
+        public void onError(Throwable e) {
+            boolean b;
+
+            try {
+                b = predicate.test(e);
+            } catch (Throwable ex) {
+                Exceptions.throwIfFatal(ex);
+                s.onError(new CompositeException(e, ex));
+                return;
+            }
+
+            if (b) {
+                s.onComplete();
+            } else {
+                s.onError(e);
+            }
+        }
+
+        @Override
+        public void onSubscribe(Disposable d) {
+            s.onSubscribe(d);
+        }
+
+    }
 }
