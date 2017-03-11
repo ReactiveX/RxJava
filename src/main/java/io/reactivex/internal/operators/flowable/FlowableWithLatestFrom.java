@@ -40,7 +40,7 @@ public final class FlowableWithLatestFrom<T, U, R> extends AbstractFlowableWithU
 
         serial.onSubscribe(wlf);
 
-        other.subscribe(new FlowableWithLatestSubscriber<U>(wlf));
+        other.subscribe(new FlowableWithLatestSubscriber(wlf));
 
         source.subscribe(wlf);
     }
@@ -117,7 +117,7 @@ public final class FlowableWithLatestFrom<T, U, R> extends AbstractFlowableWithU
         }
     }
 
-    final class FlowableWithLatestSubscriber<U> implements FlowableSubscriber<U> {
+    final class FlowableWithLatestSubscriber implements FlowableSubscriber<U> {
         private final WithLatestFromSubscriber<T, U, R> wlf;
 
         FlowableWithLatestSubscriber(WithLatestFromSubscriber<T, U, R> wlf) {

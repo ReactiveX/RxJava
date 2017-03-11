@@ -892,9 +892,9 @@ public final class ObservableReplay<T> extends ConnectableObservable<T> implemen
         }
     }
 
-    static final class UnBoundedFactory implements BufferSupplier {
+    static final class UnBoundedFactory implements BufferSupplier<Object> {
         @Override
-        public ReplayBuffer call() {
+        public ReplayBuffer<Object> call() {
             return new UnboundedReplayBuffer<Object>(16);
         }
     }
@@ -1027,7 +1027,7 @@ public final class ObservableReplay<T> extends ConnectableObservable<T> implemen
 
             observable.subscribe(srw);
 
-            co.connect(new DisposeConsumer(srw));
+            co.connect(new DisposeConsumer<R>(srw));
         }
     }
 

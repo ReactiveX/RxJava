@@ -44,7 +44,7 @@ public final class SingleDelay<T> extends Single<T> {
 
     final class Delay implements SingleObserver<T> {
         private final SequentialDisposable sd;
-        private final SingleObserver<? super T> s;
+        final SingleObserver<? super T> s;
 
         Delay(SequentialDisposable sd, SingleObserver<? super T> s) {
             this.sd = sd;

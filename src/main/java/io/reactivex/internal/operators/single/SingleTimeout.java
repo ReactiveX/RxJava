@@ -58,8 +58,8 @@ public final class SingleTimeout<T> extends Single<T> {
 
     final class TimeoutDispose implements Runnable {
         private final AtomicBoolean once;
-        private final CompositeDisposable set;
-        private final SingleObserver<? super T> s;
+        final CompositeDisposable set;
+        final SingleObserver<? super T> s;
 
         TimeoutDispose(AtomicBoolean once, CompositeDisposable set, SingleObserver<? super T> s) {
             this.once = once;

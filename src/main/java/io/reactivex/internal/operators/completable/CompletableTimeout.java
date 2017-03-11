@@ -90,8 +90,8 @@ public final class CompletableTimeout extends Completable {
 
     final class DisposeTask implements Runnable {
         private final AtomicBoolean once;
-        private final CompositeDisposable set;
-        private final CompletableObserver s;
+        final CompositeDisposable set;
+        final CompletableObserver s;
 
         DisposeTask(AtomicBoolean once, CompositeDisposable set, CompletableObserver s) {
             this.once = once;
