@@ -80,27 +80,29 @@ public final class ObservableDelaySubscriptionOther<T, U> extends Observable<T> 
             }
             done = true;
 
-            main.subscribe(new Observer<T>() {
-                @Override
-                public void onSubscribe(Disposable d) {
-                    serial.update(d);
-                }
+            main.subscribe(new OnComplete());
+        }
 
-                @Override
-                public void onNext(T value) {
-                    child.onNext(value);
-                }
+        final class OnComplete implements Observer<T> {
+            @Override
+            public void onSubscribe(Disposable d) {
+                serial.update(d);
+            }
 
-                @Override
-                public void onError(Throwable e) {
-                    child.onError(e);
-                }
+            @Override
+            public void onNext(T value) {
+                child.onNext(value);
+            }
 
-                @Override
-                public void onComplete() {
-                    child.onComplete();
-                }
-            });
+            @Override
+            public void onError(Throwable e) {
+                child.onError(e);
+            }
+
+            @Override
+            public void onComplete() {
+                child.onComplete();
+            }
         }
     }
 }

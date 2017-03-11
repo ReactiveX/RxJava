@@ -43,7 +43,7 @@ public final class FlowableDelaySubscriptionOther<T, U> extends Flowable<T> {
         other.subscribe(otherSubscriber);
     }
 
-    private final class DelaySubscriber implements FlowableSubscriber<U> {
+    final class DelaySubscriber implements FlowableSubscriber<U> {
         private final SubscriptionArbiter serial;
         private final Subscriber<? super T> child;
         boolean done;
@@ -84,7 +84,7 @@ public final class FlowableDelaySubscriptionOther<T, U> extends Flowable<T> {
             main.subscribe(new OnCompleteSubscriber());
         }
 
-        private class DelaySubscription implements Subscription {
+        final class DelaySubscription implements Subscription {
             private final Subscription s;
 
             public DelaySubscription(Subscription s) {

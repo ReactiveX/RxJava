@@ -1125,7 +1125,7 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
             co.connect(new DisposableConsumer(srw));
         }
 
-        private final class DisposableConsumer implements Consumer<Disposable> {
+        final class DisposableConsumer implements Consumer<Disposable> {
             private final SubscriberResourceWrapper<R> srw;
 
             DisposableConsumer(SubscriberResourceWrapper<R> srw) {

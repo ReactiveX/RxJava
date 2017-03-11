@@ -45,12 +45,7 @@ public final class ObservableReplay<T> extends ConnectableObservable<T> implemen
     }
 
     @SuppressWarnings("rawtypes")
-    static final BufferSupplier DEFAULT_UNBOUNDED_FACTORY = new BufferSupplier() {
-        @Override
-        public ReplayBuffer call() {
-            return new UnboundedReplayBuffer<Object>(16);
-        }
-    };
+    static final BufferSupplier DEFAULT_UNBOUNDED_FACTORY = new UnBoundedFactory();
 
     /**
      * Given a connectable observable factory, it multicasts over the generated
@@ -82,12 +77,7 @@ public final class ObservableReplay<T> extends ConnectableObservable<T> implemen
 
                 observable.subscribe(srw);
 
-                co.connect(new Consumer<Disposable>() {
-                    @Override
-                    public void accept(Disposable r) {
-                        srw.setResource(r);
-                    }
-                });
+                co.connect(new DisposeConsumer(srw));
             }
         });
     }
@@ -986,6 +976,26 @@ public final class ObservableReplay<T> extends ConnectableObservable<T> implemen
                 }
             }
             return prev;
+        }
+    }
+
+    static final class UnBoundedFactory implements BufferSupplier {
+        @Override
+        public ReplayBuffer call() {
+            return new UnboundedReplayBuffer<Object>(16);
+        }
+    }
+
+    static final class DisposeConsumer<R> implements Consumer<Disposable> {
+        private final ObserverResourceWrapper<R> srw;
+
+        DisposeConsumer(ObserverResourceWrapper<R> srw) {
+            this.srw = srw;
+        }
+
+        @Override
+        public void accept(Disposable r) {
+            srw.setResource(r);
         }
     }
 }
