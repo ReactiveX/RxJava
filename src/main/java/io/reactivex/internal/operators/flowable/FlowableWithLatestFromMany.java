@@ -82,12 +82,7 @@ public final class FlowableWithLatestFromMany<T, R> extends AbstractFlowableWith
         }
 
         if (n == 0) {
-            new FlowableMap<T, R>(source, new Function<T, R>() {
-                @Override
-                public R apply(T t) throws Exception {
-                    return combiner.apply(new Object[] { t });
-                }
-            }).subscribeActual(s);
+            new FlowableMap<T, R>(source, new SingletonArrayFunc()).subscribeActual(s);
             return;
         }
 
@@ -296,6 +291,13 @@ public final class FlowableWithLatestFromMany<T, R> extends AbstractFlowableWith
         @Override
         public void dispose() {
             SubscriptionHelper.cancel(this);
+        }
+    }
+
+    private final class SingletonArrayFunc implements Function<T, R> {
+        @Override
+        public R apply(T t) throws Exception {
+            return combiner.apply(new Object[] { t });
         }
     }
 }
