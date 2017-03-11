@@ -117,7 +117,7 @@ public final class FlowableWithLatestFrom<T, U, R> extends AbstractFlowableWithU
         }
     }
 
-    private final class FlowableWithLatestSubscriber<U> implements FlowableSubscriber<U> {
+    final class FlowableWithLatestSubscriber<U> implements FlowableSubscriber<U> {
         private final WithLatestFromSubscriber<T, U, R> wlf;
 
         FlowableWithLatestSubscriber(WithLatestFromSubscriber<T, U, R> wlf) {

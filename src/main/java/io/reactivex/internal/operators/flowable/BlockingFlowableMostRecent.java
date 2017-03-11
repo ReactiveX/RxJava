@@ -82,7 +82,7 @@ public final class BlockingFlowableMostRecent<T> implements Iterable<T> {
             return new Iterator();
         }
 
-        private class Iterator implements java.util.Iterator<T> {
+        final class Iterator implements java.util.Iterator<T> {
             /**
              * buffer to make sure that the state of the iterator doesn't change between calling hasNext() and next().
              */

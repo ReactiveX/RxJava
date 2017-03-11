@@ -47,66 +47,7 @@ public final class ObservablePublish<T> extends ConnectableObservable<T> impleme
     public static <T> ConnectableObservable<T> create(ObservableSource<T> source) {
         // the current connection to source needs to be shared between the operator and its onSubscribe call
         final AtomicReference<PublishObserver<T>> curr = new AtomicReference<PublishObserver<T>>();
-        ObservableSource<T> onSubscribe = new ObservableSource<T>() {
-            @Override
-            public void subscribe(Observer<? super T> child) {
-                // create the backpressure-managing producer for this child
-                InnerDisposable<T> inner = new InnerDisposable<T>(child);
-                child.onSubscribe(inner);
-                // concurrent connection/disconnection may change the state,
-                // we loop to be atomic while the child subscribes
-                for (;;) {
-                    // get the current subscriber-to-source
-                    PublishObserver<T> r = curr.get();
-                    // if there isn't one or it is disposed
-                    if (r == null || r.isDisposed()) {
-                        // create a new subscriber to source
-                        PublishObserver<T> u = new PublishObserver<T>(curr);
-                        // let's try setting it as the current subscriber-to-source
-                        if (!curr.compareAndSet(r, u)) {
-                            // didn't work, maybe someone else did it or the current subscriber
-                            // to source has just finished
-                            continue;
-                        }
-                        // we won, let's use it going onwards
-                        r = u;
-                    }
-
-                    /*
-                     * Try adding it to the current subscriber-to-source, add is atomic in respect
-                     * to other adds and the termination of the subscriber-to-source.
-                     */
-                    if (r.add(inner)) {
-                        inner.setParent(r);
-                        break; // NOPMD
-                    }
-                    /*
-                     * The current PublishObserver has been terminated, try with a newer one.
-                     */
-                    /*
-                     * Note: although technically correct, concurrent disconnects can cause
-                     * unexpected behavior such as child observers never receiving anything
-                     * (unless connected again). An alternative approach, similar to
-                     * PublishSubject would be to immediately terminate such child
-                     * observers as well:
-                     *
-                     * Object term = r.terminalEvent;
-                     * if (r.nl.isCompleted(term)) {
-                     *     child.onComplete();
-                     * } else {
-                     *     child.onError(r.nl.getError(term));
-                     * }
-                     * return;
-                     *
-                     * The original concurrent behavior was non-deterministic in this regard as well.
-                     * Allowing this behavior, however, may introduce another unexpected behavior:
-                     * after disconnecting a previous connection, one might not be able to prepare
-                     * a new connection right after a previous termination by subscribing new child
-                     * observers asynchronously before a connect call.
-                     */
-                }
-            }
-        };
+        ObservableSource<T> onSubscribe = new PublishSource<T>(curr);
         return RxJavaPlugins.onAssembly(new ObservablePublish<T>(onSubscribe, source, curr));
     }
 
@@ -371,6 +312,73 @@ public final class ObservablePublish<T> extends ConnectableObservable<T> impleme
         void setParent(PublishObserver<T> p) {
             if (!compareAndSet(null, p)) {
                 p.remove(this);
+            }
+        }
+    }
+
+    static final class PublishSource<T> implements ObservableSource<T> {
+        private final AtomicReference<PublishObserver<T>> curr;
+
+        PublishSource(AtomicReference<PublishObserver<T>> curr) {
+            this.curr = curr;
+        }
+
+        @Override
+        public void subscribe(Observer<? super T> child) {
+            // create the backpressure-managing producer for this child
+            InnerDisposable<T> inner = new InnerDisposable<T>(child);
+            child.onSubscribe(inner);
+            // concurrent connection/disconnection may change the state,
+            // we loop to be atomic while the child subscribes
+            for (;;) {
+                // get the current subscriber-to-source
+                PublishObserver<T> r = curr.get();
+                // if there isn't one or it is disposed
+                if (r == null || r.isDisposed()) {
+                    // create a new subscriber to source
+                    PublishObserver<T> u = new PublishObserver<T>(curr);
+                    // let's try setting it as the current subscriber-to-source
+                    if (!curr.compareAndSet(r, u)) {
+                        // didn't work, maybe someone else did it or the current subscriber
+                        // to source has just finished
+                        continue;
+                    }
+                    // we won, let's use it going onwards
+                    r = u;
+                }
+
+                /*
+                 * Try adding it to the current subscriber-to-source, add is atomic in respect
+                 * to other adds and the termination of the subscriber-to-source.
+                 */
+                if (r.add(inner)) {
+                    inner.setParent(r);
+                    break; // NOPMD
+                }
+                /*
+                 * The current PublishObserver has been terminated, try with a newer one.
+                 */
+                /*
+                 * Note: although technically correct, concurrent disconnects can cause
+                 * unexpected behavior such as child observers never receiving anything
+                 * (unless connected again). An alternative approach, similar to
+                 * PublishSubject would be to immediately terminate such child
+                 * observers as well:
+                 *
+                 * Object term = r.terminalEvent;
+                 * if (r.nl.isCompleted(term)) {
+                 *     child.onComplete();
+                 * } else {
+                 *     child.onError(r.nl.getError(term));
+                 * }
+                 * return;
+                 *
+                 * The original concurrent behavior was non-deterministic in this regard as well.
+                 * Allowing this behavior, however, may introduce another unexpected behavior:
+                 * after disconnecting a previous connection, one might not be able to prepare
+                 * a new connection right after a previous termination by subscribing new child
+                 * observers asynchronously before a connect call.
+                 */
             }
         }
     }

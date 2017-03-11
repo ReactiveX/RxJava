@@ -158,7 +158,7 @@ public final class FlowableTimeoutTimed<T> extends AbstractFlowableWithUpstream<
             return worker.isDisposed();
         }
 
-        private final class TimeoutTask implements Runnable {
+        final class TimeoutTask implements Runnable {
             private final long idx;
 
             TimeoutTask(long idx) {
@@ -280,7 +280,7 @@ public final class FlowableTimeoutTimed<T> extends AbstractFlowableWithUpstream<
             dispose();
         }
 
-        private final class TimeoutTask implements Runnable {
+        final class TimeoutTask implements Runnable {
             private final long idx;
 
             TimeoutTask(long idx) {

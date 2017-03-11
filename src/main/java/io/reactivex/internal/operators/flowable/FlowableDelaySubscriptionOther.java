@@ -102,7 +102,7 @@ public final class FlowableDelaySubscriptionOther<T, U> extends Flowable<T> {
             }
         }
 
-        private final class OnCompleteSubscriber implements FlowableSubscriber<T> {
+        final class OnCompleteSubscriber implements FlowableSubscriber<T> {
             @Override
             public void onSubscribe(Subscription s) {
                 serial.setSubscription(s);

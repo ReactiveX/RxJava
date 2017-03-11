@@ -102,7 +102,7 @@ public final class FlowableDelay<T> extends AbstractFlowableWithUpstream<T, T> {
             w.dispose();
         }
 
-        private final class OnNext implements Runnable {
+        final class OnNext implements Runnable {
             private final T t;
 
             OnNext(T t) {

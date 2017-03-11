@@ -830,7 +830,7 @@ public final class FlowableWindowTimed<T> extends AbstractFlowableWithUpstream<T
             }
         }
 
-        private final class Completion implements Runnable {
+        final class Completion implements Runnable {
             private final UnicastProcessor<T> processor;
 
             public Completion(UnicastProcessor<T> processor) {

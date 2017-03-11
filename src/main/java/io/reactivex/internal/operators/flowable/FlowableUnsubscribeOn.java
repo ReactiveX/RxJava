@@ -90,7 +90,7 @@ public final class FlowableUnsubscribeOn<T> extends AbstractFlowableWithUpstream
             }
         }
 
-        private final class Cancellation implements Runnable {
+        final class Cancellation implements Runnable {
             @Override
             public void run() {
                 s.cancel();

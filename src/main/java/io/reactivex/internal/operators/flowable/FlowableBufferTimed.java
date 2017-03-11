@@ -367,7 +367,7 @@ public final class FlowableBufferTimed<T, U extends Collection<? super T>> exten
             return true;
         }
 
-        private final class RemoveFromBuffer implements Runnable {
+        final class RemoveFromBuffer implements Runnable {
             private final U buffer;
 
             RemoveFromBuffer(U buffer) {

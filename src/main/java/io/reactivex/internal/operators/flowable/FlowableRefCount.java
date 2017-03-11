@@ -173,7 +173,7 @@ public final class FlowableRefCount<T> extends AbstractFlowableWithUpstream<T, T
         return Disposables.fromRunnable(new DisposeTask(current));
     }
 
-    private final class DisposeConsumer implements Consumer<Disposable> {
+    final class DisposeConsumer implements Consumer<Disposable> {
         private final Subscriber<? super T> subscriber;
         private final AtomicBoolean writeLocked;
 
@@ -196,7 +196,7 @@ public final class FlowableRefCount<T> extends AbstractFlowableWithUpstream<T, T
         }
     }
 
-    private final class DisposeTask implements Runnable {
+    final class DisposeTask implements Runnable {
         private final CompositeDisposable current;
 
         DisposeTask(CompositeDisposable current) {
