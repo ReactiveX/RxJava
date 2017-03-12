@@ -28,6 +28,7 @@ import org.mockito.stubbing.Answer;
 import rx.Single.OnSubscribe;
 import rx.exceptions.*;
 import rx.functions.*;
+import rx.internal.util.RxThreadFactory;
 import rx.observers.*;
 import rx.plugins.RxJavaHooks;
 import rx.schedulers.*;
@@ -2229,5 +2230,66 @@ public class SingleTest {
         assertTrue(s.isUnsubscribed());
 
         assertEquals(1, calls[0]);
+    }
+
+    @Test
+    public void unsubscribeOnSuccess() throws InterruptedException {
+        final AtomicReference<String> name = new AtomicReference<String>();
+
+        final CountDownLatch cdl = new CountDownLatch(1);
+
+        TestSubscriber<Integer> ts = TestSubscriber.create();
+
+        Single.fromCallable(new Callable<Integer>() {
+            @Override
+            public Integer call() throws Exception {
+                return 1;
+            }
+        })
+                .doOnUnsubscribe(new Action0() {
+                    @Override
+                    public void call() {
+                        name.set(Thread.currentThread().getName());
+                        cdl.countDown();
+                    }
+                })
+                .subscribeOn(Schedulers.io())
+                .unsubscribeOn(Schedulers.computation())
+                .subscribe(ts);
+
+        cdl.await();
+
+        ts.awaitTerminalEvent();
+        ts.assertReceivedOnNext(Arrays.asList(1));
+
+        assertTrue(name.get().startsWith("RxComputation"));
+    }
+
+    @Test
+    public void unsubscribeOnError() throws InterruptedException {
+        final AtomicReference<String> name = new AtomicReference<String>();
+
+        final CountDownLatch cdl = new CountDownLatch(1);
+
+        TestSubscriber<Integer> ts = TestSubscriber.create();
+
+        Single.<Integer>error(new RuntimeException())
+                .doOnUnsubscribe(new Action0() {
+                    @Override
+                    public void call() {
+                        name.set(Thread.currentThread().getName());
+                        cdl.countDown();
+                    }
+                })
+                .subscribeOn(Schedulers.io())
+                .unsubscribeOn(Schedulers.computation())
+                .subscribe(ts);
+
+        cdl.await();
+
+        ts.awaitTerminalEvent();
+        ts.assertError(RuntimeException.class);
+
+        assertTrue(name.get().startsWith("RxComputation"));
     }
 }
