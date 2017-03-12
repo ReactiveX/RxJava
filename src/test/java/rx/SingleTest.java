@@ -28,7 +28,6 @@ import org.mockito.stubbing.Answer;
 import rx.Single.OnSubscribe;
 import rx.exceptions.*;
 import rx.functions.*;
-import rx.internal.util.RxThreadFactory;
 import rx.observers.*;
 import rx.plugins.RxJavaHooks;
 import rx.schedulers.*;

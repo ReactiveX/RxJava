@@ -2813,7 +2813,9 @@ public class Single<T> {
      * the dispose is called on the specified scheduler
      * @param scheduler the target scheduler where to execute the cancellation
      * @return the new Single instance
+     * @since 1.2.8 - experimental
      */
+    @Experimental
     public final Single<T> unsubscribeOn(final Scheduler scheduler) {
         return create(new OnSubscribe<T>() {
             @Override

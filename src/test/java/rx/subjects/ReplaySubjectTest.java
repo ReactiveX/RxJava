@@ -1183,7 +1183,7 @@ public class ReplaySubjectTest {
 
         source.onNext(1);
         source.onCompleted();
-        
+
         source.test().assertResult(1);
 
         source.test().assertResult(1);

@@ -1584,7 +1584,7 @@ public class OperatorReplayTest {
         Observable<Integer> source = Observable.just(1)
         .replay(2, TimeUnit.SECONDS, scheduler)
         .autoConnect();
-        
+
         source.test().assertResult(1);
 
         source.test().assertResult(1);
