@@ -36,16 +36,7 @@ public final class FullArbiter<T> extends FullArbiterPad2 implements Subscriptio
     long requested;
 
     volatile Subscription s;
-    static final Subscription INITIAL = new Subscription() {
-        @Override
-        public void request(long n) {
-            // deliberately no op
-        }
-        @Override
-        public void cancel() {
-            // deliberately no op
-        }
-    };
+    static final Subscription INITIAL = new InitialSubscription();
 
 
     Disposable resource;
@@ -196,6 +187,18 @@ public final class FullArbiter<T> extends FullArbiterPad2 implements Subscriptio
             if (missed == 0) {
                 break;
             }
+        }
+    }
+
+    static final class InitialSubscription implements Subscription {
+        @Override
+        public void request(long n) {
+            // deliberately no op
+        }
+
+        @Override
+        public void cancel() {
+            // deliberately no op
         }
     }
 }
