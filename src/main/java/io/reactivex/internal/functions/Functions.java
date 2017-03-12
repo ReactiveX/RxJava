@@ -33,7 +33,6 @@ public final class Functions {
         throw new IllegalStateException("No instances!");
     }
 
-    @SuppressWarnings("unchecked")
     public static <T1, T2, R> Function<Object[], R> toFunction(final BiFunction<? super T1, ? super T2, ? extends R> f) {
         ObjectHelper.requireNonNull(f, "f is null");
         return new Array2Func<T1, T2, R>(f);
@@ -521,12 +520,13 @@ public final class Functions {
             this.f = f;
         }
 
+        @SuppressWarnings("unchecked")
         @Override
         public R apply(Object[] a) throws Exception {
             if (a.length != 2) {
                 throw new IllegalArgumentException("Array of size 2 expected but got " + a.length);
             }
-            return ((BiFunction<Object, Object, R>) f).apply(a[0], a[1]);
+            return f.apply((T1)a[0], (T2)a[1]);
         }
     }
 
