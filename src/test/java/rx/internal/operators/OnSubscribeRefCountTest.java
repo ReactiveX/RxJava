@@ -32,9 +32,10 @@ import rx.Observable;
 import rx.Observable.OnSubscribe;
 import rx.Observer;
 import rx.functions.*;
+import rx.observables.ConnectableObservable;
 import rx.observers.*;
 import rx.schedulers.*;
-import rx.subjects.*;
+import rx.subjects.ReplaySubject;
 import rx.subscriptions.Subscriptions;
 
 public class OnSubscribeRefCountTest {
@@ -746,5 +747,21 @@ public class OnSubscribeRefCountTest {
 
         source = null;
         assertTrue(String.format("%,3d -> %,3d%n", start, after), start + 20 * 1000 * 1000 > after);
+    }
+
+    @Test
+    public void replayIsUnsubscribed() {
+        ConnectableObservable<Integer> co = Observable.just(1)
+        .replay();
+
+        assertTrue(((Subscription)co).isUnsubscribed());
+
+        Subscription s = co.connect();
+
+        assertFalse(((Subscription)co).isUnsubscribed());
+
+        s.unsubscribe();
+
+        assertTrue(((Subscription)co).isUnsubscribed());
     }
 }
