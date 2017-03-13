@@ -17,11 +17,12 @@ import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
+import java.lang.management.ManagementFactory;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 
-import org.junit.*;
+import org.junit.Test;
 import org.mockito.InOrder;
 import org.reactivestreams.*;
 
@@ -29,6 +30,7 @@ import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.flowables.ConnectableFlowable;
 import io.reactivex.functions.*;
+import io.reactivex.internal.functions.Functions;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.processors.ReplayProcessor;
 import io.reactivex.schedulers.*;
@@ -618,5 +620,155 @@ public class FlowableRefCountTest {
         o.test();
 
         assertEquals(1, calls[0]);
+    }
+
+    Flowable<Object> source;
+
+    @Test
+    public void replayNoLeak() throws Exception {
+        System.gc();
+        Thread.sleep(100);
+
+        long start = ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getUsed();
+
+        source = Flowable.fromCallable(new Callable<Object>() {
+            @Override
+            public Object call() throws Exception {
+                return new byte[100 * 1000 * 1000];
+            }
+        })
+        .replay(1)
+        .refCount();
+
+        source.subscribe();
+
+        System.gc();
+        Thread.sleep(100);
+
+        long after = ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getUsed();
+
+        source = null;
+        assertTrue(String.format("%,3d -> %,3d%n", start, after), start + 20 * 1000 * 1000 > after);
+    }
+
+    @Test
+    public void replayNoLeak2() throws Exception {
+        System.gc();
+        Thread.sleep(100);
+
+        long start = ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getUsed();
+
+        source = Flowable.fromCallable(new Callable<Object>() {
+            @Override
+            public Object call() throws Exception {
+                return new byte[100 * 1000 * 1000];
+            }
+        }).concatWith(Flowable.never())
+        .replay(1)
+        .refCount();
+
+        Disposable s1 = source.subscribe();
+        Disposable s2 = source.subscribe();
+
+        s1.dispose();
+        s2.dispose();
+
+        s1 = null;
+        s2 = null;
+
+        System.gc();
+        Thread.sleep(100);
+
+        long after = ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getUsed();
+
+        source = null;
+        assertTrue(String.format("%,3d -> %,3d%n", start, after), start + 20 * 1000 * 1000 > after);
+    }
+
+    static final class ExceptionData extends Exception {
+        private static final long serialVersionUID = -6763898015338136119L;
+
+        public final Object data;
+
+        public ExceptionData(Object data) {
+            this.data = data;
+        }
+    }
+
+    @Test
+    public void publishNoLeak() throws Exception {
+        System.gc();
+        Thread.sleep(100);
+
+        long start = ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getUsed();
+
+        source = Flowable.fromCallable(new Callable<Object>() {
+            @Override
+            public Object call() throws Exception {
+                throw new ExceptionData(new byte[100 * 1000 * 1000]);
+            }
+        })
+        .publish()
+        .refCount();
+
+        source.subscribe(Functions.emptyConsumer(), Functions.emptyConsumer());
+
+        System.gc();
+        Thread.sleep(100);
+
+        long after = ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getUsed();
+
+        source = null;
+        assertTrue(String.format("%,3d -> %,3d%n", start, after), start + 20 * 1000 * 1000 > after);
+    }
+
+    @Test
+    public void publishNoLeak2() throws Exception {
+        System.gc();
+        Thread.sleep(100);
+
+        long start = ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getUsed();
+
+        source = Flowable.fromCallable(new Callable<Object>() {
+            @Override
+            public Object call() throws Exception {
+                return new byte[100 * 1000 * 1000];
+            }
+        }).concatWith(Flowable.never())
+        .publish()
+        .refCount();
+
+        Disposable s1 = source.test();
+        Disposable s2 = source.test();
+
+        s1.dispose();
+        s2.dispose();
+
+        s1 = null;
+        s2 = null;
+
+        System.gc();
+        Thread.sleep(100);
+
+        long after = ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getUsed();
+
+        source = null;
+        assertTrue(String.format("%,3d -> %,3d%n", start, after), start + 20 * 1000 * 1000 > after);
+    }
+
+    @Test
+    public void replayIsUnsubscribed() {
+        ConnectableFlowable<Integer> co = Flowable.just(1)
+        .replay();
+
+        assertTrue(((Disposable)co).isDisposed());
+
+        Disposable s = co.connect();
+
+        assertFalse(((Disposable)co).isDisposed());
+
+        s.dispose();
+
+        assertTrue(((Disposable)co).isDisposed());
     }
 }
