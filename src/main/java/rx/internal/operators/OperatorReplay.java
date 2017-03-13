@@ -28,7 +28,7 @@ import rx.observables.ConnectableObservable;
 import rx.schedulers.Timestamped;
 import rx.subscriptions.Subscriptions;
 
-public final class OperatorReplay<T> extends ConnectableObservable<T> {
+public final class OperatorReplay<T> extends ConnectableObservable<T> implements Subscription {
     /** The source observable. */
     final Observable<? extends T> source;
     /** Holds the current subscriber that is, will be or just was subscribed to the source observable. */
@@ -252,6 +252,17 @@ public final class OperatorReplay<T> extends ConnectableObservable<T> {
         this.source = source;
         this.current = current;
         this.bufferFactory = bufferFactory;
+    }
+
+    @Override
+    public void unsubscribe() {
+        current.lazySet(null);
+    }
+
+    @Override
+    public boolean isUnsubscribed() {
+        ReplaySubscriber<T> ps = current.get();
+        return ps == null || ps.isUnsubscribed();
     }
 
     @Override
