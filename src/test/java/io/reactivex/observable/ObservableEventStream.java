@@ -29,19 +29,7 @@ public final class ObservableEventStream {
     }
     public static Observable<Event> getEventStream(final String type, final int numInstances) {
 
-        return Observable.<Event>generate(new Consumer<Emitter<Event>>() {
-            @Override
-            public void accept(Emitter<Event> s) {
-                s.onNext(randomEvent(type, numInstances));
-                try {
-                    // slow it down somewhat
-                    Thread.sleep(50);
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                    s.onError(e);
-                }
-            }
-        }).subscribeOn(Schedulers.newThread());
+        return Observable.<Event>generate(new EventConsumer(numInstances, type)).subscribeOn(Schedulers.newThread());
     }
 
     public static Event randomEvent(String type, int numInstances) {
@@ -59,6 +47,28 @@ public final class ObservableEventStream {
         x ^= (x >>> 35);
         x ^= (x << 4);
         return Math.abs((int) x % max);
+    }
+
+    static final class EventConsumer implements Consumer<Emitter<Event>> {
+        private final int numInstances;
+        private final String type;
+
+        EventConsumer(int numInstances, String type) {
+            this.numInstances = numInstances;
+            this.type = type;
+        }
+
+        @Override
+        public void accept(Emitter<Event> s) {
+            s.onNext(randomEvent(type, numInstances));
+            try {
+                // slow it down somewhat
+                Thread.sleep(50);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                s.onError(e);
+            }
+        }
     }
 
     public static class Event {

@@ -39,45 +39,54 @@ public final class SingleEquals<T> extends Single<Boolean> {
         final CompositeDisposable set = new CompositeDisposable();
         s.onSubscribe(set);
 
-        class InnerObserver implements SingleObserver<T> {
-            final int index;
-            InnerObserver(int index) {
-                this.index = index;
-            }
-            @Override
-            public void onSubscribe(Disposable d) {
-                set.add(d);
-            }
+        first.subscribe(new InnerObserver<T>(0, set, values, s, count));
+        second.subscribe(new InnerObserver<T>(1, set, values, s, count));
+    }
 
-            @Override
-            public void onSuccess(T value) {
-                values[index] = value;
+    static class InnerObserver<T> implements SingleObserver<T> {
+        final int index;
+        final CompositeDisposable set;
+        final Object[] values;
+        final SingleObserver<? super Boolean> s;
+        final AtomicInteger count;
 
-                if (count.incrementAndGet() == 2) {
-                    s.onSuccess(ObjectHelper.equals(values[0], values[1]));
-                }
-            }
-
-            @Override
-            public void onError(Throwable e) {
-                for (;;) {
-                    int state = count.get();
-                    if (state >= 2) {
-                        RxJavaPlugins.onError(e);
-                        return;
-                    }
-                    if (count.compareAndSet(state, 2)) {
-                        set.dispose();
-                        s.onError(e);
-                        return;
-                    }
-                }
-            }
-
+        InnerObserver(int index, CompositeDisposable set, Object[] values, SingleObserver<? super Boolean> s, AtomicInteger count) {
+            this.index = index;
+            this.set = set;
+            this.values = values;
+            this.s = s;
+            this.count = count;
+        }
+        @Override
+        public void onSubscribe(Disposable d) {
+            set.add(d);
         }
 
-        first.subscribe(new InnerObserver(0));
-        second.subscribe(new InnerObserver(1));
+        @Override
+        public void onSuccess(T value) {
+            values[index] = value;
+
+            if (count.incrementAndGet() == 2) {
+                s.onSuccess(ObjectHelper.equals(values[0], values[1]));
+            }
+        }
+
+        @Override
+        public void onError(Throwable e) {
+            for (;;) {
+                int state = count.get();
+                if (state >= 2) {
+                    RxJavaPlugins.onError(e);
+                    return;
+                }
+                if (count.compareAndSet(state, 2)) {
+                    set.dispose();
+                    s.onError(e);
+                    return;
+                }
+            }
+        }
+
     }
 
 }

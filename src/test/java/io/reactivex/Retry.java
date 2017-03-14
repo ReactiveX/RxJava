@@ -23,6 +23,38 @@ import org.junit.runners.model.Statement;
  */
 public class Retry implements TestRule {
 
+    final class RetryStatement extends Statement {
+        private final Statement base;
+        private final Description description;
+
+        RetryStatement(Statement base, Description description) {
+            this.base = base;
+            this.description = description;
+        }
+
+        @Override
+        public void evaluate() throws Throwable {
+            Throwable caughtThrowable = null;
+
+            for (int i = 0; i < retryCount; i++) {
+                try {
+                    base.evaluate();
+                    return;
+                } catch (Throwable t) {
+                    caughtThrowable = t;
+                    System.err.println(description.getDisplayName() + ": run " + (i + 1) + " failed");
+                    int n = sleep;
+                    if (backoff && i != 0) {
+                        n = n * (2 << i);
+                    }
+                    Thread.sleep(n);
+                }
+            }
+            System.err.println(description.getDisplayName() + ": giving up after " + retryCount + " failures");
+            throw caughtThrowable;
+        }
+    }
+
     final int retryCount;
 
     final int sleep;
@@ -41,28 +73,6 @@ public class Retry implements TestRule {
     }
 
     private Statement statement(final Statement base, final Description description) {
-        return new Statement() {
-            @Override
-            public void evaluate() throws Throwable {
-                Throwable caughtThrowable = null;
-
-                for (int i = 0; i < retryCount; i++) {
-                    try {
-                        base.evaluate();
-                        return;
-                    } catch (Throwable t) {
-                        caughtThrowable = t;
-                        System.err.println(description.getDisplayName() + ": run " + (i + 1) + " failed");
-                        int n = sleep;
-                        if (backoff && i != 0) {
-                            n = n * (2 << i);
-                        }
-                        Thread.sleep(n);
-                    }
-                }
-                System.err.println(description.getDisplayName() + ": giving up after " + retryCount + " failures");
-                throw caughtThrowable;
-            }
-        };
+        return new RetryStatement(base, description);
     }
 }

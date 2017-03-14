@@ -241,7 +241,7 @@ public final class FlowableInternalHelper {
     static final class ReplayCallable<T> implements Callable<ConnectableFlowable<T>> {
         private final Flowable<T> parent;
 
-        public ReplayCallable(Flowable<T> parent) {
+        ReplayCallable(Flowable<T> parent) {
             this.parent = parent;
         }
 
@@ -310,7 +310,7 @@ public final class FlowableInternalHelper {
         private final Function<? super Flowable<T>, ? extends Publisher<R>> selector;
         private final Scheduler scheduler;
 
-        public ReplayFunction(Function<? super Flowable<T>, ? extends Publisher<R>> selector, Scheduler scheduler) {
+        ReplayFunction(Function<? super Flowable<T>, ? extends Publisher<R>> selector, Scheduler scheduler) {
             this.selector = selector;
             this.scheduler = scheduler;
         }

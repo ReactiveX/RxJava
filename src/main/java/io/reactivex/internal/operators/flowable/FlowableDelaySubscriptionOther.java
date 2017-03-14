@@ -87,7 +87,7 @@ public final class FlowableDelaySubscriptionOther<T, U> extends Flowable<T> {
         final class DelaySubscription implements Subscription {
             private final Subscription s;
 
-            public DelaySubscription(Subscription s) {
+            DelaySubscription(Subscription s) {
                 this.s = s;
             }
 
