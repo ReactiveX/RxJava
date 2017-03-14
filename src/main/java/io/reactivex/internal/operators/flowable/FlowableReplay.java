@@ -32,7 +32,7 @@ import io.reactivex.internal.util.*;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.schedulers.Timed;
 
-public final class FlowableReplay<T> extends ConnectableFlowable<T> implements HasUpstreamPublisher<T> {
+public final class FlowableReplay<T> extends ConnectableFlowable<T> implements HasUpstreamPublisher<T>, Disposable {
     /** The source observable. */
     final Flowable<T> source;
     /** Holds the current subscriber that is, will be or just was subscribed to the source observable. */
@@ -159,6 +159,17 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
     @Override
     protected void subscribeActual(Subscriber<? super T> s) {
         onSubscribe.subscribe(s);
+    }
+
+    @Override
+    public void dispose() {
+        current.lazySet(null);
+    }
+
+    @Override
+    public boolean isDisposed() {
+        Disposable d = current.get();
+        return d == null || d.isDisposed();
     }
 
     @Override

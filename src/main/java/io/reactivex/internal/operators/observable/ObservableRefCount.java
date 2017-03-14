@@ -162,6 +162,10 @@ public final class ObservableRefCount<T> extends AbstractObservableWithUpstream<
             lock.lock();
             try {
                 if (baseDisposable == currentBase) {
+                    if (source instanceof Disposable) {
+                        ((Disposable)source).dispose();
+                    }
+
                     baseDisposable.dispose();
                     baseDisposable = new CompositeDisposable();
                     subscriptionCount.set(0);
@@ -208,6 +212,10 @@ public final class ObservableRefCount<T> extends AbstractObservableWithUpstream<
             try {
                 if (baseDisposable == current) {
                     if (subscriptionCount.decrementAndGet() == 0) {
+                        if (source instanceof Disposable) {
+                            ((Disposable)source).dispose();
+                        }
+
                         baseDisposable.dispose();
                         // need a new baseDisposable because once
                         // disposed stays that way
