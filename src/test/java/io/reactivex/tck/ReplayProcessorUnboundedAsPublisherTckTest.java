@@ -35,7 +35,12 @@ public class ReplayProcessorUnboundedAsPublisherTckTest extends BaseTck<Integer>
             public void run() {
                 long start = System.currentTimeMillis();
                 while (!pp.hasSubscribers()) {
-                    Thread.yield();
+                    try {
+                        Thread.sleep(1);
+                    } catch (InterruptedException ex) {
+                        return;
+                    }
+
                     if (System.currentTimeMillis() - start > 200) {
                         return;
                     }

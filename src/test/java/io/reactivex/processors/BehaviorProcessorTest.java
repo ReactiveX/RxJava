@@ -736,7 +736,11 @@ public class BehaviorProcessorTest extends DelayedFlowableProcessorTest<Object> 
             @Override
             public void run() {
                 while (!pp.hasSubscribers()) {
-                    Thread.yield();
+                    try {
+                        Thread.sleep(1);
+                    } catch (InterruptedException ex) {
+                        return;
+                    }
                 }
 
                 for (int i = 1; i <= 10; i++) {
