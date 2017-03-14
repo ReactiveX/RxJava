@@ -33,10 +33,10 @@ import io.reactivex.internal.util.BackpressureHelper;
  */
 public final class Burst<T> extends Flowable<T> {
 
-    private final List<T> items;
-    private final Throwable error;
+    final List<T> items;
+    final Throwable error;
 
-    private Burst(Throwable error, List<T> items) {
+    Burst(Throwable error, List<T> items) {
         if (items.isEmpty()) {
             throw new IllegalArgumentException("items cannot be empty");
         }
@@ -51,46 +51,7 @@ public final class Burst<T> extends Flowable<T> {
 
     @Override
     protected void subscribeActual(final Subscriber<? super T> subscriber) {
-        subscriber.onSubscribe(new Subscription() {
-
-            final Queue<T> q = new ConcurrentLinkedQueue<T>(items);
-            final AtomicLong requested = new AtomicLong();
-            volatile boolean cancelled;
-
-            @Override
-            public void request(long n) {
-                if (cancelled) {
-                    // required by reactive-streams-jvm 3.6
-                    return;
-                }
-                if (SubscriptionHelper.validate(n)) {
-                    // just for testing, don't care about perf
-                    // so no attempt made to reduce volatile reads
-                    if (BackpressureHelper.add(requested, n) == 0) {
-                        if (q.isEmpty()) {
-                            return;
-                        }
-                        while (!q.isEmpty() && requested.get() > 0) {
-                            T item = q.poll();
-                            requested.decrementAndGet();
-                            subscriber.onNext(item);
-                        }
-                        if (q.isEmpty()) {
-                            if (error != null) {
-                                subscriber.onError(error);
-                            } else {
-                                subscriber.onComplete();
-                            }
-                        }
-                    }
-                }
-            }
-
-            @Override
-            public void cancel() {
-                cancelled = true;
-            }
-        });
+        subscriber.onSubscribe(new BurstSubscription(subscriber));
 
     }
 
@@ -103,12 +64,57 @@ public final class Burst<T> extends Flowable<T> {
         return new Builder<T>(Arrays.asList(items));
     }
 
+    final class BurstSubscription implements Subscription {
+        private final Subscriber<? super T> subscriber;
+        final Queue<T> q = new ConcurrentLinkedQueue<T>(items);
+        final AtomicLong requested = new AtomicLong();
+        volatile boolean cancelled;
+
+        BurstSubscription(Subscriber<? super T> subscriber) {
+            this.subscriber = subscriber;
+        }
+
+        @Override
+        public void request(long n) {
+            if (cancelled) {
+                // required by reactive-streams-jvm 3.6
+                return;
+            }
+            if (SubscriptionHelper.validate(n)) {
+                // just for testing, don't care about perf
+                // so no attempt made to reduce volatile reads
+                if (BackpressureHelper.add(requested, n) == 0) {
+                    if (q.isEmpty()) {
+                        return;
+                    }
+                    while (!q.isEmpty() && requested.get() > 0) {
+                        T item = q.poll();
+                        requested.decrementAndGet();
+                        subscriber.onNext(item);
+                    }
+                    if (q.isEmpty()) {
+                        if (error != null) {
+                            subscriber.onError(error);
+                        } else {
+                            subscriber.onComplete();
+                        }
+                    }
+                }
+            }
+        }
+
+        @Override
+        public void cancel() {
+            cancelled = true;
+        }
+    }
+
     public static final class Builder<T> {
 
         private final List<T> items;
         private Throwable error;
 
-        private Builder(List<T> items) {
+        Builder(List<T> items) {
             this.items = items;
         }
 

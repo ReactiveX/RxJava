@@ -118,7 +118,7 @@ public final class ObservableDelay<T> extends AbstractObservableWithUpstream<T, 
         final class OnError implements Runnable {
             private final Throwable throwable;
 
-            public OnError(Throwable throwable) {
+            OnError(Throwable throwable) {
                 this.throwable = throwable;
             }
 

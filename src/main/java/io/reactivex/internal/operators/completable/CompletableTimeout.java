@@ -57,7 +57,7 @@ public final class CompletableTimeout extends Completable {
         private final AtomicBoolean once;
         private final CompletableObserver s;
 
-        public TimeOutObserver(CompositeDisposable set, AtomicBoolean once, CompletableObserver s) {
+        TimeOutObserver(CompositeDisposable set, AtomicBoolean once, CompletableObserver s) {
             this.set = set;
             this.once = once;
             this.s = s;

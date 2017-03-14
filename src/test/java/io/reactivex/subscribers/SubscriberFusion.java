@@ -43,18 +43,7 @@ public enum SubscriberFusion {
      */
     public static <T> Function<Flowable<T>, TestSubscriber<T>> test(
             final long initialRequest, final int mode, final boolean cancelled) {
-        return new Function<Flowable<T>, TestSubscriber<T>>() {
-            @Override
-            public TestSubscriber<T> apply(Flowable<T> t) throws Exception {
-                TestSubscriber<T> ts = new TestSubscriber<T>(initialRequest);
-                ts.setInitialFusionMode(mode);
-                if (cancelled) {
-                    ts.cancel();
-                }
-                t.subscribe(ts);
-                return ts;
-            }
-        };
+        return new TestFusionCheckFunction<T>(mode, cancelled, initialRequest);
     }
     /**
      * Returns a Consumer that asserts on its TestSubscriber parameter that
@@ -72,6 +61,42 @@ public enum SubscriberFusion {
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public static <T> Consumer<TestSubscriber<T>> assertFuseable() {
         return (Consumer)AssertFuseable.INSTANCE;
+    }
+
+    static final class AssertFusionConsumer<T> implements Consumer<TestSubscriber<T>> {
+        private final int mode;
+
+        AssertFusionConsumer(int mode) {
+            this.mode = mode;
+        }
+
+        @Override
+        public void accept(TestSubscriber<T> ts) throws Exception {
+            ts.assertFusionMode(mode);
+        }
+    }
+
+    static final class TestFusionCheckFunction<T> implements Function<Flowable<T>, TestSubscriber<T>> {
+        private final int mode;
+        private final boolean cancelled;
+        private final long initialRequest;
+
+        TestFusionCheckFunction(int mode, boolean cancelled, long initialRequest) {
+            this.mode = mode;
+            this.cancelled = cancelled;
+            this.initialRequest = initialRequest;
+        }
+
+        @Override
+        public TestSubscriber<T> apply(Flowable<T> t) throws Exception {
+            TestSubscriber<T> ts = new TestSubscriber<T>(initialRequest);
+            ts.setInitialFusionMode(mode);
+            if (cancelled) {
+                ts.cancel();
+            }
+            t.subscribe(ts);
+            return ts;
+        }
     }
 
     enum AssertFuseable implements Consumer<TestSubscriber<Object>> {
@@ -124,12 +149,7 @@ public enum SubscriberFusion {
      * @return the new Consumer instance
      */
     public static <T> Consumer<TestSubscriber<T>> assertFusionMode(final int mode) {
-        return new Consumer<TestSubscriber<T>>() {
-            @Override
-            public void accept(TestSubscriber<T> ts) throws Exception {
-                ts.assertFusionMode(mode);
-            }
-        };
+        return new AssertFusionConsumer<T>(mode);
     }
 
     /**

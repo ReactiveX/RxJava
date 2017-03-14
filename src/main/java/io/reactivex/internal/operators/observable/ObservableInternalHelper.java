@@ -341,7 +341,7 @@ public final class ObservableInternalHelper {
         private final Observable<T> parent;
         private final int bufferSize;
 
-        public BufferedReplayCallable(Observable<T> parent, int bufferSize) {
+        BufferedReplayCallable(Observable<T> parent, int bufferSize) {
             this.parent = parent;
             this.bufferSize = bufferSize;
         }

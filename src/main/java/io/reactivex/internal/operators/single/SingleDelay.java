@@ -82,7 +82,7 @@ public final class SingleDelay<T> extends Single<T> {
         final class OnError implements Runnable {
             private final Throwable e;
 
-            public OnError(Throwable e) {
+            OnError(Throwable e) {
                 this.e = e;
             }
 

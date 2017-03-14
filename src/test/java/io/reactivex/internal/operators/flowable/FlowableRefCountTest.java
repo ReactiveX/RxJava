@@ -690,7 +690,7 @@ public class FlowableRefCountTest {
 
         public final Object data;
 
-        public ExceptionData(Object data) {
+        ExceptionData(Object data) {
             this.data = data;
         }
     }
