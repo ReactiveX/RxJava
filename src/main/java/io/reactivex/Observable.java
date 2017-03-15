@@ -6082,7 +6082,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @param mapper the function that maps a sequence of values into a sequence of ObservableSources that will be
      *               eagerly concatenated
      * @param maxConcurrency the maximum number of concurrent subscribed ObservableSources
-     * @param prefetch hints about the number of expected source sequence values
+     * @param prefetch hints about the number of expected values from each inner ObservableSource, must be positive
      * @return the new ObservableSource instance with the specified concatenation behavior
      * @since 2.0
      */

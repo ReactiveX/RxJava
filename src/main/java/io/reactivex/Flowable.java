@@ -6789,7 +6789,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @param mapper the function that maps a sequence of values into a sequence of Publishers that will be
      *               eagerly concatenated
      * @param maxConcurrency the maximum number of concurrent subscribed Publishers
-     * @param prefetch hints about the number of expected source sequence values
+     * @param prefetch hints about the number of expected values from each inner Publisher, must be positive
      * @return the new Publisher instance with the specified concatenation behavior
      * @since 2.0
      */

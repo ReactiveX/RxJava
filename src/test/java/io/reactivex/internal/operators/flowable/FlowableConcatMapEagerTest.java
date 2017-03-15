@@ -542,12 +542,12 @@ public class FlowableConcatMapEagerTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testInvalidCapacityHint() {
+    public void testInvalidMaxConcurrent() {
         Flowable.just(1).concatMapEager(toJust, 0, Flowable.bufferSize());
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testInvalidMaxConcurrent() {
+    public void testInvalidCapacityHint() {
         Flowable.just(1).concatMapEager(toJust, Flowable.bufferSize(), 0);
     }
 
