@@ -129,7 +129,13 @@ public final class OnSubscribeRefCount<T> implements OnSubscribe<T> {
                 // and set the subscriptionCount to 0
                 lock.lock();
                 try {
+
                     if (baseSubscription == currentBase) {
+                        // backdoor into the ConnectableObservable to cleanup and reset its state
+                        if (source instanceof Subscription) {
+                            ((Subscription)source).unsubscribe();
+                        }
+
                         baseSubscription.unsubscribe();
                         baseSubscription = new CompositeSubscription();
                         subscriptionCount.set(0);
@@ -148,7 +154,13 @@ public final class OnSubscribeRefCount<T> implements OnSubscribe<T> {
                 lock.lock();
                 try {
                     if (baseSubscription == current) {
+
                         if (subscriptionCount.decrementAndGet() == 0) {
+                            // backdoor into the ConnectableObservable to cleanup and reset its state
+                            if (source instanceof Subscription) {
+                                ((Subscription)source).unsubscribe();
+                            }
+
                             baseSubscription.unsubscribe();
                             // need a new baseSubscription because once
                             // unsubscribed stays that way
