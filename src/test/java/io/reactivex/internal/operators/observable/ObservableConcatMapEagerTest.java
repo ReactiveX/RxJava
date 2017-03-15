@@ -509,12 +509,12 @@ public class ObservableConcatMapEagerTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testInvalidCapacityHint() {
+    public void testInvalidMaxConcurrent() {
         Observable.just(1).concatMapEager(toJust, 0, Observable.bufferSize());
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testInvalidMaxConcurrent() {
+    public void testInvalidCapacityHint() {
         Observable.just(1).concatMapEager(toJust, Observable.bufferSize(), 0);
     }
 
