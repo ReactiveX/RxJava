@@ -2427,8 +2427,8 @@ public class ObservableNullTests {
         just1.toSortedList(null);
     }
 
-    @Test
-    public void toMapKeyNullAllowed() {
+    @Test(expected = NullPointerException.class)
+    public void toMapKeyNull() {
         just1.toMap(null);
     }
 
