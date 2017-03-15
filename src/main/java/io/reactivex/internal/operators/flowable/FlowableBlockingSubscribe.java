@@ -18,7 +18,7 @@ import java.util.concurrent.*;
 import org.reactivestreams.*;
 
 import io.reactivex.functions.*;
-import io.reactivex.internal.functions.Functions;
+import io.reactivex.internal.functions.*;
 import io.reactivex.internal.subscribers.*;
 import io.reactivex.internal.util.*;
 
@@ -103,6 +103,9 @@ public final class FlowableBlockingSubscribe {
      */
     public static <T> void subscribe(Publisher<? extends T> o, final Consumer<? super T> onNext,
             final Consumer<? super Throwable> onError, final Action onComplete) {
+        ObjectHelper.requireNonNull(onNext, "onNext is null");
+        ObjectHelper.requireNonNull(onError, "onError is null");
+        ObjectHelper.requireNonNull(onComplete, "onComplete is null");
         subscribe(o, new LambdaSubscriber<T>(onNext, onError, onComplete, Functions.REQUEST_MAX));
     }
 }

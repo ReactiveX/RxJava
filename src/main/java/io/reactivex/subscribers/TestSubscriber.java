@@ -118,6 +118,9 @@ implements FlowableSubscriber<T>, Subscription, Disposable {
      */
     public TestSubscriber(Subscriber<? super T> actual, long initialRequest) {
         super();
+        if (initialRequest < 0) {
+            throw new IllegalArgumentException("Negative initial request not allowed");
+        }
         this.actual = actual;
         this.subscription = new AtomicReference<Subscription>();
         this.missedRequested = new AtomicLong(initialRequest);

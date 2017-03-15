@@ -371,6 +371,8 @@ public abstract class Observable<T> implements ObservableSource<T> {
     public static <T1, T2, R> Observable<R> combineLatest(
             ObservableSource<? extends T1> source1, ObservableSource<? extends T2> source2,
             BiFunction<? super T1, ? super T2, ? extends R> combiner) {
+        ObjectHelper.requireNonNull(source1, "source1 is null");
+        ObjectHelper.requireNonNull(source2, "source2 is null");
         return combineLatest(Functions.toFunction(combiner), bufferSize(), source1, source2);
     }
 
@@ -412,6 +414,9 @@ public abstract class Observable<T> implements ObservableSource<T> {
             ObservableSource<? extends T1> source1, ObservableSource<? extends T2> source2,
             ObservableSource<? extends T3> source3,
             Function3<? super T1, ? super T2, ? super T3, ? extends R> combiner) {
+        ObjectHelper.requireNonNull(source1, "source1 is null");
+        ObjectHelper.requireNonNull(source2, "source2 is null");
+        ObjectHelper.requireNonNull(source3, "source3 is null");
         return combineLatest(Functions.toFunction(combiner), bufferSize(), source1, source2, source3);
     }
 
@@ -456,6 +461,10 @@ public abstract class Observable<T> implements ObservableSource<T> {
             ObservableSource<? extends T1> source1, ObservableSource<? extends T2> source2,
             ObservableSource<? extends T3> source3, ObservableSource<? extends T4> source4,
             Function4<? super T1, ? super T2, ? super T3, ? super T4, ? extends R> combiner) {
+        ObjectHelper.requireNonNull(source1, "source1 is null");
+        ObjectHelper.requireNonNull(source2, "source2 is null");
+        ObjectHelper.requireNonNull(source3, "source3 is null");
+        ObjectHelper.requireNonNull(source4, "source4 is null");
         return combineLatest(Functions.toFunction(combiner), bufferSize(), source1, source2, source3, source4);
     }
 
@@ -504,6 +513,11 @@ public abstract class Observable<T> implements ObservableSource<T> {
             ObservableSource<? extends T3> source3, ObservableSource<? extends T4> source4,
             ObservableSource<? extends T5> source5,
             Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? extends R> combiner) {
+        ObjectHelper.requireNonNull(source1, "source1 is null");
+        ObjectHelper.requireNonNull(source2, "source2 is null");
+        ObjectHelper.requireNonNull(source3, "source3 is null");
+        ObjectHelper.requireNonNull(source4, "source4 is null");
+        ObjectHelper.requireNonNull(source5, "source5 is null");
         return combineLatest(Functions.toFunction(combiner), bufferSize(), source1, source2, source3, source4, source5);
     }
 
@@ -555,6 +569,12 @@ public abstract class Observable<T> implements ObservableSource<T> {
             ObservableSource<? extends T3> source3, ObservableSource<? extends T4> source4,
             ObservableSource<? extends T5> source5, ObservableSource<? extends T6> source6,
             Function6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? extends R> combiner) {
+        ObjectHelper.requireNonNull(source1, "source1 is null");
+        ObjectHelper.requireNonNull(source2, "source2 is null");
+        ObjectHelper.requireNonNull(source3, "source3 is null");
+        ObjectHelper.requireNonNull(source4, "source4 is null");
+        ObjectHelper.requireNonNull(source5, "source5 is null");
+        ObjectHelper.requireNonNull(source6, "source6 is null");
         return combineLatest(Functions.toFunction(combiner), bufferSize(), source1, source2, source3, source4, source5, source6);
     }
 
@@ -610,6 +630,13 @@ public abstract class Observable<T> implements ObservableSource<T> {
             ObservableSource<? extends T5> source5, ObservableSource<? extends T6> source6,
             ObservableSource<? extends T7> source7,
             Function7<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? extends R> combiner) {
+        ObjectHelper.requireNonNull(source1, "source1 is null");
+        ObjectHelper.requireNonNull(source2, "source2 is null");
+        ObjectHelper.requireNonNull(source3, "source3 is null");
+        ObjectHelper.requireNonNull(source4, "source4 is null");
+        ObjectHelper.requireNonNull(source5, "source5 is null");
+        ObjectHelper.requireNonNull(source6, "source6 is null");
+        ObjectHelper.requireNonNull(source7, "source7 is null");
         return combineLatest(Functions.toFunction(combiner), bufferSize(), source1, source2, source3, source4, source5, source6, source7);
     }
 
@@ -668,6 +695,14 @@ public abstract class Observable<T> implements ObservableSource<T> {
             ObservableSource<? extends T5> source5, ObservableSource<? extends T6> source6,
             ObservableSource<? extends T7> source7, ObservableSource<? extends T8> source8,
             Function8<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? extends R> combiner) {
+        ObjectHelper.requireNonNull(source1, "source1 is null");
+        ObjectHelper.requireNonNull(source2, "source2 is null");
+        ObjectHelper.requireNonNull(source3, "source3 is null");
+        ObjectHelper.requireNonNull(source4, "source4 is null");
+        ObjectHelper.requireNonNull(source5, "source5 is null");
+        ObjectHelper.requireNonNull(source6, "source6 is null");
+        ObjectHelper.requireNonNull(source7, "source7 is null");
+        ObjectHelper.requireNonNull(source8, "source8 is null");
         return combineLatest(Functions.toFunction(combiner), bufferSize(), source1, source2, source3, source4, source5, source6, source7, source8);
     }
 
@@ -730,6 +765,15 @@ public abstract class Observable<T> implements ObservableSource<T> {
             ObservableSource<? extends T7> source7, ObservableSource<? extends T8> source8,
             ObservableSource<? extends T9> source9,
             Function9<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? super T9, ? extends R> combiner) {
+        ObjectHelper.requireNonNull(source1, "source1 is null");
+        ObjectHelper.requireNonNull(source2, "source2 is null");
+        ObjectHelper.requireNonNull(source3, "source3 is null");
+        ObjectHelper.requireNonNull(source4, "source4 is null");
+        ObjectHelper.requireNonNull(source5, "source5 is null");
+        ObjectHelper.requireNonNull(source6, "source6 is null");
+        ObjectHelper.requireNonNull(source7, "source7 is null");
+        ObjectHelper.requireNonNull(source8, "source8 is null");
+        ObjectHelper.requireNonNull(source9, "source9 is null");
         return combineLatest(Functions.toFunction(combiner), bufferSize(), source1, source2, source3, source4, source5, source6, source7, source8, source9);
     }
 
@@ -1012,6 +1056,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Observable<T> concat(ObservableSource<? extends ObservableSource<? extends T>> sources, int prefetch) {
         ObjectHelper.requireNonNull(sources, "sources is null");
+        ObjectHelper.verifyPositive(prefetch, "prefetch");
         return RxJavaPlugins.onAssembly(new ObservableConcatMap(sources, Functions.identity(), prefetch, ErrorMode.IMMEDIATE));
     }
 
@@ -1038,6 +1083,8 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Observable<T> concat(ObservableSource<? extends T> source1, ObservableSource<? extends T> source2) {
+        ObjectHelper.requireNonNull(source1, "source1 is null");
+        ObjectHelper.requireNonNull(source2, "source2 is null");
         return concatArray(source1, source2);
     }
 
@@ -1068,6 +1115,9 @@ public abstract class Observable<T> implements ObservableSource<T> {
     public static <T> Observable<T> concat(
             ObservableSource<? extends T> source1, ObservableSource<? extends T> source2,
             ObservableSource<? extends T> source3) {
+        ObjectHelper.requireNonNull(source1, "source1 is null");
+        ObjectHelper.requireNonNull(source2, "source2 is null");
+        ObjectHelper.requireNonNull(source3, "source3 is null");
         return concatArray(source1, source2, source3);
     }
 
@@ -1100,6 +1150,10 @@ public abstract class Observable<T> implements ObservableSource<T> {
     public static <T> Observable<T> concat(
             ObservableSource<? extends T> source1, ObservableSource<? extends T> source2,
             ObservableSource<? extends T> source3, ObservableSource<? extends T> source4) {
+        ObjectHelper.requireNonNull(source1, "source1 is null");
+        ObjectHelper.requireNonNull(source2, "source2 is null");
+        ObjectHelper.requireNonNull(source3, "source3 is null");
+        ObjectHelper.requireNonNull(source4, "source4 is null");
         return concatArray(source1, source2, source3, source4);
     }
 
@@ -1268,6 +1322,8 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Observable<T> concatDelayError(ObservableSource<? extends ObservableSource<? extends T>> sources, int prefetch, boolean tillTheEnd) {
+        ObjectHelper.requireNonNull(sources, "sources is null");
+        ObjectHelper.verifyPositive(prefetch, "prefetch is null");
         return RxJavaPlugins.onAssembly(new ObservableConcatMap(sources, Functions.identity(), prefetch, tillTheEnd ? ErrorMode.END : ErrorMode.BOUNDARY));
     }
 
@@ -1318,6 +1374,8 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Observable<T> concatEager(ObservableSource<? extends ObservableSource<? extends T>> sources, int maxConcurrency, int prefetch) {
+        ObjectHelper.requireNonNull(maxConcurrency, "maxConcurrency is null");
+        ObjectHelper.requireNonNull(prefetch, "prefetch is null");
         return wrap(sources).concatMapEager((Function)Functions.identity(), maxConcurrency, prefetch);
     }
 
@@ -1368,6 +1426,8 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Observable<T> concatEager(Iterable<? extends ObservableSource<? extends T>> sources, int maxConcurrency, int prefetch) {
+        ObjectHelper.requireNonNull(maxConcurrency, "maxConcurrency is null");
+        ObjectHelper.requireNonNull(prefetch, "prefetch is null");
         return fromIterable(sources).concatMapEagerDelayError((Function)Functions.identity(), maxConcurrency, prefetch, false);
     }
 
@@ -2617,6 +2677,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public static <T> Observable<T> merge(ObservableSource<? extends ObservableSource<? extends T>> sources) {
+        ObjectHelper.requireNonNull(sources, "sources is null");
         return RxJavaPlugins.onAssembly(new ObservableFlatMap(sources, Functions.identity(), false, Integer.MAX_VALUE, bufferSize()));
     }
 
@@ -2650,6 +2711,8 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Observable<T> merge(ObservableSource<? extends ObservableSource<? extends T>> sources, int maxConcurrency) {
+        ObjectHelper.requireNonNull(sources, "sources is null");
+        ObjectHelper.verifyPositive(maxConcurrency, "maxConcurrency");
         return RxJavaPlugins.onAssembly(new ObservableFlatMap(sources, Functions.identity(), false, maxConcurrency, bufferSize()));
     }
 
@@ -2943,6 +3006,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public static <T> Observable<T> mergeDelayError(ObservableSource<? extends ObservableSource<? extends T>> sources) {
+        ObjectHelper.requireNonNull(sources, "sources is null");
         return RxJavaPlugins.onAssembly(new ObservableFlatMap(sources, Functions.identity(), true, Integer.MAX_VALUE, bufferSize()));
     }
 
@@ -2979,6 +3043,8 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Observable<T> mergeDelayError(ObservableSource<? extends ObservableSource<? extends T>> sources, int maxConcurrency) {
+        ObjectHelper.requireNonNull(sources, "sources is null");
+        ObjectHelper.verifyPositive(maxConcurrency, "maxConcurrency");
         return RxJavaPlugins.onAssembly(new ObservableFlatMap(sources, Functions.identity(), true, maxConcurrency, bufferSize()));
     }
 
@@ -3385,6 +3451,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Observable<T> switchOnNext(ObservableSource<? extends ObservableSource<? extends T>> sources, int bufferSize) {
         ObjectHelper.requireNonNull(sources, "sources is null");
+        ObjectHelper.verifyPositive(bufferSize, "bufferSize");
         return RxJavaPlugins.onAssembly(new ObservableSwitchMap(sources, Functions.identity(), bufferSize, false));
     }
 
@@ -3809,6 +3876,8 @@ public abstract class Observable<T> implements ObservableSource<T> {
     public static <T1, T2, R> Observable<R> zip(
             ObservableSource<? extends T1> source1, ObservableSource<? extends T2> source2,
             BiFunction<? super T1, ? super T2, ? extends R> zipper) {
+        ObjectHelper.requireNonNull(source1, "source1 is null");
+        ObjectHelper.requireNonNull(source2, "source2 is null");
         return zipArray(Functions.toFunction(zipper), false, bufferSize(), source1, source2);
     }
 
@@ -3863,6 +3932,8 @@ public abstract class Observable<T> implements ObservableSource<T> {
     public static <T1, T2, R> Observable<R> zip(
             ObservableSource<? extends T1> source1, ObservableSource<? extends T2> source2,
             BiFunction<? super T1, ? super T2, ? extends R> zipper, boolean delayError) {
+        ObjectHelper.requireNonNull(source1, "source1 is null");
+        ObjectHelper.requireNonNull(source2, "source2 is null");
         return zipArray(Functions.toFunction(zipper), delayError, bufferSize(), source1, source2);
     }
 
@@ -3918,6 +3989,8 @@ public abstract class Observable<T> implements ObservableSource<T> {
     public static <T1, T2, R> Observable<R> zip(
             ObservableSource<? extends T1> source1, ObservableSource<? extends T2> source2,
             BiFunction<? super T1, ? super T2, ? extends R> zipper, boolean delayError, int bufferSize) {
+        ObjectHelper.requireNonNull(source1, "source1 is null");
+        ObjectHelper.requireNonNull(source2, "source2 is null");
         return zipArray(Functions.toFunction(zipper), delayError, bufferSize, source1, source2);
     }
 
@@ -3975,6 +4048,9 @@ public abstract class Observable<T> implements ObservableSource<T> {
     public static <T1, T2, T3, R> Observable<R> zip(
             ObservableSource<? extends T1> source1, ObservableSource<? extends T2> source2, ObservableSource<? extends T3> source3,
             Function3<? super T1, ? super T2, ? super T3, ? extends R> zipper) {
+        ObjectHelper.requireNonNull(source1, "source1 is null");
+        ObjectHelper.requireNonNull(source2, "source2 is null");
+        ObjectHelper.requireNonNull(source3, "source3 is null");
         return zipArray(Functions.toFunction(zipper), false, bufferSize(), source1, source2, source3);
     }
 
@@ -4036,6 +4112,10 @@ public abstract class Observable<T> implements ObservableSource<T> {
             ObservableSource<? extends T1> source1, ObservableSource<? extends T2> source2, ObservableSource<? extends T3> source3,
             ObservableSource<? extends T4> source4,
             Function4<? super T1, ? super T2, ? super T3, ? super T4, ? extends R> zipper) {
+        ObjectHelper.requireNonNull(source1, "source1 is null");
+        ObjectHelper.requireNonNull(source2, "source2 is null");
+        ObjectHelper.requireNonNull(source3, "source3 is null");
+        ObjectHelper.requireNonNull(source4, "source4 is null");
         return zipArray(Functions.toFunction(zipper), false, bufferSize(), source1, source2, source3, source4);
     }
 
@@ -4100,6 +4180,11 @@ public abstract class Observable<T> implements ObservableSource<T> {
             ObservableSource<? extends T1> source1, ObservableSource<? extends T2> source2, ObservableSource<? extends T3> source3,
             ObservableSource<? extends T4> source4, ObservableSource<? extends T5> source5,
             Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? extends R> zipper) {
+        ObjectHelper.requireNonNull(source1, "source1 is null");
+        ObjectHelper.requireNonNull(source2, "source2 is null");
+        ObjectHelper.requireNonNull(source3, "source3 is null");
+        ObjectHelper.requireNonNull(source4, "source4 is null");
+        ObjectHelper.requireNonNull(source5, "source5 is null");
         return zipArray(Functions.toFunction(zipper), false, bufferSize(), source1, source2, source3, source4, source5);
     }
 
@@ -4166,6 +4251,12 @@ public abstract class Observable<T> implements ObservableSource<T> {
             ObservableSource<? extends T1> source1, ObservableSource<? extends T2> source2, ObservableSource<? extends T3> source3,
             ObservableSource<? extends T4> source4, ObservableSource<? extends T5> source5, ObservableSource<? extends T6> source6,
             Function6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? extends R> zipper) {
+        ObjectHelper.requireNonNull(source1, "source1 is null");
+        ObjectHelper.requireNonNull(source2, "source2 is null");
+        ObjectHelper.requireNonNull(source3, "source3 is null");
+        ObjectHelper.requireNonNull(source4, "source4 is null");
+        ObjectHelper.requireNonNull(source5, "source5 is null");
+        ObjectHelper.requireNonNull(source6, "source6 is null");
         return zipArray(Functions.toFunction(zipper), false, bufferSize(), source1, source2, source3, source4, source5, source6);
     }
 
@@ -4236,6 +4327,13 @@ public abstract class Observable<T> implements ObservableSource<T> {
             ObservableSource<? extends T4> source4, ObservableSource<? extends T5> source5, ObservableSource<? extends T6> source6,
             ObservableSource<? extends T7> source7,
             Function7<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? extends R> zipper) {
+        ObjectHelper.requireNonNull(source1, "source1 is null");
+        ObjectHelper.requireNonNull(source2, "source2 is null");
+        ObjectHelper.requireNonNull(source3, "source3 is null");
+        ObjectHelper.requireNonNull(source4, "source4 is null");
+        ObjectHelper.requireNonNull(source5, "source5 is null");
+        ObjectHelper.requireNonNull(source6, "source6 is null");
+        ObjectHelper.requireNonNull(source7, "source7 is null");
         return zipArray(Functions.toFunction(zipper), false, bufferSize(), source1, source2, source3, source4, source5, source6, source7);
     }
 
@@ -4309,6 +4407,14 @@ public abstract class Observable<T> implements ObservableSource<T> {
             ObservableSource<? extends T4> source4, ObservableSource<? extends T5> source5, ObservableSource<? extends T6> source6,
             ObservableSource<? extends T7> source7, ObservableSource<? extends T8> source8,
             Function8<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? extends R> zipper) {
+        ObjectHelper.requireNonNull(source1, "source1 is null");
+        ObjectHelper.requireNonNull(source2, "source2 is null");
+        ObjectHelper.requireNonNull(source3, "source3 is null");
+        ObjectHelper.requireNonNull(source4, "source4 is null");
+        ObjectHelper.requireNonNull(source5, "source5 is null");
+        ObjectHelper.requireNonNull(source6, "source6 is null");
+        ObjectHelper.requireNonNull(source7, "source7 is null");
+        ObjectHelper.requireNonNull(source8, "source8 is null");
         return zipArray(Functions.toFunction(zipper), false, bufferSize(), source1, source2, source3, source4, source5, source6, source7, source8);
     }
 
@@ -4385,6 +4491,15 @@ public abstract class Observable<T> implements ObservableSource<T> {
             ObservableSource<? extends T4> source4, ObservableSource<? extends T5> source5, ObservableSource<? extends T6> source6,
             ObservableSource<? extends T7> source7, ObservableSource<? extends T8> source8, ObservableSource<? extends T9> source9,
             Function9<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? super T9, ? extends R> zipper) {
+        ObjectHelper.requireNonNull(source1, "source1 is null");
+        ObjectHelper.requireNonNull(source2, "source2 is null");
+        ObjectHelper.requireNonNull(source3, "source3 is null");
+        ObjectHelper.requireNonNull(source4, "source4 is null");
+        ObjectHelper.requireNonNull(source5, "source5 is null");
+        ObjectHelper.requireNonNull(source6, "source6 is null");
+        ObjectHelper.requireNonNull(source7, "source7 is null");
+        ObjectHelper.requireNonNull(source8, "source8 is null");
+        ObjectHelper.requireNonNull(source9, "source9 is null");
         return zipArray(Functions.toFunction(zipper), false, bufferSize(), source1, source2, source3, source4, source5, source6, source7, source8, source9);
     }
 
@@ -5490,6 +5605,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <B> Observable<List<T>> buffer(ObservableSource<B> boundary, final int initialCapacity) {
+        ObjectHelper.verifyPositive(initialCapacity, "initialCapacity");
         return buffer(boundary, Functions.<T>createArrayList(initialCapacity));
     }
 
@@ -5915,6 +6031,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> Observable<R> concatMapDelayError(Function<? super T, ? extends ObservableSource<? extends R>> mapper,
             int prefetch, boolean tillTheEnd) {
+        ObjectHelper.requireNonNull(mapper, "mapper is null");
         ObjectHelper.verifyPositive(prefetch, "prefetch");
         if (this instanceof ScalarCallable) {
             @SuppressWarnings("unchecked")
@@ -6034,6 +6151,9 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> Observable<R> concatMapEagerDelayError(Function<? super T, ? extends ObservableSource<? extends R>> mapper,
             int maxConcurrency, int prefetch, boolean tillTheEnd) {
+        ObjectHelper.requireNonNull(mapper, "mapper is null");
+        ObjectHelper.verifyPositive(maxConcurrency, "maxConcurrency");
+        ObjectHelper.verifyPositive(prefetch, "prefetch");
         return RxJavaPlugins.onAssembly(new ObservableConcatMapEager<T, R>(this, mapper, tillTheEnd ? ErrorMode.END : ErrorMode.BOUNDARY, maxConcurrency, prefetch));
     }
 
@@ -6087,6 +6207,8 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <U> Observable<U> concatMapIterable(final Function<? super T, ? extends Iterable<? extends U>> mapper, int prefetch) {
+        ObjectHelper.requireNonNull(mapper, "mapper is null");
+        ObjectHelper.verifyPositive(prefetch, "prefetch");
         return concatMap(ObservableInternalHelper.flatMapIntoIterable(mapper), prefetch);
     }
 
@@ -7681,6 +7803,8 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <U, V> Observable<V> flatMapIterable(final Function<? super T, ? extends Iterable<? extends U>> mapper,
             BiFunction<? super T, ? super U, ? extends V> resultSelector) {
+        ObjectHelper.requireNonNull(mapper, "mapper is null");
+        ObjectHelper.requireNonNull(resultSelector, "resultSelector is null");
         return flatMap(ObservableInternalHelper.flatMapIntoIterable(mapper), resultSelector, false, bufferSize(), bufferSize());
     }
 
@@ -8112,6 +8236,10 @@ public abstract class Observable<T> implements ObservableSource<T> {
             Function<? super TRight, ? extends ObservableSource<TRightEnd>> rightEnd,
             BiFunction<? super T, ? super Observable<TRight>, ? extends R> resultSelector
                     ) {
+        ObjectHelper.requireNonNull(other, "other is null");
+        ObjectHelper.requireNonNull(leftEnd, "leftEnd is null");
+        ObjectHelper.requireNonNull(rightEnd, "rightEnd is null");
+        ObjectHelper.requireNonNull(resultSelector, "resultSelector is null");
         return RxJavaPlugins.onAssembly(new ObservableGroupJoin<T, TRight, TLeftEnd, TRightEnd, R>(
                 this, other, leftEnd, rightEnd, resultSelector));
     }
@@ -8213,6 +8341,10 @@ public abstract class Observable<T> implements ObservableSource<T> {
             Function<? super TRight, ? extends ObservableSource<TRightEnd>> rightEnd,
             BiFunction<? super T, ? super TRight, ? extends R> resultSelector
                     ) {
+        ObjectHelper.requireNonNull(other, "other is null");
+        ObjectHelper.requireNonNull(leftEnd, "leftEnd is null");
+        ObjectHelper.requireNonNull(rightEnd, "rightEnd is null");
+        ObjectHelper.requireNonNull(resultSelector, "resultSelector is null");
         return RxJavaPlugins.onAssembly(new ObservableJoin<T, TRight, TLeftEnd, TRightEnd, R>(
                 this, other, leftEnd, rightEnd, resultSelector));
     }
@@ -9046,6 +9178,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> Observable<R> replay(Function<? super Observable<T>, ? extends ObservableSource<R>> selector, final int bufferSize) {
         ObjectHelper.requireNonNull(selector, "selector is null");
+        ObjectHelper.verifyPositive(bufferSize, "bufferSize");
         return ObservableReplay.multicastSelector(ObservableInternalHelper.replayCallable(this, bufferSize), selector);
     }
 
@@ -9118,8 +9251,10 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.CUSTOM)
     public final <R> Observable<R> replay(Function<? super Observable<T>, ? extends ObservableSource<R>> selector, final int bufferSize, final long time, final TimeUnit unit, final Scheduler scheduler) {
-        ObjectHelper.verifyPositive(bufferSize, "bufferSize");
         ObjectHelper.requireNonNull(selector, "selector is null");
+        ObjectHelper.verifyPositive(bufferSize, "bufferSize");
+        ObjectHelper.requireNonNull(unit, "unit is null");
+        ObjectHelper.requireNonNull(scheduler, "scheduler is null");
         return ObservableReplay.multicastSelector(
                 ObservableInternalHelper.replayCallable(this, bufferSize, time, unit, scheduler), selector);
     }
@@ -9152,6 +9287,9 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.CUSTOM)
     public final <R> Observable<R> replay(final Function<? super Observable<T>, ? extends ObservableSource<R>> selector, final int bufferSize, final Scheduler scheduler) {
+        ObjectHelper.requireNonNull(selector, "selector is null");
+        ObjectHelper.requireNonNull(scheduler, "scheduler is null");
+        ObjectHelper.verifyPositive(bufferSize, "bufferSize");
         return ObservableReplay.multicastSelector(ObservableInternalHelper.replayCallable(this, bufferSize),
                 ObservableInternalHelper.replayFunction(selector, scheduler));
     }
@@ -9275,6 +9413,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final ConnectableObservable<T> replay(final int bufferSize) {
+        ObjectHelper.verifyPositive(bufferSize, "bufferSize");
         return ObservableReplay.create(this, bufferSize);
     }
 
@@ -9366,6 +9505,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.CUSTOM)
     public final ConnectableObservable<T> replay(final int bufferSize, final Scheduler scheduler) {
+        ObjectHelper.verifyPositive(bufferSize, "bufferSize");
         return ObservableReplay.observeOn(replay(bufferSize), scheduler);
     }
 
@@ -10443,6 +10583,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Observable<T> sorted(Comparator<? super T> sortFunction) {
+        ObjectHelper.requireNonNull(sortFunction, "sortFunction is null");
         return toList().toObservable().map(Functions.listSorter(sortFunction)).flatMapIterable(Functions.<List<T>>identity());
     }
 
@@ -12208,6 +12349,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <K> Single<Map<K, T>> toMap(final Function<? super T, ? extends K> keySelector) {
+        ObjectHelper.requireNonNull(keySelector, "keySelector is null");
         return collect(HashMapSupplier.<K, T>asCallable(), Functions.toMapKeySelector(keySelector));
     }
 
@@ -12272,6 +12414,10 @@ public abstract class Observable<T> implements ObservableSource<T> {
             final Function<? super T, ? extends K> keySelector,
             final Function<? super T, ? extends V> valueSelector,
             Callable<? extends Map<K, V>> mapSupplier) {
+        ObjectHelper.requireNonNull(keySelector, "keySelector is null");
+        ObjectHelper.requireNonNull(keySelector, "keySelector is null");
+        ObjectHelper.requireNonNull(valueSelector, "valueSelector is null");
+        ObjectHelper.requireNonNull(mapSupplier, "mapSupplier is null");
         return collect(mapSupplier, Functions.toMapKeyValueSelector(keySelector, valueSelector));
     }
 
@@ -13028,6 +13174,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <B> Observable<Observable<T>> window(ObservableSource<B> boundary, int bufferSize) {
         ObjectHelper.requireNonNull(boundary, "boundary is null");
+        ObjectHelper.verifyPositive(bufferSize, "bufferSize");
         return RxJavaPlugins.onAssembly(new ObservableWindowBoundary<T, B>(this, boundary, bufferSize));
     }
 
@@ -13094,6 +13241,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
             Function<? super U, ? extends ObservableSource<V>> closingIndicator, int bufferSize) {
         ObjectHelper.requireNonNull(openingIndicator, "openingIndicator is null");
         ObjectHelper.requireNonNull(closingIndicator, "closingIndicator is null");
+        ObjectHelper.verifyPositive(bufferSize, "bufferSize");
         return RxJavaPlugins.onAssembly(new ObservableWindowBoundarySelector<T, U, V>(this, openingIndicator, closingIndicator, bufferSize));
     }
 
@@ -13150,6 +13298,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <B> Observable<Observable<T>> window(Callable<? extends ObservableSource<B>> boundary, int bufferSize) {
         ObjectHelper.requireNonNull(boundary, "boundary is null");
+        ObjectHelper.verifyPositive(bufferSize, "bufferSize");
         return RxJavaPlugins.onAssembly(new ObservableWindowBoundarySupplier<T, B>(this, boundary, bufferSize));
     }
 
