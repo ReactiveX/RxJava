@@ -421,10 +421,12 @@ public final class FlowableFlatMap<T, U> extends AbstractFlowableWithUpstream<T,
 
                 if (d && (svq == null || svq.isEmpty()) && n == 0) {
                     Throwable ex = errs.terminate();
-                    if (ex == null) {
-                        child.onComplete();
-                    } else {
-                        child.onError(ex);
+                    if (ex != ExceptionHelper.TERMINATED) {
+                        if (ex == null) {
+                            child.onComplete();
+                        } else {
+                            child.onError(ex);
+                        }
                     }
                     return;
                 }
@@ -556,7 +558,10 @@ public final class FlowableFlatMap<T, U> extends AbstractFlowableWithUpstream<T,
             }
             if (!delayErrors && errs.get() != null) {
                 clearScalarQueue();
-                actual.onError(errs.terminate());
+                Throwable ex = errs.terminate();
+                if (ex != ExceptionHelper.TERMINATED) {
+                    actual.onError(ex);
+                }
                 return true;
             }
             return false;
