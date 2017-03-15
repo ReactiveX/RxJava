@@ -17,7 +17,7 @@ import java.util.concurrent.*;
 
 import io.reactivex.*;
 import io.reactivex.functions.*;
-import io.reactivex.internal.functions.Functions;
+import io.reactivex.internal.functions.*;
 import io.reactivex.internal.observers.*;
 import io.reactivex.internal.util.*;
 
@@ -97,6 +97,9 @@ public final class ObservableBlockingSubscribe {
      */
     public static <T> void subscribe(ObservableSource<? extends T> o, final Consumer<? super T> onNext,
             final Consumer<? super Throwable> onError, final Action onComplete) {
+        ObjectHelper.requireNonNull(onNext, "onNext is null");
+        ObjectHelper.requireNonNull(onError, "onError is null");
+        ObjectHelper.requireNonNull(onComplete, "onComplete is null");
         subscribe(o, new LambdaObserver<T>(onNext, onError, onComplete, Functions.emptyConsumer()));
     }
 }

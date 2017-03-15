@@ -142,6 +142,7 @@ public abstract class Single<T> implements SingleSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public static <T> Observable<T> concat(ObservableSource<? extends SingleSource<? extends T>> sources) {
+        ObjectHelper.requireNonNull(sources, "sources is null");
         return RxJavaPlugins.onAssembly(new ObservableConcatMap(sources, SingleInternalHelper.toObservable(), 2, ErrorMode.IMMEDIATE));
     }
 
@@ -685,6 +686,7 @@ public abstract class Single<T> implements SingleSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public static <T> Flowable<T> merge(Publisher<? extends SingleSource<? extends T>> sources) {
+        ObjectHelper.requireNonNull(sources, "sources is null");
         return RxJavaPlugins.onAssembly(new FlowableFlatMapPublisher(sources, SingleInternalHelper.toFlowable(), false, Integer.MAX_VALUE, Flowable.bufferSize()));
     }
 
@@ -1669,6 +1671,7 @@ public abstract class Single<T> implements SingleSource<T> {
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Single<T> delaySubscription(CompletableSource other) {
+        ObjectHelper.requireNonNull(other, "other is null");
         return RxJavaPlugins.onAssembly(new SingleDelayWithCompletable<T>(this, other));
     }
 
@@ -1690,6 +1693,7 @@ public abstract class Single<T> implements SingleSource<T> {
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <U> Single<T> delaySubscription(SingleSource<U> other) {
+        ObjectHelper.requireNonNull(other, "other is null");
         return RxJavaPlugins.onAssembly(new SingleDelayWithSingle<T, U>(this, other));
     }
 
@@ -1711,6 +1715,7 @@ public abstract class Single<T> implements SingleSource<T> {
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <U> Single<T> delaySubscription(ObservableSource<U> other) {
+        ObjectHelper.requireNonNull(other, "other is null");
         return RxJavaPlugins.onAssembly(new SingleDelayWithObservable<T, U>(this, other));
     }
 
@@ -1737,6 +1742,7 @@ public abstract class Single<T> implements SingleSource<T> {
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <U> Single<T> delaySubscription(Publisher<U> other) {
+        ObjectHelper.requireNonNull(other, "other is null");
         return RxJavaPlugins.onAssembly(new SingleDelayWithPublisher<T, U>(this, other));
     }
 
@@ -2059,6 +2065,7 @@ public abstract class Single<T> implements SingleSource<T> {
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <U> Flowable<U> flattenAsFlowable(final Function<? super T, ? extends Iterable<? extends U>> mapper) {
+        ObjectHelper.requireNonNull(mapper, "mapper is null");
         return RxJavaPlugins.onAssembly(new SingleFlatMapIterableFlowable<T, U>(this, mapper));
     }
 
@@ -2082,6 +2089,7 @@ public abstract class Single<T> implements SingleSource<T> {
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <U> Observable<U> flattenAsObservable(final Function<? super T, ? extends Iterable<? extends U>> mapper) {
+        ObjectHelper.requireNonNull(mapper, "mapper is null");
         return RxJavaPlugins.onAssembly(new SingleFlatMapIterableObservable<T, U>(this, mapper));
     }
 
@@ -2197,6 +2205,7 @@ public abstract class Single<T> implements SingleSource<T> {
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> Single<R> map(Function<? super T, ? extends R> mapper) {
+        ObjectHelper.requireNonNull(mapper, "mapper is null");
         return RxJavaPlugins.onAssembly(new SingleMap<T, R>(this, mapper));
     }
 
@@ -2781,6 +2790,7 @@ public abstract class Single<T> implements SingleSource<T> {
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Single<T> takeUntil(final CompletableSource other) {
+        ObjectHelper.requireNonNull(other, "other is null");
         return takeUntil(new CompletableToFlowable<T>(other));
     }
 
@@ -2811,6 +2821,7 @@ public abstract class Single<T> implements SingleSource<T> {
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <E> Single<T> takeUntil(final Publisher<E> other) {
+        ObjectHelper.requireNonNull(other, "other is null");
         return RxJavaPlugins.onAssembly(new SingleTakeUntil<T, E>(this, other));
     }
 
@@ -2835,6 +2846,7 @@ public abstract class Single<T> implements SingleSource<T> {
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <E> Single<T> takeUntil(final SingleSource<? extends E> other) {
+        ObjectHelper.requireNonNull(other, "other is null");
         return takeUntil(new SingleToFlowable<E>(other));
     }
 

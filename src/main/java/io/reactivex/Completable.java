@@ -929,6 +929,7 @@ public abstract class Completable implements CompletableSource {
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final boolean blockingAwait(long timeout, TimeUnit unit) {
+        ObjectHelper.requireNonNull(unit, "unit is null");
         BlockingMultiObserver<Void> observer = new BlockingMultiObserver<Void>();
         subscribe(observer);
         return observer.blockingAwait(timeout, unit);
