@@ -12,11 +12,11 @@
  */
 package io.reactivex.processors;
 
-import io.reactivex.annotations.CheckReturnValue;
 import java.util.concurrent.atomic.*;
 
 import org.reactivestreams.*;
 
+import io.reactivex.annotations.*;
 import io.reactivex.exceptions.MissingBackpressureException;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.internal.util.BackpressureHelper;
@@ -227,6 +227,39 @@ public final class PublishProcessor<T> extends FlowableProcessor<T> {
         }
     }
 
+    /**
+     * Tries to emit the item to all currently subscribed Subscribers if all of them
+     * has requested some value, returns false otherwise.
+     * <p>
+     * This method should be called in a sequential manner just like the onXXX methods
+     * of the PublishProcessor.
+     * <p>
+     * Calling with null will terminate the PublishProcessor and a NullPointerException
+     * is signalled to the Subscribers.
+     * @param t the item to emit, not null
+     * @return true if the item was emitted to all Subscribers
+     * @since 2.0.8 - experimental
+     */
+    @Experimental
+    public boolean offer(T t) {
+        if (t == null) {
+            onError(new NullPointerException("onNext called with null. Null values are generally not allowed in 2.x operators and sources."));
+            return true;
+        }
+        PublishSubscription<T>[] array = subscribers.get();
+
+        for (PublishSubscription<T> s : array) {
+            if (s.isFull()) {
+                return false;
+            }
+        }
+
+        for (PublishSubscription<T> s : array) {
+            s.onNext(t);
+        }
+        return true;
+    }
+
     @Override
     public boolean hasSubscribers() {
         return subscribers.get().length != 0;
@@ -320,6 +353,10 @@ public final class PublishProcessor<T> extends FlowableProcessor<T> {
 
         public boolean isCancelled() {
             return get() == Long.MIN_VALUE;
+        }
+
+        boolean isFull() {
+            return get() == 0L;
         }
     }
 }

@@ -13,13 +13,13 @@
 
 package io.reactivex.processors;
 
-import io.reactivex.annotations.CheckReturnValue;
 import java.lang.reflect.Array;
 import java.util.concurrent.atomic.*;
 import java.util.concurrent.locks.*;
 
 import org.reactivestreams.*;
 
+import io.reactivex.annotations.*;
 import io.reactivex.exceptions.MissingBackpressureException;
 import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
@@ -215,6 +215,41 @@ public final class BehaviorProcessor<T> extends FlowableProcessor<T> {
         for (BehaviorSubscription<T> bs : terminate(o)) {
             bs.emitNext(o, index);  // relaxed read okay since this is the only mutator thread
         }
+    }
+
+    /**
+     * Tries to emit the item to all currently subscribed Subscribers if all of them
+     * has requested some value, returns false otherwise.
+     * <p>
+     * This method should be called in a sequential manner just like the onXXX methods
+     * of the PublishProcessor.
+     * <p>
+     * Calling with null will terminate the PublishProcessor and a NullPointerException
+     * is signalled to the Subscribers.
+     * @param t the item to emit, not null
+     * @return true if the item was emitted to all Subscribers
+     * @since 2.0.8 - experimental
+     */
+    @Experimental
+    public boolean offer(T t) {
+        if (t == null) {
+            onError(new NullPointerException("onNext called with null. Null values are generally not allowed in 2.x operators and sources."));
+            return true;
+        }
+        BehaviorSubscription<T>[] array = subscribers.get();
+
+        for (BehaviorSubscription<T> s : array) {
+            if (s.isFull()) {
+                return false;
+            }
+        }
+
+        Object o = NotificationLite.next(t);
+        setCurrent(o);
+        for (BehaviorSubscription<T> bs : array) {
+            bs.emitNext(o, index);
+        }
+        return true;
     }
 
     @Override
@@ -537,6 +572,10 @@ public final class BehaviorProcessor<T> extends FlowableProcessor<T> {
 
                 q.forEachWhile(this);
             }
+        }
+
+        public boolean isFull() {
+            return get() == 0L;
         }
     }
 }
