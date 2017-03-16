@@ -49,6 +49,7 @@ public final class UnicastSubject<T> extends Subject<T, T> {
     public static <T> UnicastSubject<T> create() {
         return create(16);
     }
+
     /**
      * Constructs an empty UnicastSubject instance with a capacity hint.
      * <p>The capacity hint determines the internal queue's island size: the larger
@@ -59,7 +60,18 @@ public final class UnicastSubject<T> extends Subject<T, T> {
      * @return the created BufferUntilSubscriber instance
      */
     public static <T> UnicastSubject<T> create(int capacityHint) {
-        State<T> state = new State<T>(capacityHint, null);
+        State<T> state = new State<T>(capacityHint, false, null);
+        return new UnicastSubject<T>(state);
+    }
+
+    /**
+     * Constructs an empty UnicastSubject instance with the default capacity hint of 16 elements.
+     *
+     * @param delayError deliver pending next events before error.
+     * @return the created UnicastSubject instance
+     */
+    public static <T> UnicastSubject<T> create(boolean delayError) {
+        State<T> state = new State<T>(16, delayError, null);
         return new UnicastSubject<T>(state);
     }
 
@@ -78,7 +90,28 @@ public final class UnicastSubject<T> extends Subject<T, T> {
      * @return the created BufferUntilSubscriber instance
      */
     public static <T> UnicastSubject<T> create(int capacityHint, Action0 onTerminated) {
-        State<T> state = new State<T>(capacityHint, onTerminated);
+        State<T> state = new State<T>(capacityHint, false, onTerminated);
+        return new UnicastSubject<T>(state);
+    }
+
+    /**
+     * Constructs an empty UnicastSubject instance with a capacity hint, delay error
+     * flag and Action0 instance to call if the subject reaches its terminal state
+     * or the single Subscriber unsubscribes mid-sequence.
+     * <p>The capacity hint determines the internal queue's island size: the larger
+     * it is the less frequent allocation will happen if there is no subscriber
+     * or the subscriber hasn't caught up.
+     * @param <T> the input and output value type
+     * @param capacityHint the capacity hint for the internal queue
+     * @param onTerminated the optional callback to call when subject reaches its terminal state
+     *                      or the single Subscriber unsubscribes mid-sequence. It will be called
+     *                      at most once.
+     * @param delayError flag indicating whether to deliver pending next events before error.
+     * @return the created BufferUntilSubscriber instance
+     */
+    public static <T> UnicastSubject<T> create(int capacityHint,
+                                               Action0 onTerminated, boolean delayError) {
+        State<T> state = new State<T>(capacityHint, delayError, onTerminated);
         return new UnicastSubject<T>(state);
     }
 
@@ -119,6 +152,8 @@ public final class UnicastSubject<T> extends Subject<T, T> {
         final AtomicReference<Subscriber<? super T>> subscriber;
         /** The queue holding values until the subscriber arrives and catches up. */
         final Queue<Object> queue;
+        /** Deliver pending next events before error. */
+        final boolean delayError;
         /** Atomically set to true on terminal condition. */
         final AtomicReference<Action0> terminateOnce;
         /** In case the source emitted an error. */
@@ -137,10 +172,12 @@ public final class UnicastSubject<T> extends Subject<T, T> {
          * reduce allocation frequency
          * @param onTerminated the action to call when the subject reaches its terminal state or
          * the single subscriber unsubscribes.
+         * @param delayError deliver pending next events before error.
          */
-        public State(int capacityHint, Action0 onTerminated) {
+        public State(int capacityHint, boolean delayError, Action0 onTerminated) {
             this.subscriber = new AtomicReference<Subscriber<? super T>>();
             this.terminateOnce = onTerminated != null ? new AtomicReference<Action0>(onTerminated) : null;
+            this.delayError = delayError;
 
             Queue<Object> q;
             if (capacityHint > 1) {
@@ -272,8 +309,7 @@ public final class UnicastSubject<T> extends Subject<T, T> {
                 if (s != null) {
                     boolean d = done;
                     boolean empty = q.isEmpty();
-
-                    if (checkTerminated(d, empty, s)) {
+                    if (checkTerminated(d, empty, delayError, s)) {
                         return;
                     }
                     long r = get();
@@ -284,7 +320,7 @@ public final class UnicastSubject<T> extends Subject<T, T> {
                         d = done;
                         Object v = q.poll();
                         empty = v == null;
-                        if (checkTerminated(d, empty, s)) {
+                        if (checkTerminated(d, empty, delayError, s)) {
                             return;
                         }
                         if (empty) {
@@ -348,23 +384,28 @@ public final class UnicastSubject<T> extends Subject<T, T> {
          * an error happened or the source terminated and the queue is empty
          * @param done indicates the source has called onCompleted
          * @param empty indicates if there are no more source values in the queue
+         * @param delayError indicates whether to deliver pending next events before error
          * @param s the target Subscriber to emit events to
          * @return true if this Subject reached a terminal state and the drain loop should quit
          */
-        boolean checkTerminated(boolean done, boolean empty, Subscriber<? super T> s) {
+        boolean checkTerminated(boolean done, boolean empty, boolean delayError, Subscriber<? super T> s) {
             if (s.isUnsubscribed()) {
                 queue.clear();
                 return true;
             }
             if (done) {
                 Throwable e = error;
-                if (e != null) {
+                if (e != null && !delayError) {
                     queue.clear();
                     s.onError(e);
                     return true;
-                } else
+                }
                 if (empty) {
-                    s.onCompleted();
+                    if (e != null) {
+                        s.onError(e);
+                    } else {
+                        s.onCompleted();
+                    }
                     return true;
                 }
             }
