@@ -68,7 +68,7 @@ public abstract class ConnectableObservable<T> extends Observable<T> {
      * Returns an {@code Observable} that stays connected to this {@code ConnectableObservable} as long as there
      * is at least one subscription to this {@code ConnectableObservable}.
      *
-     * @return a {@link Flowable}
+     * @return an {@link Observable}
      * @see <a href="http://reactivex.io/documentation/operators/refcount.html">ReactiveX documentation: RefCount</a>
      */
     public Observable<T> refCount() {
