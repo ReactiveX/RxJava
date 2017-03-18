@@ -70,6 +70,32 @@ public class UnicastSubjectTest {
     }
 
     @Test
+    public void failFast() {
+        UnicastSubject<Integer> ap = UnicastSubject.create(false);
+        ap.onNext(1);
+        ap.onError(new RuntimeException());
+        TestObserver<Integer> ts = TestObserver.create();
+        ap.subscribe(ts);
+
+        ts
+                .assertValueCount(0)
+                .assertError(RuntimeException.class);
+    }
+
+    @Test
+    public void fusionOfflineFailFast() {
+        UnicastSubject<Integer> ap = UnicastSubject.create(false);
+        ap.onNext(1);
+        ap.onError(new RuntimeException());
+        TestObserver<Integer> ts = ObserverFusion.newTest(QueueDisposable.ANY);
+        ap.subscribe(ts);
+
+        ts
+                .assertValueCount(0)
+                .assertError(RuntimeException.class);
+    }
+
+    @Test
     public void onTerminateCalledWhenOnError() {
         final AtomicBoolean didRunOnTerminate = new AtomicBoolean();
 
