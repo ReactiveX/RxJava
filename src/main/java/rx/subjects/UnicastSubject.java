@@ -303,6 +303,7 @@ public final class UnicastSubject<T> extends Subject<T, T> {
                 emitting = true;
             }
             Queue<Object> q = queue;
+            boolean delayError = this.delayError;
             for (;;) {
                 Subscriber<? super T> s = subscriber.get();
                 boolean unlimited = false;
