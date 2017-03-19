@@ -13,6 +13,8 @@
 
 package io.reactivex;
 
+import io.reactivex.annotations.*;
+
 /**
  * Interface to map/wrap a downstream observer to an upstream observer.
  */
@@ -23,5 +25,6 @@ public interface CompletableOperator {
      * @return the parent CompletableObserver instance
      * @throws Exception on failure
      */
-    CompletableObserver apply(CompletableObserver observer) throws Exception;
+    @NonNull
+    CompletableObserver apply(@NonNull CompletableObserver observer) throws Exception;
 }

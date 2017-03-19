@@ -13,6 +13,7 @@
 
 package io.reactivex;
 
+import io.reactivex.annotations.*;
 import io.reactivex.disposables.Disposable;
 
 /**
@@ -39,7 +40,7 @@ public interface SingleObserver<T> {
      * be called anytime to cancel the connection
      * @since 2.0
      */
-    void onSubscribe(Disposable d);
+    void onSubscribe(@NonNull Disposable d);
 
     /**
      * Notifies the SingleObserver with a single item and that the {@link Single} has finished sending
@@ -50,7 +51,7 @@ public interface SingleObserver<T> {
      * @param t
      *          the item emitted by the Single
      */
-    void onSuccess(T t);
+    void onSuccess(@NonNull T t);
 
     /**
      * Notifies the SingleObserver that the {@link Single} has experienced an error condition.
@@ -60,5 +61,5 @@ public interface SingleObserver<T> {
      * @param e
      *          the exception encountered by the Single
      */
-    void onError(Throwable e);
+    void onError(@NonNull Throwable e);
 }

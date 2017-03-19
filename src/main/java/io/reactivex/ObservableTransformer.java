@@ -13,6 +13,8 @@
 
 package io.reactivex;
 
+import io.reactivex.annotations.*;
+
 /**
  * Interface to compose Observables.
  *
@@ -26,5 +28,6 @@ public interface ObservableTransformer<Upstream, Downstream> {
      * @param upstream the upstream Observable instance
      * @return the transformed ObservableSource instance
      */
-    ObservableSource<Downstream> apply(Observable<Upstream> upstream);
+    @NonNull
+    ObservableSource<Downstream> apply(@NonNull Observable<Upstream> upstream);
 }

@@ -13,6 +13,7 @@
 
 package io.reactivex;
 
+import io.reactivex.annotations.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Cancellable;
 
@@ -34,14 +35,14 @@ public interface ObservableEmitter<T> extends Emitter<T> {
      * or Cancellation will be unsubscribed/cancelled.
      * @param d the disposable, null is allowed
      */
-    void setDisposable(Disposable d);
+    void setDisposable(@Nullable Disposable d);
 
     /**
      * Sets a Cancellable on this emitter; any previous Disposable
      * or Cancellation will be unsubscribed/cancelled.
      * @param c the cancellable resource, null is allowed
      */
-    void setCancellable(Cancellable c);
+    void setCancellable(@Nullable Cancellable c);
 
     /**
      * Returns true if the downstream disposed the sequence.
@@ -53,5 +54,6 @@ public interface ObservableEmitter<T> extends Emitter<T> {
      * Ensures that calls to onNext, onError and onComplete are properly serialized.
      * @return the serialized ObservableEmitter
      */
+    @NonNull
     ObservableEmitter<T> serialize();
 }

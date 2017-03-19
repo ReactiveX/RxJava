@@ -12,6 +12,8 @@
  */
 package io.reactivex;
 
+import io.reactivex.annotations.*;
+
 /**
  * Represents a basic, non-backpressured {@link Observable} source base interface,
  * consumable via an {@link Observer}.
@@ -26,5 +28,5 @@ public interface ObservableSource<T> {
      * @param observer the Observer, not null
      * @throws NullPointerException if {@code observer} is null
      */
-    void subscribe(Observer<? super T> observer);
+    void subscribe(@NonNull Observer<? super T> observer);
 }
