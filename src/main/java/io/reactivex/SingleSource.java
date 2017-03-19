@@ -12,6 +12,8 @@
  */
 package io.reactivex;
 
+import io.reactivex.annotations.*;
+
 /**
  * Represents a basic {@link Single} source base interface,
  * consumable via an {@link SingleObserver}.
@@ -29,5 +31,5 @@ public interface SingleSource<T> {
      * @param observer the SingleObserver, not null
      * @throws NullPointerException if {@code observer} is null
      */
-    void subscribe(SingleObserver<? super T> observer);
+    void subscribe(@NonNull SingleObserver<? super T> observer);
 }

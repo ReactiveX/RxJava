@@ -12,6 +12,8 @@
  */
 package io.reactivex;
 
+import io.reactivex.annotations.*;
+
 /**
  * A functional interface that has a {@code subscribe()} method that receives
  * an instance of a {@link FlowableEmitter} instance that allows pushing
@@ -26,6 +28,6 @@ public interface FlowableOnSubscribe<T> {
      * @param e the safe emitter instance, never null
      * @throws Exception on error
      */
-    void subscribe(FlowableEmitter<T> e) throws Exception;
+    void subscribe(@NonNull FlowableEmitter<T> e) throws Exception;
 }
 

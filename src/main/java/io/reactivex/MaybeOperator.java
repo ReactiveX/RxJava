@@ -10,8 +10,9 @@
  * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
  * the License for the specific language governing permissions and limitations under the License.
  */
-
 package io.reactivex;
+
+import io.reactivex.annotations.*;
 
 /**
  * Interface to map/wrap a downstream observer to an upstream observer.
@@ -26,5 +27,6 @@ public interface MaybeOperator<Downstream, Upstream> {
      * @return the parent MaybeObserver instance
      * @throws Exception on failure
      */
-    MaybeObserver<? super Upstream> apply(MaybeObserver<? super Downstream> observer) throws Exception;
+    @NonNull
+    MaybeObserver<? super Upstream> apply(@NonNull MaybeObserver<? super Downstream> observer) throws Exception;
 }

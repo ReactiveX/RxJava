@@ -13,9 +13,8 @@
 
 package io.reactivex;
 
+import io.reactivex.annotations.*;
 import org.reactivestreams.*;
-
-import io.reactivex.annotations.Experimental;
 
 /**
  * Represents a Reactive-Streams inspired Subscriber that is RxJava 2 only
@@ -37,5 +36,5 @@ public interface FlowableSubscriber<T> extends Subscriber<T> {
      * {@inheritDoc}
      */
     @Override
-    void onSubscribe(Subscription s);
+    void onSubscribe(@NonNull Subscription s);
 }

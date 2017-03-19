@@ -13,6 +13,7 @@
 
 package io.reactivex;
 
+import io.reactivex.annotations.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Cancellable;
 
@@ -35,21 +36,21 @@ public interface CompletableEmitter {
      * Signal an exception.
      * @param t the exception, not null
      */
-    void onError(Throwable t);
+    void onError(@NonNull Throwable t);
 
     /**
      * Sets a Disposable on this emitter; any previous Disposable
      * or Cancellation will be disposed/cancelled.
      * @param d the disposable, null is allowed
      */
-    void setDisposable(Disposable d);
+    void setDisposable(@Nullable Disposable d);
 
     /**
      * Sets a Cancellable on this emitter; any previous Disposable
      * or Cancellation will be disposed/cancelled.
      * @param c the cancellable resource, null is allowed
      */
-    void setCancellable(Cancellable c);
+    void setCancellable(@Nullable Cancellable c);
 
     /**
      * Returns true if the downstream disposed the sequence.
