@@ -1115,9 +1115,9 @@ public class ParallelFlowableTest {
     public void compose() {
         Flowable.range(1, 5)
         .parallel()
-        .compose(new Function<ParallelFlowable<Integer>, ParallelFlowable<Integer>>() {
+        .compose(new ParallelTransformer<Integer, Integer>() {
             @Override
-            public ParallelFlowable<Integer> apply(ParallelFlowable<Integer> pf) throws Exception {
+            public ParallelFlowable<Integer> apply(ParallelFlowable<Integer> pf) {
                 return pf.map(new Function<Integer, Integer>() {
                     @Override
                     public Integer apply(Integer v) throws Exception {
