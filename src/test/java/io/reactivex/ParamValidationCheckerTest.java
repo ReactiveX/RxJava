@@ -554,6 +554,9 @@ public class ParamValidationCheckerTest {
 
         defaultValues.put(ParallelFlowable.class, ParallelFlowable.from(Flowable.never()));
         defaultValues.put(Subscriber[].class, new Subscriber[] { new AllFunctionals() });
+
+        defaultValues.put(ParallelFailureHandling.class, ParallelFailureHandling.ERROR);
+
         // -----------------------------------------------------------------------------------
 
         defaultInstances = new HashMap<Class<?>, List<Object>>();
