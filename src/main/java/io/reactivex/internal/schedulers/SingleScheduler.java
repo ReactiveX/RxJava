@@ -106,15 +106,16 @@ public final class SingleScheduler extends Scheduler {
     @NonNull
     @Override
     public Disposable scheduleDirect(@NonNull Runnable run, long delay, TimeUnit unit) {
-        Runnable decoratedRun = RxJavaPlugins.onSchedule(run);
+        ScheduledDirectTask task = new ScheduledDirectTask(RxJavaPlugins.onSchedule(run));
         try {
             Future<?> f;
             if (delay <= 0L) {
-                f = executor.get().submit(decoratedRun);
+                f = executor.get().submit(task);
             } else {
-                f = executor.get().schedule(decoratedRun, delay, unit);
+                f = executor.get().schedule(task, delay, unit);
             }
-            return Disposables.fromFuture(f);
+            task.setFuture(f);
+            return task;
         } catch (RejectedExecutionException ex) {
             RxJavaPlugins.onError(ex);
             return EmptyDisposable.INSTANCE;
@@ -124,10 +125,11 @@ public final class SingleScheduler extends Scheduler {
     @NonNull
     @Override
     public Disposable schedulePeriodicallyDirect(@NonNull Runnable run, long initialDelay, long period, TimeUnit unit) {
-        Runnable decoratedRun = RxJavaPlugins.onSchedule(run);
+        ScheduledDirectPeriodicTask task = new ScheduledDirectPeriodicTask(RxJavaPlugins.onSchedule(run));
         try {
-            Future<?> f = executor.get().scheduleAtFixedRate(decoratedRun, initialDelay, period, unit);
-            return Disposables.fromFuture(f);
+            Future<?> f = executor.get().scheduleAtFixedRate(task, initialDelay, period, unit);
+            task.setFuture(f);
+            return task;
         } catch (RejectedExecutionException ex) {
             RxJavaPlugins.onError(ex);
             return EmptyDisposable.INSTANCE;

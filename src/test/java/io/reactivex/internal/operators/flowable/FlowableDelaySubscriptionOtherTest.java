@@ -12,6 +12,7 @@
  */
 package io.reactivex.internal.operators.flowable;
 
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 
 import org.junit.*;
@@ -21,6 +22,7 @@ import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.*;
 import io.reactivex.processors.PublishProcessor;
+import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.TestSubscriber;
 
 public class FlowableDelaySubscriptionOtherTest {
@@ -318,5 +320,31 @@ public class FlowableDelaySubscriptionOtherTest {
                 return Flowable.just(1).delaySubscription(o);
             }
         }, false, 1, 1, 1);
+    }
+
+    @Test
+    public void afterDelayNoInterrupt() {
+        ScheduledExecutorService exec = Executors.newSingleThreadScheduledExecutor();
+        try {
+            for (Scheduler s : new Scheduler[] { Schedulers.single(), Schedulers.computation(), Schedulers.newThread(), Schedulers.io(), Schedulers.from(exec) }) {
+                final TestSubscriber<Boolean> observer = TestSubscriber.create();
+                observer.withTag(s.getClass().getSimpleName());
+
+                Flowable.<Boolean>create(new FlowableOnSubscribe<Boolean>() {
+                    @Override
+                    public void subscribe(FlowableEmitter<Boolean> emitter) throws Exception {
+                      emitter.onNext(Thread.interrupted());
+                      emitter.onComplete();
+                    }
+                }, BackpressureStrategy.MISSING)
+                .delaySubscription(100, TimeUnit.MILLISECONDS, s)
+                .subscribe(observer);
+
+                observer.awaitTerminalEvent();
+                observer.assertValue(false);
+            }
+        } finally {
+            exec.shutdown();
+        }
     }
 }

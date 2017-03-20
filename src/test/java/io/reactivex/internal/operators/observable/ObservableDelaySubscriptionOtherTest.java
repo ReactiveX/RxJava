@@ -13,6 +13,7 @@
 
 package io.reactivex.internal.operators.observable;
 
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.*;
@@ -22,6 +23,7 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.*;
 import io.reactivex.observers.TestObserver;
+import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subjects.PublishSubject;
 
 public class ObservableDelaySubscriptionOtherTest {
@@ -200,4 +202,32 @@ public class ObservableDelaySubscriptionOtherTest {
             }
         }, false, 1, 1, 1);
     }
+
+
+    @Test
+    public void afterDelayNoInterrupt() {
+        ScheduledExecutorService exec = Executors.newSingleThreadScheduledExecutor();
+        try {
+            for (Scheduler s : new Scheduler[] { Schedulers.single(), Schedulers.computation(), Schedulers.newThread(), Schedulers.io(), Schedulers.from(exec) }) {
+                final TestObserver<Boolean> observer = TestObserver.create();
+                observer.withTag(s.getClass().getSimpleName());
+
+                Observable.<Boolean>create(new ObservableOnSubscribe<Boolean>() {
+                    @Override
+                    public void subscribe(ObservableEmitter<Boolean> emitter) throws Exception {
+                      emitter.onNext(Thread.interrupted());
+                      emitter.onComplete();
+                    }
+                })
+                .delaySubscription(100, TimeUnit.MILLISECONDS, s)
+                .subscribe(observer);
+
+                observer.awaitTerminalEvent();
+                observer.assertValue(false);
+            }
+        } finally {
+            exec.shutdown();
+        }
+    }
+
 }

@@ -13,12 +13,17 @@
 
 package io.reactivex.internal.operators.completable;
 
-import java.util.concurrent.TimeUnit;
+import static org.junit.Assert.assertTrue;
+
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.junit.Test;
 
 import io.reactivex.*;
-import io.reactivex.schedulers.TestScheduler;
+import io.reactivex.functions.Action;
+import io.reactivex.observers.TestObserver;
+import io.reactivex.schedulers.*;
 
 public class CompletableTimerTest {
 
@@ -26,4 +31,37 @@ public class CompletableTimerTest {
     public void dispose() {
         TestHelper.checkDisposed(Completable.timer(1, TimeUnit.SECONDS, new TestScheduler()));
     }
+
+    @Test
+    public void timerInterruptible() throws Exception {
+        ScheduledExecutorService exec = Executors.newSingleThreadScheduledExecutor();
+        try {
+            for (Scheduler s : new Scheduler[] { Schedulers.single(), Schedulers.computation(), Schedulers.newThread(), Schedulers.io(), Schedulers.from(exec) }) {
+                final AtomicBoolean interrupted = new AtomicBoolean();
+                TestObserver<Void> ts = Completable.timer(1, TimeUnit.MILLISECONDS, s)
+                .doOnComplete(new Action() {
+                    @Override
+                    public void run() throws Exception {
+                        try {
+                        Thread.sleep(3000);
+                        } catch (InterruptedException ex) {
+                            interrupted.set(true);
+                        }
+                    }
+                })
+                .test();
+
+                Thread.sleep(500);
+
+                ts.cancel();
+
+                Thread.sleep(500);
+
+                assertTrue(s.getClass().getSimpleName(), interrupted.get());
+            }
+        } finally {
+            exec.shutdown();
+        }
+    }
+
 }
