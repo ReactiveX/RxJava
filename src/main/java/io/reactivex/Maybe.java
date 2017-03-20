@@ -2092,7 +2092,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> Maybe<R> compose(MaybeTransformer<? super T, ? extends R> transformer) {
-        return wrap(((MaybeTransformer<T, R>) transformer).apply(this));
+        return wrap(((MaybeTransformer<T, R>) ObjectHelper.requireNonNull(transformer, "transformer is null")).apply(this));
     }
 
     /**
@@ -3065,7 +3065,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> R to(Function<? super Maybe<T>, R> convert) {
         try {
-            return convert.apply(this);
+            return ObjectHelper.requireNonNull(convert, "convert is null").apply(this);
         } catch (Throwable ex) {
             Exceptions.throwIfFatal(ex);
             throw ExceptionHelper.wrapOrThrow(ex);

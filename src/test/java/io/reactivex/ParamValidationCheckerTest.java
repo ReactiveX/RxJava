@@ -24,6 +24,7 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.*;
 import io.reactivex.internal.functions.Functions;
+import io.reactivex.parallel.*;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.schedulers.Schedulers;
 
@@ -56,6 +57,11 @@ public class ParamValidationCheckerTest {
     @Test(timeout = 30000)
     public void checkCompletable() {
         checkClass(Completable.class);
+    }
+
+    @Test(timeout = 30000)
+    public void checkParallelFlowable() {
+        checkClass(ParallelFlowable.class);
     }
 
     // ---------------------------------------------------------------------------------------
@@ -546,6 +552,8 @@ public class ParamValidationCheckerTest {
         defaultValues.put(Object[].class, new Object[] { new Object(), new Object() });
         defaultValues.put(Future.class, new FutureTask<Object>(Functions.EMPTY_RUNNABLE, 1));
 
+        defaultValues.put(ParallelFlowable.class, ParallelFlowable.from(Flowable.never()));
+        defaultValues.put(Subscriber[].class, new Subscriber[] { new AllFunctionals() });
         // -----------------------------------------------------------------------------------
 
         defaultInstances = new HashMap<Class<?>, List<Object>>();
@@ -572,7 +580,9 @@ public class ParamValidationCheckerTest {
 
         addDefaultInstance(Maybe.class, Maybe.just(1), "Just(1)");
         addDefaultInstance(Maybe.class, Maybe.just(1).hide(), "Just(1).Hide()");
-    }
+
+        addDefaultInstance(ParallelFlowable.class, Flowable.just(1).parallel(), "Just(1)");
+}
 
     static void addIgnore(ParamIgnore ignore) {
         String key = ignore.toString();
@@ -836,8 +846,13 @@ public class ParamValidationCheckerTest {
     FlowableTransformer, ObservableTransformer, SingleTransformer, MaybeTransformer, CompletableTransformer,
     Subscriber, FlowableSubscriber, Observer, SingleObserver, MaybeObserver, CompletableObserver,
     FlowableOperator, ObservableOperator, SingleOperator, MaybeOperator, CompletableOperator,
-    Comparator
+    Comparator, ParallelTransformer
     {
+
+        @Override
+        public ParallelFlowable apply(ParallelFlowable upstream) {
+            return null;
+        }
 
         @Override
         public Object apply(Object t1, Object t2, Object t3, Object t4, Object t5, Object t6, Object t7, Object t8,
