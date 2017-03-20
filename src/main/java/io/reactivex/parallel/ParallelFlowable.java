@@ -613,7 +613,7 @@ public abstract class ParallelFlowable<T> {
     @CheckReturnValue
     public final <U> U to(@NonNull Function<? super ParallelFlowable<T>, U> converter) {
         try {
-            return converter.apply(this);
+            return ObjectHelper.requireNonNull(converter, "converter is null").apply(this);
         } catch (Throwable ex) {
             Exceptions.throwIfFatal(ex);
             throw ExceptionHelper.wrapOrThrow(ex);
@@ -630,7 +630,7 @@ public abstract class ParallelFlowable<T> {
      */
     @CheckReturnValue
     public final <U> ParallelFlowable<U> compose(@NonNull ParallelTransformer<T, U> composer) {
-        return RxJavaPlugins.onAssembly(composer.apply(this));
+        return RxJavaPlugins.onAssembly(ObjectHelper.requireNonNull(composer, "composer is null").apply(this));
     }
 
     /**
