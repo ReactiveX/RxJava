@@ -32,7 +32,7 @@ import io.reactivex.plugins.RxJavaPlugins;
  * Abstract base class for Parallel publishers that take an array of Subscribers.
  * <p>
  * Use {@code from()} to start processing a regular Publisher in 'rails'.
- * Use {@code runOn()} to introduce where each 'rail' shoud run on thread-vise.
+ * Use {@code runOn()} to introduce where each 'rail' should run on thread-vise.
  * Use {@code sequential()} to merge the sources back into a single Flowable.
  *
  * @param <T> the value type
