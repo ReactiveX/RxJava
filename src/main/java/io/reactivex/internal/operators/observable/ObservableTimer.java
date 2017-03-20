@@ -64,8 +64,8 @@ public final class ObservableTimer extends Observable<Long> {
         @Override
         public void run() {
             if (!isDisposed()) {
-                actual.onNext(0L);
                 lazySet(EmptyDisposable.INSTANCE);
+                actual.onNext(0L);
                 actual.onComplete();
             }
         }

@@ -13,6 +13,7 @@
 
 package io.reactivex.internal.operators.observable;
 
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.*;
@@ -199,5 +200,22 @@ public class ObservableDelaySubscriptionOtherTest {
                 return Observable.just(1).delaySubscription(o);
             }
         }, false, 1, 1, 1);
+    }
+
+    @Test
+    public void afterDelayNoInterrupt() {
+        final TestObserver<Boolean> observer = TestObserver.create();
+        Observable.<Boolean>create(new ObservableOnSubscribe<Boolean>() {
+            @Override
+            public void subscribe(ObservableEmitter<Boolean> emitter) throws Exception {
+              emitter.onNext(Thread.interrupted());
+              emitter.onComplete();
+            }
+        })
+        .delaySubscription(100, TimeUnit.MICROSECONDS)
+        .subscribe(observer);
+
+        observer.awaitTerminalEvent();
+        observer.assertValue(false);
     }
 }
