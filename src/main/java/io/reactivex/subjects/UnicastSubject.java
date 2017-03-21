@@ -37,6 +37,8 @@ import io.reactivex.internal.queue.SpscLinkedArrayQueue;
  * will receive an IllegalStateException if this Subject hasn't terminated yet,
  * or the Subscribers receive the terminal event (error or completion) if this
  * Subject has terminated.
+ * <p>
+ * <img width="640" height="370" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/UnicastSubject.png" alt="">
  *
  * @param <T> the value type received and emitted by this Subject subclass
  * @since 2.0

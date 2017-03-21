@@ -37,6 +37,8 @@ import io.reactivex.plugins.RxJavaPlugins;
  * will receive an IllegalStateException if this Processor hasn't terminated yet,
  * or the Subscribers receive the terminal event (error or completion) if this
  * Processor has terminated.
+ * <p>
+ * <img width="640" height="370" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/UnicastProcessor.png" alt="">
  *
  * @param <T> the value type received and emitted by this Processor subclass
  * @since 2.0
