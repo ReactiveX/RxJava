@@ -24,12 +24,70 @@ import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 
 /**
- * An abstract Subscriber that allows asynchronous cancellation of its subscription and associated resources.
- *
- * <p>This implementation let's you chose if the AsyncObserver manages resources or not,
- * thus saving memory on cases where there is no need for that.
+ * An abstract Subscriber that allows asynchronous cancellation of its
+ * subscription and associated resources.
  *
  * <p>All pre-implemented final methods are thread-safe.
+ *
+ * <p>To release the associated resources, one has to call {@link #dispose()}
+ * in {@code onError()} and {@code onComplete()} explicitly.
+ *
+ * <p>Use {@link #add(Disposable)} to associate resources (as {@link io.reactivex.disposables.Disposable Disposable}s)
+ * with this {@code ResourceSubscriber} that will be cleaned up when {@link #dispose()} is called.
+ * Removing previously associated resources is not possible but one can create a
+ * {@link io.reactivex.disposables.CompositeDisposable CompositeDisposable}, associate it with this
+ * {@code ResourceSubscriber} and then add/remove resources to/from the {@code CompositeDisposable}
+ * freely.
+ *
+ * <p>The default {@link #onStart()} requests Long.MAX_VALUE by default. Override
+ * the method to request a custom <em>positive</em> amount. Use the protected {@link #request(long)}
+ * to request more items and {@link #dispose()} to cancel the sequence from within an
+ * {@code onNext} implementation.
+ *
+ * <p>Note that calling {@link #request(long)} from {@link #onStart()} may trigger
+ * an immediate, asynchronous emission of data to {@link #onNext(Object)}. Make sure
+ * all initialization happens before the call to {@code request()} in {@code onStart()}.
+ * Calling {@link #request(long)} inside {@link #onNext(Object)} can happen at any time
+ * because by design, {@code onNext} calls from upstream are non-reentrant and non-overlapping.
+ *
+ * <p>Like all other consumers, {@code ResourceSubscriber} can be subscribed only once.
+ * Any subsequent attempt to subscribe it to a new source will yield an
+ * {@link IllegalStateException} with message {@code "Subscription already set!"}.
+ *
+ * <p>Implementation of {@link #onStart()}, {@link #onNext(Object)}, {@link #onError(Throwable)}
+ * and {@link #onComplete()} are not allowed to throw any unchecked exceptions.
+ * If for some reason this can't be avoided, use {@link io.reactivex.Flowable#safeSubscribe(org.reactivestreams.Subscriber)}
+ * instead of the standard {@code subscribe()} method.
+ *
+ * <p>Example<code><pre>
+ * Disposable d =
+ *     Flowable.range(1, 5)
+ *     .subscribeWith(new ResourceSubscriber&lt;Integer>() {
+ *         &#64;Override public void onStart() {
+ *             add(Schedulers.single()
+ *                 .scheduleDirect(() -> System.out.println("Time!"),
+ *                     2, TimeUnit.SECONDS));
+ *             request(1);
+ *         }
+ *         &#64;Override public void onNext(Integer t) {
+ *             if (t == 3) {
+ *                 dispose();
+ *             }
+ *             System.out.println(t);
+ *             request(1);
+ *         }
+ *         &#64;Override public void onError(Throwable t) {
+ *             t.printStackTrace();
+ *             dispose();
+ *         }
+ *         &#64;Override public void onComplete() {
+ *             System.out.println("Done!");
+ *             dispose();
+ *         }
+ *     });
+ * // ...
+ * d.dispose();
+ * </pre></code>
  *
  * @param <T> the value type
  */

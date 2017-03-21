@@ -22,6 +22,41 @@ import io.reactivex.internal.disposables.DisposableHelper;
 /**
  * An abstract {@link MaybeObserver} that allows asynchronous cancellation by implementing Disposable.
  *
+ * <p>All pre-implemented final methods are thread-safe.
+ *
+ * <p>Note that {@link #onSuccess(Object)}, {@link #onError(Throwable)} and {@link #onComplete()} are
+ * exclusive to each other, unlike a regular {@link io.reactivex.Observer Observer}, and
+ * {@code onComplete()} is never called after an {@code onSuccess()}.
+ *
+ * <p>Like all other consumers, {@code DisposableMaybeObserver} can be subscribed only once.
+ * Any subsequent attempt to subscribe it to a new source will yield an
+ * {@link IllegalStateException} with message {@code "Disposable already set!"}.
+ *
+ * <p>Implementation of {@link #onStart()}, {@link #onSuccess(Object)}, {@link #onError(Throwable)} and
+ * {@link #onComplete()} are not allowed to throw any unchecked exceptions.
+ *
+ * <p>Example<code><pre>
+ * Disposable d =
+ *     Maybe.just(1).delay(1, TimeUnit.SECONDS)
+ *     .subscribeWith(new DisposableMaybeObserver&lt;Integer>() {
+ *         &#64;Override public void onStart() {
+ *             System.out.println("Start!");
+ *         }
+ *         &#64;Override public void onSuccess(Integer t) {
+ *             System.out.println(t);
+ *         }
+ *         &#64;Override public void onError(Throwable t) {
+ *             t.printStackTrace();
+ *         }
+ *         &#64;Override public void onComplete() {
+ *             System.out.println("Done!");
+ *         }
+ *     });
+ * // ...
+ * d.dispose();
+ * </pre></code>
+ *
+ *
  * @param <T> the received value type
  */
 public abstract class DisposableMaybeObserver<T> implements MaybeObserver<T>, Disposable {

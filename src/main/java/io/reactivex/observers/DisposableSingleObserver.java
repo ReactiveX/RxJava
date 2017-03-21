@@ -22,6 +22,33 @@ import io.reactivex.internal.disposables.DisposableHelper;
 /**
  * An abstract {@link SingleObserver} that allows asynchronous cancellation by implementing Disposable.
  *
+ * <p>All pre-implemented final methods are thread-safe.
+ *
+ * <p>Like all other consumers, {@code DisposableSingleObserver} can be subscribed only once.
+ * Any subsequent attempt to subscribe it to a new source will yield an
+ * {@link IllegalStateException} with message {@code "Disposable already set!"}.
+ *
+ * <p>Implementation of {@link #onStart()}, {@link #onSuccess(Object)} and {@link #onError(Throwable)}
+ * are not allowed to throw any unchecked exceptions.
+ *
+ * <p>Example<code><pre>
+ * Disposable d =
+ *     Single.just(1).delay(1, TimeUnit.SECONDS)
+ *     .subscribeWith(new DisposableSingleObserver&lt;Integer>() {
+ *         &#64;Override public void onStart() {
+ *             System.out.println("Start!");
+ *         }
+ *         &#64;Override public void onSuccess(Integer t) {
+ *             System.out.println(t);
+ *         }
+ *         &#64;Override public void onError(Throwable t) {
+ *             t.printStackTrace();
+ *         }
+ *     });
+ * // ...
+ * d.dispose();
+ * </pre></code>
+ *
  * @param <T> the received value type
  */
 public abstract class DisposableSingleObserver<T> implements SingleObserver<T>, Disposable {

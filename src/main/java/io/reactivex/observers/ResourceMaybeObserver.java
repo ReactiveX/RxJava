@@ -26,6 +26,59 @@ import io.reactivex.internal.functions.ObjectHelper;
  *
  * <p>All pre-implemented final methods are thread-safe.
  *
+ * <p>Note that {@link #onSuccess(Object)}, {@link #onError(Throwable)} and {@link #onComplete()} are
+ * exclusive to each other, unlike a regular {@link io.reactivex.Observer Observer}, and
+ * {@code onComplete()} is never called after an {@code onSuccess()}.
+ *
+ * <p>Override the protected {@link #onStart()} to perform initialization when this
+ * {@code ResourceMaybeObserver} is subscribed to a source.
+ *
+ * <p>Use the protected {@link #dispose()} to dispose the sequence externally and release
+ * all resources.
+ *
+ * <p>To release the associated resources, one has to call {@link #dispose()}
+ * in {@code onSuccess()}, {@code onError()} and {@code onComplete()} explicitly.
+ *
+ * <p>Use {@link #add(Disposable)} to associate resources (as {@link io.reactivex.disposables.Disposable Disposable}s)
+ * with this {@code ResourceMaybeObserver} that will be cleaned up when {@link #dispose()} is called.
+ * Removing previously associated resources is not possible but one can create a
+ * {@link io.reactivex.disposables.CompositeDisposable CompositeDisposable}, associate it with this
+ * {@code ResourceMaybeObserver} and then add/remove resources to/from the {@code CompositeDisposable}
+ * freely.
+ *
+ * <p>Like all other consumers, {@code ResourceMaybeObserver} can be subscribed only once.
+ * Any subsequent attempt to subscribe it to a new source will yield an
+ * {@link IllegalStateException} with message {@code "Disposable already set!"}.
+ *
+ * <p>Implementation of {@link #onStart()}, {@link #onSuccess(Object)}, {@link #onError(Throwable)}
+ * and {@link #onComplete()} are not allowed to throw any unchecked exceptions.
+ *
+ * <p>Example<code><pre>
+ * Disposable d =
+ *     Maybe.just(1).delay(1, TimeUnit.SECONDS)
+ *     .subscribeWith(new ResourceMaybeObserver&lt;Integer>() {
+ *         &#64;Override public void onStart() {
+ *             add(Schedulers.single()
+ *                 .scheduleDirect(() -> System.out.println("Time!"),
+ *                     2, TimeUnit.SECONDS));
+ *         }
+ *         &#64;Override public void onSuccess(Integer t) {
+ *             System.out.println(t);
+ *             dispose();
+ *         }
+ *         &#64;Override public void onError(Throwable t) {
+ *             t.printStackTrace();
+ *             dispose();
+ *         }
+ *         &#64;Override public void onComplete() {
+ *             System.out.println("Done!");
+ *             dispose();
+ *         }
+ *     });
+ * // ...
+ * d.dispose();
+ * </pre></code>
+ *
  * @param <T> the value type
  */
 public abstract class ResourceMaybeObserver<T> implements MaybeObserver<T>, Disposable {
