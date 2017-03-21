@@ -25,6 +25,51 @@ import io.reactivex.internal.functions.ObjectHelper;
  * An abstract {@link CompletableObserver} that allows asynchronous cancellation of its subscription and associated resources.
  *
  * <p>All pre-implemented final methods are thread-safe.
+ *
+ * <p>Override the protected {@link #onStart()} to perform initialization when this
+ * {@code ResourceCompletableObserver} is subscribed to a source.
+ *
+ * <p>Use the protected {@link #dispose()} to dispose the sequence externally and release
+ * all resources.
+ *
+ * <p>To release the associated resources, one has to call {@link #dispose()}
+ * in {@code onError()} and {@code onComplete()} explicitly.
+ *
+ * <p>Use {@link #add(Disposable)} to associate resources (as {@link io.reactivex.disposables.Disposable Disposable}s)
+ * with this {@code ResourceCompletableObserver} that will be cleaned up when {@link #dispose()} is called.
+ * Removing previously associated resources is not possible but one can create a
+ * {@link io.reactivex.disposables.CompositeDisposable CompositeDisposable}, associate it with this
+ * {@code ResourceCompletableObserver} and then add/remove resources to/from the {@code CompositeDisposable}
+ * freely.
+ *
+ * <p>Like all other consumers, {@code ResourceCompletableObserver} can be subscribed only once.
+ * Any subsequent attempt to subscribe it to a new source will yield an
+ * {@link IllegalStateException} with message {@code "Disposable already set!"}.
+ *
+ * <p>Implementation of {@link #onStart()}, {@link #onError(Throwable)}
+ * and {@link #onComplete()} are not allowed to throw any unchecked exceptions.
+ *
+ * <p>Example<code><pre>
+ * Disposable d =
+ *     Completable.complete().delay(1, TimeUnit.SECONDS)
+ *     .subscribeWith(new ResourceCompletableObserver() {
+ *         &#64;Override public void onStart() {
+ *             add(Schedulers.single()
+ *                 .scheduleDirect(() -> System.out.println("Time!"),
+ *                     2, TimeUnit.SECONDS));
+ *         }
+ *         &#64;Override public void onError(Throwable t) {
+ *             t.printStackTrace();
+ *             dispose();
+ *         }
+ *         &#64;Override public void onComplete() {
+ *             System.out.println("Done!");
+ *             dispose();
+ *         }
+ *     });
+ * // ...
+ * d.dispose();
+ * </pre></code>
  */
 public abstract class ResourceCompletableObserver implements CompletableObserver, Disposable {
     /** The active subscription. */

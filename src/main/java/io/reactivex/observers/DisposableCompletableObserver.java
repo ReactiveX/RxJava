@@ -21,6 +21,33 @@ import io.reactivex.internal.disposables.DisposableHelper;
 
 /**
  * An abstract {@link CompletableObserver} that allows asynchronous cancellation by implementing Disposable.
+ *
+ * <p>All pre-implemented final methods are thread-safe.
+ *
+ * <p>Like all other consumers, {@code DisposableCompletableObserver} can be subscribed only once.
+ * Any subsequent attempt to subscribe it to a new source will yield an
+ * {@link IllegalStateException} with message {@code "Disposable already set!"}.
+ *
+ * <p>Implementation of {@link #onStart()}, {@link #onError(Throwable)} and
+ * {@link #onComplete()} are not allowed to throw any unchecked exceptions.
+ *
+ * <p>Example<code><pre>
+ * Disposable d =
+ *     Completable.complete().delay(1, TimeUnit.SECONDS)
+ *     .subscribeWith(new DisposableMaybeObserver&lt;Integer>() {
+ *         &#64;Override public void onStart() {
+ *             System.out.println("Start!");
+ *         }
+ *         &#64;Override public void onError(Throwable t) {
+ *             t.printStackTrace();
+ *         }
+ *         &#64;Override public void onComplete() {
+ *             System.out.println("Done!");
+ *         }
+ *     });
+ * // ...
+ * d.dispose();
+ * </pre></code>
  */
 public abstract class DisposableCompletableObserver implements CompletableObserver, Disposable {
     final AtomicReference<Disposable> s = new AtomicReference<Disposable>();

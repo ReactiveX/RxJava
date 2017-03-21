@@ -25,6 +25,57 @@ import io.reactivex.internal.functions.ObjectHelper;
  *
  * <p>All pre-implemented final methods are thread-safe.
  *
+ * <p>To release the associated resources, one has to call {@link #dispose()}
+ * in {@code onError()} and {@code onComplete()} explicitly.
+ *
+ * <p>Use {@link #add(Disposable)} to associate resources (as {@link io.reactivex.disposables.Disposable Disposable}s)
+ * with this {@code ResourceObserver} that will be cleaned up when {@link #dispose()} is called.
+ * Removing previously associated resources is not possible but one can create a
+ * {@link io.reactivex.disposables.CompositeDisposable CompositeDisposable}, associate it with this
+ * {@code ResourceObserver} and then add/remove resources to/from the {@code CompositeDisposable}
+ * freely.
+ *
+ * <p>Use the {@link #dispose()} to dispose the sequence from within an
+ * {@code onNext} implementation.
+ *
+ * <p>Like all other consumers, {@code ResourceObserver} can be subscribed only once.
+ * Any subsequent attempt to subscribe it to a new source will yield an
+ * {@link IllegalStateException} with message {@code "Disposable already set!"}.
+ *
+ * <p>Implementation of {@link #onStart()}, {@link #onNext(Object)}, {@link #onError(Throwable)}
+ * and {@link #onComplete()} are not allowed to throw any unchecked exceptions.
+ * If for some reason this can't be avoided, use {@link io.reactivex.Observable#safeSubscribe(io.reactivex.Observer)}
+ * instead of the standard {@code subscribe()} method.
+ *
+ * <p>Example<code><pre>
+ * Disposable d =
+ *     Observable.range(1, 5)
+ *     .subscribeWith(new ResourceObserver&lt;Integer>() {
+ *         &#64;Override public void onStart() {
+ *             add(Schedulers.single()
+ *                 .scheduleDirect(() -> System.out.println("Time!"),
+ *                     2, TimeUnit.SECONDS));
+ *             request(1);
+ *         }
+ *         &#64;Override public void onNext(Integer t) {
+ *             if (t == 3) {
+ *                 dispose();
+ *             }
+ *             System.out.println(t);
+ *         }
+ *         &#64;Override public void onError(Throwable t) {
+ *             t.printStackTrace();
+ *             dispose();
+ *         }
+ *         &#64;Override public void onComplete() {
+ *             System.out.println("Done!");
+ *             dispose();
+ *         }
+ *     });
+ * // ...
+ * d.dispose();
+ * </pre></code>
+ *
  * @param <T> the value type
  */
 public abstract class ResourceObserver<T> implements Observer<T>, Disposable {

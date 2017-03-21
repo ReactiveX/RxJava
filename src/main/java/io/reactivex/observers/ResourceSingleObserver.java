@@ -22,9 +22,55 @@ import io.reactivex.internal.disposables.ListCompositeDisposable;
 import io.reactivex.internal.functions.ObjectHelper;
 
 /**
- * An abstract {@link SingleObserver} that allows asynchronous cancellation of its subscription and associated resources.
+ * An abstract {@link SingleObserver} that allows asynchronous cancellation of its subscription
+ * and the associated resources.
  *
  * <p>All pre-implemented final methods are thread-safe.
+ *
+ * <p>Override the protected {@link #onStart()} to perform initialization when this
+ * {@code ResourceSingleObserver} is subscribed to a source.
+ *
+ * <p>Use the protected {@link #dispose()} to dispose the sequence externally and release
+ * all resources.
+ *
+ * <p>To release the associated resources, one has to call {@link #dispose()}
+ * in {@code onSuccess()} and {@code onError()} explicitly.
+ *
+ * <p>Use {@link #add(Disposable)} to associate resources (as {@link io.reactivex.disposables.Disposable Disposable}s)
+ * with this {@code ResourceSingleObserver} that will be cleaned up when {@link #dispose()} is called.
+ * Removing previously associated resources is not possible but one can create a
+ * {@link io.reactivex.disposables.CompositeDisposable CompositeDisposable}, associate it with this
+ * {@code ResourceSingleObserver} and then add/remove resources to/from the {@code CompositeDisposable}
+ * freely.
+ *
+ * <p>Like all other consumers, {@code ResourceSingleObserver} can be subscribed only once.
+ * Any subsequent attempt to subscribe it to a new source will yield an
+ * {@link IllegalStateException} with message {@code "Disposable already set!"}.
+ *
+ * <p>Implementation of {@link #onStart()}, {@link #onSuccess(Object)} and {@link #onError(Throwable)}
+ * are not allowed to throw any unchecked exceptions.
+ *
+ * <p>Example<code><pre>
+ * Disposable d =
+ *     Single.just(1).delay(1, TimeUnit.SECONDS)
+ *     .subscribeWith(new ResourceSingleObserver&lt;Integer>() {
+ *         &#64;Override public void onStart() {
+ *             add(Schedulers.single()
+ *                 .scheduleDirect(() -> System.out.println("Time!"),
+ *                     2, TimeUnit.SECONDS));
+ *         }
+ *         &#64;Override public void onSuccess(Integer t) {
+ *             System.out.println(t);
+ *             dispose();
+ *         }
+ *         &#64;Override public void onError(Throwable t) {
+ *             t.printStackTrace();
+ *             dispose();
+ *         }
+ *     });
+ * // ...
+ * d.dispose();
+ * </pre></code>
  *
  * @param <T> the value type
  */
