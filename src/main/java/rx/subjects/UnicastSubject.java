@@ -32,7 +32,8 @@ import rx.internal.util.unsafe.*;
  * amount. In this case, the buffered values are no longer retained. If the Subscriber
  * requests a limited amount, queueing is involved and only those values are retained which
  * weren't requested by the Subscriber at that time.
- *
+ * <p>
+ * <img width="640" height="370" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/UnicastSubject.v1.png" alt="">
  * @param <T> the input and output value type
  */
 @Experimental
@@ -68,6 +69,7 @@ public final class UnicastSubject<T> extends Subject<T, T> {
      * Constructs an empty UnicastSubject instance with the default capacity hint of 16 elements.
      *
      * @param delayError deliver pending next events before error.
+     * @param <T> the input and output value type
      * @return the created UnicastSubject instance
      */
     public static <T> UnicastSubject<T> create(boolean delayError) {
