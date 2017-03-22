@@ -603,4 +603,107 @@ public class ObservableWindowWithTimeTest {
 
         ts.values().get(0).test().assertResult();
     }
+
+    @Test
+    public void periodicWindowCompletion() {
+        TestScheduler scheduler = new TestScheduler();
+        Subject<Integer> ps = PublishSubject.<Integer>create();
+
+        TestObserver<Observable<Integer>> ts = ps.window(5, TimeUnit.MILLISECONDS, scheduler, Long.MAX_VALUE, false)
+        .test();
+
+        scheduler.advanceTimeBy(100, TimeUnit.MILLISECONDS);
+
+        ts.assertValueCount(21)
+        .assertNoErrors()
+        .assertNotComplete();
+    }
+
+    @Test
+    public void periodicWindowCompletionRestartTimer() {
+        TestScheduler scheduler = new TestScheduler();
+        Subject<Integer> ps = PublishSubject.<Integer>create();
+
+        TestObserver<Observable<Integer>> ts = ps.window(5, TimeUnit.MILLISECONDS, scheduler, Long.MAX_VALUE, true)
+        .test();
+
+        scheduler.advanceTimeBy(100, TimeUnit.MILLISECONDS);
+
+        ts.assertValueCount(21)
+        .assertNoErrors()
+        .assertNotComplete();
+    }
+
+    @Test
+    public void periodicWindowCompletionBounded() {
+        TestScheduler scheduler = new TestScheduler();
+        Subject<Integer> ps = PublishSubject.<Integer>create();
+
+        TestObserver<Observable<Integer>> ts = ps.window(5, TimeUnit.MILLISECONDS, scheduler, 5, false)
+        .test();
+
+        scheduler.advanceTimeBy(100, TimeUnit.MILLISECONDS);
+
+        ts.assertValueCount(21)
+        .assertNoErrors()
+        .assertNotComplete();
+    }
+
+    @Test
+    public void periodicWindowCompletionRestartTimerBounded() {
+        TestScheduler scheduler = new TestScheduler();
+        Subject<Integer> ps = PublishSubject.<Integer>create();
+
+        TestObserver<Observable<Integer>> ts = ps.window(5, TimeUnit.MILLISECONDS, scheduler, 5, true)
+        .test();
+
+        scheduler.advanceTimeBy(100, TimeUnit.MILLISECONDS);
+
+        ts.assertValueCount(21)
+        .assertNoErrors()
+        .assertNotComplete();
+    }
+
+    @Test
+    public void periodicWindowCompletionRestartTimerBoundedSomeData() {
+        TestScheduler scheduler = new TestScheduler();
+        Subject<Integer> ps = PublishSubject.<Integer>create();
+
+        TestObserver<Observable<Integer>> ts = ps.window(5, TimeUnit.MILLISECONDS, scheduler, 2, true)
+        .test();
+
+        ps.onNext(1);
+        ps.onNext(2);
+
+        scheduler.advanceTimeBy(100, TimeUnit.MILLISECONDS);
+
+        ts.assertValueCount(22)
+        .assertNoErrors()
+        .assertNotComplete();
+    }
+
+    @Test
+    public void countRestartsOnTimeTick() {
+        TestScheduler scheduler = new TestScheduler();
+        Subject<Integer> ps = PublishSubject.<Integer>create();
+
+        TestObserver<Observable<Integer>> ts = ps.window(5, TimeUnit.MILLISECONDS, scheduler, 5, true)
+        .test();
+
+        // window #1
+        ps.onNext(1);
+        ps.onNext(2);
+
+        scheduler.advanceTimeBy(5, TimeUnit.MILLISECONDS);
+
+        // window #2
+        ps.onNext(3);
+        ps.onNext(4);
+        ps.onNext(5);
+        ps.onNext(6);
+
+        ts.assertValueCount(2)
+        .assertNoErrors()
+        .assertNotComplete();
+    }
 }
