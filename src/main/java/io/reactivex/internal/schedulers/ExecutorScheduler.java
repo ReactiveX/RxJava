@@ -51,8 +51,10 @@ public final class ExecutorScheduler extends Scheduler {
         Runnable decoratedRun = RxJavaPlugins.onSchedule(run);
         try {
             if (executor instanceof ExecutorService) {
-                Future<?> f = ((ExecutorService)executor).submit(decoratedRun);
-                return Disposables.fromFuture(f);
+                ScheduledDirectTask task = new ScheduledDirectTask(decoratedRun);
+                Future<?> f = ((ExecutorService)executor).submit(task);
+                task.setFuture(f);
+                return task;
             }
 
             BooleanRunnable br = new BooleanRunnable(decoratedRun);
@@ -70,8 +72,10 @@ public final class ExecutorScheduler extends Scheduler {
         final Runnable decoratedRun = RxJavaPlugins.onSchedule(run);
         if (executor instanceof ScheduledExecutorService) {
             try {
-                Future<?> f = ((ScheduledExecutorService)executor).schedule(decoratedRun, delay, unit);
-                return Disposables.fromFuture(f);
+                ScheduledDirectTask task = new ScheduledDirectTask(decoratedRun);
+                Future<?> f = ((ScheduledExecutorService)executor).schedule(task, delay, unit);
+                task.setFuture(f);
+                return task;
             } catch (RejectedExecutionException ex) {
                 RxJavaPlugins.onError(ex);
                 return EmptyDisposable.INSTANCE;
@@ -93,8 +97,10 @@ public final class ExecutorScheduler extends Scheduler {
         if (executor instanceof ScheduledExecutorService) {
             Runnable decoratedRun = RxJavaPlugins.onSchedule(run);
             try {
-                Future<?> f = ((ScheduledExecutorService)executor).scheduleAtFixedRate(decoratedRun, initialDelay, period, unit);
-                return Disposables.fromFuture(f);
+                ScheduledDirectPeriodicTask task = new ScheduledDirectPeriodicTask(decoratedRun);
+                Future<?> f = ((ScheduledExecutorService)executor).scheduleAtFixedRate(task, initialDelay, period, unit);
+                task.setFuture(f);
+                return task;
             } catch (RejectedExecutionException ex) {
                 RxJavaPlugins.onError(ex);
                 return EmptyDisposable.INSTANCE;

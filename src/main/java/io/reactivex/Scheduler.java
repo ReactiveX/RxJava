@@ -15,13 +15,12 @@ package io.reactivex;
 
 import java.util.concurrent.TimeUnit;
 
-import io.reactivex.annotations.Experimental;
-import io.reactivex.annotations.NonNull;
+import io.reactivex.annotations.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.disposables.*;
-import io.reactivex.internal.schedulers.SchedulerWhen;
+import io.reactivex.internal.schedulers.*;
 import io.reactivex.internal.util.ExceptionHelper;
 import io.reactivex.plugins.RxJavaPlugins;
 
@@ -131,9 +130,11 @@ public abstract class Scheduler {
 
         final Runnable decoratedRun = RxJavaPlugins.onSchedule(run);
 
-        w.schedule(new DisposeTask(decoratedRun, w), delay, unit);
+        DisposeTask task = new DisposeTask(decoratedRun, w);
 
-        return w;
+        w.schedule(task, delay, unit);
+
+        return task;
     }
 
     /**
@@ -432,9 +433,11 @@ public abstract class Scheduler {
         }
     }
 
-    static final class DisposeTask implements Runnable {
+    static final class DisposeTask implements Runnable, Disposable {
         final Runnable decoratedRun;
         final Worker w;
+
+        Thread runner;
 
         DisposeTask(Runnable decoratedRun, Worker w) {
             this.decoratedRun = decoratedRun;
@@ -443,11 +446,27 @@ public abstract class Scheduler {
 
         @Override
         public void run() {
+            runner = Thread.currentThread();
             try {
                 decoratedRun.run();
             } finally {
+                dispose();
+                runner = null;
+            }
+        }
+
+        @Override
+        public void dispose() {
+            if (runner == Thread.currentThread() && w instanceof NewThreadWorker) {
+                ((NewThreadWorker)w).shutdown();
+            } else {
                 w.dispose();
             }
+        }
+
+        @Override
+        public boolean isDisposed() {
+            return w.isDisposed();
         }
     }
 }

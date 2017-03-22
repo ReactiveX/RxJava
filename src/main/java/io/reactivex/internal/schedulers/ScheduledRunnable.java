@@ -32,6 +32,7 @@ implements Runnable, Callable<Object>, Disposable {
 
     static final int PARENT_INDEX = 0;
     static final int FUTURE_INDEX = 1;
+    static final int THREAD_INDEX = 2;
 
     /**
      * Creates a ScheduledRunnable by wrapping the given action and setting
@@ -40,7 +41,7 @@ implements Runnable, Callable<Object>, Disposable {
      * @param parent the parent tracking container or null if none
      */
     public ScheduledRunnable(Runnable actual, DisposableContainer parent) {
-        super(2);
+        super(3);
         this.actual = actual;
         this.lazySet(0, parent);
     }
@@ -54,6 +55,7 @@ implements Runnable, Callable<Object>, Disposable {
 
     @Override
     public void run() {
+        lazySet(THREAD_INDEX, Thread.currentThread());
         try {
             try {
                 actual.run();
@@ -62,6 +64,7 @@ implements Runnable, Callable<Object>, Disposable {
                 RxJavaPlugins.onError(e);
             }
         } finally {
+            lazySet(THREAD_INDEX, null);
             Object o = get(PARENT_INDEX);
             if (o != DISPOSED && o != null && compareAndSet(PARENT_INDEX, o, DONE)) {
                 ((DisposableContainer)o).delete(this);
@@ -83,7 +86,7 @@ implements Runnable, Callable<Object>, Disposable {
                 return;
             }
             if (o == DISPOSED) {
-                f.cancel(true);
+                f.cancel(get(THREAD_INDEX) != Thread.currentThread());
                 return;
             }
             if (compareAndSet(FUTURE_INDEX, o, f)) {
@@ -101,7 +104,7 @@ implements Runnable, Callable<Object>, Disposable {
             }
             if (compareAndSet(FUTURE_INDEX, o, DISPOSED)) {
                 if (o != null) {
-                    ((Future<?>)o).cancel(true);
+                    ((Future<?>)o).cancel(get(THREAD_INDEX) != Thread.currentThread());
                 }
                 break;
             }
