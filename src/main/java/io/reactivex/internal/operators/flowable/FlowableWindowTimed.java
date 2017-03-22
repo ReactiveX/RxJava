@@ -281,6 +281,7 @@ public final class FlowableWindowTimed<T> extends AbstractFlowableWithUpstream<T
         final int bufferSize;
         final boolean restartTimerOnMaxSize;
         final long maxSize;
+        final Scheduler.Worker worker;
 
         long count;
 
@@ -289,8 +290,6 @@ public final class FlowableWindowTimed<T> extends AbstractFlowableWithUpstream<T
         Subscription s;
 
         UnicastProcessor<T> window;
-
-        Scheduler.Worker worker;
 
         volatile boolean terminated;
 
@@ -307,6 +306,11 @@ public final class FlowableWindowTimed<T> extends AbstractFlowableWithUpstream<T
             this.bufferSize = bufferSize;
             this.maxSize = maxSize;
             this.restartTimerOnMaxSize = restartTimerOnMaxSize;
+            if (restartTimerOnMaxSize) {
+                worker = scheduler.createWorker();
+            } else {
+                worker = null;
+            }
         }
 
         @Override
@@ -342,10 +346,7 @@ public final class FlowableWindowTimed<T> extends AbstractFlowableWithUpstream<T
                 Disposable d;
                 ConsumerIndexHolder consumerIndexHolder = new ConsumerIndexHolder(producerIndex, this);
                 if (restartTimerOnMaxSize) {
-                    Scheduler.Worker sw = scheduler.createWorker();
-                    worker = sw;
-                    sw.schedulePeriodically(consumerIndexHolder, timespan, timespan, unit);
-                    d = sw;
+                    d = worker.schedulePeriodically(consumerIndexHolder, timespan, timespan, unit);
                 } else {
                     d = scheduler.schedulePeriodicallyDirect(consumerIndexHolder, timespan, timespan, unit);
                 }
@@ -451,6 +452,10 @@ public final class FlowableWindowTimed<T> extends AbstractFlowableWithUpstream<T
 
         public void dispose() {
             DisposableHelper.dispose(timer);
+            Worker w = worker;
+            if (w != null) {
+                w.dispose();
+            }
         }
 
         void drainLoop() {
@@ -495,9 +500,9 @@ public final class FlowableWindowTimed<T> extends AbstractFlowableWithUpstream<T
 
                     if (isHolder) {
                         ConsumerIndexHolder consumerIndexHolder = (ConsumerIndexHolder) o;
-                        if (producerIndex == consumerIndexHolder.index) {
+                        if (restartTimerOnMaxSize || producerIndex == consumerIndexHolder.index) {
                             w.onComplete();
-
+                            count = 0;
                             w = UnicastProcessor.<T>create(bufferSize);
                             window = w;
 
