@@ -12,6 +12,7 @@
  */
 package io.reactivex.internal.operators.flowable;
 
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.*;
 
 import org.junit.*;
@@ -318,5 +319,22 @@ public class FlowableDelaySubscriptionOtherTest {
                 return Flowable.just(1).delaySubscription(o);
             }
         }, false, 1, 1, 1);
+    }
+
+    @Test
+    public void afterDelayNoInterrupt() {
+        final TestSubscriber<Boolean> observer = TestSubscriber.create();
+        Flowable.<Boolean>create(new FlowableOnSubscribe<Boolean>() {
+            @Override
+            public void subscribe(FlowableEmitter<Boolean> emitter) throws Exception {
+              emitter.onNext(Thread.interrupted());
+              emitter.onComplete();
+            }
+        }, BackpressureStrategy.MISSING)
+        .delaySubscription(100, TimeUnit.MICROSECONDS)
+        .subscribe(observer);
+
+        observer.awaitTerminalEvent();
+        observer.assertValue(false);
     }
 }

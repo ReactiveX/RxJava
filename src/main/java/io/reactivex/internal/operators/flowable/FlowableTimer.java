@@ -73,8 +73,8 @@ public final class FlowableTimer extends Flowable<Long> {
         public void run() {
             if (get() != DisposableHelper.DISPOSED) {
                 if (requested) {
-                    actual.onNext(0L);
                     lazySet(EmptyDisposable.INSTANCE);
+                    actual.onNext(0L);
                     actual.onComplete();
                 } else {
                     lazySet(EmptyDisposable.INSTANCE);
