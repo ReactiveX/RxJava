@@ -13,6 +13,7 @@
 
 package io.reactivex.subjects;
 
+import io.reactivex.annotations.Experimental;
 import io.reactivex.annotations.Nullable;
 import io.reactivex.plugins.RxJavaPlugins;
 import java.util.concurrent.atomic.*;
@@ -82,7 +83,7 @@ public final class UnicastSubject<T> extends Subject<T> {
      */
     @CheckReturnValue
     public static <T> UnicastSubject<T> create() {
-        return new UnicastSubject<T>(bufferSize());
+        return new UnicastSubject<T>(bufferSize(), true);
     }
 
     /**
@@ -93,7 +94,7 @@ public final class UnicastSubject<T> extends Subject<T> {
      */
     @CheckReturnValue
     public static <T> UnicastSubject<T> create(int capacityHint) {
-        return new UnicastSubject<T>(capacityHint);
+        return new UnicastSubject<T>(capacityHint, true);
     }
 
     /**
@@ -127,12 +128,13 @@ public final class UnicastSubject<T> extends Subject<T> {
      * @return an UnicastSubject instance
      */
     @CheckReturnValue
+    @Experimental
     public static <T> UnicastSubject<T> create(int capacityHint, Runnable onTerminate, boolean delayError) {
         return new UnicastSubject<T>(capacityHint, onTerminate, delayError);
     }
 
     /**
-     * Creates an UnicastSubject with an internal buffer capacity hint 16 and given delay error flag
+     * Creates an UnicastSubject with an internal buffer capacity hint 16 and given delay error flag.
      *
      * <p>The callback, if not null, is called exactly once and
      * non-overlapped with any active replay.
@@ -142,6 +144,7 @@ public final class UnicastSubject<T> extends Subject<T> {
      * @return an UnicastSubject instance
      */
     @CheckReturnValue
+    @Experimental
     public static <T> UnicastSubject<T> create(boolean delayError) {
         return new UnicastSubject<T>(bufferSize(), delayError);
     }
@@ -172,15 +175,6 @@ public final class UnicastSubject<T> extends Subject<T> {
      * */
     UnicastSubject(int capacityHint, Runnable onTerminate) {
         this(capacityHint, onTerminate, true);
-    }
-
-    /**
-     * Creates an UnicastSubject with the given capacity hint.
-     * @param capacityHint the capacity hint for the internal, unbounded queue
-     * @since 2.0
-     */
-    UnicastSubject(int capacityHint) {
-        this(capacityHint, true);
     }
 
     /**
