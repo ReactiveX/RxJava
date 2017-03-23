@@ -136,6 +136,47 @@ public abstract class ParallelFlowable<T> {
     }
 
     /**
+     * Maps the source values on each 'rail' to another value and
+     * handles errors based on the given {@link ParallelFailureHandling} enumeration value.
+     * <p>
+     * Note that the same mapper function may be called from multiple threads concurrently.
+     * @param <R> the output value type
+     * @param mapper the mapper function turning Ts into Us.
+     * @param errorHandler the enumeration that defines how to handle errors thrown
+     *                     from the mapper function
+     * @return the new ParallelFlowable instance
+     * @since 2.0.8 - experimental
+     */
+    @CheckReturnValue
+    @Experimental
+    public final <R> ParallelFlowable<R> map(@NonNull Function<? super T, ? extends R> mapper, @NonNull ParallelFailureHandling errorHandler) {
+        ObjectHelper.requireNonNull(mapper, "mapper");
+        ObjectHelper.requireNonNull(errorHandler, "errorHandler is null");
+        return RxJavaPlugins.onAssembly(new ParallelMapTry<T, R>(this, mapper, errorHandler));
+    }
+
+    /**
+     * Maps the source values on each 'rail' to another value and
+     * handles errors based on the returned value by the handler function.
+     * <p>
+     * Note that the same mapper function may be called from multiple threads concurrently.
+     * @param <R> the output value type
+     * @param mapper the mapper function turning Ts into Us.
+     * @param errorHandler the function called with the current repeat count and
+     *                     failure Throwable and should return one of the {@link ParallelFailureHandling}
+     *                     enumeration values to indicate how to proceed.
+     * @return the new ParallelFlowable instance
+     * @since 2.0.8 - experimental
+     */
+    @CheckReturnValue
+    @Experimental
+    public final <R> ParallelFlowable<R> map(@NonNull Function<? super T, ? extends R> mapper, @NonNull BiFunction<? super Long, ? super Throwable, ParallelFailureHandling> errorHandler) {
+        ObjectHelper.requireNonNull(mapper, "mapper");
+        ObjectHelper.requireNonNull(errorHandler, "errorHandler is null");
+        return RxJavaPlugins.onAssembly(new ParallelMapTry<T, R>(this, mapper, errorHandler));
+    }
+
+    /**
      * Filters the source values on each 'rail'.
      * <p>
      * Note that the same predicate may be called from multiple threads concurrently.
@@ -146,6 +187,46 @@ public abstract class ParallelFlowable<T> {
     public final ParallelFlowable<T> filter(@NonNull Predicate<? super T> predicate) {
         ObjectHelper.requireNonNull(predicate, "predicate");
         return RxJavaPlugins.onAssembly(new ParallelFilter<T>(this, predicate));
+    }
+
+    /**
+     * Filters the source values on each 'rail' and
+     * handles errors based on the given {@link ParallelFailureHandling} enumeration value.
+     * <p>
+     * Note that the same predicate may be called from multiple threads concurrently.
+     * @param predicate the function returning true to keep a value or false to drop a value
+     * @param errorHandler the enumeration that defines how to handle errors thrown
+     *                     from the predicate
+     * @return the new ParallelFlowable instance
+     * @since 2.0.8 - experimental
+     */
+    @CheckReturnValue
+    @Experimental
+    public final ParallelFlowable<T> filter(@NonNull Predicate<? super T> predicate, @NonNull ParallelFailureHandling errorHandler) {
+        ObjectHelper.requireNonNull(predicate, "predicate");
+        ObjectHelper.requireNonNull(errorHandler, "errorHandler is null");
+        return RxJavaPlugins.onAssembly(new ParallelFilterTry<T>(this, predicate, errorHandler));
+    }
+
+
+    /**
+     * Filters the source values on each 'rail' and
+     * handles errors based on the returned value by the handler function.
+     * <p>
+     * Note that the same predicate may be called from multiple threads concurrently.
+     * @param predicate the function returning true to keep a value or false to drop a value
+     * @param errorHandler the function called with the current repeat count and
+     *                     failure Throwable and should return one of the {@link ParallelFailureHandling}
+     *                     enumeration values to indicate how to proceed.
+     * @return the new ParallelFlowable instance
+     * @since 2.0.8 - experimental
+     */
+    @CheckReturnValue
+    @Experimental
+    public final ParallelFlowable<T> filter(@NonNull Predicate<? super T> predicate, @NonNull BiFunction<? super Long, ? super Throwable, ParallelFailureHandling> errorHandler) {
+        ObjectHelper.requireNonNull(predicate, "predicate");
+        ObjectHelper.requireNonNull(errorHandler, "errorHandler is null");
+        return RxJavaPlugins.onAssembly(new ParallelFilterTry<T>(this, predicate, errorHandler));
     }
 
     /**
@@ -420,6 +501,44 @@ public abstract class ParallelFlowable<T> {
                 Functions.EMPTY_LONG_CONSUMER,
                 Functions.EMPTY_ACTION
                 ));
+    }
+
+
+    /**
+     * Call the specified consumer with the current element passing through any 'rail' and
+     * handles errors based on the given {@link ParallelFailureHandling} enumeration value.
+     *
+     * @param onNext the callback
+     * @param errorHandler the enumeration that defines how to handle errors thrown
+     *                     from the onNext consumer
+     * @return the new ParallelFlowable instance
+     * @since 2.0.8 - experimental
+     */
+    @CheckReturnValue
+    @Experimental
+    public final ParallelFlowable<T> doOnNext(@NonNull Consumer<? super T> onNext, @NonNull ParallelFailureHandling errorHandler) {
+        ObjectHelper.requireNonNull(onNext, "onNext is null");
+        ObjectHelper.requireNonNull(errorHandler, "errorHandler is null");
+        return RxJavaPlugins.onAssembly(new ParallelDoOnNextTry<T>(this, onNext, errorHandler));
+    }
+
+    /**
+     * Call the specified consumer with the current element passing through any 'rail' and
+     * handles errors based on the returned value by the handler function.
+     *
+     * @param onNext the callback
+     * @param errorHandler the function called with the current repeat count and
+     *                     failure Throwable and should return one of the {@link ParallelFailureHandling}
+     *                     enumeration values to indicate how to proceed.
+     * @return the new ParallelFlowable instance
+     * @since 2.0.8 - experimental
+     */
+    @CheckReturnValue
+    @Experimental
+    public final ParallelFlowable<T> doOnNext(@NonNull Consumer<? super T> onNext, @NonNull BiFunction<? super Long, ? super Throwable, ParallelFailureHandling> errorHandler) {
+        ObjectHelper.requireNonNull(onNext, "onNext is null");
+        ObjectHelper.requireNonNull(errorHandler, "errorHandler is null");
+        return RxJavaPlugins.onAssembly(new ParallelDoOnNextTry<T>(this, onNext, errorHandler));
     }
 
     /**

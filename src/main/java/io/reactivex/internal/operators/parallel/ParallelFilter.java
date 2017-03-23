@@ -88,7 +88,7 @@ public final class ParallelFilter<T> extends ParallelFlowable<T> {
 
         @Override
         public final void onNext(T t) {
-            if (!tryOnNext(t)) {
+            if (!tryOnNext(t) && !done) {
                 s.request(1);
             }
         }
