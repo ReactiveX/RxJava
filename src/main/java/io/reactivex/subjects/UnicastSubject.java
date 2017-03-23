@@ -126,6 +126,7 @@ public final class UnicastSubject<T> extends Subject<T> {
      * @param onTerminate the callback to run when the Subject is terminated or cancelled, null not allowed
      * @param delayError deliver pending onNext events before onError
      * @return an UnicastSubject instance
+     * @since 2.0.8 - experimental
      */
     @CheckReturnValue
     @Experimental
@@ -142,6 +143,7 @@ public final class UnicastSubject<T> extends Subject<T> {
      * @param <T> the value type
      * @param delayError deliver pending onNext events before onError
      * @return an UnicastSubject instance
+     * @since 2.0.8 - experimental
      */
     @CheckReturnValue
     @Experimental
@@ -154,7 +156,7 @@ public final class UnicastSubject<T> extends Subject<T> {
      * Creates an UnicastSubject with the given capacity hint and delay error flag.
      * @param capacityHint the capacity hint for the internal, unbounded queue
      * @param delayError deliver pending onNext events before onError
-     * @since 2.0
+     * @since 2.0.8 - experimental
      */
     UnicastSubject(int capacityHint, boolean delayError) {
         this.queue = new SpscLinkedArrayQueue<T>(ObjectHelper.verifyPositive(capacityHint, "capacityHint"));
@@ -183,7 +185,7 @@ public final class UnicastSubject<T> extends Subject<T> {
      * @param capacityHint the capacity hint for the internal, unbounded queue
      * @param onTerminate the callback to run when the Subject is terminated or cancelled, null not allowed
      * @param delayError deliver pending onNext events before onError
-     * @since 2.0
+     * @since 2.0.8 - experimental
      */
     UnicastSubject(int capacityHint, Runnable onTerminate, boolean delayError) {
         this.queue = new SpscLinkedArrayQueue<T>(ObjectHelper.verifyPositive(capacityHint, "capacityHint"));
