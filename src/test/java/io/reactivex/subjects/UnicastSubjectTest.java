@@ -27,6 +27,7 @@ import io.reactivex.internal.fuseable.*;
 import io.reactivex.observers.*;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.schedulers.Schedulers;
+import static org.mockito.Mockito.mock;
 
 public class UnicastSubjectTest {
 
@@ -83,6 +84,34 @@ public class UnicastSubjectTest {
     }
 
     @Test
+    public void threeArgsFactoryFailFast() {
+        Runnable noop = mock(Runnable.class);
+        UnicastSubject<Integer> ap = UnicastSubject.create(16, noop, false);
+        ap.onNext(1);
+        ap.onError(new RuntimeException());
+        TestObserver<Integer> ts = TestObserver.create();
+        ap.subscribe(ts);
+
+        ts
+                .assertValueCount(0)
+                .assertError(RuntimeException.class);
+    }
+
+    @Test
+    public void threeArgsFactoryDelayError() {
+        Runnable noop = mock(Runnable.class);
+        UnicastSubject<Integer> ap = UnicastSubject.create(16, noop, true);
+        ap.onNext(1);
+        ap.onError(new RuntimeException());
+        TestObserver<Integer> ts = TestObserver.create();
+        ap.subscribe(ts);
+
+        ts
+                .assertValueCount(1)
+                .assertError(RuntimeException.class);
+    }
+
+    @Test
     public void fusionOfflineFailFast() {
         UnicastSubject<Integer> ap = UnicastSubject.create(false);
         ap.onNext(1);
@@ -93,6 +122,36 @@ public class UnicastSubjectTest {
         ts
                 .assertValueCount(0)
                 .assertError(RuntimeException.class);
+    }
+
+    @Test
+    public void fusionOfflineFailFastMultipleEvents() {
+        UnicastSubject<Integer> ap = UnicastSubject.create(false);
+        ap.onNext(1);
+        ap.onNext(2);
+        ap.onNext(3);
+        ap.onComplete();
+        TestObserver<Integer> ts = ObserverFusion.newTest(QueueDisposable.ANY);
+        ap.subscribe(ts);
+
+        ts
+                .assertValueCount(3)
+                .assertComplete();
+    }
+
+    @Test
+    public void failFastMultipleEvents() {
+        UnicastSubject<Integer> ap = UnicastSubject.create(false);
+        ap.onNext(1);
+        ap.onNext(2);
+        ap.onNext(3);
+        ap.onComplete();
+        TestObserver<Integer> ts = TestObserver.create();
+        ap.subscribe(ts);
+
+        ts
+                .assertValueCount(3)
+                .assertComplete();
     }
 
     @Test
