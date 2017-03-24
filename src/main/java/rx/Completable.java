@@ -1729,6 +1729,7 @@ public class Completable {
             @Override
             public void call(final rx.CompletableSubscriber s) {
                 final SerialSubscription sd = new SerialSubscription();
+                s.onSubscribe(sd);
                 unsafeSubscribe(new rx.CompletableSubscriber() {
 
                     @Override
