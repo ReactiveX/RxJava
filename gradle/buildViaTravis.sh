@@ -1,6 +1,13 @@
 #!/bin/bash
 # This script will build the project.
 
+buildTag="$TRAVIS_TAG"
+
+if [ "$buildTag" != "" ] && [ "${buildTag:0:3}" != "v2." ]; then
+   echo -e "Wrong tag on the 2.x brach: $buildTag : build stopped"
+   exit 1
+fi
+
 GRADLE_OPTS=-Xmx832m
 
 if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then
