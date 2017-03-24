@@ -54,7 +54,7 @@ public final class UnicastSubject<T> extends Subject<T> {
     /** The optional callback when the Subject gets cancelled or terminates. */
     final AtomicReference<Runnable> onTerminate;
 
-    /** deliver onNext events before error event */
+    /** deliver onNext events before error event. */
     final boolean delayError;
 
     /** Indicates the single observer has cancelled. */

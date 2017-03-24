@@ -40,7 +40,7 @@ implements Disposable {
 
     protected static final FutureTask<Void> DISPOSED = new FutureTask<Void>(Functions.EMPTY_RUNNABLE, null);
 
-    public AbstractDirectTask(Runnable runnable) {
+    AbstractDirectTask(Runnable runnable) {
         this.runnable = runnable;
     }
 
