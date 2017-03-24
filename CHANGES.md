@@ -1,6 +1,6 @@
 # RxJava Releases #
 
-### Version 1.2.8 - March 24, 2017 ([Maven](http://search.maven.org/#artifactdetails%7Cio.reactivex%7Crxjava%7C1.2.8%7C))
+### Version 1.2.9 - March 24, 2017 ([Maven](http://search.maven.org/#artifactdetails%7Cio.reactivex%7Crxjava%7C1.2.9%7C))
 
 #### API enhancements
 - [Pull 5146](https://github.com/ReactiveX/RxJava/pull/5146): Add `Single.unsubscribeOn`.
