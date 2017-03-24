@@ -660,7 +660,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * return value of the {@link Future#get} method of that object, by passing the object into the {@code from}
      * method.
      * <p>
-     * <em>Important note:</em> This Maybe is blocking; you cannot unsubscribe from it.
+     * <em>Important note:</em> This Maybe is blocking; you cannot dispose it.
      * <p>
      * Unlike 1.x, cancelling the Maybe won't cancel the future. If necessary, one can use composition to achieve the
      * cancellation effect: {@code futureMaybe.doOnDispose(() -> future.cancel(true));}.
@@ -696,7 +696,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * Unlike 1.x, cancelling the Maybe won't cancel the future. If necessary, one can use composition to achieve the
      * cancellation effect: {@code futureMaybe.doOnCancel(() -> future.cancel(true));}.
      * <p>
-     * <em>Important note:</em> This Maybe is blocking on the thread it gets subscribed on; you cannot unsubscribe from it.
+     * <em>Important note:</em> This Maybe is blocking on the thread it gets subscribed on; you cannot dispose it.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code fromFuture} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -2036,7 +2036,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * The operator subscribes only when the first downstream subscriber subscribes and maintains
      * a single subscription towards this Maybe.
      * <p>
-     * <em>Note:</em> You sacrifice the ability to unsubscribe from the origin when you use the {@code cache}.
+     * <em>Note:</em> You sacrifice the ability to dispose the origin when you use the {@code cache}.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code cache} does not operate by default on a particular {@link Scheduler}.</dd>

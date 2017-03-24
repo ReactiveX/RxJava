@@ -249,10 +249,7 @@ public final class ParallelFilterTry<T> extends ParallelFlowable<T> {
                         }
                     }
 
-                    if (b) {
-                        return actual.tryOnNext(t);
-                    }
-                    return false;
+                    return b && actual.tryOnNext(t);
                 }
             }
             return false;

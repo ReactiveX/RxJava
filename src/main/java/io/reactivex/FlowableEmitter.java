@@ -33,14 +33,14 @@ public interface FlowableEmitter<T> extends Emitter<T> {
 
     /**
      * Sets a Disposable on this emitter; any previous Disposable
-     * or Cancellation will be unsubscribed/cancelled.
+     * or Cancellation will be disposed/cancelled.
      * @param s the disposable, null is allowed
      */
     void setDisposable(@Nullable Disposable s);
 
     /**
      * Sets a Cancellable on this emitter; any previous Disposable
-     * or Cancellation will be unsubscribed/cancelled.
+     * or Cancellation will be disposed/cancelled.
      * @param c the cancellable resource, null is allowed
      */
     void setCancellable(@Nullable Cancellable c);

@@ -89,7 +89,7 @@ public abstract class ParallelFlowable<T> {
     }
 
     /**
-     * Take a Publisher and prepare to consume it on parallallism number of 'rails' in a round-robin fashion.
+     * Take a Publisher and prepare to consume it on parallelism number of 'rails' in a round-robin fashion.
      * @param <T> the value type
      * @param source the source Publisher
      * @param parallelism the number of parallel rails
@@ -101,7 +101,7 @@ public abstract class ParallelFlowable<T> {
     }
 
     /**
-     * Take a Publisher and prepare to consume it on parallallism number of 'rails' ,
+     * Take a Publisher and prepare to consume it on parallelism number of 'rails' ,
      * possibly ordered and round-robin fashion and use custom prefetch amount and queue
      * for dealing with the source Publisher's values.
      * @param <T> the value type
@@ -453,7 +453,7 @@ public abstract class ParallelFlowable<T> {
      * This operator requires a finite source ParallelFlowable.
      *
      * @param comparator the comparator to compare elements
-     * @return the new Px instannce
+     * @return the new Flowable instance
      */
     @CheckReturnValue
     public final Flowable<List<T>> toSortedList(@NonNull Comparator<? super T> comparator) {
@@ -466,7 +466,7 @@ public abstract class ParallelFlowable<T> {
      *
      * @param comparator the comparator to compare elements
      * @param capacityHint the expected number of total elements
-     * @return the new Px instannce
+     * @return the new Flowable instance
      */
     @CheckReturnValue
     public final Flowable<List<T>> toSortedList(@NonNull Comparator<? super T> comparator, int capacityHint) {
@@ -695,7 +695,7 @@ public abstract class ParallelFlowable<T> {
      *
      * @param <C> the collection type
      * @param collectionSupplier the supplier of the collection in each rail
-     * @param collector the collector, taking the per-rali collection and the current item
+     * @param collector the collector, taking the per-rail collection and the current item
      * @return the new ParallelFlowable instance
      */
     @CheckReturnValue

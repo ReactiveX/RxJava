@@ -282,9 +282,9 @@ public final class ParallelFromPublisher<T> extends ParallelFlowable<T> {
                         break;
                     }
 
-                    long ridx = r.get(idx);
-                    long eidx = e[idx];
-                    if (ridx != eidx && r.get(n + idx) == 0) {
+                    long requestAtIndex = r.get(idx);
+                    long emissionAtIndex = e[idx];
+                    if (requestAtIndex != emissionAtIndex && r.get(n + idx) == 0) {
 
                         T v;
 
@@ -305,7 +305,7 @@ public final class ParallelFromPublisher<T> extends ParallelFlowable<T> {
 
                         a[idx].onNext(v);
 
-                        e[idx] = eidx + 1;
+                        e[idx] = emissionAtIndex + 1;
 
                         int c = ++consumed;
                         if (c == limit) {
@@ -370,9 +370,9 @@ public final class ParallelFromPublisher<T> extends ParallelFlowable<T> {
                         return;
                     }
 
-                    long ridx = r.get(idx);
-                    long eidx = e[idx];
-                    if (ridx != eidx && r.get(n + idx) == 0) {
+                    long requestAtIndex = r.get(idx);
+                    long emissionAtIndex = e[idx];
+                    if (requestAtIndex != emissionAtIndex && r.get(n + idx) == 0) {
 
                         T v;
 
@@ -396,7 +396,7 @@ public final class ParallelFromPublisher<T> extends ParallelFlowable<T> {
 
                         a[idx].onNext(v);
 
-                        e[idx] = eidx + 1;
+                        e[idx] = emissionAtIndex + 1;
 
                         notReady = 0;
                     } else {

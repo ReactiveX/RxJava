@@ -1880,7 +1880,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * return value of the {@link Future#get} method of that object, by passing the object into the {@code from}
      * method.
      * <p>
-     * <em>Important note:</em> This Publisher is blocking on the thread it gets subscribed on; you cannot unsubscribe from it.
+     * <em>Important note:</em> This Publisher is blocking on the thread it gets subscribed on; you cannot cancel it.
      * <p>
      * Unlike 1.x, cancelling the Flowable won't cancel the future. If necessary, one can use composition to achieve the
      * cancellation effect: {@code futurePublisher.doOnCancel(() -> future.cancel(true));}.
@@ -1919,7 +1919,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * Unlike 1.x, cancelling the Flowable won't cancel the future. If necessary, one can use composition to achieve the
      * cancellation effect: {@code futurePublisher.doOnCancel(() -> future.cancel(true));}.
      * <p>
-     * <em>Important note:</em> This Publisher is blocking on the thread it gets subscribed on; you cannot unsubscribe from it.
+     * <em>Important note:</em> This Publisher is blocking on the thread it gets subscribed on; you cannot cancel it.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream.</dd>
@@ -1960,7 +1960,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * Unlike 1.x, cancelling the Flowable won't cancel the future. If necessary, one can use composition to achieve the
      * cancellation effect: {@code futurePublisher.doOnCancel(() -> future.cancel(true));}.
      * <p>
-     * <em>Important note:</em> This Publisher is blocking; you cannot unsubscribe from it.
+     * <em>Important note:</em> This Publisher is blocking; you cannot cancel it.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream.</dd>
@@ -3839,7 +3839,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * from the earlier-emitted Publisher and begins emitting items from the new one.
      * <p>
      * The resulting Publisher completes if both the outer Publisher and the last inner Publisher, if any, complete.
-     * If the outer Publisher signals an onError, the inner Publisher is unsubscribed and the error delivered in-sequence.
+     * If the outer Publisher signals an onError, the inner Publisher is cancelled and the error delivered in-sequence.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream. The outer {@code Publisher} is consumed in an
@@ -3879,7 +3879,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * from the earlier-emitted Publisher and begins emitting items from the new one.
      * <p>
      * The resulting Publisher completes if both the outer Publisher and the last inner Publisher, if any, complete.
-     * If the outer Publisher signals an onError, the inner Publisher is unsubscribed and the error delivered in-sequence.
+     * If the outer Publisher signals an onError, the inner Publisher is cancelled and the error delivered in-sequence.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream. The outer {@code Publisher} is consumed in an
@@ -4160,11 +4160,11 @@ public abstract class Flowable<T> implements Publisher<T> {
      * the number of {@code onNext} invocations of the source Publisher that emits the fewest items.
      * <p>
      * The operator subscribes to its sources in order they are specified and completes eagerly if
-     * one of the sources is shorter than the rest while unsubscribing the other sources. Therefore, it
+     * one of the sources is shorter than the rest while cancelling the other sources. Therefore, it
      * is possible those other sources will never be able to run to completion (and thus not calling
      * {@code doOnComplete()}). This can also happen if the sources are exactly the same length; if
      * source A completes and B has been consumed and is about to complete, the operator detects A won't
-     * be sending further values and it will unsubscribe B immediately. For example:
+     * be sending further values and it will cancel B immediately. For example:
      * <pre><code>zip(Arrays.asList(range(1, 5).doOnComplete(action1), range(6, 5).doOnComplete(action2)), (a) -&gt; a)</code></pre>
      * {@code action1} will be called but {@code action2} won't.
      * <br>To work around this termination property,
@@ -4213,11 +4213,11 @@ public abstract class Flowable<T> implements Publisher<T> {
      * the number of {@code onNext} invocations of the source Publisher that emits the fewest items.
      * <p>
      * The operator subscribes to its sources in order they are specified and completes eagerly if
-     * one of the sources is shorter than the rest while unsubscribing the other sources. Therefore, it
+     * one of the sources is shorter than the rest while cancel the other sources. Therefore, it
      * is possible those other sources will never be able to run to completion (and thus not calling
      * {@code doOnComplete()}). This can also happen if the sources are exactly the same length; if
      * source A completes and B has been consumed and is about to complete, the operator detects A won't
-     * be sending further values and it will unsubscribe B immediately. For example:
+     * be sending further values and it will cancel B immediately. For example:
      * <pre><code>zip(just(range(1, 5).doOnComplete(action1), range(6, 5).doOnComplete(action2)), (a) -&gt; a)</code></pre>
      * {@code action1} will be called but {@code action2} won't.
      * <br>To work around this termination property,
@@ -4270,11 +4270,11 @@ public abstract class Flowable<T> implements Publisher<T> {
      * items.
      * <p>
      * The operator subscribes to its sources in order they are specified and completes eagerly if
-     * one of the sources is shorter than the rest while unsubscribing the other sources. Therefore, it
+     * one of the sources is shorter than the rest while cancelling the other sources. Therefore, it
      * is possible those other sources will never be able to run to completion (and thus not calling
      * {@code doOnComplete()}). This can also happen if the sources are exactly the same length; if
      * source A completes and B has been consumed and is about to complete, the operator detects A won't
-     * be sending further values and it will unsubscribe B immediately. For example:
+     * be sending further values and it will cancel B immediately. For example:
      * <pre><code>zip(range(1, 5).doOnComplete(action1), range(6, 5).doOnComplete(action2), (a, b) -&gt; a + b)</code></pre>
      * {@code action1} will be called but {@code action2} won't.
      * <br>To work around this termination property,
@@ -4330,11 +4330,11 @@ public abstract class Flowable<T> implements Publisher<T> {
      * items.
      * <p>
      * The operator subscribes to its sources in order they are specified and completes eagerly if
-     * one of the sources is shorter than the rest while unsubscribing the other sources. Therefore, it
+     * one of the sources is shorter than the rest while cancelling the other sources. Therefore, it
      * is possible those other sources will never be able to run to completion (and thus not calling
      * {@code doOnComplete()}). This can also happen if the sources are exactly the same length; if
      * source A completes and B has been consumed and is about to complete, the operator detects A won't
-     * be sending further values and it will unsubscribe B immediately. For example:
+     * be sending further values and it will cancel B immediately. For example:
      * <pre><code>zip(range(1, 5).doOnComplete(action1), range(6, 5).doOnComplete(action2), (a, b) -&gt; a + b)</code></pre>
      * {@code action1} will be called but {@code action2} won't.
      * <br>To work around this termination property,
@@ -4392,11 +4392,11 @@ public abstract class Flowable<T> implements Publisher<T> {
      * items.
      * <p>
      * The operator subscribes to its sources in order they are specified and completes eagerly if
-     * one of the sources is shorter than the rest while unsubscribing the other sources. Therefore, it
+     * one of the sources is shorter than the rest while cancelling the other sources. Therefore, it
      * is possible those other sources will never be able to run to completion (and thus not calling
      * {@code doOnComplete()}). This can also happen if the sources are exactly the same length; if
      * source A completes and B has been consumed and is about to complete, the operator detects A won't
-     * be sending further values and it will unsubscribe B immediately. For example:
+     * be sending further values and it will cancel B immediately. For example:
      * <pre><code>zip(range(1, 5).doOnComplete(action1), range(6, 5).doOnComplete(action2), (a, b) -&gt; a + b)</code></pre>
      * {@code action1} will be called but {@code action2} won't.
      * <br>To work around this termination property,
@@ -4455,11 +4455,11 @@ public abstract class Flowable<T> implements Publisher<T> {
      * items.
      * <p>
      * The operator subscribes to its sources in order they are specified and completes eagerly if
-     * one of the sources is shorter than the rest while unsubscribing the other sources. Therefore, it
+     * one of the sources is shorter than the rest while cancelling the other sources. Therefore, it
      * is possible those other sources will never be able to run to completion (and thus not calling
      * {@code doOnComplete()}). This can also happen if the sources are exactly the same length; if
      * source A completes and B has been consumed and is about to complete, the operator detects A won't
-     * be sending further values and it will unsubscribe B immediately. For example:
+     * be sending further values and it will cancel B immediately. For example:
      * <pre><code>zip(range(1, 5).doOnComplete(action1), range(6, 5).doOnComplete(action2), ..., (a, b, c) -&gt; a + b)</code></pre>
      * {@code action1} will be called but {@code action2} won't.
      * <br>To work around this termination property,
@@ -4520,11 +4520,11 @@ public abstract class Flowable<T> implements Publisher<T> {
      * items.
      * <p>
      * The operator subscribes to its sources in order they are specified and completes eagerly if
-     * one of the sources is shorter than the rest while unsubscribing the other sources. Therefore, it
+     * one of the sources is shorter than the rest while cancelling the other sources. Therefore, it
      * is possible those other sources will never be able to run to completion (and thus not calling
      * {@code doOnComplete()}). This can also happen if the sources are exactly the same length; if
      * source A completes and B has been consumed and is about to complete, the operator detects A won't
-     * be sending further values and it will unsubscribe B immediately. For example:
+     * be sending further values and it will cancel B immediately. For example:
      * <pre><code>zip(range(1, 5).doOnComplete(action1), range(6, 5).doOnComplete(action2), ..., (a, b, c, d) -&gt; a + b)</code></pre>
      * {@code action1} will be called but {@code action2} won't.
      * <br>To work around this termination property,
@@ -4590,11 +4590,11 @@ public abstract class Flowable<T> implements Publisher<T> {
      * items.
      * <p>
      * The operator subscribes to its sources in order they are specified and completes eagerly if
-     * one of the sources is shorter than the rest while unsubscribing the other sources. Therefore, it
+     * one of the sources is shorter than the rest while cancelling the other sources. Therefore, it
      * is possible those other sources will never be able to run to completion (and thus not calling
      * {@code doOnComplete()}). This can also happen if the sources are exactly the same length; if
      * source A completes and B has been consumed and is about to complete, the operator detects A won't
-     * be sending further values and it will unsubscribe B immediately. For example:
+     * be sending further values and it will cancel B immediately. For example:
      * <pre><code>zip(range(1, 5).doOnComplete(action1), range(6, 5).doOnComplete(action2), ..., (a, b, c, d, e) -&gt; a + b)</code></pre>
      * {@code action1} will be called but {@code action2} won't.
      * <br>To work around this termination property,
@@ -4663,11 +4663,11 @@ public abstract class Flowable<T> implements Publisher<T> {
      * items.
      * <p>
      * The operator subscribes to its sources in order they are specified and completes eagerly if
-     * one of the sources is shorter than the rest while unsubscribing the other sources. Therefore, it
+     * one of the sources is shorter than the rest while cancelling the other sources. Therefore, it
      * is possible those other sources will never be able to run to completion (and thus not calling
      * {@code doOnComplete()}). This can also happen if the sources are exactly the same length; if
      * source A completes and B has been consumed and is about to complete, the operator detects A won't
-     * be sending further values and it will unsubscribe B immediately. For example:
+     * be sending further values and it will cancel B immediately. For example:
      * <pre><code>zip(range(1, 5).doOnComplete(action1), range(6, 5).doOnComplete(action2), ..., (a, b, c, d, e, f) -&gt; a + b)</code></pre>
      * {@code action1} will be called but {@code action2} won't.
      * <br>To work around this termination property,
@@ -4740,11 +4740,11 @@ public abstract class Flowable<T> implements Publisher<T> {
      * items.
      * <p>
      * The operator subscribes to its sources in order they are specified and completes eagerly if
-     * one of the sources is shorter than the rest while unsubscribing the other sources. Therefore, it
+     * one of the sources is shorter than the rest while cancelling the other sources. Therefore, it
      * is possible those other sources will never be able to run to completion (and thus not calling
      * {@code doOnComplete()}). This can also happen if the sources are exactly the same length; if
      * source A completes and B has been consumed and is about to complete, the operator detects A won't
-     * be sending further values and it will unsubscribe B immediately. For example:
+     * be sending further values and it will cancel B immediately. For example:
      * <pre><code>zip(range(1, 5).doOnComplete(action1), range(6, 5).doOnComplete(action2), ..., (a, b, c, d, e, f, g) -&gt; a + b)</code></pre>
      * {@code action1} will be called but {@code action2} won't.
      * <br>To work around this termination property,
@@ -4822,11 +4822,11 @@ public abstract class Flowable<T> implements Publisher<T> {
      * items.
      * <p>
      * The operator subscribes to its sources in order they are specified and completes eagerly if
-     * one of the sources is shorter than the rest while unsubscribing the other sources. Therefore, it
+     * one of the sources is shorter than the rest while cancelling the other sources. Therefore, it
      * is possible those other sources will never be able to run to completion (and thus not calling
      * {@code doOnComplete()}). This can also happen if the sources are exactly the same length; if
      * source A completes and B has been consumed and is about to complete, the operator detects A won't
-     * be sending further values and it will unsubscribe B immediately. For example:
+     * be sending further values and it will cancel B immediately. For example:
      * <pre><code>zip(range(1, 5).doOnComplete(action1), range(6, 5).doOnComplete(action2), ..., (a, b, c, d, e, f, g, h) -&gt; a + b)</code></pre>
      * {@code action1} will be called but {@code action2} won't.
      * <br>To work around this termination property,
@@ -4908,11 +4908,11 @@ public abstract class Flowable<T> implements Publisher<T> {
      * items.
      * <p>
      * The operator subscribes to its sources in order they are specified and completes eagerly if
-     * one of the sources is shorter than the rest while unsubscribing the other sources. Therefore, it
+     * one of the sources is shorter than the rest while cancelling the other sources. Therefore, it
      * is possible those other sources will never be able to run to completion (and thus not calling
      * {@code doOnComplete()}). This can also happen if the sources are exactly the same length; if
      * source A completes and B has been consumed and is about to complete, the operator detects A won't
-     * be sending further values and it will unsubscribe B immediately. For example:
+     * be sending further values and it will cancel B immediately. For example:
      * <pre><code>zip(range(1, 5).doOnComplete(action1), range(6, 5).doOnComplete(action2), ..., (a, b, c, d, e, f, g, h, i) -&gt; a + b)</code></pre>
      * {@code action1} will be called but {@code action2} won't.
      * <br>To work around this termination property,
@@ -4996,11 +4996,11 @@ public abstract class Flowable<T> implements Publisher<T> {
      * the number of {@code onNext} invocations of the source Publisher that emits the fewest items.
      * <p>
      * The operator subscribes to its sources in order they are specified and completes eagerly if
-     * one of the sources is shorter than the rest while unsubscribing the other sources. Therefore, it
+     * one of the sources is shorter than the rest while cancelling the other sources. Therefore, it
      * is possible those other sources will never be able to run to completion (and thus not calling
      * {@code doOnComplete()}). This can also happen if the sources are exactly the same length; if
      * source A completes and B has been consumed and is about to complete, the operator detects A won't
-     * be sending further values and it will unsubscribe B immediately. For example:
+     * be sending further values and it will cancel B immediately. For example:
      * <pre><code>zip(new Publisher[]{range(1, 5).doOnComplete(action1), range(6, 5).doOnComplete(action2)}, (a) -&gt;
      * a)</code></pre>
      * {@code action1} will be called but {@code action2} won't.
@@ -5058,11 +5058,11 @@ public abstract class Flowable<T> implements Publisher<T> {
      * the number of {@code onNext} invocations of the source Publisher that emits the fewest items.
      * <p>
      * The operator subscribes to its sources in order they are specified and completes eagerly if
-     * one of the sources is shorter than the rest while unsubscribing the other sources. Therefore, it
+     * one of the sources is shorter than the rest while cancelling the other sources. Therefore, it
      * is possible those other sources will never be able to run to completion (and thus not calling
      * {@code doOnComplete()}). This can also happen if the sources are exactly the same length; if
      * source A completes and B has been consumed and is about to complete, the operator detects A won't
-     * be sending further values and it will unsubscribe B immediately. For example:
+     * be sending further values and it will cancel B immediately. For example:
      * <pre><code>zip(Arrays.asList(range(1, 5).doOnComplete(action1), range(6, 5).doOnComplete(action2)), (a) -&gt; a)</code></pre>
      * {@code action1} will be called but {@code action2} won't.
      * <br>To work around this termination property,
@@ -6355,13 +6355,13 @@ public abstract class Flowable<T> implements Publisher<T> {
      * <img width="640" height="410" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/cache.png" alt="">
      * <p>
      * This is useful when you want a Publisher to cache responses and you can't control the
-     * subscribe/unsubscribe behavior of all the {@link Subscriber}s.
+     * subscribe/cancel behavior of all the {@link Subscriber}s.
      * <p>
      * The operator subscribes only when the first downstream subscriber subscribes and maintains
      * a single subscription towards this Publisher. In contrast, the operator family of {@link #replay()}
      * that return a {@link ConnectableFlowable} require an explicit call to {@link ConnectableFlowable#connect()}.
      * <p>
-     * <em>Note:</em> You sacrifice the ability to unsubscribe from the origin when you use the {@code cache}
+     * <em>Note:</em> You sacrifice the ability to cancel the origin when you use the {@code cache}
      * Subscriber so be careful not to use this Subscriber on Publishers that emit an infinite or very large number
      * of items that will use up memory.
      * A possible workaround is to apply `takeUntil` with a predicate or
@@ -6413,13 +6413,13 @@ public abstract class Flowable<T> implements Publisher<T> {
      * <img width="640" height="410" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/cache.png" alt="">
      * <p>
      * This is useful when you want a Publisher to cache responses and you can't control the
-     * subscribe/unsubscribe behavior of all the {@link Subscriber}s.
+     * subscribe/cancel behavior of all the {@link Subscriber}s.
      * <p>
      * The operator subscribes only when the first downstream subscriber subscribes and maintains
      * a single subscription towards this Publisher. In contrast, the operator family of {@link #replay()}
      * that return a {@link ConnectableFlowable} require an explicit call to {@link ConnectableFlowable#connect()}.
      * <p>
-     * <em>Note:</em> You sacrifice the ability to unsubscribe from the origin when you use the {@code cache}
+     * <em>Note:</em> You sacrifice the ability to cancel the origin when you use the {@code cache}
      * Subscriber so be careful not to use this Subscriber on Publishers that emit an infinite or very large number
      * of items that will use up memory.
      * A possible workaround is to apply `takeUntil` with a predicate or
@@ -7717,12 +7717,12 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     /**
-     * Calls the unsubscribe {@code Action} if the downstream cancels the sequence.
+     * Calls the cancel {@code Action} if the downstream cancels the sequence.
      * <p>
      * The action is shared between subscriptions and thus may be called concurrently from multiple
      * threads; the action must be thread safe.
      * <p>
-     * If the action throws a runtime exception, that exception is rethrown by the {@code unsubscribe()} call,
+     * If the action throws a runtime exception, that exception is rethrown by the {@code onCancel()} call,
      * sometimes as a {@code CompositeException} if there were multiple exceptions along the way.
      * <p>
      * Note that terminal events trigger the action unless the {@code Publisher} is subscribed to via {@code unsafeSubscribe()}.
@@ -7730,7 +7730,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/doOnUnsubscribe.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>{@code doOnUnsubscribe} does not interact with backpressure requests or value delivery; backpressure
+     *  <dd>{@code doOnCancel} does not interact with backpressure requests or value delivery; backpressure
      *  behavior is preserved between its upstream and its downstream.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code doOnCancel} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -9915,7 +9915,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * Instructs a Publisher that is emitting items faster than its Subscriber can consume them to buffer up to
      * a given amount of items until they can be emitted. The resulting Publisher will {@code onError} emitting
      * a {@code BufferOverflowException} as soon as the buffer's capacity is exceeded, dropping all undelivered
-     * items, and unsubscribing from the source.
+     * items, and cancelling the source.
      * <p>
      * <img width="640" height="300" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/bp.obp.buffer.png" alt="">
      * <dl>
@@ -9942,7 +9942,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * Instructs a Publisher that is emitting items faster than its Subscriber can consume them to buffer up to
      * a given amount of items until they can be emitted. The resulting Publisher will {@code onError} emitting
      * a {@code BufferOverflowException} as soon as the buffer's capacity is exceeded, dropping all undelivered
-     * items, and unsubscribing from the source.
+     * items, and cancelling the source.
      * <p>
      * <img width="640" height="300" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/bp.obp.buffer.png" alt="">
      * <dl>
@@ -9973,7 +9973,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * Instructs a Publisher that is emitting items faster than its Subscriber can consume them to buffer up to
      * a given amount of items until they can be emitted. The resulting Publisher will {@code onError} emitting
      * a {@code BufferOverflowException} as soon as the buffer's capacity is exceeded, dropping all undelivered
-     * items, and unsubscribing from the source.
+     * items, and cancelling the source.
      * <p>
      * <img width="640" height="300" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/bp.obp.buffer.png" alt="">
      * <dl>
@@ -10007,7 +10007,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * Instructs a Publisher that is emitting items faster than its Subscriber can consume them to buffer up to
      * a given amount of items until they can be emitted. The resulting Publisher will {@code onError} emitting
      * a {@code BufferOverflowException} as soon as the buffer's capacity is exceeded, dropping all undelivered
-     * items, unsubscribing from the source, and notifying the producer with {@code onOverflow}.
+     * items, cancelling the source, and notifying the producer with {@code onOverflow}.
      * <p>
      * <img width="640" height="300" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/bp.obp.buffer.png" alt="">
      * <dl>
@@ -10044,7 +10044,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * Instructs a Publisher that is emitting items faster than its Subscriber can consume them to buffer up to
      * a given amount of items until they can be emitted. The resulting Publisher will {@code onError} emitting
      * a {@code BufferOverflowException} as soon as the buffer's capacity is exceeded, dropping all undelivered
-     * items, unsubscribing from the source, and notifying the producer with {@code onOverflow}.
+     * items, cancelling the source, and notifying the producer with {@code onOverflow}.
      * <p>
      * <img width="640" height="300" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/bp.obp.buffer.png" alt="">
      * <dl>
@@ -10075,7 +10075,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *
      * <ul>
      *     <li>{@code BackpressureOverflow.Strategy.ON_OVERFLOW_ERROR} (default) will {@code onError} dropping all undelivered items,
-     *     unsubscribing from the source, and notifying the producer with {@code onOverflow}. </li>
+     *     cancelling the source, and notifying the producer with {@code onOverflow}. </li>
      *     <li>{@code BackpressureOverflow.Strategy.ON_OVERFLOW_DROP_LATEST} will drop any new items emitted by the producer while
      *     the buffer is full, without generating any {@code onError}.  Each drop will however invoke {@code onOverflow}
      *     to signal the overflow to the producer.</li>j
@@ -12124,7 +12124,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     /**
      * Returns a new {@link Publisher} that multicasts (shares) the original {@link Publisher}. As long as
      * there is at least one {@link Subscriber} this {@link Publisher} will be subscribed and emitting data.
-     * When all subscribers have unsubscribed it will unsubscribe from the source {@link Publisher}.
+     * When all subscribers have cancelled it will cancel the source {@link Publisher}.
      * <p>
      * This is an alias for {@link #publish()}.{@link ConnectableFlowable#refCount()}.
      * <p>
@@ -13133,7 +13133,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * of these Publishers.
      * <p>
      * The resulting Publisher completes if both the upstream Publisher and the last inner Publisher, if any, complete.
-     * If the upstream Publisher signals an onError, the inner Publisher is unsubscribed and the error delivered in-sequence.
+     * If the upstream Publisher signals an onError, the inner Publisher is cancelled and the error delivered in-sequence.
      * <p>
      * <img width="640" height="350" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/switchMap.png" alt="">
      * <dl>
@@ -13166,7 +13166,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * of these Publishers.
      * <p>
      * The resulting Publisher completes if both the upstream Publisher and the last inner Publisher, if any, complete.
-     * If the upstream Publisher signals an onError, the inner Publisher is unsubscribed and the error delivered in-sequence.
+     * If the upstream Publisher signals an onError, the inner Publisher is cancelled and the error delivered in-sequence.
      * <p>
      * <img width="640" height="350" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/switchMap.png" alt="">
      * <dl>
@@ -14563,7 +14563,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * calling its {@link #subscribe} method.
      * <p>
      * Be careful not to use this operator on Publishers that emit infinite or very large numbers of items, as
-     * you do not have the option to unsubscribe.
+     * you do not have the option to cancel.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream and consumes the source {@code Publisher} in an
@@ -14596,7 +14596,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * calling its {@link #subscribe} method.
      * <p>
      * Be careful not to use this operator on Publishers that emit infinite or very large numbers of items, as
-     * you do not have the option to unsubscribe.
+     * you do not have the option to cancel.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream and consumes the source {@code Publisher} in an
@@ -14632,7 +14632,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * calling its {@link #subscribe} method.
      * <p>
      * Be careful not to use this operator on Publishers that emit infinite or very large numbers of items, as
-     * you do not have the option to unsubscribe.
+     * you do not have the option to cancel.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream and consumes the source {@code Publisher} in an
@@ -15038,7 +15038,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     /**
-     * Modifies the source Publisher so that subscribers will unsubscribe from it on a specified
+     * Modifies the source Publisher so that subscribers will cancel it on a specified
      * {@link Scheduler}.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
@@ -16040,11 +16040,11 @@ public abstract class Flowable<T> implements Publisher<T> {
      * <p>
      * <p>
      * The operator subscribes to its sources in order they are specified and completes eagerly if
-     * one of the sources is shorter than the rest while unsubscribing the other sources. Therefore, it
+     * one of the sources is shorter than the rest while cancelling the other sources. Therefore, it
      * is possible those other sources will never be able to run to completion (and thus not calling
      * {@code doOnComplete()}). This can also happen if the sources are exactly the same length; if
      * source A completes and B has been consumed and is about to complete, the operator detects A won't
-     * be sending further values and it will unsubscribe B immediately. For example:
+     * be sending further values and it will cancel B immediately. For example:
      * <pre><code>range(1, 5).doOnComplete(action1).zipWith(range(6, 5).doOnComplete(action2), (a, b) -&gt; a + b)</code></pre>
      * {@code action1} will be called but {@code action2} won't.
      * <br>To work around this termination property,
@@ -16088,11 +16088,11 @@ public abstract class Flowable<T> implements Publisher<T> {
      * <p>
      * <p>
      * The operator subscribes to its sources in order they are specified and completes eagerly if
-     * one of the sources is shorter than the rest while unsubscribing the other sources. Therefore, it
+     * one of the sources is shorter than the rest while cancelling the other sources. Therefore, it
      * is possible those other sources will never be able to run to completion (and thus not calling
      * {@code doOnComplete()}). This can also happen if the sources are exactly the same length; if
      * source A completes and B has been consumed and is about to complete, the operator detects A won't
-     * be sending further values and it will unsubscribe B immediately. For example:
+     * be sending further values and it will cancel B immediately. For example:
      * <pre><code>range(1, 5).doOnComplete(action1).zipWith(range(6, 5).doOnComplete(action2), (a, b) -&gt; a + b)</code></pre>
      * {@code action1} will be called but {@code action2} won't.
      * <br>To work around this termination property,
@@ -16139,11 +16139,11 @@ public abstract class Flowable<T> implements Publisher<T> {
      * <p>
      * <p>
      * The operator subscribes to its sources in order they are specified and completes eagerly if
-     * one of the sources is shorter than the rest while unsubscribing the other sources. Therefore, it
+     * one of the sources is shorter than the rest while cancelling the other sources. Therefore, it
      * is possible those other sources will never be able to run to completion (and thus not calling
      * {@code doOnComplete()}). This can also happen if the sources are exactly the same length; if
      * source A completes and B has been consumed and is about to complete, the operator detects A won't
-     * be sending further values and it will unsubscribe B immediately. For example:
+     * be sending further values and it will cancel B immediately. For example:
      * <pre><code>range(1, 5).doOnComplete(action1).zipWith(range(6, 5).doOnComplete(action2), (a, b) -&gt; a + b)</code></pre>
      * {@code action1} will be called but {@code action2} won't.
      * <br>To work around this termination property,

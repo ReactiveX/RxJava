@@ -61,7 +61,7 @@ import io.reactivex.processors.UnicastProcessor;
  * thread pool:
  * 
  * <pre>
- * Scheduler limitSched = Schedulers.computation().when(workers -> {
+ * Scheduler limitScheduler = Schedulers.computation().when(workers -> {
  *  // use merge max concurrent to limit the number of concurrent
  *  // callbacks two at a time
  *  return Completable.merge(Observable.merge(workers), 2);
@@ -79,7 +79,7 @@ import io.reactivex.processors.UnicastProcessor;
  * to the second.
  * 
  * <pre>
- * Scheduler limitSched = Schedulers.computation().when(workers -> {
+ * Scheduler limitScheduler = Schedulers.computation().when(workers -> {
  *  // use merge max concurrent to limit the number of concurrent
  *  // Observables two at a time
  *  return Completable.merge(Observable.merge(workers, 2));
@@ -92,7 +92,7 @@ import io.reactivex.processors.UnicastProcessor;
  * algorithm).
  * 
  * <pre>
- * Scheduler slowSched = Schedulers.computation().when(workers -> {
+ * Scheduler slowScheduler = Schedulers.computation().when(workers -> {
  *  // use concatenate to make each worker happen one at a time.
  *  return Completable.concat(workers.map(actions -> {
  *      // delay the starting of the next worker by 1 second.
@@ -245,8 +245,8 @@ public class SchedulerWhen extends Scheduler implements Disposable {
     }
 
     static class OnCompletedAction implements Runnable {
-        private CompletableObserver actionCompletable;
-        private Runnable action;
+        final CompletableObserver actionCompletable;
+        final Runnable action;
 
         OnCompletedAction(Runnable action, CompletableObserver actionCompletable) {
             this.action = action;

@@ -83,7 +83,6 @@ public final class ObservableDistinctUntilChanged<T, K> extends AbstractObservab
             }
 
             actual.onNext(t);
-            return;
         }
 
         @Override

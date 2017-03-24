@@ -48,7 +48,7 @@ public final class CompletableAmb extends Completable {
                         sources = b;
                     }
                     sources[count++] = element;
-                };
+                }
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 EmptyDisposable.error(e, s);

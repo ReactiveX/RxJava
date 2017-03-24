@@ -72,8 +72,6 @@ public final class FlowableWindow<T> extends AbstractFlowableWithUpstream<T, Flo
 
         UnicastProcessor<T> window;
 
-        boolean done;
-
         WindowExactSubscriber(Subscriber<? super Flowable<T>> actual, long size, int bufferSize) {
             super(1);
             this.actual = actual;
@@ -92,10 +90,6 @@ public final class FlowableWindow<T> extends AbstractFlowableWithUpstream<T, Flo
 
         @Override
         public void onNext(T t) {
-            if (done) {
-                return;
-            }
-
             long i = index;
 
             UnicastProcessor<T> w = window;
@@ -123,10 +117,6 @@ public final class FlowableWindow<T> extends AbstractFlowableWithUpstream<T, Flo
 
         @Override
         public void onError(Throwable t) {
-            if (done) {
-                RxJavaPlugins.onError(t);
-                return;
-            }
             Processor<T, T> w = window;
             if (w != null) {
                 window = null;
@@ -138,10 +128,6 @@ public final class FlowableWindow<T> extends AbstractFlowableWithUpstream<T, Flo
 
         @Override
         public void onComplete() {
-            if (done) {
-                return;
-            }
-
             Processor<T, T> w = window;
             if (w != null) {
                 window = null;
@@ -199,8 +185,6 @@ public final class FlowableWindow<T> extends AbstractFlowableWithUpstream<T, Flo
 
         UnicastProcessor<T> window;
 
-        boolean done;
-
         WindowSkipSubscriber(Subscriber<? super Flowable<T>> actual, long size, long skip, int bufferSize) {
             super(1);
             this.actual = actual;
@@ -221,10 +205,6 @@ public final class FlowableWindow<T> extends AbstractFlowableWithUpstream<T, Flo
 
         @Override
         public void onNext(T t) {
-            if (done) {
-                return;
-            }
-
             long i = index;
 
             UnicastProcessor<T> w = window;
@@ -258,10 +238,6 @@ public final class FlowableWindow<T> extends AbstractFlowableWithUpstream<T, Flo
 
         @Override
         public void onError(Throwable t) {
-            if (done) {
-                RxJavaPlugins.onError(t);
-                return;
-            }
             Processor<T, T> w = window;
             if (w != null) {
                 window = null;
@@ -273,10 +249,6 @@ public final class FlowableWindow<T> extends AbstractFlowableWithUpstream<T, Flo
 
         @Override
         public void onComplete() {
-            if (done) {
-                return;
-            }
-
             Processor<T, T> w = window;
             if (w != null) {
                 window = null;

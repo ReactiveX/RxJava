@@ -900,7 +900,7 @@ public final class ReplayProcessor<T> extends FlowableProcessor<T> {
 
                 if (e != 0L) {
                     if (rs.requested.get() != Long.MAX_VALUE) {
-                        r = rs.requested.addAndGet(e);
+                        rs.requested.addAndGet(e);
                     }
                 }
 
@@ -1173,7 +1173,7 @@ public final class ReplayProcessor<T> extends FlowableProcessor<T> {
 
                 if (e != 0L) {
                     if (rs.requested.get() != Long.MAX_VALUE) {
-                        r = rs.requested.addAndGet(e);
+                        rs.requested.addAndGet(e);
                     }
                 }
 

@@ -19,7 +19,7 @@ import io.reactivex.functions.Function;
 
 public final class SorterFunction<T> implements Function<List<T>, List<T>> {
 
-    Comparator<? super T> comparator;
+    final Comparator<? super T> comparator;
 
     public SorterFunction(Comparator<? super T> comparator) {
         this.comparator = comparator;

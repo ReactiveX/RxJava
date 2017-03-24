@@ -405,7 +405,6 @@ public final class ObservableFlatMap<T, U> extends AbstractObservableWithUpstrea
                         @SuppressWarnings("unchecked")
                         InnerObserver<T, U> is = (InnerObserver<T, U>)inner[j];
 
-                        U o = null;
                         for (;;) {
                             if (checkTerminate()) {
                                 return;
@@ -414,6 +413,7 @@ public final class ObservableFlatMap<T, U> extends AbstractObservableWithUpstrea
                             if (q == null) {
                                 break;
                             }
+                            U o;
                             for (;;) {
                                 try {
                                     o = q.poll();

@@ -110,13 +110,15 @@ public final class ParallelJoin<T> extends Flowable<T> {
         }
 
         void cancelAll() {
-            for (JoinInnerSubscriber<T> s : subscribers) {
+            for (int i = 0; i < subscribers.length; i++) {
+                JoinInnerSubscriber<T> s = subscribers[i];
                 s.cancel();
             }
         }
 
         void cleanup() {
-            for (JoinInnerSubscriber<T> s : subscribers) {
+            for (int i = 0; i < subscribers.length; i++) {
+                JoinInnerSubscriber<T> s = subscribers[i];
                 s.queue = null;
             }
         }
@@ -238,9 +240,8 @@ public final class ParallelJoin<T> extends Flowable<T> {
 
                     boolean empty = true;
 
-                    for (int i = 0; i < n; i++) {
+                    for (int i = 0; i < s.length; i++) {
                         JoinInnerSubscriber<T> inner = s[i];
-
                         SimplePlainQueue<T> q = inner.queue;
                         if (q != null) {
                             T v = q.poll();

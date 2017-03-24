@@ -199,7 +199,7 @@ public abstract class Scheduler {
      * size thread pool:
      * 
      * <pre>
-     * Scheduler limitSched = Schedulers.computation().when(workers -> {
+     * Scheduler limitScheduler = Schedulers.computation().when(workers -> {
      *  // use merge max concurrent to limit the number of concurrent
      *  // callbacks two at a time
      *  return Completable.merge(Flowable.merge(workers), 2);
@@ -217,7 +217,7 @@ public abstract class Scheduler {
      * subscription to the second.
      * 
      * <pre>
-     * Scheduler limitSched = Schedulers.computation().when(workers -> {
+     * Scheduler limitScheduler = Schedulers.computation().when(workers -> {
      *  // use merge max concurrent to limit the number of concurrent
      *  // Flowables two at a time
      *  return Completable.merge(Flowable.merge(workers, 2));
@@ -230,7 +230,7 @@ public abstract class Scheduler {
      * bucket algorithm).
      * 
      * <pre>
-     * Scheduler slowSched = Schedulers.computation().when(workers -> {
+     * Scheduler slowScheduler = Schedulers.computation().when(workers -> {
      *  // use concatenate to make each worker happen one at a time.
      *  return Completable.concat(workers.map(actions -> {
      *      // delay the starting of the next worker by 1 second.
@@ -254,7 +254,7 @@ public abstract class Scheduler {
     /**
      * Sequential Scheduler for executing actions on a single thread or event loop.
      * <p>
-     * Unsubscribing the {@link Worker} cancels all outstanding work and allows resource cleanup.
+     * Disposing the {@link Worker} cancels all outstanding work and allows resource cleanup.
      */
     public abstract static class Worker implements Disposable {
         /**

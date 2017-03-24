@@ -457,7 +457,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * value of the {@link Future#get} method of that object, by passing the object into the {@code from}
      * method.
      * <p>
-     * <em>Important note:</em> This Single is blocking; you cannot unsubscribe from it.
+     * <em>Important note:</em> This Single is blocking; you cannot dispose it.
      * <dl>
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code fromFuture} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -486,7 +486,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * the return value of the {@link Future#get} method of that object, by passing the object into the
      * {@code from} method.
      * <p>
-     * <em>Important note:</em> This {@code Single} is blocking; you cannot unsubscribe from it.
+     * <em>Important note:</em> This {@code Single} is blocking; you cannot dispose it.
      * <dl>
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code fromFuture} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -519,7 +519,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * the return value of the {@link Future#get} method of that object, by passing the object into the
      * {@code from} method.
      * <p>
-     * <em>Important note:</em> This {@code Single} is blocking; you cannot unsubscribe from it.
+     * <em>Important note:</em> This {@code Single} is blocking; you cannot dispose it.
      * <dl>
      * <dt><b>Scheduler:</b></dt>
      * <dd>You specify the {@link Scheduler} where the blocking wait will happen.</dd>

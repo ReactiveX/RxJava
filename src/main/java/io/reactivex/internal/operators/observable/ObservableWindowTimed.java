@@ -694,7 +694,6 @@ public final class ObservableWindowTimed<T> extends AbstractObservableWithUpstre
                             if (ws.isEmpty() && cancelled) {
                                 terminated = true;
                             }
-                            continue;
                         }
                     } else {
                         for (UnicastSubject<T> w : ws) {
