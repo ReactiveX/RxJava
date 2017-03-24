@@ -1,5 +1,16 @@
 # RxJava Releases #
 
+### Version 1.2.8 - March 24, 2017 ([Maven](http://search.maven.org/#artifactdetails%7Cio.reactivex%7Crxjava%7C1.2.8%7C))
+
+#### API enhancements
+- [Pull 5146](https://github.com/ReactiveX/RxJava/pull/5146): Add `Single.unsubscribeOn`.
+- [Pull 5195](https://github.com/ReactiveX/RxJava/pull/5195): Enhance `UnicastSubject` with optional delay error behavior.
+
+#### Bugfixes
+
+- [Pull 5141](https://github.com/ReactiveX/RxJava/pull/5141): Fix timed `replay()` not terminating when all items timeout.
+- [Pull 5181](https://github.com/ReactiveX/RxJava/pull/5181): `replay().refCount()` avoid leaking items between connections.
+
 ### Version 1.2.7 - February 24, 2017 ([Maven](http://search.maven.org/#artifactdetails%7Cio.reactivex%7Crxjava%7C1.2.7%7C))
 
 #### Deprecation of `create(OnSubscribe)`
