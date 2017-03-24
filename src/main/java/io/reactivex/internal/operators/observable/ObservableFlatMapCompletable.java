@@ -111,14 +111,12 @@ public final class ObservableFlatMapCompletable<T> extends AbstractObservableWit
                     if (decrementAndGet() == 0) {
                         Throwable ex = errors.terminate();
                         actual.onError(ex);
-                        return;
                     }
                 } else {
                     dispose();
                     if (getAndSet(0) > 0) {
                         Throwable ex = errors.terminate();
                         actual.onError(ex);
-                        return;
                     }
                 }
             } else {

@@ -129,7 +129,6 @@ public final class FlowableFlatMapCompletable<T> extends AbstractFlowableWithUps
                     if (decrementAndGet() == 0) {
                         Throwable ex = errors.terminate();
                         actual.onError(ex);
-                        return;
                     } else {
                         if (maxConcurrency != Integer.MAX_VALUE) {
                             s.request(1);
@@ -140,7 +139,6 @@ public final class FlowableFlatMapCompletable<T> extends AbstractFlowableWithUps
                     if (getAndSet(0) > 0) {
                         Throwable ex = errors.terminate();
                         actual.onError(ex);
-                        return;
                     }
                 }
             } else {

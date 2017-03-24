@@ -117,7 +117,7 @@ public class AppendOnlyLinkedArrayList<T> {
                 }
 
                 if (NotificationLite.acceptFull(o, subscriber)) {
-                    break;
+                    return true;
                 }
             }
             a = (Object[])a[c];
@@ -145,7 +145,7 @@ public class AppendOnlyLinkedArrayList<T> {
                 }
 
                 if (NotificationLite.acceptFull(o, observer)) {
-                    break;
+                    return true;
                 }
             }
             a = (Object[])a[c];

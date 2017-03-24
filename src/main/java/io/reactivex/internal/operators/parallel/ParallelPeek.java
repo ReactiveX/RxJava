@@ -159,7 +159,6 @@ public final class ParallelPeek<T> extends ParallelFlowable<T> {
                 } catch (Throwable ex) {
                     Exceptions.throwIfFatal(ex);
                     onError(ex);
-                    return;
                 }
             }
         }

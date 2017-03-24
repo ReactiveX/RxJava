@@ -49,7 +49,7 @@ public final class CompositeException extends RuntimeException {
      */
     public CompositeException(Throwable... exceptions) {
         this(exceptions == null ?
-            Arrays.asList(new NullPointerException("exceptions was null")) : Arrays.asList(exceptions));
+                Collections.singletonList(new NullPointerException("exceptions was null")) : Arrays.asList(exceptions));
     }
 
     /**
@@ -129,7 +129,7 @@ public final class CompositeException extends RuntimeException {
                     chain.initCause(e);
                 } catch (Throwable t) { // NOPMD
                     // ignore
-                    // the javadocs say that some Throwables (depending on how they're made) will never
+                    // the JavaDocs say that some Throwables (depending on how they're made) will never
                     // let me call initCause without blowing up even if it returns null
                 }
                 chain = getRootCause(chain);

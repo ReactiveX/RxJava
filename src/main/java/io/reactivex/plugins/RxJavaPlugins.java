@@ -387,7 +387,7 @@ public final class RxJavaPlugins {
      * bug cases that should pass through {@link #onError(Throwable)}
      * as is.
      * @param error the error to check
-     * @return true if the error should pass throug, false if
+     * @return true if the error should pass through, false if
      * it may be wrapped into an UndeliverableException
      */
     static boolean isBug(Throwable error) {
@@ -1166,7 +1166,7 @@ public final class RxJavaPlugins {
     }
 
     /**
-     * Set the handler that is called when an operator attemts a blocking
+     * Set the handler that is called when an operator attempts a blocking
      * await; the handler should return true to prevent the blocking
      * and to signal an IllegalStateException instead.
      * @param handler the handler to set, null resets to the default handler

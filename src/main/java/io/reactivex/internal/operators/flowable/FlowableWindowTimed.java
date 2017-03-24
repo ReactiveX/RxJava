@@ -788,7 +788,6 @@ public final class FlowableWindowTimed<T> extends AbstractFlowableWithUpstream<T
                                 worker.schedule(new Completion(w), timespan, unit);
                             } else {
                                 a.onError(new MissingBackpressureException("Can't emit window due to lack of requests"));
-                                continue;
                             }
                         } else {
                             ws.remove(work.w);
@@ -796,7 +795,6 @@ public final class FlowableWindowTimed<T> extends AbstractFlowableWithUpstream<T
                             if (ws.isEmpty() && cancelled) {
                                 terminated = true;
                             }
-                            continue;
                         }
                     } else {
                         for (UnicastProcessor<T> w : ws) {

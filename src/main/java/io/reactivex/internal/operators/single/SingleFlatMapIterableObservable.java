@@ -83,12 +83,12 @@ public final class SingleFlatMapIterableObservable<T, R> extends Observable<R> {
         @Override
         public void onSuccess(T value) {
             Observer<? super R> a = actual;
-            Iterator<? extends R> iter;
+            Iterator<? extends R> iterator;
             boolean has;
             try {
-                iter = mapper.apply(value).iterator();
+                iterator = mapper.apply(value).iterator();
 
-                has = iter.hasNext();
+                has = iterator.hasNext();
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
                 actual.onError(ex);
@@ -101,7 +101,7 @@ public final class SingleFlatMapIterableObservable<T, R> extends Observable<R> {
             }
 
             if (outputFused) {
-                it = iter;
+                it = iterator;
                 a.onNext(null);
                 a.onComplete();
             } else {
@@ -113,7 +113,7 @@ public final class SingleFlatMapIterableObservable<T, R> extends Observable<R> {
                     R v;
 
                     try {
-                        v = iter.next();
+                        v = iterator.next();
                     } catch (Throwable ex) {
                         Exceptions.throwIfFatal(ex);
                         a.onError(ex);
@@ -130,7 +130,7 @@ public final class SingleFlatMapIterableObservable<T, R> extends Observable<R> {
                     boolean b;
 
                     try {
-                        b = iter.hasNext();
+                        b = iterator.hasNext();
                     } catch (Throwable ex) {
                         Exceptions.throwIfFatal(ex);
                         a.onError(ex);
@@ -185,11 +185,11 @@ public final class SingleFlatMapIterableObservable<T, R> extends Observable<R> {
         @Nullable
         @Override
         public R poll() throws Exception {
-            Iterator<? extends R> iter = it;
+            Iterator<? extends R> iterator = it;
 
-            if (iter != null) {
-                R v = ObjectHelper.requireNonNull(iter.next(), "The iterator returned a null value");
-                if (!iter.hasNext()) {
+            if (iterator != null) {
+                R v = ObjectHelper.requireNonNull(iterator.next(), "The iterator returned a null value");
+                if (!iterator.hasNext()) {
                     it = null;
                 }
                 return v;

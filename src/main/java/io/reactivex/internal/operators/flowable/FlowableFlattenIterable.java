@@ -270,7 +270,6 @@ public final class FlowableFlattenIterable<T, R> extends AbstractFlowableWithUps
                         } catch (Throwable ex) {
                             Exceptions.throwIfFatal(ex);
                             s.cancel();
-                            it = null;
                             ExceptionHelper.addThrowable(error, ex);
                             ex = ExceptionHelper.terminate(error);
                             a.onError(ex);

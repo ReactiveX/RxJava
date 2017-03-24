@@ -98,8 +98,6 @@ public final class FlowableZip<T, R> extends Flowable<R> {
 
         final boolean delayErrors;
 
-        volatile boolean done;
-
         volatile boolean cancelled;
 
         final Object[] current;
@@ -112,7 +110,7 @@ public final class FlowableZip<T, R> extends Flowable<R> {
             @SuppressWarnings("unchecked")
             ZipSubscriber<T, R>[] a = new ZipSubscriber[n];
             for (int i = 0; i < n; i++) {
-                a[i] = new ZipSubscriber<T, R>(this, prefetch, i);
+                a[i] = new ZipSubscriber<T, R>(this, prefetch);
             }
             this.current = new Object[n];
             this.subscribers = a;
@@ -123,7 +121,7 @@ public final class FlowableZip<T, R> extends Flowable<R> {
         void subscribe(Publisher<? extends T>[] sources, int n) {
             ZipSubscriber<T, R>[] a = subscribers;
             for (int i = 0; i < n; i++) {
-                if (done || cancelled || (!delayErrors && errors.get() != null)) {
+                if (cancelled || (!delayErrors && errors.get() != null)) {
                     return;
                 }
                 sources[i].subscribe(a[i]);
@@ -333,8 +331,6 @@ public final class FlowableZip<T, R> extends Flowable<R> {
 
         final int limit;
 
-        final int index;
-
         SimpleQueue<T> queue;
 
         long produced;
@@ -343,10 +339,9 @@ public final class FlowableZip<T, R> extends Flowable<R> {
 
         int sourceMode;
 
-        ZipSubscriber(ZipCoordinator<T, R> parent, int prefetch, int index) {
+        ZipSubscriber(ZipCoordinator<T, R> parent, int prefetch) {
             this.parent = parent;
             this.prefetch = prefetch;
-            this.index = index;
             this.limit = prefetch - (prefetch >> 2);
         }
 

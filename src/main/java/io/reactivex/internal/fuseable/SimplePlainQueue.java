@@ -18,7 +18,7 @@ import io.reactivex.annotations.Nullable;
 /**
  * Override of the SimpleQueue interface with no throws Exception on poll().
  *
- * @param <T> the value type to enqueue and dequeue, not null
+ * @param <T> the value type to offer and poll, not null
  */
 public interface SimplePlainQueue<T> extends SimpleQueue<T> {
 

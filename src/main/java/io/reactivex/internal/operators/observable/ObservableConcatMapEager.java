@@ -372,7 +372,6 @@ public final class ObservableConcatMapEager<T, R> extends AbstractObservableWith
                             error.addThrowable(ex);
 
                             current = null;
-                            active = null;
                             activeCount--;
                             continue outer;
                         }
@@ -381,7 +380,6 @@ public final class ObservableConcatMapEager<T, R> extends AbstractObservableWith
 
                         if (d && empty) {
                             current = null;
-                            active = null;
                             activeCount--;
                             continue outer;
                         }
