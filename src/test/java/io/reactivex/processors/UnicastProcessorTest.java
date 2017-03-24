@@ -77,6 +77,54 @@ public class UnicastProcessorTest extends DelayedFlowableProcessorTest<Object> {
     }
 
     @Test
+    public void failFast() {
+        UnicastProcessor<Integer> ap = UnicastProcessor.create(false);
+        ap.onNext(1);
+        ap.onError(new RuntimeException());
+
+        TestSubscriber<Integer> ts = TestSubscriber.create();
+
+        ap.subscribe(ts);
+
+        ts
+                .assertValueCount(0)
+                .assertError(RuntimeException.class);
+    }
+
+    @Test
+    public void failFastFusionOffline() {
+        UnicastProcessor<Integer> ap = UnicastProcessor.create(false);
+        ap.onNext(1);
+        ap.onError(new RuntimeException());
+
+        TestSubscriber<Integer> ts = SubscriberFusion.newTest(QueueSubscription.ANY);
+
+        ap.subscribe(ts);
+        ts
+                .assertValueCount(0)
+                .assertError(RuntimeException.class);
+    }
+
+    @Test
+    public void threeArgsFactory() {
+        Runnable noop = new Runnable() {
+            @Override
+            public void run() {
+            }
+        };
+        UnicastProcessor<Integer> ap = UnicastProcessor.create(16, noop,false);
+        ap.onNext(1);
+        ap.onError(new RuntimeException());
+
+        TestSubscriber<Integer> ts = TestSubscriber.create();
+
+        ap.subscribe(ts);
+        ts
+                .assertValueCount(0)
+                .assertError(RuntimeException.class);
+    }
+
+    @Test
     public void onTerminateCalledWhenOnError() {
         final AtomicBoolean didRunOnTerminate = new AtomicBoolean();
 
