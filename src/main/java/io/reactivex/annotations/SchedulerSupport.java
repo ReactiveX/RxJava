@@ -59,6 +59,13 @@ public @interface SchedulerSupport {
      * or takes timing information from it.
      */
     String TRAMPOLINE = "io.reactivex:trampoline";
+    /**
+     * The operator/class runs on RxJava's {@linkplain Schedulers#single() single scheduler}
+     * or takes timing information from it.
+     * @since 2.0.8 - experimental
+     */
+    @Experimental
+    String SINGLE = "io.reactivex:single";
 
     /**
      * The kind of scheduler the class or method uses.
