@@ -114,7 +114,7 @@ public final class Schedulers {
      * <li>{@code rx2.computation-priority} (int): sets the thread priority of the {@link #computation()} Scheduler, default is {@link Thread#NORM_PRIORITY}</li>
      * </ul>
      * <p>
-     * The default value of this scheduler can be overridden at initialization time via the 
+     * The default value of this scheduler can be overridden at initialization time via the
      * {@link RxJavaPlugins#setInitComputationSchedulerHandler(io.reactivex.functions.Function)} plugin method.
      * Note that due to possible initialization cycles, using any of the other scheduler-returning methods will
      * result in a {@code NullPointerException}.
@@ -144,7 +144,7 @@ public final class Schedulers {
      * that will try to reuse previoulsy started instances used by the worker
      * returned by {@link io.reactivex.Scheduler#createWorker()} but otherwise will start a new backing
      * {link ScheduledExecutorService} instance. Note that this scheduler may create an unbounded number
-     * of worker threads that can result in system slowdowns or {@code OutOfMemoryError}. Therefore, for casual uses 
+     * of worker threads that can result in system slowdowns or {@code OutOfMemoryError}. Therefore, for casual uses
      * or when implementing an operator, the Worker instances must be disposed via {@link io.reactivex.Scheduler.Worker#dispose()}.
      * <p>
      * It is not recommended to perform computational work on this scheduler. Use {@link #computation()} instead.
@@ -158,7 +158,7 @@ public final class Schedulers {
      * <li>{@code rx2.io-priority} (int): sets the thread priority of the {@link #io()} Scheduler, default is {@link Thread#NORM_PRIORITY}</li>
      * </ul>
      * <p>
-     * The default value of this scheduler can be overridden at initialization time via the 
+     * The default value of this scheduler can be overridden at initialization time via the
      * {@link RxJavaPlugins#setInitIoSchedulerHandler(io.reactivex.functions.Function)} plugin method.
      * Note that due to possible initialization cycles, using any of the other scheduler-returning methods will
      * result in a {@code NullPointerException}.
@@ -203,7 +203,7 @@ public final class Schedulers {
      * <p>
      * The default implementation of this scheduler creates a new, single-threaded {@link ScheduledExecutorService} for
      * each invocation of the {@link Scheduler#scheduleDirect(Runnable)} (plus its overloads) and {@link Scheduler#createWorker()}
-     * methods, thus an unbounded number of worker threads may be created that can 
+     * methods, thus an unbounded number of worker threads may be created that can
      * result in system slowdowns or {@code OutOfMemoryError}. Therefore, for casual uses or when implementing an operator,
      * the Worker instances must be disposed via {@link io.reactivex.Scheduler.Worker#dispose()}.
      * <p>
@@ -216,7 +216,7 @@ public final class Schedulers {
      * <li>{@code rx2.newthread-priority} (int): sets the thread priority of the {@link #newThread()} Scheduler, default is {@link Thread#NORM_PRIORITY}</li>
      * </ul>
      * <p>
-     * The default value of this scheduler can be overridden at initialization time via the 
+     * The default value of this scheduler can be overridden at initialization time via the
      * {@link RxJavaPlugins#setInitNewThreadSchedulerHandler(io.reactivex.functions.Function)} plugin method.
      * Note that due to possible initialization cycles, using any of the other scheduler-returning methods will
      * result in a {@code NullPointerException}.
@@ -265,7 +265,7 @@ public final class Schedulers {
      * <li>{@code rx2.single-priority} (int): sets the thread priority of the {@link #single()} Scheduler, default is {@link Thread#NORM_PRIORITY}</li>
      * </ul>
      * <p>
-     * The default value of this scheduler can be overridden at initialization time via the 
+     * The default value of this scheduler can be overridden at initialization time via the
      * {@link RxJavaPlugins#setInitSingleSchedulerHandler(io.reactivex.functions.Function)} plugin method.
      * Note that due to possible initialization cycles, using any of the other scheduler-returning methods will
      * result in a {@code NullPointerException}.
