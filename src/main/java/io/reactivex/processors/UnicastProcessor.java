@@ -99,7 +99,7 @@ public final class UnicastProcessor<T> extends FlowableProcessor<T> {
     @CheckReturnValue
     @Experimental
     public static <T> UnicastProcessor<T> create(boolean delayError) {
-        return new UnicastProcessor<T>(bufferSize(), delayError);
+        return new UnicastProcessor<T>(bufferSize(), null, delayError);
     }
 
     /**
@@ -116,6 +116,7 @@ public final class UnicastProcessor<T> extends FlowableProcessor<T> {
      */
     @CheckReturnValue
     public static <T> UnicastProcessor<T> create(int capacityHint, Runnable onCancelled) {
+        ObjectHelper.requireNonNull(onCancelled, "onTerminate");
         return new UnicastProcessor<T>(capacityHint, onCancelled);
     }
 
@@ -136,7 +137,8 @@ public final class UnicastProcessor<T> extends FlowableProcessor<T> {
     @CheckReturnValue
     @Experimental
     public static <T> UnicastProcessor<T> create(int capacityHint, Runnable onCancelled, boolean delayError) {
-        return new UnicastProcessor<T>(capacityHint, onCancelled,delayError);
+        ObjectHelper.requireNonNull(onCancelled, "onTerminate");
+        return new UnicastProcessor<T>(capacityHint, onCancelled, delayError);
     }
 
     /**
@@ -145,23 +147,7 @@ public final class UnicastProcessor<T> extends FlowableProcessor<T> {
      * @since 2.0
      */
     UnicastProcessor(int capacityHint) {
-        this(capacityHint, true);
-    }
-
-    /**
-     * Creates an UnicastProcessor with the given capacity hint and delay error flag.
-     * @param capacityHint the capacity hint for the internal, unbounded queue
-     * @param delayError deliver pending onNext events before onError
-     * @since 2.0.8 - experimental
-     */
-    UnicastProcessor(int capacityHint, boolean delayError) {
-        this.queue = new SpscLinkedArrayQueue<T>(ObjectHelper.verifyPositive(capacityHint, "capacityHint"));
-        this.onTerminate = new AtomicReference<Runnable>();
-        this.delayError = delayError;
-        this.actual = new AtomicReference<Subscriber<? super T>>();
-        this.once = new AtomicBoolean();
-        this.wip = new UnicastQueueSubscription();
-        this.requested = new AtomicLong();
+        this(capacityHint,null, true);
     }
 
     /**
@@ -185,7 +171,7 @@ public final class UnicastProcessor<T> extends FlowableProcessor<T> {
      */
     UnicastProcessor(int capacityHint, Runnable onTerminate, boolean delayError) {
         this.queue = new SpscLinkedArrayQueue<T>(ObjectHelper.verifyPositive(capacityHint, "capacityHint"));
-        this.onTerminate = new AtomicReference<Runnable>(ObjectHelper.requireNonNull(onTerminate, "onTerminate"));
+        this.onTerminate = new AtomicReference<Runnable>(onTerminate);
         this.delayError = delayError;
         this.actual = new AtomicReference<Subscriber<? super T>>();
         this.once = new AtomicBoolean();
