@@ -56,6 +56,8 @@ public class HelloWorld {
 If your platform doesn't support Java 8 lambdas (yet), you have to create an inner class of `Consumer` manually:
 
 ```java
+import io.reactivex.functions.Consumer;
+
 Flowable.just("Hello world")
   .subscribe(new Consumer<String>() {
       @Override public void accept(String s) {
@@ -75,6 +77,8 @@ RxJava 2 features several base classes you can discover operators on:
 One of the common use cases for RxJava is to run some computation, network request on a background thread and show the results (or error) on the UI thread:
 
 ```java
+import io.reactivex.schedulers.Schedulers;
+
 Flowable.fromCallable(() -> {
     Thread.sleep(1000); //  imitate expensive computation
     return "Done";
@@ -105,7 +109,7 @@ Thread.sleep(2000);
 
 Typically, you can move computations or blocking IO to some other thread via `subscribeOn`. Once the data is ready, you can make sure they get processed on the foreground or GUI thread via `observeOn`. 
 
-RxJava operators don't work `Thread`s or `ExecutorService`s directly but with so called `Scheduler`s that abstract away sources of concurrency behind an uniform API. RxJava 2 features several standard schedulers accessible via `Schedulers` utility class. These are available on all JVM platforms but some specific platforms, such as Android, have their own typical `Scheduler`s defined: `AndroidSchedulers.mainThread()`, `SwingScheduler.instance()` or `JavaFXSchedulers.gui()`.
+RxJava operators don't work with `Thread`s or `ExecutorService`s directly but with so called `Scheduler`s that abstract away sources of concurrency behind an uniform API. RxJava 2 features several standard schedulers accessible via `Schedulers` utility class. These are available on all JVM platforms but some specific platforms, such as Android, have their own typical `Scheduler`s defined: `AndroidSchedulers.mainThread()`, `SwingScheduler.instance()` or `JavaFXSchedulers.gui()`.
 
 The `Thread.sleep(2000);` at the end is no accident. In RxJava the default `Scheduler`s run on daemon threads, which means once the Java main thread exits, they all get stopped and background computations may never happen. Sleeping for some time in this example situations let's you see the output of the flow on the console with time to spare.
 
