@@ -84,10 +84,9 @@ public class TimedTest {
 
         assertEquals("Timed[time=5, unit=SECONDS, value=1]", t1.toString());
     }
-
-    @SuppressWarnings({"unchecked", "rawtypes"})
+    
     @Test(expected = NullPointerException.class)
     public void timeUnitNullFail() throws Exception {
-        Timed<Integer> t1 = new Timed<Integer>(1, 5, null);
+        new Timed<Integer>(1, 5, null);
     }
 }
