@@ -27,10 +27,10 @@ public final class BlockingMultiObserver<T>
 extends CountDownLatch
 implements SingleObserver<T>, CompletableObserver, MaybeObserver<T> {
 
-    private T value;
-    private Throwable error;
+    T value;
+    Throwable error;
 
-    private Disposable d;
+    Disposable d;
 
     volatile boolean cancelled;
 
