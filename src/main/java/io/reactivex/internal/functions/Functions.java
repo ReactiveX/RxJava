@@ -24,7 +24,7 @@ import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.schedulers.Timed;
 
 /**
- * Utility methods to convert the Function3..Function9 instances to Function of Object array.
+ * Utility methods to convert the BiFunction, Function3..Function9 instances to Function of Object array.
  */
 public final class Functions {
 
