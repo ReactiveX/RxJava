@@ -22,10 +22,7 @@ import io.reactivex.internal.fuseable.QueueDisposable;
  * that defaults all unnecessary Queue methods to throw UnsupportedOperationException.
  * @param <T> the output value type
  */
-public abstract class BasicIntQueueDisposable<T>
-extends AtomicInteger
-implements QueueDisposable<T> {
-
+public abstract class BasicIntQueueDisposable<T> extends AtomicInteger implements QueueDisposable<T> {
 
     private static final long serialVersionUID = -1001730202384742097L;
 
