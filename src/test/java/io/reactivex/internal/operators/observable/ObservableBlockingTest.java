@@ -209,11 +209,6 @@ public class ObservableBlockingTest {
         Observable.empty().blockingLast();
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void blockingIterableNegativeBufferSizeFail() {
-        Observable.empty().blockingIterable(-1);
-    }
-
     @Test
     public void blockingFirstNormal() {
         assertEquals(1, Observable.just(1, 2).blockingFirst(3).intValue());
