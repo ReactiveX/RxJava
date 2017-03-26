@@ -169,6 +169,54 @@ public class FunctionsTest {
         }).apply(new Object[20]);
     }
 
+    @Test(expected = NullPointerException.class)
+    public void biFunctionFail() throws Exception {
+        BiFunction biFunction = null;
+        Functions.toFunction(biFunction);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void function3Fail() throws Exception {
+        Function3 function3 = null;
+        Functions.toFunction(function3);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void function4Fail() throws Exception {
+        Function3 function4 = null;
+        Functions.toFunction(function4);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void function5Fail() throws Exception {
+        Function3 function5 = null;
+        Functions.toFunction(function5);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void function6Fail() throws Exception {
+        Function3 function6 = null;
+        Functions.toFunction(function6);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void function7Fail() throws Exception {
+        Function3 function7 = null;
+        Functions.toFunction(function7);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void function8Fail() throws Exception {
+        Function3 function8 = null;
+        Functions.toFunction(function8);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void function9Fail() throws Exception {
+        Function3 function9 = null;
+        Functions.toFunction(function9);
+    }
+
     @Test
     public void identityFunctionToString() {
         assertEquals("IdentityFunction", Functions.identity().toString());
