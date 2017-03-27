@@ -33,7 +33,7 @@ import io.reactivex.internal.functions.ObjectHelper;
  * <p>Override the protected {@link #onStart()} to perform initialization when this
  * {@code ResourceMaybeObserver} is subscribed to a source.
  *
- * <p>Use the protected {@link #dispose()} to dispose the sequence externally and release
+ * <p>Use the public {@link #dispose()} method to dispose the sequence externally and release
  * all resources.
  *
  * <p>To release the associated resources, one has to call {@link #dispose()}

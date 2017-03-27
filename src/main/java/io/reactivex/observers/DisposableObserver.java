@@ -24,7 +24,7 @@ import io.reactivex.internal.disposables.*;
  *
  * <p>All pre-implemented final methods are thread-safe.
  *
- * <p>Use the protected {@link #dispose()} to dispose the sequence from within an
+ * <p>Use the public {@link #dispose()} method to dispose the sequence from within an
  * {@code onNext} implementation.
  *
  * <p>Like all other consumers, {@code DefaultObserver} can be subscribed only once.

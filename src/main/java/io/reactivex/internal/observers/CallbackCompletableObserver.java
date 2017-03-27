@@ -52,8 +52,7 @@ extends AtomicReference<Disposable> implements CompletableObserver, Disposable, 
             onComplete.run();
         } catch (Throwable ex) {
             Exceptions.throwIfFatal(ex);
-            onError(ex);
-            return;
+            RxJavaPlugins.onError(ex);
         }
         lazySet(DisposableHelper.DISPOSED);
     }

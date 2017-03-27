@@ -2566,18 +2566,24 @@ public class CompletableTest {
 
     @Test(timeout = 5000)
     public void subscribeTwoCallbacksCompleteThrows() {
-        final AtomicReference<Throwable> err = new AtomicReference<Throwable>();
-        normal.completable.subscribe(new Action() {
-            @Override
-            public void run() { throw new TestException(); }
-        }, new Consumer<Throwable>() {
-            @Override
-            public void accept(Throwable e) {
-                err.set(e);
-            }
-        });
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            final AtomicReference<Throwable> err = new AtomicReference<Throwable>();
+            normal.completable.subscribe(new Action() {
+                @Override
+                public void run() { throw new TestException(); }
+            }, new Consumer<Throwable>() {
+                @Override
+                public void accept(Throwable e) {
+                    err.set(e);
+                }
+            });
 
-        Assert.assertTrue(String.valueOf(err.get()), err.get() instanceof TestException);
+            Assert.assertNull(err.get());
+            TestHelper.assertUndeliverable(errors, 0, TestException.class);
+        } finally {
+            RxJavaPlugins.reset();
+        }
     }
 
     @Test(timeout = 5000)
