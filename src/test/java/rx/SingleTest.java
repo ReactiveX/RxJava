@@ -704,6 +704,74 @@ public class SingleTest {
         assertNotNull(errors[0]);
         assertEquals("async error", errors[0].getMessage());
     }
+    @Test
+    public void singleThrowsWhileOnErrorFails() {
+        Subscriber<Object> ts = new SafeSubscriber<Object>(new TestSubscriber<Object>()) {
+            @Override
+            public void onError(Throwable e) {
+                throw new TestException("Forced failure");
+            }
+        };
+
+        try {
+            Single.error(new RuntimeException("error")).subscribe(ts);
+            fail("Should have thrown OnErrorFailedException");
+        } catch (OnErrorFailedException ex) {
+            // expected
+            assertTrue(ex.getCause().toString(), ex.getCause() instanceof TestException);
+            assertEquals("Forced failure", ex.getCause().getMessage());
+        }
+    }
+
+    @Test
+    public void singleThrowsWhileOnErrorFailsUnsafe() {
+        Subscriber<Object> ts = new TestSubscriber<Object>() {
+            @Override
+            public void onError(Throwable e) {
+                throw new TestException("Forced failure");
+            }
+        };
+
+        try {
+            Single.error(new RuntimeException("error")).unsafeSubscribe(ts);
+            fail("Should have thrown OnErrorFailedException");
+        } catch (OnErrorFailedException ex) {
+            // expected
+            assertTrue(ex.getCause().toString(), ex.getCause() instanceof TestException);
+            assertEquals("Forced failure", ex.getCause().getMessage());
+        }
+    }
+
+    @Test
+    public void singleThrowsWhileSubscriberIsUnsubscribed() {
+        TestSubscriber<Object> ts = TestSubscriber.create();
+        ts.unsubscribe();
+
+        final List<Throwable> list = new ArrayList<Throwable>();
+
+        RxJavaHooks.setOnSingleSubscribeError(new Func1<Throwable, Throwable>() {
+            @Override
+            public Throwable call(Throwable t) {
+                list.add(t);
+                return t;
+            }
+        });
+
+        try {
+            Single.create(new OnSubscribe<Object>() {
+                @Override
+                public void call(SingleSubscriber<? super Object> t) {
+                    throw new TestException("Forced failure");
+                }
+            }).subscribe(ts);
+
+            assertEquals(1, list.size());
+
+            assertEquals("Forced failure", list.get(0).getMessage());
+        } finally {
+            RxJavaHooks.reset();
+        }
+    }
 
     @Test
     public void testAsync() {

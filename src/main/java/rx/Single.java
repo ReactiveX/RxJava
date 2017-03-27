@@ -1819,18 +1819,23 @@ public class Single<T> {
         } catch (Throwable e) {
             // special handling for certain Throwable/Error/Exception types
             Exceptions.throwIfFatal(e);
-            // if an unhandled error occurs executing the onSubscribe we will propagate it
-            try {
-                subscriber.onError(RxJavaHooks.onSingleError(e));
-            } catch (Throwable e2) {
-                Exceptions.throwIfFatal(e2);
-                // if this happens it means the onError itself failed (perhaps an invalid function implementation)
-                // so we are unable to propagate the error correctly and will just throw
-                RuntimeException r = new RuntimeException("Error occurred attempting to subscribe [" + e.getMessage() + "] and then again while trying to pass to onError.", e2);
-                // TODO could the hook be the cause of the error in the on error handling.
-                RxJavaHooks.onSingleError(r);
-                // TODO why aren't we throwing the hook's return value.
-                throw r; // NOPMD
+            // in case the subscriber can't listen to exceptions anymore
+            if (subscriber.isUnsubscribed()) {
+                RxJavaHooks.onError(RxJavaHooks.onSingleError(e));
+            } else {
+                // if an unhandled error occurs executing the onSubscribe we will propagate it
+                try {
+                    subscriber.onError(RxJavaHooks.onSingleError(e));
+                } catch (Throwable e2) {
+                    Exceptions.throwIfFatal(e2);
+                    // if this happens it means the onError itself failed (perhaps an invalid function implementation)
+                    // so we are unable to propagate the error correctly and will just throw
+                    RuntimeException r = new OnErrorFailedException("Error occurred attempting to subscribe [" + e.getMessage() + "] and then again while trying to pass to onError.", e2);
+                    // TODO could the hook be the cause of the error in the on error handling.
+                    RxJavaHooks.onSingleError(r);
+                    // TODO why aren't we throwing the hook's return value.
+                    throw r; // NOPMD
+                }
             }
             return Subscriptions.unsubscribed();
         }
@@ -1968,46 +1973,56 @@ public class Single<T> {
         try {
             RxJavaHooks.onSingleStart(this, onSubscribe).call(subscriber);
             return RxJavaHooks.onSingleReturn(subscriber);
-        } catch (Throwable ex) {
-            Exceptions.throwIfFatal(ex);
-            // if an unhandled error occurs executing the onSubscribe we will propagate it
-            try {
-                subscriber.onError(RxJavaHooks.onSingleError(ex));
-            } catch (Throwable e2) {
-                Exceptions.throwIfFatal(e2);
-                // if this happens it means the onError itself failed (perhaps an invalid function implementation)
-                // so we are unable to propagate the error correctly and will just throw
-                RuntimeException r = new RuntimeException("Error occurred attempting to subscribe [" + ex.getMessage() + "] and then again while trying to pass to onError.", e2);
-                // TODO could the hook be the cause of the error in the on error handling.
-                RxJavaHooks.onSingleError(r);
-                // TODO why aren't we throwing the hook's return value.
-                throw r; // NOPMD
+        } catch (Throwable e) {
+            Exceptions.throwIfFatal(e);
+            // in case the subscriber can't listen to exceptions anymore
+            if (subscriber.isUnsubscribed()) {
+                RxJavaHooks.onError(RxJavaHooks.onSingleError(e));
+            } else {
+                // if an unhandled error occurs executing the onSubscribe we will propagate it
+                try {
+                    subscriber.onError(RxJavaHooks.onSingleError(e));
+                } catch (Throwable e2) {
+                    Exceptions.throwIfFatal(e2);
+                    // if this happens it means the onError itself failed (perhaps an invalid function implementation)
+                    // so we are unable to propagate the error correctly and will just throw
+                    RuntimeException r = new OnErrorFailedException("Error occurred attempting to subscribe [" + e.getMessage() + "] and then again while trying to pass to onError.", e2);
+                    // TODO could the hook be the cause of the error in the on error handling.
+                    RxJavaHooks.onSingleError(r);
+                    // TODO why aren't we throwing the hook's return value.
+                    throw r; // NOPMD
+                }
             }
             return Subscriptions.unsubscribed();
         }
     }
 
-    private final Subscription unsafeSubscribe(SingleSubscriber<? super T> subscriber) {
+    private Subscription unsafeSubscribe(SingleSubscriber<? super T> subscriber) {
 
         // The code below is exactly the same an unsafeSubscribe but not used because it would
         // add a significant depth to already huge call stacks.
         try {
             RxJavaHooks.onSingleStart(this, onSubscribe).call(subscriber);
             return RxJavaHooks.onSingleReturn(subscriber);
-        } catch (Throwable ex) {
-            Exceptions.throwIfFatal(ex);
-            // if an unhandled error occurs executing the onSubscribe we will propagate it
-            try {
-                subscriber.onError(RxJavaHooks.onSingleError(ex));
-            } catch (Throwable e2) {
-                Exceptions.throwIfFatal(e2);
-                // if this happens it means the onError itself failed (perhaps an invalid function implementation)
-                // so we are unable to propagate the error correctly and will just throw
-                RuntimeException r = new RuntimeException("Error occurred attempting to subscribe [" + ex.getMessage() + "] and then again while trying to pass to onError.", e2);
-                // TODO could the hook be the cause of the error in the on error handling.
-                RxJavaHooks.onSingleError(r);
-                // TODO why aren't we throwing the hook's return value.
-                throw r; // NOPMD
+        } catch (Throwable e) {
+            Exceptions.throwIfFatal(e);
+            // in case the subscriber can't listen to exceptions anymore
+            if (subscriber.isUnsubscribed()) {
+                RxJavaHooks.onError(RxJavaHooks.onSingleError(e));
+            } else {
+                // if an unhandled error occurs executing the onSubscribe we will propagate it
+                try {
+                    subscriber.onError(RxJavaHooks.onSingleError(e));
+                } catch (Throwable e2) {
+                    Exceptions.throwIfFatal(e2);
+                    // if this happens it means the onError itself failed (perhaps an invalid function implementation)
+                    // so we are unable to propagate the error correctly and will just throw
+                    RuntimeException r = new OnErrorFailedException("Error occurred attempting to subscribe [" + e.getMessage() + "] and then again while trying to pass to onError.", e2);
+                    // TODO could the hook be the cause of the error in the on error handling.
+                    RxJavaHooks.onSingleError(r);
+                    // TODO why aren't we throwing the hook's return value.
+                    throw r; // NOPMD
+                }
             }
             return Subscriptions.unsubscribed();
         }
