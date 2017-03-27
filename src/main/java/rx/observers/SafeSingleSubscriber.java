@@ -25,6 +25,7 @@ import rx.exceptions.OnErrorFailedException;
 import rx.exceptions.OnErrorNotImplementedException;
 import rx.exceptions.UnsubscribeFailedException;
 import rx.plugins.RxJavaHooks;
+import rx.plugins.RxJavaPlugins;
 
 /**
  * {@code SafeSingleSubscriber} is a wrapper around {@code SingleSubscriber} that ensures that the {@code SingleSubscriber}
@@ -93,7 +94,8 @@ public class SafeSingleSubscriber<T> extends SingleSubscriber<T> {
         // we handle here instead of another method so we don't add stacks to the frame
         // which can prevent it from being able to handle StackOverflow
         Exceptions.throwIfFatal(e);
-        RxJavaHooks.onSingleError(e);
+        // TODO is it ok to call handleError for Singles too?
+        RxJavaPlugins.getInstance().getErrorHandler().handleError(e);
         try {
             actual.onError(e);
         } catch (OnErrorNotImplementedException e2) { // NOPMD
@@ -111,7 +113,7 @@ public class SafeSingleSubscriber<T> extends SingleSubscriber<T> {
             try {
                 unsubscribe();
             } catch (Throwable unsubscribeException) {
-                RxJavaHooks.onSingleError(unsubscribeException);
+                RxJavaHooks.onError(unsubscribeException);
                 throw new OnErrorNotImplementedException("Observer.onError not implemented and error while unsubscribing.", new CompositeException(Arrays.asList(e, unsubscribeException))); // NOPMD
             }
             throw e2;
@@ -121,11 +123,11 @@ public class SafeSingleSubscriber<T> extends SingleSubscriber<T> {
              *
              * https://github.com/ReactiveX/RxJava/issues/198
              */
-            RxJavaHooks.onSingleError(e2);
+            RxJavaHooks.onError(e2);
             try {
                 unsubscribe();
             } catch (Throwable unsubscribeException) {
-                RxJavaHooks.onSingleError(unsubscribeException);
+                RxJavaHooks.onError(unsubscribeException);
                 throw new OnErrorFailedException("Error occurred when trying to propagate error to Observer.onError and during unsubscription.", new CompositeException(Arrays.asList(e, e2, unsubscribeException)));
             }
 
@@ -135,7 +137,7 @@ public class SafeSingleSubscriber<T> extends SingleSubscriber<T> {
         try {
             unsubscribe();
         } catch (Throwable unsubscribeException) {
-            RxJavaHooks.onSingleError(unsubscribeException);
+            RxJavaHooks.onError(unsubscribeException);
             throw new OnErrorFailedException(unsubscribeException);
         }
     }
