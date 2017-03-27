@@ -26,7 +26,7 @@ import rx.internal.util.SubscriptionList;
  * once or the SingleSubscriber's {@link #onError} method exactly once.
  * <p>
  * Note, that if you want {@link #isUnsubscribed} to return {@code true} after {@link #onSuccess} or {@link #onError}
- * invocation, you need to invoke {@link #unsubscribe} in these methods.
+ * invocation, you need to invoke {@link #unsubscribe} in these methods or use {@link rx.observers.SafeSingleSubscriber}
  *
  * @see <a href="http://reactivex.io/documentation/observable.html">ReactiveX documentation: Observable</a>
  * @param <T>
