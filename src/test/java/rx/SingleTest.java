@@ -705,6 +705,76 @@ public class SingleTest {
         assertEquals("async error", errors[0].getMessage());
     }
     @Test
+    public void testSubscriberSubscribeThrowInOnSuccessSync() throws Exception {
+        final int[] successCalls = {0};
+        final int[] completedCalls = {0};
+        final Throwable[] errors = {new Exception()};
+
+        final RuntimeException te = new RuntimeException("sync error");
+
+        Single.just("success").subscribe(
+                new Subscriber<String>() {
+                    @Override
+                    public void onCompleted() {
+                        completedCalls[0]++;
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        errors[0] = e;
+                    }
+
+                    @Override
+                    public void onNext(String s) {
+                        successCalls[0]++;
+                        throw te;
+                    }
+                });
+
+        assertEquals(0, completedCalls[0]);
+        assertEquals(1, successCalls[0]);
+        assertEquals(te, errors[0]);
+    }
+
+    @Test
+    public void testSubscriberSubscribeThrowInOnSuccessAsync() throws Exception {
+        final int[] successCalls = {0};
+        final int[] completedCalls = {0};
+        final Throwable[] errors = {null};
+
+        final TestScheduler ts = new TestScheduler();
+        Single.just("success").delay(100, TimeUnit.MILLISECONDS, ts).subscribe(
+                new Subscriber<String>() {
+                    @Override
+                    public void onCompleted() {
+                        completedCalls[0]++;
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        errors[0] = e;
+                    }
+
+                    @Override
+                    public void onNext(String s) {
+                        successCalls[0]++;
+                        throw new RuntimeException("async error");
+                    }
+                });
+
+        assertEquals(0, completedCalls[0]);
+        assertEquals(0, successCalls[0]);
+        assertEquals(null, errors[0]);
+
+        ts.advanceTimeBy(200, TimeUnit.MILLISECONDS);
+
+        assertEquals(0, completedCalls[0]);
+        assertEquals(1, successCalls[0]);
+        assertNotNull(errors[0]);
+        assertEquals("async error", errors[0].getMessage());
+    }
+
+    @Test
     public void singleThrowsWhileOnErrorFails() {
         Subscriber<Object> ts = new SafeSubscriber<Object>(new TestSubscriber<Object>()) {
             @Override
