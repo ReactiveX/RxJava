@@ -35,7 +35,22 @@ import rx.internal.util.SubscriptionList;
  */
 public abstract class SingleSubscriber<T> implements Subscription {
 
-    private final SubscriptionList cs = new SubscriptionList();
+    private final SubscriptionList subscriptions;
+
+    public SingleSubscriber() {
+        this(null);
+    }
+
+    /**
+     * Construct a SingleSubscriber by using another SingleSubscriber. This wrapper will use the
+     * subscription list of the provided SingleSubscriber.
+     *
+     * @param subscriber
+     *              the other Subscriber
+     */
+    public SingleSubscriber(SingleSubscriber<?> subscriber) {
+        this.subscriptions = subscriber != null ? subscriber.subscriptions : new SubscriptionList();
+    }
 
     /**
      * Notifies the SingleSubscriber with a single item and that the {@link Single} has finished sending
@@ -67,12 +82,12 @@ public abstract class SingleSubscriber<T> implements Subscription {
      *            the {@code Subscription} to add
      */
     public final void add(Subscription s) {
-        cs.add(s);
+        subscriptions.add(s);
     }
 
     @Override
     public final void unsubscribe() {
-        cs.unsubscribe();
+        subscriptions.unsubscribe();
     }
 
     /**
@@ -82,6 +97,6 @@ public abstract class SingleSubscriber<T> implements Subscription {
      */
     @Override
     public final boolean isUnsubscribed() {
-        return cs.isUnsubscribed();
+        return subscriptions.isUnsubscribed();
     }
 }
