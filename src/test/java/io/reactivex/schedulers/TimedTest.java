@@ -84,7 +84,7 @@ public class TimedTest {
 
         assertEquals("Timed[time=5, unit=SECONDS, value=1]", t1.toString());
     }
-    
+
     @Test(expected = NullPointerException.class)
     public void timeUnitNullFail() throws Exception {
         new Timed<Integer>(1, 5, null);
