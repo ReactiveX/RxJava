@@ -1,6 +1,41 @@
-# RxJava Releases #
+# RxJava 2 Releases #
 
-Version 1.x can be found at https://github.com/ReactiveX/RxJava/blob/1.x/CHANGES.md
+The cnagelog of version 1.x can be found at https://github.com/ReactiveX/RxJava/blob/1.x/CHANGES.md
+
+### Version 2.0.8 - March 29, 2017 ([Maven](http://search.maven.org/#artifactdetails%7Cio.reactivex.rxjava2%7Crxjava%7C2.0.8%7C))
+
+**API enhancements**
+- [Pull 5161](https://github.com/ReactiveX/RxJava/pull/5161): Add `Observable.switchMapSingle()`
+- [Pull 5184](https://github.com/ReactiveX/RxJava/pull/5184): Add `offer()` method to `PublishProcessor` & `BehaviorProcessor`.
+- [Pull 5197](https://github.com/ReactiveX/RxJava/pull/5197): Add `ParallelTransformer` interface.
+- [Pull 5217](https://github.com/ReactiveX/RxJava/pull/5217): `UnicastSubject` fail-fast support.
+- [Pull 5202](https://github.com/ReactiveX/RxJava/pull/5202): Add resilient versions of parallel `map()`, `filter()` and `doOnNext()`.
+- [Pull 5226](https://github.com/ReactiveX/RxJava/pull/5226): `UnicastProcessor` fail-fast support.
+
+**Bugfixes**
+- [Pull 5163](https://github.com/ReactiveX/RxJava/pull/5163): `Single.subscribe()` to report `isDisposed()` true on success/error.
+- [Pull 5170](https://github.com/ReactiveX/RxJava/pull/5170): Fix `LambdaObserver` not cancelling the upstream.
+- [Pull 5182](https://github.com/ReactiveX/RxJava/pull/5182): Fix `replay().refCount()` leaking items between connections.
+- [Pull 5188](https://github.com/ReactiveX/RxJava/pull/5188): Fix `flatMap` emitting the terminal exception indicator on cancel.
+- [Pull 5207](https://github.com/ReactiveX/RxJava/pull/5207): Prevent tasks to self interrupt on the standard schedulers.
+- [Pull 5213](https://github.com/ReactiveX/RxJava/pull/5213): Fix `window()` with time+size emission problems.
+- [Pull 5240](https://github.com/ReactiveX/RxJava/pull/5240): fix `CallbackCompletableObserver` calling `onError`.
+
+**Documentation**
+- [Pull 5189](https://github.com/ReactiveX/RxJava/pull/5189): Declare `concatMapEager` requires positive prefetch amount.
+- [Pull 5191](https://github.com/ReactiveX/RxJava/pull/5191): Correct java doc for `refCount()` return type.
+- [Pull 5208](https://github.com/ReactiveX/RxJava/pull/5208): Fix images of `firstElement`, `flattenAsX`, `flatMapIterable`, `UnicastSubject` and `UnicastProcessor`.
+- [Pull 5210](https://github.com/ReactiveX/RxJava/pull/5210): Better documentation on the abstract consumer classes (such as `DisposableSubscriber`).
+- [Pull 5223](https://github.com/ReactiveX/RxJava/pull/5223): Improve the documentation of `Schedulers` utility class.
+- [Pull 5230](https://github.com/ReactiveX/RxJava/pull/5230): Fix wrong comments in `Functions` “Function3” -> “BiFunction, Function3”
+
+**Other**
+- Remove anonymous inner classes.
+   - [Pull 5174](https://github.com/ReactiveX/RxJava/pull/5174)
+   - [Pull 5177](https://github.com/ReactiveX/RxJava/pull/5177)
+- [Pull 5183](https://github.com/ReactiveX/RxJava/pull/5183): Test to disallow anonymous inner classes.
+- [Pull 5187](https://github.com/ReactiveX/RxJava/pull/5187): Reflection-based parameter validator & fixes.
+- [Pull 5196](https://github.com/ReactiveX/RxJava/pull/5196): Add a few more `@Nullable` & `@NonNull` annotations to public interfaces.
 
 ### Version 2.0.7 - March 7, 2017 ([Maven](http://search.maven.org/#artifactdetails%7Cio.reactivex.rxjava2%7Crxjava%7C2.0.7%7C))
 
