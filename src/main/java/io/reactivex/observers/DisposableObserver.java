@@ -27,7 +27,7 @@ import io.reactivex.internal.disposables.*;
  * <p>Use the public {@link #dispose()} method to dispose the sequence from within an
  * {@code onNext} implementation.
  *
- * <p>Like all other consumers, {@code DefaultObserver} can be subscribed only once.
+ * <p>Like all other consumers, {@code DisposableObserver} can be subscribed only once.
  * Any subsequent attempt to subscribe it to a new source will yield an
  * {@link IllegalStateException} with message {@code "Disposable already set!"}.
  *
