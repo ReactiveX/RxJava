@@ -41,12 +41,11 @@ public class BaseTypeAnnotations {
                 continue;
             }
             if (m.getDeclaringClass() == clazz) {
-                boolean isSubscribeMethod = "subscribe".equals(m.getName()) && m.getParameterTypes().length == 0;
                 boolean isAnnotationPresent = m.isAnnotationPresent(CheckReturnValue.class);
 
-                if (isSubscribeMethod) {
+                if (m.getReturnType().equals(Disposable.class)) {
                     if (isAnnotationPresent) {
-                        b.append("subscribe() method has @CheckReturnValue: ").append(m).append("\r\n");
+                        b.append("method with Disposable return type has @CheckReturnValue: ").append(m).append("\r\n");
                     }
                     continue;
                 }
