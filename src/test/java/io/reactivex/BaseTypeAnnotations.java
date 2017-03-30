@@ -21,6 +21,7 @@ import org.junit.Test;
 import org.reactivestreams.Publisher;
 
 import io.reactivex.annotations.*;
+import io.reactivex.disposables.Disposable;
 
 /**
  * Verifies several properties.
