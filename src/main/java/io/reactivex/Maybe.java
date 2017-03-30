@@ -3645,7 +3645,6 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      *             if {@code onSuccess} is null
      * @see <a href="http://reactivex.io/documentation/operators/subscribe.html">ReactiveX operators documentation: Subscribe</a>
      */
-    @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Disposable subscribe(Consumer<? super T> onSuccess) {
         return subscribe(onSuccess, Functions.ON_ERROR_MISSING, Functions.EMPTY_ACTION);
@@ -3671,7 +3670,6 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      *             if {@code onSuccess} is null, or
      *             if {@code onError} is null
      */
-    @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Disposable subscribe(Consumer<? super T> onSuccess, Consumer<? super Throwable> onError) {
         return subscribe(onSuccess, onError, Functions.EMPTY_ACTION);
@@ -3701,7 +3699,6 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      *             if {@code onComplete} is null
      * @see <a href="http://reactivex.io/documentation/operators/subscribe.html">ReactiveX operators documentation: Subscribe</a>
      */
-    @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Disposable subscribe(Consumer<? super T> onSuccess, Consumer<? super Throwable> onError,
             Action onComplete) {

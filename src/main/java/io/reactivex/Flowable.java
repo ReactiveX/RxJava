@@ -9025,7 +9025,6 @@ public abstract class Flowable<T> implements Publisher<T> {
      *             if {@code onNext} is null
      * @see <a href="http://reactivex.io/documentation/operators/subscribe.html">ReactiveX operators documentation: Subscribe</a>
      */
-    @CheckReturnValue
     @BackpressureSupport(BackpressureKind.NONE)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Disposable forEach(Consumer<? super T> onNext) {
@@ -9055,7 +9054,6 @@ public abstract class Flowable<T> implements Publisher<T> {
      *             if {@code onNext} is null
      * @see <a href="http://reactivex.io/documentation/operators/subscribe.html">ReactiveX operators documentation: Subscribe</a>
      */
-    @CheckReturnValue
     @BackpressureSupport(BackpressureKind.NONE)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Disposable forEachWhile(Predicate<? super T> onNext) {
@@ -9084,7 +9082,6 @@ public abstract class Flowable<T> implements Publisher<T> {
      *             if {@code onError} is null
      * @see <a href="http://reactivex.io/documentation/operators/subscribe.html">ReactiveX operators documentation: Subscribe</a>
      */
-    @CheckReturnValue
     @BackpressureSupport(BackpressureKind.NONE)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Disposable forEachWhile(Predicate<? super T> onNext, Consumer<? super Throwable> onError) {
@@ -9116,7 +9113,6 @@ public abstract class Flowable<T> implements Publisher<T> {
      *             if {@code onComplete} is null
      * @see <a href="http://reactivex.io/documentation/operators/subscribe.html">ReactiveX operators documentation: Subscribe</a>
      */
-    @CheckReturnValue
     @BackpressureSupport(BackpressureKind.NONE)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Disposable forEachWhile(final Predicate<? super T> onNext, final Consumer<? super Throwable> onError,
@@ -12833,7 +12829,6 @@ public abstract class Flowable<T> implements Publisher<T> {
      *             if {@code onNext} is null
      * @see <a href="http://reactivex.io/documentation/operators/subscribe.html">ReactiveX operators documentation: Subscribe</a>
      */
-    @CheckReturnValue
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Disposable subscribe(Consumer<? super T> onNext) {
@@ -12864,7 +12859,6 @@ public abstract class Flowable<T> implements Publisher<T> {
      *             if {@code onNext} is null, or
      *             if {@code onError} is null
      */
-    @CheckReturnValue
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Disposable subscribe(Consumer<? super T> onNext, Consumer<? super Throwable> onError) {
@@ -12898,7 +12892,6 @@ public abstract class Flowable<T> implements Publisher<T> {
      *             if {@code onComplete} is null
      * @see <a href="http://reactivex.io/documentation/operators/subscribe.html">ReactiveX operators documentation: Subscribe</a>
      */
-    @CheckReturnValue
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Disposable subscribe(Consumer<? super T> onNext, Consumer<? super Throwable> onError,
@@ -12935,7 +12928,6 @@ public abstract class Flowable<T> implements Publisher<T> {
      *             if {@code onComplete} is null
      * @see <a href="http://reactivex.io/documentation/operators/subscribe.html">ReactiveX operators documentation: Subscribe</a>
      */
-    @CheckReturnValue
     @BackpressureSupport(BackpressureKind.SPECIAL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Disposable subscribe(Consumer<? super T> onNext, Consumer<? super Throwable> onError,
