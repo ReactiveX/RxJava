@@ -13,13 +13,14 @@
 
 package io.reactivex.disposables;
 
-import java.util.concurrent.Future;
-
-import org.reactivestreams.Subscription;
-
+import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Action;
 import io.reactivex.internal.disposables.EmptyDisposable;
-import io.reactivex.internal.functions.*;
+import io.reactivex.internal.functions.Functions;
+import io.reactivex.internal.functions.ObjectHelper;
+import org.reactivestreams.Subscription;
+
+import java.util.concurrent.Future;
 
 /**
  * Utility class to help create disposables by wrapping
@@ -38,7 +39,8 @@ public final class Disposables {
      * @param run the Runnable to wrap
      * @return the new Disposable instance
      */
-    public static Disposable fromRunnable(Runnable run) {
+    @NonNull
+    public static Disposable fromRunnable(@NonNull Runnable run) {
         ObjectHelper.requireNonNull(run, "run is null");
         return new RunnableDisposable(run);
     }
@@ -49,7 +51,8 @@ public final class Disposables {
      * @param run the Action to wrap
      * @return the new Disposable instance
      */
-    public static Disposable fromAction(Action run) {
+    @NonNull
+    public static Disposable fromAction(@NonNull Action run) {
         ObjectHelper.requireNonNull(run, "run is null");
         return new ActionDisposable(run);
     }
@@ -60,7 +63,8 @@ public final class Disposables {
      * @param future the Future to wrap
      * @return the new Disposable instance
      */
-    public static Disposable fromFuture(Future<?> future) {
+    @NonNull
+    public static Disposable fromFuture(@NonNull Future<?> future) {
         ObjectHelper.requireNonNull(future, "future is null");
         return fromFuture(future, true);
     }
@@ -72,7 +76,8 @@ public final class Disposables {
      * @param allowInterrupt if true, the future cancel happens via Future.cancel(true)
      * @return the new Disposable instance
      */
-    public static Disposable fromFuture(Future<?> future, boolean allowInterrupt) {
+    @NonNull
+    public static Disposable fromFuture(@NonNull Future<?> future, boolean allowInterrupt) {
         ObjectHelper.requireNonNull(future, "future is null");
         return new FutureDisposable(future, allowInterrupt);
     }
@@ -83,7 +88,8 @@ public final class Disposables {
      * @param subscription the Runnable to wrap
      * @return the new Disposable instance
      */
-    public static Disposable fromSubscription(Subscription subscription) {
+    @NonNull
+    public static Disposable fromSubscription(@NonNull Subscription subscription) {
         ObjectHelper.requireNonNull(subscription, "subscription is null");
         return new SubscriptionDisposable(subscription);
     }
@@ -92,6 +98,7 @@ public final class Disposables {
      * Returns a new, non-disposed Disposable instance.
      * @return a new, non-disposed Disposable instance
      */
+    @NonNull
     public static Disposable empty() {
         return fromRunnable(Functions.EMPTY_RUNNABLE);
     }
@@ -100,6 +107,7 @@ public final class Disposables {
      * Returns a disposed Disposable instance.
      * @return a disposed Disposable instance
      */
+    @NonNull
     public static Disposable disposed() {
         return EmptyDisposable.INSTANCE;
     }

@@ -12,6 +12,8 @@
  */
 package io.reactivex.disposables;
 
+import io.reactivex.annotations.NonNull;
+
 /**
  * A disposable container that manages a Runnable instance.
  */
@@ -19,12 +21,12 @@ final class RunnableDisposable extends ReferenceDisposable<Runnable> {
 
     private static final long serialVersionUID = -8219729196779211169L;
 
-    RunnableDisposable(Runnable value) {
+    RunnableDisposable(@NonNull Runnable value) {
         super(value);
     }
 
     @Override
-    protected void onDisposed(Runnable value) {
+    protected void onDisposed(@NonNull Runnable value) {
         value.run();
     }
 

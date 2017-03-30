@@ -13,12 +13,17 @@
 
 package io.reactivex.subjects;
 
-import java.util.concurrent.atomic.*;
-
-import io.reactivex.*;
-import io.reactivex.annotations.*;
+import io.reactivex.Single;
+import io.reactivex.SingleObserver;
+import io.reactivex.annotations.CheckReturnValue;
+import io.reactivex.annotations.Experimental;
+import io.reactivex.annotations.NonNull;
+import io.reactivex.annotations.Nullable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.plugins.RxJavaPlugins;
+
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Represents a hot Single-like source and consumer of events similar to Subjects.
@@ -35,6 +40,7 @@ import io.reactivex.plugins.RxJavaPlugins;
 @Experimental
 public final class SingleSubject<T> extends Single<T> implements SingleObserver<T> {
 
+    @NonNull
     final AtomicReference<SingleDisposable<T>[]> observers;
 
     @SuppressWarnings("rawtypes")
@@ -43,8 +49,11 @@ public final class SingleSubject<T> extends Single<T> implements SingleObserver<
     @SuppressWarnings("rawtypes")
     static final SingleDisposable[] TERMINATED = new SingleDisposable[0];
 
+    @NonNull
     final AtomicBoolean once;
+    @Nullable
     T value;
+    @Nullable
     Throwable error;
 
     /**
@@ -53,6 +62,7 @@ public final class SingleSubject<T> extends Single<T> implements SingleObserver<
      * @return the new SingleSubject instance
      */
     @CheckReturnValue
+    @NonNull
     public static <T> SingleSubject<T> create() {
         return new SingleSubject<T>();
     }
@@ -64,7 +74,7 @@ public final class SingleSubject<T> extends Single<T> implements SingleObserver<
     }
 
     @Override
-    public void onSubscribe(Disposable d) {
+    public void onSubscribe(@NonNull Disposable d) {
         if (observers.get() == TERMINATED) {
             d.dispose();
         }
@@ -72,7 +82,7 @@ public final class SingleSubject<T> extends Single<T> implements SingleObserver<
 
     @SuppressWarnings("unchecked")
     @Override
-    public void onSuccess(T value) {
+    public void onSuccess(@NonNull T value) {
         if (value == null) {
             onError(new NullPointerException("Null values are not allowed in 2.x"));
             return;
@@ -87,7 +97,7 @@ public final class SingleSubject<T> extends Single<T> implements SingleObserver<
 
     @SuppressWarnings("unchecked")
     @Override
-    public void onError(Throwable e) {
+    public void onError(@NonNull Throwable e) {
         if (e == null) {
             e = new NullPointerException("Null errors are not allowed in 2.x");
         }
@@ -102,7 +112,7 @@ public final class SingleSubject<T> extends Single<T> implements SingleObserver<
     }
 
     @Override
-    protected void subscribeActual(SingleObserver<? super T> observer) {
+    protected void subscribeActual(@NonNull SingleObserver<? super T> observer) {
         SingleDisposable<T> md = new SingleDisposable<T>(observer, this);
         observer.onSubscribe(md);
         if (add(md)) {
@@ -119,7 +129,7 @@ public final class SingleSubject<T> extends Single<T> implements SingleObserver<
         }
     }
 
-    boolean add(SingleDisposable<T> inner) {
+    boolean add(@NonNull SingleDisposable<T> inner) {
         for (;;) {
             SingleDisposable<T>[] a = observers.get();
             if (a == TERMINATED) {
@@ -138,7 +148,7 @@ public final class SingleSubject<T> extends Single<T> implements SingleObserver<
     }
 
     @SuppressWarnings("unchecked")
-    void remove(SingleDisposable<T> inner) {
+    void remove(@NonNull SingleDisposable<T> inner) {
         for (;;) {
             SingleDisposable<T>[] a = observers.get();
             int n = a.length;
@@ -177,6 +187,7 @@ public final class SingleSubject<T> extends Single<T> implements SingleObserver<
      * Returns the success value if this SingleSubject was terminated with a success value.
      * @return the success value or null
      */
+    @Nullable
     public T getValue() {
         if (observers.get() == TERMINATED) {
             return value;
@@ -196,6 +207,7 @@ public final class SingleSubject<T> extends Single<T> implements SingleObserver<
      * Returns the terminal error if this SingleSubject has been terminated with an error, null otherwise.
      * @return the terminal error or null if not terminated or not with an error
      */
+    @Nullable
     public Throwable getThrowable() {
         if (observers.get() == TERMINATED) {
             return error;

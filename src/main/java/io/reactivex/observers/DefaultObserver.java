@@ -14,6 +14,7 @@
 package io.reactivex.observers;
 
 import io.reactivex.Observer;
+import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.disposables.DisposableHelper;
 
@@ -65,7 +66,7 @@ import io.reactivex.internal.disposables.DisposableHelper;
 public abstract class DefaultObserver<T> implements Observer<T> {
     private Disposable s;
     @Override
-    public final void onSubscribe(Disposable s) {
+    public final void onSubscribe(@NonNull Disposable s) {
         if (DisposableHelper.validate(this.s, s)) {
             this.s = s;
             onStart();

@@ -13,27 +13,42 @@
 
 package io.reactivex;
 
-import java.util.NoSuchElementException;
-import java.util.concurrent.*;
-
-import org.reactivestreams.Publisher;
-
 import io.reactivex.annotations.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.*;
-import io.reactivex.internal.functions.*;
-import io.reactivex.internal.fuseable.*;
-import io.reactivex.internal.observers.*;
-import io.reactivex.internal.operators.completable.*;
-import io.reactivex.internal.operators.flowable.*;
-import io.reactivex.internal.operators.maybe.*;
-import io.reactivex.internal.operators.observable.*;
+import io.reactivex.internal.functions.Functions;
+import io.reactivex.internal.functions.ObjectHelper;
+import io.reactivex.internal.fuseable.FuseToFlowable;
+import io.reactivex.internal.fuseable.FuseToMaybe;
+import io.reactivex.internal.fuseable.FuseToObservable;
+import io.reactivex.internal.observers.BiConsumerSingleObserver;
+import io.reactivex.internal.observers.BlockingMultiObserver;
+import io.reactivex.internal.observers.ConsumerSingleObserver;
+import io.reactivex.internal.observers.FutureSingleObserver;
+import io.reactivex.internal.operators.completable.CompletableFromSingle;
+import io.reactivex.internal.operators.completable.CompletableToFlowable;
+import io.reactivex.internal.operators.flowable.FlowableConcatMap;
+import io.reactivex.internal.operators.flowable.FlowableConcatMapPublisher;
+import io.reactivex.internal.operators.flowable.FlowableFlatMapPublisher;
+import io.reactivex.internal.operators.flowable.FlowableSingleSingle;
+import io.reactivex.internal.operators.maybe.MaybeFilterSingle;
+import io.reactivex.internal.operators.maybe.MaybeFromSingle;
+import io.reactivex.internal.operators.observable.ObservableConcatMap;
+import io.reactivex.internal.operators.observable.ObservableSingleSingle;
 import io.reactivex.internal.operators.single.*;
-import io.reactivex.internal.util.*;
+import io.reactivex.internal.util.ErrorMode;
+import io.reactivex.internal.util.ExceptionHelper;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.schedulers.Schedulers;
+import org.reactivestreams.Publisher;
+
+import java.util.NoSuchElementException;
+import java.util.concurrent.Callable;
+import java.util.concurrent.CancellationException;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 /**
  * The Single class implements the Reactive Pattern for a single value response.
@@ -2714,7 +2729,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * Override this method in subclasses to handle the incoming SingleObservers.
      * @param observer the SingleObserver to handle, not null
      */
-    protected abstract void subscribeActual(SingleObserver<? super T> observer);
+    protected abstract void subscribeActual(@NonNull SingleObserver<? super T> observer);
 
     /**
      * Subscribes a given SingleObserver (subclass) to this Single and returns the given

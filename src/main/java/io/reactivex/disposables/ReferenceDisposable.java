@@ -13,9 +13,10 @@
 
 package io.reactivex.disposables;
 
-import java.util.concurrent.atomic.AtomicReference;
-
+import io.reactivex.annotations.NonNull;
 import io.reactivex.internal.functions.ObjectHelper;
+
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Base class for Disposable containers that manage some other type that
@@ -27,11 +28,11 @@ abstract class ReferenceDisposable<T> extends AtomicReference<T> implements Disp
 
     private static final long serialVersionUID = 6537757548749041217L;
 
-    ReferenceDisposable(T value) {
+    ReferenceDisposable(@NonNull T value) {
         super(ObjectHelper.requireNonNull(value, "value is null"));
     }
 
-    protected abstract void onDisposed(T value);
+    protected abstract void onDisposed(@NonNull T value);
 
     @Override
     public final void dispose() {

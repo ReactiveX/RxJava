@@ -13,11 +13,12 @@
 
 package io.reactivex.observers;
 
-import java.util.concurrent.atomic.AtomicReference;
-
 import io.reactivex.SingleObserver;
+import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.disposables.DisposableHelper;
+
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * An abstract {@link SingleObserver} that allows asynchronous cancellation by implementing Disposable.
@@ -52,10 +53,11 @@ import io.reactivex.internal.disposables.DisposableHelper;
  * @param <T> the received value type
  */
 public abstract class DisposableSingleObserver<T> implements SingleObserver<T>, Disposable {
+    @NonNull
     final AtomicReference<Disposable> s = new AtomicReference<Disposable>();
 
     @Override
-    public final void onSubscribe(Disposable s) {
+    public final void onSubscribe(@NonNull Disposable s) {
         if (DisposableHelper.setOnce(this.s, s)) {
             onStart();
         }

@@ -13,6 +13,7 @@
 
 package io.reactivex.observables;
 
+import io.reactivex.annotations.NonNull;
 import org.reactivestreams.Subscriber;
 
 import io.reactivex.*;
@@ -71,6 +72,7 @@ public abstract class ConnectableObservable<T> extends Observable<T> {
      * @return an {@link Observable}
      * @see <a href="http://reactivex.io/documentation/operators/refcount.html">ReactiveX documentation: RefCount</a>
      */
+    @NonNull
     public Observable<T> refCount() {
         return RxJavaPlugins.onAssembly(new ObservableRefCount<T>(this));
     }
@@ -82,6 +84,7 @@ public abstract class ConnectableObservable<T> extends Observable<T> {
      * @return an Observable that automatically connects to this ConnectableObservable
      *         when the first Subscriber subscribes
      */
+    @NonNull
     public Observable<T> autoConnect() {
         return autoConnect(1);
     }
@@ -95,6 +98,7 @@ public abstract class ConnectableObservable<T> extends Observable<T> {
      * @return an Observable that automatically connects to this ConnectableObservable
      *         when the specified number of Subscribers subscribe to it
      */
+    @NonNull
     public Observable<T> autoConnect(int numberOfSubscribers) {
         return autoConnect(numberOfSubscribers, Functions.emptyConsumer());
     }
@@ -113,6 +117,7 @@ public abstract class ConnectableObservable<T> extends Observable<T> {
      *         when the specified number of Subscribers subscribe to it and calls the
      *         specified callback with the Subscription associated with the established connection
      */
+    @NonNull
     public Observable<T> autoConnect(int numberOfSubscribers, Consumer<? super Disposable> connection) {
         if (numberOfSubscribers <= 0) {
             this.connect(connection);

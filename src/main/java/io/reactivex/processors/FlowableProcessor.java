@@ -13,9 +13,10 @@
 
 package io.reactivex.processors;
 
+import io.reactivex.Flowable;
+import io.reactivex.FlowableSubscriber;
+import io.reactivex.annotations.NonNull;
 import org.reactivestreams.Processor;
-
-import io.reactivex.*;
 
 /**
  * Represents a Subscriber and a Flowable (Publisher) at the same time, allowing
@@ -66,6 +67,7 @@ public abstract class FlowableProcessor<T> extends Flowable<T> implements Proces
      * <p>The method is thread-safe.
      * @return the wrapped and serialized subject
      */
+    @NonNull
     public final FlowableProcessor<T> toSerialized() {
         if (this instanceof SerializedProcessor) {
             return this;

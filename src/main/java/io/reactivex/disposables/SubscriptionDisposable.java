@@ -12,6 +12,7 @@
  */
 package io.reactivex.disposables;
 
+import io.reactivex.annotations.NonNull;
 import org.reactivestreams.Subscription;
 
 /**
@@ -21,12 +22,12 @@ final class SubscriptionDisposable extends ReferenceDisposable<Subscription> {
 
     private static final long serialVersionUID = -707001650852963139L;
 
-    SubscriptionDisposable(Subscription value) {
+    SubscriptionDisposable(@NonNull Subscription value) {
         super(value);
     }
 
     @Override
-    protected void onDisposed(Subscription value) {
+    protected void onDisposed(@NonNull Subscription value) {
         value.cancel();
     }
 }

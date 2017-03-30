@@ -13,9 +13,13 @@
 package io.reactivex.observers;
 
 import io.reactivex.Observer;
+import io.reactivex.annotations.NonNull;
+import io.reactivex.annotations.Nullable;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.exceptions.*;
-import io.reactivex.internal.disposables.*;
+import io.reactivex.exceptions.CompositeException;
+import io.reactivex.exceptions.Exceptions;
+import io.reactivex.internal.disposables.DisposableHelper;
+import io.reactivex.internal.disposables.EmptyDisposable;
 import io.reactivex.plugins.RxJavaPlugins;
 
 /**
@@ -26,8 +30,10 @@ import io.reactivex.plugins.RxJavaPlugins;
  */
 public final class SafeObserver<T> implements Observer<T>, Disposable {
     /** The actual Subscriber. */
+    @NonNull
     final Observer<? super T> actual;
     /** The subscription. */
+    @Nullable
     Disposable s;
     /** Indicates a terminal state. */
     boolean done;
@@ -36,12 +42,12 @@ public final class SafeObserver<T> implements Observer<T>, Disposable {
      * Constructs a SafeObserver by wrapping the given actual Observer.
      * @param actual the actual Observer to wrap, not null (not validated)
      */
-    public SafeObserver(Observer<? super T> actual) {
+    public SafeObserver(@NonNull Observer<? super T> actual) {
         this.actual = actual;
     }
 
     @Override
-    public void onSubscribe(Disposable s) {
+    public void onSubscribe(@NonNull Disposable s) {
         if (DisposableHelper.validate(this.s, s)) {
             this.s = s;
             try {
@@ -74,7 +80,7 @@ public final class SafeObserver<T> implements Observer<T>, Disposable {
     }
 
     @Override
-    public void onNext(T t) {
+    public void onNext(@NonNull T t) {
         if (done) {
             return;
         }
@@ -134,7 +140,7 @@ public final class SafeObserver<T> implements Observer<T>, Disposable {
     }
 
     @Override
-    public void onError(Throwable t) {
+    public void onError(@NonNull Throwable t) {
         if (done) {
             RxJavaPlugins.onError(t);
             return;

@@ -13,13 +13,14 @@
 
 package io.reactivex.observers;
 
-import java.util.concurrent.atomic.AtomicReference;
-
 import io.reactivex.MaybeObserver;
+import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.internal.disposables.ListCompositeDisposable;
 import io.reactivex.internal.functions.ObjectHelper;
+
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * An abstract {@link MaybeObserver} that allows asynchronous cancellation of its subscription and associated resources.
@@ -83,9 +84,11 @@ import io.reactivex.internal.functions.ObjectHelper;
  */
 public abstract class ResourceMaybeObserver<T> implements MaybeObserver<T>, Disposable {
     /** The active subscription. */
+    @NonNull
     private final AtomicReference<Disposable> s = new AtomicReference<Disposable>();
 
     /** The resource composite, can never be null. */
+    @NonNull
     private final ListCompositeDisposable resources = new ListCompositeDisposable();
 
     /**
@@ -95,13 +98,13 @@ public abstract class ResourceMaybeObserver<T> implements MaybeObserver<T>, Disp
      *
      * @throws NullPointerException if resource is null
      */
-    public final void add(Disposable resource) {
+    public final void add(@NonNull Disposable resource) {
         ObjectHelper.requireNonNull(resource, "resource is null");
         resources.add(resource);
     }
 
     @Override
-    public final void onSubscribe(Disposable s) {
+    public final void onSubscribe(@NonNull Disposable s) {
         if (DisposableHelper.setOnce(this.s, s)) {
             onStart();
         }
