@@ -13,8 +13,7 @@
 
 package io.reactivex.schedulers;
 
-import io.reactivex.annotations.NonNull;
-import io.reactivex.annotations.Nullable;
+import io.reactivex.annotations.*;
 import io.reactivex.internal.functions.ObjectHelper;
 
 import java.util.concurrent.TimeUnit;

@@ -13,17 +13,12 @@
 
 package io.reactivex.subjects;
 
-import io.reactivex.Single;
-import io.reactivex.SingleObserver;
-import io.reactivex.annotations.CheckReturnValue;
-import io.reactivex.annotations.Experimental;
-import io.reactivex.annotations.NonNull;
-import io.reactivex.annotations.Nullable;
+import io.reactivex.*;
+import io.reactivex.annotations.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.plugins.RxJavaPlugins;
 
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.atomic.*;
 
 /**
  * Represents a hot Single-like source and consumer of events similar to Subjects.

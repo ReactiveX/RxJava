@@ -12,12 +12,10 @@
  */
 package io.reactivex.processors;
 
-import io.reactivex.annotations.CheckReturnValue;
-import io.reactivex.annotations.NonNull;
+import io.reactivex.annotations.*;
 import io.reactivex.internal.subscriptions.DeferredScalarSubscription;
 import io.reactivex.plugins.RxJavaPlugins;
-import org.reactivestreams.Subscriber;
-import org.reactivestreams.Subscription;
+import org.reactivestreams.*;
 
 import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicReference;

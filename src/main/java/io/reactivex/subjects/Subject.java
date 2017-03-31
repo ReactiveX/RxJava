@@ -14,8 +14,7 @@
 package io.reactivex.subjects;
 
 import io.reactivex.*;
-import io.reactivex.annotations.NonNull;
-import io.reactivex.annotations.Nullable;
+import io.reactivex.annotations.*;
 
 /**
  * Represents an Observer and an Observable at the same time, allowing

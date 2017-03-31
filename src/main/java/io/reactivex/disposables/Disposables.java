@@ -16,8 +16,7 @@ package io.reactivex.disposables;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Action;
 import io.reactivex.internal.disposables.EmptyDisposable;
-import io.reactivex.internal.functions.Functions;
-import io.reactivex.internal.functions.ObjectHelper;
+import io.reactivex.internal.functions.*;
 import org.reactivestreams.Subscription;
 
 import java.util.concurrent.Future;
