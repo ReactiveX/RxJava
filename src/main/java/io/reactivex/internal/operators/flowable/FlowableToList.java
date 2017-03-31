@@ -69,7 +69,10 @@ public final class FlowableToList<T, U extends Collection<? super T>> extends Ab
 
         @Override
         public void onNext(T t) {
-            value.add(t);
+            U v = value;
+            if (v != null) {
+                v.add(t);
+            }
         }
 
         @Override
