@@ -2257,11 +2257,9 @@ public class Single<T> {
             // Use a defer instead of simply   other = Single.error(new TimeoutException())
             // since instantiating an exception will cause the current stack trace to be inspected
             // and we only want to incur that overhead when a timeout actually happens.
-            other = Single.<T>defer(new Func0<Single<T>>()
-            {
+            other = Single.<T>defer(new Func0<Single<T>>() {
                 @Override
-                public Single<T> call()
-                {
+                public Single<T> call() {
                     return Single.<T>error(new TimeoutException());
                 }
             });
