@@ -337,11 +337,11 @@ public class TestSubscriber<T> extends Subscriber<T> {
         if (expected == null) {
             // check for null equality
             if (actual != null) {
-                assertionError("Value at index: " + i + " expected to be [null] but was: [" + actual + "]\n");
+                assertionError("Value at index: " + i + " expected: [null] but was: [" + actual + "]\n");
             }
         } else if (!expected.equals(actual)) {
             assertionError("Value at index: " + i
-                    + " expected to be [" + expected + "] (" + expected.getClass().getSimpleName()
+                    + " expected: [" + expected + "] (" + expected.getClass().getSimpleName()
                     + ") but was: [" + actual + "] (" + (actual != null ? actual.getClass().getSimpleName() : "null") + ")\n");
 
         }
