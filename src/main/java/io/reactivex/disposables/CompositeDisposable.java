@@ -12,13 +12,13 @@
  */
 package io.reactivex.disposables;
 
+import java.util.*;
+
 import io.reactivex.annotations.NonNull;
 import io.reactivex.exceptions.*;
 import io.reactivex.internal.disposables.DisposableContainer;
 import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.internal.util.*;
-
-import java.util.*;
 
 /**
  * A disposable container that can hold onto multiple other disposables and

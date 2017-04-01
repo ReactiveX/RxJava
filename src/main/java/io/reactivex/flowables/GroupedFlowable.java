@@ -31,8 +31,7 @@ import io.reactivex.annotations.Nullable;
  * @see <a href="http://reactivex.io/documentation/operators/groupby.html">ReactiveX documentation: GroupBy</a>
  */
 public abstract class GroupedFlowable<K, T> extends Flowable<T> {
-
-    @Nullable
+    
     final K key;
 
     /**

@@ -13,12 +13,12 @@
 
 package io.reactivex.observers;
 
+import java.util.concurrent.atomic.AtomicReference;
+
 import io.reactivex.CompletableObserver;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.disposables.DisposableHelper;
-
-import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * An abstract {@link CompletableObserver} that allows asynchronous cancellation by implementing Disposable.

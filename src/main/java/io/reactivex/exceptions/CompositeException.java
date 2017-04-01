@@ -15,10 +15,10 @@
  */
 package io.reactivex.exceptions;
 
-import io.reactivex.annotations.*;
-
 import java.io.*;
 import java.util.*;
+
+import io.reactivex.annotations.NonNull;
 
 /**
  * Represents an exception that is a composite of one or more other exceptions. A {@code CompositeException}
@@ -49,7 +49,7 @@ public final class CompositeException extends RuntimeException {
      *
      * @throws IllegalArgumentException if <code>exceptions</code> is empty.
      */
-    public CompositeException(@Nullable Throwable... exceptions) {
+    public CompositeException(@NonNull Throwable... exceptions) {
         this(exceptions == null ?
                 Collections.singletonList(new NullPointerException("exceptions was null")) : Arrays.asList(exceptions));
     }
@@ -61,7 +61,7 @@ public final class CompositeException extends RuntimeException {
      *
      * @throws IllegalArgumentException if <code>errors</code> is empty.
      */
-    public CompositeException(@Nullable Iterable<? extends Throwable> errors) {
+    public CompositeException(@NonNull Iterable<? extends Throwable> errors) {
         Set<Throwable> deDupedExceptions = new LinkedHashSet<Throwable>();
         List<Throwable> localExceptions = new ArrayList<Throwable>();
         if (errors != null) {

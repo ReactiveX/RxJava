@@ -13,10 +13,10 @@
 
 package io.reactivex.schedulers;
 
-import io.reactivex.annotations.*;
-import io.reactivex.internal.functions.ObjectHelper;
-
 import java.util.concurrent.TimeUnit;
+
+import io.reactivex.annotations.NonNull;
+import io.reactivex.internal.functions.ObjectHelper;
 
 /**
  * Holds onto a value along with time information.
@@ -45,7 +45,7 @@ public final class Timed<T> {
      * Returns the contained value.
      * @return the contained value
      */
-    @Nullable
+    @NonNull
     public T value() {
         return value;
     }

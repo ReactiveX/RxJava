@@ -13,10 +13,10 @@
 
 package io.reactivex.disposables;
 
+import java.util.concurrent.atomic.AtomicReference;
+
 import io.reactivex.annotations.NonNull;
 import io.reactivex.internal.functions.ObjectHelper;
-
-import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Base class for Disposable containers that manage some other type that

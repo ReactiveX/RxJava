@@ -35,7 +35,7 @@ public final class SerializedObserver<T> implements Observer<T>, Disposable {
     final boolean delayError;
 
     static final int QUEUE_LINK_SIZE = 4;
-    
+
     Disposable s;
 
     boolean emitting;

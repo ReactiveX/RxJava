@@ -13,13 +13,13 @@
 
 package io.reactivex.observers;
 
+import java.util.concurrent.atomic.AtomicReference;
+
 import io.reactivex.SingleObserver;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.disposables.*;
 import io.reactivex.internal.functions.ObjectHelper;
-
-import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * An abstract {@link SingleObserver} that allows asynchronous cancellation of its subscription

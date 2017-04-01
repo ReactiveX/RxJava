@@ -13,12 +13,12 @@
 
 package io.reactivex.subjects;
 
+import java.util.concurrent.atomic.*;
+
 import io.reactivex.*;
 import io.reactivex.annotations.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.plugins.RxJavaPlugins;
-
-import java.util.concurrent.atomic.*;
 
 /**
  * Represents a hot Single-like source and consumer of events similar to Subjects.
@@ -34,7 +34,7 @@ import java.util.concurrent.atomic.*;
  */
 @Experimental
 public final class SingleSubject<T> extends Single<T> implements SingleObserver<T> {
-    
+
     final AtomicReference<SingleDisposable<T>[]> observers;
 
     @SuppressWarnings("rawtypes")

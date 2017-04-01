@@ -13,6 +13,9 @@
 
 package io.reactivex.parallel;
 
+import java.util.*;
+import java.util.concurrent.Callable;
+
 import io.reactivex.*;
 import io.reactivex.annotations.*;
 import io.reactivex.exceptions.Exceptions;
@@ -23,9 +26,6 @@ import io.reactivex.internal.subscriptions.EmptySubscription;
 import io.reactivex.internal.util.*;
 import io.reactivex.plugins.RxJavaPlugins;
 import org.reactivestreams.*;
-
-import java.util.*;
-import java.util.concurrent.Callable;
 
 /**
  * Abstract base class for Parallel publishers that take an array of Subscribers.

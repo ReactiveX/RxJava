@@ -13,10 +13,10 @@
 
 package io.reactivex.disposables;
 
+import java.util.concurrent.atomic.AtomicReference;
+
 import io.reactivex.annotations.Nullable;
 import io.reactivex.internal.disposables.DisposableHelper;
-
-import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * A Disposable container that allows atomically updating/replacing the contained

@@ -13,6 +13,9 @@
 
 package io.reactivex;
 
+import java.util.NoSuchElementException;
+import java.util.concurrent.*;
+
 import io.reactivex.annotations.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.Exceptions;
@@ -30,9 +33,6 @@ import io.reactivex.observers.TestObserver;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.schedulers.Schedulers;
 import org.reactivestreams.Publisher;
-
-import java.util.NoSuchElementException;
-import java.util.concurrent.*;
 
 /**
  * The Single class implements the Reactive Pattern for a single value response.

@@ -31,8 +31,7 @@ import io.reactivex.annotations.Nullable;
  * @see <a href="http://reactivex.io/documentation/operators/groupby.html">ReactiveX documentation: GroupBy</a>
  */
 public abstract class GroupedObservable<K, T> extends Observable<T> {
-
-    @Nullable
+    
     final K key;
 
     /**
