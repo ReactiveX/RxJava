@@ -121,6 +121,20 @@ public final class ObjectHelper {
         }
         return value;
     }
+    
+    /**
+     * Validate that the given index is greater than equal to zero or report
+     * an IndexOutOfBoundsException with the count.
+     * @param count the value to validate
+     * @return count
+     * @throws IndexOutOfBoundsException if count &lt; 0
+     */
+    public static long verifyIndexPositive(long count) {
+        if (count < 0) {
+            throw new IndexOutOfBoundsException("count >= 0 required but it was " + count);
+        }
+        return count;
+    }
 
     static final class BiObjectPredicate implements BiPredicate<Object, Object> {
         @Override
