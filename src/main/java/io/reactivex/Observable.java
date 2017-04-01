@@ -3631,8 +3631,8 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @param onSubscribe the ObservableSource instance to wrap
      * @return the new Observable instance
      * @throws NullPointerException
-     *             if {@code source} is null, or
-     *             if {@code onSubscribe} is null
+     *             if {@code onSubscribe} is null, or
+     *             if source is null
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
