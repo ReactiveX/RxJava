@@ -13,6 +13,7 @@
 package io.reactivex.observers;
 
 import io.reactivex.Observer;
+import io.reactivex.annotations.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.internal.util.*;
@@ -46,7 +47,7 @@ public final class SerializedObserver<T> implements Observer<T>, Disposable {
      * Construct a SerializedObserver by wrapping the given actual Observer.
      * @param actual the actual Observer, not null (not verified)
      */
-    public SerializedObserver(Observer<? super T> actual) {
+    public SerializedObserver(@NonNull Observer<? super T> actual) {
         this(actual, false);
     }
 
@@ -57,13 +58,13 @@ public final class SerializedObserver<T> implements Observer<T>, Disposable {
      * @param actual the actual Observer, not null (not verified)
      * @param delayError if true, errors are emitted after regular values have been emitted
      */
-    public SerializedObserver(Observer<? super T> actual, boolean delayError) {
+    public SerializedObserver(@NonNull Observer<? super T> actual, boolean delayError) {
         this.actual = actual;
         this.delayError = delayError;
     }
 
     @Override
-    public void onSubscribe(Disposable s) {
+    public void onSubscribe(@NonNull Disposable s) {
         if (DisposableHelper.validate(this.s, s)) {
             this.s = s;
 
@@ -84,7 +85,7 @@ public final class SerializedObserver<T> implements Observer<T>, Disposable {
 
 
     @Override
-    public void onNext(T t) {
+    public void onNext(@NonNull T t) {
         if (done) {
             return;
         }
@@ -115,7 +116,7 @@ public final class SerializedObserver<T> implements Observer<T>, Disposable {
     }
 
     @Override
-    public void onError(Throwable t) {
+    public void onError(@NonNull Throwable t) {
         if (done) {
             RxJavaPlugins.onError(t);
             return;

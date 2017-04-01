@@ -12,6 +12,7 @@
  */
 package io.reactivex.disposables;
 
+import io.reactivex.annotations.NonNull;
 import org.reactivestreams.Subscription;
 
 /**
@@ -26,7 +27,7 @@ final class SubscriptionDisposable extends ReferenceDisposable<Subscription> {
     }
 
     @Override
-    protected void onDisposed(Subscription value) {
+    protected void onDisposed(@NonNull Subscription value) {
         value.cancel();
     }
 }

@@ -13,7 +13,7 @@
 
 package io.reactivex.exceptions;
 
-import io.reactivex.annotations.Experimental;
+import io.reactivex.annotations.*;
 
 /**
  * Represents an exception used to signal to the {@code RxJavaPlugins.onError()} that a
@@ -35,7 +35,7 @@ public final class OnErrorNotImplementedException extends RuntimeException {
      * @param e
      *          the {@code Throwable} to signal; if null, a NullPointerException is constructed
      */
-    public OnErrorNotImplementedException(String message, Throwable e) {
+    public OnErrorNotImplementedException(String message, @NonNull Throwable e) {
         super(message, e != null ? e : new NullPointerException());
     }
 
@@ -47,7 +47,7 @@ public final class OnErrorNotImplementedException extends RuntimeException {
      * @param e
      *          the {@code Throwable} to signal; if null, a NullPointerException is constructed
      */
-    public OnErrorNotImplementedException(Throwable e) {
+    public OnErrorNotImplementedException(@NonNull Throwable e) {
         super(e != null ? e.getMessage() : null, e != null ? e : new NullPointerException());
     }
 }

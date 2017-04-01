@@ -12,14 +12,13 @@
  */
 package io.reactivex.processors;
 
-import io.reactivex.annotations.CheckReturnValue;
 import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicReference;
 
-import org.reactivestreams.*;
-
+import io.reactivex.annotations.*;
 import io.reactivex.internal.subscriptions.DeferredScalarSubscription;
 import io.reactivex.plugins.RxJavaPlugins;
+import org.reactivestreams.*;
 
 /**
  * A Subject that emits the very last value followed by a completion event or the received error to Subscribers.
@@ -51,6 +50,7 @@ public final class AsyncProcessor<T> extends FlowableProcessor<T> {
      * @return the new AsyncProcessor instance
      */
     @CheckReturnValue
+    @NonNull
     public static <T> AsyncProcessor<T> create() {
         return new AsyncProcessor<T>();
     }

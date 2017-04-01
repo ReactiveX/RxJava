@@ -16,6 +16,7 @@ package io.reactivex.observers;
 import java.util.concurrent.atomic.AtomicReference;
 
 import io.reactivex.MaybeObserver;
+import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.disposables.DisposableHelper;
 
@@ -60,10 +61,11 @@ import io.reactivex.internal.disposables.DisposableHelper;
  * @param <T> the received value type
  */
 public abstract class DisposableMaybeObserver<T> implements MaybeObserver<T>, Disposable {
+    
     final AtomicReference<Disposable> s = new AtomicReference<Disposable>();
 
     @Override
-    public final void onSubscribe(Disposable s) {
+    public final void onSubscribe(@NonNull Disposable s) {
         if (DisposableHelper.setOnce(this.s, s)) {
             onStart();
         }

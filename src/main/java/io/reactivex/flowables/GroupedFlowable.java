@@ -13,6 +13,7 @@
 package io.reactivex.flowables;
 
 import io.reactivex.Flowable;
+import io.reactivex.annotations.Nullable;
 
 /**
  * A {@link Flowable} that has been grouped by key, the value of which can be obtained with {@link #getKey()}.
@@ -30,14 +31,14 @@ import io.reactivex.Flowable;
  * @see <a href="http://reactivex.io/documentation/operators/groupby.html">ReactiveX documentation: GroupBy</a>
  */
 public abstract class GroupedFlowable<K, T> extends Flowable<T> {
-
+    
     final K key;
 
     /**
      * Constructs a GroupedFlowable with the given key.
      * @param key the key
      */
-    protected GroupedFlowable(K key) {
+    protected GroupedFlowable(@Nullable K key) {
         this.key = key;
     }
 
@@ -46,6 +47,7 @@ public abstract class GroupedFlowable<K, T> extends Flowable<T> {
      *
      * @return the key that the items emitted by this {@code GroupedObservable} were grouped by
      */
+    @Nullable
     public K getKey() {
         return key;
     }

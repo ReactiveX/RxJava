@@ -13,6 +13,7 @@
 package io.reactivex.observables;
 
 import io.reactivex.Observable;
+import io.reactivex.annotations.Nullable;
 
 /**
  * An {@link Observable} that has been grouped by key, the value of which can be obtained with {@link #getKey()}.
@@ -30,14 +31,14 @@ import io.reactivex.Observable;
  * @see <a href="http://reactivex.io/documentation/operators/groupby.html">ReactiveX documentation: GroupBy</a>
  */
 public abstract class GroupedObservable<K, T> extends Observable<T> {
-
+    
     final K key;
 
     /**
      * Constructs a GroupedObservable with the given key.
      * @param key the key
      */
-    protected GroupedObservable(K key) {
+    protected GroupedObservable(@Nullable K key) {
         this.key = key;
     }
 
@@ -46,6 +47,7 @@ public abstract class GroupedObservable<K, T> extends Observable<T> {
      *
      * @return the key that the items emitted by this {@code GroupedObservable} were grouped by
      */
+    @Nullable
     public K getKey() {
         return key;
     }

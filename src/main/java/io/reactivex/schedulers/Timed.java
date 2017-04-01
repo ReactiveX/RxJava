@@ -15,6 +15,7 @@ package io.reactivex.schedulers;
 
 import java.util.concurrent.TimeUnit;
 
+import io.reactivex.annotations.NonNull;
 import io.reactivex.internal.functions.ObjectHelper;
 
 /**
@@ -34,7 +35,7 @@ public final class Timed<T> {
      * @param unit the time unit, not null
      * @throws NullPointerException if unit is null
      */
-    public Timed(T value, long time, TimeUnit unit) {
+    public Timed(@NonNull T value, long time, @NonNull TimeUnit unit) {
         this.value = value;
         this.time = time;
         this.unit = ObjectHelper.requireNonNull(unit, "unit is null");
@@ -44,6 +45,7 @@ public final class Timed<T> {
      * Returns the contained value.
      * @return the contained value
      */
+    @NonNull
     public T value() {
         return value;
     }
@@ -52,6 +54,7 @@ public final class Timed<T> {
      * Returns the time unit of the contained time.
      * @return the time unit of the contained time
      */
+    @NonNull
     public TimeUnit unit() {
         return unit;
     }
@@ -69,7 +72,7 @@ public final class Timed<T> {
      * @param unit the time unt
      * @return the converted time
      */
-    public long time(TimeUnit unit) {
+    public long time(@NonNull TimeUnit unit) {
         return unit.convert(time, this.unit);
     }
 
