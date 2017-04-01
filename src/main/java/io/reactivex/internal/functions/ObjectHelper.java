@@ -108,6 +108,20 @@ public final class ObjectHelper {
     }
 
     /**
+     * Validate that the given count is greater than equal to zero or report
+     * an IndexOutOfBoundsException with the count.
+     * @param count the value to validate
+     * @return count
+     * @throws IndexOutOfBoundsException if count &lt; 0
+     */
+    public static long verifyCountPositive(long count) {
+        if (count < 0) {
+            throw new IndexOutOfBoundsException("count >= 0 required but it was " + count);
+        }
+        return count;
+    }
+
+    /**
      * Validate that the given value is positive or report an IllegalArgumentException with
      * the parameter name.
      * @param value the value to validate
