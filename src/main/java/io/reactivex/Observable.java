@@ -1317,6 +1317,9 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @param tillTheEnd if true exceptions from the outer and all inner ObservableSources are delayed to the end
      *                   if false, exception from the outer ObservableSource is delayed till the current ObservableSource terminates
      * @return the new ObservableSource with the concatenating behavior
+     * @throws NullPointerException
+     *             if {@code onNext} is null, or
+     *             if {@code prefetch} is null
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @CheckReturnValue
@@ -1368,6 +1371,9 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *                       is interpreted as all inner ObservableSources can be active at the same time
      * @param prefetch the number of elements to prefetch from each inner ObservableSource source
      * @return the new ObservableSource instance with the specified concatenation behavior
+     * @throws NullPointerException
+     *             if {@code maxConcurrency} is null, or
+     *             if {@code prefetch} is null
      * @since 2.0
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
@@ -1420,6 +1426,9 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *                       is interpreted as all inner ObservableSources can be active at the same time
      * @param prefetch the number of elements to prefetch from each inner ObservableSource source
      * @return the new ObservableSource instance with the specified concatenation behavior
+     * @throws NullPointerException
+     *             if {@code maxConcurrency} is null, or
+     *             if {@code prefetch} is null
      * @since 2.0
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
@@ -1471,6 +1480,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @param <T> the element type
      * @param source the emitter that is called when an Observer subscribes to the returned {@code Observable}
      * @return the new Observable instance
+     * @throws NullPointerException if source is null
      * @see ObservableOnSubscribe
      * @see ObservableEmitter
      * @see Cancellable
@@ -1806,6 +1816,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *            the type of items in the {@link Iterable} sequence and the type of items to be emitted by the
      *            resulting ObservableSource
      * @return an Observable that emits each item in the source {@link Iterable} sequence
+     * @throws NullPointerException if source is null
      * @see <a href="http://reactivex.io/documentation/operators/from.html">ReactiveX operators documentation: From</a>
      */
     @CheckReturnValue
@@ -3619,6 +3630,9 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @param <T> the value type emitted
      * @param onSubscribe the ObservableSource instance to wrap
      * @return the new Observable instance
+     * @throws NullPointerException
+     *             if {@code onSubscribe} is null, or
+     *             if source is null
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -10328,9 +10342,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Observable<T> skipLast(int count) {
-        if (count < 0) {
-            throw new IndexOutOfBoundsException("count >= 0 required but it was " + count);
-        }
+        ObjectHelper.verifyIndexPositive(count);
         if (count == 0) {
             return RxJavaPlugins.onAssembly(this);
         }
@@ -11236,9 +11248,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Observable<T> takeLast(int count) {
-        if (count < 0) {
-            throw new IndexOutOfBoundsException("count >= 0 required but it was " + count);
-        } else
+        ObjectHelper.verifyIndexPositive(count);
         if (count == 0) {
             return RxJavaPlugins.onAssembly(new ObservableIgnoreElements<T>(this));
         } else
@@ -11344,9 +11354,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
         ObjectHelper.requireNonNull(unit, "unit is null");
         ObjectHelper.requireNonNull(scheduler, "scheduler is null");
         ObjectHelper.verifyPositive(bufferSize, "bufferSize");
-        if (count < 0) {
-            throw new IndexOutOfBoundsException("count >= 0 required but it was " + count);
-        }
+        ObjectHelper.verifyIndexPositive(count);
         return RxJavaPlugins.onAssembly(new ObservableTakeLastTimed<T>(this, count, time, unit, scheduler, bufferSize, delayError));
     }
 
