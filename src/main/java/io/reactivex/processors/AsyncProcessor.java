@@ -36,7 +36,6 @@ public final class AsyncProcessor<T> extends FlowableProcessor<T> {
     @SuppressWarnings("rawtypes")
     static final AsyncSubscription[] TERMINATED = new AsyncSubscription[0];
     
-    @NonNull
     final AtomicReference<AsyncSubscription<T>[]> subscribers;
 
     /** Write before updating subscribers, read after reading subscribers as TERMINATED. */

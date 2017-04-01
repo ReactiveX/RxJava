@@ -51,7 +51,6 @@ import java.util.concurrent.atomic.AtomicReference;
  * </pre></code>
  */
 public abstract class DisposableCompletableObserver implements CompletableObserver, Disposable {
-    @NonNull
     final AtomicReference<Disposable> s = new AtomicReference<Disposable>();
 
     @Override

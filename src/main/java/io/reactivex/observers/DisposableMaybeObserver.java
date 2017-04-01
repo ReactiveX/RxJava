@@ -61,7 +61,7 @@ import java.util.concurrent.atomic.AtomicReference;
  * @param <T> the received value type
  */
 public abstract class DisposableMaybeObserver<T> implements MaybeObserver<T>, Disposable {
-    @NonNull
+    
     final AtomicReference<Disposable> s = new AtomicReference<Disposable>();
 
     @Override

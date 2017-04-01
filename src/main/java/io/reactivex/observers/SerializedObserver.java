@@ -31,13 +31,11 @@ import io.reactivex.plugins.RxJavaPlugins;
  * @param <T> the value type
  */
 public final class SerializedObserver<T> implements Observer<T>, Disposable {
-    @NonNull
     final Observer<? super T> actual;
     final boolean delayError;
 
     static final int QUEUE_LINK_SIZE = 4;
-
-    @Nullable
+    
     Disposable s;
 
     boolean emitting;

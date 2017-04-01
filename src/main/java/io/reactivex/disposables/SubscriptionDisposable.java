@@ -22,7 +22,7 @@ final class SubscriptionDisposable extends ReferenceDisposable<Subscription> {
 
     private static final long serialVersionUID = -707001650852963139L;
 
-    SubscriptionDisposable(@NonNull Subscription value) {
+    SubscriptionDisposable(Subscription value) {
         super(value);
     }
 

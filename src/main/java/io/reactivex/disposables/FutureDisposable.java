@@ -12,8 +12,6 @@
  */
 package io.reactivex.disposables;
 
-import io.reactivex.annotations.Nullable;
-
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -26,7 +24,7 @@ final class FutureDisposable extends AtomicReference<Future<?>> implements Dispo
 
     private final boolean allowInterrupt;
 
-    FutureDisposable(@Nullable Future<?> run, boolean allowInterrupt) {
+    FutureDisposable(Future<?> run, boolean allowInterrupt) {
         super(run);
         this.allowInterrupt = allowInterrupt;
     }

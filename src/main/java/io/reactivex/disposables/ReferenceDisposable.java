@@ -28,7 +28,7 @@ abstract class ReferenceDisposable<T> extends AtomicReference<T> implements Disp
 
     private static final long serialVersionUID = 6537757548749041217L;
 
-    ReferenceDisposable(@NonNull T value) {
+    ReferenceDisposable(T value) {
         super(ObjectHelper.requireNonNull(value, "value is null"));
     }
 

@@ -24,10 +24,8 @@ import java.util.concurrent.TimeUnit;
  * @param <T> the value type
  */
 public final class Timed<T> {
-    @Nullable
     final T value;
     final long time;
-    @NonNull
     final TimeUnit unit;
 
     /**
@@ -37,7 +35,7 @@ public final class Timed<T> {
      * @param unit the time unit, not null
      * @throws NullPointerException if unit is null
      */
-    public Timed(@Nullable T value, long time, @NonNull TimeUnit unit) {
+    public Timed(@NonNull T value, long time, @NonNull TimeUnit unit) {
         this.value = value;
         this.time = time;
         this.unit = ObjectHelper.requireNonNull(unit, "unit is null");

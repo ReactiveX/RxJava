@@ -13,7 +13,6 @@
 
 package io.reactivex.internal.disposables;
 
-import io.reactivex.annotations.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.ProtocolViolationException;
 import io.reactivex.internal.functions.ObjectHelper;
@@ -36,7 +35,7 @@ public enum DisposableHelper implements Disposable {
      * @param d the disposable to check
      * @return true if d is {@link #DISPOSED}
      */
-    public static boolean isDisposed(@Nullable Disposable d) {
+    public static boolean isDisposed(Disposable d) {
         return d == DISPOSED;
     }
 
@@ -46,7 +45,7 @@ public enum DisposableHelper implements Disposable {
      * @param d the new Disposable to set
      * @return true if successful, false if the field contains the {@link #DISPOSED} instance.
      */
-    public static boolean set(@NonNull AtomicReference<Disposable> field, @Nullable Disposable d) {
+    public static boolean set(AtomicReference<Disposable> field, Disposable d) {
         for (;;) {
             Disposable current = field.get();
             if (current == DISPOSED) {
@@ -75,7 +74,7 @@ public enum DisposableHelper implements Disposable {
      * @param d the disposable to set, not null
      * @return true if the operation succeeded, false
      */
-    public static boolean setOnce(@NonNull AtomicReference<Disposable> field, @NonNull Disposable d) {
+    public static boolean setOnce(AtomicReference<Disposable> field, Disposable d) {
         ObjectHelper.requireNonNull(d, "d is null");
         if (!field.compareAndSet(null, d)) {
             d.dispose();
@@ -95,7 +94,7 @@ public enum DisposableHelper implements Disposable {
      * @return true if the operation succeeded, false if the target field contained
      * the common DISPOSED instance and the given disposable (if not null) is disposed.
      */
-    public static boolean replace(@NonNull AtomicReference<Disposable> field, @Nullable Disposable d) {
+    public static boolean replace(AtomicReference<Disposable> field, Disposable d) {
         for (;;) {
             Disposable current = field.get();
             if (current == DISPOSED) {
@@ -115,7 +114,7 @@ public enum DisposableHelper implements Disposable {
      * @param field the target field
      * @return true if the current thread managed to dispose the Disposable
      */
-    public static boolean dispose(@NonNull AtomicReference<Disposable> field) {
+    public static boolean dispose(AtomicReference<Disposable> field) {
         Disposable current = field.get();
         Disposable d = DISPOSED;
         if (current != d) {
@@ -137,7 +136,7 @@ public enum DisposableHelper implements Disposable {
      * @param next the next Disposable, expected to be non-null
      * @return true if the validation succeeded
      */
-    public static boolean validate(@Nullable Disposable current, @NonNull Disposable next) {
+    public static boolean validate(Disposable current, Disposable next) {
         if (next == null) {
             RxJavaPlugins.onError(new NullPointerException("next is null"));
             return false;
@@ -164,7 +163,7 @@ public enum DisposableHelper implements Disposable {
      * @param d the disposable to set
      * @return true if successful, false otherwise
      */
-    public static boolean trySet(@NonNull AtomicReference<Disposable> field, @Nullable Disposable d) {
+    public static boolean trySet(AtomicReference<Disposable> field, Disposable d) {
         if (!field.compareAndSet(null, d)) {
             if (field.get() == DISPOSED) {
                 d.dispose();

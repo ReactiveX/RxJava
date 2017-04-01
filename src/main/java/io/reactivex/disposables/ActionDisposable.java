@@ -20,7 +20,7 @@ final class ActionDisposable extends ReferenceDisposable<Action> {
 
     private static final long serialVersionUID = -8219729196779211169L;
 
-    ActionDisposable(@NonNull Action value) {
+    ActionDisposable(Action value) {
         super(value);
     }
 

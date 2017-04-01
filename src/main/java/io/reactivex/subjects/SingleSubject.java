@@ -34,8 +34,7 @@ import java.util.concurrent.atomic.*;
  */
 @Experimental
 public final class SingleSubject<T> extends Single<T> implements SingleObserver<T> {
-
-    @NonNull
+    
     final AtomicReference<SingleDisposable<T>[]> observers;
 
     @SuppressWarnings("rawtypes")
@@ -44,11 +43,8 @@ public final class SingleSubject<T> extends Single<T> implements SingleObserver<
     @SuppressWarnings("rawtypes")
     static final SingleDisposable[] TERMINATED = new SingleDisposable[0];
 
-    @NonNull
     final AtomicBoolean once;
-    @Nullable
     T value;
-    @Nullable
     Throwable error;
 
     /**

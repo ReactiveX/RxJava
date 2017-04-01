@@ -76,11 +76,9 @@ import java.util.concurrent.atomic.AtomicReference;
  */
 public abstract class ResourceSingleObserver<T> implements SingleObserver<T>, Disposable {
     /** The active subscription. */
-    @NonNull
     private final AtomicReference<Disposable> s = new AtomicReference<Disposable>();
 
     /** The resource composite, can never be null. */
-    @NonNull
     private final ListCompositeDisposable resources = new ListCompositeDisposable();
 
     /**
