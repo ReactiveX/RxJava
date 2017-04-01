@@ -12343,9 +12343,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> skipLast(int count) {
-        if (count < 0) {
-            throw new IndexOutOfBoundsException("count >= 0 required but it was " + count);
-        }
+        ObjectHelper.verifyIndexPositive(count);
         if (count == 0) {
             return RxJavaPlugins.onAssembly(this);
         }
@@ -13397,9 +13395,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> takeLast(int count) {
-        if (count < 0) {
-            throw new IndexOutOfBoundsException("count >= 0 required but it was " + count);
-        } else
+        ObjectHelper.verifyIndexPositive(count);
         if (count == 0) {
             return RxJavaPlugins.onAssembly(new FlowableIgnoreElements<T>(this));
         } else
@@ -13517,9 +13513,7 @@ public abstract class Flowable<T> implements Publisher<T> {
         ObjectHelper.requireNonNull(unit, "unit is null");
         ObjectHelper.requireNonNull(scheduler, "scheduler is null");
         ObjectHelper.verifyPositive(bufferSize, "bufferSize");
-        if (count < 0) {
-            throw new IndexOutOfBoundsException("count >= 0 required but it was " + count);
-        }
+        ObjectHelper.verifyIndexPositive(count);
         return RxJavaPlugins.onAssembly(new FlowableTakeLastTimed<T>(this, count, time, unit, scheduler, bufferSize, delayError));
     }
 

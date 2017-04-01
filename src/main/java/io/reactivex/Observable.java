@@ -10342,9 +10342,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Observable<T> skipLast(int count) {
-        if (count < 0) {
-            throw new IndexOutOfBoundsException("count >= 0 required but it was " + count);
-        }
+        ObjectHelper.verifyIndexPositive(count);
         if (count == 0) {
             return RxJavaPlugins.onAssembly(this);
         }
@@ -11250,9 +11248,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Observable<T> takeLast(int count) {
-        if (count < 0) {
-            throw new IndexOutOfBoundsException("count >= 0 required but it was " + count);
-        } else
+        ObjectHelper.verifyIndexPositive(count);
         if (count == 0) {
             return RxJavaPlugins.onAssembly(new ObservableIgnoreElements<T>(this));
         } else
@@ -11358,9 +11354,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
         ObjectHelper.requireNonNull(unit, "unit is null");
         ObjectHelper.requireNonNull(scheduler, "scheduler is null");
         ObjectHelper.verifyPositive(bufferSize, "bufferSize");
-        if (count < 0) {
-            throw new IndexOutOfBoundsException("count >= 0 required but it was " + count);
-        }
+        ObjectHelper.verifyIndexPositive(count);
         return RxJavaPlugins.onAssembly(new ObservableTakeLastTimed<T>(this, count, time, unit, scheduler, bufferSize, delayError));
     }
 
