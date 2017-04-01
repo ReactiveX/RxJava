@@ -3595,6 +3595,9 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *            time units to use for {@code delay}
      * @param scheduler
      *            the {@link Scheduler} to use for scheduling the item
+     * @throws NullPointerException
+     *             if {@code unit} is null, or
+     *             if {@code scheduler} is null
      * @return an Observable that emits {@code 0L} after a specified delay, on a specified Scheduler, and then
      *         completes
      * @see <a href="http://reactivex.io/documentation/operators/timer.html">ReactiveX operators documentation: Timer</a>
