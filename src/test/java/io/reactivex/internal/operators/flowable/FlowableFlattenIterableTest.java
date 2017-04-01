@@ -863,4 +863,55 @@ public class FlowableFlattenIterableTest {
 
         ts.assertResult(1);
     }
+
+    @Test
+    public void doubleShare() {
+        Iterable<Integer> it = Flowable.range(1, 300).blockingIterable();
+            Flowable.just(it, it)
+            .flatMapIterable(Functions.<Iterable<Integer>>identity())
+            .share()
+            .share()
+            .count()
+            .test()
+            .assertResult(600L);
+    }
+
+    @Test
+    public void multiShare() {
+        Iterable<Integer> it = Flowable.range(1, 300).blockingIterable();
+        for (int i = 0; i < 5; i++) {
+            Flowable<Integer> f = Flowable.just(it, it)
+            .flatMapIterable(Functions.<Iterable<Integer>>identity());
+
+            for (int j = 0; j < i; j++) {
+                f = f.share();
+            }
+
+            f
+            .count()
+            .test()
+            .withTag("Share: " + i)
+            .assertResult(600L);
+        }
+    }
+
+    @Test
+    public void multiShareHidden() {
+        Iterable<Integer> it = Flowable.range(1, 300).blockingIterable();
+        for (int i = 0; i < 5; i++) {
+            Flowable<Integer> f = Flowable.just(it, it)
+            .flatMapIterable(Functions.<Iterable<Integer>>identity())
+            .hide();
+
+            for (int j = 0; j < i; j++) {
+                f = f.share();
+            }
+
+            f
+            .count()
+            .test()
+            .withTag("Share: " + i)
+            .assertResult(600L);
+        }
+    }
 }

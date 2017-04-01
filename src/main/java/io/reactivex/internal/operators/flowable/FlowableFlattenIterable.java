@@ -411,7 +411,10 @@ public final class FlowableFlattenIterable<T, R> extends AbstractFlowableWithUps
         @Override
         public boolean isEmpty() {
             Iterator<? extends R> it = current;
-            return (it != null && !it.hasNext()) || queue.isEmpty();
+            if (it == null) {
+                return queue.isEmpty();
+            }
+            return !it.hasNext();
         }
 
         @Nullable
