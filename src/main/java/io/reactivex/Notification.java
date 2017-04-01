@@ -13,6 +13,7 @@
 
 package io.reactivex;
 
+import io.reactivex.annotations.*;
 import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.internal.util.NotificationLite;
 
@@ -66,6 +67,7 @@ public final class Notification<T> {
      * @see #isOnNext()
      */
     @SuppressWarnings("unchecked")
+    @Nullable
     public T getValue() {
         Object o = value;
         if (o != null && !NotificationLite.isError(o)) {
@@ -80,6 +82,7 @@ public final class Notification<T> {
      * @return the Throwable error contained or null
      * @see #isOnError()
      */
+    @Nullable
     public Throwable getError() {
         Object o = value;
         if (NotificationLite.isError(o)) {
@@ -122,7 +125,8 @@ public final class Notification<T> {
      * @return the new Notification instance
      * @throws NullPointerException if value is null
      */
-    public static <T> Notification<T> createOnNext(T value) {
+    @NonNull
+    public static <T> Notification<T> createOnNext(@NonNull T value) {
         ObjectHelper.requireNonNull(value, "value is null");
         return new Notification<T>(value);
     }
@@ -134,7 +138,8 @@ public final class Notification<T> {
      * @return the new Notification instance
      * @throws NullPointerException if error is null
      */
-    public static <T> Notification<T> createOnError(Throwable error) {
+    @NonNull
+    public static <T> Notification<T> createOnError(@NonNull Throwable error) {
         ObjectHelper.requireNonNull(error, "error is null");
         return new Notification<T>(NotificationLite.error(error));
     }
@@ -146,6 +151,7 @@ public final class Notification<T> {
      * @return the shared Notification instance representing an onComplete signal
      */
     @SuppressWarnings("unchecked")
+    @NonNull
     public static <T> Notification<T> createOnComplete() {
         return (Notification<T>)COMPLETE;
     }

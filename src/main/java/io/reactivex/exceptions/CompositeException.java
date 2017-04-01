@@ -15,6 +15,8 @@
  */
 package io.reactivex.exceptions;
 
+import io.reactivex.annotations.*;
+
 import java.io.*;
 import java.util.*;
 
@@ -47,7 +49,7 @@ public final class CompositeException extends RuntimeException {
      *
      * @throws IllegalArgumentException if <code>exceptions</code> is empty.
      */
-    public CompositeException(Throwable... exceptions) {
+    public CompositeException(@Nullable Throwable... exceptions) {
         this(exceptions == null ?
                 Collections.singletonList(new NullPointerException("exceptions was null")) : Arrays.asList(exceptions));
     }
@@ -59,7 +61,7 @@ public final class CompositeException extends RuntimeException {
      *
      * @throws IllegalArgumentException if <code>errors</code> is empty.
      */
-    public CompositeException(Iterable<? extends Throwable> errors) {
+    public CompositeException(@Nullable Iterable<? extends Throwable> errors) {
         Set<Throwable> deDupedExceptions = new LinkedHashSet<Throwable>();
         List<Throwable> localExceptions = new ArrayList<Throwable>();
         if (errors != null) {
@@ -89,16 +91,19 @@ public final class CompositeException extends RuntimeException {
      *
      * @return the exceptions that make up the {@code CompositeException}, as a {@link List} of {@link Throwable}s
      */
+    @NonNull
     public List<Throwable> getExceptions() {
         return exceptions;
     }
 
     @Override
+    @NonNull
     public String getMessage() {
         return message;
     }
 
     @Override
+    @NonNull
     public synchronized Throwable getCause() { // NOPMD
         if (cause == null) {
             // we lazily generate this causal chain if this is called
