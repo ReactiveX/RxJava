@@ -395,7 +395,7 @@ public class FlowableToListTest {
         for (int i = 0; i < 1000; i++) {
             final PublishProcessor<Integer> pp = PublishProcessor.create();
             final TestObserver<List<Integer>> ts = pp.toList().test();
-            
+
             Runnable r1 = new Runnable() {
                 @Override
                 public void run() {
@@ -408,10 +408,9 @@ public class FlowableToListTest {
                     ts.cancel();
                 }
             };
-            
+
             TestHelper.race(r1, r2);
         }
-        
     }
 
     @Test
@@ -419,7 +418,7 @@ public class FlowableToListTest {
         for (int i = 0; i < 1000; i++) {
             final PublishProcessor<Integer> pp = PublishProcessor.create();
             final TestSubscriber<List<Integer>> ts = pp.toList().toFlowable().test();
-            
+
             Runnable r1 = new Runnable() {
                 @Override
                 public void run() {
@@ -432,10 +431,10 @@ public class FlowableToListTest {
                     ts.cancel();
                 }
             };
-            
+
             TestHelper.race(r1, r2);
         }
-        
+
     }
 
     @Test
@@ -443,9 +442,9 @@ public class FlowableToListTest {
         for (int i = 0; i < 1000; i++) {
             final PublishProcessor<Integer> pp = PublishProcessor.create();
             final TestSubscriber<List<Integer>> ts = pp.toList().toFlowable().test();
-            
+
             pp.onNext(1);
-            
+
             Runnable r1 = new Runnable() {
                 @Override
                 public void run() {
@@ -458,14 +457,13 @@ public class FlowableToListTest {
                     ts.cancel();
                 }
             };
-            
+
             TestHelper.race(r1, r2);
-            
+
             if (ts.valueCount() != 0) {
                 ts.assertValue(Arrays.asList(1))
                 .assertNoErrors();
             }
         }
-        
     }
 }
