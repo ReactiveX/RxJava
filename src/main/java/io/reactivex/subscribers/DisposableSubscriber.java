@@ -37,7 +37,7 @@ import io.reactivex.internal.subscriptions.SubscriptionHelper;
  * Calling {@link #request(long)} inside {@link #onNext(Object)} can happen at any time
  * because by design, {@code onNext} calls from upstream are non-reentrant and non-overlapping.
  *
- * <p>Like all other consumers, {@code DefaultSubscriber} can be subscribed only once.
+ * <p>Like all other consumers, {@code DisposableSubscriber} can be subscribed only once.
  * Any subsequent attempt to subscribe it to a new source will yield an
  * {@link IllegalStateException} with message {@code "Subscription already set!"}.
  *

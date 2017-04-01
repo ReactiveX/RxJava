@@ -13,6 +13,7 @@
 
 package io.reactivex.internal.operators.flowable;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import java.util.*;
@@ -23,7 +24,6 @@ import org.mockito.Mockito;
 import org.reactivestreams.Subscriber;
 
 import io.reactivex.*;
-import io.reactivex.Flowable;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.processors.PublishProcessor;
@@ -388,5 +388,84 @@ public class FlowableToListTest {
         .test()
         .assertFailure(NullPointerException.class)
         .assertErrorMessage("The collectionSupplier returned a null collection. Null values are generally not allowed in 2.x operators and sources.");
+    }
+
+    @Test
+    public void onNextCancelRace() {
+        for (int i = 0; i < 1000; i++) {
+            final PublishProcessor<Integer> pp = PublishProcessor.create();
+            final TestObserver<List<Integer>> ts = pp.toList().test();
+            
+            Runnable r1 = new Runnable() {
+                @Override
+                public void run() {
+                    pp.onNext(1);
+                }
+            };
+            Runnable r2 = new Runnable() {
+                @Override
+                public void run() {
+                    ts.cancel();
+                }
+            };
+            
+            TestHelper.race(r1, r2);
+        }
+        
+    }
+
+    @Test
+    public void onNextCancelRaceFlowable() {
+        for (int i = 0; i < 1000; i++) {
+            final PublishProcessor<Integer> pp = PublishProcessor.create();
+            final TestSubscriber<List<Integer>> ts = pp.toList().toFlowable().test();
+            
+            Runnable r1 = new Runnable() {
+                @Override
+                public void run() {
+                    pp.onNext(1);
+                }
+            };
+            Runnable r2 = new Runnable() {
+                @Override
+                public void run() {
+                    ts.cancel();
+                }
+            };
+            
+            TestHelper.race(r1, r2);
+        }
+        
+    }
+
+    @Test
+    public void onCompleteCancelRaceFlowable() {
+        for (int i = 0; i < 1000; i++) {
+            final PublishProcessor<Integer> pp = PublishProcessor.create();
+            final TestSubscriber<List<Integer>> ts = pp.toList().toFlowable().test();
+            
+            pp.onNext(1);
+            
+            Runnable r1 = new Runnable() {
+                @Override
+                public void run() {
+                    pp.onComplete();
+                }
+            };
+            Runnable r2 = new Runnable() {
+                @Override
+                public void run() {
+                    ts.cancel();
+                }
+            };
+            
+            TestHelper.race(r1, r2);
+            
+            if (ts.valueCount() != 0) {
+                ts.assertValue(Arrays.asList(1))
+                .assertNoErrors();
+            }
+        }
+        
     }
 }
