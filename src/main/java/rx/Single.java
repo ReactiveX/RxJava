@@ -2254,7 +2254,15 @@ public class Single<T> {
      */
     public final Single<T> timeout(long timeout, TimeUnit timeUnit, Single<? extends T> other, Scheduler scheduler) {
         if (other == null) {
-            other = Single.<T> error(new TimeoutException());
+            // Use a defer instead of simply   other = Single.error(new TimeoutException())
+            // since instantiating an exception will cause the current stack trace to be inspected
+            // and we only want to incur that overhead when a timeout actually happens.
+            other = Single.<T>defer(new Func0<Single<T>>() {
+                @Override
+                public Single<T> call() {
+                    return Single.<T>error(new TimeoutException());
+                }
+            });
         }
         return create(new SingleTimeout<T>(onSubscribe, timeout, timeUnit, scheduler, other.onSubscribe));
     }
