@@ -33,22 +33,22 @@ public class ObjectHelperTest {
     }
 
     @Test
-    public void verifyPositiveInt() throws Exception{
+    public void verifyPositiveInt() throws Exception {
         assertEquals(1, ObjectHelper.verifyPositive(1, "param"));
     }
 
     @Test
-    public void verifyPositiveLong() throws Exception{
+    public void verifyPositiveLong() throws Exception {
         assertEquals(1L, ObjectHelper.verifyPositive(1L, "param"));
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void verifyPositiveIntFail() throws Exception{
+    public void verifyPositiveIntFail() throws Exception {
         assertEquals(-1, ObjectHelper.verifyPositive(-1, "param"));
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void verifyPositiveLongFail() throws Exception{
+    public void verifyPositiveLongFail() throws Exception {
         assertEquals(-1L, ObjectHelper.verifyPositive(-1L, "param"));
     }
 

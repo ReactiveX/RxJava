@@ -64,7 +64,7 @@ import io.reactivex.internal.disposables.DisposableHelper;
  * @param <T> the received value type
  */
 public abstract class DisposableObserver<T> implements Observer<T>, Disposable {
-   
+
     final AtomicReference<Disposable> s = new AtomicReference<Disposable>();
 
     @Override
