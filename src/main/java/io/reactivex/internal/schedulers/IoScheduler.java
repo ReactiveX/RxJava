@@ -210,12 +210,6 @@ public final class IoScheduler extends Scheduler {
                 tasks.dispose();
 
                 // releasing the pool should be the last action
-                // should prevent pool reuse in case there is a blocking
-                // action not responding to cancellation
-//                threadWorker.scheduleDirect(() -> {
-//                    pool.release(threadWorker);
-//                }, 0, TimeUnit.MILLISECONDS);
-
                 pool.release(threadWorker);
             }
         }
