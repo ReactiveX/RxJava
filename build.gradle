@@ -47,6 +47,7 @@ javadoc {
     options.addStringOption('top').value = ''
     options.addStringOption('doctitle').value = ''
     options.addStringOption('header').value = ''
+    options.links("http://docs.oracle.com/javase/7/docs/api/")
     if (JavaVersion.current().isJava7()) {
         // "./gradle/stylesheet.css" only supports Java 7
         options.addStringOption('stylesheetfile', rootProject.file('./gradle/stylesheet.css').toString())

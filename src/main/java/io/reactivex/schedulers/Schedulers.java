@@ -108,7 +108,7 @@ public final class Schedulers {
      * <p>
      * You can control certain properties of this standard scheduler via system properties that have to be set
      * before the {@link Schedulers} class is referenced in your code.
-     * <br><strong>Supported system properties ({@code System.getProperty()}):</strong>
+     * <p><strong>Supported system properties ({@code System.getProperty()}):</strong>
      * <ul>
      * <li>{@code rx2.computation-threads} (int): sets the number of threads in the {@link #computation()} Scheduler, default is the number of available CPUs</li>
      * <li>{@code rx2.computation-priority} (int): sets the thread priority of the {@link #computation()} Scheduler, default is {@link Thread#NORM_PRIORITY}</li>
@@ -153,7 +153,7 @@ public final class Schedulers {
      * <p>
      * You can control certain properties of this standard scheduler via system properties that have to be set
      * before the {@link Schedulers} class is referenced in your code.
-     * <br><strong>Supported system properties ({@code System.getProperty()}):</strong>
+     * <p><strong>Supported system properties ({@code System.getProperty()}):</strong>
      * <ul>
      * <li>{@code rx2.io-priority} (int): sets the thread priority of the {@link #io()} Scheduler, default is {@link Thread#NORM_PRIORITY}</li>
      * </ul>
@@ -211,7 +211,7 @@ public final class Schedulers {
      * <p>
      * You can control certain properties of this standard scheduler via system properties that have to be set
      * before the {@link Schedulers} class is referenced in your code.
-     * <br><strong>Supported system properties ({@code System.getProperty()}):</strong>
+     * <p><strong>Supported system properties ({@code System.getProperty()}):</strong>
      * <ul>
      * <li>{@code rx2.newthread-priority} (int): sets the thread priority of the {@link #newThread()} Scheduler, default is {@link Thread#NORM_PRIORITY}</li>
      * </ul>
@@ -260,7 +260,7 @@ public final class Schedulers {
      * <p>
      * You can control certain properties of this standard scheduler via system properties that have to be set
      * before the {@link Schedulers} class is referenced in your code.
-     * <br><strong>Supported system properties ({@code System.getProperty()}):</strong>
+     * <p><strong>Supported system properties ({@code System.getProperty()}):</strong>
      * <ul>
      * <li>{@code rx2.single-priority} (int): sets the thread priority of the {@link #single()} Scheduler, default is {@link Thread#NORM_PRIORITY}</li>
      * </ul>
