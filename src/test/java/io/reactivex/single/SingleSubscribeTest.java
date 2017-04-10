@@ -15,6 +15,7 @@ package io.reactivex.single;
 
 import static org.junit.Assert.*;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.junit.Test;
@@ -226,5 +227,41 @@ public class SingleSubscribeTest {
     @Test
     public void errorIsDisposed() {
         assertTrue(Single.error(new TestException()).subscribe(Functions.emptyConsumer(), Functions.emptyConsumer()).isDisposed());
+    }
+
+    @Test
+    public void biConsumerIsDisposedOnSuccess() {
+        final Object[] result = { null, null };
+        
+        Disposable d = Single.just(1)
+        .subscribe(new BiConsumer<Integer, Throwable>() {
+            @Override
+            public void accept(Integer t1, Throwable t2) throws Exception {
+                result[0] = t1;
+                result[1] = t2;
+            }
+        });
+        
+        assertTrue("Not disposed?!", d.isDisposed());
+        assertEquals(1, result[0]);
+        assertNull(result[1]);
+    }
+
+    @Test
+    public void biConsumerIsDisposedOnError() {
+        final Object[] result = { null, null };
+        
+        Disposable d = Single.<Integer>error(new IOException())
+        .subscribe(new BiConsumer<Integer, Throwable>() {
+            @Override
+            public void accept(Integer t1, Throwable t2) throws Exception {
+                result[0] = t1;
+                result[1] = t2;
+            }
+        });
+        
+        assertTrue("Not disposed?!", d.isDisposed());
+        assertNull(result[0]);
+        assertTrue("" + result[1], result[1] instanceof IOException);
     }
 }
