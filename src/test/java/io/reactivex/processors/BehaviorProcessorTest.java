@@ -756,4 +756,60 @@ public class BehaviorProcessorTest extends DelayedFlowableProcessorTest<Object> 
         .awaitDone(5, TimeUnit.SECONDS)
         .assertResult(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
     }
+
+    @Test
+    public void completeSubscribeRace() throws Exception {
+        for (int i = 0; i < 1000; i++) {
+            final BehaviorProcessor<Object> p = BehaviorProcessor.create();
+
+            final TestSubscriber<Object> ts = new TestSubscriber<Object>();
+
+            Runnable r1 = new Runnable() {
+                @Override
+                public void run() {
+                    p.subscribe(ts);
+                }
+            };
+
+            Runnable r2 = new Runnable() {
+                @Override
+                public void run() {
+                    p.onComplete();
+                }
+            };
+
+            TestHelper.race(r1, r2);
+
+            ts.assertResult();
+        }
+    }
+
+    @Test
+    public void errorSubscribeRace() throws Exception {
+        for (int i = 0; i < 1000; i++) {
+            final BehaviorProcessor<Object> p = BehaviorProcessor.create();
+
+            final TestSubscriber<Object> ts = new TestSubscriber<Object>();
+
+            final TestException ex = new TestException();
+
+            Runnable r1 = new Runnable() {
+                @Override
+                public void run() {
+                    p.subscribe(ts);
+                }
+            };
+
+            Runnable r2 = new Runnable() {
+                @Override
+                public void run() {
+                    p.onError(ex);
+                }
+            };
+
+            TestHelper.race(r1, r2);
+
+            ts.assertFailure(TestException.class);
+        }
+    }
 }

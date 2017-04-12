@@ -87,7 +87,7 @@ public final class BehaviorProcessor<T> extends FlowableProcessor<T> {
 
     final AtomicReference<Object> value;
 
-    boolean done;
+    final AtomicReference<Throwable> terminalEvent;
 
     long index;
 
@@ -131,6 +131,7 @@ public final class BehaviorProcessor<T> extends FlowableProcessor<T> {
         this.readLock = lock.readLock();
         this.writeLock = lock.writeLock();
         this.subscribers = new AtomicReference<BehaviorSubscription<T>[]>(EMPTY);
+        this.terminalEvent = new AtomicReference<Throwable>();
     }
 
     /**
@@ -155,18 +156,18 @@ public final class BehaviorProcessor<T> extends FlowableProcessor<T> {
                 bs.emitFirst();
             }
         } else {
-            Object o = value.get();
-            if (NotificationLite.isComplete(o)) {
+            Throwable ex = terminalEvent.get();
+            if (ex == ExceptionHelper.TERMINATED) {
                 s.onComplete();
             } else {
-                s.onError(NotificationLite.getError(o));
+                s.onError(ex);
             }
         }
     }
 
     @Override
     public void onSubscribe(Subscription s) {
-        if (done) {
+        if (terminalEvent.get() != null) {
             s.cancel();
             return;
         }
@@ -179,7 +180,7 @@ public final class BehaviorProcessor<T> extends FlowableProcessor<T> {
             onError(new NullPointerException("onNext called with null. Null values are generally not allowed in 2.x operators and sources."));
             return;
         }
-        if (done) {
+        if (terminalEvent.get() != null) {
             return;
         }
         Object o = NotificationLite.next(t);
@@ -194,11 +195,10 @@ public final class BehaviorProcessor<T> extends FlowableProcessor<T> {
         if (t == null) {
             t = new NullPointerException("onError called with null. Null values are generally not allowed in 2.x operators and sources.");
         }
-        if (done) {
+        if (!terminalEvent.compareAndSet(null, t)) {
             RxJavaPlugins.onError(t);
             return;
         }
-        done = true;
         Object o = NotificationLite.error(t);
         for (BehaviorSubscription<T> bs : terminate(o)) {
             bs.emitNext(o, index);
@@ -207,10 +207,9 @@ public final class BehaviorProcessor<T> extends FlowableProcessor<T> {
 
     @Override
     public void onComplete() {
-        if (done) {
+        if (!terminalEvent.compareAndSet(null, ExceptionHelper.TERMINATED)) {
             return;
         }
-        done = true;
         Object o = NotificationLite.complete();
         for (BehaviorSubscription<T> bs : terminate(o)) {
             bs.emitNext(o, index);  // relaxed read okay since this is the only mutator thread

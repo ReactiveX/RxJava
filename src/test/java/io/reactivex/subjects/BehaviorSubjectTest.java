@@ -769,4 +769,61 @@ public class BehaviorSubjectTest {
             }
         });
     }
+
+
+    @Test
+    public void completeSubscribeRace() throws Exception {
+        for (int i = 0; i < 1000; i++) {
+            final BehaviorSubject<Object> p = BehaviorSubject.create();
+
+            final TestObserver<Object> ts = new TestObserver<Object>();
+
+            Runnable r1 = new Runnable() {
+                @Override
+                public void run() {
+                    p.subscribe(ts);
+                }
+            };
+
+            Runnable r2 = new Runnable() {
+                @Override
+                public void run() {
+                    p.onComplete();
+                }
+            };
+
+            TestHelper.race(r1, r2);
+
+            ts.assertResult();
+        }
+    }
+
+    @Test
+    public void errorSubscribeRace() throws Exception {
+        for (int i = 0; i < 1000; i++) {
+            final BehaviorSubject<Object> p = BehaviorSubject.create();
+
+            final TestObserver<Object> ts = new TestObserver<Object>();
+
+            final TestException ex = new TestException();
+
+            Runnable r1 = new Runnable() {
+                @Override
+                public void run() {
+                    p.subscribe(ts);
+                }
+            };
+
+            Runnable r2 = new Runnable() {
+                @Override
+                public void run() {
+                    p.onError(ex);
+                }
+            };
+
+            TestHelper.race(r1, r2);
+
+            ts.assertFailure(TestException.class);
+        }
+    }
 }

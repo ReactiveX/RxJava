@@ -86,7 +86,7 @@ public final class BehaviorSubject<T> extends Subject<T> {
     final Lock readLock;
     final Lock writeLock;
 
-    boolean done;
+    final AtomicReference<Throwable> terminalEvent;
 
     long index;
 
@@ -129,6 +129,7 @@ public final class BehaviorSubject<T> extends Subject<T> {
         this.writeLock = lock.writeLock();
         this.subscribers = new AtomicReference<BehaviorDisposable<T>[]>(EMPTY);
         this.value = new AtomicReference<Object>();
+        this.terminalEvent = new AtomicReference<Throwable>();
     }
 
     /**
@@ -153,18 +154,18 @@ public final class BehaviorSubject<T> extends Subject<T> {
                 bs.emitFirst();
             }
         } else {
-            Object o = value.get();
-            if (NotificationLite.isComplete(o)) {
+            Throwable ex = terminalEvent.get();
+            if (ex == ExceptionHelper.TERMINATED) {
                 observer.onComplete();
             } else {
-                observer.onError(NotificationLite.getError(o));
+                observer.onError(ex);
             }
         }
     }
 
     @Override
     public void onSubscribe(Disposable s) {
-        if (done) {
+        if (terminalEvent.get() != null) {
             s.dispose();
         }
     }
@@ -175,7 +176,7 @@ public final class BehaviorSubject<T> extends Subject<T> {
             onError(new NullPointerException("onNext called with null. Null values are generally not allowed in 2.x operators and sources."));
             return;
         }
-        if (done) {
+        if (terminalEvent.get() != null) {
             return;
         }
         Object o = NotificationLite.next(t);
@@ -190,11 +191,10 @@ public final class BehaviorSubject<T> extends Subject<T> {
         if (t == null) {
             t = new NullPointerException("onError called with null. Null values are generally not allowed in 2.x operators and sources.");
         }
-        if (done) {
+        if (!terminalEvent.compareAndSet(null, t)) {
             RxJavaPlugins.onError(t);
             return;
         }
-        done = true;
         Object o = NotificationLite.error(t);
         for (BehaviorDisposable<T> bs : terminate(o)) {
             bs.emitNext(o, index);
@@ -203,10 +203,9 @@ public final class BehaviorSubject<T> extends Subject<T> {
 
     @Override
     public void onComplete() {
-        if (done) {
+        if (!terminalEvent.compareAndSet(null, ExceptionHelper.TERMINATED)) {
             return;
         }
-        done = true;
         Object o = NotificationLite.complete();
         for (BehaviorDisposable<T> bs : terminate(o)) {
             bs.emitNext(o, index);  // relaxed read okay since this is the only mutator thread
