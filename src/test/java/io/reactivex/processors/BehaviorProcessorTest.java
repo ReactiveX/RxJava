@@ -809,7 +809,7 @@ public class BehaviorProcessorTest extends DelayedFlowableProcessorTest<Object> 
 
             TestHelper.race(r1, r2);
 
-            ts.assertError(TestException.class);
+            ts.assertFailure(TestException.class);
         }
     }
 }

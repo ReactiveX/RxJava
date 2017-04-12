@@ -823,7 +823,7 @@ public class BehaviorSubjectTest {
 
             TestHelper.race(r1, r2);
 
-            ts.assertError(TestException.class);
+            ts.assertFailure(TestException.class);
         }
     }
 }
