@@ -748,7 +748,43 @@ public class ObservableReplayTest {
         buf.collect(values);
 
         Assert.assertEquals(Arrays.asList(5, 6), values);
+    }
 
+    @Test
+    public void testBoundedReplayBufferForMemoryLeaks() {
+        BoundedReplayBuffer<Integer> buf = new BoundedReplayBuffer<Integer>() {
+            private static final long serialVersionUID = -5182053207244406872L;
+
+            @Override
+            void truncate() {
+            }
+        };
+        buf.addLast(new Node(1));
+        buf.addLast(new Node(2));
+        buf.addLast(new Node(3));
+        buf.addLast(new Node(4));
+        buf.addLast(new Node(5));
+
+        List<Integer> valuesInMemory = new ArrayList<Integer>();
+        buf.collectObjectsInMemory(valuesInMemory);
+
+        Assert.assertEquals(Arrays.asList(1, 2, 3, 4, 5), valuesInMemory);
+
+        buf.removeFirst();
+        buf.removeFirst();
+        buf.removeFirst();
+        buf.removeFirst();
+        buf.removeFirst();
+
+        valuesInMemory.clear();
+        buf.collectObjectsInMemory(valuesInMemory);
+        Assert.assertTrue(valuesInMemory.isEmpty());
+
+        buf.addLast(new Node(5));
+        buf.addLast(new Node(6));
+        buf.collectObjectsInMemory(valuesInMemory);
+
+        Assert.assertEquals(Arrays.asList(5, 6), valuesInMemory);
     }
 
     @Test

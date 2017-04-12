@@ -616,7 +616,13 @@ public final class ObservableReplay<T> extends ConnectableObservable<T> implemen
             size--;
             // can't just move the head because it would retain the very first value
             // can't null out the head's value because of late replayers would see null
-            setFirst(next);
+            Node newHead = new Node(null);
+            Node newNext = next.get();
+            newHead.set(newNext);
+            setFirst(newHead);
+            if (newNext == null) {
+                tail = newHead;
+            }
         }
         /* test */ final void removeSome(int n) {
             Node head = get();
@@ -749,6 +755,26 @@ public final class ObservableReplay<T> extends ConnectableObservable<T> implemen
                 } else {
                     break;
                 }
+            }
+        }
+        /* test */ final void collectObjectsInMemory(Collection<? super T> output) {
+            Node next = getHead();
+            for (;;) {
+                if (next != null) {
+                    Object o = next.value;
+                    Object v = leaveTransform(o);
+                    if (NotificationLite.isComplete(v) || NotificationLite.isError(v)) {
+                        break;
+                    }
+                    T value = NotificationLite.<T>getValue(v);
+                    if (value != null) {
+                        output.add(value);
+                    }
+                    next = next;
+                } else {
+                    break;
+                }
+                next = next.get();
             }
         }
         /* test */ boolean hasError() {
