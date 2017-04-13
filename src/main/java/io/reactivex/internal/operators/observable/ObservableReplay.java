@@ -739,7 +739,9 @@ public final class ObservableReplay<T> extends ConnectableObservable<T> implemen
         /* test */ final void collectValuesInMemory(Collection<? super T> output) {
             Node next = getHead();
             for (;;) {
-                if (next != null) {
+                if (next == null) {
+                    break;
+                } else if (next.value != null) {
                     Object o = next.value;
                     Object v = leaveTransform(o);
                     if (NotificationLite.isComplete(v) || NotificationLite.isError(v)) {
@@ -749,8 +751,6 @@ public final class ObservableReplay<T> extends ConnectableObservable<T> implemen
                     if (value != null) {
                         output.add(value);
                     }
-                } else {
-                    break;
                 }
                 next = next.get();
             }

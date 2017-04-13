@@ -12,7 +12,6 @@
  */
 
 package io.reactivex.internal.operators.observable;
-
 import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
@@ -766,8 +765,7 @@ public class ObservableReplayTest {
 
         buf.next(3);
         buf.next(4);
-        values.clear();
-        buf.collect(values);
+        collectAndAssertNoLeaks(buf, values);
         Assert.assertEquals(Arrays.asList(3, 4), values);
 
         test.advanceTimeBy(2, TimeUnit.SECONDS);
@@ -809,8 +807,7 @@ public class ObservableReplayTest {
 
         buf.next(3);
         buf.next(4);
-        values.clear();
-        buf.collect(values);
+        collectAndAssertNoLeaks(buf, values);
         Assert.assertEquals(Arrays.asList(3, 4), values);
 
         test.advanceTimeBy(2, TimeUnit.SECONDS);
