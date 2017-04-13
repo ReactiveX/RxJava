@@ -616,30 +616,21 @@ public final class ObservableReplay<T> extends ConnectableObservable<T> implemen
             size--;
             // can't just move the head because it would retain the very first value
             // can't null out the head's value because of late replayers would see null
-            Node newHead = new Node(null);
-            Node newNext = next.get();
-            newHead.set(newNext);
-            setFirst(newHead);
-            if (newNext == null) {
-                tail = newHead;
-            }
-        }
-        /* test */ final void removeSome(int n) {
-            Node head = get();
-            while (n > 0) {
-                head = head.get();
-                n--;
-                size--;
-            }
+            setFirst(next);
 
-            setFirst(head);
         }
         /**
          * Arranges the given node is the new head from now on.
-         * @param n the Node instance to set as first
+         * @param next the Node instance to set as first
          */
-        final void setFirst(Node n) {
-            set(n);
+        final void setFirst(Node next) {
+            Node newHead = new Node(null);
+            Node newNext = next.get();
+            newHead.set(newNext);
+            set(newHead);
+            if (newNext == null) {
+                tail = newHead;
+            }
         }
 
         @Override
@@ -740,7 +731,31 @@ public final class ObservableReplay<T> extends ConnectableObservable<T> implemen
         void truncateFinal() {
 
         }
-        /* test */ final  void collect(Collection<? super T> output) {
+        /**
+         * Collect all values in memory even if they will be ignored by subsequent calls to replay(). This is useful
+         * for tracking memory leaks.
+         * @param output all values.
+         */
+        /* test */ final void collectValuesInMemory(Collection<? super T> output) {
+            Node next = getHead();
+            for (;;) {
+                if (next != null) {
+                    Object o = next.value;
+                    Object v = leaveTransform(o);
+                    if (NotificationLite.isComplete(v) || NotificationLite.isError(v)) {
+                        break;
+                    }
+                    T value = NotificationLite.<T>getValue(v);
+                    if (value != null) {
+                        output.add(value);
+                    }
+                } else {
+                    break;
+                }
+                next = next.get();
+            }
+        }
+        /* test */ final void collect(Collection<? super T> output) {
             Node n = getHead();
             for (;;) {
                 Node next = n.get();
@@ -755,26 +770,6 @@ public final class ObservableReplay<T> extends ConnectableObservable<T> implemen
                 } else {
                     break;
                 }
-            }
-        }
-        /* test */ final void collectObjectsInMemory(Collection<? super T> output) {
-            Node next = getHead();
-            for (;;) {
-                if (next != null) {
-                    Object o = next.value;
-                    Object v = leaveTransform(o);
-                    if (NotificationLite.isComplete(v) || NotificationLite.isError(v)) {
-                        break;
-                    }
-                    T value = NotificationLite.<T>getValue(v);
-                    if (value != null) {
-                        output.add(value);
-                    }
-                    next = next;
-                } else {
-                    break;
-                }
-                next = next.get();
             }
         }
         /* test */ boolean hasError() {
