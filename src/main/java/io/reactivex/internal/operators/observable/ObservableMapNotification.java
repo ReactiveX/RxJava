@@ -88,7 +88,7 @@ public final class ObservableMapNotification<T, R> extends AbstractObservableWit
             ObservableSource<? extends R> p;
 
             try {
-                p = ObjectHelper.requireNonNull(onNextMapper.apply(t), "The onNext publisher returned is null");
+                p = ObjectHelper.requireNonNull(onNextMapper.apply(t), "The onNext ObservableSource returned is null");
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 actual.onError(e);
@@ -103,7 +103,7 @@ public final class ObservableMapNotification<T, R> extends AbstractObservableWit
             ObservableSource<? extends R> p;
 
             try {
-                p = ObjectHelper.requireNonNull(onErrorMapper.apply(t), "The onError publisher returned is null");
+                p = ObjectHelper.requireNonNull(onErrorMapper.apply(t), "The onError ObservableSource returned is null");
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 actual.onError(e);
@@ -119,7 +119,7 @@ public final class ObservableMapNotification<T, R> extends AbstractObservableWit
             ObservableSource<? extends R> p;
 
             try {
-                p = ObjectHelper.requireNonNull(onCompleteSupplier.call(), "The onComplete publisher returned is null");
+                p = ObjectHelper.requireNonNull(onCompleteSupplier.call(), "The onComplete ObservableSource returned is null");
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 actual.onError(e);

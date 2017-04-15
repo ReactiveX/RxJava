@@ -81,7 +81,7 @@ public final class ObservableDebounce<T, U> extends AbstractObservableWithUpstre
             ObservableSource<U> p;
 
             try {
-                p = ObjectHelper.requireNonNull(debounceSelector.apply(t), "The publisher supplied is null");
+                p = ObjectHelper.requireNonNull(debounceSelector.apply(t), "The ObservableSource supplied is null");
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 dispose();

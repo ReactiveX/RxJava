@@ -34,7 +34,7 @@ public final class ObservableBlockingSubscribe {
     /**
      * Subscribes to the source and calls the Observer methods on the current thread.
      * <p>
-     * @param o the source publisher
+     * @param o the source ObservableSource
      * The call to dispose() is composed through.
      * @param observer the subscriber to forward events and calls to in the current thread
      * @param <T> the value type
@@ -70,7 +70,7 @@ public final class ObservableBlockingSubscribe {
 
     /**
      * Runs the source observable to a terminal event, ignoring any values and rethrowing any exception.
-     * @param o the source publisher
+     * @param o the source ObservableSource
      * @param <T> the value type
      */
     public static <T> void subscribe(ObservableSource<? extends T> o) {
@@ -89,7 +89,7 @@ public final class ObservableBlockingSubscribe {
 
     /**
      * Subscribes to the source and calls the given actions on the current thread.
-     * @param o the source publisher
+     * @param o the source ObservableSource
      * @param onNext the callback action for each source value
      * @param onError the callback action for an error event
      * @param onComplete the callback action for the completion event.
