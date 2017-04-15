@@ -20,8 +20,8 @@ import io.reactivex.internal.util.AppendOnlyLinkedArrayList.NonThrowingPredicate
 import io.reactivex.plugins.RxJavaPlugins;
 
 /**
- * Serializes calls to the Subscriber methods.
- * <p>All other Publisher and Subject methods are thread-safe by design.
+ * Serializes calls to the Observer methods.
+ * <p>All other Observable and Subject methods are thread-safe by design.
  *
  * @param <T> the item value type
  */

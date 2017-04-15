@@ -23,6 +23,7 @@ import io.reactivex.*;
 import io.reactivex.annotations.Nullable;
 import io.reactivex.exceptions.*;
 import io.reactivex.functions.Function;
+import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.internal.fuseable.*;
 import io.reactivex.internal.queue.SpscArrayQueue;
 import io.reactivex.internal.subscriptions.*;
@@ -298,7 +299,7 @@ public final class FlowableFlattenIterable<T, R> extends AbstractFlowableWithUps
                         R v;
 
                         try {
-                            v = it.next();
+                            v = ObjectHelper.requireNonNull(it.next(), "The iterator returned a null value");
                         } catch (Throwable ex) {
                             Exceptions.throwIfFatal(ex);
                             current = null;
@@ -437,7 +438,7 @@ public final class FlowableFlattenIterable<T, R> extends AbstractFlowableWithUps
                     current = it;
                 }
 
-                R r = it.next();
+                R r = ObjectHelper.requireNonNull(it.next(), "The iterator returned a null value");
 
                 if (!it.hasNext()) {
                     current = null;

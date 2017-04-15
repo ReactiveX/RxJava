@@ -29,7 +29,7 @@ public final class ObservableDefer<T> extends Observable<T> {
     public void subscribeActual(Observer<? super T> s) {
         ObservableSource<? extends T> pub;
         try {
-            pub = ObjectHelper.requireNonNull(supplier.call(), "null publisher supplied");
+            pub = ObjectHelper.requireNonNull(supplier.call(), "null ObservableSource supplied");
         } catch (Throwable t) {
             Exceptions.throwIfFatal(t);
             EmptyDisposable.error(t, s);

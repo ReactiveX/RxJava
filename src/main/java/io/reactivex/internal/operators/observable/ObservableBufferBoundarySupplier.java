@@ -87,7 +87,7 @@ extends AbstractObservableWithUpstream<T, U> {
                 ObservableSource<B> boundary;
 
                 try {
-                    boundary = ObjectHelper.requireNonNull(boundarySupplier.call(), "The boundary publisher supplied is null");
+                    boundary = ObjectHelper.requireNonNull(boundarySupplier.call(), "The boundary ObservableSource supplied is null");
                 } catch (Throwable ex) {
                     Exceptions.throwIfFatal(ex);
                     cancelled = true;
@@ -179,7 +179,7 @@ extends AbstractObservableWithUpstream<T, U> {
             ObservableSource<B> boundary;
 
             try {
-                boundary = ObjectHelper.requireNonNull(boundarySupplier.call(), "The boundary publisher supplied is null");
+                boundary = ObjectHelper.requireNonNull(boundarySupplier.call(), "The boundary ObservableSource supplied is null");
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
                 cancelled = true;

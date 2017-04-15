@@ -14,7 +14,6 @@
 package io.reactivex.observables;
 
 import io.reactivex.annotations.NonNull;
-import org.reactivestreams.Subscriber;
 
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
@@ -25,9 +24,9 @@ import io.reactivex.internal.util.ConnectConsumer;
 import io.reactivex.plugins.RxJavaPlugins;
 
 /**
- * A {@code ConnectableObservable} resembles an ordinary {@link Flowable}, except that it does not begin
+ * A {@code ConnectableObservable} resembles an ordinary {@link Observable}, except that it does not begin
  * emitting items when it is subscribed to, but only when its {@link #connect} method is called. In this way you
- * can wait for all intended {@link Subscriber}s to {@link Flowable#subscribe} to the {@code Observable}
+ * can wait for all intended {@link Observer}s to {@link Observable#subscribe} to the {@code Observable}
  * before the {@code Observable} begins emitting items.
  * <p>
  * <img width="640" height="510" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/publishConnect.png" alt="">
@@ -41,7 +40,7 @@ public abstract class ConnectableObservable<T> extends Observable<T> {
 
     /**
      * Instructs the {@code ConnectableObservable} to begin emitting the items from its underlying
-     * {@link Flowable} to its {@link Subscriber}s.
+     * {@link Observable} to its {@link Observer}s.
      *
      * @param connection
      *          the action that receives the connection subscription before the subscription to source happens
@@ -52,7 +51,7 @@ public abstract class ConnectableObservable<T> extends Observable<T> {
 
     /**
      * Instructs the {@code ConnectableObservable} to begin emitting the items from its underlying
-     * {@link Flowable} to its {@link Subscriber}s.
+     * {@link Observable} to its {@link Observer}s.
      * <p>
      * To disconnect from a synchronous source, use the {@link #connect(Consumer)} method.
      *
@@ -79,10 +78,10 @@ public abstract class ConnectableObservable<T> extends Observable<T> {
 
     /**
      * Returns an Observable that automatically connects to this ConnectableObservable
-     * when the first Subscriber subscribes.
+     * when the first Observer subscribes.
      *
      * @return an Observable that automatically connects to this ConnectableObservable
-     *         when the first Subscriber subscribes
+     *         when the first Observer subscribes
      */
     @NonNull
     public Observable<T> autoConnect() {
@@ -90,7 +89,7 @@ public abstract class ConnectableObservable<T> extends Observable<T> {
     }
     /**
      * Returns an Observable that automatically connects to this ConnectableObservable
-     * when the specified number of Subscribers subscribe to it.
+     * when the specified number of Observers subscribe to it.
      *
      * @param numberOfSubscribers the number of subscribers to await before calling connect
      *                            on the ConnectableObservable. A non-positive value indicates
