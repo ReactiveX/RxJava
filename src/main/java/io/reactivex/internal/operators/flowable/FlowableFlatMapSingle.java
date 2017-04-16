@@ -230,6 +230,10 @@ public final class FlowableFlatMapSingle<T, R> extends AbstractFlowableWithUpstr
                 if (!delayErrors) {
                     s.cancel();
                     set.dispose();
+                } else {
+                    if (maxConcurrency != Integer.MAX_VALUE) {
+                        s.request(1);
+                    }
                 }
                 active.decrementAndGet();
                 drain();
