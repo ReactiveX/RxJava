@@ -490,4 +490,19 @@ public class FlowableFlatMapSingleTest {
             TestHelper.race(r1, r2);
         }
     }
+
+    @Test
+    public void asyncFlattenErrorMaxConcurrency() {
+        Flowable.range(1, 1000)
+        .flatMapMaybe(new Function<Integer, MaybeSource<Integer>>() {
+            @Override
+            public MaybeSource<Integer> apply(Integer v) throws Exception {
+                return Maybe.<Integer>error(new TestException()).subscribeOn(Schedulers.computation());
+            }
+        }, true, 128)
+        .take(500)
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertFailure(CompositeException.class);
+    }
 }

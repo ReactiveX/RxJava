@@ -230,6 +230,10 @@ public final class FlowableFlatMapMaybe<T, R> extends AbstractFlowableWithUpstre
                 if (!delayErrors) {
                     s.cancel();
                     set.dispose();
+                } else {
+                    if (maxConcurrency != Integer.MAX_VALUE) {
+                        s.request(1);
+                    }
                 }
                 active.decrementAndGet();
                 drain();
@@ -254,12 +258,19 @@ public final class FlowableFlatMapMaybe<T, R> extends AbstractFlowableWithUpstre
                     }
                     return;
                 }
+
+                if (maxConcurrency != Integer.MAX_VALUE) {
+                    s.request(1);
+                }
                 if (decrementAndGet() == 0) {
                     return;
                 }
                 drainLoop();
             } else {
                 active.decrementAndGet();
+                if (maxConcurrency != Integer.MAX_VALUE) {
+                    s.request(1);
+                }
                 drain();
             }
         }
