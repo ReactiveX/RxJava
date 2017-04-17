@@ -87,6 +87,7 @@ public abstract class ConnectableObservable<T> extends Observable<T> {
     public Observable<T> autoConnect() {
         return autoConnect(1);
     }
+
     /**
      * Returns an Observable that automatically connects to this ConnectableObservable
      * when the specified number of Observers subscribe to it.
