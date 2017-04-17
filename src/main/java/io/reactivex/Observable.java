@@ -203,7 +203,6 @@ public abstract class Observable<T> implements ObservableSource<T> {
         return combineLatest(sources, combiner, bufferSize());
     }
 
-
     /**
      * Combines a collection of source ObservableSources by emitting an item that aggregates the latest values of each of
      * the source ObservableSources each time an item is received from any of the source ObservableSources, where this
