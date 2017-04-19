@@ -1934,6 +1934,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * </dl>
      * @param onDispose the action called when the subscription is disposed
      * @return the new Single instance
+     * @throws NullPointerException if onDispose is null
      * @since 2.0
      */
     @CheckReturnValue

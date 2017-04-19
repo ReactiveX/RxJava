@@ -6904,6 +6904,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @param onDispose
      *            the action that gets called when the source {@code ObservableSource}'s Disposable is disposed
      * @return the source {@code ObservableSource} modified so as to call this Action when appropriate
+     * @throws NullPointerException if onDispose is null
      * @see <a href="http://reactivex.io/documentation/operators/do.html">ReactiveX operators documentation: Do</a>
      */
     @CheckReturnValue

@@ -2448,6 +2448,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * <dd>{@code doOnDispose} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * @param onDispose the action called when the subscription is cancelled (disposed)
+     * @throws NullPointerException if onDispose is null
      * @return the new Maybe instance
      */
     @CheckReturnValue
