@@ -2441,13 +2441,14 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     }
 
     /**
-     * Calls the shared runnable if a MaybeObserver subscribed to the current Maybe
+     * Calls the shared {@code Action} if a MaybeObserver subscribed to the current Maybe
      * disposes the common Disposable it received via onSubscribe.
      * <dl>
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code doOnDispose} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * @param onDispose the runnable called when the subscription is cancelled (disposed)
+     * @param onDispose the action called when the subscription is cancelled (disposed)
+     * @throws NullPointerException if onDispose is null
      * @return the new Maybe instance
      */
     @CheckReturnValue

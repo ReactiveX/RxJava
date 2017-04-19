@@ -1107,13 +1107,13 @@ public abstract class Completable implements CompletableSource {
     }
 
     /**
-     * Returns a Completable which calls the given onDispose callback if the child subscriber cancels
-     * the subscription.
+     * Calls the shared {@code Action} if a CompletableObserver subscribed to the current
+     * Completable disposes the common Disposable it received via onSubscribe.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code doOnDispose} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * @param onDispose the callback to call when the child subscriber disposes the subscription
+     * @param onDispose the action to call when the child subscriber disposes the subscription
      * @return the new Completable instance
      * @throws NullPointerException if onDispose is null
      */
