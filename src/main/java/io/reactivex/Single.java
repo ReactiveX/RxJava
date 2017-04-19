@@ -1926,13 +1926,13 @@ public abstract class Single<T> implements SingleSource<T> {
     }
 
     /**
-     * Calls the shared runnable if a SingleObserver subscribed to the current Single
+     * Calls the shared {@code Action} if a SingleObserver subscribed to the current Single
      * disposes the common Disposable it received via onSubscribe.
      * <dl>
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code doOnDispose} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * @param onDispose the runnable called when the subscription is disposed
+     * @param onDispose the action called when the subscription is disposed
      * @return the new Single instance
      * @since 2.0
      */
