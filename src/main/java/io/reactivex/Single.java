@@ -2097,7 +2097,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * Returns an Observable that is based on applying a specified function to the item emitted by the source Single,
      * where that function returns a SingleSource.
      * <p>
-     * <img width="640" height="300" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.flatMap.png" alt="">
+     * <img width="640" height="300" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.flatMapObservable.png" alt="">
      * <dl>
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code flatMapObservable} does not operate by default on a particular {@link Scheduler}.</dd>
