@@ -17,6 +17,7 @@ import org.reactivestreams.Subscription;
 
 import io.reactivex.FlowableSubscriber;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
+import io.reactivex.internal.util.EndConsumerHelper;
 
 /**
  * Abstract base implementation of a {@link org.reactivestreams.Subscriber Subscriber} with
@@ -40,7 +41,7 @@ import io.reactivex.internal.subscriptions.SubscriptionHelper;
  *
  * <p>Like all other consumers, {@code DefaultSubscriber} can be subscribed only once.
  * Any subsequent attempt to subscribe it to a new source will yield an
- * {@link IllegalStateException} with message {@code "Subscription already set!"}.
+ * {@link IllegalStateException} with message {@code "It is not allowed to subscribe with a(n) <class name> multiple times."}.
  *
  * <p>Implementation of {@link #onStart()}, {@link #onNext(Object)}, {@link #onError(Throwable)}
  * and {@link #onComplete()} are not allowed to throw any unchecked exceptions.
@@ -78,7 +79,7 @@ public abstract class DefaultSubscriber<T> implements FlowableSubscriber<T> {
     private Subscription s;
     @Override
     public final void onSubscribe(Subscription s) {
-        if (SubscriptionHelper.validate(this.s, s)) {
+        if (EndConsumerHelper.validate(this.s, s, getClass())) {
             this.s = s;
             onStart();
         }

@@ -21,6 +21,7 @@ import org.junit.Test;
 
 import io.reactivex.*;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
+import io.reactivex.internal.util.EndConsumerHelper;
 import io.reactivex.plugins.RxJavaPlugins;
 
 public class DisposableSubscriberTest {
@@ -93,7 +94,7 @@ public class DisposableSubscriberTest {
 
             assertEquals(1, tc.start);
 
-            TestHelper.assertError(error, 0, IllegalStateException.class, "Subscription already set!");
+            TestHelper.assertError(error, 0, IllegalStateException.class, EndConsumerHelper.composeMessage(tc.getClass().getName()));
         } finally {
             RxJavaPlugins.reset();
         }

@@ -20,6 +20,7 @@ import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.disposables.*;
 import io.reactivex.internal.functions.ObjectHelper;
+import io.reactivex.internal.util.EndConsumerHelper;
 
 /**
  * An abstract {@link CompletableObserver} that allows asynchronous cancellation of its subscription and associated resources.
@@ -44,7 +45,7 @@ import io.reactivex.internal.functions.ObjectHelper;
  *
  * <p>Like all other consumers, {@code ResourceCompletableObserver} can be subscribed only once.
  * Any subsequent attempt to subscribe it to a new source will yield an
- * {@link IllegalStateException} with message {@code "Disposable already set!"}.
+ * {@link IllegalStateException} with message {@code "It is not allowed to subscribe with a(n) <class name> multiple times."}.
  *
  * <p>Implementation of {@link #onStart()}, {@link #onError(Throwable)}
  * and {@link #onComplete()} are not allowed to throw any unchecked exceptions.
@@ -92,7 +93,7 @@ public abstract class ResourceCompletableObserver implements CompletableObserver
 
     @Override
     public final void onSubscribe(@NonNull Disposable s) {
-        if (DisposableHelper.setOnce(this.s, s)) {
+        if (EndConsumerHelper.setOnce(this.s, s, getClass())) {
             onStart();
         }
     }

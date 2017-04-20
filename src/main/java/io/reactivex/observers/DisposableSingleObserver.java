@@ -19,6 +19,7 @@ import io.reactivex.SingleObserver;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.disposables.DisposableHelper;
+import io.reactivex.internal.util.EndConsumerHelper;
 
 /**
  * An abstract {@link SingleObserver} that allows asynchronous cancellation by implementing Disposable.
@@ -27,7 +28,7 @@ import io.reactivex.internal.disposables.DisposableHelper;
  *
  * <p>Like all other consumers, {@code DisposableSingleObserver} can be subscribed only once.
  * Any subsequent attempt to subscribe it to a new source will yield an
- * {@link IllegalStateException} with message {@code "Disposable already set!"}.
+ * {@link IllegalStateException} with message {@code "It is not allowed to subscribe with a(n) <class name> multiple times."}.
  *
  * <p>Implementation of {@link #onStart()}, {@link #onSuccess(Object)} and {@link #onError(Throwable)}
  * are not allowed to throw any unchecked exceptions.
@@ -58,7 +59,7 @@ public abstract class DisposableSingleObserver<T> implements SingleObserver<T>, 
 
     @Override
     public final void onSubscribe(@NonNull Disposable s) {
-        if (DisposableHelper.setOnce(this.s, s)) {
+        if (EndConsumerHelper.setOnce(this.s, s, getClass())) {
             onStart();
         }
     }
