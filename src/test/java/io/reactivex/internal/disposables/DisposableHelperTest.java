@@ -118,4 +118,29 @@ public class DisposableHelperTest {
 
         assertTrue(u.isDisposed());
     }
+
+    @Test
+    public void trySet() {
+        AtomicReference<Disposable> ref = new AtomicReference<Disposable>();
+
+        Disposable d1 = Disposables.empty();
+
+        assertTrue(DisposableHelper.trySet(ref, d1));
+
+        Disposable d2 = Disposables.empty();
+
+        assertFalse(DisposableHelper.trySet(ref, d2));
+
+        assertFalse(d1.isDisposed());
+
+        assertFalse(d2.isDisposed());
+
+        DisposableHelper.dispose(ref);
+
+        Disposable d3 = Disposables.empty();
+
+        assertFalse(DisposableHelper.trySet(ref, d3));
+
+        assertTrue(d3.isDisposed());
+    }
 }

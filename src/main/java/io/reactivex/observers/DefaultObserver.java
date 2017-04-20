@@ -17,6 +17,7 @@ import io.reactivex.Observer;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.disposables.DisposableHelper;
+import io.reactivex.internal.util.EndConsumerHelper;
 
 /**
  * Abstract base implementation of an {@link io.reactivex.Observer Observer} with support for cancelling a
@@ -30,7 +31,7 @@ import io.reactivex.internal.disposables.DisposableHelper;
  *
  * <p>Like all other consumers, {@code DefaultObserver} can be subscribed only once.
  * Any subsequent attempt to subscribe it to a new source will yield an
- * {@link IllegalStateException} with message {@code "Disposable already set!"}.
+ * {@link IllegalStateException} with message {@code "It is not allowed to subscribe with a(n) <class name> multiple times."}.
  *
  * <p>Implementation of {@link #onStart()}, {@link #onNext(Object)}, {@link #onError(Throwable)}
  * and {@link #onComplete()} are not allowed to throw any unchecked exceptions.
@@ -67,7 +68,7 @@ public abstract class DefaultObserver<T> implements Observer<T> {
     private Disposable s;
     @Override
     public final void onSubscribe(@NonNull Disposable s) {
-        if (DisposableHelper.validate(this.s, s)) {
+        if (EndConsumerHelper.validate(this.s, s, getClass())) {
             this.s = s;
             onStart();
         }

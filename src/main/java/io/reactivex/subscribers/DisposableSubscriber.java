@@ -20,6 +20,7 @@ import org.reactivestreams.Subscription;
 import io.reactivex.FlowableSubscriber;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
+import io.reactivex.internal.util.EndConsumerHelper;
 
 /**
  * An abstract Subscriber that allows asynchronous, external cancellation by implementing Disposable.
@@ -39,7 +40,7 @@ import io.reactivex.internal.subscriptions.SubscriptionHelper;
  *
  * <p>Like all other consumers, {@code DisposableSubscriber} can be subscribed only once.
  * Any subsequent attempt to subscribe it to a new source will yield an
- * {@link IllegalStateException} with message {@code "Subscription already set!"}.
+ * {@link IllegalStateException} with message {@code "It is not allowed to subscribe with a(n) <class name> multiple times."}.
  *
  * <p>Implementation of {@link #onStart()}, {@link #onNext(Object)}, {@link #onError(Throwable)}
  * and {@link #onComplete()} are not allowed to throw any unchecked exceptions.
@@ -77,7 +78,7 @@ public abstract class DisposableSubscriber<T> implements FlowableSubscriber<T>, 
 
     @Override
     public final void onSubscribe(Subscription s) {
-        if (SubscriptionHelper.setOnce(this.s, s)) {
+        if (EndConsumerHelper.setOnce(this.s, s, getClass())) {
             onStart();
         }
     }
