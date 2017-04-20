@@ -215,4 +215,42 @@ public class ResourceSubscriberTest {
         assertTrue(tc.errors.isEmpty());
         assertEquals(1, tc.complete);
     }
+
+    static final class RequestEarly extends ResourceSubscriber<Integer> {
+
+        final List<Object> events = new ArrayList<Object>();
+
+        RequestEarly() {
+            request(5);
+        }
+
+        @Override
+        protected void onStart() {
+        }
+
+        @Override
+        public void onNext(Integer t) {
+            events.add(t);
+        }
+
+        @Override
+        public void onError(Throwable t) {
+            events.add(t);
+        }
+
+        @Override
+        public void onComplete() {
+            events.add("Done");
+        }
+
+    }
+
+    @Test
+    public void requestUpfront() {
+        RequestEarly sub = new RequestEarly();
+
+        Flowable.range(1, 10).subscribe(sub);
+
+        assertEquals(Arrays.<Object>asList(1, 2, 3, 4, 5), sub.events);
+    }
 }

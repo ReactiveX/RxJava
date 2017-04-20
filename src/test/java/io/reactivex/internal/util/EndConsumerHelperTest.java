@@ -23,7 +23,8 @@ import org.reactivestreams.Subscriber;
 import io.reactivex.*;
 import io.reactivex.disposables.*;
 import io.reactivex.exceptions.ProtocolViolationException;
-import io.reactivex.internal.subscriptions.BooleanSubscription;
+import io.reactivex.internal.disposables.DisposableHelper;
+import io.reactivex.internal.subscriptions.*;
 import io.reactivex.observers.*;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.subscribers.*;
@@ -468,4 +469,25 @@ public class EndConsumerHelperTest {
         assertEquals(errors.toString(), 1, errors.size());
     }
 
+    @Test
+    public void validateDisposable() {
+        Disposable d1 = Disposables.empty();
+
+        assertFalse(EndConsumerHelper.validate(DisposableHelper.DISPOSED, d1, getClass()));
+
+        assertTrue(d1.isDisposed());
+
+        assertTrue(errors.toString(), errors.isEmpty());
+    }
+
+    @Test
+    public void validateSubscription() {
+        BooleanSubscription d1 = new BooleanSubscription();
+
+        assertFalse(EndConsumerHelper.validate(SubscriptionHelper.CANCELLED, d1, getClass()));
+
+        assertTrue(d1.isCancelled());
+
+        assertTrue(errors.toString(), errors.isEmpty());
+    }
 }
