@@ -3057,12 +3057,10 @@ public abstract class Single<T> implements SingleSource<T> {
      * </dl>
      *
      * @return an {@link Observable} that emits a single item T or an error.
-     * @since 2.0.9 - experimental
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     @SuppressWarnings("unchecked")
-    @Experimental
     public final Observable<T> toObservable() {
         if (this instanceof FuseToObservable) {
             return ((FuseToObservable<T>)this).fuseToObservable();
@@ -3080,9 +3078,11 @@ public abstract class Single<T> implements SingleSource<T> {
      * @param scheduler the target scheduler where to execute the cancellation
      * @return the new Single instance
      * @throws NullPointerException if scheduler is null
+     * @since 2.0.9 - experimental
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.CUSTOM)
+    @Experimental
     public final Single<T> unsubscribeOn(final Scheduler scheduler) {
         ObjectHelper.requireNonNull(scheduler, "scheduler is null");
         return RxJavaPlugins.onAssembly(new SingleUnsubscribeOn<T>(this, scheduler));
