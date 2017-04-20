@@ -16,6 +16,8 @@ package io.reactivex;
 import java.util.NoSuchElementException;
 import java.util.concurrent.*;
 
+import org.reactivestreams.Publisher;
+
 import io.reactivex.annotations.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.Exceptions;
@@ -32,7 +34,6 @@ import io.reactivex.internal.util.*;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.schedulers.Schedulers;
-import org.reactivestreams.Publisher;
 
 /**
  * The Single class implements the Reactive Pattern for a single value response.
@@ -3065,6 +3066,26 @@ public abstract class Single<T> implements SingleSource<T> {
             return ((FuseToObservable<T>)this).fuseToObservable();
         }
         return RxJavaPlugins.onAssembly(new SingleToObservable<T>(this));
+    }
+
+    /**
+     * Returns a Single which makes sure when a SingleObserver disposes the Disposable,
+     * that call is propagated up on the specified scheduler
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code unsubscribeOn} calls dispose() of the upstream on the {@link Scheduler} you specify.</dd>
+     * </dl>
+     * @param scheduler the target scheduler where to execute the cancellation
+     * @return the new Single instance
+     * @throws NullPointerException if scheduler is null
+     * @since 2.0.9 - experimental
+     */
+    @CheckReturnValue
+    @SchedulerSupport(SchedulerSupport.CUSTOM)
+    @Experimental
+    public final Single<T> unsubscribeOn(final Scheduler scheduler) {
+        ObjectHelper.requireNonNull(scheduler, "scheduler is null");
+        return RxJavaPlugins.onAssembly(new SingleUnsubscribeOn<T>(this, scheduler));
     }
 
     /**
