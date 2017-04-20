@@ -2096,7 +2096,7 @@ public abstract class Single<T> implements SingleSource<T> {
 
     /**
      * Returns an Observable that is based on applying a specified function to the item emitted by the source Single,
-     * where that function returns a SingleSource.
+     * where that function returns an ObservableSource.
      * <p>
      * <img width="640" height="300" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.flatMapObservable.png" alt="">
      * <dl>
