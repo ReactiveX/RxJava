@@ -1793,13 +1793,13 @@ public abstract class Single<T> implements SingleSource<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code doAfterSuccess} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
+     * <p>History: 2.0.1 - experimental
      * @param onAfterSuccess the Consumer that will be called after emitting an item from upstream to the downstream
      * @return the new Single instance
-     * @since 2.0.1 - experimental
+     * @since 2.1
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
-    @Experimental
     public final Single<T> doAfterSuccess(Consumer<? super T> onAfterSuccess) {
         ObjectHelper.requireNonNull(onAfterSuccess, "doAfterSuccess is null");
         return RxJavaPlugins.onAssembly(new SingleDoAfterSuccess<T>(this, onAfterSuccess));
@@ -1816,16 +1816,16 @@ public abstract class Single<T> implements SingleSource<T> {
      *  <dd>{@code doAfterTerminate} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
+     * <p>History: 2.0.6 - experimental
      * @param onAfterTerminate
      *            an {@link Action} to be invoked when the source Single finishes
      * @return a Single that emits the same items as the source Single, then invokes the
      *         {@link Action}
      * @see <a href="http://reactivex.io/documentation/operators/do.html">ReactiveX operators documentation: Do</a>
-     * @since 2.0.6 - experimental
+     * @since 2.1
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
-    @Experimental
     public final Single<T> doAfterTerminate(Action onAfterTerminate) {
         ObjectHelper.requireNonNull(onAfterTerminate, "onAfterTerminate is null");
         return RxJavaPlugins.onAssembly(new SingleDoAfterTerminate<T>(this, onAfterTerminate));
@@ -1842,13 +1842,13 @@ public abstract class Single<T> implements SingleSource<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code doFinally} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
+     * <p>History: 2.0.1 - experimental
      * @param onFinally the action called when this Single terminates or gets cancelled
      * @return the new Single instance
-     * @since 2.0.1 - experimental
+     * @since 2.1
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
-    @Experimental
     public final Single<T> doFinally(Action onFinally) {
         ObjectHelper.requireNonNull(onFinally, "onFinally is null");
         return RxJavaPlugins.onAssembly(new SingleDoFinally<T>(this, onFinally));

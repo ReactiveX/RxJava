@@ -12,39 +12,22 @@
  */
 package io.reactivex.plugins;
 
-import io.reactivex.Completable;
-import io.reactivex.CompletableObserver;
-import io.reactivex.Flowable;
-import io.reactivex.Maybe;
-import io.reactivex.MaybeObserver;
-import io.reactivex.Observable;
-import io.reactivex.Observer;
-import io.reactivex.Scheduler;
-import io.reactivex.Single;
-import io.reactivex.SingleObserver;
-import io.reactivex.annotations.Experimental;
-import io.reactivex.annotations.NonNull;
-import io.reactivex.annotations.Nullable;
+import java.lang.Thread.UncaughtExceptionHandler;
+import java.util.concurrent.*;
+
+import org.reactivestreams.Subscriber;
+
+import io.reactivex.*;
+import io.reactivex.annotations.*;
 import io.reactivex.exceptions.*;
 import io.reactivex.flowables.ConnectableFlowable;
-import io.reactivex.functions.BiFunction;
-import io.reactivex.functions.BooleanSupplier;
-import io.reactivex.functions.Consumer;
-import io.reactivex.functions.Function;
+import io.reactivex.functions.*;
 import io.reactivex.internal.functions.ObjectHelper;
-import io.reactivex.internal.schedulers.ComputationScheduler;
-import io.reactivex.internal.schedulers.IoScheduler;
-import io.reactivex.internal.schedulers.NewThreadScheduler;
-import io.reactivex.internal.schedulers.SingleScheduler;
+import io.reactivex.internal.schedulers.*;
 import io.reactivex.internal.util.ExceptionHelper;
 import io.reactivex.observables.ConnectableObservable;
 import io.reactivex.parallel.ParallelFlowable;
 import io.reactivex.schedulers.Schedulers;
-import org.reactivestreams.Subscriber;
-
-import java.lang.Thread.UncaughtExceptionHandler;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ThreadFactory;
 /**
  * Utility class to inject handlers to certain standard RxJava operations.
  */
@@ -161,10 +144,10 @@ public final class RxJavaPlugins {
      * Enables or disables the blockingX operators to fail
      * with an IllegalStateException on a non-blocking
      * scheduler such as computation or single.
+     * <p>History: 2.0.5 - experimental
      * @param enable enable or disable the feature
-     * @since 2.0.5 - experimental
+     * @since 2.1
      */
-    @Experimental
     public static void setFailOnNonBlockingScheduler(boolean enable) {
         if (lockdown) {
             throw new IllegalStateException("Plugins can't be changed anymore");
@@ -176,10 +159,10 @@ public final class RxJavaPlugins {
      * Returns true if the blockingX operators fail
      * with an IllegalStateException on a non-blocking scheduler
      * such as computation or single.
+     * <p>History: 2.0.5 - experimental
      * @return true if the blockingX operators fail on a non-blocking scheduler
-     * @since 2.0.5 - experimental
+     * @since 2.1
      */
-    @Experimental
     public static boolean isFailOnNonBlockingScheduler() {
         return failNonBlockingScheduler;
     }
@@ -1101,10 +1084,11 @@ public final class RxJavaPlugins {
 
     /**
      * Sets the specific hook function.
+     * <p>History: 2.0.6 - experimental
      * @param handler the hook function to set, null allowed
-     * @since 2.0.6 - experimental
+     * @since 2.1 - beta
      */
-    @Experimental
+    @Beta
     @SuppressWarnings("rawtypes")
     public static void setOnParallelAssembly(@Nullable Function<? super ParallelFlowable, ? extends ParallelFlowable> handler) {
         if (lockdown) {
@@ -1115,10 +1099,11 @@ public final class RxJavaPlugins {
 
     /**
      * Returns the current hook function.
+     * <p>History: 2.0.6 - experimental
      * @return the hook function, may be null
-     * @since 2.0.6 - experimental
+     * @since 2.1 - beta
      */
-    @Experimental
+    @Beta
     @SuppressWarnings("rawtypes")
     @Nullable
     public static Function<? super ParallelFlowable, ? extends ParallelFlowable> getOnParallelAssembly() {
@@ -1127,12 +1112,13 @@ public final class RxJavaPlugins {
 
     /**
      * Calls the associated hook function.
+     * <p>History: 2.0.6 - experimental
      * @param <T> the value type of the source
      * @param source the hook's input value
      * @return the value returned by the hook
-     * @since 2.0.6 - experimental
+     * @since 2.1 - beta
      */
-    @Experimental
+    @Beta
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @NonNull
     public static <T> ParallelFlowable<T> onAssembly(@NonNull ParallelFlowable<T> source) {
@@ -1148,11 +1134,11 @@ public final class RxJavaPlugins {
      * such as awaiting a condition or signal
      * and should return true to indicate the operator
      * should not block but throw an IllegalArgumentException.
+     * <p>History: 2.0.5 - experimental
      * @return true if the blocking should be prevented
      * @see #setFailOnNonBlockingScheduler(boolean)
-     * @since 2.0.5 - experimental
+     * @since 2.1
      */
-    @Experimental
     public static boolean onBeforeBlocking() {
         BooleanSupplier f = onBeforeBlocking;
         if (f != null) {
@@ -1169,12 +1155,12 @@ public final class RxJavaPlugins {
      * Set the handler that is called when an operator attempts a blocking
      * await; the handler should return true to prevent the blocking
      * and to signal an IllegalStateException instead.
+     * <p>History: 2.0.5 - experimental
      * @param handler the handler to set, null resets to the default handler
      * that always returns false
      * @see #onBeforeBlocking()
-     * @since 2.0.5 - experimental
+     * @since 2.1
      */
-    @Experimental
     public static void setOnBeforeBlocking(@Nullable BooleanSupplier handler) {
         if (lockdown) {
             throw new IllegalStateException("Plugins can't be changed anymore");
@@ -1185,10 +1171,10 @@ public final class RxJavaPlugins {
     /**
      * Returns the current blocking handler or null if no custom handler
      * is set.
+     * <p>History: 2.0.5 - experimental
      * @return the current blocking handler or null if not specified
-     * @since 2.0.5 - experimental
+     * @since 2.1
      */
-    @Experimental
     @Nullable
     public static BooleanSupplier getOnBeforeBlocking() {
         return onBeforeBlocking;
@@ -1197,12 +1183,12 @@ public final class RxJavaPlugins {
     /**
      * Create an instance of the default {@link Scheduler} used for {@link Schedulers#computation()}
      * except using {@code threadFactory} for thread creation.
+     * <p>History: 2.0.5 - experimental
      * @param threadFactory thread factory to use for creating worker threads. Note that this takes precedence over any
      *                      system properties for configuring new thread creation. Cannot be null.
      * @return the created Scheduler instance
-     * @since 2.0.5 - experimental
+     * @since 2.1
      */
-    @Experimental
     @NonNull
     public static Scheduler createComputationScheduler(@NonNull ThreadFactory threadFactory) {
         return new ComputationScheduler(ObjectHelper.requireNonNull(threadFactory, "threadFactory is null"));
@@ -1211,12 +1197,12 @@ public final class RxJavaPlugins {
     /**
      * Create an instance of the default {@link Scheduler} used for {@link Schedulers#io()}
      * except using {@code threadFactory} for thread creation.
+     * <p>History: 2.0.5 - experimental
      * @param threadFactory thread factory to use for creating worker threads. Note that this takes precedence over any
      *                      system properties for configuring new thread creation. Cannot be null.
      * @return the created Scheduler instance
-     * @since 2.0.5 - experimental
+     * @since 2.1
      */
-    @Experimental
     @NonNull
     public static Scheduler createIoScheduler(@NonNull ThreadFactory threadFactory) {
         return new IoScheduler(ObjectHelper.requireNonNull(threadFactory, "threadFactory is null"));
@@ -1225,12 +1211,12 @@ public final class RxJavaPlugins {
     /**
      * Create an instance of the default {@link Scheduler} used for {@link Schedulers#newThread()}
      * except using {@code threadFactory} for thread creation.
+     * <p>History: 2.0.5 - experimental
      * @param threadFactory thread factory to use for creating worker threads. Note that this takes precedence over any
      *                      system properties for configuring new thread creation. Cannot be null.
      * @return the created Scheduler instance
-     * @since 2.0.5 - experimental
+     * @since 2.1
      */
-    @Experimental
     @NonNull
     public static Scheduler createNewThreadScheduler(@NonNull ThreadFactory threadFactory) {
         return new NewThreadScheduler(ObjectHelper.requireNonNull(threadFactory, "threadFactory is null"));
@@ -1239,12 +1225,12 @@ public final class RxJavaPlugins {
     /**
      * Create an instance of the default {@link Scheduler} used for {@link Schedulers#single()}
      * except using {@code threadFactory} for thread creation.
+     * <p>History: 2.0.5 - experimental
      * @param threadFactory thread factory to use for creating worker threads. Note that this takes precedence over any
      *                      system properties for configuring new thread creation. Cannot be null.
      * @return the created Scheduler instance
-     * @since 2.0.5 - experimental
+     * @since 2.1
      */
-    @Experimental
     @NonNull
     public static Scheduler createSingleScheduler(@NonNull ThreadFactory threadFactory) {
         return new SingleScheduler(ObjectHelper.requireNonNull(threadFactory, "threadFactory is null"));

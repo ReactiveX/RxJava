@@ -986,12 +986,12 @@ public abstract class Completable implements CompletableSource {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code cache} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
+     * <p>History: 2.0.4 - experimental
      * @return the new Completable instance
-     * @since 2.0.4 - experimental
+     * @since 2.1
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
-    @Experimental
     public final Completable cache() {
         return RxJavaPlugins.onAssembly(new CompletableCache(this));
     }
@@ -1262,13 +1262,13 @@ public abstract class Completable implements CompletableSource {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code doFinally} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
+     * <p>History: 2.0.1 - experimental
      * @param onFinally the action called when this Completable terminates or gets cancelled
      * @return the new Completable instance
-     * @since 2.0.1 - experimental
+     * @since 2.1
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
-    @Experimental
     public final Completable doFinally(Action onFinally) {
         ObjectHelper.requireNonNull(onFinally, "onFinally is null");
         return RxJavaPlugins.onAssembly(new CompletableDoFinally(this, onFinally));
@@ -1598,10 +1598,10 @@ public abstract class Completable implements CompletableSource {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code hide} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
+     * <p>History: 2.0.5 - experimental
      * @return the new Completable instance
-     * @since 2.0.5 - experimental
+     * @since 2.1
      */
-    @Experimental
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Completable hide() {

@@ -24,6 +24,7 @@ import io.reactivex.schedulers.Schedulers;
  * {@linkplain #NONE not using a scheduler} and {@linkplain #CUSTOM a manually-specified scheduler}.
  * Libraries providing their own values should namespace them with their base package name followed
  * by a colon ({@code :}) and then a human-readable name (e.g., {@code com.example:ui-thread}).
+ * @since 2.0
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
