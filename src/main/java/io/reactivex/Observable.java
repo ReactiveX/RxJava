@@ -8923,12 +8923,12 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * the application of this operator via {@link #defer(Callable)}:
      * <pre><code>
      * ObservableSource&lt;T> source = ...
-     * ObservableSource.defer(() -> source.reduce(new ArrayList&lt;>(), (list, item) -> list.add(item)));
+     * Observable.defer(() -> source.reduce(new ArrayList&lt;>(), (list, item) -> list.add(item)));
      *
      * // alternatively, by using compose to stay fluent
      *
      * source.compose(o ->
-     *     ObservableSource.defer(() -> o.reduce(new ArrayList&lt;>(), (list, item) -> list.add(item)))
+     *     Observable.defer(() -> o.reduce(new ArrayList&lt;>(), (list, item) -> list.add(item)))
      * );
      * </code></pre>
      * <dl>
@@ -8972,12 +8972,12 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * the application of this operator via {@link #defer(Callable)}:
      * <pre><code>
      * ObservableSource&lt;T> source = ...
-     * ObservableSource.defer(() -> source.reduce(new ArrayList&lt;>(), (list, item) -> list.add(item)));
+     * Observable.defer(() -> source.reduce(new ArrayList&lt;>(), (list, item) -> list.add(item)));
      *
      * // alternatively, by using compose to stay fluent
      *
      * source.compose(o ->
-     *     ObservableSource.defer(() -> o.reduce(new ArrayList&lt;>(), (list, item) -> list.add(item)))
+     *     Observable.defer(() -> o.reduce(new ArrayList&lt;>(), (list, item) -> list.add(item)))
      * );
      * </code></pre>
      * <dl>
@@ -10034,12 +10034,12 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * the application of this operator via {@link #defer(Callable)}:
      * <pre><code>
      * ObservableSource&lt;T> source = ...
-     * ObservableSource.defer(() -> source.scan(new ArrayList&lt;>(), (list, item) -> list.add(item)));
+     * Observable.defer(() -> source.scan(new ArrayList&lt;>(), (list, item) -> list.add(item)));
      *
      * // alternatively, by using compose to stay fluent
      *
      * source.compose(o ->
-     *     ObservableSource.defer(() -> o.scan(new ArrayList&lt;>(), (list, item) -> list.add(item)))
+     *     Observable.defer(() -> o.scan(new ArrayList&lt;>(), (list, item) -> list.add(item)))
      * );
      * </code></pre>
      * <dl>
@@ -10083,12 +10083,12 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * the application of this operator via {@link #defer(Callable)}:
      * <pre><code>
      * ObservableSource&lt;T> source = ...
-     * ObservableSource.defer(() -> source.scan(new ArrayList&lt;>(), (list, item) -> list.add(item)));
+     * Observable.defer(() -> source.scan(new ArrayList&lt;>(), (list, item) -> list.add(item)));
      *
      * // alternatively, by using compose to stay fluent
      *
      * source.compose(o ->
-     *     ObservableSource.defer(() -> o.scan(new ArrayList&lt;>(), (list, item) -> list.add(item)))
+     *     Observable.defer(() -> o.scan(new ArrayList&lt;>(), (list, item) -> list.add(item)))
      * );
      * </code></pre>
      * <dl>
