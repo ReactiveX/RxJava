@@ -2,6 +2,34 @@
 
 The cnagelog of version 1.x can be found at https://github.com/ReactiveX/RxJava/blob/1.x/CHANGES.md
 
+### Version 2.0.9 - April 21, 2017 ([Maven](http://search.maven.org/#artifactdetails%7Cio.reactivex.rxjava2%7Crxjava%7C2.0.9%7C))
+
+**API enhancements**
+
+- [Pull 5302](https://github.com/ReactiveX/RxJava/pull/5302): Add `Single.unsubscribeOn()`.
+
+**Bugfixes**
+- [Pull 5247](https://github.com/ReactiveX/RxJava/pull/5247): Fix `Flowable.toList()` `onNext`/`cancel` race.
+- [Pull 5256](https://github.com/ReactiveX/RxJava/pull/5256): Fix `flatMapIterable` appearing to be empty when fused.
+- [Pull 5277](https://github.com/ReactiveX/RxJava/pull/5277): Fix `Single.subscribe(BiConsumer)` to be consistent with `isDisposed`.
+- [Pull 5281](https://github.com/ReactiveX/RxJava/pull/5281): Fix `BehaviorProcessor` & `BehaviorSubject` terminate-subscribe race. 
+- [Pull 5287](https://github.com/ReactiveX/RxJava/pull/5287): Fix `Flowable.flatMapMaybe`/`Flowable.flatMapSingle` `maxConcurrency` not requesting more.
+
+**Documentation**
+- [Pull 5271](https://github.com/ReactiveX/RxJava/pull/5271): enable link to external JDK, fix `Schedulers` style.
+- [Pull 5286](https://github.com/ReactiveX/RxJava/pull/5286): Cleanup for text and Javadoc 04/15.
+- [Commit 7c95808](https://github.com/ReactiveX/RxJava/commit/7c95808f077537428f2ae80fffd15e2848a2de31): Fix `DisposableX` copy-paste error in Javadoc.
+- [Pull 5296](https://github.com/ReactiveX/RxJava/pull/5296): Improve `doOnDispose` JavaDoc.
+- [Pull 5297](https://github.com/ReactiveX/RxJava/pull/5297): Fix JavaDoc image for `Single.flatMapObservable()`.
+- [Pull 5304](https://github.com/ReactiveX/RxJava/pull/5304): Correct documented return type of `Single.flatMapObservable()`'s function argument.
+
+**Other**
+- [Pull 5255](https://github.com/ReactiveX/RxJava/pull/5255): Add `NullPointerException` comments and `ObjectHelper` test code.
+- [Pull 5251](https://github.com/ReactiveX/RxJava/pull/5251):  More nullability annotations.
+- [Pull 5257](https://github.com/ReactiveX/RxJava/pull/5257): Remove `@NonNull` annotations from `BiConsumer`.
+- [Pull 5268](https://github.com/ReactiveX/RxJava/pull/5268): Remove commented out code from `IoScheduler`.
+- [Pull 5301](https://github.com/ReactiveX/RxJava/pull/5301): More detailed no-multi-subscribe error message with the standard consumer types (such as `DisposableObserver`).
+
 ### Version 2.0.8 - March 29, 2017 ([Maven](http://search.maven.org/#artifactdetails%7Cio.reactivex.rxjava2%7Crxjava%7C2.0.8%7C))
 
 **API enhancements**
