@@ -34,10 +34,11 @@ import org.reactivestreams.*;
  * Use {@code runOn()} to introduce where each 'rail' should run on thread-vise.
  * Use {@code sequential()} to merge the sources back into a single Flowable.
  *
+ * <p>History: 2.0.5 - experimental
  * @param <T> the value type
- * @since 2.0.5 - experimental
+ * @since 2.1 - beta
  */
-@Experimental
+@Beta
 public abstract class ParallelFlowable<T> {
 
     /**

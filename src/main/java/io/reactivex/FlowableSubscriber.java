@@ -20,10 +20,11 @@ import org.reactivestreams.*;
  * Represents a Reactive-Streams inspired Subscriber that is RxJava 2 only
  * and weakens rules §1.3 and §3.9 of the specification for gaining performance.
  *
+ * <p>History: 2.0.7 - experimental
  * @param <T> the value type
- * @since 2.0.7 - experimental
+ * @since 2.1 - beta
  */
-@Experimental
+@Beta
 public interface FlowableSubscriber<T> extends Subscriber<T> {
 
     /**

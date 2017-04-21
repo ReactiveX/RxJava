@@ -7648,14 +7648,14 @@ public abstract class Flowable<T> implements Publisher<T> {
      *  <dd>This operator supports normal and conditional Subscribers as well as boundary-limited
      *  synchronous or asynchronous queue-fusion.</dd>
      * </dl>
+     * <p>History: 2.0.1 - experimental
      * @param onFinally the action called when this Flowable terminates or gets cancelled
      * @return the new Flowable instance
-     * @since 2.0.1 - experimental
+     * @since 2.1
      */
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
     @SchedulerSupport(SchedulerSupport.NONE)
-    @Experimental
     public final Flowable<T> doFinally(Action onFinally) {
         ObjectHelper.requireNonNull(onFinally, "onFinally is null");
         return RxJavaPlugins.onAssembly(new FlowableDoFinally<T>(this, onFinally));
@@ -7675,14 +7675,14 @@ public abstract class Flowable<T> implements Publisher<T> {
      *  <dd>This operator supports normal and conditional Subscribers as well as boundary-limited
      *  synchronous or asynchronous queue-fusion.</dd>
      * </dl>
+     * <p>History: 2.0.1 - experimental
      * @param onAfterNext the Consumer that will be called after emitting an item from upstream to the downstream
      * @return the new Flowable instance
-     * @since 2.0.1 - experimental
+     * @since 2.1
      */
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
     @SchedulerSupport(SchedulerSupport.NONE)
-    @Experimental
     public final Flowable<T> doAfterNext(Consumer<? super T> onAfterNext) {
         ObjectHelper.requireNonNull(onAfterNext, "onAfterNext is null");
         return RxJavaPlugins.onAssembly(new FlowableDoAfterNext<T>(this, onAfterNext));
@@ -10447,13 +10447,14 @@ public abstract class Flowable<T> implements Publisher<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code parallel} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
+     * <p>History: 2.0.5 - experimental
      * @return the new ParallelFlowable instance
-     * @since 2.0.5 - experimental
+     * @since 2.1 - beta
      */
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     @CheckReturnValue
-    @Experimental
+    @Beta
     public final ParallelFlowable<T> parallel() {
         return ParallelFlowable.from(this);
     }
@@ -10476,14 +10477,15 @@ public abstract class Flowable<T> implements Publisher<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code parallel} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
+     * <p>History: 2.0.5 - experimental
      * @param parallelism the number of 'rails' to use
      * @return the new ParallelFlowable instance
-     * @since 2.0.5 - experimental
+     * @since 2.1 - beta
      */
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     @CheckReturnValue
-    @Experimental
+    @Beta
     public final ParallelFlowable<T> parallel(int parallelism) {
         ObjectHelper.verifyPositive(parallelism, "parallelism");
         return ParallelFlowable.from(this, parallelism);
@@ -10508,15 +10510,16 @@ public abstract class Flowable<T> implements Publisher<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code parallel} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
+     * <p>History: 2.0.5 - experimental
      * @param parallelism the number of 'rails' to use
      * @param prefetch the number of items each 'rail' should prefetch
      * @return the new ParallelFlowable instance
-     * @since 2.0.5 - experimental
+     * @since 2.1 - beta
      */
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     @CheckReturnValue
-    @Experimental
+    @Beta
     public final ParallelFlowable<T> parallel(int parallelism, int prefetch) {
         ObjectHelper.verifyPositive(parallelism, "parallelism");
         ObjectHelper.verifyPositive(prefetch, "prefetch");
@@ -11787,6 +11790,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *  <dd>{@code sample} operates by default on the {@code computation} {@link Scheduler}.</dd>
      * </dl>
      *
+     * <p>History: 2.0.5 - experimental
      * @param period
      *            the sampling rate
      * @param unit
@@ -11800,12 +11804,11 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @see <a href="http://reactivex.io/documentation/operators/sample.html">ReactiveX operators documentation: Sample</a>
      * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Backpressure">RxJava wiki: Backpressure</a>
      * @see #throttleLast(long, TimeUnit)
-     * @since 2.0.5 - experimental
+     * @since 2.1
      */
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.ERROR)
     @SchedulerSupport(SchedulerSupport.COMPUTATION)
-    @Experimental
     public final Flowable<T> sample(long period, TimeUnit unit, boolean emitLast) {
         return sample(period, unit, Schedulers.computation(), emitLast);
     }
@@ -11856,6 +11859,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *  <dd>You specify which {@link Scheduler} this operator will use</dd>
      * </dl>
      *
+     * <p>History: 2.0.5 - experimental
      * @param period
      *            the sampling rate
      * @param unit
@@ -11871,12 +11875,11 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @see <a href="http://reactivex.io/documentation/operators/sample.html">ReactiveX operators documentation: Sample</a>
      * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Backpressure">RxJava wiki: Backpressure</a>
      * @see #throttleLast(long, TimeUnit, Scheduler)
-     * @since 2.0.5 - experimental
+     * @since 2.1
      */
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.ERROR)
     @SchedulerSupport(SchedulerSupport.CUSTOM)
-    @Experimental
     public final Flowable<T> sample(long period, TimeUnit unit, Scheduler scheduler, boolean emitLast) {
         ObjectHelper.requireNonNull(unit, "unit is null");
         ObjectHelper.requireNonNull(scheduler, "scheduler is null");
@@ -11928,6 +11931,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *  <dd>This version of {@code sample} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
+     * <p>History: 2.0.5 - experimental
      * @param <U> the element type of the sampler Publisher
      * @param sampler
      *            the Publisher to use for sampling the source Publisher
@@ -11939,12 +11943,11 @@ public abstract class Flowable<T> implements Publisher<T> {
      *         the {@code sampler} Publisher emits an item or completes
      * @see <a href="http://reactivex.io/documentation/operators/sample.html">ReactiveX operators documentation: Sample</a>
      * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Backpressure">RxJava wiki: Backpressure</a>
-     * @since 2.0.5 - experimental
+     * @since 2.1
      */
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.ERROR)
     @SchedulerSupport(SchedulerSupport.NONE)
-    @Experimental
     public final <U> Flowable<T> sample(Publisher<U> sampler, boolean emitLast) {
         ObjectHelper.requireNonNull(sampler, "sampler is null");
         return RxJavaPlugins.onAssembly(new FlowableSamplePublisher<T>(this, sampler, emitLast));
@@ -12756,37 +12759,6 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     /**
-     * Ensures that the event flow between the upstream and downstream follow
-     * the Reactive-Streams 1.0 specification by honoring the 3 additional rules
-     * (which are omitted in standard operators due to performance reasons).
-     * <ul>
-     * <li>§1.3: onNext should not be called concurrently until onSubscribe returns</li>
-     * <li>§2.3: onError or onComplete must not call cancel</li>
-     * <li>§3.9: negative requests should emit an onError(IllegalArgumentException)</li>
-     * </ul>
-     * In addition, if rule §2.12 (onSubscribe must be called at most once) is violated,
-     * the sequence is cancelled an onError(IllegalStateException) is emitted.
-     * <dl>
-     *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The operator doesn't interfere with backpressure which is determined by the source {@code Publisher}'s backpressure
-     *  behavior.</dd>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code strict} does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     * @return the new Flowable instance
-     * @since 2.0.5 - experimental
-     * @deprecated 2.0.7, will be removed in 2.1.0; by default, the Publisher interface is always strict
-     */
-    @BackpressureSupport(BackpressureKind.PASS_THROUGH)
-    @SchedulerSupport(SchedulerSupport.NONE)
-    @Experimental
-    @CheckReturnValue
-    @Deprecated
-    public final Flowable<T> strict() {
-        return this;
-    }
-
-    /**
      * Subscribes to a Publisher and ignores {@code onNext} and {@code onComplete} emissions.
      * <p>
      * If the Flowable emits an error, it is wrapped into an
@@ -12997,12 +12969,13 @@ public abstract class Flowable<T> implements Publisher<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code subscribe} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
+     * <p>History: 2.0.7 - experimental
      * @param s the FlowableSubscriber that will consume signals from this Flowable
-     * @since 2.0.7 - experimental
+     * @since 2.1 - beta
      */
     @BackpressureSupport(BackpressureKind.SPECIAL)
     @SchedulerSupport(SchedulerSupport.NONE)
-    @Experimental
+    @Beta
     public final void subscribe(FlowableSubscriber<? super T> s) {
         ObjectHelper.requireNonNull(s, "s is null");
         try {

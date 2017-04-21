@@ -239,13 +239,14 @@ public abstract class Scheduler {
      * });
      * </pre>
      * 
+     * <p>History: 2.0.1 - experimental
      * @param <S> a Scheduler and a Subscription
      * @param combine the function that takes a two-level nested Flowable sequence of a Completable and returns
      * the Completable that will be subscribed to and should trigger the execution of the scheduled Actions.
      * @return the Scheduler with the customized execution behavior
+     * @since 2.1
      */
     @SuppressWarnings("unchecked")
-    @Experimental
     @NonNull
     public <S extends Scheduler & Disposable> S when(@NonNull Function<Flowable<Flowable<Completable>>, Completable> combine) {
         return (S) new SchedulerWhen(combine, this);
