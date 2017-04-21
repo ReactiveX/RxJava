@@ -14873,15 +14873,15 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     /**
-     * Converts the current Flowable into a non-backpressured Publisher.
+     * Converts the current Flowable into a non-backpressured {@link Observable}.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>Publishers don't support backpressure thus the current Flowable is consumed in an unbounded
+     *  <dd>Observables don't support backpressure thus the current Flowable is consumed in an unbounded
      *  manner (by requesting Long.MAX_VALUE).</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code toObservable} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * @return the new Publisher instance
+     * @return the new Observable instance
      * @since 2.0
      */
     @CheckReturnValue
