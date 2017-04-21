@@ -15,9 +15,12 @@ package io.reactivex.internal.operators.single;
 
 import static org.junit.Assert.*;
 
+import java.util.*;
+
 import org.junit.Test;
 
-import io.reactivex.TestHelper;
+import io.reactivex.*;
+
 
 public class SingleInternalHelperTest {
 
@@ -42,5 +45,22 @@ public class SingleInternalHelperTest {
     public void toObservableEnum() {
         assertEquals(1, SingleInternalHelper.ToObservable.values().length);
         assertNotNull(SingleInternalHelper.ToObservable.valueOf("INSTANCE"));
+    }
+
+    @Test
+    public void singleIterableToFlowableIterable() {
+        Iterable<? extends Flowable<Integer>> it = SingleInternalHelper.iterableToFlowable(
+                Collections.singletonList(Single.just(1)));
+
+        Iterator<? extends Flowable<Integer>> iter = it.iterator();
+
+        if (iter.hasNext()) {
+            iter.next().test().assertResult(1);
+            if (iter.hasNext()) {
+                fail("Iterator reports an additional element");
+            }
+        } else {
+            fail("Iterator was empty");
+        }
     }
 }

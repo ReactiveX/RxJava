@@ -348,4 +348,9 @@ public class ParallelMapTryTest implements Consumer<Object> {
             RxJavaPlugins.reset();
         }
     }
+
+    @Test
+    public void failureHandlingEnum() {
+        TestHelper.checkEnum(ParallelFailureHandling.class);
+    }
 }
