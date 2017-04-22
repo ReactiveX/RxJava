@@ -278,4 +278,47 @@ public class ParallelRunOnTest {
             TestHelper.race(r1, r2);
         }
     }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void normalCancelAfterRequest1() {
+
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>(1) {
+            @Override
+            public void onNext(Integer t) {
+                super.onNext(t);
+                cancel();
+                onComplete();
+            }
+        };
+
+        Flowable.range(1, 5)
+        .parallel(1)
+        .runOn(ImmediateThinScheduler.INSTANCE)
+        .subscribe(new Subscriber[] { ts });
+
+        ts.assertResult(1);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void conditionalCancelAfterRequest1() {
+
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>(1) {
+            @Override
+            public void onNext(Integer t) {
+                super.onNext(t);
+                cancel();
+                onComplete();
+            }
+        };
+
+        Flowable.range(1, 5)
+        .parallel(1)
+        .runOn(ImmediateThinScheduler.INSTANCE)
+        .filter(Functions.alwaysTrue())
+        .subscribe(new Subscriber[] { ts });
+
+        ts.assertResult(1);
+    }
 }

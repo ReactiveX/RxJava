@@ -285,4 +285,26 @@ public class SchedulerTest {
 
         assertNotNull(new Schedulers.SingleHolder());
     }
+
+    static final class CustomScheduler extends Scheduler {
+
+        @Override
+        public Worker createWorker() {
+            return Schedulers.single().createWorker();
+        }
+
+    }
+
+    @Test
+    public void customScheduleDirectDisposed() {
+        CustomScheduler scheduler = new CustomScheduler();
+
+        Disposable d = scheduler.scheduleDirect(Functions.EMPTY_RUNNABLE, 1, TimeUnit.MINUTES);
+
+        assertFalse(d.isDisposed());
+
+        d.dispose();
+
+        assertTrue(d.isDisposed());
+    }
 }

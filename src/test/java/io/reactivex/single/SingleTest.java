@@ -577,5 +577,15 @@ public class SingleTest {
             .assertFailure(RuntimeException.class)
             .assertErrorMessage("some error");
     }
+
+    @Test(expected = NullPointerException.class)
+    public void implementationThrows() {
+        new Single<Integer>() {
+            @Override
+            protected void subscribeActual(SingleObserver<? super Integer> observer) {
+                throw new NullPointerException();
+            }
+        }.test();
+    }
 }
 
