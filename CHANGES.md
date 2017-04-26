@@ -1,5 +1,16 @@
 # RxJava Releases #
 
+### Version 1.2.10 - April 26, 2017 ([Maven](http://search.maven.org/#artifactdetails%7Cio.reactivex%7Crxjava%7C1.2.10%7C))
+
+#### Bugfixes
+
+- [Pull 5225](https://github.com/ReactiveX/RxJava/pull/5225): Fix `Completable.onErrorResumeNext` unsubscribe not propagated.
+
+#### Other
+
+- [Pull 5250](https://github.com/ReactiveX/RxJava/pull/5250): Defer creation of the `TimeoutException` when using the `Single.timeout()` operator.
+- [Pull 5258](https://github.com/ReactiveX/RxJava/pull/5258): Use IntelliJ IDE friendly assertion failure message.
+
 ### Version 1.2.9 - March 24, 2017 ([Maven](http://search.maven.org/#artifactdetails%7Cio.reactivex%7Crxjava%7C1.2.9%7C))
 
 #### API enhancements
