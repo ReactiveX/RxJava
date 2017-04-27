@@ -20,7 +20,6 @@ import java.util.concurrent.*;
 
 import rx.*;
 import rx.Observer;
-import rx.annotations.Experimental;
 import rx.exceptions.CompositeException;
 
 /**
@@ -225,9 +224,8 @@ public class TestSubscriber<T> extends Subscriber<T> {
     /**
      * Returns the number of times onCompleted was called on this TestSubscriber.
      * @return the number of times onCompleted was called on this TestSubscriber.
-     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
+     * @since 1.3
      */
-    @Experimental
     public final int getCompletions() {
         return completions;
     }
@@ -356,9 +354,8 @@ public class TestSubscriber<T> extends Subscriber<T> {
      * @param unit the time unit of waiting
      * @return true if the expected number of onNext events happened
      * @throws RuntimeException if the sleep is interrupted
-     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
+     * @since 1.3
      */
-    @Experimental
     public final boolean awaitValueCount(int expected, long timeout, TimeUnit unit) {
         while (timeout != 0 && valueCount < expected) {
             try {
@@ -696,9 +693,8 @@ public class TestSubscriber<T> extends Subscriber<T> {
      * </pre></code>
      * @param expectedFirstValue the expected first value
      * @param expectedRestValues the optional rest values
-     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
+     * @since 1.3
      */
-    @Experimental
     public final void assertValuesAndClear(T expectedFirstValue, T... expectedRestValues) {
         int n = 1 + expectedRestValues.length;
         assertValueCount(n);

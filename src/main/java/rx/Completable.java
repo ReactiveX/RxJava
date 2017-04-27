@@ -20,7 +20,6 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import rx.annotations.*;
 import rx.exceptions.*;
 import rx.functions.*;
 import rx.internal.observers.AssertableSubscriberObservable;
@@ -35,10 +34,9 @@ import rx.subscriptions.*;
  * Represents a deferred computation without any value but only indication for completion or exception.
  *
  * The class follows a similar event pattern as Reactive-Streams: onSubscribe (onError|onComplete)?
- * 
- * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
+ *
+ * @since 1.3
  */
-@Beta
 public class Completable {
     /** The actual subscription action. */
     private final OnSubscribe onSubscribe;
@@ -539,9 +537,8 @@ public class Completable {
      * Completable's protocol are held.
      * @param producer the callback invoked for each incoming CompletableSubscriber
      * @return the new Completable instance
-     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
+     * @since 1.3
      */
-    @Experimental
     public static Completable fromEmitter(Action1<CompletableEmitter> producer) {
         return create(new CompletableFromEmitter(producer));
     }
@@ -2385,10 +2382,10 @@ public class Completable {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code test} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
+     * <p>History: 1.2.3 - experimental
      * @return the new AssertableSubscriber instance
-     * @since 1.2.3
+     * @since 1.3
      */
-    @Experimental
     public final AssertableSubscriber<Void> test() {
         AssertableSubscriberObservable<Void> ts = AssertableSubscriberObservable.create(Long.MAX_VALUE);
         subscribe(ts);

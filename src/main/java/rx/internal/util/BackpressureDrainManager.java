@@ -18,16 +18,14 @@ package rx.internal.util;
 import java.util.concurrent.atomic.AtomicLong;
 
 import rx.Producer;
-import rx.annotations.Experimental;
 
 /**
  * Manages the producer-backpressure-consumer interplay by
  * matching up available elements with requested elements and/or
  * terminal events.
- *
- * @since 1.1.0
+ * <p>History: 1.1.0 - experimental
+ * @since 1.3
  */
-@Experimental
 public final class BackpressureDrainManager extends AtomicLong implements Producer {
     /** */
     private static final long serialVersionUID = 2826241102729529449L;

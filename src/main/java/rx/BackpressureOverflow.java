@@ -15,15 +15,13 @@
  */
 package rx;
 
-import rx.annotations.Beta;
 import rx.exceptions.MissingBackpressureException;
 
 /**
  * Generic strategy and default implementations to deal with backpressure buffer overflows.
  * 
- * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
+ * @since 1.3
  */
-@Beta
 public final class BackpressureOverflow {
 
     private BackpressureOverflow() {

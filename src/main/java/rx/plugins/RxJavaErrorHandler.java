@@ -16,7 +16,6 @@
 package rx.plugins;
 
 import rx.*;
-import rx.annotations.Beta;
 import rx.exceptions.Exceptions;
 
 /**
@@ -64,10 +63,8 @@ public abstract class RxJavaErrorHandler { // NOPMD
      *             {@code OnErrorThrowable.OnNextValue}
      * @return a short {@link String} representation of the item if one is known for its type, or null for
      *         default
-     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the
-     *        release number)
+     * @since 1.3
      */
-    @Beta
     public final String handleOnNextValueRendering(Object item) {
 
         try {
@@ -95,10 +92,8 @@ public abstract class RxJavaErrorHandler { // NOPMD
      * @return a short {@link String} representation of the item if one is known for its type, or null for
      *         default
      * @throws InterruptedException if the rendering thread is interrupted
-     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the
-     *        release number)
+     * @since 1.3
      */
-    @Beta
     protected String render (Object item) throws InterruptedException {
         //do nothing by default
         return null;

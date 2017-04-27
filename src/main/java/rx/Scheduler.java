@@ -17,7 +17,6 @@ package rx;
 
 import java.util.concurrent.TimeUnit;
 
-import rx.annotations.Experimental;
 import rx.functions.*;
 import rx.internal.schedulers.*;
 import rx.schedulers.Schedulers;
@@ -203,9 +202,9 @@ public abstract class Scheduler {
      * @param combine the function that takes a two-level nested Observable sequence of a Completable and returns
      * the Completable that will be subscribed to and should trigger the execution of the scheduled Actions.
      * @return the Scheduler with the customized execution behavior
+     * @since 1.3
      */
     @SuppressWarnings("unchecked")
-    @Experimental
     public <S extends Scheduler & Subscription> S when(Func1<Observable<Observable<Completable>>, Completable> combine) {
         return (S) new SchedulerWhen(combine, this);
     }

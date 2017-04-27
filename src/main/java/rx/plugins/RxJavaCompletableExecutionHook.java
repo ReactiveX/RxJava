@@ -16,7 +16,6 @@
 package rx.plugins;
 
 import rx.*;
-import rx.annotations.Experimental;
 import rx.functions.Func1;
 
 /**
@@ -35,9 +34,8 @@ import rx.functions.Func1;
  * should be fast. If anything time-consuming is to be done it should be spawned asynchronously onto separate
  * worker threads.
  *
- * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
+ * @since 1.3
  */
-@Experimental
 public abstract class RxJavaCompletableExecutionHook { // NOPMD
     /**
      * Invoked during the construction by {@link Completable#create(Completable.OnSubscribe)}

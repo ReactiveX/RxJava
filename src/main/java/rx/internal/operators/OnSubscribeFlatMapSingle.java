@@ -31,9 +31,10 @@ import rx.subscriptions.CompositeSubscription;
 /**
  * Maps upstream values to Singles and merges them, up to a given
  * number of them concurrently, optionally delaying errors.
+ * <p>History: 1.2.7 - experimental
  * @param <T> the upstream value type
  * @param <R> the inner Singles and result value type
- * @since 1.2.7 - experimental
+ * @since 1.3
  */
 public final class OnSubscribeFlatMapSingle<T, R> implements Observable.OnSubscribe<R> {
 

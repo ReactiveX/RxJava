@@ -19,7 +19,6 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import rx.CompletableSubscriber;
 import rx.Subscription;
-import rx.annotations.Experimental;
 import rx.plugins.RxJavaHooks;
 
 /**
@@ -54,9 +53,8 @@ import rx.plugins.RxJavaHooks;
  *     }
  * }
  * </code></pre>
- * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
+ * @since 1.3
  */
-@Experimental
 public abstract class AsyncCompletableSubscriber implements CompletableSubscriber, Subscription {
     /**
      * Indicates the unsubscribed state.

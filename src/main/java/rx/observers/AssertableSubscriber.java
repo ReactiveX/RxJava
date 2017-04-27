@@ -19,7 +19,6 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import rx.*;
-import rx.annotations.Experimental;
 import rx.functions.Action0;
 
 /**
@@ -30,10 +29,10 @@ import rx.functions.Action0;
  * <p>
  * This interface extends {@link Observer} and allows injecting onXXX signals into
  * the testing process.
+ * <p>History: 1.2.3 - experimental
  * @param <T> the value type consumed by this Observer
- * @since 1.2.3
+ * @since 1.3
  */
-@Experimental
 public interface AssertableSubscriber<T> extends Observer<T>, Subscription {
 
     /**

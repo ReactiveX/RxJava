@@ -19,7 +19,6 @@ import java.util.Queue;
 import java.util.concurrent.atomic.*;
 
 import rx.*;
-import rx.annotations.Experimental;
 import rx.exceptions.*;
 import rx.functions.Action0;
 import rx.internal.operators.*;
@@ -35,8 +34,8 @@ import rx.internal.util.unsafe.*;
  * <p>
  * <img width="640" height="370" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/UnicastSubject.v1.png" alt="">
  * @param <T> the input and output value type
+ * @since 1.3
  */
-@Experimental
 public final class UnicastSubject<T> extends Subject<T, T> {
 
     final State<T> state;

@@ -18,7 +18,6 @@ package rx.plugins;
 
 import java.util.concurrent.ThreadFactory;
 import rx.Scheduler;
-import rx.annotations.Experimental;
 import rx.functions.Action0;
 import rx.internal.schedulers.CachedThreadScheduler;
 import rx.internal.schedulers.EventLoopsScheduler;
@@ -47,8 +46,8 @@ public class RxJavaSchedulersHook {
     /**
      * Create an instance of the default {@link Scheduler} used for {@link Schedulers#computation()}.
      * @return the created Scheduler instance
+     * @since 1.3
      */
-    @Experimental
     public static Scheduler createComputationScheduler() {
         return createComputationScheduler(new RxThreadFactory("RxComputationScheduler-"));
     }
@@ -58,8 +57,8 @@ public class RxJavaSchedulersHook {
      * except using {@code threadFactory} for thread creation.
      * @param threadFactory the factory to use for each worker thread
      * @return the created Scheduler instance
+     * @since 1.3
      */
-    @Experimental
     public static Scheduler createComputationScheduler(ThreadFactory threadFactory) {
         if (threadFactory == null) {
             throw new NullPointerException("threadFactory == null");
@@ -70,8 +69,8 @@ public class RxJavaSchedulersHook {
     /**
      * Create an instance of the default {@link Scheduler} used for {@link Schedulers#io()}.
      * @return the created Scheduler instance
+     * @since 1.3
      */
-    @Experimental
     public static Scheduler createIoScheduler() {
         return createIoScheduler(new RxThreadFactory("RxIoScheduler-"));
     }
@@ -81,8 +80,8 @@ public class RxJavaSchedulersHook {
      * except using {@code threadFactory} for thread creation.
      * @param threadFactory the factory to use for each worker thread
      * @return the created Scheduler instance
+     * @since 1.3
      */
-    @Experimental
     public static Scheduler createIoScheduler(ThreadFactory threadFactory) {
         if (threadFactory == null) {
             throw new NullPointerException("threadFactory == null");
@@ -93,8 +92,8 @@ public class RxJavaSchedulersHook {
     /**
      * Create an instance of the default {@link Scheduler} used for {@link Schedulers#newThread()}.
      * @return the created Scheduler instance
+     * @since 1.3
      */
-    @Experimental
     public static Scheduler createNewThreadScheduler() {
         return createNewThreadScheduler(new RxThreadFactory("RxNewThreadScheduler-"));
     }
@@ -104,8 +103,8 @@ public class RxJavaSchedulersHook {
      * except using {@code threadFactory} for thread creation.
      * @param threadFactory the factory to use for each worker thread
      * @return the created Scheduler instance
+     * @since 1.3
      */
-    @Experimental
     public static Scheduler createNewThreadScheduler(ThreadFactory threadFactory) {
         if (threadFactory == null) {
             throw new NullPointerException("threadFactory == null");

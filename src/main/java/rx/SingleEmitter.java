@@ -15,7 +15,6 @@
  */
 package rx;
 
-import rx.annotations.Experimental;
 import rx.functions.Cancellable;
 
 /**
@@ -24,11 +23,10 @@ import rx.functions.Cancellable;
  * <p>
  * All methods are thread-safe; calling onSuccess or onError twice or one after the other has
  * no effect.
- * @since 1.2.3 - experimental (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
- * 
+ * <p>History: 1.2.3 -experimental 
  * @param <T> the success value type
+ * @since 1.3
  */
-@Experimental
 public interface SingleEmitter<T> {
 
     /**
