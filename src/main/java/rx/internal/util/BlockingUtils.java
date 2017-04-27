@@ -17,7 +17,6 @@
 package rx.internal.util;
 
 import rx.Subscription;
-import rx.annotations.Experimental;
 
 import java.util.concurrent.CountDownLatch;
 
@@ -25,8 +24,8 @@ import java.util.concurrent.CountDownLatch;
  * Utility functions relating to blocking types.
  * <p/>
  * Not intended to be part of the public API.
+ * @since 1.3
  */
-@Experimental
 public final class BlockingUtils {
 
     private BlockingUtils() { }
@@ -37,7 +36,6 @@ public final class BlockingUtils {
      * @param latch        a CountDownLatch
      * @param subscription the Subscription to wait on.
      */
-    @Experimental
     public static void awaitForComplete(CountDownLatch latch, Subscription subscription) {
         if (latch.getCount() == 0) {
             // Synchronous observable completes before awaiting for it.

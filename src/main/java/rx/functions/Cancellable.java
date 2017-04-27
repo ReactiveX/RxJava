@@ -16,12 +16,10 @@
 
 package rx.functions;
 
-import rx.annotations.Experimental;
-
 /**
  * A functional interface that has a single close method that can throw.
+ * @since 1.3
  */
-@Experimental
 public interface Cancellable {
 
     /**

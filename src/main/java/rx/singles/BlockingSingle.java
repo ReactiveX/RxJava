@@ -20,7 +20,6 @@ import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicReference;
 
 import rx.*;
-import rx.annotations.*;
 import rx.exceptions.Exceptions;
 import rx.internal.operators.BlockingOperatorToFuture;
 import rx.internal.util.BlockingUtils;
@@ -33,9 +32,8 @@ import rx.internal.util.BlockingUtils;
  * or {@link Single#toBlocking()}.
  *
  * @param <T> the value type of the sequence
- * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
+ * @since 1.3
  */
-@Beta
 public final class BlockingSingle<T> {
     private final Single<? extends T> single;
 

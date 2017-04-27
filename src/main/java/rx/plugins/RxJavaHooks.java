@@ -19,7 +19,6 @@ import java.lang.Thread.UncaughtExceptionHandler;
 import java.util.concurrent.ScheduledExecutorService;
 
 import rx.*;
-import rx.annotations.Experimental;
 import rx.functions.*;
 import rx.internal.operators.*;
 
@@ -29,8 +28,8 @@ import rx.internal.operators.*;
  * <p>
  * The class features a lockdown state, see {@link #lockdown()} and {@link #isLockdown()}, to
  * prevent further changes to the hooks.
+ * @since 1.3
  */
-@Experimental
 public final class RxJavaHooks {
     /**
      * Prevents changing the hook callbacks when set to true.

@@ -17,14 +17,13 @@ package rx.exceptions;
 
 import java.util.*;
 
-import rx.annotations.Experimental;
 import rx.plugins.RxJavaHooks;
 
 /**
  * A RuntimeException that is stackless but holds onto a textual
  * stacktrace from tracking the assembly location of operators.
+ * @since 1.3
  */
-@Experimental
 public final class AssemblyStackTraceException extends RuntimeException {
 
     /** */

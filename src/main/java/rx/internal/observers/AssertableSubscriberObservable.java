@@ -20,7 +20,6 @@ import java.util.concurrent.TimeUnit;
 
 import rx.Producer;
 import rx.Subscriber;
-import rx.annotations.Experimental;
 import rx.functions.Action0;
 import rx.observers.TestSubscriber;
 import rx.observers.AssertableSubscriber;
@@ -33,8 +32,8 @@ import rx.observers.AssertableSubscriber;
  * 
  * @param <T>
  *            the value type
+ * @since 1.3
  */
-@Experimental
 public class AssertableSubscriberObservable<T> extends Subscriber<T> implements AssertableSubscriber<T> {
 
     private final TestSubscriber<T> ts;

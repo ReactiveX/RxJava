@@ -26,7 +26,6 @@ import rx.Observable;
 import rx.Observer;
 import rx.Scheduler;
 import rx.Subscription;
-import rx.annotations.Experimental;
 import rx.functions.Action0;
 import rx.functions.Func1;
 import rx.internal.operators.BufferUntilSubscriber;
@@ -101,8 +100,8 @@ import rx.subscriptions.Subscriptions;
  *     }));
  * });
  * </pre>
+ * @since 1.3
  */
-@Experimental
 public class SchedulerWhen extends Scheduler implements Subscription {
     private final Scheduler actualScheduler;
     private final Observer<Observable<Completable>> workerObserver;

@@ -15,12 +15,10 @@
  */
 package rx;
 
-import rx.annotations.Experimental;
-
 /**
  * Represents the subscription API callbacks when subscribing to a Completable instance.
+ * @since 1.3
  */
-@Experimental
 public interface CompletableSubscriber {
     /**
      * Called once the deferred computation completes normally.

@@ -27,8 +27,9 @@ import rx.subscriptions.CompositeSubscription;
 /**
  * Maps upstream values to Completables and merges them, up to a given
  * number of them concurrently, optionally delaying errors.
+ * <p>History: 1.2.7 - experimental
  * @param <T> the upstream value type
- * @since 1.2.7 - experimental
+ * @since 1.3
  */
 public final class OnSubscribeFlatMapCompletable<T> implements Observable.OnSubscribe<T> {
 

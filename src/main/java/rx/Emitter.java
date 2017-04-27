@@ -16,7 +16,6 @@
 
 package rx;
 
-import rx.annotations.Experimental;
 import rx.functions.Cancellable;
 
 /**
@@ -29,9 +28,8 @@ import rx.functions.Cancellable;
  * other methods are thread-safe.
  *
  * @param <T> the value type to emit
- * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
+ * @since 1.3
  */
-@Experimental
 public interface Emitter<T> extends Observer<T> {
 
     /**

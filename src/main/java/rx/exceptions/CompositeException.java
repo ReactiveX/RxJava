@@ -18,8 +18,6 @@ package rx.exceptions;
 import java.io.*;
 import java.util.*;
 
-import rx.annotations.Beta;
-
 /**
  * Represents an exception that is a composite of one or more other exceptions. A {@code CompositeException}
  * does not modify the structure of any exception it wraps, but at print-time it iterates through the list of
@@ -85,8 +83,8 @@ public final class CompositeException extends RuntimeException {
     /**
      * Constructs a CompositeException instance with the supplied initial Throwables.
      * @param errors the array of Throwables
+     * @since 1.3
      */
-    @Beta
     public CompositeException(Throwable... errors) {
         Set<Throwable> deDupedExceptions = new LinkedHashSet<Throwable>();
         List<Throwable> localExceptions = new ArrayList<Throwable>();

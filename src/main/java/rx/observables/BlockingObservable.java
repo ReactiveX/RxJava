@@ -22,7 +22,6 @@ import java.util.concurrent.atomic.AtomicReference;
 import rx.*;
 import rx.Observable;
 import rx.Observer;
-import rx.annotations.Beta;
 import rx.exceptions.*;
 import rx.functions.*;
 import rx.internal.operators.*;
@@ -469,9 +468,8 @@ public final class BlockingObservable<T> {
 
     /**
      * Runs the source observable to a terminal event, ignoring any values and rethrowing any exception.
-     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
+     * @since 1.3
      */
-    @Beta
     public void subscribe() {
         final CountDownLatch cdl = new CountDownLatch(1);
         final Throwable[] error = { null };
@@ -503,9 +501,8 @@ public final class BlockingObservable<T> {
     /**
      * Subscribes to the source and calls back the Observer methods on the current thread.
      * @param observer the observer to call event methods on
-     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
+     * @since 1.3
      */
-    @Beta
     public void subscribe(Observer<? super T> observer) {
         final BlockingQueue<Object> queue = new LinkedBlockingQueue<Object>();
 
@@ -548,10 +545,9 @@ public final class BlockingObservable<T> {
      * <p>
      * The unsubscription and backpressure is composed through.
      * @param subscriber the subscriber to forward events and calls to in the current thread
-     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
+     * @since 1.3
      */
     @SuppressWarnings("unchecked")
-    @Beta
     public void subscribe(Subscriber<? super T> subscriber) {
         final BlockingQueue<Object> queue = new LinkedBlockingQueue<Object>();
         final Producer[] theProducer = { null };
@@ -631,9 +627,8 @@ public final class BlockingObservable<T> {
      *
      * @param onNext the callback action for each source value
      * @see #forEach(Action1)
-     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
+     * @since 1.3
      */
-    @Beta
     public void subscribe(final Action1<? super T> onNext) {
         subscribe(onNext, new Action1<Throwable>() {
             @Override
@@ -647,9 +642,8 @@ public final class BlockingObservable<T> {
      * Subscribes to the source and calls the given actions on the current thread.
      * @param onNext the callback action for each source value
      * @param onError the callback action for an error event
-     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
+     * @since 1.3
      */
-    @Beta
     public void subscribe(final Action1<? super T> onNext, final Action1<? super Throwable> onError) {
         subscribe(onNext, onError, Actions.empty());
     }
@@ -659,9 +653,8 @@ public final class BlockingObservable<T> {
      * @param onNext the callback action for each source value
      * @param onError the callback action for an error event
      * @param onCompleted the callback action for the completion event.
-     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
+     * @since 1.3
      */
-    @Beta
     public void subscribe(final Action1<? super T> onNext, final Action1<? super Throwable> onError, final Action0 onCompleted) {
         subscribe(new Observer<T>() {
             @Override

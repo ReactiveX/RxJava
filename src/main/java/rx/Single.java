@@ -145,8 +145,8 @@ public class Single<T> {
      *            the Operator that implements the Single-operating function to be applied to the source Single
      * @return a Single that is the result of applying the lifted Operator to the source Single
      * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Implementing-Your-Own-Operators">RxJava wiki: Implementing Your Own Operators</a>
+     * @since 1.3
      */
-    @Beta
     public final <R> Single<R> lift(final Operator<? extends R, ? super T> lift) {
         return create(new SingleLiftObservableOperator<T, R>(this.onSubscribe, lift));
     }
@@ -602,12 +602,12 @@ public class Single<T> {
      * </code></pre>
      * <p>All of the SingleEmitter's methods are thread-safe and ensure the
      * Single's protocol are held.
+     * <p>History: 1.2.3 - experimental
      * @param <T> the success value type
      * @param producer the callback invoked for each incoming SingleSubscriber
      * @return the new Single instance
-     * @since 1.2.3 - experimental (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
+     * @since 1.3
      */
-    @Experimental
     public static <T> Single<T> fromEmitter(Action1<SingleEmitter<T>> producer) {
         if (producer == null) { throw new NullPointerException("producer is null"); }
         return create(new SingleFromEmitter<T>(producer));
@@ -939,15 +939,15 @@ public class Single<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code merge} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
+     * <p>History: 1.2.7 - experimental
      * @param <T> the value type of the inner Singles and the resulting Observable
      * @param sources the Observable that emits Singles to be merged
      * @return the new Observable instance
      * @see #merge(Observable, int)
      * @see #mergeDelayError(Observable)
      * @see #mergeDelayError(Observable, int)
-     * @since 1.2.7 - experimental
+     * @since 1.3
      */
-    @Experimental
     public static <T> Observable<T> merge(Observable<? extends Single<? extends T>> sources) {
         return merge(sources, Integer.MAX_VALUE);
     }
@@ -963,14 +963,14 @@ public class Single<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code flatMapSingle} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
+     * <p>History: 1.2.7 - experimental
      * @param <T> the value type of the inner Singles and the resulting Observable
      * @param sources the Observable that emits Singles to be merged
      * @param maxConcurrency the maximum number of inner Singles to run at a time
      * @return the new Observable instance
-     * @since 1.2.7 - experimental
+     * @since 1.3
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    @Experimental
     public static <T> Observable<T> merge(Observable<? extends Single<? extends T>> sources, int maxConcurrency) {
         return sources.flatMapSingle((Func1)UtilityFunctions.identity(), false, maxConcurrency);
     }
@@ -985,15 +985,15 @@ public class Single<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code merge} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
+     * <p>History: 1.2.7 - experimental
      * @param <T> the value type of the inner Singles and the resulting Observable
      * @param sources the Observable that emits Singles to be merged
      * @return the new Observable instance
      * @see #mergeDelayError(Observable, int)
      * @see #merge(Observable)
      * @see #merge(Observable, int)
-     * @since 1.2.7 - experimental
+     * @since 1.3
      */
-    @Experimental
     public static <T> Observable<T> mergeDelayError(Observable<? extends Single<? extends T>> sources) {
         return merge(sources, Integer.MAX_VALUE);
     }
@@ -1009,14 +1009,14 @@ public class Single<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code flatMapSingle} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
+     * <p>History: 1.2.7 - experimental
      * @param <T> the value type of the inner Singles and the resulting Observable
      * @param sources the Observable that emits Singles to be merged
      * @param maxConcurrency the maximum number of inner Singles to run at a time
      * @return the new Observable instance
-     * @since 1.2.7 - experimental
+     * @since 1.3
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    @Experimental
     public static <T> Observable<T> mergeDelayError(Observable<? extends Single<? extends T>> sources, int maxConcurrency) {
         return sources.flatMapSingle((Func1)UtilityFunctions.identity(), true, maxConcurrency);
     }
@@ -1452,8 +1452,8 @@ public class Single<T> {
      * @return a Single that, when first subscribed to, caches its response for the
      *         benefit of subsequent subscribers
      * @see <a href="http://reactivex.io/documentation/operators/replay.html">ReactiveX operators documentation: Replay</a>
+     * @since 1.3
      */
-    @Experimental
     public final Single<T> cache() {
         return toObservable().cacheWithInitialCapacity(1).toSingle();
     }
@@ -1537,9 +1537,8 @@ public class Single<T> {
      *            Completable
      * @return the Completable returned from {@code func} when applied to the item emitted by the source Single
      * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
-     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
+     * @since 1.3
      */
-    @Beta
     public final Completable flatMapCompletable(final Func1<? super T, ? extends Completable> func) {
         return Completable.create(new CompletableFlatMapSingleToCompletable<T>(this, func));
     }
@@ -1669,10 +1668,8 @@ public class Single<T> {
      * @param resumeSingleInCaseOfError a Single that will take control if source Single encounters an error.
      * @return the original Single, with appropriately modified behavior.
      * @see <a href="http://reactivex.io/documentation/operators/catch.html">ReactiveX operators documentation: Catch</a>
-     * @Experimental The behavior of this can change at any time.
-     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
+     * @since 1.3
      */
-    @Beta
     public final Single<T> onErrorResumeNext(Single<? extends T> resumeSingleInCaseOfError) {
         return new Single<T>(SingleOperatorOnErrorResumeNext.withOther(this, resumeSingleInCaseOfError));
     }
@@ -1703,10 +1700,8 @@ public class Single<T> {
      * @param resumeFunctionInCaseOfError a function that returns a Single that will take control if source Single encounters an error.
      * @return the original Single, with appropriately modified behavior.
      * @see <a href="http://reactivex.io/documentation/operators/catch.html">ReactiveX operators documentation: Catch</a>
-     * @Experimental The behavior of this can change at any time.
-     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
+     * @since 1.3
      */
-    @Beta
     public final Single<T> onErrorResumeNext(final Func1<Throwable, ? extends Single<? extends T>> resumeFunctionInCaseOfError) {
         return new Single<T>(SingleOperatorOnErrorResumeNext.withFunction(this, resumeFunctionInCaseOfError));
     }
@@ -2117,8 +2112,8 @@ public class Single<T> {
      * @param <R> the resulting object type
      * @param converter the function that receives the current Single instance and returns a value
      * @return the value returned by the function
+     * @since 1.3
      */
-    @Experimental
     public final <R> R to(Func1<? super Single<T>, R> converter) {
         return converter.call(this);
     }
@@ -2150,10 +2145,8 @@ public class Single<T> {
      * @return a {@link Completable} that calls {@code onCompleted} on it's subscriber when the source {@link Single}
      *         calls {@code onSuccess}.
      * @see <a href="http://reactivex.io/documentation/completable.html">ReactiveX documentation: Completable</a>
-     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical
-     *        with the release number).
+     * @since 1.3
      */
-    @Beta
     public final Completable toCompletable() {
         return Completable.fromSingle(this);
     }
@@ -2276,8 +2269,8 @@ public class Single<T> {
      *
      * @return a {@code BlockingSingle} version of this Single.
      * @see <a href="http://reactivex.io/documentation/operators/to.html">ReactiveX operators documentation: To</a>
+     * @since 1.3
      */
-    @Beta
     public final BlockingSingle<T> toBlocking() {
         return BlockingSingle.from(this);
     }
@@ -2326,9 +2319,8 @@ public class Single<T> {
      *            the action to invoke if the source {@link Single} calls {@code onError}
      * @return the source {@link Single} with the side-effecting behavior applied
      * @see <a href="http://reactivex.io/documentation/operators/do.html">ReactiveX operators documentation: Do</a>
-     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
+     * @since 1.3
      */
-    @Beta
     public final Single<T> doOnError(final Action1<Throwable> onError) {
         if (onError == null) {
             throw new IllegalArgumentException("onError is null");
@@ -2355,9 +2347,8 @@ public class Single<T> {
      *            the action to invoke when the source {@link Single} calls {@code onSuccess} or {@code onError}.
      * @return the source {@link Single} with the side-effecting behavior applied
      * @see <a href="http://reactivex.io/documentation/operators/do.html">ReactiveX operators documentation: Do</a>
-     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
+     * @since 1.3
      */
-    @Experimental
     public final Single<T> doOnEach(final Action1<Notification<? extends T>> onNotification) {
         if (onNotification == null) {
             throw new IllegalArgumentException("onNotification is null");
@@ -2389,9 +2380,8 @@ public class Single<T> {
      *            the action to invoke when the source {@link Single} calls {@code onSuccess}
      * @return the source {@link Single} with the side-effecting behavior applied
      * @see <a href="http://reactivex.io/documentation/operators/do.html">ReactiveX operators documentation: Do</a>
-     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
+     * @since 1.3
      */
-    @Experimental
     public final Single<T> doOnSuccess(final Action1<? super T> onSuccess) {
         if (onSuccess == null) {
             throw new IllegalArgumentException("onSuccess is null");
@@ -2417,9 +2407,8 @@ public class Single<T> {
      *            the action that gets called when an observer subscribes to this {@code Single}
      * @return the source {@code Single} modified so as to call this Action when appropriate
      * @see <a href="http://reactivex.io/documentation/operators/do.html">ReactiveX operators documentation: Do</a>
-     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
+     * @since 1.3
      */
-    @Beta
     public final Single<T> doOnSubscribe(final Action0 subscribe) {
         return create(new SingleDoOnSubscribe<T>(onSubscribe, subscribe));
     }
@@ -2442,9 +2431,8 @@ public class Single<T> {
      *            the {@link Scheduler} to use for delaying
      * @return the source Single shifted in time by the specified delay
      * @see <a href="http://reactivex.io/documentation/operators/delay.html">ReactiveX operators documentation: Delay</a>
-     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
+     * @since 1.3
      */
-    @Beta
     public final Single<T> delay(long delay, TimeUnit unit, Scheduler scheduler) {
         return create(new SingleDelay<T>(onSubscribe, delay, unit, scheduler));
     }
@@ -2465,9 +2453,8 @@ public class Single<T> {
      *            the {@link TimeUnit} in which {@code period} is defined
      * @return the source Single shifted in time by the specified delay
      * @see <a href="http://reactivex.io/documentation/operators/delay.html">ReactiveX operators documentation: Delay</a>
-     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
+     * @since 1.3
      */
-    @Beta
     public final Single<T> delay(long delay, TimeUnit unit) {
         return delay(delay, unit, Schedulers.computation());
     }
@@ -2495,9 +2482,8 @@ public class Single<T> {
      * @return a {@link Single} whose {@link Observer}s' subscriptions trigger an invocation of the given
      *         {@link Single} factory function.
      * @see <a href="http://reactivex.io/documentation/operators/defer.html">ReactiveX operators documentation: Defer</a>
-     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
+     * @since 1.3
      */
-    @Beta
     public static <T> Single<T> defer(final Callable<Single<T>> singleFactory) {
         return create(new OnSubscribe<T>() {
             @Override
@@ -2531,9 +2517,8 @@ public class Single<T> {
      *            the action that gets called when this {@link Single} is unsubscribed.
      * @return the source {@link Single} modified so as to call this Action when appropriate.
      * @see <a href="http://reactivex.io/documentation/operators/do.html">ReactiveX operators documentation: Do</a>
-     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
+     * @since 1.3
      */
-    @Beta
     public final Single<T> doOnUnsubscribe(final Action0 action) {
         return create(new SingleDoOnUnsubscribe<T>(onSubscribe, action));
     }
@@ -2553,9 +2538,8 @@ public class Single<T> {
      * @return a {@link Single} that emits the same item or error as the source {@link Single}, then invokes the
      *         {@link Action0}
      * @see <a href="http://reactivex.io/documentation/operators/do.html">ReactiveX operators documentation: Do</a>
-     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
+     * @since 1.3
      */
-    @Beta
     public final Single<T> doAfterTerminate(Action0 action) {
         return create(new SingleDoAfterTerminate<T>(this, action));
     }
@@ -2735,8 +2719,8 @@ public class Single<T> {
      *            the function that will dispose of the resource
      * @return the Single whose lifetime controls the lifetime of the dependent resource object
      * @see <a href="http://reactivex.io/documentation/operators/using.html">ReactiveX operators documentation: Using</a>
+     * @since 1.3
      */
-    @Beta
     public static <T, Resource> Single<T> using(
             final Func0<Resource> resourceFactory,
             final Func1<? super Resource, ? extends Single<? extends T>> singleFactory,
@@ -2770,10 +2754,8 @@ public class Single<T> {
      *            a terminal event ({@code onComplete} or {@code onError}).
      * @return the Single whose lifetime controls the lifetime of the dependent resource object
      * @see <a href="http://reactivex.io/documentation/operators/using.html">ReactiveX operators documentation: Using</a>
-     * @Experimental The behavior of this can change at any time.
-     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
+     * @since 1.3
      */
-    @Beta
     public static <T, Resource> Single<T> using(
             final Func0<Resource> resourceFactory,
             final Func1<? super Resource, ? extends Single<? extends T>> singleFactory,
@@ -2806,9 +2788,8 @@ public class Single<T> {
      *        to this Single.
      * @return a Single that delays the subscription to this Single
      *         until the Observable emits an element or completes normally.
-     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
+     * @since 1.3
      */
-    @Beta
     public final Single<T> delaySubscription(Observable<?> other) {
         if (other == null) {
             throw new NullPointerException();
@@ -2874,10 +2855,10 @@ public class Single<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code test} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
+     * <p>History: 1.2.3 - experimental
      * @return the new AssertableSubscriber instance
-     * @since 1.2.3
+     * @since 1.3
      */
-    @Experimental
     public final AssertableSubscriber<T> test() {
         AssertableSubscriberObservable<T> ts = AssertableSubscriberObservable.create(Long.MAX_VALUE);
         subscribe(ts);

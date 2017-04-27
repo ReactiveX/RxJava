@@ -19,7 +19,6 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.atomic.AtomicReference;
 
 import rx.Scheduler;
-import rx.annotations.Experimental;
 import rx.internal.schedulers.*;
 import rx.plugins.*;
 
@@ -185,8 +184,8 @@ public final class Schedulers {
      * Resets the current {@link Schedulers} instance.
      * This will re-init the cached schedulers on the next usage,
      * which can be useful in testing.
+     * @since 1.3
      */
-    @Experimental
     public static void reset() {
         Schedulers s = INSTANCE.getAndSet(null);
         if (s != null) {
