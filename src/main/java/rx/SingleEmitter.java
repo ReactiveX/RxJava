@@ -23,7 +23,7 @@ import rx.functions.Cancellable;
  * <p>
  * All methods are thread-safe; calling onSuccess or onError twice or one after the other has
  * no effect.
- * <p>History: 1.2.3 -experimental 
+ * <p>History: 1.2.3 - experimental 
  * @param <T> the success value type
  * @since 1.3
  */

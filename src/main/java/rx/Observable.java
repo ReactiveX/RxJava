@@ -400,7 +400,7 @@ public class Observable<T> {
      *         calls onCompleted
      * @see <a href="http://reactivex.io/documentation/completable.html">ReactiveX documentation:
      *      Completable</a>
-     * @since 1
+     * @since 1.3
      */
     public Completable toCompletable() {
         return Completable.fromObservable(this);
