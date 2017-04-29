@@ -2,6 +2,79 @@
 
 The cnagelog of version 1.x can be found at https://github.com/ReactiveX/RxJava/blob/1.x/CHANGES.md
 
+### Version 2.1.0 - April 29, 2017 ([Maven](http://search.maven.org/#artifactdetails%7Cio.reactivex.rxjava2%7Crxjava%7C2.1.0%7C))
+
+#### Summary
+
+Version 2.1.0 is the next minor release of the 2.x era and contains the standardization of many experimental API additions from the past half a year since version 2.0.0. Therefore, the following components are now considered stable and will be supported throughout the rest of the life of RxJava 2.x.
+
+**Classes, Enums, Annotations**
+
+- Annotation: `CheckReturnValue`
+- Subjects: `CompletableSubject`, `MaybeSubject`, `SingleSubject`
+- Enum: `TestWaitStrategy`
+
+**Operators**
+
+- **`Flowable`**: `doAfterNext`, `doFinally`, `sample` (emitLast)
+- **`Observable`**: `doAfterNext`, `doFinally`, `sample` (emitLast)
+- **`Single`**: `doAfterSuccess`, `doAfterTerminate`, `doFinally`
+- **`Maybe`**: `doAfterSuccess`, `doFinally`, `flatMapSingleElement`
+- **`Completable`**: `cache`, `doFinally`, `hide`
+- **`Test{Observer, Subscriber}`**: `assertNever`, `assertTimeout`, `assertNoTimeout`, `awaitCount`, `clearTimeout`, `isTimeout`, `withTag`
+- **`RxJavaPlugins`**: `createComputationScheduler`, `createIoScheduler`, `createNewThreadScheduler`, `createSingleScheduler`, `getOnBeforeBlocking`, `setOnBeforeBlocking`, `isFailOnBlockingScheduler`, `setFailOnBlockingScheduler`.
+- Other: `Scheduler.when`, `TestSubscriber.requestMore`
+
+*(For the complete list and details on the promotions, see issue [5243](https://github.com/ReactiveX/RxJava/issues/5243).)*
+
+Release 2.1.0 is functionally identical to 2.0.9 except the removal of [now unnecessary](https://github.com/ReactiveX/RxJava/releases/tag/v2.0.7) `Flowable.strict()` operator. To clarify, just like with previous minor version increments with RxJava, there won't be any further development or updates on the version 2.0.x (patch) level. 
+
+##### Beta promotions
+
+Some of the enhancements of RxJava 2.0.x were added recently which often represent complex additions to RxJava itself (such as the whole `ParallelFlowable`). We are confident their functionality adds value to the library but not enough time elapsed since their introduction for the community to try it out and provide feedback on them (i.e., naming, encompassed functionality, etc.). To indicate we are willing to support them and eventually standardize them in the next minor release, the following components have been promoted to the status of `Beta`:
+
+- Classes: `OnErrorNotImplementedException`, `ProtocolViolationException`, `UndeliverableException`, 
+ `ParallelFlowable`
+- Interface: `FlowableSubscriber`
+- Methods
+  - **`Flowable`**: `parallel`, `subscribe(FlowableSubscriber)`
+  - **`RxJavaPlugins`**: `getOnParallelAssembly`, `onAssembly(ParallelFlowable)`, `setOnParallelAssembly`
+
+#### Non-functional changes between 2.0.9 and 2.1
+
+- [Pull 5306](https://github.com/ReactiveX/RxJava/pull/5306): Change `ObservableSource.defer` to `Observable.defer` in `Observable.scan()` documentation.
+- [Pull 5309](https://github.com/ReactiveX/RxJava/pull/5309): Fix Javadoc of `Flowable.toObservable` referring to `Publisher` instead of `Observable`.
+
+#### Project statistics
+
+- Unique contributors: **41**
+- Issues closed: **315**
+- Bugs reported: **43**
+  - by community: **40** (93%)
+- Commits: **193**
+- PRs: **225**
+  - PRs accepted: **198** (88%)
+  - Community PRs: **76** (38.4% of all accepted)
+- Bugs fixed: **58**
+  - by community: **8** (13.9%)
+- Documentation enhancements: **46**
+  - by community: **22** (52.2%)
+- Cleanup: **40**
+  - by community: **22** (55%)
+- Lines
+  - added: **44,931**
+  - removed: **7,405**
+
+#### Acknowledgements
+
+The project would like to thank the following contributors for their work on various code and documentation improvements (in the order they appear on the [commit](https://github.com/ReactiveX/RxJava/commits/2.x) page):
+
+@vanniktech, @veyndan, @mauin, @smartbeng, @ImangazalievM, @bloderxd, @mibac138, @ggikko,  @mostroverkhov, @sadegh, @nmorioka, @SleimanJneidi, @davidmoten, @hkurokawa, @jbarr21, @alexandre-dubois, @VeskoI, @Stephan202, @PaulWoitaschek, @soulkeykim, @stevepeak, @jschneider, @JakeWharton, @tonycosentini, @hzsweers, @passsy, @sergiomarquesmoura, @ikesyo, @benjchristensen, @zsavely, @DDesideria, @gaemi, @Jawnnypoo, @artem-zinnatullin, @mkobit, @abersnaze, @tbcs, @gengjiawen, @qwert2603, @DmitriyZaitsev 
+
+**(40 contributors)**
+
+The project would also thank its tireless reviewers, @JakeWharton and @vanniktech for all their efforts on verifying and providing feedback on the many PRs from the project lead himself. :+1:
+
 ### Version 2.0.9 - April 21, 2017 ([Maven](http://search.maven.org/#artifactdetails%7Cio.reactivex.rxjava2%7Crxjava%7C2.0.9%7C))
 
 **API enhancements**
