@@ -22,7 +22,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @param <T> the element type
  * @since 2.0.7
  */
-public final class VolatileSizeArrayList<T> extends AtomicInteger implements List<T> {
+public final class VolatileSizeArrayList<T> extends AtomicInteger implements List<T>, RandomAccess {
 
     private static final long serialVersionUID = 3972397474470203923L;
 
