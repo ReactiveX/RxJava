@@ -1032,6 +1032,15 @@ public class TestObserverTest {
     }
 
     @Test
+    public void assertNotSubscribedAfterSubscription() {
+        TestObserver<Integer> ts = new TestObserver<Integer>();
+        UnicastSubject<Integer> up = UnicastSubject.create();
+        up.subscribe(ts);
+        ts.dispose();
+        ts.assertNotSubscribed();
+    }
+
+    @Test
     public void assertErrorMultiple() {
         TestObserver<Integer> ts = new TestObserver<Integer>();
 

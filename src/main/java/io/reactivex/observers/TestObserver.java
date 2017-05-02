@@ -251,7 +251,8 @@ implements Observer<T>, Disposable, MaybeObserver<T>, SingleObserver<T>, Complet
      */
     @Override
     public final TestObserver<T> assertNotSubscribed() {
-        if (subscription.get() != null) {
+        Disposable disposable = subscription.get();
+        if (disposable != null && disposable != DisposableHelper.DISPOSED) {
             throw fail("Subscribed!");
         } else
         if (!errors.isEmpty()) {
