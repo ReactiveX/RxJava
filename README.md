@@ -63,7 +63,7 @@ Flowable.just("Hello world")
       @Override public void accept(String s) {
           System.out.println(s);
       }
-  );
+  });
 ```
 
 RxJava 2 features several base classes you can discover operators on:
