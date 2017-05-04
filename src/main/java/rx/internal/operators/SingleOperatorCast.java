@@ -14,14 +14,14 @@ import rx.functions.Func1;
  */
 public class SingleOperatorCast<T, R> implements Func1<T, R> {
 
-  final Class<R> castClass;
+    final Class<R> castClass;
 
-  public SingleOperatorCast(Class<R> castClass) {
-    this.castClass = castClass;
-  }
+    public SingleOperatorCast(Class<R> castClass) {
+        this.castClass = castClass;
+    }
 
-  @Override
-  public R call(T t) {
-    return castClass.cast(t);
-  }
+    @Override
+    public R call(T t) {
+        return castClass.cast(t);
+    }
 }

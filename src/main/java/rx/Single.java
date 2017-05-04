@@ -220,6 +220,7 @@ public class Single<T> {
      * @param <R> the target type
      * @param klass the type token to use for casting the success result from the current Single
      * @return the new Single instance
+     * @since 1.3.1 - experimental
      */
     public final <R> Single<R> cast(final Class<R> klass) {
         return map(new SingleOperatorCast<T, R>(klass));
