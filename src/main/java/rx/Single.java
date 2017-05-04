@@ -222,7 +222,7 @@ public class Single<T> {
      * @return the new Single instance
      */
     public final <R> Single<R> cast(final Class<R> klass) {
-        return lift(new OperatorCast<T, R>(klass));
+        return map(new SingleOperatorCast<T, R>(klass));
     }
 
     /**
