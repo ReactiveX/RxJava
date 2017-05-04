@@ -222,6 +222,7 @@ public class Single<T> {
      * @return the new Single instance
      * @since 1.3.1 - experimental
      */
+    @Experimental
     public final <R> Single<R> cast(final Class<R> klass) {
         return map(new SingleOperatorCast<T, R>(klass));
     }
