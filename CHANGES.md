@@ -1,5 +1,56 @@
 # RxJava Releases #
 
+### Version 1.3.0 - May 5, 2017 ([Maven](http://search.maven.org/#artifactdetails%7Cio.reactivex%7Crxjava%7C1.3.0%7C))
+
+#### Summary
+
+Version 1.3.0 is the next minor release of the 1.x series of RxJava containing many formerly experimental API components promoted to standard. Most notably the `Completable` base reactive type is now standard as well.
+
+Note that the experimental `rx.Observable.fromEmitter()` has been removed in favor for the now also standard `Observable.create(Action1<Emitter<T>> emitter, Emitter.BackpressureMode backpressure)`
+
+The planned lifecycle of the 1.x line is as follows:
+
+Date | Remark
+------------|-------------------
+ **June 1, 2017** | Feature freeze, only bugfixes from this on.
+ **September 1, 2017** | Release `1.4.0` finalizing the remaining API components. 
+ **March 31, 2018** | End of development. 
+
+The following components have been promoted to standard:
+
+**Classes, interfaces**
+
+- **classes**: `AssemblyStackTraceException`, `RxJavaCompletableExecutionHook`, `RxJavaHooks`, `UnicastSubject`, `BlockingSingle`, `Completable`, `AssertableSubscriber`, `AsyncCompletableSubscriber`, `SafeCompletableSubscriber`
+- **interfaces**: `Cancellable`, `Emitter`, `SingleEmitter`, `CompletableEmitter`, `CompletableSubscriber`, `BackpressureOverflow.Strategy`
+
+**Operators**
+
+- **`Observable`**: `create`, `unsafeCreate`, `to`, `zip(Observable[], FuncN)`, `flatMapCompletable`, `flatMapSingle`, `groupby(Func1, Func1, Func1<Action1<K>, Map<K, Object>>)`, `onTerminateDetach`, `rebatchRequests`, `subscribeOn(Scheduler, boolean)`, `sorted`, `withLatestFrom`, `test`, `toCompletable`, `concatDelayError`, `mergeDelayError`, `switchOnNextDelayError`, `using(Func0, Func1, Action1, boolean)`, `concatMapDelayError`, `delaySubscription(Observable)`, `distinctUntilChanged(Func2)`, `concatEager`, `concatMapEager`, `onBackpressureBuffer(long, Action0, BackpressureOverflow.Strategy)`, `switchMapDelayError`, `toSortedList(int)`, `toSortedList(Func2, int)`
+- **`Completable`**: `fromEmitter`, `test`
+- **`Single`**: `fromEmitter`, `merge`, `mergeDelayError`, `cache`, `to`, `doOnEach`, `doOnSuccess`, `test`, `onErrorResumeNext`, `toCompletable`, `doOnError`, `doOnSubscribe`, `delay`, `defer`, `doOnUnsubscribe`, `doAfterTerminate`, `flatMapCompletable`, `lift`, `toBlocking`, `using`, `delaySubscription(Observable)`
+- **`TestSubscriber`**: `getCompletions`, `awaitValueCount`, `assertValuesAndClear`
+- **`SyncOnSubscriber`**: `createSingleState`, `createStateful`, `createStateless`
+
+**Other**
+
+- `Schedulers.reset`
+- `CompositeException(Throwable...)` constructor
+- `Exceptions.throwOrReport` (4 overloads)
+- `BlockingObservable.subscribe` (6 overloads)
+- **`RxJavaSchedulersHook`**: `createComputationScheduler`, `createIoScheduler`, `createNewThreadScheduler`
+- **internal**: `AssertableSubscriberObservable`, `FlatMapCompletable`, `FlatMapSingle`, `SchedulerWhen`, `BackpressureDrainManager`, `BlockingUtils`.
+- **`RxJavaPlugins`**: `reset`, `getCompletableExecutionHook`, `registerCompletableExecutionHook`
+- **`RxJavaErrorHandler`**: `handleOnNextValueRendering`, `render`
+
+In addition, the class `AsyncOnsubscribe` with its 7 factory methods and `Observable.create(AsyncOnSubscribe<S, T>)` have been promoted to **beta**.
+
+#### Acknowledgements
+
+Thanks to all who contributed to the 1.x line in the past 6 months (in order they appear on the [commit](https://github.com/ReactiveX/RxJava/commits/1.x) page):
+
+@mtiidla, @dhendry, @mostroverkhov, @yshrsmz, @BraisGabin, @cesar1000, @Jawnnypoo, @chanx2, @abersnaze, @davidmoten, @ortex, @marwinxxii, @ekchang, @pyricau, @JakeWharton, @VictorAlbertos
+
+
 ### Version 1.2.10 - April 26, 2017 ([Maven](http://search.maven.org/#artifactdetails%7Cio.reactivex%7Crxjava%7C1.2.10%7C))
 
 #### Bugfixes
