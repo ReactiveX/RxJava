@@ -211,6 +211,23 @@ public class Single<T> {
      */
 
     /**
+     * Casts the success value of the current Single into the target type or signals a
+     * ClassCastException if not compatible.
+     * <dl>
+     * <dt><b>Scheduler:</b></dt>
+     * <dd>{@code cast} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param <R> the target type
+     * @param klass the type token to use for casting the success result from the current Single
+     * @return the new Single instance
+     * @since 1.3.1 - experimental
+     */
+    @Experimental
+    public final <R> Single<R> cast(final Class<R> klass) {
+        return map(new SingleOperatorCast<T, R>(klass));
+    }
+
+    /**
      * Returns an Observable that emits the items emitted by two Singles, one after the other.
      * <p>
      * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.concat.png" alt="">
