@@ -32,7 +32,6 @@ public class SingleOperatorCastTest {
         Observer<Integer> observer = mock(Observer.class);
         single.subscribe(observer);
         verify(observer, times(1)).onNext(1);
-        verify(observer, times(1)).onNext(1);
         verify(observer, never()).onError(
             org.mockito.Matchers.any(Throwable.class));
         verify(observer, times(1)).onCompleted();
