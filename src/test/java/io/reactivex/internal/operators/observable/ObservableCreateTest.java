@@ -595,4 +595,53 @@ public class ObservableCreateTest {
             .assertResult();
         }
     }
+
+    @Test
+    public void tryOnError() {
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            final Boolean[] response = { null };
+            Observable.create(new ObservableOnSubscribe<Object>() {
+                @Override
+                public void subscribe(ObservableEmitter<Object> e) throws Exception {
+                    e.onNext(1);
+                    response[0] = e.tryOnError(new TestException());
+                }
+            })
+            .take(1)
+            .test()
+            .assertResult(1);
+
+            assertFalse(response[0]);
+
+            assertTrue(errors.toString(), errors.isEmpty());
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
+
+    @Test
+    public void tryOnErrorSerialized() {
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            final Boolean[] response = { null };
+            Observable.create(new ObservableOnSubscribe<Object>() {
+                @Override
+                public void subscribe(ObservableEmitter<Object> e) throws Exception {
+                    e = e.serialize();
+                    e.onNext(1);
+                    response[0] = e.tryOnError(new TestException());
+                }
+            })
+            .take(1)
+            .test()
+            .assertResult(1);
+
+            assertFalse(response[0]);
+
+            assertTrue(errors.toString(), errors.isEmpty());
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
 }

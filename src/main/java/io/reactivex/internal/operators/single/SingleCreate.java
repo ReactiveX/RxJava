@@ -78,6 +78,13 @@ public final class SingleCreate<T> extends Single<T> {
 
         @Override
         public void onError(Throwable t) {
+            if (!tryOnError(t)) {
+                RxJavaPlugins.onError(t);
+            }
+        }
+
+        @Override
+        public boolean tryOnError(Throwable t) {
             if (t == null) {
                 t = new NullPointerException("onError called with null. Null values are generally not allowed in 2.x operators and sources.");
             }
@@ -91,10 +98,10 @@ public final class SingleCreate<T> extends Single<T> {
                             d.dispose();
                         }
                     }
-                    return;
+                    return true;
                 }
             }
-            RxJavaPlugins.onError(t);
+            return false;
         }
 
         @Override
