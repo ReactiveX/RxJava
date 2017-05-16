@@ -65,4 +65,19 @@ public interface MaybeEmitter<T> {
      * @return true if the downstream cancelled the sequence
      */
     boolean isDisposed();
+
+    /**
+     * Attempts to emit the specified {@code Throwable} error if the downstream
+     * hasn't cancelled the sequence or is otherwise terminated, returning false
+     * if the emission is not allowed to happen due to lifecycle restrictions.
+     * <p>
+     * Unlike {@link #onError(Throwable)}, the {@code RxJavaPlugins.onError} is not called
+     * if the error could not be delivered.
+     * @param t the throwable error to signal if possible
+     * @return true if successful, false if the downstream is not able to accept further
+     * events
+     * @since 2.1.1 - experimental
+     */
+    @Experimental
+    boolean tryOnError(@NonNull Throwable t);
 }

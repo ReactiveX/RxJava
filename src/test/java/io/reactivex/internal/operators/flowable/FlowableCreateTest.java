@@ -877,4 +877,59 @@ public class FlowableCreateTest {
         }
     }
 
+
+    @Test
+    public void tryOnError() {
+        for (BackpressureStrategy strategy : BackpressureStrategy.values()) {
+            List<Throwable> errors = TestHelper.trackPluginErrors();
+            try {
+                final Boolean[] response = { null };
+                Flowable.create(new FlowableOnSubscribe<Object>() {
+                    @Override
+                    public void subscribe(FlowableEmitter<Object> e) throws Exception {
+                        e.onNext(1);
+                        response[0] = e.tryOnError(new TestException());
+                    }
+                }, strategy)
+                .take(1)
+                .test()
+                .withTag(strategy.toString())
+                .assertResult(1);
+
+                assertFalse(response[0]);
+
+                assertTrue(strategy + ": " + errors.toString(), errors.isEmpty());
+            } finally {
+                RxJavaPlugins.reset();
+            }
+        }
+    }
+
+    @Test
+    public void tryOnErrorSerialized() {
+        for (BackpressureStrategy strategy : BackpressureStrategy.values()) {
+            List<Throwable> errors = TestHelper.trackPluginErrors();
+            try {
+                final Boolean[] response = { null };
+                Flowable.create(new FlowableOnSubscribe<Object>() {
+                    @Override
+                    public void subscribe(FlowableEmitter<Object> e) throws Exception {
+                        e = e.serialize();
+                        e.onNext(1);
+                        response[0] = e.tryOnError(new TestException());
+                    }
+                }, strategy)
+                .take(1)
+                .test()
+                .withTag(strategy.toString())
+                .assertResult(1);
+
+                assertFalse(response[0]);
+
+                assertTrue(strategy + ": " + errors.toString(), errors.isEmpty());
+            } finally {
+                RxJavaPlugins.reset();
+            }
+        }
+    }
 }

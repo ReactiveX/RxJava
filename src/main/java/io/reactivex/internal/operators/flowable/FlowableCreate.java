@@ -129,19 +129,25 @@ public final class FlowableCreate<T> extends Flowable<T> {
 
         @Override
         public void onError(Throwable t) {
-            if (emitter.isCancelled() || done) {
-                RxJavaPlugins.onError(t);
-                return;
-            }
-            if (t == null) {
-                t = new NullPointerException("onError called with null. Null values are generally not allowed in 2.x operators and sources.");
-            }
-            if (error.addThrowable(t)) {
-                done = true;
-                drain();
-            } else {
+            if (!tryOnError(t)) {
                 RxJavaPlugins.onError(t);
             }
+        }
+
+        @Override
+        public boolean tryOnError(Throwable t) {
+           if (emitter.isCancelled() || done) {
+               return false;
+           }
+           if (t == null) {
+               t = new NullPointerException("onError called with null. Null values are generally not allowed in 2.x operators and sources.");
+           }
+           if (error.addThrowable(t)) {
+               done = true;
+               drain();
+               return true;
+           }
+           return false;
         }
 
         @Override
@@ -245,6 +251,10 @@ public final class FlowableCreate<T> extends Flowable<T> {
 
         @Override
         public void onComplete() {
+            complete();
+        }
+
+        protected void complete() {
             if (isCancelled()) {
                 return;
             }
@@ -256,19 +266,30 @@ public final class FlowableCreate<T> extends Flowable<T> {
         }
 
         @Override
-        public void onError(Throwable e) {
+        public final void onError(Throwable e) {
+            if (!tryOnError(e)) {
+                RxJavaPlugins.onError(e);
+            }
+        }
+
+        @Override
+        public boolean tryOnError(Throwable e) {
+            return error(e);
+        }
+
+        protected boolean error(Throwable e) {
             if (e == null) {
                 e = new NullPointerException("onError called with null. Null values are generally not allowed in 2.x operators and sources.");
             }
             if (isCancelled()) {
-                RxJavaPlugins.onError(e);
-                return;
+                return false;
             }
             try {
                 actual.onError(e);
             } finally {
                 serial.dispose();
             }
+            return true;
         }
 
         @Override
@@ -446,10 +467,9 @@ public final class FlowableCreate<T> extends Flowable<T> {
         }
 
         @Override
-        public void onError(Throwable e) {
+        public boolean tryOnError(Throwable e) {
             if (done || isCancelled()) {
-                RxJavaPlugins.onError(e);
-                return;
+                return false;
             }
 
             if (e == null) {
@@ -459,6 +479,7 @@ public final class FlowableCreate<T> extends Flowable<T> {
             error = e;
             done = true;
             drain();
+            return true;
         }
 
         @Override
@@ -507,9 +528,9 @@ public final class FlowableCreate<T> extends Flowable<T> {
                     if (d && empty) {
                         Throwable ex = error;
                         if (ex != null) {
-                            super.onError(ex);
+                            error(ex);
                         } else {
-                            super.onComplete();
+                            complete();
                         }
                         return;
                     }
@@ -536,9 +557,9 @@ public final class FlowableCreate<T> extends Flowable<T> {
                     if (d && empty) {
                         Throwable ex = error;
                         if (ex != null) {
-                            super.onError(ex);
+                            error(ex);
                         } else {
-                            super.onComplete();
+                            complete();
                         }
                         return;
                     }
@@ -589,10 +610,9 @@ public final class FlowableCreate<T> extends Flowable<T> {
         }
 
         @Override
-        public void onError(Throwable e) {
+        public boolean tryOnError(Throwable e) {
             if (done || isCancelled()) {
-                RxJavaPlugins.onError(e);
-                return;
+                return false;
             }
             if (e == null) {
                 onError(new NullPointerException("onError called with null. Null values are generally not allowed in 2.x operators and sources."));
@@ -600,6 +620,7 @@ public final class FlowableCreate<T> extends Flowable<T> {
             error = e;
             done = true;
             drain();
+            return true;
         }
 
         @Override
@@ -648,9 +669,9 @@ public final class FlowableCreate<T> extends Flowable<T> {
                     if (d && empty) {
                         Throwable ex = error;
                         if (ex != null) {
-                            super.onError(ex);
+                            error(ex);
                         } else {
-                            super.onComplete();
+                            complete();
                         }
                         return;
                     }
@@ -677,9 +698,9 @@ public final class FlowableCreate<T> extends Flowable<T> {
                     if (d && empty) {
                         Throwable ex = error;
                         if (ex != null) {
-                            super.onError(ex);
+                            error(ex);
                         } else {
-                            super.onComplete();
+                            complete();
                         }
                         return;
                     }

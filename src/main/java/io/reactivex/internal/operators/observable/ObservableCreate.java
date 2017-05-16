@@ -70,6 +70,13 @@ public final class ObservableCreate<T> extends Observable<T> {
 
         @Override
         public void onError(Throwable t) {
+            if (!tryOnError(t)) {
+                RxJavaPlugins.onError(t);
+            }
+        }
+
+        @Override
+        public boolean tryOnError(Throwable t) {
             if (t == null) {
                 t = new NullPointerException("onError called with null. Null values are generally not allowed in 2.x operators and sources.");
             }
@@ -79,9 +86,9 @@ public final class ObservableCreate<T> extends Observable<T> {
                 } finally {
                     dispose();
                 }
-            } else {
-                RxJavaPlugins.onError(t);
+                return true;
             }
+            return false;
         }
 
         @Override
@@ -174,9 +181,15 @@ public final class ObservableCreate<T> extends Observable<T> {
 
         @Override
         public void onError(Throwable t) {
-            if (emitter.isDisposed() || done) {
+            if (!tryOnError(t)) {
                 RxJavaPlugins.onError(t);
-                return;
+            }
+        }
+
+        @Override
+        public boolean tryOnError(Throwable t) {
+            if (emitter.isDisposed() || done) {
+                return false;
             }
             if (t == null) {
                 t = new NullPointerException("onError called with null. Null values are generally not allowed in 2.x operators and sources.");
@@ -184,9 +197,9 @@ public final class ObservableCreate<T> extends Observable<T> {
             if (error.addThrowable(t)) {
                 done = true;
                 drain();
-            } else {
-                RxJavaPlugins.onError(t);
+                return true;
             }
+            return false;
         }
 
         @Override
