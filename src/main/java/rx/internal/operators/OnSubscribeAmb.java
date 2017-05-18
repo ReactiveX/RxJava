@@ -279,7 +279,7 @@ public final class OnSubscribeAmb<T> implements OnSubscribe<T> {
 
         private final Subscriber<? super T> subscriber;
         private final Selection<T> selection;
-        private boolean chosen;
+        private volatile boolean chosen;
 
         AmbSubscriber(long requested, Subscriber<? super T> subscriber, Selection<T> selection) {
             this.subscriber = subscriber;
