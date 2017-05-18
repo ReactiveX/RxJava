@@ -11538,6 +11538,26 @@ public class Observable<T> {
     }
 
     /**
+     * Calls the specified converter function with the current Observable and returns
+     * its result.
+     * <p>
+     * The method can be used for converting the current Observable into some other
+     * type in a fluent way, for example:
+     * <pre>
+     * Promise<T> promise = someObservableOfT.to(RxRatpack::asPromise).onError(logger::error);
+     * </pre>
+     * 
+     * @param converter the function that converts the current observable to some other type
+     * @return the result of the converter function.
+     * @Experimental The behavior of this can change at any time.
+     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
+     */
+    @Experimental
+    public final <O> O to(final Func1<? super Observable<T>, ? extends O> converter) {
+        return converter.call(this);
+    }
+    
+    /**
      * Returns an Observable that emits a single item, a list composed of all the items emitted by the source
      * Observable.
      * <p>
