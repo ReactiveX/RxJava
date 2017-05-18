@@ -99,6 +99,15 @@ public abstract class Subscriber<T> implements Observer<T>, Subscription {
     }
 
     /**
+     * Indicates whether this Subscriber subscribed to its list of subscriptions
+     *
+     * @return {@code true} if this Subscriber subscribed to its subscriptions, {@code false} otherwise
+     */
+    public final boolean isSubscribed() {
+        return !cs.isUnsubscribed();
+    }
+
+    /**
      * Indicates whether this Subscriber has unsubscribed from its list of subscriptions.
      *
      * @return {@code true} if this Subscriber has unsubscribed from its subscriptions, {@code false} otherwise
