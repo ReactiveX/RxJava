@@ -549,7 +549,7 @@ public abstract class BaseTestConsumer<T, U extends BaseTestConsumer<T, U>> impl
             throw fail("More values received than expected (" + i + ")");
         }
         if (expectedNext) {
-            throw fail("Fever values received than expected (" + i + ")");
+            throw fail("Fewer values received than expected (" + i + ")");
         }
         return (U)this;
     }
