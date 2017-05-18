@@ -261,7 +261,7 @@ public class Observable<T> {
      * @param <T> the upstream's value type (input)
      * @param <R> the downstream's value type (output)
      */
-    public interface Operator<R, T> extends Func1<Subscriber<? super R>, Subscriber<? super T>> {
+    public interface Operator<T, R> extends Func1<Subscriber<? super T>, Subscriber<? super R>> {
         // cover for generics insanity
     }
 
