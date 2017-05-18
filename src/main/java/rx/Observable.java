@@ -9209,6 +9209,24 @@ public class Observable<T> {
     }
 
     /**
+     * Returns an Observable that batches the backpressure requests to the upstream
+     * if the downstream requests more than a specified batch size.
+     * @param batchSize the number of elements to request upfront and otherwise keep in-flight
+     * @param replenishLevel the lower bound for in-flight values that triggers a replenishment
+     * @return an Observable that batches the backpressure requests to the upstream
+     */
+    @Experimental
+    public final Observable<T> requestBatching(int batchSize, int replenishLevel) {
+        if (batchSize <= 0) {
+            throw new IllegalArgumentException("batchSize > 0 required");
+        }
+        if (replenishLevel < 0) {
+            throw new IllegalArgumentException("replenishLevel >= 0 required");
+        }
+        return lift(new OperatorRequestBatcher<T>(batchSize, replenishLevel));
+    }
+    
+    /**
      * Returns an Observable that emits the most recently emitted item (if any) emitted by the source Observable
      * within periodic time intervals.
      * <p>
