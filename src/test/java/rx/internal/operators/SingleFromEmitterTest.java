@@ -24,6 +24,9 @@ import java.util.*;
 import org.junit.*;
 
 import rx.*;
+import java.util.concurrent.atomic.AtomicInteger;
+import rx.exceptions.CompositeException;
+import rx.exceptions.OnErrorFailedException;
 import rx.exceptions.TestException;
 import rx.functions.*;
 import rx.observers.AssertableSubscriber;
@@ -173,6 +176,8 @@ public class SingleFromEmitterTest implements Cancellable, Action1<Throwable> {
 
     @Test
     public void onSuccessThrows() {
+        final AtomicInteger onErrorCallsCounter = new AtomicInteger();
+
         Single.fromEmitter(new Action1<SingleEmitter<Object>>() {
             @Override
             public void call(SingleEmitter<Object> e) {
@@ -187,32 +192,48 @@ public class SingleFromEmitterTest implements Cancellable, Action1<Throwable> {
             }
             @Override
             public void onError(Throwable error) {
+                onErrorCallsCounter.getAndAdd(1);
             }
         });
 
         assertEquals(1, calls);
 
-        assertTrue(errors.get(0).toString(), errors.get(0) instanceof TestException);
+        // consumed by onError
+        assertEquals(0, errors.size());
+        assertEquals(1, onErrorCallsCounter.get());
     }
 
     @Test
     public void onErrorThrows() {
-        Single.fromEmitter(new Action1<SingleEmitter<Object>>() {
-            @Override
-            public void call(SingleEmitter<Object> e) {
-                e.setCancellation(SingleFromEmitterTest.this);
-                e.onError(new IOException());
-            }
-        })
-        .subscribe(new SingleSubscriber<Object>() {
-            @Override
-            public void onSuccess(Object value) {
-            }
-            @Override
-            public void onError(Throwable error) {
-                throw new TestException();
-            }
-        });
+        try {
+            Single.fromEmitter(new Action1<SingleEmitter<Object>>() {
+                @Override
+                public void call(SingleEmitter<Object> e) {
+                    e.setCancellation(SingleFromEmitterTest.this);
+                    e.onError(new IOException());
+                }
+            })
+            .subscribe(new SingleSubscriber<Object>() {
+                @Override
+                public void onSuccess(Object value) {
+                }
+
+                @Override
+                public void onError(Throwable error) {
+                    throw new TestException();
+                }
+            });
+            fail("expected OnErrorFailedException because onError throws");
+        } catch (OnErrorFailedException e) {
+            assertTrue(e.getCause() instanceof CompositeException);
+            final CompositeException causes = (CompositeException) e.getCause();
+
+            final Throwable rootCause = causes.getExceptions().get(0);
+            assertTrue(rootCause instanceof IOException);
+
+            final Throwable onErrorEx = causes.getExceptions().get(1);
+            assertTrue(onErrorEx instanceof TestException);
+        }
 
         assertEquals(1, calls);
 

@@ -1786,27 +1786,19 @@ public class Single<T> {
             throw new IllegalArgumentException("onError can not be null");
         }
 
-        return subscribe(new SingleSubscriber<T>() {
-
+        final SingleSubscriber<T> subscriber = new SingleSubscriber<T>() {
             @Override
-            public final void onError(Throwable e) {
-                try {
-                    onError.call(e);
-                } finally {
-                    unsubscribe();
-                }
+            public void onSuccess(T t) {
+                onSuccess.call(t);
             }
 
             @Override
-            public final void onSuccess(T args) {
-                try {
-                    onSuccess.call(args);
-                } finally {
-                    unsubscribe();
-                }
+            public void onError(Throwable error) {
+                onError.call(error);
             }
+        };
 
-        });
+        return subscribe(subscriber);
     }
 
     /**
@@ -1839,45 +1831,47 @@ public class Single<T> {
         } catch (Throwable e) {
             // special handling for certain Throwable/Error/Exception types
             Exceptions.throwIfFatal(e);
-            // if an unhandled error occurs executing the onSubscribe we will propagate it
-            try {
-                subscriber.onError(RxJavaHooks.onSingleError(e));
-            } catch (Throwable e2) {
-                Exceptions.throwIfFatal(e2);
-                // if this happens it means the onError itself failed (perhaps an invalid function implementation)
-                // so we are unable to propagate the error correctly and will just throw
-                RuntimeException r = new RuntimeException("Error occurred attempting to subscribe [" + e.getMessage() + "] and then again while trying to pass to onError.", e2);
-                // TODO could the hook be the cause of the error in the on error handling.
-                RxJavaHooks.onSingleError(r);
-                // TODO why aren't we throwing the hook's return value.
-                throw r; // NOPMD
+            // in case the subscriber can't listen to exceptions anymore
+            if (subscriber.isUnsubscribed()) {
+                RxJavaHooks.onError(RxJavaHooks.onSingleError(e));
+            } else {
+                // if an unhandled error occurs executing the onSubscribe we will propagate it
+                try {
+                    subscriber.onError(RxJavaHooks.onSingleError(e));
+                } catch (Throwable e2) {
+                    Exceptions.throwIfFatal(e2);
+                    // if this happens it means the onError itself failed (perhaps an invalid function implementation)
+                    // so we are unable to propagate the error correctly and will just throw
+                    RuntimeException r = new OnErrorFailedException("Error occurred attempting to subscribe [" + e.getMessage() + "] and then again while trying to pass to onError.", e2);
+                    // TODO could the hook be the cause of the error in the on error handling.
+                    RxJavaHooks.onSingleError(r);
+                    // TODO why aren't we throwing the hook's return value.
+                    throw r; // NOPMD
+                }
             }
             return Subscriptions.unsubscribed();
         }
     }
 
     /**
-     * Subscribes an Observer to this single and returns a Subscription that allows
-     * unsubscription.
+     * Subscribes to an Single and provides an Observer that implements functions to handle the items the
+     * Single emits and any error or completion notification it issues.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code subscribe} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      *
-     * @param observer the Observer to subscribe
-     * @return the Subscription that allows unsubscription
+     * @param observer
+     *             the Observer that will handle emissions and notifications from the Single
+     * @return a {@link Subscription} reference with which the {@link Observer} can stop receiving items before
+     *         the Single has emitted an item or and error
      */
     public final Subscription subscribe(final Observer<? super T> observer) {
         if (observer == null) {
             throw new NullPointerException("observer is null");
         }
-        return subscribe(new SingleSubscriber<T>() {
-            @Override
-            public void onSuccess(T value) {
-                observer.onNext(value);
-                observer.onCompleted();
-            }
-            @Override
-            public void onError(Throwable error) {
-                observer.onError(error);
-            }
-        });
+
+        return subscribe(new SingleObserverSubscriber<T>(observer));
     }
 
     /**
@@ -1958,7 +1952,7 @@ public class Single<T> {
      * <dd>{@code subscribe} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
-     * @param te
+     * @param subscriber
      *            the {@link SingleSubscriber} that will handle the emission or notification from the Single
      * @return a {@link Subscription} reference can request the {@link Single} stop work.
      * @throws IllegalStateException
@@ -1971,29 +1965,78 @@ public class Single<T> {
      *             if the {@link SingleSubscriber}'s {@code onError} method itself threw a {@code Throwable}
      * @see <a href="http://reactivex.io/documentation/operators/subscribe.html">ReactiveX operators documentation: Subscribe</a>
      */
-    public final Subscription subscribe(final SingleSubscriber<? super T> te) {
-        if (te == null) {
-            throw new IllegalArgumentException("te is null");
+    public final Subscription subscribe(SingleSubscriber<? super T> subscriber) {
+        if (subscriber == null) {
+            throw new IllegalArgumentException("subscriber is null");
         }
+
+        /*
+         * See https://github.com/ReactiveX/RxJava/issues/216 for discussion on "Guideline 6.4: Protect calls
+         * to user code from within an Observer"
+         */
+        // if not already wrapped
+        if (!(subscriber instanceof SafeSingleSubscriber)) {
+            // assign to `observer` so we return the protected version
+            subscriber = new SafeSingleSubscriber<T>(subscriber);
+        }
+
+        // The code below is exactly the same an unsafeSubscribe but not used because it would
+        // add a significant depth to already huge call stacks.
         try {
-            RxJavaHooks.onSingleStart(this, onSubscribe).call(te);
-            return RxJavaHooks.onSingleReturn(te);
-        } catch (Throwable ex) {
-            Exceptions.throwIfFatal(ex);
-            // if an unhandled error occurs executing the onSubscribe we will propagate it
-            try {
-                te.onError(RxJavaHooks.onSingleError(ex));
-            } catch (Throwable e2) {
-                Exceptions.throwIfFatal(e2);
-                // if this happens it means the onError itself failed (perhaps an invalid function implementation)
-                // so we are unable to propagate the error correctly and will just throw
-                RuntimeException r = new RuntimeException("Error occurred attempting to subscribe [" + ex.getMessage() + "] and then again while trying to pass to onError.", e2);
-                // TODO could the hook be the cause of the error in the on error handling.
-                RxJavaHooks.onSingleError(r);
-                // TODO why aren't we throwing the hook's return value.
-                throw r; // NOPMD
+            RxJavaHooks.onSingleStart(this, onSubscribe).call(subscriber);
+            return RxJavaHooks.onSingleReturn(subscriber);
+        } catch (Throwable e) {
+            Exceptions.throwIfFatal(e);
+            // in case the subscriber can't listen to exceptions anymore
+            if (subscriber.isUnsubscribed()) {
+                RxJavaHooks.onError(RxJavaHooks.onSingleError(e));
+            } else {
+                // if an unhandled error occurs executing the onSubscribe we will propagate it
+                try {
+                    subscriber.onError(RxJavaHooks.onSingleError(e));
+                } catch (Throwable e2) {
+                    Exceptions.throwIfFatal(e2);
+                    // if this happens it means the onError itself failed (perhaps an invalid function implementation)
+                    // so we are unable to propagate the error correctly and will just throw
+                    RuntimeException r = new OnErrorFailedException("Error occurred attempting to subscribe [" + e.getMessage() + "] and then again while trying to pass to onError.", e2);
+                    // TODO could the hook be the cause of the error in the on error handling.
+                    RxJavaHooks.onSingleError(r);
+                    // TODO why aren't we throwing the hook's return value.
+                    throw r; // NOPMD
+                }
             }
-            return Subscriptions.empty();
+            return Subscriptions.unsubscribed();
+        }
+    }
+
+    private Subscription unsafeSubscribe(SingleSubscriber<? super T> subscriber) {
+
+        // The code below is exactly the same an unsafeSubscribe but not used because it would
+        // add a significant depth to already huge call stacks.
+        try {
+            RxJavaHooks.onSingleStart(this, onSubscribe).call(subscriber);
+            return RxJavaHooks.onSingleReturn(subscriber);
+        } catch (Throwable e) {
+            Exceptions.throwIfFatal(e);
+            // in case the subscriber can't listen to exceptions anymore
+            if (subscriber.isUnsubscribed()) {
+                RxJavaHooks.onError(RxJavaHooks.onSingleError(e));
+            } else {
+                // if an unhandled error occurs executing the onSubscribe we will propagate it
+                try {
+                    subscriber.onError(RxJavaHooks.onSingleError(e));
+                } catch (Throwable e2) {
+                    Exceptions.throwIfFatal(e2);
+                    // if this happens it means the onError itself failed (perhaps an invalid function implementation)
+                    // so we are unable to propagate the error correctly and will just throw
+                    RuntimeException r = new OnErrorFailedException("Error occurred attempting to subscribe [" + e.getMessage() + "] and then again while trying to pass to onError.", e2);
+                    // TODO could the hook be the cause of the error in the on error handling.
+                    RxJavaHooks.onSingleError(r);
+                    // TODO why aren't we throwing the hook's return value.
+                    throw r; // NOPMD
+                }
+            }
+            return Subscriptions.unsubscribed();
         }
     }
 
@@ -2048,7 +2091,7 @@ public class Single<T> {
 
                         t.add(single);
 
-                        Single.this.subscribe(single);
+                        Single.this.unsafeSubscribe(single);
                     }
                 });
             }
@@ -2855,7 +2898,7 @@ public class Single<T> {
                     }
                 }));
 
-                Single.this.subscribe(single);
+                Single.this.unsafeSubscribe(single);
             }
         });
     }

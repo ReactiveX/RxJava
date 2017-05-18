@@ -579,6 +579,271 @@ public class SingleTest {
     }
 
     @Test
+    public void testActionSubscribeThrowInOnSuccessSync() throws Exception {
+        final int[] successCalls = {0};
+        final Throwable[] errors = {new Exception()};
+
+        final RuntimeException te = new RuntimeException("sync error");
+
+        Single.just("success").subscribe(
+                new Action1<String>() {
+                    @Override
+                    public void call(String s) {
+                        successCalls[0]++;
+                        throw te;
+                    }
+                },
+                new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        errors[0] = throwable;
+                    }
+                });
+
+        assertEquals(1, successCalls[0]);
+        assertEquals(te, errors[0]);
+    }
+
+    @Test
+    public void testActionSubscribeThrowInOnSuccessAsync() throws Exception {
+        final int[] successCalls = {0};
+        final Throwable[] errors = {null};
+
+        final TestScheduler ts = new TestScheduler();
+        Single.just("success").delay(100, TimeUnit.MILLISECONDS, ts).subscribe(
+                new Action1<String>() {
+                    @Override
+                    public void call(String s) {
+                        successCalls[0]++;
+                        throw new RuntimeException("async error");
+                    }
+                },
+                new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        errors[0] = throwable;
+                    }
+                });
+
+        assertEquals(0, successCalls[0]);
+        assertEquals(null, errors[0]);
+
+        ts.advanceTimeBy(200, TimeUnit.MILLISECONDS);
+
+        assertEquals(1, successCalls[0]);
+        assertNotNull(errors[0]);
+        assertEquals("async error", errors[0].getMessage());
+    }
+
+    @Test
+    public void testObserverSubscribeThrowInOnSuccessSync() throws Exception {
+        final int[] successCalls = {0};
+        final int[] completedCalls = {0};
+        final Throwable[] errors = {new Exception()};
+
+        final RuntimeException te = new RuntimeException("sync error");
+
+        Single.just("success").subscribe(
+                new Observer<String>() {
+                    @Override
+                    public void onCompleted() {
+                        completedCalls[0]++;
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        errors[0] = e;
+                    }
+
+                    @Override
+                    public void onNext(String s) {
+                        successCalls[0]++;
+                        throw te;
+                    }
+                });
+
+        assertEquals(0, completedCalls[0]);
+        assertEquals(1, successCalls[0]);
+        assertEquals(te, errors[0]);
+    }
+
+    @Test
+    public void testObserverSubscribeThrowInOnSuccessAsync() throws Exception {
+        final int[] successCalls = {0};
+        final int[] completedCalls = {0};
+        final Throwable[] errors = {null};
+
+        final TestScheduler ts = new TestScheduler();
+        Single.just("success").delay(100, TimeUnit.MILLISECONDS, ts).subscribe(
+                new Observer<String>() {
+                    @Override
+                    public void onCompleted() {
+                        completedCalls[0]++;
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        errors[0] = e;
+                    }
+
+                    @Override
+                    public void onNext(String s) {
+                        successCalls[0]++;
+                        throw new RuntimeException("async error");
+                    }
+                });
+
+        assertEquals(0, completedCalls[0]);
+        assertEquals(0, successCalls[0]);
+        assertEquals(null, errors[0]);
+
+        ts.advanceTimeBy(200, TimeUnit.MILLISECONDS);
+
+        assertEquals(0, completedCalls[0]);
+        assertEquals(1, successCalls[0]);
+        assertNotNull(errors[0]);
+        assertEquals("async error", errors[0].getMessage());
+    }
+    @Test
+    public void testSubscriberSubscribeThrowInOnSuccessSync() throws Exception {
+        final int[] successCalls = {0};
+        final int[] completedCalls = {0};
+        final Throwable[] errors = {new Exception()};
+
+        final RuntimeException te = new RuntimeException("sync error");
+
+        Single.just("success").subscribe(
+                new Subscriber<String>() {
+                    @Override
+                    public void onCompleted() {
+                        completedCalls[0]++;
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        errors[0] = e;
+                    }
+
+                    @Override
+                    public void onNext(String s) {
+                        successCalls[0]++;
+                        throw te;
+                    }
+                });
+
+        assertEquals(0, completedCalls[0]);
+        assertEquals(1, successCalls[0]);
+        assertEquals(te, errors[0]);
+    }
+
+    @Test
+    public void testSubscriberSubscribeThrowInOnSuccessAsync() throws Exception {
+        final int[] successCalls = {0};
+        final int[] completedCalls = {0};
+        final Throwable[] errors = {null};
+
+        final TestScheduler ts = new TestScheduler();
+        Single.just("success").delay(100, TimeUnit.MILLISECONDS, ts).subscribe(
+                new Subscriber<String>() {
+                    @Override
+                    public void onCompleted() {
+                        completedCalls[0]++;
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        errors[0] = e;
+                    }
+
+                    @Override
+                    public void onNext(String s) {
+                        successCalls[0]++;
+                        throw new RuntimeException("async error");
+                    }
+                });
+
+        assertEquals(0, completedCalls[0]);
+        assertEquals(0, successCalls[0]);
+        assertEquals(null, errors[0]);
+
+        ts.advanceTimeBy(200, TimeUnit.MILLISECONDS);
+
+        assertEquals(0, completedCalls[0]);
+        assertEquals(1, successCalls[0]);
+        assertNotNull(errors[0]);
+        assertEquals("async error", errors[0].getMessage());
+    }
+
+    @Test
+    public void singleThrowsWhileOnErrorFails() {
+        Subscriber<Object> ts = new SafeSubscriber<Object>(new TestSubscriber<Object>()) {
+            @Override
+            public void onError(Throwable e) {
+                throw new TestException("Forced failure");
+            }
+        };
+
+        try {
+            Single.error(new RuntimeException("error")).subscribe(ts);
+            fail("Should have thrown OnErrorFailedException");
+        } catch (OnErrorFailedException ex) {
+            // expected
+            assertTrue(ex.getCause().toString(), ex.getCause() instanceof TestException);
+            assertEquals("Forced failure", ex.getCause().getMessage());
+        }
+    }
+
+    @Test
+    public void singleThrowsWhileOnErrorFailsUnsafe() {
+        Subscriber<Object> ts = new TestSubscriber<Object>() {
+            @Override
+            public void onError(Throwable e) {
+                throw new TestException("Forced failure");
+            }
+        };
+
+        try {
+            Single.error(new RuntimeException("error")).unsafeSubscribe(ts);
+            fail("Should have thrown OnErrorFailedException");
+        } catch (OnErrorFailedException ex) {
+            // expected
+            assertTrue(ex.getCause().toString(), ex.getCause() instanceof TestException);
+            assertEquals("Forced failure", ex.getCause().getMessage());
+        }
+    }
+
+    @Test
+    public void singleThrowsWhileSubscriberIsUnsubscribed() {
+        TestSubscriber<Object> ts = TestSubscriber.create();
+        ts.unsubscribe();
+
+        final List<Throwable> list = new ArrayList<Throwable>();
+
+        RxJavaHooks.setOnSingleSubscribeError(new Func1<Throwable, Throwable>() {
+            @Override
+            public Throwable call(Throwable t) {
+                list.add(t);
+                return t;
+            }
+        });
+
+        try {
+            Single.create(new OnSubscribe<Object>() {
+                @Override
+                public void call(SingleSubscriber<? super Object> t) {
+                    throw new TestException("Forced failure");
+                }
+            }).subscribe(ts);
+
+            assertEquals(1, list.size());
+
+            assertEquals("Forced failure", list.get(0).getMessage());
+        } finally {
+            RxJavaHooks.reset();
+        }
+    }
+
+    @Test
     public void testAsync() {
         TestSubscriber<String> ts = new TestSubscriber<String>();
         Single.just("Hello")
