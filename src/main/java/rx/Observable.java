@@ -5798,6 +5798,24 @@ public class Observable<T> {
         return unsafeCreate(new OnSubscribeDoOnEach<T>(this, observer));
     }
 
+		
+    /**
+     * Modifies the source Observable so that it invokes an action when it calls {@code onCompleted} and no items were emitted.
+     * <p>
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code doOnEmpty} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param onEmpty
+     *            the action to invoke when the source Observable calls {@code onCompleted}, contingent on no items were emitted
+     * @return the source Observable with the side-effecting behavior applied
+     * @see <a href="http://reactivex.io/documentation/operators/do.html">ReactiveX operators documentation: Do</a>
+     */
+    public final Observable<T> doOnEmpty(final Action0 onEmpty) {
+        return lift(new OperatorDoOnEmpty<T>(onEmpty));
+    }
+	
     /**
      * Modifies the source Observable so that it invokes an action for each item and terminal event it emits.
      * <p>
