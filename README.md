@@ -79,6 +79,10 @@ and for Ivy:
 ```xml
 <dependency org="io.reactivex" name="rxjava" rev="x.y.z" />
 ```
+and for Gradle:
+```groovy
+compile 'io.reactivex:rxjava:x.y.z'
+```
 
 Snapshots are available via [JFrog](https://oss.jfrog.org/webapp/search/artifact/?5&q=rxjava):
 
