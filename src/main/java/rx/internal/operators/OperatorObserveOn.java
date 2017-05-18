@@ -254,10 +254,9 @@ public final class OperatorObserveOn<T> implements Operator<T, T> {
             if (done) {
                 if (delayError) {
                     if (isEmpty) {
-                        Throwable e = error;
                         try {
-                            if (e != null) {
-                                a.onError(e);
+                            if (error != null) {
+                                a.onError(error);
                             } else {
                                 a.onCompleted();
                             }
@@ -266,11 +265,10 @@ public final class OperatorObserveOn<T> implements Operator<T, T> {
                         }
                     }
                 } else {
-                    Throwable e = error;
-                    if (e != null) {
+                    if (error != null) {
                         q.clear();
                         try {
-                            a.onError(e);
+                            a.onError(error);
                         } finally {
                             recursiveScheduler.unsubscribe();
                         }
