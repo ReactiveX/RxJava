@@ -47,7 +47,7 @@ import rx.subscriptions.Subscriptions;
  * @param <T>
  *           the type of item emitted by the {@code BlockingObservable}
  */
-public final class BlockingObservable<T> {
+public final class BlockingObservable<T> implements Runnable {
 
     private final Observable<? extends T> o;
 
