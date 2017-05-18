@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 package rx.internal.operators;
-;
+
 import org.junit.Test;
 import rx.Observer;
 import rx.Single;
