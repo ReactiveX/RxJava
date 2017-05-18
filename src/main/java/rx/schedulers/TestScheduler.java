@@ -110,15 +110,20 @@ public class TestScheduler extends Scheduler {
     }
 
     private void triggerActions(long targetTimeInNanos) {
-        while (!queue.isEmpty()) {
-            TimedAction current = queue.peek();
-            if (current.time > targetTimeInNanos) {
-                break;
+        while (true) {
+            TimedAction current = null;
+            synchronized (queue) {
+                if (queue.isEmpty()) {
+                    break;
+                }
+                current = queue.peek();
+                if (current.time > targetTimeInNanos) {
+                    break;
+                }
+                // if scheduled time is 0 (immediate) use current virtual time
+                time = current.time == 0 ? time : current.time;
+                queue.remove();
             }
-            // if scheduled time is 0 (immediate) use current virtual time
-            time = current.time == 0 ? time : current.time;
-            queue.remove();
-
             // Only execute if not unsubscribed
             if (!current.scheduler.isUnsubscribed()) {
                 current.action.call();
@@ -154,9 +159,10 @@ public class TestScheduler extends Scheduler {
 
                 @Override
                 public void call() {
-                    queue.remove(timedAction);
+                    synchronized (queue) {
+                        queue.remove(timedAction);
+                    }
                 }
-
             });
         }
 
@@ -168,9 +174,10 @@ public class TestScheduler extends Scheduler {
 
                 @Override
                 public void call() {
-                    queue.remove(timedAction);
+                    synchronized (queue) {
+                        queue.remove(timedAction);
+                    }
                 }
-
             });
         }
 
