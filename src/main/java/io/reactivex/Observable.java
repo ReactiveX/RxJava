@@ -781,6 +781,8 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * the source ObservableSources each time an item is received from any of the source ObservableSources, where this
      * aggregation is defined by a specified function.
      * <p>
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/combineLatestDelayError.png" alt="">
+     * <p>
      * Note on method signature: since Java doesn't allow creating a generic array with {@code new T[]}, the
      * implementation of this operator has to create an {@code Object[]} instead. Unfortunately, a
      * {@code Function<Integer[], R>} passed to the method would trigger a {@code ClassCastException}.
@@ -818,6 +820,8 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * the source ObservableSources each time an item is received from any of the source ObservableSources, where this
      * aggregation is defined by a specified function and delays any error from the sources until
      * all source ObservableSources terminate.
+     * <p>
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/combineLatestDelayError.png" alt="">
      * <p>
      * Note on method signature: since Java doesn't allow creating a generic array with {@code new T[]}, the
      * implementation of this operator has to create an {@code Object[]} instead. Unfortunately, a
@@ -1218,7 +1222,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * source ObservableSources. The operator buffers the values emitted by these ObservableSources and then drains them
      * in order, each one after the previous one completes.
      * <p>
-     * <img width="640" height="290" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concatArray.png" alt="">
+     * <img width="640" height="410" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concatArrayEager.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>This method does not operate by default on a particular {@link Scheduler}.</dd>
@@ -1539,7 +1543,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * Returns an Observable that invokes an {@link Observer}'s {@link Observer#onError onError} method when the
      * Observer subscribes to it.
      * <p>
-     * <img width="640" height="190" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/error.png" alt="">
+     * <img width="640" height="220" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/error.supplier.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code error} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -1564,7 +1568,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * Returns an Observable that invokes an {@link Observer}'s {@link Observer#onError onError} method when the
      * Observer subscribes to it.
      * <p>
-     * <img width="640" height="190" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/error.png" alt="">
+     * <img width="640" height="220" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/error.item.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code error} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -1646,7 +1650,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     /**
      * Converts a {@link Future} into an ObservableSource.
      * <p>
-     * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/from.Future.png" alt="">
+     * <img width="640" height="284" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/fromFuture.noarg.png" alt="">
      * <p>
      * You can convert any object that supports the {@link Future} interface into an ObservableSource that emits the
      * return value of the {@link Future#get} method of that object, by passing the object into the {@code from}
@@ -1679,7 +1683,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     /**
      * Converts a {@link Future} into an ObservableSource, with a timeout on the Future.
      * <p>
-     * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/from.Future.png" alt="">
+     * <img width="640" height="287" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/fromFuture.timeout.png" alt="">
      * <p>
      * You can convert any object that supports the {@link Future} interface into an ObservableSource that emits the
      * return value of the {@link Future#get} method of that object, by passing the object into the {@code from}
@@ -1717,7 +1721,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     /**
      * Converts a {@link Future} into an ObservableSource, with a timeout on the Future.
      * <p>
-     * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/from.Future.png" alt="">
+     * <img width="640" height="287" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/fromFuture.timeout.scheduler.png" alt="">
      * <p>
      * You can convert any object that supports the {@link Future} interface into an ObservableSource that emits the
      * return value of the {@link Future#get} method of that object, by passing the object into the {@code from}
@@ -1758,7 +1762,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     /**
      * Converts a {@link Future}, operating on a specified {@link Scheduler}, into an ObservableSource.
      * <p>
-     * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/from.Future.s.png" alt="">
+     * <img width="640" height="294" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/fromFuture.scheduler.png" alt="">
      * <p>
      * You can convert any object that supports the {@link Future} interface into an ObservableSource that emits the
      * return value of the {@link Future#get} method of that object, by passing the object into the {@code from}
@@ -1793,7 +1797,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     /**
      * Converts an {@link Iterable} sequence into an ObservableSource that emits the items in the sequence.
      * <p>
-     * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/from.png" alt="">
+     * <img width="640" height="186" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/fromIterable.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code fromIterable} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -10213,7 +10217,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * if this Observable completes without emitting any items or emits more than one item a
      * {@link NoSuchElementException} or {@code IllegalArgumentException} will be signalled respectively.
      * <p>
-     * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/single.2.png" alt="">
+     * <img width="640" height="228" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/singleOrError.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code singleOrError} does not operate by default on a particular {@link Scheduler}.</dd>
