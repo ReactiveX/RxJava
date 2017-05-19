@@ -555,6 +555,26 @@ public abstract class BaseTestConsumer<T, U extends BaseTestConsumer<T, U>> impl
     }
 
     /**
+     * Assert that this TestObserver/TestSubscriber receives only values for which the provided predicate
+     * returns true.
+     * @param forEachPredicate the predicate that receives every onNext value and should return true
+     * @return this;
+     */
+    @SuppressWarnings("unchecked")
+    public final U assertForEachValue(Predicate<T> forEachPredicate) {
+        for (T v : this.values) {
+            try {
+                if (!forEachPredicate.test(v)) {
+                    throw fail("Value " + valueAndClass(v) + " fails predicate assertion");
+                }
+            } catch (Exception ex) {
+                throw ExceptionHelper.wrapOrThrow(ex);
+            }
+        }
+        return (U)this;
+    }
+
+    /**
      * Assert that the TestObserver/TestSubscriber terminated (i.e., the terminal latch reached zero).
      * @return this;
      */
