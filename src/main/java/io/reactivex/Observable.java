@@ -7263,6 +7263,29 @@ public abstract class Observable<T> implements ObservableSource<T> {
     }
 
     /**
+     * Returns a Maybe that emits only the very first item emitted by the source ObservableSource that satisfies
+     * a specified condition, or completes if the source ObservableSource is empty.
+     * <p>
+     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/firstElement.png" alt="">
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code firstElement} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param predicate
+     *            the condition that an item emitted by the source Observable has to satisfy
+     * @return the new Maybe that emits only the very first item emitted by the source ObservableSource that satisfies
+     *            the {@code predicate}, or completes if the source ObservableSource is empty.
+     * @see <a href="http://reactivex.io/documentation/operators/first.html">ReactiveX operators documentation: First</a>
+     */
+    @CheckReturnValue
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final Maybe<T> firstElement(Predicate<? super T> predicate) {
+        ObjectHelper.requireNonNull(predicate, "predicate is null");
+        return filter(predicate).firstElement();
+    }
+
+    /**
      * Returns a Single that emits only the very first item emitted by the source ObservableSource, or a default item
      * if the source ObservableSource completes without emitting any items.
      * <p>
@@ -7284,6 +7307,31 @@ public abstract class Observable<T> implements ObservableSource<T> {
     }
 
     /**
+     * Returns a Single that emits only the very first item emitted by the source ObservableSource that satisfies
+     * a specified condition, or a default item if the source ObservableSource completes without emitting any items.
+     * <p>
+     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/first.2.png" alt="">
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code first} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param defaultItem
+     *            the default item to emit if nothing passed through the predicate
+     * @param predicate
+     *            the condition that an item emitted by the source Observable has to satisfy
+     * @return a Single that emits only the very first item emitted by the source Observable that satisfies
+     *         the {@code predicate}, or a default item if the source Observable completes without emitting any items.
+     * @see <a href="http://reactivex.io/documentation/operators/first.html">ReactiveX operators documentation: First</a>
+     */
+    @CheckReturnValue
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final Single<T> first(T defaultItem, Predicate<? super T> predicate) {
+        ObjectHelper.requireNonNull(predicate, "predicate is null");
+        return filter(predicate).first(defaultItem);
+    }
+
+    /**
      * Returns a Single that emits only the very first item emitted by this Observable or
      * signals a {@link NoSuchElementException} if this Observable is empty.
      * <p>
@@ -7300,6 +7348,29 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Single<T> firstOrError() {
         return elementAtOrError(0L);
+    }
+
+    /**
+     * Returns a Single that emits only the very first item emitted by the source Observable that satisfies
+     * a specified condition, or signals a {@link NoSuchElementException} if this Observable is empty.
+     * <p>
+     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/firstN.png" alt="">
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code firstOrError} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param predicate
+     *            the condition that an item emitted by the source Observable has to satisfy
+     * @return a Single that emits only the very first item emitted by the source Observable that satisfies
+     *         the {@code predicate}, or raises an {@code NoSuchElementException} if no such items are emitted.
+     * @see <a href="http://reactivex.io/documentation/operators/first.html">ReactiveX operators documentation: First</a>
+     */
+    @CheckReturnValue
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final Single<T> firstOrError(Predicate<? super T> predicate) {
+        ObjectHelper.requireNonNull(predicate, "predicate is null");
+        return filter(predicate).firstOrError();
     }
 
     /**

@@ -183,59 +183,128 @@ public class ObservableTest {
     }
 
     @Test
-    public void testTakeFirstWithPredicateOfSome() {
-        Observable<Integer> o = Observable.just(1, 3, 5, 4, 6, 3);
-        o.filter(IS_EVEN).take(1).subscribe(w);
-        verify(w, times(1)).onNext(anyInt());
-        verify(w).onNext(4);
-        verify(w, times(1)).onComplete();
-        verify(w, never()).onError(any(Throwable.class));
-    }
-
-    @Test
-    public void testTakeFirstWithPredicateOfNoneMatchingThePredicate() {
-        Observable<Integer> o = Observable.just(1, 3, 5, 7, 9, 7, 5, 3, 1);
-        o.filter(IS_EVEN).take(1).subscribe(w);
-        verify(w, never()).onNext(anyInt());
-        verify(w, times(1)).onComplete();
-        verify(w, never()).onError(any(Throwable.class));
-    }
-
-    @Test
-    public void testTakeFirstOfSome() {
+    public void testFirstElementOfSome() {
         Observable<Integer> o = Observable.just(1, 2, 3);
-        o.take(1).subscribe(w);
-        verify(w, times(1)).onNext(anyInt());
-        verify(w).onNext(1);
-        verify(w, times(1)).onComplete();
-        verify(w, never()).onError(any(Throwable.class));
+        o.firstElement().subscribe(wm);
+        verify(wm, times(1)).onSuccess(anyInt());
+        verify(wm, never()).onComplete();
+        verify(wm, never()).onError(any(Throwable.class));
     }
 
     @Test
-    public void testTakeFirstOfNone() {
+    public void testFirstElementOfNone() {
         Observable<Integer> o = Observable.empty();
-        o.take(1).subscribe(w);
-        verify(w, never()).onNext(anyInt());
-        verify(w, times(1)).onComplete();
-        verify(w, never()).onError(any(Throwable.class));
+        o.firstElement().subscribe(wm);
+        verify(wm, never()).onSuccess(anyInt());
+        verify(wm, times(1)).onComplete();
+        verify(wm, never()).onError(any(Throwable.class));
+    }
+
+    @Test
+    public void testFirstElementWithPredicateOfSomeMatchingThePredicate() {
+        Observable<Integer> o = Observable.just(1, 2, 3);
+        o.firstElement(IS_EVEN).subscribe(wm);
+        verify(wm, times(1)).onSuccess(anyInt());
+        verify(wm, never()).onComplete();
+        verify(wm, never()).onError(any(Throwable.class));
+    }
+
+    @Test
+    public void testFirstElementWithPredicateOfNoneMatchingThePredicate() {
+        Observable<Integer> o = Observable.just(1, 3, 5);
+        o.firstElement(IS_EVEN).subscribe(wm);
+        verify(wm, never()).onSuccess(anyInt());
+        verify(wm, times(1)).onComplete();
+        verify(wm, never()).onError(any(Throwable.class));
+    }
+
+    @Test
+    public void testFirstElementWithPredicateOfNone() {
+        Observable<Integer> o = Observable.empty();
+        o.firstElement(IS_EVEN).subscribe(wm);
+        verify(wm, never()).onSuccess(anyInt());
+        verify(wm, times(1)).onComplete();
+        verify(wm, never()).onError(any(Throwable.class));
+    }
+
+    @Test
+    public void testFirstOfSome() {
+        Observable<Integer> o = Observable.just(1, 2, 3);
+        o.first(0).subscribe(wo);
+        verify(wo, times(1)).onSuccess(1);
+        verify(wo, never()).onError(any(Throwable.class));
     }
 
     @Test
     public void testFirstOfNone() {
         Observable<Integer> o = Observable.empty();
-        o.firstElement().subscribe(wm);
-        verify(wm, never()).onSuccess(anyInt());
-        verify(wm).onComplete();
-        verify(wm, never()).onError(any(Throwable.class));
+        o.first(0).subscribe(wo);
+        verify(wo, times(1)).onSuccess(anyInt());
+        verify(wo, never()).onError(any(Throwable.class));
+    }
+
+    @Test
+    public void testFirstWithPredicateOfSomeMatchingThePredicate() {
+        Observable<Integer> o = Observable.just(1, 2, 3);
+        o.first(0, IS_EVEN).subscribe(wo);
+        verify(wo, times(1)).onSuccess(2);
+        verify(wo, never()).onError(any(Throwable.class));
     }
 
     @Test
     public void testFirstWithPredicateOfNoneMatchingThePredicate() {
-        Observable<Integer> o = Observable.just(1, 3, 5, 7, 9, 7, 5, 3, 1);
-        o.filter(IS_EVEN).firstElement().subscribe(wm);
-        verify(wm, never()).onSuccess(anyInt());
-        verify(wm).onComplete();
-        verify(wm, never()).onError(any(Throwable.class));
+        Observable<Integer> o = Observable.just(1, 3, 5);
+        o.first(0, IS_EVEN).subscribe(wo);
+        verify(wo, times(1)).onSuccess(0);
+        verify(wo, never()).onError(any(Throwable.class));
+    }
+
+    @Test
+    public void testFirstWithPredicateOfNone() {
+        Observable<Integer> o = Observable.empty();
+        o.first(0, IS_EVEN).subscribe(wo);
+        verify(wo, times(1)).onSuccess(0);
+        verify(wo, never()).onError(any(Throwable.class));
+    }
+
+    @Test
+    public void testFirstOrErrorOfSome() {
+        Observable<Integer> o = Observable.just(1, 2, 3);
+        o.firstOrError().subscribe(wo);
+        verify(wo, times(1)).onSuccess(anyInt());
+        verify(wo, never()).onError(any(Throwable.class));
+    }
+
+    @Test
+    public void testFirstOrErrorOfNone() {
+        Observable<Integer> o = Observable.empty();
+        o.firstOrError().subscribe(wo);
+        verify(wo, never()).onSuccess(anyInt());
+        verify(wo, times(1)).onError(any(Throwable.class));
+    }
+
+    @Test
+    public void testFirstOrErrorWithPredicateOfSomeMatchingThePredicate() {
+        Observable<Integer> o = Observable.just(1, 2, 3);
+        o.firstOrError(IS_EVEN).subscribe(wo);
+        verify(wo, times(1)).onSuccess(anyInt());
+        verify(wo, never()).onError(any(Throwable.class));
+    }
+
+    @Test
+    public void testFirstOrErrorWithPredicateOfNoneMatchingThePredicate() {
+        Observable<Integer> o = Observable.just(1, 3, 5);
+        o.firstOrError(IS_EVEN).subscribe(wo);
+        verify(wo, never()).onSuccess(anyInt());
+        verify(wo, times(1)).onError(any(Throwable.class));
+    }
+
+    @Test
+    public void testFirstOrErrorWithPredicateOfNone() {
+        Observable<Integer> o = Observable.empty();
+        o.firstOrError(IS_EVEN).subscribe(wo);
+        verify(wo, never()).onSuccess(anyInt());
+        verify(wo, times(1)).onError(any(Throwable.class));
     }
 
     @Test
