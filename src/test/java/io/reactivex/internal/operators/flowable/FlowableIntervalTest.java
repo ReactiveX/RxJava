@@ -11,25 +11,20 @@
  * the License for the specific language governing permissions and limitations under the License.
  */
 
-package io.reactivex.internal.operators.observable;
+package io.reactivex.internal.operators.flowable;
 
 import java.util.concurrent.TimeUnit;
 
 import org.junit.Test;
 
-import io.reactivex.*;
-import io.reactivex.schedulers.*;
+import io.reactivex.Flowable;
+import io.reactivex.schedulers.Schedulers;
 
-public class ObservableIntervalTest {
-
-    @Test
-    public void dispose() {
-        TestHelper.checkDisposed(Observable.interval(1, TimeUnit.MILLISECONDS, new TestScheduler()));
-    }
+public class FlowableIntervalTest {
 
     @Test(timeout = 2000)
     public void cancel() {
-        Observable.interval(1, TimeUnit.MILLISECONDS, Schedulers.trampoline())
+        Flowable.interval(1, TimeUnit.MILLISECONDS, Schedulers.trampoline())
         .take(10)
         .test()
         .assertResult(0L, 1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L, 9L);
