@@ -111,7 +111,7 @@ public abstract class ConnectableFlowable<T> extends Flowable<T> {
      * @param numberOfSubscribers the number of subscribers to await before calling connect
      *                            on the ConnectableObservable. A non-positive value indicates
      *                            an immediate connection.
-     * @param connection the callback Action1 that will receive the Subscription representing the
+     * @param connection the callback Consumer that will receive the Subscription representing the
      *                   established connection
      * @return an Observable that automatically connects to this ConnectableObservable
      *         when the specified number of Subscribers subscribe to it and calls the

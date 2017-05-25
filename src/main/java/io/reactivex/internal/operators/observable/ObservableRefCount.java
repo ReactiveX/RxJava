@@ -68,10 +68,10 @@ public final class ObservableRefCount<T> extends AbstractObservableWithUpstream<
                 source.connect(onSubscribe(subscriber, writeLocked));
             } finally {
                 // need to cover the case where the source is subscribed to
-                // outside of this class thus preventing the Action1 passed
+                // outside of this class thus preventing the Consumer passed
                 // to source.connect above being called
                 if (writeLocked.get()) {
-                    // Action1 passed to source.connect was not called
+                    // Consumer passed to source.connect was not called
                     lock.unlock();
                 }
             }
