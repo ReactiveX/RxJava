@@ -224,7 +224,7 @@ public class FlowableTests {
         Flowable<Integer> observable = Flowable.empty();
         observable.firstElement().toFlowable().subscribe(w);
         verify(w, never()).onNext(anyInt());
-        verify(w).onComplete();
+        verify(w, times(1)).onComplete();
         verify(w, never()).onError(any(Throwable.class));
     }
 
@@ -233,7 +233,7 @@ public class FlowableTests {
         Flowable<Integer> observable = Flowable.just(1, 3, 5, 7, 9, 7, 5, 3, 1);
         observable.filter(IS_EVEN).firstElement().toFlowable().subscribe(w);
         verify(w, never()).onNext(anyInt());
-        verify(w).onComplete();
+        verify(w, times(1)).onComplete();
         verify(w, never()).onError(any(Throwable.class));
     }
 
@@ -242,8 +242,8 @@ public class FlowableTests {
         Flowable<Integer> observable = Flowable.empty();
         observable.firstElement().subscribe(wm);
         verify(wm, never()).onSuccess(anyInt());
-        verify(wm).onComplete();
-        verify(wm, never()).onError(isA(NoSuchElementException.class));
+        verify(wm, times(1)).onComplete();
+        verify(wm, never()).onError(any(Throwable.class));
     }
 
     @Test
@@ -252,7 +252,7 @@ public class FlowableTests {
         observable.filter(IS_EVEN).firstElement().subscribe(wm);
         verify(wm, never()).onSuccess(anyInt());
         verify(wm, times(1)).onComplete();
-        verify(wm, never()).onError(isA(NoSuchElementException.class));
+        verify(wm, never()).onError(any(Throwable.class));
     }
 
     @Test
@@ -345,9 +345,10 @@ public class FlowableTests {
 
         chained.subscribe(observer);
 
-        verify(observer, times(1)).onNext(1);
-        verify(observer, times(1)).onComplete();
-        verify(observer, times(0)).onError(any(Throwable.class));
+        InOrder inOrder = inOrder(observer);
+        inOrder.verify(observer, times(1)).onNext(1);
+        inOrder.verify(observer, times(1)).onComplete();
+        inOrder.verifyNoMoreInteractions();
     }
 
     /**
@@ -796,12 +797,11 @@ public class FlowableTests {
 
         observable.subscribe(observer);
 
-        verify(observer, times(1)).onNext(l1);
-        verify(observer, times(1)).onNext(l2);
-        verify(observer, never()).onNext("123");
-        verify(observer, never()).onError(
-                any(Throwable.class));
-        verify(observer, times(1)).onComplete();
+        InOrder inOrder = inOrder(observer);
+        inOrder.verify(observer, times(1)).onNext(l1);
+        inOrder.verify(observer, times(1)).onNext(l2);
+        inOrder.verify(observer, times(1)).onComplete();
+        inOrder.verifyNoMoreInteractions();
     }
 
     @Test
@@ -812,11 +812,10 @@ public class FlowableTests {
 
         observable.subscribe(observer);
 
-        verify(observer, times(1)).onNext(true);
-        verify(observer, never()).onNext(false);
-        verify(observer, never()).onError(
-                any(Throwable.class));
-        verify(observer, times(1)).onComplete();
+        InOrder inOrder = inOrder(observer);
+        inOrder.verify(observer, times(1)).onNext(true);
+        inOrder.verify(observer, times(1)).onComplete();
+        inOrder.verifyNoMoreInteractions();
     }
 
     @Test
@@ -827,11 +826,10 @@ public class FlowableTests {
 
         observable.subscribe(observer);
 
-        verify(observer, times(1)).onNext(false);
-        verify(observer, never()).onNext(true);
-        verify(observer, never()).onError(
-                any(Throwable.class));
-        verify(observer, times(1)).onComplete();
+        InOrder inOrder = inOrder(observer);
+        inOrder.verify(observer, times(1)).onNext(false);
+        inOrder.verify(observer, times(1)).onComplete();
+        inOrder.verifyNoMoreInteractions();
     }
 
     @Test
@@ -843,11 +841,10 @@ public class FlowableTests {
 
         observable.subscribe(observer);
 
-        verify(observer, times(1)).onNext(true);
-        verify(observer, never()).onNext(false);
-        verify(observer, never()).onError(
-                any(Throwable.class));
-        verify(observer, times(1)).onComplete();
+        InOrder inOrder = inOrder(observer);
+        inOrder.verify(observer, times(1)).onNext(true);
+        inOrder.verify(observer, times(1)).onComplete();
+        inOrder.verifyNoMoreInteractions();
     }
 
     @Test
@@ -858,11 +855,10 @@ public class FlowableTests {
 
         observable.subscribe(observer);
 
-        verify(observer, times(1)).onNext(false);
-        verify(observer, never()).onNext(true);
-        verify(observer, never()).onError(
-                any(Throwable.class));
-        verify(observer, times(1)).onComplete();
+        InOrder inOrder = inOrder(observer);
+        inOrder.verify(observer, times(1)).onNext(false);
+        inOrder.verify(observer, times(1)).onComplete();
+        inOrder.verifyNoMoreInteractions();
     }
 
 
@@ -1108,7 +1104,7 @@ public class FlowableTests {
     public void testEmptyIsEmpty() {
         Flowable.<Integer>empty().subscribe(w);
 
-        verify(w).onComplete();
+        verify(w, times(1)).onComplete();
         verify(w, never()).onNext(any(Integer.class));
         verify(w, never()).onError(any(Throwable.class));
     }
