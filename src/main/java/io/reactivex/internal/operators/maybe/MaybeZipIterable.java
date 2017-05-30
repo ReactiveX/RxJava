@@ -19,6 +19,7 @@ import io.reactivex.*;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.disposables.EmptyDisposable;
+import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.internal.operators.maybe.MaybeZipArray.ZipCoordinator;
 
 public final class MaybeZipIterable<T, R> extends Maybe<R> {
@@ -81,7 +82,7 @@ public final class MaybeZipIterable<T, R> extends Maybe<R> {
     final class SingletonArrayFunc implements Function<T, R> {
         @Override
         public R apply(T t) throws Exception {
-            return zipper.apply(new Object[] { t });
+            return ObjectHelper.requireNonNull(zipper.apply(new Object[] { t }), "The zipper returned a null value");
         }
     }
 }

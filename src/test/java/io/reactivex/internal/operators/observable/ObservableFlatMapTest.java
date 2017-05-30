@@ -266,7 +266,7 @@ public class ObservableFlatMapTest {
 
         source.flatMap(just(onNext), funcThrow((Throwable) null, onError), just0(onComplete)).subscribe(o);
 
-        verify(o).onError(any(TestException.class));
+        verify(o).onError(any(CompositeException.class));
         verify(o, never()).onNext(any());
         verify(o, never()).onComplete();
     }
@@ -857,5 +857,41 @@ public class ObservableFlatMapTest {
                 }
             }
         }
+    }
+
+    @Test
+    public void iterableMapperFunctionReturnsNull() {
+        Observable.just(1)
+        .flatMapIterable(new Function<Integer, Iterable<Object>>() {
+            @Override
+            public Iterable<Object> apply(Integer v) throws Exception {
+                return null;
+            }
+        }, new BiFunction<Integer, Object, Object>() {
+            @Override
+            public Object apply(Integer v, Object w) throws Exception {
+                return v;
+            }
+        })
+        .test()
+        .assertFailureAndMessage(NullPointerException.class, "The mapper returned a null Iterable");
+    }
+
+    @Test
+    public void combinerMapperFunctionReturnsNull() {
+        Observable.just(1)
+        .flatMap(new Function<Integer, Observable<Object>>() {
+            @Override
+            public Observable<Object> apply(Integer v) throws Exception {
+                return null;
+            }
+        }, new BiFunction<Integer, Object, Object>() {
+            @Override
+            public Object apply(Integer v, Object w) throws Exception {
+                return v;
+            }
+        })
+        .test()
+        .assertFailureAndMessage(NullPointerException.class, "The mapper returned a null ObservableSource");
     }
 }

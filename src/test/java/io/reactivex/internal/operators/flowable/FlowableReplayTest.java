@@ -1748,4 +1748,17 @@ public class FlowableReplayTest {
 
         source.test().assertResult();
     }
+
+    @Test
+    public void replaySelectorReturnsNull() {
+        Flowable.just(1)
+        .replay(new Function<Flowable<Integer>, Publisher<Object>>() {
+            @Override
+            public Publisher<Object> apply(Flowable<Integer> v) throws Exception {
+                return null;
+            }
+        }, Schedulers.trampoline())
+        .test()
+        .assertFailureAndMessage(NullPointerException.class, "The selector returned a null Publisher");
+    }
 }

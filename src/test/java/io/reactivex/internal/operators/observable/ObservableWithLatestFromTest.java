@@ -27,6 +27,7 @@ import io.reactivex.Observer;
 import io.reactivex.disposables.Disposables;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.*;
+import io.reactivex.internal.functions.Functions;
 import io.reactivex.internal.util.CrashingMappedIterable;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.plugins.RxJavaPlugins;
@@ -646,5 +647,13 @@ public class ObservableWithLatestFromTest {
         })
         .test()
         .assertFailure(NullPointerException.class);
+    }
+
+    @Test
+    public void zeroOtherCombinerReturnsNull() {
+        Observable.just(1)
+        .withLatestFrom(new Observable[0], Functions.justFunction(null))
+        .test()
+        .assertFailureAndMessage(NullPointerException.class, "The combiner returned a null value");
     }
 }

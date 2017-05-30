@@ -30,6 +30,7 @@ import io.reactivex.*;
 import io.reactivex.exceptions.*;
 import io.reactivex.functions.*;
 import io.reactivex.internal.functions.Functions;
+import io.reactivex.internal.fuseable.QueueFuseable;
 import io.reactivex.internal.operators.flowable.FlowableZipTest.ArgsToString;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.processors.PublishProcessor;
@@ -1550,5 +1551,22 @@ public class FlowableCombineLatestTest {
         pp1.onNext(1);
         pp2.onNext(2);
         ts.assertResult(3);
+    }
+
+    @Test
+    public void fusedNullCheck() {
+        TestSubscriber<Integer> ts = SubscriberFusion.newTest(QueueFuseable.ASYNC);
+
+        Flowable.combineLatest(Flowable.just(1), Flowable.just(2), new BiFunction<Integer, Integer, Integer>() {
+            @Override
+            public Integer apply(Integer t1, Integer t2) throws Exception {
+                return null;
+            }
+        })
+        .subscribe(ts);
+
+        ts
+        .assertOf(SubscriberFusion.<Integer>assertFusionMode(QueueFuseable.ASYNC))
+        .assertFailureAndMessage(NullPointerException.class, "The combiner returned a null value");
     }
 }

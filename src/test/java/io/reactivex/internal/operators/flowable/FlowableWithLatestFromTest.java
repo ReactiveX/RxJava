@@ -26,6 +26,7 @@ import org.reactivestreams.Subscriber;
 import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.*;
+import io.reactivex.internal.functions.Functions;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.internal.util.CrashingMappedIterable;
 import io.reactivex.plugins.RxJavaPlugins;
@@ -707,5 +708,13 @@ public class FlowableWithLatestFromTest {
         })
         .test()
         .assertFailure(NullPointerException.class);
+    }
+
+    @Test
+    public void zeroOtherCombinerReturnsNull() {
+        Flowable.just(1)
+        .withLatestFrom(new Flowable[0], Functions.justFunction(null))
+        .test()
+        .assertFailureAndMessage(NullPointerException.class, "The combiner returned a null value");
     }
 }

@@ -19,6 +19,7 @@ import org.junit.Test;
 
 import io.reactivex.*;
 import io.reactivex.disposables.Disposables;
+import io.reactivex.exceptions.*;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.functions.Functions;
 import io.reactivex.internal.operators.observable.ObservableMapNotification.MapNotificationObserver;
@@ -84,5 +85,23 @@ public class ObservableMapNotificationTest {
                 );
             }
         });
+    }
+
+    @Test
+    public void onErrorCrash() {
+        TestObserver<Integer> ts = Observable.<Integer>error(new TestException("Outer"))
+        .flatMap(Functions.justFunction(Observable.just(1)),
+                new Function<Throwable, Observable<Integer>>() {
+                    @Override
+                    public Observable<Integer> apply(Throwable t) throws Exception {
+                        throw new TestException("Inner");
+                    }
+                },
+                Functions.justCallable(Observable.just(3)))
+        .test()
+        .assertFailure(CompositeException.class);
+
+        TestHelper.assertError(ts, 0, TestException.class, "Outer");
+        TestHelper.assertError(ts, 1, TestException.class, "Inner");
     }
 }

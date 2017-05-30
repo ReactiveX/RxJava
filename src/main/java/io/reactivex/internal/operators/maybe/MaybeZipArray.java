@@ -192,7 +192,7 @@ public final class MaybeZipArray<T, R> extends Maybe<R> {
     final class SingletonArrayFunc implements Function<T, R> {
         @Override
         public R apply(T t) throws Exception {
-            return zipper.apply(new Object[] { t });
+            return ObjectHelper.requireNonNull(zipper.apply(new Object[] { t }), "The zipper returned a null value");
         }
     }
 }
