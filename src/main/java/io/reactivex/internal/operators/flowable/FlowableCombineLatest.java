@@ -474,7 +474,7 @@ extends Flowable<R> {
                 return null;
             }
             T[] a = (T[])queue.poll();
-            R r = combiner.apply(a);
+            R r = ObjectHelper.requireNonNull(combiner.apply(a), "combiner should not return null");
             ((CombineLatestInnerSubscriber<T>)e).requestOne();
             return r;
         }

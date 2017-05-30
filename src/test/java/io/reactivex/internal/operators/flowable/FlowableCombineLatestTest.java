@@ -60,6 +60,29 @@ public class FlowableCombineLatestTest {
         verify(w, never()).onComplete();
         verify(w, times(1)).onError(Mockito.<RuntimeException> any());
     }
+    
+    @Test
+    public void testCombineLatestWithFunctionThatReturnsNullShouldEmitNPE() {
+        Subscriber<String> w = TestHelper.mockSubscriber();
+
+        PublishProcessor<String> w1 = PublishProcessor.create();
+        PublishProcessor<String> w2 = PublishProcessor.create();
+
+        Flowable<String> combined = Flowable.combineLatest(w1, w2, new BiFunction<String, String, String>() {
+            @Override
+            public String apply(String v1, String v2) {
+                return null;
+            }
+        });
+        combined.subscribe(w);
+
+        w1.onNext("first value of w1");
+        w2.onNext("first value of w2");
+
+        verify(w, never()).onNext(anyString());
+        verify(w, never()).onComplete();
+        verify(w, times(1)).onError(Mockito.any(NullPointerException.class));
+    }
 
     @Test
     public void testCombineLatestDifferentLengthFlowableSequences1() {
