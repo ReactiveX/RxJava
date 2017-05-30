@@ -167,7 +167,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @param sources
      *            the collection of source Publishers
      * @param combiner
-     *            the aggregation function used to combine the items emitted by the source Publishers
+     *            the aggregation function used to combine the items emitted by the source Publishers. Should not return null.
      * @return a Flowable that emits items that are the result of combining the items emitted by the source
      *         Publishers by means of the given aggregation function
      * @see <a href="http://reactivex.io/documentation/operators/combinelatest.html">ReactiveX operators documentation: CombineLatest</a>
@@ -208,7 +208,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @param sources
      *            the collection of source Publishers
      * @param combiner
-     *            the aggregation function used to combine the items emitted by the source Publishers
+     *            the aggregation function used to combine the items emitted by the source Publishers. Should not return null.
      * @return a Flowable that emits items that are the result of combining the items emitted by the source
      *         Publishers by means of the given aggregation function
      * @see <a href="http://reactivex.io/documentation/operators/combinelatest.html">ReactiveX operators documentation: CombineLatest</a>
@@ -249,7 +249,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @param sources
      *            the collection of source Publishers
      * @param combiner
-     *            the aggregation function used to combine the items emitted by the source Publishers
+     *            the aggregation function used to combine the items emitted by the source Publishers. Should not return null.
      * @param bufferSize
      *            the internal buffer size and prefetch amount applied to every source Flowable
      * @return a Flowable that emits items that are the result of combining the items emitted by the source
@@ -298,7 +298,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @param sources
      *            the collection of source Publishers
      * @param combiner
-     *            the aggregation function used to combine the items emitted by the source Publishers
+     *            the aggregation function used to combine the items emitted by the source Publishers. Should not return null.
      * @return a Flowable that emits items that are the result of combining the items emitted by the source
      *         Publishers by means of the given aggregation function
      * @see <a href="http://reactivex.io/documentation/operators/combinelatest.html">ReactiveX operators documentation: CombineLatest</a>
@@ -340,7 +340,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @param sources
      *            the collection of source Publishers
      * @param combiner
-     *            the aggregation function used to combine the items emitted by the source Publishers
+     *            the aggregation function used to combine the items emitted by the source Publishers. Should not return null.
      * @param bufferSize
      *            the internal buffer size and prefetch amount applied to every source Flowable
      * @return a Flowable that emits items that are the result of combining the items emitted by the source
@@ -387,7 +387,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @param sources
      *            the collection of source Publishers
      * @param combiner
-     *            the aggregation function used to combine the items emitted by the source Publishers
+     *            the aggregation function used to combine the items emitted by the source Publishers. Should not return null.
      * @return a Flowable that emits items that are the result of combining the items emitted by the source
      *         Publishers by means of the given aggregation function
      * @see <a href="http://reactivex.io/documentation/operators/combinelatest.html">ReactiveX operators documentation: CombineLatest</a>
@@ -430,7 +430,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @param sources
      *            the collection of source Publishers
      * @param combiner
-     *            the aggregation function used to combine the items emitted by the source Publishers
+     *            the aggregation function used to combine the items emitted by the source Publishers. Should not return null.
      * @return a Flowable that emits items that are the result of combining the items emitted by the source
      *         Publishers by means of the given aggregation function
      * @see <a href="http://reactivex.io/documentation/operators/combinelatest.html">ReactiveX operators documentation: CombineLatest</a>
@@ -473,7 +473,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @param sources
      *            the collection of source Publishers
      * @param combiner
-     *            the aggregation function used to combine the items emitted by the source Publishers
+     *            the aggregation function used to combine the items emitted by the source Publishers. Should not return null.
      * @param bufferSize
      *            the internal buffer size and prefetch amount applied to every source Publisher
      * @return a Flowable that emits items that are the result of combining the items emitted by the source
@@ -518,7 +518,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @param sources
      *            the collection of source Publishers
      * @param combiner
-     *            the aggregation function used to combine the items emitted by the source Publishers
+     *            the aggregation function used to combine the items emitted by the source Publishers. Should not return null.
      * @param bufferSize
      *            the internal buffer size and prefetch amount applied to every source Flowable
      * @return a Flowable that emits items that are the result of combining the items emitted by the source
@@ -569,7 +569,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @param sources
      *            the collection of source Publishers
      * @param combiner
-     *            the aggregation function used to combine the items emitted by the source Publishers
+     *            the aggregation function used to combine the items emitted by the source Publishers. Should not return null.
      * @return a Flowable that emits items that are the result of combining the items emitted by the source
      *         Publishers by means of the given aggregation function
      * @see <a href="http://reactivex.io/documentation/operators/combinelatest.html">ReactiveX operators documentation: CombineLatest</a>
@@ -612,7 +612,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @param sources
      *            the collection of source Publishers
      * @param combiner
-     *            the aggregation function used to combine the items emitted by the source Publishers
+     *            the aggregation function used to combine the items emitted by the source Publishers. Should not return null.
      * @param bufferSize
      *            the internal buffer size and prefetch amount applied to every source Flowable
      * @return a Flowable that emits items that are the result of combining the items emitted by the source
@@ -657,7 +657,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @param source2
      *            the second source Publisher
      * @param combiner
-     *            the aggregation function used to combine the items emitted by the source Publishers
+     *            the aggregation function used to combine the items emitted by the source Publishers. Should not return null.
      * @return a Flowable that emits items that are the result of combining the items emitted by the source
      *         Publishers by means of the given aggregation function
      * @see <a href="http://reactivex.io/documentation/operators/combinelatest.html">ReactiveX operators documentation: CombineLatest</a>
@@ -705,7 +705,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @param source3
      *            the third source Publisher
      * @param combiner
-     *            the aggregation function used to combine the items emitted by the source Publishers
+     *            the aggregation function used to combine the items emitted by the source Publishers. Should not return null.
      * @return a Flowable that emits items that are the result of combining the items emitted by the source
      *         Publishers by means of the given aggregation function
      * @see <a href="http://reactivex.io/documentation/operators/combinelatest.html">ReactiveX operators documentation: CombineLatest</a>
@@ -757,7 +757,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @param source4
      *            the fourth source Publisher
      * @param combiner
-     *            the aggregation function used to combine the items emitted by the source Publishers
+     *            the aggregation function used to combine the items emitted by the source Publishers. Should not return null.
      * @return a Flowable that emits items that are the result of combining the items emitted by the source
      *         Publishers by means of the given aggregation function
      * @see <a href="http://reactivex.io/documentation/operators/combinelatest.html">ReactiveX operators documentation: CombineLatest</a>
@@ -813,7 +813,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @param source5
      *            the fifth source Publisher
      * @param combiner
-     *            the aggregation function used to combine the items emitted by the source Publishers
+     *            the aggregation function used to combine the items emitted by the source Publishers. Should not return null.
      * @return a Flowable that emits items that are the result of combining the items emitted by the source
      *         Publishers by means of the given aggregation function
      * @see <a href="http://reactivex.io/documentation/operators/combinelatest.html">ReactiveX operators documentation: CombineLatest</a>
@@ -874,7 +874,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @param source6
      *            the sixth source Publisher
      * @param combiner
-     *            the aggregation function used to combine the items emitted by the source Publishers
+     *            the aggregation function used to combine the items emitted by the source Publishers. Should not return null.
      * @return a Flowable that emits items that are the result of combining the items emitted by the source
      *         Publishers by means of the given aggregation function
      * @see <a href="http://reactivex.io/documentation/operators/combinelatest.html">ReactiveX operators documentation: CombineLatest</a>
@@ -939,7 +939,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @param source7
      *            the seventh source Publisher
      * @param combiner
-     *            the aggregation function used to combine the items emitted by the source Publishers
+     *            the aggregation function used to combine the items emitted by the source Publishers. Should not return null.
      * @return a Flowable that emits items that are the result of combining the items emitted by the source
      *         Publishers by means of the given aggregation function
      * @see <a href="http://reactivex.io/documentation/operators/combinelatest.html">ReactiveX operators documentation: CombineLatest</a>
@@ -1009,7 +1009,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @param source8
      *            the eighth source Publisher
      * @param combiner
-     *            the aggregation function used to combine the items emitted by the source Publishers
+     *            the aggregation function used to combine the items emitted by the source Publishers. Should not return null.
      * @return a Flowable that emits items that are the result of combining the items emitted by the source
      *         Publishers by means of the given aggregation function
      * @see <a href="http://reactivex.io/documentation/operators/combinelatest.html">ReactiveX operators documentation: CombineLatest</a>
@@ -1083,7 +1083,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @param source9
      *            the ninth source Publisher
      * @param combiner
-     *            the aggregation function used to combine the items emitted by the source Publishers
+     *            the aggregation function used to combine the items emitted by the source Publishers. Should not return null.
      * @return a Flowable that emits items that are the result of combining the items emitted by the source
      *         Publishers by means of the given aggregation function
      * @see <a href="http://reactivex.io/documentation/operators/combinelatest.html">ReactiveX operators documentation: CombineLatest</a>
