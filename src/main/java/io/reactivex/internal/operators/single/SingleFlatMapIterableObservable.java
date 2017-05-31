@@ -25,7 +25,7 @@ import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.internal.observers.BasicIntQueueDisposable;
 
 /**
- * Maps a success value into an Iterable and streams it back as a Flowable.
+ * Maps a success value into an Iterable and streams it back as an Observable.
  *
  * @param <T> the source value type
  * @param <R> the element type of the Iterable
