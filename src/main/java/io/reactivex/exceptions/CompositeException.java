@@ -38,6 +38,9 @@ public final class CompositeException extends RuntimeException {
 
     private static final long serialVersionUID = 3026362227162912146L;
 
+
+
+
     private final List<Throwable> exceptions;
     private final String message;
     private Throwable cause;
