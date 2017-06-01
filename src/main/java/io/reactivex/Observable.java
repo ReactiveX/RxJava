@@ -10705,6 +10705,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *         the ObservableSource has finished sending them
      * @see <a href="http://reactivex.io/documentation/operators/subscribe.html">ReactiveX operators documentation: Subscribe</a>
      */
+    @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Disposable subscribe() {
         return subscribe(Functions.emptyConsumer(), Functions.ON_ERROR_MISSING, Functions.EMPTY_ACTION, Functions.emptyConsumer());
