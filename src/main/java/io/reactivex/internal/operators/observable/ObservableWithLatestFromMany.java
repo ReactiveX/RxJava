@@ -286,7 +286,7 @@ public final class ObservableWithLatestFromMany<T, R> extends AbstractObservable
     final class SingletonArrayFunc implements Function<T, R> {
         @Override
         public R apply(T t) throws Exception {
-            return combiner.apply(new Object[] { t });
+            return ObjectHelper.requireNonNull(combiner.apply(new Object[] { t }), "The combiner returned a null value");
         }
     }
 }

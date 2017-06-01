@@ -24,6 +24,7 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.*;
 import io.reactivex.internal.disposables.*;
+import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.internal.fuseable.HasUpstreamObservableSource;
 import io.reactivex.internal.util.*;
 import io.reactivex.observables.ConnectableObservable;
@@ -1026,8 +1027,8 @@ public final class ObservableReplay<T> extends ConnectableObservable<T> implemen
             ConnectableObservable<U> co;
             ObservableSource<R> observable;
             try {
-                co = connectableFactory.call();
-                observable = selector.apply(co);
+                co = ObjectHelper.requireNonNull(connectableFactory.call(), "The connectableFactory returned a null ConnectableObservable");
+                observable = ObjectHelper.requireNonNull(selector.apply(co), "The selector returned a null ObservableSource");
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 EmptyDisposable.error(e, child);

@@ -18,7 +18,7 @@ import java.util.concurrent.Callable;
 import org.reactivestreams.Subscriber;
 
 import io.reactivex.Flowable;
-import io.reactivex.exceptions.Exceptions;
+import io.reactivex.exceptions.*;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.internal.subscribers.SinglePostCompleteSubscriber;
@@ -87,7 +87,7 @@ public final class FlowableMapNotification<T, R> extends AbstractFlowableWithUps
                 p = ObjectHelper.requireNonNull(onErrorMapper.apply(t), "The onError publisher returned is null");
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
-                actual.onError(e);
+                actual.onError(new CompositeException(t, e));
                 return;
             }
 

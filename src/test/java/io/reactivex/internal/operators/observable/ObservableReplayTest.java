@@ -1528,4 +1528,37 @@ public class ObservableReplayTest {
 
         source.test().assertResult();
     }
+
+    @Test
+    public void replaySelectorReturnsNullScheduled() {
+        Observable.just(1)
+        .replay(new Function<Observable<Integer>, Observable<Object>>() {
+            @Override
+            public Observable<Object> apply(Observable<Integer> v) throws Exception {
+                return null;
+            }
+        }, Schedulers.trampoline())
+        .test()
+        .assertFailureAndMessage(NullPointerException.class, "The selector returned a null ObservableSource");
+    }
+
+    @Test
+    public void replaySelectorReturnsNull() {
+        Observable.just(1)
+        .replay(new Function<Observable<Integer>, Observable<Object>>() {
+            @Override
+            public Observable<Object> apply(Observable<Integer> v) throws Exception {
+                return null;
+            }
+        })
+        .test()
+        .assertFailureAndMessage(NullPointerException.class, "The selector returned a null ObservableSource");
+    }
+
+    @Test
+    public void replaySelectorConnectableReturnsNull() {
+        ObservableReplay.multicastSelector(Functions.justCallable((ConnectableObservable<Integer>)null), Functions.justFunction(Observable.just(1)))
+        .test()
+        .assertFailureAndMessage(NullPointerException.class, "The connectableFactory returned a null ConnectableObservable");
+    }
 }

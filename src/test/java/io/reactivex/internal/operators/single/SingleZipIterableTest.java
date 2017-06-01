@@ -22,6 +22,7 @@ import org.junit.Test;
 import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.Function;
+import io.reactivex.internal.functions.Functions;
 import io.reactivex.internal.util.CrashingMappedIterable;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.plugins.RxJavaPlugins;
@@ -235,5 +236,13 @@ public class SingleZipIterableTest {
         })
         .test()
         .assertResult(2);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void singleSourceZipperReturnsNull() {
+        Single.zip(Arrays.asList(Single.just(1)), Functions.justFunction(null))
+        .test()
+        .assertFailureAndMessage(NullPointerException.class, "The zipper returned a null value");
     }
 }

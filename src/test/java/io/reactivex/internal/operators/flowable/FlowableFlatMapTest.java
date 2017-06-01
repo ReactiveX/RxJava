@@ -264,7 +264,7 @@ public class FlowableFlatMapTest {
 
         source.flatMap(just(onNext), funcThrow((Throwable) null, onError), just0(onComplete)).subscribe(o);
 
-        verify(o).onError(any(TestException.class));
+        verify(o).onError(any(CompositeException.class));
         verify(o, never()).onNext(any());
         verify(o, never()).onComplete();
     }
@@ -996,5 +996,41 @@ public class FlowableFlatMapTest {
                 }
             }
         }
+    }
+
+    @Test
+    public void iterableMapperFunctionReturnsNull() {
+        Flowable.just(1)
+        .flatMapIterable(new Function<Integer, Iterable<Object>>() {
+            @Override
+            public Iterable<Object> apply(Integer v) throws Exception {
+                return null;
+            }
+        }, new BiFunction<Integer, Object, Object>() {
+            @Override
+            public Object apply(Integer v, Object w) throws Exception {
+                return v;
+            }
+        })
+        .test()
+        .assertFailureAndMessage(NullPointerException.class, "The mapper returned a null Iterable");
+    }
+
+    @Test
+    public void combinerMapperFunctionReturnsNull() {
+        Flowable.just(1)
+        .flatMap(new Function<Integer, Publisher<Object>>() {
+            @Override
+            public Publisher<Object> apply(Integer v) throws Exception {
+                return null;
+            }
+        }, new BiFunction<Integer, Object, Object>() {
+            @Override
+            public Object apply(Integer v, Object w) throws Exception {
+                return v;
+            }
+        })
+        .test()
+        .assertFailureAndMessage(NullPointerException.class, "The mapper returned a null Publisher");
     }
 }

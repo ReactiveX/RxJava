@@ -627,4 +627,14 @@ public class FlowableUsingTest {
             RxJavaPlugins.reset();
         }
     }
+
+    @Test
+    public void sourceSupplierReturnsNull() {
+        Flowable.using(Functions.justCallable(1),
+                Functions.justFunction((Publisher<Object>)null),
+                Functions.emptyConsumer())
+        .test()
+        .assertFailureAndMessage(NullPointerException.class, "The sourceSupplier returned a null Publisher")
+        ;
+    }
 }

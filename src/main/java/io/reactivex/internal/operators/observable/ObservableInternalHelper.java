@@ -77,7 +77,8 @@ public final class ObservableInternalHelper {
 
         @Override
         public ObservableSource<T> apply(final T v) throws Exception {
-            return new ObservableTake<U>(itemDelay.apply(v), 1).map(Functions.justFunction(v)).defaultIfEmpty(v);
+            ObservableSource<U> o = ObjectHelper.requireNonNull(itemDelay.apply(v), "The itemDelay returned a null ObservableSource");
+            return new ObservableTake<U>(o, 1).map(Functions.justFunction(v)).defaultIfEmpty(v);
         }
     }
 
@@ -165,7 +166,7 @@ public final class ObservableInternalHelper {
         @Override
         public ObservableSource<R> apply(final T t) throws Exception {
             @SuppressWarnings("unchecked")
-            ObservableSource<U> u = (ObservableSource<U>)mapper.apply(t);
+            ObservableSource<U> u = (ObservableSource<U>)ObjectHelper.requireNonNull(mapper.apply(t), "The mapper returned a null ObservableSource");
             return new ObservableMap<U, R>(u, new FlatMapWithCombinerInner<U, R, T>(combiner, t));
         }
     }
@@ -185,7 +186,7 @@ public final class ObservableInternalHelper {
 
         @Override
         public ObservableSource<U> apply(T t) throws Exception {
-            return new ObservableFromIterable<U>(mapper.apply(t));
+            return new ObservableFromIterable<U>(ObjectHelper.requireNonNull(mapper.apply(t), "The mapper returned a null Iterable"));
         }
     }
 
@@ -319,7 +320,7 @@ public final class ObservableInternalHelper {
         @Override
         public Observable<R> apply(T t) throws Exception {
             return RxJavaPlugins.onAssembly(new SingleToObservable<R>(
-                ObjectHelper.requireNonNull(mapper.apply(t), "The mapper returned a null value")));
+                ObjectHelper.requireNonNull(mapper.apply(t), "The mapper returned a null SingleSource")));
         }
 
     }
@@ -403,7 +404,8 @@ public final class ObservableInternalHelper {
 
         @Override
         public ObservableSource<R> apply(Observable<T> t) throws Exception {
-            return Observable.wrap(selector.apply(t)).observeOn(scheduler);
+            ObservableSource<R> apply = ObjectHelper.requireNonNull(selector.apply(t), "The selector returned a null ObservableSource");
+            return Observable.wrap(apply).observeOn(scheduler);
         }
     }
 }

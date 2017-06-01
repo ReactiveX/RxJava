@@ -14,7 +14,7 @@
 package io.reactivex.internal.operators.observable;
 
 import static org.junit.Assert.*;
-import static org.junit.Assert.assertNotEquals;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 import java.util.*;
@@ -964,5 +964,17 @@ public class ObservableDelayTest {
         } catch (TestException ex) {
             // expected
         }
+    }
+
+    @Test
+    public void itemDelayReturnsNull() {
+        Observable.just(1).delay(new Function<Integer, Observable<Object>>() {
+            @Override
+            public Observable<Object> apply(Integer t) throws Exception {
+                return null;
+            }
+        })
+        .test()
+        .assertFailureAndMessage(NullPointerException.class, "The itemDelay returned a null ObservableSource");
     }
 }
