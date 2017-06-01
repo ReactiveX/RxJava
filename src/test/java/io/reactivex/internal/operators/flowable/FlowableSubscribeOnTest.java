@@ -372,4 +372,51 @@ public class FlowableSubscribeOnTest {
         .assertNoErrors()
         .assertComplete();
     }
+
+    @Test
+    public void nonScheduledRequestsNotSubsequentSubscribeOn() {
+        TestSubscriber<Object> ts = Flowable.create(new FlowableOnSubscribe<Object>() {
+            @Override
+            public void subscribe(FlowableEmitter<Object> s) throws Exception {
+                for (int i = 1; i < 1001; i++) {
+                    s.onNext(i);
+                    Thread.sleep(1);
+                }
+                s.onComplete();
+            }
+        }, BackpressureStrategy.DROP)
+        .map(Functions.identity())
+        .subscribeOn(Schedulers.single(), false)
+        .observeOn(Schedulers.computation())
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertNoErrors()
+        .assertComplete();
+
+        int c = ts.valueCount();
+
+        assertTrue("" + c, c > Flowable.bufferSize());
+    }
+
+    @Test
+    public void scheduledRequestsNotSubsequentSubscribeOn() {
+        Flowable.create(new FlowableOnSubscribe<Object>() {
+            @Override
+            public void subscribe(FlowableEmitter<Object> s) throws Exception {
+                for (int i = 1; i < 1001; i++) {
+                    s.onNext(i);
+                    Thread.sleep(1);
+                }
+                s.onComplete();
+            }
+        }, BackpressureStrategy.DROP)
+        .map(Functions.identity())
+        .subscribeOn(Schedulers.single(), true)
+        .observeOn(Schedulers.computation())
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertValueCount(Flowable.bufferSize())
+        .assertNoErrors()
+        .assertComplete();
+    }
 }
