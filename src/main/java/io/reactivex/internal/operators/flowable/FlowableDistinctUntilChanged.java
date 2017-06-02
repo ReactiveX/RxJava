@@ -86,10 +86,10 @@ public final class FlowableDistinctUntilChanged<T, K> extends AbstractFlowableWi
                 key = keySelector.apply(t);
                 if (hasValue) {
                     boolean equal = comparer.test(last, key);
-                    last = key;
                     if (equal) {
                         return false;
                     }
+                    last = key;
                 } else {
                     hasValue = true;
                     last = key;
@@ -176,10 +176,10 @@ public final class FlowableDistinctUntilChanged<T, K> extends AbstractFlowableWi
                 key = keySelector.apply(t);
                 if (hasValue) {
                     boolean equal = comparer.test(last, key);
-                    last = key;
                     if (equal) {
                         return false;
                     }
+                    last = key;
                 } else {
                     hasValue = true;
                     last = key;

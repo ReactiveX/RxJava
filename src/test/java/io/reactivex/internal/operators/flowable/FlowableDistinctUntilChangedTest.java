@@ -13,6 +13,8 @@
 
 package io.reactivex.internal.operators.flowable;
 
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertSame;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
@@ -28,7 +30,10 @@ import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.*;
 import io.reactivex.internal.functions.Functions;
+import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.internal.fuseable.*;
+import io.reactivex.internal.operators.flowable.FlowableDistinctUntilChanged.DistinctUntilChangedSubscriber;
+import io.reactivex.internal.operators.flowable.FlowableDistinctUntilChanged.DistinctUntilChangedConditionalSubscriber;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.processors.*;
@@ -108,6 +113,38 @@ public class FlowableDistinctUntilChangedTest {
         inOrder.verify(w, times(1)).onComplete();
         inOrder.verify(w, never()).onNext(anyString());
         verify(w, never()).onError(any(Throwable.class));
+    }
+
+    @Test
+    public void testDistinctUntilChangedDoesntUpdateReferenceUnlessChanged() {
+        String first = "a";
+        //noinspection RedundantStringConstructorCall
+        String second = new String(first);
+        assertNotSame(first, second);
+        Flowable<String> src = Flowable.just(first, second);
+        DistinctUntilChangedSubscriber<String, String> subscriber = new DistinctUntilChangedSubscriber<String, String>(w,
+                Functions.<String>identity(),
+                ObjectHelper.<String>equalsPredicate());
+        src.distinctUntilChanged().subscribe(subscriber);
+        verify(w).onComplete();
+        assertSame(first, subscriber.last);
+    }
+
+    @Test
+    public void testDistinctUntilChangedConditionalDoesntUpdateReferenceUnlessChanged() {
+        ConditionalSubscriber<String> w = TestHelper.mockConditionalSubscriber();
+        String first = "a";
+        //noinspection RedundantStringConstructorCall
+        String second = new String(first);
+        assertNotSame(first, second);
+        Flowable<String> src = Flowable.just(first, second);
+        DistinctUntilChangedConditionalSubscriber<String, String> subscriber = new DistinctUntilChangedConditionalSubscriber<String, String>(w,
+                Functions.<String>identity(),
+                ObjectHelper.<String>equalsPredicate());
+        src.distinctUntilChanged().subscribe(subscriber);
+        verify(w).onComplete();
+        assertSame(first, subscriber.last);
+
     }
 
     @Test

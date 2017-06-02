@@ -69,10 +69,10 @@ public final class ObservableDistinctUntilChanged<T, K> extends AbstractObservab
                 key = keySelector.apply(t);
                 if (hasValue) {
                     boolean equal = comparer.test(last, key);
-                    last = key;
                     if (equal) {
                         return;
                     }
+                    last = key;
                 } else {
                     hasValue = true;
                     last = key;

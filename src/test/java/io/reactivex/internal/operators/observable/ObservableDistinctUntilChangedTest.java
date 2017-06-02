@@ -13,8 +13,10 @@
 
 package io.reactivex.internal.operators.observable;
 
+import static org.junit.Assert.assertSame;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
+import static org.testng.AssertJUnit.assertNotSame;
 
 import java.io.IOException;
 import java.util.List;
@@ -26,7 +28,10 @@ import io.reactivex.*;
 import io.reactivex.disposables.Disposables;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.*;
+import io.reactivex.internal.functions.Functions;
+import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.internal.fuseable.QueueDisposable;
+import io.reactivex.internal.operators.observable.ObservableDistinctUntilChanged.DistinctUntilChangedObserver;
 import io.reactivex.observers.*;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.subjects.*;
@@ -105,6 +110,21 @@ public class ObservableDistinctUntilChangedTest {
         inOrder.verify(w, times(1)).onComplete();
         inOrder.verify(w, never()).onNext(anyString());
         verify(w, never()).onError(any(Throwable.class));
+    }
+
+    @Test
+    public void testDistinctUntilChangedDoesntUpdateReferenceUnlessChanged() {
+        String first = "a";
+        //noinspection RedundantStringConstructorCall
+        String second = new String(first);
+        assertNotSame(first, second);
+        Observable<String> src = Observable.just(first, second);
+        DistinctUntilChangedObserver<String, String> observer = new DistinctUntilChangedObserver<String, String>(w,
+                Functions.<String>identity(),
+                ObjectHelper.<String>equalsPredicate());
+        src.distinctUntilChanged().subscribe(observer);
+        verify(w).onComplete();
+        assertSame(first, observer.last);
     }
 
     @Test
