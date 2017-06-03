@@ -60,7 +60,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     /** The default buffer size. */
     static final int BUFFER_SIZE;
     static {
-        BUFFER_SIZE = Math.max(16, Integer.getInteger("rx2.buffer-size", 128));
+        BUFFER_SIZE = Math.max(1, Integer.getInteger("rx2.buffer-size", 128));
     }
 
     /**
