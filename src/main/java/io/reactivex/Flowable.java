@@ -13045,6 +13045,10 @@ public abstract class Flowable<T> implements Publisher<T> {
     /**
      * Asynchronously subscribes Subscribers to this Publisher on the specified {@link Scheduler}.
      * <p>
+     * If there is a {@link #create(FlowableOnSubscribe, BackpressureStrategy)} type source up in the
+     * chain, it is recommended to use {@code subscribeOn(scheduler, false)} instead
+     * to avoid same-pool deadlock because requests may pile up behind a eager/blocking emitter.
+     * <p>
      * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/subscribeOn.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
@@ -13061,13 +13065,52 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @see <a href="http://reactivex.io/documentation/operators/subscribeon.html">ReactiveX operators documentation: SubscribeOn</a>
      * @see <a href="http://www.grahamlea.com/2014/07/rxjava-threading-examples/">RxJava Threading Examples</a>
      * @see #observeOn
+     * @see #subscribeOn(Scheduler, boolean)
      */
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
     @SchedulerSupport(SchedulerSupport.CUSTOM)
-    public final Flowable<T> subscribeOn(Scheduler scheduler) {
+    public final Flowable<T> subscribeOn(@NonNull Scheduler scheduler) {
         ObjectHelper.requireNonNull(scheduler, "scheduler is null");
-        return RxJavaPlugins.onAssembly(new FlowableSubscribeOn<T>(this, scheduler, this instanceof FlowableCreate));
+        return subscribeOn(scheduler, !(this instanceof FlowableCreate));
+    }
+
+    /**
+     * Asynchronously subscribes Subscribers to this Publisher on the specified {@link Scheduler}
+     * optionally reroutes requests from other threads to the same {@link Scheduler} thread.
+     * <p>
+     * If there is a {@link #create(FlowableOnSubscribe, BackpressureStrategy)} type source up in the
+     * chain, it is recommended to have {@code requestOn} false to avoid same-pool deadlock
+     * because requests may pile up behind a eager/blocking emitter.
+     * <p>
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/subscribeOn.png" alt="">
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The operator doesn't interfere with backpressure which is determined by the source {@code Publisher}'s backpressure
+     *  behavior.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>You specify which {@link Scheduler} this operator will use</dd>
+     * </dl>
+     *
+     * @param scheduler
+     *            the {@link Scheduler} to perform subscription actions on
+     * @param requestOn if true, requests are rerouted to the given Scheduler as well (strong pipelining)
+     *                  if false, requests coming from any thread are simply forwarded to
+     *                  the upstream on the same thread (weak pipelining)
+     * @return the source Publisher modified so that its subscriptions happen on the
+     *         specified {@link Scheduler}
+     * @see <a href="http://reactivex.io/documentation/operators/subscribeon.html">ReactiveX operators documentation: SubscribeOn</a>
+     * @see <a href="http://www.grahamlea.com/2014/07/rxjava-threading-examples/">RxJava Threading Examples</a>
+     * @see #observeOn
+     * @since 2.1.1 - experimental
+     */
+    @CheckReturnValue
+    @BackpressureSupport(BackpressureKind.PASS_THROUGH)
+    @SchedulerSupport(SchedulerSupport.CUSTOM)
+    @Experimental
+    public final Flowable<T> subscribeOn(@NonNull Scheduler scheduler, boolean requestOn) {
+        ObjectHelper.requireNonNull(scheduler, "scheduler is null");
+        return RxJavaPlugins.onAssembly(new FlowableSubscribeOn<T>(this, scheduler, requestOn));
     }
 
     /**
