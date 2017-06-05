@@ -175,6 +175,7 @@ For further details, consult the [wiki](https://github.com/ReactiveX/RxJava/wiki
 - Twitter: [@RxJava](http://twitter.com/RxJava)
 - [GitHub Issues](https://github.com/ReactiveX/RxJava/issues)
 - StackOverflow: [rx-java](http://stackoverflow.com/questions/tagged/rx-java) and [rx-java2](http://stackoverflow.com/questions/tagged/rx-java2)
+- [Gitter.im](https://gitter.im/ReactiveX/RxJava)
 
 ## Versioning
 
