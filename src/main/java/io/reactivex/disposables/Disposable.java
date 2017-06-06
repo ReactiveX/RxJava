@@ -26,4 +26,9 @@ public interface Disposable {
      * @return true if this resource has been disposed
      */
     boolean isDisposed();
+    
+    /**
+     * Convenience method for adding a Disposable to a CompositeDisposable
+     */
+    void disposeWith(Disposable d);
 }
