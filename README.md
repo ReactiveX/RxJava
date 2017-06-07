@@ -36,7 +36,7 @@ See the differences between version 1.x and 2.x in the wiki article [What's diff
 The first step is to include RxJava 2 into your project, for example, as a Gradle compile dependency:
 
 ```groovy
-compile "io.reactivex.rxjava2:rxjava:2.x.y"
+compile "io.reactivex.rxjava2:rxjava:2.+"
 ```
 
 The second is to write the **Hello World** program:
