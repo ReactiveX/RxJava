@@ -1807,7 +1807,7 @@ public abstract class Single<T> implements SingleSource<T> {
 
     /**
      * Registers an {@link Action} to be called after this Single invokes either onSuccess or onError.
-     * * <p>Note that the {@code doAfterSuccess} action is shared between subscriptions and as such
+     * * <p>Note that the {@code doAfterTerminate} action is shared between subscriptions and as such
      * should be thread-safe.</p>
      * <p>
      * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/doAfterTerminate.png" alt="">
