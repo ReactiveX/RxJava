@@ -39,9 +39,8 @@ import io.reactivex.internal.util.EndConsumerHelper;
  * instead of the standard {@code subscribe()} method.
  *
  * <p>Example<code><pre>
- * Disposable d =
- *     Observable.range(1, 5)
- *     .subscribeWith(new DefaultObserver&lt;Integer>() {
+ * Observable.range(1, 5)
+ *     .subscribe(new DefaultObserver&lt;Integer>() {
  *         &#64;Override public void onStart() {
  *             System.out.println("Start!");
  *         }
@@ -58,8 +57,6 @@ import io.reactivex.internal.util.EndConsumerHelper;
  *             System.out.println("Done!");
  *         }
  *     });
- * // ...
- * d.dispose();
  * </pre></code>
  *
  * @param <T> the value type
