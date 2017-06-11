@@ -8934,6 +8934,10 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * source.compose(o ->
      *     Observable.defer(() -> o.reduce(new ArrayList&lt;>(), (list, item) -> list.add(item)).toObservable())
      * ).firstOrError();
+     *
+     * // or, by using reduceWith instead of reduce
+     *
+     * source.reduceWith(() -> new ArrayList&lt;>(), (list, item) -> list.add(item)));
      * </code></pre>
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
