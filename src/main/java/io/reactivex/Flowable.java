@@ -10766,7 +10766,7 @@ public abstract class Flowable<T> implements Publisher<T> {
 
     /**
      * Returns a Flowable that applies a specified accumulator function to the first item emitted by a source
-     * Publisher and a specified seed value derived from calling a specified seedSupplier, then feeds the result
+     * Publisher and a seed value derived from calling a specified seedSupplier, then feeds the result
      * of that function along with the second item emitted by a Publisher into the same function, and so on until
      * all items have been emitted by the source Publisher, emitting the final result from the final call to your
      * function as its sole item.
