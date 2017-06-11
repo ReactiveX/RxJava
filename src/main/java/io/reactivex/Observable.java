@@ -8954,6 +8954,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *         items emitted by the source ObservableSource
      * @see <a href="http://reactivex.io/documentation/operators/reduce.html">ReactiveX operators documentation: Reduce</a>
      * @see <a href="http://en.wikipedia.org/wiki/Fold_(higher-order_function)">Wikipedia: Fold (higher-order function)</a>
+     * @see #reduceWith(Callable, BiFunction)
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)

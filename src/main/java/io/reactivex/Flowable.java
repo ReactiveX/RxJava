@@ -10758,6 +10758,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *         items emitted by the source Publisher
      * @see <a href="http://reactivex.io/documentation/operators/reduce.html">ReactiveX operators documentation: Reduce</a>
      * @see <a href="http://en.wikipedia.org/wiki/Fold_(higher-order_function)">Wikipedia: Fold (higher-order function)</a>
+     * @see #reduceWith(Callable, BiFunction)
      */
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
