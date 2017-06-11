@@ -10723,18 +10723,22 @@ public abstract class Flowable<T> implements Publisher<T> {
      * "compress," or "inject" in other programming contexts. Groovy, for instance, has an {@code inject} method
      * that does a similar operation on lists.
      * <p>
-     * Note that the {@code initialValue} is shared among all subscribers to the resulting Publisher
+     * Note that the {@code seed} is shared among all subscribers to the resulting Publisher
      * and may cause problems if it is mutable. To make sure each subscriber gets its own value, defer
      * the application of this operator via {@link #defer(Callable)}:
      * <pre><code>
      * Publisher&lt;T> source = ...
-     * Publisher.defer(() -> source.reduce(new ArrayList&lt;>(), (list, item) -> list.add(item)));
+     * Single.defer(() -> source.reduce(new ArrayList&lt;>(), (list, item) -> list.add(item)));
      *
      * // alternatively, by using compose to stay fluent
      *
      * source.compose(o ->
-     *     Publisher.defer(() -> o.reduce(new ArrayList&lt;>(), (list, item) -> list.add(item)))
-     * );
+     *     Flowable.defer(() -> o.reduce(new ArrayList&lt;>(), (list, item) -> list.add(item)).toFlowable())
+     * ).firstOrError();
+     *
+     * // or, by using reduceWith instead of reduce
+     *
+     * source.reduceWith(() -> new ArrayList&lt;>(), (list, item) -> list.add(item)));
      * </code></pre>
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
@@ -10754,6 +10758,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *         items emitted by the source Publisher
      * @see <a href="http://reactivex.io/documentation/operators/reduce.html">ReactiveX operators documentation: Reduce</a>
      * @see <a href="http://en.wikipedia.org/wiki/Fold_(higher-order_function)">Wikipedia: Fold (higher-order function)</a>
+     * @see #reduceWith(Callable, BiFunction)
      */
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
@@ -10766,29 +10771,16 @@ public abstract class Flowable<T> implements Publisher<T> {
 
     /**
      * Returns a Flowable that applies a specified accumulator function to the first item emitted by a source
-     * Publisher and a specified seed value, then feeds the result of that function along with the second item
-     * emitted by a Publisher into the same function, and so on until all items have been emitted by the
-     * source Publisher, emitting the final result from the final call to your function as its sole item.
+     * Publisher and a seed value derived from calling a specified seedSupplier, then feeds the result
+     * of that function along with the second item emitted by a Publisher into the same function, and so on until
+     * all items have been emitted by the source Publisher, emitting the final result from the final call to your
+     * function as its sole item.
      * <p>
      * <img width="640" height="325" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/reduceSeed.png" alt="">
      * <p>
      * This technique, which is called "reduce" here, is sometimes called "aggregate," "fold," "accumulate,"
      * "compress," or "inject" in other programming contexts. Groovy, for instance, has an {@code inject} method
      * that does a similar operation on lists.
-     * <p>
-     * Note that the {@code initialValue} is shared among all subscribers to the resulting Publisher
-     * and may cause problems if it is mutable. To make sure each subscriber gets its own value, defer
-     * the application of this operator via {@link #defer(Callable)}:
-     * <pre><code>
-     * Publisher&lt;T> source = ...
-     * Publisher.defer(() -> source.reduce(new ArrayList&lt;>(), (list, item) -> list.add(item)));
-     *
-     * // alternatively, by using compose to stay fluent
-     *
-     * source.compose(o ->
-     *     Publisher.defer(() -> o.reduce(new ArrayList&lt;>(), (list, item) -> list.add(item)))
-     * );
-     * </code></pre>
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure of its downstream consumer and consumes the

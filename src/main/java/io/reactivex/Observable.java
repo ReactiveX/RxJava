@@ -8922,18 +8922,22 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * "compress," or "inject" in other programming contexts. Groovy, for instance, has an {@code inject} method
      * that does a similar operation on lists.
      * <p>
-     * Note that the {@code initialValue} is shared among all subscribers to the resulting ObservableSource
+     * Note that the {@code seed} is shared among all subscribers to the resulting ObservableSource
      * and may cause problems if it is mutable. To make sure each subscriber gets its own value, defer
      * the application of this operator via {@link #defer(Callable)}:
      * <pre><code>
      * ObservableSource&lt;T> source = ...
-     * Observable.defer(() -> source.reduce(new ArrayList&lt;>(), (list, item) -> list.add(item)));
+     * Single.defer(() -> source.reduce(new ArrayList&lt;>(), (list, item) -> list.add(item)));
      *
      * // alternatively, by using compose to stay fluent
      *
      * source.compose(o ->
-     *     Observable.defer(() -> o.reduce(new ArrayList&lt;>(), (list, item) -> list.add(item)))
-     * );
+     *     Observable.defer(() -> o.reduce(new ArrayList&lt;>(), (list, item) -> list.add(item)).toObservable())
+     * ).firstOrError();
+     *
+     * // or, by using reduceWith instead of reduce
+     *
+     * source.reduceWith(() -> new ArrayList&lt;>(), (list, item) -> list.add(item)));
      * </code></pre>
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
@@ -8950,6 +8954,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *         items emitted by the source ObservableSource
      * @see <a href="http://reactivex.io/documentation/operators/reduce.html">ReactiveX operators documentation: Reduce</a>
      * @see <a href="http://en.wikipedia.org/wiki/Fold_(higher-order_function)">Wikipedia: Fold (higher-order function)</a>
+     * @see #reduceWith(Callable, BiFunction)
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -8961,29 +8966,16 @@ public abstract class Observable<T> implements ObservableSource<T> {
 
     /**
      * Returns a Single that applies a specified accumulator function to the first item emitted by a source
-     * ObservableSource and a specified seed value, then feeds the result of that function along with the second item
-     * emitted by an ObservableSource into the same function, and so on until all items have been emitted by the
-     * source ObservableSource, emitting the final result from the final call to your function as its sole item.
+     * ObservableSource and a seed value derived from calling a specified seedSupplier, then feeds the result
+     * of that function along with the second item emitted by an ObservableSource into the same function,
+     * and so on until all items have been emitted by the source ObservableSource, emitting the final result
+     * from the final call to your function as its sole item.
      * <p>
      * <img width="640" height="325" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/reduceSeed.2.png" alt="">
      * <p>
      * This technique, which is called "reduce" here, is sometimes called "aggregate," "fold," "accumulate,"
      * "compress," or "inject" in other programming contexts. Groovy, for instance, has an {@code inject} method
      * that does a similar operation on lists.
-     * <p>
-     * Note that the {@code initialValue} is shared among all subscribers to the resulting ObservableSource
-     * and may cause problems if it is mutable. To make sure each subscriber gets its own value, defer
-     * the application of this operator via {@link #defer(Callable)}:
-     * <pre><code>
-     * ObservableSource&lt;T> source = ...
-     * Observable.defer(() -> source.reduce(new ArrayList&lt;>(), (list, item) -> list.add(item)));
-     *
-     * // alternatively, by using compose to stay fluent
-     *
-     * source.compose(o ->
-     *     Observable.defer(() -> o.reduce(new ArrayList&lt;>(), (list, item) -> list.add(item)))
-     * );
-     * </code></pre>
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code reduceWith} does not operate by default on a particular {@link Scheduler}.</dd>
