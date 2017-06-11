@@ -10733,7 +10733,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * // alternatively, by using compose to stay fluent
      *
      * source.compose(o ->
-     *     Publisher.defer(() -> o.reduce(new ArrayList&lt;>(), (list, item) -> list.add(item)).toFlowable())
+     *     Flowable.defer(() -> o.reduce(new ArrayList&lt;>(), (list, item) -> list.add(item)).toFlowable())
      * ).firstOrError();
      * </code></pre>
      * <dl>
