@@ -8922,18 +8922,18 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * "compress," or "inject" in other programming contexts. Groovy, for instance, has an {@code inject} method
      * that does a similar operation on lists.
      * <p>
-     * Note that the {@code initialValue} is shared among all subscribers to the resulting ObservableSource
+     * Note that the {@code seed} is shared among all subscribers to the resulting ObservableSource
      * and may cause problems if it is mutable. To make sure each subscriber gets its own value, defer
      * the application of this operator via {@link #defer(Callable)}:
      * <pre><code>
      * ObservableSource&lt;T> source = ...
-     * Observable.defer(() -> source.reduce(new ArrayList&lt;>(), (list, item) -> list.add(item)));
+     * Single.defer(() -> source.reduce(new ArrayList&lt;>(), (list, item) -> list.add(item)));
      *
      * // alternatively, by using compose to stay fluent
      *
      * source.compose(o ->
-     *     Observable.defer(() -> o.reduce(new ArrayList&lt;>(), (list, item) -> list.add(item)))
-     * );
+     *     Observable.defer(() -> o.reduce(new ArrayList&lt;>(), (list, item) -> list.add(item)).toObservable())
+     * ).firstOrError();
      * </code></pre>
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
