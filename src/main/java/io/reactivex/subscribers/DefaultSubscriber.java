@@ -50,8 +50,7 @@ import io.reactivex.internal.util.EndConsumerHelper;
  * @param <T> the value type
  *
  * <p>Example<code><pre>
- * Disposable d =
- *     Flowable.range(1, 5)
+ * Flowable.range(1, 5)
  *     .subscribe(new DefaultSubscriber&lt;Integer>() {
  *         &#64;Override public void onStart() {
  *             System.out.println("Start!");
