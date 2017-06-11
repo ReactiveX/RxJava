@@ -52,7 +52,7 @@ import io.reactivex.internal.util.EndConsumerHelper;
  * <p>Example<code><pre>
  * Disposable d =
  *     Flowable.range(1, 5)
- *     .subscribeWith(new DefaultSubscriber&lt;Integer>() {
+ *     .subscribe(new DefaultSubscriber&lt;Integer>() {
  *         &#64;Override public void onStart() {
  *             System.out.println("Start!");
  *             request(1);
@@ -71,8 +71,6 @@ import io.reactivex.internal.util.EndConsumerHelper;
  *             System.out.println("Done!");
  *         }
  *     });
- * // ...
- * d.dispose();
  * </pre></code>
  */
 public abstract class DefaultSubscriber<T> implements FlowableSubscriber<T> {
