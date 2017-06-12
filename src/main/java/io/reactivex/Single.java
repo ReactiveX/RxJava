@@ -1633,14 +1633,13 @@ public abstract class Single<T> implements SingleSource<T> {
     }
 
     /**
-     * Delays the emission of the success or error signal from the current Single by
-     * the specified amount.
+     * Delays the emission of the success signal from the current Single by the specified amount.
      * <dl>
      * <dt><b>Scheduler:</b></dt>
      * <dd>you specify the {@link Scheduler} where the non-blocking wait and emission happens</dd>
      * </dl>
      *
-     * @param time the time amount to delay the signals
+     * @param time the time amount to delay the emission of the success signal
      * @param unit the time unit
      * @param scheduler the target scheduler to use fro the non-blocking wait and emission
      * @return the new Single instance
