@@ -1639,7 +1639,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * <dd>you specify the {@link Scheduler} where the non-blocking wait and emission happens</dd>
      * </dl>
      *
-     * @param time the time amount to delay the signals
+     * @param time the time amount to delay the emission of the success signal
      * @param unit the time unit
      * @param scheduler the target scheduler to use fro the non-blocking wait and emission
      * @return the new Single instance
