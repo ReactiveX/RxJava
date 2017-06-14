@@ -120,7 +120,7 @@ public final class ExceptionHelper {
         }
         throw (E)e;
     }
-    
+
     static final class Termination extends Throwable {
 
         private static final long serialVersionUID = -4649703670690200604L;
