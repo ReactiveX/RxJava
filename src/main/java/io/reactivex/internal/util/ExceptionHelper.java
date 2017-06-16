@@ -106,6 +106,21 @@ public final class ExceptionHelper {
         return list;
     }
 
+    /**
+     * Workaround for Java 6 not supporting throwing a final Throwable from a catch block.
+     * @param <E> the generic exception type
+     * @param e the Throwable error to return or throw
+     * @return the Throwable e if it is a subclass of Exception
+     * @throws E the generic exception thrown
+     */
+    @SuppressWarnings("unchecked")
+    public static <E extends Throwable> Exception throwIfThrowable(Throwable e) throws E {
+        if (e instanceof Exception) {
+            return (Exception)e;
+        }
+        throw (E)e;
+    }
+
     static final class Termination extends Throwable {
 
         private static final long serialVersionUID = -4649703670690200604L;
