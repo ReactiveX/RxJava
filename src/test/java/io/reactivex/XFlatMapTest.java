@@ -23,7 +23,7 @@ import org.reactivestreams.Publisher;
 
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.Function;
-import io.reactivex.observers.TestObserver;
+import io.reactivex.observers.*;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.TestSubscriber;
@@ -48,10 +48,11 @@ public class XFlatMapTest {
         }
     }
 
-    void beforeCancelSleep() throws Exception {
+    void beforeCancelSleep(BaseTestConsumer<?, ?> ts) throws Exception {
         long before = System.currentTimeMillis();
         Thread.sleep(50);
         if (System.currentTimeMillis() - before > 100) {
+            ts.dispose();
             throw new IllegalStateException("Overslept?" + (System.currentTimeMillis() - before));
         }
     }
@@ -73,7 +74,7 @@ public class XFlatMapTest {
 
             cb.await();
 
-            beforeCancelSleep();
+            beforeCancelSleep(ts);
 
             ts.cancel();
 
@@ -104,7 +105,7 @@ public class XFlatMapTest {
 
             cb.await();
 
-            beforeCancelSleep();
+            beforeCancelSleep(ts);
 
             ts.cancel();
 
@@ -135,7 +136,7 @@ public class XFlatMapTest {
 
             cb.await();
 
-            beforeCancelSleep();
+            beforeCancelSleep(ts);
 
             ts.cancel();
 
@@ -166,7 +167,7 @@ public class XFlatMapTest {
 
             cb.await();
 
-            beforeCancelSleep();
+            beforeCancelSleep(ts);
 
             ts.cancel();
 
@@ -198,7 +199,7 @@ public class XFlatMapTest {
 
             cb.await();
 
-            beforeCancelSleep();
+            beforeCancelSleep(ts);
 
             ts.cancel();
 
@@ -229,7 +230,7 @@ public class XFlatMapTest {
 
             cb.await();
 
-            beforeCancelSleep();
+            beforeCancelSleep(ts);
 
             ts.cancel();
 
@@ -260,7 +261,7 @@ public class XFlatMapTest {
 
             cb.await();
 
-            beforeCancelSleep();
+            beforeCancelSleep(ts);
 
             ts.cancel();
 
@@ -291,7 +292,7 @@ public class XFlatMapTest {
 
             cb.await();
 
-            beforeCancelSleep();
+            beforeCancelSleep(ts);
 
             ts.cancel();
 
@@ -322,7 +323,7 @@ public class XFlatMapTest {
 
             cb.await();
 
-            beforeCancelSleep();
+            beforeCancelSleep(ts);
 
             ts.cancel();
 
@@ -354,7 +355,7 @@ public class XFlatMapTest {
 
             cb.await();
 
-            beforeCancelSleep();
+            beforeCancelSleep(ts);
 
             ts.cancel();
 
@@ -385,7 +386,7 @@ public class XFlatMapTest {
 
             cb.await();
 
-            beforeCancelSleep();
+            beforeCancelSleep(ts);
 
             ts.cancel();
 
@@ -416,7 +417,7 @@ public class XFlatMapTest {
 
             cb.await();
 
-            beforeCancelSleep();
+            beforeCancelSleep(ts);
 
             ts.cancel();
 
@@ -447,7 +448,7 @@ public class XFlatMapTest {
 
             cb.await();
 
-            beforeCancelSleep();
+            beforeCancelSleep(ts);
 
             ts.cancel();
 
@@ -479,7 +480,7 @@ public class XFlatMapTest {
 
             cb.await();
 
-            beforeCancelSleep();
+            beforeCancelSleep(ts);
 
             ts.cancel();
 
@@ -510,7 +511,7 @@ public class XFlatMapTest {
 
             cb.await();
 
-            beforeCancelSleep();
+            beforeCancelSleep(ts);
 
             ts.cancel();
 
@@ -541,7 +542,7 @@ public class XFlatMapTest {
 
             cb.await();
 
-            beforeCancelSleep();
+            beforeCancelSleep(ts);
 
             ts.cancel();
 
@@ -572,7 +573,7 @@ public class XFlatMapTest {
 
             cb.await();
 
-            beforeCancelSleep();
+            beforeCancelSleep(ts);
 
             ts.cancel();
 
@@ -604,7 +605,7 @@ public class XFlatMapTest {
 
             cb.await();
 
-            beforeCancelSleep();
+            beforeCancelSleep(ts);
 
             ts.cancel();
 

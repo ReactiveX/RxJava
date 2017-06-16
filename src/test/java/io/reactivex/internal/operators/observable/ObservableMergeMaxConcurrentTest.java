@@ -201,7 +201,7 @@ public class ObservableMergeMaxConcurrentTest {
             }
         }
     }
-    @Test(timeout = 10000)
+    @Test(timeout = 30000)
     public void testSimpleAsync() {
         for (int i = 1; i < 50; i++) {
             TestObserver<Integer> ts = new TestObserver<Integer>();
@@ -221,13 +221,13 @@ public class ObservableMergeMaxConcurrentTest {
             assertEquals(expected, actual);
         }
     }
-    @Test(timeout = 10000)
+    @Test(timeout = 30000)
     public void testSimpleOneLessAsyncLoop() {
         for (int i = 0; i < 200; i++) {
             testSimpleOneLessAsync();
         }
     }
-    @Test(timeout = 10000)
+    @Test(timeout = 30000)
     public void testSimpleOneLessAsync() {
         long t = System.currentTimeMillis();
         for (int i = 2; i < 50; i++) {
