@@ -85,8 +85,27 @@ public class NewThreadWorker extends Scheduler.Worker implements Disposable {
      * @param unit the time unit for both the initialDelay and period
      * @return the ScheduledRunnable instance
      */
-    public Disposable schedulePeriodicallyDirect(final Runnable run, long initialDelay, long period, TimeUnit unit) {
-        ScheduledDirectPeriodicTask task = new ScheduledDirectPeriodicTask(RxJavaPlugins.onSchedule(run));
+    public Disposable schedulePeriodicallyDirect(Runnable run, long initialDelay, long period, TimeUnit unit) {
+        final Runnable decoratedRun = RxJavaPlugins.onSchedule(run);
+        if (period <= 0L) {
+
+            InstantPeriodicTask periodicWrapper = new InstantPeriodicTask(decoratedRun, executor);
+            try {
+                Future<?> f;
+                if (initialDelay <= 0L) {
+                    f = executor.submit(periodicWrapper);
+                } else {
+                    f = executor.schedule(periodicWrapper, initialDelay, unit);
+                }
+                periodicWrapper.setFirst(f);
+            } catch (RejectedExecutionException ex) {
+                RxJavaPlugins.onError(ex);
+                return EmptyDisposable.INSTANCE;
+            }
+
+            return periodicWrapper;
+        }
+        ScheduledDirectPeriodicTask task = new ScheduledDirectPeriodicTask(decoratedRun);
         try {
             Future<?> f = executor.scheduleAtFixedRate(task, initialDelay, period, unit);
             task.setFuture(f);
