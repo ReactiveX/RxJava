@@ -1973,4 +1973,45 @@ public class FlowableBufferTest {
         .test()
         .assertResult(Arrays.asList(1, 2), Arrays.asList(4, 5), Arrays.asList(7, 8), Arrays.asList(10));
     }
+
+    @Test
+    public void withTimeAndSizeCapacityRace() {
+        for (int i = 0; i < 1000; i++) {
+            final TestScheduler scheduler = new TestScheduler();
+
+            final PublishProcessor<Object> ps = PublishProcessor.create();
+
+            TestSubscriber<List<Object>> ts = ps.buffer(1, TimeUnit.SECONDS, scheduler, 5).test();
+
+            ps.onNext(1);
+            ps.onNext(2);
+            ps.onNext(3);
+            ps.onNext(4);
+
+            Runnable r1 = new Runnable() {
+                @Override
+                public void run() {
+                    ps.onNext(5);
+                }
+            };
+
+            Runnable r2 = new Runnable() {
+                @Override
+                public void run() {
+                    scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
+                }
+            };
+
+            TestHelper.race(r1, r2);
+
+            ps.onComplete();
+
+            int items = 0;
+            for (List<Object> o : ts.values()) {
+                items += o.size();
+            }
+
+            assertEquals("Round: " + i, 5, items);
+        }
+    }
 }
