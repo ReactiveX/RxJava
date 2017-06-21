@@ -1018,6 +1018,11 @@ public final class ReplaySubject<T> extends Subject<T> {
                 h = next;
             }
 
+            long limit = scheduler.now(unit) - maxAge;
+            if (h.time < limit) {
+                return null;
+            }
+
             Object v = h.value;
             if (v == null) {
                 return null;
