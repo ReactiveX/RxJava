@@ -483,4 +483,38 @@ public class AsyncOnSubscribeTest {
 
         subscriber.assertNotCompleted();
     }
+
+    @Test
+    public void testMergeDelayedWithScalar() {
+        final TestScheduler scheduler = new TestScheduler();
+        Observable<Integer> os = Observable.create(AsyncOnSubscribe.<Integer, Integer> createStateful(
+            new Func0<Integer>() {
+
+                @Override
+                public Integer call() {
+                    return 0;
+                }
+
+            },
+            new Func3<Integer, Long, Observer<Observable<? extends Integer>>, Integer>() {
+
+                @Override
+                public Integer call(Integer state, Long requested, Observer<Observable<? extends Integer>> emitter) {
+                    if (state == 0) {
+                        emitter.onNext(Observable.range(0,100).delay(1, TimeUnit.SECONDS, scheduler));
+                    } else {
+                        emitter.onCompleted();
+                    }
+                    return state + 1;
+                }
+
+            }));
+
+        TestSubscriber<Object> ts = new TestSubscriber<Object>();
+        os.mergeWith(Observable.just(0)).subscribe(ts);
+        scheduler.advanceTimeBy(1, TimeUnit.HOURS);
+        ts.assertCompleted();
+        ts.assertValueCount(101);
+    }
+
 }
