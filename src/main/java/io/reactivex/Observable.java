@@ -39,7 +39,7 @@ import io.reactivex.schedulers.*;
  * and/or asynchronous reactive dataflows.
  * <p>
  * Many operators in the class accept {@code ObservableSource}(s), the base reactive interface
- * for such non-backpressured flows, which {@code Observable} itself extends as well.
+ * for such non-backpressured flows, which {@code Observable} itself implements as well.
  * <p>
  * The Observable's operators, by default, run with a buffer size of 128 elements (see {@link Flowable#bufferSize()},
  * that can be overridden globally via the system parameter {@code rx2.buffer-size}. Most operators, however, have
