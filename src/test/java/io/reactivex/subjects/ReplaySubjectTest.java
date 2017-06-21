@@ -932,6 +932,26 @@ public class ReplaySubjectTest {
     }
 
     @Test
+    public void peekStateTimeAndSizeValueExpired() {
+        TestScheduler scheduler = new TestScheduler();
+        ReplaySubject<Integer> rp = ReplaySubject.createWithTime(1, TimeUnit.DAYS, scheduler);
+
+        assertNull(rp.getValue());
+        assertNull(rp.getValues(new Integer[2])[0]);
+
+        rp.onNext(2);
+
+        assertEquals((Integer)2, rp.getValue());
+        assertEquals(2, rp.getValues()[0]);
+
+        scheduler.advanceTimeBy(2, TimeUnit.DAYS);
+
+        assertEquals(null, rp.getValue());
+        assertEquals(0, rp.getValues().length);
+        assertNull(rp.getValues(new Integer[2])[0]);
+    }
+
+    @Test
     public void onNextNull() {
         final ReplaySubject<Object> s = ReplaySubject.create();
 

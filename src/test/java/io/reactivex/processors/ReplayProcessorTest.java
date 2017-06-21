@@ -1031,6 +1031,26 @@ public class ReplayProcessorTest extends FlowableProcessorTest<Object> {
     }
 
     @Test
+    public void peekStateTimeAndSizeValueExpired() {
+        TestScheduler scheduler = new TestScheduler();
+        ReplayProcessor<Integer> rp = ReplayProcessor.createWithTime(1, TimeUnit.DAYS, scheduler);
+
+        assertNull(rp.getValue());
+        assertNull(rp.getValues(new Integer[2])[0]);
+
+        rp.onNext(2);
+
+        assertEquals((Integer)2, rp.getValue());
+        assertEquals(2, rp.getValues()[0]);
+
+        scheduler.advanceTimeBy(2, TimeUnit.DAYS);
+
+        assertEquals(null, rp.getValue());
+        assertEquals(0, rp.getValues().length);
+        assertNull(rp.getValues(new Integer[2])[0]);
+    }
+
+    @Test
     public void capacityHint() {
         ReplayProcessor<Integer> rp = ReplayProcessor.create(8);
 
