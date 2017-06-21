@@ -13,6 +13,20 @@
 
 package io.reactivex.processors;
 
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.notNull;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+
 import io.reactivex.Flowable;
 import io.reactivex.TestHelper;
 import io.reactivex.disposables.Disposable;
@@ -23,19 +37,15 @@ import io.reactivex.schedulers.Schedulers;
 import io.reactivex.schedulers.TestScheduler;
 import io.reactivex.subscribers.DefaultSubscriber;
 import io.reactivex.subscribers.TestSubscriber;
+import java.util.Arrays;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 import org.junit.Test;
 import org.mockito.InOrder;
 import org.mockito.Mockito;
 import org.reactivestreams.Subscriber;
 import org.reactivestreams.Subscription;
-
-import java.util.Arrays;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicReference;
-
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
 
 public class ReplayProcessorTest extends FlowableProcessorTest<Object> {
 
@@ -1027,6 +1037,26 @@ public class ReplayProcessorTest extends FlowableProcessorTest<Object> {
 
         assertEquals(0, rp.getValues().length);
 
+        assertNull(rp.getValues(new Integer[2])[0]);
+    }
+
+    @Test
+    public void peekStateTimeAndSizeValueExpired() {
+        TestScheduler scheduler = new TestScheduler();
+        ReplayProcessor<Integer> rp = ReplayProcessor.createWithTime(1, TimeUnit.DAYS, scheduler);
+
+        assertNull(rp.getValue());
+        assertNull(rp.getValues(new Integer[2])[0]);
+
+        rp.onNext(2);
+
+        assertEquals((Integer)2, rp.getValue());
+        assertEquals(2, rp.getValues()[0]);
+
+        scheduler.advanceTimeBy(2, TimeUnit.DAYS);
+
+        assertEquals(null, rp.getValue());
+        assertEquals(0, rp.getValues().length);
         assertNull(rp.getValues(new Integer[2])[0]);
     }
 

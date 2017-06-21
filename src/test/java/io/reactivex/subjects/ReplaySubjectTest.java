@@ -934,7 +934,7 @@ public class ReplaySubjectTest {
     @Test
     public void peekStateTimeAndSizeValueExpired() {
         TestScheduler scheduler = new TestScheduler();
-        ReplaySubject<Integer> rp = ReplaySubject.createWithTimeAndSize(1, TimeUnit.DAYS, scheduler, 1);
+        ReplaySubject<Integer> rp = ReplaySubject.createWithTime(1, TimeUnit.DAYS, scheduler);
 
         assertNull(rp.getValue());
         assertNull(rp.getValues(new Integer[2])[0]);
