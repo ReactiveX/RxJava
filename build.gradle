@@ -117,11 +117,24 @@ jacoco {
 }
 
 task GCandMem(dependsOn: 'check') << {
+    print("Memory usage before: ")
+    println(java.lang.management.ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getUsed() / 1024.0 / 1024.0)
     System.gc()
     Thread.sleep(200)
     print("Memory usage: ")
     println(java.lang.management.ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getUsed() / 1024.0 / 1024.0)
 }
+
+task GCandMem2(dependsOn: 'test') << {
+    print("Memory usage before: ")
+    println(java.lang.management.ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getUsed() / 1024.0 / 1024.0)
+    System.gc()
+    Thread.sleep(200)
+    print("Memory usage: ")
+    println(java.lang.management.ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getUsed() / 1024.0 / 1024.0)
+}
+
+testng.dependsOn GCandMem2
 
 jacocoTestReport {
     reports {
