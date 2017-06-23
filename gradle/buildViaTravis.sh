@@ -8,7 +8,7 @@ if [ "$buildTag" != "" ] && [ "${buildTag:0:3}" != "v2." ]; then
    exit 1
 fi
 
-GRADLE_OPTS=-Xmx832m
+export GRADLE_OPTS=-Xmx1024m
 
 if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then
   echo -e "Build Pull Request #$TRAVIS_PULL_REQUEST => Branch [$TRAVIS_BRANCH]"
