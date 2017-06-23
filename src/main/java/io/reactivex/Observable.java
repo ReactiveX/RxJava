@@ -34,12 +34,12 @@ import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.schedulers.*;
 
 /**
- * The Observable class that is designed similar to the Reactive-Streams Pattern, minus the backpressure,
- *  and offers factory methods, intermediate operators and the ability to consume reactive dataflows.
+ * The Observable class is the non-backpressured, optionally multi-valued base reactive class that
+ * offers factory methods, intermediate operators and the ability to consume synchronous
+ * and/or asynchronous reactive dataflows.
  * <p>
- * Reactive-Streams operates with {@code ObservableSource}s which {@code Observable} extends. Many operators
- * therefore accept general {@code ObservableSource}s directly and allow direct interoperation with other
- * Reactive-Streams implementations.
+ * Many operators in the class accept {@code ObservableSource}(s), the base reactive interface
+ * for such non-backpressured flows, which {@code Observable} itself implements as well.
  * <p>
  * The Observable's operators, by default, run with a buffer size of 128 elements (see {@link Flowable#bufferSize()},
  * that can be overridden globally via the system parameter {@code rx2.buffer-size}. Most operators, however, have
@@ -49,11 +49,50 @@ import io.reactivex.schedulers.*;
  * <p>
  * <img width="640" height="317" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/legend.png" alt="">
  * <p>
- * For more information see the <a href="http://reactivex.io/documentation/ObservableSource.html">ReactiveX
- * documentation</a>.
- *
+ * The design of this class was derived from the
+ * <a href="https://github.com/reactive-streams/reactive-streams-jvm">Reactive-Streams design and specification</a>
+ * by removing any backpressure-related infrastructure and implementation detail, replacing the
+ * {@code org.reactivestreams.Subscription} with {@link Disposable} as the primary means to cancel
+ * a flow.
+ * <p>
+ * The {@code Observable} follows the protocol
+ * <pre><code>
+ *      onSubscribe onNext* (onError | onComplete)?
+ * </code></pre>
+ * where
+ * the stream can be disposed through the {@code Disposable} instance provided to consumers through
+ * {@code Observer.onSubscribe}.
+ * <p>
+ * Unlike the {@code Observable} of version 1.x, {@link #subscribe(Observer)} does not allow external cancellation
+ * of a subscription and the {@code Observer} instance is expected to expose such capability.
+ * <p>Example:
+ * <pre><code>
+ * Disposable d = Observable.just("Hello world!")
+ *     .delay(1, TimeUnit.SECONDS)
+ *     .subscribeWith(new DisposableObserver&lt;String>() {
+ *         &#64;Override public void onStart() {
+ *             System.out.println("Start!");
+ *         }
+ *         &#64;Override public void onNext(Integer t) {
+ *             System.out.println(t);
+ *         }
+ *         &#64;Override public void onError(Throwable t) {
+ *             t.printStackTrace();
+ *         }
+ *         &#64;Override public void onComplete() {
+ *             System.out.println("Done!");
+ *         }
+ *     });
+ * 
+ * Thread.sleep(500);
+ * // the sequence now can be cancelled via dispose()
+ * d.dispose();
+ * </code></pre>
+ * 
  * @param <T>
  *            the type of the items emitted by the Observable
+ * @see Flowable
+ * @see io.reactivex.observers.DisposableObserver
  */
 public abstract class Observable<T> implements ObservableSource<T> {
 
