@@ -815,4 +815,15 @@ public class TestSubscriberTest {
 
         ts.assertNoValues();
     }
+
+    @Test
+    public void assertAndClearResetsValueCount() {
+        TestSubscriber<Integer> ts = TestSubscriber.create();
+
+        ts.onNext(1);
+        ts.assertValuesAndClear(1);
+
+        ts.assertNoValues();
+        Assert.assertEquals(0, ts.getValueCount());
+    }
 }

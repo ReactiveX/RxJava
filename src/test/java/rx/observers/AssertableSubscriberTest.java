@@ -151,7 +151,7 @@ public class AssertableSubscriberTest {
        assertEquals(Thread.currentThread().getName(), ts.getLastSeenThread().getName());
        assertTrue(ts.getOnErrorEvents().isEmpty());
        assertTrue(ts.getOnNextEvents().isEmpty());
-       assertEquals(1, ts.getValueCount());
+       assertEquals(0, ts.getValueCount());
     }
 
     @Test
