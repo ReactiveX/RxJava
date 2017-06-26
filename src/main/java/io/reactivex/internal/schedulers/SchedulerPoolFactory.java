@@ -57,6 +57,9 @@ public final class SchedulerPoolFactory {
      * Starts the purge thread if not already started.
      */
     public static void start() {
+        if (!PURGE_ENABLED) {
+            return;
+        }
         for (;;) {
             ScheduledExecutorService curr = PURGE_THREAD.get();
             if (curr != null && !curr.isShutdown()) {
@@ -78,7 +81,10 @@ public final class SchedulerPoolFactory {
      * Stops the purge thread.
      */
     public static void shutdown() {
-        PURGE_THREAD.get().shutdownNow();
+        ScheduledExecutorService exec = PURGE_THREAD.get();
+        if (exec != null) {
+            exec.shutdownNow();
+        }
         POOLS.clear();
     }
 
@@ -90,10 +96,10 @@ public final class SchedulerPoolFactory {
 
         if (properties.containsKey(PURGE_ENABLED_KEY)) {
             purgeEnable = Boolean.getBoolean(PURGE_ENABLED_KEY);
+        }
 
-            if (purgeEnable && properties.containsKey(PURGE_PERIOD_SECONDS_KEY)) {
-                purgePeriod = Integer.getInteger(PURGE_PERIOD_SECONDS_KEY, purgePeriod);
-            }
+        if (purgeEnable && properties.containsKey(PURGE_PERIOD_SECONDS_KEY)) {
+            purgePeriod = Integer.getInteger(PURGE_PERIOD_SECONDS_KEY, purgePeriod);
         }
 
         PURGE_ENABLED = purgeEnable;
@@ -109,7 +115,7 @@ public final class SchedulerPoolFactory {
      */
     public static ScheduledExecutorService create(ThreadFactory factory) {
         final ScheduledExecutorService exec = Executors.newScheduledThreadPool(1, factory);
-        if (exec instanceof ScheduledThreadPoolExecutor) {
+        if (PURGE_ENABLED && exec instanceof ScheduledThreadPoolExecutor) {
             ScheduledThreadPoolExecutor e = (ScheduledThreadPoolExecutor) exec;
             POOLS.put(e, exec);
         }
