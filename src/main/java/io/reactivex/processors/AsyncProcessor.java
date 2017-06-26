@@ -21,7 +21,8 @@ import io.reactivex.plugins.RxJavaPlugins;
 import org.reactivestreams.*;
 
 /**
- * A Subject that emits the very last value followed by a completion event or the received error to Subscribers.
+ * Processor that emits the very last value followed by a completion event or the received error
+ * to {@link Subscriber}s.
  *
  * <p>The implementation of onXXX methods are technically thread-safe but non-serialized calls
  * to them may lead to undefined state in the currently subscribed Subscribers.
