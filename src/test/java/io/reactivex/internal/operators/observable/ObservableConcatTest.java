@@ -1041,4 +1041,118 @@ public class ObservableConcatTest {
 
         assertEquals(1, calls[0]);
     }
+
+    @Test
+    public void concatReportsDisposedOnComplete() {
+        final Disposable[] disposable = { null };
+
+        Observable.concat(Observable.just(1), Observable.just(2))
+        .subscribe(new Observer<Integer>() {
+
+            @Override
+            public void onSubscribe(Disposable d) {
+                disposable[0] = d;
+            }
+
+            @Override
+            public void onNext(Integer t) {
+            }
+
+            @Override
+            public void onError(Throwable e) {
+            }
+
+            @Override
+            public void onComplete() {
+            }
+        });
+
+        assertTrue(disposable[0].isDisposed());
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void concatReportsDisposedOnCompleteDelayError() {
+        final Disposable[] disposable = { null };
+
+        Observable.concatArrayDelayError(Observable.just(1), Observable.just(2))
+        .subscribe(new Observer<Integer>() {
+
+            @Override
+            public void onSubscribe(Disposable d) {
+                disposable[0] = d;
+            }
+
+            @Override
+            public void onNext(Integer t) {
+            }
+
+            @Override
+            public void onError(Throwable e) {
+            }
+
+            @Override
+            public void onComplete() {
+            }
+        });
+
+        assertTrue(disposable[0].isDisposed());
+    }
+
+    @Test
+    public void concatReportsDisposedOnError() {
+        final Disposable[] disposable = { null };
+
+        Observable.concat(Observable.just(1), Observable.<Integer>error(new TestException()))
+        .subscribe(new Observer<Integer>() {
+
+            @Override
+            public void onSubscribe(Disposable d) {
+                disposable[0] = d;
+            }
+
+            @Override
+            public void onNext(Integer t) {
+            }
+
+            @Override
+            public void onError(Throwable e) {
+            }
+
+            @Override
+            public void onComplete() {
+            }
+        });
+
+        assertTrue(disposable[0].isDisposed());
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void concatReportsDisposedOnErrorDelayError() {
+        final Disposable[] disposable = { null };
+
+        Observable.concatArrayDelayError(Observable.just(1), Observable.<Integer>error(new TestException()))
+        .subscribe(new Observer<Integer>() {
+
+            @Override
+            public void onSubscribe(Disposable d) {
+                disposable[0] = d;
+            }
+
+            @Override
+            public void onNext(Integer t) {
+            }
+
+            @Override
+            public void onError(Throwable e) {
+            }
+
+            @Override
+            public void onComplete() {
+            }
+        });
+
+        assertTrue(disposable[0].isDisposed());
+    }
 }
