@@ -151,8 +151,8 @@ public abstract class Flowable<T> implements Publisher<T> {
      * resulting sequence terminates immediately (normally or with all the errors accumulated till that point).
      * If that input source is also synchronous, other sources after it will not be subscribed to.
      * <p>
-     * If provided array of source Publishers is empty, the resulting sequence completes immediately without emitting
-     * any items and without any calls to combiner function.
+     * If the provided array of source Publishers is empty, the resulting sequence completes immediately without emitting
+     * any items and without any calls to the combiner function.
      *
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
@@ -196,7 +196,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * If that input source is also synchronous, other sources after it will not be subscribed to.
      * <p>
      * If there are no source Publishers provided, the resulting sequence completes immediately without emitting
-     * any items and without any calls to combiner function.
+     * any items and without any calls to the combiner function.
      *
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
@@ -239,8 +239,8 @@ public abstract class Flowable<T> implements Publisher<T> {
      * resulting sequence terminates immediately (normally or with all the errors accumulated till that point).
      * If that input source is also synchronous, other sources after it will not be subscribed to.
      * <p>
-     * If provided array of source Publishers is empty, the resulting sequence completes immediately without emitting
-     * any items and without any calls to combiner function.
+     * If the provided array of source Publishers is empty, the resulting sequence completes immediately without emitting
+     * any items and without any calls to the combiner function.
      *
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
@@ -291,8 +291,8 @@ public abstract class Flowable<T> implements Publisher<T> {
      * resulting sequence terminates immediately (normally or with all the errors accumulated till that point).
      * If that input source is also synchronous, other sources after it will not be subscribed to.
      * <p>
-     * If provided iterable of source Publishers is empty, the resulting sequence completes immediately without emitting
-     * any items and without any calls to combiner function.
+     * If the provided iterable of source Publishers is empty, the resulting sequence completes immediately without emitting
+     * any items and without any calls to the combiner function.
      *
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
@@ -336,8 +336,8 @@ public abstract class Flowable<T> implements Publisher<T> {
      * resulting sequence terminates immediately (normally or with all the errors accumulated till that point).
      * If that input source is also synchronous, other sources after it will not be subscribed to.
      * <p>
-     * If provided iterable of source Publishers is empty, the resulting sequence completes immediately without emitting any items and
-     * without any calls to combiner function.
+     * If the provided iterable of source Publishers is empty, the resulting sequence completes immediately without emitting any items and
+     * without any calls to the combiner function.
      *
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
@@ -386,8 +386,8 @@ public abstract class Flowable<T> implements Publisher<T> {
      * resulting sequence terminates immediately (normally or with all the errors accumulated till that point).
      * If that input source is also synchronous, other sources after it will not be subscribed to.
      * <p>
-     * If provided array of source Publishers is empty, the resulting sequence completes immediately without emitting
-     * any items and without any calls to combiner function.
+     * If the provided array of source Publishers is empty, the resulting sequence completes immediately without emitting
+     * any items and without any calls to the combiner function.
      *
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
@@ -433,7 +433,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * If that input source is also synchronous, other sources after it will not be subscribed to.
      * <p>
      * If there are no source Publishers provided, the resulting sequence completes immediately without emitting
-     * any items and without any calls to combiner function.
+     * any items and without any calls to the combiner function.
      *
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
@@ -479,7 +479,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * If that input source is also synchronous, other sources after it will not be subscribed to.
      * <p>
      * If there are no source Publishers provided, the resulting sequence completes immediately without emitting
-     * any items and without any calls to combiner function.
+     * any items and without any calls to the combiner function.
      *
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
@@ -526,8 +526,8 @@ public abstract class Flowable<T> implements Publisher<T> {
      * resulting sequence terminates immediately (normally or with all the errors accumulated till that point).
      * If that input source is also synchronous, other sources after it will not be subscribed to.
      * <p>
-     * If provided array of source Publishers is empty, the resulting sequence completes immediately without emitting
-     * any items and without any calls to combiner function.
+     * If the provided array of source Publishers is empty, the resulting sequence completes immediately without emitting
+     * any items and without any calls to the combiner function.
      *
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
@@ -580,8 +580,8 @@ public abstract class Flowable<T> implements Publisher<T> {
      * resulting sequence terminates immediately (normally or with all the errors accumulated till that point).
      * If that input source is also synchronous, other sources after it will not be subscribed to.
      * <p>
-     * If provided iterable of source Publishers is empty, the resulting sequence completes immediately without emitting
-     * any items and without any calls to combiner function.
+     * If the provided iterable of source Publishers is empty, the resulting sequence completes immediately without emitting
+     * any items and without any calls to the combiner function.
      *
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
@@ -626,8 +626,8 @@ public abstract class Flowable<T> implements Publisher<T> {
      * resulting sequence terminates immediately (normally or with all the errors accumulated till that point).
      * If that input source is also synchronous, other sources after it will not be subscribed to.
      * <p>
-     * If provided iterable of source Publishers is empty, the resulting sequence completes immediately without emitting
-     * any items and without any calls to combiner function.
+     * If the provided iterable of source Publishers is empty, the resulting sequence completes immediately without emitting
+     * any items and without any calls to the combiner function.
      *
      * <dl>
      *  <dt><b>Backpressure:</b></dt>

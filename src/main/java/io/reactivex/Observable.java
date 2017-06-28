@@ -179,7 +179,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * If that input source is also synchronous, other sources after it will not be subscribed to.
      * <p>
      * If there are no ObservableSources provided, the resulting sequence completes immediately without emitting
-     * any items and without any calls to combiner function.
+     * any items and without any calls to the combiner function.
      *
      * <p>
      * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/combineLatest.png" alt="">
@@ -221,8 +221,8 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * resulting sequence terminates immediately (normally or with all the errors accumulated till that point).
      * If that input source is also synchronous, other sources after it will not be subscribed to.
      * <p>
-     * If provided iterable of ObservableSources is empty, the resulting sequence completes immediately without emitting
-     * any items and without any calls to combiner function.
+     * If the provided iterable of ObservableSources is empty, the resulting sequence completes immediately without emitting
+     * any items and without any calls to the combiner function.
      *
      * <p>
      * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/combineLatest.png" alt="">
@@ -263,8 +263,8 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * resulting sequence terminates immediately (normally or with all the errors accumulated till that point).
      * If that input source is also synchronous, other sources after it will not be subscribed to.
      * <p>
-     * If provided iterable of ObservableSources is empty, the resulting sequence completes immediately without emitting
-     * any items and without any calls to combiner function.
+     * If the provided iterable of ObservableSources is empty, the resulting sequence completes immediately without emitting
+     * any items and without any calls to the combiner function.
      *
      * <p>
      * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/combineLatest.png" alt="">
@@ -313,8 +313,8 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * resulting sequence terminates immediately (normally or with all the errors accumulated till that point).
      * If that input source is also synchronous, other sources after it will not be subscribed to.
      * <p>
-     * If provided array of ObservableSources is empty, the resulting sequence completes immediately without emitting
-     * any items and without any calls to combiner function.
+     * If the provided array of ObservableSources is empty, the resulting sequence completes immediately without emitting
+     * any items and without any calls to the combiner function.
      *
      * <p>
      * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/combineLatest.png" alt="">
@@ -355,8 +355,8 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * resulting sequence terminates immediately (normally or with all the errors accumulated till that point).
      * If that input source is also synchronous, other sources after it will not be subscribed to.
      * <p>
-     * If provided array of ObservableSources is empty, the resulting sequence completes immediately without emitting
-     * any items and without any calls to combiner function.
+     * If the provided array of ObservableSources is empty, the resulting sequence completes immediately without emitting
+     * any items and without any calls to the combiner function.
      *
      * <p>
      * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/combineLatest.png" alt="">
@@ -850,8 +850,8 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * resulting sequence terminates immediately (normally or with all the errors accumulated till that point).
      * If that input source is also synchronous, other sources after it will not be subscribed to.
      * <p>
-     * If provided array of ObservableSources is empty, the resulting sequence completes immediately without emitting
-     * any items and without any calls to combiner function.
+     * If the provided array of ObservableSources is empty, the resulting sequence completes immediately without emitting
+     * any items and without any calls to the combiner function.
      *
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
@@ -894,7 +894,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * If that input source is also synchronous, other sources after it will not be subscribed to.
      * <p>
      * If there are no ObservableSources provided, the resulting sequence completes immediately without emitting
-     * any items and without any calls to combiner function.
+     * any items and without any calls to the combiner function.
      *
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
@@ -936,8 +936,8 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * resulting sequence terminates immediately (normally or with all the errors accumulated till that point).
      * If that input source is also synchronous, other sources after it will not be subscribed to.
      * <p>
-     * If provided array of ObservableSources is empty, the resulting sequence completes immediately without emitting
-     * any items and without any calls to combiner function.
+     * If the provided array of ObservableSources is empty, the resulting sequence completes immediately without emitting
+     * any items and without any calls to the combiner function.
      *
      * <p>
      * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/combineLatestDelayError.png" alt="">
@@ -988,8 +988,8 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * resulting sequence terminates immediately (normally or with all the errors accumulated till that point).
      * If that input source is also synchronous, other sources after it will not be subscribed to.
      * <p>
-     * If provided iterable of ObservableSources is empty, the resulting sequence completes immediately without emitting
-     * any items and without any calls to combiner function.
+     * If the provided iterable of ObservableSources is empty, the resulting sequence completes immediately without emitting
+     * any items and without any calls to the combiner function.
      *
      * <p>
      * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/combineLatestDelayError.png" alt="">
@@ -1031,8 +1031,8 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * resulting sequence terminates immediately (normally or with all the errors accumulated till that point).
      * If that input source is also synchronous, other sources after it will not be subscribed to.
      * <p>
-     * If provided iterable of ObservableSources is empty, the resulting sequence completes immediately without emitting
-     * any items and without any calls to combiner function.
+     * If the provided iterable of ObservableSources is empty, the resulting sequence completes immediately without emitting
+     * any items and without any calls to the combiner function.
      *
      * <p>
      * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/combineLatestDelayError.png" alt="">
