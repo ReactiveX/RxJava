@@ -24,7 +24,7 @@ targetCompatibility = JavaVersion.VERSION_1_6
 dependencies {
     signature 'org.codehaus.mojo.signature:java16:1.1@signature'
 
-    compile 'org.reactivestreams:reactive-streams:1.0.0'
+    compile 'org.reactivestreams:reactive-streams:1.0.1-RC1'
 
     testCompile 'junit:junit:4.12'
     testCompile 'org.mockito:mockito-core:2.1.0'
@@ -32,7 +32,7 @@ dependencies {
     perfCompile 'org.openjdk.jmh:jmh-core:1.16'
     perfCompile 'org.openjdk.jmh:jmh-generator-annprocess:1.16'
 
-    testCompile 'org.reactivestreams:reactive-streams-tck:1.0.0'
+    testCompile 'org.reactivestreams:reactive-streams-tck:1.0.1-RC1'
     testCompile group: 'org.testng', name: 'testng', version: '6.9.10'
 }
 
