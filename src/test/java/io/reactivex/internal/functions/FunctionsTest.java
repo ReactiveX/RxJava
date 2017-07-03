@@ -41,7 +41,7 @@ public class FunctionsTest {
             Method m = Functions.HashSetCallable.class.getMethod("values");
             m.setAccessible(true);
             Method e = Functions.HashSetCallable.class.getMethod("valueOf", String.class);
-            m.setAccessible(true);
+            e.setAccessible(true);
 
             for (Enum<HashSetCallable> o : (Enum<HashSetCallable>[])m.invoke(null)) {
                 assertSame(o, e.invoke(null, o.name()));
@@ -60,7 +60,7 @@ public class FunctionsTest {
             Method m = Functions.NaturalComparator.class.getMethod("values");
             m.setAccessible(true);
             Method e = Functions.NaturalComparator.class.getMethod("valueOf", String.class);
-            m.setAccessible(true);
+            e.setAccessible(true);
 
             for (Enum<NaturalComparator> o : (Enum<NaturalComparator>[])m.invoke(null)) {
                 assertSame(o, e.invoke(null, o.name()));
