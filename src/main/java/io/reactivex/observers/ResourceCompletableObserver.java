@@ -50,7 +50,7 @@ import io.reactivex.internal.util.EndConsumerHelper;
  * <p>Implementation of {@link #onStart()}, {@link #onError(Throwable)}
  * and {@link #onComplete()} are not allowed to throw any unchecked exceptions.
  *
- * <p>Example<code><pre>
+ * <p>Example<pre><code>
  * Disposable d =
  *     Completable.complete().delay(1, TimeUnit.SECONDS)
  *     .subscribeWith(new ResourceCompletableObserver() {
@@ -70,7 +70,7 @@ import io.reactivex.internal.util.EndConsumerHelper;
  *     });
  * // ...
  * d.dispose();
- * </pre></code>
+ * </code></pre>
  */
 public abstract class ResourceCompletableObserver implements CompletableObserver, Disposable {
     /** The active subscription. */
