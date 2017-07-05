@@ -506,8 +506,6 @@ public class FlowableMergeTest {
             assertTrue(os2.get());
 
             ts.assertValues(0L, 1L, 2L, 0L, 1L);
-            // FIXME not happening anymore
-//            ts.assertUnsubscribed();
         }
     }
 
