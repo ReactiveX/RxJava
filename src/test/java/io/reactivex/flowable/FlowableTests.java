@@ -1026,17 +1026,6 @@ public class FlowableTests {
         Flowable.just(1).ambWith(Flowable.just(2)).subscribe(ts);
         ts.assertValue(1);
     }
-// FIXME Subscribers can't throw
-//    @Test(expected = OnErrorNotImplementedException.class)
-//    public void testSubscribeWithoutOnError() {
-//        Observable<String> o = Observable.just("a", "b").flatMap(new Func1<String, Observable<String>>() {
-//            @Override
-//            public Observable<String> call(String s) {
-//                return Observable.error(new Exception("test"));
-//            }
-//        });
-//        o.subscribe();
-//    }
 
     @Test
     public void testTakeWhileToList() {
@@ -1112,28 +1101,6 @@ public class FlowableTests {
         verify(w, never()).onNext(any(Integer.class));
         verify(w, never()).onError(any(Throwable.class));
     }
-
-// FIXME this test doesn't make sense
-//    @Test // cf. https://github.com/ReactiveX/RxJava/issues/2599
-//    public void testSubscribingSubscriberAsObserverMaintainsSubscriptionChain() {
-//        TestSubscriber<Object> subscriber = new TestSubscriber<T>();
-//        Subscription subscription = Observable.just("event").subscribe((Observer<Object>) subscriber);
-//        subscription.unsubscribe();
-//
-//        subscriber.assertUnsubscribed();
-//    }
-
-// FIXME subscribers can't throw
-//    @Test(expected=OnErrorNotImplementedException.class)
-//    public void testForEachWithError() {
-//        Observable.error(new Exception("boo"))
-//        //
-//        .forEach(new Action1<Object>() {
-//            @Override
-//            public void call(Object t) {
-//                //do nothing
-//            }});
-//    }
 
     @Test(expected = NullPointerException.class)
     public void testForEachWithNull() {
