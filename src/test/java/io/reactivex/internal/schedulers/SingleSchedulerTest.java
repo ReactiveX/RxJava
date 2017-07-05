@@ -15,6 +15,7 @@ package io.reactivex.internal.schedulers;
 
 import static org.junit.Assert.*;
 
+import io.reactivex.schedulers.AbstractSchedulerTests;
 import java.util.concurrent.*;
 
 import org.junit.Test;
@@ -22,12 +23,11 @@ import org.junit.Test;
 import io.reactivex.*;
 import io.reactivex.Scheduler.Worker;
 import io.reactivex.disposables.*;
-import io.reactivex.internal.disposables.SequentialDisposable;
 import io.reactivex.internal.functions.Functions;
 import io.reactivex.internal.schedulers.SingleScheduler.ScheduledWorker;
 import io.reactivex.schedulers.Schedulers;
 
-public class SingleSchedulerTest {
+public class SingleSchedulerTest extends AbstractSchedulerTests {
 
     @Test
     public void shutdownRejects() {
@@ -119,63 +119,8 @@ public class SingleSchedulerTest {
         }
     }
 
-    @Test(timeout = 10000)
-    public void schedulePeriodicallyDirectZeroPeriod() throws Exception {
-        Scheduler s = Schedulers.single();
-
-        for (int initial = 0; initial < 2; initial++) {
-            final CountDownLatch cdl = new CountDownLatch(1);
-
-            final SequentialDisposable sd = new SequentialDisposable();
-
-            try {
-                sd.replace(s.schedulePeriodicallyDirect(new Runnable() {
-                    int count;
-                    @Override
-                    public void run() {
-                        if (++count == 10) {
-                            sd.dispose();
-                            cdl.countDown();
-                        }
-                    }
-                }, initial, 0, TimeUnit.MILLISECONDS));
-
-                assertTrue("" + initial, cdl.await(5, TimeUnit.SECONDS));
-            } finally {
-                sd.dispose();
-            }
-        }
+    @Override protected Scheduler getScheduler() {
+        return Schedulers.single();
     }
 
-    @Test(timeout = 10000)
-    public void schedulePeriodicallyZeroPeriod() throws Exception {
-        Scheduler s = Schedulers.single();
-
-        for (int initial = 0; initial < 2; initial++) {
-
-            final CountDownLatch cdl = new CountDownLatch(1);
-
-            final SequentialDisposable sd = new SequentialDisposable();
-
-            Scheduler.Worker w = s.createWorker();
-
-            try {
-                sd.replace(w.schedulePeriodically(new Runnable() {
-                    int count;
-                    @Override
-                    public void run() {
-                        if (++count == 10) {
-                            sd.dispose();
-                            cdl.countDown();
-                        }
-                    }
-                }, initial, 0, TimeUnit.MILLISECONDS));
-
-                assertTrue("" + initial, cdl.await(5, TimeUnit.SECONDS));
-            } finally {
-                sd.dispose();
-                w.dispose();
-            }
-        }
-    }
 }
