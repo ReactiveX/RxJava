@@ -5086,7 +5086,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * {@link java.lang.IllegalArgumentException}. If the {@link Observable} is empty, {@link java.util.concurrent.Future}
      * will receive an {@link java.util.NoSuchElementException}.
      * <p>
-     * If the {@code Observable} may emit more than one item, use {@code Observable.toList().toBlocking().toFuture()}.
+     * If the {@code Observable} may emit more than one item, use {@code Observable.toList().toFuture()}.
      * <p>
      * <img width="640" height="395" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/B.toFuture.png" alt="">
      * <dl>
@@ -12294,8 +12294,8 @@ public abstract class Observable<T> implements ObservableSource<T> {
     }
 
     /**
-     * Returns a Single that emits a single item, a list composed of all the items emitted by the source
-     * ObservableSource.
+     * Returns a Single that emits a single item, a list composed of all the items emitted by the
+     * finite source ObservableSource.
      * <p>
      * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/toList.2.png" alt="">
      * <p>
@@ -12305,8 +12305,9 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * function once, passing it the entire list, by calling the ObservableSource's {@code toList} method prior to
      * calling its {@link #subscribe} method.
      * <p>
-     * Be careful not to use this operator on ObservableSources that emit infinite or very large numbers of items, as
-     * you do not have the option to dispose.
+     * Note that this operator requires the upstream to signal {@code onComplete} for the accumulated list to
+     * be emitted. Sources that are infinite and never complete will never emit anything through this
+     * operator and an infinite source may lead to a fatal {@code OutOfMemoryError}.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code toList} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -12323,8 +12324,8 @@ public abstract class Observable<T> implements ObservableSource<T> {
     }
 
     /**
-     * Returns a Single that emits a single item, a list composed of all the items emitted by the source
-     * ObservableSource.
+     * Returns a Single that emits a single item, a list composed of all the items emitted by the
+     * finite source ObservableSource.
      * <p>
      * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/toList.2.png" alt="">
      * <p>
@@ -12334,8 +12335,9 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * function once, passing it the entire list, by calling the ObservableSource's {@code toList} method prior to
      * calling its {@link #subscribe} method.
      * <p>
-     * Be careful not to use this operator on ObservableSources that emit infinite or very large numbers of items, as
-     * you do not have the option to dispose.
+     * Note that this operator requires the upstream to signal {@code onComplete} for the accumulated list to
+     * be emitted. Sources that are infinite and never complete will never emit anything through this
+     * operator and an infinite source may lead to a fatal {@code OutOfMemoryError}.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code toList} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -12355,8 +12357,8 @@ public abstract class Observable<T> implements ObservableSource<T> {
     }
 
     /**
-     * Returns a Single that emits a single item, a list composed of all the items emitted by the source
-     * ObservableSource.
+     * Returns a Single that emits a single item, a list composed of all the items emitted by the
+     * finite source ObservableSource.
      * <p>
      * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/toList.2.png" alt="">
      * <p>
@@ -12366,8 +12368,9 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * function once, passing it the entire list, by calling the ObservableSource's {@code toList} method prior to
      * calling its {@link #subscribe} method.
      * <p>
-     * Be careful not to use this operator on ObservableSources that emit infinite or very large numbers of items, as
-     * you do not have the option to dispose.
+     * Note that this operator requires the upstream to signal {@code onComplete} for the accumulated collection to
+     * be emitted. Sources that are infinite and never complete will never emit anything through this
+     * operator and an infinite source may lead to a fatal {@code OutOfMemoryError}.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code toList} does not operate by default on a particular {@link Scheduler}.</dd>
