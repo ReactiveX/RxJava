@@ -5573,7 +5573,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * {@link java.lang.IllegalArgumentException}. If the {@link Flowable} is empty, {@link java.util.concurrent.Future}
      * will receive an {@link java.util.NoSuchElementException}.
      * <p>
-     * If the {@code Flowable} may emit more than one item, use {@code Flowable.toList().toBlocking().toFuture()}.
+     * If the {@code Flowable} may emit more than one item, use {@code Flowable.toList().toFuture()}.
      * <p>
      * <img width="640" height="395" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/B.toFuture.png" alt="">
      * <dl>
@@ -13056,7 +13056,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * <p>
      * If there is a {@link #create(FlowableOnSubscribe, BackpressureStrategy)} type source up in the
      * chain, it is recommended to use {@code subscribeOn(scheduler, false)} instead
-     * to avoid same-pool deadlock because requests may pile up behind a eager/blocking emitter.
+     * to avoid same-pool deadlock because requests may pile up behind an eager/blocking emitter.
      * <p>
      * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/subscribeOn.png" alt="">
      * <dl>
@@ -13090,7 +13090,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * <p>
      * If there is a {@link #create(FlowableOnSubscribe, BackpressureStrategy)} type source up in the
      * chain, it is recommended to have {@code requestOn} false to avoid same-pool deadlock
-     * because requests may pile up behind a eager/blocking emitter.
+     * because requests may pile up behind an eager/blocking emitter.
      * <p>
      * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/subscribeOn.png" alt="">
      * <dl>
@@ -14574,8 +14574,8 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     /**
-     * Returns a Single that emits a single item, a list composed of all the items emitted by the source
-     * Publisher.
+     * Returns a Single that emits a single item, a list composed of all the items emitted by the
+     * finite upstream source Publisher.
      * <p>
      * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/toList.png" alt="">
      * <p>
@@ -14585,8 +14585,9 @@ public abstract class Flowable<T> implements Publisher<T> {
      * function once, passing it the entire list, by calling the Publisher's {@code toList} method prior to
      * calling its {@link #subscribe} method.
      * <p>
-     * Be careful not to use this operator on Publishers that emit infinite or very large numbers of items, as
-     * you do not have the option to cancel.
+     * Note that this operator requires the upstream to signal {@code onComplete} for the accumulated list to
+     * be emitted. Sources that are infinite and never complete will never emit anything through this
+     * operator and an infinite source may lead to a fatal {@code OutOfMemoryError}.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream and consumes the source {@code Publisher} in an
@@ -14607,8 +14608,8 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     /**
-     * Returns a Single that emits a single item, a list composed of all the items emitted by the source
-     * Publisher.
+     * Returns a Single that emits a single item, a list composed of all the items emitted by the
+     * finite source Publisher.
      * <p>
      * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/toList.png" alt="">
      * <p>
@@ -14618,8 +14619,9 @@ public abstract class Flowable<T> implements Publisher<T> {
      * function once, passing it the entire list, by calling the Publisher's {@code toList} method prior to
      * calling its {@link #subscribe} method.
      * <p>
-     * Be careful not to use this operator on Publishers that emit infinite or very large numbers of items, as
-     * you do not have the option to cancel.
+     * Note that this operator requires the upstream to signal {@code onComplete} for the accumulated list to
+     * be emitted. Sources that are infinite and never complete will never emit anything through this
+     * operator and an infinite source may lead to a fatal {@code OutOfMemoryError}.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream and consumes the source {@code Publisher} in an
@@ -14643,8 +14645,8 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     /**
-     * Returns a Single that emits a single item, a list composed of all the items emitted by the source
-     * Publisher.
+     * Returns a Single that emits a single item, a list composed of all the items emitted by the
+     * finite source Publisher.
      * <p>
      * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/toList.png" alt="">
      * <p>
@@ -14654,8 +14656,9 @@ public abstract class Flowable<T> implements Publisher<T> {
      * function once, passing it the entire list, by calling the Publisher's {@code toList} method prior to
      * calling its {@link #subscribe} method.
      * <p>
-     * Be careful not to use this operator on Publishers that emit infinite or very large numbers of items, as
-     * you do not have the option to cancel.
+     * Note that this operator requires the upstream to signal {@code onComplete} for the accumulated collection to
+     * be emitted. Sources that are infinite and never complete will never emit anything through this
+     * operator and an infinite source may lead to a fatal {@code OutOfMemoryError}.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream and consumes the source {@code Publisher} in an
