@@ -234,69 +234,80 @@ public class BlockingOperatorNextTest {
      */
     @Test
     public void testNoBufferingOrBlockingOfSequence() throws Throwable {
-        final CountDownLatch finished = new CountDownLatch(1);
-        final int COUNT = 30;
-        final CountDownLatch timeHasPassed = new CountDownLatch(COUNT);
-        final AtomicBoolean running = new AtomicBoolean(true);
-        final AtomicInteger count = new AtomicInteger(0);
-        final Observable<Integer> obs = Observable.unsafeCreate(new Observable.OnSubscribe<Integer>() {
+        int retries = 10;
 
-            @Override
-            public void call(final Subscriber<? super Integer> o) {
-                new Thread(new Runnable() {
+        for (;;) {
+            try {
+                final CountDownLatch finished = new CountDownLatch(1);
+                final int COUNT = 30;
+                final CountDownLatch timeHasPassed = new CountDownLatch(COUNT);
+                final AtomicBoolean running = new AtomicBoolean(true);
+                final AtomicInteger count = new AtomicInteger(0);
+                final Observable<Integer> obs = Observable.unsafeCreate(new Observable.OnSubscribe<Integer>() {
 
                     @Override
-                    public void run() {
-                        try {
-                            while (running.get()) {
-                                o.onNext(count.incrementAndGet());
-                                timeHasPassed.countDown();
+                    public void call(final Subscriber<? super Integer> o) {
+                        new Thread(new Runnable() {
+
+                            @Override
+                            public void run() {
+                                try {
+                                    while (running.get()) {
+                                        o.onNext(count.incrementAndGet());
+                                        timeHasPassed.countDown();
+                                    }
+                                    o.onCompleted();
+                                } catch (Throwable e) {
+                                    o.onError(e);
+                                } finally {
+                                    finished.countDown();
+                                }
                             }
-                            o.onCompleted();
-                        } catch (Throwable e) {
-                            o.onError(e);
-                        } finally {
-                            finished.countDown();
-                        }
+                        }).start();
                     }
-                }).start();
+
+                });
+
+                try {
+                    Iterator<Integer> it = next(obs).iterator();
+
+                    assertTrue(it.hasNext());
+                    int a = it.next();
+                    assertTrue(it.hasNext());
+                    int b = it.next();
+                    // we should have a different value
+                    assertTrue("a and b should be different", a != b);
+
+                    // wait for some time (if times out we are blocked somewhere so fail ... set very high for very slow, constrained machines)
+                    timeHasPassed.await(8000, TimeUnit.MILLISECONDS);
+
+                    assertTrue(it.hasNext());
+                    int c = it.next();
+
+                    assertTrue("c should not just be the next in sequence", c != (b + 1));
+                    assertTrue("expected that c [" + c + "] is higher than or equal to " + COUNT, c >= COUNT);
+
+                    assertTrue(it.hasNext());
+                    int d = it.next();
+                    assertTrue(d > c);
+
+                    // shut down the thread
+                    running.set(false);
+
+                    finished.await();
+
+                    assertFalse(it.hasNext());
+
+                    System.out.println("a: " + a + " b: " + b + " c: " + c);
+                } finally {
+                    running.set(false); // don't let the thread spin indefinitely
+                }
+                return;
+            } catch (AssertionError ex) {
+                if (retries-- == 0) {
+                    throw ex;
+                }
             }
-
-        });
-
-        try {
-            Iterator<Integer> it = next(obs).iterator();
-
-            assertTrue(it.hasNext());
-            int a = it.next();
-            assertTrue(it.hasNext());
-            int b = it.next();
-            // we should have a different value
-            assertTrue("a and b should be different", a != b);
-
-            // wait for some time (if times out we are blocked somewhere so fail ... set very high for very slow, constrained machines)
-            timeHasPassed.await(8000, TimeUnit.MILLISECONDS);
-
-            assertTrue(it.hasNext());
-            int c = it.next();
-
-            assertTrue("c should not just be the next in sequence", c != (b + 1));
-            assertTrue("expected that c [" + c + "] is higher than or equal to " + COUNT, c >= COUNT);
-
-            assertTrue(it.hasNext());
-            int d = it.next();
-            assertTrue(d > c);
-
-            // shut down the thread
-            running.set(false);
-
-            finished.await();
-
-            assertFalse(it.hasNext());
-
-            System.out.println("a: " + a + " b: " + b + " c: " + c);
-        } finally {
-            running.set(false); // don't let the thread spin indefinitely
         }
     }
 
