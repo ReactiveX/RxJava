@@ -54,7 +54,6 @@ public final class SafeCompletableSubscriber implements CompletableSubscriber, S
 
     @Override
     public void onError(Throwable e) {
-        RxJavaHooks.onError(e);
         if (done) {
             return;
         }
@@ -63,6 +62,7 @@ public final class SafeCompletableSubscriber implements CompletableSubscriber, S
             actual.onError(e);
         } catch (Throwable ex) {
             Exceptions.throwIfFatal(ex);
+            RxJavaHooks.onError(e);
 
             throw new OnErrorFailedException(new CompositeException(e, ex));
         }
