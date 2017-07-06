@@ -59,7 +59,7 @@ public class FlowableFilterTest {
     }
 
     /**
-     * Make sure we are adjusting subscriber.request() for filtered items
+     * Make sure we are adjusting subscriber.request() for filtered items.
      * @throws InterruptedException if the test is interrupted
      * @throws InterruptedException if the test is interrupted
      */
@@ -107,7 +107,7 @@ public class FlowableFilterTest {
     }
 
     /**
-     * Make sure we are adjusting subscriber.request() for filtered items
+     * Make sure we are adjusting subscriber.request() for filtered items.
      * @throws InterruptedException if the test is interrupted
      */
     @Test(timeout = 500000)
