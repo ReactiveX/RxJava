@@ -894,7 +894,7 @@ public class OperatorSwitchTest {
             .switchMap(UtilityFunctions.<Observable<Integer>>identity())
             .observeOn(Schedulers.computation())
             .ignoreElements()
-            .timeout(5, TimeUnit.SECONDS)
+            .timeout(15, TimeUnit.SECONDS)
             .toBlocking()
             .subscribe(Actions.empty(), new Action1<Throwable>() {
                 @Override
