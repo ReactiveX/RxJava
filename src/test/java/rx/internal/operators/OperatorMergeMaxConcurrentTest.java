@@ -197,7 +197,7 @@ public class OperatorMergeMaxConcurrentTest {
             testSimpleAsync();
         }
     }
-    @Test(timeout = 10000)
+    @Test(timeout = 30000)
     public void testSimpleAsync() {
         for (int i = 1; i < 50; i++) {
             TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
@@ -217,7 +217,7 @@ public class OperatorMergeMaxConcurrentTest {
             assertEquals(expected, actual);
         }
     }
-    @Test(timeout = 10000)
+    @Test(timeout = 30000)
     public void testSimpleOneLessAsyncLoop() {
         int max = 200;
         if (PlatformDependent.isAndroid()) {
@@ -227,7 +227,7 @@ public class OperatorMergeMaxConcurrentTest {
             testSimpleOneLessAsync();
         }
     }
-    @Test(timeout = 10000)
+    @Test(timeout = 30000)
     public void testSimpleOneLessAsync() {
         long t = System.currentTimeMillis();
         for (int i = 2; i < 50; i++) {

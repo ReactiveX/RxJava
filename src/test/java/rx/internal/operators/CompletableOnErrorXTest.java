@@ -29,7 +29,7 @@ public class CompletableOnErrorXTest {
     @Test
     public void nextUnsubscribe() {
         PublishSubject<Integer> ps = PublishSubject.create();
-        
+
         AssertableSubscriber<Void> as = ps.toCompletable()
         .onErrorResumeNext(new Func1<Throwable, Completable>() {
             @Override
@@ -49,7 +49,7 @@ public class CompletableOnErrorXTest {
     @Test
     public void completeUnsubscribe() {
         PublishSubject<Integer> ps = PublishSubject.create();
-        
+
         AssertableSubscriber<Void> as = ps.toCompletable()
         .onErrorComplete()
         .test();

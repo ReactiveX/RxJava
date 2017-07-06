@@ -532,9 +532,9 @@ public abstract class AsyncOnSubscribe<S, T> implements OnSubscribe<T> {
                 onNextCalled = false;
                 expectedDelivery = n;
                 nextIteration(n);
-                
-                //hasTerminated will be true when onCompleted was already emitted from the request callback 
-                //even if the the observer has not seen onCompleted from the requested observable, 
+
+                //hasTerminated will be true when onCompleted was already emitted from the request callback
+                //even if the the observer has not seen onCompleted from the requested observable,
                 //so we should not clean up while there are active subscriptions
                 if (hasTerminated && !subscriptions.hasSubscriptions() || isUnsubscribed()) {
                     cleanup();
