@@ -8988,7 +8988,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     }
 
     /**
-     * Returns an Observable that applies a specified accumulator function to the first item emitted by a source
+     * Returns a Single that applies a specified accumulator function to the first item emitted by a source
      * ObservableSource and a specified seed value, then feeds the result of that function along with the second item
      * emitted by an ObservableSource into the same function, and so on until all items have been emitted by the
      * source ObservableSource, emitting the final result from the final call to your function as its sole item.
