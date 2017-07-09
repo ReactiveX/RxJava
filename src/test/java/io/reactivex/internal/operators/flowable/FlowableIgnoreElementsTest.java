@@ -65,8 +65,6 @@ public class FlowableIgnoreElementsTest {
         ts.assertNoErrors();
         ts.assertNoValues();
         ts.assertTerminated();
-        // FIXME no longer testable
-//        ts.assertUnsubscribed();
     }
 
     @Test
@@ -76,8 +74,6 @@ public class FlowableIgnoreElementsTest {
         Flowable.error(ex).ignoreElements().toFlowable().subscribe(ts);
         ts.assertNoValues();
         ts.assertTerminated();
-        // FIXME no longer testable
-//        ts.assertUnsubscribed();
         ts.assertError(TestException.class);
         ts.assertErrorMessage("boo");
     }
@@ -183,8 +179,6 @@ public class FlowableIgnoreElementsTest {
         ts.assertNoErrors();
         ts.assertNoValues();
         ts.assertTerminated();
-        // FIXME no longer testable
-//        ts.assertUnsubscribed();
     }
 
     @Test
@@ -194,8 +188,6 @@ public class FlowableIgnoreElementsTest {
         Flowable.error(ex).ignoreElements().subscribe(ts);
         ts.assertNoValues();
         ts.assertTerminated();
-        // FIXME no longer testable
-//        ts.assertUnsubscribed();
         ts.assertError(TestException.class);
         ts.assertErrorMessage("boo");
     }

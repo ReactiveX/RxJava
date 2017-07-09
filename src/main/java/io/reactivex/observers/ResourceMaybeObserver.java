@@ -54,7 +54,7 @@ import io.reactivex.internal.util.EndConsumerHelper;
  * <p>Implementation of {@link #onStart()}, {@link #onSuccess(Object)}, {@link #onError(Throwable)}
  * and {@link #onComplete()} are not allowed to throw any unchecked exceptions.
  *
- * <p>Example<code><pre>
+ * <p>Example<pre><code>
  * Disposable d =
  *     Maybe.just(1).delay(1, TimeUnit.SECONDS)
  *     .subscribeWith(new ResourceMaybeObserver&lt;Integer>() {
@@ -78,7 +78,7 @@ import io.reactivex.internal.util.EndConsumerHelper;
  *     });
  * // ...
  * d.dispose();
- * </pre></code>
+ * </code></pre>
  *
  * @param <T> the value type
  */

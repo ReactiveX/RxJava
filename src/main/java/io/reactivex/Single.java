@@ -109,7 +109,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * Concatenate the single values, in a non-overlapping fashion, of the Single sources provided by
      * an Iterable sequence.
      * <dl>
-     *  <dt><b>Backpressure:</b><dt>
+     *  <dt><b>Backpressure:</b></dt>
      *  <dd>The returned {@code Flowable} honors the backpressure of the downstream consumer.</dd>
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code concat} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -150,7 +150,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * Concatenate the single values, in a non-overlapping fashion, of the Single sources provided by
      * a Publisher sequence.
      * <dl>
-     *  <dt><b>Backpressure:</b><dt>
+     *  <dt><b>Backpressure:</b></dt>
      *  <dd>The returned {@code Flowable} honors the backpressure of the downstream consumer
      *  and the sources {@code Publisher} is expected to honor it as well.</dd>
      * <dt><b>Scheduler:</b></dt>
@@ -172,7 +172,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * Concatenate the single values, in a non-overlapping fashion, of the Single sources provided by
      * a Publisher sequence and prefetched by the specified amount.
      * <dl>
-     *  <dt><b>Backpressure:</b><dt>
+     *  <dt><b>Backpressure:</b></dt>
      *  <dd>The returned {@code Flowable} honors the backpressure of the downstream consumer
      *  and the sources {@code Publisher} is expected to honor it as well.</dd>
      * <dt><b>Scheduler:</b></dt>
@@ -199,7 +199,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * <p>
      * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.concat.png" alt="">
      * <dl>
-     *  <dt><b>Backpressure:</b><dt>
+     *  <dt><b>Backpressure:</b></dt>
      *  <dd>The returned {@code Flowable} honors the backpressure of the downstream consumer.</dd>
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code concat} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -230,7 +230,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * <p>
      * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.concat.png" alt="">
      * <dl>
-     *  <dt><b>Backpressure:</b><dt>
+     *  <dt><b>Backpressure:</b></dt>
      *  <dd>The returned {@code Flowable} honors the backpressure of the downstream consumer.</dd>
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code concat} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -265,7 +265,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * <p>
      * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.concat.png" alt="">
      * <dl>
-     *  <dt><b>Backpressure:</b><dt>
+     *  <dt><b>Backpressure:</b></dt>
      *  <dd>The returned {@code Flowable} honors the backpressure of the downstream consumer.</dd>
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code concat} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -302,7 +302,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * Concatenate the single values, in a non-overlapping fashion, of the Single sources provided in
      * an array.
      * <dl>
-     *  <dt><b>Backpressure:</b><dt>
+     *  <dt><b>Backpressure:</b></dt>
      *  <dd>The returned {@code Flowable} honors the backpressure of the downstream consumer.</dd>
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code concatArray} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -650,7 +650,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * Merges an Iterable sequence of SingleSource instances into a single Flowable sequence,
      * running all SingleSources at once.
      * <dl>
-     *  <dt><b>Backpressure:</b><dt>
+     *  <dt><b>Backpressure:</b></dt>
      *  <dd>The returned {@code Flowable} honors the backpressure of the downstream consumer.</dd>
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code merge} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -671,7 +671,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * Merges a Flowable sequence of SingleSource instances into a single Flowable sequence,
      * running all SingleSources at once.
      * <dl>
-     *  <dt><b>Backpressure:</b><dt>
+     *  <dt><b>Backpressure:</b></dt>
      *  <dd>The returned {@code Flowable} honors the backpressure of the downstream consumer.</dd>
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code merge} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -724,7 +724,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * You can combine items emitted by multiple Singles so that they appear as a single Flowable, by
      * using the {@code merge} method.
      * <dl>
-     *  <dt><b>Backpressure:</b><dt>
+     *  <dt><b>Backpressure:</b></dt>
      *  <dd>The returned {@code Flowable} honors the backpressure of the downstream consumer.</dd>
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code merge} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -758,7 +758,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * You can combine items emitted by multiple Singles so that they appear as a single Flowable, by using
      * the {@code merge} method.
      * <dl>
-     *  <dt><b>Backpressure:</b><dt>
+     *  <dt><b>Backpressure:</b></dt>
      *  <dd>The returned {@code Flowable} honors the backpressure of the downstream consumer.</dd>
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code merge} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -796,7 +796,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * You can combine items emitted by multiple Singles so that they appear as a single Flowable, by using
      * the {@code merge} method.
      * <dl>
-     *  <dt><b>Backpressure:</b><dt>
+     *  <dt><b>Backpressure:</b></dt>
      *  <dd>The returned {@code Flowable} honors the backpressure of the downstream consumer.</dd>
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code merge} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -1594,7 +1594,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * <p>
      * <img width="640" height="335" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.concatWith.png" alt="">
      * <dl>
-     *  <dt><b>Backpressure:</b><dt>
+     *  <dt><b>Backpressure:</b></dt>
      *  <dd>The returned {@code Flowable} honors the backpressure of the downstream consumer.</dd>
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code concatWith} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -2020,7 +2020,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * <p>
      * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.flatMapObservable.png" alt="">
      * <dl>
-     *  <dt><b>Backpressure:</b><dt>
+     *  <dt><b>Backpressure:</b></dt>
      *  <dd>The returned {@code Flowable} honors the backpressure of the downstream consumer
      *  and the {@code Publisher} returned by the mapper function is expected to honor it as well.</dd>
      * <dt><b>Scheduler:</b></dt>
@@ -2255,7 +2255,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * You can combine items emitted by multiple Singles so that they appear as a single Flowable, by using
      * the {@code mergeWith} method.
      * <dl>
-     *  <dt><b>Backpressure:</b><dt>
+     *  <dt><b>Backpressure:</b></dt>
      *  <dd>The returned {@code Flowable} honors the backpressure of the downstream consumer.</dd>
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code mergeWith} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -2421,7 +2421,7 @@ public abstract class Single<T> implements SingleSource<T> {
     /**
      * Repeatedly re-subscribes to the current Single and emits each success value.
      * <dl>
-     *  <dt><b>Backpressure:</b><dt>
+     *  <dt><b>Backpressure:</b></dt>
      *  <dd>The returned {@code Flowable} honors the backpressure of the downstream consumer.</dd>
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code repeat} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -2439,7 +2439,7 @@ public abstract class Single<T> implements SingleSource<T> {
     /**
      * Re-subscribes to the current Single at most the given number of times and emits each success value.
      * <dl>
-     *  <dt><b>Backpressure:</b><dt>
+     *  <dt><b>Backpressure:</b></dt>
      *  <dd>The returned {@code Flowable} honors the backpressure of the downstream consumer.</dd>
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code repeat} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -2460,7 +2460,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * the Publisher returned by the handler function signals a value in response to a
      * value signalled through the Flowable the handle receives.
      * <dl>
-     *  <dt><b>Backpressure:</b><dt>
+     *  <dt><b>Backpressure:</b></dt>
      *  <dd>The returned {@code Flowable} honors the backpressure of the downstream consumer.
      *  The {@code Publisher} returned by the handler function is expected to honor backpressure as well.</dd>
      * <dt><b>Scheduler:</b></dt>
@@ -2483,7 +2483,7 @@ public abstract class Single<T> implements SingleSource<T> {
     /**
      * Re-subscribes to the current Single until the given BooleanSupplier returns true.
      * <dl>
-     *  <dt><b>Backpressure:</b><dt>
+     *  <dt><b>Backpressure:</b></dt>
      *  <dd>The returned {@code Flowable} honors the backpressure of the downstream consumer.</dd>
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code repeatUntil} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -2721,10 +2721,10 @@ public abstract class Single<T> implements SingleSource<T> {
      * SingleObserver as is.
      * <p>Usage example:
      * <pre><code>
-     * Single&lt;Integer> source = Single.just(1);
+     * Single&lt;Integer&gt; source = Single.just(1);
      * CompositeDisposable composite = new CompositeDisposable();
      *
-     * class ResourceSingleObserver implements SingleObserver&lt;Integer>, Disposable {
+     * class ResourceSingleObserver implements SingleObserver&lt;Integer&gt;, Disposable {
      *     // ...
      * }
      *
@@ -2989,7 +2989,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * <p>
      * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.toObservable.png" alt="">
      * <dl>
-     *  <dt><b>Backpressure:</b><dt>
+     *  <dt><b>Backpressure:</b></dt>
      *  <dd>The returned {@code Flowable} honors the backpressure of the downstream consumer.</dd>
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code toFlowable} does not operate by default on a particular {@link Scheduler}.</dd>

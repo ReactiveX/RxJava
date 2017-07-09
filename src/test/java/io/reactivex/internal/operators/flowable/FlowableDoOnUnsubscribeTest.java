@@ -80,8 +80,6 @@ public class FlowableDoOnUnsubscribeTest {
         for (int i = 0; i < subCount; ++i) {
             subscriptions.get(i).dispose();
             // Test that unsubscribe() method is not affected in any way
-            // FIXME no longer valid
-//            subscribers.get(i).assertUnsubscribed();
         }
 
         upperLatch.await();
@@ -143,8 +141,6 @@ public class FlowableDoOnUnsubscribeTest {
         for (int i = 0; i < subCount; ++i) {
             subscriptions.get(i).dispose();
             // Test that unsubscribe() method is not affected in any way
-            // FIXME no longer valid
-//            subscribers.get(i).assertUnsubscribed();
         }
 
         upperLatch.await();

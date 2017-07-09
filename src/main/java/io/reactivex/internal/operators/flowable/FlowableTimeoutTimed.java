@@ -68,7 +68,7 @@ public final class FlowableTimeoutTimed<T> extends AbstractFlowableWithUpstream<
 
         final FullArbiter<T> arbiter;
 
-        final AtomicReference<Disposable> timer = new AtomicReference<Disposable>();
+        Disposable timer;
 
         volatile long index;
 
@@ -110,16 +110,11 @@ public final class FlowableTimeoutTimed<T> extends AbstractFlowableWithUpstream<
         }
 
         void scheduleTimeout(final long idx) {
-            Disposable d = timer.get();
-            if (d != null) {
-                d.dispose();
+            if (timer != null) {
+                timer.dispose();
             }
 
-            if (timer.compareAndSet(d, NEW_TIMER)) {
-                d = worker.schedule(new TimeoutTask(idx), timeout, unit);
-
-                DisposableHelper.replace(timer, d);
-            }
+            timer = worker.schedule(new TimeoutTask(idx), timeout, unit);
         }
 
         void subscribeNext() {
@@ -170,11 +165,10 @@ public final class FlowableTimeoutTimed<T> extends AbstractFlowableWithUpstream<
                 if (idx == index) {
                     done = true;
                     s.cancel();
-                    DisposableHelper.dispose(timer);
+                    worker.dispose();
 
                     subscribeNext();
 
-                    worker.dispose();
                 }
             }
         }
@@ -188,7 +182,7 @@ public final class FlowableTimeoutTimed<T> extends AbstractFlowableWithUpstream<
 
         Subscription s;
 
-        final AtomicReference<Disposable> timer = new AtomicReference<Disposable>();
+        Disposable timer;
 
         volatile long index;
 
@@ -224,16 +218,11 @@ public final class FlowableTimeoutTimed<T> extends AbstractFlowableWithUpstream<
         }
 
         void scheduleTimeout(final long idx) {
-            Disposable d = timer.get();
-            if (d != null) {
-                d.dispose();
+            if (timer != null) {
+                timer.dispose();
             }
 
-            if (timer.compareAndSet(d, NEW_TIMER)) {
-                d = worker.schedule(new TimeoutTask(idx), timeout, unit);
-
-                DisposableHelper.replace(timer, d);
-            }
+            timer = worker.schedule(new TimeoutTask(idx), timeout, unit);
         }
 
         @Override

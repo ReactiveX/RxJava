@@ -1044,17 +1044,6 @@ public class ObservableTest {
         Observable.just(1).ambWith(Observable.just(2)).subscribe(ts);
         ts.assertValue(1);
     }
-// FIXME Subscribers can't throw
-//    @Test(expected = OnErrorNotImplementedException.class)
-//    public void testSubscribeWithoutOnError() {
-//        Observable<String> o = Observable.just("a", "b").flatMap(new Func1<String, Observable<String>>() {
-//            @Override
-//            public Observable<String> call(String s) {
-//                return Observable.error(new Exception("test"));
-//            }
-//        });
-//        o.subscribe();
-//    }
 
     @Test
     public void testTakeWhileToList() {

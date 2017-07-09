@@ -60,7 +60,7 @@ import io.reactivex.internal.util.EndConsumerHelper;
  * If for some reason this can't be avoided, use {@link io.reactivex.Flowable#safeSubscribe(org.reactivestreams.Subscriber)}
  * instead of the standard {@code subscribe()} method.
  *
- * <p>Example<code><pre>
+ * <p>Example<pre><code>
  * Disposable d =
  *     Flowable.range(1, 5)
  *     .subscribeWith(new ResourceSubscriber&lt;Integer>() {
@@ -88,7 +88,7 @@ import io.reactivex.internal.util.EndConsumerHelper;
  *     });
  * // ...
  * d.dispose();
- * </pre></code>
+ * </code></pre>
  *
  * @param <T> the value type
  */

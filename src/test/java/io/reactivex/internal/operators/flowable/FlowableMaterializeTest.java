@@ -197,8 +197,6 @@ public class FlowableMaterializeTest {
         ts.dispose();
         ts.request(1);
         ts.assertNoValues();
-        // FIXME no longer assertable
-//        ts.assertUnsubscribed();
     }
 
     private static class TestNotificationSubscriber extends DefaultSubscriber<Notification<String>> {
