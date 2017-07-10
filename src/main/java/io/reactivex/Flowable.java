@@ -10787,7 +10787,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @param reducer
      *            an accumulator function to be invoked on each item emitted by the source Publisher, the
      *            result of which will be used in the next accumulator call
-     * @return a Flowable that emits a single item that is the result of accumulating the output from the
+     * @return a Single that emits a single item that is the result of accumulating the output from the
      *         items emitted by the source Publisher
      * @see <a href="http://reactivex.io/documentation/operators/reduce.html">ReactiveX operators documentation: Reduce</a>
      * @see <a href="http://en.wikipedia.org/wiki/Fold_(higher-order_function)">Wikipedia: Fold (higher-order function)</a>
@@ -10803,7 +10803,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     /**
-     * Returns a Flowable that applies a specified accumulator function to the first item emitted by a source
+     * Returns a Single that applies a specified accumulator function to the first item emitted by a source
      * Publisher and a seed value derived from calling a specified seedSupplier, then feeds the result
      * of that function along with the second item emitted by a Publisher into the same function, and so on until
      * all items have been emitted by the source Publisher, emitting the final result from the final call to your
@@ -10828,7 +10828,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @param reducer
      *            an accumulator function to be invoked on each item emitted by the source Publisher, the
      *            result of which will be used in the next accumulator call
-     * @return a Flowable that emits a single item that is the result of accumulating the output from the
+     * @return a Single that emits a single item that is the result of accumulating the output from the
      *         items emitted by the source Publisher
      * @see <a href="http://reactivex.io/documentation/operators/reduce.html">ReactiveX operators documentation: Reduce</a>
      * @see <a href="http://en.wikipedia.org/wiki/Fold_(higher-order_function)">Wikipedia: Fold (higher-order function)</a>

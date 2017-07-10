@@ -9027,7 +9027,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @param reducer
      *            an accumulator function to be invoked on each item emitted by the source ObservableSource, the
      *            result of which will be used in the next accumulator call
-     * @return an Observable that emits a single item that is the result of accumulating the output from the
+     * @return a Single that emits a single item that is the result of accumulating the output from the
      *         items emitted by the source ObservableSource
      * @see <a href="http://reactivex.io/documentation/operators/reduce.html">ReactiveX operators documentation: Reduce</a>
      * @see <a href="http://en.wikipedia.org/wiki/Fold_(higher-order_function)">Wikipedia: Fold (higher-order function)</a>
