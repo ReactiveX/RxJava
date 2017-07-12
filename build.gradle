@@ -21,10 +21,13 @@ apply plugin: 'nebula.rxjava-project'
 sourceCompatibility = JavaVersion.VERSION_1_6
 targetCompatibility = JavaVersion.VERSION_1_6
 
+def rsVersion = '1.0.1-RC2'
+
 dependencies {
+    repositories { maven { url "https://oss.sonatype.org/content/repositories/orgreactivestreams-1031" } }
     signature 'org.codehaus.mojo.signature:java16:1.1@signature'
 
-    compile 'org.reactivestreams:reactive-streams:1.0.1-RC1'
+    compile "org.reactivestreams:reactive-streams:$rsVersion"
 
     testCompile 'junit:junit:4.12'
     testCompile 'org.mockito:mockito-core:2.1.0'
@@ -32,7 +35,7 @@ dependencies {
     perfCompile 'org.openjdk.jmh:jmh-core:1.16'
     perfCompile 'org.openjdk.jmh:jmh-generator-annprocess:1.16'
 
-    testCompile 'org.reactivestreams:reactive-streams-tck:1.0.1-RC1'
+    testCompile "org.reactivestreams:reactive-streams-tck:$rsVersion"
     testCompile group: 'org.testng', name: 'testng', version: '6.9.10'
 }
 
