@@ -24,7 +24,6 @@ targetCompatibility = JavaVersion.VERSION_1_6
 def rsVersion = '1.0.1-RC2'
 
 dependencies {
-    repositories { maven { url "https://oss.sonatype.org/content/repositories/orgreactivestreams-1031" } }
     signature 'org.codehaus.mojo.signature:java16:1.1@signature'
 
     compile "org.reactivestreams:reactive-streams:$rsVersion"
