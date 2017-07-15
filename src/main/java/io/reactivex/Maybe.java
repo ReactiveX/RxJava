@@ -2191,7 +2191,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
 
     /**
      * Returns a Maybe that emits the item emitted by the source Maybe or a specified default item
-     * if the source Maybe is empty.
+     * if the source Maybe is empty. A Single instance can be obtained using the toSingle() method.
      * <p>
      * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/defaultIfEmpty.png" alt="">
      * <dl>
@@ -2204,6 +2204,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * @return a Maybe that emits either the specified default item if the source Maybe emits no
      *         items, or the items emitted by the source Maybe
      * @see <a href="http://reactivex.io/documentation/operators/defaultifempty.html">ReactiveX operators documentation: DefaultIfEmpty</a>
+     * @see #toSingle()
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
