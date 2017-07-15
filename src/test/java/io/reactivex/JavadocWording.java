@@ -148,9 +148,11 @@ public class JavadocWording {
                 for (;;) {
                     int idx = m.javadoc.indexOf("Single", jdx);
                     if (idx >= 0) {
-                        if (!m.signature.contains("Single")) {
+                        int j = m.javadoc.indexOf("#toSingle", jdx);
+                        int k = m.javadoc.indexOf("{@code Single", jdx);
+                        if (!m.signature.contains("Single") && (j + 3 != idx && k + 7 != idx)) {
                             e.append("java.lang.RuntimeException: Maybe doc mentions Single but not in the signature\r\n at io.reactivex.")
-                            .append("Maybe (Maybe.java:").append(m.javadocLine + lineNumber(m.javadoc, idx) - 1).append(")\r\n\r\n");
+                            .append("Maybe(Maybe.java:").append(m.javadocLine + lineNumber(m.javadoc, idx) - 1).append(")\r\n\r\n");
                         }
                         jdx = idx + 6;
                     } else {
