@@ -13,6 +13,7 @@
 
 package io.reactivex.internal.operators.flowable;
 
+import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
@@ -21,6 +22,8 @@ import java.util.*;
 
 import org.junit.Test;
 import org.mockito.InOrder;
+
+import io.reactivex.schedulers.TestScheduler;
 import org.reactivestreams.Subscriber;
 
 import io.reactivex.*;
@@ -261,7 +264,10 @@ public class FlowableWithLatestFromTest {
 
     @Test
     public void testBackpressure() {
-        Flowable<Integer> source = Flowable.range(1, 10);
+        TestScheduler testScheduler = new TestScheduler();
+        Flowable<Integer> source = Flowable.interval( 2, SECONDS, testScheduler)
+                .map(toInt())
+                .onBackpressureDrop();
         PublishProcessor<Integer> other = PublishProcessor.create();
 
         Flowable<Integer> result = source.withLatestFrom(other, COMBINER);
@@ -274,17 +280,23 @@ public class FlowableWithLatestFromTest {
 
         ts.request(1);
 
+        testScheduler.advanceTimeBy(5, SECONDS);
+
         assertTrue("Other has no observers!", other.hasSubscribers());
 
         ts.assertNoValues();
 
         other.onNext(1);
 
-        ts.request(1);
+        ts.assertNoValues();
+
+        testScheduler.advanceTimeBy(2, SECONDS);
 
         ts.assertValue((2 << 8) + 1);
 
         ts.request(5);
+        testScheduler.advanceTimeBy(17, SECONDS);
+
         ts.assertValues(
                 (2 << 8) + 1, (3 << 8) + 1, (4 << 8) + 1, (5 << 8) + 1,
                 (6 << 8) + 1, (7 << 8) + 1
@@ -295,6 +307,15 @@ public class FlowableWithLatestFromTest {
         assertFalse("Other has observers!", other.hasSubscribers());
 
         ts.assertNoErrors();
+    }
+
+    private Function<Long, Integer> toInt() {
+        return new Function<Long, Integer>() {
+            @Override
+            public Integer apply(Long aLong) throws Exception {
+                return aLong.intValue();
+            }
+        };
     }
 
     static final Function<Object[], String> toArray = new Function<Object[], String>() {
