@@ -73,6 +73,3 @@ bin/
 # PMD files
 .pmd
 .ruleset
-
-# Android Studio
-local.properties
