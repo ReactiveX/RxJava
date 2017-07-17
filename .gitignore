@@ -70,9 +70,9 @@ bin/
 *.cache
 /.nb-gradle/private/
 
-#PMD files
+# PMD files
 .pmd
 .ruleset
 
-#Android Studio
+# Android Studio
 local.properties
