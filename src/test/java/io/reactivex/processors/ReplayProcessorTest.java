@@ -1318,4 +1318,114 @@ public class ReplayProcessorTest extends FlowableProcessorTest<Object> {
 
         source.test().assertResult();
     }
+
+    int raceLoop = 10000;
+
+    @Test
+    public void unboundedRequestCompleteRace() {
+        for (int i = 0; i < raceLoop; i++) {
+            final ReplayProcessor<Integer> source = ReplayProcessor.create();
+
+            final TestSubscriber<Integer> ts = source.test(0);
+
+            Runnable r1 = new Runnable() {
+                @Override
+                public void run() {
+                    source.onComplete();
+                }
+            };
+
+            Runnable r2 = new Runnable() {
+                @Override
+                public void run() {
+                    ts.request(1);
+                }
+            };
+
+            TestHelper.race(r1, r2);
+
+            ts.assertResult();
+        }
+    }
+
+    @Test
+    public void sizeRequestCompleteRace() {
+        for (int i = 0; i < raceLoop; i++) {
+            final ReplayProcessor<Integer> source = ReplayProcessor.createWithSize(10);
+
+            final TestSubscriber<Integer> ts = source.test(0);
+
+            Runnable r1 = new Runnable() {
+                @Override
+                public void run() {
+                    source.onComplete();
+                }
+            };
+
+            Runnable r2 = new Runnable() {
+                @Override
+                public void run() {
+                    ts.request(1);
+                }
+            };
+
+            TestHelper.race(r1, r2);
+
+            ts.assertResult();
+        }
+    }
+
+    @Test
+    public void timedRequestCompleteRace() {
+        for (int i = 0; i < raceLoop; i++) {
+            final ReplayProcessor<Integer> source = ReplayProcessor.createWithTime(2, TimeUnit.HOURS, Schedulers.single());
+
+            final TestSubscriber<Integer> ts = source.test(0);
+
+            Runnable r1 = new Runnable() {
+                @Override
+                public void run() {
+                    source.onComplete();
+                }
+            };
+
+            Runnable r2 = new Runnable() {
+                @Override
+                public void run() {
+                    ts.request(1);
+                }
+            };
+
+            TestHelper.race(r1, r2);
+
+            ts.assertResult();
+        }
+    }
+
+    @Test
+    public void timeAndSizeRequestCompleteRace() {
+        for (int i = 0; i < raceLoop; i++) {
+            final ReplayProcessor<Integer> source = ReplayProcessor.createWithTimeAndSize(2, TimeUnit.HOURS, Schedulers.single(), 100);
+
+            final TestSubscriber<Integer> ts = source.test(0);
+
+            Runnable r1 = new Runnable() {
+                @Override
+                public void run() {
+                    source.onComplete();
+                }
+            };
+
+            Runnable r2 = new Runnable() {
+                @Override
+                public void run() {
+                    ts.request(1);
+                }
+            };
+
+            TestHelper.race(r1, r2);
+
+            ts.assertResult();
+        }
+    }
 }
