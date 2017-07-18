@@ -81,6 +81,8 @@ public final class FlowableWithLatestFrom<T, U, R> extends AbstractFlowableWithU
                     return;
                 }
                 actual.onNext(r);
+            } else{
+                request(1);
             }
         }
 

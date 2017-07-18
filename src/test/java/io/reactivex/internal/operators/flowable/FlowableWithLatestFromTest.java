@@ -261,7 +261,7 @@ public class FlowableWithLatestFromTest {
 
     @Test
     public void testBackpressure() {
-        Flowable<Integer> source = Flowable.range(1, 10);
+        PublishProcessor<Integer> source = PublishProcessor.create();
         PublishProcessor<Integer> other = PublishProcessor.create();
 
         Flowable<Integer> result = source.withLatestFrom(other, COMBINER);
@@ -274,17 +274,24 @@ public class FlowableWithLatestFromTest {
 
         ts.request(1);
 
+        source.onNext(1);
+
         assertTrue("Other has no observers!", other.hasSubscribers());
 
         ts.assertNoValues();
 
         other.onNext(1);
 
-        ts.request(1);
+        source.onNext(2);
 
         ts.assertValue((2 << 8) + 1);
 
         ts.request(5);
+        source.onNext(3);
+        source.onNext(4);
+        source.onNext(5);
+        source.onNext(6);
+        source.onNext(7);
         ts.assertValues(
                 (2 << 8) + 1, (3 << 8) + 1, (4 << 8) + 1, (5 << 8) + 1,
                 (6 << 8) + 1, (7 << 8) + 1
@@ -716,5 +723,31 @@ public class FlowableWithLatestFromTest {
         .withLatestFrom(new Flowable[0], Functions.justFunction(null))
         .test()
         .assertFailureAndMessage(NullPointerException.class, "The combiner returned a null value");
+    }
+
+    @Test
+    public void testSingleRequestNotForgottenWhenNoData() {
+        PublishProcessor<Integer> source = PublishProcessor.create();
+        PublishProcessor<Integer> other = PublishProcessor.create();
+
+        Flowable<Integer> result = source.withLatestFrom(other, COMBINER);
+
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>(0L);
+
+        result.subscribe(ts);
+
+        ts.request(1);
+
+        source.onNext(1);
+
+        ts.assertNoValues();
+
+        other.onNext(1);
+
+        ts.assertNoValues();
+
+        source.onNext(2);
+
+        ts.assertValue((2 << 8) + 1);
     }
 }
