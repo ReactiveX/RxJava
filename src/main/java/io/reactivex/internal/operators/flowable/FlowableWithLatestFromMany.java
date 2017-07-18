@@ -19,7 +19,6 @@ import org.reactivestreams.*;
 
 import io.reactivex.*;
 import io.reactivex.annotations.*;
-import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.functions.ObjectHelper;
@@ -134,7 +133,7 @@ public final class FlowableWithLatestFromMany<T, R> extends AbstractFlowableWith
             WithLatestInnerSubscriber[] subscribers = this.subscribers;
             AtomicReference<Subscription> s = this.s;
             for (int i = 0; i < n; i++) {
-                if (SubscriptionHelper.isCancelled(s.get()) || done) {
+                if (SubscriptionHelper.isCancelled(s.get())) {
                     return;
                 }
                 others[i].subscribe(subscribers[i]);
@@ -215,7 +214,7 @@ public final class FlowableWithLatestFromMany<T, R> extends AbstractFlowableWith
         @Override
         public void cancel() {
             SubscriptionHelper.cancel(s);
-            for (Disposable s : subscribers) {
+            for (WithLatestInnerSubscriber s : subscribers) {
                 s.dispose();
             }
         }
@@ -234,6 +233,7 @@ public final class FlowableWithLatestFromMany<T, R> extends AbstractFlowableWith
         void innerComplete(int index, boolean nonEmpty) {
             if (!nonEmpty) {
                 done = true;
+                SubscriptionHelper.cancel(s);
                 cancelAllBut(index);
                 HalfSerializer.onComplete(actual, this, error);
             }
@@ -251,7 +251,7 @@ public final class FlowableWithLatestFromMany<T, R> extends AbstractFlowableWith
 
     static final class WithLatestInnerSubscriber
     extends AtomicReference<Subscription>
-    implements FlowableSubscriber<Object>, Disposable {
+    implements FlowableSubscriber<Object> {
 
         private static final long serialVersionUID = 3256684027868224024L;
 
@@ -291,13 +291,7 @@ public final class FlowableWithLatestFromMany<T, R> extends AbstractFlowableWith
             parent.innerComplete(index, hasValue);
         }
 
-        @Override
-        public boolean isDisposed() {
-            return SubscriptionHelper.isCancelled(get());
-        }
-
-        @Override
-        public void dispose() {
+        void dispose() {
             SubscriptionHelper.cancel(this);
         }
     }

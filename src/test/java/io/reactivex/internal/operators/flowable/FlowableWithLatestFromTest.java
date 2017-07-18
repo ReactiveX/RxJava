@@ -776,4 +776,90 @@ public class FlowableWithLatestFromTest {
         .test(1)
         .assertResult();
     }
+
+    @Test
+    public void otherOnSubscribeRace() {
+        for (int i = 0; i < 1000; i++) {
+            final PublishProcessor<Integer> pp0 = PublishProcessor.create();
+            final PublishProcessor<Integer> pp1 = PublishProcessor.create();
+            final PublishProcessor<Integer> pp2 = PublishProcessor.create();
+            final PublishProcessor<Integer> pp3 = PublishProcessor.create();
+
+            final Flowable<Object> source = pp0.withLatestFrom(pp1, pp2, pp3, new Function4<Object, Integer, Integer, Integer, Object>() {
+                @Override
+                public Object apply(Object a, Integer b, Integer c, Integer d)
+                        throws Exception {
+                    return a;
+                }
+            });
+
+            final TestSubscriber<Object> ts = new TestSubscriber<Object>();
+
+            Runnable r1 = new Runnable() {
+                @Override
+                public void run() {
+                    source.subscribe(ts);
+                }
+            };
+
+            Runnable r2 = new Runnable() {
+                @Override
+                public void run() {
+                    ts.cancel();
+                }
+            };
+
+            TestHelper.race(r1, r2);
+
+            ts.assertEmpty();
+
+            assertFalse(pp0.hasSubscribers());
+            assertFalse(pp1.hasSubscribers());
+            assertFalse(pp2.hasSubscribers());
+            assertFalse(pp3.hasSubscribers());
+        }
+    }
+
+    @Test
+    public void otherCompleteRace() {
+        for (int i = 0; i < 1000; i++) {
+            final PublishProcessor<Integer> pp0 = PublishProcessor.create();
+            final PublishProcessor<Integer> pp1 = PublishProcessor.create();
+            final PublishProcessor<Integer> pp2 = PublishProcessor.create();
+            final PublishProcessor<Integer> pp3 = PublishProcessor.create();
+
+            final Flowable<Object> source = pp0.withLatestFrom(pp1, pp2, pp3, new Function4<Object, Integer, Integer, Integer, Object>() {
+                @Override
+                public Object apply(Object a, Integer b, Integer c, Integer d)
+                        throws Exception {
+                    return a;
+                }
+            });
+
+            final TestSubscriber<Object> ts = new TestSubscriber<Object>();
+
+            Runnable r1 = new Runnable() {
+                @Override
+                public void run() {
+                    source.subscribe(ts);
+                }
+            };
+
+            Runnable r2 = new Runnable() {
+                @Override
+                public void run() {
+                    pp1.onComplete();
+                }
+            };
+
+            TestHelper.race(r1, r2);
+
+            ts.assertResult();
+
+            assertFalse(pp0.hasSubscribers());
+            assertFalse(pp1.hasSubscribers());
+            assertFalse(pp2.hasSubscribers());
+            assertFalse(pp3.hasSubscribers());
+        }
+    }
 }
