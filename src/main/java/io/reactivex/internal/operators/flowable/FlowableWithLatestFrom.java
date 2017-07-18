@@ -21,6 +21,7 @@ import io.reactivex.*;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.BiFunction;
 import io.reactivex.internal.functions.ObjectHelper;
+import io.reactivex.internal.fuseable.ConditionalSubscriber;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.subscribers.SerializedSubscriber;
 
@@ -45,7 +46,8 @@ public final class FlowableWithLatestFrom<T, U, R> extends AbstractFlowableWithU
         source.subscribe(wlf);
     }
 
-    static final class WithLatestFromSubscriber<T, U, R> extends AtomicReference<U> implements FlowableSubscriber<T>, Subscription {
+    static final class WithLatestFromSubscriber<T, U, R> extends AtomicReference<U>
+    implements ConditionalSubscriber<T>, Subscription {
 
         private static final long serialVersionUID = -312246233408980075L;
 
@@ -69,6 +71,13 @@ public final class FlowableWithLatestFrom<T, U, R> extends AbstractFlowableWithU
 
         @Override
         public void onNext(T t) {
+            if (!tryOnNext(t)) {
+                s.get().request(1);
+            }
+        }
+
+        @Override
+        public boolean tryOnNext(T t) {
             U u = get();
             if (u != null) {
                 R r;
@@ -78,11 +87,12 @@ public final class FlowableWithLatestFrom<T, U, R> extends AbstractFlowableWithU
                     Exceptions.throwIfFatal(e);
                     cancel();
                     actual.onError(e);
-                    return;
+                    return false;
                 }
                 actual.onNext(r);
-            } else{
-                request(1);
+                return true;
+            } else {
+                return false;
             }
         }
 
