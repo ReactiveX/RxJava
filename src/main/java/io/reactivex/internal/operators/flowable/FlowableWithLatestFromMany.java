@@ -23,6 +23,7 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.functions.ObjectHelper;
+import io.reactivex.internal.fuseable.ConditionalSubscriber;
 import io.reactivex.internal.subscriptions.*;
 import io.reactivex.internal.util.*;
 import io.reactivex.plugins.RxJavaPlugins;
@@ -95,7 +96,7 @@ public final class FlowableWithLatestFromMany<T, R> extends AbstractFlowableWith
 
     static final class WithLatestFromSubscriber<T, R>
     extends AtomicInteger
-    implements FlowableSubscriber<T>, Subscription {
+    implements ConditionalSubscriber<T>, Subscription {
 
         private static final long serialVersionUID = 1577321883966341961L;
 
@@ -147,8 +148,15 @@ public final class FlowableWithLatestFromMany<T, R> extends AbstractFlowableWith
 
         @Override
         public void onNext(T t) {
+            if (!tryOnNext(t) && !done) {
+                s.get().request(1);
+            }
+        }
+
+        @Override
+        public boolean tryOnNext(T t) {
             if (done) {
-                return;
+                return false;
             }
             AtomicReferenceArray<Object> ara = values;
             int n = ara.length();
@@ -159,8 +167,7 @@ public final class FlowableWithLatestFromMany<T, R> extends AbstractFlowableWith
                 Object o = ara.get(i);
                 if (o == null) {
                     // somebody hasn't signalled yet, skip this T
-                    s.get().request(1);
-                    return;
+                    return false;
                 }
                 objects[i + 1] = o;
             }
@@ -173,10 +180,11 @@ public final class FlowableWithLatestFromMany<T, R> extends AbstractFlowableWith
                 Exceptions.throwIfFatal(ex);
                 cancel();
                 onError(ex);
-                return;
+                return false;
             }
 
             HalfSerializer.onNext(actual, v, this, error);
+            return true;
         }
 
         @Override

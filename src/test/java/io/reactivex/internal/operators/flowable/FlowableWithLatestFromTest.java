@@ -726,7 +726,7 @@ public class FlowableWithLatestFromTest {
     }
 
     @Test
-    public void testSingleRequestNotForgottenWhenNoData() {
+    public void singleRequestNotForgottenWhenNoData() {
         PublishProcessor<Integer> source = PublishProcessor.create();
         PublishProcessor<Integer> other = PublishProcessor.create();
 
@@ -749,5 +749,31 @@ public class FlowableWithLatestFromTest {
         source.onNext(2);
 
         ts.assertValue((2 << 8) + 1);
+    }
+
+    @Test
+    public void coldSourceConsumedWithoutOther() {
+        Flowable.range(1, 10).withLatestFrom(Flowable.never(),
+        new BiFunction<Integer, Object, Object>() {
+            @Override
+            public Object apply(Integer a, Object b) throws Exception {
+                return a;
+            }
+        })
+        .test(1)
+        .assertResult();
+    }
+
+    @Test
+    public void coldSourceConsumedWithoutManyOthers() {
+        Flowable.range(1, 10).withLatestFrom(Flowable.never(), Flowable.never(), Flowable.never(),
+        new Function4<Integer, Object, Object, Object, Object>() {
+            @Override
+            public Object apply(Integer a, Object b, Object c, Object d) throws Exception {
+                return a;
+            }
+        })
+        .test(1)
+        .assertResult();
     }
 }
