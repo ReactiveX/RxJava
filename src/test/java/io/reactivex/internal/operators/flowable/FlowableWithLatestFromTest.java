@@ -13,26 +13,36 @@
 
 package io.reactivex.internal.operators.flowable;
 
-import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import org.junit.Test;
 import org.mockito.InOrder;
 
-import org.reactivestreams.Subscriber;
-
-import io.reactivex.*;
+import io.reactivex.Flowable;
+import io.reactivex.TestHelper;
 import io.reactivex.exceptions.TestException;
-import io.reactivex.functions.*;
+import io.reactivex.functions.BiFunction;
+import io.reactivex.functions.Function;
+import io.reactivex.functions.Function3;
+import io.reactivex.functions.Function4;
+import io.reactivex.functions.Function5;
 import io.reactivex.internal.functions.Functions;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.internal.util.CrashingMappedIterable;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.subscribers.TestSubscriber;
+import org.reactivestreams.Subscriber;
 
 public class FlowableWithLatestFromTest {
     static final BiFunction<Integer, Integer, Integer> COMBINER = new BiFunction<Integer, Integer, Integer>() {
@@ -305,15 +315,6 @@ public class FlowableWithLatestFromTest {
         ts.assertNoErrors();
     }
 
-    private Function<Long, Integer> toInt() {
-        return new Function<Long, Integer>() {
-            @Override
-            public Integer apply(Long aLong) throws Exception {
-                return aLong.intValue();
-            }
-        };
-    }
-
     static final Function<Object[], String> toArray = new Function<Object[], String>() {
         @Override
         public String apply(Object[] args) {
@@ -331,7 +332,7 @@ public class FlowableWithLatestFromTest {
         TestSubscriber<String> ts = new TestSubscriber<String>();
 
         main.withLatestFrom(new Flowable[] { ps1, ps2, ps3 }, toArray)
-                .subscribe(ts);
+        .subscribe(ts);
 
         main.onNext("1");
         ts.assertNoValues();
@@ -378,7 +379,7 @@ public class FlowableWithLatestFromTest {
         TestSubscriber<String> ts = new TestSubscriber<String>();
 
         main.withLatestFrom(Arrays.<Flowable<?>>asList(ps1, ps2, ps3), toArray)
-                .subscribe(ts);
+        .subscribe(ts);
 
         main.onNext("1");
         ts.assertNoValues();
@@ -455,7 +456,7 @@ public class FlowableWithLatestFromTest {
         TestSubscriber<String> ts = new TestSubscriber<String>(0);
 
         Flowable.range(1, 10).withLatestFrom(new Flowable<?>[] { ps1, ps2 }, toArray)
-                .subscribe(ts);
+        .subscribe(ts);
 
         ts.assertNoValues();
 
@@ -477,7 +478,7 @@ public class FlowableWithLatestFromTest {
         TestSubscriber<String> ts = new TestSubscriber<String>(0);
 
         Flowable.range(1, 3).withLatestFrom(new Flowable<?>[] { ps1, ps2 }, toArray)
-                .subscribe(ts);
+        .subscribe(ts);
 
         ts.assertNoValues();
 
@@ -508,7 +509,7 @@ public class FlowableWithLatestFromTest {
 
         Flowable.range(1, 3).withLatestFrom(
                 new Flowable<?>[] { Flowable.just(1), Flowable.empty() }, toArray)
-                .subscribe(ts);
+        .subscribe(ts);
 
         ts.assertNoValues();
         ts.assertNoErrors();
@@ -521,7 +522,7 @@ public class FlowableWithLatestFromTest {
 
         Flowable.range(1, 3).withLatestFrom(
                 new Flowable<?>[] { Flowable.just(1), Flowable.error(new TestException()) }, toArray)
-                .subscribe(ts);
+        .subscribe(ts);
 
         ts.assertNoValues();
         ts.assertError(TestException.class);
@@ -534,7 +535,7 @@ public class FlowableWithLatestFromTest {
 
         Flowable.error(new TestException()).withLatestFrom(
                 new Flowable<?>[] { Flowable.just(1), Flowable.just(1) }, toArray)
-                .subscribe(ts);
+        .subscribe(ts);
 
         ts.assertNoValues();
         ts.assertError(TestException.class);
@@ -553,7 +554,7 @@ public class FlowableWithLatestFromTest {
                 return Arrays.asList(a, b, c);
             }
         })
-                .subscribe(ts);
+        .subscribe(ts);
 
         ts.assertValue(Arrays.asList(1, 1, 1));
         ts.assertNoErrors();
@@ -572,7 +573,7 @@ public class FlowableWithLatestFromTest {
                 return Arrays.asList(a, b, c, d);
             }
         })
-                .subscribe(ts);
+        .subscribe(ts);
 
         ts.assertValue(Arrays.asList(1, 1, 1, 1));
         ts.assertNoErrors();
@@ -591,7 +592,7 @@ public class FlowableWithLatestFromTest {
                 return Arrays.asList(a, b, c, d, e);
             }
         })
-                .subscribe(ts);
+        .subscribe(ts);
 
         ts.assertValue(Arrays.asList(1, 1, 1, 1, 1));
         ts.assertNoErrors();
@@ -618,19 +619,19 @@ public class FlowableWithLatestFromTest {
     @Test
     public void manyIteratorThrows() {
         Flowable.just(1)
-                .withLatestFrom(new CrashingMappedIterable<Flowable<Integer>>(1, 100, 100, new Function<Integer, Flowable<Integer>>() {
-                    @Override
-                    public Flowable<Integer> apply(Integer v) throws Exception {
-                        return Flowable.just(2);
-                    }
-                }), new Function<Object[], Object>() {
-                    @Override
-                    public Object apply(Object[] a) throws Exception {
-                        return a;
-                    }
-                })
-                .test()
-                .assertFailureAndMessage(TestException.class, "iterator()");
+        .withLatestFrom(new CrashingMappedIterable<Flowable<Integer>>(1, 100, 100, new Function<Integer, Flowable<Integer>>() {
+            @Override
+            public Flowable<Integer> apply(Integer v) throws Exception {
+                return Flowable.just(2);
+            }
+        }), new Function<Object[], Object>() {
+            @Override
+            public Object apply(Object[] a) throws Exception {
+                return a;
+            }
+        })
+        .test()
+        .assertFailureAndMessage(TestException.class, "iterator()");
     }
 
     @Test
@@ -641,8 +642,8 @@ public class FlowableWithLatestFromTest {
                 throw new TestException();
             }
         })
-                .test()
-                .assertFailure(TestException.class);
+        .test()
+        .assertFailure(TestException.class);
     }
 
     @Test
@@ -664,8 +665,8 @@ public class FlowableWithLatestFromTest {
                     return a;
                 }
             })
-                    .test()
-                    .assertFailureAndMessage(TestException.class, "First");
+            .test()
+            .assertFailureAndMessage(TestException.class, "First");
 
             TestHelper.assertUndeliverable(errors, 0, TestException.class, "Second");
         } finally {
@@ -678,21 +679,21 @@ public class FlowableWithLatestFromTest {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
             Flowable.just(1)
-                    .withLatestFrom(new Flowable<Integer>() {
-                        @Override
-                        protected void subscribeActual(Subscriber<? super Integer> s) {
-                            s.onSubscribe(new BooleanSubscription());
-                            s.onError(new TestException("First"));
-                            s.onError(new TestException("Second"));
-                        }
-                    }, new BiFunction<Integer, Integer, Integer>() {
-                        @Override
-                        public Integer apply(Integer a, Integer b) throws Exception {
-                            return a + b;
-                        }
-                    })
-                    .test()
-                    .assertFailureAndMessage(TestException.class, "First");
+            .withLatestFrom(new Flowable<Integer>() {
+                @Override
+                protected void subscribeActual(Subscriber<? super Integer> s) {
+                    s.onSubscribe(new BooleanSubscription());
+                    s.onError(new TestException("First"));
+                    s.onError(new TestException("Second"));
+                }
+            }, new BiFunction<Integer, Integer, Integer>() {
+                @Override
+                public Integer apply(Integer a, Integer b) throws Exception {
+                    return a + b;
+                }
+            })
+            .test()
+            .assertFailureAndMessage(TestException.class, "First");
 
             TestHelper.assertUndeliverable(errors, 0, TestException.class, "Second");
         } finally {
@@ -703,14 +704,14 @@ public class FlowableWithLatestFromTest {
     @Test
     public void combineToNull1() {
         Flowable.just(1)
-                .withLatestFrom(Flowable.just(2), new BiFunction<Integer, Integer, Object>() {
-                    @Override
-                    public Object apply(Integer a, Integer b) throws Exception {
-                        return null;
-                    }
-                })
-                .test()
-                .assertFailure(NullPointerException.class);
+        .withLatestFrom(Flowable.just(2), new BiFunction<Integer, Integer, Object>() {
+            @Override
+            public Object apply(Integer a, Integer b) throws Exception {
+                return null;
+            }
+        })
+        .test()
+        .assertFailure(NullPointerException.class);
     }
 
     @SuppressWarnings("unchecked")
@@ -718,21 +719,21 @@ public class FlowableWithLatestFromTest {
     public void combineToNull2() {
         Flowable.just(1)
         .withLatestFrom(Arrays.asList(Flowable.just(2), Flowable.just(3)), new Function<Object[], Object>() {
-                    @Override
-                    public Object apply(Object[] o) throws Exception {
-                        return null;
-                    }
-                })
-                .test()
-                .assertFailure(NullPointerException.class);
+            @Override
+            public Object apply(Object[] o) throws Exception {
+                return null;
+            }
+        })
+        .test()
+        .assertFailure(NullPointerException.class);
     }
 
     @Test
     public void zeroOtherCombinerReturnsNull() {
         Flowable.just(1)
-                .withLatestFrom(new Flowable[0], Functions.justFunction(null))
-                .test()
-                .assertFailureAndMessage(NullPointerException.class, "The combiner returned a null value");
+        .withLatestFrom(new Flowable[0], Functions.justFunction(null))
+        .test()
+        .assertFailureAndMessage(NullPointerException.class, "The combiner returned a null value");
     }
 
     @Test
