@@ -13,7 +13,6 @@
 
 package io.reactivex.processors;
 
-import io.reactivex.annotations.CheckReturnValue;
 import java.lang.reflect.Array;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
@@ -22,6 +21,7 @@ import java.util.concurrent.atomic.*;
 import org.reactivestreams.*;
 
 import io.reactivex.Scheduler;
+import io.reactivex.annotations.CheckReturnValue;
 import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.internal.util.*;
@@ -277,7 +277,7 @@ public final class ReplayProcessor<T> extends FlowableProcessor<T> {
         }
 
         ReplayBuffer<T> b = buffer;
-        b.add(t);
+        b.next(t);
 
         for (ReplaySubscription<T> rs : subscribers.get()) {
             b.replay(rs);
@@ -296,11 +296,9 @@ public final class ReplayProcessor<T> extends FlowableProcessor<T> {
         }
         done = true;
 
-        Object o = NotificationLite.error(t);
-
         ReplayBuffer<T> b = buffer;
+        b.error(t);
 
-        b.addFinal(o);
         for (ReplaySubscription<T> rs : subscribers.getAndSet(TERMINATED)) {
             b.replay(rs);
         }
@@ -314,11 +312,9 @@ public final class ReplayProcessor<T> extends FlowableProcessor<T> {
         }
         done = true;
 
-        Object o = NotificationLite.complete();
-
         ReplayBuffer<T> b = buffer;
 
-        b.addFinal(o);
+        b.complete();
 
         for (ReplaySubscription<T> rs : subscribers.getAndSet(TERMINATED)) {
             b.replay(rs);
@@ -336,9 +332,9 @@ public final class ReplayProcessor<T> extends FlowableProcessor<T> {
 
     @Override
     public Throwable getThrowable() {
-        Object o = buffer.get();
-        if (NotificationLite.isError(o)) {
-            return NotificationLite.getError(o);
+        ReplayBuffer<T> b = buffer;
+        if (b.isDone()) {
+            return b.getError();
         }
         return null;
     }
@@ -382,14 +378,14 @@ public final class ReplayProcessor<T> extends FlowableProcessor<T> {
 
     @Override
     public boolean hasComplete() {
-        Object o = buffer.get();
-        return NotificationLite.isComplete(o);
+        ReplayBuffer<T> b = buffer;
+        return b.isDone() && b.getError() == null;
     }
 
     @Override
     public boolean hasThrowable() {
-        Object o = buffer.get();
-        return NotificationLite.isError(o);
+        ReplayBuffer<T> b = buffer;
+        return b.isDone() && b.getError() != null;
     }
 
     /**
@@ -463,9 +459,11 @@ public final class ReplayProcessor<T> extends FlowableProcessor<T> {
      */
     interface ReplayBuffer<T> {
 
-        void add(T value);
+        void next(T value);
 
-        void addFinal(Object notificationLite);
+        void error(Throwable ex);
+
+        void complete();
 
         void replay(ReplaySubscription<T> rs);
 
@@ -475,11 +473,9 @@ public final class ReplayProcessor<T> extends FlowableProcessor<T> {
 
         T[] getValues(T[] array);
 
-        /**
-         * Returns the terminal NotificationLite object or null if not yet terminated.
-         * @return the terminal NotificationLite object or null if not yet terminated
-         */
-        Object get();
+        boolean isDone();
+
+        Throwable getError();
     }
 
     static final class ReplaySubscription<T> extends AtomicInteger implements Subscription {
@@ -493,6 +489,8 @@ public final class ReplayProcessor<T> extends FlowableProcessor<T> {
         final AtomicLong requested;
 
         volatile boolean cancelled;
+
+        long emitted;
 
         ReplaySubscription(Subscriber<? super T> actual, ReplayProcessor<T> state) {
             this.actual = actual;
@@ -517,51 +515,43 @@ public final class ReplayProcessor<T> extends FlowableProcessor<T> {
     }
 
     static final class UnboundedReplayBuffer<T>
-    extends AtomicReference<Object>
     implements ReplayBuffer<T> {
 
-        private static final long serialVersionUID = -4457200895834877300L;
+        final List<T> buffer;
 
-        final List<Object> buffer;
-
+        Throwable error;
         volatile boolean done;
 
         volatile int size;
 
         UnboundedReplayBuffer(int capacityHint) {
-            this.buffer = new ArrayList<Object>(ObjectHelper.verifyPositive(capacityHint, "capacityHint"));
+            this.buffer = new ArrayList<T>(ObjectHelper.verifyPositive(capacityHint, "capacityHint"));
         }
 
         @Override
-        public void add(T value) {
+        public void next(T value) {
             buffer.add(value);
             size++;
         }
 
         @Override
-        public void addFinal(Object notificationLite) {
-            lazySet(notificationLite);
-            buffer.add(notificationLite);
-            size++;
+        public void error(Throwable ex) {
+            error = ex;
             done = true;
         }
 
         @Override
-        @SuppressWarnings("unchecked")
+        public void complete() {
+            done = true;
+        }
+
+        @Override
         public T getValue() {
             int s = size;
-            if (s != 0) {
-                List<Object> b = buffer;
-                Object o = b.get(s - 1);
-                if (NotificationLite.isComplete(o) || NotificationLite.isError(o)) {
-                    if (s == 1) {
-                        return null;
-                    }
-                    return (T)b.get(s - 2);
-                }
-                return (T)o;
+            if (s == 0) {
+                return null;
             }
-            return null;
+            return buffer.get(s - 1);
         }
 
         @Override
@@ -574,25 +564,13 @@ public final class ReplayProcessor<T> extends FlowableProcessor<T> {
                 }
                 return array;
             }
-            List<Object> b = buffer;
-            Object o = b.get(s - 1);
-
-            if (NotificationLite.isComplete(o) || NotificationLite.isError(o)) {
-                s--;
-                if (s == 0) {
-                    if (array.length != 0) {
-                        array[0] = null;
-                    }
-                    return array;
-                }
-            }
-
+            List<T> b = buffer;
 
             if (array.length < s) {
                 array = (T[])Array.newInstance(array.getClass().getComponentType(), s);
             }
             for (int i = 0; i < s; i++) {
-                array[i] = (T)b.get(i);
+                array[i] = b.get(i);
             }
             if (array.length > s) {
                 array[s] = null;
@@ -602,14 +580,13 @@ public final class ReplayProcessor<T> extends FlowableProcessor<T> {
         }
 
         @Override
-        @SuppressWarnings("unchecked")
         public void replay(ReplaySubscription<T> rs) {
             if (rs.getAndIncrement() != 0) {
                 return;
             }
 
             int missed = 1;
-            final List<Object> b = buffer;
+            final List<T> b = buffer;
             final Subscriber<? super T> a = rs.actual;
 
             Integer indexObject = (Integer)rs.index;
@@ -620,67 +597,67 @@ public final class ReplayProcessor<T> extends FlowableProcessor<T> {
                 index = 0;
                 rs.index = 0;
             }
+            long e = rs.emitted;
 
             for (;;) {
 
-                if (rs.cancelled) {
-                    rs.index = null;
-                    return;
-                }
-
-                int s = size;
                 long r = rs.requested.get();
-                long e = 0L;
 
-                while (s != index) {
-
+                while (e != r) {
                     if (rs.cancelled) {
                         rs.index = null;
                         return;
                     }
 
-                    Object o = b.get(index);
+                    boolean d = done;
+                    int s = size;
 
-                    if (done) {
-                        if (index + 1 == s) {
-                            s = size;
-                            if (index + 1 == s) {
-                                if (NotificationLite.isComplete(o)) {
-                                    a.onComplete();
-                                } else {
-                                    a.onError(NotificationLite.getError(o));
-                                }
-                                rs.index = null;
-                                rs.cancelled = true;
-                                return;
-                            }
+                    if (d && index == s) {
+                        rs.index = null;
+                        rs.cancelled = true;
+                        Throwable ex = error;
+                        if (ex == null) {
+                            a.onComplete();
+                        } else {
+                            a.onError(ex);
                         }
+                        return;
                     }
 
-                    if (r == 0) {
-                        r = rs.requested.get() + e;
-                        if (r == 0) {
-                            break;
-                        }
+                    if (index == s) {
+                        break;
                     }
 
-                    a.onNext((T)o);
-                    r--;
-                    e--;
+                    a.onNext(b.get(index));
+
                     index++;
+                    e++;
                 }
 
-                if (e != 0L) {
-                    if (rs.requested.get() != Long.MAX_VALUE) {
-                        r = rs.requested.addAndGet(e);
+                if (e == r) {
+                    if (rs.cancelled) {
+                        rs.index = null;
+                        return;
                     }
-                }
-                if (index != size && r != 0L) {
-                    continue;
+
+                    boolean d = done;
+                    int s = size;
+
+                    if (d && index == s) {
+                        rs.index = null;
+                        rs.cancelled = true;
+                        Throwable ex = error;
+                        if (ex == null) {
+                            a.onComplete();
+                        } else {
+                            a.onError(ex);
+                        }
+                        return;
+                    }
                 }
 
                 rs.index = index;
-
+                rs.emitted = e;
                 missed = rs.addAndGet(-missed);
                 if (missed == 0) {
                     break;
@@ -690,15 +667,17 @@ public final class ReplayProcessor<T> extends FlowableProcessor<T> {
 
         @Override
         public int size() {
-            int s = size;
-            if (s != 0) {
-                Object o = buffer.get(s - 1);
-                if (NotificationLite.isComplete(o) || NotificationLite.isError(o)) {
-                    return s - 1;
-                }
-                return s;
-            }
-            return 0;
+            return size;
+        }
+
+        @Override
+        public boolean isDone() {
+            return done;
+        }
+
+        @Override
+        public Throwable getError() {
+            return error;
         }
     }
 
@@ -727,22 +706,21 @@ public final class ReplayProcessor<T> extends FlowableProcessor<T> {
     }
 
     static final class SizeBoundReplayBuffer<T>
-    extends AtomicReference<Object>
     implements ReplayBuffer<T> {
 
-        private static final long serialVersionUID = 3027920763113911982L;
         final int maxSize;
         int size;
 
-        volatile Node<Object> head;
+        volatile Node<T> head;
 
-        Node<Object> tail;
+        Node<T> tail;
 
+        Throwable error;
         volatile boolean done;
 
         SizeBoundReplayBuffer(int maxSize) {
             this.maxSize = ObjectHelper.verifyPositive(maxSize, "maxSize");
-            Node<Object> h = new Node<Object>(null);
+            Node<T> h = new Node<T>(null);
             this.tail = h;
             this.head = h;
         }
@@ -750,15 +728,15 @@ public final class ReplayProcessor<T> extends FlowableProcessor<T> {
         void trim() {
             if (size > maxSize) {
                 size--;
-                Node<Object> h = head;
+                Node<T> h = head;
                 head = h.get();
             }
         }
 
         @Override
-        public void add(T value) {
-            Node<Object> n = new Node<Object>(value);
-            Node<Object> t = tail;
+        public void next(T value) {
+            Node<T> n = new Node<T>(value);
+            Node<T> t = tail;
 
             tail = n;
             size++;
@@ -768,71 +746,64 @@ public final class ReplayProcessor<T> extends FlowableProcessor<T> {
         }
 
         @Override
-        public void addFinal(Object notificationLite) {
-            lazySet(notificationLite);
-            Node<Object> n = new Node<Object>(notificationLite);
-            Node<Object> t = tail;
-
-            tail = n;
-            size++;
-            t.set(n); // releases both the tail and size
-
+        public void error(Throwable ex) {
+            error = ex;
             done = true;
         }
 
         @Override
-        @SuppressWarnings("unchecked")
+        public void complete() {
+            done = true;
+        }
+
+        @Override
+        public boolean isDone() {
+            return done;
+        }
+
+        @Override
+        public Throwable getError() {
+            return error;
+        }
+
+        @Override
         public T getValue() {
-            Node<Object> prev = null;
-            Node<Object> h = head;
-
+            Node<T> h = head;
             for (;;) {
-                Node<Object> next = h.get();
-                if (next == null) {
-                    break;
+                Node<T> n = h.get();
+                if (n == null) {
+                    return h.value;
                 }
-                prev = h;
-                h = next;
+                h = n;
             }
-
-            Object v = h.value;
-            if (v == null) {
-                return null;
-            }
-            if (NotificationLite.isComplete(v) || NotificationLite.isError(v)) {
-                return (T)prev.value;
-            }
-
-            return (T)v;
         }
 
         @Override
         @SuppressWarnings("unchecked")
         public T[] getValues(T[] array) {
-            Node<Object> h = head;
-            int s = size();
-
-            if (s == 0) {
-                if (array.length != 0) {
-                    array[0] = null;
+            int s = 0;
+            Node<T> h = head;
+            Node<T> h0 = h;
+            for (;;) {
+                Node<T> next = h0.get();
+                if (next == null) {
+                    break;
                 }
-            } else {
-                if (array.length < s) {
-                    array = (T[])Array.newInstance(array.getClass().getComponentType(), s);
-                }
-
-                int i = 0;
-                while (i != s) {
-                    Node<Object> next = h.get();
-                    array[i] = (T)next.value;
-                    i++;
-                    h = next;
-                }
-                if (array.length > s) {
-                    array[s] = null;
-                }
+                s++;
+                h0 = next;
+            }
+            if (array.length < s) {
+                array = (T[])Array.newInstance(array.getClass().getComponentType(), s);
             }
 
+            for (int j = 0; j < s; j++) {
+                h = h.get();
+                array[j] = h.value;
+            }
+
+            if (array.length > s) {
+                array[s] = null;
+            }
             return array;
         }
 
@@ -846,65 +817,71 @@ public final class ReplayProcessor<T> extends FlowableProcessor<T> {
             int missed = 1;
             final Subscriber<? super T> a = rs.actual;
 
-            Node<Object> index = (Node<Object>)rs.index;
+            Node<T> index = (Node<T>)rs.index;
             if (index == null) {
                 index = head;
             }
 
+            long e = rs.emitted;
+
             for (;;) {
 
                 long r = rs.requested.get();
-                long e = 0;
 
-                for (;;) {
+                while (e != r) {
                     if (rs.cancelled) {
                         rs.index = null;
                         return;
                     }
 
-                    Node<Object> n = index.get();
+                    boolean d = done;
+                    Node<T> next = index.get();
+                    boolean empty = next == null;
 
-                    if (n == null) {
+                    if (d && empty) {
+                        rs.index = null;
+                        rs.cancelled = true;
+                        Throwable ex = error;
+                        if (ex == null) {
+                            a.onComplete();
+                        } else {
+                            a.onError(ex);
+                        }
+                        return;
+                    }
+
+                    if (empty) {
                         break;
                     }
 
-                    Object o = n.value;
-
-                    if (done) {
-                        if (n.get() == null) {
-
-                            if (NotificationLite.isComplete(o)) {
-                                a.onComplete();
-                            } else {
-                                a.onError(NotificationLite.getError(o));
-                            }
-                            rs.index = null;
-                            rs.cancelled = true;
-                            return;
-                        }
-                    }
-
-                    if (r == 0) {
-                        r = rs.requested.get() + e;
-                        if (r == 0) {
-                            break;
-                        }
-                    }
-
-                    a.onNext((T)o);
-                    r--;
-                    e--;
-
-                    index = n;
+                    a.onNext(next.value);
+                    e++;
+                    index = next;
                 }
 
-                if (e != 0L) {
-                    if (rs.requested.get() != Long.MAX_VALUE) {
-                        rs.requested.addAndGet(e);
+                if (e == r) {
+                    if (rs.cancelled) {
+                        rs.index = null;
+                        return;
+                    }
+
+                    boolean d = done;
+
+                    if (d && index.get() == null) {
+                        rs.index = null;
+                        rs.cancelled = true;
+                        Throwable ex = error;
+                        if (ex == null) {
+                            a.onComplete();
+                        } else {
+                            a.onError(ex);
+                        }
+                        return;
                     }
                 }
 
                 rs.index = index;
+                rs.emitted = e;
 
                 missed = rs.addAndGet(-missed);
                 if (missed == 0) {
@@ -916,14 +893,10 @@ public final class ReplayProcessor<T> extends FlowableProcessor<T> {
         @Override
         public int size() {
             int s = 0;
-            Node<Object> h = head;
+            Node<T> h = head;
             while (s != Integer.MAX_VALUE) {
-                Node<Object> next = h.get();
+                Node<T> next = h.get();
                 if (next == null) {
-                    Object o = h.value;
-                    if (NotificationLite.isComplete(o) || NotificationLite.isError(o)) {
-                        s--;
-                    }
                     break;
                 }
                 s++;
@@ -935,10 +908,7 @@ public final class ReplayProcessor<T> extends FlowableProcessor<T> {
     }
 
     static final class SizeAndTimeBoundReplayBuffer<T>
-    extends AtomicReference<Object>
     implements ReplayBuffer<T> {
-
-        private static final long serialVersionUID = 1242561386470847675L;
 
         final int maxSize;
         final long maxAge;
@@ -946,10 +916,11 @@ public final class ReplayProcessor<T> extends FlowableProcessor<T> {
         final Scheduler scheduler;
         int size;
 
-        volatile TimedNode<Object> head;
+        volatile TimedNode<T> head;
 
-        TimedNode<Object> tail;
+        TimedNode<T> tail;
 
+        Throwable error;
         volatile boolean done;
 
 
@@ -958,7 +929,7 @@ public final class ReplayProcessor<T> extends FlowableProcessor<T> {
             this.maxAge = ObjectHelper.verifyPositive(maxAge, "maxAge");
             this.unit = ObjectHelper.requireNonNull(unit, "unit is null");
             this.scheduler = ObjectHelper.requireNonNull(scheduler, "scheduler is null");
-            TimedNode<Object> h = new TimedNode<Object>(null, 0L);
+            TimedNode<T> h = new TimedNode<T>(null, 0L);
             this.tail = h;
             this.head = h;
         }
@@ -966,15 +937,15 @@ public final class ReplayProcessor<T> extends FlowableProcessor<T> {
         void trim() {
             if (size > maxSize) {
                 size--;
-                TimedNode<Object> h = head;
+                TimedNode<T> h = head;
                 head = h.get();
             }
             long limit = scheduler.now(unit) - maxAge;
 
-            TimedNode<Object> h = head;
+            TimedNode<T> h = head;
 
             for (;;) {
-                TimedNode<Object> next = h.get();
+                TimedNode<T> next = h.get();
                 if (next == null) {
                     head = h;
                     break;
@@ -993,11 +964,11 @@ public final class ReplayProcessor<T> extends FlowableProcessor<T> {
         void trimFinal() {
             long limit = scheduler.now(unit) - maxAge;
 
-            TimedNode<Object> h = head;
+            TimedNode<T> h = head;
 
             for (;;) {
-                TimedNode<Object> next = h.get();
-                if (next.get() == null) {
+                TimedNode<T> next = h.get();
+                if (next == null) {
                     head = h;
                     break;
                 }
@@ -1012,9 +983,9 @@ public final class ReplayProcessor<T> extends FlowableProcessor<T> {
         }
 
         @Override
-        public void add(T value) {
-            TimedNode<Object> n = new TimedNode<Object>(value, scheduler.now(unit));
-            TimedNode<Object> t = tail;
+        public void next(T value) {
+            TimedNode<T> n = new TimedNode<T>(value, scheduler.now(unit));
+            TimedNode<T> t = tail;
 
             tail = n;
             size++;
@@ -1024,31 +995,27 @@ public final class ReplayProcessor<T> extends FlowableProcessor<T> {
         }
 
         @Override
-        public void addFinal(Object notificationLite) {
-            lazySet(notificationLite);
-            TimedNode<Object> n = new TimedNode<Object>(notificationLite, Long.MAX_VALUE);
-            TimedNode<Object> t = tail;
-
-            tail = n;
-            size++;
-            t.set(n); // releases both the tail and size
+        public void error(Throwable ex) {
             trimFinal();
-
+            error = ex;
             done = true;
         }
 
         @Override
-        @SuppressWarnings("unchecked")
+        public void complete() {
+            trimFinal();
+            done = true;
+        }
+
+        @Override
         public T getValue() {
-            TimedNode<Object> prev = null;
-            TimedNode<Object> h = head;
+            TimedNode<T> h = head;
 
             for (;;) {
-                TimedNode<Object> next = h.get();
+                TimedNode<T> next = h.get();
                 if (next == null) {
                     break;
                 }
-                prev = h;
                 h = next;
             }
 
@@ -1057,21 +1024,13 @@ public final class ReplayProcessor<T> extends FlowableProcessor<T> {
                 return null;
             }
 
-            Object v = h.value;
-            if (v == null) {
-                return null;
-            }
-            if (NotificationLite.isComplete(v) || NotificationLite.isError(v)) {
-                return (T)prev.value;
-            }
-
-            return (T)v;
+            return h.value;
         }
 
         @Override
         @SuppressWarnings("unchecked")
         public T[] getValues(T[] array) {
-            TimedNode<Object> h = getHead();
+            TimedNode<T> h = getHead();
             int s = size(h);
 
             if (s == 0) {
@@ -1085,8 +1044,8 @@ public final class ReplayProcessor<T> extends FlowableProcessor<T> {
 
                 int i = 0;
                 while (i != s) {
-                    TimedNode<Object> next = h.get();
-                    array[i] = (T)next.value;
+                    TimedNode<T> next = h.get();
+                    array[i] = next.value;
                     i++;
                     h = next;
                 }
@@ -1098,11 +1057,11 @@ public final class ReplayProcessor<T> extends FlowableProcessor<T> {
             return array;
         }
 
-        TimedNode<Object> getHead() {
-            TimedNode<Object> index = head;
+        TimedNode<T> getHead() {
+            TimedNode<T> index = head;
             // skip old entries
             long limit = scheduler.now(unit) - maxAge;
-            TimedNode<Object> next = index.get();
+            TimedNode<T> next = index.get();
             while (next != null) {
                 long ts = next.time;
                 if (ts > limit) {
@@ -1124,65 +1083,71 @@ public final class ReplayProcessor<T> extends FlowableProcessor<T> {
             int missed = 1;
             final Subscriber<? super T> a = rs.actual;
 
-            TimedNode<Object> index = (TimedNode<Object>)rs.index;
+            TimedNode<T> index = (TimedNode<T>)rs.index;
             if (index == null) {
                 index = getHead();
             }
 
+            long e = rs.emitted;
+
             for (;;) {
 
                 long r = rs.requested.get();
-                long e = 0;
 
-                for (;;) {
+                while (e != r) {
                     if (rs.cancelled) {
                         rs.index = null;
                         return;
                     }
 
-                    TimedNode<Object> n = index.get();
+                    boolean d = done;
+                    TimedNode<T> next = index.get();
+                    boolean empty = next == null;
 
-                    if (n == null) {
+                    if (d && empty) {
+                        rs.index = null;
+                        rs.cancelled = true;
+                        Throwable ex = error;
+                        if (ex == null) {
+                            a.onComplete();
+                        } else {
+                            a.onError(ex);
+                        }
+                        return;
+                    }
+
+                    if (empty) {
                         break;
                     }
 
-                    Object o = n.value;
-
-                    if (done) {
-                        if (n.get() == null) {
-
-                            if (NotificationLite.isComplete(o)) {
-                                a.onComplete();
-                            } else {
-                                a.onError(NotificationLite.getError(o));
-                            }
-                            rs.index = null;
-                            rs.cancelled = true;
-                            return;
-                        }
-                    }
-
-                    if (r == 0) {
-                        r = rs.requested.get() + e;
-                        if (r == 0) {
-                            break;
-                        }
-                    }
-
-                    a.onNext((T)o);
-                    r--;
-                    e--;
-
-                    index = n;
+                    a.onNext(next.value);
+                    e++;
+                    index = next;
                 }
 
-                if (e != 0L) {
-                    if (rs.requested.get() != Long.MAX_VALUE) {
-                        rs.requested.addAndGet(e);
+                if (e == r) {
+                    if (rs.cancelled) {
+                        rs.index = null;
+                        return;
+                    }
+
+                    boolean d = done;
+
+                    if (d && index.get() == null) {
+                        rs.index = null;
+                        rs.cancelled = true;
+                        Throwable ex = error;
+                        if (ex == null) {
+                            a.onComplete();
+                        } else {
+                            a.onError(ex);
+                        }
+                        return;
                     }
                 }
 
                 rs.index = index;
+                rs.emitted = e;
 
                 missed = rs.addAndGet(-missed);
                 if (missed == 0) {
@@ -1196,15 +1161,11 @@ public final class ReplayProcessor<T> extends FlowableProcessor<T> {
             return size(getHead());
         }
 
-        int size(TimedNode<Object> h) {
+        int size(TimedNode<T> h) {
             int s = 0;
             while (s != Integer.MAX_VALUE) {
-                TimedNode<Object> next = h.get();
+                TimedNode<T> next = h.get();
                 if (next == null) {
-                    Object o = h.value;
-                    if (NotificationLite.isComplete(o) || NotificationLite.isError(o)) {
-                        s--;
-                    }
                     break;
                 }
                 s++;
@@ -1212,6 +1173,16 @@ public final class ReplayProcessor<T> extends FlowableProcessor<T> {
             }
 
             return s;
+        }
+
+        @Override
+        public Throwable getError() {
+            return error;
+        }
+
+        @Override
+        public boolean isDone() {
+            return done;
         }
     }
 }

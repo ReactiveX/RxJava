@@ -13,29 +13,25 @@
 
 package io.reactivex.processors;
 
-import io.reactivex.Flowable;
-import io.reactivex.TestHelper;
+import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
+
+import java.util.Arrays;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicReference;
+
+import org.junit.Test;
+import org.mockito.*;
+import org.reactivestreams.*;
+
+import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
-import io.reactivex.schedulers.Schedulers;
-import io.reactivex.schedulers.TestScheduler;
-import io.reactivex.subscribers.DefaultSubscriber;
-import io.reactivex.subscribers.TestSubscriber;
-import org.junit.Test;
-import org.mockito.InOrder;
-import org.mockito.Mockito;
-import org.reactivestreams.Subscriber;
-import org.reactivestreams.Subscription;
-
-import java.util.Arrays;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicReference;
-
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import io.reactivex.schedulers.*;
+import io.reactivex.subscribers.*;
 
 public class ReplayProcessorTest extends FlowableProcessorTest<Object> {
 
@@ -1317,5 +1313,233 @@ public class ReplayProcessorTest extends FlowableProcessorTest<Object> {
         scheduler.advanceTimeBy(3, TimeUnit.SECONDS);
 
         source.test().assertResult();
+    }
+
+    int raceLoop = 10000;
+
+    @Test
+    public void unboundedRequestCompleteRace() {
+        for (int i = 0; i < raceLoop; i++) {
+            final ReplayProcessor<Integer> source = ReplayProcessor.create();
+
+            final TestSubscriber<Integer> ts = source.test(0);
+
+            Runnable r1 = new Runnable() {
+                @Override
+                public void run() {
+                    source.onComplete();
+                }
+            };
+
+            Runnable r2 = new Runnable() {
+                @Override
+                public void run() {
+                    ts.request(1);
+                }
+            };
+
+            TestHelper.race(r1, r2);
+
+            ts.assertResult();
+        }
+    }
+
+    @Test
+    public void sizeRequestCompleteRace() {
+        for (int i = 0; i < raceLoop; i++) {
+            final ReplayProcessor<Integer> source = ReplayProcessor.createWithSize(10);
+
+            final TestSubscriber<Integer> ts = source.test(0);
+
+            Runnable r1 = new Runnable() {
+                @Override
+                public void run() {
+                    source.onComplete();
+                }
+            };
+
+            Runnable r2 = new Runnable() {
+                @Override
+                public void run() {
+                    ts.request(1);
+                }
+            };
+
+            TestHelper.race(r1, r2);
+
+            ts.assertResult();
+        }
+    }
+
+    @Test
+    public void timedRequestCompleteRace() {
+        for (int i = 0; i < raceLoop; i++) {
+            final ReplayProcessor<Integer> source = ReplayProcessor.createWithTime(2, TimeUnit.HOURS, Schedulers.single());
+
+            final TestSubscriber<Integer> ts = source.test(0);
+
+            Runnable r1 = new Runnable() {
+                @Override
+                public void run() {
+                    source.onComplete();
+                }
+            };
+
+            Runnable r2 = new Runnable() {
+                @Override
+                public void run() {
+                    ts.request(1);
+                }
+            };
+
+            TestHelper.race(r1, r2);
+
+            ts.assertResult();
+        }
+    }
+
+    @Test
+    public void timeAndSizeRequestCompleteRace() {
+        for (int i = 0; i < raceLoop; i++) {
+            final ReplayProcessor<Integer> source = ReplayProcessor.createWithTimeAndSize(2, TimeUnit.HOURS, Schedulers.single(), 100);
+
+            final TestSubscriber<Integer> ts = source.test(0);
+
+            Runnable r1 = new Runnable() {
+                @Override
+                public void run() {
+                    source.onComplete();
+                }
+            };
+
+            Runnable r2 = new Runnable() {
+                @Override
+                public void run() {
+                    ts.request(1);
+                }
+            };
+
+            TestHelper.race(r1, r2);
+
+            ts.assertResult();
+        }
+    }
+
+    @Test
+    public void unboundedZeroRequestComplete() {
+        final ReplayProcessor<Integer> source = ReplayProcessor.create();
+
+        source.onComplete();
+
+        source.test(0).assertResult();
+    }
+
+    @Test
+    public void unboundedZeroRequestError() {
+        final ReplayProcessor<Integer> source = ReplayProcessor.create();
+
+        source.onError(new TestException());
+
+        source.test(0).assertFailure(TestException.class);
+    }
+
+    @Test
+    public void sizeBoundZeroRequestComplete() {
+        final ReplayProcessor<Integer> source = ReplayProcessor.createWithSize(16);
+
+        source.onComplete();
+
+        source.test(0).assertResult();
+    }
+
+    @Test
+    public void sizeBoundZeroRequestError() {
+        final ReplayProcessor<Integer> source = ReplayProcessor.createWithSize(16);
+
+        source.onError(new TestException());
+
+        source.test(0).assertFailure(TestException.class);
+    }
+
+    @Test
+    public void timeBoundZeroRequestComplete() {
+        final ReplayProcessor<Integer> source = ReplayProcessor.createWithTime(1, TimeUnit.MINUTES, Schedulers.single());
+
+        source.onComplete();
+
+        source.test(0).assertResult();
+    }
+
+    @Test
+    public void timeBoundZeroRequestError() {
+        final ReplayProcessor<Integer> source = ReplayProcessor.createWithTime(1, TimeUnit.MINUTES, Schedulers.single());
+
+        source.onError(new TestException());
+
+        source.test(0).assertFailure(TestException.class);
+    }
+
+    @Test
+    public void timeAndSizeBoundZeroRequestComplete() {
+        final ReplayProcessor<Integer> source = ReplayProcessor.createWithTimeAndSize(1, TimeUnit.MINUTES, Schedulers.single(), 16);
+
+        source.onComplete();
+
+        source.test(0).assertResult();
+    }
+
+    @Test
+    public void timeAndSizeBoundZeroRequestError() {
+        final ReplayProcessor<Integer> source = ReplayProcessor.createWithTimeAndSize(1, TimeUnit.MINUTES, Schedulers.single(), 16);
+
+        source.onError(new TestException());
+
+        source.test(0).assertFailure(TestException.class);
+    }
+
+    TestSubscriber<Integer> take1AndCancel() {
+        return new TestSubscriber<Integer>(1) {
+            @Override
+            public void onNext(Integer t) {
+                super.onNext(t);
+                cancel();
+                onComplete();
+            }
+        };
+    }
+
+    @Test
+    public void unboundedCancelAfterOne() {
+        ReplayProcessor<Integer> source = ReplayProcessor.create();
+        source.onNext(1);
+
+        source.subscribeWith(take1AndCancel())
+        .assertResult(1);
+    }
+
+    @Test
+    public void sizeBoundCancelAfterOne() {
+        ReplayProcessor<Integer> source = ReplayProcessor.createWithSize(16);
+        source.onNext(1);
+
+        source.subscribeWith(take1AndCancel())
+        .assertResult(1);
+    }
+
+    @Test
+    public void timeBoundCancelAfterOne() {
+        ReplayProcessor<Integer> source = ReplayProcessor.createWithTime(1, TimeUnit.MINUTES, Schedulers.single());
+        source.onNext(1);
+
+        source.subscribeWith(take1AndCancel())
+        .assertResult(1);
+    }
+    @Test
+    public void timeAndSizeBoundCancelAfterOne() {
+        ReplayProcessor<Integer> source = ReplayProcessor.createWithTimeAndSize(1, TimeUnit.MINUTES, Schedulers.single(), 16);
+        source.onNext(1);
+
+        source.subscribeWith(take1AndCancel())
+        .assertResult(1);
     }
 }
