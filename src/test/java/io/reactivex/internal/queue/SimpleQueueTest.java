@@ -20,7 +20,7 @@ package io.reactivex.internal.queue;
 
 import static org.junit.Assert.*;
 
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.*;
 
 import org.junit.Test;
 
@@ -154,5 +154,24 @@ public class SimpleQueueTest {
 
         t1.join();
         t2.join();
+    }
+
+    @Test
+    public void spscLinkedArrayQueueNoNepotism() {
+        SpscLinkedArrayQueue<Integer> q = new SpscLinkedArrayQueue<Integer>(16);
+
+        AtomicReferenceArray<Object> ara = q.producerBuffer;
+
+        for (int i = 0; i < 20; i++) {
+            q.offer(i);
+        }
+
+        assertNotNull(ara.get(16));
+
+        for (int i = 0; i < 20; i++) {
+            assertEquals(i, q.poll().intValue());
+        }
+
+        assertNull(ara.get(16));
     }
 }
