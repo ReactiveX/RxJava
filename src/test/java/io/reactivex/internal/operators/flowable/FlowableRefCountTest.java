@@ -42,7 +42,7 @@ public class FlowableRefCountTest {
     public void testRefCountAsync() {
         final AtomicInteger subscribeCount = new AtomicInteger();
         final AtomicInteger nextCount = new AtomicInteger();
-        Flowable<Long> r = Flowable.interval(0, 5, TimeUnit.MILLISECONDS)
+        Flowable<Long> r = Flowable.interval(0, 20, TimeUnit.MILLISECONDS)
                 .doOnSubscribe(new Consumer<Subscription>() {
                     @Override
                     public void accept(Subscription s) {
@@ -67,11 +67,26 @@ public class FlowableRefCountTest {
 
         Disposable s2 = r.subscribe();
 
-        // give time to emit
         try {
-            Thread.sleep(52);
+            Thread.sleep(10);
         } catch (InterruptedException e) {
         }
+
+        for (;;) {
+            int a = nextCount.get();
+            int b = receivedCount.get();
+            if (a > 10 && a < 20 && a == b) {
+                break;
+            }
+            if (a >= 20) {
+                break;
+            }
+            try {
+                Thread.sleep(20);
+            } catch (InterruptedException e) {
+            }
+        }
+        // give time to emit
 
         // now unsubscribe
         s2.dispose(); // unsubscribe s2 first as we're counting in 1 and there can be a race between unsubscribe and one subscriber getting a value but not the other
