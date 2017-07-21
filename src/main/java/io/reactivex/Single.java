@@ -1752,7 +1752,6 @@ public abstract class Single<T> implements SingleSource<T> {
      * <dd>{@code delaySubscription} does by default subscribe to the current Single
      * on the {@code computation} {@link Scheduler} after the delay.</dd>
      * </dl>
-     * @param <U> the element type of the other source
      * @param time the time amount to wait with the subscription
      * @param unit the time unit of the waiting
      * @return the new Single instance
@@ -1760,7 +1759,7 @@ public abstract class Single<T> implements SingleSource<T> {
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.COMPUTATION)
-    public final <U> Single<T> delaySubscription(long time, TimeUnit unit) {
+    public final Single<T> delaySubscription(long time, TimeUnit unit) {
         return delaySubscription(time, unit, Schedulers.computation());
     }
 
@@ -1771,7 +1770,6 @@ public abstract class Single<T> implements SingleSource<T> {
      * <dd>{@code delaySubscription} does by default subscribe to the current Single
      * on the {@link Scheduler} you provided, after the delay.</dd>
      * </dl>
-     * @param <U> the element type of the other source
      * @param time the time amount to wait with the subscription
      * @param unit the time unit of the waiting
      * @param scheduler the scheduler to wait on and subscribe on to the current Single
@@ -1780,7 +1778,7 @@ public abstract class Single<T> implements SingleSource<T> {
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.CUSTOM)
-    public final <U> Single<T> delaySubscription(long time, TimeUnit unit, Scheduler scheduler) {
+    public final Single<T> delaySubscription(long time, TimeUnit unit, Scheduler scheduler) {
         return delaySubscription(Observable.timer(time, unit, scheduler));
     }
 
