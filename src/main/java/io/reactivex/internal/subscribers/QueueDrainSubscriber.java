@@ -32,7 +32,7 @@ import io.reactivex.internal.util.*;
  * @param <U> the value type in the queue
  * @param <V> the value type the child subscriber accepts
  */
-public abstract class QueueDrainSubscriber<T, U, V> extends QueueDrainSubscriberPad4 implements FlowableSubscriber<T>, QueueDrain<U, V> {
+public abstract class QueueDrainSubscriber<T, U, V> extends QueueDrainSubscriberPad3 implements FlowableSubscriber<T>, QueueDrain<U, V> {
     protected final Subscriber<? super V> actual;
     protected final SimplePlainQueue<U> queue;
 
@@ -165,30 +165,14 @@ public abstract class QueueDrainSubscriber<T, U, V> extends QueueDrainSubscriber
 // Padding superclasses
 //-------------------------------------------------------------------
 
-/** Pads the header away from other fields. */
-class QueueDrainSubscriberPad0 {
-    volatile long p1, p2, p3, p4, p5, p6, p7;
-    volatile long p8, p9, p10, p11, p12, p13, p14, p15;
-}
 
 /** The WIP counter. */
-class QueueDrainSubscriberWip extends QueueDrainSubscriberPad0 {
+class QueueDrainSubscriberWip {
     final AtomicInteger wip = new AtomicInteger();
 }
 
-/** Pads away the wip from the other fields. */
-class QueueDrainSubscriberPad2 extends QueueDrainSubscriberWip {
-    volatile long p1a, p2a, p3a, p4a, p5a, p6a, p7a;
-    volatile long p8a, p9a, p10a, p11a, p12a, p13a, p14a, p15a;
-}
-
 /** Contains the requested field. */
-class QueueDrainSubscriberPad3 extends QueueDrainSubscriberPad2 {
+class QueueDrainSubscriberPad3 extends QueueDrainSubscriberWip{
     final AtomicLong requested = new AtomicLong();
 }
 
-/** Pads away the requested from the other fields. */
-class QueueDrainSubscriberPad4 extends QueueDrainSubscriberPad3 {
-    volatile long q1, q2, q3, q4, q5, q6, q7;
-    volatile long q8, q9, q10, q11, q12, q13, q14, q15;
-}
