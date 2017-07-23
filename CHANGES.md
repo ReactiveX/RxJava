@@ -2,6 +2,38 @@
 
 The changelog of version 1.x can be found at https://github.com/ReactiveX/RxJava/blob/1.x/CHANGES.md
 
+### Version 2.1.2 - July 23, 2017 ([Maven](http://search.maven.org/#artifactdetails%7Cio.reactivex.rxjava2%7Crxjava%7C2.1.2%7C))
+
+#### Documentation changes
+
+- [Pull 5432](https://github.com/ReactiveX/RxJava/pull/5432): Fix/clarify the `Observable` class' javadoc.
+- [Pull 5444](https://github.com/ReactiveX/RxJava/pull/5444): Fix wording in `Async` and `Publish` processors javadoc.
+- [Pull 5413](https://github.com/ReactiveX/RxJava/pull/5413): Add empty source clauses to javadocs of `combineLatest` operators accepting unspecified number of sources.
+- [Pull 5465](https://github.com/ReactiveX/RxJava/pull/5465): Fix wording of toList, fix a/an in `subscribeOn`.
+- [Pull 5476](https://github.com/ReactiveX/RxJava/pull/5476): Fix Javadoc for `Flowable` and `Observable` reduce.
+- [Pull 5478](https://github.com/ReactiveX/RxJava/pull/5478): Corrected return type in doc for `F.reduce(seed, reducer)`, `F.reduceWith(seedSupplier, reducer)` and `O.reduce(seed, reducer)`.
+- [Pull 5486](https://github.com/ReactiveX/RxJava/pull/5486): Small note on `Maybe.defaultIfEmpty` regarding `toSingle`.
+
+#### Bugfixes
+
+- [Pull 5434](https://github.com/ReactiveX/RxJava/pull/5434): Fix time bounded `ReplaySubject.getValue()` inconsistency with `getValues()` on old items.
+- [Pull 5440](https://github.com/ReactiveX/RxJava/pull/5440): `concat` to report `isDisposed` consistently with termination.
+- [Pull 5441](https://github.com/ReactiveX/RxJava/pull/5441): Fix periodic scheduler purging config not honored.
+- [Pull 5494](https://github.com/ReactiveX/RxJava/pull/5494): Fix `FlowableWithLatestFrom` not requesting more when the other hasn't emitted yet.
+- [Pull 5493](https://github.com/ReactiveX/RxJava/pull/5493): Fix `ReplayProcessor` backpressure and `NotificationLite` emission bug.
+- [Pull 5507](https://github.com/ReactiveX/RxJava/pull/5507): Fix GC nepotism in `SpscLinkedArrayQueue`.
+- [Pull 5511](https://github.com/ReactiveX/RxJava/pull/5511): Remove unnecessary generic type parameter for the timed `Single.delaySubscription` methods.
+
+#### Other
+
+- [Pull 5447](https://github.com/ReactiveX/RxJava/pull/5447): Remove `@NonNull` annotation in `Consumer` method parameter.
+- [Pull 5449](https://github.com/ReactiveX/RxJava/pull/5449): Remove the `@NonNull` annotation from `Function`.
+- [Commit 4d8f008c](https://github.com/ReactiveX/RxJava/commit/4d8f008cb6823730b5e25fea559905a811d8ce32): add missing 'the' to the changed sentences of Pull 5413
+- [Pull 5460](https://github.com/ReactiveX/RxJava/pull/5460): Fix Javadoc mistakes and some style.
+- [Pull 5466](https://github.com/ReactiveX/RxJava/pull/5466): Use a mutable field in `FlowableTimeoutTimed` instead of an `AtomicReference`.
+- [Commit 5d2e8fb4](https://github.com/ReactiveX/RxJava/commit/5d2e8fb4363f18c5cbb247e2d4c6ed1c71527128): Fix `Schedulers.io()` javadoc `{link` missing the `@` symbol.
+- [Pull 5495](https://github.com/ReactiveX/RxJava/pull/5495): Make `withLatestFrom` conditional subscriber, test cold consumption.
+
 ### Version 2.1.1 - June 21, 2017 ([Maven](http://search.maven.org/#artifactdetails%7Cio.reactivex.rxjava2%7Crxjava%7C2.1.1%7C))
 
 #### Notable changes
