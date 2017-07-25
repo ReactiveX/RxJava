@@ -14,24 +14,25 @@
  * the License.
  */
 
-package io.reactivex.internal.operators.flowable;
+package io.reactivex.internal.operators.observable;
 
+import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
-import static org.junit.Assert.*;
 
 import java.util.concurrent.*;
 
 import org.junit.Test;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
-import org.reactivestreams.*;
 
 import io.reactivex.*;
+import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Function;
+import io.reactivex.observers.TestObserver;
 import io.reactivex.schedulers.Schedulers;
-import io.reactivex.subscribers.TestSubscriber;
 
-public class FlowableFromCallableTest {
+public class ObservableFromCallableTest {
 
     @SuppressWarnings("unchecked")
     @Test
@@ -40,11 +41,11 @@ public class FlowableFromCallableTest {
 
         when(func.call()).thenReturn(new Object());
 
-        Flowable<Object> fromCallableFlowable = Flowable.fromCallable(func);
+        Observable<Object> fromCallableObservable = Observable.fromCallable(func);
 
         verifyZeroInteractions(func);
 
-        fromCallableFlowable.subscribe();
+        fromCallableObservable.subscribe();
 
         verify(func).call();
     }
@@ -56,11 +57,11 @@ public class FlowableFromCallableTest {
 
         when(func.call()).thenReturn("test_value");
 
-        Flowable<String> fromCallableFlowable = Flowable.fromCallable(func);
+        Observable<String> fromCallableObservable = Observable.fromCallable(func);
 
-        Subscriber<String> observer = TestHelper.mockSubscriber();
+        Observer<Object> observer = TestHelper.mockObserver();
 
-        fromCallableFlowable.subscribe(observer);
+        fromCallableObservable.subscribe(observer);
 
         verify(observer).onNext("test_value");
         verify(observer).onComplete();
@@ -75,11 +76,11 @@ public class FlowableFromCallableTest {
         Throwable throwable = new IllegalStateException("Test exception");
         when(func.call()).thenThrow(throwable);
 
-        Flowable<Object> fromCallableFlowable = Flowable.fromCallable(func);
+        Observable<Object> fromCallableObservable = Observable.fromCallable(func);
 
-        Subscriber<Object> observer = TestHelper.mockSubscriber();
+        Observer<Object> observer = TestHelper.mockObserver();
 
-        fromCallableFlowable.subscribe(observer);
+        fromCallableObservable.subscribe(observer);
 
         verify(observer, never()).onNext(any());
         verify(observer, never()).onComplete();
@@ -112,13 +113,13 @@ public class FlowableFromCallableTest {
             }
         });
 
-        Flowable<String> fromCallableFlowable = Flowable.fromCallable(func);
+        Observable<String> fromCallableObservable = Observable.fromCallable(func);
 
-        Subscriber<String> observer = TestHelper.mockSubscriber();
+        Observer<Object> observer = TestHelper.mockObserver();
 
-        TestSubscriber<String> outer = new TestSubscriber<String>(observer);
+        TestObserver<String> outer = new TestObserver<String>(observer);
 
-        fromCallableFlowable
+        fromCallableObservable
                 .subscribeOn(Schedulers.computation())
                 .subscribe(outer);
 
@@ -135,7 +136,7 @@ public class FlowableFromCallableTest {
         verify(func).call();
 
         // Observer must not be notified at all
-        verify(observer).onSubscribe(any(Subscription.class));
+        verify(observer).onSubscribe(any(Disposable.class));
         verifyNoMoreInteractions(observer);
     }
 
@@ -143,18 +144,18 @@ public class FlowableFromCallableTest {
     public void shouldAllowToThrowCheckedException() {
         final Exception checkedException = new Exception("test exception");
 
-        Flowable<Object> fromCallableFlowable = Flowable.fromCallable(new Callable<Object>() {
+        Observable<Object> fromCallableObservable = Observable.fromCallable(new Callable<Object>() {
             @Override
             public Object call() throws Exception {
                 throw checkedException;
             }
         });
 
-        Subscriber<Object> observer = TestHelper.mockSubscriber();
+        Observer<Object> observer = TestHelper.mockObserver();
 
-        fromCallableFlowable.subscribe(observer);
+        fromCallableObservable.subscribe(observer);
 
-        verify(observer).onSubscribe(any(Subscription.class));
+        verify(observer).onSubscribe(any(Disposable.class));
         verify(observer).onError(checkedException);
         verifyNoMoreInteractions(observer);
     }
@@ -163,11 +164,11 @@ public class FlowableFromCallableTest {
     public void fusedFlatMapExecution() {
         final int[] calls = { 0 };
 
-        Flowable.just(1).flatMap(new Function<Integer, Publisher<? extends Object>>() {
+        Observable.just(1).flatMap(new Function<Integer, ObservableSource<? extends Object>>() {
             @Override
-            public Publisher<? extends Object> apply(Integer v)
+            public ObservableSource<? extends Object> apply(Integer v)
                     throws Exception {
-                return Flowable.fromCallable(new Callable<Object>() {
+                return Observable.fromCallable(new Callable<Object>() {
                     @Override
                     public Object call() throws Exception {
                         return ++calls[0];
@@ -185,11 +186,11 @@ public class FlowableFromCallableTest {
     public void fusedFlatMapExecutionHidden() {
         final int[] calls = { 0 };
 
-        Flowable.just(1).hide().flatMap(new Function<Integer, Publisher<? extends Object>>() {
+        Observable.just(1).hide().flatMap(new Function<Integer, ObservableSource<? extends Object>>() {
             @Override
-            public Publisher<? extends Object> apply(Integer v)
+            public ObservableSource<? extends Object> apply(Integer v)
                     throws Exception {
-                return Flowable.fromCallable(new Callable<Object>() {
+                return Observable.fromCallable(new Callable<Object>() {
                     @Override
                     public Object call() throws Exception {
                         return ++calls[0];
@@ -205,11 +206,11 @@ public class FlowableFromCallableTest {
 
     @Test
     public void fusedFlatMapNull() {
-        Flowable.just(1).flatMap(new Function<Integer, Publisher<? extends Object>>() {
+        Observable.just(1).flatMap(new Function<Integer, ObservableSource<? extends Object>>() {
             @Override
-            public Publisher<? extends Object> apply(Integer v)
+            public ObservableSource<? extends Object> apply(Integer v)
                     throws Exception {
-                return Flowable.fromCallable(new Callable<Object>() {
+                return Observable.fromCallable(new Callable<Object>() {
                     @Override
                     public Object call() throws Exception {
                         return null;
@@ -223,11 +224,11 @@ public class FlowableFromCallableTest {
 
     @Test
     public void fusedFlatMapNullHidden() {
-        Flowable.just(1).hide().flatMap(new Function<Integer, Publisher<? extends Object>>() {
+        Observable.just(1).hide().flatMap(new Function<Integer, ObservableSource<? extends Object>>() {
             @Override
-            public Publisher<? extends Object> apply(Integer v)
+            public ObservableSource<? extends Object> apply(Integer v)
                     throws Exception {
-                return Flowable.fromCallable(new Callable<Object>() {
+                return Observable.fromCallable(new Callable<Object>() {
                     @Override
                     public Object call() throws Exception {
                         return null;
