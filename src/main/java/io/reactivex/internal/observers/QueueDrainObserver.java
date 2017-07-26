@@ -28,7 +28,7 @@ import io.reactivex.internal.util.*;
  * @param <U> the value type in the queue
  * @param <V> the value type the child subscriber accepts
  */
-public abstract class QueueDrainObserver<T, U, V> extends QueueDrainSubscriberPad2 implements Observer<T>, ObservableQueueDrain<U, V> {
+public abstract class QueueDrainObserver<T, U, V> extends QueueDrainSubscriberWip implements Observer<T>, ObservableQueueDrain<U, V> {
     protected final Observer<? super V> actual;
     protected final SimplePlainQueue<U> queue;
 
@@ -127,20 +127,8 @@ public abstract class QueueDrainObserver<T, U, V> extends QueueDrainSubscriberPa
 // Padding superclasses
 //-------------------------------------------------------------------
 
-/** Pads the header away from other fields. */
-class QueueDrainSubscriberPad0 {
-    volatile long p1, p2, p3, p4, p5, p6, p7;
-    volatile long p8, p9, p10, p11, p12, p13, p14, p15;
-}
 
 /** The wip counter. */
-class QueueDrainSubscriberWip extends QueueDrainSubscriberPad0 {
+class QueueDrainSubscriberWip {
     final AtomicInteger wip = new AtomicInteger();
 }
-
-/** Pads away the wip from the other fields. */
-class QueueDrainSubscriberPad2 extends QueueDrainSubscriberWip {
-    volatile long p1a, p2a, p3a, p4a, p5a, p6a, p7a;
-    volatile long p8a, p9a, p10a, p11a, p12a, p13a, p14a, p15a;
-}
-

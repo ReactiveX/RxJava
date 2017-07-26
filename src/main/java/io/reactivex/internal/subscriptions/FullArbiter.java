@@ -29,7 +29,7 @@ import io.reactivex.plugins.RxJavaPlugins;
  *
  * @param <T> the value type
  */
-public final class FullArbiter<T> extends FullArbiterPad2 implements Subscription {
+public final class FullArbiter<T> extends FullArbiterMissed implements Subscription {
     final Subscriber<? super T> actual;
     final SpscLinkedArrayQueue<Object> queue;
 
@@ -203,30 +203,13 @@ public final class FullArbiter<T> extends FullArbiterPad2 implements Subscriptio
     }
 }
 
-/** Pads the object header away. */
-class FullArbiterPad0 {
-    volatile long p1a, p2a, p3a, p4a, p5a, p6a, p7a;
-    volatile long p8a, p9a, p10a, p11a, p12a, p13a, p14a, p15a;
-}
 
 /** The work-in-progress counter. */
-class FullArbiterWip extends FullArbiterPad0 {
+class FullArbiterWip {
     final AtomicInteger wip = new AtomicInteger();
 }
 
-/** Pads the wip counter away. */
-class FullArbiterPad1 extends FullArbiterWip {
-    volatile long p1b, p2b, p3b, p4b, p5b, p6b, p7b;
-    volatile long p8b, p9b, p10b, p11b, p12b, p13b, p14b, p15b;
-}
-
 /** The missed request counter. */
-class FullArbiterMissed extends FullArbiterPad1 {
+class FullArbiterMissed extends FullArbiterWip {
     final AtomicLong missedRequested = new AtomicLong();
-}
-
-/** Pads the missed request counter away. */
-class FullArbiterPad2 extends FullArbiterMissed {
-    volatile long p1c, p2c, p3c, p4c, p5c, p6c, p7c;
-    volatile long p8c, p9c, p10c, p11c, p12c, p13c, p14c, p15c;
 }
