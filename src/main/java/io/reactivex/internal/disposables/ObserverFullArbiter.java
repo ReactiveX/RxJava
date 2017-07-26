@@ -27,7 +27,7 @@ import io.reactivex.plugins.RxJavaPlugins;
  *
  * @param <T> the value type
  */
-public final class ObserverFullArbiter<T> extends FullArbiterPad1 implements Disposable {
+public final class ObserverFullArbiter<T> extends FullArbiterWip implements Disposable {
     final Observer<? super T> actual;
     final SpscLinkedArrayQueue<Object> queue;
 
@@ -162,19 +162,7 @@ public final class ObserverFullArbiter<T> extends FullArbiterPad1 implements Dis
     }
 }
 
-/** Pads the object header away. */
-class FullArbiterPad0 {
-    volatile long p1a, p2a, p3a, p4a, p5a, p6a, p7a;
-    volatile long p8a, p9a, p10a, p11a, p12a, p13a, p14a, p15a;
-}
-
 /** The work-in-progress counter. */
-class FullArbiterWip extends FullArbiterPad0 {
+class FullArbiterWip {
     final AtomicInteger wip = new AtomicInteger();
-}
-
-/** Pads the wip counter away. */
-class FullArbiterPad1 extends FullArbiterWip {
-    volatile long p1b, p2b, p3b, p4b, p5b, p6b, p7b;
-    volatile long p8b, p9b, p10b, p11b, p12b, p13b, p14b, p15b;
 }
