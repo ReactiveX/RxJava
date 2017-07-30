@@ -2222,7 +2222,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     /**
      * Returns an Observable that emits a single item and then completes.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/just.png" alt="">
+     * <img width="640" height="290" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/just.item.png" alt="">
      * <p>
      * To convert any object into an ObservableSource that emits that object, pass that object into the {@code just}
      * method.
@@ -3341,7 +3341,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     /**
      * Returns an Observable that emits a sequence of Longs within a specified range.
      * <p>
-     * <img width="640" height="195" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/range.png" alt="">
+     * <img width="640" height="195" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/rangeLong.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code rangeLong} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -10603,10 +10603,12 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * Returns an Observable that emits the events emitted by source ObservableSource, in a
      * sorted order. Each item emitted by the ObservableSource must implement {@link Comparable} with respect to all
      * other items in the sequence.
-     *
-     * <p>If any item emitted by this Observable does not implement {@link Comparable} with respect to
-     *             all other items emitted by this Observable, no items will be emitted and the
-     *             sequence is terminated with a {@link ClassCastException}.
+     * <p>
+     * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/sorted.png" alt="">
+     * <p>
+     * If any item emitted by this Observable does not implement {@link Comparable} with respect to
+     * all other items emitted by this Observable, no items will be emitted and the
+     * sequence is terminated with a {@link ClassCastException}.
      *
      * <p>Note that calling {@code sorted} with long, non-terminating or infinite sources
      * might cause {@link OutOfMemoryError}
@@ -10698,7 +10700,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * Returns an Observable that emits a specified item before it begins to emit items emitted by the source
      * ObservableSource.
      * <p>
-     * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/startWith.png" alt="">
+     * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/startWith.item.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code startWith} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -10722,7 +10724,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * Returns an Observable that emits the specified items before it begins to emit items emitted by the source
      * ObservableSource.
      * <p>
-     * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/startWith.png" alt="">
+     * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/startWithArray.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code startWithArray} does not operate by default on a particular {@link Scheduler}.</dd>
