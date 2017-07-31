@@ -1383,6 +1383,48 @@ public class TestObserverTest {
     }
 
     @Test
+    public void assertValueAtIndexEmpty() {
+        TestObserver<Object> ts = new TestObserver<Object>();
+
+        Observable.empty().subscribe(ts);
+
+        thrown.expect(AssertionError.class);
+        thrown.expectMessage("No values");
+        ts.assertValueAt(0, null);
+    }
+
+    @Test
+    public void assertValueAtIndexMatch() {
+        TestObserver<Integer> ts = new TestObserver<Integer>();
+
+        Observable.just(1, 2).subscribe(ts);
+
+        ts.assertValueAt(1, 2);
+    }
+
+    @Test
+    public void assertValueAtIndexNoMatch() {
+        TestObserver<Integer> ts = new TestObserver<Integer>();
+
+        Observable.just(1, 2, 3).subscribe(ts);
+
+        thrown.expect(AssertionError.class);
+        thrown.expectMessage("Expected: 2 (class: Integer), Actual: 3 (class: Integer) (latch = 0, values = 3, errors = 0, completions = 1)");
+        ts.assertValueAt(2, 2);
+    }
+
+    @Test
+    public void assertValueAtIndexInvalidIndex() {
+        TestObserver<Integer> ts = new TestObserver<Integer>();
+
+        Observable.just(1, 2).subscribe(ts);
+
+        thrown.expect(AssertionError.class);
+        thrown.expectMessage("Invalid index: 2 (latch = 0, values = 2, errors = 0, completions = 1)");
+        ts.assertValueAt(2, 1);
+    }
+
+    @Test
     public void withTag() {
         try {
             for (int i = 1; i < 3; i++) {

@@ -403,6 +403,31 @@ public abstract class BaseTestConsumer<T, U extends BaseTestConsumer<T, U>> impl
 
     /**
      * Asserts that this TestObserver/TestSubscriber received an onNext value at the given index
+     * which is equal to the given value with respect to Objects.equals.
+     * @param index the position to assert on
+     * @param value the value to expect
+     * @return this
+     */
+    @SuppressWarnings("unchecked")
+    public final U assertValueAt(int index, T value) {
+        int s = values.size();
+        if (s == 0) {
+            throw fail("No values");
+        }
+
+        if (index >= values.size()) {
+            throw fail("Invalid index: " + index);
+        }
+
+        T v = values.get(index);
+        if (!ObjectHelper.equals(value, v)) {
+            throw fail("Expected: " + valueAndClass(value) + ", Actual: " + valueAndClass(v));
+        }
+        return (U)this;
+    }
+
+    /**
+     * Asserts that this TestObserver/TestSubscriber received an onNext value at the given index
      * for the provided predicate returns true.
      * @param index the position to assert on
      * @param valuePredicate
