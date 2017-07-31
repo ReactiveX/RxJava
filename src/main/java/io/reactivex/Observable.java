@@ -8715,6 +8715,14 @@ public abstract class Observable<T> implements ObservableSource<T> {
         return filter(Functions.isInstanceOf(clazz)).cast(clazz);
     }
 
+    @CheckReturnValue
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final Observable<T> onErrorResumeNextFilter(Predicate<? super Throwable> predicate, final ObservableSource<? extends T> next) {
+        ObjectHelper.requireNonNull(predicate, "predicate is null");
+        ObjectHelper.requireNonNull(next, "next is null");
+        return RxJavaPlugins.onAssembly(new ObservableOnErrorNextFilter<T>(this, predicate, next, false));
+    }
+
     /**
      * Instructs an ObservableSource to pass control to another ObservableSource rather than invoking
      * {@link Observer#onError onError} if it encounters an error.
@@ -8785,6 +8793,14 @@ public abstract class Observable<T> implements ObservableSource<T> {
     public final Observable<T> onErrorResumeNext(final ObservableSource<? extends T> next) {
         ObjectHelper.requireNonNull(next, "next is null");
         return onErrorResumeNext(Functions.justFunction(next));
+    }
+
+    @CheckReturnValue
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final Observable<T> onErrorReturnFilter(Predicate<? super Throwable> predicate, final T item) {
+        ObjectHelper.requireNonNull(predicate, "predicate is null");
+        ObjectHelper.requireNonNull(item, "item is null");
+        return onErrorResumeNextFilter(predicate, Observable.just(item));
     }
 
     /**
