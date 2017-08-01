@@ -95,9 +95,9 @@ extends AbstractObservableWithUpstream<T, U> {
         @Override
         public void onNext(T t) {
             synchronized (this) {
-                for (U b : buffers) {
+                buffers.forEach(b -> {
                     b.add(t);
-                }
+                });
             }
         }
 
@@ -126,9 +126,9 @@ extends AbstractObservableWithUpstream<T, U> {
             }
 
             SimplePlainQueue<U> q = queue;
-            for (U u : list) {
+            list.forEach(u -> {
                 q.offer(u);
-            }
+            });
             done = true;
             if (enter()) {
                 QueueDrainHelper.drainLoop(q, actual, false, this, this);

@@ -154,9 +154,9 @@ public class SequentialDisposableTest {
         verify(firstSet).dispose();
         verify(underlying).dispose();
 
-        for (final Thread t : threads) {
+        threads.forEach(t -> {
             t.join();
-        }
+        });
     }
 
     @Test
@@ -198,8 +198,8 @@ public class SequentialDisposableTest {
             verify(subscription).dispose();
         }
 
-        for (final Thread t : threads) {
+        threads.forEach(t -> {
             t.join();
-        }
+        });
     }
 }

@@ -819,12 +819,12 @@ public class ParamValidationCheckerTest {
                             if (!errors.isEmpty()) {
                                 fail++;
                                 b.append("\r\nUndeliverable errors:");
-                                for (Throwable err : errors) {
+                                errors.stream().map(err -> {
                                     b.append("\r\n    ").append(err);
-                                    if (err.getCause() != null) {
+                                    return err;
+                                }).filter(err -> err.getCause() != null).forEach(err -> {
                                         b.append("\r\n    ").append(err.getCause());
-                                    }
-                                }
+                                });
                                 continue outer;
                             }
                         }

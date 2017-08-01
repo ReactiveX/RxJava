@@ -198,9 +198,9 @@ public class ObservableCovarianceTest {
                 oldList.removeAll(newList);
 
                 // for all left in the oldList we'll create DROP events
-                for (@SuppressWarnings("unused") Movie old : oldList) {
+                oldList.forEach(old -> {
                     delta.add(new Movie());
-                }
+                });
 
                 return Observable.fromIterable(delta);
             }
