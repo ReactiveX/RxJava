@@ -1390,38 +1390,38 @@ public class TestObserverTest {
 
         thrown.expect(AssertionError.class);
         thrown.expectMessage("No values");
-        ts.assertValueAt(0, 1);
+        ts.assertValueAt(0, "a");
     }
 
     @Test
     public void assertValueAtIndexMatch() {
-        TestObserver<Integer> ts = new TestObserver<Integer>();
+        TestObserver<String> ts = new TestObserver<String>();
 
-        Observable.just(1, 2).subscribe(ts);
+        Observable.just("a", "b").subscribe(ts);
 
-        ts.assertValueAt(1, 2);
+        ts.assertValueAt(1, "b");
     }
 
     @Test
     public void assertValueAtIndexNoMatch() {
-        TestObserver<Integer> ts = new TestObserver<Integer>();
+        TestObserver<String> ts = new TestObserver<String>();
 
-        Observable.just(1, 2, 3).subscribe(ts);
+        Observable.just("a", "b", "c").subscribe(ts);
 
         thrown.expect(AssertionError.class);
-        thrown.expectMessage("Expected: 2 (class: Integer), Actual: 3 (class: Integer) (latch = 0, values = 3, errors = 0, completions = 1)");
-        ts.assertValueAt(2, 2);
+        thrown.expectMessage("Expected: b (class: String), Actual: c (class: String) (latch = 0, values = 3, errors = 0, completions = 1)");
+        ts.assertValueAt(2, "b");
     }
 
     @Test
     public void assertValueAtIndexInvalidIndex() {
-        TestObserver<Integer> ts = new TestObserver<Integer>();
+        TestObserver<String> ts = new TestObserver<String>();
 
-        Observable.just(1, 2).subscribe(ts);
+        Observable.just("a", "b").subscribe(ts);
 
         thrown.expect(AssertionError.class);
         thrown.expectMessage("Invalid index: 2 (latch = 0, values = 2, errors = 0, completions = 1)");
-        ts.assertValueAt(2, 1);
+        ts.assertValueAt(2, "c");
     }
 
     @Test
