@@ -1,6 +1,6 @@
 language: java
 jdk:
-- oraclejdk7
+- oraclejdk8
 
 # force upgrade Java8 as per https://github.com/travis-ci/travis-ci/issues/4042 (fixes compilation issue)
 #addons:
