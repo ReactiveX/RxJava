@@ -51,9 +51,9 @@ public class ParallelRunOnTest {
             .assertFailure(TestException.class);
 
             assertFalse(errors.isEmpty());
-            for (Throwable ex : errors) {
+            errors.forEach(ex -> {
                 assertTrue(ex.toString(), ex.getCause() instanceof TestException);
-            }
+            });
         } finally {
             RxJavaPlugins.reset();
         }

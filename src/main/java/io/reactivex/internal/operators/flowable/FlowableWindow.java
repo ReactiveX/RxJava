@@ -371,9 +371,9 @@ public final class FlowableWindow<T> extends AbstractFlowableWithUpstream<T, Flo
 
             i++;
 
-            for (Processor<T, T> w : windows) {
+            windows.forEach(w -> {
                 w.onNext(t);
-            }
+            });
 
             long p = produced + 1;
             if (p == size) {
@@ -401,9 +401,9 @@ public final class FlowableWindow<T> extends AbstractFlowableWithUpstream<T, Flo
                 return;
             }
 
-            for (Processor<T, T> w : windows) {
+            windows.forEach(w -> {
                 w.onError(t);
-            }
+            });
             windows.clear();
 
             error = t;
@@ -417,9 +417,9 @@ public final class FlowableWindow<T> extends AbstractFlowableWithUpstream<T, Flo
                 return;
             }
 
-            for (Processor<T, T> w : windows) {
+            windows.forEach(w -> {
                 w.onComplete();
-            }
+            });
             windows.clear();
 
             done = true;

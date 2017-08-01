@@ -404,9 +404,9 @@ public final class FlowableBuffer<T, C extends Collection<? super T>> extends Ab
                 actual.onNext(b);
             }
 
-            for (C b0 : bs) {
+            bs.forEach(b0 -> {
                 b0.add(t);
-            }
+            });
 
             if (i == skip) {
                 i = 0;
