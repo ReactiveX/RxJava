@@ -1390,7 +1390,7 @@ public class TestObserverTest {
 
         thrown.expect(AssertionError.class);
         thrown.expectMessage("No values");
-        ts.assertValueAt(0, null);
+        ts.assertValueAt(0, 1);
     }
 
     @Test
