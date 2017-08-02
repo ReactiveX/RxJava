@@ -17,6 +17,7 @@ import java.util.*;
 import java.util.concurrent.*;
 
 import io.reactivex.Notification;
+import io.reactivex.annotations.Experimental;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.CompositeException;
 import io.reactivex.functions.Predicate;
@@ -335,7 +336,7 @@ public abstract class BaseTestConsumer<T, U extends BaseTestConsumer<T, U>> impl
 
     /**
      * Assert that this TestObserver/TestSubscriber did not receive an onNext value which is equal to
-     * the given value with respect to Objects.equals.
+     * the given value with respect to null-safe Object.equals.
      *
      * <p>History: 2.0.5 - experimental
      * @param value the value to expect not being received
@@ -397,6 +398,33 @@ public abstract class BaseTestConsumer<T, U extends BaseTestConsumer<T, U>> impl
             } catch (Exception ex) {
                 throw ExceptionHelper.wrapOrThrow(ex);
             }
+        }
+        return (U)this;
+    }
+
+    /**
+     * Asserts that this TestObserver/TestSubscriber received an onNext value at the given index
+     * which is equal to the given value with respect to null-safe Object.equals.
+     * @param index the position to assert on
+     * @param value the value to expect
+     * @return this
+     * @since 2.1.3 - experimental
+     */
+    @SuppressWarnings("unchecked")
+    @Experimental
+    public final U assertValueAt(int index, T value) {
+        int s = values.size();
+        if (s == 0) {
+            throw fail("No values");
+        }
+
+        if (index >= s) {
+            throw fail("Invalid index: " + index);
+        }
+
+        T v = values.get(index);
+        if (!ObjectHelper.equals(value, v)) {
+            throw fail("Expected: " + valueAndClass(value) + ", Actual: " + valueAndClass(v));
         }
         return (U)this;
     }
