@@ -29,5 +29,5 @@ public interface ObservableOperator<Downstream, Upstream> {
      * @throws Exception on failure
      */
     @NonNull
-    Observer<? super Upstream> apply(@NonNull Observer<? super Downstream> observer) throws Exception;
+    Observer<? super Upstream> apply(Observer<? super Downstream> observer) throws Exception;
 }

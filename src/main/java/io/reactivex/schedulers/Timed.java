@@ -35,7 +35,7 @@ public final class Timed<T> {
      * @param unit the time unit, not null
      * @throws NullPointerException if unit is null
      */
-    public Timed(@NonNull T value, long time, @NonNull TimeUnit unit) {
+    public Timed(T value, long time, TimeUnit unit) {
         this.value = value;
         this.time = time;
         this.unit = ObjectHelper.requireNonNull(unit, "unit is null");
@@ -72,7 +72,7 @@ public final class Timed<T> {
      * @param unit the time unt
      * @return the converted time
      */
-    public long time(@NonNull TimeUnit unit) {
+    public long time(TimeUnit unit) {
         return unit.convert(time, this.unit);
     }
 

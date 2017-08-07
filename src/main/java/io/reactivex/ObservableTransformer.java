@@ -29,5 +29,5 @@ public interface ObservableTransformer<Upstream, Downstream> {
      * @return the transformed ObservableSource instance
      */
     @NonNull
-    ObservableSource<Downstream> apply(@NonNull Observable<Upstream> upstream);
+    ObservableSource<Downstream> apply(Observable<Upstream> upstream);
 }

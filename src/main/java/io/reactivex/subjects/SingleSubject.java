@@ -65,7 +65,7 @@ public final class SingleSubject<T> extends Single<T> implements SingleObserver<
     }
 
     @Override
-    public void onSubscribe(@NonNull Disposable d) {
+    public void onSubscribe(Disposable d) {
         if (observers.get() == TERMINATED) {
             d.dispose();
         }
@@ -73,7 +73,7 @@ public final class SingleSubject<T> extends Single<T> implements SingleObserver<
 
     @SuppressWarnings("unchecked")
     @Override
-    public void onSuccess(@NonNull T value) {
+    public void onSuccess(T value) {
         if (value == null) {
             onError(new NullPointerException("Null values are not allowed in 2.x"));
             return;
@@ -88,7 +88,7 @@ public final class SingleSubject<T> extends Single<T> implements SingleObserver<
 
     @SuppressWarnings("unchecked")
     @Override
-    public void onError(@NonNull Throwable e) {
+    public void onError(Throwable e) {
         if (e == null) {
             e = new NullPointerException("Null errors are not allowed in 2.x");
         }
@@ -103,7 +103,7 @@ public final class SingleSubject<T> extends Single<T> implements SingleObserver<
     }
 
     @Override
-    protected void subscribeActual(@NonNull SingleObserver<? super T> observer) {
+    protected void subscribeActual(SingleObserver<? super T> observer) {
         SingleDisposable<T> md = new SingleDisposable<T>(observer, this);
         observer.onSubscribe(md);
         if (add(md)) {
@@ -120,7 +120,7 @@ public final class SingleSubject<T> extends Single<T> implements SingleObserver<
         }
     }
 
-    boolean add(@NonNull SingleDisposable<T> inner) {
+    boolean add(SingleDisposable<T> inner) {
         for (;;) {
             SingleDisposable<T>[] a = observers.get();
             if (a == TERMINATED) {
@@ -139,7 +139,7 @@ public final class SingleSubject<T> extends Single<T> implements SingleObserver<
     }
 
     @SuppressWarnings("unchecked")
-    void remove(@NonNull SingleDisposable<T> inner) {
+    void remove(SingleDisposable<T> inner) {
         for (;;) {
             SingleDisposable<T>[] a = observers.get();
             int n = a.length;

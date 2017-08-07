@@ -29,5 +29,5 @@ public interface SingleOperator<Downstream, Upstream> {
      * @throws Exception on failure
      */
     @NonNull
-    SingleObserver<? super Upstream> apply(@NonNull SingleObserver<? super Downstream> observer) throws Exception;
+    SingleObserver<? super Upstream> apply(SingleObserver<? super Downstream> observer) throws Exception;
 }

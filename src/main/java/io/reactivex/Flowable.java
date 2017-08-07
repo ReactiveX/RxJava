@@ -13079,7 +13079,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
     @SchedulerSupport(SchedulerSupport.CUSTOM)
-    public final Flowable<T> subscribeOn(@NonNull Scheduler scheduler) {
+    public final Flowable<T> subscribeOn(Scheduler scheduler) {
         ObjectHelper.requireNonNull(scheduler, "scheduler is null");
         return subscribeOn(scheduler, !(this instanceof FlowableCreate));
     }
@@ -13117,7 +13117,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
     @SchedulerSupport(SchedulerSupport.CUSTOM)
     @Experimental
-    public final Flowable<T> subscribeOn(@NonNull Scheduler scheduler, boolean requestOn) {
+    public final Flowable<T> subscribeOn(Scheduler scheduler, boolean requestOn) {
         ObjectHelper.requireNonNull(scheduler, "scheduler is null");
         return RxJavaPlugins.onAssembly(new FlowableSubscribeOn<T>(this, scheduler, requestOn));
     }

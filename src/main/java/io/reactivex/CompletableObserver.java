@@ -13,7 +13,6 @@
 
 package io.reactivex;
 
-import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.Disposable;
 
 /**
@@ -25,7 +24,7 @@ public interface CompletableObserver {
      * then can be used to cancel the subscription at any time.
      * @param d the Disposable instance to call dispose on for cancellation, not null
      */
-    void onSubscribe(@NonNull Disposable d);
+    void onSubscribe(Disposable d);
 
     /**
      * Called once the deferred computation completes normally.
@@ -36,5 +35,5 @@ public interface CompletableObserver {
      * Called once if the deferred computation 'throws' an exception.
      * @param e the exception, not null.
      */
-    void onError(@NonNull Throwable e);
+    void onError(Throwable e);
 }

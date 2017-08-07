@@ -27,5 +27,5 @@ public interface CompletableSource {
      * @param cs the CompletableObserver, not null
      * @throws NullPointerException if {@code cs} is null
      */
-    void subscribe(@NonNull CompletableObserver cs);
+    void subscribe(CompletableObserver cs);
 }

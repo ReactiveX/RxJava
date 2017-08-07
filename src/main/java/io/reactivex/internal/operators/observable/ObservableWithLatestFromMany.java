@@ -44,14 +44,14 @@ public final class ObservableWithLatestFromMany<T, R> extends AbstractObservable
     @NonNull
     final Function<? super Object[], R> combiner;
 
-    public ObservableWithLatestFromMany(@NonNull ObservableSource<T> source, @NonNull ObservableSource<?>[] otherArray, @NonNull Function<? super Object[], R> combiner) {
+    public ObservableWithLatestFromMany(ObservableSource<T> source, ObservableSource<?>[] otherArray, Function<? super Object[], R> combiner) {
         super(source);
         this.otherArray = otherArray;
         this.otherIterable = null;
         this.combiner = combiner;
     }
 
-    public ObservableWithLatestFromMany(@NonNull ObservableSource<T> source, @NonNull Iterable<? extends ObservableSource<?>> otherIterable, @NonNull Function<? super Object[], R> combiner) {
+    public ObservableWithLatestFromMany(ObservableSource<T> source, Iterable<? extends ObservableSource<?>> otherIterable, Function<? super Object[], R> combiner) {
         super(source);
         this.otherArray = null;
         this.otherIterable = otherIterable;

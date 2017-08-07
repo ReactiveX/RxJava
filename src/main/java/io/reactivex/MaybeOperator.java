@@ -28,5 +28,5 @@ public interface MaybeOperator<Downstream, Upstream> {
      * @throws Exception on failure
      */
     @NonNull
-    MaybeObserver<? super Upstream> apply(@NonNull MaybeObserver<? super Downstream> observer) throws Exception;
+    MaybeObserver<? super Upstream> apply(MaybeObserver<? super Downstream> observer) throws Exception;
 }

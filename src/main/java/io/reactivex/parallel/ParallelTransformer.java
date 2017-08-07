@@ -32,5 +32,5 @@ public interface ParallelTransformer<Upstream, Downstream> {
      * @return the transformed ParallelFlowable instance
      */
     @NonNull
-    ParallelFlowable<Downstream> apply(@NonNull ParallelFlowable<Upstream> upstream);
+    ParallelFlowable<Downstream> apply(ParallelFlowable<Upstream> upstream);
 }

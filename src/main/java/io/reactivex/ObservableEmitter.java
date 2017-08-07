@@ -70,5 +70,5 @@ public interface ObservableEmitter<T> extends Emitter<T> {
      * @since 2.1.1 - experimental
      */
     @Experimental
-    boolean tryOnError(@NonNull Throwable t);
+    boolean tryOnError(Throwable t);
 }

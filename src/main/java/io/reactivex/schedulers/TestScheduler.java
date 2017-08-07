@@ -64,7 +64,7 @@ public final class TestScheduler extends Scheduler {
     }
 
     @Override
-    public long now(@NonNull TimeUnit unit) {
+    public long now(TimeUnit unit) {
         return unit.convert(time, TimeUnit.NANOSECONDS);
     }
 
@@ -141,7 +141,7 @@ public final class TestScheduler extends Scheduler {
 
         @NonNull
         @Override
-        public Disposable schedule(@NonNull Runnable run, long delayTime, @NonNull TimeUnit unit) {
+        public Disposable schedule(Runnable run, long delayTime, TimeUnit unit) {
             if (disposed) {
                 return EmptyDisposable.INSTANCE;
             }
@@ -153,7 +153,7 @@ public final class TestScheduler extends Scheduler {
 
         @NonNull
         @Override
-        public Disposable schedule(@NonNull Runnable run) {
+        public Disposable schedule(Runnable run) {
             if (disposed) {
                 return EmptyDisposable.INSTANCE;
             }
@@ -163,7 +163,7 @@ public final class TestScheduler extends Scheduler {
         }
 
         @Override
-        public long now(@NonNull TimeUnit unit) {
+        public long now(TimeUnit unit) {
             return TestScheduler.this.now(unit);
         }
 

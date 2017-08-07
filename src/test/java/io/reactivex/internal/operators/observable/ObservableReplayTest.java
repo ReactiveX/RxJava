@@ -692,14 +692,14 @@ public class ObservableReplayTest {
 
         @NonNull
         @Override
-        public Disposable schedule(@NonNull Runnable action) {
+        public Disposable schedule(Runnable action) {
             action.run();
             return mockDisposable; // this subscription is returned but discarded
         }
 
         @NonNull
         @Override
-        public Disposable schedule(@NonNull Runnable action, long delayTime, @NonNull TimeUnit unit) {
+        public Disposable schedule(Runnable action, long delayTime, TimeUnit unit) {
             action.run();
             return mockDisposable;
         }

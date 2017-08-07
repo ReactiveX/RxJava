@@ -48,7 +48,7 @@ public abstract class ConnectableFlowable<T> extends Flowable<T> {
      *          allowing the caller to synchronously disconnect a synchronous source
      * @see <a href="http://reactivex.io/documentation/operators/connect.html">ReactiveX documentation: Connect</a>
      */
-    public abstract void connect(@NonNull Consumer<? super Disposable> connection);
+    public abstract void connect(Consumer<? super Disposable> connection);
 
     /**
      * Instructs the {@code ConnectableObservable} to begin emitting the items from its underlying
@@ -118,7 +118,7 @@ public abstract class ConnectableFlowable<T> extends Flowable<T> {
      *         specified callback with the Subscription associated with the established connection
      */
     @NonNull
-    public Flowable<T> autoConnect(int numberOfSubscribers, @NonNull Consumer<? super Disposable> connection) {
+    public Flowable<T> autoConnect(int numberOfSubscribers, Consumer<? super Disposable> connection) {
         if (numberOfSubscribers <= 0) {
             this.connect(connection);
             return RxJavaPlugins.onAssembly(this);

@@ -127,14 +127,14 @@ public final class ComputationScheduler extends Scheduler {
 
     @NonNull
     @Override
-    public Disposable scheduleDirect(@NonNull Runnable run, long delay, TimeUnit unit) {
+    public Disposable scheduleDirect(Runnable run, long delay, TimeUnit unit) {
         PoolWorker w = pool.get().getEventLoop();
         return w.scheduleDirect(run, delay, unit);
     }
 
     @NonNull
     @Override
-    public Disposable schedulePeriodicallyDirect(@NonNull Runnable run, long initialDelay, long period, TimeUnit unit) {
+    public Disposable schedulePeriodicallyDirect(Runnable run, long initialDelay, long period, TimeUnit unit) {
         PoolWorker w = pool.get().getEventLoop();
         return w.schedulePeriodicallyDirect(run, initialDelay, period, unit);
     }
@@ -194,7 +194,7 @@ public final class ComputationScheduler extends Scheduler {
 
         @NonNull
         @Override
-        public Disposable schedule(@NonNull Runnable action) {
+        public Disposable schedule(Runnable action) {
             if (disposed) {
                 return EmptyDisposable.INSTANCE;
             }
@@ -203,7 +203,7 @@ public final class ComputationScheduler extends Scheduler {
         }
         @NonNull
         @Override
-        public Disposable schedule(@NonNull Runnable action, long delayTime, @NonNull TimeUnit unit) {
+        public Disposable schedule(Runnable action, long delayTime, TimeUnit unit) {
             if (disposed) {
                 return EmptyDisposable.INSTANCE;
             }

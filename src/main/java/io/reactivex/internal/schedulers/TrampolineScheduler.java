@@ -48,14 +48,14 @@ public final class TrampolineScheduler extends Scheduler {
 
     @NonNull
     @Override
-    public Disposable scheduleDirect(@NonNull Runnable run) {
+    public Disposable scheduleDirect(Runnable run) {
         run.run();
         return EmptyDisposable.INSTANCE;
     }
 
     @NonNull
     @Override
-    public Disposable scheduleDirect(@NonNull Runnable run, long delay, TimeUnit unit) {
+    public Disposable scheduleDirect(Runnable run, long delay, TimeUnit unit) {
         try {
             unit.sleep(delay);
             run.run();
@@ -77,13 +77,13 @@ public final class TrampolineScheduler extends Scheduler {
 
         @NonNull
         @Override
-        public Disposable schedule(@NonNull Runnable action) {
+        public Disposable schedule(Runnable action) {
             return enqueue(action, now(TimeUnit.MILLISECONDS));
         }
 
         @NonNull
         @Override
-        public Disposable schedule(@NonNull Runnable action, long delayTime, @NonNull TimeUnit unit) {
+        public Disposable schedule(Runnable action, long delayTime, TimeUnit unit) {
             long execTime = now(TimeUnit.MILLISECONDS) + unit.toMillis(delayTime);
 
             return enqueue(new SleepingRunnable(action, this, execTime), execTime);

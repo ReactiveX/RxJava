@@ -26,7 +26,7 @@ final class RunnableDisposable extends ReferenceDisposable<Runnable> {
     }
 
     @Override
-    protected void onDisposed(@NonNull Runnable value) {
+    protected void onDisposed(Runnable value) {
         value.run();
     }
 

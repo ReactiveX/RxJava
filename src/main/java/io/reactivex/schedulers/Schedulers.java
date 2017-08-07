@@ -337,7 +337,7 @@ public final class Schedulers {
      * @return the new Scheduler wrapping the Executor
      */
     @NonNull
-    public static Scheduler from(@NonNull Executor executor) {
+    public static Scheduler from(Executor executor) {
         return new ExecutorScheduler(executor);
     }
 

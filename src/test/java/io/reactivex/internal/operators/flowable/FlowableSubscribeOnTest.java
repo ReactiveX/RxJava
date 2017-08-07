@@ -149,13 +149,13 @@ public class FlowableSubscribeOnTest {
 
             @NonNull
             @Override
-            public Disposable schedule(@NonNull final Runnable action) {
+            public Disposable schedule(final Runnable action) {
                 return actualInner.schedule(action, delay, unit);
             }
 
             @NonNull
             @Override
-            public Disposable schedule(@NonNull final Runnable action, final long delayTime, @NonNull final TimeUnit delayUnit) {
+            public Disposable schedule(final Runnable action, final long delayTime, final TimeUnit delayUnit) {
                 TimeUnit common = delayUnit.compareTo(unit) < 0 ? delayUnit : unit;
                 long t = common.convert(delayTime, delayUnit) + common.convert(delay, unit);
                 return actualInner.schedule(action, t, common);

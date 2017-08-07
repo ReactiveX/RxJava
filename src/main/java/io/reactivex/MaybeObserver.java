@@ -39,7 +39,7 @@ public interface MaybeObserver<T> {
      * @param d the Disposable instance whose {@link Disposable#dispose()} can
      * be called anytime to cancel the connection
      */
-    void onSubscribe(@NonNull Disposable d);
+    void onSubscribe(Disposable d);
 
     /**
      * Notifies the MaybeObserver with one item and that the {@link Maybe} has finished sending
@@ -50,7 +50,7 @@ public interface MaybeObserver<T> {
      * @param t
      *          the item emitted by the Maybe
      */
-    void onSuccess(@NonNull T t);
+    void onSuccess(T t);
 
     /**
      * Notifies the MaybeObserver that the {@link Maybe} has experienced an error condition.
@@ -60,7 +60,7 @@ public interface MaybeObserver<T> {
      * @param e
      *          the exception encountered by the Maybe
      */
-    void onError(@NonNull Throwable e);
+    void onError(Throwable e);
 
     /**
      * Called once the deferred computation completes normally.

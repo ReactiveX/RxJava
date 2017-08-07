@@ -33,13 +33,13 @@ public interface SingleEmitter<T> {
      * Signal a success value.
      * @param t the value, not null
      */
-    void onSuccess(@NonNull T t);
+    void onSuccess(T t);
 
     /**
      * Signal an exception.
      * @param t the exception, not null
      */
-    void onError(@NonNull Throwable t);
+    void onError(Throwable t);
 
     /**
      * Sets a Disposable on this emitter; any previous Disposable
@@ -74,5 +74,5 @@ public interface SingleEmitter<T> {
      * @since 2.1.1 - experimental
      */
     @Experimental
-    boolean tryOnError(@NonNull Throwable t);
+    boolean tryOnError(Throwable t);
 }

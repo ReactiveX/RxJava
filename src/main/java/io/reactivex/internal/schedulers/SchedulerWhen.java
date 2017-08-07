@@ -318,7 +318,7 @@ public class SchedulerWhen extends Scheduler implements Disposable {
 
         @NonNull
         @Override
-        public Disposable schedule(@NonNull final Runnable action, final long delayTime, @NonNull final TimeUnit unit) {
+        public Disposable schedule(final Runnable action, final long delayTime, final TimeUnit unit) {
             // send a scheduled action to the actionQueue
             DelayedAction delayedAction = new DelayedAction(action, delayTime, unit);
             actionProcessor.onNext(delayedAction);
@@ -327,7 +327,7 @@ public class SchedulerWhen extends Scheduler implements Disposable {
 
         @NonNull
         @Override
-        public Disposable schedule(@NonNull final Runnable action) {
+        public Disposable schedule(final Runnable action) {
             // send a scheduled action to the actionQueue
             ImmediateAction immediateAction = new ImmediateAction(action);
             actionProcessor.onNext(immediateAction);

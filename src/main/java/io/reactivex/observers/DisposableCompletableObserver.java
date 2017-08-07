@@ -55,7 +55,7 @@ public abstract class DisposableCompletableObserver implements CompletableObserv
     final AtomicReference<Disposable> s = new AtomicReference<Disposable>();
 
     @Override
-    public final void onSubscribe(@NonNull Disposable s) {
+    public final void onSubscribe(Disposable s) {
         if (EndConsumerHelper.setOnce(this.s, s, getClass())) {
             onStart();
         }

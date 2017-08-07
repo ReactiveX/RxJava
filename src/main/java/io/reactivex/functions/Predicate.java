@@ -26,5 +26,5 @@ public interface Predicate<T> {
      * @return the boolean result
      * @throws Exception on error
      */
-    boolean test(@NonNull T t) throws Exception;
+    boolean test(T t) throws Exception;
 }

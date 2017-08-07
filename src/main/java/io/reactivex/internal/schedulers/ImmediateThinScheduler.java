@@ -48,20 +48,20 @@ public final class ImmediateThinScheduler extends Scheduler {
 
     @NonNull
     @Override
-    public Disposable scheduleDirect(@NonNull Runnable run) {
+    public Disposable scheduleDirect(Runnable run) {
         run.run();
         return DISPOSED;
     }
 
     @NonNull
     @Override
-    public Disposable scheduleDirect(@NonNull Runnable run, long delay, TimeUnit unit) {
+    public Disposable scheduleDirect(Runnable run, long delay, TimeUnit unit) {
         throw new UnsupportedOperationException("This scheduler doesn't support delayed execution");
     }
 
     @NonNull
     @Override
-    public Disposable schedulePeriodicallyDirect(@NonNull Runnable run, long initialDelay, long period, TimeUnit unit) {
+    public Disposable schedulePeriodicallyDirect(Runnable run, long initialDelay, long period, TimeUnit unit) {
         throw new UnsupportedOperationException("This scheduler doesn't support periodic execution");
     }
 
@@ -85,20 +85,20 @@ public final class ImmediateThinScheduler extends Scheduler {
 
         @NonNull
         @Override
-        public Disposable schedule(@NonNull Runnable run) {
+        public Disposable schedule(Runnable run) {
             run.run();
             return DISPOSED;
         }
 
         @NonNull
         @Override
-        public Disposable schedule(@NonNull Runnable run, long delay, @NonNull TimeUnit unit) {
+        public Disposable schedule(Runnable run, long delay, TimeUnit unit) {
             throw new UnsupportedOperationException("This scheduler doesn't support delayed execution");
         }
 
         @NonNull
         @Override
-        public Disposable schedulePeriodically(@NonNull Runnable run, long initialDelay, long period, TimeUnit unit) {
+        public Disposable schedulePeriodically(Runnable run, long initialDelay, long period, TimeUnit unit) {
             throw new UnsupportedOperationException("This scheduler doesn't support periodic execution");
         }
     }

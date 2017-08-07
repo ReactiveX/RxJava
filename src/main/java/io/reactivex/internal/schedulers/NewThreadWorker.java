@@ -38,13 +38,13 @@ public class NewThreadWorker extends Scheduler.Worker implements Disposable {
 
     @NonNull
     @Override
-    public Disposable schedule(@NonNull final Runnable run) {
+    public Disposable schedule(final Runnable run) {
         return schedule(run, 0, null);
     }
 
     @NonNull
     @Override
-    public Disposable schedule(@NonNull final Runnable action, long delayTime, @NonNull TimeUnit unit) {
+    public Disposable schedule(final Runnable action, long delayTime, TimeUnit unit) {
         if (disposed) {
             return EmptyDisposable.INSTANCE;
         }
@@ -129,7 +129,7 @@ public class NewThreadWorker extends Scheduler.Worker implements Disposable {
      * @return the ScheduledRunnable instance
      */
     @NonNull
-    public ScheduledRunnable scheduleActual(final Runnable run, long delayTime, @NonNull TimeUnit unit, @Nullable DisposableContainer parent) {
+    public ScheduledRunnable scheduleActual(final Runnable run, long delayTime, TimeUnit unit, @Nullable DisposableContainer parent) {
         Runnable decoratedRun = RxJavaPlugins.onSchedule(run);
 
         ScheduledRunnable sr = new ScheduledRunnable(decoratedRun, parent);

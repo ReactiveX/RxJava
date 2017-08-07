@@ -221,7 +221,7 @@ public final class IoScheduler extends Scheduler {
 
         @NonNull
         @Override
-        public Disposable schedule(@NonNull Runnable action, long delayTime, @NonNull TimeUnit unit) {
+        public Disposable schedule(Runnable action, long delayTime, TimeUnit unit) {
             if (tasks.isDisposed()) {
                 // don't schedule, we are unsubscribed
                 return EmptyDisposable.INSTANCE;

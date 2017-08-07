@@ -49,7 +49,7 @@ public final class CompositeException extends RuntimeException {
      *
      * @throws IllegalArgumentException if <code>exceptions</code> is empty.
      */
-    public CompositeException(@NonNull Throwable... exceptions) {
+    public CompositeException(Throwable... exceptions) {
         this(exceptions == null ?
                 Collections.singletonList(new NullPointerException("exceptions was null")) : Arrays.asList(exceptions));
     }
@@ -61,7 +61,7 @@ public final class CompositeException extends RuntimeException {
      *
      * @throws IllegalArgumentException if <code>errors</code> is empty.
      */
-    public CompositeException(@NonNull Iterable<? extends Throwable> errors) {
+    public CompositeException(Iterable<? extends Throwable> errors) {
         Set<Throwable> deDupedExceptions = new LinkedHashSet<Throwable>();
         List<Throwable> localExceptions = new ArrayList<Throwable>();
         if (errors != null) {

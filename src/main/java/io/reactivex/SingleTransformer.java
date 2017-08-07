@@ -29,5 +29,5 @@ public interface SingleTransformer<Upstream, Downstream> {
      * @return the transformed SingleSource instance
      */
     @NonNull
-    SingleSource<Downstream> apply(@NonNull Single<Upstream> upstream);
+    SingleSource<Downstream> apply(Single<Upstream> upstream);
 }

@@ -89,13 +89,13 @@ public abstract class ResourceSingleObserver<T> implements SingleObserver<T>, Di
      *
      * @throws NullPointerException if resource is null
      */
-    public final void add(@NonNull Disposable resource) {
+    public final void add(Disposable resource) {
         ObjectHelper.requireNonNull(resource, "resource is null");
         resources.add(resource);
     }
 
     @Override
-    public final void onSubscribe(@NonNull Disposable s) {
+    public final void onSubscribe(Disposable s) {
         if (EndConsumerHelper.setOnce(this.s, s, getClass())) {
             onStart();
         }

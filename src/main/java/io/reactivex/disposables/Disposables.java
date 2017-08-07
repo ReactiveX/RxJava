@@ -13,13 +13,13 @@
 
 package io.reactivex.disposables;
 
-import java.util.concurrent.Future;
-
 import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Action;
 import io.reactivex.internal.disposables.EmptyDisposable;
 import io.reactivex.internal.functions.*;
 import org.reactivestreams.Subscription;
+
+import java.util.concurrent.Future;
 
 /**
  * Utility class to help create disposables by wrapping
@@ -39,7 +39,7 @@ public final class Disposables {
      * @return the new Disposable instance
      */
     @NonNull
-    public static Disposable fromRunnable(@NonNull Runnable run) {
+    public static Disposable fromRunnable(Runnable run) {
         ObjectHelper.requireNonNull(run, "run is null");
         return new RunnableDisposable(run);
     }
@@ -51,7 +51,7 @@ public final class Disposables {
      * @return the new Disposable instance
      */
     @NonNull
-    public static Disposable fromAction(@NonNull Action run) {
+    public static Disposable fromAction(Action run) {
         ObjectHelper.requireNonNull(run, "run is null");
         return new ActionDisposable(run);
     }
@@ -63,7 +63,7 @@ public final class Disposables {
      * @return the new Disposable instance
      */
     @NonNull
-    public static Disposable fromFuture(@NonNull Future<?> future) {
+    public static Disposable fromFuture(Future<?> future) {
         ObjectHelper.requireNonNull(future, "future is null");
         return fromFuture(future, true);
     }
@@ -76,7 +76,7 @@ public final class Disposables {
      * @return the new Disposable instance
      */
     @NonNull
-    public static Disposable fromFuture(@NonNull Future<?> future, boolean allowInterrupt) {
+    public static Disposable fromFuture(Future<?> future, boolean allowInterrupt) {
         ObjectHelper.requireNonNull(future, "future is null");
         return new FutureDisposable(future, allowInterrupt);
     }
@@ -88,7 +88,7 @@ public final class Disposables {
      * @return the new Disposable instance
      */
     @NonNull
-    public static Disposable fromSubscription(@NonNull Subscription subscription) {
+    public static Disposable fromSubscription(Subscription subscription) {
         ObjectHelper.requireNonNull(subscription, "subscription is null");
         return new SubscriptionDisposable(subscription);
     }

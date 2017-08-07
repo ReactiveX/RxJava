@@ -94,7 +94,7 @@ public abstract class ResourceObserver<T> implements Observer<T>, Disposable {
      *
      * @throws NullPointerException if resource is null
      */
-    public final void add(@NonNull Disposable resource) {
+    public final void add(Disposable resource) {
         ObjectHelper.requireNonNull(resource, "resource is null");
         resources.add(resource);
     }

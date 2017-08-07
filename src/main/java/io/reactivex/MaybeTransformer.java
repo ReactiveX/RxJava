@@ -29,5 +29,5 @@ public interface MaybeTransformer<Upstream, Downstream> {
      * @return the transformed MaybeSource instance
      */
     @NonNull
-    MaybeSource<Downstream> apply(@NonNull Maybe<Upstream> upstream);
+    MaybeSource<Downstream> apply(Maybe<Upstream> upstream);
 }

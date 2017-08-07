@@ -30,5 +30,5 @@ public interface FlowableOperator<Downstream, Upstream> {
      * @throws Exception on failure
      */
     @NonNull
-    Subscriber<? super Upstream> apply(@NonNull Subscriber<? super Downstream> observer) throws Exception;
+    Subscriber<? super Upstream> apply(Subscriber<? super Downstream> observer) throws Exception;
 }

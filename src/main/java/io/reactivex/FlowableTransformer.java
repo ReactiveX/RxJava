@@ -30,5 +30,5 @@ public interface FlowableTransformer<Upstream, Downstream> {
      * @return the transformed Publisher instance
      */
     @NonNull
-    Publisher<Downstream> apply(@NonNull Flowable<Upstream> upstream);
+    Publisher<Downstream> apply(Flowable<Upstream> upstream);
 }

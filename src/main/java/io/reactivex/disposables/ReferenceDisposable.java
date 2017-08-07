@@ -32,7 +32,7 @@ abstract class ReferenceDisposable<T> extends AtomicReference<T> implements Disp
         super(ObjectHelper.requireNonNull(value, "value is null"));
     }
 
-    protected abstract void onDisposed(@NonNull T value);
+    protected abstract void onDisposed(T value);
 
     @Override
     public final void dispose() {

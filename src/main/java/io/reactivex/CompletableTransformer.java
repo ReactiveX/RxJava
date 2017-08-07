@@ -26,5 +26,5 @@ public interface CompletableTransformer {
      * @return the transformed CompletableSource instance
      */
     @NonNull
-    CompletableSource apply(@NonNull Completable upstream);
+    CompletableSource apply(Completable upstream);
 }

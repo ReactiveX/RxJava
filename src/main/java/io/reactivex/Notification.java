@@ -126,7 +126,7 @@ public final class Notification<T> {
      * @throws NullPointerException if value is null
      */
     @NonNull
-    public static <T> Notification<T> createOnNext(@NonNull T value) {
+    public static <T> Notification<T> createOnNext(T value) {
         ObjectHelper.requireNonNull(value, "value is null");
         return new Notification<T>(value);
     }
@@ -139,7 +139,7 @@ public final class Notification<T> {
      * @throws NullPointerException if error is null
      */
     @NonNull
-    public static <T> Notification<T> createOnError(@NonNull Throwable error) {
+    public static <T> Notification<T> createOnError(Throwable error) {
         ObjectHelper.requireNonNull(error, "error is null");
         return new Notification<T>(NotificationLite.error(error));
     }

@@ -35,7 +35,7 @@ public final class ExecutorScheduler extends Scheduler {
 
     static final Scheduler HELPER = Schedulers.single();
 
-    public ExecutorScheduler(@NonNull Executor executor) {
+    public ExecutorScheduler(Executor executor) {
         this.executor = executor;
     }
 
@@ -47,7 +47,7 @@ public final class ExecutorScheduler extends Scheduler {
 
     @NonNull
     @Override
-    public Disposable scheduleDirect(@NonNull Runnable run) {
+    public Disposable scheduleDirect(Runnable run) {
         Runnable decoratedRun = RxJavaPlugins.onSchedule(run);
         try {
             if (executor instanceof ExecutorService) {
@@ -68,7 +68,7 @@ public final class ExecutorScheduler extends Scheduler {
 
     @NonNull
     @Override
-    public Disposable scheduleDirect(@NonNull Runnable run, final long delay, final TimeUnit unit) {
+    public Disposable scheduleDirect(Runnable run, final long delay, final TimeUnit unit) {
         final Runnable decoratedRun = RxJavaPlugins.onSchedule(run);
         if (executor instanceof ScheduledExecutorService) {
             try {
@@ -93,7 +93,7 @@ public final class ExecutorScheduler extends Scheduler {
 
     @NonNull
     @Override
-    public Disposable schedulePeriodicallyDirect(@NonNull Runnable run, long initialDelay, long period, TimeUnit unit) {
+    public Disposable schedulePeriodicallyDirect(Runnable run, long initialDelay, long period, TimeUnit unit) {
         if (executor instanceof ScheduledExecutorService) {
             Runnable decoratedRun = RxJavaPlugins.onSchedule(run);
             try {
@@ -127,7 +127,7 @@ public final class ExecutorScheduler extends Scheduler {
 
         @NonNull
         @Override
-        public Disposable schedule(@NonNull Runnable run) {
+        public Disposable schedule(Runnable run) {
             if (disposed) {
                 return EmptyDisposable.INSTANCE;
             }
@@ -153,7 +153,7 @@ public final class ExecutorScheduler extends Scheduler {
 
         @NonNull
         @Override
-        public Disposable schedule(@NonNull Runnable run, long delay, @NonNull TimeUnit unit) {
+        public Disposable schedule(Runnable run, long delay, TimeUnit unit) {
             if (delay <= 0) {
                 return schedule(run);
             }

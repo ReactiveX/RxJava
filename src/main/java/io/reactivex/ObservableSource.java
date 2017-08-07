@@ -28,5 +28,5 @@ public interface ObservableSource<T> {
      * @param observer the Observer, not null
      * @throws NullPointerException if {@code observer} is null
      */
-    void subscribe(@NonNull Observer<? super T> observer);
+    void subscribe(Observer<? super T> observer);
 }

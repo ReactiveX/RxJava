@@ -46,13 +46,13 @@ public class SchedulerWorkerTest {
 
                 @NonNull
                 @Override
-                public Disposable schedule(@NonNull Runnable action) {
+                public Disposable schedule(Runnable action) {
                     return w.schedule(action);
                 }
 
                 @NonNull
                 @Override
-                public Disposable schedule(@NonNull Runnable action, long delayTime, @NonNull TimeUnit unit) {
+                public Disposable schedule(Runnable action, long delayTime, TimeUnit unit) {
                     return w.schedule(action, delayTime, unit);
                 }
 
@@ -64,7 +64,7 @@ public class SchedulerWorkerTest {
         }
 
         @Override
-        public long now(@NonNull TimeUnit unit) {
+        public long now(TimeUnit unit) {
             return super.now(unit) + unit.convert(drift, TimeUnit.NANOSECONDS);
         }
     }

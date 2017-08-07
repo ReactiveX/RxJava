@@ -31,5 +31,5 @@ public interface MaybeSource<T> {
      * @param observer the MaybeObserver, not null
      * @throws NullPointerException if {@code observer} is null
      */
-    void subscribe(@NonNull MaybeObserver<? super T> observer);
+    void subscribe(MaybeObserver<? super T> observer);
 }

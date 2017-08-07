@@ -255,7 +255,7 @@ public class SchedulerTest {
                 return new Worker() {
                     @NonNull
                     @Override
-                    public Disposable schedule(@NonNull Runnable run, long delay, @NonNull TimeUnit unit) {
+                    public Disposable schedule(Runnable run, long delay, TimeUnit unit) {
                         return EmptyDisposable.INSTANCE;
                     }
 

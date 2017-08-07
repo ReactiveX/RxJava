@@ -13,21 +13,23 @@
 
 package io.reactivex.internal.operators.flowable;
 
-import java.util.Iterator;
-import java.util.concurrent.atomic.*;
-
-import org.reactivestreams.*;
-
-import io.reactivex.*;
-import io.reactivex.annotations.*;
+import io.reactivex.Flowable;
+import io.reactivex.FlowableSubscriber;
+import io.reactivex.annotations.Nullable;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.internal.operators.flowable.FlowableMap.MapSubscriber;
 import io.reactivex.internal.queue.SpscLinkedArrayQueue;
 import io.reactivex.internal.subscriptions.*;
-import io.reactivex.internal.util.*;
+import io.reactivex.internal.util.BackpressureHelper;
+import io.reactivex.internal.util.ExceptionHelper;
 import io.reactivex.plugins.RxJavaPlugins;
+import org.reactivestreams.*;
+
+import java.util.Iterator;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Combines the latest values from multiple sources through a function.
@@ -50,8 +52,8 @@ extends Flowable<R> {
 
     final boolean delayErrors;
 
-    public FlowableCombineLatest(@NonNull Publisher<? extends T>[] array,
-                    @NonNull Function<? super Object[], ? extends R> combiner,
+    public FlowableCombineLatest(Publisher<? extends T>[] array,
+                    Function<? super Object[], ? extends R> combiner,
                     int bufferSize, boolean delayErrors) {
         this.array = array;
         this.iterable = null;
@@ -60,8 +62,8 @@ extends Flowable<R> {
         this.delayErrors = delayErrors;
     }
 
-    public FlowableCombineLatest(@NonNull Iterable<? extends Publisher<? extends T>> iterable,
-                    @NonNull Function<? super Object[], ? extends R> combiner,
+    public FlowableCombineLatest(Iterable<? extends Publisher<? extends T>> iterable,
+                    Function<? super Object[], ? extends R> combiner,
                     int bufferSize, boolean delayErrors) {
         this.array = null;
         this.iterable = iterable;

@@ -26,5 +26,5 @@ public interface CompletableOperator {
      * @throws Exception on failure
      */
     @NonNull
-    CompletableObserver apply(@NonNull CompletableObserver observer) throws Exception;
+    CompletableObserver apply(CompletableObserver observer) throws Exception;
 }
