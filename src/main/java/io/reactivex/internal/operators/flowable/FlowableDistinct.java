@@ -19,7 +19,7 @@ import java.util.concurrent.Callable;
 import org.reactivestreams.Subscriber;
 
 import io.reactivex.Flowable;
-import io.reactivex.annotations.Nullable;
+import javax.annotation.Nullable;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.functions.ObjectHelper;

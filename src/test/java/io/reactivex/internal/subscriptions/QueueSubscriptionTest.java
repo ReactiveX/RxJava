@@ -13,7 +13,7 @@
 
 package io.reactivex.internal.subscriptions;
 
-import io.reactivex.annotations.Nullable;
+import javax.annotation.Nullable;
 import org.junit.Test;
 
 import static org.junit.Assert.*;

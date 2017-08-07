@@ -13,7 +13,7 @@
 package io.reactivex.observables;
 
 import io.reactivex.Observable;
-import io.reactivex.annotations.Nullable;
+import javax.annotation.Nullable;
 
 /**
  * An {@link Observable} that has been grouped by key, the value of which can be obtained with {@link #getKey()}.

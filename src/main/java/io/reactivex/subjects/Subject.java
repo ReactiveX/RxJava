@@ -14,7 +14,7 @@
 package io.reactivex.subjects;
 
 import io.reactivex.*;
-import io.reactivex.annotations.Nullable;
+import javax.annotation.Nullable;
 import javax.annotation.Nonnull;
 
 /**

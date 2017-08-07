@@ -13,7 +13,7 @@
 package io.reactivex.flowables;
 
 import io.reactivex.Flowable;
-import io.reactivex.annotations.Nullable;
+import javax.annotation.Nullable;
 
 /**
  * A {@link Flowable} that has been grouped by key, the value of which can be obtained with {@link #getKey()}.

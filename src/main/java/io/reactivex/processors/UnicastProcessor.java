@@ -17,7 +17,7 @@ import io.reactivex.annotations.CheckReturnValue;
 import java.util.concurrent.atomic.*;
 
 import io.reactivex.annotations.Experimental;
-import io.reactivex.annotations.Nullable;
+import javax.annotation.Nullable;
 import org.reactivestreams.*;
 
 import io.reactivex.internal.functions.ObjectHelper;

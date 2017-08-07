@@ -15,7 +15,7 @@ package io.reactivex.internal.operators.observable;
 
 import io.reactivex.*;
 import io.reactivex.annotations.Experimental;
-import io.reactivex.annotations.Nullable;
+import javax.annotation.Nullable;
 import io.reactivex.functions.Consumer;
 import io.reactivex.internal.observers.BasicFuseableObserver;
 

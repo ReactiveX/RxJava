@@ -16,7 +16,7 @@ package io.reactivex.internal.operators.flowable;
 import org.reactivestreams.*;
 
 import io.reactivex.*;
-import io.reactivex.annotations.Nullable;
+import javax.annotation.Nullable;
 import io.reactivex.internal.fuseable.QueueSubscription;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 

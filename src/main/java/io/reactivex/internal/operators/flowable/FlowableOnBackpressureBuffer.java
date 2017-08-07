@@ -18,7 +18,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import org.reactivestreams.*;
 
 import io.reactivex.*;
-import io.reactivex.annotations.Nullable;
+import javax.annotation.Nullable;
 import io.reactivex.exceptions.*;
 import io.reactivex.functions.Action;
 import io.reactivex.internal.fuseable.SimplePlainQueue;

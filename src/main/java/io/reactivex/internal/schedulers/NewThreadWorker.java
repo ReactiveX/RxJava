@@ -14,7 +14,7 @@
 package io.reactivex.internal.schedulers;
 
 import io.reactivex.Scheduler;
-import io.reactivex.annotations.Nullable;
+import javax.annotation.Nullable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.disposables.*;
 import io.reactivex.plugins.RxJavaPlugins;

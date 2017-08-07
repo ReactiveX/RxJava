@@ -14,11 +14,10 @@
 package io.reactivex.subjects;
 
 import io.reactivex.*;
-import io.reactivex.annotations.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.plugins.RxJavaPlugins;
 import java.util.concurrent.atomic.*;
-import javax.annotation.Nonnull;
+import javax.annotation.*;
 
 /**
  * Represents a hot Single-like source and consumer of events similar to Subjects.

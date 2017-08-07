@@ -13,10 +13,9 @@
 
 package io.reactivex;
 
-import io.reactivex.annotations.*;
 import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.internal.util.NotificationLite;
-import javax.annotation.Nonnull;
+import javax.annotation.*;
 
 /**
  * Represents the reactive signal types: onNext, onError and onComplete and

@@ -21,7 +21,7 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 
-import io.reactivex.annotations.Nullable;
+import javax.annotation.Nullable;
 import org.junit.Test;
 import org.mockito.InOrder;
 import org.reactivestreams.*;

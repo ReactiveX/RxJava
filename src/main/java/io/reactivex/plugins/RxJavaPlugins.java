@@ -13,7 +13,7 @@
 package io.reactivex.plugins;
 
 import io.reactivex.*;
-import io.reactivex.annotations.*;
+import io.reactivex.annotations.Beta;
 import io.reactivex.exceptions.*;
 import io.reactivex.flowables.ConnectableFlowable;
 import io.reactivex.functions.*;
@@ -25,7 +25,7 @@ import io.reactivex.parallel.ParallelFlowable;
 import io.reactivex.schedulers.Schedulers;
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.util.concurrent.*;
-import javax.annotation.Nonnull;
+import javax.annotation.*;
 import org.reactivestreams.Subscriber;
 /**
  * Utility class to inject handlers to certain standard RxJava operations.

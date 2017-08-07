@@ -19,7 +19,7 @@ import org.reactivestreams.*;
 
 import io.reactivex.*;
 import io.reactivex.Scheduler.Worker;
-import io.reactivex.annotations.Nullable;
+import javax.annotation.Nullable;
 import io.reactivex.exceptions.*;
 import io.reactivex.internal.fuseable.*;
 import io.reactivex.internal.queue.SpscArrayQueue;
