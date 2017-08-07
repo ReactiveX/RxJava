@@ -16,12 +16,11 @@
 package io.reactivex.internal.schedulers;
 
 import io.reactivex.Scheduler;
-import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.*;
 import io.reactivex.internal.disposables.*;
-
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicReference;
+import javax.annotation.Nonnull;
 
 /**
  * Holds a fixed pool of worker threads and assigns them
@@ -119,20 +118,20 @@ public final class ComputationScheduler extends Scheduler {
         start();
     }
 
-    @NonNull
+    @Nonnull
     @Override
     public Worker createWorker() {
         return new EventLoopWorker(pool.get().getEventLoop());
     }
 
-    @NonNull
+    @Nonnull
     @Override
     public Disposable scheduleDirect(Runnable run, long delay, TimeUnit unit) {
         PoolWorker w = pool.get().getEventLoop();
         return w.scheduleDirect(run, delay, unit);
     }
 
-    @NonNull
+    @Nonnull
     @Override
     public Disposable schedulePeriodicallyDirect(Runnable run, long initialDelay, long period, TimeUnit unit) {
         PoolWorker w = pool.get().getEventLoop();
@@ -192,7 +191,7 @@ public final class ComputationScheduler extends Scheduler {
             return disposed;
         }
 
-        @NonNull
+        @Nonnull
         @Override
         public Disposable schedule(Runnable action) {
             if (disposed) {
@@ -201,7 +200,7 @@ public final class ComputationScheduler extends Scheduler {
 
             return poolWorker.scheduleActual(action, 0, TimeUnit.MILLISECONDS, serial);
         }
-        @NonNull
+        @Nonnull
         @Override
         public Disposable schedule(Runnable action, long delayTime, TimeUnit unit) {
             if (disposed) {

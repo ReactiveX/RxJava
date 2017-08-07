@@ -13,7 +13,7 @@
 
 package io.reactivex;
 
-import io.reactivex.annotations.*;
+import javax.annotation.Nonnull;
 import org.reactivestreams.Subscriber;
 
 /**
@@ -29,6 +29,6 @@ public interface FlowableOperator<Downstream, Upstream> {
      * @return the parent Subscriber instance
      * @throws Exception on failure
      */
-    @NonNull
+    @Nonnull
     Subscriber<? super Upstream> apply(Subscriber<? super Downstream> observer) throws Exception;
 }

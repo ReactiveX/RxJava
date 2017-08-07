@@ -16,6 +16,7 @@ package io.reactivex;
 import io.reactivex.annotations.*;
 import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.internal.util.NotificationLite;
+import javax.annotation.Nonnull;
 
 /**
  * Represents the reactive signal types: onNext, onError and onComplete and
@@ -125,7 +126,7 @@ public final class Notification<T> {
      * @return the new Notification instance
      * @throws NullPointerException if value is null
      */
-    @NonNull
+    @Nonnull
     public static <T> Notification<T> createOnNext(T value) {
         ObjectHelper.requireNonNull(value, "value is null");
         return new Notification<T>(value);
@@ -138,7 +139,7 @@ public final class Notification<T> {
      * @return the new Notification instance
      * @throws NullPointerException if error is null
      */
-    @NonNull
+    @Nonnull
     public static <T> Notification<T> createOnError(Throwable error) {
         ObjectHelper.requireNonNull(error, "error is null");
         return new Notification<T>(NotificationLite.error(error));
@@ -151,7 +152,7 @@ public final class Notification<T> {
      * @return the shared Notification instance representing an onComplete signal
      */
     @SuppressWarnings("unchecked")
-    @NonNull
+    @Nonnull
     public static <T> Notification<T> createOnComplete() {
         return (Notification<T>)COMPLETE;
     }

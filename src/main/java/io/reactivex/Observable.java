@@ -13,11 +13,6 @@
 
 package io.reactivex;
 
-import java.util.*;
-import java.util.concurrent.*;
-
-import org.reactivestreams.Publisher;
-
 import io.reactivex.annotations.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.Exceptions;
@@ -32,6 +27,10 @@ import io.reactivex.observables.*;
 import io.reactivex.observers.*;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.schedulers.*;
+import java.util.*;
+import java.util.concurrent.*;
+import javax.annotation.Nonnull;
+import org.reactivestreams.Publisher;
 
 /**
  * The Observable class is the non-backpressured, optionally multi-valued base reactive class that
@@ -11093,7 +11092,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @Experimental
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
-    @NonNull
+    @Nonnull
     public final <R> Observable<R> switchMapSingle(Function<? super T, ? extends SingleSource<? extends R>> mapper) {
         return ObservableInternalHelper.switchMapSingle(this, mapper);
     }
@@ -11124,7 +11123,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @Experimental
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
-    @NonNull
+    @Nonnull
     public final <R> Observable<R> switchMapSingleDelayError(Function<? super T, ? extends SingleSource<? extends R>> mapper) {
         return ObservableInternalHelper.switchMapSingleDelayError(this, mapper);
     }

@@ -13,11 +13,10 @@
 
 package io.reactivex.internal.schedulers;
 
-import java.util.concurrent.TimeUnit;
-
 import io.reactivex.Scheduler;
-import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.*;
+import java.util.concurrent.TimeUnit;
+import javax.annotation.Nonnull;
 
 /**
  * A Scheduler partially implementing the API by allowing only non-delayed, non-periodic
@@ -46,26 +45,26 @@ public final class ImmediateThinScheduler extends Scheduler {
         // singleton class
     }
 
-    @NonNull
+    @Nonnull
     @Override
     public Disposable scheduleDirect(Runnable run) {
         run.run();
         return DISPOSED;
     }
 
-    @NonNull
+    @Nonnull
     @Override
     public Disposable scheduleDirect(Runnable run, long delay, TimeUnit unit) {
         throw new UnsupportedOperationException("This scheduler doesn't support delayed execution");
     }
 
-    @NonNull
+    @Nonnull
     @Override
     public Disposable schedulePeriodicallyDirect(Runnable run, long initialDelay, long period, TimeUnit unit) {
         throw new UnsupportedOperationException("This scheduler doesn't support periodic execution");
     }
 
-    @NonNull
+    @Nonnull
     @Override
     public Worker createWorker() {
         return WORKER;
@@ -83,20 +82,20 @@ public final class ImmediateThinScheduler extends Scheduler {
             return false; // dispose() has no effect
         }
 
-        @NonNull
+        @Nonnull
         @Override
         public Disposable schedule(Runnable run) {
             run.run();
             return DISPOSED;
         }
 
-        @NonNull
+        @Nonnull
         @Override
         public Disposable schedule(Runnable run, long delay, TimeUnit unit) {
             throw new UnsupportedOperationException("This scheduler doesn't support delayed execution");
         }
 
-        @NonNull
+        @Nonnull
         @Override
         public Disposable schedulePeriodically(Runnable run, long initialDelay, long period, TimeUnit unit) {
             throw new UnsupportedOperationException("This scheduler doesn't support periodic execution");

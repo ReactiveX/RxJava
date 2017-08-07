@@ -12,7 +12,7 @@
  */
 package io.reactivex;
 
-import io.reactivex.annotations.*;
+import javax.annotation.Nonnull;
 
 /**
  * Interface to map/wrap a downstream observer to an upstream observer.
@@ -27,6 +27,6 @@ public interface MaybeOperator<Downstream, Upstream> {
      * @return the parent MaybeObserver instance
      * @throws Exception on failure
      */
-    @NonNull
+    @Nonnull
     MaybeObserver<? super Upstream> apply(MaybeObserver<? super Downstream> observer) throws Exception;
 }

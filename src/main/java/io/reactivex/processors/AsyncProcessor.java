@@ -12,12 +12,12 @@
  */
 package io.reactivex.processors;
 
-import java.util.Arrays;
-import java.util.concurrent.atomic.AtomicReference;
-
-import io.reactivex.annotations.*;
+import io.reactivex.annotations.CheckReturnValue;
 import io.reactivex.internal.subscriptions.DeferredScalarSubscription;
 import io.reactivex.plugins.RxJavaPlugins;
+import java.util.Arrays;
+import java.util.concurrent.atomic.AtomicReference;
+import javax.annotation.Nonnull;
 import org.reactivestreams.*;
 
 /**
@@ -51,7 +51,7 @@ public final class AsyncProcessor<T> extends FlowableProcessor<T> {
      * @return the new AsyncProcessor instance
      */
     @CheckReturnValue
-    @NonNull
+    @Nonnull
     public static <T> AsyncProcessor<T> create() {
         return new AsyncProcessor<T>();
     }

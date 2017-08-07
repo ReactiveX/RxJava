@@ -13,8 +13,6 @@
 
 package io.reactivex.functions;
 
-import io.reactivex.annotations.NonNull;
-
 /**
  * A functional interface (callback) that returns true or false for the given input values.
  * @param <T1> the first value

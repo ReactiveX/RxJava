@@ -13,22 +13,10 @@
 
 package io.reactivex.internal.operators.observable;
 
-import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
-
-import java.util.*;
-import java.util.concurrent.*;
-import java.util.concurrent.atomic.AtomicInteger;
-
-import org.junit.*;
-import org.mockito.InOrder;
-
-import io.reactivex.*;
 import io.reactivex.Observable;
+import io.reactivex.*;
 import io.reactivex.Observer;
 import io.reactivex.Scheduler.Worker;
-import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.*;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.*;
@@ -40,6 +28,18 @@ import io.reactivex.observers.TestObserver;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.schedulers.*;
 import io.reactivex.subjects.PublishSubject;
+import java.util.*;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicInteger;
+import javax.annotation.Nonnull;
+import org.junit.*;
+import org.mockito.InOrder;
+
+import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.notNull;
+import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.never;
 
 public class ObservableReplayTest {
     @Test
@@ -690,14 +690,14 @@ public class ObservableReplayTest {
             this.mockDisposable = mockDisposable;
         }
 
-        @NonNull
+        @Nonnull
         @Override
         public Disposable schedule(Runnable action) {
             action.run();
             return mockDisposable; // this subscription is returned but discarded
         }
 
-        @NonNull
+        @Nonnull
         @Override
         public Disposable schedule(Runnable action, long delayTime, TimeUnit unit) {
             action.run();

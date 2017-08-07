@@ -14,11 +14,10 @@
 package io.reactivex.schedulers;
 
 import io.reactivex.Scheduler;
-import io.reactivex.annotations.NonNull;
 import io.reactivex.internal.schedulers.*;
 import io.reactivex.plugins.RxJavaPlugins;
-
 import java.util.concurrent.*;
+import javax.annotation.Nonnull;
 
 /**
  * Static factory methods for returning standard Scheduler instances.
@@ -39,19 +38,19 @@ import java.util.concurrent.*;
  * </ul>
  */
 public final class Schedulers {
-    @NonNull
+    @Nonnull
     static final Scheduler SINGLE;
 
-    @NonNull
+    @Nonnull
     static final Scheduler COMPUTATION;
 
-    @NonNull
+    @Nonnull
     static final Scheduler IO;
 
-    @NonNull
+    @Nonnull
     static final Scheduler TRAMPOLINE;
 
-    @NonNull
+    @Nonnull
     static final Scheduler NEW_THREAD;
 
     static final class SingleHolder {
@@ -130,7 +129,7 @@ public final class Schedulers {
      * annotation.
      * @return a {@link Scheduler} meant for computation-bound work
      */
-    @NonNull
+    @Nonnull
     public static Scheduler computation() {
         return RxJavaPlugins.onComputationScheduler(COMPUTATION);
     }
@@ -174,7 +173,7 @@ public final class Schedulers {
      * annotation.
      * @return a {@link Scheduler} meant for IO-bound work
      */
-    @NonNull
+    @Nonnull
     public static Scheduler io() {
         return RxJavaPlugins.onIoScheduler(IO);
     }
@@ -193,7 +192,7 @@ public final class Schedulers {
      * This scheduler can't be overridden via an {@link RxJavaPlugins} method.
      * @return a {@link Scheduler} that queues work on the current thread
      */
-    @NonNull
+    @Nonnull
     public static Scheduler trampoline() {
         return TRAMPOLINE;
     }
@@ -232,7 +231,7 @@ public final class Schedulers {
      * annotation.
      * @return a {@link Scheduler} that creates new threads
      */
-    @NonNull
+    @Nonnull
     public static Scheduler newThread() {
         return RxJavaPlugins.onNewThreadScheduler(NEW_THREAD);
     }
@@ -282,7 +281,7 @@ public final class Schedulers {
      * @return a {@link Scheduler} that shares a single backing thread.
      * @since 2.0
      */
-    @NonNull
+    @Nonnull
     public static Scheduler single() {
         return RxJavaPlugins.onSingleScheduler(SINGLE);
     }
@@ -336,7 +335,7 @@ public final class Schedulers {
      *          the executor to wrap
      * @return the new Scheduler wrapping the Executor
      */
-    @NonNull
+    @Nonnull
     public static Scheduler from(Executor executor) {
         return new ExecutorScheduler(executor);
     }

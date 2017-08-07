@@ -13,8 +13,6 @@
 
 package io.reactivex.functions;
 
-import io.reactivex.annotations.NonNull;
-
 /**
  * A functional interface that takes a value and returns another value, possibly with a
  * different type and allows throwing a checked exception.

@@ -12,8 +12,6 @@
  */
 package io.reactivex.disposables;
 
-import io.reactivex.annotations.NonNull;
-
 /**
  * A disposable container that manages a Runnable instance.
  */

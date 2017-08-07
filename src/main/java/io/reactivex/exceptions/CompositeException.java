@@ -17,8 +17,7 @@ package io.reactivex.exceptions;
 
 import java.io.*;
 import java.util.*;
-
-import io.reactivex.annotations.NonNull;
+import javax.annotation.Nonnull;
 
 /**
  * Represents an exception that is a composite of one or more other exceptions. A {@code CompositeException}
@@ -91,19 +90,19 @@ public final class CompositeException extends RuntimeException {
      *
      * @return the exceptions that make up the {@code CompositeException}, as a {@link List} of {@link Throwable}s
      */
-    @NonNull
+    @Nonnull
     public List<Throwable> getExceptions() {
         return exceptions;
     }
 
     @Override
-    @NonNull
+    @Nonnull
     public String getMessage() {
         return message;
     }
 
     @Override
-    @NonNull
+    @Nonnull
     public synchronized Throwable getCause() { // NOPMD
         if (cause == null) {
             // we lazily generate this causal chain if this is called

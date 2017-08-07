@@ -13,18 +13,15 @@
 
 package io.reactivex;
 
-import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.Function;
-import io.reactivex.internal.disposables.EmptyDisposable;
-import io.reactivex.internal.disposables.SequentialDisposable;
-import io.reactivex.internal.schedulers.NewThreadWorker;
-import io.reactivex.internal.schedulers.SchedulerWhen;
+import io.reactivex.internal.disposables.*;
+import io.reactivex.internal.schedulers.*;
 import io.reactivex.internal.util.ExceptionHelper;
 import io.reactivex.plugins.RxJavaPlugins;
-
 import java.util.concurrent.TimeUnit;
+import javax.annotation.Nonnull;
 
 /**
  * A {@code Scheduler} is an object that specifies an API for scheduling
@@ -63,7 +60,7 @@ public abstract class Scheduler {
      *
      * @return a Worker representing a serial queue of actions to be executed
      */
-    @NonNull
+    @Nonnull
     public abstract Worker createWorker();
 
     /**
@@ -108,7 +105,7 @@ public abstract class Scheduler {
      * @return the Disposable instance that let's one cancel this particular task.
      * @since 2.0
      */
-    @NonNull
+    @Nonnull
     public Disposable scheduleDirect(Runnable run) {
         return scheduleDirect(run, 0L, TimeUnit.NANOSECONDS);
     }
@@ -126,7 +123,7 @@ public abstract class Scheduler {
      * @return the Disposable that let's one cancel this particular delayed task.
      * @since 2.0
      */
-    @NonNull
+    @Nonnull
     public Disposable scheduleDirect(Runnable run, long delay, TimeUnit unit) {
         final Worker w = createWorker();
 
@@ -157,7 +154,7 @@ public abstract class Scheduler {
      * @return the Disposable that let's one cancel this particular delayed task.
      * @since 2.0
      */
-    @NonNull
+    @Nonnull
     public Disposable schedulePeriodicallyDirect(Runnable run, long initialDelay, long period, TimeUnit unit) {
         final Worker w = createWorker();
 
@@ -249,7 +246,7 @@ public abstract class Scheduler {
      * @since 2.1
      */
     @SuppressWarnings("unchecked")
-    @NonNull
+    @Nonnull
     public <S extends Scheduler & Disposable> S when(Function<Flowable<Flowable<Completable>>, Completable> combine) {
         return (S) new SchedulerWhen(combine, this);
     }
@@ -269,7 +266,7 @@ public abstract class Scheduler {
          *            Runnable to schedule
          * @return a Disposable to be able to unsubscribe the action (cancel it if not executed)
          */
-        @NonNull
+        @Nonnull
         public Disposable schedule(Runnable run) {
             return schedule(run, 0L, TimeUnit.NANOSECONDS);
         }
@@ -289,7 +286,7 @@ public abstract class Scheduler {
          *            the time unit of {@code delayTime}
          * @return a Disposable to be able to unsubscribe the action (cancel it if not executed)
          */
-        @NonNull
+        @Nonnull
         public abstract Disposable schedule(Runnable run, long delay, TimeUnit unit);
 
         /**
@@ -312,7 +309,7 @@ public abstract class Scheduler {
          *            the time unit of {@code period}
          * @return a Disposable to be able to unsubscribe the action (cancel it if not executed)
          */
-        @NonNull
+        @Nonnull
         public Disposable schedulePeriodically(Runnable run, final long initialDelay, final long period, final TimeUnit unit) {
             final SequentialDisposable first = new SequentialDisposable();
 
@@ -350,9 +347,9 @@ public abstract class Scheduler {
          * of this task has to happen (accounting for clock drifts).
          */
         final class PeriodicTask implements Runnable {
-            @NonNull
+            @Nonnull
             final Runnable decoratedRun;
-            @NonNull
+            @Nonnull
             final SequentialDisposable sd;
             final long periodInNanoseconds;
             long count;
@@ -401,9 +398,9 @@ public abstract class Scheduler {
     static class PeriodicDirectTask
     implements Runnable, Disposable {
         final Runnable run;
-        @NonNull
+        @Nonnull
         final Worker worker;
-        @NonNull
+        @Nonnull
         volatile boolean disposed;
 
         PeriodicDirectTask(Runnable run, Worker worker) {

@@ -23,11 +23,10 @@ import io.reactivex.internal.util.ExceptionHelper;
 import io.reactivex.observables.ConnectableObservable;
 import io.reactivex.parallel.ParallelFlowable;
 import io.reactivex.schedulers.Schedulers;
-import org.reactivestreams.Subscriber;
-
 import java.lang.Thread.UncaughtExceptionHandler;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.*;
+import javax.annotation.Nonnull;
+import org.reactivestreams.Subscriber;
 /**
  * Utility class to inject handlers to certain standard RxJava operations.
  */
@@ -263,7 +262,7 @@ public final class RxJavaPlugins {
      * @return the value returned by the hook, not null
      * @throws NullPointerException if the callable parameter or its result are null
      */
-    @NonNull
+    @Nonnull
     public static Scheduler initComputationScheduler(Callable<Scheduler> defaultScheduler) {
         ObjectHelper.requireNonNull(defaultScheduler, "Scheduler Callable can't be null");
         Function<? super Callable<Scheduler>, ? extends Scheduler> f = onInitComputationHandler;
@@ -279,7 +278,7 @@ public final class RxJavaPlugins {
      * @return the value returned by the hook, not null
      * @throws NullPointerException if the callable parameter or its result are null
      */
-    @NonNull
+    @Nonnull
     public static Scheduler initIoScheduler(Callable<Scheduler> defaultScheduler) {
         ObjectHelper.requireNonNull(defaultScheduler, "Scheduler Callable can't be null");
         Function<? super Callable<Scheduler>, ? extends Scheduler> f = onInitIoHandler;
@@ -295,7 +294,7 @@ public final class RxJavaPlugins {
      * @return the value returned by the hook, not null
      * @throws NullPointerException if the callable parameter or its result are null
      */
-    @NonNull
+    @Nonnull
     public static Scheduler initNewThreadScheduler(Callable<Scheduler> defaultScheduler) {
         ObjectHelper.requireNonNull(defaultScheduler, "Scheduler Callable can't be null");
         Function<? super Callable<Scheduler>, ? extends Scheduler> f = onInitNewThreadHandler;
@@ -311,7 +310,7 @@ public final class RxJavaPlugins {
      * @return the value returned by the hook, not null
      * @throws NullPointerException if the callable parameter or its result are null
      */
-    @NonNull
+    @Nonnull
     public static Scheduler initSingleScheduler(Callable<Scheduler> defaultScheduler) {
         ObjectHelper.requireNonNull(defaultScheduler, "Scheduler Callable can't be null");
         Function<? super Callable<Scheduler>, ? extends Scheduler> f = onInitSingleHandler;
@@ -326,7 +325,7 @@ public final class RxJavaPlugins {
      * @param defaultScheduler the hook's input value
      * @return the value returned by the hook
      */
-    @NonNull
+    @Nonnull
     public static Scheduler onComputationScheduler(Scheduler defaultScheduler) {
         Function<? super Scheduler, ? extends Scheduler> f = onComputationHandler;
         if (f == null) {
@@ -416,7 +415,7 @@ public final class RxJavaPlugins {
      * @param defaultScheduler the hook's input value
      * @return the value returned by the hook
      */
-    @NonNull
+    @Nonnull
     public static Scheduler onIoScheduler(Scheduler defaultScheduler) {
         Function<? super Scheduler, ? extends Scheduler> f = onIoHandler;
         if (f == null) {
@@ -430,7 +429,7 @@ public final class RxJavaPlugins {
      * @param defaultScheduler the hook's input value
      * @return the value returned by the hook
      */
-    @NonNull
+    @Nonnull
     public static Scheduler onNewThreadScheduler(Scheduler defaultScheduler) {
         Function<? super Scheduler, ? extends Scheduler> f = onNewThreadHandler;
         if (f == null) {
@@ -444,7 +443,7 @@ public final class RxJavaPlugins {
      * @param run the runnable instance
      * @return the replacement runnable
      */
-    @NonNull
+    @Nonnull
     public static Runnable onSchedule(Runnable run) {
         Function<? super Runnable, ? extends Runnable> f = onScheduleHandler;
         if (f == null) {
@@ -458,7 +457,7 @@ public final class RxJavaPlugins {
      * @param defaultScheduler the hook's input value
      * @return the value returned by the hook
      */
-    @NonNull
+    @Nonnull
     public static Scheduler onSingleScheduler(Scheduler defaultScheduler) {
         Function<? super Scheduler, ? extends Scheduler> f = onSingleHandler;
         if (f == null) {
@@ -897,7 +896,7 @@ public final class RxJavaPlugins {
      * @return the value returned by the hook
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    @NonNull
+    @Nonnull
     public static <T> Subscriber<? super T> onSubscribe(Flowable<T> source, Subscriber<? super T> subscriber) {
         BiFunction<? super Flowable, ? super Subscriber, ? extends Subscriber> f = onFlowableSubscribe;
         if (f != null) {
@@ -914,7 +913,7 @@ public final class RxJavaPlugins {
      * @return the value returned by the hook
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    @NonNull
+    @Nonnull
     public static <T> Observer<? super T> onSubscribe(Observable<T> source, Observer<? super T> observer) {
         BiFunction<? super Observable, ? super Observer, ? extends Observer> f = onObservableSubscribe;
         if (f != null) {
@@ -931,7 +930,7 @@ public final class RxJavaPlugins {
      * @return the value returned by the hook
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    @NonNull
+    @Nonnull
     public static <T> SingleObserver<? super T> onSubscribe(Single<T> source, SingleObserver<? super T> observer) {
         BiFunction<? super Single, ? super SingleObserver, ? extends SingleObserver> f = onSingleSubscribe;
         if (f != null) {
@@ -946,7 +945,7 @@ public final class RxJavaPlugins {
      * @param observer the observer
      * @return the value returned by the hook
      */
-    @NonNull
+    @Nonnull
     public static CompletableObserver onSubscribe(Completable source, CompletableObserver observer) {
         BiFunction<? super Completable, ? super CompletableObserver, ? extends CompletableObserver> f = onCompletableSubscribe;
         if (f != null) {
@@ -963,7 +962,7 @@ public final class RxJavaPlugins {
      * @return the value returned by the hook
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    @NonNull
+    @Nonnull
     public static <T> MaybeObserver<? super T> onSubscribe(Maybe<T> source, MaybeObserver<? super T> subscriber) {
         BiFunction<? super Maybe, ? super MaybeObserver, ? extends MaybeObserver> f = onMaybeSubscribe;
         if (f != null) {
@@ -979,7 +978,7 @@ public final class RxJavaPlugins {
      * @return the value returned by the hook
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    @NonNull
+    @Nonnull
     public static <T> Maybe<T> onAssembly(Maybe<T> source) {
         Function<? super Maybe, ? extends Maybe> f = onMaybeAssembly;
         if (f != null) {
@@ -995,7 +994,7 @@ public final class RxJavaPlugins {
      * @return the value returned by the hook
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    @NonNull
+    @Nonnull
     public static <T> Flowable<T> onAssembly(Flowable<T> source) {
         Function<? super Flowable, ? extends Flowable> f = onFlowableAssembly;
         if (f != null) {
@@ -1011,7 +1010,7 @@ public final class RxJavaPlugins {
      * @return the value returned by the hook
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    @NonNull
+    @Nonnull
     public static <T> ConnectableFlowable<T> onAssembly(ConnectableFlowable<T> source) {
         Function<? super ConnectableFlowable, ? extends ConnectableFlowable> f = onConnectableFlowableAssembly;
         if (f != null) {
@@ -1027,7 +1026,7 @@ public final class RxJavaPlugins {
      * @return the value returned by the hook
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    @NonNull
+    @Nonnull
     public static <T> Observable<T> onAssembly(Observable<T> source) {
         Function<? super Observable, ? extends Observable> f = onObservableAssembly;
         if (f != null) {
@@ -1043,7 +1042,7 @@ public final class RxJavaPlugins {
      * @return the value returned by the hook
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    @NonNull
+    @Nonnull
     public static <T> ConnectableObservable<T> onAssembly(ConnectableObservable<T> source) {
         Function<? super ConnectableObservable, ? extends ConnectableObservable> f = onConnectableObservableAssembly;
         if (f != null) {
@@ -1059,7 +1058,7 @@ public final class RxJavaPlugins {
      * @return the value returned by the hook
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    @NonNull
+    @Nonnull
     public static <T> Single<T> onAssembly(Single<T> source) {
         Function<? super Single, ? extends Single> f = onSingleAssembly;
         if (f != null) {
@@ -1073,7 +1072,7 @@ public final class RxJavaPlugins {
      * @param source the hook's input value
      * @return the value returned by the hook
      */
-    @NonNull
+    @Nonnull
     public static Completable onAssembly(Completable source) {
         Function<? super Completable, ? extends Completable> f = onCompletableAssembly;
         if (f != null) {
@@ -1120,7 +1119,7 @@ public final class RxJavaPlugins {
      */
     @Beta
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    @NonNull
+    @Nonnull
     public static <T> ParallelFlowable<T> onAssembly(ParallelFlowable<T> source) {
         Function<? super ParallelFlowable, ? extends ParallelFlowable> f = onParallelAssembly;
         if (f != null) {
@@ -1189,7 +1188,7 @@ public final class RxJavaPlugins {
      * @return the created Scheduler instance
      * @since 2.1
      */
-    @NonNull
+    @Nonnull
     public static Scheduler createComputationScheduler(ThreadFactory threadFactory) {
         return new ComputationScheduler(ObjectHelper.requireNonNull(threadFactory, "threadFactory is null"));
     }
@@ -1203,7 +1202,7 @@ public final class RxJavaPlugins {
      * @return the created Scheduler instance
      * @since 2.1
      */
-    @NonNull
+    @Nonnull
     public static Scheduler createIoScheduler(ThreadFactory threadFactory) {
         return new IoScheduler(ObjectHelper.requireNonNull(threadFactory, "threadFactory is null"));
     }
@@ -1217,7 +1216,7 @@ public final class RxJavaPlugins {
      * @return the created Scheduler instance
      * @since 2.1
      */
-    @NonNull
+    @Nonnull
     public static Scheduler createNewThreadScheduler(ThreadFactory threadFactory) {
         return new NewThreadScheduler(ObjectHelper.requireNonNull(threadFactory, "threadFactory is null"));
     }
@@ -1231,7 +1230,7 @@ public final class RxJavaPlugins {
      * @return the created Scheduler instance
      * @since 2.1
      */
-    @NonNull
+    @Nonnull
     public static Scheduler createSingleScheduler(ThreadFactory threadFactory) {
         return new SingleScheduler(ObjectHelper.requireNonNull(threadFactory, "threadFactory is null"));
     }
@@ -1245,7 +1244,7 @@ public final class RxJavaPlugins {
      * @param t the parameter value to the function
      * @return the result of the function call
      */
-    @NonNull
+    @Nonnull
     static <T, R> R apply(Function<T, R> f, T t) {
         try {
             return f.apply(t);
@@ -1265,7 +1264,7 @@ public final class RxJavaPlugins {
      * @param u the second parameter value to the function
      * @return the result of the function call
      */
-    @NonNull
+    @Nonnull
     static <T, U, R> R apply(BiFunction<T, U, R> f, T t, U u) {
         try {
             return f.apply(t, u);
@@ -1281,7 +1280,7 @@ public final class RxJavaPlugins {
      * @return the result of the callable call, not null
      * @throws NullPointerException if the callable parameter returns null
      */
-    @NonNull
+    @Nonnull
     static Scheduler callRequireNonNull(Callable<Scheduler> s) {
         try {
             return ObjectHelper.requireNonNull(s.call(), "Scheduler Callable result can't be null");
@@ -1298,7 +1297,7 @@ public final class RxJavaPlugins {
      * @return the result of the function call, not null
      * @throws NullPointerException if the function parameter returns null
      */
-    @NonNull
+    @Nonnull
     static Scheduler applyRequireNonNull(Function<? super Callable<Scheduler>, ? extends Scheduler> f, Callable<Scheduler> s) {
         return ObjectHelper.requireNonNull(apply(f, s), "Scheduler Callable result can't be null");
     }

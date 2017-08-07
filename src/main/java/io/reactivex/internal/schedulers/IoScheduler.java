@@ -17,12 +17,11 @@
 package io.reactivex.internal.schedulers;
 
 import io.reactivex.Scheduler;
-import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.*;
 import io.reactivex.internal.disposables.EmptyDisposable;
-
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
+import javax.annotation.Nonnull;
 
 /**
  * Scheduler that creates and caches a set of thread pools and reuses them if possible.
@@ -181,7 +180,7 @@ public final class IoScheduler extends Scheduler {
         }
     }
 
-    @NonNull
+    @Nonnull
     @Override
     public Worker createWorker() {
         return new EventLoopWorker(pool.get());
@@ -219,7 +218,7 @@ public final class IoScheduler extends Scheduler {
             return once.get();
         }
 
-        @NonNull
+        @Nonnull
         @Override
         public Disposable schedule(Runnable action, long delayTime, TimeUnit unit) {
             if (tasks.isDisposed()) {

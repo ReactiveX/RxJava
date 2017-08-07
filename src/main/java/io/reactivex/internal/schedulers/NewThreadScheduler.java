@@ -17,9 +17,8 @@
 package io.reactivex.internal.schedulers;
 
 import io.reactivex.Scheduler;
-import io.reactivex.annotations.NonNull;
-
 import java.util.concurrent.ThreadFactory;
+import javax.annotation.Nonnull;
 
 /**
  * Schedules work on a new thread.
@@ -49,7 +48,7 @@ public final class NewThreadScheduler extends Scheduler {
         this.threadFactory = threadFactory;
     }
 
-    @NonNull
+    @Nonnull
     @Override
     public Worker createWorker() {
         return new NewThreadWorker(threadFactory);

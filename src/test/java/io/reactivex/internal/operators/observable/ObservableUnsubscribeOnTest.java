@@ -13,15 +13,6 @@
 
 package io.reactivex.internal.operators.observable;
 
-import static org.junit.Assert.*;
-
-import java.util.List;
-import java.util.concurrent.*;
-import java.util.concurrent.atomic.*;
-
-import io.reactivex.annotations.NonNull;
-import org.junit.Test;
-
 import io.reactivex.*;
 import io.reactivex.disposables.*;
 import io.reactivex.exceptions.TestException;
@@ -29,6 +20,13 @@ import io.reactivex.functions.Action;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.schedulers.Schedulers;
+import java.util.List;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.*;
+import javax.annotation.Nonnull;
+import org.junit.Test;
+
+import static org.junit.Assert.*;
 
 public class ObservableUnsubscribeOnTest {
 
@@ -180,7 +178,7 @@ public class ObservableUnsubscribeOnTest {
             }
         }
 
-        @NonNull
+        @Nonnull
         @Override
         public Worker createWorker() {
             return eventLoop.createWorker();

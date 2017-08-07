@@ -12,7 +12,6 @@
  */
 package io.reactivex.disposables;
 
-import io.reactivex.annotations.NonNull;
 import org.reactivestreams.Subscription;
 
 /**

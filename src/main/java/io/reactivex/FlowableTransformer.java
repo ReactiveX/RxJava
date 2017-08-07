@@ -13,7 +13,7 @@
 
 package io.reactivex;
 
-import io.reactivex.annotations.*;
+import javax.annotation.Nonnull;
 import org.reactivestreams.Publisher;
 
 /**
@@ -29,6 +29,6 @@ public interface FlowableTransformer<Upstream, Downstream> {
      * @param upstream the upstream Flowable instance
      * @return the transformed Publisher instance
      */
-    @NonNull
+    @Nonnull
     Publisher<Downstream> apply(Flowable<Upstream> upstream);
 }

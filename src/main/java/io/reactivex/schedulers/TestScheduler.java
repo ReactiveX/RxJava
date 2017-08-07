@@ -13,14 +13,13 @@
 
 package io.reactivex.schedulers;
 
-import java.util.Queue;
-import java.util.concurrent.*;
-
 import io.reactivex.Scheduler;
-import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.*;
 import io.reactivex.internal.disposables.EmptyDisposable;
 import io.reactivex.internal.functions.ObjectHelper;
+import java.util.Queue;
+import java.util.concurrent.*;
+import javax.annotation.Nonnull;
 
 /**
  * A special, non thread-safe scheduler for testing operators that require
@@ -119,7 +118,7 @@ public final class TestScheduler extends Scheduler {
         time = targetTimeInNanoseconds;
     }
 
-    @NonNull
+    @Nonnull
     @Override
     public Worker createWorker() {
         return new TestWorker();
@@ -139,7 +138,7 @@ public final class TestScheduler extends Scheduler {
             return disposed;
         }
 
-        @NonNull
+        @Nonnull
         @Override
         public Disposable schedule(Runnable run, long delayTime, TimeUnit unit) {
             if (disposed) {
@@ -151,7 +150,7 @@ public final class TestScheduler extends Scheduler {
             return Disposables.fromRunnable(new QueueRemove(timedAction));
         }
 
-        @NonNull
+        @Nonnull
         @Override
         public Disposable schedule(Runnable run) {
             if (disposed) {

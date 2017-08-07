@@ -16,15 +16,14 @@
 
 package io.reactivex.internal.schedulers;
 
-import java.util.concurrent.*;
-import java.util.concurrent.atomic.AtomicInteger;
-
 import io.reactivex.Scheduler;
-import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.*;
 import io.reactivex.internal.disposables.EmptyDisposable;
 import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.plugins.RxJavaPlugins;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicInteger;
+import javax.annotation.Nonnull;
 
 /**
  * Schedules work on the current thread but does not execute immediately. Work is put in a queue and executed
@@ -37,7 +36,7 @@ public final class TrampolineScheduler extends Scheduler {
         return INSTANCE;
     }
 
-    @NonNull
+    @Nonnull
     @Override
     public Worker createWorker() {
         return new TrampolineWorker();
@@ -46,14 +45,14 @@ public final class TrampolineScheduler extends Scheduler {
     /* package accessible for unit tests */TrampolineScheduler() {
     }
 
-    @NonNull
+    @Nonnull
     @Override
     public Disposable scheduleDirect(Runnable run) {
         run.run();
         return EmptyDisposable.INSTANCE;
     }
 
-    @NonNull
+    @Nonnull
     @Override
     public Disposable scheduleDirect(Runnable run, long delay, TimeUnit unit) {
         try {
@@ -75,13 +74,13 @@ public final class TrampolineScheduler extends Scheduler {
 
         volatile boolean disposed;
 
-        @NonNull
+        @Nonnull
         @Override
         public Disposable schedule(Runnable action) {
             return enqueue(action, now(TimeUnit.MILLISECONDS));
         }
 
-        @NonNull
+        @Nonnull
         @Override
         public Disposable schedule(Runnable action, long delayTime, TimeUnit unit) {
             long execTime = now(TimeUnit.MILLISECONDS) + unit.toMillis(delayTime);

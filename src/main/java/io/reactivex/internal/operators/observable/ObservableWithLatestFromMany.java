@@ -12,11 +12,7 @@
  */
 package io.reactivex.internal.operators.observable;
 
-import java.util.Arrays;
-import java.util.concurrent.atomic.*;
-
 import io.reactivex.*;
-import io.reactivex.annotations.NonNull;
 import io.reactivex.annotations.Nullable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.Exceptions;
@@ -25,6 +21,9 @@ import io.reactivex.internal.disposables.*;
 import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.internal.util.*;
 import io.reactivex.plugins.RxJavaPlugins;
+import java.util.Arrays;
+import java.util.concurrent.atomic.*;
+import javax.annotation.Nonnull;
 
 /**
  * Combines a main sequence of values with the latest from multiple other sequences via
@@ -41,7 +40,7 @@ public final class ObservableWithLatestFromMany<T, R> extends AbstractObservable
     @Nullable
     final Iterable<? extends ObservableSource<?>> otherIterable;
 
-    @NonNull
+    @Nonnull
     final Function<? super Object[], R> combiner;
 
     public ObservableWithLatestFromMany(ObservableSource<T> source, ObservableSource<?>[] otherArray, Function<? super Object[], R> combiner) {

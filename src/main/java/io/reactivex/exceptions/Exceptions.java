@@ -13,8 +13,8 @@
 
 package io.reactivex.exceptions;
 
-import io.reactivex.annotations.*;
 import io.reactivex.internal.util.ExceptionHelper;
+import javax.annotation.Nonnull;
 
 /**
  * Utility class to help propagate checked exceptions and rethrow exceptions
@@ -33,7 +33,7 @@ public final class Exceptions {
      * @return because {@code propagate} itself throws an exception or error, this is a sort of phantom return
      *         value; {@code propagate} does not actually return anything
      */
-    @NonNull
+    @Nonnull
     public static RuntimeException propagate(Throwable t) {
         /*
          * The return type of RuntimeException is a trick for code to be like this:

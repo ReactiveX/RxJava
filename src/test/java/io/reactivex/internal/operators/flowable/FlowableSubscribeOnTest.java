@@ -13,15 +13,6 @@
 
 package io.reactivex.internal.operators.flowable;
 
-import static org.junit.Assert.*;
-
-import java.util.concurrent.*;
-import java.util.concurrent.atomic.*;
-
-import io.reactivex.annotations.NonNull;
-import org.junit.*;
-import org.reactivestreams.*;
-
 import io.reactivex.*;
 import io.reactivex.Scheduler.Worker;
 import io.reactivex.disposables.Disposable;
@@ -30,6 +21,13 @@ import io.reactivex.internal.operators.flowable.FlowableSubscribeOn.SubscribeOnS
 import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.schedulers.*;
 import io.reactivex.subscribers.*;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.*;
+import javax.annotation.Nonnull;
+import org.junit.*;
+import org.reactivestreams.*;
+
+import static org.junit.Assert.*;
 
 public class FlowableSubscribeOnTest {
 
@@ -123,7 +121,7 @@ public class FlowableSubscribeOnTest {
             this.unit = unit;
         }
 
-        @NonNull
+        @Nonnull
         @Override
         public Worker createWorker() {
             return new SlowInner(actual.createWorker());
@@ -147,13 +145,13 @@ public class FlowableSubscribeOnTest {
                 return actualInner.isDisposed();
             }
 
-            @NonNull
+            @Nonnull
             @Override
             public Disposable schedule(final Runnable action) {
                 return actualInner.schedule(action, delay, unit);
             }
 
-            @NonNull
+            @Nonnull
             @Override
             public Disposable schedule(final Runnable action, final long delayTime, final TimeUnit delayUnit) {
                 TimeUnit common = delayUnit.compareTo(unit) < 0 ? delayUnit : unit;

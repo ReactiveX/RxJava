@@ -13,14 +13,13 @@
 
 package io.reactivex.internal.schedulers;
 
-import java.util.concurrent.*;
-
 import io.reactivex.Scheduler;
-import io.reactivex.annotations.NonNull;
 import io.reactivex.annotations.Nullable;
-import io.reactivex.disposables.*;
+import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.disposables.*;
 import io.reactivex.plugins.RxJavaPlugins;
+import java.util.concurrent.*;
+import javax.annotation.Nonnull;
 
 /**
  * Base class that manages a single-threaded ScheduledExecutorService as a
@@ -36,13 +35,13 @@ public class NewThreadWorker extends Scheduler.Worker implements Disposable {
         executor = SchedulerPoolFactory.create(threadFactory);
     }
 
-    @NonNull
+    @Nonnull
     @Override
     public Disposable schedule(final Runnable run) {
         return schedule(run, 0, null);
     }
 
-    @NonNull
+    @Nonnull
     @Override
     public Disposable schedule(final Runnable action, long delayTime, TimeUnit unit) {
         if (disposed) {
@@ -128,7 +127,7 @@ public class NewThreadWorker extends Scheduler.Worker implements Disposable {
      * @param parent the optional tracker parent to add the created ScheduledRunnable instance to before it gets scheduled
      * @return the ScheduledRunnable instance
      */
-    @NonNull
+    @Nonnull
     public ScheduledRunnable scheduleActual(final Runnable run, long delayTime, TimeUnit unit, @Nullable DisposableContainer parent) {
         Runnable decoratedRun = RxJavaPlugins.onSchedule(run);
 

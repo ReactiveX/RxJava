@@ -13,10 +13,9 @@
 
 package io.reactivex.schedulers;
 
-import java.util.concurrent.TimeUnit;
-
-import io.reactivex.annotations.NonNull;
 import io.reactivex.internal.functions.ObjectHelper;
+import java.util.concurrent.TimeUnit;
+import javax.annotation.Nonnull;
 
 /**
  * Holds onto a value along with time information.
@@ -45,7 +44,7 @@ public final class Timed<T> {
      * Returns the contained value.
      * @return the contained value
      */
-    @NonNull
+    @Nonnull
     public T value() {
         return value;
     }
@@ -54,7 +53,7 @@ public final class Timed<T> {
      * Returns the time unit of the contained time.
      * @return the time unit of the contained time
      */
-    @NonNull
+    @Nonnull
     public TimeUnit unit() {
         return unit;
     }

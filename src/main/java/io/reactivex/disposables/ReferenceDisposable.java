@@ -14,8 +14,6 @@
 package io.reactivex.disposables;
 
 import java.util.concurrent.atomic.AtomicReference;
-
-import io.reactivex.annotations.NonNull;
 import io.reactivex.internal.functions.ObjectHelper;
 
 /**

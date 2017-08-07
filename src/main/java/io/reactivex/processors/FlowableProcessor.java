@@ -14,7 +14,7 @@
 package io.reactivex.processors;
 
 import io.reactivex.*;
-import io.reactivex.annotations.NonNull;
+import javax.annotation.Nonnull;
 import org.reactivestreams.Processor;
 
 /**
@@ -66,7 +66,7 @@ public abstract class FlowableProcessor<T> extends Flowable<T> implements Proces
      * <p>The method is thread-safe.
      * @return the wrapped and serialized subject
      */
-    @NonNull
+    @Nonnull
     public final FlowableProcessor<T> toSerialized() {
         if (this instanceof SerializedProcessor) {
             return this;
