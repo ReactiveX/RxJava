@@ -18,4 +18,7 @@
  * Base type for the parallel type offering a sub-DSL for working with Flowable items
  * in parallel.
  */
+@ParametersAreNonnullByDefault
 package io.reactivex.parallel;
+
+import javax.annotation.ParametersAreNonnullByDefault;

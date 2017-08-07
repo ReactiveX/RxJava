@@ -18,4 +18,7 @@
  * Classes extending the Observable base reactive class and implementing
  * the Observer interface at the same time (aka hot Observables).
  */
+@ParametersAreNonnullByDefault
 package io.reactivex.subjects;
+
+import javax.annotation.ParametersAreNonnullByDefault;

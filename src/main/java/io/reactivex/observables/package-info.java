@@ -18,4 +18,7 @@
  * Classes supporting the Observable base reactive class: connectable and grouped
  * observables.
  */
+@ParametersAreNonnullByDefault
 package io.reactivex.observables;
+
+import javax.annotation.ParametersAreNonnullByDefault;

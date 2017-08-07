@@ -17,4 +17,7 @@
 /**
  * Annotations for indicating experimental and beta operators, classes, methods, types or fields.
  */
+@ParametersAreNonnullByDefault
 package io.reactivex.annotations;
+
+import javax.annotation.ParametersAreNonnullByDefault;

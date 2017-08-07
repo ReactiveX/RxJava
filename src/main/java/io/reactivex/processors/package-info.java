@@ -18,4 +18,7 @@
  * Classes extending the Flowable base reactive class and implementing
  * the Subscriber interface at the same time (aka hot Flowables).
  */
+@ParametersAreNonnullByDefault
 package io.reactivex.processors;
+
+import javax.annotation.ParametersAreNonnullByDefault;
