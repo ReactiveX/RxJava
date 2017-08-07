@@ -21,10 +21,26 @@ apply plugin: 'nebula.rxjava-project'
 sourceCompatibility = JavaVersion.VERSION_1_6
 targetCompatibility = JavaVersion.VERSION_1_6
 
+configurations {
+    provided
+}
+
+sourceSets {
+    main {
+        compileClasspath += configurations.provided
+        runtimeClasspath += configurations.provided
+    }
+    test {
+        compileClasspath += configurations.provided
+        runtimeClasspath += configurations.provided
+    }
+}
+
 dependencies {
     signature 'org.codehaus.mojo.signature:java16:1.1@signature'
 
     compile 'org.reactivestreams:reactive-streams:1.0.0'
+    provided 'com.google.code.findbugs:jsr305:3.0.2'
 
     testCompile 'junit:junit:4.12'
     testCompile 'org.mockito:mockito-core:2.1.0'
