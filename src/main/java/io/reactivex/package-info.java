@@ -48,5 +48,7 @@
  * and receive events.</p>
  * <p>Usage examples can be found on the {@link io.reactivex.Flowable}/{@link io.reactivex.Observable} and {@link org.reactivestreams.Subscriber} classes.</p>
  */
+@ParametersAreNonnullByDefault
 package io.reactivex;
 
+import javax.annotation.ParametersAreNonnullByDefault;

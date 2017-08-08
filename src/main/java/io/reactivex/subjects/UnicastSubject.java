@@ -14,7 +14,7 @@
 package io.reactivex.subjects;
 
 import io.reactivex.annotations.Experimental;
-import io.reactivex.annotations.Nullable;
+import javax.annotation.Nullable;
 import io.reactivex.plugins.RxJavaPlugins;
 import java.util.concurrent.atomic.*;
 

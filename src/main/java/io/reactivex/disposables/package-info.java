@@ -19,4 +19,7 @@
  * (Disposable container types) and utility classes to construct
  * Disposables from callbacks and other types.
  */
+@ParametersAreNonnullByDefault
 package io.reactivex.disposables;
+
+import javax.annotation.ParametersAreNonnullByDefault;

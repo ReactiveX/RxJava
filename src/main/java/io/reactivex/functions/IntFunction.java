@@ -12,7 +12,7 @@
  */
 package io.reactivex.functions;
 
-import io.reactivex.annotations.NonNull;
+import javax.annotation.Nonnull;
 
 /**
  * A functional interface (callback) that takes a primitive value and return value of type T.
@@ -25,6 +25,6 @@ public interface IntFunction<T> {
      * @return the result Object
      * @throws Exception on error
      */
-    @NonNull
+    @Nonnull
     T apply(int i) throws Exception;
 }

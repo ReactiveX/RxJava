@@ -28,6 +28,6 @@ public interface SingleOnSubscribe<T> {
      * @param e the safe emitter instance, never null
      * @throws Exception on error
      */
-    void subscribe(@NonNull SingleEmitter<T> e) throws Exception;
+    void subscribe(SingleEmitter<T> e) throws Exception;
 }
 

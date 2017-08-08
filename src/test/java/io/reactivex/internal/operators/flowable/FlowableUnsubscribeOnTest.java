@@ -13,16 +13,6 @@
 
 package io.reactivex.internal.operators.flowable;
 
-import static org.junit.Assert.*;
-
-import java.util.List;
-import java.util.concurrent.*;
-import java.util.concurrent.atomic.AtomicReference;
-
-import io.reactivex.annotations.NonNull;
-import org.junit.Test;
-import org.reactivestreams.*;
-
 import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.Action;
@@ -30,6 +20,14 @@ import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.TestSubscriber;
+import java.util.List;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicReference;
+import javax.annotation.Nonnull;
+import org.junit.Test;
+import org.reactivestreams.*;
+
+import static org.junit.Assert.*;
 
 public class FlowableUnsubscribeOnTest {
 
@@ -178,7 +176,7 @@ public class FlowableUnsubscribeOnTest {
             }
         }
 
-        @NonNull
+        @Nonnull
         @Override
         public Worker createWorker() {
             return eventLoop.createWorker();

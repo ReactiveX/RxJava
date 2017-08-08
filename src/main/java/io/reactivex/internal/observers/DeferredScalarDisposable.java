@@ -14,7 +14,7 @@
 package io.reactivex.internal.observers;
 
 import io.reactivex.Observer;
-import io.reactivex.annotations.Nullable;
+import javax.annotation.Nullable;
 import io.reactivex.plugins.RxJavaPlugins;
 
 /**

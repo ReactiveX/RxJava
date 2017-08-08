@@ -28,6 +28,6 @@ public interface FlowableOnSubscribe<T> {
      * @param e the safe emitter instance, never null
      * @throws Exception on error
      */
-    void subscribe(@NonNull FlowableEmitter<T> e) throws Exception;
+    void subscribe(FlowableEmitter<T> e) throws Exception;
 }
 

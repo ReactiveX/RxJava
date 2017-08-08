@@ -31,5 +31,5 @@ public interface SingleSource<T> {
      * @param observer the SingleObserver, not null
      * @throws NullPointerException if {@code observer} is null
      */
-    void subscribe(@NonNull SingleObserver<? super T> observer);
+    void subscribe(SingleObserver<? super T> observer);
 }

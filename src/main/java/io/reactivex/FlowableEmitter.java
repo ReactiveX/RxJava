@@ -13,9 +13,10 @@
 
 package io.reactivex;
 
-import io.reactivex.annotations.*;
+import io.reactivex.annotations.Experimental;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Cancellable;
+import javax.annotation.*;
 
 /**
  * Abstraction over a Reactive Streams {@link org.reactivestreams.Subscriber} that allows associating
@@ -63,7 +64,7 @@ public interface FlowableEmitter<T> extends Emitter<T> {
      * Ensures that calls to onNext, onError and onComplete are properly serialized.
      * @return the serialized FlowableEmitter
      */
-    @NonNull
+    @Nonnull
     FlowableEmitter<T> serialize();
 
     /**
@@ -79,5 +80,5 @@ public interface FlowableEmitter<T> extends Emitter<T> {
      * @since 2.1.1 - experimental
      */
     @Experimental
-    boolean tryOnError(@NonNull Throwable t);
+    boolean tryOnError(Throwable t);
 }

@@ -13,7 +13,7 @@
 
 package io.reactivex;
 
-import io.reactivex.annotations.*;
+import javax.annotation.Nonnull;
 
 /**
  * Interface to compose Singles.
@@ -28,6 +28,6 @@ public interface SingleTransformer<Upstream, Downstream> {
      * @param upstream the upstream Single instance
      * @return the transformed SingleSource instance
      */
-    @NonNull
-    SingleSource<Downstream> apply(@NonNull Single<Upstream> upstream);
+    @Nonnull
+    SingleSource<Downstream> apply(Single<Upstream> upstream);
 }

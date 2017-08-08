@@ -13,7 +13,8 @@
 
 package io.reactivex.parallel;
 
-import io.reactivex.annotations.*;
+import io.reactivex.annotations.Experimental;
+import javax.annotation.Nonnull;
 
 /**
  * Interface to compose ParallelFlowable.
@@ -31,6 +32,6 @@ public interface ParallelTransformer<Upstream, Downstream> {
      * @param upstream the upstream ParallelFlowable instance
      * @return the transformed ParallelFlowable instance
      */
-    @NonNull
-    ParallelFlowable<Downstream> apply(@NonNull ParallelFlowable<Upstream> upstream);
+    @Nonnull
+    ParallelFlowable<Downstream> apply(ParallelFlowable<Upstream> upstream);
 }

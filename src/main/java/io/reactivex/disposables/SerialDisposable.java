@@ -15,7 +15,7 @@ package io.reactivex.disposables;
 
 import java.util.concurrent.atomic.AtomicReference;
 
-import io.reactivex.annotations.Nullable;
+import javax.annotation.Nullable;
 import io.reactivex.internal.disposables.DisposableHelper;
 
 /**

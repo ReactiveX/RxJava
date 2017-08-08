@@ -28,6 +28,6 @@ public interface ObservableOnSubscribe<T> {
      * @param e the safe emitter instance, never null
      * @throws Exception on error
      */
-    void subscribe(@NonNull ObservableEmitter<T> e) throws Exception;
+    void subscribe(ObservableEmitter<T> e) throws Exception;
 }
 

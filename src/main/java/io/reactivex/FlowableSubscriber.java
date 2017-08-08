@@ -37,5 +37,5 @@ public interface FlowableSubscriber<T> extends Subscriber<T> {
      * {@inheritDoc}
      */
     @Override
-    void onSubscribe(@NonNull Subscription s);
+    void onSubscribe(Subscription s);
 }

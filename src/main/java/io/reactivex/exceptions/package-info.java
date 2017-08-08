@@ -18,4 +18,7 @@
  * Exception handling utilities, safe subscriber exception classes,
  * lifecycle exception classes.
  */
+@ParametersAreNonnullByDefault
 package io.reactivex.exceptions;
+
+import javax.annotation.ParametersAreNonnullByDefault;

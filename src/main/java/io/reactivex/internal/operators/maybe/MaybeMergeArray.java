@@ -16,7 +16,7 @@ package io.reactivex.internal.operators.maybe;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.*;
 
-import io.reactivex.annotations.Nullable;
+import javax.annotation.Nullable;
 import org.reactivestreams.Subscriber;
 
 import io.reactivex.*;

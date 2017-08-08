@@ -2712,7 +2712,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * Override this method in subclasses to handle the incoming SingleObservers.
      * @param observer the SingleObserver to handle, not null
      */
-    protected abstract void subscribeActual(@NonNull SingleObserver<? super T> observer);
+    protected abstract void subscribeActual(SingleObserver<? super T> observer);
 
     /**
      * Subscribes a given SingleObserver (subclass) to this Single and returns the given

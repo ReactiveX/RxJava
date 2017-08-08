@@ -13,9 +13,10 @@
 
 package io.reactivex;
 
-import io.reactivex.annotations.*;
+import io.reactivex.annotations.Experimental;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Cancellable;
+import javax.annotation.Nullable;
 
 /**
  * Abstraction over an RxJava {@link MaybeObserver} that allows associating
@@ -33,13 +34,13 @@ public interface MaybeEmitter<T> {
      * Signal a success value.
      * @param t the value, not null
      */
-    void onSuccess(@NonNull T t);
+    void onSuccess(T t);
 
     /**
      * Signal an exception.
      * @param t the exception, not null
      */
-    void onError(@NonNull Throwable t);
+    void onError(Throwable t);
 
     /**
      * Signal the completion.
@@ -79,5 +80,5 @@ public interface MaybeEmitter<T> {
      * @since 2.1.1 - experimental
      */
     @Experimental
-    boolean tryOnError(@NonNull Throwable t);
+    boolean tryOnError(Throwable t);
 }

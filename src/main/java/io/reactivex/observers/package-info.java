@@ -18,4 +18,7 @@
  * Default wrappers and implementations for Observer-based consumer classes and interfaces;
  * utility classes for creating them from callbacks.
  */
+@ParametersAreNonnullByDefault
 package io.reactivex.observers;
+
+import javax.annotation.ParametersAreNonnullByDefault;

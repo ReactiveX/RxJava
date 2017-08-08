@@ -18,4 +18,7 @@
  * Classes supporting the Flowable base reactive class: connectable and grouped
  * flowables.
  */
+@ParametersAreNonnullByDefault
 package io.reactivex.flowables;
+
+import javax.annotation.ParametersAreNonnullByDefault;

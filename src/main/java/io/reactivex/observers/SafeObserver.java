@@ -37,12 +37,12 @@ public final class SafeObserver<T> implements Observer<T>, Disposable {
      * Constructs a SafeObserver by wrapping the given actual Observer.
      * @param actual the actual Observer to wrap, not null (not validated)
      */
-    public SafeObserver(@NonNull Observer<? super T> actual) {
+    public SafeObserver(Observer<? super T> actual) {
         this.actual = actual;
     }
 
     @Override
-    public void onSubscribe(@NonNull Disposable s) {
+    public void onSubscribe(Disposable s) {
         if (DisposableHelper.validate(this.s, s)) {
             this.s = s;
             try {
@@ -75,7 +75,7 @@ public final class SafeObserver<T> implements Observer<T>, Disposable {
     }
 
     @Override
-    public void onNext(@NonNull T t) {
+    public void onNext(T t) {
         if (done) {
             return;
         }
@@ -135,7 +135,7 @@ public final class SafeObserver<T> implements Observer<T>, Disposable {
     }
 
     @Override
-    public void onError(@NonNull Throwable t) {
+    public void onError(Throwable t) {
         if (done) {
             RxJavaPlugins.onError(t);
             return;

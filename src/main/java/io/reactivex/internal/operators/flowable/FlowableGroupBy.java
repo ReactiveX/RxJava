@@ -20,7 +20,7 @@ import java.util.concurrent.atomic.*;
 import org.reactivestreams.*;
 
 import io.reactivex.*;
-import io.reactivex.annotations.Nullable;
+import javax.annotation.Nullable;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.flowables.GroupedFlowable;
 import io.reactivex.functions.Function;

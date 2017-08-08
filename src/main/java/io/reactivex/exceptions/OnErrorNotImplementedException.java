@@ -36,7 +36,7 @@ public final class OnErrorNotImplementedException extends RuntimeException {
      * @param e
      *          the {@code Throwable} to signal; if null, a NullPointerException is constructed
      */
-    public OnErrorNotImplementedException(String message, @NonNull Throwable e) {
+    public OnErrorNotImplementedException(String message, Throwable e) {
         super(message, e != null ? e : new NullPointerException());
     }
 
@@ -48,7 +48,7 @@ public final class OnErrorNotImplementedException extends RuntimeException {
      * @param e
      *          the {@code Throwable} to signal; if null, a NullPointerException is constructed
      */
-    public OnErrorNotImplementedException(@NonNull Throwable e) {
+    public OnErrorNotImplementedException(Throwable e) {
         super(e != null ? e.getMessage() : null, e != null ? e : new NullPointerException());
     }
 }

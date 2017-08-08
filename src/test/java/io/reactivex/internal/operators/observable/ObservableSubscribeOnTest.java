@@ -13,18 +13,16 @@
 
 package io.reactivex.internal.operators.observable;
 
-import static org.junit.Assert.assertEquals;
-
-import java.util.concurrent.*;
-import java.util.concurrent.atomic.AtomicInteger;
-
-import io.reactivex.annotations.NonNull;
-import org.junit.*;
-
 import io.reactivex.*;
 import io.reactivex.disposables.*;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.schedulers.*;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicInteger;
+import javax.annotation.Nonnull;
+import org.junit.*;
+
+import static org.junit.Assert.assertEquals;
 
 public class ObservableSubscribeOnTest {
 
@@ -118,7 +116,7 @@ public class ObservableSubscribeOnTest {
             this.unit = unit;
         }
 
-        @NonNull
+        @Nonnull
         @Override
         public Worker createWorker() {
             return new SlowInner(actual.createWorker());
@@ -142,15 +140,15 @@ public class ObservableSubscribeOnTest {
                 return actualInner.isDisposed();
             }
 
-            @NonNull
+            @Nonnull
             @Override
-            public Disposable schedule(@NonNull final Runnable action) {
+            public Disposable schedule(final Runnable action) {
                 return actualInner.schedule(action, delay, unit);
             }
 
-            @NonNull
+            @Nonnull
             @Override
-            public Disposable schedule(@NonNull final Runnable action, final long delayTime, @NonNull final TimeUnit delayUnit) {
+            public Disposable schedule(final Runnable action, final long delayTime, final TimeUnit delayUnit) {
                 TimeUnit common = delayUnit.compareTo(unit) < 0 ? delayUnit : unit;
                 long t = common.convert(delayTime, delayUnit) + common.convert(delay, unit);
                 return actualInner.schedule(action, t, common);

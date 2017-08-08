@@ -13,22 +13,20 @@
 
 package io.reactivex.schedulers;
 
-import static org.junit.Assert.*;
-
-import java.util.*;
-import java.util.concurrent.TimeUnit;
-
-import io.reactivex.annotations.NonNull;
-import org.junit.Test;
-
 import io.reactivex.Scheduler;
 import io.reactivex.disposables.Disposable;
+import java.util.*;
+import java.util.concurrent.TimeUnit;
+import javax.annotation.Nonnull;
+import org.junit.Test;
+
+import static org.junit.Assert.assertTrue;
 
 public class SchedulerWorkerTest {
 
     static final class CustomDriftScheduler extends Scheduler {
         public volatile long drift;
-        @NonNull
+        @Nonnull
         @Override
         public Worker createWorker() {
             final Worker w = Schedulers.computation().createWorker();
@@ -44,15 +42,15 @@ public class SchedulerWorkerTest {
                     return w.isDisposed();
                 }
 
-                @NonNull
+                @Nonnull
                 @Override
-                public Disposable schedule(@NonNull Runnable action) {
+                public Disposable schedule(Runnable action) {
                     return w.schedule(action);
                 }
 
-                @NonNull
+                @Nonnull
                 @Override
-                public Disposable schedule(@NonNull Runnable action, long delayTime, @NonNull TimeUnit unit) {
+                public Disposable schedule(Runnable action, long delayTime, TimeUnit unit) {
                     return w.schedule(action, delayTime, unit);
                 }
 
@@ -64,7 +62,7 @@ public class SchedulerWorkerTest {
         }
 
         @Override
-        public long now(@NonNull TimeUnit unit) {
+        public long now(TimeUnit unit) {
             return super.now(unit) + unit.convert(drift, TimeUnit.NANOSECONDS);
         }
     }

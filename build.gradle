@@ -26,6 +26,9 @@ dependencies {
 
     compile 'org.reactivestreams:reactive-streams:1.0.0'
 
+    compileOnly 'com.google.code.findbugs:jsr305:3.0.2'
+    testCompileOnly 'com.google.code.findbugs:jsr305:3.0.2'
+    
     testCompile 'junit:junit:4.12'
     testCompile 'org.mockito:mockito-core:2.1.0'
 

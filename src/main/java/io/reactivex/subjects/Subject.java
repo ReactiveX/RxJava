@@ -14,7 +14,8 @@
 package io.reactivex.subjects;
 
 import io.reactivex.*;
-import io.reactivex.annotations.*;
+import javax.annotation.Nullable;
+import javax.annotation.Nonnull;
 
 /**
  * Represents an Observer and an Observable at the same time, allowing
@@ -65,7 +66,7 @@ public abstract class Subject<T> extends Observable<T> implements Observer<T> {
      * <p>The method is thread-safe.
      * @return the wrapped and serialized subject
      */
-    @NonNull
+    @Nonnull
     public final Subject<T> toSerialized() {
         if (this instanceof SerializedSubject) {
             return this;

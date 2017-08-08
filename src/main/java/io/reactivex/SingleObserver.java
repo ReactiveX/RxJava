@@ -40,7 +40,7 @@ public interface SingleObserver<T> {
      * be called anytime to cancel the connection
      * @since 2.0
      */
-    void onSubscribe(@NonNull Disposable d);
+    void onSubscribe(Disposable d);
 
     /**
      * Notifies the SingleObserver with a single item and that the {@link Single} has finished sending
@@ -51,7 +51,7 @@ public interface SingleObserver<T> {
      * @param t
      *          the item emitted by the Single
      */
-    void onSuccess(@NonNull T t);
+    void onSuccess(T t);
 
     /**
      * Notifies the SingleObserver that the {@link Single} has experienced an error condition.
@@ -61,5 +61,5 @@ public interface SingleObserver<T> {
      * @param e
      *          the exception encountered by the Single
      */
-    void onError(@NonNull Throwable e);
+    void onError(Throwable e);
 }

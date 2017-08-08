@@ -12,8 +12,6 @@
  */
 package io.reactivex.disposables;
 
-import io.reactivex.annotations.NonNull;
-
 /**
  * A disposable container that manages a Runnable instance.
  */
@@ -26,7 +24,7 @@ final class RunnableDisposable extends ReferenceDisposable<Runnable> {
     }
 
     @Override
-    protected void onDisposed(@NonNull Runnable value) {
+    protected void onDisposed(Runnable value) {
         value.run();
     }
 

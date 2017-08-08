@@ -12,7 +12,6 @@
  */
 package io.reactivex.disposables;
 
-import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Action;
 import io.reactivex.internal.util.ExceptionHelper;
 
@@ -25,7 +24,7 @@ final class ActionDisposable extends ReferenceDisposable<Action> {
     }
 
     @Override
-    protected void onDisposed(@NonNull Action value) {
+    protected void onDisposed(Action value) {
         try {
             value.run();
         } catch (Throwable ex) {

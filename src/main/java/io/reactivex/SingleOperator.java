@@ -13,7 +13,7 @@
 
 package io.reactivex;
 
-import io.reactivex.annotations.*;
+import javax.annotation.Nonnull;
 
 /**
  * Interface to map/wrap a downstream observer to an upstream observer.
@@ -28,6 +28,6 @@ public interface SingleOperator<Downstream, Upstream> {
      * @return the parent SingleObserver instance
      * @throws Exception on failure
      */
-    @NonNull
-    SingleObserver<? super Upstream> apply(@NonNull SingleObserver<? super Downstream> observer) throws Exception;
+    @Nonnull
+    SingleObserver<? super Upstream> apply(SingleObserver<? super Downstream> observer) throws Exception;
 }

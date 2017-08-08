@@ -16,7 +16,7 @@ package io.reactivex.internal.operators.single;
 import java.util.Iterator;
 import java.util.concurrent.atomic.AtomicLong;
 
-import io.reactivex.annotations.Nullable;
+import javax.annotation.Nullable;
 import org.reactivestreams.Subscriber;
 
 import io.reactivex.*;

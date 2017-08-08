@@ -12,13 +12,7 @@
  */
 package io.reactivex.internal.operators.flowable;
 
-import java.util.Arrays;
-import java.util.concurrent.atomic.*;
-
-import org.reactivestreams.*;
-
 import io.reactivex.*;
-import io.reactivex.annotations.*;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.functions.ObjectHelper;
@@ -26,6 +20,10 @@ import io.reactivex.internal.fuseable.ConditionalSubscriber;
 import io.reactivex.internal.subscriptions.*;
 import io.reactivex.internal.util.*;
 import io.reactivex.plugins.RxJavaPlugins;
+import java.util.Arrays;
+import java.util.concurrent.atomic.*;
+import javax.annotation.Nullable;
+import org.reactivestreams.*;
 
 /**
  * Combines a main sequence of values with the latest from multiple other sequences via
@@ -43,14 +41,14 @@ public final class FlowableWithLatestFromMany<T, R> extends AbstractFlowableWith
 
     final Function<? super Object[], R> combiner;
 
-    public FlowableWithLatestFromMany(@NonNull Flowable<T> source, @NonNull Publisher<?>[] otherArray, Function<? super Object[], R> combiner) {
+    public FlowableWithLatestFromMany(Flowable<T> source, Publisher<?>[] otherArray, Function<? super Object[], R> combiner) {
         super(source);
         this.otherArray = otherArray;
         this.otherIterable = null;
         this.combiner = combiner;
     }
 
-    public FlowableWithLatestFromMany(@NonNull Flowable<T> source, @NonNull Iterable<? extends Publisher<?>> otherIterable, @NonNull Function<? super Object[], R> combiner) {
+    public FlowableWithLatestFromMany(Flowable<T> source, Iterable<? extends Publisher<?>> otherIterable, Function<? super Object[], R> combiner) {
         super(source);
         this.otherArray = null;
         this.otherIterable = otherIterable;

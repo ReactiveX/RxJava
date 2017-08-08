@@ -13,8 +13,6 @@
 
 package io.reactivex.functions;
 
-import io.reactivex.annotations.NonNull;
-
 /**
  * A functional interface (callback) that returns true or false for the given input value.
  * @param <T> the first value
@@ -26,5 +24,5 @@ public interface Predicate<T> {
      * @return the boolean result
      * @throws Exception on error
      */
-    boolean test(@NonNull T t) throws Exception;
+    boolean test(T t) throws Exception;
 }

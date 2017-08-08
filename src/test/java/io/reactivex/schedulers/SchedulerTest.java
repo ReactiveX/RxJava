@@ -13,14 +13,6 @@
 
 package io.reactivex.schedulers;
 
-import static org.junit.Assert.*;
-
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-
-import io.reactivex.annotations.NonNull;
-import org.junit.Test;
-
 import io.reactivex.*;
 import io.reactivex.Scheduler.Worker;
 import io.reactivex.disposables.Disposable;
@@ -28,6 +20,12 @@ import io.reactivex.exceptions.TestException;
 import io.reactivex.internal.disposables.*;
 import io.reactivex.internal.functions.Functions;
 import io.reactivex.plugins.RxJavaPlugins;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+import javax.annotation.Nonnull;
+import org.junit.Test;
+
+import static org.junit.Assert.*;
 
 public class SchedulerTest {
 
@@ -249,13 +247,13 @@ public class SchedulerTest {
     @Test
     public void defaultSchedulePeriodicallyDirectRejects() {
         Scheduler s = new Scheduler() {
-            @NonNull
+            @Nonnull
             @Override
             public Worker createWorker() {
                 return new Worker() {
-                    @NonNull
+                    @Nonnull
                     @Override
-                    public Disposable schedule(@NonNull Runnable run, long delay, @NonNull TimeUnit unit) {
+                    public Disposable schedule(Runnable run, long delay, TimeUnit unit) {
                         return EmptyDisposable.INSTANCE;
                     }
 

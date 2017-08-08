@@ -13,9 +13,6 @@
 
 package io.reactivex.flowables;
 
-import io.reactivex.annotations.NonNull;
-import org.reactivestreams.Subscriber;
-
 import io.reactivex.Flowable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
@@ -23,6 +20,8 @@ import io.reactivex.internal.functions.Functions;
 import io.reactivex.internal.operators.flowable.*;
 import io.reactivex.internal.util.ConnectConsumer;
 import io.reactivex.plugins.RxJavaPlugins;
+import javax.annotation.Nonnull;
+import org.reactivestreams.Subscriber;
 
 /**
  * A {@code ConnectableObservable} resembles an ordinary {@link Flowable}, except that it does not begin
@@ -48,7 +47,7 @@ public abstract class ConnectableFlowable<T> extends Flowable<T> {
      *          allowing the caller to synchronously disconnect a synchronous source
      * @see <a href="http://reactivex.io/documentation/operators/connect.html">ReactiveX documentation: Connect</a>
      */
-    public abstract void connect(@NonNull Consumer<? super Disposable> connection);
+    public abstract void connect(Consumer<? super Disposable> connection);
 
     /**
      * Instructs the {@code ConnectableObservable} to begin emitting the items from its underlying
@@ -72,7 +71,7 @@ public abstract class ConnectableFlowable<T> extends Flowable<T> {
      * @return a {@link Flowable}
      * @see <a href="http://reactivex.io/documentation/operators/refcount.html">ReactiveX documentation: RefCount</a>
      */
-    @NonNull
+    @Nonnull
     public Flowable<T> refCount() {
         return RxJavaPlugins.onAssembly(new FlowableRefCount<T>(this));
     }
@@ -84,7 +83,7 @@ public abstract class ConnectableFlowable<T> extends Flowable<T> {
      * @return an Observable that automatically connects to this ConnectableObservable
      *         when the first Subscriber subscribes
      */
-    @NonNull
+    @Nonnull
     public Flowable<T> autoConnect() {
         return autoConnect(1);
     }
@@ -98,7 +97,7 @@ public abstract class ConnectableFlowable<T> extends Flowable<T> {
      * @return an Observable that automatically connects to this ConnectableObservable
      *         when the specified number of Subscribers subscribe to it
      */
-    @NonNull
+    @Nonnull
     public Flowable<T> autoConnect(int numberOfSubscribers) {
         return autoConnect(numberOfSubscribers, Functions.emptyConsumer());
     }
@@ -117,8 +116,8 @@ public abstract class ConnectableFlowable<T> extends Flowable<T> {
      *         when the specified number of Subscribers subscribe to it and calls the
      *         specified callback with the Subscription associated with the established connection
      */
-    @NonNull
-    public Flowable<T> autoConnect(int numberOfSubscribers, @NonNull Consumer<? super Disposable> connection) {
+    @Nonnull
+    public Flowable<T> autoConnect(int numberOfSubscribers, Consumer<? super Disposable> connection) {
         if (numberOfSubscribers <= 0) {
             this.connect(connection);
             return RxJavaPlugins.onAssembly(this);

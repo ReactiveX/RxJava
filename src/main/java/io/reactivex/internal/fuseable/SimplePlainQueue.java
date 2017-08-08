@@ -13,7 +13,7 @@
 
 package io.reactivex.internal.fuseable;
 
-import io.reactivex.annotations.Nullable;
+import javax.annotation.Nullable;
 
 /**
  * Override of the SimpleQueue interface with no throws Exception on poll().

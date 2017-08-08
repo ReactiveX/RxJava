@@ -18,4 +18,7 @@
  * Default wrappers and implementations for Subscriber-based consumer classes and interfaces;
  * utility classes for creating them from callbacks.
  */
+@ParametersAreNonnullByDefault
 package io.reactivex.subscribers;
+
+import javax.annotation.ParametersAreNonnullByDefault;

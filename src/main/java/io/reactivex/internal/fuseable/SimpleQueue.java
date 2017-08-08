@@ -13,7 +13,7 @@
 
 package io.reactivex.internal.fuseable;
 
-import io.reactivex.annotations.*;
+import javax.annotation.Nullable;
 
 /**
  * A minimalist queue interface without the method bloat of java.util.Collection and java.util.Queue.
@@ -28,7 +28,7 @@ public interface SimpleQueue<T> {
      * @return true if successful, false if the value was not enqueued
      * likely due to reaching the queue capacity)
      */
-    boolean offer(@NonNull T value);
+    boolean offer(T value);
 
     /**
      * Atomically enqueue two values.
@@ -37,7 +37,7 @@ public interface SimpleQueue<T> {
      * @return true if successful, false if the value was not enqueued
      * likely due to reaching the queue capacity)
      */
-    boolean offer(@NonNull T v1, @NonNull T v2);
+    boolean offer(T v1, T v2);
 
     /**
      * Tries to dequeue a value (non-null) or returns null if

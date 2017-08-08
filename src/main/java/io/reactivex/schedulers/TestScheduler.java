@@ -13,14 +13,13 @@
 
 package io.reactivex.schedulers;
 
-import java.util.Queue;
-import java.util.concurrent.*;
-
 import io.reactivex.Scheduler;
-import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.*;
 import io.reactivex.internal.disposables.EmptyDisposable;
 import io.reactivex.internal.functions.ObjectHelper;
+import java.util.Queue;
+import java.util.concurrent.*;
+import javax.annotation.Nonnull;
 
 /**
  * A special, non thread-safe scheduler for testing operators that require
@@ -64,7 +63,7 @@ public final class TestScheduler extends Scheduler {
     }
 
     @Override
-    public long now(@NonNull TimeUnit unit) {
+    public long now(TimeUnit unit) {
         return unit.convert(time, TimeUnit.NANOSECONDS);
     }
 
@@ -119,7 +118,7 @@ public final class TestScheduler extends Scheduler {
         time = targetTimeInNanoseconds;
     }
 
-    @NonNull
+    @Nonnull
     @Override
     public Worker createWorker() {
         return new TestWorker();
@@ -139,9 +138,9 @@ public final class TestScheduler extends Scheduler {
             return disposed;
         }
 
-        @NonNull
+        @Nonnull
         @Override
-        public Disposable schedule(@NonNull Runnable run, long delayTime, @NonNull TimeUnit unit) {
+        public Disposable schedule(Runnable run, long delayTime, TimeUnit unit) {
             if (disposed) {
                 return EmptyDisposable.INSTANCE;
             }
@@ -151,9 +150,9 @@ public final class TestScheduler extends Scheduler {
             return Disposables.fromRunnable(new QueueRemove(timedAction));
         }
 
-        @NonNull
+        @Nonnull
         @Override
-        public Disposable schedule(@NonNull Runnable run) {
+        public Disposable schedule(Runnable run) {
             if (disposed) {
                 return EmptyDisposable.INSTANCE;
             }
@@ -163,7 +162,7 @@ public final class TestScheduler extends Scheduler {
         }
 
         @Override
-        public long now(@NonNull TimeUnit unit) {
+        public long now(TimeUnit unit) {
             return TestScheduler.this.now(unit);
         }
 

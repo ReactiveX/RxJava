@@ -13,7 +13,7 @@
 
 package io.reactivex.functions;
 
-import io.reactivex.annotations.NonNull;
+import javax.annotation.Nonnull;
 
 /**
  * A functional interface (callback) that computes a value based on multiple input values.
@@ -30,6 +30,6 @@ public interface BiFunction<T1, T2, R> {
      * @return the result value
      * @throws Exception on error
      */
-    @NonNull
-    R apply(@NonNull T1 t1, @NonNull T2 t2) throws Exception;
+    @Nonnull
+    R apply(T1 t1, T2 t2) throws Exception;
 }

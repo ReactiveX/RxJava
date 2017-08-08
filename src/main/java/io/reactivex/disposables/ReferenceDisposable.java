@@ -14,8 +14,6 @@
 package io.reactivex.disposables;
 
 import java.util.concurrent.atomic.AtomicReference;
-
-import io.reactivex.annotations.NonNull;
 import io.reactivex.internal.functions.ObjectHelper;
 
 /**
@@ -32,7 +30,7 @@ abstract class ReferenceDisposable<T> extends AtomicReference<T> implements Disp
         super(ObjectHelper.requireNonNull(value, "value is null"));
     }
 
-    protected abstract void onDisposed(@NonNull T value);
+    protected abstract void onDisposed(T value);
 
     @Override
     public final void dispose() {

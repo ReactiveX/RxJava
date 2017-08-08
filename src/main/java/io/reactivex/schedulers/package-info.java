@@ -17,4 +17,7 @@
  * Scheduler implementations, value+time record class and the standard factory class to
  * return standard RxJava schedulers or wrap any Executor-based (thread pool) instances.
  */
+@ParametersAreNonnullByDefault
 package io.reactivex.schedulers;
+
+import javax.annotation.ParametersAreNonnullByDefault;

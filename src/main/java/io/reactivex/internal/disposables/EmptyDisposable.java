@@ -14,7 +14,7 @@
 package io.reactivex.internal.disposables;
 
 import io.reactivex.*;
-import io.reactivex.annotations.Nullable;
+import javax.annotation.Nullable;
 import io.reactivex.internal.fuseable.QueueDisposable;
 
 /**

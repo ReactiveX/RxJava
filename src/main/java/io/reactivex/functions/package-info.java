@@ -18,4 +18,7 @@
  * Functional interfaces of functions and actions of arity 0 to 9 and related
  * utility classes.
  */
+@ParametersAreNonnullByDefault
 package io.reactivex.functions;
+
+import javax.annotation.ParametersAreNonnullByDefault;

@@ -18,4 +18,7 @@
  * Callback types and a central plugin handler class to hook into the lifecycle
  * of the base reactive types and schedulers.
  */
+@ParametersAreNonnullByDefault
 package io.reactivex.plugins;
+
+import javax.annotation.ParametersAreNonnullByDefault;

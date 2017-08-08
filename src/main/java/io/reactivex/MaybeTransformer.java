@@ -13,7 +13,7 @@
 
 package io.reactivex;
 
-import io.reactivex.annotations.*;
+import javax.annotation.Nonnull;
 
 /**
  * Interface to compose Maybes.
@@ -28,6 +28,6 @@ public interface MaybeTransformer<Upstream, Downstream> {
      * @param upstream the upstream Maybe instance
      * @return the transformed MaybeSource instance
      */
-    @NonNull
-    MaybeSource<Downstream> apply(@NonNull Maybe<Upstream> upstream);
+    @Nonnull
+    MaybeSource<Downstream> apply(Maybe<Upstream> upstream);
 }

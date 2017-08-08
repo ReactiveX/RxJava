@@ -15,23 +15,15 @@
  */
 package io.reactivex.internal.schedulers;
 
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicReference;
-
-import io.reactivex.Completable;
-import io.reactivex.CompletableObserver;
-import io.reactivex.Flowable;
-import io.reactivex.Observable;
-import io.reactivex.Scheduler;
+import io.reactivex.*;
 import io.reactivex.annotations.Experimental;
-import io.reactivex.annotations.NonNull;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.disposables.Disposables;
+import io.reactivex.disposables.*;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.Function;
-import io.reactivex.processors.FlowableProcessor;
-import io.reactivex.processors.UnicastProcessor;
+import io.reactivex.processors.*;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.*;
+import javax.annotation.Nonnull;
 
 /**
  * Allows the use of operators for controlling the timing around when actions
@@ -130,7 +122,7 @@ public class SchedulerWhen extends Scheduler implements Disposable {
         return disposable.isDisposed();
     }
 
-    @NonNull
+    @Nonnull
     @Override
     public Worker createWorker() {
         final Worker actualWorker = actualScheduler.createWorker();
@@ -316,18 +308,18 @@ public class SchedulerWhen extends Scheduler implements Disposable {
             return unsubscribed.get();
         }
 
-        @NonNull
+        @Nonnull
         @Override
-        public Disposable schedule(@NonNull final Runnable action, final long delayTime, @NonNull final TimeUnit unit) {
+        public Disposable schedule(final Runnable action, final long delayTime, final TimeUnit unit) {
             // send a scheduled action to the actionQueue
             DelayedAction delayedAction = new DelayedAction(action, delayTime, unit);
             actionProcessor.onNext(delayedAction);
             return delayedAction;
         }
 
-        @NonNull
+        @Nonnull
         @Override
-        public Disposable schedule(@NonNull final Runnable action) {
+        public Disposable schedule(final Runnable action) {
             // send a scheduled action to the actionQueue
             ImmediateAction immediateAction = new ImmediateAction(action);
             actionProcessor.onNext(immediateAction);

@@ -14,4 +14,7 @@
 /**
  * Base interfaces and types for supporting operator-fusion.
  */
+@ParametersAreNonnullByDefault
 package io.reactivex.internal.fuseable;
+
+import javax.annotation.ParametersAreNonnullByDefault;

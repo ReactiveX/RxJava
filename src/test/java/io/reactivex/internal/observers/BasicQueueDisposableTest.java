@@ -13,7 +13,7 @@
 
 package io.reactivex.internal.observers;
 
-import io.reactivex.annotations.Nullable;
+import javax.annotation.Nullable;
 import org.junit.Test;
 
 public class BasicQueueDisposableTest {
