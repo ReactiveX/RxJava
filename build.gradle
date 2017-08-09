@@ -21,19 +21,30 @@ apply plugin: 'nebula.rxjava-project'
 sourceCompatibility = JavaVersion.VERSION_1_6
 targetCompatibility = JavaVersion.VERSION_1_6
 
+// Dependency versions
+// ---------------------------------------
+
+def junitVersion = "4.12"
+def reactiveStreamsVersion = "1.0.1"
+def mockitoVersion = "2.1.0"
+def jmhVersion = "1.16"
+def testNgVersion = "6.9.10"
+
+// --------------------------------------
+
 dependencies {
     signature 'org.codehaus.mojo.signature:java16:1.1@signature'
 
-    compile 'org.reactivestreams:reactive-streams:1.0.0'
+    compile "org.reactivestreams:reactive-streams:$reactiveStreamsVersion"
 
-    testCompile 'junit:junit:4.12'
-    testCompile 'org.mockito:mockito-core:2.1.0'
+    testCompile "junit:junit:$junitVersion"
+    testCompile "org.mockito:mockito-core:$mockitoVersion"
 
-    perfCompile 'org.openjdk.jmh:jmh-core:1.16'
-    perfCompile 'org.openjdk.jmh:jmh-generator-annprocess:1.16'
+    perfCompile "org.openjdk.jmh:jmh-core:$jmhVersion"
+    perfCompile "org.openjdk.jmh:jmh-generator-annprocess:$jmhVersion"
 
-    testCompile 'org.reactivestreams:reactive-streams-tck:1.0.0'
-    testCompile group: 'org.testng', name: 'testng', version: '6.9.10'
+    testCompile "org.reactivestreams:reactive-streams-tck:$reactiveStreamsVersion"
+    testCompile "org.testng:testng:$testNgVersion"
 }
 
 javadoc {
@@ -47,7 +58,10 @@ javadoc {
     options.addStringOption('top').value = ''
     options.addStringOption('doctitle').value = ''
     options.addStringOption('header').value = ''
+
     options.links("http://docs.oracle.com/javase/7/docs/api/")
+    options.links("http://www.reactive-streams.org/reactive-streams-${reactiveStreamsVersion}-javadoc/")
+
     if (JavaVersion.current().isJava7()) {
         // "./gradle/stylesheet.css" only supports Java 7
         options.addStringOption('stylesheetfile', rootProject.file('./gradle/stylesheet.css').toString())
