@@ -199,7 +199,7 @@ APIs marked with the `@Deprecated` annotation at the class or method level will 
 
 #### io.reactivex.internal.*
 
-All code inside the `io.reactivex.internal.*` packages is considered private API and should not be relied upon at all. It can change at any time. 
+All code inside the `io.reactivex.internal.*` packages are considered private API and should not be relied upon at all. It can change at any time. 
 
 ## Full Documentation
 
