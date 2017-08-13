@@ -141,7 +141,7 @@ public final class Schedulers {
      * This can be used for asynchronously performing blocking IO.
      * <p>
      * The implementation is backed by a pool of single-threaded {@link ScheduledExecutorService} instances
-     * that will try to reuse previoulsy started instances used by the worker
+     * that will try to reuse previously started instances used by the worker
      * returned by {@link io.reactivex.Scheduler#createWorker()} but otherwise will start a new backing
      * {@link ScheduledExecutorService} instance. Note that this scheduler may create an unbounded number
      * of worker threads that can result in system slowdowns or {@code OutOfMemoryError}. Therefore, for casual uses
