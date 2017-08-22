@@ -1569,4 +1569,23 @@ public class FlowableCombineLatestTest {
         .assertOf(SubscriberFusion.<Integer>assertFusionMode(QueueFuseable.ASYNC))
         .assertFailureAndMessage(NullPointerException.class, "The combiner returned a null value");
     }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void syncFirstErrorsAfterItemDelayError() {
+        Flowable.combineLatestDelayError(Arrays.asList(
+                    Flowable.just(21).concatWith(Flowable.<Integer>error(new TestException())),
+                    Flowable.just(21).delay(100, TimeUnit.MILLISECONDS)
+                ),
+                new Function<Object[], Object>() {
+                    @Override
+                    public Object apply(Object[] a) throws Exception {
+                        return (Integer)a[0] + (Integer)a[1];
+                    }
+                }
+                )
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertFailure(TestException.class, 42);
+    }
 }
