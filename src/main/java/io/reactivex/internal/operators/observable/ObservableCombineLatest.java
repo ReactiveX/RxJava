@@ -135,11 +135,6 @@ public final class ObservableCombineLatest<T, R> extends Observable<R> {
             return cancelled;
         }
 
-        void cancel(SpscLinkedArrayQueue<?> q) {
-            clear(q);
-            cancelSources();
-        }
-
         void cancelSources() {
             for (CombinerObserver<T, R> s : observers) {
                 s.dispose();
