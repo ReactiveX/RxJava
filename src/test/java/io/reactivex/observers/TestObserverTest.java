@@ -1439,4 +1439,66 @@ public class TestObserverTest {
             assertTrue(ex.toString(), ex.toString().contains("testing with item=2"));
         }
     }
+
+    @Test
+    public void assertValuesOnly() {
+        TestObserver<Integer> to = TestObserver.create();
+        to.onSubscribe(Disposables.empty());
+        to.assertValuesOnly();
+
+        to.onNext(5);
+        to.assertValuesOnly(5);
+
+        to.onNext(-1);
+        to.assertValuesOnly(5, -1);
+    }
+
+    @Test
+    public void assertValuesOnlyThrowsOnUnexpectedValue() {
+        TestObserver<Integer> to = TestObserver.create();
+        to.onSubscribe(Disposables.empty());
+        to.assertValuesOnly();
+
+        to.onNext(5);
+        to.assertValuesOnly(5);
+
+        to.onNext(-1);
+
+        try {
+            to.assertValuesOnly(5);
+            fail();
+        } catch (AssertionError ex) {
+            // expected
+        }
+    }
+
+    @Test
+    public void assertValuesOnlyThrowsWhenCompleted() {
+        TestObserver<Integer> to = TestObserver.create();
+        to.onSubscribe(Disposables.empty());
+
+        to.onComplete();
+
+        try {
+            to.assertValuesOnly();
+            fail();
+        } catch (AssertionError ex) {
+            // expected
+        }
+    }
+
+    @Test
+    public void assertValuesOnlyThrowsWhenErrored() {
+        TestObserver<Integer> to = TestObserver.create();
+        to.onSubscribe(Disposables.empty());
+
+        to.onError(new TestException());
+
+        try {
+            to.assertValuesOnly();
+            fail();
+        } catch (AssertionError ex) {
+            // expected
+        }
+    }
 }

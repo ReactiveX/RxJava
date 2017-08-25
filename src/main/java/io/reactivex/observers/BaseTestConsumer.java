@@ -523,6 +523,21 @@ public abstract class BaseTestConsumer<T, U extends BaseTestConsumer<T, U>> impl
     }
 
     /**
+     * Assert that the TestObserver/TestSubscriber received only the specified values in the specified order without terminating.
+     * @param values the values expected
+     * @return this;
+     * @since 2.1.4
+     */
+    @SuppressWarnings("unchecked")
+    @Experimental
+    public final U assertValuesOnly(T... values) {
+        return assertSubscribed()
+                .assertValues(values)
+                .assertNoErrors()
+                .assertNotComplete();
+    }
+
+    /**
      * Assert that the TestObserver/TestSubscriber received only the specified values in any order.
      * <p>This helps asserting when the order of the values is not guaranteed, i.e., when merging
      * asynchronous streams.
