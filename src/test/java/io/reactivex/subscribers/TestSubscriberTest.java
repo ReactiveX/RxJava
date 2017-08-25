@@ -1999,7 +1999,7 @@ public class TestSubscriberTest {
     }
 
     @Test
-    public void assertValuesOnlyWantsOnlyValues() {
+    public void assertValuesOnly() {
         TestSubscriber<Integer> ts = TestSubscriber.create();
         ts.onSubscribe(new BooleanSubscription());
         ts.assertValuesOnly();
@@ -2009,6 +2009,25 @@ public class TestSubscriberTest {
 
         ts.onNext(-1);
         ts.assertValuesOnly(5, -1);
+    }
+
+    @Test
+    public void assertValuesOnlyThrowsOnUnexpectedValue() {
+        TestSubscriber<Integer> ts = TestSubscriber.create();
+        ts.onSubscribe(new BooleanSubscription());
+        ts.assertValuesOnly();
+
+        ts.onNext(5);
+        ts.assertValuesOnly(5);
+
+        ts.onNext(-1);
+
+        try {
+            ts.assertValuesOnly(5);
+            fail();
+        } catch (AssertionError ex) {
+            // expected
+        }
     }
 
     @Test

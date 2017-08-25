@@ -526,8 +526,10 @@ public abstract class BaseTestConsumer<T, U extends BaseTestConsumer<T, U>> impl
      * Assert that the TestObserver/TestSubscriber received only the specified values in the specified order without terminating.
      * @param values the values expected
      * @return this;
+     * @since 2.1.4
      */
     @SuppressWarnings("unchecked")
+    @Experimental
     public final U assertValuesOnly(T... values) {
         return assertSubscribed()
                 .assertValues(values)
