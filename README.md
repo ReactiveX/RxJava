@@ -250,7 +250,6 @@ To build:
 ```
 $ git clone git@github.com:ReactiveX/RxJava.git
 $ cd RxJava/
-$ git checkout -b 2.x
 $ ./gradlew build
 ```
 
