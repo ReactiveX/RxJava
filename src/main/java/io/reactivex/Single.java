@@ -873,6 +873,9 @@ public abstract class Single<T> implements SingleSource<T> {
      * @param unit the time unit of the delay
      * @param scheduler the scheduler where the single 0L will be emitted
      * @return the new Single instance
+     * @throws NullPointerException
+     *             if unit is null, or
+     *             if scheduler is null
      * @since 2.0
      */
     @CheckReturnValue
@@ -1643,6 +1646,9 @@ public abstract class Single<T> implements SingleSource<T> {
      * @param unit the time unit
      * @param scheduler the target scheduler to use for the non-blocking wait and emission
      * @return the new Single instance
+     * @throws NullPointerException
+     *             if unit is null, or
+     *             if scheduler is null
      * @since 2.0
      */
     @CheckReturnValue
@@ -2285,6 +2291,7 @@ public abstract class Single<T> implements SingleSource<T> {
      *            the {@link Scheduler} to notify subscribers on
      * @return the source Single modified so that its subscribers are notified on the specified
      *         {@link Scheduler}
+     * @throws NullPointerException if scheduler is null
      * @see <a href="http://reactivex.io/documentation/operators/observeon.html">ReactiveX operators documentation: ObserveOn</a>
      * @see <a href="http://www.grahamlea.com/2014/07/rxjava-threading-examples/">RxJava Threading Examples</a>
      * @see #subscribeOn
@@ -2919,6 +2926,10 @@ public abstract class Single<T> implements SingleSource<T> {
      * @param unit the time unit
      * @param other the other SingleSource that gets subscribed to if the current Single times out
      * @return the new Single instance
+     * @throws NullPointerException
+     *             if other is null, or
+     *             if unit is null, or
+     *             if scheduler is null
      * @since 2.0
      */
     @CheckReturnValue
