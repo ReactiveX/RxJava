@@ -48,7 +48,7 @@ public final class RxThreadFactory extends AtomicLong implements ThreadFactory {
 
     @Override
     public Thread newThread(Runnable r) {
-        StringBuilder nameBuilder = new StringBuilder(prefix).append('-').append(incrementAndGet());
+//        StringBuilder nameBuilder = new StringBuilder(prefix).append('-').append(incrementAndGet());
 
 //        if (CREATE_TRACE) {
 //            nameBuilder.append("\r\n");
@@ -70,7 +70,8 @@ public final class RxThreadFactory extends AtomicLong implements ThreadFactory {
 //            }
 //        }
 
-        String name = nameBuilder.toString();
+//        String name = nameBuilder.toString();
+        String name = prefix + '-' + incrementAndGet();
         Thread t = nonBlocking ? new RxCustomThread(r, name) : new Thread(r, name);
         t.setPriority(priority);
         t.setDaemon(true);
