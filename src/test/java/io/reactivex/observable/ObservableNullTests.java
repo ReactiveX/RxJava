@@ -1326,8 +1326,13 @@ public class ObservableNullTests {
     }
 
     @Test(expected = NullPointerException.class)
-    public void filterNull() {
-        just1.filter(null);
+    public void filterMatcherNull() {
+        just1.filter((Integer) null);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void filterPredicateNull() {
+        just1.filter((Predicate<? super Object>)null);
     }
 
     @Test(expected = NullPointerException.class)
