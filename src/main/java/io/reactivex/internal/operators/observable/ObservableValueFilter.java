@@ -13,29 +13,29 @@
 
 package io.reactivex.internal.operators.observable;
 
-import io.reactivex.*;
+import io.reactivex.ObservableSource;
+import io.reactivex.Observer;
 import io.reactivex.annotations.Nullable;
-import io.reactivex.functions.Predicate;
 import io.reactivex.internal.observers.BasicFuseableObserver;
 
-public final class ObservableFilter<T> extends AbstractObservableWithUpstream<T, T> {
-    final Predicate<? super T> predicate;
-    public ObservableFilter(ObservableSource<T> source, Predicate<? super T> predicate) {
+public final class ObservableValueFilter<T> extends AbstractObservableWithUpstream<T, T> {
+    final T matcher;
+    public ObservableValueFilter(ObservableSource<T> source, T matcher) {
         super(source);
-        this.predicate = predicate;
+        this.matcher = matcher;
     }
 
     @Override
     public void subscribeActual(Observer<? super T> s) {
-        source.subscribe(new FilterObserver<T>(s, predicate));
+        source.subscribe(new FilterObserver<T>(s, matcher));
     }
 
     static final class FilterObserver<T> extends BasicFuseableObserver<T, T> {
-        final Predicate<? super T> filter;
+        final T matcher;
 
-        FilterObserver(Observer<? super T> actual, Predicate<? super T> filter) {
+        FilterObserver(Observer<? super T> actual, T matcher) {
             super(actual);
-            this.filter = filter;
+            this.matcher = matcher;
         }
 
         @Override
@@ -43,7 +43,7 @@ public final class ObservableFilter<T> extends AbstractObservableWithUpstream<T,
             if (sourceMode == NONE) {
                 boolean b;
                 try {
-                    b = filter.test(t);
+                    b = matcher.equals(t);
                 } catch (Throwable e) {
                     fail(e);
                     return;
@@ -66,7 +66,7 @@ public final class ObservableFilter<T> extends AbstractObservableWithUpstream<T,
         public T poll() throws Exception {
             for (;;) {
                 T v = qs.poll();
-                if (v == null || filter.test(v)) {
+                if (v == null || matcher.equals(v)) {
                     return v;
                 }
             }

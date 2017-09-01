@@ -7317,7 +7317,29 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Observable<T> filter(Predicate<? super T> predicate) {
         ObjectHelper.requireNonNull(predicate, "predicate is null");
-        return RxJavaPlugins.onAssembly(new ObservableFilter<T>(this, predicate));
+        return RxJavaPlugins.onAssembly(new ObservablePredicateFilter<T>(this, predicate));
+    }
+
+    /**
+     * Filters items emitted by an ObservableSource by only emitting those that are equal to a specified matcher.
+     * <p>
+     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/filter.png" alt="">
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code filter} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param matcher
+     *            an object that is compared with each item emitted by the source ObservableSource
+     * @return an Observable that emits only those items emitted by the source ObservableSource where (matcher.equals(item))
+     *         evaluates as {@code true}
+     * @see <a href="http://reactivex.io/documentation/operators/filter.html">ReactiveX operators documentation: Filter</a>
+     */
+    @CheckReturnValue
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final Observable<T> filter(T matcher) {
+        ObjectHelper.requireNonNull(matcher, "matcher is null");
+        return RxJavaPlugins.onAssembly(new ObservableValueFilter<T>(this, matcher));
     }
 
     /**

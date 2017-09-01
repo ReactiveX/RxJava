@@ -13,21 +13,21 @@
 
 package io.reactivex.internal.operators.observable;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
-
 import org.junit.Test;
 import org.mockito.Mockito;
 
 import io.reactivex.*;
-import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.*;
+import io.reactivex.observers.*;
+import io.reactivex.exceptions.TestException;
 import io.reactivex.internal.functions.Functions;
 import io.reactivex.internal.fuseable.QueueDisposable;
-import io.reactivex.observers.*;
 import io.reactivex.subjects.UnicastSubject;
 
-public class ObservableFilterTest {
+import static org.mockito.Mockito.*;
+import static org.mockito.ArgumentMatchers.any;
+
+public class ObservablePredicateFilterTest {
 
     @Test
     public void testFilter() {
