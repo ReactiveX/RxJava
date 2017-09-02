@@ -3835,7 +3835,9 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      *              the alternate SingleSource to subscribe to if the main does not emit any items
      * @return  a Single that emits the items emitted by the source Maybe or the item of an
      *          alternate SingleSource if the source Maybe is empty.
+     * @since 2.1.4 - experimental
      */
+    @Experimental
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Single<T> switchIfEmpty(SingleSource<? extends T> other) {
