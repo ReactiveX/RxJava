@@ -24,7 +24,7 @@ import io.reactivex.observers.TestObserver;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.Schedulers;
 
-public class MaybeSwitchIfEmptyToMaybeTest {
+public class MaybeSwitchIfEmptyTest {
 
     @Test
     public void nonEmpty() {
@@ -34,6 +34,16 @@ public class MaybeSwitchIfEmptyToMaybeTest {
     @Test
     public void empty() {
         Maybe.<Integer>empty().switchIfEmpty(Maybe.just(2)).test().assertResult(2);
+    }
+
+    @Test
+    public void defaultIfEmptyNonEmpty() {
+        Maybe.just(1).defaultIfEmpty(2).test().assertResult(1);
+    }
+
+    @Test
+    public void defaultIfEmptyEmpty() {
+        Maybe.<Integer>empty().defaultIfEmpty(2).test().assertResult(2);
     }
 
     @Test

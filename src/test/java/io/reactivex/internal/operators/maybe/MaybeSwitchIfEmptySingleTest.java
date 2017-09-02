@@ -26,7 +26,7 @@ import org.junit.Test;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-public class MaybeSwitchIfEmptyToSingleTest {
+public class MaybeSwitchIfEmptySingleTest {
 
     @Test
     public void nonEmpty() {
@@ -36,16 +36,6 @@ public class MaybeSwitchIfEmptyToSingleTest {
     @Test
     public void empty() {
         Maybe.<Integer>empty().switchIfEmpty(Single.just(2)).test().assertResult(2);
-    }
-
-    @Test
-    public void defaultIfEmptyNonEmpty() {
-        Maybe.just(1).defaultIfEmpty(2).test().assertResult(1);
-    }
-
-    @Test
-    public void defaultIfEmptyEmpty() {
-        Maybe.<Integer>empty().defaultIfEmpty(2).test().assertResult(2);
     }
 
     @Test
@@ -83,9 +73,9 @@ public class MaybeSwitchIfEmptyToSingleTest {
 
     @Test
     public void doubleOnSubscribe() {
-        TestHelper.checkDoubleOnSubscribeMaybe(new Function<Maybe<Integer>, Maybe<Integer>>() {
+        TestHelper.checkDoubleOnSubscribeMaybeToSingle(new Function<Maybe<Integer>, Single<Integer>>() {
             @Override
-            public Maybe<Integer> apply(Maybe<Integer> f) throws Exception {
+            public Single<Integer> apply(Maybe<Integer> f) throws Exception {
                 return f.switchIfEmpty(Single.just(2));
             }
         });

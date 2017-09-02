@@ -13,25 +13,22 @@
 
 package io.reactivex.internal.operators.maybe;
 
-import io.reactivex.MaybeObserver;
-import io.reactivex.MaybeSource;
-import io.reactivex.SingleObserver;
-import io.reactivex.SingleSource;
+import java.util.concurrent.atomic.AtomicReference;
+
+import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.disposables.DisposableHelper;
-
-import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Subscribes to the other source if the main source is empty.
  *
  * @param <T> the value type
  */
-public final class MaybeSwitchIfEmptyToSingle<T> extends AbstractMaybeWithUpstream<T, T> {
+public final class MaybeSwitchIfEmpty<T> extends AbstractMaybeWithUpstream<T, T> {
 
-    final SingleSource<? extends T> other;
+    final MaybeSource<? extends T> other;
 
-    public MaybeSwitchIfEmptyToSingle(MaybeSource<T> source, SingleSource<? extends T> other) {
+    public MaybeSwitchIfEmpty(MaybeSource<T> source, MaybeSource<? extends T> other) {
         super(source);
         this.other = other;
     }
@@ -45,13 +42,13 @@ public final class MaybeSwitchIfEmptyToSingle<T> extends AbstractMaybeWithUpstre
     extends AtomicReference<Disposable>
     implements MaybeObserver<T>, Disposable {
 
-        private static final long serialVersionUID = 4603919676453758899L;
+        private static final long serialVersionUID = -2223459372976438024L;
 
         final MaybeObserver<? super T> actual;
 
-        final SingleSource<? extends T> other;
+        final MaybeSource<? extends T> other;
 
-        SwitchIfEmptyMaybeObserver(MaybeObserver<? super T> actual, SingleSource<? extends T> other) {
+        SwitchIfEmptyMaybeObserver(MaybeObserver<? super T> actual, MaybeSource<? extends T> other) {
             this.actual = actual;
             this.other = other;
         }
@@ -88,17 +85,17 @@ public final class MaybeSwitchIfEmptyToSingle<T> extends AbstractMaybeWithUpstre
             Disposable d = get();
             if (d != DisposableHelper.DISPOSED) {
                 if (compareAndSet(d, null)) {
-                    other.subscribe(new OtherSingleObserver<T>(actual, this));
+                    other.subscribe(new OtherMaybeObserver<T>(actual, this));
                 }
             }
         }
 
-        static final class OtherSingleObserver<T> implements SingleObserver<T> {
+        static final class OtherMaybeObserver<T> implements MaybeObserver<T> {
 
             final MaybeObserver<? super T> actual;
 
             final AtomicReference<Disposable> parent;
-            OtherSingleObserver(MaybeObserver<? super T> actual, AtomicReference<Disposable> parent) {
+            OtherMaybeObserver(MaybeObserver<? super T> actual, AtomicReference<Disposable> parent) {
                 this.actual = actual;
                 this.parent = parent;
             }
@@ -113,6 +110,10 @@ public final class MaybeSwitchIfEmptyToSingle<T> extends AbstractMaybeWithUpstre
             @Override
             public void onError(Throwable e) {
                 actual.onError(e);
+            }
+            @Override
+            public void onComplete() {
+                actual.onComplete();
             }
         }
 
