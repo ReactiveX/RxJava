@@ -2213,7 +2213,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Maybe<T> defaultIfEmpty(T defaultItem) {
         ObjectHelper.requireNonNull(defaultItem, "item is null");
-        return switchIfEmpty(just(defaultItem));
+        return switchIfEmpty(Single.just(defaultItem));
     }
 
 
@@ -3817,7 +3817,30 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Maybe<T> switchIfEmpty(MaybeSource<? extends T> other) {
         ObjectHelper.requireNonNull(other, "other is null");
-        return RxJavaPlugins.onAssembly(new MaybeSwitchIfEmpty<T>(this, other));
+        return RxJavaPlugins.onAssembly(new MaybeSwitchIfEmptyToMaybe<T>(this, other));
+    }
+
+    /**
+     * Returns a Maybe that emits the items emitted by the source Maybe or the item of an alternate
+     * SingleSource if the current Maybe is empty.
+     * <p>
+     * <img width="640" height="445" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/switchifempty.m.png" alt="">
+     * <p/>
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code switchIfEmpty} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param other
+     *              the alternate SingleSource to subscribe to if the main does not emit any items
+     * @return  a Maybe that emits the items emitted by the source Maybe or the item of an
+     *          alternate SingleSource if the source Maybe is empty.
+     */
+    @CheckReturnValue
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final Maybe<T> switchIfEmpty(SingleSource<? extends T> other) {
+        ObjectHelper.requireNonNull(other, "other is null");
+        return RxJavaPlugins.onAssembly(new MaybeSwitchIfEmptyToSingle<T>(this, other));
     }
 
     /**
