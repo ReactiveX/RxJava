@@ -3821,6 +3821,31 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     }
 
     /**
+     * Returns a Single that emits the items emitted by the source Maybe or the item of an alternate
+     * SingleSource if the current Maybe is empty.
+     * <p>
+     * <img width="640" height="445" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/switchifempty.m.png" alt="">
+     * <p/>
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code switchIfEmpty} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param other
+     *              the alternate SingleSource to subscribe to if the main does not emit any items
+     * @return  a Single that emits the items emitted by the source Maybe or the item of an
+     *          alternate SingleSource if the source Maybe is empty.
+     * @since 2.1.4 - experimental
+     */
+    @Experimental
+    @CheckReturnValue
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final Single<T> switchIfEmpty(SingleSource<? extends T> other) {
+        ObjectHelper.requireNonNull(other, "other is null");
+        return RxJavaPlugins.onAssembly(new MaybeSwitchIfEmptySingle<T>(this, other));
+    }
+
+    /**
      * Returns a Maybe that emits the items emitted by the source Maybe until a second MaybeSource
      * emits an item.
      * <p>
