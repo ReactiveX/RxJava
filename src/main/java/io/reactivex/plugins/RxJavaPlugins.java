@@ -30,8 +30,27 @@ import io.reactivex.parallel.ParallelFlowable;
 import io.reactivex.schedulers.Schedulers;
 /**
  * Utility class to inject handlers to certain standard RxJava operations.
+ * <p>
+ * <strong>Supported system properties ({@code System.getProperty()}):</strong>
+ * <ul>
+ * <li>{@code rx2.uncaught-behavior} (String): sets the behavior of the uncaught exception handling, default is {@link #UNCAUGHT_HANDLER}. This is {@link Experimental}.</li>
+ * </ul>
  */
 public final class RxJavaPlugins {
+
+    /**
+     * System property value for uncaught exceptions that passes the exception directly to the current thread's
+     * {@link UncaughtExceptionHandler}. This is the default behavior.
+     */
+    @Experimental
+    public static final String UNCAUGHT_HANDLER = "handler";
+
+    /**
+     * System property value for uncaught exceptions that just immediately throws the uncaught exception.
+     */
+    @Experimental
+    public static final String UNCAUGHT_THROW = "throw";
+
     @Nullable
     static volatile Consumer<? super Throwable> errorHandler;
 
@@ -122,6 +141,9 @@ public final class RxJavaPlugins {
      * computation or single scheduler will throw an IllegalStateException.
      */
     static volatile boolean failNonBlockingScheduler;
+
+    /** The name of the system property for setting the uncaught exception behavior. */
+    private static final String KEY_UNCAUGHT_BEHAVIOR = "rx2.uncaught-behavior";
 
     /**
      * Prevents changing the plugins from then on.
@@ -406,9 +428,15 @@ public final class RxJavaPlugins {
     }
 
     static void uncaught(@NonNull Throwable error) {
-        Thread currentThread = Thread.currentThread();
-        UncaughtExceptionHandler handler = currentThread.getUncaughtExceptionHandler();
-        handler.uncaughtException(currentThread, error);
+        String uncaughtBehavior = System.getProperty(KEY_UNCAUGHT_BEHAVIOR, UNCAUGHT_HANDLER);
+        if (UNCAUGHT_THROW.equals(uncaughtBehavior)) {
+            throw new UncaughtRxJavaException(error);
+        } else {
+            Thread currentThread = Thread.currentThread();
+            UncaughtExceptionHandler handler = currentThread.getUncaughtExceptionHandler();
+            handler.uncaughtException(currentThread, error);
+        }
+        // TODO Error on invalid inputs somehow?
     }
 
     /**
