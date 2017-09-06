@@ -4,6 +4,8 @@ import io.reactivex.annotations.Experimental;
 
 /**
  * An interface that indicates that the implementing type has default implementations for error consumption.
+ *
+ * @since 2.1.4 - experimental
  */
 @Experimental
 public interface HasDefaultErrorConsumer {
