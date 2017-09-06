@@ -17,6 +17,7 @@ import static org.junit.Assert.*;
 
 import java.util.*;
 
+import io.reactivex.internal.functions.Functions;
 import org.junit.Test;
 
 import io.reactivex.Observable;
@@ -341,5 +342,25 @@ public class LambdaObserverTest {
         assertFalse("No errors?!", errors.isEmpty());
 
         assertTrue(errors.toString(), errors.get(0) instanceof TestException);
+    }
+
+    @Test
+    public void hasMissingErrorConsumer() {
+        LambdaObserver<Integer> o = new LambdaObserver<Integer>(Functions.<Integer>emptyConsumer(),
+                Functions.ON_ERROR_MISSING,
+                Functions.EMPTY_ACTION,
+                Functions.<Disposable>emptyConsumer());
+
+        assertTrue(o.hasMissingErrorConsumer());
+    }
+
+    @Test
+    public void isNotMissingErrorConsumer() {
+        LambdaObserver<Integer> o = new LambdaObserver<Integer>(Functions.<Integer>emptyConsumer(),
+                Functions.<Throwable>emptyConsumer(),
+                Functions.EMPTY_ACTION,
+                Functions.<Disposable>emptyConsumer());
+
+        assertFalse(o.hasMissingErrorConsumer());
     }
 }
