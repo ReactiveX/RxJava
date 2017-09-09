@@ -21,12 +21,12 @@ import io.reactivex.exceptions.*;
 import io.reactivex.functions.Consumer;
 import io.reactivex.internal.disposables.*;
 import io.reactivex.internal.functions.Functions;
-import io.reactivex.observers.HasDefaultErrorConsumer;
+import io.reactivex.observers.CompositeObserver;
 import io.reactivex.plugins.RxJavaPlugins;
 
 public final class ConsumerSingleObserver<T>
 extends AtomicReference<Disposable>
-implements SingleObserver<T>, Disposable, HasDefaultErrorConsumer {
+implements SingleObserver<T>, Disposable, CompositeObserver {
 
 
     private static final long serialVersionUID = -7012088219455310787L;
@@ -78,7 +78,7 @@ implements SingleObserver<T>, Disposable, HasDefaultErrorConsumer {
     }
 
     @Override
-    public boolean hasMissingErrorConsumer() {
+    public boolean onErrorImplemented() {
         return onError == Functions.ON_ERROR_MISSING;
     }
 }

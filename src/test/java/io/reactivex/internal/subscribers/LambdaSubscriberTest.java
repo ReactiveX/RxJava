@@ -356,7 +356,7 @@ public class LambdaSubscriberTest {
                 Functions.EMPTY_ACTION,
                 FlowableInternalHelper.RequestMax.INSTANCE);
 
-        assertTrue(o.hasMissingErrorConsumer());
+        assertTrue(o.onErrorImplemented());
     }
 
     @Test
@@ -366,6 +366,6 @@ public class LambdaSubscriberTest {
                 Functions.EMPTY_ACTION,
                 FlowableInternalHelper.RequestMax.INSTANCE);
 
-        assertFalse(o.hasMissingErrorConsumer());
+        assertFalse(o.onErrorImplemented());
     }
 }

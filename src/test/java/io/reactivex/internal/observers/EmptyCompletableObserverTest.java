@@ -10,6 +10,6 @@ public final class EmptyCompletableObserverTest {
     public void hasMissingErrorConsumer() {
         EmptyCompletableObserver o = new EmptyCompletableObserver();
 
-        assertTrue(o.hasMissingErrorConsumer());
+        assertTrue(o.onErrorImplemented());
     }
 }

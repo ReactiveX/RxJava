@@ -16,7 +16,7 @@ package io.reactivex.internal.subscribers;
 import java.util.concurrent.atomic.AtomicReference;
 
 import io.reactivex.internal.functions.Functions;
-import io.reactivex.observers.HasDefaultErrorConsumer;
+import io.reactivex.observers.CompositeObserver;
 import org.reactivestreams.Subscription;
 
 import io.reactivex.FlowableSubscriber;
@@ -27,7 +27,7 @@ import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.plugins.RxJavaPlugins;
 
 public final class LambdaSubscriber<T> extends AtomicReference<Subscription>
-        implements FlowableSubscriber<T>, Subscription, Disposable, HasDefaultErrorConsumer {
+        implements FlowableSubscriber<T>, Subscription, Disposable, CompositeObserver {
 
     private static final long serialVersionUID = -7251123623727029452L;
     final Consumer<? super T> onNext;
@@ -120,7 +120,7 @@ public final class LambdaSubscriber<T> extends AtomicReference<Subscription>
     }
 
     @Override
-    public boolean hasMissingErrorConsumer() {
+    public boolean onErrorImplemented() {
         return onError == Functions.ON_ERROR_MISSING;
     }
 }

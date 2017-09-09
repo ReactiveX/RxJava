@@ -11,7 +11,7 @@ public final class CallbackCompletableObserverTest {
     public void hasMissingErrorConsumer() {
         CallbackCompletableObserver o = new CallbackCompletableObserver(Functions.EMPTY_ACTION);
 
-        assertTrue(o.hasMissingErrorConsumer());
+        assertTrue(o.onErrorImplemented());
     }
 
     @Test
@@ -19,7 +19,7 @@ public final class CallbackCompletableObserverTest {
         CallbackCompletableObserver o = new CallbackCompletableObserver(Functions.<Throwable>emptyConsumer(),
                 Functions.EMPTY_ACTION);
 
-        assertFalse(o.hasMissingErrorConsumer());
+        assertFalse(o.onErrorImplemented());
     }
 
 }
