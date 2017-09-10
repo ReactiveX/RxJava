@@ -127,7 +127,7 @@ public class MaybeCallbackObserverTest {
                 Functions.ON_ERROR_MISSING,
                 Functions.EMPTY_ACTION);
 
-        assertTrue(o.onErrorImplemented());
+        assertTrue(o.hasCustomOnError());
     }
 
     @Test
@@ -136,6 +136,6 @@ public class MaybeCallbackObserverTest {
                 Functions.<Throwable>emptyConsumer(),
                 Functions.EMPTY_ACTION);
 
-        assertFalse(o.onErrorImplemented());
+        assertFalse(o.hasCustomOnError());
     }
 }

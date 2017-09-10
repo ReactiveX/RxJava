@@ -19,12 +19,12 @@ import io.reactivex.CompletableObserver;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.OnErrorNotImplementedException;
 import io.reactivex.internal.disposables.DisposableHelper;
-import io.reactivex.observers.CompositeObserver;
+import io.reactivex.observers.LambdaConsumerIntrospection;
 import io.reactivex.plugins.RxJavaPlugins;
 
 public final class EmptyCompletableObserver
 extends AtomicReference<Disposable>
-implements CompletableObserver, Disposable, CompositeObserver {
+implements CompletableObserver, Disposable, LambdaConsumerIntrospection {
 
 
     private static final long serialVersionUID = -7545121636549663526L;
@@ -57,7 +57,7 @@ implements CompletableObserver, Disposable, CompositeObserver {
     }
 
     @Override
-    public boolean onErrorImplemented() {
+    public boolean hasCustomOnError() {
         return true;
     }
 }

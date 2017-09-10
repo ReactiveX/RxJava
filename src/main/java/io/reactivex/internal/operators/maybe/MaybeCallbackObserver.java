@@ -21,7 +21,7 @@ import io.reactivex.exceptions.*;
 import io.reactivex.functions.*;
 import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.internal.functions.Functions;
-import io.reactivex.observers.CompositeObserver;
+import io.reactivex.observers.LambdaConsumerIntrospection;
 import io.reactivex.plugins.RxJavaPlugins;
 
 /**
@@ -31,7 +31,7 @@ import io.reactivex.plugins.RxJavaPlugins;
  */
 public final class MaybeCallbackObserver<T>
 extends AtomicReference<Disposable>
-implements MaybeObserver<T>, Disposable, CompositeObserver {
+implements MaybeObserver<T>, Disposable, LambdaConsumerIntrospection {
 
 
     private static final long serialVersionUID = -6076952298809384986L;
@@ -99,7 +99,7 @@ implements MaybeObserver<T>, Disposable, CompositeObserver {
     }
 
     @Override
-    public boolean onErrorImplemented() {
+    public boolean hasCustomOnError() {
         return onError == Functions.ON_ERROR_MISSING;
     }
 }

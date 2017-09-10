@@ -12,7 +12,7 @@ public final class ConsumerSingleObserverTest {
         ConsumerSingleObserver<Integer> o = new ConsumerSingleObserver<Integer>(Functions.<Integer>emptyConsumer(),
                 Functions.ON_ERROR_MISSING);
 
-        assertTrue(o.onErrorImplemented());
+        assertTrue(o.hasCustomOnError());
     }
 
     @Test
@@ -20,7 +20,7 @@ public final class ConsumerSingleObserverTest {
         ConsumerSingleObserver<Integer> o = new ConsumerSingleObserver<Integer>(Functions.<Integer>emptyConsumer(),
                 Functions.<Throwable>emptyConsumer());
 
-        assertFalse(o.onErrorImplemented());
+        assertFalse(o.hasCustomOnError());
     }
 
 }

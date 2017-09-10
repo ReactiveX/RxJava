@@ -351,7 +351,7 @@ public class LambdaObserverTest {
                 Functions.EMPTY_ACTION,
                 Functions.<Disposable>emptyConsumer());
 
-        assertTrue(o.onErrorImplemented());
+        assertTrue(o.hasCustomOnError());
     }
 
     @Test
@@ -361,6 +361,6 @@ public class LambdaObserverTest {
                 Functions.EMPTY_ACTION,
                 Functions.<Disposable>emptyConsumer());
 
-        assertFalse(o.onErrorImplemented());
+        assertFalse(o.hasCustomOnError());
     }
 }
