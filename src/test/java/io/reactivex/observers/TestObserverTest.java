@@ -958,6 +958,7 @@ public class TestObserverTest {
             throw new RuntimeException("Should have thrown");
         } catch (AssertionError ex) {
             // expected
+            assertTrue(ex.getMessage(), ex.getMessage().startsWith("More values received than expected (0)"));
         }
 
         try {
@@ -965,6 +966,7 @@ public class TestObserverTest {
             throw new RuntimeException("Should have thrown");
         } catch (AssertionError ex) {
             // expected
+            assertTrue(ex.getMessage(), ex.getMessage().startsWith("More values received than expected (1)"));
         }
 
         ts.assertValueSequence(Arrays.asList(1, 2));
@@ -974,6 +976,7 @@ public class TestObserverTest {
             throw new RuntimeException("Should have thrown");
         } catch (AssertionError ex) {
             // expected
+            assertTrue(ex.getMessage(), ex.getMessage().startsWith("Fewer values received than expected (2)"));
         }
     }
 
