@@ -15,6 +15,7 @@ package io.reactivex.internal.operators.single;
 
 import static org.junit.Assert.*;
 
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.Test;
@@ -23,6 +24,7 @@ import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.Action;
 import io.reactivex.observers.TestObserver;
+import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.schedulers.TestScheduler;
 import io.reactivex.subjects.*;
 
@@ -167,36 +169,44 @@ public class SingleTimeoutTest {
     @Test
     public void errorTimeoutRace() {
         final TestException ex = new TestException();
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
 
-        for (int i = 0; i < 1000; i++) {
-            final SingleSubject<Integer> subj = SingleSubject.create();
-            SingleSubject<Integer> fallback = SingleSubject.create();
+            for (int i = 0; i < 1000; i++) {
+                final SingleSubject<Integer> subj = SingleSubject.create();
+                SingleSubject<Integer> fallback = SingleSubject.create();
 
-            final TestScheduler sch = new TestScheduler();
+                final TestScheduler sch = new TestScheduler();
 
-            TestObserver<Integer> to = subj.timeout(1, TimeUnit.MILLISECONDS, sch, fallback).test();
+                TestObserver<Integer> to = subj.timeout(1, TimeUnit.MILLISECONDS, sch, fallback).test();
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    subj.onError(ex);
+                Runnable r1 = new Runnable() {
+                    @Override
+                    public void run() {
+                        subj.onError(ex);
+                    }
+                };
+
+                Runnable r2 = new Runnable() {
+                    @Override
+                    public void run() {
+                        sch.advanceTimeBy(1, TimeUnit.MILLISECONDS);
+                    }
+                };
+
+                TestHelper.race(r1, r2);
+
+                if (!fallback.hasObservers()) {
+                    to.assertFailure(TestException.class);
+                } else {
+                    to.assertEmpty();
                 }
-            };
-
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    sch.advanceTimeBy(1, TimeUnit.MILLISECONDS);
+                if (!errors.isEmpty()) {
+                    TestHelper.assertUndeliverable(errors, 0, TestException.class);
                 }
-            };
-
-            TestHelper.race(r1, r2);
-
-            if (!fallback.hasObservers()) {
-                to.assertFailure(TestException.class);
-            } else {
-                to.assertEmpty();
             }
+        } finally {
+            RxJavaPlugins.reset();
         }
     }
 }

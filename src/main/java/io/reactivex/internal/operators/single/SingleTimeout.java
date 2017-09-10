@@ -19,6 +19,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.disposables.DisposableHelper;
+import io.reactivex.plugins.RxJavaPlugins;
 
 public final class SingleTimeout<T> extends Single<T> {
 
@@ -139,6 +140,8 @@ public final class SingleTimeout<T> extends Single<T> {
             if (d != DisposableHelper.DISPOSED && compareAndSet(d, DisposableHelper.DISPOSED)) {
                 DisposableHelper.dispose(task);
                 actual.onError(e);
+            } else {
+                RxJavaPlugins.onError(e);
             }
         }
 
