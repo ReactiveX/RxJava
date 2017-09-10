@@ -345,22 +345,22 @@ public class LambdaObserverTest {
     }
 
     @Test
-    public void hasMissingErrorConsumer() {
+    public void onErrorMissingShouldReportNoCustomOnError() {
         LambdaObserver<Integer> o = new LambdaObserver<Integer>(Functions.<Integer>emptyConsumer(),
                 Functions.ON_ERROR_MISSING,
                 Functions.EMPTY_ACTION,
                 Functions.<Disposable>emptyConsumer());
 
-        assertTrue(o.hasCustomOnError());
+        assertFalse(o.hasCustomOnError());
     }
 
     @Test
-    public void isNotMissingErrorConsumer() {
+    public void customOnErrorShouldReportCustomOnError() {
         LambdaObserver<Integer> o = new LambdaObserver<Integer>(Functions.<Integer>emptyConsumer(),
                 Functions.<Throwable>emptyConsumer(),
                 Functions.EMPTY_ACTION,
                 Functions.<Disposable>emptyConsumer());
 
-        assertFalse(o.hasCustomOnError());
+        assertTrue(o.hasCustomOnError());
     }
 }

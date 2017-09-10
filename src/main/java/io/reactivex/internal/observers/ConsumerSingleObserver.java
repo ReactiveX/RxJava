@@ -79,6 +79,6 @@ implements SingleObserver<T>, Disposable, LambdaConsumerIntrospection {
 
     @Override
     public boolean hasCustomOnError() {
-        return onError == Functions.ON_ERROR_MISSING;
+        return onError != Functions.ON_ERROR_MISSING;
     }
 }

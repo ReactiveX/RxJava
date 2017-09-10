@@ -2,14 +2,14 @@ package io.reactivex.internal.observers;
 
 import org.junit.Test;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
 
 public final class EmptyCompletableObserverTest {
 
     @Test
-    public void hasMissingErrorConsumer() {
+    public void defaultShouldReportNoCustomOnError() {
         EmptyCompletableObserver o = new EmptyCompletableObserver();
 
-        assertTrue(o.hasCustomOnError());
+        assertFalse(o.hasCustomOnError());
     }
 }

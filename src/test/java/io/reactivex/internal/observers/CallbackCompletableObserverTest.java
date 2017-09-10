@@ -8,18 +8,18 @@ import static org.junit.Assert.*;
 public final class CallbackCompletableObserverTest {
 
     @Test
-    public void hasMissingErrorConsumer() {
+    public void emptyActionShouldReportNoCustomOnError() {
         CallbackCompletableObserver o = new CallbackCompletableObserver(Functions.EMPTY_ACTION);
 
-        assertTrue(o.hasCustomOnError());
+        assertFalse(o.hasCustomOnError());
     }
 
     @Test
-    public void isNotMissingErrorConsumer() {
+    public void customOnErrorShouldReportCustomOnError() {
         CallbackCompletableObserver o = new CallbackCompletableObserver(Functions.<Throwable>emptyConsumer(),
                 Functions.EMPTY_ACTION);
 
-        assertFalse(o.hasCustomOnError());
+        assertTrue(o.hasCustomOnError());
     }
 
 }

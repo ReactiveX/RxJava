@@ -122,20 +122,20 @@ public class MaybeCallbackObserverTest {
     }
 
     @Test
-    public void hasMissingErrorConsumer() {
+    public void onErrorMissingShouldReportNoCustomOnError() {
         MaybeCallbackObserver<Integer> o = new MaybeCallbackObserver<Integer>(Functions.<Integer>emptyConsumer(),
                 Functions.ON_ERROR_MISSING,
                 Functions.EMPTY_ACTION);
 
-        assertTrue(o.hasCustomOnError());
+        assertFalse(o.hasCustomOnError());
     }
 
     @Test
-    public void isNotMissingErrorConsumer() {
+    public void customOnErrorShouldReportCustomOnError() {
         MaybeCallbackObserver<Integer> o = new MaybeCallbackObserver<Integer>(Functions.<Integer>emptyConsumer(),
                 Functions.<Throwable>emptyConsumer(),
                 Functions.EMPTY_ACTION);
 
-        assertFalse(o.hasCustomOnError());
+        assertTrue(o.hasCustomOnError());
     }
 }

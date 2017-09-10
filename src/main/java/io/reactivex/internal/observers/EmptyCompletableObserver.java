@@ -58,6 +58,6 @@ implements CompletableObserver, Disposable, LambdaConsumerIntrospection {
 
     @Override
     public boolean hasCustomOnError() {
-        return true;
+        return false;
     }
 }

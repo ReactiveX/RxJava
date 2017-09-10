@@ -107,6 +107,6 @@ public final class LambdaObserver<T> extends AtomicReference<Disposable>
 
     @Override
     public boolean hasCustomOnError() {
-        return onError == Functions.ON_ERROR_MISSING;
+        return onError != Functions.ON_ERROR_MISSING;
     }
 }

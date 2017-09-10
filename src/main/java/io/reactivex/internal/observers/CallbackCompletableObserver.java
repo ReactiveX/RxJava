@@ -87,6 +87,6 @@ extends AtomicReference<Disposable>
 
     @Override
     public boolean hasCustomOnError() {
-        return onError == this;
+        return onError != this;
     }
 }

@@ -8,19 +8,19 @@ import static org.junit.Assert.*;
 public final class ConsumerSingleObserverTest {
 
     @Test
-    public void hasMissingErrorConsumer() {
+    public void onErrorMissingShouldReportNoCustomOnError() {
         ConsumerSingleObserver<Integer> o = new ConsumerSingleObserver<Integer>(Functions.<Integer>emptyConsumer(),
                 Functions.ON_ERROR_MISSING);
 
-        assertTrue(o.hasCustomOnError());
+        assertFalse(o.hasCustomOnError());
     }
 
     @Test
-    public void isNotMissingErrorConsumer() {
+    public void customOnErrorShouldReportCustomOnError() {
         ConsumerSingleObserver<Integer> o = new ConsumerSingleObserver<Integer>(Functions.<Integer>emptyConsumer(),
                 Functions.<Throwable>emptyConsumer());
 
-        assertFalse(o.hasCustomOnError());
+        assertTrue(o.hasCustomOnError());
     }
 
 }

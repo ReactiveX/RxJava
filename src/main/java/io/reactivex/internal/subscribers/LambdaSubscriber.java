@@ -121,6 +121,6 @@ public final class LambdaSubscriber<T> extends AtomicReference<Subscription>
 
     @Override
     public boolean hasCustomOnError() {
-        return onError == Functions.ON_ERROR_MISSING;
+        return onError != Functions.ON_ERROR_MISSING;
     }
 }
