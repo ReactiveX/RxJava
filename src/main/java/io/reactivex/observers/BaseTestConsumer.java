@@ -579,11 +579,11 @@ public abstract class BaseTestConsumer<T, U extends BaseTestConsumer<T, U>> impl
                 break;
             }
 
-            T v = expectedIterator.next();
-            T u = actualIterator.next();
+            T u = expectedIterator.next();
+            T v = actualIterator.next();
 
             if (!ObjectHelper.equals(u, v)) {
-                throw fail("Values at position " + i + " differ; Expected: " + valueAndClass(v) + ", Actual: " + valueAndClass(u));
+                throw fail("Values at position " + i + " differ; Expected: " + valueAndClass(u) + ", Actual: " + valueAndClass(v));
             }
             i++;
         }
