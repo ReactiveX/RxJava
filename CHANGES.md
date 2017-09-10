@@ -1,5 +1,18 @@
 # RxJava Releases #
 
+### Version 1.3.1 - September 10, 2017 ([Maven](http://search.maven.org/#artifactdetails%7Cio.reactivex%7Crxjava%7C1.3.1%7C))
+
+#### API changes
+*Remark: submitted & merged before the feature freeze of June 1st.*
+
+- [Pull 5332](https://github.com/ReactiveX/RxJava/pull/5332): Add the `cast` operator to `Single`.
+
+#### Bugfixes
+
+- [Pull 5430](https://github.com/ReactiveX/RxJava/pull/5430): Fix premature cleanup in `AsyncOnSubscribe` when the last `Observable` is still running.
+- [Pull 5437](https://github.com/ReactiveX/RxJava/pull/5437): `TestSubscriber::assertValuesAndClear` should reset `valueCount`.
+- [Pull 5470](https://github.com/ReactiveX/RxJava/pull/5470): Fix eager call to `RxJavHooks.onError` in `SafeCompletableSuscriber`.
+
 ### Version 1.3.0 - May 5, 2017 ([Maven](http://search.maven.org/#artifactdetails%7Cio.reactivex%7Crxjava%7C1.3.0%7C))
 
 #### Summary
