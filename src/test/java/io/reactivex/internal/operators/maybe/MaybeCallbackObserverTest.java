@@ -13,18 +13,17 @@
 
 package io.reactivex.internal.operators.maybe;
 
-import static org.junit.Assert.*;
-
-import java.util.List;
-
-import org.junit.Test;
-
 import io.reactivex.TestHelper;
 import io.reactivex.disposables.*;
 import io.reactivex.exceptions.*;
 import io.reactivex.functions.*;
 import io.reactivex.internal.functions.Functions;
 import io.reactivex.plugins.RxJavaPlugins;
+import org.junit.Test;
+
+import java.util.List;
+
+import static org.junit.Assert.*;
 
 public class MaybeCallbackObserverTest {
 
@@ -120,5 +119,23 @@ public class MaybeCallbackObserverTest {
         } finally {
             RxJavaPlugins.reset();
         }
+    }
+
+    @Test
+    public void onErrorMissingShouldReportNoCustomOnError() {
+        MaybeCallbackObserver<Integer> o = new MaybeCallbackObserver<Integer>(Functions.<Integer>emptyConsumer(),
+                Functions.ON_ERROR_MISSING,
+                Functions.EMPTY_ACTION);
+
+        assertFalse(o.hasCustomOnError());
+    }
+
+    @Test
+    public void customOnErrorShouldReportCustomOnError() {
+        MaybeCallbackObserver<Integer> o = new MaybeCallbackObserver<Integer>(Functions.<Integer>emptyConsumer(),
+                Functions.<Throwable>emptyConsumer(),
+                Functions.EMPTY_ACTION);
+
+        assertTrue(o.hasCustomOnError());
     }
 }
