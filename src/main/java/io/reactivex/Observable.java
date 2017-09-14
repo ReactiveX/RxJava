@@ -4714,7 +4714,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     // ***************************************************************************************************
 
     /**
-     * Returns an Observable that emits a Boolean that indicates whether all of the items emitted by the source
+     * Returns a Single that emits a Boolean that indicates whether all of the items emitted by the source
      * ObservableSource satisfy a condition.
      * <p>
      * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/all.2.png" alt="">
@@ -4762,7 +4762,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     }
 
     /**
-     * Returns an Observable that emits {@code true} if any item emitted by the source ObservableSource satisfies a
+     * Returns a Single that emits {@code true} if any item emitted by the source ObservableSource satisfies a
      * specified condition, otherwise {@code false}. <em>Note:</em> this always emits {@code false} if the
      * source ObservableSource is empty.
      * <p>
@@ -6319,7 +6319,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     }
 
     /**
-     * Returns an Observable that emits a Boolean that indicates whether the source ObservableSource emitted a
+     * Returns a Single that emits a Boolean that indicates whether the source ObservableSource emitted a
      * specified item.
      * <p>
      * <img width="640" height="320" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/contains.2.png" alt="">
@@ -8364,7 +8364,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     }
 
     /**
-     * Returns an Observable that emits {@code true} if the source ObservableSource is empty, otherwise {@code false}.
+     * Returns a Single that emits {@code true} if the source ObservableSource is empty, otherwise {@code false}.
      * <p>
      * In Rx.Net this is negated as the {@code any} Observer but we renamed this in RxJava to better match Java
      * naming idioms.
