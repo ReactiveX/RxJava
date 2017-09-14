@@ -16,7 +16,7 @@
 package rx.internal.schedulers;
 
 import java.lang.reflect.*;
-import java.util.Iterator;
+import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -110,10 +110,12 @@ public class NewThreadWorker extends Scheduler.Worker implements Subscription {
     }
 
     /** Purges each registered executor and eagerly evicts shutdown executors. */
-    @SuppressAnimalSniffer // CHM.keySet returns KeySetView in Java 8+; false positive here
     static void purgeExecutors() {
         try {
-            Iterator<ScheduledThreadPoolExecutor> it = EXECUTORS.keySet().iterator();
+            // This prevents map.keySet to compile to a Java 8+ KeySetView return type
+            // and cause NoSuchMethodError on Java 6-7 runtimes.
+            Map<ScheduledThreadPoolExecutor, ScheduledThreadPoolExecutor> map = EXECUTORS;
+            Iterator<ScheduledThreadPoolExecutor> it = map.keySet().iterator();
             while (it.hasNext()) {
                 ScheduledThreadPoolExecutor exec = it.next();
                 if (!exec.isShutdown()) {
