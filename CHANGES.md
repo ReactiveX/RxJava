@@ -1,5 +1,11 @@
 # RxJava Releases #
 
+### Version 1.3.2 - September 15, 2017 ([Maven](http://search.maven.org/#artifactdetails%7Cio.reactivex%7Crxjava%7C1.3.2%7C))
+
+#### Bugfixes
+
+- [Pull 5602](https://github.com/ReactiveX/RxJava/pull/5602): Workaround for CHM.keySet bad type with Java 8 compiler
+
 ### Version 1.3.1 - September 10, 2017 ([Maven](http://search.maven.org/#artifactdetails%7Cio.reactivex%7Crxjava%7C1.3.1%7C))
 
 #### API changes
