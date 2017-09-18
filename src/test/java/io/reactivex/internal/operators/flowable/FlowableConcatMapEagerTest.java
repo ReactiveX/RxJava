@@ -1193,4 +1193,39 @@ public class FlowableConcatMapEagerTest {
         .assertResult(1, 2, 3, 4, 5)
         ;
     }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void maxConcurrencyOf2() {
+        List<Integer>[] list = new ArrayList[100];
+        for (int i = 0; i < 100; i++) {
+            List<Integer> lst = new ArrayList<Integer>();
+            list[i] = lst;
+            for (int k = 1; k <= 10; k++) {
+                lst.add((i) * 10 + k);
+            }
+        }
+
+        Flowable.range(1, 1000)
+        .buffer(10)
+        .concatMapEager(new Function<List<Integer>, Flowable<List<Integer>>>() {
+            @Override
+            public Flowable<List<Integer>> apply(List<Integer> v)
+                    throws Exception {
+                return Flowable.just(v)
+                        .subscribeOn(Schedulers.io())
+                        .doOnNext(new Consumer<List<Integer>>() {
+                            @Override
+                            public void accept(List<Integer> v)
+                                    throws Exception {
+                                Thread.sleep(new Random().nextInt(20));
+                            }
+                        });
+            }
+        }
+                , 2, 3)
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertResult(list);
+    }
 }
