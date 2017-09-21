@@ -1697,7 +1697,29 @@ public abstract class Completable implements CompletableSource {
         ObjectHelper.requireNonNull(onError, "onError is null");
         ObjectHelper.requireNonNull(onComplete, "onComplete is null");
 
-        CallbackCompletableObserver s = new CallbackCompletableObserver(onError, onComplete);
+        return subscribe(onComplete, onError, Functions.emptyConsumer());
+    }
+
+    /**
+     * Subscribes to this Completable and calls back either the onError or onComplete functions.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code subscribe} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param onComplete the runnable that is called if the Completable completes normally
+     * @param onError the consumer that is called if this Completable emits an error
+     * @param onSubscribe the {@code Consumer} that receives the upstream's Disposable
+     * @return the Disposable that can be used for cancelling the subscription asynchronously
+     * @throws NullPointerException if either callback is null
+     */
+    @CheckReturnValue
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final Disposable subscribe(final Action onComplete, final Consumer<? super Throwable> onError, Consumer<? super Disposable> onSubscribe) {
+        ObjectHelper.requireNonNull(onError, "onError is null");
+        ObjectHelper.requireNonNull(onComplete, "onComplete is null");
+        ObjectHelper.requireNonNull(onSubscribe, "onSubscribe is null");
+
+        CallbackCompletableObserver s = new CallbackCompletableObserver(onError, onComplete, onSubscribe);
         subscribe(s);
         return s;
     }
@@ -1721,9 +1743,7 @@ public abstract class Completable implements CompletableSource {
     public final Disposable subscribe(final Action onComplete) {
         ObjectHelper.requireNonNull(onComplete, "onComplete is null");
 
-        CallbackCompletableObserver s = new CallbackCompletableObserver(onComplete);
-        subscribe(s);
-        return s;
+        return subscribe(onComplete, Functions.ON_ERROR_MISSING);
     }
 
     /**
