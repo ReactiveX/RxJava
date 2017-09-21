@@ -1694,9 +1694,6 @@ public abstract class Completable implements CompletableSource {
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Disposable subscribe(final Action onComplete, final Consumer<? super Throwable> onError) {
-        ObjectHelper.requireNonNull(onError, "onError is null");
-        ObjectHelper.requireNonNull(onComplete, "onComplete is null");
-
         return subscribe(onComplete, onError, Functions.emptyConsumer());
     }
 
@@ -1741,8 +1738,6 @@ public abstract class Completable implements CompletableSource {
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Disposable subscribe(final Action onComplete) {
-        ObjectHelper.requireNonNull(onComplete, "onComplete is null");
-
         return subscribe(onComplete, Functions.ON_ERROR_MISSING);
     }
 
