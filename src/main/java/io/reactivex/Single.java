@@ -1617,14 +1617,14 @@ public abstract class Single<T> implements SingleSource<T> {
     }
 
     /**
-     * Delays the emission of the success or error signal from the current Single by
-     * the specified amount.
+     * Delays the emission of the success signal from the current Single by the specified amount.
+     * An error signal will not be delayed.
      * <dl>
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code delay} operates by default on the {@code computation} {@link Scheduler}.</dd>
      * </dl>
      *
-     * @param time the time amount to delay the signals
+     * @param time the amount of time the success signal should be delayed for
      * @param unit the time unit
      * @return the new Single instance
      * @since 2.0
@@ -1632,17 +1632,38 @@ public abstract class Single<T> implements SingleSource<T> {
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.COMPUTATION)
     public final Single<T> delay(long time, TimeUnit unit) {
-        return delay(time, unit, Schedulers.computation());
+        return delay(time, unit, Schedulers.computation(), false);
+    }
+
+    /**
+     * Delays the emission of the success or error signal from the current Single by the specified amount.
+     * <dl>
+     * <dt><b>Scheduler:</b></dt>
+     * <dd>{@code delay} operates by default on the {@code computation} {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param time the amount of time the success or error signal should be delayed for
+     * @param unit the time unit
+     * @param delayError if true, both success and error signals are delayed. if false, only success signals are delayed.
+     * @return the new Single instance
+     * @since 2.1.5 - experimental
+     */
+    @Experimental
+    @CheckReturnValue
+    @SchedulerSupport(SchedulerSupport.COMPUTATION)
+    public final Single<T> delay(long time, TimeUnit unit, boolean delayError) {
+        return delay(time, unit, Schedulers.computation(), delayError);
     }
 
     /**
      * Delays the emission of the success signal from the current Single by the specified amount.
+     * An error signal will not be delayed.
      * <dl>
      * <dt><b>Scheduler:</b></dt>
      * <dd>you specify the {@link Scheduler} where the non-blocking wait and emission happens</dd>
      * </dl>
      *
-     * @param time the time amount to delay the emission of the success signal
+     * @param time the amount of time the success signal should be delayed for
      * @param unit the time unit
      * @param scheduler the target scheduler to use for the non-blocking wait and emission
      * @return the new Single instance
@@ -1654,9 +1675,33 @@ public abstract class Single<T> implements SingleSource<T> {
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.CUSTOM)
     public final Single<T> delay(final long time, final TimeUnit unit, final Scheduler scheduler) {
+        return delay(time, unit, scheduler, false);
+    }
+
+    /**
+     * Delays the emission of the success or error signal from the current Single by the specified amount.
+     * <dl>
+     * <dt><b>Scheduler:</b></dt>
+     * <dd>you specify the {@link Scheduler} where the non-blocking wait and emission happens</dd>
+     * </dl>
+     *
+     * @param time the amount of time the success or error signal should be delayed for
+     * @param unit the time unit
+     * @param scheduler the target scheduler to use for the non-blocking wait and emission
+     * @param delayError if true, both success and error signals are delayed. if false, only success signals are delayed.
+     * @return the new Single instance
+     * @throws NullPointerException
+     *             if unit is null, or
+     *             if scheduler is null
+     * @since 2.1.5 - experimental
+     */
+    @Experimental
+    @CheckReturnValue
+    @SchedulerSupport(SchedulerSupport.CUSTOM)
+    public final Single<T> delay(final long time, final TimeUnit unit, final Scheduler scheduler, boolean delayError) {
         ObjectHelper.requireNonNull(unit, "unit is null");
         ObjectHelper.requireNonNull(scheduler, "scheduler is null");
-        return RxJavaPlugins.onAssembly(new SingleDelay<T>(this, time, unit, scheduler));
+        return RxJavaPlugins.onAssembly(new SingleDelay<T>(this, time, unit, scheduler, delayError));
     }
 
     /**
