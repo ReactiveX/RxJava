@@ -6546,7 +6546,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
 
     /**
      * Returns an Observable that emits the items emitted by the source ObservableSource shifted forward in time by a
-     * specified delay. Error notifications from the source ObservableSource are not delayed.
+     * specified delay. If {@code delayError} is true, error notifications will also be delayed.
      * <p>
      * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/delay.png" alt="">
      * <dl>
@@ -6597,7 +6597,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
 
     /**
      * Returns an Observable that emits the items emitted by the source ObservableSource shifted forward in time by a
-     * specified delay. Error notifications from the source ObservableSource are not delayed.
+     * specified delay. If {@code delayError} is true, error notifications will also be delayed.
      * <p>
      * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/delay.s.png" alt="">
      * <dl>
