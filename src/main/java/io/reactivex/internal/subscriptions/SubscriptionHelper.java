@@ -137,7 +137,7 @@ public enum SubscriptionHelper implements Subscription {
      * @return true if the operation succeeded, false if the target field was not null.
      */
     public static boolean setOnce(AtomicReference<Subscription> field, Subscription s) {
-        ObjectHelper.requireNonNull(s, "d is null");
+        ObjectHelper.requireNonNull(s, "s is null");
         if (!field.compareAndSet(null, s)) {
             s.cancel();
             if (field.get() != CANCELLED) {
