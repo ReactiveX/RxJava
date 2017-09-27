@@ -73,6 +73,7 @@ public final class CompletableDetach extends Completable {
             d = DisposableHelper.DISPOSED;
             CompletableObserver a = actual;
             if (a != null) {
+                actual = null;
                 a.onError(e);
             }
         }
@@ -82,6 +83,7 @@ public final class CompletableDetach extends Completable {
             d = DisposableHelper.DISPOSED;
             CompletableObserver a = actual;
             if (a != null) {
+                actual = null;
                 a.onComplete();
             }
         }

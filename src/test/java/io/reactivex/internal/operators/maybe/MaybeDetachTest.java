@@ -15,6 +15,7 @@ package io.reactivex.internal.operators.maybe;
 
 import static org.junit.Assert.assertNull;
 
+import java.io.IOException;
 import java.lang.ref.WeakReference;
 
 import org.junit.Test;
@@ -96,6 +97,7 @@ public class MaybeDetachTest {
             protected void subscribeActual(MaybeObserver<? super Integer> observer) {
                 observer.onSubscribe(wr.get());
                 observer.onComplete();
+                observer.onComplete();
             };
         }
         .onTerminateDetach()
@@ -121,6 +123,7 @@ public class MaybeDetachTest {
             protected void subscribeActual(MaybeObserver<? super Integer> observer) {
                 observer.onSubscribe(wr.get());
                 observer.onError(new TestException());
+                observer.onError(new IOException());
             };
         }
         .onTerminateDetach()
@@ -146,6 +149,7 @@ public class MaybeDetachTest {
             protected void subscribeActual(MaybeObserver<? super Integer> observer) {
                 observer.onSubscribe(wr.get());
                 observer.onSuccess(1);
+                observer.onSuccess(2);
             };
         }
         .onTerminateDetach()

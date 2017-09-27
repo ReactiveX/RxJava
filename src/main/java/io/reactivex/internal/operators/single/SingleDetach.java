@@ -74,6 +74,7 @@ public final class SingleDetach<T> extends Single<T> {
             d = DisposableHelper.DISPOSED;
             SingleObserver<? super T> a = actual;
             if (a != null) {
+                actual = null;
                 a.onSuccess(value);
             }
         }
@@ -83,6 +84,7 @@ public final class SingleDetach<T> extends Single<T> {
             d = DisposableHelper.DISPOSED;
             SingleObserver<? super T> a = actual;
             if (a != null) {
+                actual = null;
                 a.onError(e);
             }
         }

@@ -13,8 +13,9 @@
 
 package io.reactivex.internal.operators.single;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNull;
 
+import java.io.IOException;
 import java.lang.ref.WeakReference;
 
 import org.junit.Test;
@@ -41,7 +42,7 @@ public class SingleDetachTest {
 
     @Test
     public void dispose() {
-        TestHelper.checkDisposed(PublishProcessor.create().singleElement().onTerminateDetach());
+        TestHelper.checkDisposed(PublishProcessor.create().singleOrError().onTerminateDetach());
     }
 
     @Test
@@ -96,6 +97,7 @@ public class SingleDetachTest {
             protected void subscribeActual(SingleObserver<? super Integer> observer) {
                 observer.onSubscribe(wr.get());
                 observer.onError(new TestException());
+                observer.onError(new IOException());
             };
         }
         .onTerminateDetach()
@@ -121,6 +123,7 @@ public class SingleDetachTest {
             protected void subscribeActual(SingleObserver<? super Integer> observer) {
                 observer.onSubscribe(wr.get());
                 observer.onSuccess(1);
+                observer.onSuccess(2);
             };
         }
         .onTerminateDetach()

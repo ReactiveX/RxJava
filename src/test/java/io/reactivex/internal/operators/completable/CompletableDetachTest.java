@@ -15,6 +15,7 @@ package io.reactivex.internal.operators.completable;
 
 import static org.junit.Assert.assertNull;
 
+import java.io.IOException;
 import java.lang.ref.WeakReference;
 
 import org.junit.Test;
@@ -96,6 +97,7 @@ public class CompletableDetachTest {
             protected void subscribeActual(CompletableObserver observer) {
                 observer.onSubscribe(wr.get());
                 observer.onComplete();
+                observer.onComplete();
             };
         }
         .onTerminateDetach()
@@ -121,6 +123,7 @@ public class CompletableDetachTest {
             protected void subscribeActual(CompletableObserver observer) {
                 observer.onSubscribe(wr.get());
                 observer.onError(new TestException());
+                observer.onError(new IOException());
             };
         }
         .onTerminateDetach()
