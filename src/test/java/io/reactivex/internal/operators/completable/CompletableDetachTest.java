@@ -11,7 +11,7 @@
  * the License for the specific language governing permissions and limitations under the License.
  */
 
-package io.reactivex.internal.operators.maybe;
+package io.reactivex.internal.operators.completable;
 
 import static org.junit.Assert.assertNull;
 
@@ -26,14 +26,14 @@ import io.reactivex.functions.Function;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.processors.PublishProcessor;
 
-public class MaybeDetachTest {
+public class CompletableDetachTest {
 
     @Test
     public void doubleSubscribe() {
 
-        TestHelper.checkDoubleOnSubscribeMaybe(new Function<Maybe<Object>, MaybeSource<Object>>() {
+        TestHelper.checkDoubleOnSubscribeCompletable(new Function<Completable, CompletableSource>() {
             @Override
-            public MaybeSource<Object> apply(Maybe<Object> m) throws Exception {
+            public CompletableSource apply(Completable m) throws Exception {
                 return m.onTerminateDetach();
             }
         });
@@ -41,12 +41,12 @@ public class MaybeDetachTest {
 
     @Test
     public void dispose() {
-        TestHelper.checkDisposed(PublishProcessor.create().singleElement().onTerminateDetach());
+        TestHelper.checkDisposed(PublishProcessor.create().ignoreElements().onTerminateDetach());
     }
 
     @Test
     public void onError() {
-        Maybe.error(new TestException())
+        Completable.error(new TestException())
         .onTerminateDetach()
         .test()
         .assertFailure(TestException.class);
@@ -54,7 +54,7 @@ public class MaybeDetachTest {
 
     @Test
     public void onComplete() {
-        Maybe.empty()
+        Completable.complete()
         .onTerminateDetach()
         .test()
         .assertResult();
@@ -65,9 +65,9 @@ public class MaybeDetachTest {
         Disposable d = Disposables.empty();
         final WeakReference<Disposable> wr = new WeakReference<Disposable>(d);
 
-        TestObserver<Object> to = new Maybe<Object>() {
+        TestObserver<Void> to = new Completable() {
             @Override
-            protected void subscribeActual(MaybeObserver<? super Object> observer) {
+            protected void subscribeActual(CompletableObserver observer) {
                 observer.onSubscribe(wr.get());
             };
         }
@@ -91,9 +91,9 @@ public class MaybeDetachTest {
         Disposable d = Disposables.empty();
         final WeakReference<Disposable> wr = new WeakReference<Disposable>(d);
 
-        TestObserver<Integer> to = new Maybe<Integer>() {
+        TestObserver<Void> to = new Completable() {
             @Override
-            protected void subscribeActual(MaybeObserver<? super Integer> observer) {
+            protected void subscribeActual(CompletableObserver observer) {
                 observer.onSubscribe(wr.get());
                 observer.onComplete();
             };
@@ -116,9 +116,9 @@ public class MaybeDetachTest {
         Disposable d = Disposables.empty();
         final WeakReference<Disposable> wr = new WeakReference<Disposable>(d);
 
-        TestObserver<Integer> to = new Maybe<Integer>() {
+        TestObserver<Void> to = new Completable() {
             @Override
-            protected void subscribeActual(MaybeObserver<? super Integer> observer) {
+            protected void subscribeActual(CompletableObserver observer) {
                 observer.onSubscribe(wr.get());
                 observer.onError(new TestException());
             };
@@ -132,31 +132,6 @@ public class MaybeDetachTest {
         Thread.sleep(200);
 
         to.assertFailure(TestException.class);
-
-        assertNull(wr.get());
-    }
-
-    @Test
-    public void successDetaches() throws Exception {
-        Disposable d = Disposables.empty();
-        final WeakReference<Disposable> wr = new WeakReference<Disposable>(d);
-
-        TestObserver<Integer> to = new Maybe<Integer>() {
-            @Override
-            protected void subscribeActual(MaybeObserver<? super Integer> observer) {
-                observer.onSubscribe(wr.get());
-                observer.onSuccess(1);
-            };
-        }
-        .onTerminateDetach()
-        .test();
-
-        d = null;
-
-        System.gc();
-        Thread.sleep(200);
-
-        to.assertResult(1);
 
         assertNull(wr.get());
     }

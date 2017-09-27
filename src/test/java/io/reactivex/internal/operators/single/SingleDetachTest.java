@@ -11,9 +11,9 @@
  * the License for the specific language governing permissions and limitations under the License.
  */
 
-package io.reactivex.internal.operators.maybe;
+package io.reactivex.internal.operators.single;
 
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.*;
 
 import java.lang.ref.WeakReference;
 
@@ -26,14 +26,14 @@ import io.reactivex.functions.Function;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.processors.PublishProcessor;
 
-public class MaybeDetachTest {
+public class SingleDetachTest {
 
     @Test
     public void doubleSubscribe() {
 
-        TestHelper.checkDoubleOnSubscribeMaybe(new Function<Maybe<Object>, MaybeSource<Object>>() {
+        TestHelper.checkDoubleOnSubscribeSingle(new Function<Single<Object>, SingleSource<Object>>() {
             @Override
-            public MaybeSource<Object> apply(Maybe<Object> m) throws Exception {
+            public SingleSource<Object> apply(Single<Object> m) throws Exception {
                 return m.onTerminateDetach();
             }
         });
@@ -46,18 +46,18 @@ public class MaybeDetachTest {
 
     @Test
     public void onError() {
-        Maybe.error(new TestException())
+        Single.error(new TestException())
         .onTerminateDetach()
         .test()
         .assertFailure(TestException.class);
     }
 
     @Test
-    public void onComplete() {
-        Maybe.empty()
+    public void onSuccess() {
+        Single.just(1)
         .onTerminateDetach()
         .test()
-        .assertResult();
+        .assertResult(1);
     }
 
     @Test
@@ -65,9 +65,9 @@ public class MaybeDetachTest {
         Disposable d = Disposables.empty();
         final WeakReference<Disposable> wr = new WeakReference<Disposable>(d);
 
-        TestObserver<Object> to = new Maybe<Object>() {
+        TestObserver<Object> to = new Single<Object>() {
             @Override
-            protected void subscribeActual(MaybeObserver<? super Object> observer) {
+            protected void subscribeActual(SingleObserver<? super Object> observer) {
                 observer.onSubscribe(wr.get());
             };
         }
@@ -87,38 +87,13 @@ public class MaybeDetachTest {
     }
 
     @Test
-    public void completeDetaches() throws Exception {
-        Disposable d = Disposables.empty();
-        final WeakReference<Disposable> wr = new WeakReference<Disposable>(d);
-
-        TestObserver<Integer> to = new Maybe<Integer>() {
-            @Override
-            protected void subscribeActual(MaybeObserver<? super Integer> observer) {
-                observer.onSubscribe(wr.get());
-                observer.onComplete();
-            };
-        }
-        .onTerminateDetach()
-        .test();
-
-        d = null;
-
-        System.gc();
-        Thread.sleep(200);
-
-        to.assertResult();
-
-        assertNull(wr.get());
-    }
-
-    @Test
     public void errorDetaches() throws Exception {
         Disposable d = Disposables.empty();
         final WeakReference<Disposable> wr = new WeakReference<Disposable>(d);
 
-        TestObserver<Integer> to = new Maybe<Integer>() {
+        TestObserver<Integer> to = new Single<Integer>() {
             @Override
-            protected void subscribeActual(MaybeObserver<? super Integer> observer) {
+            protected void subscribeActual(SingleObserver<? super Integer> observer) {
                 observer.onSubscribe(wr.get());
                 observer.onError(new TestException());
             };
@@ -141,9 +116,9 @@ public class MaybeDetachTest {
         Disposable d = Disposables.empty();
         final WeakReference<Disposable> wr = new WeakReference<Disposable>(d);
 
-        TestObserver<Integer> to = new Maybe<Integer>() {
+        TestObserver<Integer> to = new Single<Integer>() {
             @Override
-            protected void subscribeActual(MaybeObserver<? super Integer> observer) {
+            protected void subscribeActual(SingleObserver<? super Integer> observer) {
                 observer.onSubscribe(wr.get());
                 observer.onSuccess(1);
             };

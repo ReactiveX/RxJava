@@ -1381,6 +1381,24 @@ public abstract class Completable implements CompletableSource {
     }
 
     /**
+     * Nulls out references to the upstream producer and downstream CompletableObserver if
+     * the sequence is terminated or downstream calls dispose().
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code onTerminateDetach} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @return a Completable which nulls out references to the upstream producer and downstream CompletableObserver if
+     * the sequence is terminated or downstream calls dispose()
+     * @since 2.1.5 - experimental
+     */
+    @Experimental
+    @CheckReturnValue
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final Completable onTerminateDetach() {
+        return RxJavaPlugins.onAssembly(new CompletableDetach(this));
+    }
+
+    /**
      * Returns a Completable that repeatedly subscribes to this Completable until cancelled.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
