@@ -2469,6 +2469,24 @@ public abstract class Single<T> implements SingleSource<T> {
     }
 
     /**
+     * Nulls out references to the upstream producer and downstream SingleObserver if
+     * the sequence is terminated or downstream calls dispose().
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code onTerminateDetach} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @return a Single which nulls out references to the upstream producer and downstream SingleObserver if
+     * the sequence is terminated or downstream calls dispose()
+     * @since 2.1.5 - experimental
+     */
+    @Experimental
+    @CheckReturnValue
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final Single<T> onTerminateDetach() {
+        return RxJavaPlugins.onAssembly(new SingleDetach<T>(this));
+    }
+
+    /**
      * Repeatedly re-subscribes to the current Single and emits each success value.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>

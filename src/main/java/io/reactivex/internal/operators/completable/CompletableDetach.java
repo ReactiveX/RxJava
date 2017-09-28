@@ -11,35 +11,39 @@
  * the License for the specific language governing permissions and limitations under the License.
  */
 
-package io.reactivex.internal.operators.maybe;
+package io.reactivex.internal.operators.completable;
 
 import io.reactivex.*;
+import io.reactivex.annotations.Experimental;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.disposables.DisposableHelper;
 
 /**
- * Breaks the references between the upstream and downstream when the Maybe terminates.
- *
- * @param <T> the value type
+ * Breaks the references between the upstream and downstream when the Completable terminates.
+ * 
+ * @since 2.1.5 - experimental
  */
-public final class MaybeDetach<T> extends AbstractMaybeWithUpstream<T, T> {
+@Experimental
+public final class CompletableDetach extends Completable {
 
-    public MaybeDetach(MaybeSource<T> source) {
-        super(source);
+    final CompletableSource source;
+
+    public CompletableDetach(CompletableSource source) {
+        this.source = source;
     }
 
     @Override
-    protected void subscribeActual(MaybeObserver<? super T> observer) {
-        source.subscribe(new DetachMaybeObserver<T>(observer));
+    protected void subscribeActual(CompletableObserver observer) {
+        source.subscribe(new DetachCompletableObserver(observer));
     }
 
-    static final class DetachMaybeObserver<T> implements MaybeObserver<T>, Disposable {
+    static final class DetachCompletableObserver implements CompletableObserver, Disposable {
 
-        MaybeObserver<? super T> actual;
+        CompletableObserver actual;
 
         Disposable d;
 
-        DetachMaybeObserver(MaybeObserver<? super T> actual) {
+        DetachCompletableObserver(CompletableObserver actual) {
             this.actual = actual;
         }
 
@@ -65,19 +69,9 @@ public final class MaybeDetach<T> extends AbstractMaybeWithUpstream<T, T> {
         }
 
         @Override
-        public void onSuccess(T value) {
-            d = DisposableHelper.DISPOSED;
-            MaybeObserver<? super T> a = actual;
-            if (a != null) {
-                actual = null;
-                a.onSuccess(value);
-            }
-        }
-
-        @Override
         public void onError(Throwable e) {
             d = DisposableHelper.DISPOSED;
-            MaybeObserver<? super T> a = actual;
+            CompletableObserver a = actual;
             if (a != null) {
                 actual = null;
                 a.onError(e);
@@ -87,7 +81,7 @@ public final class MaybeDetach<T> extends AbstractMaybeWithUpstream<T, T> {
         @Override
         public void onComplete() {
             d = DisposableHelper.DISPOSED;
-            MaybeObserver<? super T> a = actual;
+            CompletableObserver a = actual;
             if (a != null) {
                 actual = null;
                 a.onComplete();
