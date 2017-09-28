@@ -233,6 +233,12 @@ public class RxJavaPluginsTest {
                 }
             };
 
+            BiConsumer bc = new BiConsumer() {
+                @Override
+                public void accept(Object t1, Object t2) throws Exception {
+                }
+            };
+
             for (Method m : RxJavaPlugins.class.getMethods()) {
                 if (m.getName().startsWith("set")) {
 
@@ -263,6 +269,9 @@ public class RxJavaPluginsTest {
                         } else
                         if (paramType.isAssignableFrom(BooleanSupplier.class)) {
                             m.invoke(null, bs);
+                        } else
+                        if (paramType.isAssignableFrom(BiConsumer.class)) {
+                            m.invoke(null, bc);
                         } else {
                             m.invoke(null, f2);
                         }
@@ -2254,5 +2263,23 @@ public class RxJavaPluginsTest {
         assertTrue(RxJavaPlugins.isBug(new UndeliverableException(new TestException())));
         assertTrue(RxJavaPlugins.isBug(new CompositeException(new TestException())));
         assertTrue(RxJavaPlugins.isBug(new OnErrorNotImplementedException(new TestException())));
+    }
+
+    @Test
+    public void onCallbackCrashCrash() {
+        try {
+            RxJavaPlugins.setOnCallbackCrash(new BiConsumer<Throwable, Object>() {
+                @Override
+                public void accept(Throwable t, Object o) throws Exception {
+                    throw new TestException();
+                }
+            });
+            RxJavaPlugins.onCallbackCrash(new IOException(), new Object());
+            fail("Should have thrown");
+        } catch (TestException expected) {
+            // expected
+        } finally {
+            RxJavaPlugins.setOnCallbackCrash(null);
+        }
     }
 }

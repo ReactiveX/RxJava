@@ -124,6 +124,16 @@ public final class RxJavaPlugins {
     static volatile boolean failNonBlockingScheduler;
 
     /**
+     * Called when an user-provided callback crashes; should help
+     * locating where that callback comes from by providing its instance
+     * on which this handler can call toString(), getClass() and
+     * getClass().getEnclosingMethod() for example.
+     * @since 2.1.5 - experimental
+     */
+    @Experimental
+    static volatile BiConsumer<? super Throwable, Object> onCallbackCrash;
+
+    /**
      * Prevents changing the plugins from then on.
      * <p>This allows container-like environments to prevent clients
      * messing with plugins.
@@ -508,6 +518,7 @@ public final class RxJavaPlugins {
 
         setFailOnNonBlockingScheduler(false);
         setOnBeforeBlocking(null);
+        setOnCallbackCrash(null);
     }
 
     /**
@@ -1178,6 +1189,51 @@ public final class RxJavaPlugins {
     @Nullable
     public static BooleanSupplier getOnBeforeBlocking() {
         return onBeforeBlocking;
+    }
+
+    /**
+     * Sets the handler that is called when an user-provided callback crashes.
+     * @param onCallbackCrash the handler to set, null resets to the default handler
+     * @since 2.1.5 - experimental
+     */
+    @Experimental
+    public static void setOnCallbackCrash(@Nullable BiConsumer<? super Throwable, Object> onCallbackCrash) {
+        if (lockdown) {
+            throw new IllegalStateException("Plugins can't be changed anymore");
+        }
+        RxJavaPlugins.onCallbackCrash = onCallbackCrash;
+    }
+
+    /**
+     * Returns the handler that is called when an user-provided callback crashes.
+     * @return the current handler or null if not specified
+     * @since 2.1.5 - experimental
+     */
+    @Experimental
+    @Nullable
+    public static BiConsumer<? super Throwable, Object> getOnCallbackCrash() {
+        return onCallbackCrash;
+    }
+
+    /**
+     * Called by operators when an user-provided callback in the operator crashes with
+     * the Throwable exception and the callback instance.
+     * @param ex the Throwable
+     * @param callback the user-provided callback
+     * @return the Throwable received
+     * @since 2.1.5 - experimental
+     */
+    @Experimental
+    public static Throwable onCallbackCrash(@NonNull Throwable ex, @NonNull Object callback) {
+        BiConsumer<? super Throwable, Object> f = onCallbackCrash;
+        if (f != null) {
+            try {
+                f.accept(ex, callback);
+            } catch (Throwable exc) {
+                throw ExceptionHelper.wrapOrThrow(exc);
+            }
+        }
+        return ex;
     }
 
     /**
