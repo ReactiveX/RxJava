@@ -336,8 +336,8 @@ if (rootProject.hasProperty("releaseMode")) {
          publications = ["mavenJava"]
          publish = true
          pkg {
-           repo = "generic"
-           name = "rxjava"
+           repo = "RxJava"
+           name = "RxJava"
            userOrg = "reactivex"
            labels = ["rxjava", "reactivex"]
            licenses = ["Apache-2.0"]
