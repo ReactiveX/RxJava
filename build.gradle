@@ -333,7 +333,6 @@ if (rootProject.hasProperty("releaseMode")) {
          user = rootProject.bintrayUser
          key = rootProject.bintrayKey
          configurations = ["archives"]
-         publications = ["mavenJava"]
          publish = true
          pkg {
            repo = "RxJava"
