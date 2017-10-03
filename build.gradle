@@ -26,8 +26,9 @@ if (releaseTag != null && !releaseTag.isEmpty()) {
         releaseTag = releaseTag.substring(1);
     }
     version = releaseTag;
-    
-    println("Releasing with version " + project.properties["release.version"]);
+    project.properties.put("release.version", releaseTag);
+
+    println("Releasing with version " + version);
 }
 
 description = "RxJava: Reactive Extensions for the JVM – a library for composing asynchronous and event-based programs using observable sequences for the Java VM."
@@ -324,8 +325,10 @@ if (rootProject.hasProperty("releaseMode")) {
 
    if ("full".equals(rootProject.releaseMode)) {
       // based on https://github.com/bintray/gradle-bintray-plugin
-      println("ReleaseMode: " + rootProject.releaseMode);
-      
+      def rver = version;
+
+      println("ReleaseMode: " + rootProject.releaseMode + " version " + rver);
+
       bintray {
          user = rootProject.bintrayUser
          key = rootProject.bintrayKey
