@@ -41,7 +41,7 @@ import io.reactivex.internal.util.EndConsumerHelper;
  * <p>Example<pre><code>
  * Disposable d =
  *     Observable.range(1, 5)
- *     .subscribeWith(new DisposableObserver&lt;Integer>() {
+ *     .subscribeWith(new DisposableObserver&lt;Integer&gt;() {
  *         &#64;Override public void onStart() {
  *             System.out.println("Start!");
  *         }
