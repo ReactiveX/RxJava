@@ -207,7 +207,6 @@ public abstract class Completable implements CompletableSource {
      *
      * });
      * </code></pre>
-     * <p>
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code create} does not operate by default on a particular {@link Scheduler}.</dd>

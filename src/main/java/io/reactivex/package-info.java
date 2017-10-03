@@ -40,7 +40,7 @@
  * <li>Subscriber == IAsyncEnumerator</li>
  * </ul>
  * The Single and Completable reactive base types have no equivalent in Rx.NET as of 3.x.
- * </p>
+ *
  * <p>Services which intend on exposing data asynchronously and wish
  * to allow reactive processing and composition can implement the
  * {@link io.reactivex.Flowable}, {@link io.reactivex.Observable}, {@link io.reactivex.Single}

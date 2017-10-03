@@ -37,7 +37,7 @@ public abstract class Subject<T> extends Observable<T> implements Observer<T> {
      * <p>The method is thread-safe.
      * @return true if the subject has reached a terminal state through an error event
      * @see #getThrowable()
-     * &see {@link #hasComplete()}
+     * @see #hasComplete()
      */
     public abstract boolean hasThrowable();
 

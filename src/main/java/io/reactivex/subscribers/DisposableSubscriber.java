@@ -50,7 +50,7 @@ import io.reactivex.internal.util.EndConsumerHelper;
  * <p>Example<pre><code>
  * Disposable d =
  *     Flowable.range(1, 5)
- *     .subscribeWith(new DisposableSubscriber&lt;Integer>() {
+ *     .subscribeWith(new DisposableSubscriber&lt;Integer&gt;() {
  *         &#64;Override public void onStart() {
  *             request(1);
  *         }

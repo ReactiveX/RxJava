@@ -36,7 +36,7 @@ import io.reactivex.internal.util.EndConsumerHelper;
  * <p>Example<pre><code>
  * Disposable d =
  *     Single.just(1).delay(1, TimeUnit.SECONDS)
- *     .subscribeWith(new DisposableSingleObserver&lt;Integer>() {
+ *     .subscribeWith(new DisposableSingleObserver&lt;Integer&gt;() {
  *         &#64;Override public void onStart() {
  *             System.out.println("Start!");
  *         }

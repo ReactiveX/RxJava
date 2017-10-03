@@ -40,7 +40,6 @@ import io.reactivex.plugins.RxJavaPlugins;
  * {@code new} but must be created via the {@link #create()} method.
  *
  * Example usage:
- * <p>
  * <pre> {@code
 
   PublishProcessor<Object> processor = PublishProcessor.create();

@@ -44,7 +44,6 @@ import io.reactivex.plugins.RxJavaPlugins;
  *
  * <p>
  * Example usage:
- * <p>
  * <pre> {@code
 
   ReplayProcessor<Object> processor = new ReplayProcessor<T>();

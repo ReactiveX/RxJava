@@ -32,7 +32,6 @@ import io.reactivex.plugins.RxJavaPlugins;
  * <img width="640" height="415" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/S.BehaviorSubject.png" alt="">
  * <p>
  * Example usage:
- * <p>
  * <pre> {@code
 
   // observer will receive all 4 events (including "default").

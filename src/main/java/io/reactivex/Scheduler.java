@@ -199,7 +199,7 @@ public abstract class Scheduler {
      * size thread pool:
      * 
      * <pre>
-     * Scheduler limitScheduler = Schedulers.computation().when(workers -> {
+     * Scheduler limitScheduler = Schedulers.computation().when(workers -&gt; {
      *  // use merge max concurrent to limit the number of concurrent
      *  // callbacks two at a time
      *  return Completable.merge(Flowable.merge(workers), 2);
@@ -217,7 +217,7 @@ public abstract class Scheduler {
      * subscription to the second.
      * 
      * <pre>
-     * Scheduler limitScheduler = Schedulers.computation().when(workers -> {
+     * Scheduler limitScheduler = Schedulers.computation().when(workers -&gt; {
      *  // use merge max concurrent to limit the number of concurrent
      *  // Flowables two at a time
      *  return Completable.merge(Flowable.merge(workers, 2));
@@ -230,9 +230,9 @@ public abstract class Scheduler {
      * bucket algorithm).
      * 
      * <pre>
-     * Scheduler slowScheduler = Schedulers.computation().when(workers -> {
+     * Scheduler slowScheduler = Schedulers.computation().when(workers -&gt; {
      *  // use concatenate to make each worker happen one at a time.
-     *  return Completable.concat(workers.map(actions -> {
+     *  return Completable.concat(workers.map(actions -&gt; {
      *      // delay the starting of the next worker by 1 second.
      *      return Completable.merge(actions.delaySubscription(1, TimeUnit.SECONDS));
      *  }));
