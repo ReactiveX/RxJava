@@ -10,9 +10,9 @@ jdk:
 
 # prevent travis running gradle assemble; let the build script do it anyway
 install: true
-      
+
+# running in container causes test failures and 2x-3x longer build, use standalone instances
 sudo: required
-# as per http://blog.travis-ci.com/2014-12-17-faster-builds-with-container-based-infrastructure/
 
 # script for build and release via Travis to Bintray
 script: gradle/buildViaTravis.sh
