@@ -588,7 +588,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * <p>
      * Note that even though {@link Publisher} appears to be a functional interface, it
      * is not recommended to implement it through a lambda as the specification requires
-     * state management not achievable with a stateless lambda.
+     * state management that is not achievable with a stateless lambda.
      * <dl>
      * <dt><b>Backpressure:</b></dt>
      * <dd>The {@code publisher} is consumed in an unbounded fashion but will be cancelled

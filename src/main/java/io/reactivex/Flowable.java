@@ -2104,7 +2104,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * <p>
      * Note that even though {@link Publisher} appears to be a functional interface, it
      * is not recommended to implement it through a lambda as the specification requires
-     * state management not achievable with a stateless lambda.
+     * state management that is not achievable with a stateless lambda.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator is a pass-through for backpressure and its behavior is determined by the
