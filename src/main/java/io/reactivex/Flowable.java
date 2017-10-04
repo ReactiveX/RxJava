@@ -2094,6 +2094,17 @@ public abstract class Flowable<T> implements Publisher<T> {
     /**
      * Converts an arbitrary Reactive-Streams Publisher into a Flowable if not already a
      * Flowable.
+     * <p>
+     * The {@link Publisher} must follow the
+     * <a href="https://github.com/reactive-streams/reactive-streams-jvm#reactive-streams">Reactive-Streams specification</a>.
+     * Violating the specification may result in undefined behavior.
+     * <p>
+     * If possible, use {@link #create(FlowableOnSubscribe, BackpressureStrategy)} to create a
+     * source-like {@code Flowable} instead.
+     * <p>
+     * Note that even though {@link Publisher} appears to be a functional interface, it
+     * is not recommended to implement it through a lambda as the specification requires
+     * state management that is not achievable with a stateless lambda.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator is a pass-through for backpressure and its behavior is determined by the
@@ -2105,6 +2116,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @param source the Publisher to convert
      * @return the new Flowable instance
      * @throws NullPointerException if publisher is null
+     * @see #create(FlowableOnSubscribe, BackpressureStrategy)
      */
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)

@@ -578,6 +578,17 @@ public abstract class Single<T> implements SingleSource<T> {
      * Wraps a specific Publisher into a Single and signals its single element or error.
      * <p>If the source Publisher is empty, a NoSuchElementException is signalled. If
      * the source has more than one element, an IndexOutOfBoundsException is signalled.
+     * <p>
+     * The {@link Publisher} must follow the
+     * <a href="https://github.com/reactive-streams/reactive-streams-jvm#reactive-streams">Reactive-Streams specification</a>.
+     * Violating the specification may result in undefined behavior.
+     * <p>
+     * If possible, use {@link #create(SingleOnSubscribe)} to create a
+     * source-like {@code Single} instead.
+     * <p>
+     * Note that even though {@link Publisher} appears to be a functional interface, it
+     * is not recommended to implement it through a lambda as the specification requires
+     * state management that is not achievable with a stateless lambda.
      * <dl>
      * <dt><b>Backpressure:</b></dt>
      * <dd>The {@code publisher} is consumed in an unbounded fashion but will be cancelled
@@ -588,6 +599,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * @param <T> the value type
      * @param publisher the source Publisher instance, not null
      * @return the new Single instance
+     * @see #create(SingleOnSubscribe)
      */
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @CheckReturnValue
