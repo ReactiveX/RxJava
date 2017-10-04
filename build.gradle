@@ -124,6 +124,7 @@ jar {
         instruction "Bundle-DocURL", "https://github.com/ReactiveX/RxJava"
         instruction "Import-Package", "!org.junit,!junit.framework,!org.mockito.*,!org.testng.*,*"
         instruction "Eclipse-ExtensibleAPI", "true"
+        instruction "Automatic-Module-Name", "io.reactivex.rxjava2"
     }
 }
 
