@@ -2801,11 +2801,11 @@ public abstract class Single<T> implements SingleSource<T> {
      * Single&lt;Integer&gt; source = Single.just(1);
      * CompositeDisposable composite = new CompositeDisposable();
      *
-     * class ResourceSingleObserver implements SingleObserver&lt;Integer&gt;, Disposable {
+     * DisposableSingleObserver&lt;Integer&gt; ds = new DisposableSingleObserver&lt;&gt;() {
      *     // ...
-     * }
+     * };
      *
-     * composite.add(source.subscribeWith(new ResourceSingleObserver()));
+     * composite.add(source.subscribeWith(ds));
      * </code></pre>
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
