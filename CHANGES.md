@@ -2,6 +2,32 @@
 
 The changelog of version 1.x can be found at https://github.com/ReactiveX/RxJava/blob/1.x/CHANGES.md
 
+Note that there might be a couple of 2.1.5-RCx tags before this release in order to iron out the nebula-plugin free release process.
+
+### Version 2.1.5 - October 5, 2017 ([Maven](http://search.maven.org/#artifactdetails%7Cio.reactivex.rxjava2%7Crxjava%7C2.1.5%7C))
+
+#### API changes
+
+- [Pull 5616](https://github.com/ReactiveX/RxJava/pull/5616): Add `Single.delay` overload that delays errors.
+- [Pull 5624](https://github.com/ReactiveX/RxJava/pull/5624): add `onTerminateDetach` to `Single` and `Completable`.
+
+#### Documentation changes
+
+- [Pull 5617](https://github.com/ReactiveX/RxJava/pull/5617): Fix `Observable.delay` & `Flowable.delay` javadoc.
+- [Pull 5637](https://github.com/ReactiveX/RxJava/pull/5637): Fixing JavaDoc warnings.
+- [Pull 5640](https://github.com/ReactiveX/RxJava/pull/5640): Additional warnings for `fromPublisher()`.
+
+#### Bugfixes
+
+- No bugs were reported.
+
+#### Other
+
+- [Pull 5615](https://github.com/ReactiveX/RxJava/pull/5615): Add missing license headers.
+- [Pull 5623](https://github.com/ReactiveX/RxJava/pull/5623): Fix incorrect error message in `SubscriptionHelper.setOnce`
+- [Pull 5633](https://github.com/ReactiveX/RxJava/pull/5633): Upgrade to Gradle 4.2.1, remove nebula plugin, replace it with custom release logic.
+
+
 ### Version 2.1.4 - September 22, 2017 ([Maven](http://search.maven.org/#artifactdetails%7Cio.reactivex.rxjava2%7Crxjava%7C2.1.4%7C))
 
 #### API changes
