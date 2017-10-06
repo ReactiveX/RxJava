@@ -15,7 +15,10 @@
  */
 
 /**
- * Default wrappers and implementations for Observer-based consumer classes and interfaces;
- * utility classes for creating them from callbacks.
+ * Default wrappers and implementations for Observer-based consumer classes and interfaces,
+ * including disposable and resource-tracking variants and
+ * the {@link io.reactivex.subscribers.TestObserver} that allows unit testing
+ * {@link io.reactivex.Observable}-, {@link io.reactivex.Single}-, {@link io.reactivex.Maybe}-
+ * and {@link io.reactivex.Completable}-based flows.
  */
 package io.reactivex.observers;
