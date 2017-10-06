@@ -45,7 +45,7 @@ public final class ObservableConcatMapCompletable<T> extends Completable {
 
     static final class SourceObserver<T> extends AtomicInteger implements Observer<T>, Disposable {
 
-        private static final long serialVersionUID = -7332607315705607415L;
+        private static final long serialVersionUID = 6893587405571511048L;
         final CompletableObserver actual;
         final SequentialDisposable sa;
         final Function<? super T, ? extends CompletableSource> mapper;
