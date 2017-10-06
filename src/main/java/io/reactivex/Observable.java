@@ -6262,7 +6262,9 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @param mapper
      *            a function that, when applied to an item emitted by the source ObservableSource, returns a CompletableSource
      * @return a Completable that signals {@code onComplete} when the upstream and all CompletableSources complete
+     * @since 2.1.6 - experimental
      */
+    @Experimental
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Completable concatMapCompletable(Function<? super T, ? extends CompletableSource> mapper) {
@@ -6279,16 +6281,20 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *
      * @param mapper
      *            a function that, when applied to an item emitted by the source ObservableSource, returns a CompletableSource
-     * @param prefetch
-     *            the number of elements to prefetch from the current Observable
+     *
+     * @param capacityHint
+     *            the number of upstream items expected to be buffered until the current CompletableSource,  mapped from
+     *            the current item, completes.
      * @return a Completable that signals {@code onComplete} when the upstream and all CompletableSources complete
+     * @since 2.1.6 - experimental
      */
+    @Experimental
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final Completable concatMapCompletable(Function<? super T, ? extends CompletableSource> mapper, int prefetch) {
+    public final Completable concatMapCompletable(Function<? super T, ? extends CompletableSource> mapper, int capacityHint) {
         ObjectHelper.requireNonNull(mapper, "mapper is null");
-        ObjectHelper.verifyPositive(prefetch, "prefetch");
-        return RxJavaPlugins.onAssembly(new ObservableConcatMapCompletable<T>(this, mapper, prefetch));
+        ObjectHelper.verifyPositive(capacityHint, "capacityHint");
+        return RxJavaPlugins.onAssembly(new ObservableConcatMapCompletable<T>(this, mapper, capacityHint));
     }
 
     /**
