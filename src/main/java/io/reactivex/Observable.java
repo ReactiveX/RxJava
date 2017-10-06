@@ -6260,9 +6260,8 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * </dl>
      *
      * @param mapper
-     *            a function that, when applied to an item emitted by the source ObservableSource, returns an
-     *            CompletableSource
-     * @return a Completable that emits onComplete when the upstream and all CompletableSources complete
+     *            a function that, when applied to an item emitted by the source ObservableSource, returns a CompletableSource
+     * @return a Completable that signals {@code onComplete} when the upstream and all CompletableSources complete
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -6279,11 +6278,10 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * </dl>
      *
      * @param mapper
-     *            a function that, when applied to an item emitted by the source ObservableSource, returns an
-     *            CompletableSource
+     *            a function that, when applied to an item emitted by the source ObservableSource, returns a CompletableSource
      * @param prefetch
      *            the number of elements to prefetch from the current Observable
-     * @return a Completable that emits onComplete when the upstream and all CompletableSources complete
+     * @return a Completable that signals {@code onComplete} when the upstream and all CompletableSources complete
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
