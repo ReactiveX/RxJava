@@ -6092,7 +6092,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * <p>
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code concatMap} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dd>{@code concatMapCompletable} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
      * @param mapper
@@ -6113,7 +6113,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * <p>
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code concatMap} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dd>{@code concatMapCompletable} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
      * @param mapper
@@ -6128,6 +6128,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Completable concatMapCompletable(Function<? super T, ? extends CompletableSource> mapper, int prefetch) {
         ObjectHelper.requireNonNull(mapper, "mapper is null");
+        ObjectHelper.verifyPositive(prefetch, "prefetch");
         return RxJavaPlugins.onAssembly(new ObservableConcatMapCompletable<T>(this, mapper, prefetch));
     }
 
