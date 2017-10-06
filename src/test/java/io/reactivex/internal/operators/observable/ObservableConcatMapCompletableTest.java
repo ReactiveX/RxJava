@@ -22,7 +22,7 @@ import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subjects.PublishSubject;
 import io.reactivex.subjects.UnicastSubject;
-import org.testng.annotations.Test;
+import org.junit.Test;
 
 import java.util.List;
 
