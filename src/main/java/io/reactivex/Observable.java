@@ -83,12 +83,12 @@ import io.reactivex.schedulers.*;
  *             System.out.println("Done!");
  *         }
  *     });
- *
+ * 
  * Thread.sleep(500);
  * // the sequence now can be cancelled via dispose()
  * d.dispose();
  * </code></pre>
- *
+ * 
  * @param <T>
  *            the type of the items emitted by the Observable
  * @see Flowable
