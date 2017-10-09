@@ -10939,11 +10939,11 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * Observable&lt;Integer&gt; source = Observable.range(1, 10);
      * CompositeDisposable composite = new CompositeDisposable();
      *
-     * ResourceObserver&lt;Integer&gt; rs = new ResourceObserver&lt;&gt;() {
+     * DisposableObserver&lt;Integer&gt; ds = new DisposableObserver&lt;&gt;() {
      *     // ...
      * };
      *
-     * composite.add(source.subscribeWith(rs));
+     * composite.add(source.subscribeWith(ds));
      * </code></pre>
      * <dl>
      *  <dt><b>Scheduler:</b></dt>

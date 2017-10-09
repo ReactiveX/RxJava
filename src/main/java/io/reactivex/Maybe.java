@@ -3772,11 +3772,11 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * Maybe&lt;Integer&gt; source = Maybe.just(1);
      * CompositeDisposable composite = new CompositeDisposable();
      *
-     * MaybeObserver&lt;Integer&gt; ms = new MaybeObserver&lt;&gt;() {
+     * DisposableMaybeObserver&lt;Integer&gt; ds = new DisposableMaybeObserver&lt;&gt;() {
      *     // ...
      * };
      *
-     * composite.add(source.subscribeWith(ms));
+     * composite.add(source.subscribeWith(ds));
      * </code></pre>
      * <dl>
      *  <dt><b>Scheduler:</b></dt>

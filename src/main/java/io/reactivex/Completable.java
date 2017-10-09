@@ -1686,11 +1686,11 @@ public abstract class Completable implements CompletableSource {
      * Completable source = Completable.complete().delay(1, TimeUnit.SECONDS);
      * CompositeDisposable composite = new CompositeDisposable();
      *
-     * class ResourceCompletableObserver implements CompletableObserver, Disposable {
+     * DisposableCompletableObserver ds = new DisposableCompletableObserver() {
      *     // ...
-     * }
+     * };
      *
-     * composite.add(source.subscribeWith(new ResourceCompletableObserver()));
+     * composite.add(source.subscribeWith(ds));
      * </code></pre>
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
