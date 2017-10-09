@@ -54,7 +54,7 @@ def junitVersion = "4.12"
 def reactiveStreamsVersion = "1.0.1"
 def mockitoVersion = "2.1.0"
 def jmhVersion = "1.16"
-def testNgVersion = "6.9.10"
+def testNgVersion = "6.11"
 
 // --------------------------------------
 
