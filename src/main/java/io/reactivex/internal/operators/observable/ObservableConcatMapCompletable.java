@@ -12,19 +12,17 @@
  */
 package io.reactivex.internal.operators.observable;
 
+import java.util.concurrent.atomic.*;
+
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.disposables.DisposableHelper;
-import io.reactivex.internal.disposables.SequentialDisposable;
 import io.reactivex.internal.functions.ObjectHelper;
-import io.reactivex.internal.fuseable.QueueDisposable;
-import io.reactivex.internal.fuseable.SimpleQueue;
+import io.reactivex.internal.fuseable.*;
 import io.reactivex.internal.queue.SpscLinkedArrayQueue;
 import io.reactivex.plugins.RxJavaPlugins;
-
-import java.util.concurrent.atomic.AtomicInteger;
 
 public final class ObservableConcatMapCompletable<T> extends Completable {
 
@@ -47,9 +45,8 @@ public final class ObservableConcatMapCompletable<T> extends Completable {
 
         private static final long serialVersionUID = 6893587405571511048L;
         final CompletableObserver actual;
-        final SequentialDisposable sa;
         final Function<? super T, ? extends CompletableSource> mapper;
-        final CompletableObserver inner;
+        final InnerObserver inner;
         final int bufferSize;
 
         SimpleQueue<T> queue;
@@ -70,7 +67,6 @@ public final class ObservableConcatMapCompletable<T> extends Completable {
             this.mapper = mapper;
             this.bufferSize = bufferSize;
             this.inner = new InnerObserver(actual, this);
-            this.sa = new SequentialDisposable();
         }
         @Override
         public void onSubscribe(Disposable s) {
@@ -149,16 +145,12 @@ public final class ObservableConcatMapCompletable<T> extends Completable {
         @Override
         public void dispose() {
             disposed = true;
-            sa.dispose();
+            inner.dispose();
             s.dispose();
 
             if (getAndIncrement() == 0) {
                 queue.clear();
             }
-        }
-
-        void innerSubscribe(Disposable s) {
-            sa.update(s);
         }
 
         void drain() {
@@ -219,7 +211,8 @@ public final class ObservableConcatMapCompletable<T> extends Completable {
             }
         }
 
-        static final class InnerObserver implements CompletableObserver {
+        static final class InnerObserver extends AtomicReference<Disposable> implements CompletableObserver {
+            private static final long serialVersionUID = -5987419458390772447L;
             final CompletableObserver actual;
             final SourceObserver<?> parent;
 
@@ -230,7 +223,7 @@ public final class ObservableConcatMapCompletable<T> extends Completable {
 
             @Override
             public void onSubscribe(Disposable s) {
-                parent.innerSubscribe(s);
+                DisposableHelper.set(this, s);
             }
 
             @Override
@@ -241,6 +234,10 @@ public final class ObservableConcatMapCompletable<T> extends Completable {
             @Override
             public void onComplete() {
                 parent.innerComplete();
+            }
+
+            void dispose() {
+                DisposableHelper.dispose(this);
             }
         }
     }

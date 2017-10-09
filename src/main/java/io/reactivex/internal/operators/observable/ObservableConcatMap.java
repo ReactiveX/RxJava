@@ -13,7 +13,7 @@
 package io.reactivex.internal.operators.observable;
 
 import java.util.concurrent.Callable;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.*;
 
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
@@ -59,9 +59,8 @@ public final class ObservableConcatMap<T, U> extends AbstractObservableWithUpstr
 
         private static final long serialVersionUID = 8828587559905699186L;
         final Observer<? super U> actual;
-        final SequentialDisposable sa;
         final Function<? super T, ? extends ObservableSource<? extends U>> mapper;
-        final Observer<U> inner;
+        final InnerObserver<U> inner;
         final int bufferSize;
 
         SimpleQueue<T> queue;
@@ -82,7 +81,6 @@ public final class ObservableConcatMap<T, U> extends AbstractObservableWithUpstr
             this.mapper = mapper;
             this.bufferSize = bufferSize;
             this.inner = new InnerObserver<U>(actual, this);
-            this.sa = new SequentialDisposable();
         }
         @Override
         public void onSubscribe(Disposable s) {
@@ -161,16 +159,12 @@ public final class ObservableConcatMap<T, U> extends AbstractObservableWithUpstr
         @Override
         public void dispose() {
             disposed = true;
-            sa.dispose();
+            inner.dispose();
             s.dispose();
 
             if (getAndIncrement() == 0) {
                 queue.clear();
             }
-        }
-
-        void innerSubscribe(Disposable s) {
-            sa.update(s);
         }
 
         void drain() {
@@ -231,7 +225,10 @@ public final class ObservableConcatMap<T, U> extends AbstractObservableWithUpstr
             }
         }
 
-        static final class InnerObserver<U> implements Observer<U> {
+        static final class InnerObserver<U> extends AtomicReference<Disposable> implements Observer<U> {
+
+            private static final long serialVersionUID = -7449079488798789337L;
+
             final Observer<? super U> actual;
             final SourceObserver<?, ?> parent;
 
@@ -242,7 +239,7 @@ public final class ObservableConcatMap<T, U> extends AbstractObservableWithUpstr
 
             @Override
             public void onSubscribe(Disposable s) {
-                parent.innerSubscribe(s);
+                DisposableHelper.set(this, s);
             }
 
             @Override
@@ -257,6 +254,10 @@ public final class ObservableConcatMap<T, U> extends AbstractObservableWithUpstr
             @Override
             public void onComplete() {
                 parent.innerComplete();
+            }
+
+            void dispose() {
+                DisposableHelper.dispose(this);
             }
         }
     }
@@ -277,8 +278,6 @@ public final class ObservableConcatMap<T, U> extends AbstractObservableWithUpstr
         final AtomicThrowable error;
 
         final DelayErrorInnerObserver<R> observer;
-
-        final SequentialDisposable arbiter;
 
         final boolean tillTheEnd;
 
@@ -303,7 +302,6 @@ public final class ObservableConcatMap<T, U> extends AbstractObservableWithUpstr
             this.tillTheEnd = tillTheEnd;
             this.error = new AtomicThrowable();
             this.observer = new DelayErrorInnerObserver<R>(actual, this);
-            this.arbiter = new SequentialDisposable();
         }
 
         @Override
@@ -375,7 +373,7 @@ public final class ObservableConcatMap<T, U> extends AbstractObservableWithUpstr
         public void dispose() {
             cancelled = true;
             d.dispose();
-            arbiter.dispose();
+            observer.dispose();
         }
 
         @SuppressWarnings("unchecked")
@@ -479,7 +477,9 @@ public final class ObservableConcatMap<T, U> extends AbstractObservableWithUpstr
             }
         }
 
-        static final class DelayErrorInnerObserver<R> implements Observer<R> {
+        static final class DelayErrorInnerObserver<R> extends AtomicReference<Disposable> implements Observer<R> {
+
+            private static final long serialVersionUID = 2620149119579502636L;
 
             final Observer<? super R> actual;
 
@@ -492,7 +492,7 @@ public final class ObservableConcatMap<T, U> extends AbstractObservableWithUpstr
 
             @Override
             public void onSubscribe(Disposable d) {
-                parent.arbiter.replace(d);
+                DisposableHelper.replace(this, d);
             }
 
             @Override
@@ -519,6 +519,10 @@ public final class ObservableConcatMap<T, U> extends AbstractObservableWithUpstr
                 ConcatMapDelayErrorObserver<?, R> p = parent;
                 p.active = false;
                 p.drain();
+            }
+
+            void dispose() {
+                DisposableHelper.dispose(this);
             }
         }
     }
