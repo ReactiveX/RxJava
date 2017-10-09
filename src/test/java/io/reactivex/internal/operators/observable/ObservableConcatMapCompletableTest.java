@@ -34,7 +34,7 @@ public class ObservableConcatMapCompletableTest {
     public void asyncFused() throws Exception {
         UnicastSubject<Integer> us = UnicastSubject.create();
 
-        TestObserver to = us.concatMapCompletable(completableComplete(), 2).test();
+        TestObserver<Void> to = us.concatMapCompletable(completableComplete(), 2).test();
 
         us.onNext(1);
         us.onComplete();
@@ -46,7 +46,7 @@ public class ObservableConcatMapCompletableTest {
     @Test
     public void notFused() throws Exception {
         UnicastSubject<Integer> us = UnicastSubject.create();
-        TestObserver to = us.hide().concatMapCompletable(completableComplete(), 2).test();
+        TestObserver<Void> to = us.hide().concatMapCompletable(completableComplete(), 2).test();
 
         us.onNext(1);
         us.onNext(2);
@@ -113,7 +113,7 @@ public class ObservableConcatMapCompletableTest {
                 final PublishSubject<Integer> ps1 = PublishSubject.create();
                 final PublishSubject<Integer> ps2 = PublishSubject.create();
 
-                TestObserver to = ps1.concatMapCompletable(new Function<Integer, CompletableSource>() {
+                TestObserver<Void> to = ps1.concatMapCompletable(new Function<Integer, CompletableSource>() {
                     @Override
                     public CompletableSource apply(Integer v) throws Exception {
                         return Completable.fromObservable(ps2);
@@ -172,7 +172,6 @@ public class ObservableConcatMapCompletableTest {
         .assertFailure(TestException.class);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void concatReportsDisposedOnComplete() {
         final Disposable[] disposable = { null };
@@ -199,7 +198,6 @@ public class ObservableConcatMapCompletableTest {
         assertTrue(disposable[0].isDisposed());
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void concatReportsDisposedOnError() {
         final Disposable[] disposable = { null };
