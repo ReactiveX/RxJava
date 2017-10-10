@@ -66,7 +66,7 @@ public class FlowableLimitTest implements LongConsumer, Action {
 
         assertEquals(2, requests.size());
         assertEquals(5, requests.get(0).intValue());
-        assertEquals(-100, requests.get(1).intValue());
+        assertEquals(CANCELLED, requests.get(1));
     }
 
     @Test
@@ -98,7 +98,7 @@ public class FlowableLimitTest implements LongConsumer, Action {
         .assertResult();
 
         assertEquals(1, requests.size());
-        assertEquals(-100, requests.get(0).intValue());
+        assertEquals(CANCELLED, requests.get(0));
     }
 
     @Test
