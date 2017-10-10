@@ -30,7 +30,9 @@ import io.reactivex.subscribers.TestSubscriber;
 
 public class FlowableLimitTest implements LongConsumer, Action {
 
-    final List<Long> requests = Collections.synchronizedList(new ArrayList<Long>());
+    final List<Long> requests = new ArrayList<Long>();
+
+    static final Long CANCELLED = -100L;
 
     @Override
     public void accept(long t) throws Exception {
@@ -39,7 +41,7 @@ public class FlowableLimitTest implements LongConsumer, Action {
 
     @Override
     public void run() throws Exception {
-        requests.add(-100L);
+        requests.add(CANCELLED);
     }
 
     @Test
@@ -130,7 +132,7 @@ public class FlowableLimitTest implements LongConsumer, Action {
         .test()
         .assertResult(1, 2, 3, 4, 5);
 
-        assertEquals(Arrays.asList(6L, -100L), requests);
+        assertEquals(Arrays.asList(6L, CANCELLED), requests);
     }
 
     @Test
