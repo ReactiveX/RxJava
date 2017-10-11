@@ -15,21 +15,26 @@
  */
 package rx.internal.operators;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 
 import java.io.IOException;
+import java.util.*;
 import java.util.concurrent.*;
 
 import org.junit.*;
 import org.mockito.*;
 
 import rx.*;
+import rx.Observable;
 import rx.Observable.OnSubscribe;
-import rx.functions.Func1;
-import rx.observers.TestSubscriber;
+import rx.Observer;
+import rx.exceptions.TestException;
+import rx.functions.*;
+import rx.observers.*;
 import rx.schedulers.TestScheduler;
-import rx.subjects.PublishSubject;
+import rx.subjects.*;
 
 public class OperatorTimeoutTests {
     private PublishSubject<String> underlyingSubject;
@@ -426,5 +431,72 @@ public class OperatorTimeoutTests {
         ts.assertValue(1);
         ts.assertNoErrors();
         ts.assertCompleted();
+    }
+
+    @Test
+    public void disconnectOnTimeout() {
+        final List<String> list = Collections.synchronizedList(new ArrayList<String>());
+
+        TestScheduler sch = new TestScheduler();
+
+        Subject<Long, Long> subject = PublishSubject.create();
+        Observable<Long> initialObservable = subject.share()
+        .map(new Func1<Long, Long>() {
+            @Override
+            public Long call(Long value) {
+                list.add("Received value " + value);
+                return value;
+            }
+        });
+
+        Observable<Long> timeoutObservable = initialObservable
+        .map(new Func1<Long, Long>() {
+            @Override
+            public Long call(Long value) {
+               list.add("Timeout received value " + value);
+               return value;
+            }
+        });
+
+        TestSubscriber<Long> subscriber = new TestSubscriber<Long>();
+        initialObservable
+        .doOnUnsubscribe(new Action0() {
+            @Override
+            public void call() {
+                list.add("Unsubscribed");
+            }
+        })
+        .timeout(1, TimeUnit.SECONDS, timeoutObservable, sch).subscribe(subscriber);
+
+        subject.onNext(5L);
+
+        sch.advanceTimeBy(2, TimeUnit.SECONDS);
+
+        subject.onNext(10L);
+        subject.onCompleted();
+
+        subscriber.awaitTerminalEvent();
+        subscriber.assertNoErrors();
+        subscriber.assertValues(5L, 10L);
+
+        assertEquals(Arrays.asList(
+                "Received value 5",
+                "Unsubscribed",
+                "Received value 10",
+                "Timeout received value 10"
+        ), list);
+    }
+
+    @Test
+    public void fallbackIsError() {
+        TestScheduler sch = new TestScheduler();
+
+        AssertableSubscriber<Object> as = Observable.never()
+                .timeout(1, TimeUnit.SECONDS, Observable.error(new TestException()), sch)
+        .test();
+
+        sch.advanceTimeBy(1, TimeUnit.SECONDS);
+
+        as.assertFailure(TestException.class);
     }
 }

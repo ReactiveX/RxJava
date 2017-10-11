@@ -11443,7 +11443,7 @@ public class Observable<T> {
      * @see <a href="http://reactivex.io/documentation/operators/timeout.html">ReactiveX operators documentation: Timeout</a>
      */
     public final Observable<T> timeout(long timeout, TimeUnit timeUnit, Observable<? extends T> other, Scheduler scheduler) {
-        return lift(new OperatorTimeout<T>(timeout, timeUnit, other, scheduler));
+        return unsafeCreate(new OnSubscribeTimeoutTimedWithFallback<T>(this, timeout, timeUnit, scheduler, other));
     }
 
     /**
