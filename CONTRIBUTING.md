@@ -6,7 +6,7 @@ When submitting code, please make every effort to follow existing conventions an
 
 ## License
 
-By contributing your code, you agree to license your contribution under the terms of the APLv2: https://github.com/ReactiveX/RxJava/blob/master/LICENSE
+By contributing your code, you agree to license your contribution under the terms of the APLv2: https://github.com/ReactiveX/RxJava/blob/2.x/LICENSE
 
 All files are released with the Apache 2.0 license.
 
