@@ -11284,11 +11284,13 @@ public class Observable<T> {
      *             if {@code timeoutSelector} is null
      * @see <a href="http://reactivex.io/documentation/operators/timeout.html">ReactiveX operators documentation: Timeout</a>
      */
+    @SuppressWarnings("unchecked")
     public final <U, V> Observable<T> timeout(Func0<? extends Observable<U>> firstTimeoutSelector, Func1<? super T, ? extends Observable<V>> timeoutSelector, Observable<? extends T> other) {
         if (timeoutSelector == null) {
             throw new NullPointerException("timeoutSelector is null");
         }
-        return lift(new OperatorTimeoutWithSelector<T, U, V>(firstTimeoutSelector, timeoutSelector, other));
+        return unsafeCreate(new OnSubscribeTimeoutSelectorWithFallback<T, U, V>(this,
+                firstTimeoutSelector != null ? defer((Func0<Observable<U>>)firstTimeoutSelector) : null, timeoutSelector, other));
     }
 
     /**

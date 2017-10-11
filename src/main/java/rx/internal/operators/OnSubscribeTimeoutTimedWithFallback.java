@@ -106,10 +106,7 @@ public final class OnSubscribeTimeoutTimedWithFallback<T> implements Observable.
         @Override
         public void onNext(T t) {
             long idx = index.get();
-            if (idx == Long.MAX_VALUE) {
-                return;
-            }
-            if (!index.compareAndSet(idx, idx + 1)) {
+            if (idx == Long.MAX_VALUE || !index.compareAndSet(idx, idx + 1)) {
                 return;
             }
 
@@ -118,9 +115,9 @@ public final class OnSubscribeTimeoutTimedWithFallback<T> implements Observable.
                 s.unsubscribe();
             }
 
-            actual.onNext(t);
-
             consumed++;
+
+            actual.onNext(t);
 
             startTimeout(idx + 1);
         }
@@ -194,37 +191,37 @@ public final class OnSubscribeTimeoutTimedWithFallback<T> implements Observable.
                 onTimeout(idx);
             }
         }
+    }
 
-        static final class FallbackSubscriber<T> extends Subscriber<T> {
+    static final class FallbackSubscriber<T> extends Subscriber<T> {
 
-            final Subscriber<? super T> actual;
+        final Subscriber<? super T> actual;
 
-            final ProducerArbiter arbiter;
+        final ProducerArbiter arbiter;
 
-            FallbackSubscriber(Subscriber<? super T> actual, ProducerArbiter arbiter) {
-                this.actual = actual;
-                this.arbiter = arbiter;
-            }
+        FallbackSubscriber(Subscriber<? super T> actual, ProducerArbiter arbiter) {
+            this.actual = actual;
+            this.arbiter = arbiter;
+        }
 
-            @Override
-            public void onNext(T t) {
-                actual.onNext(t);
-            }
+        @Override
+        public void onNext(T t) {
+            actual.onNext(t);
+        }
 
-            @Override
-            public void onError(Throwable e) {
-                actual.onError(e);
-            }
+        @Override
+        public void onError(Throwable e) {
+            actual.onError(e);
+        }
 
-            @Override
-            public void onCompleted() {
-                actual.onCompleted();
-            }
+        @Override
+        public void onCompleted() {
+            actual.onCompleted();
+        }
 
-            @Override
-            public void setProducer(Producer p) {
-                arbiter.setProducer(p);
-            }
+        @Override
+        public void setProducer(Producer p) {
+            arbiter.setProducer(p);
         }
     }
 }
