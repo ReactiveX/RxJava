@@ -64,9 +64,6 @@ public final class CompositeDisposable implements Disposable, DisposableContaine
 
     @Override
     public void dispose() {
-        if (disposed) {
-            return;
-        }
         OpenHashSet<Disposable> set;
         synchronized (this) {
             if (disposed) {
@@ -88,17 +85,15 @@ public final class CompositeDisposable implements Disposable, DisposableContaine
     @Override
     public boolean add(@NonNull Disposable d) {
         ObjectHelper.requireNonNull(d, "d is null");
-        if (!disposed) {
-            synchronized (this) {
-                if (!disposed) {
-                    OpenHashSet<Disposable> set = resources;
-                    if (set == null) {
-                        set = new OpenHashSet<Disposable>();
-                        resources = set;
-                    }
-                    set.add(d);
-                    return true;
+        synchronized (this) {
+            if (!disposed) {
+                OpenHashSet<Disposable> set = resources;
+                if (set == null) {
+                    set = new OpenHashSet<Disposable>();
+                    resources = set;
                 }
+                set.add(d);
+                return true;
             }
         }
         d.dispose();
@@ -113,20 +108,18 @@ public final class CompositeDisposable implements Disposable, DisposableContaine
      */
     public boolean addAll(@NonNull Disposable... ds) {
         ObjectHelper.requireNonNull(ds, "ds is null");
-        if (!disposed) {
-            synchronized (this) {
-                if (!disposed) {
-                    OpenHashSet<Disposable> set = resources;
-                    if (set == null) {
-                        set = new OpenHashSet<Disposable>(ds.length + 1);
-                        resources = set;
-                    }
-                    for (Disposable d : ds) {
-                        ObjectHelper.requireNonNull(d, "d is null");
-                        set.add(d);
-                    }
-                    return true;
+        synchronized (this) {
+            if (!disposed) {
+                OpenHashSet<Disposable> set = resources;
+                if (set == null) {
+                    set = new OpenHashSet<Disposable>(ds.length + 1);
+                    resources = set;
                 }
+                for (Disposable d : ds) {
+                    ObjectHelper.requireNonNull(d, "d is null");
+                    set.add(d);
+                }
+                return true;
             }
         }
         for (Disposable d : ds) {
@@ -147,9 +140,6 @@ public final class CompositeDisposable implements Disposable, DisposableContaine
     @Override
     public boolean delete(@NonNull Disposable d) {
         ObjectHelper.requireNonNull(d, "Disposable item is null");
-        if (disposed) {
-            return false;
-        }
         synchronized (this) {
             if (disposed) {
                 return false;
@@ -167,9 +157,6 @@ public final class CompositeDisposable implements Disposable, DisposableContaine
      * Atomically clears the container, then disposes all the previously contained Disposables.
      */
     public void clear() {
-        if (disposed) {
-            return;
-        }
         OpenHashSet<Disposable> set;
         synchronized (this) {
             if (disposed) {
@@ -188,9 +175,6 @@ public final class CompositeDisposable implements Disposable, DisposableContaine
      * @return the number of currently held Disposables
      */
     public int size() {
-        if (disposed) {
-            return 0;
-        }
         synchronized (this) {
             if (disposed) {
                 return 0;
