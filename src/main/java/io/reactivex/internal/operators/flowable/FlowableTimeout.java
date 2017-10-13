@@ -350,8 +350,9 @@ public final class FlowableTimeout<T, U, V> extends AbstractFlowableWithUpstream
 
         @Override
         public void onNext(Object t) {
-            if (get() != SubscriptionHelper.CANCELLED) {
-                get().cancel();
+            Subscription upstream = get();
+            if (upstream != SubscriptionHelper.CANCELLED) {
+                upstream.cancel();
                 lazySet(SubscriptionHelper.CANCELLED);
                 parent.onTimeout(idx);
             }
