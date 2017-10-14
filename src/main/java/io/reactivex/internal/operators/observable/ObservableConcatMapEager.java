@@ -24,6 +24,7 @@ import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.internal.fuseable.*;
 import io.reactivex.internal.observers.*;
+import io.reactivex.internal.queue.SpscLinkedArrayQueue;
 import io.reactivex.internal.util.*;
 import io.reactivex.plugins.RxJavaPlugins;
 
@@ -129,7 +130,7 @@ public final class ObservableConcatMapEager<T, R> extends AbstractObservableWith
                     }
                 }
 
-                queue = QueueDrainHelper.createQueue(prefetch);
+                queue = new SpscLinkedArrayQueue<T>(prefetch);
 
                 actual.onSubscribe(this);
             }
@@ -372,7 +373,6 @@ public final class ObservableConcatMapEager<T, R> extends AbstractObservableWith
                             error.addThrowable(ex);
 
                             current = null;
-                            active = null;
                             activeCount--;
                             continue outer;
                         }
@@ -381,7 +381,6 @@ public final class ObservableConcatMapEager<T, R> extends AbstractObservableWith
 
                         if (d && empty) {
                             current = null;
-                            active = null;
                             activeCount--;
                             continue outer;
                         }

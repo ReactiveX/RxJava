@@ -22,8 +22,9 @@ import io.reactivex.plugins.RxJavaPlugins;
 /**
  * Serializes access to the onNext, onError and onComplete methods of another Subscriber.
  *
- * <p>Note that onSubscribe is not serialized in respect of the other methods so
- * make sure the Subscription is set before any of the other methods are called.
+ * <p>Note that {@link #onSubscribe(Subscription)} is not serialized in respect of the other methods so
+ * make sure the {@code onSubscribe} is called with a non-null {@code Subscription}
+ * before any of the other methods are called.
  *
  * <p>The implementation assumes that the actual Subscriber's methods don't throw.
  *

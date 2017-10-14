@@ -126,7 +126,6 @@ public final class ParallelCollect<T, C> extends ParallelFlowable<C> {
                 Exceptions.throwIfFatal(ex);
                 cancel();
                 onError(ex);
-                return;
             }
         }
 

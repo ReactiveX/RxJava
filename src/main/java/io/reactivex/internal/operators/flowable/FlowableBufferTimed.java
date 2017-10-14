@@ -280,16 +280,7 @@ public final class FlowableBufferTimed<T, U extends Collection<? super T>> exten
 
             w.schedulePeriodically(this, timeskip, timeskip, unit);
 
-            w.schedule(new Runnable() {
-                @Override
-                public void run() {
-                    synchronized (BufferSkipBoundedSubscriber.this) {
-                        buffers.remove(b);
-                    }
-
-                    fastPathOrderedEmitMax(b, false, w);
-                }
-            }, timespan, unit);
+            w.schedule(new RemoveFromBuffer(b), timespan, unit);
         }
 
         @Override
@@ -367,22 +358,30 @@ public final class FlowableBufferTimed<T, U extends Collection<? super T>> exten
                 buffers.add(b);
             }
 
-            w.schedule(new Runnable() {
-                @Override
-                public void run() {
-                    synchronized (BufferSkipBoundedSubscriber.this) {
-                        buffers.remove(b);
-                    }
-
-                    fastPathOrderedEmitMax(b, false, w);
-                }
-            }, timespan, unit);
+            w.schedule(new RemoveFromBuffer(b), timespan, unit);
         }
 
         @Override
         public boolean accept(Subscriber<? super U> a, U v) {
             a.onNext(v);
             return true;
+        }
+
+        final class RemoveFromBuffer implements Runnable {
+            private final U buffer;
+
+            RemoveFromBuffer(U buffer) {
+                this.buffer = buffer;
+            }
+
+            @Override
+            public void run() {
+                synchronized (BufferSkipBoundedSubscriber.this) {
+                    buffers.remove(buffer);
+                }
+
+                fastPathOrderedEmitMax(buffer, false, w);
+            }
         }
     }
 
@@ -461,12 +460,12 @@ public final class FlowableBufferTimed<T, U extends Collection<? super T>> exten
                 if (b.size() < maxSize) {
                     return;
                 }
+
+                buffer = null;
+                producerIndex++;
             }
 
             if (restartTimerOnMaxSize) {
-                buffer = null;
-                producerIndex++;
-
                 timer.dispose();
             }
 
@@ -481,17 +480,12 @@ public final class FlowableBufferTimed<T, U extends Collection<? super T>> exten
                 return;
             }
 
+            synchronized (this) {
+                buffer = b;
+                consumerIndex++;
+            }
             if (restartTimerOnMaxSize) {
-                synchronized (this) {
-                    buffer = b;
-                    consumerIndex++;
-                }
-
                 timer = w.schedulePeriodically(this, timespan, timespan, unit);
-            } else {
-                synchronized (this) {
-                    buffer = b;
-                }
             }
         }
 

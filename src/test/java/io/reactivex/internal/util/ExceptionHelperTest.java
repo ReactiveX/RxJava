@@ -46,4 +46,9 @@ public class ExceptionHelperTest {
             TestHelper.race(r, r, Schedulers.single());
         }
     }
+
+    @Test(expected = InternalError.class)
+    public void throwIfThrowable() throws Exception {
+        ExceptionHelper.<Exception>throwIfThrowable(new InternalError());
+    }
 }

@@ -135,15 +135,13 @@ public class MaybeFromActionTest {
                 @Override
                 public void run() throws Exception {
                     cdl1.countDown();
-                    cdl2.await();
+                    cdl2.await(5, TimeUnit.SECONDS);
                 }
             }).subscribeOn(Schedulers.single()).test();
 
             assertTrue(cdl1.await(5, TimeUnit.SECONDS));
 
             to.cancel();
-
-            cdl2.countDown();
 
             int timeout = 10;
 

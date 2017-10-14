@@ -13,6 +13,8 @@
 
 package io.reactivex;
 
+import io.reactivex.annotations.*;
+
 /**
  * Interface to map/wrap a downstream observer to an upstream observer.
  *
@@ -26,5 +28,6 @@ public interface ObservableOperator<Downstream, Upstream> {
      * @return the parent Observer instance
      * @throws Exception on failure
      */
-    Observer<? super Upstream> apply(Observer<? super Downstream> observer) throws Exception;
+    @NonNull
+    Observer<? super Upstream> apply(@NonNull Observer<? super Downstream> observer) throws Exception;
 }

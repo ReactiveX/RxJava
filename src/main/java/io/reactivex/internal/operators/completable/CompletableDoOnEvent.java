@@ -32,36 +32,44 @@ public final class CompletableDoOnEvent extends Completable {
 
     @Override
     protected void subscribeActual(final CompletableObserver s) {
-        source.subscribe(new CompletableObserver() {
-            @Override
-            public void onComplete() {
-                try {
-                    onEvent.accept(null);
-                } catch (Throwable e) {
-                    Exceptions.throwIfFatal(e);
-                    s.onError(e);
-                    return;
-                }
+        source.subscribe(new DoOnEvent(s));
+    }
 
-                s.onComplete();
+    final class DoOnEvent implements CompletableObserver {
+        private final CompletableObserver observer;
+
+        DoOnEvent(CompletableObserver observer) {
+            this.observer = observer;
+        }
+
+        @Override
+        public void onComplete() {
+            try {
+                onEvent.accept(null);
+            } catch (Throwable e) {
+                Exceptions.throwIfFatal(e);
+                observer.onError(e);
+                return;
             }
 
-            @Override
-            public void onError(Throwable e) {
-                try {
-                    onEvent.accept(e);
-                } catch (Throwable ex) {
-                    Exceptions.throwIfFatal(ex);
-                    e = new CompositeException(e, ex);
-                }
+            observer.onComplete();
+        }
 
-                s.onError(e);
+        @Override
+        public void onError(Throwable e) {
+            try {
+                onEvent.accept(e);
+            } catch (Throwable ex) {
+                Exceptions.throwIfFatal(ex);
+                e = new CompositeException(e, ex);
             }
 
-            @Override
-            public void onSubscribe(final Disposable d) {
-                s.onSubscribe(d);
-            }
-        });
+            observer.onError(e);
+        }
+
+        @Override
+        public void onSubscribe(final Disposable d) {
+            observer.onSubscribe(d);
+        }
     }
 }

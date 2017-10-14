@@ -86,12 +86,14 @@ public final class FlowableUnsubscribeOn<T> extends AbstractFlowableWithUpstream
         @Override
         public void cancel() {
             if (compareAndSet(false, true)) {
-                scheduler.scheduleDirect(new Runnable() {
-                    @Override
-                    public void run() {
-                        s.cancel();
-                    }
-                });
+                scheduler.scheduleDirect(new Cancellation());
+            }
+        }
+
+        final class Cancellation implements Runnable {
+            @Override
+            public void run() {
+                s.cancel();
             }
         }
     }

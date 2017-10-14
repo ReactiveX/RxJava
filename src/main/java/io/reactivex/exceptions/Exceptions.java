@@ -13,6 +13,7 @@
 
 package io.reactivex.exceptions;
 
+import io.reactivex.annotations.*;
 import io.reactivex.internal.util.ExceptionHelper;
 
 /**
@@ -32,7 +33,8 @@ public final class Exceptions {
      * @return because {@code propagate} itself throws an exception or error, this is a sort of phantom return
      *         value; {@code propagate} does not actually return anything
      */
-    public static RuntimeException propagate(Throwable t) {
+    @NonNull
+    public static RuntimeException propagate(@NonNull Throwable t) {
         /*
          * The return type of RuntimeException is a trick for code to be like this:
          *
@@ -61,7 +63,7 @@ public final class Exceptions {
      *         the {@code Throwable} to test and perhaps throw
      * @see <a href="https://github.com/ReactiveX/RxJava/issues/748#issuecomment-32471495">RxJava: StackOverflowError is swallowed (Issue #748)</a>
      */
-    public static void throwIfFatal(Throwable t) {
+    public static void throwIfFatal(@NonNull Throwable t) {
         // values here derived from https://github.com/ReactiveX/RxJava/issues/748#issuecomment-32471495
         if (t instanceof VirtualMachineError) {
             throw (VirtualMachineError) t;

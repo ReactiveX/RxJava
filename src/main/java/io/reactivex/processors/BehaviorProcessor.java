@@ -13,13 +13,13 @@
 
 package io.reactivex.processors;
 
-import io.reactivex.annotations.CheckReturnValue;
 import java.lang.reflect.Array;
 import java.util.concurrent.atomic.*;
 import java.util.concurrent.locks.*;
 
 import org.reactivestreams.*;
 
+import io.reactivex.annotations.*;
 import io.reactivex.exceptions.MissingBackpressureException;
 import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
@@ -34,7 +34,6 @@ import io.reactivex.plugins.RxJavaPlugins;
  * <img width="640" height="460" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/S.BehaviorProcessor.png" alt="">
  * <p>
  * Example usage:
- * <p>
  * <pre> {@code
 
   // observer will receive all events.
@@ -87,7 +86,7 @@ public final class BehaviorProcessor<T> extends FlowableProcessor<T> {
 
     final AtomicReference<Object> value;
 
-    boolean done;
+    final AtomicReference<Throwable> terminalEvent;
 
     long index;
 
@@ -131,6 +130,7 @@ public final class BehaviorProcessor<T> extends FlowableProcessor<T> {
         this.readLock = lock.readLock();
         this.writeLock = lock.writeLock();
         this.subscribers = new AtomicReference<BehaviorSubscription<T>[]>(EMPTY);
+        this.terminalEvent = new AtomicReference<Throwable>();
     }
 
     /**
@@ -155,18 +155,18 @@ public final class BehaviorProcessor<T> extends FlowableProcessor<T> {
                 bs.emitFirst();
             }
         } else {
-            Object o = value.get();
-            if (NotificationLite.isComplete(o)) {
+            Throwable ex = terminalEvent.get();
+            if (ex == ExceptionHelper.TERMINATED) {
                 s.onComplete();
             } else {
-                s.onError(NotificationLite.getError(o));
+                s.onError(ex);
             }
         }
     }
 
     @Override
     public void onSubscribe(Subscription s) {
-        if (done) {
+        if (terminalEvent.get() != null) {
             s.cancel();
             return;
         }
@@ -179,7 +179,7 @@ public final class BehaviorProcessor<T> extends FlowableProcessor<T> {
             onError(new NullPointerException("onNext called with null. Null values are generally not allowed in 2.x operators and sources."));
             return;
         }
-        if (done) {
+        if (terminalEvent.get() != null) {
             return;
         }
         Object o = NotificationLite.next(t);
@@ -194,11 +194,10 @@ public final class BehaviorProcessor<T> extends FlowableProcessor<T> {
         if (t == null) {
             t = new NullPointerException("onError called with null. Null values are generally not allowed in 2.x operators and sources.");
         }
-        if (done) {
+        if (!terminalEvent.compareAndSet(null, t)) {
             RxJavaPlugins.onError(t);
             return;
         }
-        done = true;
         Object o = NotificationLite.error(t);
         for (BehaviorSubscription<T> bs : terminate(o)) {
             bs.emitNext(o, index);
@@ -207,14 +206,48 @@ public final class BehaviorProcessor<T> extends FlowableProcessor<T> {
 
     @Override
     public void onComplete() {
-        if (done) {
+        if (!terminalEvent.compareAndSet(null, ExceptionHelper.TERMINATED)) {
             return;
         }
-        done = true;
         Object o = NotificationLite.complete();
         for (BehaviorSubscription<T> bs : terminate(o)) {
             bs.emitNext(o, index);  // relaxed read okay since this is the only mutator thread
         }
+    }
+
+    /**
+     * Tries to emit the item to all currently subscribed Subscribers if all of them
+     * has requested some value, returns false otherwise.
+     * <p>
+     * This method should be called in a sequential manner just like the onXXX methods
+     * of the PublishProcessor.
+     * <p>
+     * Calling with null will terminate the PublishProcessor and a NullPointerException
+     * is signalled to the Subscribers.
+     * @param t the item to emit, not null
+     * @return true if the item was emitted to all Subscribers
+     * @since 2.0.8 - experimental
+     */
+    @Experimental
+    public boolean offer(T t) {
+        if (t == null) {
+            onError(new NullPointerException("onNext called with null. Null values are generally not allowed in 2.x operators and sources."));
+            return true;
+        }
+        BehaviorSubscription<T>[] array = subscribers.get();
+
+        for (BehaviorSubscription<T> s : array) {
+            if (s.isFull()) {
+                return false;
+            }
+        }
+
+        Object o = NotificationLite.next(t);
+        setCurrent(o);
+        for (BehaviorSubscription<T> bs : array) {
+            bs.emitNext(o, index);
+        }
+        return true;
     }
 
     @Override
@@ -537,6 +570,10 @@ public final class BehaviorProcessor<T> extends FlowableProcessor<T> {
 
                 q.forEachWhile(this);
             }
+        }
+
+        public boolean isFull() {
+            return get() == 0L;
         }
     }
 }

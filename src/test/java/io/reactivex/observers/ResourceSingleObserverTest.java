@@ -23,6 +23,7 @@ import io.reactivex.TestHelper;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.disposables.Disposables;
 import io.reactivex.exceptions.TestException;
+import io.reactivex.internal.util.EndConsumerHelper;
 import io.reactivex.plugins.RxJavaPlugins;
 
 import static org.junit.Assert.assertEquals;
@@ -183,7 +184,7 @@ public class ResourceSingleObserverTest {
 
             assertEquals(1, rso.start);
 
-            TestHelper.assertError(error, 0, IllegalStateException.class, "Disposable already set!");
+            TestHelper.assertError(error, 0, IllegalStateException.class, EndConsumerHelper.composeMessage(rso.getClass().getName()));
         } finally {
             RxJavaPlugins.reset();
         }

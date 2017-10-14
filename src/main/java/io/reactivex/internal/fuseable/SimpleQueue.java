@@ -18,7 +18,7 @@ import io.reactivex.annotations.*;
 /**
  * A minimalist queue interface without the method bloat of java.util.Collection and java.util.Queue.
  *
- * @param <T> the value type to enqueue and dequeue, not null
+ * @param <T> the value type to offer and poll, not null
  */
 public interface SimpleQueue<T> {
 

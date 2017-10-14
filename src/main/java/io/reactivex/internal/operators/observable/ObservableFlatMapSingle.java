@@ -109,7 +109,7 @@ public final class ObservableFlatMapSingle<T, R> extends AbstractObservableWithU
 
             InnerObserver inner = new InnerObserver();
 
-            if (set.add(inner)) {
+            if (!cancelled && set.add(inner)) {
                 ms.subscribe(inner);
             }
         }

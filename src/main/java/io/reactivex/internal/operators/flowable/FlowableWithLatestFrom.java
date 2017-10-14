@@ -21,6 +21,7 @@ import io.reactivex.*;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.BiFunction;
 import io.reactivex.internal.functions.ObjectHelper;
+import io.reactivex.internal.fuseable.ConditionalSubscriber;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.subscribers.SerializedSubscriber;
 
@@ -40,34 +41,13 @@ public final class FlowableWithLatestFrom<T, U, R> extends AbstractFlowableWithU
 
         serial.onSubscribe(wlf);
 
-        other.subscribe(new FlowableSubscriber<U>() {
-            @Override
-            public void onSubscribe(Subscription s) {
-                if (wlf.setOther(s)) {
-                    s.request(Long.MAX_VALUE);
-                }
-            }
-
-            @Override
-            public void onNext(U t) {
-                wlf.lazySet(t);
-            }
-
-            @Override
-            public void onError(Throwable t) {
-                wlf.otherError(t);
-            }
-
-            @Override
-            public void onComplete() {
-                // nothing to do, the wlf will complete on its own pace
-            }
-        });
+        other.subscribe(new FlowableWithLatestSubscriber(wlf));
 
         source.subscribe(wlf);
     }
 
-    static final class WithLatestFromSubscriber<T, U, R> extends AtomicReference<U> implements FlowableSubscriber<T>, Subscription {
+    static final class WithLatestFromSubscriber<T, U, R> extends AtomicReference<U>
+    implements ConditionalSubscriber<T>, Subscription {
 
         private static final long serialVersionUID = -312246233408980075L;
 
@@ -91,6 +71,13 @@ public final class FlowableWithLatestFrom<T, U, R> extends AbstractFlowableWithU
 
         @Override
         public void onNext(T t) {
+            if (!tryOnNext(t)) {
+                s.get().request(1);
+            }
+        }
+
+        @Override
+        public boolean tryOnNext(T t) {
             U u = get();
             if (u != null) {
                 R r;
@@ -100,9 +87,12 @@ public final class FlowableWithLatestFrom<T, U, R> extends AbstractFlowableWithU
                     Exceptions.throwIfFatal(e);
                     cancel();
                     actual.onError(e);
-                    return;
+                    return false;
                 }
                 actual.onNext(r);
+                return true;
+            } else {
+                return false;
             }
         }
 
@@ -136,6 +126,36 @@ public final class FlowableWithLatestFrom<T, U, R> extends AbstractFlowableWithU
         public void otherError(Throwable e) {
             SubscriptionHelper.cancel(s);
             actual.onError(e);
+        }
+    }
+
+    final class FlowableWithLatestSubscriber implements FlowableSubscriber<U> {
+        private final WithLatestFromSubscriber<T, U, R> wlf;
+
+        FlowableWithLatestSubscriber(WithLatestFromSubscriber<T, U, R> wlf) {
+            this.wlf = wlf;
+        }
+
+        @Override
+        public void onSubscribe(Subscription s) {
+            if (wlf.setOther(s)) {
+                s.request(Long.MAX_VALUE);
+            }
+        }
+
+        @Override
+        public void onNext(U t) {
+            wlf.lazySet(t);
+        }
+
+        @Override
+        public void onError(Throwable t) {
+            wlf.otherError(t);
+        }
+
+        @Override
+        public void onComplete() {
+            // nothing to do, the wlf will complete on its own pace
         }
     }
 }

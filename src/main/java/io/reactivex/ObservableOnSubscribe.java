@@ -12,6 +12,8 @@
  */
 package io.reactivex;
 
+import io.reactivex.annotations.*;
+
 /**
  * A functional interface that has a {@code subscribe()} method that receives
  * an instance of an {@link ObservableEmitter} instance that allows pushing
@@ -26,6 +28,6 @@ public interface ObservableOnSubscribe<T> {
      * @param e the safe emitter instance, never null
      * @throws Exception on error
      */
-    void subscribe(ObservableEmitter<T> e) throws Exception;
+    void subscribe(@NonNull ObservableEmitter<T> e) throws Exception;
 }
 

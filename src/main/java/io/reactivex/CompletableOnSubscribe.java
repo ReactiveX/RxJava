@@ -12,6 +12,8 @@
  */
 package io.reactivex;
 
+import io.reactivex.annotations.*;
+
 /**
  * A functional interface that has a {@code subscribe()} method that receives
  * an instance of a {@link CompletableEmitter} instance that allows pushing
@@ -24,6 +26,6 @@ public interface CompletableOnSubscribe {
      * @param e the safe emitter instance, never null
      * @throws Exception on error
      */
-    void subscribe(CompletableEmitter e) throws Exception;
+    void subscribe(@NonNull CompletableEmitter e) throws Exception;
 }
 

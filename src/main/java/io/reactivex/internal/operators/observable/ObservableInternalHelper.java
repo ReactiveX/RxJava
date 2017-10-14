@@ -18,7 +18,10 @@ import java.util.concurrent.*;
 import io.reactivex.*;
 import io.reactivex.functions.*;
 import io.reactivex.internal.functions.Functions;
+import io.reactivex.internal.functions.ObjectHelper;
+import io.reactivex.internal.operators.single.SingleToObservable;
 import io.reactivex.observables.ConnectableObservable;
+import io.reactivex.plugins.RxJavaPlugins;
 
 /**
  * Helper utility class to support Observable with inner classes.
@@ -74,7 +77,8 @@ public final class ObservableInternalHelper {
 
         @Override
         public ObservableSource<T> apply(final T v) throws Exception {
-            return new ObservableTake<U>(itemDelay.apply(v), 1).map(Functions.justFunction(v)).defaultIfEmpty(v);
+            ObservableSource<U> o = ObjectHelper.requireNonNull(itemDelay.apply(v), "The itemDelay returned a null ObservableSource");
+            return new ObservableTake<U>(o, 1).map(Functions.justFunction(v)).defaultIfEmpty(v);
         }
     }
 
@@ -162,7 +166,7 @@ public final class ObservableInternalHelper {
         @Override
         public ObservableSource<R> apply(final T t) throws Exception {
             @SuppressWarnings("unchecked")
-            ObservableSource<U> u = (ObservableSource<U>)mapper.apply(t);
+            ObservableSource<U> u = (ObservableSource<U>)ObjectHelper.requireNonNull(mapper.apply(t), "The mapper returned a null ObservableSource");
             return new ObservableMap<U, R>(u, new FlatMapWithCombinerInner<U, R, T>(combiner, t));
         }
     }
@@ -182,7 +186,7 @@ public final class ObservableInternalHelper {
 
         @Override
         public ObservableSource<U> apply(T t) throws Exception {
-            return new ObservableFromIterable<U>(mapper.apply(t));
+            return new ObservableFromIterable<U>(ObjectHelper.requireNonNull(mapper.apply(t), "The mapper returned a null Iterable"));
         }
     }
 
@@ -217,48 +221,23 @@ public final class ObservableInternalHelper {
     }
 
     public static <T> Callable<ConnectableObservable<T>> replayCallable(final Observable<T> parent) {
-        return new Callable<ConnectableObservable<T>>() {
-            @Override
-            public ConnectableObservable<T> call() {
-                return parent.replay();
-            }
-        };
+        return new ReplayCallable<T>(parent);
     }
 
     public static <T> Callable<ConnectableObservable<T>> replayCallable(final Observable<T> parent, final int bufferSize) {
-        return new Callable<ConnectableObservable<T>>() {
-            @Override
-            public ConnectableObservable<T> call() {
-                return parent.replay(bufferSize);
-            }
-        };
+        return new BufferedReplayCallable<T>(parent, bufferSize);
     }
 
     public static <T> Callable<ConnectableObservable<T>> replayCallable(final Observable<T> parent, final int bufferSize, final long time, final TimeUnit unit, final Scheduler scheduler) {
-        return new Callable<ConnectableObservable<T>>() {
-            @Override
-            public ConnectableObservable<T> call() {
-                return parent.replay(bufferSize, time, unit, scheduler);
-            }
-        };
+        return new BufferedTimedReplayCallable<T>(parent, bufferSize, time, unit, scheduler);
     }
 
     public static <T> Callable<ConnectableObservable<T>> replayCallable(final Observable<T> parent, final long time, final TimeUnit unit, final Scheduler scheduler) {
-        return new Callable<ConnectableObservable<T>>() {
-            @Override
-            public ConnectableObservable<T> call() {
-                return parent.replay(time, unit, scheduler);
-            }
-        };
+        return new TimedReplayCallable<T>(parent, time, unit, scheduler);
     }
 
     public static <T, R> Function<Observable<T>, ObservableSource<R>> replayFunction(final Function<? super Observable<T>, ? extends ObservableSource<R>> selector, final Scheduler scheduler) {
-        return new Function<Observable<T>, ObservableSource<R>>() {
-            @Override
-            public ObservableSource<R> apply(Observable<T> t) throws Exception {
-                return Observable.wrap(selector.apply(t)).observeOn(scheduler);
-            }
-        };
+        return new ReplayFunction<T, R>(selector, scheduler);
     }
 
     enum ErrorMapperFilter implements Function<Notification<Object>, Throwable>, Predicate<Notification<Object>> {
@@ -315,4 +294,118 @@ public final class ObservableInternalHelper {
         return new ZipIterableFunction<T, R>(zipper);
     }
 
+    public static <T,R> Observable<R> switchMapSingle(Observable<T> source, final Function<? super T, ? extends SingleSource<? extends R>> mapper) {
+        return source.switchMap(convertSingleMapperToObservableMapper(mapper), 1);
+    }
+
+    public static <T,R> Observable<R> switchMapSingleDelayError(Observable<T> source,
+            Function<? super T, ? extends SingleSource<? extends R>> mapper) {
+        return source.switchMapDelayError(convertSingleMapperToObservableMapper(mapper), 1);
+    }
+
+    private static <T, R> Function<T, Observable<R>> convertSingleMapperToObservableMapper(
+            final Function<? super T, ? extends SingleSource<? extends R>> mapper) {
+        ObjectHelper.requireNonNull(mapper, "mapper is null");
+        return new ObservableMapper<T,R>(mapper);
+    }
+
+    static final class ObservableMapper<T,R> implements Function<T,Observable<R>> {
+
+        final Function<? super T, ? extends SingleSource<? extends R>> mapper;
+
+        ObservableMapper(Function<? super T, ? extends SingleSource<? extends R>> mapper) {
+            this.mapper = mapper;
+        }
+
+        @Override
+        public Observable<R> apply(T t) throws Exception {
+            return RxJavaPlugins.onAssembly(new SingleToObservable<R>(
+                ObjectHelper.requireNonNull(mapper.apply(t), "The mapper returned a null SingleSource")));
+        }
+
+    }
+
+    static final class ReplayCallable<T> implements Callable<ConnectableObservable<T>> {
+        private final Observable<T> parent;
+
+        ReplayCallable(Observable<T> parent) {
+            this.parent = parent;
+        }
+
+        @Override
+        public ConnectableObservable<T> call() {
+            return parent.replay();
+        }
+    }
+
+    static final class BufferedReplayCallable<T> implements Callable<ConnectableObservable<T>> {
+        private final Observable<T> parent;
+        private final int bufferSize;
+
+        BufferedReplayCallable(Observable<T> parent, int bufferSize) {
+            this.parent = parent;
+            this.bufferSize = bufferSize;
+        }
+
+        @Override
+        public ConnectableObservable<T> call() {
+            return parent.replay(bufferSize);
+        }
+    }
+
+    static final class BufferedTimedReplayCallable<T> implements Callable<ConnectableObservable<T>> {
+        private final Observable<T> parent;
+        private final int bufferSize;
+        private final long time;
+        private final TimeUnit unit;
+        private final Scheduler scheduler;
+
+        BufferedTimedReplayCallable(Observable<T> parent, int bufferSize, long time, TimeUnit unit, Scheduler scheduler) {
+            this.parent = parent;
+            this.bufferSize = bufferSize;
+            this.time = time;
+            this.unit = unit;
+            this.scheduler = scheduler;
+        }
+
+        @Override
+        public ConnectableObservable<T> call() {
+            return parent.replay(bufferSize, time, unit, scheduler);
+        }
+    }
+
+    static final class TimedReplayCallable<T> implements Callable<ConnectableObservable<T>> {
+        private final Observable<T> parent;
+        private final long time;
+        private final TimeUnit unit;
+        private final Scheduler scheduler;
+
+        TimedReplayCallable(Observable<T> parent, long time, TimeUnit unit, Scheduler scheduler) {
+            this.parent = parent;
+            this.time = time;
+            this.unit = unit;
+            this.scheduler = scheduler;
+        }
+
+        @Override
+        public ConnectableObservable<T> call() {
+            return parent.replay(time, unit, scheduler);
+        }
+    }
+
+    static final class ReplayFunction<T, R> implements Function<Observable<T>, ObservableSource<R>> {
+        private final Function<? super Observable<T>, ? extends ObservableSource<R>> selector;
+        private final Scheduler scheduler;
+
+        ReplayFunction(Function<? super Observable<T>, ? extends ObservableSource<R>> selector, Scheduler scheduler) {
+            this.selector = selector;
+            this.scheduler = scheduler;
+        }
+
+        @Override
+        public ObservableSource<R> apply(Observable<T> t) throws Exception {
+            ObservableSource<R> apply = ObjectHelper.requireNonNull(selector.apply(t), "The selector returned a null ObservableSource");
+            return Observable.wrap(apply).observeOn(scheduler);
+        }
+    }
 }

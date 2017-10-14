@@ -28,6 +28,7 @@ import org.mockito.stubbing.Answer;
 import org.reactivestreams.*;
 
 import io.reactivex.*;
+import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.functions.Functions;
@@ -544,5 +545,222 @@ public class FlowableTimeoutWithSelectorTest {
         assertFalse(ps.hasSubscribers());
 
         to.assertResult(1);
+    }
+
+    @Test
+    public void lateOnTimeoutError() {
+        for (int i = 0; i < 1000; i++) {
+            List<Throwable> errors = TestHelper.trackPluginErrors();
+            try {
+                final PublishProcessor<Integer> pp = PublishProcessor.create();
+
+                final Subscriber<?>[] sub = { null, null };
+
+                final Flowable<Integer> pp2 = new Flowable<Integer>() {
+
+                    int count;
+
+                    @Override
+                    protected void subscribeActual(
+                            Subscriber<? super Integer> s) {
+                        s.onSubscribe(new BooleanSubscription());
+                        sub[count++] = s;
+                    }
+                };
+
+                TestSubscriber<Integer> ts = pp.timeout(Functions.justFunction(pp2)).test();
+
+                pp.onNext(0);
+
+                Runnable r1 = new Runnable() {
+                    @Override
+                    public void run() {
+                        pp.onNext(1);
+                    }
+                };
+
+                final Throwable ex = new TestException();
+
+                Runnable r2 = new Runnable() {
+                    @Override
+                    public void run() {
+                        sub[0].onError(ex);
+                    }
+                };
+
+                TestHelper.race(r1, r2);
+
+                ts.assertValueAt(0, 0);
+
+                if (!errors.isEmpty()) {
+                    TestHelper.assertUndeliverable(errors, 0, TestException.class);
+                }
+            } finally {
+                RxJavaPlugins.reset();
+            }
+        }
+    }
+
+    @Test
+    public void lateOnTimeoutFallbackRace() {
+        for (int i = 0; i < 1000; i++) {
+            List<Throwable> errors = TestHelper.trackPluginErrors();
+            try {
+                final PublishProcessor<Integer> pp = PublishProcessor.create();
+
+                final Subscriber<?>[] sub = { null, null };
+
+                final Flowable<Integer> pp2 = new Flowable<Integer>() {
+
+                    int count;
+
+                    @Override
+                    protected void subscribeActual(
+                            Subscriber<? super Integer> s) {
+                        assertFalse(((Disposable)s).isDisposed());
+                        s.onSubscribe(new BooleanSubscription());
+                        sub[count++] = s;
+                    }
+                };
+
+                TestSubscriber<Integer> ts = pp.timeout(Functions.justFunction(pp2), Flowable.<Integer>never()).test();
+
+                pp.onNext(0);
+
+                Runnable r1 = new Runnable() {
+                    @Override
+                    public void run() {
+                        pp.onNext(1);
+                    }
+                };
+
+                final Throwable ex = new TestException();
+
+                Runnable r2 = new Runnable() {
+                    @Override
+                    public void run() {
+                        sub[0].onError(ex);
+                    }
+                };
+
+                TestHelper.race(r1, r2);
+
+                ts.assertValueAt(0, 0);
+
+                if (!errors.isEmpty()) {
+                    TestHelper.assertUndeliverable(errors, 0, TestException.class);
+                }
+            } finally {
+                RxJavaPlugins.reset();
+            }
+        }
+    }
+
+    @Test
+    public void onErrorOnTimeoutRace() {
+        for (int i = 0; i < 1000; i++) {
+            List<Throwable> errors = TestHelper.trackPluginErrors();
+            try {
+                final PublishProcessor<Integer> pp = PublishProcessor.create();
+
+                final Subscriber<?>[] sub = { null, null };
+
+                final Flowable<Integer> pp2 = new Flowable<Integer>() {
+
+                    int count;
+
+                    @Override
+                    protected void subscribeActual(
+                            Subscriber<? super Integer> s) {
+                        assertFalse(((Disposable)s).isDisposed());
+                        s.onSubscribe(new BooleanSubscription());
+                        sub[count++] = s;
+                    }
+                };
+
+                TestSubscriber<Integer> ts = pp.timeout(Functions.justFunction(pp2)).test();
+
+                pp.onNext(0);
+
+                final Throwable ex = new TestException();
+
+                Runnable r1 = new Runnable() {
+                    @Override
+                    public void run() {
+                        pp.onError(ex);
+                    }
+                };
+
+                Runnable r2 = new Runnable() {
+                    @Override
+                    public void run() {
+                        sub[0].onComplete();
+                    }
+                };
+
+                TestHelper.race(r1, r2);
+
+                ts.assertValueAt(0, 0);
+
+                if (!errors.isEmpty()) {
+                    TestHelper.assertUndeliverable(errors, 0, TestException.class);
+                }
+            } finally {
+                RxJavaPlugins.reset();
+            }
+        }
+    }
+
+    @Test
+    public void onECompleteOnTimeoutRace() {
+        for (int i = 0; i < 1000; i++) {
+            List<Throwable> errors = TestHelper.trackPluginErrors();
+            try {
+                final PublishProcessor<Integer> pp = PublishProcessor.create();
+
+                final Subscriber<?>[] sub = { null, null };
+
+                final Flowable<Integer> pp2 = new Flowable<Integer>() {
+
+                    int count;
+
+                    @Override
+                    protected void subscribeActual(
+                            Subscriber<? super Integer> s) {
+                        assertFalse(((Disposable)s).isDisposed());
+                        s.onSubscribe(new BooleanSubscription());
+                        sub[count++] = s;
+                    }
+                };
+
+                TestSubscriber<Integer> ts = pp.timeout(Functions.justFunction(pp2)).test();
+
+                pp.onNext(0);
+
+                Runnable r1 = new Runnable() {
+                    @Override
+                    public void run() {
+                        pp.onComplete();
+                    }
+                };
+
+                Runnable r2 = new Runnable() {
+                    @Override
+                    public void run() {
+                        sub[0].onComplete();
+                    }
+                };
+
+                TestHelper.race(r1, r2);
+
+                ts.assertValueAt(0, 0);
+
+                if (!errors.isEmpty()) {
+                    TestHelper.assertUndeliverable(errors, 0, TestException.class);
+                }
+            } finally {
+                RxJavaPlugins.reset();
+            }
+        }
     }
 }

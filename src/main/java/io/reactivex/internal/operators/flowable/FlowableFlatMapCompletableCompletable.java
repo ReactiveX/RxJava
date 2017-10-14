@@ -79,6 +79,8 @@ public final class FlowableFlatMapCompletableCompletable<T> extends Completable 
 
         Subscription s;
 
+        volatile boolean disposed;
+
         FlatMapCompletableMainSubscriber(CompletableObserver observer,
                 Function<? super T, ? extends CompletableSource> mapper, boolean delayErrors,
                 int maxConcurrency) {
@@ -124,7 +126,7 @@ public final class FlowableFlatMapCompletableCompletable<T> extends Completable 
 
             InnerObserver inner = new InnerObserver();
 
-            if (set.add(inner)) {
+            if (!disposed && set.add(inner)) {
                 cs.subscribe(inner);
             }
         }
@@ -136,7 +138,6 @@ public final class FlowableFlatMapCompletableCompletable<T> extends Completable 
                     if (decrementAndGet() == 0) {
                         Throwable ex = errors.terminate();
                         actual.onError(ex);
-                        return;
                     } else {
                         if (maxConcurrency != Integer.MAX_VALUE) {
                             s.request(1);
@@ -147,7 +148,6 @@ public final class FlowableFlatMapCompletableCompletable<T> extends Completable 
                     if (getAndSet(0) > 0) {
                         Throwable ex = errors.terminate();
                         actual.onError(ex);
-                        return;
                     }
                 }
             } else {
@@ -173,6 +173,7 @@ public final class FlowableFlatMapCompletableCompletable<T> extends Completable 
 
         @Override
         public void dispose() {
+            disposed = true;
             s.cancel();
             set.dispose();
         }

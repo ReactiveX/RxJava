@@ -20,7 +20,7 @@ import org.reactivestreams.*;
 import io.reactivex.*;
 import io.reactivex.flowables.ConnectableFlowable;
 import io.reactivex.functions.*;
-import io.reactivex.internal.functions.Functions;
+import io.reactivex.internal.functions.*;
 
 /**
  * Helper utility class to support Flowable with inner classes.
@@ -77,7 +77,8 @@ public final class FlowableInternalHelper {
 
         @Override
         public Publisher<T> apply(final T v) throws Exception {
-            return new FlowableTakePublisher<U>(itemDelay.apply(v), 1).map(Functions.justFunction(v)).defaultIfEmpty(v);
+            Publisher<U> p = ObjectHelper.requireNonNull(itemDelay.apply(v), "The itemDelay returned a null Publisher");
+            return new FlowableTakePublisher<U>(p, 1).map(Functions.justFunction(v)).defaultIfEmpty(v);
         }
     }
 
@@ -164,7 +165,7 @@ public final class FlowableInternalHelper {
         @Override
         public Publisher<R> apply(final T t) throws Exception {
             @SuppressWarnings("unchecked")
-            Publisher<U> u = (Publisher<U>)mapper.apply(t);
+            Publisher<U> u = (Publisher<U>)ObjectHelper.requireNonNull(mapper.apply(t), "The mapper returned a null Publisher");
             return new FlowableMapPublisher<U, R>(u, new FlatMapWithCombinerInner<U, R, T>(combiner, t));
         }
     }
@@ -184,7 +185,7 @@ public final class FlowableInternalHelper {
 
         @Override
         public Publisher<U> apply(T t) throws Exception {
-            return new FlowableFromIterable<U>(mapper.apply(t));
+            return new FlowableFromIterable<U>(ObjectHelper.requireNonNull(mapper.apply(t), "The mapper returned a null Iterable"));
         }
     }
 
@@ -193,48 +194,23 @@ public final class FlowableInternalHelper {
     }
 
     public static <T> Callable<ConnectableFlowable<T>> replayCallable(final Flowable<T> parent) {
-        return new Callable<ConnectableFlowable<T>>() {
-            @Override
-            public ConnectableFlowable<T> call() {
-                return parent.replay();
-            }
-        };
+        return new ReplayCallable<T>(parent);
     }
 
     public static <T> Callable<ConnectableFlowable<T>> replayCallable(final Flowable<T> parent, final int bufferSize) {
-        return new Callable<ConnectableFlowable<T>>() {
-            @Override
-            public ConnectableFlowable<T> call() {
-                return parent.replay(bufferSize);
-            }
-        };
+        return new BufferedReplayCallable<T>(parent, bufferSize);
     }
 
     public static <T> Callable<ConnectableFlowable<T>> replayCallable(final Flowable<T> parent, final int bufferSize, final long time, final TimeUnit unit, final Scheduler scheduler) {
-        return new Callable<ConnectableFlowable<T>>() {
-            @Override
-            public ConnectableFlowable<T> call() {
-                return parent.replay(bufferSize, time, unit, scheduler);
-            }
-        };
+        return new BufferedTimedReplay<T>(parent, bufferSize, time, unit, scheduler);
     }
 
     public static <T> Callable<ConnectableFlowable<T>> replayCallable(final Flowable<T> parent, final long time, final TimeUnit unit, final Scheduler scheduler) {
-        return new Callable<ConnectableFlowable<T>>() {
-            @Override
-            public ConnectableFlowable<T> call() {
-                return parent.replay(time, unit, scheduler);
-            }
-        };
+        return new TimedReplay<T>(parent, time, unit, scheduler);
     }
 
     public static <T, R> Function<Flowable<T>, Publisher<R>> replayFunction(final Function<? super Flowable<T>, ? extends Publisher<R>> selector, final Scheduler scheduler) {
-        return new Function<Flowable<T>, Publisher<R>>() {
-            @Override
-            public Publisher<R> apply(Flowable<T> t) throws Exception {
-                return Flowable.fromPublisher(selector.apply(t)).observeOn(scheduler);
-            }
-        };
+        return new ReplayFunction<T, R>(selector, scheduler);
     }
 
     public enum RequestMax implements Consumer<Subscription> {
@@ -263,4 +239,87 @@ public final class FlowableInternalHelper {
         return new ZipIterableFunction<T, R>(zipper);
     }
 
+    static final class ReplayCallable<T> implements Callable<ConnectableFlowable<T>> {
+        private final Flowable<T> parent;
+
+        ReplayCallable(Flowable<T> parent) {
+            this.parent = parent;
+        }
+
+        @Override
+        public ConnectableFlowable<T> call() {
+            return parent.replay();
+        }
+    }
+
+    static final class BufferedReplayCallable<T> implements Callable<ConnectableFlowable<T>> {
+        private final Flowable<T> parent;
+        private final int bufferSize;
+
+        BufferedReplayCallable(Flowable<T> parent, int bufferSize) {
+            this.parent = parent;
+            this.bufferSize = bufferSize;
+        }
+
+        @Override
+        public ConnectableFlowable<T> call() {
+            return parent.replay(bufferSize);
+        }
+    }
+
+    static final class BufferedTimedReplay<T> implements Callable<ConnectableFlowable<T>> {
+        private final Flowable<T> parent;
+        private final int bufferSize;
+        private final long time;
+        private final TimeUnit unit;
+        private final Scheduler scheduler;
+
+        BufferedTimedReplay(Flowable<T> parent, int bufferSize, long time, TimeUnit unit, Scheduler scheduler) {
+            this.parent = parent;
+            this.bufferSize = bufferSize;
+            this.time = time;
+            this.unit = unit;
+            this.scheduler = scheduler;
+        }
+
+        @Override
+        public ConnectableFlowable<T> call() {
+            return parent.replay(bufferSize, time, unit, scheduler);
+        }
+    }
+
+    static final class TimedReplay<T> implements Callable<ConnectableFlowable<T>> {
+        private final Flowable<T> parent;
+        private final long time;
+        private final TimeUnit unit;
+        private final Scheduler scheduler;
+
+        TimedReplay(Flowable<T> parent, long time, TimeUnit unit, Scheduler scheduler) {
+            this.parent = parent;
+            this.time = time;
+            this.unit = unit;
+            this.scheduler = scheduler;
+        }
+
+        @Override
+        public ConnectableFlowable<T> call() {
+            return parent.replay(time, unit, scheduler);
+        }
+    }
+
+    static final class ReplayFunction<T, R> implements Function<Flowable<T>, Publisher<R>> {
+        private final Function<? super Flowable<T>, ? extends Publisher<R>> selector;
+        private final Scheduler scheduler;
+
+        ReplayFunction(Function<? super Flowable<T>, ? extends Publisher<R>> selector, Scheduler scheduler) {
+            this.selector = selector;
+            this.scheduler = scheduler;
+        }
+
+        @Override
+        public Publisher<R> apply(Flowable<T> t) throws Exception {
+            Publisher<R> p = ObjectHelper.requireNonNull(selector.apply(t), "The selector returned a null Publisher");
+            return Flowable.fromPublisher(p).observeOn(scheduler);
+        }
+    }
 }

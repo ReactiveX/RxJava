@@ -27,38 +27,64 @@ import io.reactivex.disposables.Disposables;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.*;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
+import io.reactivex.observers.TestObserver;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.schedulers.Schedulers;
+import io.reactivex.schedulers.TestScheduler;
 import io.reactivex.subjects.PublishSubject;
 
 public class SingleDelayTest {
     @Test
-    public void delay() throws Exception {
-        final AtomicInteger value = new AtomicInteger();
+    public void delayOnSuccess() {
+        final TestScheduler scheduler = new TestScheduler();
+        final TestObserver<Integer> observer = Single.just(1)
+            .delay(5, TimeUnit.SECONDS, scheduler)
+            .test();
 
-        Single.just(1).delay(200, TimeUnit.MILLISECONDS)
-        .subscribe(new BiConsumer<Integer, Throwable>() {
-            @Override
-            public void accept(Integer v, Throwable e) throws Exception {
-                value.set(v);
-            }
-        });
+        scheduler.advanceTimeTo(2, TimeUnit.SECONDS);
+        observer.assertNoValues();
 
-        Thread.sleep(100);
-
-        assertEquals(0, value.get());
-
-        Thread.sleep(200);
-
-        assertEquals(1, value.get());
+        scheduler.advanceTimeTo(5, TimeUnit.SECONDS);
+        observer.assertValue(1);
     }
 
     @Test
-    public void delayError() {
-        Single.error(new TestException()).delay(5, TimeUnit.SECONDS)
-        .test()
-        .awaitDone(1, TimeUnit.SECONDS)
-        .assertFailure(TestException.class);
+    public void delayOnError() {
+        final TestScheduler scheduler = new TestScheduler();
+        final TestObserver<?> observer = Single.error(new TestException())
+            .delay(5, TimeUnit.SECONDS, scheduler)
+            .test();
+
+        scheduler.triggerActions();
+        observer.assertError(TestException.class);
+    }
+
+    @Test
+    public void delayedErrorOnSuccess() {
+        final TestScheduler scheduler = new TestScheduler();
+        final TestObserver<Integer> observer = Single.just(1)
+            .delay(5, TimeUnit.SECONDS, scheduler, true)
+            .test();
+
+        scheduler.advanceTimeTo(2, TimeUnit.SECONDS);
+        observer.assertNoValues();
+
+        scheduler.advanceTimeTo(5, TimeUnit.SECONDS);
+        observer.assertValue(1);
+    }
+
+    @Test
+    public void delayedErrorOnError() {
+        final TestScheduler scheduler = new TestScheduler();
+        final TestObserver<?> observer = Single.error(new TestException())
+            .delay(5, TimeUnit.SECONDS, scheduler, true)
+            .test();
+
+        scheduler.advanceTimeTo(2, TimeUnit.SECONDS);
+        observer.assertNoErrors();
+
+        scheduler.advanceTimeTo(5, TimeUnit.SECONDS);
+        observer.assertError(TestException.class);
     }
 
     @Test

@@ -15,13 +15,12 @@ package io.reactivex;
 
 import java.util.concurrent.TimeUnit;
 
-import io.reactivex.annotations.Experimental;
-import io.reactivex.annotations.NonNull;
+import io.reactivex.annotations.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.disposables.*;
-import io.reactivex.internal.schedulers.SchedulerWhen;
+import io.reactivex.internal.schedulers.*;
 import io.reactivex.internal.util.ExceptionHelper;
 import io.reactivex.plugins.RxJavaPlugins;
 
@@ -131,18 +130,11 @@ public abstract class Scheduler {
 
         final Runnable decoratedRun = RxJavaPlugins.onSchedule(run);
 
-        w.schedule(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    decoratedRun.run();
-                } finally {
-                    w.dispose();
-                }
-            }
-        }, delay, unit);
+        DisposeTask task = new DisposeTask(decoratedRun, w);
 
-        return w;
+        w.schedule(task, delay, unit);
+
+        return task;
     }
 
     /**
@@ -207,7 +199,7 @@ public abstract class Scheduler {
      * size thread pool:
      * 
      * <pre>
-     * Scheduler limitSched = Schedulers.computation().when(workers -> {
+     * Scheduler limitScheduler = Schedulers.computation().when(workers -&gt; {
      *  // use merge max concurrent to limit the number of concurrent
      *  // callbacks two at a time
      *  return Completable.merge(Flowable.merge(workers), 2);
@@ -225,7 +217,7 @@ public abstract class Scheduler {
      * subscription to the second.
      * 
      * <pre>
-     * Scheduler limitSched = Schedulers.computation().when(workers -> {
+     * Scheduler limitScheduler = Schedulers.computation().when(workers -&gt; {
      *  // use merge max concurrent to limit the number of concurrent
      *  // Flowables two at a time
      *  return Completable.merge(Flowable.merge(workers, 2));
@@ -238,22 +230,23 @@ public abstract class Scheduler {
      * bucket algorithm).
      * 
      * <pre>
-     * Scheduler slowSched = Schedulers.computation().when(workers -> {
+     * Scheduler slowScheduler = Schedulers.computation().when(workers -&gt; {
      *  // use concatenate to make each worker happen one at a time.
-     *  return Completable.concat(workers.map(actions -> {
+     *  return Completable.concat(workers.map(actions -&gt; {
      *      // delay the starting of the next worker by 1 second.
      *      return Completable.merge(actions.delaySubscription(1, TimeUnit.SECONDS));
      *  }));
      * });
      * </pre>
      * 
+     * <p>History: 2.0.1 - experimental
      * @param <S> a Scheduler and a Subscription
      * @param combine the function that takes a two-level nested Flowable sequence of a Completable and returns
      * the Completable that will be subscribed to and should trigger the execution of the scheduled Actions.
      * @return the Scheduler with the customized execution behavior
+     * @since 2.1
      */
     @SuppressWarnings("unchecked")
-    @Experimental
     @NonNull
     public <S extends Scheduler & Disposable> S when(@NonNull Function<Flowable<Flowable<Completable>>, Completable> combine) {
         return (S) new SchedulerWhen(combine, this);
@@ -262,7 +255,7 @@ public abstract class Scheduler {
     /**
      * Sequential Scheduler for executing actions on a single thread or event loop.
      * <p>
-     * Unsubscribing the {@link Worker} cancels all outstanding work and allows resource cleanup.
+     * Disposing the {@link Worker} cancels all outstanding work and allows resource cleanup.
      */
     public abstract static class Worker implements Disposable {
         /**
@@ -438,6 +431,43 @@ public abstract class Scheduler {
         @Override
         public boolean isDisposed() {
             return disposed;
+        }
+    }
+
+    static final class DisposeTask implements Runnable, Disposable {
+        final Runnable decoratedRun;
+        final Worker w;
+
+        Thread runner;
+
+        DisposeTask(Runnable decoratedRun, Worker w) {
+            this.decoratedRun = decoratedRun;
+            this.w = w;
+        }
+
+        @Override
+        public void run() {
+            runner = Thread.currentThread();
+            try {
+                decoratedRun.run();
+            } finally {
+                dispose();
+                runner = null;
+            }
+        }
+
+        @Override
+        public void dispose() {
+            if (runner == Thread.currentThread() && w instanceof NewThreadWorker) {
+                ((NewThreadWorker)w).shutdown();
+            } else {
+                w.dispose();
+            }
+        }
+
+        @Override
+        public boolean isDisposed() {
+            return w.isDisposed();
         }
     }
 }

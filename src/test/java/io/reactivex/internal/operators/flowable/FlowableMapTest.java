@@ -256,59 +256,6 @@ public class FlowableMapTest {
         }).blockingGet();
     }
 
-    // FIXME RS subscribers can't throw
-//    @Test(expected = OnErrorNotImplementedException.class)
-//    public void verifyExceptionIsThrownIfThereIsNoExceptionHandler() {
-//
-//        Publisher<Object> creator = new Publisher<Object>() {
-//
-//            @Override
-//            public void subscribe(Subscriber<? super Object> observer) {
-//                observer.onSubscribe(EmptySubscription.INSTANCE);
-//                observer.onNext("a");
-//                observer.onNext("b");
-//                observer.onNext("c");
-//                observer.onComplete();
-//            }
-//        };
-//
-//        Function<Object, Flowable<Object>> manyMapper = new Function<Object, Flowable<Object>>() {
-//
-//            @Override
-//            public Flowable<Object> apply(Object object) {
-//                return Flowable.just(object);
-//            }
-//        };
-//
-//        Function<Object, Object> mapper = new Function<Object, Object>() {
-//            private int count = 0;
-//
-//            @Override
-//            public Object apply(Object object) {
-//                ++count;
-//                if (count > 2) {
-//                    throw new RuntimeException();
-//                }
-//                return object;
-//            }
-//        };
-//
-//        Consumer<Object> onNext = new Consumer<Object>() {
-//
-//            @Override
-//            public void accept(Object object) {
-//                System.out.println(object.toString());
-//            }
-//        };
-//
-//        try {
-//            Flowable.create(creator).flatMap(manyMapper).map(mapper).subscribe(onNext);
-//        } catch (RuntimeException e) {
-//            e.printStackTrace();
-//            throw e;
-//        }
-//    }
-
     private static Map<String, String> getMap(String prefix) {
         Map<String, String> m = new HashMap<String, String>();
         m.put("firstName", prefix + "First");

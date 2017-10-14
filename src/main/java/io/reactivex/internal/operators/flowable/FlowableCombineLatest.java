@@ -132,12 +132,7 @@ extends Flowable<R> {
             return;
         }
         if (n == 1) {
-            ((Publisher<T>)a[0]).subscribe(new MapSubscriber<T, R>(s, new Function<T, R>() {
-                @Override
-                public R apply(T t) throws Exception {
-                    return combiner.apply(new Object[] { t });
-                }
-            }));
+            ((Publisher<T>)a[0]).subscribe(new MapSubscriber<T, R>(s, new SingletonArrayFunc()));
             return;
         }
 
@@ -479,7 +474,7 @@ extends Flowable<R> {
                 return null;
             }
             T[] a = (T[])queue.poll();
-            R r = combiner.apply(a);
+            R r = ObjectHelper.requireNonNull(combiner.apply(a), "The combiner returned a null value");
             ((CombineLatestInnerSubscriber<T>)e).requestOne();
             return r;
         }
@@ -555,6 +550,13 @@ extends Flowable<R> {
                 produced = p;
             }
 
+        }
+    }
+
+    final class SingletonArrayFunc implements Function<T, R> {
+        @Override
+        public R apply(T t) throws Exception {
+            return combiner.apply(new Object[] { t });
         }
     }
 }

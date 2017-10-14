@@ -261,16 +261,7 @@ extends AbstractObservableWithUpstream<T, U> {
 
                 w.schedulePeriodically(this, timeskip, timeskip, unit);
 
-                w.schedule(new Runnable() {
-                    @Override
-                    public void run() {
-                        synchronized (BufferSkipBoundedObserver.this) {
-                            buffers.remove(b);
-                        }
-
-                        fastPathOrderedEmit(b, false, w);
-                    }
-                }, timespan, unit);
+                w.schedule(new RemoveFromBufferEmit(b), timespan, unit);
             }
         }
 
@@ -352,21 +343,46 @@ extends AbstractObservableWithUpstream<T, U> {
                 buffers.add(b);
             }
 
-            w.schedule(new Runnable() {
-                @Override
-                public void run() {
-                    synchronized (BufferSkipBoundedObserver.this) {
-                        buffers.remove(b);
-                    }
-
-                    fastPathOrderedEmit(b, false, w);
-                }
-            }, timespan, unit);
+            w.schedule(new RemoveFromBuffer(b), timespan, unit);
         }
 
         @Override
         public void accept(Observer<? super U> a, U v) {
             a.onNext(v);
+        }
+
+        final class RemoveFromBuffer implements Runnable {
+            private final U b;
+
+            RemoveFromBuffer(U b) {
+                this.b = b;
+            }
+
+            @Override
+            public void run() {
+                synchronized (BufferSkipBoundedObserver.this) {
+                    buffers.remove(b);
+                }
+
+                fastPathOrderedEmit(b, false, w);
+            }
+        }
+
+        final class RemoveFromBufferEmit implements Runnable {
+            private final U buffer;
+
+            RemoveFromBufferEmit(U buffer) {
+                this.buffer = buffer;
+            }
+
+            @Override
+            public void run() {
+                synchronized (BufferSkipBoundedObserver.this) {
+                    buffers.remove(buffer);
+                }
+
+                fastPathOrderedEmit(buffer, false, w);
+            }
         }
     }
 
@@ -442,12 +458,11 @@ extends AbstractObservableWithUpstream<T, U> {
                 if (b.size() < maxSize) {
                     return;
                 }
+                buffer = null;
+                producerIndex++;
             }
 
             if (restartTimerOnMaxSize) {
-                buffer = null;
-                producerIndex++;
-
                 timer.dispose();
             }
 
@@ -462,17 +477,12 @@ extends AbstractObservableWithUpstream<T, U> {
                 return;
             }
 
+            synchronized (this) {
+                buffer = b;
+                consumerIndex++;
+            }
             if (restartTimerOnMaxSize) {
-                synchronized (this) {
-                    buffer = b;
-                    consumerIndex++;
-                }
-
                 timer = w.schedulePeriodically(this, timespan, timespan, unit);
-            } else {
-                synchronized (this) {
-                    buffer = b;
-                }
             }
         }
 

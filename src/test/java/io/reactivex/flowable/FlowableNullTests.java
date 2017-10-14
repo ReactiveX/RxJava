@@ -1341,6 +1341,7 @@ public class FlowableNullTests {
     }
 
     @Test(expected = NullPointerException.class)
+    @Ignore("No longer crashes with NPE but signals it; tested elsewhere.")
     public void flatMapNotificationOnErrorReturnsNull() {
         Flowable.error(new TestException()).flatMap(new Function<Object, Publisher<Integer>>() {
             @Override
@@ -2327,7 +2328,7 @@ public class FlowableNullTests {
 
     @Test(expected = NullPointerException.class)
     public void timeoutFirstItemReturnsNull() {
-        just1.timeout(just1, new Function<Integer, Publisher<Object>>() {
+        just1.timeout(Flowable.never(), new Function<Integer, Publisher<Object>>() {
             @Override
             public Publisher<Object> apply(Integer v) {
                 return null;

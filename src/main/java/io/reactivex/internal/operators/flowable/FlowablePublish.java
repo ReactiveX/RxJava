@@ -60,71 +60,7 @@ public final class FlowablePublish<T> extends ConnectableFlowable<T> implements 
     public static <T> ConnectableFlowable<T> create(Flowable<T> source, final int bufferSize) {
         // the current connection to source needs to be shared between the operator and its onSubscribe call
         final AtomicReference<PublishSubscriber<T>> curr = new AtomicReference<PublishSubscriber<T>>();
-        Publisher<T> onSubscribe = new Publisher<T>() {
-            @Override
-            public void subscribe(Subscriber<? super T> child) {
-                // create the backpressure-managing producer for this child
-                InnerSubscriber<T> inner = new InnerSubscriber<T>(child);
-                child.onSubscribe(inner);
-                // concurrent connection/disconnection may change the state,
-                // we loop to be atomic while the child subscribes
-                for (;;) {
-                    // get the current subscriber-to-source
-                    PublishSubscriber<T> r = curr.get();
-                    // if there isn't one or it is cancelled/disposed
-                    if (r == null || r.isDisposed()) {
-                        // create a new subscriber to source
-                        PublishSubscriber<T> u = new PublishSubscriber<T>(curr, bufferSize);
-                        // let's try setting it as the current subscriber-to-source
-                        if (!curr.compareAndSet(r, u)) {
-                            // didn't work, maybe someone else did it or the current subscriber
-                            // to source has just finished
-                            continue;
-                        }
-                        // we won, let's use it going onwards
-                        r = u;
-                    }
-
-                    /*
-                     * Try adding it to the current subscriber-to-source, add is atomic in respect
-                     * to other adds and the termination of the subscriber-to-source.
-                     */
-                    if (r.add(inner)) {
-                        if (inner.get() == CANCELLED) {
-                            r.remove(inner);
-                        } else {
-                            inner.parent = r;
-                        }
-                        r.dispatch();
-                        break; // NOPMD
-                    }
-                    /*
-                     * The current PublishSubscriber has been terminated, try with a newer one.
-                     */
-                    /*
-                     * Note: although technically correct, concurrent disconnects can cause
-                     * unexpected behavior such as child subscribers never receiving anything
-                     * (unless connected again). An alternative approach, similar to
-                     * PublishProcessor would be to immediately terminate such child
-                     * subscribers as well:
-                     *
-                     * Object term = r.terminalEvent;
-                     * if (r.nl.isCompleted(term)) {
-                     *     child.onComplete();
-                     * } else {
-                     *     child.onError(r.nl.getError(term));
-                     * }
-                     * return;
-                     *
-                     * The original concurrent behavior was non-deterministic in this regard as well.
-                     * Allowing this behavior, however, may introduce another unexpected behavior:
-                     * after disconnecting a previous connection, one might not be able to prepare
-                     * a new connection right after a previous termination by subscribing new child
-                     * subscribers asynchronously before a connect call.
-                     */
-                }
-            }
-        };
+        Publisher<T> onSubscribe = new FlowablePublisher<T>(curr, bufferSize);
         return RxJavaPlugins.onAssembly(new FlowablePublish<T>(onSubscribe, source, curr, bufferSize));
     }
 
@@ -682,6 +618,80 @@ public final class FlowablePublish<T> extends ConnectableFlowable<T> implements 
                         p.dispatch();
                     }
                 }
+            }
+        }
+    }
+
+    static final class FlowablePublisher<T> implements Publisher<T> {
+        private final AtomicReference<PublishSubscriber<T>> curr;
+        private final int bufferSize;
+
+        FlowablePublisher(AtomicReference<PublishSubscriber<T>> curr, int bufferSize) {
+            this.curr = curr;
+            this.bufferSize = bufferSize;
+        }
+
+        @Override
+        public void subscribe(Subscriber<? super T> child) {
+            // create the backpressure-managing producer for this child
+            InnerSubscriber<T> inner = new InnerSubscriber<T>(child);
+            child.onSubscribe(inner);
+            // concurrent connection/disconnection may change the state,
+            // we loop to be atomic while the child subscribes
+            for (;;) {
+                // get the current subscriber-to-source
+                PublishSubscriber<T> r = curr.get();
+                // if there isn't one or it is cancelled/disposed
+                if (r == null || r.isDisposed()) {
+                    // create a new subscriber to source
+                    PublishSubscriber<T> u = new PublishSubscriber<T>(curr, bufferSize);
+                    // let's try setting it as the current subscriber-to-source
+                    if (!curr.compareAndSet(r, u)) {
+                        // didn't work, maybe someone else did it or the current subscriber
+                        // to source has just finished
+                        continue;
+                    }
+                    // we won, let's use it going onwards
+                    r = u;
+                }
+
+                /*
+                 * Try adding it to the current subscriber-to-source, add is atomic in respect
+                 * to other adds and the termination of the subscriber-to-source.
+                 */
+                if (r.add(inner)) {
+                    if (inner.get() == CANCELLED) {
+                        r.remove(inner);
+                    } else {
+                        inner.parent = r;
+                    }
+                    r.dispatch();
+                    break; // NOPMD
+                }
+                /*
+                 * The current PublishSubscriber has been terminated, try with a newer one.
+                 */
+                /*
+                 * Note: although technically correct, concurrent disconnects can cause
+                 * unexpected behavior such as child subscribers never receiving anything
+                 * (unless connected again). An alternative approach, similar to
+                 * PublishProcessor would be to immediately terminate such child
+                 * subscribers as well:
+                 *
+                 * Object term = r.terminalEvent;
+                 * if (r.nl.isCompleted(term)) {
+                 *     child.onComplete();
+                 * } else {
+                 *     child.onError(r.nl.getError(term));
+                 * }
+                 * return;
+                 *
+                 * The original concurrent behavior was non-deterministic in this regard as well.
+                 * Allowing this behavior, however, may introduce another unexpected behavior:
+                 * after disconnecting a previous connection, one might not be able to prepare
+                 * a new connection right after a previous termination by subscribing new child
+                 * subscribers asynchronously before a connect call.
+                 */
             }
         }
     }

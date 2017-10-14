@@ -83,12 +83,7 @@ public final class ObservableWithLatestFromMany<T, R> extends AbstractObservable
         }
 
         if (n == 0) {
-            new ObservableMap<T, R>(source, new Function<T, R>() {
-                @Override
-                public R apply(T t) throws Exception {
-                    return combiner.apply(new Object[] { t });
-                }
-            }).subscribeActual(s);
+            new ObservableMap<T, R>(source, new SingletonArrayFunc()).subscribeActual(s);
             return;
         }
 
@@ -285,6 +280,13 @@ public final class ObservableWithLatestFromMany<T, R> extends AbstractObservable
 
         public void dispose() {
             DisposableHelper.dispose(this);
+        }
+    }
+
+    final class SingletonArrayFunc implements Function<T, R> {
+        @Override
+        public R apply(T t) throws Exception {
+            return ObjectHelper.requireNonNull(combiner.apply(new Object[] { t }), "The combiner returned a null value");
         }
     }
 }

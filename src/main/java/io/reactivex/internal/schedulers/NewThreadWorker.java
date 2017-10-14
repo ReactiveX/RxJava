@@ -60,15 +60,16 @@ public class NewThreadWorker extends Scheduler.Worker implements Disposable {
      * @return the ScheduledRunnable instance
      */
     public Disposable scheduleDirect(final Runnable run, long delayTime, TimeUnit unit) {
-        Runnable decoratedRun = RxJavaPlugins.onSchedule(run);
+        ScheduledDirectTask task = new ScheduledDirectTask(RxJavaPlugins.onSchedule(run));
         try {
             Future<?> f;
-            if (delayTime <= 0) {
-                f = executor.submit(decoratedRun);
+            if (delayTime <= 0L) {
+                f = executor.submit(task);
             } else {
-                f = executor.schedule(decoratedRun, delayTime, unit);
+                f = executor.schedule(task, delayTime, unit);
             }
-            return Disposables.fromFuture(f);
+            task.setFuture(f);
+            return task;
         } catch (RejectedExecutionException ex) {
             RxJavaPlugins.onError(ex);
             return EmptyDisposable.INSTANCE;
@@ -84,11 +85,31 @@ public class NewThreadWorker extends Scheduler.Worker implements Disposable {
      * @param unit the time unit for both the initialDelay and period
      * @return the ScheduledRunnable instance
      */
-    public Disposable schedulePeriodicallyDirect(final Runnable run, long initialDelay, long period, TimeUnit unit) {
-        Runnable decoratedRun = RxJavaPlugins.onSchedule(run);
+    public Disposable schedulePeriodicallyDirect(Runnable run, long initialDelay, long period, TimeUnit unit) {
+        final Runnable decoratedRun = RxJavaPlugins.onSchedule(run);
+        if (period <= 0L) {
+
+            InstantPeriodicTask periodicWrapper = new InstantPeriodicTask(decoratedRun, executor);
+            try {
+                Future<?> f;
+                if (initialDelay <= 0L) {
+                    f = executor.submit(periodicWrapper);
+                } else {
+                    f = executor.schedule(periodicWrapper, initialDelay, unit);
+                }
+                periodicWrapper.setFirst(f);
+            } catch (RejectedExecutionException ex) {
+                RxJavaPlugins.onError(ex);
+                return EmptyDisposable.INSTANCE;
+            }
+
+            return periodicWrapper;
+        }
+        ScheduledDirectPeriodicTask task = new ScheduledDirectPeriodicTask(decoratedRun);
         try {
-            Future<?> f = executor.scheduleAtFixedRate(decoratedRun, initialDelay, period, unit);
-            return Disposables.fromFuture(f);
+            Future<?> f = executor.scheduleAtFixedRate(task, initialDelay, period, unit);
+            task.setFuture(f);
+            return task;
         } catch (RejectedExecutionException ex) {
             RxJavaPlugins.onError(ex);
             return EmptyDisposable.INSTANCE;
@@ -142,6 +163,16 @@ public class NewThreadWorker extends Scheduler.Worker implements Disposable {
         if (!disposed) {
             disposed = true;
             executor.shutdownNow();
+        }
+    }
+
+    /**
+     * Shuts down the underlying executor in a non-interrupting fashion.
+     */
+    public void shutdown() {
+        if (!disposed) {
+            disposed = true;
+            executor.shutdown();
         }
     }
 

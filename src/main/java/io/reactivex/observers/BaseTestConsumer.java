@@ -21,9 +21,8 @@ import io.reactivex.annotations.Experimental;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.CompositeException;
 import io.reactivex.functions.Predicate;
-import io.reactivex.internal.functions.Functions;
-import io.reactivex.internal.functions.ObjectHelper;
-import io.reactivex.internal.util.ExceptionHelper;
+import io.reactivex.internal.functions.*;
+import io.reactivex.internal.util.*;
 
 /**
  * Base class with shared infrastructure to support TestSubscriber and TestObserver.
@@ -48,11 +47,21 @@ public abstract class BaseTestConsumer<T, U extends BaseTestConsumer<T, U>> impl
 
     protected int establishedFusionMode;
 
+    /**
+     * The optional tag associated with this test consumer.
+     * @since 2.0.7
+     */
     protected CharSequence tag;
 
+    /**
+     * Indicates that one of the awaitX method has timed out.
+     * @since 2.0.7
+     */
+    protected boolean timeout;
+
     public BaseTestConsumer() {
-        this.values = new ArrayList<T>();
-        this.errors = new ArrayList<Throwable>();
+        this.values = new VolatileSizeArrayList<T>();
+        this.errors = new VolatileSizeArrayList<Throwable>();
         this.done = new CountDownLatch(1);
     }
 
@@ -133,6 +142,14 @@ public abstract class BaseTestConsumer<T, U extends BaseTestConsumer<T, U>> impl
         .append("completions = ").append(completions)
         ;
 
+        if (timeout) {
+            b.append(", timeout!");
+        }
+
+        if (isDisposed()) {
+            b.append(", disposed!");
+        }
+
         CharSequence tag = this.tag;
         if (tag != null) {
             b.append(", tag = ")
@@ -181,7 +198,9 @@ public abstract class BaseTestConsumer<T, U extends BaseTestConsumer<T, U>> impl
      * @see #awaitTerminalEvent(long, TimeUnit)
      */
     public final boolean await(long time, TimeUnit unit) throws InterruptedException {
-        return done.getCount() == 0 || done.await(time, unit);
+        boolean d = done.getCount() == 0 || (done.await(time, unit));
+        timeout = !d;
+        return d;
     }
 
     // assertion methods
@@ -317,13 +336,13 @@ public abstract class BaseTestConsumer<T, U extends BaseTestConsumer<T, U>> impl
 
     /**
      * Assert that this TestObserver/TestSubscriber did not receive an onNext value which is equal to
-     * the given value with respect to Objects.equals.
+     * the given value with respect to null-safe Object.equals.
      *
-     * @since 2.0.5 - experimental
+     * <p>History: 2.0.5 - experimental
      * @param value the value to expect not being received
-     * @return this;
+     * @return this
+     * @since 2.1
      */
-    @Experimental
     @SuppressWarnings("unchecked")
     public final U assertNever(T value) {
         int s = values.size();
@@ -360,12 +379,12 @@ public abstract class BaseTestConsumer<T, U extends BaseTestConsumer<T, U>> impl
      * Asserts that this TestObserver/TestSubscriber did not receive any onNext value for which
      * the provided predicate returns true.
      *
-     * @since 2.0.5 - experimental
+     * <p>History: 2.0.5 - experimental
      * @param valuePredicate the predicate that receives the onNext value
      *                       and should return true for the expected value.
      * @return this
+     * @since 2.1
      */
-    @Experimental
     @SuppressWarnings("unchecked")
     public final U assertNever(Predicate<? super T> valuePredicate) {
         int s = values.size();
@@ -379,6 +398,33 @@ public abstract class BaseTestConsumer<T, U extends BaseTestConsumer<T, U>> impl
             } catch (Exception ex) {
                 throw ExceptionHelper.wrapOrThrow(ex);
             }
+        }
+        return (U)this;
+    }
+
+    /**
+     * Asserts that this TestObserver/TestSubscriber received an onNext value at the given index
+     * which is equal to the given value with respect to null-safe Object.equals.
+     * @param index the position to assert on
+     * @param value the value to expect
+     * @return this
+     * @since 2.1.3 - experimental
+     */
+    @SuppressWarnings("unchecked")
+    @Experimental
+    public final U assertValueAt(int index, T value) {
+        int s = values.size();
+        if (s == 0) {
+            throw fail("No values");
+        }
+
+        if (index >= s) {
+            throw fail("Invalid index: " + index);
+        }
+
+        T v = values.get(index);
+        if (!ObjectHelper.equals(value, v)) {
+            throw fail("Expected: " + valueAndClass(value) + ", Actual: " + valueAndClass(v));
         }
         return (U)this;
     }
@@ -477,6 +523,21 @@ public abstract class BaseTestConsumer<T, U extends BaseTestConsumer<T, U>> impl
     }
 
     /**
+     * Assert that the TestObserver/TestSubscriber received only the specified values in the specified order without terminating.
+     * @param values the values expected
+     * @return this;
+     * @since 2.1.4
+     */
+    @SuppressWarnings("unchecked")
+    @Experimental
+    public final U assertValuesOnly(T... values) {
+        return assertSubscribed()
+                .assertValues(values)
+                .assertNoErrors()
+                .assertNotComplete();
+    }
+
+    /**
      * Assert that the TestObserver/TestSubscriber received only the specified values in any order.
      * <p>This helps asserting when the order of the values is not guaranteed, i.e., when merging
      * asynchronous streams.
@@ -506,20 +567,20 @@ public abstract class BaseTestConsumer<T, U extends BaseTestConsumer<T, U>> impl
     @SuppressWarnings("unchecked")
     public final U assertValueSequence(Iterable<? extends T> sequence) {
         int i = 0;
-        Iterator<T> vit = values.iterator();
-        Iterator<? extends T> it = sequence.iterator();
+        Iterator<T> actualIterator = values.iterator();
+        Iterator<? extends T> expectedIterator = sequence.iterator();
         boolean actualNext;
         boolean expectedNext;
         for (;;) {
-            actualNext = it.hasNext();
-            expectedNext = vit.hasNext();
+            expectedNext = expectedIterator.hasNext();
+            actualNext = actualIterator.hasNext();
 
             if (!actualNext || !expectedNext) {
                 break;
             }
 
-            T v = it.next();
-            T u = vit.next();
+            T u = expectedIterator.next();
+            T v = actualIterator.next();
 
             if (!ObjectHelper.equals(u, v)) {
                 throw fail("Values at position " + i + " differ; Expected: " + valueAndClass(u) + ", Actual: " + valueAndClass(v));
@@ -531,7 +592,7 @@ public abstract class BaseTestConsumer<T, U extends BaseTestConsumer<T, U>> impl
             throw fail("More values received than expected (" + i + ")");
         }
         if (expectedNext) {
-            throw fail("Fever values received than expected (" + i + ")");
+            throw fail("Fewer values received than expected (" + i + ")");
         }
         return (U)this;
     }
@@ -738,6 +799,7 @@ public abstract class BaseTestConsumer<T, U extends BaseTestConsumer<T, U>> impl
     public final U awaitDone(long time, TimeUnit unit) {
         try {
             if (!done.await(time, unit)) {
+                timeout = true;
                 dispose();
             }
         } catch (InterruptedException ex) {
@@ -749,7 +811,7 @@ public abstract class BaseTestConsumer<T, U extends BaseTestConsumer<T, U>> impl
 
 
     /**
-     * Assert that the TestObserver/TestSubscriber/TestSubscriber has received a Disposable but no other events.
+     * Assert that the TestObserver/TestSubscriber has received a Disposable but no other events.
      * @return this
      */
     public final U assertEmpty() {
@@ -762,14 +824,198 @@ public abstract class BaseTestConsumer<T, U extends BaseTestConsumer<T, U>> impl
     /**
      * Set the tag displayed along with an assertion failure's
      * other state information.
+     * <p>History: 2.0.7 - experimental
      * @param tag the string to display (null won't print any tag)
      * @return this
-     * @since 2.0.7 - experimental
+     * @since 2.1
      */
     @SuppressWarnings("unchecked")
-    @Experimental
     public final U withTag(CharSequence tag) {
         this.tag = tag;
+        return (U)this;
+    }
+
+    /**
+     * Enumeration of default wait strategies when waiting for a specific number of
+     * items in {@link BaseTestConsumer#awaitCount(int, Runnable)}.
+     * <p>History: 2.0.7 - experimental
+     * @since 2.1
+     */
+    public enum TestWaitStrategy implements Runnable {
+        /** The wait loop will spin as fast as possible. */
+        SPIN {
+            @Override
+            public void run() {
+                // nothing to do
+            }
+        },
+        /** The current thread will be yielded. */
+        YIELD {
+            @Override
+            public void run() {
+                Thread.yield();
+            }
+        },
+        /** The current thread sleeps for 1 millisecond. */
+        SLEEP_1MS {
+            @Override
+            public void run() {
+                sleep(1);
+            }
+        },
+        /** The current thread sleeps for 10 milliseconds. */
+        SLEEP_10MS {
+            @Override
+            public void run() {
+                sleep(10);
+            }
+        },
+        /** The current thread sleeps for 100 milliseconds. */
+        SLEEP_100MS {
+            @Override
+            public void run() {
+                sleep(100);
+            }
+        },
+        /** The current thread sleeps for 1000 milliseconds. */
+        SLEEP_1000MS {
+            @Override
+            public void run() {
+                sleep(1000);
+            }
+        }
+        ;
+
+        @Override
+        public abstract void run();
+
+        static void sleep(int millis) {
+            try {
+                Thread.sleep(millis);
+            } catch (InterruptedException ex) {
+                throw new RuntimeException(ex);
+            }
+        }
+    }
+
+
+    /**
+     * Await until the TestObserver/TestSubscriber receives the given
+     * number of items or terminates by sleeping 10 milliseconds at a time
+     * up to 5000 milliseconds of timeout.
+     * <p>History: 2.0.7 - experimental
+     * @param atLeast the number of items expected at least
+     * @return this
+     * @see #awaitCount(int, Runnable, long)
+     * @since 2.1
+     */
+    public final U awaitCount(int atLeast) {
+        return awaitCount(atLeast, TestWaitStrategy.SLEEP_10MS, 5000);
+    }
+
+    /**
+     * Await until the TestObserver/TestSubscriber receives the given
+     * number of items or terminates by waiting according to the wait
+     * strategy and up to 5000 milliseconds of timeout.
+     * <p>History: 2.0.7 - experimental
+     * @param atLeast the number of items expected at least
+     * @param waitStrategy a Runnable called when the current received count
+     *                     hasn't reached the expected value and there was
+     *                     no terminal event either, see {@link TestWaitStrategy}
+     *                     for examples
+     * @return this
+     * @see #awaitCount(int, Runnable, long)
+     * @since 2.1
+     */
+    public final U awaitCount(int atLeast, Runnable waitStrategy) {
+        return awaitCount(atLeast, waitStrategy, 5000);
+    }
+
+    /**
+     * Await until the TestObserver/TestSubscriber receives the given
+     * number of items or terminates.
+     * <p>History: 2.0.7 - experimental
+     * @param atLeast the number of items expected at least
+     * @param waitStrategy a Runnable called when the current received count
+     *                     hasn't reached the expected value and there was
+     *                     no terminal event either, see {@link TestWaitStrategy}
+     *                     for examples
+     * @param timeoutMillis if positive, the await ends if the specified amount of
+     *                      time has passed no matter how many items were received
+     * @return this
+     * @since 2.1
+     */
+    @SuppressWarnings("unchecked")
+    public final U awaitCount(int atLeast, Runnable waitStrategy, long timeoutMillis) {
+        long start = System.currentTimeMillis();
+        for (;;) {
+            if (timeoutMillis > 0L && System.currentTimeMillis() - start >= timeoutMillis) {
+                timeout = true;
+                break;
+            }
+            if (done.getCount() == 0L) {
+                break;
+            }
+            if (values.size() >= atLeast) {
+                break;
+            }
+
+            waitStrategy.run();
+        }
+        return (U)this;
+    }
+
+    /**
+     * @return true if one of the timeout-based await methods has timed out.
+     * <p>History: 2.0.7 - experimental
+     * @see #clearTimeout()
+     * @see #assertTimeout()
+     * @see #assertNoTimeout()
+     * @since 2.1
+     */
+    public final boolean isTimeout() {
+        return timeout;
+    }
+
+    /**
+     * Clears the timeout flag set by the await methods when they timed out.
+     * <p>History: 2.0.7 - experimental
+     * @return this
+     * @since 2.1
+     * @see #isTimeout()
+     */
+    @SuppressWarnings("unchecked")
+    public final U clearTimeout() {
+        timeout = false;
+        return (U)this;
+    }
+
+    /**
+     * Asserts that some awaitX method has timed out.
+     * <p>History: 2.0.7 - experimental
+     * @return this
+     * @since 2.1
+     */
+    @SuppressWarnings("unchecked")
+    public final U assertTimeout() {
+        if (!timeout) {
+            throw fail("No timeout?!");
+        }
+        return (U)this;
+    }
+
+
+    /**
+     * Asserts that some awaitX method has not timed out.
+     * <p>History: 2.0.7 - experimental
+     * @return this
+     * @since 2.1
+     */
+    @SuppressWarnings("unchecked")
+    public final U assertNoTimeout() {
+        if (timeout) {
+            throw fail("Timeout?!");
+        }
         return (U)this;
     }
 }

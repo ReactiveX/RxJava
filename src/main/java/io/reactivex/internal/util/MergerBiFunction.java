@@ -23,7 +23,7 @@ import io.reactivex.functions.BiFunction;
  */
 public final class MergerBiFunction<T> implements BiFunction<List<T>, List<T>, List<T>> {
 
-    Comparator<? super T> comparator;
+    final Comparator<? super T> comparator;
 
     public MergerBiFunction(Comparator<? super T> comparator) {
         this.comparator = comparator;

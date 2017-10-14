@@ -32,7 +32,6 @@ import io.reactivex.plugins.RxJavaPlugins;
  * <img width="640" height="405" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/S.ReplaySubject.png" alt="">
  * <p>
  * Example usage:
- * <p>
  * <pre> {@code
 
   ReplaySubject<Object> subject = new ReplaySubject<>();
@@ -1016,6 +1015,11 @@ public final class ReplaySubject<T> extends Subject<T> {
                 }
                 prev = h;
                 h = next;
+            }
+
+            long limit = scheduler.now(unit) - maxAge;
+            if (h.time < limit) {
+                return null;
             }
 
             Object v = h.value;

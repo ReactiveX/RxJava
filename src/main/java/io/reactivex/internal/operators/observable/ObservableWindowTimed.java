@@ -254,6 +254,8 @@ public final class ObservableWindowTimed<T> extends AbstractObservableWithUpstre
         final boolean restartTimerOnMaxSize;
         final long maxSize;
 
+        final Scheduler.Worker worker;
+
         long count;
 
         long producerIndex;
@@ -262,7 +264,6 @@ public final class ObservableWindowTimed<T> extends AbstractObservableWithUpstre
 
         UnicastSubject<T> window;
 
-        Scheduler.Worker worker;
 
         volatile boolean terminated;
 
@@ -279,6 +280,11 @@ public final class ObservableWindowTimed<T> extends AbstractObservableWithUpstre
             this.bufferSize = bufferSize;
             this.maxSize = maxSize;
             this.restartTimerOnMaxSize = restartTimerOnMaxSize;
+            if (restartTimerOnMaxSize) {
+                worker = scheduler.createWorker();
+            } else {
+                worker = null;
+            }
         }
 
         @Override
@@ -302,10 +308,7 @@ public final class ObservableWindowTimed<T> extends AbstractObservableWithUpstre
                 Disposable d;
                 ConsumerIndexHolder consumerIndexHolder = new ConsumerIndexHolder(producerIndex, this);
                 if (restartTimerOnMaxSize) {
-                    Scheduler.Worker sw = scheduler.createWorker();
-                    worker = sw;
-                    sw.schedulePeriodically(consumerIndexHolder, timespan, timespan, unit);
-                    d = sw;
+                    d = worker.schedulePeriodically(consumerIndexHolder, timespan, timespan, unit);
                 } else {
                     d = scheduler.schedulePeriodicallyDirect(consumerIndexHolder, timespan, timespan, unit);
                 }
@@ -394,6 +397,10 @@ public final class ObservableWindowTimed<T> extends AbstractObservableWithUpstre
 
         void disposeTimer() {
             DisposableHelper.dispose(timer);
+            Worker w = worker;
+            if (w != null) {
+                w.dispose();
+            }
         }
 
         void drainLoop() {
@@ -438,9 +445,9 @@ public final class ObservableWindowTimed<T> extends AbstractObservableWithUpstre
 
                     if (isHolder) {
                         ConsumerIndexHolder consumerIndexHolder = (ConsumerIndexHolder) o;
-                        if (producerIndex == consumerIndexHolder.index) {
+                        if (restartTimerOnMaxSize || producerIndex == consumerIndexHolder.index) {
                             w.onComplete();
-
+                            count = 0;
                             w = UnicastSubject.create(bufferSize);
                             window = w;
 
@@ -552,12 +559,7 @@ public final class ObservableWindowTimed<T> extends AbstractObservableWithUpstre
                 windows.add(w);
 
                 actual.onNext(w);
-                worker.schedule(new Runnable() {
-                    @Override
-                    public void run() {
-                        complete(w);
-                    }
-                }, timespan, unit);
+                worker.schedule(new CompletionTask(w), timespan, unit);
 
                 worker.schedulePeriodically(this, timeskip, timeskip, unit);
             }
@@ -685,19 +687,13 @@ public final class ObservableWindowTimed<T> extends AbstractObservableWithUpstre
                             ws.add(w);
                             a.onNext(w);
 
-                            worker.schedule(new Runnable() {
-                                @Override
-                                public void run() {
-                                    complete(w);
-                                }
-                            }, timespan, unit);
+                            worker.schedule(new CompletionTask(w), timespan, unit);
                         } else {
                             ws.remove(work.w);
                             work.w.onComplete();
                             if (ws.isEmpty() && cancelled) {
                                 terminated = true;
                             }
-                            continue;
                         }
                     } else {
                         for (UnicastSubject<T> w : ws) {
@@ -733,6 +729,19 @@ public final class ObservableWindowTimed<T> extends AbstractObservableWithUpstre
             SubjectWork(UnicastSubject<T> w, boolean open) {
                 this.w = w;
                 this.open = open;
+            }
+        }
+
+        final class CompletionTask implements Runnable {
+            private final UnicastSubject<T> w;
+
+            CompletionTask(UnicastSubject<T> w) {
+                this.w = w;
+            }
+
+            @Override
+            public void run() {
+                complete(w);
             }
         }
     }

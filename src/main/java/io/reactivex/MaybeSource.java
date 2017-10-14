@@ -12,6 +12,8 @@
  */
 package io.reactivex;
 
+import io.reactivex.annotations.*;
+
 /**
  * Represents a basic {@link Maybe} source base interface,
  * consumable via an {@link MaybeObserver}.
@@ -29,5 +31,5 @@ public interface MaybeSource<T> {
      * @param observer the MaybeObserver, not null
      * @throws NullPointerException if {@code observer} is null
      */
-    void subscribe(MaybeObserver<? super T> observer);
+    void subscribe(@NonNull MaybeObserver<? super T> observer);
 }

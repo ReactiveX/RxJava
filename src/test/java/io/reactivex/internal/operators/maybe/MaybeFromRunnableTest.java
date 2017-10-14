@@ -134,7 +134,7 @@ public class MaybeFromRunnableTest {
                 public void run() {
                     cdl1.countDown();
                     try {
-                        cdl2.await();
+                        cdl2.await(5, TimeUnit.SECONDS);
                     } catch (InterruptedException ex) {
                         throw new RuntimeException(ex);
                     }
@@ -144,8 +144,6 @@ public class MaybeFromRunnableTest {
             assertTrue(cdl1.await(5, TimeUnit.SECONDS));
 
             to.cancel();
-
-            cdl2.countDown();
 
             int timeout = 10;
 

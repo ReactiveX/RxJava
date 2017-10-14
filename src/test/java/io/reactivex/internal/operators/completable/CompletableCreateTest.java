@@ -16,6 +16,7 @@ package io.reactivex.internal.operators.completable;
 import static org.junit.Assert.*;
 
 import java.io.IOException;
+import java.util.List;
 
 import org.junit.Test;
 
@@ -23,6 +24,7 @@ import io.reactivex.*;
 import io.reactivex.disposables.*;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.Cancellable;
+import io.reactivex.plugins.RxJavaPlugins;
 
 public class CompletableCreateTest {
 
@@ -271,5 +273,28 @@ public class CompletableCreateTest {
                 throw new TestException();
             }
         });
+    }
+
+    @Test
+    public void tryOnError() {
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            final Boolean[] response = { null };
+            Completable.create(new CompletableOnSubscribe() {
+                @Override
+                public void subscribe(CompletableEmitter e) throws Exception {
+                    e.onComplete();
+                    response[0] = e.tryOnError(new TestException());
+                }
+            })
+            .test()
+            .assertResult();
+
+            assertFalse(response[0]);
+
+            assertTrue(errors.toString(), errors.isEmpty());
+        } finally {
+            RxJavaPlugins.reset();
+        }
     }
 }

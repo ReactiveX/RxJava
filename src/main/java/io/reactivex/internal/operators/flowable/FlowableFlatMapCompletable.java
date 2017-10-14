@@ -72,6 +72,8 @@ public final class FlowableFlatMapCompletable<T> extends AbstractFlowableWithUps
 
         Subscription s;
 
+        volatile boolean cancelled;
+
         FlatMapCompletableMainSubscriber(Subscriber<? super T> observer,
                 Function<? super T, ? extends CompletableSource> mapper, boolean delayErrors,
                 int maxConcurrency) {
@@ -117,7 +119,7 @@ public final class FlowableFlatMapCompletable<T> extends AbstractFlowableWithUps
 
             InnerConsumer inner = new InnerConsumer();
 
-            if (set.add(inner)) {
+            if (!cancelled && set.add(inner)) {
                 cs.subscribe(inner);
             }
         }
@@ -129,7 +131,6 @@ public final class FlowableFlatMapCompletable<T> extends AbstractFlowableWithUps
                     if (decrementAndGet() == 0) {
                         Throwable ex = errors.terminate();
                         actual.onError(ex);
-                        return;
                     } else {
                         if (maxConcurrency != Integer.MAX_VALUE) {
                             s.request(1);
@@ -140,7 +141,6 @@ public final class FlowableFlatMapCompletable<T> extends AbstractFlowableWithUps
                     if (getAndSet(0) > 0) {
                         Throwable ex = errors.terminate();
                         actual.onError(ex);
-                        return;
                     }
                 }
             } else {
@@ -166,6 +166,7 @@ public final class FlowableFlatMapCompletable<T> extends AbstractFlowableWithUps
 
         @Override
         public void cancel() {
+            cancelled = true;
             s.cancel();
             set.dispose();
         }

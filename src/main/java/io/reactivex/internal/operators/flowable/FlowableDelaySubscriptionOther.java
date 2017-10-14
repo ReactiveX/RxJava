@@ -38,71 +38,90 @@ public final class FlowableDelaySubscriptionOther<T, U> extends Flowable<T> {
         final SubscriptionArbiter serial = new SubscriptionArbiter();
         child.onSubscribe(serial);
 
-        FlowableSubscriber<U> otherSubscriber = new FlowableSubscriber<U>() {
-            boolean done;
+        FlowableSubscriber<U> otherSubscriber = new DelaySubscriber(serial, child);
 
-            @Override
-            public void onSubscribe(final Subscription s) {
-                serial.setSubscription(new Subscription() {
-                    @Override
-                    public void request(long n) {
-                        // ignored
-                    }
+        other.subscribe(otherSubscriber);
+    }
 
-                    @Override
-                    public void cancel() {
-                        s.cancel();
-                    }
-                });
-                s.request(Long.MAX_VALUE);
+    final class DelaySubscriber implements FlowableSubscriber<U> {
+        final SubscriptionArbiter serial;
+        final Subscriber<? super T> child;
+        boolean done;
+
+        DelaySubscriber(SubscriptionArbiter serial, Subscriber<? super T> child) {
+            this.serial = serial;
+            this.child = child;
+        }
+
+        @Override
+        public void onSubscribe(final Subscription s) {
+            serial.setSubscription(new DelaySubscription(s));
+            s.request(Long.MAX_VALUE);
+        }
+
+        @Override
+        public void onNext(U t) {
+            onComplete();
+        }
+
+        @Override
+        public void onError(Throwable e) {
+            if (done) {
+                RxJavaPlugins.onError(e);
+                return;
+            }
+            done = true;
+            child.onError(e);
+        }
+
+        @Override
+        public void onComplete() {
+            if (done) {
+                return;
+            }
+            done = true;
+
+            main.subscribe(new OnCompleteSubscriber());
+        }
+
+        final class DelaySubscription implements Subscription {
+            private final Subscription s;
+
+            DelaySubscription(Subscription s) {
+                this.s = s;
             }
 
             @Override
-            public void onNext(U t) {
-                onComplete();
+            public void request(long n) {
+                // ignored
             }
 
             @Override
-            public void onError(Throwable e) {
-                if (done) {
-                    RxJavaPlugins.onError(e);
-                    return;
-                }
-                done = true;
-                child.onError(e);
+            public void cancel() {
+                s.cancel();
+            }
+        }
+
+        final class OnCompleteSubscriber implements FlowableSubscriber<T> {
+            @Override
+            public void onSubscribe(Subscription s) {
+                serial.setSubscription(s);
+            }
+
+            @Override
+            public void onNext(T t) {
+                child.onNext(t);
+            }
+
+            @Override
+            public void onError(Throwable t) {
+                child.onError(t);
             }
 
             @Override
             public void onComplete() {
-                if (done) {
-                    return;
-                }
-                done = true;
-
-                main.subscribe(new FlowableSubscriber<T>() {
-                    @Override
-                    public void onSubscribe(Subscription s) {
-                        serial.setSubscription(s);
-                    }
-
-                    @Override
-                    public void onNext(T t) {
-                        child.onNext(t);
-                    }
-
-                    @Override
-                    public void onError(Throwable t) {
-                        child.onError(t);
-                    }
-
-                    @Override
-                    public void onComplete() {
-                        child.onComplete();
-                    }
-                });
+                child.onComplete();
             }
-        };
-
-        other.subscribe(otherSubscriber);
+        }
     }
 }

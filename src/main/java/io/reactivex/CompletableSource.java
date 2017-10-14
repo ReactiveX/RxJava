@@ -12,6 +12,8 @@
  */
 package io.reactivex;
 
+import io.reactivex.annotations.*;
+
 /**
  * Represents a basic {@link Completable} source base interface,
  * consumable via an {@link CompletableObserver}.
@@ -25,5 +27,5 @@ public interface CompletableSource {
      * @param cs the CompletableObserver, not null
      * @throws NullPointerException if {@code cs} is null
      */
-    void subscribe(CompletableObserver cs);
+    void subscribe(@NonNull CompletableObserver cs);
 }

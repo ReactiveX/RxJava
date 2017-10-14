@@ -26,6 +26,7 @@ import org.reactivestreams.*;
 
 import io.reactivex.*;
 import io.reactivex.exceptions.*;
+import io.reactivex.flowables.ConnectableFlowable;
 import io.reactivex.functions.*;
 import io.reactivex.internal.functions.Functions;
 import io.reactivex.internal.fuseable.*;
@@ -731,5 +732,198 @@ public class FlowableDoOnEachTest {
                 return o.doOnEach(new TestSubscriber<Object>());
             }
         });
+    }
+
+    @Test
+    public void doOnNextDoOnErrorFused() {
+        ConnectableFlowable<Integer> co = Flowable.just(1)
+        .doOnNext(new Consumer<Integer>() {
+            @Override
+            public void accept(Integer v) throws Exception {
+                throw new TestException("First");
+            }
+        })
+        .doOnError(new Consumer<Throwable>() {
+            @Override
+            public void accept(Throwable e) throws Exception {
+                throw new TestException("Second");
+            }
+        })
+        .publish();
+
+        TestSubscriber<Integer> ts = co.test();
+        co.connect();
+
+        ts.assertFailure(CompositeException.class);
+
+        TestHelper.assertError(ts, 0, TestException.class, "First");
+        TestHelper.assertError(ts, 1, TestException.class, "Second");
+    }
+
+    @Test
+    public void doOnNextDoOnErrorCombinedFused() {
+        ConnectableFlowable<Integer> co = Flowable.just(1)
+                .compose(new FlowableTransformer<Integer, Integer>() {
+                    @Override
+                    public Publisher<Integer> apply(Flowable<Integer> v) {
+                        return new FlowableDoOnEach<Integer>(v,
+                                new Consumer<Integer>() {
+                                    @Override
+                                    public void accept(Integer v) throws Exception {
+                                        throw new TestException("First");
+                                    }
+                                },
+                                new Consumer<Throwable>() {
+                                    @Override
+                                    public void accept(Throwable e) throws Exception {
+                                        throw new TestException("Second");
+                                    }
+                                },
+                                Functions.EMPTY_ACTION
+                                ,
+                                Functions.EMPTY_ACTION
+                                );
+                    }
+                })
+        .publish();
+
+        TestSubscriber<Integer> ts = co.test();
+        co.connect();
+
+        ts.assertFailure(CompositeException.class);
+
+        TestHelper.assertError(ts, 0, TestException.class, "First");
+        TestHelper.assertError(ts, 1, TestException.class, "Second");
+    }
+
+    @Test
+    public void doOnNextDoOnErrorFused2() {
+        ConnectableFlowable<Integer> co = Flowable.just(1)
+        .doOnNext(new Consumer<Integer>() {
+            @Override
+            public void accept(Integer v) throws Exception {
+                throw new TestException("First");
+            }
+        })
+        .doOnError(new Consumer<Throwable>() {
+            @Override
+            public void accept(Throwable e) throws Exception {
+                throw new TestException("Second");
+            }
+        })
+        .doOnError(new Consumer<Throwable>() {
+            @Override
+            public void accept(Throwable e) throws Exception {
+                throw new TestException("Third");
+            }
+        })
+        .publish();
+
+        TestSubscriber<Integer> ts = co.test();
+        co.connect();
+
+        ts.assertFailure(CompositeException.class);
+
+        TestHelper.assertError(ts, 0, TestException.class, "First");
+        TestHelper.assertError(ts, 1, TestException.class, "Second");
+        TestHelper.assertError(ts, 2, TestException.class, "Third");
+    }
+
+    @Test
+    public void doOnNextDoOnErrorFusedConditional() {
+        ConnectableFlowable<Integer> co = Flowable.just(1)
+        .doOnNext(new Consumer<Integer>() {
+            @Override
+            public void accept(Integer v) throws Exception {
+                throw new TestException("First");
+            }
+        })
+        .doOnError(new Consumer<Throwable>() {
+            @Override
+            public void accept(Throwable e) throws Exception {
+                throw new TestException("Second");
+            }
+        })
+        .filter(Functions.alwaysTrue())
+        .publish();
+
+        TestSubscriber<Integer> ts = co.test();
+        co.connect();
+
+        ts.assertFailure(CompositeException.class);
+
+        TestHelper.assertError(ts, 0, TestException.class, "First");
+        TestHelper.assertError(ts, 1, TestException.class, "Second");
+    }
+
+    @Test
+    public void doOnNextDoOnErrorFusedConditional2() {
+        ConnectableFlowable<Integer> co = Flowable.just(1)
+        .doOnNext(new Consumer<Integer>() {
+            @Override
+            public void accept(Integer v) throws Exception {
+                throw new TestException("First");
+            }
+        })
+        .doOnError(new Consumer<Throwable>() {
+            @Override
+            public void accept(Throwable e) throws Exception {
+                throw new TestException("Second");
+            }
+        })
+        .doOnError(new Consumer<Throwable>() {
+            @Override
+            public void accept(Throwable e) throws Exception {
+                throw new TestException("Third");
+            }
+        })
+        .filter(Functions.alwaysTrue())
+        .publish();
+
+        TestSubscriber<Integer> ts = co.test();
+        co.connect();
+
+        ts.assertFailure(CompositeException.class);
+
+        TestHelper.assertError(ts, 0, TestException.class, "First");
+        TestHelper.assertError(ts, 1, TestException.class, "Second");
+        TestHelper.assertError(ts, 2, TestException.class, "Third");
+    }
+
+    @Test
+    public void doOnNextDoOnErrorCombinedFusedConditional() {
+        ConnectableFlowable<Integer> co = Flowable.just(1)
+                .compose(new FlowableTransformer<Integer, Integer>() {
+                    @Override
+                    public Publisher<Integer> apply(Flowable<Integer> v) {
+                        return new FlowableDoOnEach<Integer>(v,
+                                new Consumer<Integer>() {
+                                    @Override
+                                    public void accept(Integer v) throws Exception {
+                                        throw new TestException("First");
+                                    }
+                                },
+                                new Consumer<Throwable>() {
+                                    @Override
+                                    public void accept(Throwable e) throws Exception {
+                                        throw new TestException("Second");
+                                    }
+                                },
+                                Functions.EMPTY_ACTION
+                                ,
+                                Functions.EMPTY_ACTION
+                                );
+                    }
+                })
+        .filter(Functions.alwaysTrue())
+        .publish();
+
+        TestSubscriber<Integer> ts = co.test();
+        co.connect();
+
+        ts.assertFailure(CompositeException.class);
+
+        TestHelper.assertError(ts, 0, TestException.class, "First");
+        TestHelper.assertError(ts, 1, TestException.class, "Second");
     }
 }

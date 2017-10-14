@@ -28,6 +28,7 @@ import io.reactivex.*;
 import io.reactivex.exceptions.*;
 import io.reactivex.functions.*;
 import io.reactivex.internal.functions.Functions;
+import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.TestSubscriber;
@@ -263,7 +264,7 @@ public class FlowableFlatMapTest {
 
         source.flatMap(just(onNext), funcThrow((Throwable) null, onError), just0(onComplete)).subscribe(o);
 
-        verify(o).onError(any(TestException.class));
+        verify(o).onError(any(CompositeException.class));
         verify(o, never()).onNext(any());
         verify(o, never()).onComplete();
     }
@@ -925,5 +926,111 @@ public class FlowableFlatMapTest {
             assertTrue(list.toString(), list.contains("RxSi"));
             assertTrue(list.toString(), list.contains("RxCo"));
         }
+    }
+
+    @Test
+    public void cancelScalarDrainRace() {
+        for (int i = 0; i < 1000; i++) {
+            List<Throwable> errors = TestHelper.trackPluginErrors();
+            try {
+
+                final PublishProcessor<Flowable<Integer>> pp = PublishProcessor.create();
+
+                final TestSubscriber<Integer> ts = pp.flatMap(Functions.<Flowable<Integer>>identity()).test(0);
+
+                Runnable r1 = new Runnable() {
+                    @Override
+                    public void run() {
+                        ts.cancel();
+                    }
+                };
+                Runnable r2 = new Runnable() {
+                    @Override
+                    public void run() {
+                        pp.onComplete();
+                    }
+                };
+
+                TestHelper.race(r1, r2);
+
+                assertTrue(errors.toString(), errors.isEmpty());
+            } finally {
+                RxJavaPlugins.reset();
+            }
+        }
+    }
+
+    @Test
+    public void cancelDrainRace() {
+        for (int i = 0; i < 1000; i++) {
+            for (int j = 1; j < 50; j += 5) {
+                List<Throwable> errors = TestHelper.trackPluginErrors();
+                try {
+
+                    final PublishProcessor<Flowable<Integer>> pp = PublishProcessor.create();
+
+                    final TestSubscriber<Integer> ts = pp.flatMap(Functions.<Flowable<Integer>>identity()).test(0);
+
+                    final PublishProcessor<Integer> just = PublishProcessor.create();
+                    pp.onNext(just);
+
+                    Runnable r1 = new Runnable() {
+                        @Override
+                        public void run() {
+                            ts.request(1);
+                            ts.cancel();
+                        }
+                    };
+                    Runnable r2 = new Runnable() {
+                        @Override
+                        public void run() {
+                            just.onNext(1);
+                        }
+                    };
+
+                    TestHelper.race(r1, r2);
+
+                    assertTrue(errors.toString(), errors.isEmpty());
+                } finally {
+                    RxJavaPlugins.reset();
+                }
+            }
+        }
+    }
+
+    @Test
+    public void iterableMapperFunctionReturnsNull() {
+        Flowable.just(1)
+        .flatMapIterable(new Function<Integer, Iterable<Object>>() {
+            @Override
+            public Iterable<Object> apply(Integer v) throws Exception {
+                return null;
+            }
+        }, new BiFunction<Integer, Object, Object>() {
+            @Override
+            public Object apply(Integer v, Object w) throws Exception {
+                return v;
+            }
+        })
+        .test()
+        .assertFailureAndMessage(NullPointerException.class, "The mapper returned a null Iterable");
+    }
+
+    @Test
+    public void combinerMapperFunctionReturnsNull() {
+        Flowable.just(1)
+        .flatMap(new Function<Integer, Publisher<Object>>() {
+            @Override
+            public Publisher<Object> apply(Integer v) throws Exception {
+                return null;
+            }
+        }, new BiFunction<Integer, Object, Object>() {
+            @Override
+            public Object apply(Integer v, Object w) throws Exception {
+                return v;
+            }
+        })
+        .test()
+        .assertFailureAndMessage(NullPointerException.class, "The mapper returned a null Publisher");
     }
 }

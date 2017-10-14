@@ -24,6 +24,7 @@ import io.reactivex.schedulers.Schedulers;
  * {@linkplain #NONE not using a scheduler} and {@linkplain #CUSTOM a manually-specified scheduler}.
  * Libraries providing their own values should namespace them with their base package name followed
  * by a colon ({@code :}) and then a human-readable name (e.g., {@code com.example:ui-thread}).
+ * @since 2.0
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
@@ -59,6 +60,13 @@ public @interface SchedulerSupport {
      * or takes timing information from it.
      */
     String TRAMPOLINE = "io.reactivex:trampoline";
+    /**
+     * The operator/class runs on RxJava's {@linkplain Schedulers#single() single scheduler}
+     * or takes timing information from it.
+     * @since 2.0.8 - experimental
+     */
+    @Experimental
+    String SINGLE = "io.reactivex:single";
 
     /**
      * The kind of scheduler the class or method uses.

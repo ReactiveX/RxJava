@@ -29,7 +29,9 @@ import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.*;
 import io.reactivex.functions.*;
+import io.reactivex.internal.functions.Functions;
 import io.reactivex.observers.TestObserver;
+import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subjects.PublishSubject;
 
@@ -264,7 +266,7 @@ public class ObservableFlatMapTest {
 
         source.flatMap(just(onNext), funcThrow((Throwable) null, onError), just0(onComplete)).subscribe(o);
 
-        verify(o).onError(any(TestException.class));
+        verify(o).onError(any(CompositeException.class));
         verify(o, never()).onNext(any());
         verify(o, never()).onComplete();
     }
@@ -783,5 +785,113 @@ public class ObservableFlatMapTest {
             assertTrue(list.toString(), list.contains("RxSi"));
             assertTrue(list.toString(), list.contains("RxCo"));
         }
+    }
+
+    @Test
+    public void cancelScalarDrainRace() {
+        for (int i = 0; i < 1000; i++) {
+            List<Throwable> errors = TestHelper.trackPluginErrors();
+            try {
+
+                final PublishSubject<Observable<Integer>> pp = PublishSubject.create();
+
+                final TestObserver<Integer> ts = pp.flatMap(Functions.<Observable<Integer>>identity()).test();
+
+                Runnable r1 = new Runnable() {
+                    @Override
+                    public void run() {
+                        ts.cancel();
+                    }
+                };
+                Runnable r2 = new Runnable() {
+                    @Override
+                    public void run() {
+                        pp.onComplete();
+                    }
+                };
+
+                TestHelper.race(r1, r2);
+
+                assertTrue(errors.toString(), errors.isEmpty());
+            } finally {
+                RxJavaPlugins.reset();
+            }
+        }
+    }
+
+    @Test
+    public void cancelDrainRace() {
+        for (int i = 0; i < 1000; i++) {
+            for (int j = 1; j < 50; j += 5) {
+                List<Throwable> errors = TestHelper.trackPluginErrors();
+                try {
+
+                    final PublishSubject<Observable<Integer>> pp = PublishSubject.create();
+
+                    final TestObserver<Integer> ts = pp.flatMap(Functions.<Observable<Integer>>identity()).test();
+
+                    final PublishSubject<Integer> just = PublishSubject.create();
+                    final PublishSubject<Integer> just2 = PublishSubject.create();
+                    pp.onNext(just);
+                    pp.onNext(just2);
+
+                    Runnable r1 = new Runnable() {
+                        @Override
+                        public void run() {
+                            just2.onNext(1);
+                            ts.cancel();
+                        }
+                    };
+                    Runnable r2 = new Runnable() {
+                        @Override
+                        public void run() {
+                            just.onNext(1);
+                        }
+                    };
+
+                    TestHelper.race(r1, r2);
+
+                    assertTrue(errors.toString(), errors.isEmpty());
+                } finally {
+                    RxJavaPlugins.reset();
+                }
+            }
+        }
+    }
+
+    @Test
+    public void iterableMapperFunctionReturnsNull() {
+        Observable.just(1)
+        .flatMapIterable(new Function<Integer, Iterable<Object>>() {
+            @Override
+            public Iterable<Object> apply(Integer v) throws Exception {
+                return null;
+            }
+        }, new BiFunction<Integer, Object, Object>() {
+            @Override
+            public Object apply(Integer v, Object w) throws Exception {
+                return v;
+            }
+        })
+        .test()
+        .assertFailureAndMessage(NullPointerException.class, "The mapper returned a null Iterable");
+    }
+
+    @Test
+    public void combinerMapperFunctionReturnsNull() {
+        Observable.just(1)
+        .flatMap(new Function<Integer, Observable<Object>>() {
+            @Override
+            public Observable<Object> apply(Integer v) throws Exception {
+                return null;
+            }
+        }, new BiFunction<Integer, Object, Object>() {
+            @Override
+            public Object apply(Integer v, Object w) throws Exception {
+                return v;
+            }
+        })
+        .test()
+        .assertFailureAndMessage(NullPointerException.class, "The mapper returned a null ObservableSource");
     }
 }

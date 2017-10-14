@@ -138,7 +138,7 @@ public class MaybeFromCallableTest {
                 @Override
                 public Integer call() throws Exception {
                     cdl1.countDown();
-                    cdl2.await();
+                    cdl2.await(5, TimeUnit.SECONDS);
                     return 1;
                 }
             }).subscribeOn(Schedulers.single()).test();
@@ -146,8 +146,6 @@ public class MaybeFromCallableTest {
             assertTrue(cdl1.await(5, TimeUnit.SECONDS));
 
             to.cancel();
-
-            cdl2.countDown();
 
             int timeout = 10;
 

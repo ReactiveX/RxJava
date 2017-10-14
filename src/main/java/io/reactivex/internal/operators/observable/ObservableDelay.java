@@ -78,40 +78,17 @@ public final class ObservableDelay<T> extends AbstractObservableWithUpstream<T, 
 
         @Override
         public void onNext(final T t) {
-            w.schedule(new Runnable() {
-                @Override
-                public void run() {
-                    actual.onNext(t);
-                }
-            }, delay, unit);
+            w.schedule(new OnNext(t), delay, unit);
         }
 
         @Override
         public void onError(final Throwable t) {
-            w.schedule(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        actual.onError(t);
-                    } finally {
-                        w.dispose();
-                    }
-                }
-            }, delayError ? delay : 0, unit);
+            w.schedule(new OnError(t), delayError ? delay : 0, unit);
         }
 
         @Override
         public void onComplete() {
-            w.schedule(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        actual.onComplete();
-                    } finally {
-                        w.dispose();
-                    }
-                }
-            }, delay, unit);
+            w.schedule(new OnComplete(), delay, unit);
         }
 
         @Override
@@ -123,6 +100,47 @@ public final class ObservableDelay<T> extends AbstractObservableWithUpstream<T, 
         @Override
         public boolean isDisposed() {
             return w.isDisposed();
+        }
+
+        final class OnNext implements Runnable {
+            private final T t;
+
+            OnNext(T t) {
+                this.t = t;
+            }
+
+            @Override
+            public void run() {
+                actual.onNext(t);
+            }
+        }
+
+        final class OnError implements Runnable {
+            private final Throwable throwable;
+
+            OnError(Throwable throwable) {
+                this.throwable = throwable;
+            }
+
+            @Override
+            public void run() {
+                try {
+                    actual.onError(throwable);
+                } finally {
+                    w.dispose();
+                }
+            }
+        }
+
+        final class OnComplete implements Runnable {
+            @Override
+            public void run() {
+                try {
+                    actual.onComplete();
+                } finally {
+                    w.dispose();
+                }
+            }
         }
     }
 }

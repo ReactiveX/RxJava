@@ -19,8 +19,8 @@ import io.reactivex.annotations.NonNull;
  * A functional interface (callback) that computes a value based on multiple input values.
  * @param <T1> the first value type
  * @param <T2> the second value type
- * @param <T3> the second value type
- * @param <T4> the second value type
+ * @param <T3> the third value type
+ * @param <T4> the fourth value type
  * @param <R> the result type
  */
 public interface Function4<T1, T2, T3, T4, R> {

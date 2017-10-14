@@ -56,12 +56,14 @@ public class HelloWorld {
 If your platform doesn't support Java 8 lambdas (yet), you have to create an inner class of `Consumer` manually:
 
 ```java
+import io.reactivex.functions.Consumer;
+
 Flowable.just("Hello world")
   .subscribe(new Consumer<String>() {
       @Override public void accept(String s) {
           System.out.println(s);
       }
-  );
+  });
 ```
 
 RxJava 2 features several base classes you can discover operators on:
@@ -75,6 +77,8 @@ RxJava 2 features several base classes you can discover operators on:
 One of the common use cases for RxJava is to run some computation, network request on a background thread and show the results (or error) on the UI thread:
 
 ```java
+import io.reactivex.schedulers.Schedulers;
+
 Flowable.fromCallable(() -> {
     Thread.sleep(1000); //  imitate expensive computation
     return "Done";
@@ -105,7 +109,7 @@ Thread.sleep(2000);
 
 Typically, you can move computations or blocking IO to some other thread via `subscribeOn`. Once the data is ready, you can make sure they get processed on the foreground or GUI thread via `observeOn`. 
 
-RxJava operators don't work `Thread`s or `ExecutorService`s directly but with so called `Scheduler`s that abstract away sources of concurrency behind an uniform API. RxJava 2 features several standard schedulers accessible via `Schedulers` utility class. These are available on all JVM platforms but some specific platforms, such as Android, have their own typical `Scheduler`s defined: `AndroidSchedulers.mainThread()`, `SwingScheduler.instance()` or `JavaFXSchedulers.gui()`.
+RxJava operators don't work with `Thread`s or `ExecutorService`s directly but with so called `Scheduler`s that abstract away sources of concurrency behind an uniform API. RxJava 2 features several standard schedulers accessible via `Schedulers` utility class. These are available on all JVM platforms but some specific platforms, such as Android, have their own typical `Scheduler`s defined: `AndroidSchedulers.mainThread()`, `SwingScheduler.instance()` or `JavaFXSchedulers.gui()`.
 
 The `Thread.sleep(2000);` at the end is no accident. In RxJava the default `Scheduler`s run on daemon threads, which means once the Java main thread exits, they all get stopped and background computations may never happen. Sleeping for some time in this example situations let's you see the output of the flow on the console with time to spare.
 
@@ -171,6 +175,7 @@ For further details, consult the [wiki](https://github.com/ReactiveX/RxJava/wiki
 - Twitter: [@RxJava](http://twitter.com/RxJava)
 - [GitHub Issues](https://github.com/ReactiveX/RxJava/issues)
 - StackOverflow: [rx-java](http://stackoverflow.com/questions/tagged/rx-java) and [rx-java2](http://stackoverflow.com/questions/tagged/rx-java2)
+- [Gitter.im](https://gitter.im/ReactiveX/RxJava)
 
 ## Versioning
 
@@ -226,7 +231,7 @@ and for Ivy:
 <dependency org="io.reactivex.rxjava2" name="rxjava" rev="x.y.z" />
 ```
 
-Snapshots are available via [JFrog](https://oss.jfrog.org/webapp/search/artifact/?5&q=rxjava):
+Snapshots are available via https://oss.jfrog.org/libs-snapshot/io/reactivex/rxjava2/rxjava/
 
 ```groovy
 repositories {
@@ -234,7 +239,7 @@ repositories {
 }
 
 dependencies {
-    compile 'io.reactivex.rxjava2:rxjava:2.0.0-DP0-SNAPSHOT'
+    compile 'io.reactivex.rxjava2:rxjava:2.2.0-SNAPSHOT'
 }
 ```
 
@@ -245,7 +250,6 @@ To build:
 ```
 $ git clone git@github.com:ReactiveX/RxJava.git
 $ cd RxJava/
-$ git checkout -b 2.x
 $ ./gradlew build
 ```
 
@@ -258,19 +262,19 @@ For bugs, questions and discussions please use the [Github Issues](https://githu
  
 ## LICENSE
 
-Copyright (c) 2016-present, RxJava Contributors.
+    Copyright (c) 2016-present, RxJava Contributors.
 
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
 
-<http://www.apache.org/licenses/LICENSE-2.0>
+    http://www.apache.org/licenses/LICENSE-2.0
 
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
 
-[beta source link]: https://github.com/ReactiveX/RxJava/blob/master/src/main/java/rx/annotations/Beta.java
-[experimental source link]: https://github.com/ReactiveX/RxJava/blob/master/src/main/java/rx/annotations/Experimental.java
+[beta source link]: https://github.com/ReactiveX/RxJava/blob/2.x/src/main/java/io/reactivex/annotations/Beta.java
+[experimental source link]: https://github.com/ReactiveX/RxJava/blob/2.x/src/main/java/io/reactivex/annotations/Experimental.java

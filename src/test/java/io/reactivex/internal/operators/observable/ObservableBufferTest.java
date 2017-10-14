@@ -1398,4 +1398,45 @@ public class ObservableBufferTest {
         to
         .assertFailure(TestException.class);
     }
+
+    @Test
+    public void withTimeAndSizeCapacityRace() {
+        for (int i = 0; i < 1000; i++) {
+            final TestScheduler scheduler = new TestScheduler();
+
+            final PublishSubject<Object> ps = PublishSubject.create();
+
+            TestObserver<List<Object>> ts = ps.buffer(1, TimeUnit.SECONDS, scheduler, 5).test();
+
+            ps.onNext(1);
+            ps.onNext(2);
+            ps.onNext(3);
+            ps.onNext(4);
+
+            Runnable r1 = new Runnable() {
+                @Override
+                public void run() {
+                    ps.onNext(5);
+                }
+            };
+
+            Runnable r2 = new Runnable() {
+                @Override
+                public void run() {
+                    scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
+                }
+            };
+
+            TestHelper.race(r1, r2);
+
+            ps.onComplete();
+
+            int items = 0;
+            for (List<Object> o : ts.values()) {
+                items += o.size();
+            }
+
+            assertEquals("Round: " + i, 5, items);
+        }
+    }
 }

@@ -19,6 +19,7 @@ import io.reactivex.*;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.disposables.EmptyDisposable;
+import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.internal.operators.single.SingleZipArray.ZipCoordinator;
 
 public final class SingleZipIterable<T, R> extends Single<R> {
@@ -61,12 +62,7 @@ public final class SingleZipIterable<T, R> extends Single<R> {
         }
 
         if (n == 1) {
-            a[0].subscribe(new SingleMap.MapSingleObserver<T, R>(observer, new Function<T, R>() {
-                @Override
-                public R apply(T t) throws Exception {
-                    return zipper.apply(new Object[] { t });
-                }
-            }));
+            a[0].subscribe(new SingleMap.MapSingleObserver<T, R>(observer, new SingletonArrayFunc()));
             return;
         }
 
@@ -83,4 +79,10 @@ public final class SingleZipIterable<T, R> extends Single<R> {
         }
     }
 
+    final class SingletonArrayFunc implements Function<T, R> {
+        @Override
+        public R apply(T t) throws Exception {
+            return ObjectHelper.requireNonNull(zipper.apply(new Object[] { t }), "The zipper returned a null value");
+        }
+    }
 }

@@ -37,6 +37,7 @@ implements SingleObserver<T>, Disposable {
     @Override
     public void onError(Throwable e) {
         try {
+            lazySet(DisposableHelper.DISPOSED);
             onCallback.accept(null, e);
         } catch (Throwable ex) {
             Exceptions.throwIfFatal(ex);
@@ -52,6 +53,7 @@ implements SingleObserver<T>, Disposable {
     @Override
     public void onSuccess(T value) {
         try {
+            lazySet(DisposableHelper.DISPOSED);
             onCallback.accept(value, null);
         } catch (Throwable ex) {
             Exceptions.throwIfFatal(ex);

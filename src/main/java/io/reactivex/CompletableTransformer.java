@@ -13,6 +13,8 @@
 
 package io.reactivex;
 
+import io.reactivex.annotations.*;
+
 /**
  * Convenience interface and callback used by the compose operator to turn a Completable into another
  * Completable fluently.
@@ -23,5 +25,6 @@ public interface CompletableTransformer {
      * @param upstream the upstream Completable instance
      * @return the transformed CompletableSource instance
      */
-    CompletableSource apply(Completable upstream);
+    @NonNull
+    CompletableSource apply(@NonNull Completable upstream);
 }

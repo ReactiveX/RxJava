@@ -167,7 +167,6 @@ public final class FlowableCache<T> extends AbstractFlowableWithUpstream<T, T> {
                 ReplaySubscription<T>[] b;
                 if (n == 1) {
                     b = EMPTY;
-                    return;
                 } else {
                     b = new ReplaySubscription[n - 1];
                     System.arraycopy(a, 0, b, 0, j);

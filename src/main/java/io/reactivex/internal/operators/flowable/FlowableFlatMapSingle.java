@@ -128,7 +128,7 @@ public final class FlowableFlatMapSingle<T, R> extends AbstractFlowableWithUpstr
 
             InnerObserver inner = new InnerObserver();
 
-            if (set.add(inner)) {
+            if (!cancelled && set.add(inner)) {
                 ms.subscribe(inner);
             }
         }
@@ -230,6 +230,10 @@ public final class FlowableFlatMapSingle<T, R> extends AbstractFlowableWithUpstr
                 if (!delayErrors) {
                     s.cancel();
                     set.dispose();
+                } else {
+                    if (maxConcurrency != Integer.MAX_VALUE) {
+                        s.request(1);
+                    }
                 }
                 active.decrementAndGet();
                 drain();

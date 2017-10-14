@@ -20,10 +20,57 @@ import org.reactivestreams.Subscription;
 import io.reactivex.FlowableSubscriber;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
+import io.reactivex.internal.util.EndConsumerHelper;
 
 /**
- * An abstract Subscriber that allows asynchronous cancellation by implementing Disposable.
+ * An abstract Subscriber that allows asynchronous, external cancellation by implementing Disposable.
  *
+ * <p>All pre-implemented final methods are thread-safe.
+ *
+ * <p>The default {@link #onStart()} requests Long.MAX_VALUE by default. Override
+ * the method to request a custom <em>positive</em> amount. Use the protected {@link #request(long)}
+ * to request more items and {@link #cancel()} to cancel the sequence from within an
+ * {@code onNext} implementation.
+ *
+ * <p>Note that calling {@link #request(long)} from {@link #onStart()} may trigger
+ * an immediate, asynchronous emission of data to {@link #onNext(Object)}. Make sure
+ * all initialization happens before the call to {@code request()} in {@code onStart()}.
+ * Calling {@link #request(long)} inside {@link #onNext(Object)} can happen at any time
+ * because by design, {@code onNext} calls from upstream are non-reentrant and non-overlapping.
+ *
+ * <p>Like all other consumers, {@code DisposableSubscriber} can be subscribed only once.
+ * Any subsequent attempt to subscribe it to a new source will yield an
+ * {@link IllegalStateException} with message {@code "It is not allowed to subscribe with a(n) <class name> multiple times."}.
+ *
+ * <p>Implementation of {@link #onStart()}, {@link #onNext(Object)}, {@link #onError(Throwable)}
+ * and {@link #onComplete()} are not allowed to throw any unchecked exceptions.
+ * If for some reason this can't be avoided, use {@link io.reactivex.Flowable#safeSubscribe(org.reactivestreams.Subscriber)}
+ * instead of the standard {@code subscribe()} method.
+ *
+ * <p>Example<pre><code>
+ * Disposable d =
+ *     Flowable.range(1, 5)
+ *     .subscribeWith(new DisposableSubscriber&lt;Integer&gt;() {
+ *         &#64;Override public void onStart() {
+ *             request(1);
+ *         }
+ *         &#64;Override public void onNext(Integer t) {
+ *             if (t == 3) {
+ *                 cancel();
+ *             }
+ *             System.out.println(t);
+ *             request(1);
+ *         }
+ *         &#64;Override public void onError(Throwable t) {
+ *             t.printStackTrace();
+ *         }
+ *         &#64;Override public void onComplete() {
+ *             System.out.println("Done!");
+ *         }
+ *     });
+ * // ...
+ * d.dispose();
+ * </code></pre>
  * @param <T> the received value type.
  */
 public abstract class DisposableSubscriber<T> implements FlowableSubscriber<T>, Disposable {
@@ -31,7 +78,7 @@ public abstract class DisposableSubscriber<T> implements FlowableSubscriber<T>, 
 
     @Override
     public final void onSubscribe(Subscription s) {
-        if (SubscriptionHelper.setOnce(this.s, s)) {
+        if (EndConsumerHelper.setOnce(this.s, s, getClass())) {
             onStart();
         }
     }

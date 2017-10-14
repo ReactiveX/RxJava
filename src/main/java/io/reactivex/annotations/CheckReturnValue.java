@@ -21,13 +21,12 @@ import java.lang.annotation.Target;
 
 /**
  * Marks methods whose return values should be checked.
- *
- * @since 2.0.2 - experimental
+ * <p>History: 2.0.2 - experimental
+ * @since 2.1
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Target(ElementType.METHOD)
-@Experimental
 public @interface CheckReturnValue {
 
 }

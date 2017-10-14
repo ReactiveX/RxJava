@@ -151,7 +151,6 @@ public class FlowableCacheTest {
         ts.assertNoErrors();
         ts.assertComplete();
         ts.assertValues(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
-//        ts.assertUnsubscribed(); // FIXME no longer valid
         assertFalse(cached.hasSubscribers());
     }
 

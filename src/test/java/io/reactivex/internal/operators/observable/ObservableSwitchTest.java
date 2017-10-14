@@ -26,6 +26,7 @@ import org.mockito.InOrder;
 import io.reactivex.*;
 import io.reactivex.disposables.*;
 import io.reactivex.exceptions.*;
+import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.functions.Functions;
 import io.reactivex.internal.util.ExceptionHelper;
@@ -579,7 +580,6 @@ public class ObservableSwitchTest {
         }, 16)
         .test()
         .assertResult(1);
-
     }
 
     @Test
@@ -621,6 +621,82 @@ public class ObservableSwitchTest {
         ts.cancel();
 
         assertFalse(pp.hasObservers());
+    }
+
+    @Test
+    public void switchMapSingleJustSource() {
+        Observable.just(0)
+        .switchMapSingle(new Function<Object, SingleSource<Integer>>() {
+            @Override
+            public SingleSource<Integer> apply(Object v) throws Exception {
+                return Single.just(1);
+            }
+        })
+        .test()
+        .assertResult(1);
+    }
+
+    @Test
+    public void switchMapSingleMapperReturnsNull() {
+        Observable.just(0)
+        .switchMapSingle(new Function<Object, SingleSource<Integer>>() {
+            @Override
+            public SingleSource<Integer> apply(Object v) throws Exception {
+                return null;
+            }
+        })
+        .test()
+        .assertError(NullPointerException.class);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void switchMapSingleMapperIsNull() {
+        Observable.just(0)
+        .switchMapSingle(null);
+    }
+
+    @Test
+    public void switchMapSingleFunctionDoesntReturnSingle() {
+        Observable.just(0)
+        .switchMapSingle(new Function<Object, SingleSource<Integer>>() {
+            @Override
+            public SingleSource<Integer> apply(Object v) throws Exception {
+                return new SingleSource<Integer>() {
+                    @Override
+                    public void subscribe(SingleObserver<? super Integer> s) {
+                        s.onSubscribe(Disposables.empty());
+                        s.onSuccess(1);
+                    }
+                };
+            }
+        })
+        .test()
+        .assertResult(1);
+    }
+
+    @Test
+    public void switchMapSingleDelayErrorJustSource() {
+        final AtomicBoolean completed = new AtomicBoolean();
+        Observable.just(0, 1)
+        .switchMapSingleDelayError(new Function<Integer, SingleSource<Integer>>() {
+            @Override
+            public SingleSource<Integer> apply(Integer v) throws Exception {
+                if (v == 0) {
+                    return Single.error(new RuntimeException());
+                } else {
+                    return Single.just(1).doOnSuccess(new Consumer<Integer>() {
+
+                        @Override
+                        public void accept(Integer n) throws Exception {
+                            completed.set(true);
+                        }});
+                }
+            }
+        })
+        .test()
+        .assertValue(1)
+        .assertError(RuntimeException.class);
+        assertTrue(completed.get());
     }
 
     @Test

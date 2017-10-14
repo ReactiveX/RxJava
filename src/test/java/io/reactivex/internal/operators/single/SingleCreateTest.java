@@ -16,6 +16,7 @@ package io.reactivex.internal.operators.single;
 import static org.junit.Assert.*;
 
 import java.io.IOException;
+import java.util.List;
 
 import org.junit.Test;
 
@@ -23,6 +24,7 @@ import io.reactivex.*;
 import io.reactivex.disposables.*;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.Cancellable;
+import io.reactivex.plugins.RxJavaPlugins;
 
 public class SingleCreateTest {
 
@@ -281,5 +283,28 @@ public class SingleCreateTest {
                 throw new TestException();
             }
         });
+    }
+
+    @Test
+    public void tryOnError() {
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            final Boolean[] response = { null };
+            Single.create(new SingleOnSubscribe<Object>() {
+                @Override
+                public void subscribe(SingleEmitter<Object> e) throws Exception {
+                    e.onSuccess(1);
+                    response[0] = e.tryOnError(new TestException());
+                }
+            })
+            .test()
+            .assertResult(1);
+
+            assertFalse(response[0]);
+
+            assertTrue(errors.toString(), errors.isEmpty());
+        } finally {
+            RxJavaPlugins.reset();
+        }
     }
 }

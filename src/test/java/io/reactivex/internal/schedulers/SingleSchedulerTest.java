@@ -15,6 +15,7 @@ package io.reactivex.internal.schedulers;
 
 import static org.junit.Assert.*;
 
+import io.reactivex.schedulers.AbstractSchedulerTests;
 import java.util.concurrent.*;
 
 import org.junit.Test;
@@ -26,7 +27,7 @@ import io.reactivex.internal.functions.Functions;
 import io.reactivex.internal.schedulers.SingleScheduler.ScheduledWorker;
 import io.reactivex.schedulers.Schedulers;
 
-public class SingleSchedulerTest {
+public class SingleSchedulerTest extends AbstractSchedulerTests {
 
     @Test
     public void shutdownRejects() {
@@ -117,4 +118,9 @@ public class SingleSchedulerTest {
             Thread.sleep(1);
         }
     }
+
+    @Override protected Scheduler getScheduler() {
+        return Schedulers.single();
+    }
+
 }

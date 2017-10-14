@@ -601,8 +601,6 @@ public class FlowableReplayTest {
         verifyObserverMock(mockObserverBeforeConnect, 2, 6);
         verifyObserverMock(mockObserverAfterConnect, 2, 6);
 
-        // FIXME not supported
-//        verify(spiedWorker, times(1)).isUnsubscribed();
         // FIXME publish calls cancel too
         verify(spiedWorker, times(1)).dispose();
         verify(sourceUnsubscribed, never()).run();
@@ -667,8 +665,6 @@ public class FlowableReplayTest {
         verifyObserver(mockObserverBeforeConnect, 2, 2, illegalArgumentException);
         verifyObserver(mockObserverAfterConnect, 2, 2, illegalArgumentException);
 
-        // FIXME no longer supported
-//        verify(spiedWorker, times(1)).isUnsubscribed();
         // FIXME publish also calls cancel
         verify(spiedWorker, times(1)).dispose();
         verify(sourceUnsubscribed, never()).run();
@@ -973,8 +969,6 @@ public class FlowableReplayTest {
         ts.assertNoErrors();
         ts.assertTerminated();
         ts.assertValues(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
-        // FIXME no longer assertable
-//        ts.assertUnsubscribed();
     }
 
     @Test
@@ -1747,5 +1741,18 @@ public class FlowableReplayTest {
         scheduler.advanceTimeBy(3, TimeUnit.SECONDS);
 
         source.test().assertResult();
+    }
+
+    @Test
+    public void replaySelectorReturnsNull() {
+        Flowable.just(1)
+        .replay(new Function<Flowable<Integer>, Publisher<Object>>() {
+            @Override
+            public Publisher<Object> apply(Flowable<Integer> v) throws Exception {
+                return null;
+            }
+        }, Schedulers.trampoline())
+        .test()
+        .assertFailureAndMessage(NullPointerException.class, "The selector returned a null Publisher");
     }
 }

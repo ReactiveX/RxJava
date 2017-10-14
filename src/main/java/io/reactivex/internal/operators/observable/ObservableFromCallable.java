@@ -54,6 +54,6 @@ public final class ObservableFromCallable<T> extends Observable<T> implements Ca
 
     @Override
     public T call() throws Exception {
-        return callable.call();
+        return ObjectHelper.requireNonNull(callable.call(), "The callable returned a null value");
     }
 }

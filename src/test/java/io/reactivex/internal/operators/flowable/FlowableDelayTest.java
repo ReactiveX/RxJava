@@ -1018,4 +1018,15 @@ public class FlowableDelayTest {
         }
     }
 
+    @Test
+    public void itemDelayReturnsNull() {
+        Flowable.just(1).delay(new Function<Integer, Publisher<Object>>() {
+            @Override
+            public Publisher<Object> apply(Integer t) throws Exception {
+                return null;
+            }
+        })
+        .test()
+        .assertFailureAndMessage(NullPointerException.class, "The itemDelay returned a null Publisher");
+    }
 }

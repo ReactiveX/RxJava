@@ -99,6 +99,9 @@ public final class FlowableRefCount<T> extends AbstractFlowableWithUpstream<T, T
             lock.lock();
             try {
                 if (baseDisposable == currentBase) {
+                    if (source instanceof Disposable) {
+                        ((Disposable)source).dispose();
+                    }
                     baseDisposable.dispose();
                     baseDisposable = new CompositeDisposable();
                     subscriptionCount.set(0);
@@ -135,10 +138,10 @@ public final class FlowableRefCount<T> extends AbstractFlowableWithUpstream<T, T
                 source.connect(onSubscribe(subscriber, writeLocked));
             } finally {
                 // need to cover the case where the source is subscribed to
-                // outside of this class thus preventing the Action1 passed
+                // outside of this class thus preventing the Consumer passed
                 // to source.connect above being called
                 if (writeLocked.get()) {
-                    // Action1 passed to source.connect was not called
+                    // Consumer passed to source.connect was not called
                     lock.unlock();
                 }
             }
@@ -156,20 +159,7 @@ public final class FlowableRefCount<T> extends AbstractFlowableWithUpstream<T, T
 
     private Consumer<Disposable> onSubscribe(final Subscriber<? super T> subscriber,
             final AtomicBoolean writeLocked) {
-        return new Consumer<Disposable>() {
-            @Override
-            public void accept(Disposable subscription) {
-                try {
-                    baseDisposable.add(subscription);
-                    // ready to subscribe to source so do it
-                    doSubscribe(subscriber, baseDisposable);
-                } finally {
-                    // release the write lock
-                    lock.unlock();
-                    writeLocked.set(false);
-                }
-            }
-        };
+        return new DisposeConsumer(subscriber, writeLocked);
     }
 
     void doSubscribe(final Subscriber<? super T> subscriber, final CompositeDisposable currentBase) {
@@ -183,23 +173,58 @@ public final class FlowableRefCount<T> extends AbstractFlowableWithUpstream<T, T
     }
 
     private Disposable disconnect(final CompositeDisposable current) {
-        return Disposables.fromRunnable(new Runnable() {
-            @Override
-            public void run() {
-                lock.lock();
-                try {
-                    if (baseDisposable == current) {
-                        if (subscriptionCount.decrementAndGet() == 0) {
-                            baseDisposable.dispose();
-                            // need a new baseDisposable because once
-                            // disposed stays that way
-                            baseDisposable = new CompositeDisposable();
-                        }
-                    }
-                } finally {
-                    lock.unlock();
-                }
+        return Disposables.fromRunnable(new DisposeTask(current));
+    }
+
+    final class DisposeConsumer implements Consumer<Disposable> {
+        private final Subscriber<? super T> subscriber;
+        private final AtomicBoolean writeLocked;
+
+        DisposeConsumer(Subscriber<? super T> subscriber, AtomicBoolean writeLocked) {
+            this.subscriber = subscriber;
+            this.writeLocked = writeLocked;
+        }
+
+        @Override
+        public void accept(Disposable subscription) {
+            try {
+                baseDisposable.add(subscription);
+                // ready to subscribe to source so do it
+                doSubscribe(subscriber, baseDisposable);
+            } finally {
+                // release the write lock
+                lock.unlock();
+                writeLocked.set(false);
             }
-        });
+        }
+    }
+
+    final class DisposeTask implements Runnable {
+        private final CompositeDisposable current;
+
+        DisposeTask(CompositeDisposable current) {
+            this.current = current;
+        }
+
+        @Override
+        public void run() {
+            lock.lock();
+            try {
+                if (baseDisposable == current) {
+                    if (subscriptionCount.decrementAndGet() == 0) {
+                        if (source instanceof Disposable) {
+                            ((Disposable)source).dispose();
+                        }
+
+                        baseDisposable.dispose();
+                        // need a new baseDisposable because once
+                        // disposed stays that way
+                        baseDisposable = new CompositeDisposable();
+                    }
+                }
+            } finally {
+                lock.unlock();
+            }
+        }
     }
 }

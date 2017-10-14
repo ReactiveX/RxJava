@@ -17,7 +17,6 @@ import java.util.concurrent.atomic.*;
 import org.reactivestreams.*;
 
 import io.reactivex.FlowableSubscriber;
-import io.reactivex.annotations.Experimental;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 import io.reactivex.internal.fuseable.QueueSubscription;
@@ -118,6 +117,9 @@ implements FlowableSubscriber<T>, Subscription, Disposable {
      */
     public TestSubscriber(Subscriber<? super T> actual, long initialRequest) {
         super();
+        if (initialRequest < 0) {
+            throw new IllegalArgumentException("Negative initial request not allowed");
+        }
         this.actual = actual;
         this.subscription = new AtomicReference<Subscription>();
         this.missedRequested = new AtomicLong(initialRequest);
@@ -201,6 +203,7 @@ implements FlowableSubscriber<T>, Subscription, Disposable {
             } catch (Throwable ex) {
                 // Exceptions.throwIfFatal(e); TODO add fatal exceptions?
                 errors.add(ex);
+                qs.cancel();
             }
             return;
         }
@@ -407,11 +410,11 @@ implements FlowableSubscriber<T>, Subscription, Disposable {
 
     /**
      * Calls {@link #request(long)} and returns this.
+     * <p>History: 2.0.1 - experimental
      * @param n the request amount
      * @return this
-     * @since 2.0.1 - experimental
+     * @since 2.1
      */
-    @Experimental
     public final TestSubscriber<T> requestMore(long n) {
         request(n);
         return this;

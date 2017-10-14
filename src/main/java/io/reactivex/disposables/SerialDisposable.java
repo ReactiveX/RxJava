@@ -15,7 +15,8 @@ package io.reactivex.disposables;
 
 import java.util.concurrent.atomic.AtomicReference;
 
-import io.reactivex.internal.disposables.*;
+import io.reactivex.annotations.Nullable;
+import io.reactivex.internal.disposables.DisposableHelper;
 
 /**
  * A Disposable container that allows atomically updating/replacing the contained
@@ -36,7 +37,7 @@ public final class SerialDisposable implements Disposable {
      * Constructs a SerialDisposable with the given initial Disposable instance.
      * @param initialDisposable the initial Disposable instance to use, null allowed
      */
-    public SerialDisposable(Disposable initialDisposable) {
+    public SerialDisposable(@Nullable Disposable initialDisposable) {
         this.resource = new AtomicReference<Disposable>(initialDisposable);
     }
 
@@ -47,7 +48,7 @@ public final class SerialDisposable implements Disposable {
      * @return true if the operation succeeded, false if the container has been disposed
      * @see #replace(Disposable)
      */
-    public boolean set(Disposable next) {
+    public boolean set(@Nullable Disposable next) {
         return DisposableHelper.set(resource, next);
     }
 
@@ -58,7 +59,7 @@ public final class SerialDisposable implements Disposable {
      * @return true if the operation succeeded, false if the container has been disposed
      * @see #set(Disposable)
      */
-    public boolean replace(Disposable next) {
+    public boolean replace(@Nullable Disposable next) {
         return DisposableHelper.replace(resource, next);
     }
 
@@ -66,6 +67,7 @@ public final class SerialDisposable implements Disposable {
      * Returns the currently contained Disposable or null if this container is empty.
      * @return the current Disposable, may be null
      */
+    @Nullable
     public Disposable get() {
         Disposable d = resource.get();
         if (d == DisposableHelper.DISPOSED) {

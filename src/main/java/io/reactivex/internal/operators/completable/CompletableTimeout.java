@@ -44,42 +44,74 @@ public final class CompletableTimeout extends Completable {
 
         final AtomicBoolean once = new AtomicBoolean();
 
-        Disposable timer = scheduler.scheduleDirect(new Runnable() {
-            @Override
-            public void run() {
-                if (once.compareAndSet(false, true)) {
-                    set.clear();
-                    if (other == null) {
-                        s.onError(new TimeoutException());
-                    } else {
-                        other.subscribe(new CompletableObserver() {
-
-                            @Override
-                            public void onSubscribe(Disposable d) {
-                                set.add(d);
-                            }
-
-                            @Override
-                            public void onError(Throwable e) {
-                                set.dispose();
-                                s.onError(e);
-                            }
-
-                            @Override
-                            public void onComplete() {
-                                set.dispose();
-                                s.onComplete();
-                            }
-
-                        });
-                    }
-                }
-            }
-        }, timeout, unit);
+        Disposable timer = scheduler.scheduleDirect(new DisposeTask(once, set, s), timeout, unit);
 
         set.add(timer);
 
-        source.subscribe(new CompletableObserver() {
+        source.subscribe(new TimeOutObserver(set, once, s));
+    }
+
+    static final class TimeOutObserver implements CompletableObserver {
+
+        private final CompositeDisposable set;
+        private final AtomicBoolean once;
+        private final CompletableObserver s;
+
+        TimeOutObserver(CompositeDisposable set, AtomicBoolean once, CompletableObserver s) {
+            this.set = set;
+            this.once = once;
+            this.s = s;
+        }
+
+        @Override
+        public void onSubscribe(Disposable d) {
+            set.add(d);
+        }
+
+        @Override
+        public void onError(Throwable e) {
+            if (once.compareAndSet(false, true)) {
+                set.dispose();
+                s.onError(e);
+            } else {
+                RxJavaPlugins.onError(e);
+            }
+        }
+
+        @Override
+        public void onComplete() {
+            if (once.compareAndSet(false, true)) {
+                set.dispose();
+                s.onComplete();
+            }
+        }
+
+    }
+
+    final class DisposeTask implements Runnable {
+        private final AtomicBoolean once;
+        final CompositeDisposable set;
+        final CompletableObserver s;
+
+        DisposeTask(AtomicBoolean once, CompositeDisposable set, CompletableObserver s) {
+            this.once = once;
+            this.set = set;
+            this.s = s;
+        }
+
+        @Override
+        public void run() {
+            if (once.compareAndSet(false, true)) {
+                set.clear();
+                if (other == null) {
+                    s.onError(new TimeoutException());
+                } else {
+                    other.subscribe(new DisposeObserver());
+                }
+            }
+        }
+
+        final class DisposeObserver implements CompletableObserver {
 
             @Override
             public void onSubscribe(Disposable d) {
@@ -88,22 +120,16 @@ public final class CompletableTimeout extends Completable {
 
             @Override
             public void onError(Throwable e) {
-                if (once.compareAndSet(false, true)) {
-                    set.dispose();
-                    s.onError(e);
-                } else {
-                    RxJavaPlugins.onError(e);
-                }
+                set.dispose();
+                s.onError(e);
             }
 
             @Override
             public void onComplete() {
-                if (once.compareAndSet(false, true)) {
-                    set.dispose();
-                    s.onComplete();
-                }
+                set.dispose();
+                s.onComplete();
             }
 
-        });
+        }
     }
 }

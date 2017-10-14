@@ -20,9 +20,12 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.*;
 import io.reactivex.functions.*;
 import io.reactivex.internal.disposables.DisposableHelper;
+import io.reactivex.internal.functions.Functions;
+import io.reactivex.observers.LambdaConsumerIntrospection;
 import io.reactivex.plugins.RxJavaPlugins;
 
-public final class LambdaObserver<T> extends AtomicReference<Disposable> implements Observer<T>, Disposable {
+public final class LambdaObserver<T> extends AtomicReference<Disposable>
+        implements Observer<T>, Disposable, LambdaConsumerIntrospection {
 
     private static final long serialVersionUID = -7251123623727029452L;
     final Consumer<? super T> onNext;
@@ -47,6 +50,7 @@ public final class LambdaObserver<T> extends AtomicReference<Disposable> impleme
                 onSubscribe.accept(this);
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
+                s.dispose();
                 onError(ex);
             }
         }
@@ -59,6 +63,7 @@ public final class LambdaObserver<T> extends AtomicReference<Disposable> impleme
                 onNext.accept(t);
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
+                get().dispose();
                 onError(e);
             }
         }
@@ -98,5 +103,10 @@ public final class LambdaObserver<T> extends AtomicReference<Disposable> impleme
     @Override
     public boolean isDisposed() {
         return get() == DisposableHelper.DISPOSED;
+    }
+
+    @Override
+    public boolean hasCustomOnError() {
+        return onError != Functions.ON_ERROR_MISSING;
     }
 }

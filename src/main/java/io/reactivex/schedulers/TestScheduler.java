@@ -102,14 +102,14 @@ public final class TestScheduler extends Scheduler {
     }
 
     private void triggerActions(long targetTimeInNanoseconds) {
-        while (!queue.isEmpty()) {
+        for (;;) {
             TimedRunnable current = queue.peek();
-            if (current.time > targetTimeInNanoseconds) {
+            if (current == null || current.time > targetTimeInNanoseconds) {
                 break;
             }
             // if scheduled time is 0 (immediate) use current virtual time
             time = current.time == 0 ? time : current.time;
-            queue.remove();
+            queue.remove(current);
 
             // Only execute if not unsubscribed
             if (!current.scheduler.disposed) {
@@ -148,12 +148,7 @@ public final class TestScheduler extends Scheduler {
             final TimedRunnable timedAction = new TimedRunnable(this, time + unit.toNanos(delayTime), run, counter++);
             queue.add(timedAction);
 
-            return Disposables.fromRunnable(new Runnable() {
-                @Override
-                public void run() {
-                    queue.remove(timedAction);
-                }
-            });
+            return Disposables.fromRunnable(new QueueRemove(timedAction));
         }
 
         @NonNull
@@ -164,12 +159,7 @@ public final class TestScheduler extends Scheduler {
             }
             final TimedRunnable timedAction = new TimedRunnable(this, 0, run, counter++);
             queue.add(timedAction);
-            return Disposables.fromRunnable(new Runnable() {
-                @Override
-                public void run() {
-                    queue.remove(timedAction);
-                }
-            });
+            return Disposables.fromRunnable(new QueueRemove(timedAction));
         }
 
         @Override
@@ -177,5 +167,17 @@ public final class TestScheduler extends Scheduler {
             return TestScheduler.this.now(unit);
         }
 
+        final class QueueRemove implements Runnable {
+            final TimedRunnable timedAction;
+
+            QueueRemove(TimedRunnable timedAction) {
+                this.timedAction = timedAction;
+            }
+
+            @Override
+            public void run() {
+                queue.remove(timedAction);
+            }
+        }
     }
 }

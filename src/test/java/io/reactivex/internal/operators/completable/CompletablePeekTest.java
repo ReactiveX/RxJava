@@ -20,7 +20,9 @@ import org.junit.Test;
 import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.Action;
+import io.reactivex.internal.functions.Functions;
 import io.reactivex.plugins.RxJavaPlugins;
+import io.reactivex.subjects.CompletableSubject;
 
 public class CompletablePeekTest {
 
@@ -42,5 +44,10 @@ public class CompletablePeekTest {
         } finally {
             RxJavaPlugins.reset();
         }
+    }
+
+    @Test
+    public void disposed() {
+        TestHelper.checkDisposed(CompletableSubject.create().doOnComplete(Functions.EMPTY_ACTION));
     }
 }

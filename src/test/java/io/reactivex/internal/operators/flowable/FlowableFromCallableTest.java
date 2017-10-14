@@ -17,6 +17,7 @@
 package io.reactivex.internal.operators.flowable;
 
 import static org.mockito.Mockito.*;
+import static org.junit.Assert.*;
 
 import java.util.concurrent.*;
 
@@ -26,6 +27,7 @@ import org.mockito.stubbing.Answer;
 import org.reactivestreams.*;
 
 import io.reactivex.*;
+import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.TestSubscriber;
 
@@ -155,5 +157,85 @@ public class FlowableFromCallableTest {
         verify(observer).onSubscribe(any(Subscription.class));
         verify(observer).onError(checkedException);
         verifyNoMoreInteractions(observer);
+    }
+
+    @Test
+    public void fusedFlatMapExecution() {
+        final int[] calls = { 0 };
+
+        Flowable.just(1).flatMap(new Function<Integer, Publisher<? extends Object>>() {
+            @Override
+            public Publisher<? extends Object> apply(Integer v)
+                    throws Exception {
+                return Flowable.fromCallable(new Callable<Object>() {
+                    @Override
+                    public Object call() throws Exception {
+                        return ++calls[0];
+                    }
+                });
+            }
+        })
+        .test()
+        .assertResult(1);
+
+        assertEquals(1, calls[0]);
+    }
+
+    @Test
+    public void fusedFlatMapExecutionHidden() {
+        final int[] calls = { 0 };
+
+        Flowable.just(1).hide().flatMap(new Function<Integer, Publisher<? extends Object>>() {
+            @Override
+            public Publisher<? extends Object> apply(Integer v)
+                    throws Exception {
+                return Flowable.fromCallable(new Callable<Object>() {
+                    @Override
+                    public Object call() throws Exception {
+                        return ++calls[0];
+                    }
+                });
+            }
+        })
+        .test()
+        .assertResult(1);
+
+        assertEquals(1, calls[0]);
+    }
+
+    @Test
+    public void fusedFlatMapNull() {
+        Flowable.just(1).flatMap(new Function<Integer, Publisher<? extends Object>>() {
+            @Override
+            public Publisher<? extends Object> apply(Integer v)
+                    throws Exception {
+                return Flowable.fromCallable(new Callable<Object>() {
+                    @Override
+                    public Object call() throws Exception {
+                        return null;
+                    }
+                });
+            }
+        })
+        .test()
+        .assertFailure(NullPointerException.class);
+    }
+
+    @Test
+    public void fusedFlatMapNullHidden() {
+        Flowable.just(1).hide().flatMap(new Function<Integer, Publisher<? extends Object>>() {
+            @Override
+            public Publisher<? extends Object> apply(Integer v)
+                    throws Exception {
+                return Flowable.fromCallable(new Callable<Object>() {
+                    @Override
+                    public Object call() throws Exception {
+                        return null;
+                    }
+                });
+            }
+        })
+        .test()
+        .assertFailure(NullPointerException.class);
     }
 }

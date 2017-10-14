@@ -64,6 +64,8 @@ public final class ObservableFlatMapCompletable<T> extends AbstractObservableWit
 
         Disposable d;
 
+        volatile boolean disposed;
+
         FlatMapCompletableMainObserver(Observer<? super T> observer, Function<? super T, ? extends CompletableSource> mapper, boolean delayErrors) {
             this.actual = observer;
             this.mapper = mapper;
@@ -99,7 +101,7 @@ public final class ObservableFlatMapCompletable<T> extends AbstractObservableWit
 
             InnerObserver inner = new InnerObserver();
 
-            if (set.add(inner)) {
+            if (!disposed && set.add(inner)) {
                 cs.subscribe(inner);
             }
         }
@@ -111,14 +113,12 @@ public final class ObservableFlatMapCompletable<T> extends AbstractObservableWit
                     if (decrementAndGet() == 0) {
                         Throwable ex = errors.terminate();
                         actual.onError(ex);
-                        return;
                     }
                 } else {
                     dispose();
                     if (getAndSet(0) > 0) {
                         Throwable ex = errors.terminate();
                         actual.onError(ex);
-                        return;
                     }
                 }
             } else {
@@ -140,6 +140,7 @@ public final class ObservableFlatMapCompletable<T> extends AbstractObservableWit
 
         @Override
         public void dispose() {
+            disposed = true;
             d.dispose();
             set.dispose();
         }

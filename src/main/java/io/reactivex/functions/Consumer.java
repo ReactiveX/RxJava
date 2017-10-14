@@ -13,8 +13,6 @@
 
 package io.reactivex.functions;
 
-import io.reactivex.annotations.NonNull;
-
 /**
  * A functional interface (callback) that accepts a single value.
  * @param <T> the value type
@@ -25,5 +23,5 @@ public interface Consumer<T> {
      * @param t the value
      * @throws Exception on error
      */
-    void accept(@NonNull T t) throws Exception;
+    void accept(T t) throws Exception;
 }

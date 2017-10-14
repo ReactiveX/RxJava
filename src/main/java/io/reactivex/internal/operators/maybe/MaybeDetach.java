@@ -69,6 +69,7 @@ public final class MaybeDetach<T> extends AbstractMaybeWithUpstream<T, T> {
             d = DisposableHelper.DISPOSED;
             MaybeObserver<? super T> a = actual;
             if (a != null) {
+                actual = null;
                 a.onSuccess(value);
             }
         }
@@ -78,6 +79,7 @@ public final class MaybeDetach<T> extends AbstractMaybeWithUpstream<T, T> {
             d = DisposableHelper.DISPOSED;
             MaybeObserver<? super T> a = actual;
             if (a != null) {
+                actual = null;
                 a.onError(e);
             }
         }
@@ -87,6 +89,7 @@ public final class MaybeDetach<T> extends AbstractMaybeWithUpstream<T, T> {
             d = DisposableHelper.DISPOSED;
             MaybeObserver<? super T> a = actual;
             if (a != null) {
+                actual = null;
                 a.onComplete();
             }
         }

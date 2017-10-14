@@ -321,6 +321,36 @@ public class FlowableFlatMapMaybeTest {
     }
 
     @Test
+    public void asyncFlattenNoneMaxConcurrency() {
+        Flowable.range(1, 1000)
+        .flatMapMaybe(new Function<Integer, MaybeSource<Integer>>() {
+            @Override
+            public MaybeSource<Integer> apply(Integer v) throws Exception {
+                return Maybe.<Integer>empty().subscribeOn(Schedulers.computation());
+            }
+        }, false, 128)
+        .take(500)
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertResult();
+    }
+
+    @Test
+    public void asyncFlattenErrorMaxConcurrency() {
+        Flowable.range(1, 1000)
+        .flatMapMaybe(new Function<Integer, MaybeSource<Integer>>() {
+            @Override
+            public MaybeSource<Integer> apply(Integer v) throws Exception {
+                return Maybe.<Integer>error(new TestException()).subscribeOn(Schedulers.computation());
+            }
+        }, true, 128)
+        .take(500)
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertFailure(CompositeException.class);
+    }
+
+    @Test
     public void successError() {
         final PublishProcessor<Integer> ps = PublishProcessor.create();
 

@@ -491,4 +491,26 @@ public class ExceptionsTest {
         }
     }
 
+    @Test
+    public void errorNotImplementedNull1() {
+        OnErrorNotImplementedException ex = new OnErrorNotImplementedException(null);
+
+        assertTrue("" + ex.getCause(), ex.getCause() instanceof NullPointerException);
+    }
+
+    @Test
+    public void errorNotImplementedNull2() {
+        OnErrorNotImplementedException ex = new OnErrorNotImplementedException("Message", null);
+
+        assertTrue("" + ex.getCause(), ex.getCause() instanceof NullPointerException);
+    }
+
+    @Test
+    public void errorNotImplementedWithCause() {
+        OnErrorNotImplementedException ex = new OnErrorNotImplementedException("Message", new TestException("Forced failure"));
+
+        assertTrue("" + ex.getCause(), ex.getCause() instanceof TestException);
+
+        assertEquals("" + ex.getCause(), "Forced failure", ex.getCause().getMessage());
+    }
 }

@@ -26,6 +26,7 @@ import org.reactivestreams.Subscriber;
 import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.*;
+import io.reactivex.internal.functions.Functions;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.internal.util.CrashingMappedIterable;
 import io.reactivex.plugins.RxJavaPlugins;
@@ -260,7 +261,7 @@ public class FlowableWithLatestFromTest {
 
     @Test
     public void testBackpressure() {
-        Flowable<Integer> source = Flowable.range(1, 10);
+        PublishProcessor<Integer> source = PublishProcessor.create();
         PublishProcessor<Integer> other = PublishProcessor.create();
 
         Flowable<Integer> result = source.withLatestFrom(other, COMBINER);
@@ -273,17 +274,24 @@ public class FlowableWithLatestFromTest {
 
         ts.request(1);
 
+        source.onNext(1);
+
         assertTrue("Other has no observers!", other.hasSubscribers());
 
         ts.assertNoValues();
 
         other.onNext(1);
 
-        ts.request(1);
+        source.onNext(2);
 
         ts.assertValue((2 << 8) + 1);
 
         ts.request(5);
+        source.onNext(3);
+        source.onNext(4);
+        source.onNext(5);
+        source.onNext(6);
+        source.onNext(7);
         ts.assertValues(
                 (2 << 8) + 1, (3 << 8) + 1, (4 << 8) + 1, (5 << 8) + 1,
                 (6 << 8) + 1, (7 << 8) + 1
@@ -707,5 +715,151 @@ public class FlowableWithLatestFromTest {
         })
         .test()
         .assertFailure(NullPointerException.class);
+    }
+
+    @Test
+    public void zeroOtherCombinerReturnsNull() {
+        Flowable.just(1)
+        .withLatestFrom(new Flowable[0], Functions.justFunction(null))
+        .test()
+        .assertFailureAndMessage(NullPointerException.class, "The combiner returned a null value");
+    }
+
+    @Test
+    public void singleRequestNotForgottenWhenNoData() {
+        PublishProcessor<Integer> source = PublishProcessor.create();
+        PublishProcessor<Integer> other = PublishProcessor.create();
+
+        Flowable<Integer> result = source.withLatestFrom(other, COMBINER);
+
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>(0L);
+
+        result.subscribe(ts);
+
+        ts.request(1);
+
+        source.onNext(1);
+
+        ts.assertNoValues();
+
+        other.onNext(1);
+
+        ts.assertNoValues();
+
+        source.onNext(2);
+
+        ts.assertValue((2 << 8) + 1);
+    }
+
+    @Test
+    public void coldSourceConsumedWithoutOther() {
+        Flowable.range(1, 10).withLatestFrom(Flowable.never(),
+        new BiFunction<Integer, Object, Object>() {
+            @Override
+            public Object apply(Integer a, Object b) throws Exception {
+                return a;
+            }
+        })
+        .test(1)
+        .assertResult();
+    }
+
+    @Test
+    public void coldSourceConsumedWithoutManyOthers() {
+        Flowable.range(1, 10).withLatestFrom(Flowable.never(), Flowable.never(), Flowable.never(),
+        new Function4<Integer, Object, Object, Object, Object>() {
+            @Override
+            public Object apply(Integer a, Object b, Object c, Object d) throws Exception {
+                return a;
+            }
+        })
+        .test(1)
+        .assertResult();
+    }
+
+    @Test
+    public void otherOnSubscribeRace() {
+        for (int i = 0; i < 1000; i++) {
+            final PublishProcessor<Integer> pp0 = PublishProcessor.create();
+            final PublishProcessor<Integer> pp1 = PublishProcessor.create();
+            final PublishProcessor<Integer> pp2 = PublishProcessor.create();
+            final PublishProcessor<Integer> pp3 = PublishProcessor.create();
+
+            final Flowable<Object> source = pp0.withLatestFrom(pp1, pp2, pp3, new Function4<Object, Integer, Integer, Integer, Object>() {
+                @Override
+                public Object apply(Object a, Integer b, Integer c, Integer d)
+                        throws Exception {
+                    return a;
+                }
+            });
+
+            final TestSubscriber<Object> ts = new TestSubscriber<Object>();
+
+            Runnable r1 = new Runnable() {
+                @Override
+                public void run() {
+                    source.subscribe(ts);
+                }
+            };
+
+            Runnable r2 = new Runnable() {
+                @Override
+                public void run() {
+                    ts.cancel();
+                }
+            };
+
+            TestHelper.race(r1, r2);
+
+            ts.assertEmpty();
+
+            assertFalse(pp0.hasSubscribers());
+            assertFalse(pp1.hasSubscribers());
+            assertFalse(pp2.hasSubscribers());
+            assertFalse(pp3.hasSubscribers());
+        }
+    }
+
+    @Test
+    public void otherCompleteRace() {
+        for (int i = 0; i < 1000; i++) {
+            final PublishProcessor<Integer> pp0 = PublishProcessor.create();
+            final PublishProcessor<Integer> pp1 = PublishProcessor.create();
+            final PublishProcessor<Integer> pp2 = PublishProcessor.create();
+            final PublishProcessor<Integer> pp3 = PublishProcessor.create();
+
+            final Flowable<Object> source = pp0.withLatestFrom(pp1, pp2, pp3, new Function4<Object, Integer, Integer, Integer, Object>() {
+                @Override
+                public Object apply(Object a, Integer b, Integer c, Integer d)
+                        throws Exception {
+                    return a;
+                }
+            });
+
+            final TestSubscriber<Object> ts = new TestSubscriber<Object>();
+
+            Runnable r1 = new Runnable() {
+                @Override
+                public void run() {
+                    source.subscribe(ts);
+                }
+            };
+
+            Runnable r2 = new Runnable() {
+                @Override
+                public void run() {
+                    pp1.onComplete();
+                }
+            };
+
+            TestHelper.race(r1, r2);
+
+            ts.assertResult();
+
+            assertFalse(pp0.hasSubscribers());
+            assertFalse(pp1.hasSubscribers());
+            assertFalse(pp2.hasSubscribers());
+            assertFalse(pp3.hasSubscribers());
+        }
     }
 }

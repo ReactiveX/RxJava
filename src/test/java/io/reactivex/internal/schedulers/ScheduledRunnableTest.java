@@ -217,4 +217,70 @@ public class ScheduledRunnableTest {
             RxJavaPlugins.reset();
         }
     }
+
+    @Test
+    public void withoutParentDisposed() {
+        ScheduledRunnable run = new ScheduledRunnable(Functions.EMPTY_RUNNABLE, null);
+        run.dispose();
+        run.call();
+    }
+
+    @Test
+    public void withParentDisposed() {
+        ScheduledRunnable run = new ScheduledRunnable(Functions.EMPTY_RUNNABLE, new CompositeDisposable());
+        run.dispose();
+        run.call();
+    }
+
+    @Test
+    public void withFutureDisposed() {
+        ScheduledRunnable run = new ScheduledRunnable(Functions.EMPTY_RUNNABLE, null);
+        run.setFuture(new FutureTask<Void>(Functions.EMPTY_RUNNABLE, null));
+        run.dispose();
+        run.call();
+    }
+
+    @Test
+    public void withFutureDisposed2() {
+        ScheduledRunnable run = new ScheduledRunnable(Functions.EMPTY_RUNNABLE, null);
+        run.dispose();
+        run.setFuture(new FutureTask<Void>(Functions.EMPTY_RUNNABLE, null));
+        run.call();
+    }
+
+    @Test
+    public void withFutureDisposed3() {
+        ScheduledRunnable run = new ScheduledRunnable(Functions.EMPTY_RUNNABLE, null);
+        run.dispose();
+        run.set(2, Thread.currentThread());
+        run.setFuture(new FutureTask<Void>(Functions.EMPTY_RUNNABLE, null));
+        run.call();
+    }
+
+    @Test
+    public void runFuture() {
+        for (int i = 0; i < 500; i++) {
+            CompositeDisposable set = new CompositeDisposable();
+            final ScheduledRunnable run = new ScheduledRunnable(Functions.EMPTY_RUNNABLE, set);
+            set.add(run);
+
+            final FutureTask<Void> ft = new FutureTask<Void>(Functions.EMPTY_RUNNABLE, null);
+
+            Runnable r1 = new Runnable() {
+                @Override
+                public void run() {
+                    run.call();
+                }
+            };
+
+            Runnable r2 = new Runnable() {
+                @Override
+                public void run() {
+                    run.setFuture(ft);
+                }
+            };
+
+            TestHelper.race(r1, r2);
+        }
+    }
 }

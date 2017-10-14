@@ -13,18 +13,20 @@
 package io.reactivex.observers;
 
 import io.reactivex.Observer;
+import io.reactivex.annotations.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.internal.util.*;
 import io.reactivex.plugins.RxJavaPlugins;
 
 /**
- * Serializes access to the onNext, onError and onComplete methods of another Subscriber.
+ * Serializes access to the onNext, onError and onComplete methods of another Observer.
  *
- * <p>Note that onSubscribe is not serialized in respect of the other methods so
- * make sure the Subscription is set before any of the other methods are called.
+ * <p>Note that {@link #onSubscribe(Disposable)} is not serialized in respect of the other methods so
+ * make sure the {@code onSubscribe()} is called with a non-null {@code Disposable}
+ * before any of the other methods are called.
  *
- * <p>The implementation assumes that the actual Subscriber's methods don't throw.
+ * <p>The implementation assumes that the actual Observer's methods don't throw.
  *
  * @param <T> the value type
  */
@@ -45,7 +47,7 @@ public final class SerializedObserver<T> implements Observer<T>, Disposable {
      * Construct a SerializedObserver by wrapping the given actual Observer.
      * @param actual the actual Observer, not null (not verified)
      */
-    public SerializedObserver(Observer<? super T> actual) {
+    public SerializedObserver(@NonNull Observer<? super T> actual) {
         this(actual, false);
     }
 
@@ -56,13 +58,13 @@ public final class SerializedObserver<T> implements Observer<T>, Disposable {
      * @param actual the actual Observer, not null (not verified)
      * @param delayError if true, errors are emitted after regular values have been emitted
      */
-    public SerializedObserver(Observer<? super T> actual, boolean delayError) {
+    public SerializedObserver(@NonNull Observer<? super T> actual, boolean delayError) {
         this.actual = actual;
         this.delayError = delayError;
     }
 
     @Override
-    public void onSubscribe(Disposable s) {
+    public void onSubscribe(@NonNull Disposable s) {
         if (DisposableHelper.validate(this.s, s)) {
             this.s = s;
 
@@ -83,7 +85,7 @@ public final class SerializedObserver<T> implements Observer<T>, Disposable {
 
 
     @Override
-    public void onNext(T t) {
+    public void onNext(@NonNull T t) {
         if (done) {
             return;
         }
@@ -114,7 +116,7 @@ public final class SerializedObserver<T> implements Observer<T>, Disposable {
     }
 
     @Override
-    public void onError(Throwable t) {
+    public void onError(@NonNull Throwable t) {
         if (done) {
             RxJavaPlugins.onError(t);
             return;

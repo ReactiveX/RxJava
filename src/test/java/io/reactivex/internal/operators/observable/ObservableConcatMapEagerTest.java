@@ -509,12 +509,12 @@ public class ObservableConcatMapEagerTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testInvalidCapacityHint() {
+    public void testInvalidMaxConcurrent() {
         Observable.just(1).concatMapEager(toJust, 0, Observable.bufferSize());
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testInvalidMaxConcurrent() {
+    public void testInvalidCapacityHint() {
         Observable.just(1).concatMapEager(toJust, Observable.bufferSize(), 0);
     }
 
@@ -1000,5 +1000,40 @@ public class ObservableConcatMapEagerTest {
         .awaitDone(5, TimeUnit.SECONDS)
         .assertResult(1, 2, 3, 4, 5)
         ;
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void maxConcurrencyOf2() {
+        List<Integer>[] list = new ArrayList[100];
+        for (int i = 0; i < 100; i++) {
+            List<Integer> lst = new ArrayList<Integer>();
+            list[i] = lst;
+            for (int k = 1; k <= 10; k++) {
+                lst.add((i) * 10 + k);
+            }
+        }
+
+        Observable.range(1, 1000)
+        .buffer(10)
+        .concatMapEager(new Function<List<Integer>, ObservableSource<List<Integer>>>() {
+            @Override
+            public ObservableSource<List<Integer>> apply(List<Integer> v)
+                    throws Exception {
+                return Observable.just(v)
+                        .subscribeOn(Schedulers.io())
+                        .doOnNext(new Consumer<List<Integer>>() {
+                            @Override
+                            public void accept(List<Integer> v)
+                                    throws Exception {
+                                Thread.sleep(new Random().nextInt(20));
+                            }
+                        });
+            }
+        }
+                , 2, 3)
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertResult(list);
     }
 }

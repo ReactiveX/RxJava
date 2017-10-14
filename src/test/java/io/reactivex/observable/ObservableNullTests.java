@@ -1406,6 +1406,7 @@ public class ObservableNullTests {
     }
 
     @Test(expected = NullPointerException.class)
+    @Ignore("No longer crashes with NPE but signals it; tested elsewhere.")
     public void flatMapNotificationOnErrorReturnsNull() {
         Observable.error(new TestException()).flatMap(new Function<Object, Observable<Integer>>() {
             @Override
@@ -2427,8 +2428,8 @@ public class ObservableNullTests {
         just1.toSortedList(null);
     }
 
-    @Test
-    public void toMapKeyNullAllowed() {
+    @Test(expected = NullPointerException.class)
+    public void toMapKeyNull() {
         just1.toMap(null);
     }
 
