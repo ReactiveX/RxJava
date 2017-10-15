@@ -812,4 +812,37 @@ public class BehaviorProcessorTest extends DelayedFlowableProcessorTest<Object> 
             ts.assertFailure(TestException.class);
         }
     }
+
+    @Test(timeout = 10000)
+    public void subscriberCancelOfferRace() {
+        for (int i = 0; i < 1000; i++) {
+            final BehaviorProcessor<Integer> pp = BehaviorProcessor.create();
+
+            final TestSubscriber<Integer> ts = pp.test(1);
+
+            Runnable r1 = new Runnable() {
+                @Override
+                public void run() {
+                    for (int i = 0; i < 2; i++) {
+                        while (!pp.offer(i)) ;
+                    }
+                }
+            };
+
+            Runnable r2 = new Runnable() {
+                @Override
+                public void run() {
+                    ts.cancel();
+                }
+            };
+
+            TestHelper.race(r1, r2);
+
+            if (ts.valueCount() > 0) {
+                ts.assertValuesOnly(0);
+            } else {
+                ts.assertEmpty();
+            }
+        }
+    }
 }
