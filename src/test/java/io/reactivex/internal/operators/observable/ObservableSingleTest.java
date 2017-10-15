@@ -282,6 +282,7 @@ public class ObservableSingleTest {
 
         InOrder inOrder = inOrder(observer);
         inOrder.verify(observer).onComplete();
+        inOrder.verify(observer, never()).onError(any(Throwable.class));
         inOrder.verifyNoMoreInteractions();
     }
 
