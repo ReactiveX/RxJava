@@ -13,11 +13,16 @@
 
 package io.reactivex.internal.observers;
 
-import java.util.concurrent.*;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
-import io.reactivex.*;
+import io.reactivex.CompletableObserver;
+import io.reactivex.MaybeObserver;
+import io.reactivex.SingleObserver;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.internal.util.*;
+import io.reactivex.internal.util.BlockingHelper;
+import io.reactivex.internal.util.ExceptionHelper;
 
 /**
  * A combined Observer that awaits the success or error signal via a CountDownLatch.

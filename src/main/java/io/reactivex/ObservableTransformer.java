@@ -13,7 +13,7 @@
 
 package io.reactivex;
 
-import io.reactivex.annotations.*;
+import io.reactivex.annotations.NonNull;
 
 /**
  * Interface to compose Observables.

@@ -12,7 +12,8 @@
  */
 package io.reactivex.internal.operators.observable;
 
-import io.reactivex.*;
+import io.reactivex.ObservableSource;
+import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.Predicate;

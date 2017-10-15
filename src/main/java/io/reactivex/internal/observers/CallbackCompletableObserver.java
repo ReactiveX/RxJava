@@ -17,8 +17,10 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import io.reactivex.CompletableObserver;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.exceptions.*;
-import io.reactivex.functions.*;
+import io.reactivex.exceptions.Exceptions;
+import io.reactivex.exceptions.OnErrorNotImplementedException;
+import io.reactivex.functions.Action;
+import io.reactivex.functions.Consumer;
 import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.observers.LambdaConsumerIntrospection;
 import io.reactivex.plugins.RxJavaPlugins;

@@ -16,10 +16,13 @@ package io.reactivex.internal.operators.completable;
 import java.util.Iterator;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import io.reactivex.*;
+import io.reactivex.Completable;
+import io.reactivex.CompletableObserver;
+import io.reactivex.CompletableSource;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.Exceptions;
-import io.reactivex.internal.disposables.*;
+import io.reactivex.internal.disposables.EmptyDisposable;
+import io.reactivex.internal.disposables.SequentialDisposable;
 import io.reactivex.internal.functions.ObjectHelper;
 
 public final class CompletableConcatIterable extends Completable {

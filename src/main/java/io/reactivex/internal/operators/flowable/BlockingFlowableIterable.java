@@ -13,18 +13,23 @@
 
 package io.reactivex.internal.operators.flowable;
 
-import java.util.*;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.concurrent.locks.*;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import org.reactivestreams.Subscription;
 
-import io.reactivex.*;
+import io.reactivex.Flowable;
+import io.reactivex.FlowableSubscriber;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.MissingBackpressureException;
 import io.reactivex.internal.queue.SpscArrayQueue;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
-import io.reactivex.internal.util.*;
+import io.reactivex.internal.util.BlockingHelper;
+import io.reactivex.internal.util.ExceptionHelper;
 
 public final class BlockingFlowableIterable<T> implements Iterable<T> {
     final Flowable<T> source;

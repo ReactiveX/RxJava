@@ -13,7 +13,8 @@
 
 package io.reactivex.internal.schedulers;
 
-import java.util.concurrent.*;
+import java.util.concurrent.Callable;
+import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicReferenceArray;
 
 import io.reactivex.disposables.Disposable;

@@ -13,7 +13,8 @@
 
 package io.reactivex;
 
-import io.reactivex.annotations.*;
+import io.reactivex.annotations.NonNull;
+import io.reactivex.annotations.Nullable;
 import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.internal.util.NotificationLite;
 

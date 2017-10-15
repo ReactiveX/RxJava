@@ -13,7 +13,8 @@
 
 package io.reactivex.internal.operators.flowable;
 
-import java.util.concurrent.*;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 import org.reactivestreams.Subscriber;
 

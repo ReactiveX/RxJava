@@ -16,8 +16,10 @@ package io.reactivex.internal.observers;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.Exceptions;
-import io.reactivex.functions.*;
-import io.reactivex.internal.disposables.*;
+import io.reactivex.functions.Action;
+import io.reactivex.functions.Consumer;
+import io.reactivex.internal.disposables.DisposableHelper;
+import io.reactivex.internal.disposables.EmptyDisposable;
 import io.reactivex.plugins.RxJavaPlugins;
 
 public final class DisposableLambdaObserver<T> implements Observer<T>, Disposable {

@@ -15,7 +15,10 @@ package io.reactivex.internal.operators.maybe;
 
 import java.util.Iterator;
 
-import io.reactivex.*;
+import io.reactivex.MaybeObserver;
+import io.reactivex.MaybeSource;
+import io.reactivex.Observable;
+import io.reactivex.Observer;
 import io.reactivex.annotations.Nullable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.Exceptions;

@@ -13,9 +13,13 @@
 
 package io.reactivex.internal.operators.maybe;
 
-import java.util.concurrent.atomic.*;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
-import io.reactivex.*;
+import io.reactivex.MaybeObserver;
+import io.reactivex.MaybeSource;
+import io.reactivex.Single;
+import io.reactivex.SingleObserver;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.BiPredicate;

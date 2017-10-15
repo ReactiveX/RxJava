@@ -15,8 +15,12 @@ package io.reactivex.internal.operators.completable;
 
 import java.util.concurrent.TimeUnit;
 
-import io.reactivex.*;
-import io.reactivex.disposables.*;
+import io.reactivex.Completable;
+import io.reactivex.CompletableObserver;
+import io.reactivex.CompletableSource;
+import io.reactivex.Scheduler;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
 
 public final class CompletableDelay extends Completable {
 

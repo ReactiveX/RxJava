@@ -13,8 +13,11 @@
 
 package io.reactivex;
 
-import io.reactivex.annotations.*;
-import org.reactivestreams.*;
+import org.reactivestreams.Subscriber;
+import org.reactivestreams.Subscription;
+
+import io.reactivex.annotations.Beta;
+import io.reactivex.annotations.NonNull;
 
 /**
  * Represents a Reactive-Streams inspired Subscriber that is RxJava 2 only

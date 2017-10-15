@@ -13,7 +13,9 @@
 
 package io.reactivex.internal.operators.single;
 
-import io.reactivex.*;
+import io.reactivex.Single;
+import io.reactivex.SingleObserver;
+import io.reactivex.SingleSource;
 import io.reactivex.annotations.Experimental;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.disposables.DisposableHelper;

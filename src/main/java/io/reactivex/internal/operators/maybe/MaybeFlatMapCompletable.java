@@ -15,7 +15,11 @@ package io.reactivex.internal.operators.maybe;
 
 import java.util.concurrent.atomic.AtomicReference;
 
-import io.reactivex.*;
+import io.reactivex.Completable;
+import io.reactivex.CompletableObserver;
+import io.reactivex.CompletableSource;
+import io.reactivex.MaybeObserver;
+import io.reactivex.MaybeSource;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.Function;

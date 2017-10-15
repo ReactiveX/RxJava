@@ -13,10 +13,13 @@
 
 package io.reactivex.internal.operators.completable;
 
-import org.reactivestreams.*;
+import org.reactivestreams.Publisher;
+import org.reactivestreams.Subscription;
 
-import io.reactivex.*;
-import io.reactivex.disposables.*;
+import io.reactivex.Completable;
+import io.reactivex.CompletableObserver;
+import io.reactivex.FlowableSubscriber;
+import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 
 public final class CompletableFromPublisher<T> extends Completable {

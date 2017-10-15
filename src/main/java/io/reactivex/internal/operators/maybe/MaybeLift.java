@@ -13,7 +13,9 @@
 
 package io.reactivex.internal.operators.maybe;
 
-import io.reactivex.*;
+import io.reactivex.MaybeObserver;
+import io.reactivex.MaybeOperator;
+import io.reactivex.MaybeSource;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.internal.disposables.EmptyDisposable;
 import io.reactivex.internal.functions.ObjectHelper;

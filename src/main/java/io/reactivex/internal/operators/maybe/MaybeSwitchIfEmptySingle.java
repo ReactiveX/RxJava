@@ -13,12 +13,16 @@
 
 package io.reactivex.internal.operators.maybe;
 
-import io.reactivex.*;
+import java.util.concurrent.atomic.AtomicReference;
+
+import io.reactivex.MaybeObserver;
+import io.reactivex.MaybeSource;
+import io.reactivex.Single;
+import io.reactivex.SingleObserver;
+import io.reactivex.SingleSource;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.internal.fuseable.HasUpstreamMaybeSource;
-
-import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Subscribes to the other source if the main source is empty.

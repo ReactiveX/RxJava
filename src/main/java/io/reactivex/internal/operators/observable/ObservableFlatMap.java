@@ -13,20 +13,26 @@
 
 package io.reactivex.internal.operators.observable;
 
-import java.util.*;
+import java.util.ArrayDeque;
+import java.util.Queue;
 import java.util.concurrent.Callable;
-import java.util.concurrent.atomic.*;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
 import io.reactivex.ObservableSource;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.exceptions.*;
+import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.internal.functions.ObjectHelper;
-import io.reactivex.internal.fuseable.*;
-import io.reactivex.internal.queue.*;
-import io.reactivex.internal.util.*;
+import io.reactivex.internal.fuseable.QueueDisposable;
+import io.reactivex.internal.fuseable.SimplePlainQueue;
+import io.reactivex.internal.fuseable.SimpleQueue;
+import io.reactivex.internal.queue.SpscArrayQueue;
+import io.reactivex.internal.queue.SpscLinkedArrayQueue;
+import io.reactivex.internal.util.AtomicThrowable;
+import io.reactivex.internal.util.ExceptionHelper;
 import io.reactivex.plugins.RxJavaPlugins;
 
 public final class ObservableFlatMap<T, U> extends AbstractObservableWithUpstream<T, U> {

@@ -15,7 +15,8 @@ package io.reactivex.internal.operators.observable;
 
 import java.util.concurrent.Callable;
 
-import io.reactivex.*;
+import io.reactivex.Observable;
+import io.reactivex.Observer;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.internal.observers.DeferredScalarDisposable;

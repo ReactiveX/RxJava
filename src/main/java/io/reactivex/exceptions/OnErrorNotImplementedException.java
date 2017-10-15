@@ -13,7 +13,8 @@
 
 package io.reactivex.exceptions;
 
-import io.reactivex.annotations.*;
+import io.reactivex.annotations.Beta;
+import io.reactivex.annotations.NonNull;
 
 /**
  * Represents an exception used to signal to the {@code RxJavaPlugins.onError()} that a

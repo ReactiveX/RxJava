@@ -15,9 +15,13 @@ package io.reactivex.internal.operators.observable;
 
 import java.util.concurrent.atomic.AtomicReference;
 
-import io.reactivex.*;
+import io.reactivex.CompletableObserver;
+import io.reactivex.CompletableSource;
+import io.reactivex.ObservableSource;
+import io.reactivex.Observer;
 import io.reactivex.annotations.Nullable;
-import io.reactivex.disposables.*;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.disposables.DisposableHelper;

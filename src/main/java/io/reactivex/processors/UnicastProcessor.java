@@ -13,17 +13,22 @@
 
 package io.reactivex.processors;
 
-import io.reactivex.annotations.CheckReturnValue;
-import java.util.concurrent.atomic.*;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicReference;
 
+import org.reactivestreams.Subscriber;
+import org.reactivestreams.Subscription;
+
+import io.reactivex.annotations.CheckReturnValue;
 import io.reactivex.annotations.Experimental;
 import io.reactivex.annotations.Nullable;
-import org.reactivestreams.*;
-
 import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.internal.fuseable.QueueSubscription;
 import io.reactivex.internal.queue.SpscLinkedArrayQueue;
-import io.reactivex.internal.subscriptions.*;
+import io.reactivex.internal.subscriptions.BasicIntQueueSubscription;
+import io.reactivex.internal.subscriptions.EmptySubscription;
+import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.internal.util.BackpressureHelper;
 import io.reactivex.plugins.RxJavaPlugins;
 

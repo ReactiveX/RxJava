@@ -13,15 +13,19 @@
 
 package io.reactivex.internal.operators.flowable;
 
-import org.reactivestreams.*;
+import org.reactivestreams.Publisher;
+import org.reactivestreams.Subscriber;
+import org.reactivestreams.Subscription;
 
 import io.reactivex.Flowable;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.functions.ObjectHelper;
-import io.reactivex.internal.operators.flowable.FlowableRepeatWhen.*;
+import io.reactivex.internal.operators.flowable.FlowableRepeatWhen.WhenReceiver;
+import io.reactivex.internal.operators.flowable.FlowableRepeatWhen.WhenSourceSubscriber;
 import io.reactivex.internal.subscriptions.EmptySubscription;
-import io.reactivex.processors.*;
+import io.reactivex.processors.FlowableProcessor;
+import io.reactivex.processors.UnicastProcessor;
 import io.reactivex.subscribers.SerializedSubscriber;
 
 public final class FlowableRetryWhen<T> extends AbstractFlowableWithUpstream<T, T> {

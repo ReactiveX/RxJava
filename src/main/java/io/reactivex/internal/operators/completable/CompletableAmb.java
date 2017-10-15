@@ -15,8 +15,11 @@ package io.reactivex.internal.operators.completable;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import io.reactivex.*;
-import io.reactivex.disposables.*;
+import io.reactivex.Completable;
+import io.reactivex.CompletableObserver;
+import io.reactivex.CompletableSource;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.internal.disposables.EmptyDisposable;
 import io.reactivex.plugins.RxJavaPlugins;

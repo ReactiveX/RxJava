@@ -15,7 +15,9 @@ package io.reactivex.internal.operators.observable;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import io.reactivex.*;
+import io.reactivex.ObservableSource;
+import io.reactivex.Observer;
+import io.reactivex.Scheduler;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.plugins.RxJavaPlugins;

@@ -14,12 +14,15 @@ package io.reactivex.observers;
 
 import java.util.concurrent.atomic.AtomicReference;
 
-import io.reactivex.*;
+import io.reactivex.CompletableObserver;
+import io.reactivex.MaybeObserver;
+import io.reactivex.Observer;
+import io.reactivex.SingleObserver;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.internal.fuseable.QueueDisposable;
-import io.reactivex.internal.util.*;
+import io.reactivex.internal.util.ExceptionHelper;
 
 /**
  * An Observer that records events and allows making assertions about them.

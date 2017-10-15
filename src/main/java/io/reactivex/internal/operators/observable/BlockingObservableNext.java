@@ -13,12 +13,16 @@
 
 package io.reactivex.internal.operators.observable;
 
-import java.util.*;
-import java.util.concurrent.*;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import io.reactivex.*;
-import io.reactivex.internal.util.*;
+import io.reactivex.Notification;
+import io.reactivex.ObservableSource;
+import io.reactivex.internal.util.BlockingHelper;
+import io.reactivex.internal.util.ExceptionHelper;
 import io.reactivex.observers.DisposableObserver;
 import io.reactivex.plugins.RxJavaPlugins;
 

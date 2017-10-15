@@ -13,16 +13,20 @@
 
 package io.reactivex.subjects;
 
-import io.reactivex.annotations.CheckReturnValue;
 import java.lang.reflect.Array;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.concurrent.locks.*;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import io.reactivex.Observer;
+import io.reactivex.annotations.CheckReturnValue;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.functions.ObjectHelper;
-import io.reactivex.internal.util.*;
+import io.reactivex.internal.util.AppendOnlyLinkedArrayList;
 import io.reactivex.internal.util.AppendOnlyLinkedArrayList.NonThrowingPredicate;
+import io.reactivex.internal.util.ExceptionHelper;
+import io.reactivex.internal.util.NotificationLite;
 import io.reactivex.plugins.RxJavaPlugins;
 
 /**

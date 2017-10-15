@@ -17,12 +17,16 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.reactivestreams.Publisher;
 
-import io.reactivex.*;
+import io.reactivex.Flowable;
+import io.reactivex.Single;
+import io.reactivex.SingleObserver;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.BiPredicate;
-import io.reactivex.internal.fuseable.*;
-import io.reactivex.internal.operators.flowable.FlowableSequenceEqual.*;
+import io.reactivex.internal.fuseable.FuseToFlowable;
+import io.reactivex.internal.fuseable.SimpleQueue;
+import io.reactivex.internal.operators.flowable.FlowableSequenceEqual.EqualCoordinatorHelper;
+import io.reactivex.internal.operators.flowable.FlowableSequenceEqual.EqualSubscriber;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.internal.util.AtomicThrowable;
 import io.reactivex.plugins.RxJavaPlugins;

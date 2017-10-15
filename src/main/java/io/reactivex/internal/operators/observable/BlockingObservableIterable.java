@@ -13,15 +13,19 @@
 
 package io.reactivex.internal.operators.observable;
 
-import java.util.*;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.concurrent.locks.*;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import io.reactivex.ObservableSource;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.internal.queue.SpscLinkedArrayQueue;
-import io.reactivex.internal.util.*;
+import io.reactivex.internal.util.BlockingHelper;
+import io.reactivex.internal.util.ExceptionHelper;
 
 public final class BlockingObservableIterable<T> implements Iterable<T> {
     final ObservableSource<? extends T> source;

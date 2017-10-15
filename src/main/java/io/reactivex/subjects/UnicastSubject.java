@@ -13,19 +13,20 @@
 
 package io.reactivex.subjects;
 
-import io.reactivex.annotations.Experimental;
-import io.reactivex.annotations.Nullable;
-import io.reactivex.plugins.RxJavaPlugins;
-import java.util.concurrent.atomic.*;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 
 import io.reactivex.Observer;
 import io.reactivex.annotations.CheckReturnValue;
+import io.reactivex.annotations.Experimental;
+import io.reactivex.annotations.Nullable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.disposables.EmptyDisposable;
 import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.internal.fuseable.SimpleQueue;
 import io.reactivex.internal.observers.BasicIntQueueDisposable;
 import io.reactivex.internal.queue.SpscLinkedArrayQueue;
+import io.reactivex.plugins.RxJavaPlugins;
 
 /**
  * Subject that allows only a single Subscriber to subscribe to it during its lifetime.

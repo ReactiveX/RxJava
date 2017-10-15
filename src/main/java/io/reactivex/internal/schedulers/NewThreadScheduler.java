@@ -16,10 +16,10 @@
 
 package io.reactivex.internal.schedulers;
 
+import java.util.concurrent.ThreadFactory;
+
 import io.reactivex.Scheduler;
 import io.reactivex.annotations.NonNull;
-
-import java.util.concurrent.ThreadFactory;
 
 /**
  * Schedules work on a new thread.

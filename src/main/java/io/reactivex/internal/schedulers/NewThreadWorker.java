@@ -13,13 +13,19 @@
 
 package io.reactivex.internal.schedulers;
 
-import java.util.concurrent.*;
+import java.util.concurrent.Callable;
+import java.util.concurrent.Future;
+import java.util.concurrent.RejectedExecutionException;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.TimeUnit;
 
 import io.reactivex.Scheduler;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.annotations.Nullable;
-import io.reactivex.disposables.*;
-import io.reactivex.internal.disposables.*;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.internal.disposables.DisposableContainer;
+import io.reactivex.internal.disposables.EmptyDisposable;
 import io.reactivex.plugins.RxJavaPlugins;
 
 /**

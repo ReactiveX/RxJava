@@ -13,9 +13,11 @@
 
 package io.reactivex.processors;
 
-import io.reactivex.*;
-import io.reactivex.annotations.NonNull;
 import org.reactivestreams.Processor;
+
+import io.reactivex.Flowable;
+import io.reactivex.FlowableSubscriber;
+import io.reactivex.annotations.NonNull;
 
 /**
  * Represents a Subscriber and a Flowable (Publisher) at the same time, allowing

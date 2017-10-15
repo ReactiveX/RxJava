@@ -15,11 +15,15 @@ package io.reactivex.internal.operators.completable;
 
 import java.util.concurrent.atomic.AtomicReference;
 
-import io.reactivex.*;
+import io.reactivex.Completable;
+import io.reactivex.CompletableEmitter;
+import io.reactivex.CompletableObserver;
+import io.reactivex.CompletableOnSubscribe;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.Cancellable;
-import io.reactivex.internal.disposables.*;
+import io.reactivex.internal.disposables.CancellableDisposable;
+import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.plugins.RxJavaPlugins;
 
 public final class CompletableCreate extends Completable {

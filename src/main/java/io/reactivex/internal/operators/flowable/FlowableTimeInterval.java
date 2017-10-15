@@ -15,9 +15,12 @@ package io.reactivex.internal.operators.flowable;
 
 import java.util.concurrent.TimeUnit;
 
-import org.reactivestreams.*;
+import org.reactivestreams.Subscriber;
+import org.reactivestreams.Subscription;
 
-import io.reactivex.*;
+import io.reactivex.Flowable;
+import io.reactivex.FlowableSubscriber;
+import io.reactivex.Scheduler;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.schedulers.Timed;
 

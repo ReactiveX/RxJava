@@ -13,7 +13,8 @@
 
 package io.reactivex.internal.operators.observable;
 
-import io.reactivex.*;
+import io.reactivex.ObservableSource;
+import io.reactivex.Observer;
 import io.reactivex.annotations.Experimental;
 import io.reactivex.annotations.Nullable;
 import io.reactivex.functions.Consumer;

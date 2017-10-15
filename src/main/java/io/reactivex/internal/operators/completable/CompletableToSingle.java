@@ -15,7 +15,10 @@ package io.reactivex.internal.operators.completable;
 
 import java.util.concurrent.Callable;
 
-import io.reactivex.*;
+import io.reactivex.CompletableObserver;
+import io.reactivex.CompletableSource;
+import io.reactivex.Single;
+import io.reactivex.SingleObserver;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.Exceptions;
 

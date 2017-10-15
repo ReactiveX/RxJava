@@ -13,14 +13,15 @@
 
 package io.reactivex.flowables;
 
-import io.reactivex.annotations.NonNull;
 import org.reactivestreams.Subscriber;
 
 import io.reactivex.Flowable;
+import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 import io.reactivex.internal.functions.Functions;
-import io.reactivex.internal.operators.flowable.*;
+import io.reactivex.internal.operators.flowable.FlowableAutoConnect;
+import io.reactivex.internal.operators.flowable.FlowableRefCount;
 import io.reactivex.internal.util.ConnectConsumer;
 import io.reactivex.plugins.RxJavaPlugins;
 

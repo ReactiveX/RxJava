@@ -13,8 +13,10 @@
 
 package io.reactivex.internal.operators.completable;
 
-import io.reactivex.*;
-import io.reactivex.disposables.*;
+import io.reactivex.Completable;
+import io.reactivex.CompletableObserver;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.disposables.Disposables;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.Action;
 

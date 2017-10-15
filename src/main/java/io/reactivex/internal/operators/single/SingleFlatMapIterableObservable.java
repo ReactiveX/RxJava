@@ -15,7 +15,10 @@ package io.reactivex.internal.operators.single;
 
 import java.util.Iterator;
 
-import io.reactivex.*;
+import io.reactivex.Observable;
+import io.reactivex.Observer;
+import io.reactivex.SingleObserver;
+import io.reactivex.SingleSource;
 import io.reactivex.annotations.Nullable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.Exceptions;

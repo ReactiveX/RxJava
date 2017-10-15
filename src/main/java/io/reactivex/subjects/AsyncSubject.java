@@ -13,11 +13,11 @@
 
 package io.reactivex.subjects;
 
-import io.reactivex.annotations.CheckReturnValue;
 import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicReference;
 
 import io.reactivex.Observer;
+import io.reactivex.annotations.CheckReturnValue;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.observers.DeferredScalarDisposable;
 import io.reactivex.plugins.RxJavaPlugins;

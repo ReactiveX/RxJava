@@ -18,7 +18,9 @@ import java.util.concurrent.atomic.AtomicReference;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.disposables.DisposableHelper;
-import io.reactivex.internal.fuseable.*;
+import io.reactivex.internal.fuseable.QueueDisposable;
+import io.reactivex.internal.fuseable.QueueSubscription;
+import io.reactivex.internal.fuseable.SimpleQueue;
 import io.reactivex.internal.util.QueueDrainHelper;
 
 /**

@@ -15,14 +15,18 @@ package io.reactivex.internal.util;
 import java.util.Queue;
 import java.util.concurrent.atomic.AtomicLong;
 
-import org.reactivestreams.*;
+import org.reactivestreams.Subscriber;
+import org.reactivestreams.Subscription;
 
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.exceptions.*;
+import io.reactivex.exceptions.Exceptions;
+import io.reactivex.exceptions.MissingBackpressureException;
 import io.reactivex.functions.BooleanSupplier;
-import io.reactivex.internal.fuseable.*;
-import io.reactivex.internal.queue.*;
+import io.reactivex.internal.fuseable.SimplePlainQueue;
+import io.reactivex.internal.fuseable.SimpleQueue;
+import io.reactivex.internal.queue.SpscArrayQueue;
+import io.reactivex.internal.queue.SpscLinkedArrayQueue;
 
 /**
  * Utility class to help with the queue-drain serialization idiom.

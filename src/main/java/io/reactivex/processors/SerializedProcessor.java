@@ -13,9 +13,11 @@
 
 package io.reactivex.processors;
 
-import org.reactivestreams.*;
+import org.reactivestreams.Subscriber;
+import org.reactivestreams.Subscription;
 
-import io.reactivex.internal.util.*;
+import io.reactivex.internal.util.AppendOnlyLinkedArrayList;
+import io.reactivex.internal.util.NotificationLite;
 import io.reactivex.plugins.RxJavaPlugins;
 
 /**

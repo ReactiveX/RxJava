@@ -13,7 +13,8 @@
 
 package io.reactivex.parallel;
 
-import io.reactivex.annotations.*;
+import io.reactivex.annotations.Experimental;
+import io.reactivex.annotations.NonNull;
 
 /**
  * Interface to compose ParallelFlowable.

@@ -17,8 +17,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.internal.fuseable.*;
-import io.reactivex.internal.util.*;
+import io.reactivex.internal.fuseable.SimplePlainQueue;
+import io.reactivex.internal.util.ObservableQueueDrain;
+import io.reactivex.internal.util.QueueDrainHelper;
 
 /**
  * Abstract base class for subscribers that hold another subscriber, a queue

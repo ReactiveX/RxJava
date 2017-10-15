@@ -13,7 +13,8 @@
 
 package io.reactivex.internal.operators.flowable;
 
-import org.reactivestreams.*;
+import org.reactivestreams.Publisher;
+import org.reactivestreams.Subscriber;
 
 import io.reactivex.Flowable;
 import io.reactivex.functions.Function;

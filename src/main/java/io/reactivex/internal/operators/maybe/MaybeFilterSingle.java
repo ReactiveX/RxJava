@@ -13,7 +13,10 @@
 
 package io.reactivex.internal.operators.maybe;
 
-import io.reactivex.*;
+import io.reactivex.Maybe;
+import io.reactivex.MaybeObserver;
+import io.reactivex.SingleObserver;
+import io.reactivex.SingleSource;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.Predicate;

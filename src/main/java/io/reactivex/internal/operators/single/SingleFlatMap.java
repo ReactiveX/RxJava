@@ -13,13 +13,16 @@
 
 package io.reactivex.internal.operators.single;
 
-import io.reactivex.*;
+import java.util.concurrent.atomic.AtomicReference;
+
+import io.reactivex.Single;
+import io.reactivex.SingleObserver;
+import io.reactivex.SingleSource;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.internal.functions.ObjectHelper;
-import java.util.concurrent.atomic.AtomicReference;
 
 public final class SingleFlatMap<T, R> extends Single<R> {
     final SingleSource<? extends T> source;

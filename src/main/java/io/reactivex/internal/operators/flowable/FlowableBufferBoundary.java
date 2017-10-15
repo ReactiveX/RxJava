@@ -13,14 +13,20 @@
 
 package io.reactivex.internal.operators.flowable;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.reactivestreams.*;
+import org.reactivestreams.Publisher;
+import org.reactivestreams.Subscriber;
+import org.reactivestreams.Subscription;
 
 import io.reactivex.Flowable;
-import io.reactivex.disposables.*;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.functions.ObjectHelper;
@@ -30,7 +36,8 @@ import io.reactivex.internal.subscribers.QueueDrainSubscriber;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.internal.util.QueueDrainHelper;
 import io.reactivex.plugins.RxJavaPlugins;
-import io.reactivex.subscribers.*;
+import io.reactivex.subscribers.DisposableSubscriber;
+import io.reactivex.subscribers.SerializedSubscriber;
 
 public final class FlowableBufferBoundary<T, U extends Collection<? super T>, Open, Close>
 extends AbstractFlowableWithUpstream<T, U> {

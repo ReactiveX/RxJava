@@ -12,7 +12,7 @@
  */
 package io.reactivex;
 
-import io.reactivex.annotations.*;
+import io.reactivex.annotations.NonNull;
 
 /**
  * A functional interface that has a {@code subscribe()} method that receives

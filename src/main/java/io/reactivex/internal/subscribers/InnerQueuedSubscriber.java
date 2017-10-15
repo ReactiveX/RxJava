@@ -18,7 +18,8 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.reactivestreams.Subscription;
 
 import io.reactivex.FlowableSubscriber;
-import io.reactivex.internal.fuseable.*;
+import io.reactivex.internal.fuseable.QueueSubscription;
+import io.reactivex.internal.fuseable.SimpleQueue;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.internal.util.QueueDrainHelper;
 

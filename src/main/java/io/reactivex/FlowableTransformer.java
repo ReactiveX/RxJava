@@ -13,8 +13,9 @@
 
 package io.reactivex;
 
-import io.reactivex.annotations.*;
 import org.reactivestreams.Publisher;
+
+import io.reactivex.annotations.NonNull;
 
 /**
  * Interface to compose Flowables.

@@ -13,7 +13,8 @@
 
 package io.reactivex.internal.operators.maybe;
 
-import io.reactivex.*;
+import io.reactivex.Maybe;
+import io.reactivex.MaybeObserver;
 import io.reactivex.disposables.Disposables;
 
 /**

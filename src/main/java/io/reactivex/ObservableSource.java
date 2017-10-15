@@ -12,7 +12,7 @@
  */
 package io.reactivex;
 
-import io.reactivex.annotations.*;
+import io.reactivex.annotations.NonNull;
 
 /**
  * Represents a basic, non-backpressured {@link Observable} source base interface,

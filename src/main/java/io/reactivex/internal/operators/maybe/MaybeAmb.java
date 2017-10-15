@@ -15,8 +15,11 @@ package io.reactivex.internal.operators.maybe;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import io.reactivex.*;
-import io.reactivex.disposables.*;
+import io.reactivex.Maybe;
+import io.reactivex.MaybeObserver;
+import io.reactivex.MaybeSource;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.internal.disposables.EmptyDisposable;
 import io.reactivex.plugins.RxJavaPlugins;

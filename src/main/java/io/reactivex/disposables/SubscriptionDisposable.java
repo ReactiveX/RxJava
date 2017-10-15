@@ -12,8 +12,9 @@
  */
 package io.reactivex.disposables;
 
-import io.reactivex.annotations.NonNull;
 import org.reactivestreams.Subscription;
+
+import io.reactivex.annotations.NonNull;
 
 /**
  * A Disposable container that handles a {@link Subscription}.

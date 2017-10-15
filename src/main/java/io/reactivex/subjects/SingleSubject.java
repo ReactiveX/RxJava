@@ -13,10 +13,14 @@
 
 package io.reactivex.subjects;
 
-import java.util.concurrent.atomic.*;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 
-import io.reactivex.*;
-import io.reactivex.annotations.*;
+import io.reactivex.Single;
+import io.reactivex.SingleObserver;
+import io.reactivex.annotations.CheckReturnValue;
+import io.reactivex.annotations.NonNull;
+import io.reactivex.annotations.Nullable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.plugins.RxJavaPlugins;
 

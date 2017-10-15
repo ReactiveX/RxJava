@@ -12,14 +12,38 @@
  */
 package io.reactivex.internal.functions;
 
-import java.util.*;
-import java.util.concurrent.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.Callable;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 import org.reactivestreams.Subscription;
 
-import io.reactivex.*;
+import io.reactivex.Notification;
+import io.reactivex.Scheduler;
 import io.reactivex.exceptions.OnErrorNotImplementedException;
-import io.reactivex.functions.*;
+import io.reactivex.functions.Action;
+import io.reactivex.functions.BiConsumer;
+import io.reactivex.functions.BiFunction;
+import io.reactivex.functions.BooleanSupplier;
+import io.reactivex.functions.Consumer;
+import io.reactivex.functions.Function;
+import io.reactivex.functions.Function3;
+import io.reactivex.functions.Function4;
+import io.reactivex.functions.Function5;
+import io.reactivex.functions.Function6;
+import io.reactivex.functions.Function7;
+import io.reactivex.functions.Function8;
+import io.reactivex.functions.Function9;
+import io.reactivex.functions.LongConsumer;
+import io.reactivex.functions.Predicate;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.schedulers.Timed;
 

@@ -13,13 +13,15 @@
 
 package io.reactivex.internal.operators.single;
 
-import java.util.*;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
 import java.util.concurrent.Callable;
 
 import org.reactivestreams.Publisher;
 
-import io.reactivex.*;
+import io.reactivex.Flowable;
 import io.reactivex.Observable;
+import io.reactivex.SingleSource;
 import io.reactivex.functions.Function;
 
 /**

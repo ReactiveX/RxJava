@@ -17,9 +17,11 @@ import org.reactivestreams.Subscriber;
 
 import io.reactivex.Flowable;
 import io.reactivex.annotations.Nullable;
-import io.reactivex.functions.*;
+import io.reactivex.functions.BiPredicate;
+import io.reactivex.functions.Function;
 import io.reactivex.internal.fuseable.ConditionalSubscriber;
-import io.reactivex.internal.subscribers.*;
+import io.reactivex.internal.subscribers.BasicFuseableConditionalSubscriber;
+import io.reactivex.internal.subscribers.BasicFuseableSubscriber;
 
 public final class FlowableDistinctUntilChanged<T, K> extends AbstractFlowableWithUpstream<T, T> {
 

@@ -14,7 +14,8 @@ package io.reactivex.internal.util;
 
 import java.io.Serializable;
 
-import org.reactivestreams.*;
+import org.reactivestreams.Subscriber;
+import org.reactivestreams.Subscription;
 
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;

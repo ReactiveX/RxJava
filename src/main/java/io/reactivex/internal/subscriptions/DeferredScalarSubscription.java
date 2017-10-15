@@ -13,8 +13,9 @@
 
 package io.reactivex.internal.subscriptions;
 
-import io.reactivex.annotations.Nullable;
 import org.reactivestreams.Subscriber;
+
+import io.reactivex.annotations.Nullable;
 
 /**
  * A subscription that signals a single value eventually.
