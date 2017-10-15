@@ -10277,9 +10277,8 @@ public abstract class Observable<T> implements ObservableSource<T> {
     }
 
     /**
-     * Returns a Maybe that emits the single item emitted by this Observable if this Observable
-     * emits only a single item, otherwise if this Observable emits more than one item or no items, an
-     * {@code IllegalArgumentException} or {@code NoSuchElementException} is signalled respectively.
+     * Returns a Maybe that emits the single item emitted by this Observable or completes if this Observable is empty.
+     * If this Observable emits more than one item, an {@code IllegalArgumentException} is signalled instead.
      * <p>
      * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/singleElement.png" alt="">
      * <dl>
