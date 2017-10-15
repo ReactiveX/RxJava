@@ -16,7 +16,8 @@ package io.reactivex.internal.util;
 import org.reactivestreams.Subscriber;
 
 import io.reactivex.Observer;
-import io.reactivex.functions.*;
+import io.reactivex.functions.BiPredicate;
+import io.reactivex.functions.Predicate;
 
 /**
  * A linked-array-list implementation that only supports appending and consumption.

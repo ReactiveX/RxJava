@@ -15,10 +15,13 @@ package io.reactivex.processors;
 import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicReference;
 
-import io.reactivex.annotations.*;
+import org.reactivestreams.Subscriber;
+import org.reactivestreams.Subscription;
+
+import io.reactivex.annotations.CheckReturnValue;
+import io.reactivex.annotations.NonNull;
 import io.reactivex.internal.subscriptions.DeferredScalarSubscription;
 import io.reactivex.plugins.RxJavaPlugins;
-import org.reactivestreams.*;
 
 /**
  * Processor that emits the very last value followed by a completion event or the received error

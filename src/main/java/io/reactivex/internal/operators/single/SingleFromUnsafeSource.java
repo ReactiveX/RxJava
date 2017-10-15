@@ -13,7 +13,9 @@
 
 package io.reactivex.internal.operators.single;
 
-import io.reactivex.*;
+import io.reactivex.Single;
+import io.reactivex.SingleObserver;
+import io.reactivex.SingleSource;
 
 public final class SingleFromUnsafeSource<T> extends Single<T> {
     final SingleSource<T> source;

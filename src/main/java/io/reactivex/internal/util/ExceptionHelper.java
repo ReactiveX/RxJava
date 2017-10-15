@@ -13,7 +13,9 @@
 
 package io.reactivex.internal.util;
 
-import java.util.*;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
 import io.reactivex.exceptions.CompositeException;

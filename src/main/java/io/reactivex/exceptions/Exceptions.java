@@ -13,7 +13,7 @@
 
 package io.reactivex.exceptions;
 
-import io.reactivex.annotations.*;
+import io.reactivex.annotations.NonNull;
 import io.reactivex.internal.util.ExceptionHelper;
 
 /**

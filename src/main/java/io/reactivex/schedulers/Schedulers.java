@@ -13,12 +13,22 @@
 
 package io.reactivex.schedulers;
 
+import java.util.concurrent.Callable;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ThreadFactory;
+
 import io.reactivex.Scheduler;
 import io.reactivex.annotations.NonNull;
-import io.reactivex.internal.schedulers.*;
+import io.reactivex.internal.schedulers.ComputationScheduler;
+import io.reactivex.internal.schedulers.ExecutorScheduler;
+import io.reactivex.internal.schedulers.IoScheduler;
+import io.reactivex.internal.schedulers.NewThreadScheduler;
+import io.reactivex.internal.schedulers.SchedulerPoolFactory;
+import io.reactivex.internal.schedulers.SingleScheduler;
+import io.reactivex.internal.schedulers.TrampolineScheduler;
 import io.reactivex.plugins.RxJavaPlugins;
-
-import java.util.concurrent.*;
 
 /**
  * Static factory methods for returning standard Scheduler instances.

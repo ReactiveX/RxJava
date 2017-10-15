@@ -13,7 +13,8 @@
 
 package io.reactivex.subscribers;
 
-import java.util.concurrent.atomic.*;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.reactivestreams.Subscription;
 

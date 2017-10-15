@@ -13,8 +13,9 @@
 
 package io.reactivex;
 
-import io.reactivex.annotations.*;
 import org.reactivestreams.Subscriber;
+
+import io.reactivex.annotations.NonNull;
 
 /**
  * Interface to map/wrap a downstream subscriber to an upstream subscriber.

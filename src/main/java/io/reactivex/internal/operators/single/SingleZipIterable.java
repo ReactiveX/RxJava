@@ -13,9 +13,12 @@
 
 package io.reactivex.internal.operators.single;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.NoSuchElementException;
 
-import io.reactivex.*;
+import io.reactivex.Single;
+import io.reactivex.SingleObserver;
+import io.reactivex.SingleSource;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.disposables.EmptyDisposable;

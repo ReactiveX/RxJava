@@ -13,7 +13,7 @@
 
 package io.reactivex;
 
-import io.reactivex.annotations.*;
+import io.reactivex.annotations.NonNull;
 
 /**
  * Interface to map/wrap a downstream observer to an upstream observer.

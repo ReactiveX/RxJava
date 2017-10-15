@@ -25,7 +25,9 @@ package io.reactivex.internal.subscriptions;
  * the License for the specific language governing permissions and limitations under the License.
  */
 
-import java.util.concurrent.atomic.*;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.reactivestreams.Subscription;
 

@@ -13,7 +13,10 @@
 
 package io.reactivex.internal.schedulers;
 
-import java.util.concurrent.*;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import io.reactivex.disposables.Disposable;
 

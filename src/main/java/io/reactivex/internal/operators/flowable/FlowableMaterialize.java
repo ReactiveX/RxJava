@@ -15,7 +15,8 @@ package io.reactivex.internal.operators.flowable;
 
 import org.reactivestreams.Subscriber;
 
-import io.reactivex.*;
+import io.reactivex.Flowable;
+import io.reactivex.Notification;
 import io.reactivex.internal.subscribers.SinglePostCompleteSubscriber;
 import io.reactivex.plugins.RxJavaPlugins;
 

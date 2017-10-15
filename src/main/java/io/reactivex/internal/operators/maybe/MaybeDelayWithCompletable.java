@@ -13,6 +13,8 @@
 
 package io.reactivex.internal.operators.maybe;
 
+import java.util.concurrent.atomic.AtomicReference;
+
 import io.reactivex.CompletableObserver;
 import io.reactivex.CompletableSource;
 import io.reactivex.Maybe;
@@ -20,7 +22,6 @@ import io.reactivex.MaybeObserver;
 import io.reactivex.MaybeSource;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.disposables.DisposableHelper;
-import java.util.concurrent.atomic.AtomicReference;
 
 public final class MaybeDelayWithCompletable<T> extends Maybe<T> {
 

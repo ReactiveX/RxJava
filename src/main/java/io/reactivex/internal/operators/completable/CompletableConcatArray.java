@@ -15,7 +15,9 @@ package io.reactivex.internal.operators.completable;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-import io.reactivex.*;
+import io.reactivex.Completable;
+import io.reactivex.CompletableObserver;
+import io.reactivex.CompletableSource;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.disposables.SequentialDisposable;
 

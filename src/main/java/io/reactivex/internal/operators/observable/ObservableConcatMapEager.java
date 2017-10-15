@@ -16,16 +16,20 @@ package io.reactivex.internal.operators.observable;
 import java.util.ArrayDeque;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import io.reactivex.*;
+import io.reactivex.ObservableSource;
+import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.internal.functions.ObjectHelper;
-import io.reactivex.internal.fuseable.*;
-import io.reactivex.internal.observers.*;
+import io.reactivex.internal.fuseable.QueueDisposable;
+import io.reactivex.internal.fuseable.SimpleQueue;
+import io.reactivex.internal.observers.InnerQueuedObserver;
+import io.reactivex.internal.observers.InnerQueuedObserverSupport;
 import io.reactivex.internal.queue.SpscLinkedArrayQueue;
-import io.reactivex.internal.util.*;
+import io.reactivex.internal.util.AtomicThrowable;
+import io.reactivex.internal.util.ErrorMode;
 import io.reactivex.plugins.RxJavaPlugins;
 
 public final class ObservableConcatMapEager<T, R> extends AbstractObservableWithUpstream<T, R> {

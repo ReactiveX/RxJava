@@ -15,8 +15,10 @@ package io.reactivex.internal.operators.completable;
 
 import java.util.concurrent.Callable;
 
-import io.reactivex.*;
-import io.reactivex.disposables.*;
+import io.reactivex.Completable;
+import io.reactivex.CompletableObserver;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.disposables.Disposables;
 import io.reactivex.exceptions.Exceptions;
 
 public final class CompletableFromCallable extends Completable {

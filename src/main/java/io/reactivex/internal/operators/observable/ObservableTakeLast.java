@@ -15,7 +15,8 @@ package io.reactivex.internal.operators.observable;
 
 import java.util.ArrayDeque;
 
-import io.reactivex.*;
+import io.reactivex.ObservableSource;
+import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.disposables.DisposableHelper;
 

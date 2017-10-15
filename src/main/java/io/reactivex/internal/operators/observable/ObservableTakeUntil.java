@@ -15,9 +15,11 @@ package io.reactivex.internal.operators.observable;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import io.reactivex.*;
+import io.reactivex.ObservableSource;
+import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.internal.disposables.*;
+import io.reactivex.internal.disposables.ArrayCompositeDisposable;
+import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.observers.SerializedObserver;
 
 public final class ObservableTakeUntil<T, U> extends AbstractObservableWithUpstream<T, T> {

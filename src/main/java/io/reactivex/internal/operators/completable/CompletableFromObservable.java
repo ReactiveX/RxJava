@@ -13,7 +13,10 @@
 
 package io.reactivex.internal.operators.completable;
 
-import io.reactivex.*;
+import io.reactivex.Completable;
+import io.reactivex.CompletableObserver;
+import io.reactivex.ObservableSource;
+import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 
 public final class CompletableFromObservable<T> extends Completable {

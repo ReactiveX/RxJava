@@ -14,17 +14,25 @@
 package io.reactivex.internal.operators.maybe;
 
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.atomic.*;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicReferenceArray;
 
-import io.reactivex.annotations.Nullable;
 import org.reactivestreams.Subscriber;
 
-import io.reactivex.*;
-import io.reactivex.disposables.*;
+import io.reactivex.Flowable;
+import io.reactivex.MaybeObserver;
+import io.reactivex.MaybeSource;
+import io.reactivex.annotations.Nullable;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.internal.fuseable.SimpleQueue;
-import io.reactivex.internal.subscriptions.*;
-import io.reactivex.internal.util.*;
+import io.reactivex.internal.subscriptions.BasicIntQueueSubscription;
+import io.reactivex.internal.subscriptions.SubscriptionHelper;
+import io.reactivex.internal.util.AtomicThrowable;
+import io.reactivex.internal.util.BackpressureHelper;
+import io.reactivex.internal.util.NotificationLite;
 import io.reactivex.plugins.RxJavaPlugins;
 
 /**

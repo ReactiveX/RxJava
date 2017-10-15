@@ -15,15 +15,17 @@ package io.reactivex.internal.subscribers;
 
 import java.util.concurrent.atomic.AtomicReference;
 
-import io.reactivex.internal.functions.Functions;
-import io.reactivex.observers.LambdaConsumerIntrospection;
 import org.reactivestreams.Subscription;
 
 import io.reactivex.FlowableSubscriber;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.exceptions.*;
-import io.reactivex.functions.*;
+import io.reactivex.exceptions.CompositeException;
+import io.reactivex.exceptions.Exceptions;
+import io.reactivex.functions.Action;
+import io.reactivex.functions.Consumer;
+import io.reactivex.internal.functions.Functions;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
+import io.reactivex.observers.LambdaConsumerIntrospection;
 import io.reactivex.plugins.RxJavaPlugins;
 
 public final class LambdaSubscriber<T> extends AtomicReference<Subscription>

@@ -13,6 +13,8 @@
 
 package io.reactivex.internal.operators.single;
 
+import java.util.concurrent.atomic.AtomicReference;
+
 import io.reactivex.Maybe;
 import io.reactivex.MaybeObserver;
 import io.reactivex.MaybeSource;
@@ -23,7 +25,6 @@ import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.internal.functions.ObjectHelper;
-import java.util.concurrent.atomic.AtomicReference;
 
 public final class SingleFlatMapMaybe<T, R> extends Maybe<R> {
 

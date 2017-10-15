@@ -13,7 +13,7 @@
 
 package io.reactivex;
 
-import io.reactivex.annotations.*;
+import io.reactivex.annotations.NonNull;
 
 /**
  * Convenience interface and callback used by the compose operator to turn a Completable into another

@@ -13,12 +13,13 @@
 
 package io.reactivex.internal.operators.maybe;
 
-import io.reactivex.internal.functions.ObjectHelper;
 import java.util.concurrent.Callable;
 
-import io.reactivex.*;
+import io.reactivex.Maybe;
+import io.reactivex.MaybeObserver;
 import io.reactivex.disposables.Disposables;
 import io.reactivex.exceptions.Exceptions;
+import io.reactivex.internal.functions.ObjectHelper;
 
 /**
  * Signals a Throwable returned by a Callable.

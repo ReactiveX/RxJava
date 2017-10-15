@@ -13,7 +13,8 @@
 
 package io.reactivex.internal.operators.maybe;
 
-import io.reactivex.*;
+import io.reactivex.MaybeObserver;
+import io.reactivex.MaybeSource;
 
 /**
  * Wraps a MaybeSource without safeguard and calls its subscribe() method for each MaybeObserver.

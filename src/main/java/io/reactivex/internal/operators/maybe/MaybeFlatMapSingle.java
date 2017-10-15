@@ -13,6 +13,9 @@
 
 package io.reactivex.internal.operators.maybe;
 
+import java.util.NoSuchElementException;
+import java.util.concurrent.atomic.AtomicReference;
+
 import io.reactivex.MaybeObserver;
 import io.reactivex.MaybeSource;
 import io.reactivex.Single;
@@ -23,8 +26,6 @@ import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.internal.functions.ObjectHelper;
-import java.util.NoSuchElementException;
-import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Maps the success value of the source MaybeSource into a Single.

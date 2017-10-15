@@ -15,9 +15,12 @@ package io.reactivex.internal.operators.flowable;
 
 import java.util.NoSuchElementException;
 
-import org.reactivestreams.*;
+import org.reactivestreams.Publisher;
+import org.reactivestreams.Subscription;
 
-import io.reactivex.*;
+import io.reactivex.FlowableSubscriber;
+import io.reactivex.Single;
+import io.reactivex.SingleObserver;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 

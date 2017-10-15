@@ -12,13 +12,16 @@
  */
 package io.reactivex.disposables;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 import io.reactivex.annotations.NonNull;
-import io.reactivex.exceptions.*;
+import io.reactivex.exceptions.CompositeException;
+import io.reactivex.exceptions.Exceptions;
 import io.reactivex.internal.disposables.DisposableContainer;
 import io.reactivex.internal.functions.ObjectHelper;
-import io.reactivex.internal.util.*;
+import io.reactivex.internal.util.ExceptionHelper;
+import io.reactivex.internal.util.OpenHashSet;
 
 /**
  * A disposable container that can hold onto multiple other disposables and

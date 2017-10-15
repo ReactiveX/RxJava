@@ -12,10 +12,13 @@
  */
 package io.reactivex.internal.operators.flowable;
 
-import org.reactivestreams.*;
+import org.reactivestreams.Subscriber;
+import org.reactivestreams.Subscription;
 
-import io.reactivex.*;
-import io.reactivex.internal.subscriptions.*;
+import io.reactivex.Flowable;
+import io.reactivex.FlowableSubscriber;
+import io.reactivex.internal.subscriptions.DeferredScalarSubscription;
+import io.reactivex.internal.subscriptions.SubscriptionHelper;
 
 public final class FlowableTakeLastOne<T> extends AbstractFlowableWithUpstream<T, T> {
 

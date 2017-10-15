@@ -13,9 +13,11 @@
 
 package io.reactivex.internal.operators.observable;
 
-import io.reactivex.*;
+import io.reactivex.ObservableSource;
+import io.reactivex.Observer;
 import io.reactivex.annotations.Nullable;
-import io.reactivex.functions.*;
+import io.reactivex.functions.BiPredicate;
+import io.reactivex.functions.Function;
 import io.reactivex.internal.observers.BasicFuseableObserver;
 
 public final class ObservableDistinctUntilChanged<T, K> extends AbstractObservableWithUpstream<T, T> {

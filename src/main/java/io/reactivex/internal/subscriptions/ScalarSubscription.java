@@ -15,9 +15,9 @@ package io.reactivex.internal.subscriptions;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-import io.reactivex.annotations.Nullable;
 import org.reactivestreams.Subscriber;
 
+import io.reactivex.annotations.Nullable;
 import io.reactivex.internal.fuseable.QueueSubscription;
 
 /**

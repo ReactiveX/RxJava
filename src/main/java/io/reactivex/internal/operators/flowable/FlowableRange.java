@@ -18,7 +18,8 @@ import org.reactivestreams.Subscriber;
 import io.reactivex.Flowable;
 import io.reactivex.annotations.Nullable;
 import io.reactivex.internal.fuseable.ConditionalSubscriber;
-import io.reactivex.internal.subscriptions.*;
+import io.reactivex.internal.subscriptions.BasicQueueSubscription;
+import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.internal.util.BackpressureHelper;
 
 /**
