@@ -2255,4 +2255,57 @@ public class RxJavaPluginsTest {
         assertTrue(RxJavaPlugins.isBug(new CompositeException(new TestException())));
         assertTrue(RxJavaPlugins.isBug(new OnErrorNotImplementedException(new TestException())));
     }
+
+    @Test
+    public void errorSignalledAfterUnsubscriptionShouldBeWrappedIntoUndeliverableException() throws InterruptedException {
+        final CountDownLatch observableExecutionLatch = new CountDownLatch(1);
+        final AtomicBoolean canSignalErrorNow = new AtomicBoolean();
+
+        final Disposable disposable = Observable
+                .fromCallable(new Callable<Object>() {
+                    @Override
+                    public Object call() throws Exception {
+                        observableExecutionLatch.countDown();
+
+                        while (canSignalErrorNow.get() == false) {
+                            Thread.yield();
+                        }
+
+                        throw new IllegalStateException("Wrap me into UndeliverableException, I'm not a user bug!");
+                    }
+                })
+                .subscribeOn(Schedulers.newThread())
+                .subscribe();
+
+        // Make sure Observable.create() got executed.
+        observableExecutionLatch.await();
+
+        // Drop observer.
+        disposable.dispose();
+
+        // Prepare error handler to capture actual error delivered to it.
+        final AtomicReference<Throwable> throwableSeenByErrorHandler = new AtomicReference<Throwable>();
+        final CountDownLatch errorHandlerLatch = new CountDownLatch(1);
+
+        RxJavaPlugins.setErrorHandler(new Consumer<Throwable>() {
+            @Override
+            public void accept(Throwable throwable) throws Exception {
+                throwableSeenByErrorHandler.set(throwable);
+                errorHandlerLatch.countDown();
+            }
+        });
+
+        // Allow Observable.create() signal error that should be wrapped into UndeliverableException.
+        canSignalErrorNow.set(true);
+
+        // Wait for error to show up in error handler.
+        errorHandlerLatch.await();
+
+        final Throwable throwable = throwableSeenByErrorHandler.get();
+
+        assertTrue(
+                "Expected UndeliverableException, but was " + throwable,
+                throwable instanceof UndeliverableException
+        );
+    }
 }
