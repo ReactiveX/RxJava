@@ -4689,7 +4689,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * {@code Function<Integer[], R>} passed to the method would trigger a {@code ClassCastException}.
      *
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/zip.png" alt="">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/zipIterable.o.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code zipIterable} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -4752,7 +4752,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * Mirrors the ObservableSource (current or provided) that first either emits an item or sends a termination
      * notification.
      * <p>
-     * <img width="640" height="385" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/amb.png" alt="">
+     * <img width="640" height="385" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/ambWith.o.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code ambWith} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -4854,7 +4854,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * <p>
      * <em>Note:</em> This will block even if the underlying Observable is asynchronous.
      * <p>
-     * <img width="640" height="330" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/B.forEach.png" alt="">
+     * <img width="640" height="330" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/blockingForEach.o.png" alt="">
      * <p>
      * This is similar to {@link Observable#subscribe(Observer)}, but it blocks. Because it blocks it does not
      * need the {@link Observer#onComplete()} or {@link Observer#onError(Throwable)} methods. If the
@@ -4892,7 +4892,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     /**
      * Converts this {@code Observable} into an {@link Iterable}.
      * <p>
-     * <img width="640" height="315" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/B.toIterable.png" alt="">
+     * <img width="640" height="315" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/blockingIterable.o.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code blockingIterable} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -4931,7 +4931,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * Returns the last item emitted by this {@code Observable}, or throws
      * {@code NoSuchElementException} if this {@code Observable} emits no items.
      * <p>
-     * <img width="640" height="315" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/B.last.png" alt="">
+     * <img width="640" height="315" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/blockingLast.o.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code blockingLast} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -4958,7 +4958,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * Returns the last item emitted by this {@code Observable}, or a default value if it emits no
      * items.
      * <p>
-     * <img width="640" height="310" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/B.lastOrDefault.png" alt="">
+     * <img width="640" height="310" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/blockingLastDefault.o.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code blockingLast} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -5006,7 +5006,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * Returns an {@link Iterable} that always returns the item most recently emitted by this
      * {@code Observable}.
      * <p>
-     * <img width="640" height="490" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/B.mostRecent.png" alt="">
+     * <img width="640" height="426" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/blockingMostRecent.o.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code blockingMostRecent} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -5029,7 +5029,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * Returns an {@link Iterable} that blocks until this {@code Observable} emits another item, then
      * returns that item.
      * <p>
-     * <img width="640" height="490" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/B.next.png" alt="">
+     * <img width="640" height="427" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/blockingNext.o.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code blockingNext} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -5049,7 +5049,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * If this {@code Observable} completes after emitting a single item, return that item, otherwise
      * throw a {@code NoSuchElementException}.
      * <p>
-     * <img width="640" height="315" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/B.single.png" alt="">
+     * <img width="640" height="315" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/blockingSingle.o.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code blockingSingle} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -5073,7 +5073,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * more than one item, throw an {@code IllegalArgumentException}; if it emits no items, return a default
      * value.
      * <p>
-     * <img width="640" height="315" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/B.singleOrDefault.png" alt="">
+     * <img width="640" height="315" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/blockingSingleDefault.o.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code blockingSingle} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -5854,7 +5854,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * Returns an Observable that subscribes to this ObservableSource lazily, caches all of its events
      * and replays them, in the same order as received, to all the downstream subscribers.
      * <p>
-     * <img width="640" height="410" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/cache.png" alt="">
+     * <img width="640" height="410" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/cacheWithInitialCapacity.o.png" alt="">
      * <p>
      * This is useful when you want an ObservableSource to cache responses and you can't control the
      * subscribe/dispose behavior of all the {@link Observer}s.
