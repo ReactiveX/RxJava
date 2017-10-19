@@ -1,5 +1,11 @@
 # RxJava Releases #
 
+### Version 1.3.3 - October 19, 2017 ([Maven](http://search.maven.org/#artifactdetails%7Cio.reactivex%7Crxjava%7C1.3.3%7C))
+
+#### Bugfixes
+
+- [Pull 5660](https://github.com/ReactiveX/RxJava/pull/5660): Fix `timeout` (timed, selector) unsubscribe bug.
+
 ### Version 1.3.2 - September 15, 2017 ([Maven](http://search.maven.org/#artifactdetails%7Cio.reactivex%7Crxjava%7C1.3.2%7C))
 
 #### Bugfixes
