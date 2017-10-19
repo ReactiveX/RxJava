@@ -33,7 +33,7 @@ if (releaseTag != null && !releaseTag.isEmpty()) {
 
 description = "RxJava: Reactive Extensions for the JVM – a library for composing asynchronous and event-based programs using observable sequences for the Java VM."
 
-apply plugin: "java"
+apply plugin: "java-library"
 apply plugin: "checkstyle"
 apply plugin: "jacoco"
 apply plugin: "ru.vyarus.animalsniffer"
@@ -65,13 +65,14 @@ repositories {
 dependencies {
     signature "org.codehaus.mojo.signature:java16:1.1@signature"
 
-    compile "org.reactivestreams:reactive-streams:$reactiveStreamsVersion"
+    api "org.reactivestreams:reactive-streams:$reactiveStreamsVersion"
+    jmh "org.reactivestreams:reactive-streams:$reactiveStreamsVersion"
 
-    testCompile "junit:junit:$junitVersion"
-    testCompile "org.mockito:mockito-core:$mockitoVersion"
+    testImplementation "junit:junit:$junitVersion"
+    testImplementation "org.mockito:mockito-core:$mockitoVersion"
 
-    testCompile "org.reactivestreams:reactive-streams-tck:$reactiveStreamsVersion"
-    testCompile "org.testng:testng:$testNgVersion"
+    testImplementation "org.reactivestreams:reactive-streams-tck:$reactiveStreamsVersion"
+    testImplementation "org.testng:testng:$testNgVersion"
 }
 
 javadoc {
