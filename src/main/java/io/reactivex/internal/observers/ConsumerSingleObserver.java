@@ -64,6 +64,7 @@ implements SingleObserver<T>, Disposable, LambdaConsumerIntrospection {
         } catch (Throwable ex) {
             Exceptions.throwIfFatal(ex);
             RxJavaPlugins.onError(ex);
+            onError(ex)
         }
     }
 
