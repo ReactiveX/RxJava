@@ -2,7 +2,31 @@
 
 The changelog of version 1.x can be found at https://github.com/ReactiveX/RxJava/blob/1.x/CHANGES.md
 
-Note that there might be a couple of 2.1.5-RCx tags before this release in order to iron out the nebula-plugin free release process.
+### Version 2.1.6 - October 27, 2017 ([Maven](http://search.maven.org/#artifactdetails%7Cio.reactivex.rxjava2%7Crxjava%7C2.1.6%7C))
+
+#### API changes
+
+- [Pull 5649](https://github.com/ReactiveX/RxJava/pull/5649): Add `Observable.concatMapCompletable()`.
+- [Pull 5655](https://github.com/ReactiveX/RxJava/pull/5655): Add `Flowable.limit()` to limit both item count and request amount.
+
+#### Documentation changes
+
+- [Pull 5648](https://github.com/ReactiveX/RxJava/pull/5648): Improve package JavaDoc of `io.reactivex` and `io.reactivex.observers`.
+- [Pull 5647](https://github.com/ReactiveX/RxJava/pull/5647): Fix `subscribeWith` documentation examples.
+- [Pull 5651](https://github.com/ReactiveX/RxJava/pull/5651): Update `Observable.just(2..10)` and `switchOnNextDelayError` marbles.
+- [Pull 5668](https://github.com/ReactiveX/RxJava/pull/5668): Fix a misleading documentation of `Observable.singleElement()`.
+- [Pull 5680](https://github.com/ReactiveX/RxJava/pull/5680): More `Observable` marble fixes.
+
+#### Bugfixes
+
+- [Pull 5669](https://github.com/ReactiveX/RxJava/pull/5669): Fix `PublishProcessor` cancel/emission overflow bug.
+- [Pull 5677](https://github.com/ReactiveX/RxJava/pull/5677): Make `parallel()` a fusion-async-boundary.
+
+#### Other
+
+- [Pull 5652](https://github.com/ReactiveX/RxJava/pull/5652): Inline disposability in `Observable.concatMap(Completable)`.
+- [Pull 5653](https://github.com/ReactiveX/RxJava/pull/5653): Upgrade testng to get method names to show up in gradle console when skipping, and in testng html output.
+- [Pull 5661](https://github.com/ReactiveX/RxJava/pull/5661): Improve `Flowable.timeout()`. 
 
 ### Version 2.1.5 - October 5, 2017 ([Maven](http://search.maven.org/#artifactdetails%7Cio.reactivex.rxjava2%7Crxjava%7C2.1.5%7C))
 
