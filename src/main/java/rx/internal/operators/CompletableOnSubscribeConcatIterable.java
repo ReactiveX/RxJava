@@ -21,7 +21,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import rx.*;
 import rx.Completable.OnSubscribe;
-import rx.subscriptions.*;
+import rx.internal.subscriptions.SequentialSubscription;
+import rx.subscriptions.Subscriptions;
 
 public final class CompletableOnSubscribeConcatIterable implements OnSubscribe {
     final Iterable<? extends Completable> sources;
@@ -61,17 +62,17 @@ public final class CompletableOnSubscribeConcatIterable implements OnSubscribe {
         final CompletableSubscriber actual;
         final Iterator<? extends Completable> sources;
 
-        final SerialSubscription sd;
+        final SequentialSubscription sd;
 
         public ConcatInnerSubscriber(CompletableSubscriber actual, Iterator<? extends Completable> sources) {
             this.actual = actual;
             this.sources = sources;
-            this.sd = new SerialSubscription();
+            this.sd = new SequentialSubscription();
         }
 
         @Override
         public void onSubscribe(Subscription d) {
-            sd.set(d);
+            sd.replace(d);
         }
 
         @Override

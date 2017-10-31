@@ -20,7 +20,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import rx.*;
 import rx.Completable.OnSubscribe;
-import rx.subscriptions.SerialSubscription;
+import rx.internal.subscriptions.SequentialSubscription;
 
 public final class CompletableOnSubscribeConcatArray implements OnSubscribe {
     final Completable[] sources;
@@ -45,17 +45,17 @@ public final class CompletableOnSubscribeConcatArray implements OnSubscribe {
 
         int index;
 
-        final SerialSubscription sd;
+        final SequentialSubscription sd;
 
         public ConcatInnerSubscriber(CompletableSubscriber actual, Completable[] sources) {
             this.actual = actual;
             this.sources = sources;
-            this.sd = new SerialSubscription();
+            this.sd = new SequentialSubscription();
         }
 
         @Override
         public void onSubscribe(Subscription d) {
-            sd.set(d);
+            sd.replace(d);
         }
 
         @Override

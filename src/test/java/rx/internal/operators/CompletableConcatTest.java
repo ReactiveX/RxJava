@@ -16,7 +16,11 @@
 
 package rx.internal.operators;
 
-import java.util.concurrent.TimeUnit;
+import static org.junit.Assert.assertFalse;
+
+import java.util.Arrays;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.junit.*;
 
@@ -58,4 +62,77 @@ public class CompletableConcatTest {
 
         Assert.assertEquals(5, calls[0]);
     }
+
+    @Test
+    public void andThenNoInterrupt() throws InterruptedException {
+        for (int k = 0; k < 100; k++) {
+            final int count = 10;
+            final CountDownLatch latch = new CountDownLatch(count);
+            final AtomicBoolean interrupted = new AtomicBoolean();
+
+            for (int i = 0; i < count; i++) {
+                Completable.complete()
+                .subscribeOn(Schedulers.io())
+                .observeOn(Schedulers.io())
+                .andThen(Completable.fromAction(new Action0() {
+                    @Override
+                    public void call() {
+                        try {
+                            Thread.sleep(30);
+                        } catch (InterruptedException e) {
+                            System.out.println("Interrupted! " + Thread.currentThread());
+                            interrupted.set(true);
+                        }
+                    }
+                }))
+                .subscribe(new Action0() {
+                    @Override
+                    public void call() {
+                        latch.countDown();
+                    }
+                });
+            }
+
+            latch.await();
+            assertFalse("The second Completable was interrupted!", interrupted.get());
+        }
+    }
+
+    @Test
+    public void noInterrupt() throws InterruptedException {
+        for (int k = 0; k < 100; k++) {
+            final int count = 10;
+            final CountDownLatch latch = new CountDownLatch(count);
+            final AtomicBoolean interrupted = new AtomicBoolean();
+
+            for (int i = 0; i < count; i++) {
+                Completable c0 = Completable.fromAction(new Action0() {
+                    @Override
+                    public void call() {
+                        try {
+                            Thread.sleep(30);
+                        } catch (InterruptedException e) {
+                            System.out.println("Interrupted! " + Thread.currentThread());
+                            interrupted.set(true);
+                        }
+                    }
+                });
+                Completable.concat(Arrays.asList(Completable.complete()
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(Schedulers.io()),
+                    c0)
+                )
+                .subscribe(new Action0() {
+                    @Override
+                    public void call() {
+                        latch.countDown();
+                    }
+                });
+            }
+
+            latch.await();
+            assertFalse("The second Completable was interrupted!", interrupted.get());
+        }
+    }
+
 }
