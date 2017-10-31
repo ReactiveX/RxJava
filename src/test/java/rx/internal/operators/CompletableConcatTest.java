@@ -20,6 +20,7 @@ import static org.junit.Assert.assertFalse;
 
 import java.util.Arrays;
 import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.junit.*;
 
@@ -61,27 +62,26 @@ public class CompletableConcatTest {
 
         Assert.assertEquals(5, calls[0]);
     }
-    
 
     @Test
     public void andThenNoInterrupt() throws InterruptedException {
         for (int k = 0; k < 100; k++) {
             final int count = 10;
             final CountDownLatch latch = new CountDownLatch(count);
-            final boolean[] interrupted = { false };
+            final AtomicBoolean interrupted = new AtomicBoolean();
 
             for (int i = 0; i < count; i++) {
                 Completable.complete()
                 .subscribeOn(Schedulers.io())
-                .observeOn(Schedulers.io()) // The problem does not occur if you comment out this line
+                .observeOn(Schedulers.io())
                 .andThen(Completable.fromAction(new Action0() {
                     @Override
                     public void call() {
                         try {
                             Thread.sleep(30);
                         } catch (InterruptedException e) {
-                            System.out.println("Interrupted! " + Thread.currentThread()); // This is output periodically
-                            interrupted[0] = true;
+                            System.out.println("Interrupted! " + Thread.currentThread());
+                            interrupted.set(true);
                         }
                     }
                 }))
@@ -94,7 +94,7 @@ public class CompletableConcatTest {
             }
 
             latch.await();
-            assertFalse("The second Completable was interrupted!", interrupted[0]);
+            assertFalse("The second Completable was interrupted!", interrupted.get());
         }
     }
 
@@ -103,7 +103,7 @@ public class CompletableConcatTest {
         for (int k = 0; k < 100; k++) {
             final int count = 10;
             final CountDownLatch latch = new CountDownLatch(count);
-            final boolean[] interrupted = { false };
+            final AtomicBoolean interrupted = new AtomicBoolean();
 
             for (int i = 0; i < count; i++) {
                 Completable c0 = Completable.fromAction(new Action0() {
@@ -112,8 +112,8 @@ public class CompletableConcatTest {
                         try {
                             Thread.sleep(30);
                         } catch (InterruptedException e) {
-                            System.out.println("Interrupted! " + Thread.currentThread()); // This is output periodically
-                            interrupted[0] = true;
+                            System.out.println("Interrupted! " + Thread.currentThread());
+                            interrupted.set(true);
                         }
                     }
                 });
@@ -131,7 +131,7 @@ public class CompletableConcatTest {
             }
 
             latch.await();
-            assertFalse("The second Completable was interrupted!", interrupted[0]);
+            assertFalse("The second Completable was interrupted!", interrupted.get());
         }
     }
 
