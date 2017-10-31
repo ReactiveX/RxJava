@@ -80,14 +80,14 @@ public class CompletableAndThenTest {
             for (int i = 0; i < count; i++) {
                 Completable.complete()
                 .subscribeOn(Schedulers.io())
-                .observeOn(Schedulers.io()) // The problem does not occur if you comment out this line
+                .observeOn(Schedulers.io())
                 .andThen(Completable.fromAction(new Action() {
                     @Override
                     public void run() throws Exception {
                         try {
                             Thread.sleep(30);
                         } catch (InterruptedException e) {
-                            System.out.println("Interrupted! " + Thread.currentThread()); // This is output periodically
+                            System.out.println("Interrupted! " + Thread.currentThread());
                             interrupted[0] = true;
                         }
                     }

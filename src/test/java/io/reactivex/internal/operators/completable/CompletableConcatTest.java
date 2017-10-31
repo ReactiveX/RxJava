@@ -270,7 +270,7 @@ public class CompletableConcatTest {
                         try {
                             Thread.sleep(30);
                         } catch (InterruptedException e) {
-                            System.out.println("Interrupted! " + Thread.currentThread()); // This is output periodically
+                            System.out.println("Interrupted! " + Thread.currentThread());
                             interrupted[0] = true;
                         }
                     }
