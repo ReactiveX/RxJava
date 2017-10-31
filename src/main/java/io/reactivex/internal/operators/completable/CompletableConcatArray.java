@@ -52,7 +52,7 @@ public final class CompletableConcatArray extends Completable {
 
         @Override
         public void onSubscribe(Disposable d) {
-            sd.update(d);
+            sd.replace(d);
         }
 
         @Override

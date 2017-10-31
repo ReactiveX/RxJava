@@ -16,6 +16,7 @@ package io.reactivex.internal.operators.completable;
 import static org.junit.Assert.*;
 
 import java.util.*;
+import java.util.concurrent.CountDownLatch;
 
 import org.junit.Test;
 import org.reactivestreams.*;
@@ -23,7 +24,7 @@ import org.reactivestreams.*;
 import io.reactivex.*;
 import io.reactivex.disposables.Disposables;
 import io.reactivex.exceptions.*;
-import io.reactivex.functions.Function;
+import io.reactivex.functions.*;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.observers.*;
 import io.reactivex.plugins.RxJavaPlugins;
@@ -252,6 +253,43 @@ public class CompletableConcatTest {
             };
 
             TestHelper.race(r1, r2, Schedulers.single());
+        }
+    }
+
+    @Test
+    public void noInterrupt() throws InterruptedException {
+        for (int k = 0; k < 100; k++) {
+            final int count = 10;
+            final CountDownLatch latch = new CountDownLatch(count);
+            final boolean[] interrupted = { false };
+
+            for (int i = 0; i < count; i++) {
+                Completable c0 = Completable.fromAction(new Action() {
+                    @Override
+                    public void run() throws Exception {
+                        try {
+                            Thread.sleep(30);
+                        } catch (InterruptedException e) {
+                            System.out.println("Interrupted! " + Thread.currentThread());
+                            interrupted[0] = true;
+                        }
+                    }
+                });
+                Completable.concat(Arrays.asList(Completable.complete()
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(Schedulers.io()),
+                    c0)
+                )
+                .subscribe(new Action() {
+                    @Override
+                    public void run() throws Exception {
+                        latch.countDown();
+                    }
+                });
+            }
+
+            latch.await();
+            assertFalse("The second Completable was interrupted!", interrupted[0]);
         }
     }
 }
