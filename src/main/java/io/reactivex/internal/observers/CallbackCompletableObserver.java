@@ -20,10 +20,12 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.*;
 import io.reactivex.functions.*;
 import io.reactivex.internal.disposables.DisposableHelper;
+import io.reactivex.observers.LambdaConsumerIntrospection;
 import io.reactivex.plugins.RxJavaPlugins;
 
 public final class CallbackCompletableObserver
-extends AtomicReference<Disposable> implements CompletableObserver, Disposable, Consumer<Throwable> {
+extends AtomicReference<Disposable>
+        implements CompletableObserver, Disposable, Consumer<Throwable>, LambdaConsumerIntrospection {
 
 
     private static final long serialVersionUID = -4361286194466301354L;
@@ -81,5 +83,10 @@ extends AtomicReference<Disposable> implements CompletableObserver, Disposable, 
     @Override
     public boolean isDisposed() {
         return get() == DisposableHelper.DISPOSED;
+    }
+
+    @Override
+    public boolean hasCustomOnError() {
+        return onError != this;
     }
 }

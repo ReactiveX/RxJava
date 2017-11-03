@@ -956,15 +956,15 @@ public class TestObserverTest {
         try {
             ts.assertValueSequence(Collections.<Integer>emptyList());
             throw new RuntimeException("Should have thrown");
-        } catch (AssertionError ex) {
-            // expected
+        } catch (AssertionError expected) {
+            assertTrue(expected.getMessage(), expected.getMessage().startsWith("More values received than expected (0)"));
         }
 
         try {
             ts.assertValueSequence(Collections.singletonList(1));
             throw new RuntimeException("Should have thrown");
-        } catch (AssertionError ex) {
-            // expected
+        } catch (AssertionError expected) {
+            assertTrue(expected.getMessage(), expected.getMessage().startsWith("More values received than expected (1)"));
         }
 
         ts.assertValueSequence(Arrays.asList(1, 2));
@@ -972,8 +972,8 @@ public class TestObserverTest {
         try {
             ts.assertValueSequence(Arrays.asList(1, 2, 3));
             throw new RuntimeException("Should have thrown");
-        } catch (AssertionError ex) {
-            // expected
+        } catch (AssertionError expected) {
+            assertTrue(expected.getMessage(), expected.getMessage().startsWith("Fewer values received than expected (2)"));
         }
     }
 
@@ -1383,6 +1383,48 @@ public class TestObserverTest {
     }
 
     @Test
+    public void assertValueAtIndexEmpty() {
+        TestObserver<Object> ts = new TestObserver<Object>();
+
+        Observable.empty().subscribe(ts);
+
+        thrown.expect(AssertionError.class);
+        thrown.expectMessage("No values");
+        ts.assertValueAt(0, "a");
+    }
+
+    @Test
+    public void assertValueAtIndexMatch() {
+        TestObserver<String> ts = new TestObserver<String>();
+
+        Observable.just("a", "b").subscribe(ts);
+
+        ts.assertValueAt(1, "b");
+    }
+
+    @Test
+    public void assertValueAtIndexNoMatch() {
+        TestObserver<String> ts = new TestObserver<String>();
+
+        Observable.just("a", "b", "c").subscribe(ts);
+
+        thrown.expect(AssertionError.class);
+        thrown.expectMessage("Expected: b (class: String), Actual: c (class: String) (latch = 0, values = 3, errors = 0, completions = 1)");
+        ts.assertValueAt(2, "b");
+    }
+
+    @Test
+    public void assertValueAtIndexInvalidIndex() {
+        TestObserver<String> ts = new TestObserver<String>();
+
+        Observable.just("a", "b").subscribe(ts);
+
+        thrown.expect(AssertionError.class);
+        thrown.expectMessage("Invalid index: 2 (latch = 0, values = 2, errors = 0, completions = 1)");
+        ts.assertValueAt(2, "c");
+    }
+
+    @Test
     public void withTag() {
         try {
             for (int i = 1; i < 3; i++) {
@@ -1395,6 +1437,68 @@ public class TestObserverTest {
             fail("Should have thrown!");
         } catch (AssertionError ex) {
             assertTrue(ex.toString(), ex.toString().contains("testing with item=2"));
+        }
+    }
+
+    @Test
+    public void assertValuesOnly() {
+        TestObserver<Integer> to = TestObserver.create();
+        to.onSubscribe(Disposables.empty());
+        to.assertValuesOnly();
+
+        to.onNext(5);
+        to.assertValuesOnly(5);
+
+        to.onNext(-1);
+        to.assertValuesOnly(5, -1);
+    }
+
+    @Test
+    public void assertValuesOnlyThrowsOnUnexpectedValue() {
+        TestObserver<Integer> to = TestObserver.create();
+        to.onSubscribe(Disposables.empty());
+        to.assertValuesOnly();
+
+        to.onNext(5);
+        to.assertValuesOnly(5);
+
+        to.onNext(-1);
+
+        try {
+            to.assertValuesOnly(5);
+            fail();
+        } catch (AssertionError ex) {
+            // expected
+        }
+    }
+
+    @Test
+    public void assertValuesOnlyThrowsWhenCompleted() {
+        TestObserver<Integer> to = TestObserver.create();
+        to.onSubscribe(Disposables.empty());
+
+        to.onComplete();
+
+        try {
+            to.assertValuesOnly();
+            fail();
+        } catch (AssertionError ex) {
+            // expected
+        }
+    }
+
+    @Test
+    public void assertValuesOnlyThrowsWhenErrored() {
+        TestObserver<Integer> to = TestObserver.create();
+        to.onSubscribe(Disposables.empty());
+
+        to.onError(new TestException());
+
+        try {
+            to.assertValuesOnly();
+            fail();
+        } catch (AssertionError ex) {
+            // expected
         }
     }
 }

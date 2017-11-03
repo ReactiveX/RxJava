@@ -1198,4 +1198,23 @@ public class ObservableCombineLatestTest {
         ps2.onNext(2);
         ts.assertResult(3);
     }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void syncFirstErrorsAfterItemDelayError() {
+        Observable.combineLatestDelayError(Arrays.asList(
+                    Observable.just(21).concatWith(Observable.<Integer>error(new TestException())),
+                    Observable.just(21).delay(100, TimeUnit.MILLISECONDS)
+                ),
+                new Function<Object[], Object>() {
+                    @Override
+                    public Object apply(Object[] a) throws Exception {
+                        return (Integer)a[0] + (Integer)a[1];
+                    }
+                }
+                )
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertFailure(TestException.class, 42);
+    }
 }

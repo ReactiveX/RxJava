@@ -21,17 +21,18 @@ import io.reactivex.internal.disposables.SequentialDisposable;
 
 public final class SingleDelay<T> extends Single<T> {
 
-
     final SingleSource<? extends T> source;
     final long time;
     final TimeUnit unit;
     final Scheduler scheduler;
+    final boolean delayError;
 
-    public SingleDelay(SingleSource<? extends T> source, long time, TimeUnit unit, Scheduler scheduler) {
+    public SingleDelay(SingleSource<? extends T> source, long time, TimeUnit unit, Scheduler scheduler, boolean delayError) {
         this.source = source;
         this.time = time;
         this.unit = unit;
         this.scheduler = scheduler;
+        this.delayError = delayError;
     }
 
     @Override
@@ -63,7 +64,7 @@ public final class SingleDelay<T> extends Single<T> {
 
         @Override
         public void onError(final Throwable e) {
-            sd.replace(scheduler.scheduleDirect(new OnError(e), 0, unit));
+            sd.replace(scheduler.scheduleDirect(new OnError(e), delayError ? time : 0, unit));
         }
 
         final class OnSuccess implements Runnable {

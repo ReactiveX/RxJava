@@ -1,78 +1,218 @@
 buildscript {
-  repositories { jcenter() }
+  repositories { 
+    jcenter()
+    mavenCentral()
+    maven {
+        url "https://plugins.gradle.org/m2/"
+    }
+  }
   dependencies {
-    classpath 'com.netflix.nebula:gradle-rxjava-project-plugin:4.0.0'
-    classpath 'ru.vyarus:gradle-animalsniffer-plugin:1.1.0'
+    classpath "ru.vyarus:gradle-animalsniffer-plugin:1.2.0"
+    classpath "gradle.plugin.nl.javadude.gradle.plugins:license-gradle-plugin:0.13.1"
+    classpath "me.champeau.gradle:jmh-gradle-plugin:0.4.4"
+    classpath "com.jfrog.bintray.gradle:gradle-bintray-plugin:1.7.3"
+    classpath "org.jfrog.buildinfo:build-info-extractor-gradle:4.5.2"
   }
 }
 
-group = 'io.reactivex.rxjava2'
+group = "io.reactivex.rxjava2"
+ext.githubProjectName = "rxjava"
 
-description = 'RxJava: Reactive Extensions for the JVM – a library for composing asynchronous and event-based programs using observable sequences for the Java VM.'
+version = project.properties["release.version"]
 
-apply plugin: 'java'
-// apply plugin: 'pmd'  // disabled because runs out of memory on Travis
-// apply plugin: 'findbugs'  // disabled because runs out of memory on Travis
-apply plugin: 'checkstyle'
-apply plugin: 'jacoco'
-apply plugin: 'ru.vyarus.animalsniffer'
-apply plugin: 'nebula.rxjava-project'
+def releaseTag = System.getenv("TRAVIS_TAG");
+if (releaseTag != null && !releaseTag.isEmpty()) {
+    if (releaseTag.startsWith("v")) {
+        releaseTag = releaseTag.substring(1);
+    }
+    version = releaseTag;
+    project.properties.put("release.version", releaseTag);
+
+    println("Releasing with version " + version);
+}
+
+description = "RxJava: Reactive Extensions for the JVM – a library for composing asynchronous and event-based programs using observable sequences for the Java VM."
+
+apply plugin: "java-library"
+apply plugin: "checkstyle"
+apply plugin: "jacoco"
+apply plugin: "ru.vyarus.animalsniffer"
+apply plugin: "maven"
+apply plugin: "osgi"
+apply plugin: "me.champeau.gradle.jmh"
+apply plugin: "com.github.hierynomus.license"
+apply plugin: "com.jfrog.bintray"
+apply plugin: "com.jfrog.artifactory"
 
 sourceCompatibility = JavaVersion.VERSION_1_6
 targetCompatibility = JavaVersion.VERSION_1_6
 
+// Dependency versions
+// ---------------------------------------
+
+def junitVersion = "4.12"
+def reactiveStreamsVersion = "1.0.1"
+def mockitoVersion = "2.1.0"
+def jmhLibVersion = "1.19"
+def testNgVersion = "6.11"
+
+// --------------------------------------
+
+repositories {
+  mavenCentral()
+}
+
 dependencies {
-    signature 'org.codehaus.mojo.signature:java16:1.1@signature'
+    signature "org.codehaus.mojo.signature:java16:1.1@signature"
 
-    compile 'org.reactivestreams:reactive-streams:1.0.0'
+    api "org.reactivestreams:reactive-streams:$reactiveStreamsVersion"
+    jmh "org.reactivestreams:reactive-streams:$reactiveStreamsVersion"
 
-    testCompile 'junit:junit:4.12'
-    testCompile 'org.mockito:mockito-core:2.1.0'
+    testImplementation "junit:junit:$junitVersion"
+    testImplementation "org.mockito:mockito-core:$mockitoVersion"
 
-    perfCompile 'org.openjdk.jmh:jmh-core:1.16'
-    perfCompile 'org.openjdk.jmh:jmh-generator-annprocess:1.16'
-
-    testCompile 'org.reactivestreams:reactive-streams-tck:1.0.0'
-    testCompile group: 'org.testng', name: 'testng', version: '6.9.10'
+    testImplementation "org.reactivestreams:reactive-streams-tck:$reactiveStreamsVersion"
+    testImplementation "org.testng:testng:$testNgVersion"
 }
 
 javadoc {
+    failOnError = false
     exclude "**/internal/**"
     exclude "**/test/**"
     exclude "**/perf/**"
+    exclude "**/jmh/**"
     options {
         windowTitle = "RxJava Javadoc ${project.version}"
     }
     // Clear the following options to make the docs consistent with the old format
-    options.addStringOption('top').value = ''
-    options.addStringOption('doctitle').value = ''
-    options.addStringOption('header').value = ''
+    options.addStringOption("top").value = ""
+    options.addStringOption("doctitle").value = ""
+    options.addStringOption("header").value = ""
+
     options.links("http://docs.oracle.com/javase/7/docs/api/")
+    options.links("http://www.reactive-streams.org/reactive-streams-${reactiveStreamsVersion}-javadoc/")
+
     if (JavaVersion.current().isJava7()) {
         // "./gradle/stylesheet.css" only supports Java 7
-        options.addStringOption('stylesheetfile', rootProject.file('./gradle/stylesheet.css').toString())
+        options.addStringOption("stylesheetfile", rootProject.file("./gradle/stylesheet.css").toString())
     }
 }
 
 animalsniffer {
-    annotation = 'io.reactivex.internal.util.SuppressAnimalSniffer'
+    annotation = "io.reactivex.internal.util.SuppressAnimalSniffer"
 }
 
-// support for snapshot/final releases with the various branches RxJava uses
-nebulaRelease {
-    addReleaseBranchPattern(/\d+\.\d+\.\d+/)
-    addReleaseBranchPattern('HEAD')
+task sourcesJar(type: Jar, dependsOn: classes) {
+    classifier = "sources"
+    from sourceSets.main.allSource
 }
 
-if (project.hasProperty('release.useLastTag')) {
-    tasks.prepare.enabled = false
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = "javadoc"
+    from javadoc.destinationDir
+}
+
+artifacts {
+    archives jar
+    archives sourcesJar
+    archives javadocJar
+}
+
+jar {
+    manifest {
+        name = "rxjava"
+        instruction "Bundle-Vendor", "RxJava Contributors"
+        instruction "Bundle-DocURL", "https://github.com/ReactiveX/RxJava"
+        instruction "Import-Package", "!org.junit,!junit.framework,!org.mockito.*,!org.testng.*,*"
+        instruction "Eclipse-ExtensibleAPI", "true"
+        instruction "Automatic-Module-Name", "io.reactivex.rxjava2"
+    }
+}
+
+license {
+    header rootProject.file("HEADER")
+    ext.year = Calendar.getInstance().get(Calendar.YEAR)
+    skipExistingHeaders true
+    ignoreFailures true
+    excludes(["**/*.md", "**/*.txt"])
+}
+
+apply plugin: "maven-publish"
+
+install {
+    repositories.mavenInstaller.pom.project {
+        name "RxJava"
+        description "Reactive Extensions for Java"
+        url "https://github.com/ReactiveX/RxJava"
+        licenses {
+            license {
+                name "The Apache Software License, Version 2.0"
+                url "http://www.apache.org/licenses/LICENSE-2.0.txt"
+                distribution "repo"
+            }
+        }
+        developers {
+            developer {
+                id "akarnokd"
+                name "David Karnok"
+                email "akarnokd@gmail.com"
+            }
+        }
+        scm {
+            connection "scm:git:git@github.com:ReactiveX/RxJava.git"
+            url "scm:git:git@github.com:ReactiveX/RxJava.git"
+            developerConnection "scm:git:git@github.com:ReactiveX/RxJava.git"
+        }
+        issueManagement {
+            system "github"
+            url "https://github.com/ReactiveX/RxJava/issues"
+        }
+    }
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+            artifact (sourcesJar) { 
+                classifier = "sources"
+            }
+        }
+    }
+}
+
+// Reactive-Streams as compile dependency
+publishing.publications.all {
+  pom.withXml {
+    asNode().dependencies."*".findAll() {
+      it.scope.text() == "runtime" && project.configurations.compile.allDependencies.find { dep ->
+        dep.name == it.artifactId.text()
+      }
+    }.each { it.scope*.value = "compile"}
+  }
+}
+
+jmh {
+    jmhVersion = jmhLibVersion
+    humanOutputFile = null
+    includeTests = false
+
+    if (project.hasProperty("jmh")) {
+        include = ".*" + project.jmh + ".*"
+        println("JMH: " + include);
+    }
+
+}
+
+plugins.withType(EclipsePlugin) {
+    project.eclipse.classpath.plusConfigurations += [ configurations.jmh ]
 }
 
 test {
     
     testLogging  {
         // showing skipped occasionally should prevent CI timeout due to lack of standard output
-        events=['skipped', 'failed'] // "started", "passed"
+        events=["skipped", "failed"] // "started", "passed"
         // showStandardStreams = true
         exceptionFormat="full"
 
@@ -88,7 +228,7 @@ test {
 
     maxHeapSize = "1200m"
 
-    if (System.getenv('CI') == null) {
+    if (System.getenv("CI") == null) {
         maxParallelForks = Runtime.runtime.availableProcessors().intdiv(2) ?: 1
     }
 }
@@ -96,7 +236,7 @@ test {
 task testng(type: Test) { 
      useTestNG()
      testLogging  {
-        events=['skipped', 'failed']
+        events=["skipped", "failed"]
         exceptionFormat="full"
 
         debug.events = ["skipped", "failed"]
@@ -113,10 +253,10 @@ task testng(type: Test) {
 check.dependsOn testng 
 
 jacoco {
-    toolVersion = '0.7.7.201606060606' // See http://www.eclemma.org/jacoco/.
+    toolVersion = "0.7.9" // See http://www.eclemma.org/jacoco/.
 }
 
-task GCandMem(dependsOn: 'check') << {
+task GCandMem(dependsOn: "check") doLast {
     print("Memory usage before: ")
     println(java.lang.management.ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getUsed() / 1024.0 / 1024.0)
     System.gc()
@@ -125,7 +265,7 @@ task GCandMem(dependsOn: 'check') << {
     println(java.lang.management.ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getUsed() / 1024.0 / 1024.0)
 }
 
-task GCandMem2(dependsOn: 'test') << {
+task GCandMem2(dependsOn: "test") doLast {
     print("Memory usage before: ")
     println(java.lang.management.ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getUsed() / 1024.0 / 1024.0)
     System.gc()
@@ -145,7 +285,7 @@ jacocoTestReport {
     afterEvaluate {
         classDirectories = files(classDirectories.files.collect {
             fileTree(dir: it,
-                    exclude: ['io/reactivex/tck/**'])
+                    exclude: ["io/reactivex/tck/**"])
         })
     }
 }
@@ -154,84 +294,72 @@ jacocoTestReport.dependsOn GCandMem
 
 build.dependsOn jacocoTestReport
 
-// pmd {
-//     toolVersion = '5.4.2'
-//     ignoreFailures = true
-//     sourceSets = [sourceSets.main]
-//     ruleSets = []
-//     ruleSetFiles = files('pmd.xml')
-// }
-
-// pmdMain {
-//     reports {
-//         html.enabled = true
-//         xml.enabled = true
-//     }
-// }
-
-// build.dependsOn pmdMain
-
-// task pmdPrint(dependsOn: 'pmdMain') << {
-//     File file = new File('build/reports/pmd/main.xml')
-//     if (file.exists()) {
-
-//         println("Listing first 100 PMD violations")
-
-//         file.eachLine { line, count ->
-//             if (count <= 100) {
-//                println(line)
-//             }
-//         }
-
-//     } else {
-//         println("PMD file not found.")
-//     }
-// }
-
-// build.dependsOn pmdPrint
-
 checkstyle {
-    configFile file('checkstyle.xml')
+    configFile file("checkstyle.xml")
     ignoreFailures = true
     toolVersion ="6.19" 
 }
 
-/*
-findbugs {
-    ignoreFailures true
-    toolVersion = '3.0.1'
-    effort = 'max'
-    reportLevel = 'low'
-    sourceSets = [sourceSets.main]
-}
+if (rootProject.hasProperty("releaseMode")) {
 
-findbugsMain {
-    reports {
-        html.enabled = false // Findbugs can only have on report enabled
-        xml.enabled = true
-    }
-}
-*/
-
-// from https://discuss.gradle.org/t/maven-publish-plugin-generated-pom-making-dependency-scope-runtime/7494/10
-
-publishing.publications.all {
-  pom.withXml {
-    asNode().dependencies.'*'.findAll() {
-      it.scope.text() == 'runtime' && project.configurations.compile.allDependencies.find { dep ->
-        dep.name == it.artifactId.text()
-      }
-    }.each { it.scope*.value = 'compile'}
-
-    asNode().developers.'*'.findAll() {
-       it.id.text() == 'benjchristensen'
-    } .each {
-       it.id*.value = 'akarnokd'
-       it.name*.value = 'David Karnok'
-       it.email*.value = 'akarnokd@gmail.com'
+  if ("branch".equals(rootProject.releaseMode)) {
+    // From https://github.com/ReactiveX/RxAndroid/blob/2.x/rxandroid/build.gradle#L94
+  
+    println("ReleaseMode: " + rootProject.releaseMode);
+    artifactory {
+        contextUrl = "https://oss.jfrog.org"
+    
+        publish {
+            repository {
+                repoKey = "oss-snapshot-local"
+    
+                username = rootProject.bintrayUser
+                password = rootProject.bintrayKey
+            }
+    
+            defaults {
+                publishConfigs("archives")
+            }
+        }
     }
     
-    asNode().properties.nebula_Module_Owner*.value = 'akarnokd@gmail.com'
-    asNode().properties.nebula_Module_Email*.value = 'akarnokd@gmail.com'
+    build.finalizedBy(artifactoryPublish)
   }
+
+   if ("full".equals(rootProject.releaseMode)) {
+      // based on https://github.com/bintray/gradle-bintray-plugin
+      def rver = version;
+
+      println("ReleaseMode: " + rootProject.releaseMode + " version " + rver);
+
+      bintray {
+         user = rootProject.bintrayUser
+         key = rootProject.bintrayKey
+         configurations = ["archives"]
+         publish = true
+         pkg {
+           repo = "RxJava"
+           name = "RxJava"
+           userOrg = "reactivex"
+           labels = ["rxjava", "reactivex"]
+           licenses = ["Apache-2.0"]
+           vcsUrl = "https://github.com/ReactiveX/RxJava.git"
+           version {
+             name = rver
+             gpg {
+                sign = true
+             }
+             mavenCentralSync {
+               sync = true 
+               user = rootProject.sonatypeUsername
+               password = rootProject.sonatypePassword
+               close = "1"
+             }
+           }
+         }
+      }
+      
+      build.finalizedBy(bintrayUpload)
+   }
 }
+

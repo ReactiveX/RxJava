@@ -40,7 +40,6 @@ import io.reactivex.plugins.RxJavaPlugins;
  * {@code new} but must be created via the {@link #create()} method.
  *
  * Example usage:
- * <p>
  * <pre> {@code
 
   PublishProcessor<Object> processor = PublishProcessor.create();
@@ -314,9 +313,7 @@ public final class PublishProcessor<T> extends FlowableProcessor<T> {
             }
             if (r != 0L) {
                 actual.onNext(t);
-                if (r != Long.MAX_VALUE) {
-                    decrementAndGet();
-                }
+                BackpressureHelper.producedCancel(this, 1);
             } else {
                 cancel();
                 actual.onError(new MissingBackpressureException("Could not emit value due to lack of requests"));

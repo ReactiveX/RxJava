@@ -15,15 +15,18 @@ package io.reactivex.internal.operators.single;
 
 import static org.junit.Assert.*;
 
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.Test;
 
-import io.reactivex.Single;
+import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
+import io.reactivex.functions.Action;
 import io.reactivex.observers.TestObserver;
+import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.schedulers.TestScheduler;
-import io.reactivex.subjects.PublishSubject;
+import io.reactivex.subjects.*;
 
 public class SingleTimeoutTest {
 
@@ -68,5 +71,142 @@ public class SingleTimeoutTest {
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
         .assertFailure(TestException.class);
+    }
+
+    @Test
+    public void disposeWhenFallback() {
+        TestScheduler sch = new TestScheduler();
+
+        SingleSubject<Integer> subj = SingleSubject.create();
+
+        subj.timeout(1, TimeUnit.SECONDS, sch, Single.just(1))
+        .test(true)
+        .assertEmpty();
+
+        assertFalse(subj.hasObservers());
+    }
+
+    @Test
+    public void isDisposed() {
+        TestHelper.checkDisposed(SingleSubject.create().timeout(1, TimeUnit.DAYS));
+    }
+
+    @Test
+    public void fallbackDispose() {
+        TestScheduler sch = new TestScheduler();
+
+        SingleSubject<Integer> subj = SingleSubject.create();
+
+        SingleSubject<Integer> fallback = SingleSubject.create();
+
+        TestObserver<Integer> to = subj.timeout(1, TimeUnit.SECONDS, sch, fallback)
+        .test();
+
+        assertFalse(fallback.hasObservers());
+
+        sch.advanceTimeBy(1, TimeUnit.SECONDS);
+
+        assertFalse(subj.hasObservers());
+        assertTrue(fallback.hasObservers());
+
+        to.cancel();
+
+        assertFalse(fallback.hasObservers());
+    }
+
+    @Test
+    public void normalSuccessDoesntDisposeMain() {
+        final int[] calls = { 0 };
+
+        Single.just(1)
+        .doOnDispose(new Action() {
+            @Override
+            public void run() throws Exception {
+                calls[0]++;
+            }
+        })
+        .timeout(1, TimeUnit.DAYS)
+        .test()
+        .assertResult(1);
+
+        assertEquals(0, calls[0]);
+    }
+
+    @Test
+    public void successTimeoutRace() {
+        for (int i = 0; i < 1000; i++) {
+            final SingleSubject<Integer> subj = SingleSubject.create();
+            SingleSubject<Integer> fallback = SingleSubject.create();
+
+            final TestScheduler sch = new TestScheduler();
+
+            TestObserver<Integer> to = subj.timeout(1, TimeUnit.MILLISECONDS, sch, fallback).test();
+
+            Runnable r1 = new Runnable() {
+                @Override
+                public void run() {
+                    subj.onSuccess(1);
+                }
+            };
+
+            Runnable r2 = new Runnable() {
+                @Override
+                public void run() {
+                    sch.advanceTimeBy(1, TimeUnit.MILLISECONDS);
+                }
+            };
+
+            TestHelper.race(r1, r2);
+
+            if (!fallback.hasObservers()) {
+                to.assertResult(1);
+            } else {
+                to.assertEmpty();
+            }
+        }
+    }
+
+    @Test
+    public void errorTimeoutRace() {
+        final TestException ex = new TestException();
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+
+            for (int i = 0; i < 1000; i++) {
+                final SingleSubject<Integer> subj = SingleSubject.create();
+                SingleSubject<Integer> fallback = SingleSubject.create();
+
+                final TestScheduler sch = new TestScheduler();
+
+                TestObserver<Integer> to = subj.timeout(1, TimeUnit.MILLISECONDS, sch, fallback).test();
+
+                Runnable r1 = new Runnable() {
+                    @Override
+                    public void run() {
+                        subj.onError(ex);
+                    }
+                };
+
+                Runnable r2 = new Runnable() {
+                    @Override
+                    public void run() {
+                        sch.advanceTimeBy(1, TimeUnit.MILLISECONDS);
+                    }
+                };
+
+                TestHelper.race(r1, r2);
+
+                if (!fallback.hasObservers()) {
+                    to.assertFailure(TestException.class);
+                } else {
+                    to.assertEmpty();
+                }
+                if (!errors.isEmpty()) {
+                    TestHelper.assertUndeliverable(errors, 0, TestException.class);
+                }
+            }
+        } finally {
+            RxJavaPlugins.reset();
+        }
     }
 }

@@ -20,11 +20,13 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.*;
 import io.reactivex.functions.Consumer;
 import io.reactivex.internal.disposables.*;
+import io.reactivex.internal.functions.Functions;
+import io.reactivex.observers.LambdaConsumerIntrospection;
 import io.reactivex.plugins.RxJavaPlugins;
 
 public final class ConsumerSingleObserver<T>
 extends AtomicReference<Disposable>
-implements SingleObserver<T>, Disposable {
+implements SingleObserver<T>, Disposable, LambdaConsumerIntrospection {
 
 
     private static final long serialVersionUID = -7012088219455310787L;
@@ -73,5 +75,10 @@ implements SingleObserver<T>, Disposable {
     @Override
     public boolean isDisposed() {
         return get() == DisposableHelper.DISPOSED;
+    }
+
+    @Override
+    public boolean hasCustomOnError() {
+        return onError != Functions.ON_ERROR_MISSING;
     }
 }

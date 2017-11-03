@@ -51,7 +51,7 @@ import io.reactivex.internal.util.EndConsumerHelper;
  *
  * <p>Example<pre><code>
  * Flowable.range(1, 5)
- *     .subscribe(new DefaultSubscriber&lt;Integer>() {
+ *     .subscribe(new DefaultSubscriber&lt;Integer&gt;() {
  *         &#64;Override public void onStart() {
  *             System.out.println("Start!");
  *             request(1);

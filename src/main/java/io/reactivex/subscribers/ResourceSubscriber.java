@@ -63,10 +63,10 @@ import io.reactivex.internal.util.EndConsumerHelper;
  * <p>Example<pre><code>
  * Disposable d =
  *     Flowable.range(1, 5)
- *     .subscribeWith(new ResourceSubscriber&lt;Integer>() {
+ *     .subscribeWith(new ResourceSubscriber&lt;Integer&gt;() {
  *         &#64;Override public void onStart() {
  *             add(Schedulers.single()
- *                 .scheduleDirect(() -> System.out.println("Time!"),
+ *                 .scheduleDirect(() -&gt; System.out.println("Time!"),
  *                     2, TimeUnit.SECONDS));
  *             request(1);
  *         }

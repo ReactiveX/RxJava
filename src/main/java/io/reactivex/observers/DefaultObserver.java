@@ -40,7 +40,7 @@ import io.reactivex.internal.util.EndConsumerHelper;
  *
  * <p>Example<pre><code>
  * Observable.range(1, 5)
- *     .subscribe(new DefaultObserver&lt;Integer>() {
+ *     .subscribe(new DefaultObserver&lt;Integer&gt;() {
  *         &#64;Override public void onStart() {
  *             System.out.println("Start!");
  *         }

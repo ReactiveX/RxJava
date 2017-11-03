@@ -426,12 +426,6 @@ public class FlowableTimeoutTests {
     }
 
     @Test
-    public void newTimer() {
-        FlowableTimeoutTimed.NEW_TIMER.dispose();
-        assertTrue(FlowableTimeoutTimed.NEW_TIMER.isDisposed());
-    }
-
-    @Test
     public void badSource() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
@@ -518,4 +512,88 @@ public class FlowableTimeoutTests {
         to.assertResult(1);
     }
 
+    @Test
+    public void fallbackErrors() {
+        Flowable.never()
+        .timeout(1, TimeUnit.MILLISECONDS, Flowable.error(new TestException()))
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertFailure(TestException.class);
+    }
+
+    @Test
+    public void onNextOnTimeoutRace() {
+        for (int i = 0; i < 1000; i++) {
+            final TestScheduler sch = new TestScheduler();
+
+            final PublishProcessor<Integer> pp = PublishProcessor.create();
+
+            TestSubscriber<Integer> ts = pp.timeout(1, TimeUnit.SECONDS, sch).test();
+
+            Runnable r1 = new Runnable() {
+                @Override
+                public void run() {
+                    pp.onNext(1);
+                }
+            };
+
+            Runnable r2 = new Runnable() {
+                @Override
+                public void run() {
+                    sch.advanceTimeBy(1, TimeUnit.SECONDS);
+                }
+            };
+
+            TestHelper.race(r1, r2);
+
+            if (ts.valueCount() != 0) {
+                if (ts.errorCount() != 0) {
+                    ts.assertFailure(TimeoutException.class, 1);
+                } else {
+                    ts.assertValuesOnly(1);
+                }
+            } else {
+                ts.assertFailure(TimeoutException.class);
+            }
+        }
+    }
+
+    @Test
+    public void onNextOnTimeoutRaceFallback() {
+        for (int i = 0; i < 1000; i++) {
+            final TestScheduler sch = new TestScheduler();
+
+            final PublishProcessor<Integer> pp = PublishProcessor.create();
+
+            TestSubscriber<Integer> ts = pp.timeout(1, TimeUnit.SECONDS, sch, Flowable.just(2)).test();
+
+            Runnable r1 = new Runnable() {
+                @Override
+                public void run() {
+                    pp.onNext(1);
+                }
+            };
+
+            Runnable r2 = new Runnable() {
+                @Override
+                public void run() {
+                    sch.advanceTimeBy(1, TimeUnit.SECONDS);
+                }
+            };
+
+            TestHelper.race(r1, r2);
+
+            if (ts.isTerminated()) {
+                int c = ts.valueCount();
+                if (c == 1) {
+                    int v = ts.values().get(0);
+                    assertTrue("" + v, v == 1 || v == 2);
+                } else {
+                    ts.assertResult(1, 2);
+                }
+            } else {
+                ts.assertValuesOnly(1);
+            }
+        }
+    }
 }

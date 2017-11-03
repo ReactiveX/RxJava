@@ -1997,4 +1997,66 @@ public class TestSubscriberTest {
             ws.run();
         }
     }
+
+    @Test
+    public void assertValuesOnly() {
+        TestSubscriber<Integer> ts = TestSubscriber.create();
+        ts.onSubscribe(new BooleanSubscription());
+        ts.assertValuesOnly();
+
+        ts.onNext(5);
+        ts.assertValuesOnly(5);
+
+        ts.onNext(-1);
+        ts.assertValuesOnly(5, -1);
+    }
+
+    @Test
+    public void assertValuesOnlyThrowsOnUnexpectedValue() {
+        TestSubscriber<Integer> ts = TestSubscriber.create();
+        ts.onSubscribe(new BooleanSubscription());
+        ts.assertValuesOnly();
+
+        ts.onNext(5);
+        ts.assertValuesOnly(5);
+
+        ts.onNext(-1);
+
+        try {
+            ts.assertValuesOnly(5);
+            fail();
+        } catch (AssertionError ex) {
+            // expected
+        }
+    }
+
+    @Test
+    public void assertValuesOnlyThrowsWhenCompleted() {
+        TestSubscriber<Integer> ts = TestSubscriber.create();
+        ts.onSubscribe(new BooleanSubscription());
+
+        ts.onComplete();
+
+        try {
+            ts.assertValuesOnly();
+            fail();
+        } catch (AssertionError ex) {
+            // expected
+        }
+    }
+
+    @Test
+    public void assertValuesOnlyThrowsWhenErrored() {
+        TestSubscriber<Integer> ts = TestSubscriber.create();
+        ts.onSubscribe(new BooleanSubscription());
+
+        ts.onError(new TestException());
+
+        try {
+            ts.assertValuesOnly();
+            fail();
+        } catch (AssertionError ex) {
+            // expected
+        }
+    }
 }

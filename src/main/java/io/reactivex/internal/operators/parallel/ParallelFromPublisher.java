@@ -116,7 +116,7 @@ public final class ParallelFromPublisher<T> extends ParallelFlowable<T> {
                     @SuppressWarnings("unchecked")
                     QueueSubscription<T> qs = (QueueSubscription<T>) s;
 
-                    int m = qs.requestFusion(QueueSubscription.ANY);
+                    int m = qs.requestFusion(QueueSubscription.ANY | QueueSubscription.BOUNDARY);
 
                     if (m == QueueSubscription.SYNC) {
                         sourceMode = m;

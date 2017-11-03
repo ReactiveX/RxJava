@@ -15,7 +15,9 @@
  */
 
 /**
- * Default wrappers and implementations for Subscriber-based consumer classes and interfaces;
- * utility classes for creating them from callbacks.
+ * Default wrappers and implementations for Subscriber-based consumer classes and interfaces,
+ * including disposable and resource-tracking variants and
+ * the {@link io.reactivex.subscribers.TestSubscriber} that allows unit testing
+ * {@link io.reactivex.Flowable}-based flows.
  */
 package io.reactivex.subscribers;

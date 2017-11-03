@@ -57,10 +57,10 @@ import io.reactivex.internal.util.EndConsumerHelper;
  * <p>Example<pre><code>
  * Disposable d =
  *     Maybe.just(1).delay(1, TimeUnit.SECONDS)
- *     .subscribeWith(new ResourceMaybeObserver&lt;Integer>() {
+ *     .subscribeWith(new ResourceMaybeObserver&lt;Integer&gt;() {
  *         &#64;Override public void onStart() {
  *             add(Schedulers.single()
- *                 .scheduleDirect(() -> System.out.println("Time!"),
+ *                 .scheduleDirect(() -&gt; System.out.println("Time!"),
  *                     2, TimeUnit.SECONDS));
  *         }
  *         &#64;Override public void onSuccess(Integer t) {

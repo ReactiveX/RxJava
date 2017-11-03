@@ -27,7 +27,6 @@ import io.reactivex.plugins.RxJavaPlugins;
  * <img width="640" height="405" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/S.PublishSubject.png" alt="">
  * <p>
  * Example usage:
- * <p>
  * <pre> {@code
 
   PublishSubject<Object> subject = PublishSubject.create();

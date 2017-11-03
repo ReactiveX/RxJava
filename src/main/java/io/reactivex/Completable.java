@@ -207,7 +207,6 @@ public abstract class Completable implements CompletableSource {
      *
      * });
      * </code></pre>
-     * <p>
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code create} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -395,6 +394,17 @@ public abstract class Completable implements CompletableSource {
     /**
      * Returns a Completable instance that subscribes to the given publisher, ignores all values and
      * emits only the terminal event.
+     * <p>
+     * The {@link Publisher} must follow the
+     * <a href="https://github.com/reactive-streams/reactive-streams-jvm#reactive-streams">Reactive-Streams specification</a>.
+     * Violating the specification may result in undefined behavior.
+     * <p>
+     * If possible, use {@link #create(CompletableOnSubscribe)} to create a
+     * source-like {@code Completable} instead.
+     * <p>
+     * Note that even though {@link Publisher} appears to be a functional interface, it
+     * is not recommended to implement it through a lambda as the specification requires
+     * state management that is not achievable with a stateless lambda.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The returned {@code Completable} honors the backpressure of the downstream consumer
@@ -406,6 +416,7 @@ public abstract class Completable implements CompletableSource {
      * @param publisher the Publisher instance to subscribe to, not null
      * @return the new Completable instance
      * @throws NullPointerException if publisher is null
+     * @see #create(CompletableOnSubscribe)
      */
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
@@ -1381,6 +1392,24 @@ public abstract class Completable implements CompletableSource {
     }
 
     /**
+     * Nulls out references to the upstream producer and downstream CompletableObserver if
+     * the sequence is terminated or downstream calls dispose().
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code onTerminateDetach} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @return a Completable which nulls out references to the upstream producer and downstream CompletableObserver if
+     * the sequence is terminated or downstream calls dispose()
+     * @since 2.1.5 - experimental
+     */
+    @Experimental
+    @CheckReturnValue
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final Completable onTerminateDetach() {
+        return RxJavaPlugins.onAssembly(new CompletableDetach(this));
+    }
+
+    /**
      * Returns a Completable that repeatedly subscribes to this Completable until cancelled.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
@@ -1657,11 +1686,11 @@ public abstract class Completable implements CompletableSource {
      * Completable source = Completable.complete().delay(1, TimeUnit.SECONDS);
      * CompositeDisposable composite = new CompositeDisposable();
      *
-     * class ResourceCompletableObserver implements CompletableObserver, Disposable {
+     * DisposableCompletableObserver ds = new DisposableCompletableObserver() {
      *     // ...
-     * }
+     * };
      *
-     * composite.add(source.subscribeWith(new ResourceCompletableObserver()));
+     * composite.add(source.subscribeWith(ds));
      * </code></pre>
      * <dl>
      *  <dt><b>Scheduler:</b></dt>

@@ -17,6 +17,7 @@ import java.util.*;
 import java.util.concurrent.*;
 
 import io.reactivex.Notification;
+import io.reactivex.annotations.Experimental;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.CompositeException;
 import io.reactivex.functions.Predicate;
@@ -335,7 +336,7 @@ public abstract class BaseTestConsumer<T, U extends BaseTestConsumer<T, U>> impl
 
     /**
      * Assert that this TestObserver/TestSubscriber did not receive an onNext value which is equal to
-     * the given value with respect to Objects.equals.
+     * the given value with respect to null-safe Object.equals.
      *
      * <p>History: 2.0.5 - experimental
      * @param value the value to expect not being received
@@ -397,6 +398,33 @@ public abstract class BaseTestConsumer<T, U extends BaseTestConsumer<T, U>> impl
             } catch (Exception ex) {
                 throw ExceptionHelper.wrapOrThrow(ex);
             }
+        }
+        return (U)this;
+    }
+
+    /**
+     * Asserts that this TestObserver/TestSubscriber received an onNext value at the given index
+     * which is equal to the given value with respect to null-safe Object.equals.
+     * @param index the position to assert on
+     * @param value the value to expect
+     * @return this
+     * @since 2.1.3 - experimental
+     */
+    @SuppressWarnings("unchecked")
+    @Experimental
+    public final U assertValueAt(int index, T value) {
+        int s = values.size();
+        if (s == 0) {
+            throw fail("No values");
+        }
+
+        if (index >= s) {
+            throw fail("Invalid index: " + index);
+        }
+
+        T v = values.get(index);
+        if (!ObjectHelper.equals(value, v)) {
+            throw fail("Expected: " + valueAndClass(value) + ", Actual: " + valueAndClass(v));
         }
         return (U)this;
     }
@@ -495,6 +523,21 @@ public abstract class BaseTestConsumer<T, U extends BaseTestConsumer<T, U>> impl
     }
 
     /**
+     * Assert that the TestObserver/TestSubscriber received only the specified values in the specified order without terminating.
+     * @param values the values expected
+     * @return this;
+     * @since 2.1.4
+     */
+    @SuppressWarnings("unchecked")
+    @Experimental
+    public final U assertValuesOnly(T... values) {
+        return assertSubscribed()
+                .assertValues(values)
+                .assertNoErrors()
+                .assertNotComplete();
+    }
+
+    /**
      * Assert that the TestObserver/TestSubscriber received only the specified values in any order.
      * <p>This helps asserting when the order of the values is not guaranteed, i.e., when merging
      * asynchronous streams.
@@ -524,20 +567,20 @@ public abstract class BaseTestConsumer<T, U extends BaseTestConsumer<T, U>> impl
     @SuppressWarnings("unchecked")
     public final U assertValueSequence(Iterable<? extends T> sequence) {
         int i = 0;
-        Iterator<T> vit = values.iterator();
-        Iterator<? extends T> it = sequence.iterator();
+        Iterator<T> actualIterator = values.iterator();
+        Iterator<? extends T> expectedIterator = sequence.iterator();
         boolean actualNext;
         boolean expectedNext;
         for (;;) {
-            actualNext = it.hasNext();
-            expectedNext = vit.hasNext();
+            expectedNext = expectedIterator.hasNext();
+            actualNext = actualIterator.hasNext();
 
             if (!actualNext || !expectedNext) {
                 break;
             }
 
-            T v = it.next();
-            T u = vit.next();
+            T u = expectedIterator.next();
+            T v = actualIterator.next();
 
             if (!ObjectHelper.equals(u, v)) {
                 throw fail("Values at position " + i + " differ; Expected: " + valueAndClass(u) + ", Actual: " + valueAndClass(v));
