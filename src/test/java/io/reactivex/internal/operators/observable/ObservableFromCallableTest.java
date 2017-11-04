@@ -20,8 +20,11 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
+import java.util.List;
 import java.util.concurrent.*;
 
+import io.reactivex.exceptions.TestException;
+import io.reactivex.plugins.RxJavaPlugins;
 import org.junit.Test;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
@@ -239,4 +242,75 @@ public class ObservableFromCallableTest {
         .test()
         .assertFailure(NullPointerException.class);
     }
+
+    @Test
+    public void disposedOnArrival() {
+        final int[] count = { 0 };
+        Observable.fromCallable(new Callable<Object>() {
+            @Override
+            public Object call() throws Exception {
+                count[0]++;
+                return 1;
+            }
+        })
+                .test(true)
+                .assertEmpty();
+
+        assertEquals(0, count[0]);
+    }
+
+    @Test
+    public void disposedOnCall() {
+        final TestObserver<Integer> to = new TestObserver<Integer>();
+
+        Observable.fromCallable(new Callable<Integer>() {
+            @Override
+            public Integer call() throws Exception {
+                to.cancel();
+                return 1;
+            }
+        })
+                .subscribe(to);
+
+        to.assertEmpty();
+    }
+
+    @Test
+    public void disposedOnCallThrows() {
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            final TestObserver<Integer> to = new TestObserver<Integer>();
+
+            Observable.fromCallable(new Callable<Integer>() {
+                @Override
+                public Integer call() throws Exception {
+                    to.cancel();
+                    throw new TestException();
+                }
+            })
+                    .subscribe(to);
+
+            to.assertEmpty();
+
+            TestHelper.assertUndeliverable(errors, 0, TestException.class);
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
+
+    @Test
+    public void take() {
+        Observable.fromCallable(new Callable<Object>() {
+            @Override
+            public Object call() throws Exception {
+                return 1;
+            }
+        })
+                .take(1)
+                .test()
+                .assertResult(1);
+    }
+
+
+
 }
