@@ -243,9 +243,9 @@ public final class Schedulers {
      * <p>
      * Uses:
      * <ul>
-     * <li>main event loop</li>
+     * <li>event loop</li>
      * <li>support Schedulers.from(Executor) and from(ExecutorService) with delayed scheduling</li>
-     * <li>support benchmarks that pipeline data from the main thread to some other thread and
+     * <li>support benchmarks that pipeline data from some thread to another thread and
      * avoid core-bashing of computation's round-robin nature</li>
      * </ul>
      * <p>
