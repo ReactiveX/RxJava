@@ -2291,4 +2291,162 @@ public class SingleTest {
 
         assertTrue(name.get().startsWith("RxComputation"));
     }
+
+    @Test
+    public void subscribeLambdasSuccessSyncCrash() throws Exception {
+        final List<Throwable> list = Collections.synchronizedList(new ArrayList<Throwable>());
+        RxJavaHooks.setOnError(new Action1<Throwable>() {
+            @Override
+            public void call(Throwable t) {
+                list.add(t);
+            }
+        });
+        try {
+            final AtomicReference<Throwable> onErrorRef = new AtomicReference<Throwable>();
+
+            Single.just(1)
+            .subscribe(new Action1<Integer>() {
+                @Override
+                public void call(Integer t) {
+                    throw new IllegalArgumentException();
+                }
+            }, new Action1<Throwable>() {
+                @Override
+                public void call(Throwable t) {
+                    onErrorRef.set(t);
+                }
+            });
+
+            assertNull("Should not have called onError:", onErrorRef.get());
+            assertTrue("Exception missing or more reported: " + list,
+                    list.size() == 1 && list.get(0) instanceof IllegalArgumentException);
+        } finally {
+            RxJavaHooks.reset();
+        }
+    }
+
+    @Test
+    public void subscribeLambdasSuccessAsyncCrash() throws Exception {
+        final List<Throwable> list = Collections.synchronizedList(new ArrayList<Throwable>());
+        RxJavaHooks.setOnError(new Action1<Throwable>() {
+            @Override
+            public void call(Throwable t) {
+                list.add(t);
+            }
+        });
+        try {
+            final AtomicReference<Throwable> onErrorRef = new AtomicReference<Throwable>();
+
+            Single.just(1)
+            .subscribeOn(Schedulers.computation())
+            .subscribe(new Action1<Integer>() {
+                @Override
+                public void call(Integer t) {
+                    throw new IllegalArgumentException();
+                }
+            }, new Action1<Throwable>() {
+                @Override
+                public void call(Throwable t) {
+                    onErrorRef.set(t);
+                }
+            });
+
+            long start = System.currentTimeMillis();
+
+            while (System.currentTimeMillis() < start + 200) {
+                Thread.sleep(1);
+
+                assertNull("Should not have called onError:", onErrorRef.get());
+            }
+
+            assertTrue("Exception missing or more reported: " + list,
+                    list.size() == 1 && list.get(0) instanceof IllegalArgumentException);
+        } finally {
+            RxJavaHooks.reset();
+        }
+    }
+
+    @Test
+    public void subscribeLambdasErrorSyncCrash() throws Exception {
+        final List<Throwable> list = Collections.synchronizedList(new ArrayList<Throwable>());
+        RxJavaHooks.setOnError(new Action1<Throwable>() {
+            @Override
+            public void call(Throwable t) {
+                list.add(t);
+            }
+        });
+        try {
+            final AtomicReference<Object> onSuccessRef = new AtomicReference<Object>();
+
+            Single.<Integer>error(new IllegalStateException())
+            .subscribe(new Action1<Integer>() {
+                @Override
+                public void call(Integer t) {
+                    onSuccessRef.set(t);
+                }
+            }, new Action1<Throwable>() {
+                @Override
+                public void call(Throwable t) {
+                    throw new IllegalArgumentException();
+                }
+            });
+
+            assertNull("Should not have called onSuccess", onSuccessRef.get());
+            assertTrue("Exception missing or more reported: " + list,
+                    list.size() == 1 && list.get(0) instanceof CompositeException);
+
+            List<Throwable> inners = ((CompositeException)list.get(0)).getExceptions();
+
+            assertTrue("" + inners.get(0), inners.get(0) instanceof IllegalStateException);
+            assertTrue("" + inners.get(1), inners.get(1) instanceof IllegalArgumentException);
+        } finally {
+            RxJavaHooks.reset();
+        }
+    }
+
+    @Test
+    public void subscribeLambdasErrorAsyncCrash() throws Exception {
+        final List<Throwable> list = Collections.synchronizedList(new ArrayList<Throwable>());
+        RxJavaHooks.setOnError(new Action1<Throwable>() {
+            @Override
+            public void call(Throwable t) {
+                list.add(t);
+            }
+        });
+        try {
+            final AtomicReference<Object> onSuccessRef = new AtomicReference<Object>();
+
+            Single.<Integer>error(new IllegalStateException())
+            .subscribeOn(Schedulers.computation())
+            .subscribe(new Action1<Integer>() {
+                @Override
+                public void call(Integer t) {
+                    onSuccessRef.set(t);
+                }
+            }, new Action1<Throwable>() {
+                @Override
+                public void call(Throwable t) {
+                    throw new IllegalArgumentException();
+                }
+            });
+
+            long start = System.currentTimeMillis();
+
+            while (System.currentTimeMillis() < start + 200) {
+                Thread.sleep(1);
+
+                assertNull("Should not have called onSuccess", onSuccessRef.get());
+            }
+
+            assertTrue("Exception missing or more reported: " + list,
+                    list.size() == 1 && list.get(0) instanceof CompositeException);
+
+            List<Throwable> inners = ((CompositeException)list.get(0)).getExceptions();
+
+            assertTrue("" + inners.get(0), inners.get(0) instanceof IllegalStateException);
+            assertTrue("" + inners.get(1), inners.get(1) instanceof IllegalArgumentException);
+        } finally {
+            RxJavaHooks.reset();
+        }
+    }
 }

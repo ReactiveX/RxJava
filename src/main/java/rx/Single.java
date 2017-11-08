@@ -1792,6 +1792,9 @@ public class Single<T> {
             public final void onError(Throwable e) {
                 try {
                     onError.call(e);
+                } catch (Throwable ex) {
+                    Exceptions.throwIfFatal(ex);
+                    RxJavaHooks.onError(new CompositeException(e, ex));
                 } finally {
                     unsubscribe();
                 }
@@ -1801,6 +1804,9 @@ public class Single<T> {
             public final void onSuccess(T args) {
                 try {
                     onSuccess.call(args);
+                } catch (Throwable ex) {
+                    Exceptions.throwIfFatal(ex);
+                    RxJavaHooks.onError(ex);
                 } finally {
                     unsubscribe();
                 }
