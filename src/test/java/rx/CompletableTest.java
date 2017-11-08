@@ -2827,14 +2827,27 @@ public class CompletableTest {
         });
     }
 
-    @Test(expected = OnErrorNotImplementedException.class)
+    @Test
     public void propagateExceptionSubscribeOneActionThrowFromOnSuccess() {
-        normal.completable.toSingleDefault(1).subscribe(new Action1<Integer>() {
+        final List<Throwable> list = Collections.synchronizedList(new ArrayList<Throwable>());
+        RxJavaHooks.setOnError(new Action1<Throwable>() {
             @Override
-            public void call(Integer integer) {
-                throw new TestException();
+            public void call(Throwable t) {
+                list.add(t);
             }
         });
+        try {
+            normal.completable.toSingleDefault(1).subscribe(new Action1<Integer>() {
+                @Override
+                public void call(Integer integer) {
+                    throw new TestException();
+                }
+            });
+            assertTrue("TestException missing or more reported: " + list,
+                    list.size() == 1 && list.get(0) instanceof TestException);
+        } finally {
+            RxJavaHooks.reset();
+        }
     }
 
     @Test(timeout = 5000)
