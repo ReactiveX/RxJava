@@ -7944,8 +7944,8 @@ public abstract class Observable<T> implements ObservableSource<T> {
     }
 
     /**
-     * Maps each element of the upstream Observable into MaybeSources, subscribes to them and
-     * waits until the upstream and all MaybeSources complete.
+     * Maps each element of the upstream Observable into MaybeSources, subscribes to all of them
+     * and merges their onSuccess values, in no particular order, into a single Observable sequence.
      * <p>
      * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/flatMapMaybe.png" alt="">
      * <dl>
@@ -7963,8 +7963,9 @@ public abstract class Observable<T> implements ObservableSource<T> {
     }
 
     /**
-     * Maps each element of the upstream Observable into MaybeSources, subscribes to them and
-     * waits until the upstream and all MaybeSources complete, optionally delaying all errors.
+     * Maps each element of the upstream Observable into MaybeSources, subscribes to them
+     * and merges their onSuccess values, in no particular order, into a single Observable sequence,
+     * optionally delaying all errors.
      * <p>
      * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/flatMapMaybe.png" alt="">
      * <dl>
@@ -7985,8 +7986,8 @@ public abstract class Observable<T> implements ObservableSource<T> {
     }
 
     /**
-     * Maps each element of the upstream Observable into SingleSources, subscribes to them and
-     * waits until the upstream and all SingleSources complete.
+     * Maps each element of the upstream Observable into SingleSources, subscribes to all of them
+     * and merges their onSuccess values, in no particular order, into a single Observable sequence.
      * <p>
      * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/flatMapSingle.png" alt="">
      * <dl>
@@ -8004,8 +8005,9 @@ public abstract class Observable<T> implements ObservableSource<T> {
     }
 
     /**
-     * Maps each element of the upstream Observable into SingleSources, subscribes to them and
-     * waits until the upstream and all SingleSources complete, optionally delaying all errors.
+     * Maps each element of the upstream Observable into SingleSources, subscribes to them
+     * and merges their onSuccess values, in no particular order, into a single Observable sequence,
+     * optionally delaying all errors.
      * <p>
      * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/flatMapSingle.png" alt="">
      * <dl>
