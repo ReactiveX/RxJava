@@ -75,6 +75,20 @@ public abstract class BaseTestConsumer<T, U extends BaseTestConsumer<T, U>> impl
 
     /**
      * Returns a shared list of received onNext values.
+     * <p>
+     * Note that accessing the items via certain methods of the {@link List}
+     * interface while the upstream is still actively emitting
+     * more items may result in a {@code ConcurrentModificationException}.
+     * <p>
+     * The {@link List#size()} method will return the number of items
+     * already received by this TestObserver/TestSubscriber in a thread-safe
+     * manner that can be read via {@link List#get(int)}) method
+     * (index range of 0 to {@code List.size() - 1}).
+     * <p>
+     * A view of the returned List can be created via {@link List#subList(int, int)}
+     * by using the bounds 0 (inclusive) to {@link List#size()} (exclusive) which,
+     * when accessed in a read-only fashion, should be also thread-safe and not throw any
+     * {@code ConcurrentModificationException}.
      * @return a list of received onNext values
      */
     public final List<T> values() {
@@ -83,6 +97,20 @@ public abstract class BaseTestConsumer<T, U extends BaseTestConsumer<T, U>> impl
 
     /**
      * Returns a shared list of received onError exceptions.
+     * <p>
+     * Note that accessing the errors via certain methods of the {@link List}
+     * interface while the upstream is still actively emitting
+     * more items or errors may result in a {@code ConcurrentModificationException}.
+     * <p>
+     * The {@link List#size()} method will return the number of errors
+     * already received by this TestObserver/TestSubscriber in a thread-safe
+     * manner that can be read via {@link List#get(int)}) method
+     * (index range of 0 to {@code List.size() - 1}).
+     * <p>
+     * A view of the returned List can be created via {@link List#subList(int, int)}
+     * by using the bounds 0 (inclusive) to {@link List#size()} (exclusive) which,
+     * when accessed in a read-only fashion, should be also thread-safe and not throw any
+     * {@code ConcurrentModificationException}.
      * @return a list of received events onError exceptions
      */
     public final List<Throwable> errors() {
