@@ -8945,8 +8945,8 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     /**
-     * Maps each element of the upstream Flowable into MaybeSources, subscribes to them and
-     * waits until the upstream and all MaybeSources complete.
+     * Maps each element of the upstream Flowable into MaybeSources, subscribes to all of them
+     * and merges their onSuccess values, in no particular order, into a single Flowable sequence.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator consumes the upstream in an unbounded manner.</dd>
@@ -8965,8 +8965,9 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     /**
-     * Maps each element of the upstream Flowable into MaybeSources, subscribes to them and
-     * waits until the upstream and all MaybeSources complete, optionally delaying all errors.
+     * Maps each element of the upstream Flowable into MaybeSources, subscribes to at most
+     * {@code maxConcurrency} MaybeSources at a time and merges their onSuccess values,
+     * in no particular order, into a single Flowable sequence, optionally delaying all errors.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>If {@code maxConcurrency == Integer.MAX_VALUE} the operator consumes the upstream in an unbounded manner.
@@ -8992,8 +8993,8 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     /**
-     * Maps each element of the upstream Flowable into SingleSources, subscribes to them and
-     * waits until the upstream and all SingleSources complete.
+     * Maps each element of the upstream Flowable into SingleSources, subscribes to all of them
+     * and merges their onSuccess values, in no particular order, into a single Flowable sequence.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator consumes the upstream in an unbounded manner.</dd>
@@ -9012,8 +9013,9 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     /**
-     * Maps each element of the upstream Flowable into SingleSources, subscribes to them and
-     * waits until the upstream and all SingleSources complete, optionally delaying all errors.
+     * Maps each element of the upstream Flowable into SingleSources, subscribes to at most
+     * {@code maxConcurrency} SingleSources at a time and merges their onSuccess values,
+     * in no particular order, into a single Flowable sequence, optionally delaying all errors.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>If {@code maxConcurrency == Integer.MAX_VALUE} the operator consumes the upstream in an unbounded manner.
