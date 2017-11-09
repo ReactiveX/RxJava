@@ -71,7 +71,7 @@ implements Runnable, Callable<Object>, Disposable {
         } finally {
             lazySet(THREAD_INDEX, null);
             Object o = get(PARENT_INDEX);
-            if (o != PARENT_DISPOSED && o != null && compareAndSet(PARENT_INDEX, o, DONE)) {
+            if (o != PARENT_DISPOSED && compareAndSet(PARENT_INDEX, o, DONE) && o != null) {
                 ((DisposableContainer)o).delete(this);
             }
 

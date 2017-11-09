@@ -335,4 +335,40 @@ public class ScheduledRunnableTest {
             assertFalse("The task was interrupted", interrupted.get());
         }
     }
+
+    @Test
+    public void disposeAfterRun() {
+        final ScheduledRunnable run = new ScheduledRunnable(Functions.EMPTY_RUNNABLE, null);
+
+        run.run();
+        assertEquals(ScheduledRunnable.DONE, run.get(ScheduledRunnable.FUTURE_INDEX));
+
+        run.dispose();
+        assertEquals(ScheduledRunnable.DONE, run.get(ScheduledRunnable.FUTURE_INDEX));
+    }
+
+    @Test
+    public void syncDisposeIdempotent() {
+        final ScheduledRunnable run = new ScheduledRunnable(Functions.EMPTY_RUNNABLE, null);
+        run.set(ScheduledRunnable.THREAD_INDEX, Thread.currentThread());
+
+        run.dispose();
+        assertEquals(ScheduledRunnable.SYNC_DISPOSED, run.get(ScheduledRunnable.FUTURE_INDEX));
+        run.dispose();
+        assertEquals(ScheduledRunnable.SYNC_DISPOSED, run.get(ScheduledRunnable.FUTURE_INDEX));
+        run.run();
+        assertEquals(ScheduledRunnable.SYNC_DISPOSED, run.get(ScheduledRunnable.FUTURE_INDEX));
+    }
+
+    @Test
+    public void asyncDisposeIdempotent() {
+        final ScheduledRunnable run = new ScheduledRunnable(Functions.EMPTY_RUNNABLE, null);
+
+        run.dispose();
+        assertEquals(ScheduledRunnable.ASYNC_DISPOSED, run.get(ScheduledRunnable.FUTURE_INDEX));
+        run.dispose();
+        assertEquals(ScheduledRunnable.ASYNC_DISPOSED, run.get(ScheduledRunnable.FUTURE_INDEX));
+        run.run();
+        assertEquals(ScheduledRunnable.ASYNC_DISPOSED, run.get(ScheduledRunnable.FUTURE_INDEX));
+    }
 }
