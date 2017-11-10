@@ -554,7 +554,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * {@code from} method.
      * <dl>
      * <dt><b>Scheduler:</b></dt>
-     * <dd>You specify which {@link Scheduler} this operator will use</dd>
+     * <dd>You specify which {@link Scheduler} this operator will use.</dd>
      * </dl>
      *
      * @param future
@@ -2338,7 +2338,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.observeOn.png" alt="">
      * <dl>
      * <dt><b>Scheduler:</b></dt>
-     * <dd>you specify which {@link Scheduler} this operator will use</dd>
+     * <dd>you specify which {@link Scheduler} this operator will use.</dd>
      * </dl>
      *
      * @param scheduler
@@ -2830,7 +2830,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.subscribeOn.png" alt="">
      * <dl>
      * <dt><b>Scheduler:</b></dt>
-     * <dd>You specify which {@link Scheduler} this operator will use</dd>
+     * <dd>You specify which {@link Scheduler} this operator will use.</dd>
      * </dl>
      *
      * @param scheduler
