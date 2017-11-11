@@ -13391,6 +13391,8 @@ public abstract class Flowable<T> implements Publisher<T> {
     /**
      * Returns a Flowable that emits those items emitted by source Publisher before a specified time runs
      * out.
+     * If time runs out before Flowable is finished, termination events would be balled on provided {@link Scheduler},
+     * which is {@code computation} by default.
      * <p>
      * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/take.t.png" alt="">
      * <dl>
@@ -13418,6 +13420,8 @@ public abstract class Flowable<T> implements Publisher<T> {
     /**
      * Returns a Flowable that emits those items emitted by source Publisher before a specified time (on a
      * specified Scheduler) runs out.
+     * If time runs out before Flowable is finished, termination events would be balled on provided {@link Scheduler},
+     * which is {@code computation} by default.
      * <p>
      * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/take.ts.png" alt="">
      * <dl>
