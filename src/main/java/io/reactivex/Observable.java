@@ -11285,8 +11285,9 @@ public abstract class Observable<T> implements ObservableSource<T> {
     /**
      * Returns an Observable that emits those items emitted by source ObservableSource before a specified time runs
      * out.
-     * If time runs out before Observable is finished, termination events would be called on provided {@link Scheduler},
-     * which is {@code computation} by default.
+     * <p>
+     * If time runs out before the {@code Observable} completes normally, the {@code onComplete} event will be
+     * signaled on the default {@code computation} {@link Scheduler}.
      * <p>
      * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/take.t.png" alt="">
      * <dl>
@@ -11310,8 +11311,9 @@ public abstract class Observable<T> implements ObservableSource<T> {
     /**
      * Returns an Observable that emits those items emitted by source ObservableSource before a specified time (on a
      * specified Scheduler) runs out.
-     * If time runs out before Observable is finished, termination events would be called on provided {@link Scheduler},
-     * which is {@code computation} by default.
+     * <p>
+     * If time runs out before the {@code Observable} completes normally, the {@code onComplete} event will be
+     * signaled on the provided {@link Scheduler}.
      * <p>
      * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/take.ts.png" alt="">
      * <dl>
