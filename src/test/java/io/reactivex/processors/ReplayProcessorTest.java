@@ -44,25 +44,25 @@ public class ReplayProcessorTest extends FlowableProcessorTest<Object> {
 
     @Test
     public void testCompleted() {
-        ReplayProcessor<String> subject = ReplayProcessor.create();
+        ReplayProcessor<String> processor = ReplayProcessor.create();
 
         Subscriber<String> o1 = TestHelper.mockSubscriber();
-        subject.subscribe(o1);
+        processor.subscribe(o1);
 
-        subject.onNext("one");
-        subject.onNext("two");
-        subject.onNext("three");
-        subject.onComplete();
+        processor.onNext("one");
+        processor.onNext("two");
+        processor.onNext("three");
+        processor.onComplete();
 
-        subject.onNext("four");
-        subject.onComplete();
-        subject.onError(new Throwable());
+        processor.onNext("four");
+        processor.onComplete();
+        processor.onError(new Throwable());
 
         assertCompletedSubscriber(o1);
 
         // assert that subscribing a 2nd time gets the same data
         Subscriber<String> o2 = TestHelper.mockSubscriber();
-        subject.subscribe(o2);
+        processor.subscribe(o2);
         assertCompletedSubscriber(o2);
     }
 
@@ -137,17 +137,17 @@ public class ReplayProcessorTest extends FlowableProcessorTest<Object> {
 
     @Test
     public void testCompletedAfterError() {
-        ReplayProcessor<String> subject = ReplayProcessor.create();
+        ReplayProcessor<String> processor = ReplayProcessor.create();
 
         Subscriber<String> observer = TestHelper.mockSubscriber();
 
-        subject.onNext("one");
-        subject.onError(testException);
-        subject.onNext("two");
-        subject.onComplete();
-        subject.onError(new RuntimeException());
+        processor.onNext("one");
+        processor.onError(testException);
+        processor.onNext("two");
+        processor.onComplete();
+        processor.onError(new RuntimeException());
 
-        subject.subscribe(observer);
+        processor.subscribe(observer);
         verify(observer).onSubscribe((Subscription)notNull());
         verify(observer, times(1)).onNext("one");
         verify(observer, times(1)).onError(testException);
@@ -167,24 +167,24 @@ public class ReplayProcessorTest extends FlowableProcessorTest<Object> {
 
     @Test
     public void testError() {
-        ReplayProcessor<String> subject = ReplayProcessor.create();
+        ReplayProcessor<String> processor = ReplayProcessor.create();
 
         Subscriber<String> observer = TestHelper.mockSubscriber();
-        subject.subscribe(observer);
+        processor.subscribe(observer);
 
-        subject.onNext("one");
-        subject.onNext("two");
-        subject.onNext("three");
-        subject.onError(testException);
+        processor.onNext("one");
+        processor.onNext("two");
+        processor.onNext("three");
+        processor.onError(testException);
 
-        subject.onNext("four");
-        subject.onError(new Throwable());
-        subject.onComplete();
+        processor.onNext("four");
+        processor.onError(new Throwable());
+        processor.onComplete();
 
         assertErrorSubscriber(observer);
 
         observer = TestHelper.mockSubscriber();
-        subject.subscribe(observer);
+        processor.subscribe(observer);
         assertErrorSubscriber(observer);
     }
 
@@ -198,22 +198,22 @@ public class ReplayProcessorTest extends FlowableProcessorTest<Object> {
 
     @Test
     public void testSubscribeMidSequence() {
-        ReplayProcessor<String> subject = ReplayProcessor.create();
+        ReplayProcessor<String> processor = ReplayProcessor.create();
 
         Subscriber<String> observer = TestHelper.mockSubscriber();
-        subject.subscribe(observer);
+        processor.subscribe(observer);
 
-        subject.onNext("one");
-        subject.onNext("two");
+        processor.onNext("one");
+        processor.onNext("two");
 
         assertObservedUntilTwo(observer);
 
         Subscriber<String> anotherSubscriber = TestHelper.mockSubscriber();
-        subject.subscribe(anotherSubscriber);
+        processor.subscribe(anotherSubscriber);
         assertObservedUntilTwo(anotherSubscriber);
 
-        subject.onNext("three");
-        subject.onComplete();
+        processor.onNext("three");
+        processor.onComplete();
 
         assertCompletedSubscriber(observer);
         assertCompletedSubscriber(anotherSubscriber);
@@ -221,24 +221,24 @@ public class ReplayProcessorTest extends FlowableProcessorTest<Object> {
 
     @Test
     public void testUnsubscribeFirstSubscriber() {
-        ReplayProcessor<String> subject = ReplayProcessor.create();
+        ReplayProcessor<String> processor = ReplayProcessor.create();
 
         Subscriber<String> observer = TestHelper.mockSubscriber();
         TestSubscriber<String> ts = new TestSubscriber<String>(observer);
-        subject.subscribe(ts);
+        processor.subscribe(ts);
 
-        subject.onNext("one");
-        subject.onNext("two");
+        processor.onNext("one");
+        processor.onNext("two");
 
         ts.dispose();
         assertObservedUntilTwo(observer);
 
         Subscriber<String> anotherSubscriber = TestHelper.mockSubscriber();
-        subject.subscribe(anotherSubscriber);
+        processor.subscribe(anotherSubscriber);
         assertObservedUntilTwo(anotherSubscriber);
 
-        subject.onNext("three");
-        subject.onComplete();
+        processor.onNext("three");
+        processor.onComplete();
 
         assertObservedUntilTwo(observer);
         assertCompletedSubscriber(anotherSubscriber);
@@ -309,15 +309,15 @@ public class ReplayProcessorTest extends FlowableProcessorTest<Object> {
 
         };
 
-        ReplayProcessor<String> subject = ReplayProcessor.create();
-        subject.subscribe(observer1);
-        subject.onNext("one");
+        ReplayProcessor<String> processor = ReplayProcessor.create();
+        processor.subscribe(observer1);
+        processor.onNext("one");
         assertEquals("one", lastValueForSubscriber1.get());
-        subject.onNext("two");
+        processor.onNext("two");
         assertEquals("two", lastValueForSubscriber1.get());
 
         // use subscribeOn to make this async otherwise we deadlock as we are using CountDownLatches
-        subject.subscribeOn(Schedulers.newThread()).subscribe(observer2);
+        processor.subscribeOn(Schedulers.newThread()).subscribe(observer2);
 
         System.out.println("before waiting for one");
 
@@ -326,7 +326,7 @@ public class ReplayProcessorTest extends FlowableProcessorTest<Object> {
 
         System.out.println("after waiting for one");
 
-        subject.onNext("three");
+        processor.onNext("three");
 
         System.out.println("sent three");
 
@@ -335,9 +335,9 @@ public class ReplayProcessorTest extends FlowableProcessorTest<Object> {
 
         System.out.println("about to send onComplete");
 
-        subject.onComplete();
+        processor.onComplete();
 
-        System.out.println("completed subject");
+        System.out.println("completed processor");
 
         // release
         makeSlow.countDown();

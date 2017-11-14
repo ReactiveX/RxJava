@@ -40,22 +40,22 @@ public class PublishProcessorTest extends FlowableProcessorTest<Object> {
 
     @Test
     public void testCompleted() {
-        PublishProcessor<String> subject = PublishProcessor.create();
+        PublishProcessor<String> processor = PublishProcessor.create();
 
         Subscriber<String> observer = TestHelper.mockSubscriber();
-        subject.subscribe(observer);
+        processor.subscribe(observer);
 
-        subject.onNext("one");
-        subject.onNext("two");
-        subject.onNext("three");
-        subject.onComplete();
+        processor.onNext("one");
+        processor.onNext("two");
+        processor.onNext("three");
+        processor.onComplete();
 
         Subscriber<String> anotherSubscriber = TestHelper.mockSubscriber();
-        subject.subscribe(anotherSubscriber);
+        processor.subscribe(anotherSubscriber);
 
-        subject.onNext("four");
-        subject.onComplete();
-        subject.onError(new Throwable());
+        processor.onNext("four");
+        processor.onComplete();
+        processor.onError(new Throwable());
 
         assertCompletedSubscriber(observer);
         // todo bug?            assertNeverSubscriber(anotherSubscriber);
@@ -113,22 +113,22 @@ public class PublishProcessorTest extends FlowableProcessorTest<Object> {
 
     @Test
     public void testError() {
-        PublishProcessor<String> subject = PublishProcessor.create();
+        PublishProcessor<String> processor = PublishProcessor.create();
 
         Subscriber<String> observer = TestHelper.mockSubscriber();
-        subject.subscribe(observer);
+        processor.subscribe(observer);
 
-        subject.onNext("one");
-        subject.onNext("two");
-        subject.onNext("three");
-        subject.onError(testException);
+        processor.onNext("one");
+        processor.onNext("two");
+        processor.onNext("three");
+        processor.onError(testException);
 
         Subscriber<String> anotherSubscriber = TestHelper.mockSubscriber();
-        subject.subscribe(anotherSubscriber);
+        processor.subscribe(anotherSubscriber);
 
-        subject.onNext("four");
-        subject.onError(new Throwable());
-        subject.onComplete();
+        processor.onNext("four");
+        processor.onError(new Throwable());
+        processor.onComplete();
 
         assertErrorSubscriber(observer);
         // todo bug?            assertNeverSubscriber(anotherSubscriber);
@@ -144,21 +144,21 @@ public class PublishProcessorTest extends FlowableProcessorTest<Object> {
 
     @Test
     public void testSubscribeMidSequence() {
-        PublishProcessor<String> subject = PublishProcessor.create();
+        PublishProcessor<String> processor = PublishProcessor.create();
 
         Subscriber<String> observer = TestHelper.mockSubscriber();
-        subject.subscribe(observer);
+        processor.subscribe(observer);
 
-        subject.onNext("one");
-        subject.onNext("two");
+        processor.onNext("one");
+        processor.onNext("two");
 
         assertObservedUntilTwo(observer);
 
         Subscriber<String> anotherSubscriber = TestHelper.mockSubscriber();
-        subject.subscribe(anotherSubscriber);
+        processor.subscribe(anotherSubscriber);
 
-        subject.onNext("three");
-        subject.onComplete();
+        processor.onNext("three");
+        processor.onComplete();
 
         assertCompletedSubscriber(observer);
         assertCompletedStartingWithThreeSubscriber(anotherSubscriber);
@@ -174,23 +174,23 @@ public class PublishProcessorTest extends FlowableProcessorTest<Object> {
 
     @Test
     public void testUnsubscribeFirstSubscriber() {
-        PublishProcessor<String> subject = PublishProcessor.create();
+        PublishProcessor<String> processor = PublishProcessor.create();
 
         Subscriber<String> observer = TestHelper.mockSubscriber();
         TestSubscriber<String> ts = new TestSubscriber<String>(observer);
-        subject.subscribe(ts);
+        processor.subscribe(ts);
 
-        subject.onNext("one");
-        subject.onNext("two");
+        processor.onNext("one");
+        processor.onNext("two");
 
         ts.dispose();
         assertObservedUntilTwo(observer);
 
         Subscriber<String> anotherSubscriber = TestHelper.mockSubscriber();
-        subject.subscribe(anotherSubscriber);
+        processor.subscribe(anotherSubscriber);
 
-        subject.onNext("three");
-        subject.onComplete();
+        processor.onNext("three");
+        processor.onComplete();
 
         assertObservedUntilTwo(observer);
         assertCompletedStartingWithThreeSubscriber(anotherSubscriber);
@@ -220,7 +220,7 @@ public class PublishProcessorTest extends FlowableProcessorTest<Object> {
             public Flowable<String> apply(final Integer v) {
                 countParent.incrementAndGet();
 
-                // then subscribe to subject again (it will not receive the previous value)
+                // then subscribe to processor again (it will not receive the previous value)
                 return s.map(new Function<Integer, String>() {
 
                     @Override
