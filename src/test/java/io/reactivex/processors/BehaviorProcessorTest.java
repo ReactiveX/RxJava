@@ -50,14 +50,14 @@ public class BehaviorProcessorTest extends DelayedFlowableProcessorTest<Object> 
 
     @Test
     public void testThatSubscriberReceivesDefaultValueAndSubsequentEvents() {
-        BehaviorProcessor<String> subject = BehaviorProcessor.createDefault("default");
+        BehaviorProcessor<String> processor = BehaviorProcessor.createDefault("default");
 
         Subscriber<String> observer = TestHelper.mockSubscriber();
-        subject.subscribe(observer);
+        processor.subscribe(observer);
 
-        subject.onNext("one");
-        subject.onNext("two");
-        subject.onNext("three");
+        processor.onNext("one");
+        processor.onNext("two");
+        processor.onNext("three");
 
         verify(observer, times(1)).onNext("default");
         verify(observer, times(1)).onNext("one");
@@ -69,15 +69,15 @@ public class BehaviorProcessorTest extends DelayedFlowableProcessorTest<Object> 
 
     @Test
     public void testThatSubscriberReceivesLatestAndThenSubsequentEvents() {
-        BehaviorProcessor<String> subject = BehaviorProcessor.createDefault("default");
+        BehaviorProcessor<String> processor = BehaviorProcessor.createDefault("default");
 
-        subject.onNext("one");
+        processor.onNext("one");
 
         Subscriber<String> observer = TestHelper.mockSubscriber();
-        subject.subscribe(observer);
+        processor.subscribe(observer);
 
-        subject.onNext("two");
-        subject.onNext("three");
+        processor.onNext("two");
+        processor.onNext("three");
 
         verify(observer, Mockito.never()).onNext("default");
         verify(observer, times(1)).onNext("one");
@@ -89,13 +89,13 @@ public class BehaviorProcessorTest extends DelayedFlowableProcessorTest<Object> 
 
     @Test
     public void testSubscribeThenOnComplete() {
-        BehaviorProcessor<String> subject = BehaviorProcessor.createDefault("default");
+        BehaviorProcessor<String> processor = BehaviorProcessor.createDefault("default");
 
         Subscriber<String> observer = TestHelper.mockSubscriber();
-        subject.subscribe(observer);
+        processor.subscribe(observer);
 
-        subject.onNext("one");
-        subject.onComplete();
+        processor.onNext("one");
+        processor.onComplete();
 
         verify(observer, times(1)).onNext("default");
         verify(observer, times(1)).onNext("one");
@@ -105,12 +105,12 @@ public class BehaviorProcessorTest extends DelayedFlowableProcessorTest<Object> 
 
     @Test
     public void testSubscribeToCompletedOnlyEmitsOnComplete() {
-        BehaviorProcessor<String> subject = BehaviorProcessor.createDefault("default");
-        subject.onNext("one");
-        subject.onComplete();
+        BehaviorProcessor<String> processor = BehaviorProcessor.createDefault("default");
+        processor.onNext("one");
+        processor.onComplete();
 
         Subscriber<String> observer = TestHelper.mockSubscriber();
-        subject.subscribe(observer);
+        processor.subscribe(observer);
 
         verify(observer, never()).onNext("default");
         verify(observer, never()).onNext("one");
@@ -120,13 +120,13 @@ public class BehaviorProcessorTest extends DelayedFlowableProcessorTest<Object> 
 
     @Test
     public void testSubscribeToErrorOnlyEmitsOnError() {
-        BehaviorProcessor<String> subject = BehaviorProcessor.createDefault("default");
-        subject.onNext("one");
+        BehaviorProcessor<String> processor = BehaviorProcessor.createDefault("default");
+        processor.onNext("one");
         RuntimeException re = new RuntimeException("test error");
-        subject.onError(re);
+        processor.onError(re);
 
         Subscriber<String> observer = TestHelper.mockSubscriber();
-        subject.subscribe(observer);
+        processor.subscribe(observer);
 
         verify(observer, never()).onNext("default");
         verify(observer, never()).onNext("one");
@@ -181,15 +181,15 @@ public class BehaviorProcessorTest extends DelayedFlowableProcessorTest<Object> 
 
     @Test
     public void testCompletedAfterErrorIsNotSent() {
-        BehaviorProcessor<String> subject = BehaviorProcessor.createDefault("default");
+        BehaviorProcessor<String> processor = BehaviorProcessor.createDefault("default");
 
         Subscriber<String> observer = TestHelper.mockSubscriber();
-        subject.subscribe(observer);
+        processor.subscribe(observer);
 
-        subject.onNext("one");
-        subject.onError(testException);
-        subject.onNext("two");
-        subject.onComplete();
+        processor.onNext("one");
+        processor.onError(testException);
+        processor.onNext("two");
+        processor.onComplete();
 
         verify(observer, times(1)).onNext("default");
         verify(observer, times(1)).onNext("one");
@@ -200,15 +200,15 @@ public class BehaviorProcessorTest extends DelayedFlowableProcessorTest<Object> 
 
     @Test
     public void testCompletedAfterErrorIsNotSent2() {
-        BehaviorProcessor<String> subject = BehaviorProcessor.createDefault("default");
+        BehaviorProcessor<String> processor = BehaviorProcessor.createDefault("default");
 
         Subscriber<String> observer = TestHelper.mockSubscriber();
-        subject.subscribe(observer);
+        processor.subscribe(observer);
 
-        subject.onNext("one");
-        subject.onError(testException);
-        subject.onNext("two");
-        subject.onComplete();
+        processor.onNext("one");
+        processor.onError(testException);
+        processor.onNext("two");
+        processor.onComplete();
 
         verify(observer, times(1)).onNext("default");
         verify(observer, times(1)).onNext("one");
@@ -217,7 +217,7 @@ public class BehaviorProcessorTest extends DelayedFlowableProcessorTest<Object> 
         verify(observer, never()).onComplete();
 
         Subscriber<Object> o2 = TestHelper.mockSubscriber();
-        subject.subscribe(o2);
+        processor.subscribe(o2);
         verify(o2, times(1)).onError(testException);
         verify(o2, never()).onNext(any());
         verify(o2, never()).onComplete();
@@ -225,15 +225,15 @@ public class BehaviorProcessorTest extends DelayedFlowableProcessorTest<Object> 
 
     @Test
     public void testCompletedAfterErrorIsNotSent3() {
-        BehaviorProcessor<String> subject = BehaviorProcessor.createDefault("default");
+        BehaviorProcessor<String> processor = BehaviorProcessor.createDefault("default");
 
         Subscriber<String> observer = TestHelper.mockSubscriber();
-        subject.subscribe(observer);
+        processor.subscribe(observer);
 
-        subject.onNext("one");
-        subject.onComplete();
-        subject.onNext("two");
-        subject.onComplete();
+        processor.onNext("one");
+        processor.onComplete();
+        processor.onNext("two");
+        processor.onComplete();
 
         verify(observer, times(1)).onNext("default");
         verify(observer, times(1)).onNext("one");
@@ -242,7 +242,7 @@ public class BehaviorProcessorTest extends DelayedFlowableProcessorTest<Object> 
         verify(observer, never()).onNext("two");
 
         Subscriber<Object> o2 = TestHelper.mockSubscriber();
-        subject.subscribe(o2);
+        processor.subscribe(o2);
         verify(o2, times(1)).onComplete();
         verify(o2, never()).onNext(any());
         verify(observer, never()).onError(any(Throwable.class));
