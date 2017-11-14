@@ -2470,7 +2470,42 @@ public class ObservableNullTests {
             public Object apply(Integer v) {
                 return v;
             }
-        }, null);
+        }, (Callable<? extends Map<Object,Object>>) null);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void toMapMergeFunctionNull() {
+        just1.toMap(new Function<Integer, Object>() {
+            @Override
+            public Object apply(Integer v) {
+                return v;
+            }
+        }, new Function<Integer, Object>() {
+            @Override
+            public Object apply(Integer v) {
+                return v;
+            }
+        }, (BiFunction<Object, Object, Object>) null);
+    }
+
+    @Test
+    public void toMapMergeFunctionReturnsNullAllowed() {
+        just1.toMap(new Function<Integer, Object>() {
+            @Override
+            public Object apply(Integer v) {
+                return v;
+            }
+        }, new Function<Integer, Object>() {
+            @Override
+            public Object apply(Integer v) {
+                return v;
+            }
+        }, new BiFunction<Object, Object, Object>() {
+            @Override
+            public Object apply(Object o, Object o2) throws Exception {
+                return null;
+            }
+        } );
     }
 
     @Test(expected = NullPointerException.class)

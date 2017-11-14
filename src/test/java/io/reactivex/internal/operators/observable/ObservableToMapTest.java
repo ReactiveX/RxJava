@@ -24,6 +24,7 @@ import io.reactivex.*;
 import io.reactivex.Observable;
 import io.reactivex.Observer;
 import io.reactivex.functions.Function;
+import io.reactivex.functions.BiFunction;
 
 public class ObservableToMapTest {
     Observer<Object> objectObserver;
@@ -395,6 +396,78 @@ public class ObservableToMapTest {
 
         verify(singleObserver, never()).onSuccess(expected);
         verify(singleObserver, times(1)).onError(any(Throwable.class));
+    }
+
+    @Test
+    public void testMergeMap() {
+        Observable<String> source = Observable.just("a", "bb", "ccc", "dddd", "a", "ccc");
+
+        Map<Integer, String> expected = new HashMap<Integer, String>();
+        expected.put(1, "aa");
+        expected.put(2, "bb");
+        expected.put(3, "cccccc");
+        expected.put(4, "dddd");
+
+        Single<Map<Integer, String>> mapped = source
+                .toMap(lengthFunc, new Function<String, String>() {
+                    @Override
+                    public String apply(String v) {
+                        return v;
+                    }
+                }, new BiFunction<String, String, String>() {
+                    @Override
+                    public String apply(String s, String s2) {
+                        return s.concat(s2);
+                    }
+                });
+
+        mapped.subscribe(singleObserver);
+
+        verify(singleObserver, never()).onError(any(Throwable.class));
+        verify(singleObserver, times(1)).onSuccess(expected);
+    }
+
+    @Test
+    public void testMergeMapWithFactory() {
+        Observable<String> source = Observable.just("a", "bb", "ccc", "dddd", "a", "ccc");
+
+        Callable<Map<Integer, String>> mapFactory = new Callable<Map<Integer, String>>() {
+            @Override
+            public Map<Integer, String> call() {
+                return new LinkedHashMap<Integer, String>() {
+
+                    private static final long serialVersionUID = -3296811238780863394L;
+
+                    @Override
+                    protected boolean removeEldestEntry(Map.Entry<Integer, String> eldest) {
+                        return size() > 3;
+                    }
+                };
+            }
+        };
+
+        Map<Integer, String> expected = new HashMap<Integer, String>();
+        expected.put(1, "a");
+        expected.put(3, "cccccc");
+        expected.put(4, "dddd");
+
+        Single<Map<Integer, String>> mapped = source
+                .toMap(lengthFunc, new Function<String, String>() {
+                    @Override
+                    public String apply(String v) {
+                        return v;
+                    }
+                }, new BiFunction<String, String, String>() {
+                    @Override
+                    public String apply(String s, String s2) {
+                        return s.concat(s2);
+                    }
+                }, mapFactory);
+
+        mapped.subscribe(singleObserver);
+
+        verify(singleObserver, never()).onError(any(Throwable.class));
+        verify(singleObserver, times(1)).onSuccess(expected);
     }
 
 }
