@@ -472,6 +472,40 @@ public final class Functions {
         }
     }
 
+    public static <T, K, V> BiConsumer<Map<K, V>, T> toMapKeyValueMergeSelector(final Function<? super T, ? extends K> keySelector, final Function<? super T, ? extends V> valueSelector, final BiFunction<V, V, V> mergeFunction) {
+        return new ToMapKeyValueMergeSelector<K, V, T>(valueSelector, keySelector, mergeFunction);
+    }
+
+    private static final class ToMapKeyValueMergeSelector<K, V, T>
+            implements BiConsumer<Map<K, V>, T> {
+        private final Function<? super T, ? extends K> keySelector;
+        private final Function<? super T, ? extends V> valueSelector;
+        private final BiFunction<V, V, V> mergeFunction;
+
+        ToMapKeyValueMergeSelector(
+                Function<? super T, ? extends V> valueSelector,
+                Function<? super T, ? extends K> keySelector,
+                BiFunction<V, V, V> mergeFunction) {
+            this.valueSelector = valueSelector;
+            this.keySelector = keySelector;
+            this.mergeFunction = mergeFunction;
+        }
+
+        @Override
+        public void accept(Map<K, V> m, T t) throws Exception {
+            K key = keySelector.apply(t);
+            V value = valueSelector.apply(t);
+            V oldValue = m.get(key);
+            V newValue = (oldValue == null) ? value :
+                    mergeFunction.apply(oldValue, value);
+            if(newValue == null) {
+                m.remove(key);
+            } else {
+                m.put(key, newValue);
+            }
+        }
+    }
+
     public static <T, K, V> BiConsumer<Map<K, Collection<V>>, T> toMultimapKeyValueSelector(
             final Function<? super T, ? extends K> keySelector, final Function<? super T, ? extends V> valueSelector,
             final Function<? super K, ? extends Collection<? super V>> collectionFactory) {

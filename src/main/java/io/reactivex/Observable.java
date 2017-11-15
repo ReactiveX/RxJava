@@ -12544,6 +12544,85 @@ public abstract class Observable<T> implements ObservableSource<T> {
     }
 
     /**
+     * Returns a Single that emits a single HashMap containing values corresponding to items emitted by the
+     * source ObservableSource, mapped by the keys returned by a specified {@code keySelector} function, where
+     * values are merged for duplicate keys by a specified {@code mergeFunction} function.
+     * <p>
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/toMap.2.png" alt="">
+     * <p>
+     * If more than one source item maps to the same key, the HashMap will contain a single entry that
+     * corresponds to the merged result of those items.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code toMap} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param <K> the key type of the Map
+     * @param <V> the value type of the Map
+     * @param keySelector
+     *            the function that extracts the key from a source item to be used in the HashMap
+     * @param valueSelector
+     *            the function that extracts the value from a source item to be used in the HashMap
+     * @param mergeFunction
+     *            the binary operator that merges items that map to the same key
+     * @return a Single that emits a single item: a HashMap containing the mapped items from the source
+     *         ObservableSource
+     * @see <a href="http://reactivex.io/documentation/operators/to.html">ReactiveX operators documentation: To</a>
+     */
+    @CheckReturnValue
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final <K, V> Single<Map<K, V>> toMap(
+            final Function<? super T, ? extends K> keySelector,
+            final Function<? super T, ? extends V> valueSelector,
+            final BiFunction<V, V, V> mergeFunction) {
+        ObjectHelper.requireNonNull(keySelector, "keySelector is null");
+        ObjectHelper.requireNonNull(valueSelector, "valueSelector is null");
+        ObjectHelper.requireNonNull(mergeFunction, "mergeFunction is null");
+        return collect(HashMapSupplier.<K, V>asCallable(), Functions.toMapKeyValueMergeSelector(keySelector, valueSelector, mergeFunction));
+    }
+
+    /**
+     * Returns a Single that emits a single HashMap containing values corresponding to items emitted by the
+     * source ObservableSource, mapped by the keys returned by a specified {@code keySelector} function, where
+     * values are merged for duplicate keys by a specified {@code mergeFunction} function.
+     * <p>
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/toMap.2.png" alt="">
+     * <p>
+     * If more than one source item maps to the same key, the HashMap will contain a single entry that
+     * corresponds to the merged result of those items.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code toMap} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param <K> the key type of the Map
+     * @param <V> the value type of the Map
+     * @param keySelector
+     *            the function that extracts the key from a source item to be used in the HashMap
+     * @param valueSelector
+     *            the function that extracts the value from a source item to be used in the HashMap
+     * @param mergeFunction
+     *            the binary operator that merges items that map to the same key
+     * @param mapSupplier
+     *            the function that returns a Map instance to be used
+     * @return a Single that emits a single item: a HashMap containing the mapped items from the source
+     *         ObservableSource
+     * @see <a href="http://reactivex.io/documentation/operators/to.html">ReactiveX operators documentation: To</a>
+     */
+    @CheckReturnValue
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final <K, V> Single<Map<K, V>> toMap(
+            final Function<? super T, ? extends K> keySelector,
+            final Function<? super T, ? extends V> valueSelector,
+            final BiFunction<V, V, V> mergeFunction,
+            final Callable<? extends Map<K, V>> mapSupplier) {
+        ObjectHelper.requireNonNull(keySelector, "keySelector is null");
+        ObjectHelper.requireNonNull(valueSelector, "valueSelector is null");
+        ObjectHelper.requireNonNull(mergeFunction, "mergeFunction is null");
+        return collect(mapSupplier, Functions.toMapKeyValueMergeSelector(keySelector, valueSelector, mergeFunction));
+    }
+
+    /**
      * Returns a Single that emits a single HashMap that contains an ArrayList of items emitted by the
      * source ObservableSource keyed by a specified {@code keySelector} function.
      * <p>
