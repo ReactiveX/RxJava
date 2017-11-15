@@ -371,4 +371,27 @@ public class ScheduledRunnableTest {
         run.run();
         assertEquals(ScheduledRunnable.ASYNC_DISPOSED, run.get(ScheduledRunnable.FUTURE_INDEX));
     }
+
+
+    @Test
+    public void noParentIsDisposed() {
+        ScheduledRunnable run = new ScheduledRunnable(Functions.EMPTY_RUNNABLE, null);
+        assertFalse(run.isDisposed());
+        run.run();
+        assertTrue(run.isDisposed());
+    }
+
+    @Test
+    public void withParentIsDisposed() {
+        CompositeDisposable set = new CompositeDisposable();
+        ScheduledRunnable run = new ScheduledRunnable(Functions.EMPTY_RUNNABLE, set);
+        set.add(run);
+
+        assertFalse(run.isDisposed());
+
+        run.run();
+        assertTrue(run.isDisposed());
+
+        assertFalse(set.remove(run));
+    }
 }
