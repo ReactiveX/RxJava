@@ -26,7 +26,12 @@ implements Runnable, Callable<Object>, Disposable {
     private static final long serialVersionUID = -6120223772001106981L;
     final Runnable actual;
 
-    static final Object DISPOSED = new Object();
+    /** Indicates that the parent tracking this task has been notified about its completion. */
+    static final Object PARENT_DISPOSED = new Object();
+    /** Indicates the dispose() was called from within the run/call method. */
+    static final Object SYNC_DISPOSED = new Object();
+    /** Indicates the dispose() was called from another thread. */
+    static final Object ASYNC_DISPOSED = new Object();
 
     static final Object DONE = new Object();
 
@@ -66,13 +71,13 @@ implements Runnable, Callable<Object>, Disposable {
         } finally {
             lazySet(THREAD_INDEX, null);
             Object o = get(PARENT_INDEX);
-            if (o != DISPOSED && o != null && compareAndSet(PARENT_INDEX, o, DONE)) {
+            if (o != PARENT_DISPOSED && compareAndSet(PARENT_INDEX, o, DONE) && o != null) {
                 ((DisposableContainer)o).delete(this);
             }
 
             for (;;) {
                 o = get(FUTURE_INDEX);
-                if (o == DISPOSED || compareAndSet(FUTURE_INDEX, o, DONE)) {
+                if (o == SYNC_DISPOSED || o == ASYNC_DISPOSED || compareAndSet(FUTURE_INDEX, o, DONE)) {
                     break;
                 }
             }
@@ -85,8 +90,12 @@ implements Runnable, Callable<Object>, Disposable {
             if (o == DONE) {
                 return;
             }
-            if (o == DISPOSED) {
-                f.cancel(get(THREAD_INDEX) != Thread.currentThread());
+            if (o == SYNC_DISPOSED) {
+                f.cancel(false);
+                return;
+            }
+            if (o == ASYNC_DISPOSED) {
+                f.cancel(true);
                 return;
             }
             if (compareAndSet(FUTURE_INDEX, o, f)) {
@@ -99,12 +108,13 @@ implements Runnable, Callable<Object>, Disposable {
     public void dispose() {
         for (;;) {
             Object o = get(FUTURE_INDEX);
-            if (o == DONE || o == DISPOSED) {
+            if (o == DONE || o == SYNC_DISPOSED || o == ASYNC_DISPOSED) {
                 break;
             }
-            if (compareAndSet(FUTURE_INDEX, o, DISPOSED)) {
+            boolean async = get(THREAD_INDEX) != Thread.currentThread();
+            if (compareAndSet(FUTURE_INDEX, o, async ? ASYNC_DISPOSED : SYNC_DISPOSED)) {
                 if (o != null) {
-                    ((Future<?>)o).cancel(get(THREAD_INDEX) != Thread.currentThread());
+                    ((Future<?>)o).cancel(async);
                 }
                 break;
             }
@@ -112,10 +122,10 @@ implements Runnable, Callable<Object>, Disposable {
 
         for (;;) {
             Object o = get(PARENT_INDEX);
-            if (o == DONE || o == DISPOSED || o == null) {
+            if (o == DONE || o == PARENT_DISPOSED || o == null) {
                 return;
             }
-            if (compareAndSet(PARENT_INDEX, o, DISPOSED)) {
+            if (compareAndSet(PARENT_INDEX, o, PARENT_DISPOSED)) {
                 ((DisposableContainer)o).delete(this);
                 return;
             }
@@ -124,7 +134,7 @@ implements Runnable, Callable<Object>, Disposable {
 
     @Override
     public boolean isDisposed() {
-        Object o = get(FUTURE_INDEX);
-        return o == DISPOSED || o == DONE;
+        Object o = get(PARENT_INDEX);
+        return o == PARENT_DISPOSED || o == DONE;
     }
 }
