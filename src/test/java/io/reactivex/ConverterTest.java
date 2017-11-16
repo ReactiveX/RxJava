@@ -1,9 +1,24 @@
+/**
+ * Copyright (c) 2016-present, RxJava Contributors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is
+ * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
+ * the License for the specific language governing permissions and limitations under the License.
+ */
+
 package io.reactivex;
 
-import io.reactivex.exceptions.TestException;
+import static org.junit.Assert.*;
+
 import org.junit.Test;
 
-import static org.junit.Assert.*;
+import io.reactivex.exceptions.TestException;
+import io.reactivex.parallel.*;
 
 public final class ConverterTest {
 
@@ -70,7 +85,7 @@ public final class ConverterTest {
     @Test
     public void completableConverterThrows() {
         try {
-            Completable.complete().as(new CompletableConverter() {
+            Completable.complete().as(new CompletableConverter<Completable>() {
                 @Override
                 public Completable apply(Completable v) {
                     throw new TestException("Forced failure");
@@ -84,32 +99,44 @@ public final class ConverterTest {
 
     // Test demos for signature generics in compose() methods. Just needs to compile.
 
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     @Test
     public void observableGenericsSignatureTest() {
         A<String, Integer> a = new A<String, Integer>() { };
 
-        Observable.just(a).as(ConverterTest.<Integer>testObservableConverterCreator());
+        Observable.just(a).as((ObservableConverter)ConverterTest.testObservableConverterCreator());
     }
 
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     @Test
     public void singleGenericsSignatureTest() {
         A<String, Integer> a = new A<String, Integer>() { };
 
-        Single.just(a).as(ConverterTest.<Integer>testSingleConverterCreator());
+        Single.just(a).as((SingleConverter)ConverterTest.<String>testSingleConverterCreator());
     }
 
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     @Test
     public void maybeGenericsSignatureTest() {
         A<String, Integer> a = new A<String, Integer>() { };
 
-        Maybe.just(a).as(ConverterTest.<Integer>testMaybeConverterCreator());
+        Maybe.just(a).as((MaybeConverter)ConverterTest.<String>testMaybeConverterCreator());
     }
 
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     @Test
     public void flowableGenericsSignatureTest() {
         A<String, Integer> a = new A<String, Integer>() { };
 
-        Flowable.just(a).as(ConverterTest.<Integer>testFlowableConverterCreator());
+        Flowable.just(a).as((FlowableConverter)ConverterTest.<String>testFlowableConverterCreator());
+    }
+
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    @Test
+    public void parallelFlowableGenericsSignatureTest() {
+        A<String, Integer> a = new A<String, Integer>() { };
+
+        Flowable.just(a).parallel().as((ParallelFlowableConverter)ConverterTest.<String>testParallelFlowableConverterCreator());
     }
 
     @Test
@@ -140,6 +167,12 @@ public final class ConverterTest {
                 .as(converter)
                 .test()
                 .assertComplete();
+
+        Flowable.just(1)
+        .parallel()
+        .as(converter)
+        .test()
+        .assertValue(1);
     }
 
     interface A<T, R> { }
@@ -185,11 +218,28 @@ public final class ConverterTest {
         };
     }
 
-    private static class CompositeConverter implements ObservableConverter<Integer, Flowable<Integer>>,
+    private static <T> ParallelFlowableConverter<A<T, ?>, B<T>> testParallelFlowableConverterCreator() {
+        return new ParallelFlowableConverter<A<T, ?>, B<T>>() {
+            @Override
+            public B<T> apply(ParallelFlowable<A<T, ?>> a) {
+                return new B<T>() {
+                };
+            }
+        };
+    }
+
+    static class CompositeConverter
+    implements ObservableConverter<Integer, Flowable<Integer>>,
+            ParallelFlowableConverter<Integer, Flowable<Integer>>,
             FlowableConverter<Integer, Observable<Integer>>,
             MaybeConverter<Integer, Flowable<Integer>>,
             SingleConverter<Integer, Flowable<Integer>>,
             CompletableConverter<Flowable<Integer>> {
+        @Override
+        public Flowable<Integer> apply(ParallelFlowable<Integer> upstream) throws Exception {
+            return upstream.sequential();
+        }
+
         @Override
         public Flowable<Integer> apply(Completable upstream) throws Exception {
             return upstream.toFlowable();

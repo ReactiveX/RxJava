@@ -560,6 +560,46 @@ public class ParamValidationCheckerTest {
 
         defaultValues.put(ParallelFailureHandling.class, ParallelFailureHandling.ERROR);
 
+        @SuppressWarnings("rawtypes")
+        class MixedConverters implements FlowableConverter, ObservableConverter, SingleConverter,
+        MaybeConverter, CompletableConverter, ParallelFlowableConverter {
+
+            @Override
+            public Object apply(ParallelFlowable upstream) throws Exception {
+                return upstream;
+            }
+
+            @Override
+            public Object apply(Completable upstream) throws Exception {
+                return upstream;
+            }
+
+            @Override
+            public Object apply(Maybe upstream) throws Exception {
+                return upstream;
+            }
+
+            @Override
+            public Object apply(Single upstream) throws Exception {
+                return upstream;
+            }
+
+            @Override
+            public Object apply(Observable upstream) throws Exception {
+                return upstream;
+            }
+
+            @Override
+            public Object apply(Flowable upstream) throws Exception {
+                return upstream;
+            }
+        }
+
+        MixedConverters mc = new MixedConverters();
+        for (Class<?> c : MixedConverters.class.getInterfaces()) {
+            defaultValues.put(c, mc);
+        }
+
         // -----------------------------------------------------------------------------------
 
         defaultInstances = new HashMap<Class<?>, List<Object>>();
