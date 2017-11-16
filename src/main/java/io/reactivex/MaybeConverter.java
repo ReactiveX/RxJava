@@ -29,6 +29,7 @@ public interface MaybeConverter<T, R> {
      *
      * @param upstream the upstream Maybe instance
      * @return the converted value
+     * @throws Exception on error
      */
     @NonNull
     R apply(@NonNull Maybe<T> upstream) throws Exception;
