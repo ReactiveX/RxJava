@@ -25,7 +25,7 @@ import io.reactivex.annotations.*;
 @Experimental
 public interface FlowableConverter<T, R> {
     /**
-     * Applies a function to the upstream Flowable and returns a converted value of type <R>.
+     * Applies a function to the upstream Flowable and returns a converted value of type {@code R}.
      *
      * @param upstream the upstream Flowable instance
      * @return the converted value

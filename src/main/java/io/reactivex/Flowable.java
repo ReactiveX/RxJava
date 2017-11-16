@@ -5245,7 +5245,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The backpressure behavior depends on what happens in the {@code converter} function.</dd>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code to} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dd>{@code as} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
      * @param <R> the resulting object type
@@ -5257,7 +5257,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.SPECIAL)
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final <R> R as(FlowableConverter<T, ? extends R> converter) {
+    public final <R> R as(@NonNull FlowableConverter<T, ? extends R> converter) {
         try {
             return ObjectHelper.requireNonNull(converter, "converter is null").apply(this);
         } catch (Throwable ex) {

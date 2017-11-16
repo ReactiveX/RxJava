@@ -1995,7 +1995,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * This allows fluent conversion to any other type.
      * <dl>
      * <dt><b>Scheduler:</b></dt>
-     * <dd>{@code to} does not operate by default on a particular {@link Scheduler}.</dd>
+     * <dd>{@code as} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
      * @param <R> the resulting object type
@@ -2006,7 +2006,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     @Experimental
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final <R> R as(MaybeConverter<T, ? extends R> converter) {
+    public final <R> R as(@NonNull MaybeConverter<T, ? extends R> converter) {
         try {
             return ObjectHelper.requireNonNull(converter, "converter is null").apply(this);
         } catch (Throwable ex) {

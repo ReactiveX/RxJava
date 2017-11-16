@@ -1528,7 +1528,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * This allows fluent conversion to any other type.
      * <dl>
      * <dt><b>Scheduler:</b></dt>
-     * <dd>{@code to} does not operate by default on a particular {@link Scheduler}.</dd>
+     * <dd>{@code as} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
      * @param <R> the resulting object type
@@ -1539,7 +1539,7 @@ public abstract class Single<T> implements SingleSource<T> {
     @Experimental
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final <R> R as(SingleConverter<T, ? extends R> converter) {
+    public final <R> R as(@NonNull SingleConverter<T, ? extends R> converter) {
         try {
             return ObjectHelper.requireNonNull(converter, "converter is null").apply(this);
         } catch (Throwable ex) {

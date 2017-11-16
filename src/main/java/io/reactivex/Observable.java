@@ -4806,7 +4806,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * This allows fluent conversion to any other type.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code to} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dd>{@code as} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
      * @param <R> the resulting object type
@@ -4817,7 +4817,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @Experimental
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final <R> R as(ObservableConverter<T, ? extends R> converter) {
+    public final <R> R as(@NonNull ObservableConverter<T, ? extends R> converter) {
         try {
             return ObjectHelper.requireNonNull(converter, "converter is null").apply(this);
         } catch (Throwable ex) {

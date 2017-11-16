@@ -25,7 +25,7 @@ import io.reactivex.annotations.*;
 @Experimental
 public interface MaybeConverter<T, R> {
     /**
-     * Applies a function to the upstream Maybe and returns a converted value of type <R>.
+     * Applies a function to the upstream Maybe and returns a converted value of type {@code R}.
      *
      * @param upstream the upstream Maybe instance
      * @return the converted value
