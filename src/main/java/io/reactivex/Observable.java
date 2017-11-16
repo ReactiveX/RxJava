@@ -4801,6 +4801,31 @@ public abstract class Observable<T> implements ObservableSource<T> {
     }
 
     /**
+     * Calls the specified converter function during assembly time and returns its resulting value.
+     * <p>
+     * This allows fluent conversion to any other type.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code to} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param <R> the resulting object type
+     * @param converter the function that receives the current Observable instance and returns a value
+     * @return the converted value
+     * @throws NullPointerException if converter is null
+     */
+    @CheckReturnValue
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final <R> R as(ObservableConverter<T, ? extends R> converter) {
+        try {
+            return ObjectHelper.requireNonNull(converter, "converter is null").apply(this);
+        } catch (Throwable ex) {
+            Exceptions.throwIfFatal(ex);
+            throw ExceptionHelper.wrapOrThrow(ex);
+        }
+    }
+
+    /**
      * Returns the first item emitted by this {@code Observable}, or throws
      * {@code NoSuchElementException} if it emits no items.
      * <dl>

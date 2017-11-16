@@ -1166,6 +1166,34 @@ public class ObservableTest {
     }
 
     @Test
+    public void testAsExtend() {
+        final TestObserver<Object> subscriber = new TestObserver<Object>();
+        final Object value = new Object();
+        Observable.just(value).as(new ObservableConverter<Object, Object>() {
+            @Override
+            public Object apply(Observable<Object> onSubscribe) {
+                onSubscribe.subscribe(subscriber);
+                subscriber.assertNoErrors();
+                subscriber.assertComplete();
+                subscriber.assertValue(value);
+                return subscriber.values().get(0);
+            }
+        });
+    }
+
+    @Test
+    public void as() {
+        Observable.just(1).as(new ObservableConverter<Integer, Flowable<Integer>>() {
+            @Override
+            public Flowable<Integer> apply(Observable<Integer> v) throws Exception {
+                return v.toFlowable(BackpressureStrategy.MISSING);
+            }
+        })
+        .test()
+        .assertResult(1);
+    }
+
+    @Test
     public void testFlatMap() {
         List<Integer> list = Observable.range(1, 5).flatMap(new Function<Integer, Observable<Integer>>() {
             @Override
