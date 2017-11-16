@@ -13,7 +13,7 @@
 
 package io.reactivex;
 
-import io.reactivex.annotations.NonNull;
+import io.reactivex.annotations.*;
 
 /**
  * Convenience interface and callback used by the {@link Maybe#as} operator to turn a Maybe into another
@@ -22,6 +22,7 @@ import io.reactivex.annotations.NonNull;
  * @param <T> the upstream type
  * @param <R> the output type
  */
+@Experimental
 public interface MaybeConverter<T, R> {
     /**
      * Applies a function to the upstream Maybe and returns a converted value of type <R>.

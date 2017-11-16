@@ -2003,6 +2003,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * @return the converted value
      * @throws NullPointerException if converter is null
      */
+    @Experimental
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> R as(MaybeConverter<T, ? extends R> converter) {

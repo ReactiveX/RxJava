@@ -5253,6 +5253,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @return the converted value
      * @throws NullPointerException if converter is null
      */
+    @Experimental
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.SPECIAL)
     @SchedulerSupport(SchedulerSupport.NONE)

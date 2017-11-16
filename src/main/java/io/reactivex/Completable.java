@@ -922,6 +922,7 @@ public abstract class Completable implements CompletableSource {
      * @return the converted value
      * @throws NullPointerException if converter is null
      */
+    @Experimental
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> R as(CompletableConverter<? extends R> converter) {

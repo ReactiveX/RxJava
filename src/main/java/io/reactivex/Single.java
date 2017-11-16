@@ -1536,6 +1536,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * @return the converted value
      * @throws NullPointerException if converter is null
      */
+    @Experimental
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> R as(SingleConverter<T, ? extends R> converter) {

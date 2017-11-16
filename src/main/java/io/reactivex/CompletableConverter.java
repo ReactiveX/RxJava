@@ -13,7 +13,7 @@
 
 package io.reactivex;
 
-import io.reactivex.annotations.NonNull;
+import io.reactivex.annotations.*;
 
 /**
  * Convenience interface and callback used by the {@link Completable#as} operator to turn a Completable into another
@@ -21,6 +21,7 @@ import io.reactivex.annotations.NonNull;
  *
  * @param <R> the output type
  */
+@Experimental
 public interface CompletableConverter<R> {
     /**
      * Applies a function to the upstream Completable and returns a converted value of type <R>.

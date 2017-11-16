@@ -4814,6 +4814,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @return the converted value
      * @throws NullPointerException if converter is null
      */
+    @Experimental
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> R as(ObservableConverter<T, ? extends R> converter) {
