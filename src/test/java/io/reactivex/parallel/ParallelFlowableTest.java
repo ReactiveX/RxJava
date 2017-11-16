@@ -1100,11 +1100,37 @@ public class ParallelFlowableTest {
         .assertResult(1, 2, 3, 4, 5);
     }
 
+    @Test
+    public void as() {
+        Flowable.range(1, 5)
+        .parallel()
+        .as(new ParallelFlowableConverter<Integer, Flowable<Integer>>() {
+            @Override
+            public Flowable<Integer> apply(ParallelFlowable<Integer> pf) throws Exception {
+                return pf.sequential();
+            }
+        })
+        .test()
+        .assertResult(1, 2, 3, 4, 5);
+    }
+
     @Test(expected = TestException.class)
     public void toThrows() {
         Flowable.range(1, 5)
         .parallel()
         .to(new Function<ParallelFlowable<Integer>, Flowable<Integer>>() {
+            @Override
+            public Flowable<Integer> apply(ParallelFlowable<Integer> pf) throws Exception {
+                throw new TestException();
+            }
+        });
+    }
+
+    @Test(expected = TestException.class)
+    public void asThrows() {
+        Flowable.range(1, 5)
+        .parallel()
+        .as(new ParallelFlowableConverter<Integer, Flowable<Integer>>() {
             @Override
             public Flowable<Integer> apply(ParallelFlowable<Integer> pf) throws Exception {
                 throw new TestException();
