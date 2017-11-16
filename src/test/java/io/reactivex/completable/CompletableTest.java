@@ -2796,9 +2796,41 @@ public class CompletableTest {
         });
     }
 
+    @Test(timeout = 5000)
+    public void asNormal() {
+        Flowable<Object> flow = normal.completable.as(new CompletableConverter<Flowable<Object>>() {
+            @Override
+            public Flowable<Object> apply(Completable c) {
+                return c.toFlowable();
+            }
+        });
+
+        flow.blockingForEach(new Consumer<Object>() {
+            @Override
+            public void accept(Object e) { }
+        });
+    }
+
+    @Test
+    public void as() {
+        Completable.complete().as(new CompletableConverter<Flowable<Integer>>() {
+            @Override
+            public Flowable<Integer> apply(Completable v) throws Exception {
+                return v.toFlowable();
+            }
+        })
+        .test()
+        .assertComplete();
+    }
+
     @Test(expected = NullPointerException.class)
     public void toNull() {
         normal.completable.to(null);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void asNull() {
+        normal.completable.as(null);
     }
 
     @Test(timeout = 5000)
