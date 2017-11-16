@@ -204,4 +204,31 @@ public class OperatorUnsubscribeOnTest {
         }
 
     }
+
+    @Test
+    public void backpressure() {
+        AssertableSubscriber<Integer> as = Observable.range(1, 10)
+        .unsubscribeOn(Schedulers.trampoline())
+        .test(0);
+
+        as.assertNoValues()
+        .assertNoErrors()
+        .assertNotCompleted();
+
+        as.requestMore(1);
+
+        as.assertValue(1)
+        .assertNoErrors()
+        .assertNotCompleted();
+
+        as.requestMore(3);
+
+        as.assertValues(1, 2, 3, 4)
+        .assertNoErrors()
+        .assertNotCompleted();
+
+        as.requestMore(10);
+
+        as.assertResult(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
+    }
 }

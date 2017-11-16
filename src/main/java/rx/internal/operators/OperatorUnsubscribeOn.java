@@ -52,6 +52,10 @@ public class OperatorUnsubscribeOn<T> implements Operator<T, T> {
                 subscriber.onNext(t);
             }
 
+            @Override
+            public void setProducer(Producer p) {
+                subscriber.setProducer(p);
+            }
         };
 
         subscriber.add(Subscriptions.create(new Action0() {
