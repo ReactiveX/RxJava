@@ -20,6 +20,7 @@ import io.reactivex.annotations.*;
  * value fluently.
  *
  * @param <R> the output type
+ * @since 2.1.7 - experimental
  */
 @Experimental
 public interface CompletableConverter<R> {

@@ -1535,6 +1535,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * @param converter the function that receives the current Single instance and returns a value
      * @return the converted value
      * @throws NullPointerException if converter is null
+     * @since 2.1.7 - experimental
      */
     @Experimental
     @CheckReturnValue

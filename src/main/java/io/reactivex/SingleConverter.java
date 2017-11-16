@@ -21,6 +21,7 @@ import io.reactivex.annotations.*;
  *
  * @param <T> the upstream type
  * @param <R> the output type
+ * @since 2.1.7 - experimental
  */
 @Experimental
 public interface SingleConverter<T, R> {
