@@ -565,32 +565,32 @@ public class ParamValidationCheckerTest {
         MaybeConverter, CompletableConverter, ParallelFlowableConverter {
 
             @Override
-            public Object apply(ParallelFlowable upstream) throws Exception {
+            public Object apply(ParallelFlowable upstream) {
                 return upstream;
             }
 
             @Override
-            public Object apply(Completable upstream) throws Exception {
+            public Object apply(Completable upstream) {
                 return upstream;
             }
 
             @Override
-            public Object apply(Maybe upstream) throws Exception {
+            public Object apply(Maybe upstream) {
                 return upstream;
             }
 
             @Override
-            public Object apply(Single upstream) throws Exception {
+            public Object apply(Single upstream) {
                 return upstream;
             }
 
             @Override
-            public Object apply(Observable upstream) throws Exception {
+            public Object apply(Observable upstream) {
                 return upstream;
             }
 
             @Override
-            public Object apply(Flowable upstream) throws Exception {
+            public Object apply(Flowable upstream) {
                 return upstream;
             }
         }

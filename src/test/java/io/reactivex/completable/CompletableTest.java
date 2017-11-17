@@ -2815,7 +2815,7 @@ public class CompletableTest {
     public void as() {
         Completable.complete().as(new CompletableConverter<Flowable<Integer>>() {
             @Override
-            public Flowable<Integer> apply(Completable v) throws Exception {
+            public Flowable<Integer> apply(Completable v) {
                 return v.toFlowable();
             }
         })

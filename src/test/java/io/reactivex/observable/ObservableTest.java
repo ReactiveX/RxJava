@@ -1185,7 +1185,7 @@ public class ObservableTest {
     public void as() {
         Observable.just(1).as(new ObservableConverter<Integer, Flowable<Integer>>() {
             @Override
-            public Flowable<Integer> apply(Observable<Integer> v) throws Exception {
+            public Flowable<Integer> apply(Observable<Integer> v) {
                 return v.toFlowable(BackpressureStrategy.MISSING);
             }
         })

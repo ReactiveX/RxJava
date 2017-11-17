@@ -1106,7 +1106,7 @@ public class ParallelFlowableTest {
         .parallel()
         .as(new ParallelFlowableConverter<Integer, Flowable<Integer>>() {
             @Override
-            public Flowable<Integer> apply(ParallelFlowable<Integer> pf) throws Exception {
+            public Flowable<Integer> apply(ParallelFlowable<Integer> pf) {
                 return pf.sequential();
             }
         })
@@ -1132,7 +1132,7 @@ public class ParallelFlowableTest {
         .parallel()
         .as(new ParallelFlowableConverter<Integer, Flowable<Integer>>() {
             @Override
-            public Flowable<Integer> apply(ParallelFlowable<Integer> pf) throws Exception {
+            public Flowable<Integer> apply(ParallelFlowable<Integer> pf) {
                 throw new TestException();
             }
         });

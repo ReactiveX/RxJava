@@ -547,7 +547,7 @@ public class SingleTest {
     public void as() {
         Single.just(1).as(new SingleConverter<Integer, Flowable<Integer>>() {
             @Override
-            public Flowable<Integer> apply(Single<Integer> v) throws Exception {
+            public Flowable<Integer> apply(Single<Integer> v) {
                 return v.toFlowable();
             }
         })

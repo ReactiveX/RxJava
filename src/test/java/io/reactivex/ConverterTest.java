@@ -236,32 +236,32 @@ public final class ConverterTest {
             SingleConverter<Integer, Flowable<Integer>>,
             CompletableConverter<Flowable<Integer>> {
         @Override
-        public Flowable<Integer> apply(ParallelFlowable<Integer> upstream) throws Exception {
+        public Flowable<Integer> apply(ParallelFlowable<Integer> upstream) {
             return upstream.sequential();
         }
 
         @Override
-        public Flowable<Integer> apply(Completable upstream) throws Exception {
+        public Flowable<Integer> apply(Completable upstream) {
             return upstream.toFlowable();
         }
 
         @Override
-        public Observable<Integer> apply(Flowable<Integer> upstream) throws Exception {
+        public Observable<Integer> apply(Flowable<Integer> upstream) {
             return upstream.toObservable();
         }
 
         @Override
-        public Flowable<Integer> apply(Maybe<Integer> upstream) throws Exception {
+        public Flowable<Integer> apply(Maybe<Integer> upstream) {
             return upstream.toFlowable();
         }
 
         @Override
-        public Flowable<Integer> apply(Observable<Integer> upstream) throws Exception {
+        public Flowable<Integer> apply(Observable<Integer> upstream) {
             return upstream.toFlowable(BackpressureStrategy.MISSING);
         }
 
         @Override
-        public Flowable<Integer> apply(Single<Integer> upstream) throws Exception {
+        public Flowable<Integer> apply(Single<Integer> upstream) {
             return upstream.toFlowable();
         }
     }

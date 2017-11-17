@@ -1146,7 +1146,7 @@ public class FlowableTests {
     public void as() {
         Flowable.just(1).as(new FlowableConverter<Integer, Observable<Integer>>() {
             @Override
-            public Observable<Integer> apply(Flowable<Integer> v) throws Exception {
+            public Observable<Integer> apply(Flowable<Integer> v) {
                 return v.toObservable();
             }
         })

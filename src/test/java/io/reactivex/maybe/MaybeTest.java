@@ -385,7 +385,7 @@ public class MaybeTest {
     public void as() {
         Maybe.just(1).as(new MaybeConverter<Integer, Flowable<Integer>>() {
             @Override
-            public Flowable<Integer> apply(Maybe<Integer> v) throws Exception {
+            public Flowable<Integer> apply(Maybe<Integer> v) {
                 return v.toFlowable();
             }
         })
