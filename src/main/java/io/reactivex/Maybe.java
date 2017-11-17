@@ -2008,12 +2008,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> R as(@NonNull MaybeConverter<T, ? extends R> converter) {
-        try {
-            return ObjectHelper.requireNonNull(converter, "converter is null").apply(this);
-        } catch (Throwable ex) {
-            Exceptions.throwIfFatal(ex);
-            throw ExceptionHelper.wrapOrThrow(ex);
-        }
+        return ObjectHelper.requireNonNull(converter, "converter is null").apply(this);
     }
 
     /**

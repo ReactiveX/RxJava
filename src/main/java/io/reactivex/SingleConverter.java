@@ -30,8 +30,7 @@ public interface SingleConverter<T, R> {
      *
      * @param upstream the upstream Single instance
      * @return the converted value
-     * @throws Exception on error
      */
     @NonNull
-    R apply(@NonNull Single<T> upstream) throws Exception;
+    R apply(@NonNull Single<T> upstream);
 }

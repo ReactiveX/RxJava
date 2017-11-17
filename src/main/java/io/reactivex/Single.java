@@ -1541,12 +1541,7 @@ public abstract class Single<T> implements SingleSource<T> {
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> R as(@NonNull SingleConverter<T, ? extends R> converter) {
-        try {
-            return ObjectHelper.requireNonNull(converter, "converter is null").apply(this);
-        } catch (Throwable ex) {
-            Exceptions.throwIfFatal(ex);
-            throw ExceptionHelper.wrapOrThrow(ex);
-        }
+        return ObjectHelper.requireNonNull(converter, "converter is null").apply(this);
     }
 
     /**

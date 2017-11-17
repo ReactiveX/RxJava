@@ -5259,12 +5259,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @BackpressureSupport(BackpressureKind.SPECIAL)
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> R as(@NonNull FlowableConverter<T, ? extends R> converter) {
-        try {
-            return ObjectHelper.requireNonNull(converter, "converter is null").apply(this);
-        } catch (Throwable ex) {
-            Exceptions.throwIfFatal(ex);
-            throw ExceptionHelper.wrapOrThrow(ex);
-        }
+        return ObjectHelper.requireNonNull(converter, "converter is null").apply(this);
     }
 
     /**

@@ -30,8 +30,7 @@ public interface ParallelFlowableConverter<T, R> {
      *
      * @param upstream the upstream ParallelFlowable instance
      * @return the converted value
-     * @throws Exception on error
      */
     @NonNull
-    R apply(@NonNull ParallelFlowable<T> upstream) throws Exception;
+    R apply(@NonNull ParallelFlowable<T> upstream);
 }

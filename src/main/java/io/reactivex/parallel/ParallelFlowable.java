@@ -137,12 +137,7 @@ public abstract class ParallelFlowable<T> {
     @CheckReturnValue
     @NonNull
     public final <R> R as(@NonNull ParallelFlowableConverter<T, R> converter) {
-        try {
-            return ObjectHelper.requireNonNull(converter, "converter is null").apply(this);
-        } catch (Throwable ex) {
-            Exceptions.throwIfFatal(ex);
-            throw ExceptionHelper.wrapOrThrow(ex);
-        }
+        return ObjectHelper.requireNonNull(converter, "converter is null").apply(this);
     }
 
     /**

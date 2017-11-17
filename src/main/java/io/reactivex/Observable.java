@@ -4819,12 +4819,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> R as(@NonNull ObservableConverter<T, ? extends R> converter) {
-        try {
-            return ObjectHelper.requireNonNull(converter, "converter is null").apply(this);
-        } catch (Throwable ex) {
-            Exceptions.throwIfFatal(ex);
-            throw ExceptionHelper.wrapOrThrow(ex);
-        }
+        return ObjectHelper.requireNonNull(converter, "converter is null").apply(this);
     }
 
     /**

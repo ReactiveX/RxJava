@@ -30,8 +30,7 @@ public interface ObservableConverter<T, R> {
      *
      * @param upstream the upstream Observable instance
      * @return the converted value
-     * @throws Exception on error
      */
     @NonNull
-    R apply(@NonNull Observable<T> upstream) throws Exception;
+    R apply(@NonNull Observable<T> upstream);
 }

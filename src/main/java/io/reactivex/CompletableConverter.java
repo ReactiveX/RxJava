@@ -29,8 +29,7 @@ public interface CompletableConverter<R> {
      *
      * @param upstream the upstream Completable instance
      * @return the converted value
-     * @throws Exception on error
      */
     @NonNull
-    R apply(@NonNull Completable upstream) throws Exception;
+    R apply(@NonNull Completable upstream);
 }

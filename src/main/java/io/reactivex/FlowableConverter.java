@@ -30,8 +30,7 @@ public interface FlowableConverter<T, R> {
      *
      * @param upstream the upstream Flowable instance
      * @return the converted value
-     * @throws Exception on error
      */
     @NonNull
-    R apply(@NonNull Flowable<T> upstream) throws Exception;
+    R apply(@NonNull Flowable<T> upstream);
 }
