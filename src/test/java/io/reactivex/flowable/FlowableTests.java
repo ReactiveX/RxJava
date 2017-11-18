@@ -1114,7 +1114,7 @@ public class FlowableTests {
     public void testExtend() {
         final TestSubscriber<Object> subscriber = new TestSubscriber<Object>();
         final Object value = new Object();
-        Flowable.just(value).to(new Function<Flowable<Object>, Object>() {
+        Object returned = Flowable.just(value).to(new Function<Flowable<Object>, Object>() {
             @Override
             public Object apply(Flowable<Object> onSubscribe) {
                     onSubscribe.subscribe(subscriber);
@@ -1124,13 +1124,14 @@ public class FlowableTests {
                     return subscriber.values().get(0);
                 }
         });
+        assertSame(returned, value);
     }
 
     @Test
     public void testAsExtend() {
         final TestSubscriber<Object> subscriber = new TestSubscriber<Object>();
         final Object value = new Object();
-        Flowable.just(value).as(new FlowableConverter<Object, Object>() {
+        Object returned = Flowable.just(value).as(new FlowableConverter<Object, Object>() {
             @Override
             public Object apply(Flowable<Object> onSubscribe) {
                     onSubscribe.subscribe(subscriber);
@@ -1140,6 +1141,7 @@ public class FlowableTests {
                     return subscriber.values().get(0);
                 }
         });
+        assertSame(returned, value);
     }
 
     @Test
