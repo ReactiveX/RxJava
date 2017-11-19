@@ -2352,6 +2352,11 @@ public class FlowableNullTests {
     }
 
     @Test(expected = NullPointerException.class)
+    public void asNull() {
+        just1.as(null);
+    }
+
+    @Test(expected = NullPointerException.class)
     public void toListNull() {
         just1.toList(null);
     }

@@ -20,6 +20,7 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 
+import io.reactivex.Observable;
 import org.junit.*;
 import org.mockito.InOrder;
 import org.reactivestreams.*;
@@ -1113,7 +1114,7 @@ public class FlowableTests {
     public void testExtend() {
         final TestSubscriber<Object> subscriber = new TestSubscriber<Object>();
         final Object value = new Object();
-        Flowable.just(value).to(new Function<Flowable<Object>, Object>() {
+        Object returned = Flowable.just(value).to(new Function<Flowable<Object>, Object>() {
             @Override
             public Object apply(Flowable<Object> onSubscribe) {
                     onSubscribe.subscribe(subscriber);
@@ -1123,6 +1124,36 @@ public class FlowableTests {
                     return subscriber.values().get(0);
                 }
         });
+        assertSame(returned, value);
+    }
+
+    @Test
+    public void testAsExtend() {
+        final TestSubscriber<Object> subscriber = new TestSubscriber<Object>();
+        final Object value = new Object();
+        Object returned = Flowable.just(value).as(new FlowableConverter<Object, Object>() {
+            @Override
+            public Object apply(Flowable<Object> onSubscribe) {
+                    onSubscribe.subscribe(subscriber);
+                    subscriber.assertNoErrors();
+                    subscriber.assertComplete();
+                    subscriber.assertValue(value);
+                    return subscriber.values().get(0);
+                }
+        });
+        assertSame(returned, value);
+    }
+
+    @Test
+    public void as() {
+        Flowable.just(1).as(new FlowableConverter<Integer, Observable<Integer>>() {
+            @Override
+            public Observable<Integer> apply(Flowable<Integer> v) {
+                return v.toObservable();
+            }
+        })
+        .test()
+        .assertResult(1);
     }
 
     @Test
