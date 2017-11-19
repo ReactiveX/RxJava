@@ -1,5 +1,16 @@
 # RxJava Releases #
 
+### Version 1.3.4 - November 19, 2017 ([Maven](http://search.maven.org/#artifactdetails%7Cio.reactivex%7Crxjava%7C1.3.4%7C))
+
+#### Bugfixes
+
+- [Pull 5696](https://github.com/ReactiveX/RxJava/pull/5696): Fix `Completable.concat` to use `replace` and don't dispose the old `Subscription` on switching to the next source.
+- [Pull 5726](https://github.com/ReactiveX/RxJava/pull/5726): Fix broken backpressure through `unsubscribeOn()`.
+
+#### Documentation
+
+- [Pull 5719](https://github.com/ReactiveX/RxJava/pull/5719): Document the timed `take()` operator will signal the `onCompleted` event on the given `Scheduler` when it times out.
+
 ### Version 1.3.3 - October 19, 2017 ([Maven](http://search.maven.org/#artifactdetails%7Cio.reactivex%7Crxjava%7C1.3.3%7C))
 
 #### Bugfixes
