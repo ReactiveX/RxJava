@@ -2783,32 +2783,30 @@ public class CompletableTest {
 
     @Test(timeout = 5000)
     public void toNormal() {
-        Flowable<Object> flow = normal.completable.to(new Function<Completable, Flowable<Object>>() {
-            @Override
-            public Flowable<Object> apply(Completable c) {
-                return c.toFlowable();
-            }
-        });
-
-        flow.blockingForEach(new Consumer<Object>() {
-            @Override
-            public void accept(Object e) { }
-        });
+        normal.completable
+                .to(new Function<Completable, Flowable<Object>>() {
+                    @Override
+                    public Flowable<Object> apply(Completable c) {
+                        return c.toFlowable();
+                    }
+                })
+                .test()
+                .assertComplete()
+                .assertNoValues();
     }
 
     @Test(timeout = 5000)
     public void asNormal() {
-        Flowable<Object> flow = normal.completable.as(new CompletableConverter<Flowable<Object>>() {
-            @Override
-            public Flowable<Object> apply(Completable c) {
-                return c.toFlowable();
-            }
-        });
-
-        flow.blockingForEach(new Consumer<Object>() {
-            @Override
-            public void accept(Object e) { }
-        });
+        normal.completable
+                .as(new CompletableConverter<Flowable<Object>>() {
+                    @Override
+                    public Flowable<Object> apply(Completable c) {
+                        return c.toFlowable();
+                    }
+                })
+                .test()
+                .assertComplete()
+                .assertNoValues();
     }
 
     @Test
