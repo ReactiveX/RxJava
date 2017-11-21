@@ -23,8 +23,8 @@ public interface SchedulerRunnableWrapper extends Runnable {
     /**
      * Returns the wrapped action.
      *
-     * @return the wrapped action. Cannot be null.
+     * @return the wrapped action, may be null.
      */
-    @NonNull
+    @Nullable
     Runnable getWrappedRunnable();
 }
