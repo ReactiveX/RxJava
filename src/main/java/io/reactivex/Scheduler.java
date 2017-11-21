@@ -368,7 +368,7 @@ public abstract class Scheduler {
 
             @Override
             public void run() {
-                decoratedRun.run();
+                getWrappedRunnable().run();
 
                 if (!sd.isDisposed()) {
 
@@ -418,7 +418,7 @@ public abstract class Scheduler {
         public void run() {
             if (!disposed) {
                 try {
-                    run.run();
+                    getWrappedRunnable().run();
                 } catch (Throwable ex) {
                     Exceptions.throwIfFatal(ex);
                     worker.dispose();
@@ -459,7 +459,7 @@ public abstract class Scheduler {
         public void run() {
             runner = Thread.currentThread();
             try {
-                decoratedRun.run();
+                getWrappedRunnable().run();
             } finally {
                 dispose();
                 runner = null;
