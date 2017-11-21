@@ -10,7 +10,21 @@
 
 package io.reactivex.internal.schedulers;
 
+import io.reactivex.annotations.*;
+
+/**
+ * Represents a wrapped action inside internal scheduler's task.
+ *
+ * @since 2.1.7 - experimental
+ */
+@Experimental
 public interface SchedulerRunnableWrapper extends Runnable {
 
+    /**
+     * Returns the wrapped action.
+     *
+     * @return the wrapped action. Cannot be null.
+     */
+    @NonNull
     Runnable getWrappedRunnable();
 }

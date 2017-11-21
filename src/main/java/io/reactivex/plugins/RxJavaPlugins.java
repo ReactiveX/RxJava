@@ -623,9 +623,14 @@ public final class RxJavaPlugins {
     /**
      * Unwraps internal scheduler's task.
      * @param task the internal task
-     * @return the unwrapped runnable or task
+     * @return the unwrapped runnable or task. Cannot be null.
+     *
+     * @since 2.1.7 - experimental
      */
-    public static Runnable unwrapRunnable(Runnable task) {
+    @Experimental
+    @CheckReturnValue
+    @NonNull
+    public static Runnable unwrapRunnable(@NonNull Runnable task) {
         if (task instanceof SchedulerRunnableWrapper) {
             return ((SchedulerRunnableWrapper) task).getWrappedRunnable();
         }
