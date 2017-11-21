@@ -621,6 +621,18 @@ public final class RxJavaPlugins {
     }
 
     /**
+     * Unwraps internal scheduler's task.
+     * @param task the internal task
+     * @return the unwrapped runnable or task
+     */
+    public static Runnable unwrapRunnable(Runnable task) {
+        if (task instanceof SchedulerRunnableWrapper) {
+            return ((SchedulerRunnableWrapper) task).getWrappedRunnable();
+        }
+        return task;
+    }
+
+    /**
      * Revokes the lockdown, only for testing purposes.
      */
     /* test. */static void unlock() {

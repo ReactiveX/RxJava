@@ -16,26 +16,16 @@
 
 package io.reactivex.plugins;
 
-import static org.junit.Assert.*;
-
-import java.io.*;
-import java.lang.Thread.UncaughtExceptionHandler;
-import java.lang.reflect.*;
-import java.util.*;
-import java.util.concurrent.*;
-import java.util.concurrent.atomic.*;
-
-import org.junit.*;
-import org.reactivestreams.*;
-
 import io.reactivex.*;
-import io.reactivex.Observable;
-import io.reactivex.Observer;
 import io.reactivex.Scheduler.Worker;
-import io.reactivex.disposables.*;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.disposables.Disposables;
 import io.reactivex.exceptions.*;
 import io.reactivex.flowables.ConnectableFlowable;
-import io.reactivex.functions.*;
+import io.reactivex.functions.BiFunction;
+import io.reactivex.functions.BooleanSupplier;
+import io.reactivex.functions.Consumer;
+import io.reactivex.functions.Function;
 import io.reactivex.internal.functions.Functions;
 import io.reactivex.internal.operators.completable.CompletableError;
 import io.reactivex.internal.operators.flowable.FlowableRange;
@@ -44,10 +34,30 @@ import io.reactivex.internal.operators.observable.ObservableRange;
 import io.reactivex.internal.operators.parallel.ParallelFromPublisher;
 import io.reactivex.internal.operators.single.SingleJust;
 import io.reactivex.internal.schedulers.ImmediateThinScheduler;
+import io.reactivex.internal.schedulers.SchedulerRunnableWrapper;
 import io.reactivex.internal.subscriptions.ScalarSubscription;
 import io.reactivex.observables.ConnectableObservable;
 import io.reactivex.parallel.ParallelFlowable;
 import io.reactivex.schedulers.Schedulers;
+import org.junit.Ignore;
+import org.junit.Test;
+import org.reactivestreams.Subscriber;
+import org.reactivestreams.Subscription;
+
+import java.io.IOException;
+import java.io.InterruptedIOException;
+import java.lang.Thread.UncaughtExceptionHandler;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
+
+import static org.junit.Assert.*;
 
 public class RxJavaPluginsTest {
 
@@ -2254,5 +2264,38 @@ public class RxJavaPluginsTest {
         assertTrue(RxJavaPlugins.isBug(new UndeliverableException(new TestException())));
         assertTrue(RxJavaPlugins.isBug(new CompositeException(new TestException())));
         assertTrue(RxJavaPlugins.isBug(new OnErrorNotImplementedException(new TestException())));
+    }
+
+    @Test
+    public void unwrappedTask() {
+        class TestSchedulerRunnableWrapper implements SchedulerRunnableWrapper {
+            private final Runnable decoratedRun;
+
+            private TestSchedulerRunnableWrapper(Runnable decoratedRun) {
+                this.decoratedRun = decoratedRun;
+            }
+
+            @Override
+            public Runnable getWrappedRunnable() {
+                return decoratedRun;
+            }
+
+            @Override
+            public void run() {
+                throw new NullPointerException();
+            }
+        }
+
+        final Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+
+            }
+        };
+        SchedulerRunnableWrapper wrapper = new TestSchedulerRunnableWrapper(runnable);
+        Runnable unwrappedRunnable = RxJavaPlugins.unwrapRunnable(wrapper);
+
+        assertEquals(runnable, unwrappedRunnable);
+        unwrappedRunnable.run();
     }
 }
