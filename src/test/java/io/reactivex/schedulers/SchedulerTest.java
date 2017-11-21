@@ -16,9 +16,10 @@ package io.reactivex.schedulers;
 import static org.junit.Assert.*;
 
 import java.util.List;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 import io.reactivex.annotations.NonNull;
+import io.reactivex.internal.schedulers.SchedulerRunnableWrapper;
 import org.junit.Test;
 
 import io.reactivex.*;
@@ -44,6 +45,7 @@ public class SchedulerTest {
             }
         }, 100, 100, TimeUnit.MILLISECONDS);
 
+        assertTrue(d instanceof SchedulerRunnableWrapper);
         assertEquals(0, count[0]);
         assertFalse(d.isDisposed());
 
@@ -87,6 +89,7 @@ public class SchedulerTest {
             }
         }, 100, 100, TimeUnit.MILLISECONDS);
 
+        assertTrue(d instanceof SchedulerRunnableWrapper);
         d.dispose();
 
         assertEquals(0, count[0]);
@@ -134,6 +137,7 @@ public class SchedulerTest {
             }
         }, 100, 100, TimeUnit.MILLISECONDS);
 
+        assertTrue(d instanceof SchedulerRunnableWrapper);
         sd.set(d);
 
         assertEquals(0, count[0]);
@@ -198,7 +202,7 @@ public class SchedulerTest {
                     scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
                 }
             };
-
+            assertTrue(d instanceof SchedulerRunnableWrapper);
             TestHelper.race(r1, r2, Schedulers.io());
         }
 
@@ -214,7 +218,7 @@ public class SchedulerTest {
                     Functions.EMPTY_RUNNABLE, 0, 0, TimeUnit.MILLISECONDS);
 
             Thread.sleep(1);
-
+            assertTrue(d instanceof SchedulerRunnableWrapper);
             d.dispose();
         }
 
@@ -302,6 +306,7 @@ public class SchedulerTest {
         Disposable d = scheduler.scheduleDirect(Functions.EMPTY_RUNNABLE, 1, TimeUnit.MINUTES);
 
         assertFalse(d.isDisposed());
+        assertTrue(d instanceof SchedulerRunnableWrapper);
 
         d.dispose();
 
