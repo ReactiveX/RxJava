@@ -2284,8 +2284,17 @@ public class RxJavaPluginsTest {
         };
         SchedulerRunnableWrapper wrapper = new TestSchedulerRunnableWrapper(runnable);
         Runnable unwrappedRunnable = RxJavaPlugins.unwrapRunnable(wrapper);
-
         assertEquals(runnable, unwrappedRunnable);
         unwrappedRunnable.run();
+
+        Runnable nonWrappedRunnable = RxJavaPlugins.unwrapRunnable(runnable);
+        assertEquals(runnable, nonWrappedRunnable);
+        nonWrappedRunnable.run();
+
+        assertNull(RxJavaPlugins.unwrapRunnable(null));
+
+        SchedulerRunnableWrapper nullWrapped = new TestSchedulerRunnableWrapper(null);
+        Runnable nullWrappedRunnable = RxJavaPlugins.unwrapRunnable(nullWrapped);
+        assertNull(nullWrappedRunnable);
     }
 }
