@@ -36,13 +36,12 @@ public class SchedulerTest {
 
         TestScheduler scheduler = new TestScheduler();
 
-        Runnable action = new Runnable() {
+        Disposable d = scheduler.schedulePeriodicallyDirect(new Runnable() {
             @Override
             public void run() {
                 count[0]++;
             }
-        };
-        Disposable d = scheduler.schedulePeriodicallyDirect(action, 100, 100, TimeUnit.MILLISECONDS);
+        }, 100, 100, TimeUnit.MILLISECONDS);
 
         assertEquals(0, count[0]);
         assertFalse(d.isDisposed());
