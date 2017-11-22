@@ -13,7 +13,7 @@
 
 package io.reactivex;
 
-import io.reactivex.annotations.*;;
+import io.reactivex.annotations.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.Function;
