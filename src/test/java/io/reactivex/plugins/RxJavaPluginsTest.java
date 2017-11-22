@@ -2269,11 +2269,6 @@ public class RxJavaPluginsTest {
             public Runnable getWrappedRunnable() {
                 return decoratedRun;
             }
-
-            @Override
-            public void run() {
-                throw new NullPointerException();
-            }
         }
 
         final Runnable runnable = new Runnable() {
@@ -2285,13 +2280,13 @@ public class RxJavaPluginsTest {
         SchedulerRunnableWrapper wrapper = new TestSchedulerRunnableWrapper(runnable);
         Runnable unwrappedRunnable = RxJavaPlugins.unwrapRunnable(wrapper);
         assertEquals(runnable, unwrappedRunnable);
-        unwrappedRunnable.run();
 
         Runnable nonWrappedRunnable = RxJavaPlugins.unwrapRunnable(runnable);
-        assertEquals(runnable, nonWrappedRunnable);
-        nonWrappedRunnable.run();
+        assertNull(nonWrappedRunnable);
 
         assertNull(RxJavaPlugins.unwrapRunnable(null));
+
+        assertNull(RxJavaPlugins.unwrapRunnable("string"));
 
         SchedulerRunnableWrapper nullWrapped = new TestSchedulerRunnableWrapper(null);
         Runnable nullWrappedRunnable = RxJavaPlugins.unwrapRunnable(nullWrapped);

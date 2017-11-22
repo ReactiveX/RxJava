@@ -18,7 +18,7 @@ import io.reactivex.annotations.*;
  * @since 2.1.7 - experimental
  */
 @Experimental
-public interface SchedulerRunnableWrapper extends Runnable {
+public interface SchedulerRunnableWrapper {
 
     /**
      * Returns the wrapped action.

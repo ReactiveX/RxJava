@@ -630,11 +630,11 @@ public final class RxJavaPlugins {
     @Experimental
     @CheckReturnValue
     @Nullable
-    public static Runnable unwrapRunnable(@NonNull Runnable task) {
+    public static Runnable unwrapRunnable(@NonNull Object task) {
         if (task instanceof SchedulerRunnableWrapper) {
             return ((SchedulerRunnableWrapper) task).getWrappedRunnable();
         }
-        return task;
+        return null;
     }
 
     /**

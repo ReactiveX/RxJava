@@ -347,7 +347,7 @@ public abstract class Scheduler {
          * Holds state and logic to calculate when the next delayed invocation
          * of this task has to happen (accounting for clock drifts).
          */
-        final class PeriodicTask implements SchedulerRunnableWrapper {
+        final class PeriodicTask implements Runnable, SchedulerRunnableWrapper {
             @NonNull
             final Runnable decoratedRun;
             @NonNull
@@ -368,7 +368,7 @@ public abstract class Scheduler {
 
             @Override
             public void run() {
-                getWrappedRunnable().run();
+                decoratedRun.run();
 
                 if (!sd.isDisposed()) {
 
@@ -402,7 +402,7 @@ public abstract class Scheduler {
     }
 
     static class PeriodicDirectTask
-    implements Disposable, SchedulerRunnableWrapper {
+    implements Disposable, Runnable, SchedulerRunnableWrapper {
         final Runnable run;
         @NonNull
         final Worker worker;
@@ -418,7 +418,7 @@ public abstract class Scheduler {
         public void run() {
             if (!disposed) {
                 try {
-                    getWrappedRunnable().run();
+                    run.run();
                 } catch (Throwable ex) {
                     Exceptions.throwIfFatal(ex);
                     worker.dispose();
@@ -444,7 +444,7 @@ public abstract class Scheduler {
         }
     }
 
-    static final class DisposeTask implements Disposable, SchedulerRunnableWrapper {
+    static final class DisposeTask implements Disposable, Runnable, SchedulerRunnableWrapper {
         final Runnable decoratedRun;
         final Worker w;
 
@@ -459,7 +459,7 @@ public abstract class Scheduler {
         public void run() {
             runner = Thread.currentThread();
             try {
-                getWrappedRunnable().run();
+                decoratedRun.run();
             } finally {
                 dispose();
                 runner = null;

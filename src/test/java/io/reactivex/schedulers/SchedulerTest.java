@@ -13,20 +13,22 @@
 
 package io.reactivex.schedulers;
 
+import static org.junit.Assert.*;
+
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+
+import io.reactivex.annotations.NonNull;
+import io.reactivex.internal.schedulers.SchedulerRunnableWrapper;
+import org.junit.Test;
+
 import io.reactivex.*;
 import io.reactivex.Scheduler.Worker;
-import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.internal.disposables.*;
 import io.reactivex.internal.functions.Functions;
 import io.reactivex.plugins.RxJavaPlugins;
-import org.junit.Test;
-
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-
-import static org.junit.Assert.*;
 
 public class SchedulerTest {
 
@@ -213,7 +215,7 @@ public class SchedulerTest {
                     Functions.EMPTY_RUNNABLE, 0, 0, TimeUnit.MILLISECONDS);
 
             Thread.sleep(1);
-            
+
             d.dispose();
         }
 
@@ -305,5 +307,66 @@ public class SchedulerTest {
         d.dispose();
 
         assertTrue(d.isDisposed());
+    }
+
+    @Test
+    public void unwrapDefaultPeriodicTask() {
+        TestScheduler scheduler = new TestScheduler();
+
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+            }
+        };
+        SchedulerRunnableWrapper wrapper = (SchedulerRunnableWrapper) scheduler.schedulePeriodicallyDirect(runnable, 100, 100, TimeUnit.MILLISECONDS);
+
+        assertEquals(runnable, wrapper.getWrappedRunnable());
+    }
+
+    @Test
+    public void unwrapScheduleDirectTask() {
+        TestScheduler scheduler = new TestScheduler();
+
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+            }
+        };
+        SchedulerRunnableWrapper wrapper = (SchedulerRunnableWrapper) scheduler.scheduleDirect(runnable, 100, TimeUnit.MILLISECONDS);
+        assertEquals(runnable, wrapper.getWrappedRunnable());
+    }
+
+    @Test
+    public void unwrapWorkerPeriodicTask() {
+        final Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+            }
+        };
+
+        Scheduler scheduler = new Scheduler() {
+            @Override
+            public Worker createWorker() {
+                return new Worker() {
+                    @Override
+                    public Disposable schedule(Runnable run, long delay, TimeUnit unit) {
+                        SchedulerRunnableWrapper wrapper = (SchedulerRunnableWrapper) RxJavaPlugins.unwrapRunnable(run);
+                        assertEquals(runnable, wrapper.getWrappedRunnable());
+                        return (Disposable) wrapper;
+                    }
+
+                    @Override
+                    public void dispose() {
+                    }
+
+                    @Override
+                    public boolean isDisposed() {
+                        return false;
+                    }
+                };
+            }
+        };
+
+        scheduler.schedulePeriodicallyDirect(runnable, 100, 100, TimeUnit.MILLISECONDS);
     }
 }
