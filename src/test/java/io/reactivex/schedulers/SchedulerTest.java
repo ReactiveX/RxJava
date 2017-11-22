@@ -146,7 +146,7 @@ public class SchedulerTest {
 
     @Test
     public void disposeSelfPeriodic() {
-        final int[] count = {0};
+        final int[] count = { 0 };
 
         TestScheduler scheduler = new TestScheduler();
 
@@ -197,6 +197,7 @@ public class SchedulerTest {
                     scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
                 }
             };
+
             TestHelper.race(r1, r2, Schedulers.io());
         }
 
@@ -212,6 +213,7 @@ public class SchedulerTest {
                     Functions.EMPTY_RUNNABLE, 0, 0, TimeUnit.MILLISECONDS);
 
             Thread.sleep(1);
+            
             d.dispose();
         }
 
