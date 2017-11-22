@@ -68,7 +68,7 @@ Flowable.just("Hello world")
 
 RxJava 2 features several base classes you can discover operators on:
 
-  - `io.reactivex.Flowable` : 0..N flows, supporting Reactive-Streams and backpressure
+  - `io.reactivex.Flowable`: 0..N flows, supporting Reactive-Streams and backpressure
   - `io.reactivex.Observable`: 0..N flows, no backpressure
   - `io.reactivex.Single`: a flow of exactly 1 item or an error
   - `io.reactivex.Completable`: a flow without items but only a completion or error signal
@@ -133,7 +133,7 @@ Flowable.range(1, 10)
         .subscribeOn(Schedulers.computation())
         .map(w -> w * w)
   )
-.blockingSubscribe(System.out::println);
+  .blockingSubscribe(System.out::println);
 ```
 
 Practically, paralellism in RxJava means running independent flows and merging their results back into a single flow. The operator `flatMap` does this by first mapping each number from 1 to 10 into its own individual `Flowable`, runs them and merges the computed squares.
@@ -142,11 +142,11 @@ Starting from 2.0.5, there is an *experimental* operator `parallel()` and type `
 
 ```java
 Flowable.range(1, 10)
-.parallel()
-.runOn(Schedulers.computation())
-.map(v -> v * v)
-.sequential()
-.blockingSubscribe(System.out::println);
+  .parallel()
+  .runOn(Schedulers.computation())
+  .map(v -> v * v)
+  .sequential()
+  .blockingSubscribe(System.out::println);
 ```
 
 `flatMap` is a powerful operator and helps in a lot of situations. For example, given a service that returns a `Flowable`, we'd like to call another service with values emitted by the first service:
@@ -158,8 +158,8 @@ inventorySource.flatMap(inventoryItem ->
     erp.getDemandAsync(inventoryItem.getId())
     .map(demand 
         -> System.out.println("Item " + inventoryItem.getName() + " has demand " + demand));
-)
-.subscribe();
+  )
+  .subscribe();
 ```
 
 Note, however, that `flatMap` doesn't guarantee any order and the end result from the inner flows may end up interleaved. There are alternative operators:
