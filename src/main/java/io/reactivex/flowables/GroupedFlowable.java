@@ -20,7 +20,7 @@ import io.reactivex.annotations.Nullable;
  * <p>
  * <em>Note:</em> A {@link GroupedFlowable} will cache the items it is to emit until such time as it
  * is subscribed to. For this reason, in order to avoid memory leaks, you should not simply ignore those
- * {@code GroupedObservable}s that do not concern you. Instead, you can signal to them that they
+ * {@code GroupedFlowable}s that do not concern you. Instead, you can signal to them that they
  * may discard their buffers by applying an operator like {@link Flowable#take take}{@code (0)} to them.
  *
  * @param <K>
@@ -43,9 +43,9 @@ public abstract class GroupedFlowable<K, T> extends Flowable<T> {
     }
 
     /**
-     * Returns the key that identifies the group of items emitted by this {@code GroupedObservable}.
+     * Returns the key that identifies the group of items emitted by this {@code GroupedFlowable}.
      *
-     * @return the key that the items emitted by this {@code GroupedObservable} were grouped by
+     * @return the key that the items emitted by this {@code GroupedFlowable} were grouped by
      */
     @Nullable
     public K getKey() {
