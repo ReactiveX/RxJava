@@ -16,6 +16,17 @@
 
 package io.reactivex.plugins;
 
+import static org.junit.Assert.*;
+
+import java.io.*;
+import java.lang.Thread.UncaughtExceptionHandler;
+import java.lang.reflect.*;
+import java.util.*;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.*;
+
+import org.junit.*;
+import org.reactivestreams.*;
 
 import io.reactivex.*;
 import io.reactivex.Observable;
@@ -37,17 +48,6 @@ import io.reactivex.internal.subscriptions.ScalarSubscription;
 import io.reactivex.observables.ConnectableObservable;
 import io.reactivex.parallel.ParallelFlowable;
 import io.reactivex.schedulers.Schedulers;
-import org.junit.*;
-import org.reactivestreams.*;
-
-import java.io.*;
-import java.lang.Thread.UncaughtExceptionHandler;
-import java.lang.reflect.*;
-import java.util.*;
-import java.util.concurrent.*;
-import java.util.concurrent.atomic.*;
-
-import static org.junit.Assert.*;
 
 public class RxJavaPluginsTest {
 
