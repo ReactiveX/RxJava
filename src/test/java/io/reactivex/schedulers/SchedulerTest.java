@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import io.reactivex.annotations.NonNull;
-import io.reactivex.internal.schedulers.SchedulerRunnableWrapper;
+import io.reactivex.internal.schedulers.SchedulerRunnableIntrospection;
 import org.junit.Test;
 
 import io.reactivex.*;
@@ -318,7 +318,7 @@ public class SchedulerTest {
             public void run() {
             }
         };
-        SchedulerRunnableWrapper wrapper = (SchedulerRunnableWrapper) scheduler.schedulePeriodicallyDirect(runnable, 100, 100, TimeUnit.MILLISECONDS);
+        SchedulerRunnableIntrospection wrapper = (SchedulerRunnableIntrospection) scheduler.schedulePeriodicallyDirect(runnable, 100, 100, TimeUnit.MILLISECONDS);
 
         assertEquals(runnable, wrapper.getWrappedRunnable());
     }
@@ -332,7 +332,7 @@ public class SchedulerTest {
             public void run() {
             }
         };
-        SchedulerRunnableWrapper wrapper = (SchedulerRunnableWrapper) scheduler.scheduleDirect(runnable, 100, TimeUnit.MILLISECONDS);
+        SchedulerRunnableIntrospection wrapper = (SchedulerRunnableIntrospection) scheduler.scheduleDirect(runnable, 100, TimeUnit.MILLISECONDS);
         assertEquals(runnable, wrapper.getWrappedRunnable());
     }
 
@@ -350,9 +350,10 @@ public class SchedulerTest {
                 return new Worker() {
                     @Override
                     public Disposable schedule(Runnable run, long delay, TimeUnit unit) {
-                        SchedulerRunnableWrapper wrapper = (SchedulerRunnableWrapper) RxJavaPlugins.unwrapRunnable(run);
-                        assertEquals(runnable, wrapper.getWrappedRunnable());
-                        return (Disposable) wrapper;
+                        SchedulerRunnableIntrospection outerWrapper = (SchedulerRunnableIntrospection) run;
+                        SchedulerRunnableIntrospection innerWrapper = (SchedulerRunnableIntrospection) outerWrapper.getWrappedRunnable();
+                        assertEquals(runnable, innerWrapper.getWrappedRunnable());
+                        return (Disposable) innerWrapper;
                     }
 
                     @Override

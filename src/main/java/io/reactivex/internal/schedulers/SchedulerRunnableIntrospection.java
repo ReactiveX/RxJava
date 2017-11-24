@@ -10,15 +10,20 @@
 
 package io.reactivex.internal.schedulers;
 
+import io.reactivex.Scheduler;
 import io.reactivex.annotations.*;
+import io.reactivex.plugins.RxJavaPlugins;
 
 /**
- * Represents a wrapped action inside internal scheduler's task.
+ * Marker interface to indicate wrapped action inside internal scheduler's task.
+ *
+ * Inside of the {@link RxJavaPlugins#onSchedule(Runnable)}, you can unwrap runnable from internal wrappers like
+ * {@link Scheduler.DisposeTask}.
  *
  * @since 2.1.7 - experimental
  */
 @Experimental
-public interface SchedulerRunnableWrapper {
+public interface SchedulerRunnableIntrospection {
 
     /**
      * Returns the wrapped action.

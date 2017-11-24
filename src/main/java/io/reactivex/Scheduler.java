@@ -347,7 +347,7 @@ public abstract class Scheduler {
          * Holds state and logic to calculate when the next delayed invocation
          * of this task has to happen (accounting for clock drifts).
          */
-        final class PeriodicTask implements Runnable, SchedulerRunnableWrapper {
+        final class PeriodicTask implements Runnable, SchedulerRunnableIntrospection {
             @NonNull
             final Runnable decoratedRun;
             @NonNull
@@ -402,7 +402,7 @@ public abstract class Scheduler {
     }
 
     static class PeriodicDirectTask
-    implements Disposable, Runnable, SchedulerRunnableWrapper {
+    implements Disposable, Runnable, SchedulerRunnableIntrospection {
         final Runnable run;
         @NonNull
         final Worker worker;
@@ -444,7 +444,7 @@ public abstract class Scheduler {
         }
     }
 
-    static final class DisposeTask implements Disposable, Runnable, SchedulerRunnableWrapper {
+    static final class DisposeTask implements Disposable, Runnable, SchedulerRunnableIntrospection {
         final Runnable decoratedRun;
         final Worker w;
 

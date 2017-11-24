@@ -2255,41 +2255,4 @@ public class RxJavaPluginsTest {
         assertTrue(RxJavaPlugins.isBug(new CompositeException(new TestException())));
         assertTrue(RxJavaPlugins.isBug(new OnErrorNotImplementedException(new TestException())));
     }
-
-    @Test
-    public void unwrappedTask() {
-        class TestSchedulerRunnableWrapper implements SchedulerRunnableWrapper {
-            private final Runnable decoratedRun;
-
-            private TestSchedulerRunnableWrapper(Runnable decoratedRun) {
-                this.decoratedRun = decoratedRun;
-            }
-
-            @Override
-            public Runnable getWrappedRunnable() {
-                return decoratedRun;
-            }
-        }
-
-        final Runnable runnable = new Runnable() {
-            @Override
-            public void run() {
-
-            }
-        };
-        SchedulerRunnableWrapper wrapper = new TestSchedulerRunnableWrapper(runnable);
-        Runnable unwrappedRunnable = RxJavaPlugins.unwrapRunnable(wrapper);
-        assertEquals(runnable, unwrappedRunnable);
-
-        Runnable nonWrappedRunnable = RxJavaPlugins.unwrapRunnable(runnable);
-        assertNull(nonWrappedRunnable);
-
-        assertNull(RxJavaPlugins.unwrapRunnable(null));
-
-        assertNull(RxJavaPlugins.unwrapRunnable("string"));
-
-        SchedulerRunnableWrapper nullWrapped = new TestSchedulerRunnableWrapper(null);
-        Runnable nullWrappedRunnable = RxJavaPlugins.unwrapRunnable(nullWrapped);
-        assertNull(nullWrappedRunnable);
-    }
 }
