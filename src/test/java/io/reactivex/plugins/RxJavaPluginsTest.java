@@ -32,7 +32,7 @@ import io.reactivex.internal.operators.maybe.MaybeError;
 import io.reactivex.internal.operators.observable.ObservableRange;
 import io.reactivex.internal.operators.parallel.ParallelFromPublisher;
 import io.reactivex.internal.operators.single.SingleJust;
-import io.reactivex.internal.schedulers.*;
+import io.reactivex.internal.schedulers.ImmediateThinScheduler;
 import io.reactivex.internal.subscriptions.ScalarSubscription;
 import io.reactivex.observables.ConnectableObservable;
 import io.reactivex.parallel.ParallelFlowable;

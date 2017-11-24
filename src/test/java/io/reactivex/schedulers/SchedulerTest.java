@@ -19,7 +19,6 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import io.reactivex.annotations.NonNull;
-import io.reactivex.internal.schedulers.SchedulerRunnableIntrospection;
 import org.junit.Test;
 
 import io.reactivex.*;
