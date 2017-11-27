@@ -23,7 +23,7 @@ import io.reactivex.annotations.*;
  * {@link io.reactivex.Scheduler.Worker} instances will be running
  * with different backing threads.
  *
- * @since 2.1.7 - experimental
+ * @since 2.1.8 - experimental
  */
 @Experimental
 public interface SchedulerMultiWorkerSupport {
