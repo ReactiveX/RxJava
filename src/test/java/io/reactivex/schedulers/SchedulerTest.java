@@ -319,7 +319,7 @@ public class SchedulerTest {
         };
         SchedulerRunnableIntrospection wrapper = (SchedulerRunnableIntrospection) scheduler.schedulePeriodicallyDirect(runnable, 100, 100, TimeUnit.MILLISECONDS);
 
-        assertEquals(runnable, wrapper.getWrappedRunnable());
+        assertSame(runnable, wrapper.getWrappedRunnable());
     }
 
     @Test
@@ -332,7 +332,7 @@ public class SchedulerTest {
             }
         };
         SchedulerRunnableIntrospection wrapper = (SchedulerRunnableIntrospection) scheduler.scheduleDirect(runnable, 100, TimeUnit.MILLISECONDS);
-        assertEquals(runnable, wrapper.getWrappedRunnable());
+        assertSame(runnable, wrapper.getWrappedRunnable());
     }
 
     @Test
@@ -351,7 +351,7 @@ public class SchedulerTest {
                     public Disposable schedule(Runnable run, long delay, TimeUnit unit) {
                         SchedulerRunnableIntrospection outerWrapper = (SchedulerRunnableIntrospection) run;
                         SchedulerRunnableIntrospection innerWrapper = (SchedulerRunnableIntrospection) outerWrapper.getWrappedRunnable();
-                        assertEquals(runnable, innerWrapper.getWrappedRunnable());
+                        assertSame(runnable, innerWrapper.getWrappedRunnable());
                         return (Disposable) innerWrapper;
                     }
 
