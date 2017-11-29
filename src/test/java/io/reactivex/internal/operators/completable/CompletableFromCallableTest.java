@@ -18,7 +18,6 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import io.reactivex.Observable;
 import io.reactivex.Observer;
 import io.reactivex.TestHelper;
 import io.reactivex.disposables.Disposable;
