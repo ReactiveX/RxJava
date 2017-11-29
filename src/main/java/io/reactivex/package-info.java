@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 /**
- * Base reactive classes: Flowable, Observable, Single, Maybe and Completable; base reactive consumers;
+ * Base reactive classes: {@link io.reactivex.Flowable},  {@link io.reactivex.Observable},
+ * {@link io.reactivex.Single},  {@link io.reactivex.Maybe} and
+ *  {@link io.reactivex.Completable}; base reactive consumers;
  * other common base interfaces.
  *
  * <p>A library that enables subscribing to and composing asynchronous events and
