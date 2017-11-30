@@ -10,8 +10,7 @@
 
 package io.reactivex.schedulers;
 
-import com.sun.istack.internal.NotNull;
-import io.reactivex.annotations.Experimental;
+import io.reactivex.annotations.*;
 import io.reactivex.functions.Function;
 import io.reactivex.plugins.RxJavaPlugins;
 
@@ -31,6 +30,6 @@ public interface SchedulerRunnableIntrospection {
      *
      * @return the wrapped action. Cannot be null.
      */
-    @NotNull
+    @NonNull
     Runnable getWrappedRunnable();
 }
