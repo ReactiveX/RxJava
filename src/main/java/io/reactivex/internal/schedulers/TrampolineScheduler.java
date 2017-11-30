@@ -49,20 +49,16 @@ public final class TrampolineScheduler extends Scheduler {
     @NonNull
     @Override
     public Disposable scheduleDirect(@NonNull Runnable run) {
-        // TODO remove if https://github.com/ReactiveX/RxJava/pull/5747 gets merged.
-        ObjectHelper.requireNonNull(run, "runnable is null");
-        run.run();
+        RxJavaPlugins.onSchedule(run).run();
         return EmptyDisposable.INSTANCE;
     }
 
     @NonNull
     @Override
     public Disposable scheduleDirect(@NonNull Runnable run, long delay, TimeUnit unit) {
-        // TODO remove if https://github.com/ReactiveX/RxJava/pull/5747 gets merged.
-        ObjectHelper.requireNonNull(run, "runnable is null");
         try {
             unit.sleep(delay);
-            run.run();
+            RxJavaPlugins.onSchedule(run).run();
         } catch (InterruptedException ex) {
             Thread.currentThread().interrupt();
             RxJavaPlugins.onError(ex);
