@@ -4827,6 +4827,8 @@ public abstract class Observable<T> implements ObservableSource<T> {
     /**
      * Returns the first item emitted by this {@code Observable}, or throws
      * {@code NoSuchElementException} if it emits no items.
+     * <p>
+     * <img width="640" height="412" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/blockingFirst.o.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code blockingFirst} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -4852,6 +4854,8 @@ public abstract class Observable<T> implements ObservableSource<T> {
     /**
      * Returns the first item emitted by this {@code Observable}, or a default value if it emits no
      * items.
+     * <p>
+     * <img width="640" height="329" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/blockingFirst.o.default.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code blockingFirst} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -5124,7 +5128,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * <p>
      * If the {@code Observable} may emit more than one item, use {@code Observable.toList().toFuture()}.
      * <p>
-     * <img width="640" height="395" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/B.toFuture.png" alt="">
+     * <img width="640" height="389" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/toFuture.o.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code toFuture} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -5141,6 +5145,8 @@ public abstract class Observable<T> implements ObservableSource<T> {
 
     /**
      * Runs the source observable to a terminal event, ignoring any values and rethrowing any exception.
+     * <p>
+     * <img width="640" height="270" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/blockingSubscribe.o.0.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code blockingSubscribe} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -5154,6 +5160,8 @@ public abstract class Observable<T> implements ObservableSource<T> {
 
     /**
      * Subscribes to the source and calls the given callbacks <strong>on the current thread</strong>.
+     * <p>
+     * <img width="640" height="393" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/blockingSubscribe.o.1.png" alt="">
      * <p>
      * If the Observable emits an error, it is wrapped into an
      * {@link io.reactivex.exceptions.OnErrorNotImplementedException OnErrorNotImplementedException}
@@ -5172,6 +5180,8 @@ public abstract class Observable<T> implements ObservableSource<T> {
 
     /**
      * Subscribes to the source and calls the given callbacks <strong>on the current thread</strong>.
+     * <p>
+     * <img width="640" height="396" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/blockingSubscribe.o.2.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code blockingSubscribe} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -5188,6 +5198,8 @@ public abstract class Observable<T> implements ObservableSource<T> {
 
     /**
      * Subscribes to the source and calls the given callbacks <strong>on the current thread</strong>.
+     * <p>
+     * <img width="640" height="394" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/blockingSubscribe.o.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code blockingSubscribe} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -5991,7 +6003,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * Collects items emitted by the source ObservableSource into a single mutable data structure and returns
      * a Single that emits this structure.
      * <p>
-     * <img width="640" height="330" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/collect.2.png" alt="">
+     * <img width="640" height="330" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/collectInto.o.png" alt="">
      * <p>
      * This is a simplified version of {@code reduce} that does not need to return the state on each pass.
      * <dl>
@@ -7053,7 +7065,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * If the action throws a runtime exception, that exception is rethrown by the {@code dispose()} call,
      * sometimes as a {@code CompositeException} if there were multiple exceptions along the way.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/doOnUnsubscribe.png" alt="">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/doOnDispose.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code doOnDispose} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -7074,7 +7086,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     /**
      * Modifies the source ObservableSource so that it invokes an action when it calls {@code onComplete}.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/doOnComplete.png" alt="">
+     * <img width="640" height="358" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/doOnComplete.o.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code doOnComplete} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -7177,7 +7189,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * In case the {@code onError} action throws, the downstream will receive a composite exception containing
      * the original exception and the exception thrown by {@code onError}.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/doOnError.png" alt="">
+     * <img width="640" height="355" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/doOnError.o.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code doOnError} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -7198,7 +7210,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * Calls the appropriate onXXX method (shared between all Observer) for the lifecycle events of
      * the sequence (subscription, cancellation, requesting).
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/doOnLifecycle.png" alt="">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/doOnLifecycle.o.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code doOnLifecycle} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -7222,7 +7234,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     /**
      * Modifies the source ObservableSource so that it invokes an action when it calls {@code onNext}.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/doOnNext.png" alt="">
+     * <img width="640" height="360" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/doOnNext.o.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code doOnNext} does not operate by default on a particular {@link Scheduler}.</dd>
