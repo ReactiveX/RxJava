@@ -10,15 +10,16 @@
 
 package io.reactivex.schedulers;
 
-import io.reactivex.Scheduler;
-import io.reactivex.annotations.*;
+import com.sun.istack.internal.NotNull;
+import io.reactivex.annotations.Experimental;
+import io.reactivex.functions.Function;
 import io.reactivex.plugins.RxJavaPlugins;
 
 /**
- * Marker interface to indicate wrapped action inside internal scheduler's task.
+ * Interface to wrap an action inside internal scheduler's task.
  *
- * Inside of the {@link RxJavaPlugins#onSchedule(Runnable)}, you can unwrap runnable from internal wrappers like
- * {@link Scheduler.DisposeTask}.
+ * You can check if runnable implements this interface and unwrap original runnable.
+ * For example inside of the {@link RxJavaPlugins#setScheduleHandler(Function)}
  *
  * @since 2.1.7 - experimental
  */
@@ -28,8 +29,8 @@ public interface SchedulerRunnableIntrospection {
     /**
      * Returns the wrapped action.
      *
-     * @return the wrapped action, may be null.
+     * @return the wrapped action. Cannot be null.
      */
-    @Nullable
+    @NotNull
     Runnable getWrappedRunnable();
 }
