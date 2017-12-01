@@ -715,10 +715,12 @@ public abstract class AbstractSchedulerTests {
                 cdl.countDown();
             }
         };
-        SchedulerRunnableIntrospection wrapper = (SchedulerRunnableIntrospection) s.schedulePeriodicallyDirect(countDownRunnable, 100, 100, TimeUnit.MILLISECONDS);
+        Disposable disposable = s.schedulePeriodicallyDirect(countDownRunnable, 100, 100, TimeUnit.MILLISECONDS);
+        SchedulerRunnableIntrospection wrapper = (SchedulerRunnableIntrospection) disposable;
 
         assertSame(countDownRunnable, wrapper.getWrappedRunnable());
         assertTrue(cdl.await(5, TimeUnit.SECONDS));
+        disposable.dispose();
     }
 
     @Test
@@ -735,7 +737,9 @@ public abstract class AbstractSchedulerTests {
                 cdl.countDown();
             }
         };
-        SchedulerRunnableIntrospection wrapper = (SchedulerRunnableIntrospection) scheduler.scheduleDirect(countDownRunnable, 100, TimeUnit.MILLISECONDS);
+        Disposable disposable = scheduler.scheduleDirect(countDownRunnable, 100, TimeUnit.MILLISECONDS);
+        SchedulerRunnableIntrospection wrapper = (SchedulerRunnableIntrospection) disposable;
         assertSame(countDownRunnable, wrapper.getWrappedRunnable());
+        disposable.dispose();
     }
 }
