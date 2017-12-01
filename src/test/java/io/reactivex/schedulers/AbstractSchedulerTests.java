@@ -698,4 +698,44 @@ public abstract class AbstractSchedulerTests {
             disposable.get().dispose();
         }
     }
+
+    @Test(timeout = 5000)
+    public void unwrapDefaultPeriodicTask() throws InterruptedException {
+        Scheduler s = getScheduler();
+        if (s instanceof TrampolineScheduler) {
+            // Can't properly stop a trampolined periodic task.
+            return;
+        }
+
+
+        final CountDownLatch cdl = new CountDownLatch(1);
+        Runnable countDownRunnable = new Runnable() {
+            @Override
+            public void run() {
+                cdl.countDown();
+            }
+        };
+        SchedulerRunnableIntrospection wrapper = (SchedulerRunnableIntrospection) s.schedulePeriodicallyDirect(countDownRunnable, 100, 100, TimeUnit.MILLISECONDS);
+
+        assertSame(countDownRunnable, wrapper.getWrappedRunnable());
+        assertTrue(cdl.await(5, TimeUnit.SECONDS));
+    }
+
+    @Test
+    public void unwrapScheduleDirectTask() {
+        Scheduler scheduler = getScheduler();
+        if (scheduler instanceof TrampolineScheduler) {
+            // Can't properly stop a trampolined periodic task.
+            return;
+        }
+        final CountDownLatch cdl = new CountDownLatch(1);
+        Runnable countDownRunnable = new Runnable() {
+            @Override
+            public void run() {
+                cdl.countDown();
+            }
+        };
+        SchedulerRunnableIntrospection wrapper = (SchedulerRunnableIntrospection) scheduler.scheduleDirect(countDownRunnable, 100, TimeUnit.MILLISECONDS);
+        assertSame(countDownRunnable, wrapper.getWrappedRunnable());
+    }
 }
