@@ -703,7 +703,7 @@ public abstract class AbstractSchedulerTests {
     public void unwrapDefaultPeriodicTask() throws InterruptedException {
         Scheduler s = getScheduler();
         if (s instanceof TrampolineScheduler) {
-            // Can't properly stop a trampolined periodic task.
+            // TrampolineScheduler always return EmptyDisposable
             return;
         }
 
@@ -727,7 +727,7 @@ public abstract class AbstractSchedulerTests {
     public void unwrapScheduleDirectTask() {
         Scheduler scheduler = getScheduler();
         if (scheduler instanceof TrampolineScheduler) {
-            // Can't properly stop a trampolined periodic task.
+            // TrampolineScheduler always return EmptyDisposable
             return;
         }
         final CountDownLatch cdl = new CountDownLatch(1);
