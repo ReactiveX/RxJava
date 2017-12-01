@@ -554,7 +554,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * {@code from} method.
      * <dl>
      * <dt><b>Scheduler:</b></dt>
-     * <dd>You specify which {@link Scheduler} this operator will use</dd>
+     * <dd>You specify which {@link Scheduler} this operator will use.</dd>
      * </dl>
      *
      * @param future
@@ -1523,6 +1523,28 @@ public abstract class Single<T> implements SingleSource<T> {
     }
 
     /**
+     * Calls the specified converter function during assembly time and returns its resulting value.
+     * <p>
+     * This allows fluent conversion to any other type.
+     * <dl>
+     * <dt><b>Scheduler:</b></dt>
+     * <dd>{@code as} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param <R> the resulting object type
+     * @param converter the function that receives the current Single instance and returns a value
+     * @return the converted value
+     * @throws NullPointerException if converter is null
+     * @since 2.1.7 - experimental
+     */
+    @Experimental
+    @CheckReturnValue
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final <R> R as(@NonNull SingleConverter<T, ? extends R> converter) {
+        return ObjectHelper.requireNonNull(converter, "converter is null").apply(this);
+    }
+
+    /**
      * Hides the identity of the current Single, including the Disposable that is sent
      * to the downstream via {@code onSubscribe()}.
      * <dl>
@@ -2338,7 +2360,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.observeOn.png" alt="">
      * <dl>
      * <dt><b>Scheduler:</b></dt>
-     * <dd>you specify which {@link Scheduler} this operator will use</dd>
+     * <dd>you specify which {@link Scheduler} this operator will use.</dd>
      * </dl>
      *
      * @param scheduler
@@ -2830,7 +2852,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.subscribeOn.png" alt="">
      * <dl>
      * <dt><b>Scheduler:</b></dt>
-     * <dd>You specify which {@link Scheduler} this operator will use</dd>
+     * <dd>You specify which {@link Scheduler} this operator will use.</dd>
      * </dl>
      *
      * @param scheduler

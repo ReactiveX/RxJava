@@ -22,6 +22,8 @@ import io.reactivex.Scheduler.Worker;
 import io.reactivex.exceptions.MissingBackpressureException;
 import io.reactivex.internal.fuseable.ConditionalSubscriber;
 import io.reactivex.internal.queue.SpscArrayQueue;
+import io.reactivex.internal.schedulers.SchedulerMultiWorkerSupport;
+import io.reactivex.internal.schedulers.SchedulerMultiWorkerSupport.WorkerCallback;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.internal.util.BackpressureHelper;
 import io.reactivex.parallel.ParallelFlowable;
@@ -47,7 +49,7 @@ public final class ParallelRunOn<T> extends ParallelFlowable<T> {
     }
 
     @Override
-    public void subscribe(Subscriber<? super T>[] subscribers) {
+    public void subscribe(final Subscriber<? super T>[] subscribers) {
         if (!validate(subscribers)) {
             return;
         }
@@ -55,26 +57,50 @@ public final class ParallelRunOn<T> extends ParallelFlowable<T> {
         int n = subscribers.length;
 
         @SuppressWarnings("unchecked")
-        Subscriber<T>[] parents = new Subscriber[n];
+        final Subscriber<T>[] parents = new Subscriber[n];
 
-        int prefetch = this.prefetch;
-
-        for (int i = 0; i < n; i++) {
-            Subscriber<? super T> a = subscribers[i];
-
-            Worker w = scheduler.createWorker();
-            SpscArrayQueue<T> q = new SpscArrayQueue<T>(prefetch);
-
-            if (a instanceof ConditionalSubscriber) {
-                parents[i] = new RunOnConditionalSubscriber<T>((ConditionalSubscriber<? super T>)a, prefetch, q, w);
-            } else {
-                parents[i] = new RunOnSubscriber<T>(a, prefetch, q, w);
+        if (scheduler instanceof SchedulerMultiWorkerSupport) {
+            SchedulerMultiWorkerSupport multiworker = (SchedulerMultiWorkerSupport) scheduler;
+            multiworker.createWorkers(n, new MultiWorkerCallback(subscribers, parents));
+        } else {
+            for (int i = 0; i < n; i++) {
+                createSubscriber(i, subscribers, parents, scheduler.createWorker());
             }
         }
-
         source.subscribe(parents);
     }
 
+    void createSubscriber(int i, Subscriber<? super T>[] subscribers,
+            Subscriber<T>[] parents, Scheduler.Worker worker) {
+
+        Subscriber<? super T> a = subscribers[i];
+
+        SpscArrayQueue<T> q = new SpscArrayQueue<T>(prefetch);
+
+        if (a instanceof ConditionalSubscriber) {
+            parents[i] = new RunOnConditionalSubscriber<T>((ConditionalSubscriber<? super T>)a, prefetch, q, worker);
+        } else {
+            parents[i] = new RunOnSubscriber<T>(a, prefetch, q, worker);
+        }
+    }
+
+    final class MultiWorkerCallback implements WorkerCallback {
+
+        final Subscriber<? super T>[] subscribers;
+
+        final Subscriber<T>[] parents;
+
+        MultiWorkerCallback(Subscriber<? super T>[] subscribers,
+                Subscriber<T>[] parents) {
+            this.subscribers = subscribers;
+            this.parents = parents;
+        }
+
+        @Override
+        public void onWorker(int i, Worker w) {
+            createSubscriber(i, subscribers, parents, w);
+        }
+    }
 
     @Override
     public int parallelism() {

@@ -227,10 +227,10 @@ public class ReplayProcessorConcurrencyTest {
     @Test(timeout = 10000)
     public void testSubscribeCompletionRaceCondition() {
         for (int i = 0; i < 50; i++) {
-            final ReplayProcessor<String> subject = ReplayProcessor.create();
+            final ReplayProcessor<String> processor = ReplayProcessor.create();
             final AtomicReference<String> value1 = new AtomicReference<String>();
 
-            subject.subscribe(new Consumer<String>() {
+            processor.subscribe(new Consumer<String>() {
 
                 @Override
                 public void accept(String t1) {
@@ -249,15 +249,15 @@ public class ReplayProcessorConcurrencyTest {
 
                 @Override
                 public void run() {
-                    subject.onNext("value");
-                    subject.onComplete();
+                    processor.onNext("value");
+                    processor.onComplete();
                 }
             });
 
-            SubjectObserverThread t2 = new SubjectObserverThread(subject);
-            SubjectObserverThread t3 = new SubjectObserverThread(subject);
-            SubjectObserverThread t4 = new SubjectObserverThread(subject);
-            SubjectObserverThread t5 = new SubjectObserverThread(subject);
+            SubjectObserverThread t2 = new SubjectObserverThread(processor);
+            SubjectObserverThread t3 = new SubjectObserverThread(processor);
+            SubjectObserverThread t4 = new SubjectObserverThread(processor);
+            SubjectObserverThread t5 = new SubjectObserverThread(processor);
 
             t2.start();
             t3.start();
@@ -300,18 +300,18 @@ public class ReplayProcessorConcurrencyTest {
 
     static class SubjectObserverThread extends Thread {
 
-        private final ReplayProcessor<String> subject;
+        private final ReplayProcessor<String> processor;
         private final AtomicReference<String> value = new AtomicReference<String>();
 
-        SubjectObserverThread(ReplayProcessor<String> subject) {
-            this.subject = subject;
+        SubjectObserverThread(ReplayProcessor<String> processor) {
+            this.processor = processor;
         }
 
         @Override
         public void run() {
             try {
                 // a timeout exception will happen if we don't get a terminal state
-                String v = subject.timeout(2000, TimeUnit.MILLISECONDS).blockingSingle();
+                String v = processor.timeout(2000, TimeUnit.MILLISECONDS).blockingSingle();
                 value.set(v);
             } catch (Exception e) {
                 e.printStackTrace();

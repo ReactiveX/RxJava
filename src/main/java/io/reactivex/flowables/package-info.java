@@ -15,7 +15,8 @@
  */
 
 /**
- * Classes supporting the Flowable base reactive class: connectable and grouped
- * flowables.
+ * Classes supporting the Flowable base reactive class:
+ * {@link io.reactivex.flowables.ConnectableFlowable} and
+ * {@link io.reactivex.flowables.GroupedFlowable}.
  */
 package io.reactivex.flowables;

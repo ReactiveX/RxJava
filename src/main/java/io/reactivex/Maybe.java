@@ -1347,7 +1347,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * <img width="640" height="200" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/timer.s.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>You specify which {@link Scheduler} this operator will use</dd>
+     *  <dd>You specify which {@link Scheduler} this operator will use.</dd>
      * </dl>
      *
      * @param delay
@@ -1990,6 +1990,28 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     }
 
     /**
+     * Calls the specified converter function during assembly time and returns its resulting value.
+     * <p>
+     * This allows fluent conversion to any other type.
+     * <dl>
+     * <dt><b>Scheduler:</b></dt>
+     * <dd>{@code as} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param <R> the resulting object type
+     * @param converter the function that receives the current Maybe instance and returns a value
+     * @return the converted value
+     * @throws NullPointerException if converter is null
+     * @since 2.1.7 - experimental
+     */
+    @Experimental
+    @CheckReturnValue
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final <R> R as(@NonNull MaybeConverter<T, ? extends R> converter) {
+        return ObjectHelper.requireNonNull(converter, "converter is null").apply(this);
+    }
+
+    /**
      * Waits in a blocking fashion until the current Maybe signals a success value (which is returned),
      * null if completed or an exception (which is propagated).
      * <dl>
@@ -2245,7 +2267,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/delay.s.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>you specify which {@link Scheduler} this operator will use</dd>
+     *  <dd>you specify which {@link Scheduler} this operator will use.</dd>
      * </dl>
      *
      * @param delay
@@ -2348,7 +2370,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/delaySubscription.s.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>You specify which {@link Scheduler} this operator will use</dd>
+     *  <dd>You specify which {@link Scheduler} this operator will use.</dd>
      * </dl>
      *
      * @param delay
@@ -3008,7 +3030,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * <img width="640" height="182" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.observeOn.png" alt="">
      * <dl>
      * <dt><b>Scheduler:</b></dt>
-     * <dd>you specify which {@link Scheduler} this operator will use</dd>
+     * <dd>you specify which {@link Scheduler} this operator will use.</dd>
      * </dl>
      *
      * @param scheduler
@@ -3747,7 +3769,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * <img width="640" height="752" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.subscribeOn.png" alt="">
      * <dl>
      * <dt><b>Scheduler:</b></dt>
-     * <dd>you specify which {@link Scheduler} this operator will use</dd>
+     * <dd>you specify which {@link Scheduler} this operator will use.</dd>
      * </dl>
      *
      * @param scheduler
@@ -3953,7 +3975,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/timeout.2s.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>You specify which {@link Scheduler} this operator will use</dd>
+     *  <dd>You specify which {@link Scheduler} this operator will use.</dd>
      * </dl>
      *
      * @param timeout
@@ -3983,7 +4005,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/timeout.1s.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>You specify which {@link Scheduler} this operator will use</dd>
+     *  <dd>You specify which {@link Scheduler} this operator will use.</dd>
      * </dl>
      *
      * @param timeout

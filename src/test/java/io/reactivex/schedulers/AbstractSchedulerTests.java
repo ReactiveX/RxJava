@@ -20,6 +20,8 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 
+import io.reactivex.internal.functions.Functions;
+import io.reactivex.plugins.RxJavaPlugins;
 import org.junit.Test;
 import org.mockito.InOrder;
 import org.mockito.invocation.InvocationOnMock;
@@ -41,6 +43,7 @@ public abstract class AbstractSchedulerTests {
 
     /**
      * The scheduler to test.
+     *
      * @return the Scheduler instance
      */
     protected abstract Scheduler getScheduler();
@@ -576,6 +579,7 @@ public abstract class AbstractSchedulerTests {
             try {
                 sd.replace(s.schedulePeriodicallyDirect(new Runnable() {
                     int count;
+
                     @Override
                     public void run() {
                         if (++count == 10) {
@@ -610,6 +614,7 @@ public abstract class AbstractSchedulerTests {
             try {
                 sd.replace(w.schedulePeriodically(new Runnable() {
                     int count;
+
                     @Override
                     public void run() {
                         if (++count == 10) {
@@ -624,6 +629,73 @@ public abstract class AbstractSchedulerTests {
                 sd.dispose();
                 w.dispose();
             }
+        }
+    }
+
+    private void assertRunnableDecorated(Runnable scheduleCall) throws InterruptedException {
+        try {
+            final CountDownLatch decoratedCalled = new CountDownLatch(1);
+
+            RxJavaPlugins.setScheduleHandler(new Function<Runnable, Runnable>() {
+                @Override
+                public Runnable apply(final Runnable actual) throws Exception {
+                    return new Runnable() {
+                        @Override
+                        public void run() {
+                            decoratedCalled.countDown();
+                            actual.run();
+                        }
+                    };
+                }
+            });
+
+            scheduleCall.run();
+
+            assertTrue(decoratedCalled.await(5, TimeUnit.SECONDS));
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
+
+    @Test(timeout = 6000)
+    public void scheduleDirectDecoratesRunnable() throws InterruptedException {
+        assertRunnableDecorated(new Runnable() {
+            @Override
+            public void run() {
+                getScheduler().scheduleDirect(Functions.EMPTY_RUNNABLE);
+            }
+        });
+    }
+
+    @Test(timeout = 6000)
+    public void scheduleDirectWithDelayDecoratesRunnable() throws InterruptedException {
+        assertRunnableDecorated(new Runnable() {
+            @Override
+            public void run() {
+                getScheduler().scheduleDirect(Functions.EMPTY_RUNNABLE, 1, TimeUnit.MILLISECONDS);
+            }
+        });
+    }
+
+    @Test(timeout = 6000)
+    public void schedulePeriodicallyDirectDecoratesRunnable() throws InterruptedException {
+        final Scheduler scheduler = getScheduler();
+        if (scheduler instanceof TrampolineScheduler) {
+            // Can't properly stop a trampolined periodic task.
+            return;
+        }
+
+        final AtomicReference<Disposable> disposable = new AtomicReference<Disposable>();
+
+        try {
+            assertRunnableDecorated(new Runnable() {
+                @Override
+                public void run() {
+                    disposable.set(scheduler.schedulePeriodicallyDirect(Functions.EMPTY_RUNNABLE, 1, 10000, TimeUnit.MILLISECONDS));
+                }
+            });
+        } finally {
+            disposable.get().dispose();
         }
     }
 }

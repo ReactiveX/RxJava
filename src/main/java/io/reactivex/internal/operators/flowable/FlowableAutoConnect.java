@@ -23,8 +23,8 @@ import io.reactivex.flowables.ConnectableFlowable;
 import io.reactivex.functions.Consumer;
 
 /**
- * Wraps a ConnectableObservable and calls its connect() method once
- * the specified number of Subscribers have subscribed.
+ * Wraps a {@link ConnectableFlowable} and calls its {@code connect()} method once
+ * the specified number of {@link Subscriber}s have subscribed.
  *
  * @param <T> the value type of the chain
  */

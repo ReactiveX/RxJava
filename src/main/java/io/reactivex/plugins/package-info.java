@@ -15,7 +15,7 @@
  */
 
 /**
- * Callback types and a central plugin handler class to hook into the lifecycle
- * of the base reactive types and schedulers.
+ * Contains the central plugin handler {@link io.reactivex.plugins.RxJavaPlugins}
+ * class to hook into the lifecycle of the base reactive types and schedulers.
  */
 package io.reactivex.plugins;

@@ -2,6 +2,32 @@
 
 The changelog of version 1.x can be found at https://github.com/ReactiveX/RxJava/blob/1.x/CHANGES.md
 
+### Version 2.1.7 - November 27, 2017 ([Maven](http://search.maven.org/#artifactdetails%7Cio.reactivex.rxjava2%7Crxjava%7C2.1.7%7C))
+
+#### API changes
+
+- [Pull 5729](https://github.com/ReactiveX/RxJava/pull/5729): Implement `as()` operator on the 6 base classes - similar to `to()` but dedicated functional interface for each base class instead of just `Function`.
+
+#### Documentation changes
+
+- [Pull 5706](https://github.com/ReactiveX/RxJava/pull/5706): Remove mentions of Main thread from `Schedulers.single()` JavaDoc.
+- [Pull 5709](https://github.com/ReactiveX/RxJava/pull/5709): Improve JavaDocs of `flatMapSingle` and `flatMapMaybe`.
+- [Pull 5713](https://github.com/ReactiveX/RxJava/pull/5713): Add `BaseTestConsumer` `values()` and `errors()` thread-safety clarifications.
+- [Pull 5717](https://github.com/ReactiveX/RxJava/pull/5717): Add period to custom scheduler use sentences in `Schedulers`.
+- [Pull 5718](https://github.com/ReactiveX/RxJava/pull/5718): Add a sentence to documentation of `take()` operator about the thread `onComplete` may get signaled.
+- [Pull 5738](https://github.com/ReactiveX/RxJava/pull/5738): Correct JavaDoc for `ConnectableFlowable`, `GroupedFlowable`, `FlowableAutoConnect`.
+- [Pull 5740](https://github.com/ReactiveX/RxJava/pull/5740): Marbles for `Observable` `all`, `fromPublisher`, `zipArray`.
+
+#### Bugfixes
+
+- [Pull 5695](https://github.com/ReactiveX/RxJava/pull/5695): Fix `Completable.concat` to use replace (don't dispose old).
+- [Pull 5715](https://github.com/ReactiveX/RxJava/pull/5715): Distinguish between sync and async dispose in `ScheduledRunnable`.
+- [Pull 5743](https://github.com/ReactiveX/RxJava/pull/5743): Check `isDisposed` before emitting in `SingleFromCallable`.
+
+#### Other
+
+- [Pull 5723](https://github.com/ReactiveX/RxJava/pull/5723): Remove duplicate nullity check line in `toMap`.
+
 ### Version 2.1.6 - October 27, 2017 ([Maven](http://search.maven.org/#artifactdetails%7Cio.reactivex.rxjava2%7Crxjava%7C2.1.6%7C))
 
 #### API changes

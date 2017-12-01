@@ -543,6 +543,18 @@ public class SingleTest {
         }).intValue());
     }
 
+    @Test
+    public void as() {
+        Single.just(1).as(new SingleConverter<Integer, Flowable<Integer>>() {
+            @Override
+            public Flowable<Integer> apply(Single<Integer> v) {
+                return v.toFlowable();
+            }
+        })
+        .test()
+        .assertResult(1);
+    }
+
     @Test(expected = NullPointerException.class)
     public void fromObservableNull() {
         Single.fromObservable(null);

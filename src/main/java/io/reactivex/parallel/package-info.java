@@ -15,7 +15,7 @@
  */
 
 /**
- * Base type for the parallel type offering a sub-DSL for working with Flowable items
- * in parallel.
+ * Contains the base type {@link io.reactivex.parallel.ParallelFlowable},
+ * a sub-DSL for working with {@link io.reactivex.Flowable} sequences in parallel.
  */
 package io.reactivex.parallel;

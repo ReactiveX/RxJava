@@ -25,22 +25,22 @@ import io.reactivex.internal.util.ConnectConsumer;
 import io.reactivex.plugins.RxJavaPlugins;
 
 /**
- * A {@code ConnectableObservable} resembles an ordinary {@link Flowable}, except that it does not begin
+ * A {@code ConnectableFlowable} resembles an ordinary {@link Flowable}, except that it does not begin
  * emitting items when it is subscribed to, but only when its {@link #connect} method is called. In this way you
- * can wait for all intended {@link Subscriber}s to {@link Flowable#subscribe} to the {@code Observable}
- * before the {@code Observable} begins emitting items.
+ * can wait for all intended {@link Subscriber}s to {@link Flowable#subscribe} to the {@code Flowable}
+ * before the {@code Flowable} begins emitting items.
  * <p>
  * <img width="640" height="510" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/publishConnect.png" alt="">
  *
  * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Connectable-Observable-Operators">RxJava Wiki:
  *      Connectable Observable Operators</a>
  * @param <T>
- *          the type of items emitted by the {@code ConnectableObservable}
+ *          the type of items emitted by the {@code ConnectableFlowable}
  */
 public abstract class ConnectableFlowable<T> extends Flowable<T> {
 
     /**
-     * Instructs the {@code ConnectableObservable} to begin emitting the items from its underlying
+     * Instructs the {@code ConnectableFlowable} to begin emitting the items from its underlying
      * {@link Flowable} to its {@link Subscriber}s.
      *
      * @param connection
@@ -51,7 +51,7 @@ public abstract class ConnectableFlowable<T> extends Flowable<T> {
     public abstract void connect(@NonNull Consumer<? super Disposable> connection);
 
     /**
-     * Instructs the {@code ConnectableObservable} to begin emitting the items from its underlying
+     * Instructs the {@code ConnectableFlowable} to begin emitting the items from its underlying
      * {@link Flowable} to its {@link Subscriber}s.
      * <p>
      * To disconnect from a synchronous source, use the {@link #connect(io.reactivex.functions.Consumer)} method.
@@ -66,8 +66,8 @@ public abstract class ConnectableFlowable<T> extends Flowable<T> {
     }
 
     /**
-     * Returns an {@code Observable} that stays connected to this {@code ConnectableObservable} as long as there
-     * is at least one subscription to this {@code ConnectableObservable}.
+     * Returns a {@code Flowable} that stays connected to this {@code ConnectableFlowable} as long as there
+     * is at least one subscription to this {@code ConnectableFlowable}.
      *
      * @return a {@link Flowable}
      * @see <a href="http://reactivex.io/documentation/operators/refcount.html">ReactiveX documentation: RefCount</a>
@@ -78,10 +78,10 @@ public abstract class ConnectableFlowable<T> extends Flowable<T> {
     }
 
     /**
-     * Returns an Observable that automatically connects to this ConnectableObservable
+     * Returns a Flowable that automatically connects to this ConnectableFlowable
      * when the first Subscriber subscribes.
      *
-     * @return an Observable that automatically connects to this ConnectableObservable
+     * @return a Flowable that automatically connects to this ConnectableFlowable
      *         when the first Subscriber subscribes
      */
     @NonNull
@@ -89,13 +89,13 @@ public abstract class ConnectableFlowable<T> extends Flowable<T> {
         return autoConnect(1);
     }
     /**
-     * Returns an Observable that automatically connects to this ConnectableObservable
+     * Returns a Flowable that automatically connects to this ConnectableFlowable
      * when the specified number of Subscribers subscribe to it.
      *
      * @param numberOfSubscribers the number of subscribers to await before calling connect
-     *                            on the ConnectableObservable. A non-positive value indicates
+     *                            on the ConnectableFlowable. A non-positive value indicates
      *                            an immediate connection.
-     * @return an Observable that automatically connects to this ConnectableObservable
+     * @return a Flowable that automatically connects to this ConnectableFlowable
      *         when the specified number of Subscribers subscribe to it
      */
     @NonNull
@@ -104,16 +104,16 @@ public abstract class ConnectableFlowable<T> extends Flowable<T> {
     }
 
     /**
-     * Returns an Observable that automatically connects to this ConnectableObservable
+     * Returns a Flowable that automatically connects to this ConnectableFlowable
      * when the specified number of Subscribers subscribe to it and calls the
      * specified callback with the Subscription associated with the established connection.
      *
      * @param numberOfSubscribers the number of subscribers to await before calling connect
-     *                            on the ConnectableObservable. A non-positive value indicates
+     *                            on the ConnectableFlowable. A non-positive value indicates
      *                            an immediate connection.
      * @param connection the callback Consumer that will receive the Subscription representing the
      *                   established connection
-     * @return an Observable that automatically connects to this ConnectableObservable
+     * @return a Flowable that automatically connects to this ConnectableFlowable
      *         when the specified number of Subscribers subscribe to it and calls the
      *         specified callback with the Subscription associated with the established connection
      */

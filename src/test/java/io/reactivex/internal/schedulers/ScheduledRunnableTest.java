@@ -18,6 +18,7 @@ import static org.junit.Assert.*;
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.util.List;
 import java.util.concurrent.FutureTask;
+import java.util.concurrent.atomic.*;
 
 import org.junit.Test;
 
@@ -282,5 +283,115 @@ public class ScheduledRunnableTest {
 
             TestHelper.race(r1, r2);
         }
+    }
+
+    @Test
+    public void syncWorkerCancelRace() {
+        for (int i = 0; i < 10000; i++) {
+            final CompositeDisposable set = new CompositeDisposable();
+            final AtomicBoolean interrupted = new AtomicBoolean();
+            final AtomicInteger sync = new AtomicInteger(2);
+            final AtomicInteger syncb = new AtomicInteger(2);
+
+            Runnable r0 = new Runnable() {
+                @Override
+                public void run() {
+                    set.dispose();
+                    if (sync.decrementAndGet() != 0) {
+                        while (sync.get() != 0) { }
+                    }
+                    if (syncb.decrementAndGet() != 0) {
+                        while (syncb.get() != 0) { }
+                    }
+                    for (int j = 0; j < 1000; j++) {
+                        if (Thread.currentThread().isInterrupted()) {
+                            interrupted.set(true);
+                            break;
+                        }
+                    }
+                }
+            };
+
+            final ScheduledRunnable run = new ScheduledRunnable(r0, set);
+            set.add(run);
+
+            final FutureTask<Void> ft = new FutureTask<Void>(run, null);
+
+            Runnable r2 = new Runnable() {
+                @Override
+                public void run() {
+                    if (sync.decrementAndGet() != 0) {
+                        while (sync.get() != 0) { }
+                    }
+                    run.setFuture(ft);
+                    if (syncb.decrementAndGet() != 0) {
+                        while (syncb.get() != 0) { }
+                    }
+                }
+            };
+
+            TestHelper.race(ft, r2);
+
+            assertFalse("The task was interrupted", interrupted.get());
+        }
+    }
+
+    @Test
+    public void disposeAfterRun() {
+        final ScheduledRunnable run = new ScheduledRunnable(Functions.EMPTY_RUNNABLE, null);
+
+        run.run();
+        assertEquals(ScheduledRunnable.DONE, run.get(ScheduledRunnable.FUTURE_INDEX));
+
+        run.dispose();
+        assertEquals(ScheduledRunnable.DONE, run.get(ScheduledRunnable.FUTURE_INDEX));
+    }
+
+    @Test
+    public void syncDisposeIdempotent() {
+        final ScheduledRunnable run = new ScheduledRunnable(Functions.EMPTY_RUNNABLE, null);
+        run.set(ScheduledRunnable.THREAD_INDEX, Thread.currentThread());
+
+        run.dispose();
+        assertEquals(ScheduledRunnable.SYNC_DISPOSED, run.get(ScheduledRunnable.FUTURE_INDEX));
+        run.dispose();
+        assertEquals(ScheduledRunnable.SYNC_DISPOSED, run.get(ScheduledRunnable.FUTURE_INDEX));
+        run.run();
+        assertEquals(ScheduledRunnable.SYNC_DISPOSED, run.get(ScheduledRunnable.FUTURE_INDEX));
+    }
+
+    @Test
+    public void asyncDisposeIdempotent() {
+        final ScheduledRunnable run = new ScheduledRunnable(Functions.EMPTY_RUNNABLE, null);
+
+        run.dispose();
+        assertEquals(ScheduledRunnable.ASYNC_DISPOSED, run.get(ScheduledRunnable.FUTURE_INDEX));
+        run.dispose();
+        assertEquals(ScheduledRunnable.ASYNC_DISPOSED, run.get(ScheduledRunnable.FUTURE_INDEX));
+        run.run();
+        assertEquals(ScheduledRunnable.ASYNC_DISPOSED, run.get(ScheduledRunnable.FUTURE_INDEX));
+    }
+
+
+    @Test
+    public void noParentIsDisposed() {
+        ScheduledRunnable run = new ScheduledRunnable(Functions.EMPTY_RUNNABLE, null);
+        assertFalse(run.isDisposed());
+        run.run();
+        assertTrue(run.isDisposed());
+    }
+
+    @Test
+    public void withParentIsDisposed() {
+        CompositeDisposable set = new CompositeDisposable();
+        ScheduledRunnable run = new ScheduledRunnable(Functions.EMPTY_RUNNABLE, set);
+        set.add(run);
+
+        assertFalse(run.isDisposed());
+
+        run.run();
+        assertTrue(run.isDisposed());
+
+        assertFalse(set.remove(run));
     }
 }

@@ -30,11 +30,11 @@ public class SerializedProcessorTest {
 
     @Test
     public void testBasic() {
-        SerializedProcessor<String> subject = new SerializedProcessor<String>(PublishProcessor.<String> create());
+        SerializedProcessor<String> processor = new SerializedProcessor<String>(PublishProcessor.<String> create());
         TestSubscriber<String> ts = new TestSubscriber<String>();
-        subject.subscribe(ts);
-        subject.onNext("hello");
-        subject.onComplete();
+        processor.subscribe(ts);
+        processor.onNext("hello");
+        processor.onComplete();
         ts.awaitTerminalEvent();
         ts.assertValue("hello");
     }
