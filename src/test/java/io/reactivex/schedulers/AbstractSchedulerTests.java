@@ -698,4 +698,48 @@ public abstract class AbstractSchedulerTests {
             disposable.get().dispose();
         }
     }
+
+    @Test(timeout = 5000)
+    public void unwrapDefaultPeriodicTask() throws InterruptedException {
+        Scheduler s = getScheduler();
+        if (s instanceof TrampolineScheduler) {
+            // TrampolineScheduler always return EmptyDisposable
+            return;
+        }
+
+
+        final CountDownLatch cdl = new CountDownLatch(1);
+        Runnable countDownRunnable = new Runnable() {
+            @Override
+            public void run() {
+                cdl.countDown();
+            }
+        };
+        Disposable disposable = s.schedulePeriodicallyDirect(countDownRunnable, 100, 100, TimeUnit.MILLISECONDS);
+        SchedulerRunnableIntrospection wrapper = (SchedulerRunnableIntrospection) disposable;
+
+        assertSame(countDownRunnable, wrapper.getWrappedRunnable());
+        assertTrue(cdl.await(5, TimeUnit.SECONDS));
+        disposable.dispose();
+    }
+
+    @Test
+    public void unwrapScheduleDirectTask() {
+        Scheduler scheduler = getScheduler();
+        if (scheduler instanceof TrampolineScheduler) {
+            // TrampolineScheduler always return EmptyDisposable
+            return;
+        }
+        final CountDownLatch cdl = new CountDownLatch(1);
+        Runnable countDownRunnable = new Runnable() {
+            @Override
+            public void run() {
+                cdl.countDown();
+            }
+        };
+        Disposable disposable = scheduler.scheduleDirect(countDownRunnable, 100, TimeUnit.MILLISECONDS);
+        SchedulerRunnableIntrospection wrapper = (SchedulerRunnableIntrospection) disposable;
+        assertSame(countDownRunnable, wrapper.getWrappedRunnable());
+        disposable.dispose();
+    }
 }

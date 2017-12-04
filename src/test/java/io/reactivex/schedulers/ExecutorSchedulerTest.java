@@ -561,4 +561,22 @@ public class ExecutorSchedulerTest extends AbstractSchedulerConcurrencyTests {
             executorScheduler.shutdownNow();
         }
     }
+
+    @Test
+    public void unwrapScheduleDirectTaskAfterDispose() {
+        Scheduler scheduler = getScheduler();
+        final CountDownLatch cdl = new CountDownLatch(1);
+        Runnable countDownRunnable = new Runnable() {
+            @Override
+            public void run() {
+                cdl.countDown();
+            }
+        };
+        Disposable disposable = scheduler.scheduleDirect(countDownRunnable, 100, TimeUnit.MILLISECONDS);
+        SchedulerRunnableIntrospection wrapper = (SchedulerRunnableIntrospection) disposable;
+        assertSame(countDownRunnable, wrapper.getWrappedRunnable());
+        disposable.dispose();
+
+        assertSame(Functions.EMPTY_RUNNABLE, wrapper.getWrappedRunnable());
+    }
 }

@@ -13,8 +13,6 @@
 
 package io.reactivex;
 
-import java.util.concurrent.TimeUnit;
-
 import io.reactivex.annotations.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.Exceptions;
@@ -23,6 +21,9 @@ import io.reactivex.internal.disposables.*;
 import io.reactivex.internal.schedulers.*;
 import io.reactivex.internal.util.ExceptionHelper;
 import io.reactivex.plugins.RxJavaPlugins;
+import io.reactivex.schedulers.SchedulerRunnableIntrospection;
+
+import java.util.concurrent.TimeUnit;
 
 /**
  * A {@code Scheduler} is an object that specifies an API for scheduling
@@ -197,7 +198,7 @@ public abstract class Scheduler {
      * <p>
      * Limit the amount concurrency two at a time without creating a new fix
      * size thread pool:
-     * 
+     *
      * <pre>
      * Scheduler limitScheduler = Schedulers.computation().when(workers -&gt; {
      *  // use merge max concurrent to limit the number of concurrent
@@ -215,7 +216,7 @@ public abstract class Scheduler {
      * {@link Flowable#zip(org.reactivestreams.Publisher, org.reactivestreams.Publisher, io.reactivex.functions.BiFunction)} where
      * subscribing to the first {@link Flowable} could deadlock the
      * subscription to the second.
-     * 
+     *
      * <pre>
      * Scheduler limitScheduler = Schedulers.computation().when(workers -&gt; {
      *  // use merge max concurrent to limit the number of concurrent
@@ -223,12 +224,12 @@ public abstract class Scheduler {
      *  return Completable.merge(Flowable.merge(workers, 2));
      * });
      * </pre>
-     * 
+     *
      * Slowing down the rate to no more than than 1 a second. This suffers from
      * the same problem as the one above I could find an {@link Flowable}
      * operator that limits the rate without dropping the values (aka leaky
      * bucket algorithm).
-     * 
+     *
      * <pre>
      * Scheduler slowScheduler = Schedulers.computation().when(workers -&gt; {
      *  // use concatenate to make each worker happen one at a time.
@@ -238,7 +239,7 @@ public abstract class Scheduler {
      *  }));
      * });
      * </pre>
-     * 
+     *
      * <p>History: 2.0.1 - experimental
      * @param <S> a Scheduler and a Subscription
      * @param combine the function that takes a two-level nested Flowable sequence of a Completable and returns
@@ -347,7 +348,7 @@ public abstract class Scheduler {
          * Holds state and logic to calculate when the next delayed invocation
          * of this task has to happen (accounting for clock drifts).
          */
-        final class PeriodicTask implements Runnable {
+        final class PeriodicTask implements Runnable, SchedulerRunnableIntrospection {
             @NonNull
             final Runnable decoratedRun;
             @NonNull
@@ -393,11 +394,16 @@ public abstract class Scheduler {
                     sd.replace(schedule(this, delay, TimeUnit.NANOSECONDS));
                 }
             }
+
+            @Override
+            public Runnable getWrappedRunnable() {
+                return this.decoratedRun;
+            }
         }
     }
 
     static class PeriodicDirectTask
-    implements Runnable, Disposable {
+    implements Disposable, Runnable, SchedulerRunnableIntrospection {
         final Runnable run;
         @NonNull
         final Worker worker;
@@ -432,9 +438,14 @@ public abstract class Scheduler {
         public boolean isDisposed() {
             return disposed;
         }
+
+        @Override
+        public Runnable getWrappedRunnable() {
+            return run;
+        }
     }
 
-    static final class DisposeTask implements Runnable, Disposable {
+    static final class DisposeTask implements Disposable, Runnable, SchedulerRunnableIntrospection {
         final Runnable decoratedRun;
         final Worker w;
 
@@ -468,6 +479,11 @@ public abstract class Scheduler {
         @Override
         public boolean isDisposed() {
             return w.isDisposed();
+        }
+
+        @Override
+        public Runnable getWrappedRunnable() {
+            return this.decoratedRun;
         }
     }
 }
