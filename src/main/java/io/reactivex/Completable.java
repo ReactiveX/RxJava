@@ -1546,6 +1546,28 @@ public abstract class Completable implements CompletableSource {
     }
 
     /**
+     * Returns a Completable that when this Completable emits an error, retries at most times
+     * or until the predicate returns false, whichever happens first and emitting the last error.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code retry} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param times the number of times the returned Completable should retry this Completable
+     * @param predicate the predicate that is called with the latest throwable and should return
+     * true to indicate the returned Completable should resubscribe to this Completable.
+     * @return the new Completable instance
+     * @throws NullPointerException if predicate is null
+     * @throws IllegalArgumentException if times is negative
+     * @since 2.1.8 - experimental
+     */
+    @Experimental
+    @CheckReturnValue
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final Completable retry(long times, Predicate<? super Throwable> predicate) {
+        return fromPublisher(toFlowable().retry(times, predicate));
+    }
+
+    /**
      * Returns a Completable that when this Completable emits an error, calls the given predicate with
      * the latest exception to decide whether to resubscribe to this or not.
      * <dl>
