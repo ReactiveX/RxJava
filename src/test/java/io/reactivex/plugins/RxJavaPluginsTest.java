@@ -1369,8 +1369,6 @@ public class RxJavaPluginsTest {
 
             assertNull(RxJavaPlugins.onAssembly((Maybe)null));
 
-            assertNull(RxJavaPlugins.onSchedule(null));
-
             Maybe myb = new Maybe() {
                 @Override
                 public void subscribeActual(MaybeObserver t) {
@@ -1381,10 +1379,7 @@ public class RxJavaPluginsTest {
             assertSame(myb, RxJavaPlugins.onAssembly(myb));
 
 
-            assertNull(RxJavaPlugins.onSchedule(null));
-
             Runnable action = Functions.EMPTY_RUNNABLE;
-
             assertSame(action, RxJavaPlugins.onSchedule(action));
 
             class AllSubscriber implements Subscriber, Observer, SingleObserver, CompletableObserver, MaybeObserver {
