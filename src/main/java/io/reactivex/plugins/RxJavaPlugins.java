@@ -446,7 +446,7 @@ public final class RxJavaPlugins {
      */
     @NonNull
     public static Runnable onSchedule(@NonNull Runnable run) {
-        ObjectHelper.requireNonNull(run, "runnable is null");
+        ObjectHelper.requireNonNull(run, "run is null");
 
         Function<? super Runnable, ? extends Runnable> f = onScheduleHandler;
         if (f == null) {
