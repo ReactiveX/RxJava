@@ -749,7 +749,7 @@ public abstract class AbstractSchedulerTests {
             getScheduler().scheduleDirect(null);
             fail();
         } catch (NullPointerException npe) {
-            assertEquals("runnable is null", npe.getMessage());
+            assertEquals("run is null", npe.getMessage());
         }
     }
 
@@ -759,7 +759,7 @@ public abstract class AbstractSchedulerTests {
             getScheduler().scheduleDirect(null, 10, TimeUnit.MILLISECONDS);
             fail();
         } catch (NullPointerException npe) {
-            assertEquals("runnable is null", npe.getMessage());
+            assertEquals("run is null", npe.getMessage());
         }
     }
 
@@ -769,7 +769,7 @@ public abstract class AbstractSchedulerTests {
             getScheduler().schedulePeriodicallyDirect(null, 5, 10, TimeUnit.MILLISECONDS);
             fail();
         } catch (NullPointerException npe) {
-            assertEquals("runnable is null", npe.getMessage());
+            assertEquals("run is null", npe.getMessage());
         }
     }
 }
