@@ -77,8 +77,20 @@ public abstract class ConnectableObservable<T> extends Observable<T> {
     }
 
     /**
-     * Returns an Observable that automatically connects to this ConnectableObservable
+     * Returns an Observable that automatically connects (at most once) to this ConnectableObservable
      * when the first Observer subscribes.
+     * <p>
+     * <img width="640" height="348" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/autoConnect.o.png" alt="">
+     * <p>
+     * The connection happens after the first subscription and happens at most once
+     * during the lifetime of the returned Observable. If this ConnectableObservable
+     * terminates, the connection is never renewed, no matter how Observers come
+     * and go. Use {@link #refCount()} to renew a connection or dispose an active
+     * connection when all {@code Observers}s have disposed their {@code Disposable}s.
+     * <p>
+     * This overload does not allow disconnecting the connection established via
+     * {@link #connect(Consumer)}. Use the {@link #autoConnect(int, Consumer)} overload
+     * to gain access to the {@code Disposable} representing the only connection.
      *
      * @return an Observable that automatically connects to this ConnectableObservable
      *         when the first Observer subscribes
@@ -89,8 +101,20 @@ public abstract class ConnectableObservable<T> extends Observable<T> {
     }
 
     /**
-     * Returns an Observable that automatically connects to this ConnectableObservable
+     * Returns an Observable that automatically connects (at most once) to this ConnectableObservable
      * when the specified number of Observers subscribe to it.
+     * <p>
+     * <img width="640" height="348" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/autoConnect.o.png" alt="">
+     * <p>
+     * The connection happens after the given number of subscriptions and happens at most once
+     * during the lifetime of the returned Observable. If this ConnectableObservable
+     * terminates, the connection is never renewed, no matter how Observers come
+     * and go. Use {@link #refCount()} to renew a connection or dispose an active
+     * connection when all {@code Observers}s have disposed their {@code Disposable}s.
+     * <p>
+     * This overload does not allow disconnecting the connection established via
+     * {@link #connect(Consumer)}. Use the {@link #autoConnect(int, Consumer)} overload
+     * to gain access to the {@code Disposable} representing the only connection.
      *
      * @param numberOfSubscribers the number of subscribers to await before calling connect
      *                            on the ConnectableObservable. A non-positive value indicates
@@ -104,9 +128,17 @@ public abstract class ConnectableObservable<T> extends Observable<T> {
     }
 
     /**
-     * Returns an Observable that automatically connects to this ConnectableObservable
+     * Returns an Observable that automatically connects (at most once) to this ConnectableObservable
      * when the specified number of Subscribers subscribe to it and calls the
      * specified callback with the Subscription associated with the established connection.
+     * <p>
+     * <img width="640" height="348" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/autoConnect.o.png" alt="">
+     * <p>
+     * The connection happens after the given number of subscriptions and happens at most once
+     * during the lifetime of the returned Observable. If this ConnectableObservable
+     * terminates, the connection is never renewed, no matter how Observers come
+     * and go. Use {@link #refCount()} to renew a connection or dispose an active
+     * connection when all {@code Observers}s have disposed their {@code Disposable}s.
      *
      * @param numberOfSubscribers the number of subscribers to await before calling connect
      *                            on the ConnectableObservable. A non-positive value indicates
