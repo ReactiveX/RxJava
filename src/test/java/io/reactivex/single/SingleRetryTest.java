@@ -57,6 +57,8 @@ public class SingleRetryTest {
 
         Single.fromCallable(new Callable<Boolean>() {
             @Override public Boolean call() throws Exception {
+                numberOfSubscribeCalls.incrementAndGet();
+
                 if (atomicInteger.decrementAndGet() != 0) {
                     throw new RuntimeException();
                 }
@@ -78,6 +80,8 @@ public class SingleRetryTest {
 
         Single.fromCallable(new Callable<Boolean>() {
             @Override public Boolean call() throws Exception {
+                numberOfSubscribeCalls.incrementAndGet();
+
                 if (atomicInteger.decrementAndGet() != 0) {
                     throw new RuntimeException();
                 }
@@ -99,6 +103,8 @@ public class SingleRetryTest {
 
         Single.fromCallable(new Callable<Boolean>() {
             @Override public Boolean call() throws Exception {
+                numberOfSubscribeCalls.incrementAndGet();
+
                 if (atomicInteger.decrementAndGet() != 0) {
                     throw new RuntimeException();
                 }
