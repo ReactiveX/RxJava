@@ -2650,6 +2650,26 @@ public abstract class Single<T> implements SingleSource<T> {
     }
 
     /**
+     * Repeatedly re-subscribe at most times or until the predicate returns false, whichever happens first
+     * if it fails with an onError.
+     * <dl>
+     * <dt><b>Scheduler:</b></dt>
+     * <dd>{@code retry} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param times the number of times to resubscribe if the current Single fails
+     * @param predicate the predicate called with the failure Throwable
+     *                  and should return true if a resubscription should happen
+     * @return the new Single instance
+     * @since 2.1.8 - experimental
+     */
+    @Experimental
+    @CheckReturnValue
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final Single<T> retry(long times, Predicate<? super Throwable> predicate) {
+        return toSingle(toFlowable().retry(times, predicate));
+    }
+
+    /**
      * Re-subscribe to the current Single if the given predicate returns true when the Single fails
      * with an onError.
      * <dl>
