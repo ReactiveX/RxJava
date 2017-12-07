@@ -21,6 +21,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.functions.Functions;
+import io.reactivex.schedulers.SchedulerRunnableIntrospection;
 
 /**
  * Base functionality for direct tasks that manage a runnable and cancellation/completion.
@@ -28,7 +29,7 @@ import io.reactivex.internal.functions.Functions;
  */
 abstract class AbstractDirectTask
 extends AtomicReference<Future<?>>
-implements Disposable {
+implements Disposable, SchedulerRunnableIntrospection {
 
     private static final long serialVersionUID = 1811839108042568751L;
 
@@ -76,5 +77,10 @@ implements Disposable {
                 break;
             }
         }
+    }
+
+    @Override
+    public Runnable getWrappedRunnable() {
+        return runnable;
     }
 }

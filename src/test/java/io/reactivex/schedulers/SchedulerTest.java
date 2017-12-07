@@ -307,4 +307,66 @@ public class SchedulerTest {
 
         assertTrue(d.isDisposed());
     }
+
+    @Test
+    public void unwrapDefaultPeriodicTask() {
+        TestScheduler scheduler = new TestScheduler();
+
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+            }
+        };
+        SchedulerRunnableIntrospection wrapper = (SchedulerRunnableIntrospection) scheduler.schedulePeriodicallyDirect(runnable, 100, 100, TimeUnit.MILLISECONDS);
+
+        assertSame(runnable, wrapper.getWrappedRunnable());
+    }
+
+    @Test
+    public void unwrapScheduleDirectTask() {
+        TestScheduler scheduler = new TestScheduler();
+
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+            }
+        };
+        SchedulerRunnableIntrospection wrapper = (SchedulerRunnableIntrospection) scheduler.scheduleDirect(runnable, 100, TimeUnit.MILLISECONDS);
+        assertSame(runnable, wrapper.getWrappedRunnable());
+    }
+
+    @Test
+    public void unwrapWorkerPeriodicTask() {
+        final Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+            }
+        };
+
+        Scheduler scheduler = new Scheduler() {
+            @Override
+            public Worker createWorker() {
+                return new Worker() {
+                    @Override
+                    public Disposable schedule(Runnable run, long delay, TimeUnit unit) {
+                        SchedulerRunnableIntrospection outerWrapper = (SchedulerRunnableIntrospection) run;
+                        SchedulerRunnableIntrospection innerWrapper = (SchedulerRunnableIntrospection) outerWrapper.getWrappedRunnable();
+                        assertSame(runnable, innerWrapper.getWrappedRunnable());
+                        return (Disposable) innerWrapper;
+                    }
+
+                    @Override
+                    public void dispose() {
+                    }
+
+                    @Override
+                    public boolean isDisposed() {
+                        return false;
+                    }
+                };
+            }
+        };
+
+        scheduler.schedulePeriodicallyDirect(runnable, 100, 100, TimeUnit.MILLISECONDS);
+    }
 }

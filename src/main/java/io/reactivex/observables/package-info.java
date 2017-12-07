@@ -16,7 +16,7 @@
 
 /**
  * Classes supporting the Observable base reactive class:
- * {@link io.reactivex.observable.ConnectableObservable} and
- * {@link io.reactivex.observable.GroupedObservable}.
+ * {@link io.reactivex.observables.ConnectableObservable} and
+ * {@link io.reactivex.observables.GroupedObservable}.
  */
 package io.reactivex.observables;
