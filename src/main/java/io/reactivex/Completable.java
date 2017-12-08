@@ -1055,6 +1055,10 @@ public abstract class Completable implements CompletableSource {
      * @param other the other Completable, not null
      * @return the new Completable which subscribes to this and then the other Completable
      * @throws NullPointerException if other is null
+     * @see #andThen(MaybeSource)
+     * @see #andThen(ObservableSource)
+     * @see #andThen(SingleSource)
+     * @see #andThen(Publisher)
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -1130,6 +1134,7 @@ public abstract class Completable implements CompletableSource {
      * @param onComplete the callback to call when this emits an onComplete event
      * @return the new Completable instance
      * @throws NullPointerException if onComplete is null
+     * @see #doFinally(Action)
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -1167,6 +1172,7 @@ public abstract class Completable implements CompletableSource {
      * @param onError the error callback
      * @return the new Completable instance
      * @throws NullPointerException if onError is null
+     * @see #doFinally(Action)
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -1254,6 +1260,7 @@ public abstract class Completable implements CompletableSource {
      * </dl>
      * @param onTerminate the callback to call just before this Completable terminates
      * @return the new Completable instance
+     * @see #doFinally(Action)
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -1272,6 +1279,7 @@ public abstract class Completable implements CompletableSource {
      * </dl>
      * @param onAfterTerminate the callback to call after this Completable terminates
      * @return the new Completable instance
+     * @see #doFinally(Action)
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
