@@ -7300,7 +7300,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * Modifies the source ObservableSource so that it invokes an action when it calls {@code onComplete} or
      * {@code onError}.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/doOnTerminate.png" alt="">
+     * <img width="640" height="327" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/doOnTerminate.o.png" alt="">
      * <p>
      * This differs from {@code doAfterTerminate} in that this happens <em>before</em> the {@code onComplete} or
      * {@code onError} notification.
@@ -7328,7 +7328,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * Returns a Maybe that emits the single item at a specified index in a sequence of emissions from
      * this Observable or completes if this Observable signals fewer elements than index.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/elementAt.2m.png" alt="">
+     * <img width="640" height="363" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/elementAt.o.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code elementAt} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -7355,7 +7355,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * Returns a Single that emits the item found at a specified index in a sequence of emissions from
      * this Observable, or a default item if that index is out of range.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/elementAt.2s.png" alt="">
+     * <img width="640" height="353" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/elementAtDefault.o.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code elementAt} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -7385,7 +7385,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * Returns a Single that emits the item found at a specified index in a sequence of emissions from this Observable
      * or signals a {@link NoSuchElementException} if this Observable signals fewer elements than index.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/elementAt.2s.png" alt="">
+     * <img width="640" height="362" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/elementAtOrError.o.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code elementAtOrError} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -7435,7 +7435,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * Returns a Maybe that emits only the very first item emitted by the source ObservableSource, or
      * completes if the source ObservableSource is empty.
      * <p>
-     * <img width="640" height="237" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/firstElement.m.png" alt="">
+     * <img width="640" height="286" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/firstElement.m.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code firstElement} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -7475,7 +7475,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * Returns a Single that emits only the very first item emitted by this Observable or
      * signals a {@link NoSuchElementException} if this Observable is empty.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/first.2.png" alt="">
+     * <img width="640" height="434" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/firstOrError.o.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code firstOrError} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -7521,7 +7521,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * by the source ObservableSource, where that function returns an ObservableSource, and then merging those resulting
      * ObservableSources and emitting the results of this merger.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/flatMap.png" alt="">
+     * <img width="640" height="356" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/flatMapDelayError.o.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code flatMap} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -7550,8 +7550,8 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * by the source ObservableSource, where that function returns an ObservableSource, and then merging those resulting
      * ObservableSources and emitting the results of this merger, while limiting the maximum number of concurrent
      * subscriptions to these ObservableSources.
-     * <!-- <p> -->
-     * <!-- <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/flatMap.png" alt=""> -->
+     * <p>
+     * <img width="640" height="441" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/flatMapMaxConcurrency.o.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code flatMap} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -7583,8 +7583,8 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * by the source ObservableSource, where that function returns an ObservableSource, and then merging those resulting
      * ObservableSources and emitting the results of this merger, while limiting the maximum number of concurrent
      * subscriptions to these ObservableSources.
-     * <!-- <p> -->
-     * <!-- <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/flatMap.png" alt=""> -->
+     * <p>
+     * <img width="640" height="441" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/flatMapMaxConcurrency.o.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code flatMap} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -7707,8 +7707,8 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * by the source ObservableSource, where that function returns an ObservableSource, and then merging those resulting
      * ObservableSources and emitting the results of this merger, while limiting the maximum number of concurrent
      * subscriptions to these ObservableSources.
-     * <!-- <p> -->
-     * <!-- <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/flatMap.png" alt=""> -->
+     * <p>
+     * <img width="640" height="441" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/flatMapMaxConcurrency.o.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code flatMap} does not operate by default on a particular {@link Scheduler}.</dd>
