@@ -18,6 +18,7 @@ import java.util.concurrent.atomic.*;
 
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.plugins.RxJavaPlugins;
 
 /**
@@ -172,11 +173,9 @@ public final class PublishSubject<T> extends Subject<T> {
 
     @Override
     public void onNext(T t) {
+        ObjectHelper.requireNonNull(t, "onNext called with null. Null values are generally not allowed in 2.x operators and sources.");
+
         if (subscribers.get() == TERMINATED) {
-            return;
-        }
-        if (t == null) {
-            onError(new NullPointerException("onNext called with null. Null values are generally not allowed in 2.x operators and sources."));
             return;
         }
         for (PublishDisposable<T> s : subscribers.get()) {
@@ -187,12 +186,10 @@ public final class PublishSubject<T> extends Subject<T> {
     @SuppressWarnings("unchecked")
     @Override
     public void onError(Throwable t) {
+        ObjectHelper.requireNonNull(t, "onError called with null. Null values are generally not allowed in 2.x operators and sources.");
         if (subscribers.get() == TERMINATED) {
             RxJavaPlugins.onError(t);
             return;
-        }
-        if (t == null) {
-            t = new NullPointerException("onError called with null. Null values are generally not allowed in 2.x operators and sources.");
         }
         error = t;
 

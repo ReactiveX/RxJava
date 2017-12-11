@@ -13,12 +13,13 @@
 
 package io.reactivex.subjects;
 
-import io.reactivex.annotations.CheckReturnValue;
 import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicReference;
 
 import io.reactivex.Observer;
+import io.reactivex.annotations.CheckReturnValue;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.internal.observers.DeferredScalarDisposable;
 import io.reactivex.plugins.RxJavaPlugins;
 
@@ -75,32 +76,17 @@ public final class AsyncSubject<T> extends Subject<T> {
 
     @Override
     public void onNext(T t) {
+        ObjectHelper.requireNonNull(t, "onNext called with null. Null values are generally not allowed in 2.x operators and sources.");
         if (subscribers.get() == TERMINATED) {
-            return;
-        }
-        if (t == null) {
-            nullOnNext();
             return;
         }
         value = t;
     }
 
     @SuppressWarnings("unchecked")
-    void nullOnNext() {
-        value = null;
-        Throwable ex = new NullPointerException("onNext called with null. Null values are generally not allowed in 2.x operators and sources.");
-        error = ex;
-        for (AsyncDisposable<T> as : subscribers.getAndSet(TERMINATED)) {
-            as.onError(ex);
-        }
-    }
-
-    @SuppressWarnings("unchecked")
     @Override
     public void onError(Throwable t) {
-        if (t == null) {
-            t = new NullPointerException("onError called with null. Null values are generally not allowed in 2.x operators and sources.");
-        }
+        ObjectHelper.requireNonNull(t, "onError called with null. Null values are generally not allowed in 2.x operators and sources.");
         if (subscribers.get() == TERMINATED) {
             RxJavaPlugins.onError(t);
             return;

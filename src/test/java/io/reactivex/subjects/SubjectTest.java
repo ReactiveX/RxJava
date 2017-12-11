@@ -11,19 +11,19 @@
  * the License for the specific language governing permissions and limitations under the License.
  */
 
-package io.reactivex.processors;
+package io.reactivex.subjects;
 
 import static org.junit.Assert.*;
 
 import org.junit.Test;
 
-public abstract class FlowableProcessorTest<T> {
+public abstract class SubjectTest<T> {
 
-    protected abstract FlowableProcessor<T> create();
+    protected abstract Subject<T> create();
 
     @Test
     public void onNextNull() {
-        FlowableProcessor<T> p = create();
+        Subject<T> p = create();
 
         try {
             p.onNext(null);
@@ -37,7 +37,7 @@ public abstract class FlowableProcessorTest<T> {
 
     @Test
     public void onErrorNull() {
-        FlowableProcessor<T> p = create();
+        Subject<T> p = create();
 
         try {
             p.onError(null);

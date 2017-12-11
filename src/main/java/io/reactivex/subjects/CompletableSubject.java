@@ -16,8 +16,9 @@ package io.reactivex.subjects;
 import java.util.concurrent.atomic.*;
 
 import io.reactivex.*;
-import io.reactivex.annotations.*;
+import io.reactivex.annotations.CheckReturnValue;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.plugins.RxJavaPlugins;
 
 /**
@@ -66,9 +67,7 @@ public final class CompletableSubject extends Completable implements Completable
 
     @Override
     public void onError(Throwable e) {
-        if (e == null) {
-            e = new NullPointerException("Null errors are not allowed in 2.x");
-        }
+        ObjectHelper.requireNonNull(e, "onError called with null. Null values are generally not allowed in 2.x operators and sources.");
         if (once.compareAndSet(false, true)) {
             this.error = e;
             for (CompletableDisposable md : observers.getAndSet(TERMINATED)) {

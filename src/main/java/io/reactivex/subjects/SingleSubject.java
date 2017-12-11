@@ -18,6 +18,7 @@ import java.util.concurrent.atomic.*;
 import io.reactivex.*;
 import io.reactivex.annotations.*;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.plugins.RxJavaPlugins;
 
 /**
@@ -74,10 +75,7 @@ public final class SingleSubject<T> extends Single<T> implements SingleObserver<
     @SuppressWarnings("unchecked")
     @Override
     public void onSuccess(@NonNull T value) {
-        if (value == null) {
-            onError(new NullPointerException("Null values are not allowed in 2.x"));
-            return;
-        }
+        ObjectHelper.requireNonNull(value, "onSuccess called with null. Null values are generally not allowed in 2.x operators and sources.");
         if (once.compareAndSet(false, true)) {
             this.value = value;
             for (SingleDisposable<T> md : observers.getAndSet(TERMINATED)) {
@@ -89,9 +87,7 @@ public final class SingleSubject<T> extends Single<T> implements SingleObserver<
     @SuppressWarnings("unchecked")
     @Override
     public void onError(@NonNull Throwable e) {
-        if (e == null) {
-            e = new NullPointerException("Null errors are not allowed in 2.x");
-        }
+        ObjectHelper.requireNonNull(e, "onError called with null. Null values are generally not allowed in 2.x operators and sources.");
         if (once.compareAndSet(false, true)) {
             this.error = e;
             for (SingleDisposable<T> md : observers.getAndSet(TERMINATED)) {

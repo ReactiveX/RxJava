@@ -267,10 +267,8 @@ public final class ReplayProcessor<T> extends FlowableProcessor<T> {
 
     @Override
     public void onNext(T t) {
-        if (t == null) {
-            onError(new NullPointerException("onNext called with null. Null values are generally not allowed in 2.x operators and sources."));
-            return;
-        }
+        ObjectHelper.requireNonNull(t, "onNext called with null. Null values are generally not allowed in 2.x operators and sources.");
+
         if (done) {
             return;
         }
@@ -286,9 +284,8 @@ public final class ReplayProcessor<T> extends FlowableProcessor<T> {
     @SuppressWarnings("unchecked")
     @Override
     public void onError(Throwable t) {
-        if (t == null) {
-            t = new NullPointerException("onError called with null. Null values are generally not allowed in 2.x operators and sources.");
-        }
+        ObjectHelper.requireNonNull(t, "onError called with null. Null values are generally not allowed in 2.x operators and sources.");
+
         if (done) {
             RxJavaPlugins.onError(t);
             return;

@@ -35,7 +35,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
-public class AsyncProcessorTest extends DelayedFlowableProcessorTest<Object> {
+public class AsyncProcessorTest extends FlowableProcessorTest<Object> {
 
     private final Throwable testException = new Throwable();
 

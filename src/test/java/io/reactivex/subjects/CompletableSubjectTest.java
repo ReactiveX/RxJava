@@ -125,11 +125,14 @@ public class CompletableSubjectTest {
     public void nullThrowable() {
         CompletableSubject cs = CompletableSubject.create();
 
-        TestObserver<Void> to = cs.test();
+        try {
+            cs.onError(null);
+            fail("No NullPointerException thrown");
+        } catch (NullPointerException ex) {
+            assertEquals("onError called with null. Null values are generally not allowed in 2.x operators and sources.", ex.getMessage());
+        }
 
-        cs.onError(null);
-
-        to.assertFailure(NullPointerException.class);
+        cs.test().assertEmpty().cancel();;
     }
 
     @Test

@@ -30,7 +30,12 @@ import io.reactivex.functions.*;
 import io.reactivex.observers.*;
 import io.reactivex.schedulers.Schedulers;
 
-public class PublishSubjectTest {
+public class PublishSubjectTest extends SubjectTest<Integer> {
+
+    @Override
+    protected Subject<Integer> create() {
+        return PublishSubject.create();
+    }
 
     @Test
     public void testCompleted() {
@@ -668,30 +673,6 @@ public class PublishSubjectTest {
     }
 
     @Test
-    public void nullOnNext() {
-        PublishSubject<Integer> pp = PublishSubject.create();
-
-        TestObserver<Integer> ts = pp.test();
-
-        assertTrue(pp.hasObservers());
-
-        pp.onNext(null);
-
-        ts.assertFailure(NullPointerException.class);
-    }
-
-    @Test
-    public void nullOnError() {
-        PublishSubject<Integer> pp = PublishSubject.create();
-
-        TestObserver<Integer> ts = pp.test();
-
-        pp.onError(null);
-
-        ts.assertFailure(NullPointerException.class);
-    }
-
-    @Test
     public void subscribedTo() {
         PublishSubject<Integer> pp = PublishSubject.create();
         PublishSubject<Integer> pp2 = PublishSubject.create();
@@ -705,29 +686,5 @@ public class PublishSubjectTest {
         pp.onComplete();
 
         ts.assertResult(1, 2);
-    }
-
-    @Test
-    public void onNextNull() {
-        final PublishSubject<Object> s = PublishSubject.create();
-
-        s.onNext(null);
-
-        s.test()
-            .assertNoValues()
-            .assertError(NullPointerException.class)
-            .assertErrorMessage("onNext called with null. Null values are generally not allowed in 2.x operators and sources.");
-    }
-
-    @Test
-    public void onErrorNull() {
-        final PublishSubject<Object> s = PublishSubject.create();
-
-        s.onError(null);
-
-        s.test()
-            .assertNoValues()
-            .assertError(NullPointerException.class)
-            .assertErrorMessage("onError called with null. Null values are generally not allowed in 2.x operators and sources.");
     }
 }

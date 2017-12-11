@@ -177,28 +177,6 @@ public class MaybeSubjectTest {
     }
 
     @Test
-    public void nullValue() {
-        MaybeSubject<Integer> ms = MaybeSubject.create();
-
-        TestObserver<Integer> to = ms.test();
-
-        ms.onSuccess(null);
-
-        to.assertFailure(NullPointerException.class);
-    }
-
-    @Test
-    public void nullThrowable() {
-        MaybeSubject<Integer> ms = MaybeSubject.create();
-
-        TestObserver<Integer> to = ms.test();
-
-        ms.onError(null);
-
-        to.assertFailure(NullPointerException.class);
-    }
-
-    @Test
     public void cancelOnArrival() {
         MaybeSubject.create()
         .test(true)

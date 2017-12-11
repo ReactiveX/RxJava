@@ -15,10 +15,12 @@ package io.reactivex.processors;
 import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicReference;
 
+import org.reactivestreams.*;
+
 import io.reactivex.annotations.*;
+import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.internal.subscriptions.DeferredScalarSubscription;
 import io.reactivex.plugins.RxJavaPlugins;
-import org.reactivestreams.*;
 
 /**
  * Processor that emits the very last value followed by a completion event or the received error
@@ -77,32 +79,17 @@ public final class AsyncProcessor<T> extends FlowableProcessor<T> {
 
     @Override
     public void onNext(T t) {
+        ObjectHelper.requireNonNull(t, "onNext called with null. Null values are generally not allowed in 2.x operators and sources.");
         if (subscribers.get() == TERMINATED) {
-            return;
-        }
-        if (t == null) {
-            nullOnNext();
             return;
         }
         value = t;
     }
 
     @SuppressWarnings("unchecked")
-    void nullOnNext() {
-        value = null;
-        Throwable ex = new NullPointerException("onNext called with null. Null values are generally not allowed in 2.x operators and sources.");
-        error = ex;
-        for (AsyncSubscription<T> as : subscribers.getAndSet(TERMINATED)) {
-            as.onError(ex);
-        }
-    }
-
-    @SuppressWarnings("unchecked")
     @Override
     public void onError(Throwable t) {
-        if (t == null) {
-            t = new NullPointerException("onError called with null. Null values are generally not allowed in 2.x operators and sources.");
-        }
+        ObjectHelper.requireNonNull(t, "onError called with null. Null values are generally not allowed in 2.x operators and sources.");
         if (subscribers.get() == TERMINATED) {
             RxJavaPlugins.onError(t);
             return;
