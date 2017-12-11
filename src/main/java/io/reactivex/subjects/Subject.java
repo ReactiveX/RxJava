@@ -79,7 +79,7 @@ public abstract class Subject<T> extends Observable<T> implements Observer<T> {
      * <p>
      * This operator is similar to {@link io.reactivex.observables.ConnectableObservable#refCount()}
      * except the first Observer doesn't trigger any sort of connection; that happens
-     * when the resulting Subject is subscribed to an Observer manually.
+     * when the resulting Subject is subscribed to an Observable manually.
      * @return the wrapped and reference-counted Subject
      * @since 2.1.8 - experimental
      */
