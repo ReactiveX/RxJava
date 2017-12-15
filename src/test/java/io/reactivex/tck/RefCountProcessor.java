@@ -18,7 +18,6 @@ import java.util.concurrent.atomic.*;
 import org.reactivestreams.*;
 
 import io.reactivex.FlowableSubscriber;
-import io.reactivex.annotations.Experimental;
 import io.reactivex.internal.subscriptions.*;
 import io.reactivex.processors.FlowableProcessor;
 
@@ -27,9 +26,8 @@ import io.reactivex.processors.FlowableProcessor;
  * onSubscribe if the number of subscribers reaches zero.
  *
  * @param <T> the upstream and downstream value type
- * @since 2.1.8 - experimental
+ * @since 2.1.8
  */
-@Experimental
 /* public */final class RefCountProcessor<T> extends FlowableProcessor<T> implements Subscription {
 
     final FlowableProcessor<T> actual;

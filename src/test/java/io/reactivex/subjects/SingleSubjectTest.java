@@ -152,7 +152,7 @@ public class SingleSubjectTest {
             assertEquals("onError called with null. Null values are generally not allowed in 2.x operators and sources.", ex.getMessage());
         }
 
-        ss.test().assertEmpty().cancel();;
+        ss.test().assertEmpty().cancel();
     }
 
     @Test
