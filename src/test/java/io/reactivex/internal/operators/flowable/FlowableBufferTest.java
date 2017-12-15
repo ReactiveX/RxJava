@@ -2014,4 +2014,64 @@ public class FlowableBufferTest {
             assertEquals("Round: " + i, 5, items);
         }
     }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void noCompletionCancelExact() {
+        final AtomicInteger counter = new AtomicInteger();
+
+        Flowable.<Integer>empty()
+        .doOnCancel(new Action() {
+            @Override
+            public void run() throws Exception {
+                counter.getAndIncrement();
+            }
+        })
+        .buffer(5, TimeUnit.SECONDS)
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertResult(Collections.<Integer>emptyList());
+
+        assertEquals(0, counter.get());
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void noCompletionCancelSkip() {
+        final AtomicInteger counter = new AtomicInteger();
+
+        Flowable.<Integer>empty()
+        .doOnCancel(new Action() {
+            @Override
+            public void run() throws Exception {
+                counter.getAndIncrement();
+            }
+        })
+        .buffer(5, 10, TimeUnit.SECONDS)
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertResult(Collections.<Integer>emptyList());
+
+        assertEquals(0, counter.get());
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void noCompletionCancelOverlap() {
+        final AtomicInteger counter = new AtomicInteger();
+
+        Flowable.<Integer>empty()
+        .doOnCancel(new Action() {
+            @Override
+            public void run() throws Exception {
+                counter.getAndIncrement();
+            }
+        })
+        .buffer(10, 5, TimeUnit.SECONDS)
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertResult(Collections.<Integer>emptyList());
+
+        assertEquals(0, counter.get());
+    }
 }

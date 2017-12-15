@@ -166,7 +166,7 @@ public final class FlowableBufferTimed<T, U extends Collection<? super T>> exten
             queue.offer(b);
             done = true;
             if (enter()) {
-                QueueDrainHelper.drainMaxLoop(queue, actual, false, this, this);
+                QueueDrainHelper.drainMaxLoop(queue, actual, false, null, this);
             }
         }
 

@@ -161,7 +161,7 @@ extends AbstractObservableWithUpstream<T, U> {
                 queue.offer(b);
                 done = true;
                 if (enter()) {
-                    QueueDrainHelper.drainLoop(queue, actual, false, this, this);
+                    QueueDrainHelper.drainLoop(queue, actual, false, null, this);
                 }
             }
             DisposableHelper.dispose(timer);

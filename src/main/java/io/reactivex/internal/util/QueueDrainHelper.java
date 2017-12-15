@@ -168,7 +168,9 @@ public final class QueueDrainHelper {
         if (d) {
             if (delayError) {
                 if (empty) {
-                    disposable.dispose();
+                    if (disposable != null) {
+                        disposable.dispose();
+                    }
                     Throwable err = qd.error();
                     if (err != null) {
                         s.onError(err);
@@ -181,12 +183,16 @@ public final class QueueDrainHelper {
                 Throwable err = qd.error();
                 if (err != null) {
                     q.clear();
-                    disposable.dispose();
+                    if (disposable != null) {
+                        disposable.dispose();
+                    }
                     s.onError(err);
                     return true;
                 } else
                 if (empty) {
-                    disposable.dispose();
+                    if (disposable != null) {
+                        disposable.dispose();
+                    }
                     s.onComplete();
                     return true;
                 }
