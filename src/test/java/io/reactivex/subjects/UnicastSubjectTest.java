@@ -29,7 +29,12 @@ import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.schedulers.Schedulers;
 import static org.mockito.Mockito.mock;
 
-public class UnicastSubjectTest {
+public class UnicastSubjectTest extends SubjectTest<Integer> {
+
+    @Override
+    protected Subject<Integer> create() {
+        return UnicastSubject.create();
+    }
 
     @Test
     public void fusionLive() {
@@ -214,64 +219,6 @@ public class UnicastSubjectTest {
     @Test(expected = IllegalArgumentException.class)
     public void zeroCapacityHint() {
         UnicastSubject.create(0);
-    }
-
-    @Test
-    public void onNextNull() {
-        final UnicastSubject<Object> s = UnicastSubject.create();
-
-        s.onNext(null);
-
-        s.test()
-            .assertNoValues()
-            .assertError(NullPointerException.class)
-            .assertErrorMessage("onNext called with null. Null values are generally not allowed in 2.x operators and sources.");
-    }
-
-    @Test
-    public void onErrorNull() {
-        final UnicastSubject<Object> s = UnicastSubject.create();
-
-        s.onError(null);
-
-        s.test()
-            .assertNoValues()
-            .assertError(NullPointerException.class)
-            .assertErrorMessage("onError called with null. Null values are generally not allowed in 2.x operators and sources.");
-    }
-
-    @Test
-    public void onNextNullDelayed() {
-        final UnicastSubject<Object> p = UnicastSubject.create();
-
-        TestObserver<Object> ts = p.test();
-
-        p.onNext(null);
-
-        ts
-            .assertNoValues()
-            .assertError(NullPointerException.class)
-            .assertErrorMessage("onNext called with null. Null values are generally not allowed in 2.x operators and sources.");
-    }
-
-    @Test
-    public void onErrorNullDelayed() {
-        final UnicastSubject<Object> p = UnicastSubject.create();
-
-        assertFalse(p.hasObservers());
-
-        TestObserver<Object> ts = p.test();
-
-        assertTrue(p.hasObservers());
-
-        p.onError(null);
-
-        assertFalse(p.hasObservers());
-
-        ts
-            .assertNoValues()
-            .assertError(NullPointerException.class)
-            .assertErrorMessage("onError called with null. Null values are generally not allowed in 2.x operators and sources.");
     }
 
     @Test

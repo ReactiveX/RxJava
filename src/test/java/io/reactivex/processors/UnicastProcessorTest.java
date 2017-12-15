@@ -30,7 +30,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.junit.Assert.*;
 
-public class UnicastProcessorTest extends DelayedFlowableProcessorTest<Object> {
+public class UnicastProcessorTest extends FlowableProcessorTest<Object> {
 
     @Override
     protected FlowableProcessor<Object> create() {

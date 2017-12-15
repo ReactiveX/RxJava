@@ -18,6 +18,7 @@ import java.util.concurrent.atomic.*;
 import io.reactivex.*;
 import io.reactivex.annotations.*;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.plugins.RxJavaPlugins;
 
 /**
@@ -73,10 +74,7 @@ public final class MaybeSubject<T> extends Maybe<T> implements MaybeObserver<T> 
     @SuppressWarnings("unchecked")
     @Override
     public void onSuccess(T value) {
-        if (value == null) {
-            onError(new NullPointerException("Null values are not allowed in 2.x"));
-            return;
-        }
+        ObjectHelper.requireNonNull(value, "onSuccess called with null. Null values are generally not allowed in 2.x operators and sources.");
         if (once.compareAndSet(false, true)) {
             this.value = value;
             for (MaybeDisposable<T> md : observers.getAndSet(TERMINATED)) {
@@ -88,9 +86,7 @@ public final class MaybeSubject<T> extends Maybe<T> implements MaybeObserver<T> 
     @SuppressWarnings("unchecked")
     @Override
     public void onError(Throwable e) {
-        if (e == null) {
-            e = new NullPointerException("Null errors are not allowed in 2.x");
-        }
+        ObjectHelper.requireNonNull(e, "onError called with null. Null values are generally not allowed in 2.x operators and sources.");
         if (once.compareAndSet(false, true)) {
             this.error = e;
             for (MaybeDisposable<T> md : observers.getAndSet(TERMINATED)) {

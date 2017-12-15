@@ -339,12 +339,9 @@ public final class UnicastProcessor<T> extends FlowableProcessor<T> {
 
     @Override
     public void onNext(T t) {
-        if (done || cancelled) {
-            return;
-        }
+        ObjectHelper.requireNonNull(t, "onNext called with null. Null values are generally not allowed in 2.x operators and sources.");
 
-        if (t == null) {
-            onError(new NullPointerException("onNext called with null. Null values are generally not allowed in 2.x operators and sources."));
+        if (done || cancelled) {
             return;
         }
 
@@ -354,13 +351,11 @@ public final class UnicastProcessor<T> extends FlowableProcessor<T> {
 
     @Override
     public void onError(Throwable t) {
+        ObjectHelper.requireNonNull(t, "onError called with null. Null values are generally not allowed in 2.x operators and sources.");
+
         if (done || cancelled) {
             RxJavaPlugins.onError(t);
             return;
-        }
-
-        if (t == null) {
-            t = new NullPointerException("onError called with null. Null values are generally not allowed in 2.x operators and sources.");
         }
 
         error = t;

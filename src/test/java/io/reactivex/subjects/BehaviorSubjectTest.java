@@ -32,9 +32,14 @@ import io.reactivex.observers.*;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.schedulers.Schedulers;
 
-public class BehaviorSubjectTest {
+public class BehaviorSubjectTest extends SubjectTest<Integer> {
 
     private final Throwable testException = new Throwable();
+
+    @Override
+    protected Subject<Integer> create() {
+        return BehaviorSubject.create();
+    }
 
     @Test
     public void testThatSubscriberReceivesDefaultValueAndSubsequentEvents() {
@@ -561,66 +566,6 @@ public class BehaviorSubjectTest {
         assertFalse(as.hasComplete());
         assertNull(as.getValue());
         assertTrue(as.getThrowable() instanceof TestException);
-    }
-
-    @Test
-    public void onNextNull() {
-        final BehaviorSubject<Object> s = BehaviorSubject.create();
-
-        s.onNext(null);
-
-        s.test()
-            .assertNoValues()
-            .assertError(NullPointerException.class)
-            .assertErrorMessage("onNext called with null. Null values are generally not allowed in 2.x operators and sources.");
-    }
-
-    @Test
-    public void onErrorNull() {
-        final BehaviorSubject<Object> s = BehaviorSubject.create();
-
-        s.onError(null);
-
-        s.test()
-            .assertNoValues()
-            .assertError(NullPointerException.class)
-            .assertErrorMessage("onError called with null. Null values are generally not allowed in 2.x operators and sources.");
-    }
-
-    @Test
-    public void onNextNullDelayed() {
-        final BehaviorSubject<Object> p = BehaviorSubject.create();
-
-        TestObserver<Object> ts = p.test();
-
-        assertTrue(p.hasObservers());
-
-        p.onNext(null);
-
-        assertFalse(p.hasObservers());
-
-        ts
-            .assertNoValues()
-            .assertError(NullPointerException.class)
-            .assertErrorMessage("onNext called with null. Null values are generally not allowed in 2.x operators and sources.");
-    }
-
-    @Test
-    public void onErrorNullDelayed() {
-        final BehaviorSubject<Object> p = BehaviorSubject.create();
-
-        TestObserver<Object> ts = p.test();
-
-        assertTrue(p.hasObservers());
-
-        p.onError(null);
-
-        assertFalse(p.hasObservers());
-
-        ts
-            .assertNoValues()
-            .assertError(NullPointerException.class)
-            .assertErrorMessage("onError called with null. Null values are generally not allowed in 2.x operators and sources.");
     }
 
     @Test
