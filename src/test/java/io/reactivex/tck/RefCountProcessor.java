@@ -11,47 +11,49 @@
  * the License for the specific language governing permissions and limitations under the License.
  */
 
-package io.reactivex.subjects;
+package io.reactivex.tck;
 
 import java.util.concurrent.atomic.*;
 
-import io.reactivex.Observer;
+import org.reactivestreams.*;
+
+import io.reactivex.FlowableSubscriber;
 import io.reactivex.annotations.Experimental;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.internal.disposables.*;
+import io.reactivex.internal.subscriptions.*;
+import io.reactivex.processors.FlowableProcessor;
 
 /**
- * A Subject wrapper that disposes the Disposable set via
- * onSubscribe if the number of observers reaches zero.
+ * A FlowableProcessor wrapper that disposes the Subscription set via
+ * onSubscribe if the number of subscribers reaches zero.
  *
  * @param <T> the upstream and downstream value type
  * @since 2.1.8 - experimental
  */
 @Experimental
-/* public */final class RefCountSubject<T> extends Subject<T> implements Disposable {
+/* public */final class RefCountProcessor<T> extends FlowableProcessor<T> implements Subscription {
 
-    final Subject<T> actual;
+    final FlowableProcessor<T> actual;
 
-    final AtomicReference<Disposable> upstream;
+    final AtomicReference<Subscription> upstream;
 
-    final AtomicReference<RefCountObserver<T>[]> observers;
-
-    @SuppressWarnings("rawtypes")
-    static final RefCountObserver[] EMPTY = new RefCountObserver[0];
+    final AtomicReference<RefCountSubscriber<T>[]> subscribers;
 
     @SuppressWarnings("rawtypes")
-    static final RefCountObserver[] TERMINATED = new RefCountObserver[0];
+    static final RefCountSubscriber[] EMPTY = new RefCountSubscriber[0];
+
+    @SuppressWarnings("rawtypes")
+    static final RefCountSubscriber[] TERMINATED = new RefCountSubscriber[0];
 
     @SuppressWarnings("unchecked")
-    RefCountSubject(Subject<T> actual) {
+    RefCountProcessor(FlowableProcessor<T> actual) {
         this.actual = actual;
-        this.upstream = new AtomicReference<Disposable>();
-        this.observers = new AtomicReference<RefCountObserver<T>[]>(EMPTY);
+        this.upstream = new AtomicReference<Subscription>();
+        this.subscribers = new AtomicReference<RefCountSubscriber<T>[]>(EMPTY);
     }
 
     @Override
-    public void onSubscribe(Disposable s) {
-        if (DisposableHelper.setOnce(upstream, s)) {
+    public void onSubscribe(Subscription s) {
+        if (SubscriptionHelper.setOnce(upstream, s)) {
             actual.onSubscribe(this);
         }
     }
@@ -63,21 +65,21 @@ import io.reactivex.internal.disposables.*;
 
     @Override
     public void onError(Throwable t) {
-        upstream.lazySet(DisposableHelper.DISPOSED);
+        upstream.lazySet(SubscriptionHelper.CANCELLED);
         actual.onError(t);
     }
 
     @Override
     public void onComplete() {
-        upstream.lazySet(DisposableHelper.DISPOSED);
+        upstream.lazySet(SubscriptionHelper.CANCELLED);
         actual.onComplete();
     }
 
     @Override
-    protected void subscribeActual(Observer<? super T> s) {
-        RefCountObserver<T> rcs = new RefCountObserver<T>(s, this);
+    protected void subscribeActual(Subscriber<? super T> s) {
+        RefCountSubscriber<T> rcs = new RefCountSubscriber<T>(s, this);
         if (!add(rcs)) {
-            EmptyDisposable.error(new IllegalStateException("RefCountSubject terminated"), s);
+            EmptySubscription.error(new IllegalStateException("RefCountProcessor terminated"), s);
             return;
         }
         actual.subscribe(rcs);
@@ -99,41 +101,41 @@ import io.reactivex.internal.disposables.*;
     }
 
     @Override
-    public boolean hasObservers() {
-        return actual.hasObservers();
+    public boolean hasSubscribers() {
+        return actual.hasSubscribers();
     }
 
     @Override
-    public void dispose() {
-        DisposableHelper.dispose(upstream);
+    public void cancel() {
+        SubscriptionHelper.cancel(upstream);
     }
 
     @Override
-    public boolean isDisposed() {
-        return DisposableHelper.isDisposed(upstream.get());
+    public void request(long n) {
+        upstream.get().request(n);
     }
 
-    boolean add(RefCountObserver<T> rcs) {
+    boolean add(RefCountSubscriber<T> rcs) {
         for (;;) {
-            RefCountObserver<T>[] a = observers.get();
+            RefCountSubscriber<T>[] a = subscribers.get();
             if (a == TERMINATED) {
                 return false;
             }
             int n = a.length;
             @SuppressWarnings("unchecked")
-            RefCountObserver<T>[] b = new RefCountObserver[n + 1];
+            RefCountSubscriber<T>[] b = new RefCountSubscriber[n + 1];
             System.arraycopy(a, 0, b, 0, n);
             b[n] = rcs;
-            if (observers.compareAndSet(a, b)) {
+            if (subscribers.compareAndSet(a, b)) {
                 return true;
             }
         }
     }
 
     @SuppressWarnings("unchecked")
-    void remove(RefCountObserver<T> rcs) {
+    void remove(RefCountSubscriber<T> rcs) {
         for (;;) {
-            RefCountObserver<T>[] a = observers.get();
+            RefCountSubscriber<T>[] a = subscribers.get();
             int n = a.length;
             if (n == 0) {
                 break;
@@ -151,47 +153,52 @@ import io.reactivex.internal.disposables.*;
                 break;
             }
 
-            RefCountObserver<T>[] b;
+            RefCountSubscriber<T>[] b;
             if (n == 1) {
                 b = TERMINATED;
             } else {
-                b = new RefCountObserver[n - 1];
+                b = new RefCountSubscriber[n - 1];
                 System.arraycopy(a, 0, b, 0, j);
                 System.arraycopy(a, j + 1, b, j, n - j - 1);
             }
-            if (observers.compareAndSet(a, b)) {
+            if (subscribers.compareAndSet(a, b)) {
                 if (b == TERMINATED) {
-                    dispose();
+                    cancel();
                 }
                 break;
             }
         }
     }
 
-    static final class RefCountObserver<T> extends AtomicBoolean implements Observer<T>, Disposable {
+    static final class RefCountSubscriber<T> extends AtomicBoolean implements FlowableSubscriber<T>, Subscription {
 
         private static final long serialVersionUID = -4317488092687530631L;
 
-        final Observer<? super T> actual;
+        final Subscriber<? super T> actual;
 
-        final RefCountSubject<T> parent;
+        final RefCountProcessor<T> parent;
 
-        Disposable upstream;
+        Subscription upstream;
 
-        RefCountObserver(Observer<? super T> actual, RefCountSubject<T> parent) {
+        RefCountSubscriber(Subscriber<? super T> actual, RefCountProcessor<T> parent) {
             this.actual = actual;
             this.parent = parent;
         }
 
         @Override
-        public void dispose() {
+        public void request(long n) {
+            upstream.request(n);
+        }
+
+        @Override
+        public void cancel() {
             lazySet(true);
-            upstream.dispose();
+            upstream.cancel();
             parent.remove(this);
         }
 
         @Override
-        public void onSubscribe(Disposable s) {
+        public void onSubscribe(Subscription s) {
             this.upstream = s;
             actual.onSubscribe(this);
         }
@@ -209,11 +216,6 @@ import io.reactivex.internal.disposables.*;
         @Override
         public void onComplete() {
             actual.onComplete();
-        }
-
-        @Override
-        public boolean isDisposed() {
-            return upstream.isDisposed();
         }
     }
 }

@@ -76,24 +76,4 @@ public abstract class FlowableProcessor<T> extends Flowable<T> implements Proces
         }
         return new SerializedProcessor<T>(this);
     }
-
-    /**
-     * Wraps this FlowableProcessor and makes sure if all subscribers cancel
-     * their subscriptions, the upstream's Subscription gets cancelled as well.
-     * <p>
-     * This operator is similar to {@link io.reactivex.flowables.ConnectableFlowable#refCount()}
-     * except the first Subscriber doesn't trigger any sort of connection; that happens
-     * when the resulting FlowableProcessor is subscribed to a Publisher manually.
-     * @return the wrapped and reference-counted FlowableProcessor
-     * @since 2.1.8 - experimental
-     */
-    @NonNull
-    @CheckReturnValue
-    @Experimental
-    public final FlowableProcessor<T> refCount() {
-        if (this instanceof RefCountProcessor) {
-            return this;
-        }
-        return new RefCountProcessor<T>(this);
-    }
 }

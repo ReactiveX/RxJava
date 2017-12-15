@@ -72,24 +72,4 @@ public abstract class Subject<T> extends Observable<T> implements Observer<T> {
         }
         return new SerializedSubject<T>(this);
     }
-
-    /**
-     * Wraps this Subject and makes sure if all observers dispose
-     * their disposables, the upstream's Disposable gets disposed as well.
-     * <p>
-     * This operator is similar to {@link io.reactivex.observables.ConnectableObservable#refCount()}
-     * except the first Observer doesn't trigger any sort of connection; that happens
-     * when the resulting Subject is subscribed to an Observable manually.
-     * @return the wrapped and reference-counted Subject
-     * @since 2.1.8 - experimental
-     */
-    @NonNull
-    @CheckReturnValue
-    @Experimental
-    public final Subject<T> refCount() {
-        if (this instanceof RefCountSubject) {
-            return this;
-        }
-        return new RefCountSubject<T>(this);
-    }
 }
