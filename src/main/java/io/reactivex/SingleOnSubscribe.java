@@ -25,9 +25,9 @@ public interface SingleOnSubscribe<T> {
 
     /**
      * Called for each SingleObserver that subscribes.
-     * @param e the safe emitter instance, never null
+     * @param emitter the safe emitter instance, never null
      * @throws Exception on error
      */
-    void subscribe(@NonNull SingleEmitter<T> e) throws Exception;
+    void subscribe(@NonNull SingleEmitter<T> emitter) throws Exception;
 }
 
