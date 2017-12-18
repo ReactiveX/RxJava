@@ -51,7 +51,7 @@ targetCompatibility = JavaVersion.VERSION_1_6
 // ---------------------------------------
 
 def junitVersion = "4.12"
-def reactiveStreamsVersion = "1.0.1"
+def reactiveStreamsVersion = "1.0.2"
 def mockitoVersion = "2.1.0"
 def jmhLibVersion = "1.19"
 def testNgVersion = "6.11"
