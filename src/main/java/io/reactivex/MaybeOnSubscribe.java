@@ -25,9 +25,9 @@ public interface MaybeOnSubscribe<T> {
 
     /**
      * Called for each MaybeObserver that subscribes.
-     * @param e the safe emitter instance, never null
+     * @param emitter the safe emitter instance, never null
      * @throws Exception on error
      */
-    void subscribe(@NonNull MaybeEmitter<T> e) throws Exception;
+    void subscribe(@NonNull MaybeEmitter<T> emitter) throws Exception;
 }
 
