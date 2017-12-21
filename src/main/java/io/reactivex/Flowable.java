@@ -11782,7 +11782,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *  }, BackpressureStrategy.BUFFER).retryWhen(attempts -&gt; {
      *      return attempts.zipWith(Flowable.range(1, 3), (n, i) -&gt; i).flatMap(i -&gt; {
      *          System.out.println("delay retry by " + i + " second(s)");
-     *          return Publisher.timer(i, TimeUnit.SECONDS);
+     *          return Flowable.timer(i, TimeUnit.SECONDS);
      *      });
      *  }).blockingForEach(System.out::println);
      * </code></pre>
