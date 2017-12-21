@@ -11776,10 +11776,10 @@ public abstract class Flowable<T> implements Publisher<T> {
      * This retries 3 times, each time incrementing the number of seconds it waits.
      *
      * <pre><code>
-     *  Flowable.create((Subscriber&lt;? super String&gt; s) -&gt; {
+     *  Flowable.create((FlowableEmitter&lt;? super String&gt; s) -&gt; {
      *      System.out.println("subscribing");
      *      s.onError(new RuntimeException("always fails"));
-     *  }).retryWhen(attempts -&gt; {
+     *  }, BackpressureStrategy.BUFFER).retryWhen(attempts -&gt; {
      *      return attempts.zipWith(Flowable.range(1, 3), (n, i) -&gt; i).flatMap(i -&gt; {
      *          System.out.println("delay retry by " + i + " second(s)");
      *          return Publisher.timer(i, TimeUnit.SECONDS);

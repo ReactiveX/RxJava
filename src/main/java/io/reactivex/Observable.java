@@ -9933,7 +9933,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * This retries 3 times, each time incrementing the number of seconds it waits.
      *
      * <pre><code>
-     *  Observable.create((Observer&lt;? super String&gt; s) -&gt; {
+     *  Observable.create((ObservableEmitter&lt;? super String&gt; s) -&gt; {
      *      System.out.println("subscribing");
      *      s.onError(new RuntimeException("always fails"));
      *  }).retryWhen(attempts -&gt; {
