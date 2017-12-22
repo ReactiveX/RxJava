@@ -2709,13 +2709,13 @@ public abstract class Single<T> implements SingleSource<T> {
      *     .retryWhen(errors -&gt; {
      *         AtomicInteger counter = new AtomicInteger();
      *         return errors
-     *                   .takeWhile(e -&gt; counter.getAndIncrement() == 3)
+     *                   .takeWhile(e -&gt; counter.getAndIncrement() != 3)
      *                   .flatMap(e -&gt; {
      *                       System.out.println("delay retry by " + counter.get() + " second(s)");
      *                       return Flowable.timer(counter.get(), TimeUnit.SECONDS);
      *                   });
      *     })
-     *     .blockingSubscribe(System.out::println, System.out::println);
+     *     .blockingGet();
      * </code></pre>
      * <dl>
      * <dt><b>Scheduler:</b></dt>
