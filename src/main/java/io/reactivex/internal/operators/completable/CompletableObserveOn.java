@@ -82,6 +82,10 @@ public final class CompletableObserveOn extends Completable {
 
         @Override
         public void run() {
+            if (isDisposed()) {
+                return;
+            }
+
             Throwable ex = error;
             if (ex != null) {
                 error = null;

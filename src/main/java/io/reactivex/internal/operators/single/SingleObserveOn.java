@@ -74,6 +74,10 @@ public final class SingleObserveOn<T> extends Single<T> {
 
         @Override
         public void run() {
+            if (isDisposed()) {
+                return;
+            }
+
             Throwable ex = error;
             if (ex != null) {
                 actual.onError(ex);

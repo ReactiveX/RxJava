@@ -14,12 +14,16 @@
 package io.reactivex.internal.operators.single;
 
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.junit.Test;
 
 import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
+import io.reactivex.functions.Action;
+import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
+import io.reactivex.observers.TestObserver;
 import io.reactivex.schedulers.Schedulers;
 
 public class SingleObserveOnTest {
@@ -46,5 +50,35 @@ public class SingleObserveOnTest {
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
         .assertFailure(TestException.class);
+    }
+
+    @Test
+    public void race() {
+        final AtomicBoolean disposed = new AtomicBoolean(false);
+
+        final TestObserver<Long> test =
+            Single.timer(1000, TimeUnit.MILLISECONDS, Schedulers.computation())
+                .observeOn(Schedulers.single())
+                .doOnSuccess(new Consumer<Long>() {
+                    @Override
+                    public void accept(Long l) throws Exception {
+                        if (disposed.get()) {
+                            throw new IllegalStateException("Already disposed!");
+                        }
+                    }
+                })
+                .test();
+
+        Completable.timer(1000, TimeUnit.MILLISECONDS, Schedulers.single())
+            .subscribe(new Action() {
+                @Override
+                public void run() throws Exception {
+                    test.dispose();
+                    disposed.set(true);
+                }
+            });
+
+        test.awaitDone(3, TimeUnit.SECONDS)
+            .assertNoErrors();
     }
 }

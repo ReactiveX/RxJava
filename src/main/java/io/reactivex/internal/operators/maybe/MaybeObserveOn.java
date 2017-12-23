@@ -93,6 +93,10 @@ public final class MaybeObserveOn<T> extends AbstractMaybeWithUpstream<T, T> {
 
         @Override
         public void run() {
+            if (isDisposed()) {
+                return;
+            }
+
             Throwable ex = error;
             if (ex != null) {
                 error = null;
