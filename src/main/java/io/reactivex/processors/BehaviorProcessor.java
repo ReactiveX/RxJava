@@ -50,19 +50,19 @@ import io.reactivex.plugins.RxJavaPlugins;
  * effect can be achieved by using a special item and making sure {@code Subscriber}s subscribe through a
  * filter whose predicate filters out this special item:
  * <pre><code>
- * BehaviorProcessor&lt;Integer> processor = BehaviorProcessor.create();
+ * BehaviorProcessor&lt;Integer&gt; processor = BehaviorProcessor.create();
  *
  * final Integer EMPTY = Integer.MIN_VALUE;
  *
- * Flowable&lt;Integer> flowable = processor.filter(v -&gt; v != EMPTY);
+ * Flowable&lt;Integer&gt; flowable = processor.filter(v -&gt; v != EMPTY);
  *
- * TestSubscriber&lt;Integer> ts1 = flowable.test();
+ * TestSubscriber&lt;Integer&gt; ts1 = flowable.test();
  *
  * processor.onNext(1);
  * // this will "clear" the cache
  * processor.onNext(EMPTY);
  * 
- * TestSubscriber&lt;Integer> ts2 = flowable.test();
+ * TestSubscriber&lt;Integer&gt; ts2 = flowable.test();
  * 
  * processor.onNext(2);
  * processor.onComplete();
