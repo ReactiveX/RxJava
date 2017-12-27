@@ -34,7 +34,7 @@ import io.reactivex.plugins.RxJavaPlugins;
  * <img width="640" height="460" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/S.BehaviorProcessor.png" alt="">
  * <p>
  * This processor does not have a public constructor by design; a new empty instance of this
- * {@code BehaviorSubject} can be created via the {@link #create()} method and
+ * {@code BehaviorProcessor} can be created via the {@link #create()} method and
  * a new non-empty instance can be created via {@link #createDefault(Object)} (named as such to avoid
  * overload resolution conflict with {@code Flowable.create} that creates a Flowable, not a {@code BehaviorProcessor}).
  * <p>
@@ -81,15 +81,15 @@ import io.reactivex.plugins.RxJavaPlugins;
  * <p>
  * Even though {@code BehaviorProcessor} implements the {@code Subscriber} interface, calling
  * {@code onSubscribe} is not required (<a href="https://github.com/reactive-streams/reactive-streams-jvm#2.12">Rule 2.12</a>)
- * if the processor is used as a standalone source. However, calling {@code onSubscribe} is
- * called after the {@code BehaviorProcessor} reached its terminal state will result in the
+ * if the processor is used as a standalone source. However, calling {@code onSubscribe}
+ * after the {@code BehaviorProcessor} reached its terminal state will result in the
  * given {@code Subscription} being cancelled immediately.
  * <p>
  * Calling {@link #onNext(Object)}, {@link #onError(Throwable)} and {@link #onComplete()}
  * is still required to be serialized (called from the same thread or called non-overlappingly from different threads
  * through external means of serialization). The {@link #toSerialized()} method available to all {@code FlowableProcessor}s
  * provides such serialization and also protects against reentrance (i.e., when a downstream {@code Subscriber}
- * consuming this processor also wants to call {@link #onNext(Object)} on this processor recursively.
+ * consuming this processor also wants to call {@link #onNext(Object)} on this processor recursively).
  * <p>
  * This {@code BehaviorProcessor} supports the standard state-peeking methods {@link #hasComplete()}, {@link #hasThrowable()},
  * {@link #getThrowable()} and {@link #hasSubscribers()} as well as means to read the latest observed value
@@ -112,6 +112,16 @@ import io.reactivex.plugins.RxJavaPlugins;
  *  <dt><b>Scheduler:</b></dt>
  *  <dd>{@code BehaviorProcessor} does not operate by default on a particular {@link io.reactivex.Scheduler} and
  *  the {@code Subscriber}s get notified on the thread the respective {@code onXXX} methods were invoked.</dd>
+ *  <dt><b>Error handling:</b></dt>
+ *  <dd>When the {@link #onError(Throwable)} is called, the {@code BehaviorProcessor} enters into a terminal state
+ *  and emits the same {@code Throwable} instance to the last set of {@code Subscriber}s. During this emission,
+ *  if one or more {@code Subscriber}s cancel their respective {@code Subscription}s, the
+ *  {@code Throwable} is delivered to the global error handler via
+ *  {@link io.reactivex.plugins.RxJavaPlugins#onError(Throwable)} (multiple times if multiple {@code Subscriber}s
+ *  cancel at once).
+ *  If there were no {@code Subscriber}s subscribed to this {@code BehaviorProcessor} when the {@code onError()}
+ *  was called, the global error handler is not invoked.
+ *  </dd>
  * </dl>
  * <p>
  * Example usage:
