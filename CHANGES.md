@@ -2,6 +2,57 @@
 
 The changelog of version 1.x can be found at https://github.com/ReactiveX/RxJava/blob/1.x/CHANGES.md
 
+### Version 2.1.8 - December 27, 2017 ([Maven](http://search.maven.org/#artifactdetails%7Cio.reactivex.rxjava2%7Crxjava%7C2.1.8%7C))
+
+**Warning! Behavior change regarding handling illegal calls with `null` in `Processor`s and `Subject`s.**
+
+The [Reactive Streams specification](https://github.com/reactive-streams/reactive-streams-jvm#user-content-2.13) mandates that calling `onNext` and `onError` with `null` should
+result in an immediate `NullPointerException` thrown from these methods. Unfortunately, this requirement was overlooked (it resulted in calls to `onError` with `NullPointerException` which meant the Processor/Subject variants entered their terminal state).
+
+If, for some reason, the original behavior is required, one has to call `onError` with a `NullPointerException` explicitly:
+
+```java
+PublishSubject<Integer> ps = PublishSubject.create();
+
+TestObserver<Integer> to = ps.test();
+
+// ps.onNext(null); // doesn't work anymore
+
+ps.onError(new NullPointerException());
+
+to.assertFailure(NullPointerException.class);
+```
+
+#### API changes
+
+- [Pull 5741](https://github.com/ReactiveX/RxJava/pull/5741): API to get distinct `Worker`s from some `Scheduler`s.
+- [Pull 5734](https://github.com/ReactiveX/RxJava/pull/5734): Add `RxJavaPlugins.unwrapRunnable` to help with RxJava-internal wrappers in `Scheduler`s.
+- [Pull 5753](https://github.com/ReactiveX/RxJava/pull/5753): Add `retry(times, predicate)` to `Single` & `Completable` and verify behavior across them and `Maybe`.
+
+#### Documentation changes
+
+- [Pull 5746](https://github.com/ReactiveX/RxJava/pull/5746): Improve wording and links in `package-info`s + remove unused imports.
+- [Pull 5745](https://github.com/ReactiveX/RxJava/pull/5745): Add/update `Observable` marbles 11/28.
+- [Commit 53d5a235](https://github.com/ReactiveX/RxJava/commit/53d5a235f63ca143c11571cd538ad927c0f8f3ad): Fix JavaDoc link in observables/package-info.
+- [Pull 5755](https://github.com/ReactiveX/RxJava/pull/5755): Add marbles for `Observable` (12/06).
+- [Pull 5756](https://github.com/ReactiveX/RxJava/pull/5756): Improve `autoConnect()` JavaDoc + add its marble.
+- [Pull 5758](https://github.com/ReactiveX/RxJava/pull/5758): Add a couple of `@see` to `Completable`. 
+- [Pull 5759](https://github.com/ReactiveX/RxJava/pull/5759): Marble additions and updates (12/11)
+- [Pull 5773](https://github.com/ReactiveX/RxJava/pull/5773): Improve JavaDoc of `retryWhen()` operators.
+- [Pull 5778](https://github.com/ReactiveX/RxJava/pull/5778): Improve `BehaviorProcessor` JavaDoc.
+
+#### Bugfixes
+
+- [Pull 5747](https://github.com/ReactiveX/RxJava/pull/5747): Fix `TrampolineScheduler` not calling `RxJavaPlugins.onSchedule()`,  add tests for all schedulers.
+- [Pull 5748](https://github.com/ReactiveX/RxJava/pull/5748): Check `runnable == null` in `*Scheduler.schedule*()`.
+- [Pull 5761](https://github.com/ReactiveX/RxJava/pull/5761): Fix timed exact `buffer()` calling cancel unnecessarily.
+- [Pull 5760](https://github.com/ReactiveX/RxJava/pull/5760): `Subject`/`FlowableProcessor` NPE fixes, add `UnicastProcessor` TCK.
+
+#### Other
+
+- [Pull 5771](https://github.com/ReactiveX/RxJava/pull/5771): Upgrade dependency to Reactive Streams 1.0.2
+- [Pull 5766](https://github.com/ReactiveX/RxJava/pull/5766): Rename `XOnSubscribe` parameter name to `emitter` for better IDE auto-completion.
+
 ### Version 2.1.7 - November 27, 2017 ([Maven](http://search.maven.org/#artifactdetails%7Cio.reactivex.rxjava2%7Crxjava%7C2.1.7%7C))
 
 #### API changes
