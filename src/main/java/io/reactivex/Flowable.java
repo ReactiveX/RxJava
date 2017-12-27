@@ -2965,6 +2965,19 @@ public abstract class Flowable<T> implements Publisher<T> {
      *  backpressure; if violated, the operator <em>may</em> signal {@code MissingBackpressureException}.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code merge} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dt><b>Error handling:</b></dt>
+     *  <dd>If any of the source {@code Publisher}s signal a {@code Throwable} via {@code onError}, the resulting
+     *  {@code Flowable} terminates with that {@code Throwable} and all other source {@code Publisher}s are cancelled.
+     *  If more than one {@code Publisher} signals an error, the resulting {@code Flowable} may terminate with the
+     *  first one's error or, depending on the concurrency of the sources, may terminate with a
+     *  {@code CompositeException} containing two or more of the various error signals.
+     *  {@code Throwable}s that didn't make into the composite will be sent (individually) to the global error handler via
+     *  {@link RxJavaPlugins#onError(Throwable)} method as <em>undeliverable errors</em>. Similarly, {@code Throwable}s
+     *  signaled by source(s) after the returned {@code Flowable} has been cancelled or terminated with a
+     *  (composite) error will be sent to the same global error handler.
+     *  Use {@link #mergeDelayError(Iterable)} to merge sources and terminate only when all source {@code Publisher}s
+     *  have completed or failed with an error.
+     *  </dd>
      * </dl>
      *
      * @param <T> the common element base type
@@ -2973,6 +2986,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @return a Flowable that emits items that are the result of flattening the items emitted by the
      *         Publishers in the Iterable
      * @see <a href="http://reactivex.io/documentation/operators/merge.html">ReactiveX operators documentation: Merge</a>
+     * @see #mergeDelayError(Iterable)
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @CheckReturnValue
