@@ -338,7 +338,7 @@ public final class RxJavaPlugins {
     /**
      * Called when an undeliverable error occurs.
      * <p>
-     * Undeliverable errors are those {@code Observer.onError()} invocations that are not allowed happen to
+     * Undeliverable errors are those {@code Observer.onError()} invocations that are not allowed to happen on
      * the given consumer type ({@code Observer}, {@code Subscriber}, etc.) due to protocol restrictions
      * because the consumer has either disposed/cancelled its {@code Disposable}/{@code Subscription} or
      * has already terminated with an {@code onError()} or {@code onComplete()} signal.
@@ -354,6 +354,7 @@ public final class RxJavaPlugins {
      * @param error the error to report
      * @see #getErrorHandler()
      * @see #setErrorHandler(Consumer)
+     * @see <a href="https://github.com/ReactiveX/RxJava/wiki/What's-different-in-2.0#error-handling">Error handling Wiki</a>
      */
     public static void onError(@NonNull Throwable error) {
         Consumer<? super Throwable> f = errorHandler;
