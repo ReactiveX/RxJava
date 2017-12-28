@@ -10524,7 +10524,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code onTerminateDetach} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * @return a Flowable which out references to the upstream producer and downstream Subscriber if
+     * @return a Flowable which nulls out references to the upstream producer and downstream Subscriber if
      * the sequence is terminated or downstream cancels
      * @since 2.0
      */
