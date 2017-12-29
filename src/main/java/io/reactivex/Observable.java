@@ -9012,7 +9012,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code onTerminateDetach} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * @return an Observable which out references to the upstream producer and downstream Observer if
+     * @return an Observable which nulls out references to the upstream producer and downstream Observer if
      * the sequence is terminated or downstream calls dispose()
      * @since 2.0
      */
