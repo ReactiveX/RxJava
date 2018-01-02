@@ -41,6 +41,8 @@ import io.reactivex.schedulers.Schedulers;
  * in a sequential fashion following this protocol:<br>
  * {@code onSubscribe (onSuccess | onError | onComplete)?}.
  * <p>
+ * Note that {@code onSuccess}, {@code onError} and {@code onComplete} are mutually exclusive events; unlike {@code Observable},
+ * {@code onSuccess} is never followed by {@code onError} or {@code onComplete}.
  * @param <T> the value type
  * @since 2.0
  */
@@ -2489,7 +2491,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     /**
      * Modifies the source Maybe so that it invokes an action when it calls {@code onComplete}.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/doOnComplete.png" alt="">
+     * <img width="640" height="358" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/doOnComplete.m.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code doOnComplete} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -2516,6 +2518,8 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     /**
      * Calls the shared consumer with the error sent via onError for each
      * MaybeObserver that subscribes to the current Maybe.
+     * <p>
+     * <img width="640" height="358" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/doOnError.m.png" alt="">
      * <dl>
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code doOnError} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -2583,6 +2587,8 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     /**
      * Calls the shared consumer with the success value sent via onSuccess for each
      * MaybeObserver that subscribes to the current Maybe.
+     * <p>
+     * <img width="640" height="358" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/doOnSuccess.m.png" alt="">
      * <dl>
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code doOnSuccess} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -2653,7 +2659,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
 
     /**
      * Maps the onSuccess, onError or onComplete signals of this Maybe into MaybeSource and emits that
-     * MaybeSource's signals
+     * MaybeSource's signals.
      * <p>
      * <img width="640" height="410" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/mergeMap.nce.png" alt="">
      * <dl>
@@ -4140,7 +4146,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
 
     /**
      * Returns a Maybe which makes sure when a MaybeObserver disposes the Disposable,
-     * that call is propagated up on the specified scheduler
+     * that call is propagated up on the specified scheduler.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code unsubscribeOn} calls dispose() of the upstream on the {@link Scheduler} you specify.</dd>
