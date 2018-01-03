@@ -31,6 +31,87 @@ import io.reactivex.plugins.RxJavaPlugins;
  * <p>
  * <img width="640" height="415" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/S.BehaviorSubject.png" alt="">
  * <p>
+ * This subject does not have a public constructor by design; a new empty instance of this
+ * {@code BehaviorSubject} can be created via the {@link #create()} method and
+ * a new non-empty instance can be created via {@link #createDefault(Object)} (named as such to avoid
+ * overload resolution conflict with {@code Observable.create} that creates an Observable, not a {@code BehaviorSubject}).
+ * <p>
+ * Since the {@code Subject} is conceptionally derived from the {@code Processor} type in the Reactive Streams specification,
+ * {@code null}s are not allowed (<a href="https://github.com/reactive-streams/reactive-streams-jvm#2.13">Rule 2.13</a>) as
+ * default initial values in {@link #createDefault(Object)} or as parameters to {@link #onNext(Object)} and
+ * {@link #onError(Throwable)}.
+ * <p>
+ * Since a {@code BehaviorSubject} is an {@link io.reactivex.Observable}, it does not support backpressure.
+ * <p>
+ * When this {@code BehaviorSubject} is terminated via {@link #onError(Throwable)} or {@link #onComplete()}, the
+ * last observed item (if any) is cleared and late {@link io.reactivex.Observer}s only receive
+ * the respective terminal event.
+ * <p>
+ * The {@code BehaviorSubject} does not support clearing its cached value (to appear empty again), however, the
+ * effect can be achieved by using a special item and making sure {@code Observer}s subscribe through a
+ * filter whose predicate filters out this special item:
+ * <pre><code>
+ * BehaviorSubject&lt;Integer&gt; subject = BehaviorSubject.create();
+ *
+ * final Integer EMPTY = Integer.MIN_VALUE;
+ *
+ * Observable&lt;Integer&gt; observable = subject.filter(v -&gt; v != EMPTY);
+ *
+ * TestObserver&lt;Integer&gt; to1 = observable.test();
+ *
+ * observable.onNext(1);
+ * // this will "clear" the cache
+ * observable.onNext(EMPTY);
+ * 
+ * TestObserver&lt;Integer&gt; to2 = observable.test();
+ * 
+ * subject.onNext(2);
+ * subject.onComplete();
+ * 
+ * // to1 received both non-empty items
+ * to1.assertResult(1, 2);
+ * 
+ * // to2 received only 2 even though the current item was EMPTY
+ * // when it got subscribed
+ * to2.assertResult(2);
+ * 
+ * // Observers coming after the subject was terminated receive
+ * // no items and only the onComplete event in this case.
+ * observable.test().assertResult();
+ * </code></pre>
+ * <p>
+ * Even though {@code BehaviorSubject} implements the {@code Observer} interface, calling
+ * {@code onSubscribe} is not required (<a href="https://github.com/reactive-streams/reactive-streams-jvm#2.12">Rule 2.12</a>)
+ * if the subject is used as a standalone source. However, calling {@code onSubscribe}
+ * after the {@code BehaviorSubjecct} reached its terminal state will result in the
+ * given {@code Disposable} being disposed immediately.
+ * <p>
+ * Calling {@link #onNext(Object)}, {@link #onError(Throwable)} and {@link #onComplete()}
+ * is still required to be serialized (called from the same thread or called non-overlappingly from different threads
+ * through external means of serialization). The {@link #toSerialized()} method available to all {@code Subject}s
+ * provides such serialization and also protects against reentrance (i.e., when a downstream {@code Observer}
+ * consuming this subject also wants to call {@link #onNext(Object)} on this subject recursively).
+ * <p>
+ * This {@code BehaviorSubject} supports the standard state-peeking methods {@link #hasComplete()}, {@link #hasThrowable()},
+ * {@link #getThrowable()} and {@link #hasObservers()} as well as means to read the latest observed value
+ * in a non-blocking and thread-safe manner via {@link #hasValue()}, {@link #getValue()},
+ * {@link #getValues()} or {@link #getValues(Object[])}.
+ * <dl>
+ *  <dt><b>Scheduler:</b></dt>
+ *  <dd>{@code BehaviorSubject} does not operate by default on a particular {@link io.reactivex.Scheduler} and
+ *  the {@code Observer}s get notified on the thread the respective {@code onXXX} methods were invoked.</dd>
+ *  <dt><b>Error handling:</b></dt>
+ *  <dd>When the {@link #onError(Throwable)} is called, the {@code BehaviorSubject} enters into a terminal state
+ *  and emits the same {@code Throwable} instance to the last set of {@code Observer}s. During this emission,
+ *  if one or more {@code Observer}s dispose their respective {@code Disposable}s, the
+ *  {@code Throwable} is delivered to the global error handler via
+ *  {@link io.reactivex.plugins.RxJavaPlugins#onError(Throwable)} (multiple times if multiple {@code Observer}s
+ *  cancel at once).
+ *  If there were no {@code Observer}s subscribed to this {@code BehaviorSubject} when the {@code onError()}
+ *  was called, the global error handler is not invoked.
+ *  </dd>
+ * </dl>
+ * <p>
  * Example usage:
  * <pre> {@code
 

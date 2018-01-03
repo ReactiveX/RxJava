@@ -337,7 +337,24 @@ public final class RxJavaPlugins {
 
     /**
      * Called when an undeliverable error occurs.
+     * <p>
+     * Undeliverable errors are those {@code Observer.onError()} invocations that are not allowed to happen on
+     * the given consumer type ({@code Observer}, {@code Subscriber}, etc.) due to protocol restrictions
+     * because the consumer has either disposed/cancelled its {@code Disposable}/{@code Subscription} or
+     * has already terminated with an {@code onError()} or {@code onComplete()} signal.
+     * <p>
+     * By default, this global error handler prints the stacktrace via {@link Throwable#printStackTrace()}
+     * and calls {@link java.lang.Thread.UncaughtExceptionHandler#uncaughtException(Thread, Throwable)}
+     * on the current thread.
+     * <p>
+     * Note that on some platforms, the platform runtime terminates the current application with an error if such
+     * uncaught exceptions happen. In this case, it is recommended the application installs a global error
+     * handler via the {@link #setErrorHandler(Consumer)} plugin method.
+     *
      * @param error the error to report
+     * @see #getErrorHandler()
+     * @see #setErrorHandler(Consumer)
+     * @see <a href="https://github.com/ReactiveX/RxJava/wiki/What's-different-in-2.0#error-handling">Error handling Wiki</a>
      */
     public static void onError(@NonNull Throwable error) {
         Consumer<? super Throwable> f = errorHandler;
