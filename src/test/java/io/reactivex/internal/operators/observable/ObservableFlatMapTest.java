@@ -894,4 +894,48 @@ public class ObservableFlatMapTest {
         .test()
         .assertFailureAndMessage(NullPointerException.class, "The mapper returned a null ObservableSource");
     }
+
+
+    @Test
+    public void failingFusedInnerCancelsSource() {
+        final AtomicInteger counter = new AtomicInteger();
+        Observable.range(1, 5)
+        .doOnNext(new Consumer<Integer>() {
+            @Override
+            public void accept(Integer v) throws Exception {
+                counter.getAndIncrement();
+            }
+        })
+        .flatMap(new Function<Integer, Observable<Integer>>() {
+            @Override
+            public Observable<Integer> apply(Integer v)
+                    throws Exception {
+                return Observable.<Integer>fromIterable(new Iterable<Integer>() {
+                    @Override
+                    public Iterator<Integer> iterator() {
+                        return new Iterator<Integer>() {
+                            @Override
+                            public boolean hasNext() {
+                                return true;
+                            }
+
+                            @Override
+                            public Integer next() {
+                                throw new TestException();
+                            }
+
+                            @Override
+                            public void remove() {
+                                throw new UnsupportedOperationException();
+                            }
+                        };
+                    }
+                });
+            }
+        })
+        .test()
+        .assertFailure(TestException.class);
+
+        assertEquals(1, counter.get());
+    }
 }

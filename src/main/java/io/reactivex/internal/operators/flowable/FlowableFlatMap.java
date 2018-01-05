@@ -85,7 +85,7 @@ public final class FlowableFlatMap<T, U> extends AbstractFlowableWithUpstream<T,
 
         final AtomicLong requested = new AtomicLong();
 
-        Subscription s;
+        Subscription upstream;
 
         long uniqueId;
         long lastId;
@@ -107,8 +107,8 @@ public final class FlowableFlatMap<T, U> extends AbstractFlowableWithUpstream<T,
 
         @Override
         public void onSubscribe(Subscription s) {
-            if (SubscriptionHelper.validate(this.s, s)) {
-                this.s = s;
+            if (SubscriptionHelper.validate(this.upstream, s)) {
+                this.upstream = s;
                 actual.onSubscribe(this);
                 if (!cancelled) {
                     if (maxConcurrency == Integer.MAX_VALUE) {
@@ -132,7 +132,7 @@ public final class FlowableFlatMap<T, U> extends AbstractFlowableWithUpstream<T,
                 p = ObjectHelper.requireNonNull(mapper.apply(t), "The mapper returned a null Publisher");
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
-                s.cancel();
+                upstream.cancel();
                 onError(e);
                 return;
             }
@@ -154,7 +154,7 @@ public final class FlowableFlatMap<T, U> extends AbstractFlowableWithUpstream<T,
                     if (maxConcurrency != Integer.MAX_VALUE && !cancelled
                             && ++scalarEmitted == scalarLimit) {
                         scalarEmitted = 0;
-                        s.request(scalarLimit);
+                        upstream.request(scalarLimit);
                     }
                 }
             } else {
@@ -238,7 +238,7 @@ public final class FlowableFlatMap<T, U> extends AbstractFlowableWithUpstream<T,
                     if (maxConcurrency != Integer.MAX_VALUE && !cancelled
                             && ++scalarEmitted == scalarLimit) {
                         scalarEmitted = 0;
-                        s.request(scalarLimit);
+                        upstream.request(scalarLimit);
                     }
                 } else {
                     if (q == null) {
@@ -350,7 +350,7 @@ public final class FlowableFlatMap<T, U> extends AbstractFlowableWithUpstream<T,
         public void cancel() {
             if (!cancelled) {
                 cancelled = true;
-                s.cancel();
+                upstream.cancel();
                 disposeAll();
                 if (getAndIncrement() == 0) {
                     SimpleQueue<U> q = queue;
@@ -482,6 +482,9 @@ public final class FlowableFlatMap<T, U> extends AbstractFlowableWithUpstream<T,
                                     Exceptions.throwIfFatal(ex);
                                     is.dispose();
                                     errs.addThrowable(ex);
+                                    if (!delayErrors) {
+                                        upstream.cancel();
+                                    }
                                     if (checkTerminate()) {
                                         return;
                                     }
@@ -539,7 +542,7 @@ public final class FlowableFlatMap<T, U> extends AbstractFlowableWithUpstream<T,
                 }
 
                 if (replenishMain != 0L && !cancelled) {
-                    s.request(replenishMain);
+                    upstream.request(replenishMain);
                 }
                 if (innerCompleted) {
                     continue;
@@ -594,7 +597,7 @@ public final class FlowableFlatMap<T, U> extends AbstractFlowableWithUpstream<T,
             if (errs.addThrowable(t)) {
                 inner.done = true;
                 if (!delayErrors) {
-                    s.cancel();
+                    upstream.cancel();
                     for (InnerSubscriber<?, ?> a : subscribers.getAndSet(CANCELLED)) {
                         a.dispose();
                     }
