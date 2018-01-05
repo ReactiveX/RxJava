@@ -111,7 +111,7 @@ Typically, you can move computations or blocking IO to some other thread via `su
 
 RxJava operators don't work with `Thread`s or `ExecutorService`s directly but with so called `Scheduler`s that abstract away sources of concurrency behind an uniform API. RxJava 2 features several standard schedulers accessible via `Schedulers` utility class. These are available on all JVM platforms but some specific platforms, such as Android, have their own typical `Scheduler`s defined: `AndroidSchedulers.mainThread()`, `SwingScheduler.instance()` or `JavaFXSchedulers.gui()`.
 
-The `Thread.sleep(2000);` at the end is no accident. In RxJava the default `Scheduler`s run on daemon threads, which means once the Java main thread exits, they all get stopped and background computations may never happen. Sleeping for some time in this example situations let's you see the output of the flow on the console with time to spare.
+The `Thread.sleep(2000);` at the end is no accident. In RxJava the default `Scheduler`s run on daemon threads, which means once the Java main thread exits, they all get stopped and background computations may never happen. Sleeping for some time in this example situations lets you see the output of the flow on the console with time to spare.
 
 Flows in RxJava are sequential in nature split into processing stages that may run **concurrently** with each other:
 
