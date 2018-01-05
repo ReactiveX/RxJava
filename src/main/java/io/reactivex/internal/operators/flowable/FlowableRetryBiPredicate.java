@@ -40,7 +40,6 @@ public final class FlowableRetryBiPredicate<T> extends AbstractFlowableWithUpstr
         rs.subscribeNext();
     }
 
-    // FIXME update to a fresh Rsc algorithm
     static final class RetryBiSubscriber<T> extends AtomicInteger implements FlowableSubscriber<T> {
 
         private static final long serialVersionUID = -7098360935104053232L;
@@ -50,6 +49,9 @@ public final class FlowableRetryBiPredicate<T> extends AbstractFlowableWithUpstr
         final Publisher<? extends T> source;
         final BiPredicate<? super Integer, ? super Throwable> predicate;
         int retries;
+
+        long produced;
+
         RetryBiSubscriber(Subscriber<? super T> actual,
                 BiPredicate<? super Integer, ? super Throwable> predicate, SubscriptionArbiter sa, Publisher<? extends T> source) {
             this.actual = actual;
@@ -65,8 +67,8 @@ public final class FlowableRetryBiPredicate<T> extends AbstractFlowableWithUpstr
 
         @Override
         public void onNext(T t) {
+            produced++;
             actual.onNext(t);
-            sa.produced(1L);
         }
         @Override
         public void onError(Throwable t) {
@@ -100,6 +102,13 @@ public final class FlowableRetryBiPredicate<T> extends AbstractFlowableWithUpstr
                     if (sa.isCancelled()) {
                         return;
                     }
+
+                    long p = produced;
+                    if (p != 0L) {
+                        produced = 0L;
+                        sa.produced(p);
+                    }
+
                     source.subscribe(this);
 
                     missed = addAndGet(-missed);

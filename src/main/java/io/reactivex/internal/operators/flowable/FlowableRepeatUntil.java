@@ -38,7 +38,6 @@ public final class FlowableRepeatUntil<T> extends AbstractFlowableWithUpstream<T
         rs.subscribeNext();
     }
 
-    // FIXME update to a fresh Rsc algorithm
     static final class RepeatSubscriber<T> extends AtomicInteger implements FlowableSubscriber<T> {
 
         private static final long serialVersionUID = -7098360935104053232L;
@@ -47,6 +46,9 @@ public final class FlowableRepeatUntil<T> extends AbstractFlowableWithUpstream<T
         final SubscriptionArbiter sa;
         final Publisher<? extends T> source;
         final BooleanSupplier stop;
+
+        long produced;
+
         RepeatSubscriber(Subscriber<? super T> actual, BooleanSupplier until, SubscriptionArbiter sa, Publisher<? extends T> source) {
             this.actual = actual;
             this.sa = sa;
@@ -61,8 +63,8 @@ public final class FlowableRepeatUntil<T> extends AbstractFlowableWithUpstream<T
 
         @Override
         public void onNext(T t) {
+            produced++;
             actual.onNext(t);
-            sa.produced(1L);
         }
         @Override
         public void onError(Throwable t) {
@@ -93,6 +95,16 @@ public final class FlowableRepeatUntil<T> extends AbstractFlowableWithUpstream<T
             if (getAndIncrement() == 0) {
                 int missed = 1;
                 for (;;) {
+                    if (sa.isCancelled()) {
+                        return;
+                    }
+
+                    long p = produced;
+                    if (p != 0L) {
+                        produced = 0L;
+                        sa.produced(p);
+                    }
+
                     source.subscribe(this);
 
                     missed = addAndGet(-missed);

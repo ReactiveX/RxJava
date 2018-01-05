@@ -38,12 +38,11 @@ public final class FlowableRetryPredicate<T> extends AbstractFlowableWithUpstrea
         SubscriptionArbiter sa = new SubscriptionArbiter();
         s.onSubscribe(sa);
 
-        RepeatSubscriber<T> rs = new RepeatSubscriber<T>(s, count, predicate, sa, source);
+        RetrySubscriber<T> rs = new RetrySubscriber<T>(s, count, predicate, sa, source);
         rs.subscribeNext();
     }
 
-    // FIXME update to a fresh Rsc algorithm
-    static final class RepeatSubscriber<T> extends AtomicInteger implements FlowableSubscriber<T> {
+    static final class RetrySubscriber<T> extends AtomicInteger implements FlowableSubscriber<T> {
 
         private static final long serialVersionUID = -7098360935104053232L;
 
@@ -52,7 +51,10 @@ public final class FlowableRetryPredicate<T> extends AbstractFlowableWithUpstrea
         final Publisher<? extends T> source;
         final Predicate<? super Throwable> predicate;
         long remaining;
-        RepeatSubscriber(Subscriber<? super T> actual, long count,
+
+        long produced;
+
+        RetrySubscriber(Subscriber<? super T> actual, long count,
                 Predicate<? super Throwable> predicate, SubscriptionArbiter sa, Publisher<? extends T> source) {
             this.actual = actual;
             this.sa = sa;
@@ -68,8 +70,8 @@ public final class FlowableRetryPredicate<T> extends AbstractFlowableWithUpstrea
 
         @Override
         public void onNext(T t) {
+            produced++;
             actual.onNext(t);
-            sa.produced(1L);
         }
         @Override
         public void onError(Throwable t) {
@@ -111,6 +113,13 @@ public final class FlowableRetryPredicate<T> extends AbstractFlowableWithUpstrea
                     if (sa.isCancelled()) {
                         return;
                     }
+
+                    long p = produced;
+                    if (p != 0L) {
+                        produced = 0L;
+                        sa.produced(p);
+                    }
+
                     source.subscribe(this);
 
                     missed = addAndGet(-missed);
