@@ -36,7 +36,6 @@ public final class FlowableRepeat<T> extends AbstractFlowableWithUpstream<T, T> 
         rs.subscribeNext();
     }
 
-    // FIXME update to a fresh Rsc algorithm
     static final class RepeatSubscriber<T> extends AtomicInteger implements FlowableSubscriber<T> {
 
         private static final long serialVersionUID = -7098360935104053232L;
@@ -45,6 +44,9 @@ public final class FlowableRepeat<T> extends AbstractFlowableWithUpstream<T, T> 
         final SubscriptionArbiter sa;
         final Publisher<? extends T> source;
         long remaining;
+
+        long produced;
+
         RepeatSubscriber(Subscriber<? super T> actual, long count, SubscriptionArbiter sa, Publisher<? extends T> source) {
             this.actual = actual;
             this.sa = sa;
@@ -59,8 +61,8 @@ public final class FlowableRepeat<T> extends AbstractFlowableWithUpstream<T, T> 
 
         @Override
         public void onNext(T t) {
+            produced++;
             actual.onNext(t);
-            sa.produced(1L);
         }
         @Override
         public void onError(Throwable t) {
@@ -89,6 +91,11 @@ public final class FlowableRepeat<T> extends AbstractFlowableWithUpstream<T, T> 
                 for (;;) {
                     if (sa.isCancelled()) {
                         return;
+                    }
+                    long p = produced;
+                    if (p != 0L) {
+                        produced = 0L;
+                        sa.produced(p);
                     }
                     source.subscribe(this);
 
