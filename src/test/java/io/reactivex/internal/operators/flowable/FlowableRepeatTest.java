@@ -260,6 +260,19 @@ public class FlowableRepeatTest {
     }
 
     @Test
+    public void repeatUntilCancel() {
+        Flowable.just(1)
+        .repeatUntil(new BooleanSupplier() {
+            @Override
+            public boolean getAsBoolean() throws Exception {
+                return true;
+            }
+        })
+        .test(2L, true)
+        .assertEmpty();
+    }
+
+    @Test
     public void repeatLongPredicateInvalid() {
         try {
             Flowable.just(1).repeat(-99);
