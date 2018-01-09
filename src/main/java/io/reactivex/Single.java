@@ -787,9 +787,9 @@ public abstract class Single<T> implements SingleSource<T> {
      *
      * @param <T> the common value type
      * @param source1
-     *            a Single to be merged
+     *            a SingleSource to be merged
      * @param source2
-     *            a Single to be merged
+     *            a SingleSource to be merged
      * @return a Flowable that emits all of the items emitted by the source Singles
      * @see <a href="http://reactivex.io/documentation/operators/merge.html">ReactiveX operators documentation: Merge</a>
      * @see #mergeDelayError(SingleSource, SingleSource)
@@ -835,11 +835,11 @@ public abstract class Single<T> implements SingleSource<T> {
      *
      * @param <T> the common value type
      * @param source1
-     *            a Single to be merged
+     *            a SingleSource to be merged
      * @param source2
-     *            a Single to be merged
+     *            a SingleSource to be merged
      * @param source3
-     *            a Single to be merged
+     *            a SingleSource to be merged
      * @return a Flowable that emits all of the items emitted by the source Singles
      * @see <a href="http://reactivex.io/documentation/operators/merge.html">ReactiveX operators documentation: Merge</a>
      * @see #mergeDelayError(SingleSource, SingleSource, SingleSource)
@@ -887,13 +887,13 @@ public abstract class Single<T> implements SingleSource<T> {
      *
      * @param <T> the common value type
      * @param source1
-     *            a Single to be merged
+     *            a SingleSource to be merged
      * @param source2
-     *            a Single to be merged
+     *            a SingleSource to be merged
      * @param source3
-     *            a Single to be merged
+     *            a SingleSource to be merged
      * @param source4
-     *            a Single to be merged
+     *            a SingleSource to be merged
      * @return a Flowable that emits all of the items emitted by the source Singles
      * @see <a href="http://reactivex.io/documentation/operators/merge.html">ReactiveX operators documentation: Merge</a>
      * @see #mergeDelayError(SingleSource, SingleSource, SingleSource, SingleSource)
@@ -980,9 +980,9 @@ public abstract class Single<T> implements SingleSource<T> {
      *
      * @param <T> the common value type
      * @param source1
-     *            a Single to be merged
+     *            a SingleSource to be merged
      * @param source2
-     *            a Single to be merged
+     *            a SingleSource to be merged
      * @return a Flowable that emits all of the items emitted by the source Singles
      * @see <a href="http://reactivex.io/documentation/operators/merge.html">ReactiveX operators documentation: Merge</a>
      * @see #merge(SingleSource, SingleSource)
@@ -1018,11 +1018,11 @@ public abstract class Single<T> implements SingleSource<T> {
      *
      * @param <T> the common value type
      * @param source1
-     *            a Single to be merged
+     *            a SingleSource to be merged
      * @param source2
-     *            a Single to be merged
+     *            a SingleSource to be merged
      * @param source3
-     *            a Single to be merged
+     *            a SingleSource to be merged
      * @return a Flowable that emits all of the items emitted by the source Singles
      * @see <a href="http://reactivex.io/documentation/operators/merge.html">ReactiveX operators documentation: Merge</a>
      * @see #merge(SingleSource, SingleSource, SingleSource)
@@ -1060,13 +1060,13 @@ public abstract class Single<T> implements SingleSource<T> {
      *
      * @param <T> the common value type
      * @param source1
-     *            a Single to be merged
+     *            a SingleSource to be merged
      * @param source2
-     *            a Single to be merged
+     *            a SingleSource to be merged
      * @param source3
-     *            a Single to be merged
+     *            a SingleSource to be merged
      * @param source4
-     *            a Single to be merged
+     *            a SingleSource to be merged
      * @return a Flowable that emits all of the items emitted by the source Singles
      * @see <a href="http://reactivex.io/documentation/operators/merge.html">ReactiveX operators documentation: Merge</a>
      * @see #merge(SingleSource, SingleSource, SingleSource, SingleSource)
@@ -2592,7 +2592,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * </dl>
      *
      * @param other
-     *            a Single to be merged
+     *            a SingleSource to be merged
      * @return  that emits all of the items emitted by the source Singles
      * @see <a href="http://reactivex.io/documentation/operators/merge.html">ReactiveX operators documentation: Merge</a>
      */
