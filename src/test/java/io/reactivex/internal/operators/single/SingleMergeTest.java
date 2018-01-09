@@ -15,7 +15,7 @@ package io.reactivex.internal.operators.single;
 
 import static org.junit.Assert.assertTrue;
 
-import java.util.List;
+import java.util.*;
 
 import org.junit.Test;
 
@@ -69,5 +69,72 @@ public class SingleMergeTest {
         } finally {
             RxJavaPlugins.reset();
         }
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void mergeDelayErrorIterable() {
+        Single.mergeDelayError(Arrays.asList(
+                Single.just(1),
+                Single.<Integer>error(new TestException()),
+                Single.just(2))
+        )
+        .test()
+        .assertFailure(TestException.class, 1, 2);
+    }
+
+    @Test
+    public void mergeDelayErrorPublisher() {
+        Single.mergeDelayError(Flowable.just(
+                Single.just(1),
+                Single.<Integer>error(new TestException()),
+                Single.just(2))
+        )
+        .test()
+        .assertFailure(TestException.class, 1, 2);
+    }
+
+    @Test
+    public void mergeDelayError2() {
+        Single.mergeDelayError(
+                Single.just(1),
+                Single.<Integer>error(new TestException())
+        )
+        .test()
+        .assertFailure(TestException.class, 1);
+    }
+
+    @Test
+    public void mergeDelayError2ErrorFirst() {
+        Single.mergeDelayError(
+                Single.<Integer>error(new TestException()),
+                Single.just(1)
+        )
+        .test()
+        .assertFailure(TestException.class, 1);
+    }
+
+    @Test
+    public void mergeDelayError3() {
+        Single.mergeDelayError(
+                Single.just(1),
+                Single.<Integer>error(new TestException()),
+                Single.just(2)
+        )
+        .test()
+        .assertFailure(TestException.class, 1, 2);
+    }
+
+
+    @Test
+    public void mergeDelayError4() {
+        Single.mergeDelayError(
+                Single.just(1),
+                Single.<Integer>error(new TestException()),
+                Single.just(2),
+                Single.just(3)
+        )
+        .test()
+        .assertFailure(TestException.class, 1, 2, 3);
     }
 }

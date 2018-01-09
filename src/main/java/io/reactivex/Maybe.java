@@ -1180,12 +1180,12 @@ public abstract class Maybe<T> implements MaybeSource<T> {
 
     /**
      * Flattens a Publisher that emits MaybeSources into one Publisher, in a way that allows a Subscriber to
-     * receive all successfully emitted items from all of the source Publishers without being interrupted by
-     * an error notification from one of them.
+     * receive all successfully emitted items from all of the source MaybeSources without being interrupted by
+     * an error notification from one of them or even the main Publisher.
      * <p>
-     * This behaves like {@link #merge(Publisher)} except that if any of the merged Publishers notify of an
+     * This behaves like {@link #merge(Publisher)} except that if any of the merged MaybeSources notify of an
      * error via {@link Subscriber#onError onError}, {@code mergeDelayError} will refrain from propagating that
-     * error notification until all of the merged Publishers have finished emitting items.
+     * error notification until all of the merged MaybeSources and the main Publisher have finished emitting items.
      * <p>
      * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/mergeDelayError.png" alt="">
      * <p>
@@ -1212,6 +1212,46 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Flowable<T> mergeDelayError(Publisher<? extends MaybeSource<? extends T>> sources) {
         return Flowable.fromPublisher(sources).flatMap((Function)MaybeToPublisher.instance(), true);
+    }
+
+
+    /**
+     * Flattens a Publisher that emits MaybeSources into one Publisher, in a way that allows a Subscriber to
+     * receive all successfully emitted items from all of the source MaybeSources without being interrupted by
+     * an error notification from one of them or even the main Publisher as well as limiting the total number of active MaybeSources.
+     * <p>
+     * This behaves like {@link #merge(Publisher, int)} except that if any of the merged MaybeSources notify of an
+     * error via {@link Subscriber#onError onError}, {@code mergeDelayError} will refrain from propagating that
+     * error notification until all of the merged MaybeSources and the main Publisher have finished emitting items.
+     * <p>
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/mergeDelayError.png" alt="">
+     * <p>
+     * Even if multiple merged Publishers send {@code onError} notifications, {@code mergeDelayError} will only
+     * invoke the {@code onError} method of its Subscribers once.
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The operator honors backpressure from downstream. The outer {@code Publisher} is consumed
+     *  in unbounded mode (i.e., no backpressure is applied to it).</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code mergeDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param <T> the common element base type
+     * @param sources
+     *            a Publisher that emits MaybeSources
+     * @param maxConcurrency the maximum number of active inner MaybeSources to be merged at a time
+     * @return a Flowable that emits all of the items emitted by the Publishers emitted by the
+     *         {@code source} Publisher
+     * @see <a href="http://reactivex.io/documentation/operators/merge.html">ReactiveX operators documentation: Merge</a>
+     * @since 2.1.9 - experimental
+     */
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @BackpressureSupport(BackpressureKind.FULL)
+    @CheckReturnValue
+    @SchedulerSupport(SchedulerSupport.NONE)
+    @Experimental
+    public static <T> Flowable<T> mergeDelayError(Publisher<? extends MaybeSource<? extends T>> sources, int maxConcurrency) {
+        return Flowable.fromPublisher(sources).flatMap((Function)MaybeToPublisher.instance(), true, maxConcurrency);
     }
 
     /**
