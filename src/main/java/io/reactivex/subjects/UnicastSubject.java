@@ -79,7 +79,7 @@ import io.reactivex.internal.queue.SpscLinkedArrayQueue;
  * given {@code Disposable} being disposed immediately.
  * <p>
  * Calling {@link #onNext(Object)}, {@link #onError(Throwable)} and {@link #onComplete()}
- * is still required to be serialized (called from the same thread or called non-overlappingly from different threads
+ * is required to be serialized (called from the same thread or called non-overlappingly from different threads
  * through external means of serialization). The {@link #toSerialized()} method available to all {@code Subject}s
  * provides such serialization and also protects against reentrance (i.e., when a downstream {@code Observer}
  * consuming this subject also wants to call {@link #onNext(Object)} on this subject recursively).
