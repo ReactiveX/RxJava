@@ -24,12 +24,85 @@ import io.reactivex.plugins.RxJavaPlugins;
 /**
  * Represents a hot Maybe-like source and consumer of events similar to Subjects.
  * <p>
- * All methods are thread safe. Calling onSuccess or onComplete multiple
- * times has no effect. Calling onError multiple times relays the Throwable to
- * the RxJavaPlugins' error handler.
+ * This subject does not have a public constructor by design; a new non-terminated instance of this
+ * {@code MaybeSubject} can be created via the {@link #create()} method.
  * <p>
- * The MaybeSubject doesn't store the Disposables coming through onSubscribe but
- * disposes them once the other onXXX methods were called (terminal state reached).
+ * Since the {@code MaybeSubject} is conceptionally derived from the {@code Processor} type in the Reactive Streams specification,
+ * {@code null}s are not allowed (<a href="https://github.com/reactive-streams/reactive-streams-jvm#2.13">Rule 2.13</a>)
+ * as parameters to  {@link #onSuccess(Object)} and {@link #onError(Throwable)}. Such calls will result in a
+ * {@link NullPointerException} being thrown and the subject's state is not changed.
+ * <p>
+ * Since a {@code MaybeSubject} is a {@link io.reactivex.Maybe}, calling {@code onSuccess}, {@code onError}
+ * or {@code onComplete} will move this {@code MaybeSubject} into its terminal state atomically.
+ * <p>
+ * All methods are thread safe. Calling {@link #onSuccess(Object)} or {@link #onComplete()} multiple
+ * times has no effect. Calling {@link #onError(Throwable)} multiple times relays the {@code Throwable} to
+ * the {@link io.reactivex.plugins.RxJavaPlugins#onError(Throwable)} global error handler.
+ * <p>
+ * Even though {@code MaybeSubject} implements the {@code MaybeObserver} interface, calling
+ * {@code onSubscribe} is not required (<a href="https://github.com/reactive-streams/reactive-streams-jvm#2.12">Rule 2.12</a>)
+ * if the subject is used as a standalone source. However, calling {@code onSubscribe}
+ * after the {@code MaybeSubject} reached its terminal state will result in the
+ * given {@code Disposable} being disposed immediately.
+ * <p>
+ * This {@code MaybeSubject} supports the standard state-peeking methods {@link #hasComplete()}, {@link #hasThrowable()},
+ * {@link #getThrowable()} and {@link #hasObservers()} as well as means to read any success item in a non-blocking
+ * and thread-safe manner via {@link #hasValue()} and {@link #getValue()}.
+ * <p>
+ * The {@code MaybeSubject} does not support clearing its cached {@code onSuccess} value.
+ * <dl>
+ *  <dt><b>Scheduler:</b></dt>
+ *  <dd>{@code MaybeSubject} does not operate by default on a particular {@link io.reactivex.Scheduler} and
+ *  the {@code MaybeObserver}s get notified on the thread where the terminating {@code onSuccess}, {@code onError} or {@code onComplete}
+ *  methods were invoked.</dd>
+ *  <dt><b>Error handling:</b></dt>
+ *  <dd>When the {@link #onError(Throwable)} is called, the {@code MaybeSubject} enters into a terminal state
+ *  and emits the same {@code Throwable} instance to the last set of {@code MaybeObserver}s. During this emission,
+ *  if one or more {@code MaybeObserver}s dispose their respective {@code Disposable}s, the
+ *  {@code Throwable} is delivered to the global error handler via
+ *  {@link io.reactivex.plugins.RxJavaPlugins#onError(Throwable)} (multiple times if multiple {@code MaybeObserver}s
+ *  cancel at once).
+ *  If there were no {@code MaybeObserver}s subscribed to this {@code MaybeSubject} when the {@code onError()}
+ *  was called, the global error handler is not invoked.
+ *  </dd>
+ * </dl>
+ * <p>
+ * Example usage:
+ * <pre><code>
+ * MaybeSubject&lt;Integer&gt; subject1 = MaybeSubject.create();
+ * 
+ * TestObserver&lt;Integer&gt; to1 = subject1.test();
+ * 
+ * // MaybeSubjects are empty by default
+ * to1.assertEmpty();
+ * 
+ * subject1.onSuccess(1);
+ * 
+ * // onSuccess is a terminal event with MaybeSubjects
+ * // TestObserver converts onSuccess into onNext + onComplete
+ * to1.assertResult(1);
+ *
+ * TestObserver&lt;Integer&gt; to2 = subject1.test();
+ * 
+ * // late Observers receive the terminal signal (onSuccess) too
+ * to2.assertResult(1);
+ *
+ * // -----------------------------------------------------
+ *
+ * MaybeSubject&lt;Integer&gt; subject2 = MaybeSubject.create();
+ *
+ * TestObserver&lt;Integer&gt; to3 = subject2.test();
+ * 
+ * subject2.onComplete();
+ * 
+ * // a completed MaybeSubject completes its MaybeObservers
+ * to3.assertResult();
+ *
+ * TestObserver&lt;Integer&gt; to4 = subject1.test();
+ * 
+ * // late Observers receive the terminal signal (onComplete) too
+ * to4.assertResult();
+ * </code></pre>
  * <p>History: 2.0.5 - experimental
  * @param <T> the value type received and emitted
  * @since 2.1
