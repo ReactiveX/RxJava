@@ -787,9 +787,9 @@ public abstract class Single<T> implements SingleSource<T> {
      *
      * @param <T> the common value type
      * @param source1
-     *            a Single to be merged
+     *            a SingleSource to be merged
      * @param source2
-     *            a Single to be merged
+     *            a SingleSource to be merged
      * @return a Flowable that emits all of the items emitted by the source Singles
      * @see <a href="http://reactivex.io/documentation/operators/merge.html">ReactiveX operators documentation: Merge</a>
      * @see #mergeDelayError(SingleSource, SingleSource)
@@ -835,11 +835,11 @@ public abstract class Single<T> implements SingleSource<T> {
      *
      * @param <T> the common value type
      * @param source1
-     *            a Single to be merged
+     *            a SingleSource to be merged
      * @param source2
-     *            a Single to be merged
+     *            a SingleSource to be merged
      * @param source3
-     *            a Single to be merged
+     *            a SingleSource to be merged
      * @return a Flowable that emits all of the items emitted by the source Singles
      * @see <a href="http://reactivex.io/documentation/operators/merge.html">ReactiveX operators documentation: Merge</a>
      * @see #mergeDelayError(SingleSource, SingleSource, SingleSource)
@@ -880,20 +880,20 @@ public abstract class Single<T> implements SingleSource<T> {
      *  {@link RxJavaPlugins#onError(Throwable)} method as {@code UndeliverableException} errors. Similarly, {@code Throwable}s
      *  signaled by source(s) after the returned {@code Flowable} has been cancelled or terminated with a
      *  (composite) error will be sent to the same global error handler.
-     *  Use {@link #mergeDelayError(SingleSource, SingleSource, SingleSource)} to merge sources and terminate only when all source {@code SingleSource}s
+     *  Use {@link #mergeDelayError(SingleSource, SingleSource, SingleSource, SingleSource)} to merge sources and terminate only when all source {@code SingleSource}s
      *  have completed or failed with an error.
      *  </dd>
      * </dl>
      *
      * @param <T> the common value type
      * @param source1
-     *            a Single to be merged
+     *            a SingleSource to be merged
      * @param source2
-     *            a Single to be merged
+     *            a SingleSource to be merged
      * @param source3
-     *            a Single to be merged
+     *            a SingleSource to be merged
      * @param source4
-     *            a Single to be merged
+     *            a SingleSource to be merged
      * @return a Flowable that emits all of the items emitted by the source Singles
      * @see <a href="http://reactivex.io/documentation/operators/merge.html">ReactiveX operators documentation: Merge</a>
      * @see #mergeDelayError(SingleSource, SingleSource, SingleSource, SingleSource)
@@ -911,6 +911,181 @@ public abstract class Single<T> implements SingleSource<T> {
         ObjectHelper.requireNonNull(source3, "source3 is null");
         ObjectHelper.requireNonNull(source4, "source4 is null");
         return merge(Flowable.fromArray(source1, source2, source3, source4));
+    }
+
+
+    /**
+     * Merges an Iterable sequence of SingleSource instances into a single Flowable sequence,
+     * running all SingleSources at once and delaying any error(s) until all sources succeed or fail.
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The returned {@code Flowable} honors the backpressure of the downstream consumer.</dd>
+     * <dt><b>Scheduler:</b></dt>
+     * <dd>{@code mergeDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param <T> the common and resulting value type
+     * @param sources the Iterable sequence of SingleSource sources
+     * @return the new Flowable instance
+     * @since 2.1.9 - experimental
+     * @see #merge(Iterable)
+     */
+    @CheckReturnValue
+    @BackpressureSupport(BackpressureKind.FULL)
+    @SchedulerSupport(SchedulerSupport.NONE)
+    @Experimental
+    public static <T> Flowable<T> mergeDelayError(Iterable<? extends SingleSource<? extends T>> sources) {
+        return mergeDelayError(Flowable.fromIterable(sources));
+    }
+
+    /**
+     * Merges a Flowable sequence of SingleSource instances into a single Flowable sequence,
+     * running all SingleSources at once and delaying any error(s) until all sources succeed or fail.
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The returned {@code Flowable} honors the backpressure of the downstream consumer.</dd>
+     * <dt><b>Scheduler:</b></dt>
+     * <dd>{@code mergeDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param <T> the common and resulting value type
+     * @param sources the Flowable sequence of SingleSource sources
+     * @return the new Flowable instance
+     * @see #merge(Publisher)
+     * @since 2.1.9 - experimental
+     */
+    @CheckReturnValue
+    @BackpressureSupport(BackpressureKind.FULL)
+    @SchedulerSupport(SchedulerSupport.NONE)
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @Experimental
+    public static <T> Flowable<T> mergeDelayError(Publisher<? extends SingleSource<? extends T>> sources) {
+        ObjectHelper.requireNonNull(sources, "sources is null");
+        return RxJavaPlugins.onAssembly(new FlowableFlatMapPublisher(sources, SingleInternalHelper.toFlowable(), true, Integer.MAX_VALUE, Flowable.bufferSize()));
+    }
+
+
+    /**
+     * Flattens two Singles into a single Flowable, without any transformation, delaying
+     * any error(s) until all sources succeed or fail.
+     * <p>
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.merge.png" alt="">
+     * <p>
+     * You can combine items emitted by multiple Singles so that they appear as a single Flowable, by
+     * using the {@code mergeDelayError} method.
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The returned {@code Flowable} honors the backpressure of the downstream consumer.</dd>
+     * <dt><b>Scheduler:</b></dt>
+     * <dd>{@code mergeDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param <T> the common value type
+     * @param source1
+     *            a SingleSource to be merged
+     * @param source2
+     *            a SingleSource to be merged
+     * @return a Flowable that emits all of the items emitted by the source Singles
+     * @see <a href="http://reactivex.io/documentation/operators/merge.html">ReactiveX operators documentation: Merge</a>
+     * @see #merge(SingleSource, SingleSource)
+     * @since 2.1.9 - experimental
+     */
+    @CheckReturnValue
+    @BackpressureSupport(BackpressureKind.FULL)
+    @SchedulerSupport(SchedulerSupport.NONE)
+    @SuppressWarnings("unchecked")
+    @Experimental
+    public static <T> Flowable<T> mergeDelayError(
+            SingleSource<? extends T> source1, SingleSource<? extends T> source2
+     ) {
+        ObjectHelper.requireNonNull(source1, "source1 is null");
+        ObjectHelper.requireNonNull(source2, "source2 is null");
+        return mergeDelayError(Flowable.fromArray(source1, source2));
+    }
+
+    /**
+     * Flattens three Singles into a single Flowable, without any transformation, delaying
+     * any error(s) until all sources succeed or fail.
+     * <p>
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.merge.png" alt="">
+     * <p>
+     * You can combine items emitted by multiple Singles so that they appear as a single Flowable, by using
+     * the {@code mergeDelayError} method.
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The returned {@code Flowable} honors the backpressure of the downstream consumer.</dd>
+     * <dt><b>Scheduler:</b></dt>
+     * <dd>{@code mergeDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param <T> the common value type
+     * @param source1
+     *            a SingleSource to be merged
+     * @param source2
+     *            a SingleSource to be merged
+     * @param source3
+     *            a SingleSource to be merged
+     * @return a Flowable that emits all of the items emitted by the source Singles
+     * @see <a href="http://reactivex.io/documentation/operators/merge.html">ReactiveX operators documentation: Merge</a>
+     * @see #merge(SingleSource, SingleSource, SingleSource)
+     * @since 2.1.9 - experimental
+     */
+    @CheckReturnValue
+    @BackpressureSupport(BackpressureKind.FULL)
+    @SchedulerSupport(SchedulerSupport.NONE)
+    @SuppressWarnings("unchecked")
+    @Experimental
+    public static <T> Flowable<T> mergeDelayError(
+            SingleSource<? extends T> source1, SingleSource<? extends T> source2,
+            SingleSource<? extends T> source3
+     ) {
+        ObjectHelper.requireNonNull(source1, "source1 is null");
+        ObjectHelper.requireNonNull(source2, "source2 is null");
+        ObjectHelper.requireNonNull(source3, "source3 is null");
+        return mergeDelayError(Flowable.fromArray(source1, source2, source3));
+    }
+
+    /**
+     * Flattens four Singles into a single Flowable, without any transformation, delaying
+     * any error(s) until all sources succeed or fail.
+     * <p>
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.merge.png" alt="">
+     * <p>
+     * You can combine items emitted by multiple Singles so that they appear as a single Flowable, by using
+     * the {@code mergeDelayError} method.
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The returned {@code Flowable} honors the backpressure of the downstream consumer.</dd>
+     * <dt><b>Scheduler:</b></dt>
+     * <dd>{@code mergeDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param <T> the common value type
+     * @param source1
+     *            a SingleSource to be merged
+     * @param source2
+     *            a SingleSource to be merged
+     * @param source3
+     *            a SingleSource to be merged
+     * @param source4
+     *            a SingleSource to be merged
+     * @return a Flowable that emits all of the items emitted by the source Singles
+     * @see <a href="http://reactivex.io/documentation/operators/merge.html">ReactiveX operators documentation: Merge</a>
+     * @see #merge(SingleSource, SingleSource, SingleSource, SingleSource)
+     * @since 2.1.9 - experimental
+     */
+    @CheckReturnValue
+    @BackpressureSupport(BackpressureKind.FULL)
+    @SchedulerSupport(SchedulerSupport.NONE)
+    @SuppressWarnings("unchecked")
+    @Experimental
+    public static <T> Flowable<T> mergeDelayError(
+            SingleSource<? extends T> source1, SingleSource<? extends T> source2,
+            SingleSource<? extends T> source3, SingleSource<? extends T> source4
+     ) {
+        ObjectHelper.requireNonNull(source1, "source1 is null");
+        ObjectHelper.requireNonNull(source2, "source2 is null");
+        ObjectHelper.requireNonNull(source3, "source3 is null");
+        ObjectHelper.requireNonNull(source4, "source4 is null");
+        return mergeDelayError(Flowable.fromArray(source1, source2, source3, source4));
     }
 
     /**
@@ -2417,7 +2592,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * </dl>
      *
      * @param other
-     *            a Single to be merged
+     *            a SingleSource to be merged
      * @return  that emits all of the items emitted by the source Singles
      * @see <a href="http://reactivex.io/documentation/operators/merge.html">ReactiveX operators documentation: Merge</a>
      */
