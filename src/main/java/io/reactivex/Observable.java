@@ -12657,7 +12657,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * Returns a Single that emits a single item, a list composed of all the items emitted by the
      * finite source ObservableSource.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/toList.2.png" alt="">
+     * <img width="640" height="365" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/toList.o.c.png" alt="">
      * <p>
      * Normally, an ObservableSource that returns multiple items will do so by invoking its {@link Observer}'s
      * {@link Observer#onNext onNext} method for each such item. You can change this behavior, instructing the
@@ -12910,6 +12910,30 @@ public abstract class Observable<T> implements ObservableSource<T> {
 
     /**
      * Converts the current Observable into a Flowable by applying the specified backpressure strategy.
+     * <p>
+     * Marble diagrams for the various backpressure strategies are as follows:
+     * <ul>
+     * <li>{@link BackpressureStrategy#BUFFER}
+     * <p>
+     * <img width="640" height="274" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/toFlowable.o.buffer.png" alt="">
+     * </li>
+     * <li>{@link BackpressureStrategy#DROP}
+     * <p>
+     * <img width="640" height="389" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/toFlowable.o.drop.png" alt="">
+     * </li>
+     * <li>{@link BackpressureStrategy#LATEST}
+     * <p>
+     * <img width="640" height="296" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/toFlowable.o.latest.png" alt="">
+     * </li>
+     * <li>{@link BackpressureStrategy#ERROR}
+     * <p>
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/toFlowable.o.error.png" alt="">
+     * </li>
+     * <li>{@link BackpressureStrategy#MISSING}
+     * <p>
+     * <img width="640" height="411" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/toFlowable.o.missing.png" alt="">
+     * </li>
+     * </ul>
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator applies the chosen backpressure strategy of {@link BackpressureStrategy} enum.</dd>
@@ -13046,6 +13070,8 @@ public abstract class Observable<T> implements ObservableSource<T> {
     /**
      * Modifies the source ObservableSource so that subscribers will dispose it on a specified
      * {@link Scheduler}.
+     * <p>
+     * <img width="640" height="452" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/unsubscribeOn.o.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>You specify which {@link Scheduler} this operator will use.</dd>
@@ -13908,6 +13934,8 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * Returns an Observable that emits items that are the result of applying a specified function to pairs of
      * values, one each from the source ObservableSource and another specified ObservableSource.
      * <p>
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/zip.png" alt="">
+     * <p>
      * The operator subscribes to its sources in order they are specified and completes eagerly if
      * one of the sources is shorter than the rest while disposing the other sources. Therefore, it
      * is possible those other sources will never be able to run to completion (and thus not calling
@@ -13919,8 +13947,6 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * <br>To work around this termination property,
      * use {@link #doOnDispose(Action)} as well or use {@code using()} to do cleanup in case of completion
      * or a dispose() call.
-     *
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/zip.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code zipWith} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -13951,6 +13977,8 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * Returns an Observable that emits items that are the result of applying a specified function to pairs of
      * values, one each from the source ObservableSource and another specified ObservableSource.
      * <p>
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/zip.png" alt="">
+     * <p>
      * The operator subscribes to its sources in order they are specified and completes eagerly if
      * one of the sources is shorter than the rest while disposing the other sources. Therefore, it
      * is possible those other sources will never be able to run to completion (and thus not calling
@@ -13962,8 +13990,6 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * <br>To work around this termination property,
      * use {@link #doOnDispose(Action)} as well or use {@code using()} to do cleanup in case of completion
      * or a dispose() call.
-     *
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/zip.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code zipWith} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -13996,6 +14022,8 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * Returns an Observable that emits items that are the result of applying a specified function to pairs of
      * values, one each from the source ObservableSource and another specified ObservableSource.
      * <p>
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/zip.png" alt="">
+     * <p>
      * The operator subscribes to its sources in order they are specified and completes eagerly if
      * one of the sources is shorter than the rest while disposing the other sources. Therefore, it
      * is possible those other sources will never be able to run to completion (and thus not calling
@@ -14007,8 +14035,6 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * <br>To work around this termination property,
      * use {@link #doOnDispose(Action)} as well or use {@code using()} to do cleanup in case of completion
      * or a dispose() call.
-     *
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/zip.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code zipWith} does not operate by default on a particular {@link Scheduler}.</dd>
