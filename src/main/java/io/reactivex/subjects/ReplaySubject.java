@@ -27,14 +27,80 @@ import io.reactivex.internal.util.NotificationLite;
 import io.reactivex.plugins.RxJavaPlugins;
 
 /**
- * Replays events to Observers.
+ * Replays events (in a configurable bounded or unbounded manner) to current and late {@link Observer}s.
  * <p>
  * <img width="640" height="405" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/S.ReplaySubject.png" alt="">
+ * <p>
+ * This subject does not have a public constructor by design; a new empty instance of this
+ * {@code ReplaySubject} can be created via the following {@code create} methods that
+ * allow specifying the retention policy for items:
+ * <ul>
+ * <li>{@link #create()} - creates an empty, unbounded {@code ReplaySubject} that
+ *     caches all items and the terminal event it receives.</li>
+ * <li>{@link #create(int)} - creates an empty, unbounded {@code ReplaySubject}
+ *     with a hint about how many <b>total</b> items one expects to retain.</li>
+ * <li>{@link #createWithSize(int)} - creates an empty, size-bound {@code ReplaySubject}
+ *     that retains at most the given number of the latest item it receives.</li>
+ * <li>{@link #createWithTime(long, TimeUnit, Scheduler)} - creates an empty, time-bound
+ *     {@code ReplaySubject} that retains items no older than the specified time amount.</li>
+ * <li>{@link #createWithTimeAndSize(long, TimeUnit, Scheduler, int)} - creates an empty,
+ *     time- and size-bound {@code ReplaySubject} that retains at most the given number
+ *     items that are also not older than the specified time amount.</li>
+ * </ul>
+ * <p>
+ * Since a {@code Subject} is conceptionally derived from the {@code Processor} type in the Reactive Streams specification,
+ * {@code null}s are not allowed (<a href="https://github.com/reactive-streams/reactive-streams-jvm#2.13">Rule 2.13</a>) as
+ * parameters to {@link #onNext(Object)} and {@link #onError(Throwable)}. Such calls will result in a
+ * {@link NullPointerException} being thrown and the subject's state is not changed.
+ * <p>
+ * Since a {@code ReplaySubject} is an {@link io.reactivex.Observable}, it does not support backpressure.
+ * <p>
+ * When this {@code ReplaySubject} is terminated via {@link #onError(Throwable)} or {@link #onComplete()},
+ * late {@link io.reactivex.Observer}s will receive the retained/cached items first (if any) followed by the respective
+ * terminal event. If the {@code ReplaySubject} has a time-bound, the age of the retained/cached items are still considered
+ * when replaying and thus it may result in no items being emitted before the terminal event.
+ * <p>
+ * Once an {@code Observer} has subscribed, it will receive items continuously from that point on. Bounds only affect how
+ * many past items a new {@code Observer} will receive before it catches up with the live event feed.
+ * <p>
+ * Even though {@code ReplaySubject} implements the {@code Observer} interface, calling
+ * {@code onSubscribe} is not required (<a href="https://github.com/reactive-streams/reactive-streams-jvm#2.12">Rule 2.12</a>)
+ * if the subject is used as a standalone source. However, calling {@code onSubscribe}
+ * after the {@code ReplaySubject} reached its terminal state will result in the
+ * given {@code Disposable} being disposed immediately.
+ * <p>
+ * Calling {@link #onNext(Object)}, {@link #onError(Throwable)} and {@link #onComplete()}
+ * is required to be serialized (called from the same thread or called non-overlappingly from different threads
+ * through external means of serialization). The {@link #toSerialized()} method available to all {@code Subject}s
+ * provides such serialization and also protects against reentrance (i.e., when a downstream {@code Observer}
+ * consuming this subject also wants to call {@link #onNext(Object)} on this subject recursively).
+ * <p>
+ * This {@code ReplaySubject} supports the standard state-peeking methods {@link #hasComplete()}, {@link #hasThrowable()},
+ * {@link #getThrowable()} and {@link #hasObservers()} as well as means to read the retained/cached items
+ * in a non-blocking and thread-safe manner via {@link #hasValue()}, {@link #getValue()},
+ * {@link #getValues()} or {@link #getValues(Object[])}.
+ * <dl>
+ *  <dt><b>Scheduler:</b></dt>
+ *  <dd>{@code ReplaySubject} does not operate by default on a particular {@link io.reactivex.Scheduler} and
+ *  the {@code Observer}s get notified on the thread the respective {@code onXXX} methods were invoked.
+ *  Time-bound {@code ReplaySubject}s use the given {@code Scheduler} in their {@code create} methods
+ *  as time source to timestamp of items received for the age checks.</dd>
+ *  <dt><b>Error handling:</b></dt>
+ *  <dd>When the {@link #onError(Throwable)} is called, the {@code ReplaySubject} enters into a terminal state
+ *  and emits the same {@code Throwable} instance to the last set of {@code Observer}s. During this emission,
+ *  if one or more {@code Observer}s dispose their respective {@code Disposable}s, the
+ *  {@code Throwable} is delivered to the global error handler via
+ *  {@link io.reactivex.plugins.RxJavaPlugins#onError(Throwable)} (multiple times if multiple {@code Observer}s
+ *  cancel at once).
+ *  If there were no {@code Observer}s subscribed to this {@code ReplaySubject} when the {@code onError()}
+ *  was called, the global error handler is not invoked.
+ *  </dd>
+ * </dl>
  * <p>
  * Example usage:
  * <pre> {@code
 
-  ReplaySubject<Object> subject = new ReplaySubject<>();
+  ReplaySubject<Object> subject = ReplaySubject.create();
   subject.onNext("one");
   subject.onNext("two");
   subject.onNext("three");

@@ -16,9 +16,10 @@ package io.reactivex.subjects;
 import io.reactivex.annotations.Experimental;
 import io.reactivex.annotations.Nullable;
 import io.reactivex.plugins.RxJavaPlugins;
+
 import java.util.concurrent.atomic.*;
 
-import io.reactivex.Observer;
+import io.reactivex.*;
 import io.reactivex.annotations.CheckReturnValue;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.disposables.EmptyDisposable;
@@ -28,19 +29,116 @@ import io.reactivex.internal.observers.BasicIntQueueDisposable;
 import io.reactivex.internal.queue.SpscLinkedArrayQueue;
 
 /**
- * Subject that allows only a single Subscriber to subscribe to it during its lifetime.
- *
- * <p>This subject buffers notifications and replays them to the Subscriber as requested.
- *
- * <p>This subject holds an unbounded internal buffer.
- *
- * <p>If more than one Subscriber attempts to subscribe to this Subject, they
- * will receive an IllegalStateException if this Subject hasn't terminated yet,
- * or the Subscribers receive the terminal event (error or completion) if this
- * Subject has terminated.
+ * A Subject that queues up events until a single {@link Observer} subscribes to it, replays
+ * those events to it until the {@code Observer} catches up and then switches to relaying events live to
+ * this single {@code Observer} until this {@code UnicastSubject} terminates or the {@code Observer} unsubscribes.
  * <p>
  * <img width="640" height="370" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/UnicastSubject.png" alt="">
- *
+ * <p>
+ * Note that {@code UnicastSubject} holds an unbounded internal buffer.
+ * <p>
+ * This subject does not have a public constructor by design; a new empty instance of this
+ * {@code UnicastSubject} can be created via the following {@code create} methods that
+ * allow specifying the retention policy for items:
+ * <ul>
+ * <li>{@link #create()} - creates an empty, unbounded {@code UnicastSubject} that
+ *     caches all items and the terminal event it receives.</li>
+ * <li>{@link #create(int)} - creates an empty, unbounded {@code UnicastSubject}
+ *     with a hint about how many <b>total</b> items one expects to retain.</li>
+ * <li>{@link #create(boolean)} - creates an empty, unbounded {@code UnicastSubject} that
+ *     optionally delays an error it receives and replays it after the regular items have been emitted.</li>
+ * <li>{@link #create(int, Runnable)} - creates an empty, unbounded {@code UnicastSubject}
+ *     with a hint about how many <b>total</b> items one expects to retain and a callback that will be
+ *     called exactly once when the {@code UnicastSubject} gets terminated or the single {@code Observer} unsubscribes.</li>
+ * <li>{@link #create(int, Runnable, boolean)} - creates an empty, unbounded {@code UnicastSubject}
+ *     with a hint about how many <b>total</b> items one expects to retain and a callback that will be
+ *     called exactly once when the {@code UnicastSubject} gets terminated or the single {@code Observer} unsubscribes
+ *     and optionally delays an error it receives and replays it after the regular items have been emitted.</li>
+ * </ul>
+ * <p>
+ * If more than one {@code Observer} attempts to subscribe to this {@code UnicastSubject}, they
+ * will receive an {@code IllegalStateException} indicating the single-use-only nature of this {@code UnicastSubject},
+ * even if the {@code UnicastSubject} already terminated with an error.
+ * <p>
+ * Since a {@code Subject} is conceptionally derived from the {@code Processor} type in the Reactive Streams specification,
+ * {@code null}s are not allowed (<a href="https://github.com/reactive-streams/reactive-streams-jvm#2.13">Rule 2.13</a>) as
+ * parameters to {@link #onNext(Object)} and {@link #onError(Throwable)}. Such calls will result in a
+ * {@link NullPointerException} being thrown and the subject's state is not changed.
+ * <p>
+ * Since a {@code UnicastSubject} is an {@link io.reactivex.Observable}, it does not support backpressure.
+ * <p>
+ * When this {@code UnicastSubject} is terminated via {@link #onError(Throwable)} the current or late single {@code Observer}
+ * may receive the {@code Throwable} before any available items could be emitted. To make sure an onError event is delivered
+ * to the {@code Observer} after the normal items, create a {@code UnicastSubject} with the {@link #create(boolean)} or
+ * {@link #create(int, Runnable, boolean)} factory methods.
+ * <p>
+ * Even though {@code UnicastSubject} implements the {@code Observer} interface, calling
+ * {@code onSubscribe} is not required (<a href="https://github.com/reactive-streams/reactive-streams-jvm#2.12">Rule 2.12</a>)
+ * if the subject is used as a standalone source. However, calling {@code onSubscribe}
+ * after the {@code UnicastSubject} reached its terminal state will result in the
+ * given {@code Disposable} being disposed immediately.
+ * <p>
+ * Calling {@link #onNext(Object)}, {@link #onError(Throwable)} and {@link #onComplete()}
+ * is required to be serialized (called from the same thread or called non-overlappingly from different threads
+ * through external means of serialization). The {@link #toSerialized()} method available to all {@code Subject}s
+ * provides such serialization and also protects against reentrance (i.e., when a downstream {@code Observer}
+ * consuming this subject also wants to call {@link #onNext(Object)} on this subject recursively).
+ * <p>
+ * This {@code UnicastSubject} supports the standard state-peeking methods {@link #hasComplete()}, {@link #hasThrowable()},
+ * {@link #getThrowable()} and {@link #hasObservers()}.
+ * <dl>
+ *  <dt><b>Scheduler:</b></dt>
+ *  <dd>{@code UnicastSubject} does not operate by default on a particular {@link io.reactivex.Scheduler} and
+ *  the {@code Observer}s get notified on the thread the respective {@code onXXX} methods were invoked.</dd>
+ *  <dt><b>Error handling:</b></dt>
+ *  <dd>When the {@link #onError(Throwable)} is called, the {@code UnicastSubject} enters into a terminal state
+ *  and emits the same {@code Throwable} instance to the last set of {@code Observer}s. During this emission,
+ *  if one or more {@code Observer}s dispose their respective {@code Disposable}s, the
+ *  {@code Throwable} is delivered to the global error handler via
+ *  {@link io.reactivex.plugins.RxJavaPlugins#onError(Throwable)} (multiple times if multiple {@code Observer}s
+ *  cancel at once).
+ *  If there were no {@code Observer}s subscribed to this {@code UnicastSubject} when the {@code onError()}
+ *  was called, the global error handler is not invoked.
+ *  </dd>
+ * </dl>
+ * <p>
+ * Example usage:
+ * <pre><code>
+ * UnicastSubject&lt;Integer&gt; subject = UnicastSubject.create();
+ * 
+ * TestObserver&lt;Integer&gt; to1 = subject.test();
+ * 
+ * // fresh UnicastSubjects are empty
+ * to1.assertEmpty();
+ * 
+ * TestObserver&lt;Integer&gt; to2 = subject.test();
+ * 
+ * // A UnicastSubject only allows one Observer during its lifetime
+ * to2.assertFailure(IllegalStateException.class);
+ * 
+ * subject.onNext(1);
+ * to1.assertValue(1);
+ * 
+ * subject.onNext(2);
+ * to1.assertValues(1, 2);
+ * 
+ * subject.onComplete();
+ * to1.assertResult(1, 2);
+ * 
+ * // ----------------------------------------------------
+ * 
+ * UnicastSubject&lt;Integer&gt; subject2 = UnicastSubject.create();
+ * 
+ * // a UnicastSubject caches events util its single Observer subscribes
+ * subject.onNext(1);
+ * subject.onNext(2);
+ * subject.onComplete();
+ * 
+ * TestObserver&lt;Integer&gt; to3 = subject2.test();
+ * 
+ * // the cached events are emitted in order
+ * to3.assertResult(1, 2);
+ * </code></pre>
  * @param <T> the value type received and emitted by this Subject subclass
  * @since 2.0
  */

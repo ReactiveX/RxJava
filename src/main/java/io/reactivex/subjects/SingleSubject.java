@@ -24,12 +24,69 @@ import io.reactivex.plugins.RxJavaPlugins;
 /**
  * Represents a hot Single-like source and consumer of events similar to Subjects.
  * <p>
- * All methods are thread safe. Calling onSuccess multiple
- * times has no effect. Calling onError multiple times relays the Throwable to
- * the RxJavaPlugins' error handler.
+ * This subject does not have a public constructor by design; a new non-terminated instance of this
+ * {@code SingleSubject} can be created via the {@link #create()} method.
  * <p>
- * The SingleSubject doesn't store the Disposables coming through onSubscribe but
- * disposes them once the other onXXX methods were called (terminal state reached).
+ * Since the {@code SingleSubject} is conceptionally derived from the {@code Processor} type in the Reactive Streams specification,
+ * {@code null}s are not allowed (<a href="https://github.com/reactive-streams/reactive-streams-jvm#2.13">Rule 2.13</a>)
+ * as parameters to  {@link #onSuccess(Object)} and {@link #onError(Throwable)}. Such calls will result in a
+ * {@link NullPointerException} being thrown and the subject's state is not changed.
+ * <p>
+ * Since a {@code SingleSubject} is a {@link io.reactivex.Maybe}, calling {@code onSuccess}, {@code onError}
+ * or {@code onComplete} will move this {@code SingleSubject} into its terminal state atomically.
+ * <p>
+ * All methods are thread safe. Calling {@link #onSuccess(Object)} multiple
+ * times has no effect. Calling {@link #onError(Throwable)} multiple times relays the {@code Throwable} to
+ * the {@link io.reactivex.plugins.RxJavaPlugins#onError(Throwable)} global error handler.
+ * <p>
+ * Even though {@code SingleSubject} implements the {@code SingleObserver} interface, calling
+ * {@code onSubscribe} is not required (<a href="https://github.com/reactive-streams/reactive-streams-jvm#2.12">Rule 2.12</a>)
+ * if the subject is used as a standalone source. However, calling {@code onSubscribe}
+ * after the {@code SingleSubject} reached its terminal state will result in the
+ * given {@code Disposable} being disposed immediately.
+ * <p>
+ * This {@code SingleSubject} supports the standard state-peeking methods {@link #hasThrowable()},
+ * {@link #getThrowable()} and {@link #hasObservers()} as well as means to read any success item in a non-blocking
+ * and thread-safe manner via {@link #hasValue()} and {@link #getValue()}.
+ * <p>
+ * The {@code SingleSubject} does not support clearing its cached {@code onSuccess} value.
+ * <dl>
+ *  <dt><b>Scheduler:</b></dt>
+ *  <dd>{@code SingleSubject} does not operate by default on a particular {@link io.reactivex.Scheduler} and
+ *  the {@code SingleObserver}s get notified on the thread where the terminating {@code onSuccess}, {@code onError}
+ *  or {@code onComplete} methods were invoked.</dd>
+ *  <dt><b>Error handling:</b></dt>
+ *  <dd>When the {@link #onError(Throwable)} is called, the {@code SingleSubject} enters into a terminal state
+ *  and emits the same {@code Throwable} instance to the last set of {@code SingleObserver}s. During this emission,
+ *  if one or more {@code SingleObserver}s dispose their respective {@code Disposable}s, the
+ *  {@code Throwable} is delivered to the global error handler via
+ *  {@link io.reactivex.plugins.RxJavaPlugins#onError(Throwable)} (multiple times if multiple {@code SingleObserver}s
+ *  cancel at once).
+ *  If there were no {@code SingleObserver}s subscribed to this {@code SingleSubject} when the {@code onError()}
+ *  was called, the global error handler is not invoked.
+ *  </dd>
+ * </dl>
+ * <p>
+ * Example usage:
+ * <pre><code>
+ * SingleSubject&lt;Integer&gt; subject1 = SingleSubject.create();
+ * 
+ * TestObserver&lt;Integer&gt; to1 = subject1.test();
+ * 
+ * // SingleSubjects are empty by default
+ * to1.assertEmpty();
+ * 
+ * subject1.onSuccess(1);
+ * 
+ * // onSuccess is a terminal event with SingleSubjects
+ * // TestObserver converts onSuccess into onNext + onComplete
+ * to1.assertResult(1);
+ *
+ * TestObserver&lt;Integer&gt; to2 = subject1.test();
+ * 
+ * // late Observers receive the terminal signal (onSuccess) too
+ * to2.assertResult(1);
+ * </code></pre>
  * <p>History: 2.0.5 - experimental
  * @param <T> the value type received and emitted
  * @since 2.1

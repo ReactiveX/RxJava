@@ -36,10 +36,11 @@ import io.reactivex.plugins.RxJavaPlugins;
  * a new non-empty instance can be created via {@link #createDefault(Object)} (named as such to avoid
  * overload resolution conflict with {@code Observable.create} that creates an Observable, not a {@code BehaviorSubject}).
  * <p>
- * Since the {@code Subject} is conceptionally derived from the {@code Processor} type in the Reactive Streams specification,
+ * Since a {@code Subject} is conceptionally derived from the {@code Processor} type in the Reactive Streams specification,
  * {@code null}s are not allowed (<a href="https://github.com/reactive-streams/reactive-streams-jvm#2.13">Rule 2.13</a>) as
  * default initial values in {@link #createDefault(Object)} or as parameters to {@link #onNext(Object)} and
- * {@link #onError(Throwable)}.
+ * {@link #onError(Throwable)}. Such calls will result in a
+ * {@link NullPointerException} being thrown and the subject's state is not changed.
  * <p>
  * Since a {@code BehaviorSubject} is an {@link io.reactivex.Observable}, it does not support backpressure.
  * <p>
@@ -83,11 +84,11 @@ import io.reactivex.plugins.RxJavaPlugins;
  * Even though {@code BehaviorSubject} implements the {@code Observer} interface, calling
  * {@code onSubscribe} is not required (<a href="https://github.com/reactive-streams/reactive-streams-jvm#2.12">Rule 2.12</a>)
  * if the subject is used as a standalone source. However, calling {@code onSubscribe}
- * after the {@code BehaviorSubjecct} reached its terminal state will result in the
+ * after the {@code BehaviorSubject} reached its terminal state will result in the
  * given {@code Disposable} being disposed immediately.
  * <p>
  * Calling {@link #onNext(Object)}, {@link #onError(Throwable)} and {@link #onComplete()}
- * is still required to be serialized (called from the same thread or called non-overlappingly from different threads
+ * is required to be serialized (called from the same thread or called non-overlappingly from different threads
  * through external means of serialization). The {@link #toSerialized()} method available to all {@code Subject}s
  * provides such serialization and also protects against reentrance (i.e., when a downstream {@code Observer}
  * consuming this subject also wants to call {@link #onNext(Object)} on this subject recursively).

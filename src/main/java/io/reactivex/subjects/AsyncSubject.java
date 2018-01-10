@@ -24,14 +24,86 @@ import io.reactivex.internal.observers.DeferredScalarDisposable;
 import io.reactivex.plugins.RxJavaPlugins;
 
 /**
- * An Subject that emits the very last value followed by a completion event or the received error to Observers.
- *
- * <p>The implementation of onXXX methods are technically thread-safe but non-serialized calls
+ * A Subject that emits the very last value followed by a completion event or the received error to Observers.
+ * <p>
+ * This subject does not have a public constructor by design; a new empty instance of this
+ * {@code AsyncSubject} can be created via the {@link #create()} method.
+ * <p>
+ * Since a {@code Subject} is conceptionally derived from the {@code Processor} type in the Reactive Streams specification,
+ * {@code null}s are not allowed (<a href="https://github.com/reactive-streams/reactive-streams-jvm#2.13">Rule 2.13</a>)
+ * as parameters to {@link #onNext(Object)} and {@link #onError(Throwable)}. Such calls will result in a
+ * {@link NullPointerException} being thrown and the subject's state is not changed.
+ * <p>
+ * Since an {@code AsyncSubject} is an {@link io.reactivex.Observable}, it does not support backpressure.
+ * <p>
+ * When this {@code AsyncSubject} is terminated via {@link #onError(Throwable)}, the
+ * last observed item (if any) is cleared and late {@link io.reactivex.Observer}s only receive
+ * the {@code onError} event.
+ * <p>
+ * The {@code AsyncSubject} caches the latest item internally and it emits this item only when {@code onComplete} is called.
+ * Therefore, it is not recommended to use this {@code Subject} with infinite or never-completing sources.
+ * <p>
+ * Even though {@code AsyncSubject} implements the {@code Observer} interface, calling
+ * {@code onSubscribe} is not required (<a href="https://github.com/reactive-streams/reactive-streams-jvm#2.12">Rule 2.12</a>)
+ * if the subject is used as a standalone source. However, calling {@code onSubscribe}
+ * after the {@code AsyncSubject} reached its terminal state will result in the
+ * given {@code Disposable} being disposed immediately.
+ * <p>
+ * Calling {@link #onNext(Object)}, {@link #onError(Throwable)} and {@link #onComplete()}
+ * is required to be serialized (called from the same thread or called non-overlappingly from different threads
+ * through external means of serialization). The {@link #toSerialized()} method available to all {@code Subject}s
+ * provides such serialization and also protects against reentrance (i.e., when a downstream {@code Observer}
+ * consuming this subject also wants to call {@link #onNext(Object)} on this subject recursively).
+ * The implementation of onXXX methods are technically thread-safe but non-serialized calls
  * to them may lead to undefined state in the currently subscribed Observers.
+ * <p>
+ * This {@code AsyncSubject} supports the standard state-peeking methods {@link #hasComplete()}, {@link #hasThrowable()},
+ * {@link #getThrowable()} and {@link #hasObservers()} as well as means to read the very last observed value -
+ * after this {@code AsyncSubject} has been completed - in a non-blocking and thread-safe
+ * manner via {@link #hasValue()}, {@link #getValue()}, {@link #getValues()} or {@link #getValues(Object[])}.
+ * <dl>
+ *  <dt><b>Scheduler:</b></dt>
+ *  <dd>{@code AsyncSubject} does not operate by default on a particular {@link io.reactivex.Scheduler} and
+ *  the {@code Observer}s get notified on the thread where the terminating {@code onError} or {@code onComplete}
+ *  methods were invoked.</dd>
+ *  <dt><b>Error handling:</b></dt>
+ *  <dd>When the {@link #onError(Throwable)} is called, the {@code AsyncSubject} enters into a terminal state
+ *  and emits the same {@code Throwable} instance to the last set of {@code Observer}s. During this emission,
+ *  if one or more {@code Observer}s dispose their respective {@code Disposable}s, the
+ *  {@code Throwable} is delivered to the global error handler via
+ *  {@link io.reactivex.plugins.RxJavaPlugins#onError(Throwable)} (multiple times if multiple {@code Observer}s
+ *  cancel at once).
+ *  If there were no {@code Observer}s subscribed to this {@code AsyncSubject} when the {@code onError()}
+ *  was called, the global error handler is not invoked.
+ *  </dd>
+ * </dl>
+ * <p>
+ * Example usage:
+ * <pre><code>
+ * AsyncSubject&lt;Object&gt; subject = AsyncSubject.create();
+ * 
+ * TestObserver&lt;Object&gt; to1 = subject.test();
+ * 
+ * to1.assertEmpty();
+ * 
+ * subject.onNext(1);
+ * 
+ * // AsyncSubject only emits when onComplete was called.
+ * to1.assertEmpty();
  *
+ * subject.onNext(2);
+ * subject.onComplete();
+ * 
+ * // onComplete triggers the emission of the last cached item and the onComplete event.
+ * to1.assertResult(2);
+ * 
+ * TestObserver&lt;Object&gt; to2 = subject.test();
+ * 
+ * // late Observers receive the last cached item too
+ * to2.assertResult(2);
+ * </code></pre>
  * @param <T> the value type
  */
-
 public final class AsyncSubject<T> extends Subject<T> {
 
     @SuppressWarnings("rawtypes")

@@ -17,9 +17,11 @@ import io.reactivex.*;
 import io.reactivex.annotations.*;
 
 /**
- * Represents an Observer and an Observable at the same time, allowing
- * multicasting events from a single source to multiple child Subscribers.
- * <p>All methods except the onSubscribe, onNext, onError and onComplete are thread-safe.
+ * Represents an {@link Observer} and an {@link Observable} at the same time, allowing
+ * multicasting events from a single source to multiple child {@code Observer}s.
+ * <p>
+ * All methods except the {@link #onSubscribe(io.reactivex.disposables.Disposable)}, {@link #onNext(Object)},
+ * {@link #onError(Throwable)} and {@link #onComplete()} are thread-safe.
  * Use {@link #toSerialized()} to make these methods thread-safe as well.
  *
  * @param <T> the item value type
