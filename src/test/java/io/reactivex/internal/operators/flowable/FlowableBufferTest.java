@@ -37,6 +37,54 @@ import io.reactivex.subscribers.*;
 
 public class FlowableBufferTest {
 
+    // see https://github.com/ReactiveX/RxJava/issues/5809
+    @Test
+    public void bufferedCanCompleteIfOpenNeverCompletesDropping() {
+        Flowable.range(1, 200)
+                .zipWith(Flowable.interval(5, TimeUnit.MILLISECONDS),
+                        new BiFunction<Integer, Long, Integer>() {
+                            @Override
+                            public Integer apply(Integer integer, Long aLong) {
+                                return integer;
+                            }
+                        })
+                .buffer(Flowable.interval(0,200, TimeUnit.MILLISECONDS),
+                        new Function<Long, Publisher<?>>() {
+                            @Override
+                            public Publisher<?> apply(Long a) {
+                                return Flowable.just(a).delay(100, TimeUnit.MILLISECONDS);
+                            }
+                        })
+                .test()
+                .assertSubscribed()
+                .awaitDone(3, TimeUnit.SECONDS)
+                .assertComplete();
+    }
+
+    // see https://github.com/ReactiveX/RxJava/issues/5809
+    @Test
+    public void bufferedCanCompleteIfOpenNeverCompletesOverlapping() {
+        Flowable.range(1, 200)
+                .zipWith(Flowable.interval(5, TimeUnit.MILLISECONDS),
+                        new BiFunction<Integer, Long, Integer>() {
+                            @Override
+                            public Integer apply(Integer integer, Long aLong) {
+                                return integer;
+                            }
+                        })
+                .buffer(Flowable.interval(0,100, TimeUnit.MILLISECONDS),
+                        new Function<Long, Publisher<?>>() {
+                            @Override
+                            public Publisher<?> apply(Long a) {
+                                return Flowable.just(a).delay(200, TimeUnit.MILLISECONDS);
+                            }
+                        })
+                .test()
+                .assertSubscribed()
+                .awaitDone(3, TimeUnit.SECONDS)
+                .assertComplete();
+    }
+
     private Subscriber<List<String>> observer;
     private TestScheduler scheduler;
     private Scheduler.Worker innerScheduler;

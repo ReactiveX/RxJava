@@ -67,6 +67,8 @@ extends AbstractFlowableWithUpstream<T, U> {
 
         final AtomicInteger windows = new AtomicInteger();
 
+        BufferOpenSubscriber bos;
+
         BufferBoundarySubscriber(Subscriber<? super U> actual,
                 Publisher<? extends Open> bufferOpen,
                 Function<? super Open, ? extends Publisher<? extends Close>> bufferClose,
@@ -85,6 +87,7 @@ extends AbstractFlowableWithUpstream<T, U> {
 
                 BufferOpenSubscriber<T, U, Open, Close> bos = new BufferOpenSubscriber<T, U, Open, Close>(this);
                 resources.add(bos);
+                this.bos = bos;
 
                 actual.onSubscribe(this);
 
@@ -116,6 +119,7 @@ extends AbstractFlowableWithUpstream<T, U> {
 
         @Override
         public void onComplete() {
+            resources.remove(bos);
             if (windows.decrementAndGet() == 0) {
                 complete();
             }
