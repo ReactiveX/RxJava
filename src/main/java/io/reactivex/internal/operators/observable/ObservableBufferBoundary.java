@@ -93,7 +93,7 @@ extends AbstractObservableWithUpstream<T, U> {
             this.queue = new SpscLinkedArrayQueue<C>(bufferSize());
             this.observers = new CompositeDisposable();
             this.upstream = new AtomicReference<Disposable>();
-            this.buffers = new HashMap<Long, C>();
+            this.buffers = new LinkedHashMap<Long, C>();
             this.errors = new AtomicThrowable();
         }
 
@@ -146,7 +146,7 @@ extends AbstractObservableWithUpstream<T, U> {
                 for (C b : bufs.values()) {
                     queue.offer(b);
                 }
-                bufs = null;
+                buffers = null;
             }
             done = true;
             drain();
@@ -208,21 +208,6 @@ extends AbstractObservableWithUpstream<T, U> {
             p.subscribe(bc);
         }
 
-        void openError(BufferOpenObserver<Open> os, Throwable ex) {
-            DisposableHelper.dispose(upstream);
-            observers.delete(os);
-            if (errors.addThrowable(ex)) {
-                observers.dispose();
-                synchronized (this) {
-                    buffers = null;
-                }
-                done = true;
-                drain();
-            } else {
-                RxJavaPlugins.onError(ex);
-            }
-        }
-
         void openComplete(BufferOpenObserver<Open> os) {
             observers.delete(os);
             if (observers.size() == 0) {
@@ -252,9 +237,9 @@ extends AbstractObservableWithUpstream<T, U> {
             drain();
         }
 
-        void closeError(BufferCloseObserver<T, C> closer, Throwable ex) {
+        void boundaryError(Disposable observer, Throwable ex) {
             DisposableHelper.dispose(upstream);
-            observers.delete(closer);
+            observers.delete(observer);
             if (errors.addThrowable(ex)) {
                 observers.dispose();
                 synchronized (this) {
@@ -338,7 +323,7 @@ extends AbstractObservableWithUpstream<T, U> {
             @Override
             public void onError(Throwable t) {
                 lazySet(DisposableHelper.DISPOSED);
-                parent.openError(this, t);
+                parent.boundaryError(this, t);
             }
 
             @Override
@@ -393,7 +378,7 @@ extends AbstractObservableWithUpstream<T, U> {
         public void onError(Throwable t) {
             if (get() != DisposableHelper.DISPOSED) {
                 lazySet(DisposableHelper.DISPOSED);
-                parent.closeError(this, t);
+                parent.boundaryError(this, t);
             } else {
                 RxJavaPlugins.onError(t);
             }

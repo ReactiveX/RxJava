@@ -99,7 +99,7 @@ extends AbstractFlowableWithUpstream<T, U> {
             this.subscribers = new CompositeDisposable();
             this.requested = new AtomicLong();
             this.upstream = new AtomicReference<Subscription>();
-            this.buffers = new HashMap<Long, C>();
+            this.buffers = new LinkedHashMap<Long, C>();
             this.errors = new AtomicThrowable();
         }
 
@@ -154,7 +154,7 @@ extends AbstractFlowableWithUpstream<T, U> {
                 for (C b : bufs.values()) {
                     queue.offer(b);
                 }
-                bufs = null;
+                buffers = null;
             }
             done = true;
             drain();
@@ -217,21 +217,6 @@ extends AbstractFlowableWithUpstream<T, U> {
             p.subscribe(bc);
         }
 
-        void openError(BufferOpenSubscriber<Open> os, Throwable ex) {
-            SubscriptionHelper.cancel(upstream);
-            subscribers.delete(os);
-            if (errors.addThrowable(ex)) {
-                subscribers.dispose();
-                synchronized (this) {
-                    buffers = null;
-                }
-                done = true;
-                drain();
-            } else {
-                RxJavaPlugins.onError(ex);
-            }
-        }
-
         void openComplete(BufferOpenSubscriber<Open> os) {
             subscribers.delete(os);
             if (subscribers.size() == 0) {
@@ -261,9 +246,9 @@ extends AbstractFlowableWithUpstream<T, U> {
             drain();
         }
 
-        void closeError(BufferCloseSubscriber<T, C> closer, Throwable ex) {
+        void boundaryError(Disposable subscriber, Throwable ex) {
             SubscriptionHelper.cancel(upstream);
-            subscribers.delete(closer);
+            subscribers.delete(subscriber);
             if (errors.addThrowable(ex)) {
                 subscribers.dispose();
                 synchronized (this) {
@@ -374,7 +359,7 @@ extends AbstractFlowableWithUpstream<T, U> {
             @Override
             public void onError(Throwable t) {
                 lazySet(SubscriptionHelper.CANCELLED);
-                parent.openError(this, t);
+                parent.boundaryError(this, t);
             }
 
             @Override
@@ -431,7 +416,7 @@ extends AbstractFlowableWithUpstream<T, U> {
         public void onError(Throwable t) {
             if (get() != SubscriptionHelper.CANCELLED) {
                 lazySet(SubscriptionHelper.CANCELLED);
-                parent.closeError(this, t);
+                parent.boundaryError(this, t);
             } else {
                 RxJavaPlugins.onError(t);
             }
