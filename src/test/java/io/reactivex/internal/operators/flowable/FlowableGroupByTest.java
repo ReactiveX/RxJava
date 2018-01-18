@@ -17,13 +17,19 @@ import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
+import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 
+import io.reactivex.subjects.PublishSubject;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.reactivestreams.*;
+
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.RemovalListener;
+import com.google.common.cache.RemovalNotification;
 
 import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
@@ -1841,5 +1847,241 @@ public class FlowableGroupByTest {
         })
         .test()
         .assertResult(1);
+    }
+    
+    @Test
+    public void mapFactoryThrows() {
+        final IOException ex = new IOException("boo");
+        Function<Consumer<Object>, Map<Integer, Object>> evictingMapFactory =  //
+                new Function<Consumer<Object>, Map<Integer, Object>>() {
+
+                    @Override
+                    public Map<Integer, Object> apply(final Consumer<Object> notify) throws Exception {
+                        throw ex;
+                    }
+                };
+        Flowable.just(1) 
+          .groupBy(Functions.<Integer>identity(), Functions.identity(), true, 16, evictingMapFactory) 
+          .test() 
+          .assertNoValues()
+          .assertError(ex);
+    }
+    
+    @Test
+    public void mapFactoryExpiryCompletesGroupedFlowable() {
+        final List<Integer> completed = new CopyOnWriteArrayList<Integer>();
+        Function<Consumer<Object>, Map<Integer, Object>> evictingMapFactory = createEvictingMapFactorySynchronousOnly(1);
+        PublishSubject<Integer> subject = PublishSubject.create();
+        TestSubscriber<Integer> ts = subject.toFlowable(BackpressureStrategy.BUFFER)
+                .groupBy(Functions.<Integer>identity(), Functions.<Integer>identity(), true, 16, evictingMapFactory)
+                .flatMap(addCompletedKey(completed))
+                .test();
+        subject.onNext(1);
+        subject.onNext(2);
+        subject.onNext(3);
+        ts.assertValues(1, 2, 3)
+          .assertNotTerminated();
+        assertEquals(Arrays.asList(1, 2), completed);
+        //ensure coverage of the code that clears the evicted queue
+        subject.onComplete();
+        ts.assertComplete();
+        ts.assertValueCount(3);
+    }
+    
+    private static final Function<Integer, Integer> mod5 = new Function<Integer, Integer>() {
+
+        @Override
+        public Integer apply(Integer n) throws Exception {
+            return n % 5;
+        }
+    };
+    
+    @Test
+    public void mapFactoryWithExpiringGuavaCacheDemonstrationCodeForUseInJavadoc() {
+        //javadoc will be a version of this using lambdas and without assertions
+        final List<Integer> completed = new CopyOnWriteArrayList<Integer>();
+        //size should be less than 5 to notice the effect
+        Function<Consumer<Object>, Map<Integer, Object>> evictingMapFactory = createEvictingMapFactoryGuava(3);
+        int numValues = 1000;
+        TestSubscriber<Integer> ts =
+            Flowable.range(1, numValues)
+                .groupBy(mod5, Functions.<Integer>identity(), true, 16, evictingMapFactory)
+                .flatMap(addCompletedKey(completed))
+                .test()
+                .assertComplete();
+        ts.assertValueCount(numValues);
+        //the exact eviction behaviour of the guava cache is not specified so we make some approximate tests
+        assertTrue(completed.size() > numValues *0.9);
+    }
+    
+    @Test
+    public void mapFactoryEvictionQueueClearedOnErrorCoverageOnly() {
+        Function<Consumer<Object>, Map<Integer, Object>> evictingMapFactory = createEvictingMapFactorySynchronousOnly(1);
+        PublishSubject<Integer> subject = PublishSubject.create();
+        TestSubscriber<Integer> ts = subject
+                .toFlowable(BackpressureStrategy.BUFFER)
+                .groupBy(Functions.<Integer>identity(), Functions.<Integer>identity(), true, 16, evictingMapFactory)
+                .flatMap(new Function<GroupedFlowable<Integer, Integer>, Publisher<Integer>>() {
+                    @Override
+                    public Publisher<Integer> apply(GroupedFlowable<Integer, Integer> g) throws Exception {
+                        return g;
+                    }
+                })
+                .test();
+        RuntimeException ex = new RuntimeException();
+        //ensure coverage of the code that clears the evicted queue
+        subject.onError(ex);
+        ts.assertNoValues()
+          .assertError(ex);
+    }
+
+    private static Function<GroupedFlowable<Integer, Integer>, Publisher<? extends Integer>> addCompletedKey(
+            final List<Integer> completed) {
+        return new Function<GroupedFlowable<Integer, Integer>, Publisher<? extends Integer>>() {
+            @Override
+            public Publisher<? extends Integer> apply(final GroupedFlowable<Integer, Integer> g) throws Exception {
+                return g.doOnComplete(new Action() {
+                    @Override
+                    public void run() throws Exception {
+                        completed.add(g.getKey());
+                    }
+                });
+            }
+        };
+    }
+
+    //not thread safe
+    private static final class SingleThreadEvictingHashMap<K,V> implements Map<K,V> {
+
+        private final List<K> list = new ArrayList<K>();
+        private final Map<K,V> map = new HashMap<K,V>();
+        private final int maxSize;
+        private final Consumer<V> evictedListener;
+
+        SingleThreadEvictingHashMap(int maxSize, Consumer<V> evictedListener) {
+            this.maxSize = maxSize;
+            this.evictedListener = evictedListener;
+        }
+
+        @Override
+        public int size() {
+            return map.size();
+        }
+
+        @Override
+        public boolean isEmpty() {
+            return map.isEmpty();
+        }
+
+        @Override
+        public boolean containsKey(Object key) {
+            return map.containsKey(key);
+        }
+
+        @Override
+        public boolean containsValue(Object value) {
+            return map.containsValue(value);
+        }
+
+        @Override
+        public V get(Object key) {
+            return map.get(key);
+        }
+
+        @Override
+        public V put(K key, V value) {
+            list.remove(key);
+            V v;
+            if (maxSize > 0 && list.size() == maxSize) {
+                //remove first
+                K k = list.get(0);
+                list.remove(0);
+                v = map.get(k);
+            } else {
+                v = null;
+            }
+            list.add(key);
+            V result = map.put(key, value);
+            if (v != null) {
+                try {
+                    evictedListener.accept(v);
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            return result;
+        }
+
+        @Override
+        public V remove(Object key) {
+            return map.remove(key);
+        }
+
+        @Override
+        public void putAll(Map<? extends K, ? extends V> m) {
+            map.putAll(m);
+        }
+
+        @Override
+        public void clear() {
+            map.clear();
+        }
+
+        @Override
+        public Set<K> keySet() {
+            return map.keySet();
+        }
+
+        @Override
+        public Collection<V> values() {
+            return map.values();
+        }
+
+        @Override
+        public Set<Entry<K, V>> entrySet() {
+            return map.entrySet();
+        }
+    }
+
+    private static Function<Consumer<Object>, Map<Integer, Object>> createEvictingMapFactoryGuava(final int maxSize) {
+        Function<Consumer<Object>, Map<Integer, Object>> evictingMapFactory =  //
+                new Function<Consumer<Object>, Map<Integer, Object>>(){
+
+            @Override
+            public Map<Integer, Object> apply(final Consumer<Object> notify) throws Exception {
+                return CacheBuilder.newBuilder() //
+                        .maximumSize(maxSize) //
+                        .removalListener(new RemovalListener<Integer, Object>() {
+                            @Override
+                            public void onRemoval(RemovalNotification<Integer,Object> notification) {
+                                try {
+                                    notify.accept(notification.getValue());
+                                } catch (Exception e) {
+                                    throw new RuntimeException(e);
+                                }
+                            }})
+                        .<Integer, Object> build()
+                        .asMap();
+            }};
+        return evictingMapFactory;
+    }
+
+    private static Function<Consumer<Object>, Map<Integer, Object>> createEvictingMapFactorySynchronousOnly(final int maxSize) {
+        Function<Consumer<Object>, Map<Integer, Object>> evictingMapFactory =  //
+                new Function<Consumer<Object>, Map<Integer, Object>>(){
+
+                    @Override
+                    public Map<Integer, Object> apply(final Consumer<Object> notify) throws Exception {
+                        return new SingleThreadEvictingHashMap<Integer,Object>(maxSize, new Consumer<Object>() {
+                                    @Override
+                                    public void accept(Object object) {
+                                        try {
+                                            notify.accept(object);
+                                        } catch (Exception e) {
+                                            throw new RuntimeException(e);
+                                        }
+                                    }});
+                    }};
+        return evictingMapFactory;
     }
 }
