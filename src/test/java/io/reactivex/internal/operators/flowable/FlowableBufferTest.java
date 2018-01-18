@@ -2080,31 +2080,31 @@ public class FlowableBufferTest {
     @Test
     @SuppressWarnings("unchecked")
     public void boundaryOpenCloseDisposedOnComplete() {
-        PublishProcessor<Integer> pp0 = PublishProcessor.create();
+        PublishProcessor<Integer> source = PublishProcessor.create();
 
-        PublishProcessor<Integer> pp1 = PublishProcessor.create();
+        PublishProcessor<Integer> openIndicator = PublishProcessor.create();
 
-        PublishProcessor<Integer> pp2 = PublishProcessor.create();
+        PublishProcessor<Integer> closeIndicator = PublishProcessor.create();
 
-        TestSubscriber<List<Integer>> ts = pp0
-        .buffer(pp1, Functions.justFunction(pp2))
+        TestSubscriber<List<Integer>> ts = source
+        .buffer(openIndicator, Functions.justFunction(closeIndicator))
         .test();
 
-        assertTrue(pp0.hasSubscribers());
-        assertTrue(pp1.hasSubscribers());
-        assertFalse(pp2.hasSubscribers());
+        assertTrue(source.hasSubscribers());
+        assertTrue(openIndicator.hasSubscribers());
+        assertFalse(closeIndicator.hasSubscribers());
 
-        pp1.onNext(1);
+        openIndicator.onNext(1);
 
-        assertTrue(pp1.hasSubscribers());
-        assertTrue(pp2.hasSubscribers());
+        assertTrue(openIndicator.hasSubscribers());
+        assertTrue(closeIndicator.hasSubscribers());
 
-        pp0.onComplete();
+        source.onComplete();
 
         ts.assertResult(Collections.<Integer>emptyList());
 
-        assertFalse(pp1.hasSubscribers());
-        assertFalse(pp2.hasSubscribers());
+        assertFalse(openIndicator.hasSubscribers());
+        assertFalse(closeIndicator.hasSubscribers());
     }
 
     @Test
@@ -2203,28 +2203,28 @@ public class FlowableBufferTest {
     @Test
     @SuppressWarnings("unchecked")
     public void openCloseOpenCompletes() {
-        PublishProcessor<Integer> pp0 = PublishProcessor.create();
+        PublishProcessor<Integer> source = PublishProcessor.create();
 
-        PublishProcessor<Integer> pp1 = PublishProcessor.create();
+        PublishProcessor<Integer> openIndicator = PublishProcessor.create();
 
-        PublishProcessor<Integer> pp2 = PublishProcessor.create();
+        PublishProcessor<Integer> closeIndicator = PublishProcessor.create();
 
-        TestSubscriber<List<Integer>> ts = pp0
-        .buffer(pp1, Functions.justFunction(pp2))
+        TestSubscriber<List<Integer>> ts = source
+        .buffer(openIndicator, Functions.justFunction(closeIndicator))
         .test();
 
-        pp1.onNext(1);
+        openIndicator.onNext(1);
 
-        assertTrue(pp2.hasSubscribers());
+        assertTrue(closeIndicator.hasSubscribers());
 
-        pp1.onComplete();
+        openIndicator.onComplete();
 
-        assertTrue(pp0.hasSubscribers());
-        assertTrue(pp2.hasSubscribers());
+        assertTrue(source.hasSubscribers());
+        assertTrue(closeIndicator.hasSubscribers());
 
-        pp2.onComplete();
+        closeIndicator.onComplete();
 
-        assertFalse(pp0.hasSubscribers());
+        assertFalse(source.hasSubscribers());
 
         ts.assertResult(Collections.<Integer>emptyList());
     }
@@ -2232,28 +2232,28 @@ public class FlowableBufferTest {
     @Test
     @SuppressWarnings("unchecked")
     public void openCloseOpenCompletesNoBuffers() {
-        PublishProcessor<Integer> pp0 = PublishProcessor.create();
+        PublishProcessor<Integer> source = PublishProcessor.create();
 
-        PublishProcessor<Integer> pp1 = PublishProcessor.create();
+        PublishProcessor<Integer> openIndicator = PublishProcessor.create();
 
-        PublishProcessor<Integer> pp2 = PublishProcessor.create();
+        PublishProcessor<Integer> closeIndicator = PublishProcessor.create();
 
-        TestSubscriber<List<Integer>> ts = pp0
-        .buffer(pp1, Functions.justFunction(pp2))
+        TestSubscriber<List<Integer>> ts = source
+        .buffer(openIndicator, Functions.justFunction(closeIndicator))
         .test();
 
-        pp1.onNext(1);
+        openIndicator.onNext(1);
 
-        assertTrue(pp2.hasSubscribers());
+        assertTrue(closeIndicator.hasSubscribers());
 
-        pp2.onComplete();
+        closeIndicator.onComplete();
 
-        assertTrue(pp0.hasSubscribers());
-        assertTrue(pp1.hasSubscribers());
+        assertTrue(source.hasSubscribers());
+        assertTrue(openIndicator.hasSubscribers());
 
-        pp1.onComplete();
+        openIndicator.onComplete();
 
-        assertFalse(pp0.hasSubscribers());
+        assertFalse(source.hasSubscribers());
 
         ts.assertResult(Collections.<Integer>emptyList());
     }
@@ -2261,23 +2261,23 @@ public class FlowableBufferTest {
     @Test
     @SuppressWarnings("unchecked")
     public void openCloseTake() {
-        PublishProcessor<Integer> pp0 = PublishProcessor.create();
+        PublishProcessor<Integer> source = PublishProcessor.create();
 
-        PublishProcessor<Integer> pp1 = PublishProcessor.create();
+        PublishProcessor<Integer> openIndicator = PublishProcessor.create();
 
-        PublishProcessor<Integer> pp2 = PublishProcessor.create();
+        PublishProcessor<Integer> closeIndicator = PublishProcessor.create();
 
-        TestSubscriber<List<Integer>> ts = pp0
-        .buffer(pp1, Functions.justFunction(pp2))
+        TestSubscriber<List<Integer>> ts = source
+        .buffer(openIndicator, Functions.justFunction(closeIndicator))
         .take(1)
         .test(2);
 
-        pp1.onNext(1);
-        pp2.onComplete();
+        openIndicator.onNext(1);
+        closeIndicator.onComplete();
 
-        assertFalse(pp0.hasSubscribers());
-        assertFalse(pp1.hasSubscribers());
-        assertFalse(pp2.hasSubscribers());
+        assertFalse(source.hasSubscribers());
+        assertFalse(openIndicator.hasSubscribers());
+        assertFalse(closeIndicator.hasSubscribers());
 
         ts.assertResult(Collections.<Integer>emptyList());
     }
@@ -2285,23 +2285,23 @@ public class FlowableBufferTest {
     @Test
     @SuppressWarnings("unchecked")
     public void openCloseLimit() {
-        PublishProcessor<Integer> pp0 = PublishProcessor.create();
+        PublishProcessor<Integer> source = PublishProcessor.create();
 
-        PublishProcessor<Integer> pp1 = PublishProcessor.create();
+        PublishProcessor<Integer> openIndicator = PublishProcessor.create();
 
-        PublishProcessor<Integer> pp2 = PublishProcessor.create();
+        PublishProcessor<Integer> closeIndicator = PublishProcessor.create();
 
-        TestSubscriber<List<Integer>> ts = pp0
-        .buffer(pp1, Functions.justFunction(pp2))
+        TestSubscriber<List<Integer>> ts = source
+        .buffer(openIndicator, Functions.justFunction(closeIndicator))
         .limit(1)
         .test(2);
 
-        pp1.onNext(1);
-        pp2.onComplete();
+        openIndicator.onNext(1);
+        closeIndicator.onComplete();
 
-        assertFalse(pp0.hasSubscribers());
-        assertFalse(pp1.hasSubscribers());
-        assertFalse(pp2.hasSubscribers());
+        assertFalse(source.hasSubscribers());
+        assertFalse(openIndicator.hasSubscribers());
+        assertFalse(closeIndicator.hasSubscribers());
 
         ts.assertResult(Collections.<Integer>emptyList());
     }
@@ -2309,20 +2309,20 @@ public class FlowableBufferTest {
     @Test
     @SuppressWarnings("unchecked")
     public void openCloseEmptyBackpressure() {
-        PublishProcessor<Integer> pp0 = PublishProcessor.create();
+        PublishProcessor<Integer> source = PublishProcessor.create();
 
-        PublishProcessor<Integer> pp1 = PublishProcessor.create();
+        PublishProcessor<Integer> openIndicator = PublishProcessor.create();
 
-        PublishProcessor<Integer> pp2 = PublishProcessor.create();
+        PublishProcessor<Integer> closeIndicator = PublishProcessor.create();
 
-        TestSubscriber<List<Integer>> ts = pp0
-        .buffer(pp1, Functions.justFunction(pp2))
+        TestSubscriber<List<Integer>> ts = source
+        .buffer(openIndicator, Functions.justFunction(closeIndicator))
         .test(0);
 
-        pp0.onComplete();
+        source.onComplete();
 
-        assertFalse(pp1.hasSubscribers());
-        assertFalse(pp2.hasSubscribers());
+        assertFalse(openIndicator.hasSubscribers());
+        assertFalse(closeIndicator.hasSubscribers());
 
         ts.assertResult();
     }
@@ -2330,20 +2330,20 @@ public class FlowableBufferTest {
     @Test
     @SuppressWarnings("unchecked")
     public void openCloseErrorBackpressure() {
-        PublishProcessor<Integer> pp0 = PublishProcessor.create();
+        PublishProcessor<Integer> source = PublishProcessor.create();
 
-        PublishProcessor<Integer> pp1 = PublishProcessor.create();
+        PublishProcessor<Integer> openIndicator = PublishProcessor.create();
 
-        PublishProcessor<Integer> pp2 = PublishProcessor.create();
+        PublishProcessor<Integer> closeIndicator = PublishProcessor.create();
 
-        TestSubscriber<List<Integer>> ts = pp0
-        .buffer(pp1, Functions.justFunction(pp2))
+        TestSubscriber<List<Integer>> ts = source
+        .buffer(openIndicator, Functions.justFunction(closeIndicator))
         .test(0);
 
-        pp0.onError(new TestException());
+        source.onError(new TestException());
 
-        assertFalse(pp1.hasSubscribers());
-        assertFalse(pp2.hasSubscribers());
+        assertFalse(openIndicator.hasSubscribers());
+        assertFalse(closeIndicator.hasSubscribers());
 
         ts.assertFailure(TestException.class);
     }

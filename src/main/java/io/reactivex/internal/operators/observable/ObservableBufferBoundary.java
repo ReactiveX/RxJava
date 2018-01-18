@@ -180,16 +180,7 @@ extends AbstractObservableWithUpstream<T, U> {
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
                 DisposableHelper.dispose(upstream);
-                if (errors.addThrowable(ex)) {
-                    observers.dispose();
-                    synchronized (this) {
-                        buffers = null;
-                    }
-                    done = true;
-                    drain();
-                } else {
-                    RxJavaPlugins.onError(ex);
-                }
+                onError(ex);
                 return;
             }
 
@@ -240,16 +231,7 @@ extends AbstractObservableWithUpstream<T, U> {
         void boundaryError(Disposable observer, Throwable ex) {
             DisposableHelper.dispose(upstream);
             observers.delete(observer);
-            if (errors.addThrowable(ex)) {
-                observers.dispose();
-                synchronized (this) {
-                    buffers = null;
-                }
-                done = true;
-                drain();
-            } else {
-                RxJavaPlugins.onError(ex);
-            }
+            onError(ex);
         }
 
         void drain() {

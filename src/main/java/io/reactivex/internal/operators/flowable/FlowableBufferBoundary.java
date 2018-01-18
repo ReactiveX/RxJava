@@ -189,16 +189,7 @@ extends AbstractFlowableWithUpstream<T, U> {
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
                 SubscriptionHelper.cancel(upstream);
-                if (errors.addThrowable(ex)) {
-                    subscribers.dispose();
-                    synchronized (this) {
-                        buffers = null;
-                    }
-                    done = true;
-                    drain();
-                } else {
-                    RxJavaPlugins.onError(ex);
-                }
+                onError(ex);
                 return;
             }
 
@@ -249,16 +240,7 @@ extends AbstractFlowableWithUpstream<T, U> {
         void boundaryError(Disposable subscriber, Throwable ex) {
             SubscriptionHelper.cancel(upstream);
             subscribers.delete(subscriber);
-            if (errors.addThrowable(ex)) {
-                subscribers.dispose();
-                synchronized (this) {
-                    buffers = null;
-                }
-                done = true;
-                drain();
-            } else {
-                RxJavaPlugins.onError(ex);
-            }
+            onError(ex);
         }
 
         void drain() {
@@ -316,8 +298,7 @@ extends AbstractFlowableWithUpstream<T, U> {
                             Throwable ex = errors.terminate();
                             a.onError(ex);
                             return;
-                        } else
-                        if (q.isEmpty()) {
+                        } else if (q.isEmpty()) {
                             a.onComplete();
                             return;
                         }

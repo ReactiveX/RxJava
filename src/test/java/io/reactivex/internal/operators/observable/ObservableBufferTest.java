@@ -1506,31 +1506,31 @@ public class ObservableBufferTest {
     @Test
     @SuppressWarnings("unchecked")
     public void boundaryOpenCloseDisposedOnComplete() {
-        PublishSubject<Integer> pp0 = PublishSubject.create();
+        PublishSubject<Integer> source = PublishSubject.create();
 
-        PublishSubject<Integer> pp1 = PublishSubject.create();
+        PublishSubject<Integer> openIndicator = PublishSubject.create();
 
-        PublishSubject<Integer> pp2 = PublishSubject.create();
+        PublishSubject<Integer> closeIndicator = PublishSubject.create();
 
-        TestObserver<List<Integer>> ts = pp0
-        .buffer(pp1, Functions.justFunction(pp2))
+        TestObserver<List<Integer>> ts = source
+        .buffer(openIndicator, Functions.justFunction(closeIndicator))
         .test();
 
-        assertTrue(pp0.hasObservers());
-        assertTrue(pp1.hasObservers());
-        assertFalse(pp2.hasObservers());
+        assertTrue(source.hasObservers());
+        assertTrue(openIndicator.hasObservers());
+        assertFalse(closeIndicator.hasObservers());
 
-        pp1.onNext(1);
+        openIndicator.onNext(1);
 
-        assertTrue(pp1.hasObservers());
-        assertTrue(pp2.hasObservers());
+        assertTrue(openIndicator.hasObservers());
+        assertTrue(closeIndicator.hasObservers());
 
-        pp0.onComplete();
+        source.onComplete();
 
         ts.assertResult(Collections.<Integer>emptyList());
 
-        assertFalse(pp1.hasObservers());
-        assertFalse(pp2.hasObservers());
+        assertFalse(openIndicator.hasObservers());
+        assertFalse(closeIndicator.hasObservers());
     }
 
     @Test
@@ -1629,28 +1629,28 @@ public class ObservableBufferTest {
     @Test
     @SuppressWarnings("unchecked")
     public void openCloseOpenCompletes() {
-        PublishSubject<Integer> pp0 = PublishSubject.create();
+        PublishSubject<Integer> source = PublishSubject.create();
 
-        PublishSubject<Integer> pp1 = PublishSubject.create();
+        PublishSubject<Integer> openIndicator = PublishSubject.create();
 
-        PublishSubject<Integer> pp2 = PublishSubject.create();
+        PublishSubject<Integer> closeIndicator = PublishSubject.create();
 
-        TestObserver<List<Integer>> ts = pp0
-        .buffer(pp1, Functions.justFunction(pp2))
+        TestObserver<List<Integer>> ts = source
+        .buffer(openIndicator, Functions.justFunction(closeIndicator))
         .test();
 
-        pp1.onNext(1);
+        openIndicator.onNext(1);
 
-        assertTrue(pp2.hasObservers());
+        assertTrue(closeIndicator.hasObservers());
 
-        pp1.onComplete();
+        openIndicator.onComplete();
 
-        assertTrue(pp0.hasObservers());
-        assertTrue(pp2.hasObservers());
+        assertTrue(source.hasObservers());
+        assertTrue(closeIndicator.hasObservers());
 
-        pp2.onComplete();
+        closeIndicator.onComplete();
 
-        assertFalse(pp0.hasObservers());
+        assertFalse(source.hasObservers());
 
         ts.assertResult(Collections.<Integer>emptyList());
     }
@@ -1658,28 +1658,28 @@ public class ObservableBufferTest {
     @Test
     @SuppressWarnings("unchecked")
     public void openCloseOpenCompletesNoBuffers() {
-        PublishSubject<Integer> pp0 = PublishSubject.create();
+        PublishSubject<Integer> source = PublishSubject.create();
 
-        PublishSubject<Integer> pp1 = PublishSubject.create();
+        PublishSubject<Integer> openIndicator = PublishSubject.create();
 
-        PublishSubject<Integer> pp2 = PublishSubject.create();
+        PublishSubject<Integer> closeIndicator = PublishSubject.create();
 
-        TestObserver<List<Integer>> ts = pp0
-        .buffer(pp1, Functions.justFunction(pp2))
+        TestObserver<List<Integer>> ts = source
+        .buffer(openIndicator, Functions.justFunction(closeIndicator))
         .test();
 
-        pp1.onNext(1);
+        openIndicator.onNext(1);
 
-        assertTrue(pp2.hasObservers());
+        assertTrue(closeIndicator.hasObservers());
 
-        pp2.onComplete();
+        closeIndicator.onComplete();
 
-        assertTrue(pp0.hasObservers());
-        assertTrue(pp1.hasObservers());
+        assertTrue(source.hasObservers());
+        assertTrue(openIndicator.hasObservers());
 
-        pp1.onComplete();
+        openIndicator.onComplete();
 
-        assertFalse(pp0.hasObservers());
+        assertFalse(source.hasObservers());
 
         ts.assertResult(Collections.<Integer>emptyList());
     }
@@ -1687,23 +1687,23 @@ public class ObservableBufferTest {
     @Test
     @SuppressWarnings("unchecked")
     public void openCloseTake() {
-        PublishSubject<Integer> pp0 = PublishSubject.create();
+        PublishSubject<Integer> source = PublishSubject.create();
 
-        PublishSubject<Integer> pp1 = PublishSubject.create();
+        PublishSubject<Integer> openIndicator = PublishSubject.create();
 
-        PublishSubject<Integer> pp2 = PublishSubject.create();
+        PublishSubject<Integer> closeIndicator = PublishSubject.create();
 
-        TestObserver<List<Integer>> ts = pp0
-        .buffer(pp1, Functions.justFunction(pp2))
+        TestObserver<List<Integer>> ts = source
+        .buffer(openIndicator, Functions.justFunction(closeIndicator))
         .take(1)
         .test();
 
-        pp1.onNext(1);
-        pp2.onComplete();
+        openIndicator.onNext(1);
+        closeIndicator.onComplete();
 
-        assertFalse(pp0.hasObservers());
-        assertFalse(pp1.hasObservers());
-        assertFalse(pp2.hasObservers());
+        assertFalse(source.hasObservers());
+        assertFalse(openIndicator.hasObservers());
+        assertFalse(closeIndicator.hasObservers());
 
         ts.assertResult(Collections.<Integer>emptyList());
     }
