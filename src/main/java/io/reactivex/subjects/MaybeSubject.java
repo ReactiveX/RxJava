@@ -24,6 +24,8 @@ import io.reactivex.plugins.RxJavaPlugins;
 /**
  * Represents a hot Maybe-like source and consumer of events similar to Subjects.
  * <p>
+ * <img width="640" height="164" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/MaybeSubject.png" alt="">
+ * <p>
  * This subject does not have a public constructor by design; a new non-terminated instance of this
  * {@code MaybeSubject} can be created via the {@link #create()} method.
  * <p>

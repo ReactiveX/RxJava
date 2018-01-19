@@ -30,8 +30,31 @@ import io.reactivex.plugins.RxJavaPlugins;
 /**
  * Replays events to Subscribers.
  * <p>
- * <img width="640" height="405" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/S.ReplaySubject.png" alt="">
- *
+ * The {@code ReplayProcessor} supports the following item retainment strategies:
+ * <ul>
+ * <li>{@link #create()} and {@link #create(int)}: retains and replays all events to current and
+ * future {@code Subscriber}s.
+ * <p>
+ * <img width="640" height="269" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/ReplayProcessor.u.png" alt="">
+ * <p>
+ * <img width="640" height="345" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/ReplayProcessor.ue.png" alt="">
+ * </li>
+ * <li>{@link #createWithSize(int)}: retains at most the given number of items and replays only these
+ * latest items to new {@code Subscriber}s.
+ * <p>
+ * <img width="640" height="332" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/ReplayProcessor.n.png" alt="">
+ * </li>
+ * <li>{@link #createWithTime(long, TimeUnit, Scheduler)}: retains items no older than the specified time
+ * and replays them to new {@code Subscriber}s (which could mean all items age out).
+ * <p>
+ * <img width="640" height="415" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/ReplayProcessor.t.png" alt="">
+ * </li>
+ * <li>{@link #createWithTimeAndSize(long, TimeUnit, Scheduler, int)}: retaims no more than the given number of items
+ * which are also no older than the specified time and replays them to new {@code Subscriber}s (which could mean all items age out).
+ * <p>
+ * <img width="640" height="404" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/ReplayProcessor.nt.png" alt="">
+ * </li>
+ * </ul>
  * <p>
  * The ReplayProcessor can be created in bounded and unbounded mode. It can be bounded by
  * size (maximum number of elements retained at most) and/or time (maximum age of elements replayed).

@@ -25,8 +25,10 @@ import io.reactivex.plugins.RxJavaPlugins;
 /**
  * Processor that emits the very last value followed by a completion event or the received error
  * to {@link Subscriber}s.
- *
- * <p>The implementation of onXXX methods are technically thread-safe but non-serialized calls
+ * <p>
+ * <img width="640" height="239" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/AsyncProcessor.png" alt="">
+ * <p>
+ * The implementation of onXXX methods are technically thread-safe but non-serialized calls
  * to them may lead to undefined state in the currently subscribed Subscribers.
  *
  * @param <T> the value type
