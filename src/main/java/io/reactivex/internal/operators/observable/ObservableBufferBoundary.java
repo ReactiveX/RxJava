@@ -15,7 +15,7 @@ package io.reactivex.internal.operators.observable;
 
 import java.util.*;
 import java.util.concurrent.Callable;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.*;
 
 import io.reactivex.ObservableSource;
 import io.reactivex.Observer;
@@ -24,11 +24,8 @@ import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.internal.functions.ObjectHelper;
-import io.reactivex.internal.fuseable.SimplePlainQueue;
-import io.reactivex.internal.observers.QueueDrainObserver;
-import io.reactivex.internal.queue.MpscLinkedQueue;
-import io.reactivex.internal.util.QueueDrainHelper;
-import io.reactivex.observers.*;
+import io.reactivex.internal.queue.SpscLinkedArrayQueue;
+import io.reactivex.internal.util.AtomicThrowable;
 import io.reactivex.plugins.RxJavaPlugins;
 
 public final class ObservableBufferBoundary<T, U extends Collection<? super T>, Open, Close>
@@ -47,55 +44,78 @@ extends AbstractObservableWithUpstream<T, U> {
 
     @Override
     protected void subscribeActual(Observer<? super U> t) {
-        source.subscribe(new BufferBoundaryObserver<T, U, Open, Close>(
-                new SerializedObserver<U>(t),
-                bufferOpen, bufferClose, bufferSupplier
-                ));
+        BufferBoundaryObserver<T, U, Open, Close> parent =
+            new BufferBoundaryObserver<T, U, Open, Close>(
+                t, bufferOpen, bufferClose, bufferSupplier
+            );
+        t.onSubscribe(parent);
+        source.subscribe(parent);
     }
 
-    static final class BufferBoundaryObserver<T, U extends Collection<? super T>, Open, Close>
-    extends QueueDrainObserver<T, U, U> implements Disposable {
+    static final class BufferBoundaryObserver<T, C extends Collection<? super T>, Open, Close>
+    extends AtomicInteger implements Observer<T>, Disposable {
+
+        private static final long serialVersionUID = -8466418554264089604L;
+
+        final Observer<? super C> actual;
+
+        final Callable<C> bufferSupplier;
+
         final ObservableSource<? extends Open> bufferOpen;
+
         final Function<? super Open, ? extends ObservableSource<? extends Close>> bufferClose;
-        final Callable<U> bufferSupplier;
-        final CompositeDisposable resources;
 
-        Disposable s;
+        final CompositeDisposable observers;
 
-        final List<U> buffers;
+        final AtomicReference<Disposable> upstream;
 
-        final AtomicInteger windows = new AtomicInteger();
+        final AtomicThrowable errors;
 
-        BufferBoundaryObserver(Observer<? super U> actual,
+        volatile boolean done;
+
+        final SpscLinkedArrayQueue<C> queue;
+
+        volatile boolean cancelled;
+
+        long index;
+
+        Map<Long, C> buffers;
+
+        BufferBoundaryObserver(Observer<? super C> actual,
                 ObservableSource<? extends Open> bufferOpen,
                 Function<? super Open, ? extends ObservableSource<? extends Close>> bufferClose,
-                        Callable<U> bufferSupplier) {
-            super(actual, new MpscLinkedQueue<U>());
+                Callable<C> bufferSupplier
+        ) {
+            this.actual = actual;
+            this.bufferSupplier = bufferSupplier;
             this.bufferOpen = bufferOpen;
             this.bufferClose = bufferClose;
-            this.bufferSupplier = bufferSupplier;
-            this.buffers = new LinkedList<U>();
-            this.resources = new CompositeDisposable();
+            this.queue = new SpscLinkedArrayQueue<C>(bufferSize());
+            this.observers = new CompositeDisposable();
+            this.upstream = new AtomicReference<Disposable>();
+            this.buffers = new LinkedHashMap<Long, C>();
+            this.errors = new AtomicThrowable();
         }
+
         @Override
         public void onSubscribe(Disposable s) {
-            if (DisposableHelper.validate(this.s, s)) {
-                this.s = s;
+            if (DisposableHelper.setOnce(this.upstream, s)) {
 
-                BufferOpenObserver<T, U, Open, Close> bos = new BufferOpenObserver<T, U, Open, Close>(this);
-                resources.add(bos);
+                BufferOpenObserver<Open> open = new BufferOpenObserver<Open>(this);
+                observers.add(open);
 
-                actual.onSubscribe(this);
-
-                windows.lazySet(1);
-                bufferOpen.subscribe(bos);
+                bufferOpen.subscribe(open);
             }
         }
 
         @Override
         public void onNext(T t) {
             synchronized (this) {
-                for (U b : buffers) {
+                Map<Long, C> bufs = buffers;
+                if (bufs == null) {
+                    return;
+                }
+                for (C b : bufs.values()) {
                     b.add(t);
                 }
             }
@@ -103,194 +123,265 @@ extends AbstractObservableWithUpstream<T, U> {
 
         @Override
         public void onError(Throwable t) {
-            dispose();
-            cancelled = true;
-            synchronized (this) {
-                buffers.clear();
+            if (errors.addThrowable(t)) {
+                observers.dispose();
+                synchronized (this) {
+                    buffers = null;
+                }
+                done = true;
+                drain();
+            } else {
+                RxJavaPlugins.onError(t);
             }
-            actual.onError(t);
         }
 
         @Override
         public void onComplete() {
-            if (windows.decrementAndGet() == 0) {
-                complete();
+            observers.dispose();
+            synchronized (this) {
+                Map<Long, C> bufs = buffers;
+                if (bufs == null) {
+                    return;
+                }
+                for (C b : bufs.values()) {
+                    queue.offer(b);
+                }
+                buffers = null;
+            }
+            done = true;
+            drain();
+        }
+
+        @Override
+        public void dispose() {
+            if (DisposableHelper.dispose(upstream)) {
+                cancelled = true;
+                observers.dispose();
+                synchronized (this) {
+                    buffers = null;
+                }
+                if (getAndIncrement() != 0) {
+                    queue.clear();
+                }
             }
         }
 
-        void complete() {
-            List<U> list;
-            synchronized (this) {
-                list = new ArrayList<U>(buffers);
-                buffers.clear();
+        @Override
+        public boolean isDisposed() {
+            return DisposableHelper.isDisposed(upstream.get());
+        }
+
+        void open(Open token) {
+            ObservableSource<? extends Close> p;
+            C buf;
+            try {
+                buf = ObjectHelper.requireNonNull(bufferSupplier.call(), "The bufferSupplier returned a null Collection");
+                p = ObjectHelper.requireNonNull(bufferClose.apply(token), "The bufferClose returned a null ObservableSource");
+            } catch (Throwable ex) {
+                Exceptions.throwIfFatal(ex);
+                DisposableHelper.dispose(upstream);
+                onError(ex);
+                return;
             }
 
-            SimplePlainQueue<U> q = queue;
-            for (U u : list) {
-                q.offer(u);
+            long idx = index;
+            index = idx + 1;
+            synchronized (this) {
+                Map<Long, C> bufs = buffers;
+                if (bufs == null) {
+                    return;
+                }
+                bufs.put(idx, buf);
             }
-            done = true;
-            if (enter()) {
-                QueueDrainHelper.drainLoop(q, actual, false, this, this);
+
+            BufferCloseObserver<T, C> bc = new BufferCloseObserver<T, C>(this, idx);
+            observers.add(bc);
+            p.subscribe(bc);
+        }
+
+        void openComplete(BufferOpenObserver<Open> os) {
+            observers.delete(os);
+            if (observers.size() == 0) {
+                DisposableHelper.dispose(upstream);
+                done = true;
+                drain();
+            }
+        }
+
+        void close(BufferCloseObserver<T, C> closer, long idx) {
+            observers.delete(closer);
+            boolean makeDone = false;
+            if (observers.size() == 0) {
+                makeDone = true;
+                DisposableHelper.dispose(upstream);
+            }
+            synchronized (this) {
+                Map<Long, C> bufs = buffers;
+                if (bufs == null) {
+                    return;
+                }
+                queue.offer(buffers.remove(idx));
+            }
+            if (makeDone) {
+                done = true;
+            }
+            drain();
+        }
+
+        void boundaryError(Disposable observer, Throwable ex) {
+            DisposableHelper.dispose(upstream);
+            observers.delete(observer);
+            onError(ex);
+        }
+
+        void drain() {
+            if (getAndIncrement() != 0) {
+                return;
+            }
+
+            int missed = 1;
+            Observer<? super C> a = actual;
+            SpscLinkedArrayQueue<C> q = queue;
+
+            for (;;) {
+                for (;;) {
+                    if (cancelled) {
+                        q.clear();
+                        return;
+                    }
+
+                    boolean d = done;
+                    if (d && errors.get() != null) {
+                        q.clear();
+                        Throwable ex = errors.terminate();
+                        a.onError(ex);
+                        return;
+                    }
+
+                    C v = q.poll();
+                    boolean empty = v == null;
+
+                    if (d && empty) {
+                        a.onComplete();
+                        return;
+                    }
+
+                    if (empty) {
+                        break;
+                    }
+
+                    a.onNext(v);
+                }
+
+                missed = addAndGet(-missed);
+                if (missed == 0) {
+                    break;
+                }
+            }
+        }
+
+        static final class BufferOpenObserver<Open>
+        extends AtomicReference<Disposable>
+        implements Observer<Open>, Disposable {
+
+            private static final long serialVersionUID = -8498650778633225126L;
+
+            final BufferBoundaryObserver<?, ?, Open, ?> parent;
+
+            BufferOpenObserver(BufferBoundaryObserver<?, ?, Open, ?> parent) {
+                this.parent = parent;
+            }
+
+            @Override
+            public void onSubscribe(Disposable s) {
+                DisposableHelper.setOnce(this, s);
+            }
+
+            @Override
+            public void onNext(Open t) {
+                parent.open(t);
+            }
+
+            @Override
+            public void onError(Throwable t) {
+                lazySet(DisposableHelper.DISPOSED);
+                parent.boundaryError(this, t);
+            }
+
+            @Override
+            public void onComplete() {
+                lazySet(DisposableHelper.DISPOSED);
+                parent.openComplete(this);
+            }
+
+            @Override
+            public void dispose() {
+                DisposableHelper.dispose(this);
+            }
+
+            @Override
+            public boolean isDisposed() {
+                return get() == DisposableHelper.DISPOSED;
+            }
+        }
+    }
+
+    static final class BufferCloseObserver<T, C extends Collection<? super T>>
+    extends AtomicReference<Disposable>
+    implements Observer<Object>, Disposable {
+
+        private static final long serialVersionUID = -8498650778633225126L;
+
+        final BufferBoundaryObserver<T, C, ?, ?> parent;
+
+        final long index;
+
+        BufferCloseObserver(BufferBoundaryObserver<T, C, ?, ?> parent, long index) {
+            this.parent = parent;
+            this.index = index;
+        }
+
+        @Override
+        public void onSubscribe(Disposable s) {
+            DisposableHelper.setOnce(this, s);
+        }
+
+        @Override
+        public void onNext(Object t) {
+            Disposable s = get();
+            if (s != DisposableHelper.DISPOSED) {
+                lazySet(DisposableHelper.DISPOSED);
+                s.dispose();
+                parent.close(this, index);
+            }
+        }
+
+        @Override
+        public void onError(Throwable t) {
+            if (get() != DisposableHelper.DISPOSED) {
+                lazySet(DisposableHelper.DISPOSED);
+                parent.boundaryError(this, t);
+            } else {
+                RxJavaPlugins.onError(t);
+            }
+        }
+
+        @Override
+        public void onComplete() {
+            if (get() != DisposableHelper.DISPOSED) {
+                lazySet(DisposableHelper.DISPOSED);
+                parent.close(this, index);
             }
         }
 
         @Override
         public void dispose() {
-            if (!cancelled) {
-                cancelled = true;
-                resources.dispose();
-            }
-        }
-
-        @Override public boolean isDisposed() {
-            return cancelled;
+            DisposableHelper.dispose(this);
         }
 
         @Override
-        public void accept(Observer<? super U> a, U v) {
-            a.onNext(v);
-        }
-
-        void open(Open window) {
-            if (cancelled) {
-                return;
-            }
-
-            U b;
-
-            try {
-                b = ObjectHelper.requireNonNull(bufferSupplier.call(), "The buffer supplied is null");
-            } catch (Throwable e) {
-                Exceptions.throwIfFatal(e);
-                onError(e);
-                return;
-            }
-
-            ObservableSource<? extends Close> p;
-
-            try {
-                p = ObjectHelper.requireNonNull(bufferClose.apply(window), "The buffer closing Observable is null");
-            } catch (Throwable e) {
-                Exceptions.throwIfFatal(e);
-                onError(e);
-                return;
-            }
-
-            if (cancelled) {
-                return;
-            }
-
-            synchronized (this) {
-                if (cancelled) {
-                    return;
-                }
-                buffers.add(b);
-            }
-
-            BufferCloseObserver<T, U, Open, Close> bcs = new BufferCloseObserver<T, U, Open, Close>(b, this);
-            resources.add(bcs);
-
-            windows.getAndIncrement();
-
-            p.subscribe(bcs);
-        }
-
-        void openFinished(Disposable d) {
-            if (resources.remove(d)) {
-                if (windows.decrementAndGet() == 0) {
-                    complete();
-                }
-            }
-        }
-
-        void close(U b, Disposable d) {
-
-            boolean e;
-            synchronized (this) {
-                e = buffers.remove(b);
-            }
-
-            if (e) {
-                fastPathOrderedEmit(b, false, this);
-            }
-
-            if (resources.remove(d)) {
-                if (windows.decrementAndGet() == 0) {
-                    complete();
-                }
-            }
-        }
-    }
-
-    static final class BufferOpenObserver<T, U extends Collection<? super T>, Open, Close>
-    extends DisposableObserver<Open> {
-        final BufferBoundaryObserver<T, U, Open, Close> parent;
-
-        boolean done;
-
-        BufferOpenObserver(BufferBoundaryObserver<T, U, Open, Close> parent) {
-            this.parent = parent;
-        }
-        @Override
-        public void onNext(Open t) {
-            if (done) {
-                return;
-            }
-            parent.open(t);
-        }
-
-        @Override
-        public void onError(Throwable t) {
-            if (done) {
-                RxJavaPlugins.onError(t);
-                return;
-            }
-            done = true;
-            parent.onError(t);
-        }
-
-        @Override
-        public void onComplete() {
-            if (done) {
-                return;
-            }
-            done = true;
-            parent.openFinished(this);
-        }
-    }
-
-    static final class BufferCloseObserver<T, U extends Collection<? super T>, Open, Close>
-    extends DisposableObserver<Close> {
-        final BufferBoundaryObserver<T, U, Open, Close> parent;
-        final U value;
-        boolean done;
-        BufferCloseObserver(U value, BufferBoundaryObserver<T, U, Open, Close> parent) {
-            this.parent = parent;
-            this.value = value;
-        }
-
-        @Override
-        public void onNext(Close t) {
-            onComplete();
-        }
-
-        @Override
-        public void onError(Throwable t) {
-            if (done) {
-                RxJavaPlugins.onError(t);
-                return;
-            }
-            parent.onError(t);
-        }
-
-        @Override
-        public void onComplete() {
-            if (done) {
-                return;
-            }
-            done = true;
-            parent.close(value, this);
+        public boolean isDisposed() {
+            return get() == DisposableHelper.DISPOSED;
         }
     }
 }
