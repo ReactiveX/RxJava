@@ -26,6 +26,8 @@ import io.reactivex.plugins.RxJavaPlugins;
 /**
  * A Subject that emits the very last value followed by a completion event or the received error to Observers.
  * <p>
+ * <img width="640" height="239" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/AsyncSubject.png" alt="">
+ * <p>
  * This subject does not have a public constructor by design; a new empty instance of this
  * {@code AsyncSubject} can be created via the {@link #create()} method.
  * <p>

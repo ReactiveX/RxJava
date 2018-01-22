@@ -29,23 +29,36 @@ import io.reactivex.plugins.RxJavaPlugins;
 /**
  * Replays events (in a configurable bounded or unbounded manner) to current and late {@link Observer}s.
  * <p>
- * <img width="640" height="405" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/S.ReplaySubject.png" alt="">
- * <p>
  * This subject does not have a public constructor by design; a new empty instance of this
  * {@code ReplaySubject} can be created via the following {@code create} methods that
  * allow specifying the retention policy for items:
  * <ul>
  * <li>{@link #create()} - creates an empty, unbounded {@code ReplaySubject} that
- *     caches all items and the terminal event it receives.</li>
+ *     caches all items and the terminal event it receives.
+ * <p>
+ * <img width="640" height="299" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/ReplaySubject.u.png" alt="">
+ * <p>
+ * <img width="640" height="398" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/ReplaySubject.ue.png" alt="">
+ * </li>
  * <li>{@link #create(int)} - creates an empty, unbounded {@code ReplaySubject}
- *     with a hint about how many <b>total</b> items one expects to retain.</li>
+ *     with a hint about how many <b>total</b> items one expects to retain.
+ * </li>
  * <li>{@link #createWithSize(int)} - creates an empty, size-bound {@code ReplaySubject}
- *     that retains at most the given number of the latest item it receives.</li>
+ *     that retains at most the given number of the latest item it receives.
+ * <p>
+ * <img width="640" height="420" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/ReplaySubject.n.png" alt="">
+ * </li>
  * <li>{@link #createWithTime(long, TimeUnit, Scheduler)} - creates an empty, time-bound
- *     {@code ReplaySubject} that retains items no older than the specified time amount.</li>
+ *     {@code ReplaySubject} that retains items no older than the specified time amount.
+ * <p>
+ * <img width="640" height="415" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/ReplaySubject.t.png" alt="">
+ * </li>
  * <li>{@link #createWithTimeAndSize(long, TimeUnit, Scheduler, int)} - creates an empty,
  *     time- and size-bound {@code ReplaySubject} that retains at most the given number
- *     items that are also not older than the specified time amount.</li>
+ *     items that are also not older than the specified time amount.
+ * <p>
+ * <img width="640" height="404" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/ReplaySubject.nt.png" alt="">
+ * </li>
  * </ul>
  * <p>
  * Since a {@code Subject} is conceptionally derived from the {@code Processor} type in the Reactive Streams specification,
