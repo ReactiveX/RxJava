@@ -2,6 +2,37 @@
 
 The changelog of version 1.x can be found at https://github.com/ReactiveX/RxJava/blob/1.x/CHANGES.md
 
+### Version 2.1.9 - January 24, 2018 ([Maven](http://search.maven.org/#artifactdetails%7Cio.reactivex.rxjava2%7Crxjava%7C2.1.9%7C))
+
+#### API changes
+
+- [Pull 5799](https://github.com/ReactiveX/RxJava/pull/5799): Add missing `{Maybe|Single}.mergeDelayError` variants.
+
+#### Performance improvements
+
+- [Pull 5790](https://github.com/ReactiveX/RxJava/pull/5790): Improve request accounting overhead in `Flowable` `retry`/`repeat`. 
+
+#### Documentation changes
+
+- [Pull 5783](https://github.com/ReactiveX/RxJava/pull/5783): Fix JavaDoc wording of `onTerminateDetach`.
+- [Pull 5780](https://github.com/ReactiveX/RxJava/pull/5780): Improve `BehaviorSubject` JavaDoc + related clarifications. 
+- [Pull 5781](https://github.com/ReactiveX/RxJava/pull/5781): Describe `merge()` error handling.
+- [Pull 5785](https://github.com/ReactiveX/RxJava/pull/5785): Update `Maybe doOn{Success,Error,Complete}` JavaDoc.
+- [Pull 5786](https://github.com/ReactiveX/RxJava/pull/5786): Add error handling section to `merge()` operator JavaDocs.
+- [Pull 5802](https://github.com/ReactiveX/RxJava/pull/5802): Improved `XSubject` JavaDocs.
+- Marble diagram fixes to `Observable`:
+  - [Pull 5795](https://github.com/ReactiveX/RxJava/pull/5795): More marbles 01/08-a.
+  - [Pull 5797](https://github.com/ReactiveX/RxJava/pull/5797): `Observable` marble fixes 01/08-b.
+  - [Pull 5798](https://github.com/ReactiveX/RxJava/pull/5798): `Observable.replay(Function, ...)` marble fixes.
+  - [Pull 5804](https://github.com/ReactiveX/RxJava/pull/5804): More `Observable` marbles, 01/10-a.
+  - [Pull 5805](https://github.com/ReactiveX/RxJava/pull/5805): Final planned `Observable` marble additions/fixes.
+ - [Pull 5816](https://github.com/ReactiveX/RxJava/pull/5816): Add `Subject` and `Processor` marbles.
+
+#### Bugfixes
+
+- [Pull 5792](https://github.com/ReactiveX/RxJava/pull/5792): Fix `flatMap` inner fused poll crash not cancelling the upstream.
+- [Pull 5811](https://github.com/ReactiveX/RxJava/pull/5811): Fix `buffer(open, close)` not disposing indicators properly.
+
 ### Version 2.1.8 - December 27, 2017 ([Maven](http://search.maven.org/#artifactdetails%7Cio.reactivex.rxjava2%7Crxjava%7C2.1.8%7C))
 
 **Warning! Behavior change regarding handling illegal calls with `null` in `Processor`s and `Subject`s.**
