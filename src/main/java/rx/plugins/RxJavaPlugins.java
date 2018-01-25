@@ -105,7 +105,7 @@ public class RxJavaPlugins {
     public RxJavaErrorHandler getErrorHandler() {
         if (errorHandler.get() == null) {
             // check for an implementation from System.getProperty first
-            Object impl = getPluginImplementationViaProperty(RxJavaErrorHandler.class, System.getProperties());
+            Object impl = getPluginImplementationViaProperty(RxJavaErrorHandler.class, getSystemPropertiesSafe());
             if (impl == null) {
                 // nothing set via properties so initialize with default
                 errorHandler.compareAndSet(null, DEFAULT_ERROR_HANDLER);
@@ -147,7 +147,7 @@ public class RxJavaPlugins {
     public RxJavaObservableExecutionHook getObservableExecutionHook() {
         if (observableExecutionHook.get() == null) {
             // check for an implementation from System.getProperty first
-            Object impl = getPluginImplementationViaProperty(RxJavaObservableExecutionHook.class, System.getProperties());
+            Object impl = getPluginImplementationViaProperty(RxJavaObservableExecutionHook.class, getSystemPropertiesSafe());
             if (impl == null) {
                 // nothing set via properties so initialize with default
                 observableExecutionHook.compareAndSet(null, RxJavaObservableExecutionHookDefault.getInstance());
@@ -189,7 +189,7 @@ public class RxJavaPlugins {
     public RxJavaSingleExecutionHook getSingleExecutionHook() {
         if (singleExecutionHook.get() == null) {
             // check for an implementation from System.getProperty first
-            Object impl = getPluginImplementationViaProperty(RxJavaSingleExecutionHook.class, System.getProperties());
+            Object impl = getPluginImplementationViaProperty(RxJavaSingleExecutionHook.class, getSystemPropertiesSafe());
             if (impl == null) {
                 // nothing set via properties so initialize with default
                 singleExecutionHook.compareAndSet(null, RxJavaSingleExecutionHookDefault.getInstance());
@@ -232,7 +232,7 @@ public class RxJavaPlugins {
     public RxJavaCompletableExecutionHook getCompletableExecutionHook() {
         if (completableExecutionHook.get() == null) {
             // check for an implementation from System.getProperty first
-            Object impl = getPluginImplementationViaProperty(RxJavaCompletableExecutionHook.class, System.getProperties());
+            Object impl = getPluginImplementationViaProperty(RxJavaCompletableExecutionHook.class, getSystemPropertiesSafe());
             if (impl == null) {
                 // nothing set via properties so initialize with default
                 completableExecutionHook.compareAndSet(null, new RxJavaCompletableExecutionHook() { });
@@ -262,6 +262,19 @@ public class RxJavaPlugins {
         }
     }
 
+    /**
+     * A security manager may prevent accessing the System properties entirely,
+     * therefore, the SecurityException is turned into an empty properties.
+     * @return the Properties to use for looking up settings
+     */
+    /* test */ static Properties getSystemPropertiesSafe() {
+        try {
+            return System.getProperties();
+        } catch (SecurityException ex) {
+            return new Properties();
+        }
+    }
+
     /* test */ static Object getPluginImplementationViaProperty(Class<?> pluginClass, Properties propsIn) {
         // Make a defensive clone because traversal may fail with ConcurrentModificationException
         // if the properties get changed by something outside RxJava.
@@ -284,25 +297,32 @@ public class RxJavaPlugins {
             String classSuffix = ".class";
             String implSuffix = ".impl";
 
-            for (Map.Entry<Object, Object> e : props.entrySet()) {
-                String key = e.getKey().toString();
-                if (key.startsWith(pluginPrefix) && key.endsWith(classSuffix)) {
-                    String value = e.getValue().toString();
+            try {
+                for (Map.Entry<Object, Object> e : props.entrySet()) {
+                    String key = e.getKey().toString();
+                    if (key.startsWith(pluginPrefix) && key.endsWith(classSuffix)) {
+                        String value = e.getValue().toString();
 
-                    if (classSimpleName.equals(value)) {
-                        String index = key.substring(0, key.length() - classSuffix.length()).substring(pluginPrefix.length());
+                        if (classSimpleName.equals(value)) {
+                            String index = key.substring(0, key.length() - classSuffix.length()).substring(pluginPrefix.length());
 
-                        String implKey = pluginPrefix + index + implSuffix;
+                            String implKey = pluginPrefix + index + implSuffix;
 
-                        implementingClass = props.getProperty(implKey);
+                            implementingClass = props.getProperty(implKey);
 
-                        if (implementingClass == null) {
-                            throw new IllegalStateException("Implementing class declaration for " + classSimpleName + " missing: " + implKey);
+                            if (implementingClass == null) {
+                                throw new IllegalStateException("Implementing class declaration for " + classSimpleName + " missing: " + implKey);
+                            }
+
+                            break;
                         }
-
-                        break;
                     }
                 }
+            } catch (SecurityException ex) {
+                // https://github.com/ReactiveX/RxJava/issues/5819
+                // We don't seem to have access to all properties.
+                // At least print the exception to the console.
+                ex.printStackTrace();
             }
         }
 
@@ -339,7 +359,7 @@ public class RxJavaPlugins {
     public RxJavaSchedulersHook getSchedulersHook() {
         if (schedulersHook.get() == null) {
             // check for an implementation from System.getProperty first
-            Object impl = getPluginImplementationViaProperty(RxJavaSchedulersHook.class, System.getProperties());
+            Object impl = getPluginImplementationViaProperty(RxJavaSchedulersHook.class, getSystemPropertiesSafe());
             if (impl == null) {
                 // nothing set via properties so initialize with default
                 schedulersHook.compareAndSet(null, RxJavaSchedulersHook.getDefaultInstance());

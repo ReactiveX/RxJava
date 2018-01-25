@@ -18,6 +18,7 @@ package rx.plugins;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
 
+import java.security.Permission;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
@@ -343,5 +344,76 @@ public class RxJavaPluginsTest {
         });
         assertEquals(re, errorHandler.e);
         assertEquals(1, errorHandler.count);
+    }
+
+    @Test
+    public void systemPropertiesSecurityException() {
+        assertNull(RxJavaPlugins.getPluginImplementationViaProperty(Object.class, new Properties() {
+
+            private static final long serialVersionUID = -4291534158508255616L;
+
+            @Override
+            public Set<java.util.Map.Entry<Object, Object>> entrySet() {
+                return new HashSet<java.util.Map.Entry<Object, Object>>() {
+
+                    private static final long serialVersionUID = -7714005655772619143L;
+
+                    @Override
+                    public Iterator<java.util.Map.Entry<Object, Object>> iterator() {
+                        return new Iterator<java.util.Map.Entry<Object, Object>>() {
+                            @Override
+                            public boolean hasNext() {
+                                return true;
+                            }
+
+                            @Override
+                            public Map.Entry<Object,Object> next() {
+                                throw new SecurityException();
+                            };
+
+                            @Override
+                            public void remove() {
+                                throw new UnsupportedOperationException();
+                            }
+                        };
+                    }
+                };
+            }
+
+            @Override
+            public synchronized Object clone() {
+                return this;
+            }
+        }));
+    }
+
+    @Test
+    public void securityManagerDenySystemProperties() {
+        SecurityManager old = System.getSecurityManager();
+        try {
+            SecurityManager sm = new SecurityManager() {
+                @Override
+                public void checkPropertiesAccess() {
+                    throw new SecurityException();
+                }
+
+                @Override
+                public void checkPermission(Permission perm) {
+                    // allow restoring the security manager
+                }
+
+                @Override
+                public void checkPermission(Permission perm, Object context) {
+                    // allow restoring the security manager
+                }
+            };
+
+            System.setSecurityManager(sm);
+            assertTrue(RxJavaPlugins.getSystemPropertiesSafe().isEmpty());
+        } finally {
+            System.setSecurityManager(old);
+        }
+
+        assertFalse(RxJavaPlugins.getSystemPropertiesSafe().isEmpty());
     }
 }
