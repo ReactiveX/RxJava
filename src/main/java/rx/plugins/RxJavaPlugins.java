@@ -105,7 +105,7 @@ public class RxJavaPlugins {
     public RxJavaErrorHandler getErrorHandler() {
         if (errorHandler.get() == null) {
             // check for an implementation from System.getProperty first
-            Object impl = getPluginImplementationViaProperty(RxJavaErrorHandler.class, System.getProperties());
+            Object impl = getPluginImplementationViaProperty(RxJavaErrorHandler.class, getSystemPropertiesSafe());
             if (impl == null) {
                 // nothing set via properties so initialize with default
                 errorHandler.compareAndSet(null, DEFAULT_ERROR_HANDLER);
@@ -147,7 +147,7 @@ public class RxJavaPlugins {
     public RxJavaObservableExecutionHook getObservableExecutionHook() {
         if (observableExecutionHook.get() == null) {
             // check for an implementation from System.getProperty first
-            Object impl = getPluginImplementationViaProperty(RxJavaObservableExecutionHook.class, System.getProperties());
+            Object impl = getPluginImplementationViaProperty(RxJavaObservableExecutionHook.class, getSystemPropertiesSafe());
             if (impl == null) {
                 // nothing set via properties so initialize with default
                 observableExecutionHook.compareAndSet(null, RxJavaObservableExecutionHookDefault.getInstance());
@@ -189,7 +189,7 @@ public class RxJavaPlugins {
     public RxJavaSingleExecutionHook getSingleExecutionHook() {
         if (singleExecutionHook.get() == null) {
             // check for an implementation from System.getProperty first
-            Object impl = getPluginImplementationViaProperty(RxJavaSingleExecutionHook.class, System.getProperties());
+            Object impl = getPluginImplementationViaProperty(RxJavaSingleExecutionHook.class, getSystemPropertiesSafe());
             if (impl == null) {
                 // nothing set via properties so initialize with default
                 singleExecutionHook.compareAndSet(null, RxJavaSingleExecutionHookDefault.getInstance());
@@ -232,7 +232,7 @@ public class RxJavaPlugins {
     public RxJavaCompletableExecutionHook getCompletableExecutionHook() {
         if (completableExecutionHook.get() == null) {
             // check for an implementation from System.getProperty first
-            Object impl = getPluginImplementationViaProperty(RxJavaCompletableExecutionHook.class, System.getProperties());
+            Object impl = getPluginImplementationViaProperty(RxJavaCompletableExecutionHook.class, getSystemPropertiesSafe());
             if (impl == null) {
                 // nothing set via properties so initialize with default
                 completableExecutionHook.compareAndSet(null, new RxJavaCompletableExecutionHook() { });
@@ -259,6 +259,19 @@ public class RxJavaPlugins {
     public void registerCompletableExecutionHook(RxJavaCompletableExecutionHook impl) {
         if (!completableExecutionHook.compareAndSet(null, impl)) {
             throw new IllegalStateException("Another strategy was already registered: " + singleExecutionHook.get());
+        }
+    }
+
+    /**
+     * A security manager may prevent accessing the System properties entirely,
+     * therefore, the SecurityException is turned into an empty properties.
+     * @return the Properties to use for looking up settings
+     */
+    /* test */ static Properties getSystemPropertiesSafe() {
+        try {
+            return System.getProperties();
+        } catch (SecurityException ex) {
+            return new Properties();
         }
     }
 
@@ -346,7 +359,7 @@ public class RxJavaPlugins {
     public RxJavaSchedulersHook getSchedulersHook() {
         if (schedulersHook.get() == null) {
             // check for an implementation from System.getProperty first
-            Object impl = getPluginImplementationViaProperty(RxJavaSchedulersHook.class, System.getProperties());
+            Object impl = getPluginImplementationViaProperty(RxJavaSchedulersHook.class, getSystemPropertiesSafe());
             if (impl == null) {
                 // nothing set via properties so initialize with default
                 schedulersHook.compareAndSet(null, RxJavaSchedulersHook.getDefaultInstance());

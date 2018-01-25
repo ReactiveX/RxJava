@@ -18,6 +18,7 @@ package rx.plugins;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
 
+import java.security.Permission;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
@@ -384,5 +385,35 @@ public class RxJavaPluginsTest {
                 return this;
             }
         }));
+    }
+
+    @Test
+    public void securityManagerDenySystemProperties() {
+        SecurityManager old = System.getSecurityManager();
+        try {
+            SecurityManager sm = new SecurityManager() {
+                @Override
+                public void checkPropertiesAccess() {
+                    throw new SecurityException();
+                }
+
+                @Override
+                public void checkPermission(Permission perm) {
+                    // allow restoring the security manager
+                }
+
+                @Override
+                public void checkPermission(Permission perm, Object context) {
+                    // allow restoring the security manager
+                }
+            };
+
+            System.setSecurityManager(sm);
+            assertTrue(RxJavaPlugins.getSystemPropertiesSafe().isEmpty());
+        } finally {
+            System.setSecurityManager(old);
+        }
+
+        assertFalse(RxJavaPlugins.getSystemPropertiesSafe().isEmpty());
     }
 }
