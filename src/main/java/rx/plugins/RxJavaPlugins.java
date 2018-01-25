@@ -284,25 +284,32 @@ public class RxJavaPlugins {
             String classSuffix = ".class";
             String implSuffix = ".impl";
 
-            for (Map.Entry<Object, Object> e : props.entrySet()) {
-                String key = e.getKey().toString();
-                if (key.startsWith(pluginPrefix) && key.endsWith(classSuffix)) {
-                    String value = e.getValue().toString();
+            try {
+                for (Map.Entry<Object, Object> e : props.entrySet()) {
+                    String key = e.getKey().toString();
+                    if (key.startsWith(pluginPrefix) && key.endsWith(classSuffix)) {
+                        String value = e.getValue().toString();
 
-                    if (classSimpleName.equals(value)) {
-                        String index = key.substring(0, key.length() - classSuffix.length()).substring(pluginPrefix.length());
+                        if (classSimpleName.equals(value)) {
+                            String index = key.substring(0, key.length() - classSuffix.length()).substring(pluginPrefix.length());
 
-                        String implKey = pluginPrefix + index + implSuffix;
+                            String implKey = pluginPrefix + index + implSuffix;
 
-                        implementingClass = props.getProperty(implKey);
+                            implementingClass = props.getProperty(implKey);
 
-                        if (implementingClass == null) {
-                            throw new IllegalStateException("Implementing class declaration for " + classSimpleName + " missing: " + implKey);
+                            if (implementingClass == null) {
+                                throw new IllegalStateException("Implementing class declaration for " + classSimpleName + " missing: " + implKey);
+                            }
+
+                            break;
                         }
-
-                        break;
                     }
                 }
+            } catch (SecurityException ex) {
+                // https://github.com/ReactiveX/RxJava/issues/5819
+                // We don't seem to have access to all properties.
+                // At least print the exception to the console.
+                ex.printStackTrace();
             }
         }
 

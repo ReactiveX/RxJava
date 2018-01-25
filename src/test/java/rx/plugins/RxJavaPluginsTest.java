@@ -344,4 +344,45 @@ public class RxJavaPluginsTest {
         assertEquals(re, errorHandler.e);
         assertEquals(1, errorHandler.count);
     }
+
+    @Test
+    public void systemPropertiesSecurityException() {
+        assertNull(RxJavaPlugins.getPluginImplementationViaProperty(Object.class, new Properties() {
+
+            private static final long serialVersionUID = -4291534158508255616L;
+
+            @Override
+            public Set<java.util.Map.Entry<Object, Object>> entrySet() {
+                return new HashSet<java.util.Map.Entry<Object, Object>>() {
+
+                    private static final long serialVersionUID = -7714005655772619143L;
+
+                    @Override
+                    public Iterator<java.util.Map.Entry<Object, Object>> iterator() {
+                        return new Iterator<java.util.Map.Entry<Object, Object>>() {
+                            @Override
+                            public boolean hasNext() {
+                                return true;
+                            }
+
+                            @Override
+                            public Map.Entry<Object,Object> next() {
+                                throw new SecurityException();
+                            };
+
+                            @Override
+                            public void remove() {
+                                throw new UnsupportedOperationException();
+                            }
+                        };
+                    }
+                };
+            }
+
+            @Override
+            public synchronized Object clone() {
+                return this;
+            }
+        }));
+    }
 }
