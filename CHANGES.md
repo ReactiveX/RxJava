@@ -1,5 +1,11 @@
 # RxJava Releases #
 
+### Version 1.3.5 - January 27, 2018 ([Maven](http://search.maven.org/#artifactdetails%7Cio.reactivex%7Crxjava%7C1.3.5%7C))
+
+#### Other
+
+- [Pull 5820](https://github.com/ReactiveX/RxJava/pull/5820): `RxJavaPlugins` lookup workaround for `System.getProperties()` access restrictions.
+
 ### Version 1.3.4 - November 19, 2017 ([Maven](http://search.maven.org/#artifactdetails%7Cio.reactivex%7Crxjava%7C1.3.4%7C))
 
 #### Bugfixes
