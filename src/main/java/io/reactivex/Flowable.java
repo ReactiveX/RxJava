@@ -12373,11 +12373,11 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     /**
-     * Returns a new {@link Publisher} that multicasts (shares) the original {@link Publisher}. As long as
+     * Returns a new {@link Publisher} that multicasts (and shares a single subscription to) the original {@link Publisher}. As long as
      * there is at least one {@link Subscriber} this {@link Publisher} will be subscribed and emitting data.
      * When all subscribers have cancelled it will cancel the source {@link Publisher}.
      * <p>
-     * This is an alias for {@link #publish()}.{@link ConnectableFlowable#refCount()}.
+     * This is an alias for {@link #publish()}.{@link ConnectableFlowable#refCount() refCount()}.
      * <p>
      * <img width="640" height="510" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/publishRefCount.png" alt="">
      * <dl>

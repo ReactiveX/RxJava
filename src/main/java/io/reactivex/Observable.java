@@ -10493,11 +10493,11 @@ public abstract class Observable<T> implements ObservableSource<T> {
     }
 
     /**
-     * Returns a new {@link ObservableSource} that multicasts (shares) the original {@link ObservableSource}. As long as
+     * Returns a new {@link ObservableSource} that multicasts (and shares a single subscription to) the original {@link ObservableSource}. As long as
      * there is at least one {@link Observer} this {@link ObservableSource} will be subscribed and emitting data.
      * When all subscribers have disposed it will dispose the source {@link ObservableSource}.
      * <p>
-     * This is an alias for {@link #publish()}.{@link ConnectableObservable#refCount()}.
+     * This is an alias for {@link #publish()}.{@link ConnectableObservable#refCount() refCount()}.
      * <p>
      * <img width="640" height="510" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/publishRefCount.o.png" alt="">
      * <dl>
