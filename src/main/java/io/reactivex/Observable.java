@@ -10493,7 +10493,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     }
 
     /**
-     * Returns a new {@link ObservableSource} that multicasts (abd shares a single subscription to) the original {@link ObservableSource}. As long as
+     * Returns a new {@link ObservableSource} that multicasts (and shares a single subscription to) the original {@link ObservableSource}. As long as
      * there is at least one {@link Observer} this {@link ObservableSource} will be subscribed and emitting data.
      * When all subscribers have disposed it will dispose the source {@link ObservableSource}.
      * <p>
