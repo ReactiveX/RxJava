@@ -5078,7 +5078,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
     /**
      * Converts this {@code Observable} into an {@link Iterable}.
      * <p>
-     * <img width="640" height="315" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/B.toIterable.png" alt="">
+     * <img width="640" height="315" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/blockingIterable.o.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code blockingIterable} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -5150,6 +5150,8 @@ public abstract class Observable<T> implements ObservableSource<T> {
     /**
      * Returns an {@link Iterable} that returns the latest item emitted by this {@code Observable},
      * waiting if necessary for one to become available.
+     * <p>
+     * <img width="640" height="350" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/blockingLatest.o.png" alt="">
      * <p>
      * If this {@code Observable} produces items faster than {@code Iterator.next} takes them,
      * {@code onNext} events might be skipped, but {@code onError} or {@code onComplete} events are not.
