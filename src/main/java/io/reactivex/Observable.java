@@ -9498,6 +9498,9 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * emitted by a {@link ConnectableObservable} that shares a single subscription to the source ObservableSource,
      * replaying {@code bufferSize} notifications.
      * <p>
+     * Note that due to concurrency requirements, {@code replay(bufferSize)} may hold strong references to more than
+     * {@code bufferSize} source emissions.
+     * <p>
      * <img width="640" height="391" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/replay.o.fn.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
@@ -9528,6 +9531,9 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * Returns an Observable that emits items that are the results of invoking a specified selector on items
      * emitted by a {@link ConnectableObservable} that shares a single subscription to the source ObservableSource,
      * replaying no more than {@code bufferSize} items that were emitted within a specified time window.
+     * <p>
+     * Note that due to concurrency requirements, {@code replay(bufferSize)} may hold strong references to more than
+     * {@code bufferSize} source emissions.
      * <p>
      * <img width="640" height="350" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/replay.o.fnt.png" alt="">
      * <dl>
@@ -9562,6 +9568,9 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * Returns an Observable that emits items that are the results of invoking a specified selector on items
      * emitted by a {@link ConnectableObservable} that shares a single subscription to the source ObservableSource,
      * replaying no more than {@code bufferSize} items that were emitted within a specified time window.
+     * <p>
+     * Note that due to concurrency requirements, {@code replay(bufferSize)} may hold strong references to more than
+     * {@code bufferSize} source emissions.
      * <p>
      * <img width="640" height="328" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/replay.o.fnts.png" alt="">
      * <dl>
@@ -9605,6 +9614,9 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * Returns an Observable that emits items that are the results of invoking a specified selector on items
      * emitted by a {@link ConnectableObservable} that shares a single subscription to the source ObservableSource,
      * replaying a maximum of {@code bufferSize} items.
+     * <p>
+     * Note that due to concurrency requirements, {@code replay(bufferSize)} may hold strong references to more than
+     * {@code bufferSize} source emissions.
      * <p>
      * <img width="640" height="362" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/replay.o.fns.png" alt="">
      * <dl>
@@ -9740,6 +9752,9 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * an ordinary ObservableSource, except that it does not begin emitting items when it is subscribed to, but only
      * when its {@code connect} method is called.
      * <p>
+     * Note that due to concurrency requirements, {@code replay(bufferSize)} may hold strong references to more than
+     * {@code bufferSize} source emissions.
+     * <p>
      * <img width="640" height="445" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/replay.o.n.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
@@ -9764,6 +9779,9 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * replays at most {@code bufferSize} items that were emitted during a specified time window. A Connectable
      * ObservableSource resembles an ordinary ObservableSource, except that it does not begin emitting items when it is
      * subscribed to, but only when its {@code connect} method is called.
+     * <p>
+     * Note that due to concurrency requirements, {@code replay(bufferSize)} may hold strong references to more than
+     * {@code bufferSize} source emissions.
      * <p>
      * <img width="640" height="445" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/replay.o.nt.png" alt="">
      * <dl>
@@ -9793,6 +9811,9 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * that replays a maximum of {@code bufferSize} items that are emitted within a specified time window. A
      * Connectable ObservableSource resembles an ordinary ObservableSource, except that it does not begin emitting items
      * when it is subscribed to, but only when its {@code connect} method is called.
+     * <p>
+     * Note that due to concurrency requirements, {@code replay(bufferSize)} may hold strong references to more than
+     * {@code bufferSize} source emissions.
      * <p>
      * <img width="640" height="445" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/replay.o.nts.png" alt="">
      * <dl>
@@ -9829,6 +9850,9 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * replays at most {@code bufferSize} items emitted by that ObservableSource. A Connectable ObservableSource resembles
      * an ordinary ObservableSource, except that it does not begin emitting items when it is subscribed to, but only
      * when its {@code connect} method is called.
+     * <p>
+     * Note that due to concurrency requirements, {@code replay(bufferSize)} may hold strong references to more than
+     * {@code bufferSize} source emissions.
      * <p>
      * <img width="640" height="445" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/replay.o.ns.png" alt="">
      * <dl>
