@@ -92,6 +92,9 @@ import io.reactivex.plugins.RxJavaPlugins;
  * {@link #getThrowable()} and {@link #hasObservers()} as well as means to read the retained/cached items
  * in a non-blocking and thread-safe manner via {@link #hasValue()}, {@link #getValue()},
  * {@link #getValues()} or {@link #getValues(Object[])}.
+ * <p>
+ * Note that due to concurrency requirements, a size-bounded {@code ReplaySubject} may hold strong references to more
+ * source emissions than specified.
  * <dl>
  *  <dt><b>Scheduler:</b></dt>
  *  <dd>{@code ReplaySubject} does not operate by default on a particular {@link io.reactivex.Scheduler} and

@@ -66,6 +66,10 @@ import io.reactivex.plugins.RxJavaPlugins;
  * if an individual item gets delayed due to backpressure.
  *
  * <p>
+ * Due to concurrency requirements, a size-bounded {@code ReplayProcessor} may hold strong references to more source
+ * emissions than specified.
+ *
+ * <p>
  * Example usage:
  * <pre> {@code
 
