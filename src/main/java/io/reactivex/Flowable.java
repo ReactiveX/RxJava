@@ -2458,7 +2458,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     /**
-     * Returns an Flowable that signals the given (constant reference) item and then completes.
+     * Returns a Flowable that signals the given (constant reference) item and then completes.
      * <p>
      * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/just.png" alt="">
      * <p>
