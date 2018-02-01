@@ -963,4 +963,25 @@ public class ObservableSwitchTest {
 
         to.assertFailure(TestException.class, 1);
     }
+
+    @Test
+    public void innerDisposedOnMainError() {
+        final PublishSubject<Integer> main = PublishSubject.create();
+        final PublishSubject<Integer> inner = PublishSubject.create();
+
+        TestObserver<Integer> to = main.switchMap(Functions.justFunction(inner))
+        .test();
+
+        assertTrue(main.hasObservers());
+
+        main.onNext(1);
+
+        assertTrue(inner.hasObservers());
+
+        main.onError(new TestException());
+
+        assertFalse(inner.hasObservers());
+
+        to.assertFailure(TestException.class);
+    }
 }

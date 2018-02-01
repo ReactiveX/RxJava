@@ -131,15 +131,15 @@ public final class ObservableSwitchMap<T, R> extends AbstractObservableWithUpstr
 
         @Override
         public void onError(Throwable t) {
-            if (done || !errors.addThrowable(t)) {
+            if (!done && errors.addThrowable(t)) {
                 if (!delayErrors) {
                     disposeInner();
                 }
+                done = true;
+                drain();
+            } else {
                 RxJavaPlugins.onError(t);
-                return;
             }
-            done = true;
-            drain();
         }
 
         @Override
