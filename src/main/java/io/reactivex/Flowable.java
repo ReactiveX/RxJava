@@ -2458,17 +2458,17 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     /**
-     * Returns a Flowable that emits a single item and then completes.
+     * Returns a Flowable that signals the given (constant reference) item and then completes.
      * <p>
      * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/just.png" alt="">
      * <p>
-     * To convert any object into a Publisher that emits that object, pass that object into the {@code just}
-     * method.
+     * Note that the item is taken and re-emitted as is and not computed by any means by {@code just}. Use {@link #fromCallable(Callable)}
+     * to generate a single item on demand (when {@code Subscriber}s subscribe to it).
      * <p>
-     * This is similar to the {@link #fromArray(java.lang.Object[])} method, except that {@code from} will convert
-     * an {@link Iterable} object into a Publisher that emits each of the items in the Iterable, one at a
-     * time, while the {@code just} method converts an Iterable into a Publisher that emits the entire
-     * Iterable as a single item.
+     * See the multi-parameter overloads of {@code just} to emit more than one (constant reference) items one after the other.
+     * Use {@link #fromArray(Object...)} to emit an arbitrary number of items that are known upfront.
+     * <p>
+     * To emit the items of an {@link Iterable} sequence (such as a {@link java.util.List}), use {@link #fromIterable(Iterable)}.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream.</dd>
@@ -2482,6 +2482,10 @@ public abstract class Flowable<T> implements Publisher<T> {
      *            the type of that item
      * @return a Flowable that emits {@code value} as a single item and then completes
      * @see <a href="http://reactivex.io/documentation/operators/just.html">ReactiveX operators documentation: Just</a>
+     * @see #just(Object, Object)
+     * @see #fromCallable(Callable)
+     * @see #fromArray(Object...)
+     * @see #fromIterable(Iterable)
      */
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.FULL)

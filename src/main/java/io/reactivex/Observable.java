@@ -2234,17 +2234,17 @@ public abstract class Observable<T> implements ObservableSource<T> {
     }
 
     /**
-     * Returns an Observable that emits a single item and then completes.
+     * Returns an Observable that signals the given (constant reference) item and then completes.
      * <p>
      * <img width="640" height="290" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/just.item.png" alt="">
      * <p>
-     * To convert any object into an ObservableSource that emits that object, pass that object into the {@code just}
-     * method.
+     * Note that the item is taken and re-emitted as is and not computed by any means by {@code just}. Use {@link #fromCallable(Callable)}
+     * to generate a single item on demand (when {@code Observer}s subscribe to it).
      * <p>
-     * This is similar to the {@link #fromArray(java.lang.Object[])} method, except that {@code from} will convert
-     * an {@link Iterable} object into an ObservableSource that emits each of the items in the Iterable, one at a
-     * time, while the {@code just} method converts an Iterable into an ObservableSource that emits the entire
-     * Iterable as a single item.
+     * See the multi-parameter overloads of {@code just} to emit more than one (constant reference) items one after the other.
+     * Use {@link #fromArray(Object...)} to emit an arbitrary number of items that are known upfront.
+     * <p>
+     * To emit the items of an {@link Iterable} sequence (such as a {@link java.util.List}), use {@link #fromIterable(Iterable)}.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code just} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -2256,6 +2256,10 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *            the type of that item
      * @return an Observable that emits {@code value} as a single item and then completes
      * @see <a href="http://reactivex.io/documentation/operators/just.html">ReactiveX operators documentation: Just</a>
+     * @see #just(Object, Object)
+     * @see #fromCallable(Callable)
+     * @see #fromArray(Object...)
+     * @see #fromIterable(Iterable)
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
