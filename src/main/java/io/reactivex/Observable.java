@@ -7016,10 +7016,11 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * <p>
      * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/distinct.png" alt="">
      * <p>
-     * It is recommended the elements' class {@code T} in the flow overrides the default {@code Object.equals()} to provide
-     * meaningful comparison between items as the default Java implementation only considers reference equivalence.
+     * It is recommended the elements' class {@code T} in the flow overrides the default {@code Object.equals()}
+     * and {@link Object#hashCode()} to provide meaningful comparison between items as the default Java
+     * implementation only considers reference equivalence.
      * <p>
-     * By default, {@code distinct()} uses an internal, per Observer {@link java.util.HashSet} to remember
+     * By default, {@code distinct()} uses an internal {@link java.util.HashSet} per Observer to remember
      * previously seen items and uses {@link java.util.Set#add(Object)} returning {@code false} as the
      * indicator for duplicates.
      * <p>
@@ -7053,10 +7054,11 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * <p>
      * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/distinct.key.png" alt="">
      * <p>
-     * It is recommended the keys' class {@code K} overrides the default {@code Object.equals()} to provide
-     * meaningful comparison between the key objects as the default Java implementation only considers reference equivalence.
+     * It is recommended the keys' class {@code K} overrides the default {@code Object.equals()}
+     * and {@link Object#hashCode()} to provide meaningful comparison between the key objects as the default
+     * Java implementation only considers reference equivalence.
      * <p>
-     * By default, {@code distinct()} uses an internal, per Observer {@link java.util.HashSet} to remember
+     * By default, {@code distinct()} uses an internal {@link java.util.HashSet} per Observer to remember
      * previously seen keys and uses {@link java.util.Set#add(Object)} returning {@code false} as the
      * indicator for duplicates.
      * <p>
@@ -7092,8 +7094,9 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * <p>
      * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/distinct.key.png" alt="">
      * <p>
-     * It is recommended the keys' class {@code K} overrides the default {@code Object.equals()} to provide
-     * meaningful comparison between the key objects as the default Java implementation only considers reference equivalence.
+     * It is recommended the keys' class {@code K} overrides the default {@code Object.equals()}
+     * and {@link Object#hashCode()}  to provide meaningful comparison between the key objects as
+     * the default Java implementation only considers reference equivalence.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code distinct} does not operate by default on a particular {@link Scheduler}.</dd>
