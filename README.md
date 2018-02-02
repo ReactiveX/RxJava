@@ -68,11 +68,11 @@ Flowable.just("Hello world")
 
 RxJava 2 features several base classes you can discover operators on:
 
-  - `io.reactivex.Flowable`: 0..N flows, supporting Reactive-Streams and backpressure
-  - `io.reactivex.Observable`: 0..N flows, no backpressure
-  - `io.reactivex.Single`: a flow of exactly 1 item or an error
-  - `io.reactivex.Completable`: a flow without items but only a completion or error signal
-  - `io.reactivex.Maybe`: a flow with no items, exactly one item or an error
+  - [`io.reactivex.Flowable`](http://reactivex.io/RxJava/2.x/javadoc/io/reactivex/Flowable.html): 0..N flows, supporting Reactive-Streams and backpressure
+  - [`io.reactivex.Observable`](http://reactivex.io/RxJava/2.x/javadoc/io/reactivex/Observable.html): 0..N flows, no backpressure
+  - [`io.reactivex.Single`](http://reactivex.io/RxJava/2.x/javadoc/io/reactivex/Single.html): a flow of exactly 1 item or an error
+  - [`io.reactivex.Completable`](http://reactivex.io/RxJava/2.x/javadoc/io/reactivex/Completable.html): a flow without items but only a completion or error signal
+  - [`io.reactivex.Maybe`](http://reactivex.io/RxJava/2.x/javadoc/io/reactivex/Maybe.html): a flow with no items, exactly one item or an error
 
 One of the common use cases for RxJava is to run some computation, network request on a background thread and show the results (or error) on the UI thread:
 
