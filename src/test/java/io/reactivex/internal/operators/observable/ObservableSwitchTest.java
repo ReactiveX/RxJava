@@ -18,7 +18,7 @@ import static org.mockito.Mockito.*;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.*;
 
 import org.junit.*;
 import org.mockito.InOrder;
@@ -768,7 +768,7 @@ public class ObservableSwitchTest {
 
     @Test
     public void outerInnerErrorRace() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < 5000; i++) {
             List<Throwable> errors = TestHelper.trackPluginErrors();
             try {
 
@@ -785,6 +785,8 @@ public class ObservableSwitchTest {
                     }
                 })
                 .test();
+
+                ps1.onNext(1);
 
                 final TestException ex1 = new TestException();
 
@@ -807,7 +809,7 @@ public class ObservableSwitchTest {
                 TestHelper.race(r1, r2);
 
                 for (Throwable e : errors) {
-                    assertTrue(e.toString(), e instanceof TestException);
+                    assertTrue(e.getCause().toString(), e.getCause() instanceof TestException);
                 }
             } finally {
                 RxJavaPlugins.reset();
@@ -962,5 +964,94 @@ public class ObservableSwitchTest {
         ps.onNext(1);
 
         to.assertFailure(TestException.class, 1);
+    }
+
+    @Test
+    public void innerDisposedOnMainError() {
+        final PublishSubject<Integer> main = PublishSubject.create();
+        final PublishSubject<Integer> inner = PublishSubject.create();
+
+        TestObserver<Integer> to = main.switchMap(Functions.justFunction(inner))
+        .test();
+
+        assertTrue(main.hasObservers());
+
+        main.onNext(1);
+
+        assertTrue(inner.hasObservers());
+
+        main.onError(new TestException());
+
+        assertFalse(inner.hasObservers());
+
+        to.assertFailure(TestException.class);
+    }
+
+    @Test
+    public void outerInnerErrorRaceIgnoreDispose() {
+        for (int i = 0; i < 5000; i++) {
+            List<Throwable> errors = TestHelper.trackPluginErrors();
+            try {
+
+                final AtomicReference<Observer<? super Integer>> obs1 = new AtomicReference<Observer<? super Integer>>();
+                final Observable<Integer> ps1 = new Observable<Integer>() {
+                    @Override
+                    protected void subscribeActual(
+                            Observer<? super Integer> observer) {
+                        obs1.set(observer);
+                    }
+                };
+                final AtomicReference<Observer<? super Integer>> obs2 = new AtomicReference<Observer<? super Integer>>();
+                final Observable<Integer> ps2 = new Observable<Integer>() {
+                    @Override
+                    protected void subscribeActual(
+                            Observer<? super Integer> observer) {
+                        obs2.set(observer);
+                    }
+                };
+
+                ps1.switchMap(new Function<Integer, ObservableSource<Integer>>() {
+                    @Override
+                    public ObservableSource<Integer> apply(Integer v) throws Exception {
+                        if (v == 1) {
+                            return ps2;
+                        }
+                        return Observable.never();
+                    }
+                })
+                .test();
+
+                obs1.get().onSubscribe(Disposables.empty());
+                obs1.get().onNext(1);
+
+                obs2.get().onSubscribe(Disposables.empty());
+
+                final TestException ex1 = new TestException();
+
+                Runnable r1 = new Runnable() {
+                    @Override
+                    public void run() {
+                        obs1.get().onError(ex1);
+                    }
+                };
+
+                final TestException ex2 = new TestException();
+
+                Runnable r2 = new Runnable() {
+                    @Override
+                    public void run() {
+                        obs2.get().onError(ex2);
+                    }
+                };
+
+                TestHelper.race(r1, r2);
+
+                for (Throwable e : errors) {
+                    assertTrue(e.toString(), e.getCause() instanceof TestException);
+                }
+            } finally {
+                RxJavaPlugins.reset();
+            }
+        }
     }
 }

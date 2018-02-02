@@ -1153,4 +1153,25 @@ public class FlowableSwitchTest {
         .test()
         .assertFailure(TestException.class);
     }
+
+    @Test
+    public void innerCancelledOnMainError() {
+        final PublishProcessor<Integer> main = PublishProcessor.create();
+        final PublishProcessor<Integer> inner = PublishProcessor.create();
+
+        TestSubscriber<Integer> to = main.switchMap(Functions.justFunction(inner))
+        .test();
+
+        assertTrue(main.hasSubscribers());
+
+        main.onNext(1);
+
+        assertTrue(inner.hasSubscribers());
+
+        main.onError(new TestException());
+
+        assertFalse(inner.hasSubscribers());
+
+        to.assertFailure(TestException.class);
+    }
 }
