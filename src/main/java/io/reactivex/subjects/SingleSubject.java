@@ -34,8 +34,8 @@ import io.reactivex.plugins.RxJavaPlugins;
  * as parameters to  {@link #onSuccess(Object)} and {@link #onError(Throwable)}. Such calls will result in a
  * {@link NullPointerException} being thrown and the subject's state is not changed.
  * <p>
- * Since a {@code SingleSubject} is a {@link io.reactivex.Maybe}, calling {@code onSuccess}, {@code onError}
- * or {@code onComplete} will move this {@code SingleSubject} into its terminal state atomically.
+ * Since a {@code SingleSubject} is a {@link io.reactivex.Single}, calling {@code onSuccess} or {@code onError}
+ * will move this {@code SingleSubject} into its terminal state atomically.
  * <p>
  * All methods are thread safe. Calling {@link #onSuccess(Object)} multiple
  * times has no effect. Calling {@link #onError(Throwable)} multiple times relays the {@code Throwable} to
@@ -55,8 +55,8 @@ import io.reactivex.plugins.RxJavaPlugins;
  * <dl>
  *  <dt><b>Scheduler:</b></dt>
  *  <dd>{@code SingleSubject} does not operate by default on a particular {@link io.reactivex.Scheduler} and
- *  the {@code SingleObserver}s get notified on the thread where the terminating {@code onSuccess}, {@code onError}
- *  or {@code onComplete} methods were invoked.</dd>
+ *  the {@code SingleObserver}s get notified on the thread where the terminating {@code onSuccess} or {@code onError}
+ *  methods were invoked.</dd>
  *  <dt><b>Error handling:</b></dt>
  *  <dd>When the {@link #onError(Throwable)} is called, the {@code SingleSubject} enters into a terminal state
  *  and emits the same {@code Throwable} instance to the last set of {@code SingleObserver}s. During this emission,
