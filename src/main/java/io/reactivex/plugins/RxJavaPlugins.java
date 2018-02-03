@@ -86,6 +86,7 @@ public final class RxJavaPlugins {
     @Nullable
     static volatile Function<? super Single, ? extends Single> onSingleAssembly;
 
+    @Nullable
     static volatile Function<? super Completable, ? extends Completable> onCompletableAssembly;
 
     @SuppressWarnings("rawtypes")
