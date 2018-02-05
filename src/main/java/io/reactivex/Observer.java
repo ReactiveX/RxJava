@@ -19,14 +19,35 @@ import io.reactivex.disposables.Disposable;
 /**
  * Provides a mechanism for receiving push-based notifications.
  * <p>
- * After an Observer calls an {@link Observable}'s {@link Observable#subscribe subscribe} method,
- * first the Observable calls {@link #onSubscribe(Disposable)} with a {@link Disposable} that allows
+ * When an {@code Observer} is subscribed to an {@link ObservableSource} through the {@link ObservableSource#subscribe(Observer)} method,
+ * the {@code ObservableSource} calls {@link #onSubscribe(Disposable)}  with a {@link Disposable} that allows
  * cancelling the sequence at any time, then the
- * {@code Observable} may call the Observer's {@link #onNext} method any number of times
+ * {@code ObservableSource} may call the Observer's {@link #onNext} method any number of times
  * to provide notifications. A well-behaved
- * {@code Observable} will call an Observer's {@link #onComplete} method exactly once or the Observer's
+ * {@code ObservableSource} will call an {@code Observer}'s {@link #onComplete} method exactly once or the {@code Observer}'s
  * {@link #onError} method exactly once.
- *
+ * <p>
+ * Calling the {@code Observer}'s method must happen in a serialized fashion, that is, they must not
+ * be invoked concurrently by multiple threads in an overlapping fashion and the invocation pattern must
+ * adhere to the following protocol:
+ * <p>
+ * <pre><code>    onSubscribe onNext* (onError | onComplete)?</code></pre>
+ * <p>
+ * Subscribing an {@code Observer} to multiple {@code ObservableSource}s is not recommended. If such reuse
+ * happens, it is the duty of the {@code Observer} implementation to be ready to receive multiple calls to
+ * its methods and ensure proper concurrent behavior of its business logic.
+ * <p>
+ * Calling {@link #onSubscribe(Disposable)}, {@link #onNext(Object)} or {@link #onError(Throwable)} with a
+ * {@code null} argument is forbidden.
+ * <p>
+ * The implementations of the {@code onXXX} methods should avoid throwing runtime exceptions other than the following cases:
+ * <ul>
+ * <li>If the argument is {@code null}, the methods can throw a {@code NullPointerException}.
+ * Note though that RxJava prevents {@code null}s to enter into the flow and thus there is generally no
+ * need to check for nulls in flows assembled from standard sources and intermediate operators.
+ * </li>
+ * <li>If there is a fatal error (such as {@code VirtualMachineError}).</li>
+ * </ul>
  * @see <a href="http://reactivex.io/documentation/observable.html">ReactiveX documentation: Observable</a>
  * @param <T>
  *          the type of item the Observer expects to observe
