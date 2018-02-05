@@ -62,7 +62,7 @@ public abstract class ConnectableFlowable<T> extends Flowable<T> {
     public final Disposable connect() {
         ConnectConsumer cc = new ConnectConsumer();
         connect(cc);
-        return cc.disposable;
+        return cc.getDisposable();
     }
 
     /**

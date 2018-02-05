@@ -81,7 +81,7 @@ public final class ObservableBlockingSubscribe {
         o.subscribe(ls);
 
         BlockingHelper.awaitForComplete(callback, ls);
-        Throwable e = callback.error;
+        Throwable e = callback.getError();
         if (e != null) {
             throw ExceptionHelper.wrapOrThrow(e);
         }

@@ -23,7 +23,7 @@ import io.reactivex.functions.*;
 public final class BlockingIgnoringReceiver
 extends CountDownLatch
 implements Consumer<Throwable>, Action {
-    public Throwable error;
+    private Throwable error;
 
     public BlockingIgnoringReceiver() {
         super(1);
@@ -33,6 +33,10 @@ implements Consumer<Throwable>, Action {
     public void accept(Throwable e) {
         error = e;
         countDown();
+    }
+
+    public Throwable getError() {
+        return error;
     }
 
     @Override
