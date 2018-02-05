@@ -20,10 +20,14 @@ import io.reactivex.functions.Consumer;
  * Store the Disposable received from the connection.
  */
 public final class ConnectConsumer implements Consumer<Disposable> {
-    public Disposable disposable;
+    private Disposable disposable;
 
     @Override
     public void accept(Disposable t) throws Exception {
         this.disposable = t;
+    }
+
+    public Disposable getDisposable() {
+        return disposable;
     }
 }

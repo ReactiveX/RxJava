@@ -61,7 +61,7 @@ public abstract class ConnectableObservable<T> extends Observable<T> {
     public final Disposable connect() {
         ConnectConsumer cc = new ConnectConsumer();
         connect(cc);
-        return cc.disposable;
+        return cc.getDisposable();
     }
 
     /**
