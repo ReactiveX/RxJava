@@ -21,7 +21,7 @@ import io.reactivex.disposables.Disposable;
  * <p>
  * When a {@code MaybeObserver} is subscribed to a {@link MaybeSource} through the {@link MaybeSource#subscribe(MaybeObserver)} method,
  * the {@code MaybeSource} calls {@link #onSubscribe(Disposable)}  with a {@link Disposable} that allows
- * cancelling the sequence at any time. A well-behaved
+ * disposing the sequence at any time. A well-behaved
  * {@code MaybeSource} will call a {@code MaybeObserver}'s {@link #onSuccess(Object)}, {@link #onError(Throwable)}
  * or {@link #onComplete()} method exactly once as they are considered mutually exclusive <strong>terminal signals</strong>.
  * <p>

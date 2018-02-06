@@ -21,7 +21,7 @@ import io.reactivex.disposables.Disposable;
  * <p>
  * When a {@code CompletableObserver} is subscribed to a {@link CompletableSource} through the {@link CompletableSource#subscribe(CompletableObserver)} method,
  * the {@code CompletableSource} calls {@link #onSubscribe(Disposable)}  with a {@link Disposable} that allows
- * cancelling the sequence at any time. A well-behaved
+ * disposing the sequence at any time. A well-behaved
  * {@code CompletableSource} will call a {@code CompletableObserver}'s {@link #onError(Throwable)}
  * or {@link #onComplete()} method exactly once as they are considered mutually exclusive <strong>terminal signals</strong>.
  * <p>
@@ -35,7 +35,7 @@ import io.reactivex.disposables.Disposable;
  * happens, it is the duty of the {@code CompletableObserver} implementation to be ready to receive multiple calls to
  * its methods and ensure proper concurrent behavior of its business logic.
  * <p>
- * Calling {@link #onSubscribe(Disposable)} or{@link #onError(Throwable)} with a
+ * Calling {@link #onSubscribe(Disposable)} or {@link #onError(Throwable)} with a
  * {@code null} argument is forbidden.
  * <p>
  * The implementations of the {@code onXXX} methods should avoid throwing runtime exceptions other than the following cases:

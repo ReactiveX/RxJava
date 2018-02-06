@@ -21,7 +21,7 @@ import io.reactivex.disposables.Disposable;
  * <p>
  * When an {@code Observer} is subscribed to an {@link ObservableSource} through the {@link ObservableSource#subscribe(Observer)} method,
  * the {@code ObservableSource} calls {@link #onSubscribe(Disposable)}  with a {@link Disposable} that allows
- * cancelling the sequence at any time, then the
+ * disposing the sequence at any time, then the
  * {@code ObservableSource} may call the Observer's {@link #onNext} method any number of times
  * to provide notifications. A well-behaved
  * {@code ObservableSource} will call an {@code Observer}'s {@link #onComplete} method exactly once or the {@code Observer}'s
