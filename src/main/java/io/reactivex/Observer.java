@@ -40,7 +40,8 @@ import io.reactivex.disposables.Disposable;
  * Calling {@link #onSubscribe(Disposable)}, {@link #onNext(Object)} or {@link #onError(Throwable)} with a
  * {@code null} argument is forbidden.
  * <p>
- * The implementations of the {@code onXXX} methods should avoid throwing runtime exceptions other than the following cases:
+ * The implementations of the {@code onXXX} methods should avoid throwing runtime exceptions other than the following cases
+ * (see <a href="https://github.com/reactive-streams/reactive-streams-jvm#2.13">Rule 2.13</a> of the Reactive Streams specification):
  * <ul>
  * <li>If the argument is {@code null}, the methods can throw a {@code NullPointerException}.
  * Note though that RxJava prevents {@code null}s to enter into the flow and thus there is generally no
@@ -48,6 +49,27 @@ import io.reactivex.disposables.Disposable;
  * </li>
  * <li>If there is a fatal error (such as {@code VirtualMachineError}).</li>
  * </ul>
+ * <p>
+ * Violating Rule 2.13 results in undefined flow behavior. Generally, the following can happen:
+ * <ul>
+ * <li>An upstream operator turns it into an {@link #onError} call.</li>
+ * <li>If the flow is synchronous, the {@link ObservableSource#subscribe(Observer)} throws instead of returning normally.</li>
+ * <li>If the flow is asynchronous, the exception propagates up to the component ({@link Scheduler} or {@link java.util.concurrent.Executor})
+ * providing the asynchronous boundary the code is running and either routes the exception to the global
+ * {@link io.reactivex.plugins.RxJavaPlugins#onError(Throwable)} handler or the current thread's
+ * {@link java.lang.Thread.UncaughtExceptionHandler#uncaughtException(Thread, Throwable)} handler.</li>
+ * </ul>
+ * From the {@code Observable}'s perspective, an {@code Observer} is the end consumer thus it is the {@code Observer}'s
+ * responsibility to handle the error case and signal it "further down". This means unreliable code in the {@code onXXX}
+ * methods should be wrapped into `try-catch`es, specifically in {@link #onError(Throwable)} or {@link #onComplete()}, and handled there
+ * (for example, by logging it or presenting the user with an error dialog). However, if the error would be thrown from
+ * {@link #onNext(Object)}, <a href="https://github.com/reactive-streams/reactive-streams-jvm#2.13">Rule 2.13</a> mandates
+ * the implementation calls {@link Disposable#dispose()} and signals the exception in a way that is adequate to the target context,
+ * for example, by calling {@link #onError(Throwable)} on the same {@code Observer} instance.
+ * <p>
+ * If, for some reason, the {@code Observer} won't follow Rule 2.13, the {@link Observable#safeSubscribe(Observer)} can wrap it
+ * with the necessary safeguards and route exceptions thrown from {@code onNext} into {@code onError} and route exceptions thrown
+ * from {@code onError} and {@code onComplete} into the global error handler via {@link io.reactivex.plugins.RxJavaPlugins#onError(Throwable)}.
  * @see <a href="http://reactivex.io/documentation/observable.html">ReactiveX documentation: Observable</a>
  * @param <T>
  *          the type of item the Observer expects to observe
