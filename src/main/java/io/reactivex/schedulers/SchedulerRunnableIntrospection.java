@@ -15,10 +15,15 @@ import io.reactivex.functions.Function;
 import io.reactivex.plugins.RxJavaPlugins;
 
 /**
- * Interface to wrap an action inside internal scheduler's task.
- *
- * You can check if runnable implements this interface and unwrap original runnable.
- * For example inside of the {@link RxJavaPlugins#setScheduleHandler(Function)}
+ * Interface to indicate the implementor class wraps a {@code Runnable} that can
+ * be accessed via {@link #getWrappedRunnable()}.
+ * <p>
+ * You can check if a {@link Runnable} task submitted to a {@link io.reactivex.Scheduler Scheduler} (or its
+ * {@link io.reactivex.Scheduler.Worker Scheduler.Worker}) implements this interface and unwrap the
+ * original {@code Runnable} instance. This could help to avoid hooking the same underlying {@code Runnable}
+ * task in a custom {@link RxJavaPlugins#onSchedule(Runnable)} hook set via
+ * the {@link RxJavaPlugins#setScheduleHandler(Function)} method multiple times due to internal delegation
+ * of the default {@code Scheduler.scheduleDirect} or {@code Scheduler.Worker.schedule} methods.
  *
  * @since 2.1.7 - experimental
  */
