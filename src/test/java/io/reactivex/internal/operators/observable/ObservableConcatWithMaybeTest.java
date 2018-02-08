@@ -134,4 +134,46 @@ public class ObservableConcatWithMaybeTest {
         .assertResult(1);
     }
 
+    @Test
+    public void badSource() {
+        new Observable<Integer>() {
+            @Override
+            protected void subscribeActual(Observer<? super Integer> s) {
+                Disposable bs1 = Disposables.empty();
+                s.onSubscribe(bs1);
+
+                Disposable bs2 = Disposables.empty();
+                s.onSubscribe(bs2);
+
+                assertFalse(bs1.isDisposed());
+                assertTrue(bs2.isDisposed());
+
+                s.onComplete();
+            }
+        }.concatWith(Maybe.<Integer>empty())
+        .test()
+        .assertResult();
+    }
+
+    @Test
+    public void badSource2() {
+        Flowable.empty().concatWith(new Maybe<Integer>() {
+            @Override
+            protected void subscribeActual(MaybeObserver<? super Integer> s) {
+                Disposable bs1 = Disposables.empty();
+                s.onSubscribe(bs1);
+
+                Disposable bs2 = Disposables.empty();
+                s.onSubscribe(bs2);
+
+                assertFalse(bs1.isDisposed());
+                assertTrue(bs2.isDisposed());
+
+                s.onComplete();
+            }
+        })
+        .test()
+        .assertResult();
+    }
+
 }
