@@ -19,7 +19,7 @@ import org.testng.annotations.Test;
 import io.reactivex.*;
 
 @Test
-public class ConcatWithMaybeCompletableTckTest extends BaseTck<Integer> {
+public class ConcatWithCompletableTckTest extends BaseTck<Integer> {
 
     @Override
     public Publisher<Integer> createPublisher(long elements) {
