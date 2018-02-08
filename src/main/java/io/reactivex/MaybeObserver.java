@@ -17,14 +17,38 @@ import io.reactivex.annotations.*;
 import io.reactivex.disposables.Disposable;
 
 /**
- * Provides a mechanism for receiving push-based notifications.
+ * Provides a mechanism for receiving push-based notification of a single value, an error or completion without any value.
  * <p>
- * After a MaybeObserver calls a {@link Maybe}'s {@link Maybe#subscribe subscribe} method,
- * first the Maybe calls {@link #onSubscribe(Disposable)} with a {@link Disposable} that allows
- * cancelling the sequence at any time, then the
- * {@code Maybe} calls only one of the MaybeObserver's {@link #onSuccess}, {@link #onError} or
- * {@link #onComplete} methods to provide notifications.
- *
+ * When a {@code MaybeObserver} is subscribed to a {@link MaybeSource} through the {@link MaybeSource#subscribe(MaybeObserver)} method,
+ * the {@code MaybeSource} calls {@link #onSubscribe(Disposable)}  with a {@link Disposable} that allows
+ * disposing the sequence at any time. A well-behaved
+ * {@code MaybeSource} will call a {@code MaybeObserver}'s {@link #onSuccess(Object)}, {@link #onError(Throwable)}
+ * or {@link #onComplete()} method exactly once as they are considered mutually exclusive <strong>terminal signals</strong>.
+ * <p>
+ * Calling the {@code MaybeObserver}'s method must happen in a serialized fashion, that is, they must not
+ * be invoked concurrently by multiple threads in an overlapping fashion and the invocation pattern must
+ * adhere to the following protocol:
+ * <p>
+ * <pre><code>    onSubscribe (onSuccess | onError | onComplete)?</code></pre>
+ * <p>
+ * Note that unlike with the {@code Observable} protocol, {@link #onComplete()} is not called after the success item has been
+ * signalled via {@link #onSuccess(Object)}.
+ * <p>
+ * Subscribing a {@code MaybeObserver} to multiple {@code MaybeSource}s is not recommended. If such reuse
+ * happens, it is the duty of the {@code MaybeObserver} implementation to be ready to receive multiple calls to
+ * its methods and ensure proper concurrent behavior of its business logic.
+ * <p>
+ * Calling {@link #onSubscribe(Disposable)}, {@link #onSuccess(Object)} or {@link #onError(Throwable)} with a
+ * {@code null} argument is forbidden.
+ * <p>
+ * The implementations of the {@code onXXX} methods should avoid throwing runtime exceptions other than the following cases:
+ * <ul>
+ * <li>If the argument is {@code null}, the methods can throw a {@code NullPointerException}.
+ * Note though that RxJava prevents {@code null}s to enter into the flow and thus there is generally no
+ * need to check for nulls in flows assembled from standard sources and intermediate operators.
+ * </li>
+ * <li>If there is a fatal error (such as {@code VirtualMachineError}).</li>
+ * </ul>
  * @see <a href="http://reactivex.io/documentation/observable.html">ReactiveX documentation: Observable</a>
  * @param <T>
  *          the type of item the MaybeObserver expects to observe

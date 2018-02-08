@@ -17,14 +17,35 @@ import io.reactivex.annotations.*;
 import io.reactivex.disposables.Disposable;
 
 /**
- * Provides a mechanism for receiving push-based notifications.
+ * Provides a mechanism for receiving push-based notification of a single value or an error.
  * <p>
- * After a SingleObserver calls a {@link Single}'s {@link Single#subscribe subscribe} method,
- * first the Single calls {@link #onSubscribe(Disposable)} with a {@link Disposable} that allows
- * cancelling the sequence at any time, then the
- * {@code Single} calls only one of the SingleObserver {@link #onSuccess} and {@link #onError} methods to provide
- * notifications.
- *
+ * When a {@code SingleObserver} is subscribed to a {@link SingleSource} through the {@link SingleSource#subscribe(SingleObserver)} method,
+ * the {@code SingleSource} calls {@link #onSubscribe(Disposable)}  with a {@link Disposable} that allows
+ * disposing the sequence at any time. A well-behaved
+ * {@code SingleSource} will call a {@code SingleObserver}'s {@link #onSuccess(Object)} method exactly once or the {@code SingleObserver}'s
+ * {@link #onError} method exactly once as they are considered mutually exclusive <strong>terminal signals</strong>.
+ * <p>
+ * Calling the {@code SingleObserver}'s method must happen in a serialized fashion, that is, they must not
+ * be invoked concurrently by multiple threads in an overlapping fashion and the invocation pattern must
+ * adhere to the following protocol:
+ * <p>
+ * <pre><code>    onSubscribe (onSuccess | onError)?</code></pre>
+ * <p>
+ * Subscribing a {@code SingleObserver} to multiple {@code SingleSource}s is not recommended. If such reuse
+ * happens, it is the duty of the {@code SingleObserver} implementation to be ready to receive multiple calls to
+ * its methods and ensure proper concurrent behavior of its business logic.
+ * <p>
+ * Calling {@link #onSubscribe(Disposable)}, {@link #onSuccess(Object)} or {@link #onError(Throwable)} with a
+ * {@code null} argument is forbidden.
+ * <p>
+ * The implementations of the {@code onXXX} methods should avoid throwing runtime exceptions other than the following cases:
+ * <ul>
+ * <li>If the argument is {@code null}, the methods can throw a {@code NullPointerException}.
+ * Note though that RxJava prevents {@code null}s to enter into the flow and thus there is generally no
+ * need to check for nulls in flows assembled from standard sources and intermediate operators.
+ * </li>
+ * <li>If there is a fatal error (such as {@code VirtualMachineError}).</li>
+ * </ul>
  * @see <a href="http://reactivex.io/documentation/observable.html">ReactiveX documentation: Observable</a>
  * @param <T>
  *          the type of item the SingleObserver expects to observe

@@ -17,7 +17,36 @@ import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.Disposable;
 
 /**
- * Represents the subscription API callbacks when subscribing to a Completable instance.
+ * Provides a mechanism for receiving push-based notification of a valueless completion or an error.
+ * <p>
+ * When a {@code CompletableObserver} is subscribed to a {@link CompletableSource} through the {@link CompletableSource#subscribe(CompletableObserver)} method,
+ * the {@code CompletableSource} calls {@link #onSubscribe(Disposable)}  with a {@link Disposable} that allows
+ * disposing the sequence at any time. A well-behaved
+ * {@code CompletableSource} will call a {@code CompletableObserver}'s {@link #onError(Throwable)}
+ * or {@link #onComplete()} method exactly once as they are considered mutually exclusive <strong>terminal signals</strong>.
+ * <p>
+ * Calling the {@code CompletableObserver}'s method must happen in a serialized fashion, that is, they must not
+ * be invoked concurrently by multiple threads in an overlapping fashion and the invocation pattern must
+ * adhere to the following protocol:
+ * <p>
+ * <pre><code>    onSubscribe (onError | onComplete)?</code></pre>
+ * <p>
+ * Subscribing a {@code CompletableObserver} to multiple {@code CompletableSource}s is not recommended. If such reuse
+ * happens, it is the duty of the {@code CompletableObserver} implementation to be ready to receive multiple calls to
+ * its methods and ensure proper concurrent behavior of its business logic.
+ * <p>
+ * Calling {@link #onSubscribe(Disposable)} or {@link #onError(Throwable)} with a
+ * {@code null} argument is forbidden.
+ * <p>
+ * The implementations of the {@code onXXX} methods should avoid throwing runtime exceptions other than the following cases:
+ * <ul>
+ * <li>If the argument is {@code null}, the methods can throw a {@code NullPointerException}.
+ * Note though that RxJava prevents {@code null}s to enter into the flow and thus there is generally no
+ * need to check for nulls in flows assembled from standard sources and intermediate operators.
+ * </li>
+ * <li>If there is a fatal error (such as {@code VirtualMachineError}).</li>
+ * </ul>
+ * @since 2.0
  */
 public interface CompletableObserver {
     /**
