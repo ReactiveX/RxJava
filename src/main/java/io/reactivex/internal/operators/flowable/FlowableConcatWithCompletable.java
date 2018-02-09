@@ -91,9 +91,9 @@ public final class FlowableConcatWithCompletable<T> extends AbstractFlowableWith
             } else {
                 inCompletable = true;
                 upstream = SubscriptionHelper.CANCELLED;
-                CompletableSource c = other;
+                CompletableSource cs = other;
                 other = null;
-                c.subscribe(this);
+                cs.subscribe(this);
             }
         }
 

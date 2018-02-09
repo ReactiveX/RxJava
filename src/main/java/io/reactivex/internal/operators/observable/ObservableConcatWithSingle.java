@@ -83,9 +83,9 @@ public final class ObservableConcatWithSingle<T> extends AbstractObservableWithU
         public void onComplete() {
             inSingle = true;
             DisposableHelper.replace(this, null);
-            SingleSource<? extends T> c = other;
+            SingleSource<? extends T> ss = other;
             other = null;
-            c.subscribe(this);
+            ss.subscribe(this);
         }
 
         @Override

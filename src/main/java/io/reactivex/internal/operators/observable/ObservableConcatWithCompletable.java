@@ -80,9 +80,9 @@ public final class ObservableConcatWithCompletable<T> extends AbstractObservable
             } else {
                 inCompletable = true;
                 DisposableHelper.replace(this, null);
-                CompletableSource c = other;
+                CompletableSource cs = other;
                 other = null;
-                c.subscribe(this);
+                cs.subscribe(this);
             }
         }
 

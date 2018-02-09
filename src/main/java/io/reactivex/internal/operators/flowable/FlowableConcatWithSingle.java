@@ -83,9 +83,9 @@ public final class FlowableConcatWithSingle<T> extends AbstractFlowableWithUpstr
         @Override
         public void onComplete() {
             s = SubscriptionHelper.CANCELLED;
-            SingleSource<? extends T> c = other;
+            SingleSource<? extends T> ss = other;
             other = null;
-            c.subscribe(this);
+            ss.subscribe(this);
         }
 
         @Override

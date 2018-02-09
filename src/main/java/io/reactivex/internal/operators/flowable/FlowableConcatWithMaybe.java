@@ -89,9 +89,9 @@ public final class FlowableConcatWithMaybe<T> extends AbstractFlowableWithUpstre
             } else {
                 inMaybe = true;
                 s = SubscriptionHelper.CANCELLED;
-                MaybeSource<? extends T> c = other;
+                MaybeSource<? extends T> ms = other;
                 other = null;
-                c.subscribe(this);
+                ms.subscribe(this);
             }
         }
 

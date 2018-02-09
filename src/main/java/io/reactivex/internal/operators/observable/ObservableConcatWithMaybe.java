@@ -86,9 +86,9 @@ public final class ObservableConcatWithMaybe<T> extends AbstractObservableWithUp
             } else {
                 inMaybe = true;
                 DisposableHelper.replace(this, null);
-                MaybeSource<? extends T> c = other;
+                MaybeSource<? extends T> ms = other;
                 other = null;
-                c.subscribe(this);
+                ms.subscribe(this);
             }
         }
 
