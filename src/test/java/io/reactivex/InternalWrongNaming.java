@@ -179,7 +179,13 @@ public class InternalWrongNaming {
                 "FlowableFlatMapCompletableCompletable",
                 "FlowableFlatMapSingle",
                 "FlowableFlatMapMaybe",
-                "FlowableSequenceEqualSingle"
+                "FlowableSequenceEqualSingle",
+                "FlowableConcatWithSingle",
+                "FlowableConcatWithMaybe",
+                "FlowableConcatWithCompletable",
+                "FlowableMergeWithSingle",
+                "FlowableMergeWithMaybe",
+                "FlowableMergeWithCompletable"
         );
     }
 }
