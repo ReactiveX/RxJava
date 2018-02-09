@@ -83,6 +83,10 @@ public final class FlowableMergeWithMaybe<T> extends AbstractFlowableWithUpstrea
 
         int consumed;
 
+        static final int OTHER_STATE_HAS_VALUE = 1;
+
+        static final int OTHER_STATE_CONSUMED_OR_EMPTY = 2;
+
         MergeWithObserver(Subscriber<? super T> actual) {
             this.actual = actual;
             this.mainSubscription = new AtomicReference<Subscription>();
@@ -178,17 +182,17 @@ public final class FlowableMergeWithMaybe<T> extends AbstractFlowableWithUpstrea
 
                     emitted = e + 1;
                     actual.onNext(value);
-                    otherState = 2;
+                    otherState = OTHER_STATE_CONSUMED_OR_EMPTY;
                 } else {
                     singleItem = value;
-                    otherState = 1;
+                    otherState = OTHER_STATE_HAS_VALUE;
                     if (decrementAndGet() == 0) {
                         return;
                     }
                 }
             } else {
                 singleItem = value;
-                otherState = 1;
+                otherState = OTHER_STATE_HAS_VALUE;
                 if (getAndIncrement() != 0) {
                     return;
                 }
@@ -206,7 +210,7 @@ public final class FlowableMergeWithMaybe<T> extends AbstractFlowableWithUpstrea
         }
 
         void otherComplete() {
-            otherState = 2;
+            otherState = OTHER_STATE_CONSUMED_OR_EMPTY;
             drain();
         }
 
@@ -250,11 +254,11 @@ public final class FlowableMergeWithMaybe<T> extends AbstractFlowableWithUpstrea
                     }
 
                     int os = otherState;
-                    if (os == 1) {
+                    if (os == OTHER_STATE_HAS_VALUE) {
                         T v = singleItem;
                         singleItem = null;
-                        otherState = 2;
-                        os = 2;
+                        otherState = OTHER_STATE_CONSUMED_OR_EMPTY;
+                        os = OTHER_STATE_CONSUMED_OR_EMPTY;
                         actual.onNext(v);
 
                         e++;
@@ -266,7 +270,7 @@ public final class FlowableMergeWithMaybe<T> extends AbstractFlowableWithUpstrea
                     T v = q != null ? q.poll() : null;
                     boolean empty = v == null;
 
-                    if (d && empty && os == 2) {
+                    if (d && empty && os == OTHER_STATE_CONSUMED_OR_EMPTY) {
                         queue = null;
                         actual.onComplete();
                         return;

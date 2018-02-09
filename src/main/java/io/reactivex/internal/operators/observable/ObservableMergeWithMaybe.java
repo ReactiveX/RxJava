@@ -70,6 +70,10 @@ public final class ObservableMergeWithMaybe<T> extends AbstractObservableWithUps
 
         volatile int otherState;
 
+        static final int OTHER_STATE_HAS_VALUE = 1;
+
+        static final int OTHER_STATE_CONSUMED_OR_EMPTY = 2;
+
         MergeWithObserver(Observer<? super T> actual) {
             this.actual = actual;
             this.mainDisposable = new AtomicReference<Disposable>();
@@ -134,10 +138,10 @@ public final class ObservableMergeWithMaybe<T> extends AbstractObservableWithUps
         void otherSuccess(T value) {
             if (compareAndSet(0, 1)) {
                 actual.onNext(value);
-                otherState = 2;
+                otherState = OTHER_STATE_CONSUMED_OR_EMPTY;
             } else {
                 singleItem = value;
-                otherState = 1;
+                otherState = OTHER_STATE_HAS_VALUE;
                 if (getAndIncrement() != 0) {
                     return;
                 }
@@ -155,7 +159,7 @@ public final class ObservableMergeWithMaybe<T> extends AbstractObservableWithUps
         }
 
         void otherComplete() {
-            otherState = 2;
+            otherState = OTHER_STATE_CONSUMED_OR_EMPTY;
             drain();
         }
 
@@ -194,11 +198,11 @@ public final class ObservableMergeWithMaybe<T> extends AbstractObservableWithUps
                     }
 
                     int os = otherState;
-                    if (os == 1) {
+                    if (os == OTHER_STATE_HAS_VALUE) {
                         T v = singleItem;
                         singleItem = null;
-                        otherState = 2;
-                        os = 2;
+                        otherState = OTHER_STATE_CONSUMED_OR_EMPTY;
+                        os = OTHER_STATE_CONSUMED_OR_EMPTY;
                         actual.onNext(v);
                     }
 
@@ -207,7 +211,7 @@ public final class ObservableMergeWithMaybe<T> extends AbstractObservableWithUps
                     T v = q != null ? q.poll() : null;
                     boolean empty = v == null;
 
-                    if (d && empty && os == 2) {
+                    if (d && empty && os == OTHER_STATE_CONSUMED_OR_EMPTY) {
                         queue = null;
                         actual.onComplete();
                         return;

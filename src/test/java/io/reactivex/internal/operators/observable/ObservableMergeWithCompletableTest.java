@@ -28,47 +28,47 @@ public class ObservableMergeWithCompletableTest {
 
     @Test
     public void normal() {
-        final TestObserver<Integer> ts = new TestObserver<Integer>();
+        final TestObserver<Integer> to = new TestObserver<Integer>();
 
         Observable.range(1, 5).mergeWith(
                 Completable.fromAction(new Action() {
                     @Override
                     public void run() throws Exception {
-                        ts.onNext(100);
+                        to.onNext(100);
                     }
                 })
         )
-        .subscribe(ts);
+        .subscribe(to);
 
-        ts.assertResult(1, 2, 3, 4, 5, 100);
+        to.assertResult(1, 2, 3, 4, 5, 100);
     }
 
     @Test
     public void take() {
-        final TestObserver<Integer> ts = new TestObserver<Integer>();
+        final TestObserver<Integer> to = new TestObserver<Integer>();
 
         Observable.range(1, 5).mergeWith(
                 Completable.complete()
         )
         .take(3)
-        .subscribe(ts);
+        .subscribe(to);
 
-        ts.assertResult(1, 2, 3);
+        to.assertResult(1, 2, 3);
     }
 
     @Test
     public void cancel() {
-        final PublishSubject<Integer> pp = PublishSubject.create();
+        final PublishSubject<Integer> ps = PublishSubject.create();
         final CompletableSubject cs = CompletableSubject.create();
 
-        TestObserver<Integer> ts = pp.mergeWith(cs).test();
+        TestObserver<Integer> to = ps.mergeWith(cs).test();
 
-        assertTrue(pp.hasObservers());
+        assertTrue(ps.hasObservers());
         assertTrue(cs.hasObservers());
 
-        ts.cancel();
+        to.cancel();
 
-        assertFalse(pp.hasObservers());
+        assertFalse(ps.hasObservers());
         assertFalse(cs.hasObservers());
     }
 
@@ -91,16 +91,16 @@ public class ObservableMergeWithCompletableTest {
     @Test
     public void completeRace() {
         for (int i = 0; i < 1000; i++) {
-            final PublishSubject<Integer> pp = PublishSubject.create();
+            final PublishSubject<Integer> ps = PublishSubject.create();
             final CompletableSubject cs = CompletableSubject.create();
 
-            TestObserver<Integer> ts = pp.mergeWith(cs).test();
+            TestObserver<Integer> to = ps.mergeWith(cs).test();
 
             Runnable r1 = new Runnable() {
                 @Override
                 public void run() {
-                    pp.onNext(1);
-                    pp.onComplete();
+                    ps.onNext(1);
+                    ps.onComplete();
                 }
             };
 
@@ -113,7 +113,7 @@ public class ObservableMergeWithCompletableTest {
 
             TestHelper.race(r1, r2);
 
-            ts.assertResult(1);
+            to.assertResult(1);
         }
     }
 

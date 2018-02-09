@@ -45,15 +45,11 @@ public class FlowableMergeWithCompletableTest {
 
     @Test
     public void take() {
-        final TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
-
-        Flowable.range(1, 5).mergeWith(
-                Completable.complete()
-        )
+        Flowable.range(1, 5)
+        .mergeWith(Completable.complete())
         .take(3)
-        .subscribe(ts);
-
-        ts.assertResult(1, 2, 3);
+        .test()
+        .assertResult(1, 2, 3);
     }
 
     @Test

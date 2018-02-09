@@ -33,67 +33,51 @@ public class ObservableMergeWithMaybeTest {
 
     @Test
     public void normal() {
-        final TestObserver<Integer> ts = new TestObserver<Integer>();
-
-        Observable.range(1, 5).mergeWith(
-                Maybe.just(100)
-        )
-        .subscribe(ts);
-
-        ts.assertResult(1, 2, 3, 4, 5, 100);
+        Observable.range(1, 5)
+        .mergeWith(Maybe.just(100))
+        .test()
+        .assertResult(1, 2, 3, 4, 5, 100);
     }
 
     @Test
     public void emptyOther() {
-        final TestObserver<Integer> ts = new TestObserver<Integer>();
-
-        Observable.range(1, 5).mergeWith(
-                Maybe.<Integer>empty()
-        )
-        .subscribe(ts);
-
-        ts.assertResult(1, 2, 3, 4, 5);
+        Observable.range(1, 5)
+        .mergeWith(Maybe.<Integer>empty())
+        .test()
+        .assertResult(1, 2, 3, 4, 5);
     }
 
     @Test
     public void normalLong() {
-        final TestObserver<Integer> ts = new TestObserver<Integer>();
-
-        Observable.range(1, 512).mergeWith(
-                Maybe.just(100)
-        )
-        .subscribe(ts);
-
-        ts.assertValueCount(513)
+        Observable.range(1, 512)
+        .mergeWith(Maybe.just(100))
+        .test()
+        .assertValueCount(513)
         .assertComplete();
     }
 
     @Test
     public void take() {
-        final TestObserver<Integer> ts = new TestObserver<Integer>();
-
-        Observable.range(1, 5).mergeWith(
-                Maybe.just(100)
-        )
+        Observable.range(1, 5)
+        .mergeWith(Maybe.just(100))
         .take(3)
-        .subscribe(ts);
-
-        ts.assertResult(1, 2, 3);
+        .test()
+        .assertResult(1, 2, 3);
     }
 
     @Test
     public void cancel() {
-        final PublishSubject<Integer> pp = PublishSubject.create();
+        final PublishSubject<Integer> ps = PublishSubject.create();
         final MaybeSubject<Integer> cs = MaybeSubject.create();
 
-        TestObserver<Integer> ts = pp.mergeWith(cs).test();
+        TestObserver<Integer> to = ps.mergeWith(cs).test();
 
-        assertTrue(pp.hasObservers());
+        assertTrue(ps.hasObservers());
         assertTrue(cs.hasObservers());
 
-        ts.cancel();
+        to.cancel();
 
-        assertFalse(pp.hasObservers());
+        assertFalse(ps.hasObservers());
         assertFalse(cs.hasObservers());
     }
 
@@ -116,16 +100,16 @@ public class ObservableMergeWithMaybeTest {
     @Test
     public void completeRace() {
         for (int i = 0; i < 10000; i++) {
-            final PublishSubject<Integer> pp = PublishSubject.create();
+            final PublishSubject<Integer> ps = PublishSubject.create();
             final MaybeSubject<Integer> cs = MaybeSubject.create();
 
-            TestObserver<Integer> ts = pp.mergeWith(cs).test();
+            TestObserver<Integer> to = ps.mergeWith(cs).test();
 
             Runnable r1 = new Runnable() {
                 @Override
                 public void run() {
-                    pp.onNext(1);
-                    pp.onComplete();
+                    ps.onNext(1);
+                    ps.onComplete();
                 }
             };
 
@@ -138,40 +122,40 @@ public class ObservableMergeWithMaybeTest {
 
             TestHelper.race(r1, r2);
 
-            ts.assertResult(1, 1);
+            to.assertResult(1, 1);
         }
     }
 
     @Test
     public void onNextSlowPath() {
-        final PublishSubject<Integer> pp = PublishSubject.create();
+        final PublishSubject<Integer> ps = PublishSubject.create();
         final MaybeSubject<Integer> cs = MaybeSubject.create();
 
-        TestObserver<Integer> ts = pp.mergeWith(cs).subscribeWith(new TestObserver<Integer>() {
+        TestObserver<Integer> to = ps.mergeWith(cs).subscribeWith(new TestObserver<Integer>() {
             @Override
             public void onNext(Integer t) {
                 super.onNext(t);
                 if (t == 1) {
-                    pp.onNext(2);
+                    ps.onNext(2);
                 }
             }
         });
 
-        pp.onNext(1);
+        ps.onNext(1);
         cs.onSuccess(3);
 
-        pp.onNext(4);
-        pp.onComplete();
+        ps.onNext(4);
+        ps.onComplete();
 
-        ts.assertResult(1, 2, 3, 4);
+        to.assertResult(1, 2, 3, 4);
     }
 
     @Test
     public void onSuccessSlowPath() {
-        final PublishSubject<Integer> pp = PublishSubject.create();
+        final PublishSubject<Integer> ps = PublishSubject.create();
         final MaybeSubject<Integer> cs = MaybeSubject.create();
 
-        TestObserver<Integer> ts = pp.mergeWith(cs).subscribeWith(new TestObserver<Integer>() {
+        TestObserver<Integer> to = ps.mergeWith(cs).subscribeWith(new TestObserver<Integer>() {
             @Override
             public void onNext(Integer t) {
                 super.onNext(t);
@@ -181,12 +165,12 @@ public class ObservableMergeWithMaybeTest {
             }
         });
 
-        pp.onNext(1);
+        ps.onNext(1);
 
-        pp.onNext(3);
-        pp.onComplete();
+        ps.onNext(3);
+        ps.onComplete();
 
-        ts.assertResult(1, 2, 3);
+        to.assertResult(1, 2, 3);
     }
 
     @Test
@@ -194,7 +178,7 @@ public class ObservableMergeWithMaybeTest {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
             final AtomicReference<Observer<?>> subscriber = new AtomicReference<Observer<?>>();
-            TestObserver<Integer> ts = new Observable<Integer>() {
+            TestObserver<Integer> to = new Observable<Integer>() {
                 @Override
                 protected void subscribeActual(Observer<? super Integer> s) {
                     s.onSubscribe(Disposables.empty());
@@ -206,7 +190,7 @@ public class ObservableMergeWithMaybeTest {
 
             subscriber.get().onError(new TestException());
 
-            ts.assertFailure(IOException.class)
+            to.assertFailure(IOException.class)
             ;
 
             TestHelper.assertUndeliverable(errors, 0, TestException.class);
@@ -265,27 +249,27 @@ public class ObservableMergeWithMaybeTest {
 
     @Test
     public void onNextSlowPathCreateQueue() {
-        final PublishSubject<Integer> pp = PublishSubject.create();
+        final PublishSubject<Integer> ps = PublishSubject.create();
         final MaybeSubject<Integer> cs = MaybeSubject.create();
 
-        TestObserver<Integer> ts = pp.mergeWith(cs).subscribeWith(new TestObserver<Integer>() {
+        TestObserver<Integer> to = ps.mergeWith(cs).subscribeWith(new TestObserver<Integer>() {
             @Override
             public void onNext(Integer t) {
                 super.onNext(t);
                 if (t == 1) {
-                    pp.onNext(2);
-                    pp.onNext(3);
+                    ps.onNext(2);
+                    ps.onNext(3);
                 }
             }
         });
 
         cs.onSuccess(0);
-        pp.onNext(1);
+        ps.onNext(1);
 
-        pp.onNext(4);
-        pp.onComplete();
+        ps.onNext(4);
+        ps.onComplete();
 
-        ts.assertResult(0, 1, 2, 3, 4);
+        to.assertResult(0, 1, 2, 3, 4);
     }
 
 }

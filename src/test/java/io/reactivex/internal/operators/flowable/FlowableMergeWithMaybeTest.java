@@ -35,65 +35,45 @@ public class FlowableMergeWithMaybeTest {
 
     @Test
     public void normal() {
-        final TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
-
-        Flowable.range(1, 5).mergeWith(
-                Maybe.just(100)
-        )
-        .subscribe(ts);
-
-        ts.assertResult(1, 2, 3, 4, 5, 100);
+        Flowable.range(1, 5)
+        .mergeWith(Maybe.just(100))
+        .test()
+        .assertResult(1, 2, 3, 4, 5, 100);
     }
 
     @Test
     public void emptyOther() {
-        final TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
-
-        Flowable.range(1, 5).mergeWith(
-                Maybe.<Integer>empty()
-        )
-        .subscribe(ts);
-
-        ts.assertResult(1, 2, 3, 4, 5);
+        Flowable.range(1, 5)
+        .mergeWith(Maybe.<Integer>empty())
+        .test()
+        .assertResult(1, 2, 3, 4, 5);
     }
 
     @Test
     public void normalLong() {
-        final TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
-
-        Flowable.range(1, 512).mergeWith(
-                Maybe.just(100)
-        )
-        .subscribe(ts);
-
-        ts.assertValueCount(513)
+        Flowable.range(1, 512)
+        .mergeWith(Maybe.just(100))
+        .test()
+        .assertValueCount(513)
         .assertComplete();
     }
 
     @Test
     public void normalLongRequestExact() {
-        final TestSubscriber<Integer> ts = new TestSubscriber<Integer>(513);
-
-        Flowable.range(1, 512).mergeWith(
-                Maybe.just(100)
-        )
-        .subscribe(ts);
-
-        ts.assertValueCount(513)
+        Flowable.range(1, 512)
+        .mergeWith(Maybe.just(100))
+        .test(513)
+        .assertValueCount(513)
         .assertComplete();
     }
 
     @Test
     public void take() {
-        final TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
-
-        Flowable.range(1, 5).mergeWith(
-                Maybe.just(100)
-        )
+        Flowable.range(1, 5)
+        .mergeWith(Maybe.just(100))
         .take(3)
-        .subscribe(ts);
-
-        ts.assertResult(1, 2, 3);
+        .test()
+        .assertResult(1, 2, 3);
     }
 
     @Test
@@ -114,14 +94,10 @@ public class FlowableMergeWithMaybeTest {
 
     @Test
     public void normalBackpressured() {
-        final TestSubscriber<Integer> ts = new TestSubscriber<Integer>(0L);
-
         Flowable.range(1, 5).mergeWith(
                 Maybe.just(100)
         )
-        .subscribe(ts);
-
-        ts
+        .test(0L)
         .assertEmpty()
         .requestMore(2)
         .assertValues(100, 1)
