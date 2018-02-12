@@ -28,7 +28,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * A {@code Scheduler} is an object that specifies an API for scheduling
  * units of work provided in the form of {@link Runnable}s to be
- * executed immediately, after a specified time delay or periodically
+ * executed without delay (effectively as soon as possible), after a specified time delay or periodically
  * and represents an abstraction over an asynchronous boundary that ensures
  * these units of work get executed by some underlying task-execution scheme
  * (such as custom Threads, event loop, {@link java.util.concurrent.Executor Executor} or Actor system)
@@ -54,7 +54,7 @@ import java.util.concurrent.TimeUnit;
  * for each individual {@link Runnable} task submitted. Implementors of this class are encouraged to provide
  * a more efficient direct scheduling implementation to avoid the time and memory overhead of creating such {@code Worker}s
  * for every task.
- * This delegation is done via special wrapper insances around the original {@code Runnable} before calling the respective
+ * This delegation is done via special wrapper instances around the original {@code Runnable} before calling the respective
  * {@code Worker.schedule} method. Note that this can lead to multiple {@code RxJavaPlugins.onSchedule} calls and potentially
  * multiple hooks applied. Therefore, the default implementations of {@code scheduleDirect} (and the {@link Worker#schedulePeriodically(Runnable, long, long, TimeUnit)})
  * wrap the incoming {@code Runnable} into a class that implements the {@link io.reactivex.schedulers.SchedulerRunnableIntrospection}
@@ -72,7 +72,7 @@ import java.util.concurrent.TimeUnit;
  * the {@link Worker#schedule(Runnable, long, TimeUnit)} for scheduling the {@code Runnable} task periodically.
  * The algorithm calculates the next absolute time when the task should run again and schedules this execution
  * based on the relative time between it and {@link Worker#now(TimeUnit)}. However, drifts or changes in the
- * system clock would affect this calculation either by scheduling subsequent runs too frequently or too far apart.
+ * system clock could affect this calculation either by scheduling subsequent runs too frequently or too far apart.
  * Therefore, the default implementation uses the {@link #clockDriftTolerance()} value (set via
  * {@code rx2.scheduler.drift-tolerance} in minutes) to detect a drift in {@link Worker#now(TimeUnit)} and
  * re-adjust the absolute/relative time calculation accordingly.
@@ -392,11 +392,11 @@ public abstract class Scheduler {
         public abstract Disposable schedule(@NonNull Runnable run, long delay, @NonNull TimeUnit unit);
 
         /**
-         * Schedules a cancelable action to be executed periodically.
+         * Schedules a periodic execution of the given task with the given initial time delay and repeat period.
          * <p>
          * The default implementation schedules and reschedules the {@code Runnable} task via the
          * {@link #schedule(Runnable, long, TimeUnit)}
-         * method over and overand at a fixed rate, that is, the first execution will be after the
+         * method over and over and at a fixed rate, that is, the first execution will be after the
          * {@code initialDelay}, the second after {@code initialDelay + period}, the third after
          * {@code initialDelay + 2 * period}, and so on.
          * <p>
