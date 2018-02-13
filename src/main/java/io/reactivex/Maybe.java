@@ -628,26 +628,42 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     }
 
     /**
-     * Returns a {@link Maybe} that invokes passed function and emits its result for each new MaybeObserver that subscribes
-     * while considering {@code null} value from the callable as indication for valueless completion.
+     * Returns a {@link Maybe} that invokes the given {@link Callable} for each individual {@link MaybeObserver} that
+     * subscribes and emits the resulting non-null item via {@code onSuccess} while
+     * considering a {@code null} result from the {@code Callable} as indication for valueless completion
+     * via {@code onComplete}.
      * <p>
-     * Allows you to defer execution of passed function until MaybeObserver subscribes to the {@link Maybe}.
-     * It makes passed function "lazy".
-     * Result of the function invocation will be emitted by the {@link Maybe}.
+     * This operator allows you to defer the execution of the given {@code Callable} until a {@code MaybeObserver}
+     * subscribes to the  returned {@link Maybe}. In other terms, this source operator evaluates the given
+     * {@code Callable} "lazily".
+     * <p>
+     * Note that the {@code null} handling of this operator differs from the similar source operators in the other
+     * {@link io.reactivex base reactive classes}. Those operators signal a {@code NullPointerException} if the value returned by their
+     * {@code Callable} is {@code null} while this {@code fromCallable} considers it to indicate the
+     * returned {@code Maybe} is empty.
      * <dl>
      *   <dt><b>Scheduler:</b></dt>
      *   <dd>{@code fromCallable} does not operate by default on a particular {@link Scheduler}.</dd>
+     *   <dt><b>Error handling:</b></dt>
+     *   <dd>Any non-fatal exception thrown by {@link Callable#call()} will be forwarded to {@code onError},
+     *   except if the {@code MaybeObserver} disposed the subscription in the meantime. In this latter case,
+     *   the exception is forwarded to the global error handler via
+     *   {@link io.reactivex.plugins.RxJavaPlugins#onError(Throwable)} wrapped into a
+     *   {@link io.reactivex.exceptions.UndeliverableException UndeliverableException}.
+     *   Fatal exceptions are rethrown and usually will end up in the executing thread's
+     *   {@link java.lang.Thread.UncaughtExceptionHandler#uncaughtException(Thread, Throwable)} handler.</dd>
      * </dl>
      *
      * @param callable
-     *         function which execution should be deferred, it will be invoked when MaybeObserver will subscribe to the {@link Maybe}.
+     *         a {@link Callable} instance whose execution should be deferred and performed for each individual
+     *         {@code MaybeObserver} that subscribes to the returned {@link Maybe}.
      * @param <T>
      *         the type of the item emitted by the {@link Maybe}.
-     * @return a {@link Maybe} whose {@link MaybeObserver}s' subscriptions trigger an invocation of the given function.
+     * @return a new Maybe instance
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
-    public static <T> Maybe<T> fromCallable(final Callable<? extends T> callable) {
+    public static <T> Maybe<T> fromCallable(@NonNull final Callable<? extends T> callable) {
         ObjectHelper.requireNonNull(callable, "callable is null");
         return RxJavaPlugins.onAssembly(new MaybeFromCallable<T>(callable));
     }
