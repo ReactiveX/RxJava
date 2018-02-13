@@ -21,9 +21,29 @@ import io.reactivex.functions.Cancellable;
  * Abstraction over an RxJava {@link CompletableObserver} that allows associating
  * a resource with it.
  * <p>
- * All methods are safe to call from multiple threads.
+ * All methods are safe to call from multiple threads, but note that there is no guarantee
+ * whose terminal event will win and get delivered to the downstream.
  * <p>
- * Calling onComplete or onError multiple times has no effect.
+ * Calling {@link #onComplete()} multiple times has no effect.
+ * Calling {@link #onError(Throwable)} multiple times or after {@code onComplete} will route the
+ * exception into the global error handler via {@link io.reactivex.plugins.RxJavaPlugins#onError(Throwable)}.
+ * <p>
+ * The emitter allows the registration of a single resource, in the form of a {@link Disposable}
+ * or {@link Cancellable} via {@link #setDisposable(Disposable)} or {@link #setCancellable(Cancellable)}
+ * respectively. The emitter implementations will dispose/cancel this instance when the
+ * downstream cancels the flow or after the event generator logic calls
+ * {@link #onError(Throwable)}, {@link #onComplete()} or when {@link #tryOnError(Throwable)} succeeds.
+ * <p>
+ * Only one {@code Disposable} or {@code Cancellable} object can be associated with the emitter at
+ * a time. Calling either {@code set} method will dispose/cancel any previous object. If there
+ * is a need for handling multiple resources, one can create a {@link io.reactivex.disposables.CompositeDisposable}
+ * and associate that with the emitter instead.
+ * <p>
+ * The {@link Cancellable} is logically equivalent to {@code Disposable} but allows using cleanup logic that can
+ * throw a checked exception (such as many {@code close()} methods on Java IO components). Since
+ * the release of resources happens after the terminal events have been delivered or the sequence gets
+ * cancelled, exceptions throw within {@code Cancellable} are routed to the global error handler via
+ * {@link io.reactivex.plugins.RxJavaPlugins#onError(Throwable)}.
  */
 public interface CompletableEmitter {
 
@@ -53,8 +73,11 @@ public interface CompletableEmitter {
     void setCancellable(@Nullable Cancellable c);
 
     /**
-     * Returns true if the downstream disposed the sequence.
-     * @return true if the downstream disposed the sequence
+     * Returns true if the downstream disposed the sequence or the
+     * emitter was terminated via {@link #onError(Throwable)},
+     * {@link #onComplete} or a successful {@link #tryOnError(Throwable)}.
+     * <p>This method is thread-safe.
+     * @return true if the downstream disposed the sequence or the emitter was terminated
      */
     boolean isDisposed();
 
