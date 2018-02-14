@@ -847,8 +847,11 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
         }
         @Override
         public void onError(Throwable e) {
-            done = true;
+            // Need to queue the error first before setting done, so that after emitLoop() removes the subscriber,
+            // it is guaranteed to notice the error. Otherwise it would be possible that inner subscribers count was 0,
+            // and at the same time the error queue was empty.
             parent.getOrCreateErrorQueue().offer(e);
+            done = true;
             parent.emit();
         }
         @Override
