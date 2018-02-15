@@ -1,5 +1,12 @@
 # RxJava Releases #
 
+### Version 1.3.6 - February 15, 2018 ([Maven](http://search.maven.org/#artifactdetails%7Cio.reactivex%7Crxjava%7C1.3.6%7C))
+
+#### Bugfixes
+
+- [Pull 5850](https://github.com/ReactiveX/RxJava/pull/5850): Fix a race condition that may make `OperatorMaterialize` emit the wrong signals.
+- [Pull 5851](https://github.com/ReactiveX/RxJava/pull/5851): Fix a race condition in `OperatorMerge.InnerSubscriber#onError` causing incorrect terminal event.
+
 ### Version 1.3.5 - January 27, 2018 ([Maven](http://search.maven.org/#artifactdetails%7Cio.reactivex%7Crxjava%7C1.3.5%7C))
 
 #### Other
