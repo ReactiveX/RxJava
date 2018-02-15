@@ -29,9 +29,12 @@ import org.junit.Test;
 import rx.Notification;
 import rx.Observable;
 import rx.Subscriber;
+import rx.TestUtil;
+import rx.functions.Action0;
 import rx.functions.Action1;
 import rx.observers.TestSubscriber;
 import rx.schedulers.Schedulers;
+import rx.subjects.PublishSubject;
 
 public class OperatorMaterializeTest {
 
@@ -199,6 +202,33 @@ public class OperatorMaterializeTest {
         ts.requestMore(1);
         ts.assertNoValues();
         ts.assertUnsubscribed();
+    }
+
+    @Test
+    public void testConcurrency() {
+        for (int i = 0; i < 1000; i++) {
+            final TestSubscriber<Notification<Integer>> ts = TestSubscriber.create(0);
+            final PublishSubject<Integer> ps = PublishSubject.create();
+            Action0 publishAction = new Action0() {
+                @Override
+                public void call() {
+                    ps.onCompleted();
+                }
+            };
+
+            Action0 requestAction = new Action0() {
+                @Override
+                public void call() {
+                    ts.requestMore(1);
+                }
+            };
+
+            ps.materialize().subscribe(ts);
+            TestUtil.race(publishAction, requestAction);
+            ts.assertValueCount(1);
+            ts.assertTerminalEvent();
+            ts.assertNoErrors();
+        }
     }
 
     private static class TestObserver extends Subscriber<Notification<String>> {

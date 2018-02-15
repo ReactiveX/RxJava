@@ -134,6 +134,7 @@ public final class OperatorMaterialize<T> implements Operator<Notification<T>, T
                     missed = true;
                     return;
                 }
+                busy = true;
             }
             // drain loop
             final AtomicLong localRequested = this.requested;
