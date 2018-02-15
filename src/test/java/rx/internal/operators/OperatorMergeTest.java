@@ -1205,6 +1205,34 @@ public class OperatorMergeTest {
         assertTrue(latch.await(10, TimeUnit.SECONDS));
     }
 
+    @Test
+    public void testConcurrentMergeInnerError() {
+        for (int i = 0; i < 1000; i++) {
+            final TestSubscriber<Integer> ts = TestSubscriber.create();
+            final PublishSubject<Integer> ps1 = PublishSubject.create();
+            final PublishSubject<Integer> ps2 = PublishSubject.create();
+            final Exception error = new NullPointerException();
+            Action0 action1 = new Action0() {
+                @Override
+                public void call() {
+                    ps1.onNext(1);
+                    ps1.onCompleted();
+                }
+            };
+            Action0 action2 = new Action0() {
+                @Override
+                public void call() {
+                    ps2.onError(error);
+                }
+            };
+
+            Observable.mergeDelayError(ps1, ps2).subscribe(ts);
+            TestUtil.race(action1, action2);
+            ts.assertTerminalEvent();
+            ts.assertError(error);
+        }
+    }
+
     private static Action1<Integer> printCount() {
         return new Action1<Integer>() {
             long count;
