@@ -6574,6 +6574,69 @@ public abstract class Observable<T> implements ObservableSource<T> {
     }
 
     /**
+     * Returns an {@code Observable} that emits the items from this {@code Observable} followed by the success item or error event
+     * of the other {@link SingleSource}.
+     * <p>
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concat.png" alt="">
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code concatWith} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param other the SingleSource whose signal should be emitted after this {@code Observable} completes normally.
+     * @return the new Observable instance
+     * @since 2.1.10 - experimental
+     */
+    @CheckReturnValue
+    @SchedulerSupport(SchedulerSupport.NONE)
+    @Experimental
+    public final Observable<T> concatWith(@NonNull SingleSource<? extends T> other) {
+        ObjectHelper.requireNonNull(other, "other is null");
+        return RxJavaPlugins.onAssembly(new ObservableConcatWithSingle<T>(this, other));
+    }
+
+    /**
+     * Returns an {@code Observable} that emits the items from this {@code Observable} followed by the success item or terminal events
+     * of the other {@link MaybeSource}.
+     * <p>
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concat.png" alt="">
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code concatWith} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param other the MaybeSource whose signal should be emitted after this Observable completes normally.
+     * @return the new Observable instance
+     * @since 2.1.10 - experimental
+     */
+    @CheckReturnValue
+    @SchedulerSupport(SchedulerSupport.NONE)
+    @Experimental
+    public final Observable<T> concatWith(@NonNull MaybeSource<? extends T> other) {
+        ObjectHelper.requireNonNull(other, "other is null");
+        return RxJavaPlugins.onAssembly(new ObservableConcatWithMaybe<T>(this, other));
+    }
+
+    /**
+     * Returns an {@code Observable} that emits items from this {@code Observable} and when it completes normally, the
+     * other {@link CompletableSource} is subscribed to and the returned {@code Observable} emits its terminal events.
+     * <p>
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concat.png" alt="">
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code concatWith} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param other the {@code CompletableSource} to subscribe to once the current {@code Observable} completes normally
+     * @return the new Observable instance
+     * @since 2.1.10 - experimental
+     */
+    @CheckReturnValue
+    @SchedulerSupport(SchedulerSupport.NONE)
+    @Experimental
+    public final Observable<T> concatWith(@NonNull CompletableSource other) {
+        ObjectHelper.requireNonNull(other, "other is null");
+        return RxJavaPlugins.onAssembly(new ObservableConcatWithCompletable<T>(this, other));
+    }
+
+    /**
      * Returns a Single that emits a Boolean that indicates whether the source ObservableSource emitted a
      * specified item.
      * <p>

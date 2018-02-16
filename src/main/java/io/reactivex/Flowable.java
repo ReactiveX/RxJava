@@ -7171,6 +7171,83 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     /**
+     * Returns a {@code Flowable} that emits the items from this {@code Flowable} followed by the success item or error event
+     * of the other {@link SingleSource}.
+     * <p>
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concat.png" alt="">
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The operator supports backpressure and makes sure the success item of the other {@code SingleSource}
+     *  is only emitted when there is a demand for it.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code concatWith} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param other the SingleSource whose signal should be emitted after this {@code Flowable} completes normally.
+     * @return the new Flowable instance
+     * @since 2.1.10 - experimental
+     */
+    @CheckReturnValue
+    @BackpressureSupport(BackpressureKind.FULL)
+    @SchedulerSupport(SchedulerSupport.NONE)
+    @Experimental
+    public final Flowable<T> concatWith(@NonNull SingleSource<? extends T> other) {
+        ObjectHelper.requireNonNull(other, "other is null");
+        return RxJavaPlugins.onAssembly(new FlowableConcatWithSingle<T>(this, other));
+    }
+
+    /**
+     * Returns a {@code Flowable} that emits the items from this {@code Flowable} followed by the success item or terminal events
+     * of the other {@link MaybeSource}.
+     * <p>
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concat.png" alt="">
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The operator supports backpressure and makes sure the success item of the other {@code MaybeSource}
+     *  is only emitted when there is a demand for it.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code concatWith} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param other the MaybeSource whose signal should be emitted after this Flowable completes normally.
+     * @return the new Flowable instance
+     * @since 2.1.10 - experimental
+     */
+    @CheckReturnValue
+    @BackpressureSupport(BackpressureKind.FULL)
+    @SchedulerSupport(SchedulerSupport.NONE)
+    @Experimental
+    public final Flowable<T> concatWith(@NonNull MaybeSource<? extends T> other) {
+        ObjectHelper.requireNonNull(other, "other is null");
+        return RxJavaPlugins.onAssembly(new FlowableConcatWithMaybe<T>(this, other));
+    }
+
+    /**
+     * Returns a {@code Flowable} that emits items from this {@code Flowable} and when it completes normally, the
+     * other {@link CompletableSource} is subscribed to and the returned {@code Flowable} emits its terminal events.
+     * <p>
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concat.png" alt="">
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The operator does not interfere with backpressure between the current Flowable and the
+     *  downstream consumer (i.e., acts as pass-through). When the operator switches to the
+     *  {@code Completable}, backpressure is no longer present because {@code Completable} doesn't
+     *  have items to apply backpressure to.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code concatWith} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param other the {@code CompletableSource} to subscribe to once the current {@code Flowable} completes normally
+     * @return the new Flowable instance
+     * @since 2.1.10 - experimental
+     */
+    @CheckReturnValue
+    @BackpressureSupport(BackpressureKind.PASS_THROUGH)
+    @SchedulerSupport(SchedulerSupport.NONE)
+    @Experimental
+    public final Flowable<T> concatWith(@NonNull CompletableSource other) {
+        ObjectHelper.requireNonNull(other, "other is null");
+        return RxJavaPlugins.onAssembly(new FlowableConcatWithCompletable<T>(this, other));
+    }
+
+    /**
      * Returns a Single that emits a Boolean that indicates whether the source Publisher emitted a
      * specified item.
      * <p>
