@@ -168,7 +168,7 @@ public class CompletableCacheTest implements Consumer<Object>, Action {
 
     @Test
     public void subscribeRace() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             PublishSubject<Integer> ps = PublishSubject.create();
 
             final Completable c = ps.ignoreElements().cache();
@@ -201,7 +201,7 @@ public class CompletableCacheTest implements Consumer<Object>, Action {
 
     @Test
     public void subscribeDisposeRace() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             PublishSubject<Integer> ps = PublishSubject.create();
 
             final Completable c = ps.ignoreElements().cache();

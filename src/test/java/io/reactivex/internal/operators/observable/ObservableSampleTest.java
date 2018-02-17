@@ -319,7 +319,7 @@ public class ObservableSampleTest {
 
     @Test
     public void emitLastTimedRunCompleteRace() {
-        for (int i = 0; i < 1000; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final TestScheduler scheduler = new TestScheduler();
 
             final PublishSubject<Integer> pp = PublishSubject.create();
@@ -367,7 +367,7 @@ public class ObservableSampleTest {
 
     @Test
     public void emitLastOtherRunCompleteRace() {
-        for (int i = 0; i < 1000; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final PublishSubject<Integer> pp = PublishSubject.create();
             final PublishSubject<Integer> sampler = PublishSubject.create();
 
@@ -398,7 +398,7 @@ public class ObservableSampleTest {
 
     @Test
     public void emitLastOtherCompleteCompleteRace() {
-        for (int i = 0; i < 1000; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final PublishSubject<Integer> pp = PublishSubject.create();
             final PublishSubject<Integer> sampler = PublishSubject.create();
 

@@ -549,7 +549,7 @@ public class FlowableTimeoutWithSelectorTest {
 
     @Test
     public void lateOnTimeoutError() {
-        for (int i = 0; i < 1000; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             List<Throwable> errors = TestHelper.trackPluginErrors();
             try {
                 final PublishProcessor<Integer> pp = PublishProcessor.create();
@@ -603,7 +603,7 @@ public class FlowableTimeoutWithSelectorTest {
 
     @Test
     public void lateOnTimeoutFallbackRace() {
-        for (int i = 0; i < 1000; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             List<Throwable> errors = TestHelper.trackPluginErrors();
             try {
                 final PublishProcessor<Integer> pp = PublishProcessor.create();
@@ -658,7 +658,7 @@ public class FlowableTimeoutWithSelectorTest {
 
     @Test
     public void onErrorOnTimeoutRace() {
-        for (int i = 0; i < 1000; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             List<Throwable> errors = TestHelper.trackPluginErrors();
             try {
                 final PublishProcessor<Integer> pp = PublishProcessor.create();
@@ -713,7 +713,7 @@ public class FlowableTimeoutWithSelectorTest {
 
     @Test
     public void onECompleteOnTimeoutRace() {
-        for (int i = 0; i < 1000; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             List<Throwable> errors = TestHelper.trackPluginErrors();
             try {
                 final PublishProcessor<Integer> pp = PublishProcessor.create();

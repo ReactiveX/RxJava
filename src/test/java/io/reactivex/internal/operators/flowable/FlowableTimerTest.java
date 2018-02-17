@@ -304,7 +304,7 @@ public class FlowableTimerTest {
 
     @Test
     public void timerCancelRace() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final TestSubscriber<Long> ts = new TestSubscriber<Long>();
 
             final TestScheduler scheduler = new TestScheduler();

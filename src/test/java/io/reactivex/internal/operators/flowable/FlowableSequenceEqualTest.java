@@ -312,7 +312,7 @@ public class FlowableSequenceEqualTest {
 
     @Test
     public void onNextCancelRace() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final PublishProcessor<Integer> ps = PublishProcessor.create();
 
             final TestObserver<Boolean> to = Flowable.sequenceEqual(Flowable.never(), ps).test();
@@ -339,7 +339,7 @@ public class FlowableSequenceEqualTest {
 
     @Test
     public void onNextCancelRaceObservable() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final PublishProcessor<Integer> ps = PublishProcessor.create();
 
             final TestSubscriber<Boolean> to = Flowable.sequenceEqual(Flowable.never(), ps).toFlowable().test();
@@ -414,7 +414,7 @@ public class FlowableSequenceEqualTest {
             }
         };
 
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final TestSubscriber<Boolean> ts = new TestSubscriber<Boolean>();
 
             final PublishProcessor<Integer> pp = PublishProcessor.create();
@@ -518,7 +518,7 @@ public class FlowableSequenceEqualTest {
             }
         };
 
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final TestObserver<Boolean> ts = new TestObserver<Boolean>();
 
             final PublishProcessor<Integer> pp = PublishProcessor.create();

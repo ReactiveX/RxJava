@@ -963,7 +963,7 @@ public class ObservableCombineLatestTest {
 
     @Test
     public void onErrorRace() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             List<Throwable> errors = TestHelper.trackPluginErrors();
             try {
                 final PublishSubject<Integer> ps1 = PublishSubject.create();

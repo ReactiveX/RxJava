@@ -95,7 +95,7 @@ public class SingleUnsubscribeOnTest {
 
     @Test
     public void disposeRace() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             PublishProcessor<Integer> pp = PublishProcessor.create();
 
             final Disposable[] ds = { null };
@@ -124,7 +124,7 @@ public class SingleUnsubscribeOnTest {
                 }
             };
 
-            TestHelper.race(r, r, Schedulers.single());
+            TestHelper.race(r, r);
         }
     }
 }

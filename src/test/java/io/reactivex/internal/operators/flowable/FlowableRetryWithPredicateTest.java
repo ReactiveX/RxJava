@@ -33,7 +33,6 @@ import io.reactivex.functions.*;
 import io.reactivex.internal.functions.Functions;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.processors.PublishProcessor;
-import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.*;
 
 public class FlowableRetryWithPredicateTest {
@@ -419,7 +418,7 @@ public class FlowableRetryWithPredicateTest {
 
     @Test
     public void retryDisposeRace() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final PublishProcessor<Integer> ps = PublishProcessor.create();
 
             final TestSubscriber<Integer> to = ps.retry(Functions.alwaysTrue()).test();
@@ -440,7 +439,7 @@ public class FlowableRetryWithPredicateTest {
                 }
             };
 
-            TestHelper.race(r1, r2, Schedulers.single());
+            TestHelper.race(r1, r2);
 
             to.assertEmpty();
         }
@@ -467,7 +466,7 @@ public class FlowableRetryWithPredicateTest {
 
     @Test
     public void retryBiPredicateDisposeRace() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final PublishProcessor<Integer> ps = PublishProcessor.create();
 
             final TestSubscriber<Integer> to = ps.retry(new BiPredicate<Object, Object>() {
@@ -493,7 +492,7 @@ public class FlowableRetryWithPredicateTest {
                 }
             };
 
-            TestHelper.race(r1, r2, Schedulers.single());
+            TestHelper.race(r1, r2);
 
             to.assertEmpty();
         }

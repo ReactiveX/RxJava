@@ -24,7 +24,6 @@ import io.reactivex.exceptions.TestException;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.processors.PublishProcessor;
-import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subjects.*;
 
 public class CompletableAmbTest {
@@ -70,7 +69,7 @@ public class CompletableAmbTest {
 
     @Test
     public void innerErrorRace() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             List<Throwable> errors = TestHelper.trackPluginErrors();
             try {
                 final PublishProcessor<Integer> pp0 = PublishProcessor.create();
@@ -95,7 +94,7 @@ public class CompletableAmbTest {
                     }
                 };
 
-                TestHelper.race(r1, r2, Schedulers.single());
+                TestHelper.race(r1, r2);
 
                 to.assertFailure(TestException.class);
 
@@ -110,7 +109,7 @@ public class CompletableAmbTest {
 
     @Test
     public void nullSourceSuccessRace() {
-        for (int i = 0; i < 1000; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             List<Throwable> errors = TestHelper.trackPluginErrors();
 
             try {
@@ -134,7 +133,7 @@ public class CompletableAmbTest {
                     }
                 };
 
-                TestHelper.race(r1, r2, Schedulers.single());
+                TestHelper.race(r1, r2);
 
                 if (!errors.isEmpty()) {
                     TestHelper.assertError(errors, 0, NullPointerException.class);

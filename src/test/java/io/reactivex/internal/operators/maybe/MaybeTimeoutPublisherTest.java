@@ -15,7 +15,7 @@ package io.reactivex.internal.operators.maybe;
 
 import static org.junit.Assert.*;
 
-import java.util.concurrent.*;
+import java.util.concurrent.TimeoutException;
 
 import org.junit.Test;
 
@@ -25,7 +25,6 @@ import io.reactivex.functions.Function;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.processors.PublishProcessor;
-import io.reactivex.schedulers.*;
 
 public class MaybeTimeoutPublisherTest {
 
@@ -157,7 +156,7 @@ public class MaybeTimeoutPublisherTest {
 
     @Test
     public void onErrorRace() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             TestHelper.trackPluginErrors();
             try {
                 final PublishProcessor<Integer> pp1 = PublishProcessor.create();
@@ -180,7 +179,7 @@ public class MaybeTimeoutPublisherTest {
                     }
                 };
 
-                TestHelper.race(r1, r2, Schedulers.single());
+                TestHelper.race(r1, r2);
 
                 to.assertFailure(TestException.class);
             } finally {
@@ -191,7 +190,7 @@ public class MaybeTimeoutPublisherTest {
 
     @Test
     public void onCompleteRace() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final PublishProcessor<Integer> pp1 = PublishProcessor.create();
             final PublishProcessor<Integer> pp2 = PublishProcessor.create();
 
@@ -210,7 +209,7 @@ public class MaybeTimeoutPublisherTest {
                 }
             };
 
-            TestHelper.race(r1, r2, Schedulers.single());
+            TestHelper.race(r1, r2);
 
             to.assertSubscribed().assertNoValues();
 

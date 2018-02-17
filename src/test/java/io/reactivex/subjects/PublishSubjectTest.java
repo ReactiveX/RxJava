@@ -14,6 +14,7 @@
 package io.reactivex.subjects;
 
 import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import java.util.ArrayList;
@@ -28,7 +29,6 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.*;
 import io.reactivex.observers.*;
-import io.reactivex.schedulers.Schedulers;
 
 public class PublishSubjectTest extends SubjectTest<Integer> {
 
@@ -563,7 +563,7 @@ public class PublishSubjectTest extends SubjectTest<Integer> {
     @Test
     public void terminateRace() throws Exception {
 
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final PublishSubject<Integer> pp = PublishSubject.create();
 
             TestObserver<Integer> ts = pp.test();
@@ -575,7 +575,7 @@ public class PublishSubjectTest extends SubjectTest<Integer> {
                 }
             };
 
-            TestHelper.race(task, task, Schedulers.io());
+            TestHelper.race(task, task);
 
             ts
             .awaitDone(5, TimeUnit.SECONDS)
@@ -586,7 +586,7 @@ public class PublishSubjectTest extends SubjectTest<Integer> {
     @Test
     public void addRemoveRance() throws Exception {
 
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final PublishSubject<Integer> pp = PublishSubject.create();
 
             final TestObserver<Integer> ts = pp.test();
@@ -604,14 +604,14 @@ public class PublishSubjectTest extends SubjectTest<Integer> {
                 }
             };
 
-            TestHelper.race(r1, r2, Schedulers.io());
+            TestHelper.race(r1, r2);
         }
     }
 
     @Test
     public void addTerminateRance() throws Exception {
 
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final PublishSubject<Integer> pp = PublishSubject.create();
 
             Runnable r1 = new Runnable() {
@@ -627,14 +627,14 @@ public class PublishSubjectTest extends SubjectTest<Integer> {
                 }
             };
 
-            TestHelper.race(r1, r2, Schedulers.io());
+            TestHelper.race(r1, r2);
         }
     }
 
     @Test
     public void addCompleteRance() throws Exception {
 
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final PublishSubject<Integer> pp = PublishSubject.create();
 
             final TestObserver<Integer> ts = new TestObserver<Integer>();
@@ -652,7 +652,7 @@ public class PublishSubjectTest extends SubjectTest<Integer> {
                 }
             };
 
-            TestHelper.race(r1, r2, Schedulers.io());
+            TestHelper.race(r1, r2);
 
             ts.awaitDone(5, TimeUnit.SECONDS)
             .assertResult();

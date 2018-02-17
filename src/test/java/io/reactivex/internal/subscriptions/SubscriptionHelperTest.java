@@ -23,7 +23,6 @@ import org.reactivestreams.Subscription;
 
 import io.reactivex.TestHelper;
 import io.reactivex.plugins.RxJavaPlugins;
-import io.reactivex.schedulers.Schedulers;
 
 public class SubscriptionHelperTest {
 
@@ -85,7 +84,7 @@ public class SubscriptionHelperTest {
 
     @Test
     public void cancelRace() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final AtomicReference<Subscription> s = new AtomicReference<Subscription>();
 
             Runnable r = new Runnable() {
@@ -95,13 +94,13 @@ public class SubscriptionHelperTest {
                 }
             };
 
-            TestHelper.race(r, r, Schedulers.single());
+            TestHelper.race(r, r);
         }
     }
 
     @Test
     public void setRace() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final AtomicReference<Subscription> s = new AtomicReference<Subscription>();
 
             final BooleanSubscription bs1 = new BooleanSubscription();
@@ -121,7 +120,7 @@ public class SubscriptionHelperTest {
                 }
             };
 
-            TestHelper.race(r1, r2, Schedulers.single());
+            TestHelper.race(r1, r2);
 
             assertTrue(bs1.isCancelled() ^ bs2.isCancelled());
         }
@@ -129,7 +128,7 @@ public class SubscriptionHelperTest {
 
     @Test
     public void replaceRace() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final AtomicReference<Subscription> s = new AtomicReference<Subscription>();
 
             final BooleanSubscription bs1 = new BooleanSubscription();
@@ -149,7 +148,7 @@ public class SubscriptionHelperTest {
                 }
             };
 
-            TestHelper.race(r1, r2, Schedulers.single());
+            TestHelper.race(r1, r2);
 
             assertFalse(bs1.isCancelled());
             assertFalse(bs2.isCancelled());
@@ -192,7 +191,7 @@ public class SubscriptionHelperTest {
 
     @Test
     public void deferredRace() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final AtomicReference<Subscription> s = new AtomicReference<Subscription>();
             final AtomicLong r = new AtomicLong();
 
@@ -224,7 +223,7 @@ public class SubscriptionHelperTest {
                 }
             };
 
-            TestHelper.race(r1, r2, Schedulers.single());
+            TestHelper.race(r1, r2);
 
             assertSame(a, s.get());
             assertEquals(1, q.get());

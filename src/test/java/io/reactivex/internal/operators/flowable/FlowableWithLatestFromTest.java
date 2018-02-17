@@ -779,7 +779,7 @@ public class FlowableWithLatestFromTest {
 
     @Test
     public void otherOnSubscribeRace() {
-        for (int i = 0; i < 1000; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final PublishProcessor<Integer> pp0 = PublishProcessor.create();
             final PublishProcessor<Integer> pp1 = PublishProcessor.create();
             final PublishProcessor<Integer> pp2 = PublishProcessor.create();
@@ -822,7 +822,7 @@ public class FlowableWithLatestFromTest {
 
     @Test
     public void otherCompleteRace() {
-        for (int i = 0; i < 1000; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final PublishProcessor<Integer> pp0 = PublishProcessor.create();
             final PublishProcessor<Integer> pp1 = PublishProcessor.create();
             final PublishProcessor<Integer> pp2 = PublishProcessor.create();

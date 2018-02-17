@@ -23,7 +23,6 @@ import org.reactivestreams.*;
 import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
-import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.TestSubscriber;
 
 public class HalfSerializerSubscriberTest {
@@ -209,7 +208,7 @@ public class HalfSerializerSubscriberTest {
 
     @Test
     public void onNextOnCompleteRace() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
 
             final AtomicInteger wip = new AtomicInteger();
             final AtomicThrowable error = new AtomicThrowable();
@@ -231,7 +230,7 @@ public class HalfSerializerSubscriberTest {
                 }
             };
 
-            TestHelper.race(r1, r2, Schedulers.single());
+            TestHelper.race(r1, r2);
 
             ts.assertComplete().assertNoErrors();
 
@@ -241,7 +240,7 @@ public class HalfSerializerSubscriberTest {
 
     @Test
     public void onErrorOnCompleteRace() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
 
             final AtomicInteger wip = new AtomicInteger();
             final AtomicThrowable error = new AtomicThrowable();
@@ -266,7 +265,7 @@ public class HalfSerializerSubscriberTest {
                 }
             };
 
-            TestHelper.race(r1, r2, Schedulers.single());
+            TestHelper.race(r1, r2);
 
             if (ts.completions() != 0) {
                 ts.assertResult();

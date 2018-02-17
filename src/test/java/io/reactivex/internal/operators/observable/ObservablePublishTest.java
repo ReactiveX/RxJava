@@ -400,7 +400,7 @@ public class ObservablePublishTest {
 
     @Test
     public void preNextConnect() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
 
             final ConnectableObservable<Integer> co = Observable.<Integer>empty().publish();
 
@@ -419,7 +419,7 @@ public class ObservablePublishTest {
 
     @Test
     public void connectRace() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
 
             final ConnectableObservable<Integer> co = Observable.<Integer>empty().publish();
 
@@ -470,7 +470,7 @@ public class ObservablePublishTest {
 
     @Test
     public void addRemoveRace() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
 
             final ConnectableObservable<Integer> co = Observable.<Integer>empty().publish();
 
@@ -552,7 +552,7 @@ public class ObservablePublishTest {
 
     @Test
     public void nextCancelRace() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
 
             final PublishSubject<Integer> ps = PublishSubject.create();
 
@@ -620,7 +620,7 @@ public class ObservablePublishTest {
 
     @Test
     public void subscribeDisconnectRace() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
 
             final PublishSubject<Integer> ps = PublishSubject.create();
 

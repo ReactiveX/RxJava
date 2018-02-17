@@ -576,7 +576,7 @@ public class PublishProcessorTest extends FlowableProcessorTest<Object> {
     @Test
     public void terminateRace() throws Exception {
 
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final PublishProcessor<Integer> pp = PublishProcessor.create();
 
             TestSubscriber<Integer> ts = pp.test();
@@ -588,7 +588,7 @@ public class PublishProcessorTest extends FlowableProcessorTest<Object> {
                 }
             };
 
-            TestHelper.race(task, task, Schedulers.io());
+            TestHelper.race(task, task);
 
             ts
             .awaitDone(5, TimeUnit.SECONDS)
@@ -599,7 +599,7 @@ public class PublishProcessorTest extends FlowableProcessorTest<Object> {
     @Test
     public void addRemoveRance() throws Exception {
 
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final PublishProcessor<Integer> pp = PublishProcessor.create();
 
             final TestSubscriber<Integer> ts = pp.test();
@@ -617,7 +617,7 @@ public class PublishProcessorTest extends FlowableProcessorTest<Object> {
                 }
             };
 
-            TestHelper.race(r1, r2, Schedulers.io());
+            TestHelper.race(r1, r2);
         }
     }
 
@@ -680,7 +680,7 @@ public class PublishProcessorTest extends FlowableProcessorTest<Object> {
 
     @Test(timeout = 10000)
     public void subscriberCancelOfferRace() {
-        for (int i = 0; i < 1000; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final PublishProcessor<Integer> pp = PublishProcessor.create();
 
             final TestSubscriber<Integer> ts = pp.test(1);
@@ -689,7 +689,7 @@ public class PublishProcessorTest extends FlowableProcessorTest<Object> {
                 @Override
                 public void run() {
                     for (int i = 0; i < 2; i++) {
-                        while (!pp.offer(i)) ;
+                        while (!pp.offer(i)) { }
                     }
                 }
             };

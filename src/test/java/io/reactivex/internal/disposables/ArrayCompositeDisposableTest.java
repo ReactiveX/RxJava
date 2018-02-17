@@ -19,7 +19,6 @@ import org.junit.Test;
 
 import io.reactivex.TestHelper;
 import io.reactivex.disposables.*;
-import io.reactivex.schedulers.Schedulers;
 
 public class ArrayCompositeDisposableTest {
 
@@ -70,7 +69,7 @@ public class ArrayCompositeDisposableTest {
 
     @Test
     public void disposeRace() {
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final ArrayCompositeDisposable acd = new ArrayCompositeDisposable(2);
 
             Runnable r = new Runnable() {
@@ -80,13 +79,13 @@ public class ArrayCompositeDisposableTest {
                 }
             };
 
-            TestHelper.race(r, r, Schedulers.io());
+            TestHelper.race(r, r);
         }
     }
 
     @Test
     public void replaceRace() {
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final ArrayCompositeDisposable acd = new ArrayCompositeDisposable(2);
 
             Runnable r = new Runnable() {
@@ -96,13 +95,13 @@ public class ArrayCompositeDisposableTest {
                 }
             };
 
-            TestHelper.race(r, r, Schedulers.io());
+            TestHelper.race(r, r);
         }
     }
 
     @Test
     public void setRace() {
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final ArrayCompositeDisposable acd = new ArrayCompositeDisposable(2);
 
             Runnable r = new Runnable() {
@@ -112,7 +111,7 @@ public class ArrayCompositeDisposableTest {
                 }
             };
 
-            TestHelper.race(r, r, Schedulers.io());
+            TestHelper.race(r, r);
         }
     }
 

@@ -567,7 +567,7 @@ public class FlowableAmbTest {
 
     @Test
     public void onNextRace() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final PublishProcessor<Integer> ps1 = PublishProcessor.create();
             final PublishProcessor<Integer> ps2 = PublishProcessor.create();
 
@@ -587,7 +587,7 @@ public class FlowableAmbTest {
                 }
             };
 
-            TestHelper.race(r1, r2, Schedulers.single());
+            TestHelper.race(r1, r2);
 
             to.assertSubscribed().assertNoErrors()
             .assertNotComplete().assertValueCount(1);
@@ -596,7 +596,7 @@ public class FlowableAmbTest {
 
     @Test
     public void onCompleteRace() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final PublishProcessor<Integer> ps1 = PublishProcessor.create();
             final PublishProcessor<Integer> ps2 = PublishProcessor.create();
 
@@ -616,7 +616,7 @@ public class FlowableAmbTest {
                 }
             };
 
-            TestHelper.race(r1, r2, Schedulers.single());
+            TestHelper.race(r1, r2);
 
             to.assertResult();
         }
@@ -624,7 +624,7 @@ public class FlowableAmbTest {
 
     @Test
     public void onErrorRace() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final PublishProcessor<Integer> ps1 = PublishProcessor.create();
             final PublishProcessor<Integer> ps2 = PublishProcessor.create();
 
@@ -648,7 +648,7 @@ public class FlowableAmbTest {
 
             List<Throwable> errors = TestHelper.trackPluginErrors();
             try {
-                TestHelper.race(r1, r2, Schedulers.single());
+                TestHelper.race(r1, r2);
             } finally {
                 RxJavaPlugins.reset();
             }

@@ -126,7 +126,7 @@ public class FutureSubscriberTest {
 
     @Test
     public void cancelRace() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final FutureSubscriber<Integer> fs = new FutureSubscriber<Integer>();
 
             Runnable r = new Runnable() {
@@ -136,7 +136,7 @@ public class FutureSubscriberTest {
                 }
             };
 
-            TestHelper.race(r, r, Schedulers.single());
+            TestHelper.race(r, r);
         }
     }
 
@@ -155,7 +155,7 @@ public class FutureSubscriberTest {
 
     @Test
     public void onErrorCancelRace() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final FutureSubscriber<Integer> fs = new FutureSubscriber<Integer>();
 
             final TestException ex = new TestException();
@@ -174,13 +174,13 @@ public class FutureSubscriberTest {
                 }
             };
 
-            TestHelper.race(r1, r2, Schedulers.single());
+            TestHelper.race(r1, r2);
         }
     }
 
     @Test
     public void onCompleteCancelRace() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final FutureSubscriber<Integer> fs = new FutureSubscriber<Integer>();
 
             if (i % 3 == 0) {
@@ -205,7 +205,7 @@ public class FutureSubscriberTest {
                 }
             };
 
-            TestHelper.race(r1, r2, Schedulers.single());
+            TestHelper.race(r1, r2);
         }
     }
 

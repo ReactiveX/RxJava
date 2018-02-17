@@ -22,7 +22,6 @@ import org.junit.Test;
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.TestException;
-import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subjects.PublishSubject;
 
 public class FutureSingleObserverTest {
@@ -66,7 +65,7 @@ public class FutureSingleObserverTest {
 
     @Test
     public void cancelRace() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final Future<?> f = Single.never().toFuture();
 
             Runnable r = new Runnable() {
@@ -76,7 +75,7 @@ public class FutureSingleObserverTest {
                 }
             };
 
-            TestHelper.race(r, r, Schedulers.single());
+            TestHelper.race(r, r);
         }
     }
 
@@ -130,7 +129,7 @@ public class FutureSingleObserverTest {
 
     @Test
     public void onSuccessCancelRace() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final PublishSubject<Integer> ps = PublishSubject.create();
 
             final Future<?> f = ps.single(-99).toFuture();
@@ -151,13 +150,13 @@ public class FutureSingleObserverTest {
                 }
             };
 
-            TestHelper.race(r1, r2, Schedulers.single());
+            TestHelper.race(r1, r2);
         }
     }
 
     @Test
     public void onErrorCancelRace() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final PublishSubject<Integer> ps = PublishSubject.create();
 
             final Future<?> f = ps.single(-99).toFuture();
@@ -178,7 +177,7 @@ public class FutureSingleObserverTest {
                 }
             };
 
-            TestHelper.race(r1, r2, Schedulers.single());
+            TestHelper.race(r1, r2);
         }
     }
 }

@@ -23,7 +23,6 @@ import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.plugins.RxJavaPlugins;
-import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.TestSubscriber;
 
 public class SerializedProcessorTest {
@@ -432,7 +431,7 @@ public class SerializedProcessorTest {
 
     @Test
     public void onNextOnNextRace() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final FlowableProcessor<Integer> s = PublishProcessor.<Integer>create().toSerialized();
 
             TestSubscriber<Integer> ts = s.test();
@@ -451,7 +450,7 @@ public class SerializedProcessorTest {
                 }
             };
 
-            TestHelper.race(r1, r2, Schedulers.single());
+            TestHelper.race(r1, r2);
 
             ts.assertSubscribed().assertNoErrors().assertNotComplete()
             .assertValueSet(Arrays.asList(1, 2));
@@ -460,7 +459,7 @@ public class SerializedProcessorTest {
 
     @Test
     public void onNextOnErrorRace() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final FlowableProcessor<Integer> s = PublishProcessor.<Integer>create().toSerialized();
 
             TestSubscriber<Integer> ts = s.test();
@@ -481,7 +480,7 @@ public class SerializedProcessorTest {
                 }
             };
 
-            TestHelper.race(r1, r2, Schedulers.single());
+            TestHelper.race(r1, r2);
 
             ts.assertError(ex).assertNotComplete();
 
@@ -493,7 +492,7 @@ public class SerializedProcessorTest {
 
     @Test
     public void onNextOnCompleteRace() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final FlowableProcessor<Integer> s = PublishProcessor.<Integer>create().toSerialized();
 
             TestSubscriber<Integer> ts = s.test();
@@ -512,7 +511,7 @@ public class SerializedProcessorTest {
                 }
             };
 
-            TestHelper.race(r1, r2, Schedulers.single());
+            TestHelper.race(r1, r2);
 
             ts.assertComplete().assertNoErrors();
 
@@ -524,7 +523,7 @@ public class SerializedProcessorTest {
 
     @Test
     public void onNextOnSubscribeRace() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final FlowableProcessor<Integer> s = PublishProcessor.<Integer>create().toSerialized();
 
             TestSubscriber<Integer> ts = s.test();
@@ -545,7 +544,7 @@ public class SerializedProcessorTest {
                 }
             };
 
-            TestHelper.race(r1, r2, Schedulers.single());
+            TestHelper.race(r1, r2);
 
             ts.assertValue(1).assertNotComplete().assertNoErrors();
         }
@@ -553,7 +552,7 @@ public class SerializedProcessorTest {
 
     @Test
     public void onCompleteOnSubscribeRace() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final FlowableProcessor<Integer> s = PublishProcessor.<Integer>create().toSerialized();
 
             TestSubscriber<Integer> ts = s.test();
@@ -574,7 +573,7 @@ public class SerializedProcessorTest {
                 }
             };
 
-            TestHelper.race(r1, r2, Schedulers.single());
+            TestHelper.race(r1, r2);
 
             ts.assertResult();
         }
@@ -582,7 +581,7 @@ public class SerializedProcessorTest {
 
     @Test
     public void onCompleteOnCompleteRace() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final FlowableProcessor<Integer> s = PublishProcessor.<Integer>create().toSerialized();
 
             TestSubscriber<Integer> ts = s.test();
@@ -601,7 +600,7 @@ public class SerializedProcessorTest {
                 }
             };
 
-            TestHelper.race(r1, r2, Schedulers.single());
+            TestHelper.race(r1, r2);
 
             ts.assertResult();
         }
@@ -609,7 +608,7 @@ public class SerializedProcessorTest {
 
     @Test
     public void onErrorOnErrorRace() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final FlowableProcessor<Integer> s = PublishProcessor.<Integer>create().toSerialized();
 
             TestSubscriber<Integer> ts = s.test();
@@ -632,7 +631,7 @@ public class SerializedProcessorTest {
                     }
                 };
 
-                TestHelper.race(r1, r2, Schedulers.single());
+                TestHelper.race(r1, r2);
 
                 ts.assertFailure(TestException.class);
 
@@ -645,7 +644,7 @@ public class SerializedProcessorTest {
 
     @Test
     public void onSubscribeOnSubscribeRace() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final FlowableProcessor<Integer> s = PublishProcessor.<Integer>create().toSerialized();
 
             TestSubscriber<Integer> ts = s.test();
@@ -667,7 +666,7 @@ public class SerializedProcessorTest {
                 }
             };
 
-            TestHelper.race(r1, r2, Schedulers.single());
+            TestHelper.race(r1, r2);
 
             ts.assertEmpty();
         }

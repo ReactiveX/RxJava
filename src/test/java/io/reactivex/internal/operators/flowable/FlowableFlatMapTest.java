@@ -826,7 +826,7 @@ public class FlowableFlatMapTest {
 
     @Test
     public void innerCompleteCancelRace() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final PublishProcessor<Integer> ps = PublishProcessor.create();
 
             final TestSubscriber<Integer> to = Flowable.merge(Flowable.just(ps)).test();
@@ -930,7 +930,7 @@ public class FlowableFlatMapTest {
 
     @Test
     public void cancelScalarDrainRace() {
-        for (int i = 0; i < 1000; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             List<Throwable> errors = TestHelper.trackPluginErrors();
             try {
 
@@ -962,7 +962,7 @@ public class FlowableFlatMapTest {
 
     @Test
     public void cancelDrainRace() {
-        for (int i = 0; i < 1000; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             for (int j = 1; j < 50; j += 5) {
                 List<Throwable> errors = TestHelper.trackPluginErrors();
                 try {

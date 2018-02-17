@@ -23,7 +23,7 @@ public class SinglePostCompleteSubscriberTest {
 
     @Test
     public void requestCompleteRace() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final TestSubscriber<Integer> ts = new TestSubscriber<Integer>(0L);
 
             final SinglePostCompleteSubscriber<Integer, Integer> spc = new SinglePostCompleteSubscriber<Integer, Integer>(ts) {

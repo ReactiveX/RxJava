@@ -1740,7 +1740,7 @@ public class FlowableObserveOnTest {
 
     @Test
     public void backFusedCancelConditional() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final TestSubscriber<Integer> ts = SubscriberFusion.newTest(QueueSubscription.ANY);
 
             final TestScheduler scheduler = new TestScheduler();

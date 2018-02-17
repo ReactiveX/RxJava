@@ -338,7 +338,7 @@ public class FlowableSampleTest {
 
     @Test
     public void emitLastTimedRunCompleteRace() {
-        for (int i = 0; i < 1000; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final TestScheduler scheduler = new TestScheduler();
 
             final PublishProcessor<Integer> pp = PublishProcessor.create();
@@ -386,7 +386,7 @@ public class FlowableSampleTest {
 
     @Test
     public void emitLastOtherRunCompleteRace() {
-        for (int i = 0; i < 1000; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final PublishProcessor<Integer> pp = PublishProcessor.create();
             final PublishProcessor<Integer> sampler = PublishProcessor.create();
 
@@ -417,7 +417,7 @@ public class FlowableSampleTest {
 
     @Test
     public void emitLastOtherCompleteCompleteRace() {
-        for (int i = 0; i < 1000; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final PublishProcessor<Integer> pp = PublishProcessor.create();
             final PublishProcessor<Integer> sampler = PublishProcessor.create();
 

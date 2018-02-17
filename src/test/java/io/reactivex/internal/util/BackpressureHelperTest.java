@@ -24,7 +24,6 @@ import org.junit.*;
 
 import io.reactivex.TestHelper;
 import io.reactivex.plugins.RxJavaPlugins;
-import io.reactivex.schedulers.Schedulers;
 
 public class BackpressureHelperTest {
     @Ignore("BackpressureHelper is an enum")
@@ -85,7 +84,7 @@ public class BackpressureHelperTest {
     public void requestProduceRace() {
         final AtomicLong requested = new AtomicLong(1);
 
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
 
             Runnable r1 = new Runnable() {
                 @Override
@@ -101,7 +100,7 @@ public class BackpressureHelperTest {
                 }
             };
 
-            TestHelper.race(r1, r2, Schedulers.single());
+            TestHelper.race(r1, r2);
         }
     }
 
@@ -109,7 +108,7 @@ public class BackpressureHelperTest {
     public void requestCancelProduceRace() {
         final AtomicLong requested = new AtomicLong(1);
 
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
 
             Runnable r1 = new Runnable() {
                 @Override
@@ -125,7 +124,7 @@ public class BackpressureHelperTest {
                 }
             };
 
-            TestHelper.race(r1, r2, Schedulers.single());
+            TestHelper.race(r1, r2);
         }
     }
 

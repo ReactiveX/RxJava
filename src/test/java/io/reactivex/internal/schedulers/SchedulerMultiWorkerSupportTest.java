@@ -66,7 +66,7 @@ public class SchedulerMultiWorkerSupportTest {
 
     @Test
     public void distinctThreads() throws Exception {
-        for (int i = 0; i < 1000; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
 
             final CompositeDisposable composite = new CompositeDisposable();
 

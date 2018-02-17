@@ -807,7 +807,7 @@ public class ObservableConcatMapEagerTest {
 
     @Test
     public void innerOuterRace() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             List<Throwable> errors = TestHelper.trackPluginErrors();
             try {
                 final PublishSubject<Integer> ps1 = PublishSubject.create();
@@ -838,7 +838,7 @@ public class ObservableConcatMapEagerTest {
                     }
                 };
 
-                TestHelper.race(r1, r2, Schedulers.single());
+                TestHelper.race(r1, r2);
 
                 to.assertSubscribed().assertNoValues().assertNotComplete();
 
@@ -862,7 +862,7 @@ public class ObservableConcatMapEagerTest {
 
     @Test
     public void nextCancelRace() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final PublishSubject<Integer> ps1 = PublishSubject.create();
 
             final TestObserver<Integer> to = ps1.concatMapEager(new Function<Integer, ObservableSource<Integer>>() {
@@ -885,7 +885,7 @@ public class ObservableConcatMapEagerTest {
                 }
             };
 
-            TestHelper.race(r1, r2, Schedulers.single());
+            TestHelper.race(r1, r2);
 
             to.assertEmpty();
         }

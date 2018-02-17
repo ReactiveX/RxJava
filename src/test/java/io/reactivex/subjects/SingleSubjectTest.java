@@ -24,7 +24,6 @@ import io.reactivex.*;
 import io.reactivex.disposables.*;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.plugins.RxJavaPlugins;
-import io.reactivex.schedulers.Schedulers;
 
 public class SingleSubjectTest {
 
@@ -225,7 +224,7 @@ public class SingleSubjectTest {
 
     @Test
     public void addRemoveRace() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final SingleSubject<Integer> ss = SingleSubject.create();
 
             final TestObserver<Integer> to = ss.test();
@@ -243,7 +242,7 @@ public class SingleSubjectTest {
                     to.cancel();
                 }
             };
-            TestHelper.race(r1, r2, Schedulers.single());
+            TestHelper.race(r1, r2);
         }
     }
 }

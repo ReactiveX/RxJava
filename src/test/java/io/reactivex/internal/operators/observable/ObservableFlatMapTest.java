@@ -694,7 +694,7 @@ public class ObservableFlatMapTest {
 
     @Test
     public void innerCompleteCancelRace() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final PublishSubject<Integer> ps = PublishSubject.create();
 
             final TestObserver<Integer> to = Observable.merge(Observable.just(ps)).test();
@@ -789,7 +789,7 @@ public class ObservableFlatMapTest {
 
     @Test
     public void cancelScalarDrainRace() {
-        for (int i = 0; i < 1000; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             List<Throwable> errors = TestHelper.trackPluginErrors();
             try {
 
@@ -821,7 +821,7 @@ public class ObservableFlatMapTest {
 
     @Test
     public void cancelDrainRace() {
-        for (int i = 0; i < 1000; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             for (int j = 1; j < 50; j += 5) {
                 List<Throwable> errors = TestHelper.trackPluginErrors();
                 try {

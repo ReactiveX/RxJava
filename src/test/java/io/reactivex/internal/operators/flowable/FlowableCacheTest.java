@@ -315,7 +315,7 @@ public class FlowableCacheTest {
 
     @Test
     public void subscribeEmitRace() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final PublishProcessor<Integer> ps = PublishProcessor.<Integer>create();
 
             final Flowable<Integer> cache = ps.cache();
@@ -341,7 +341,7 @@ public class FlowableCacheTest {
                 }
             };
 
-            TestHelper.race(r1, r2, Schedulers.single());
+            TestHelper.race(r1, r2);
 
             to
             .awaitDone(5, TimeUnit.SECONDS)

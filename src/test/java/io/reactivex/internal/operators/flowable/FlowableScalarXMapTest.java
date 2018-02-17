@@ -24,7 +24,6 @@ import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.subscriptions.*;
-import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.TestSubscriber;
 
 public class FlowableScalarXMapTest {
@@ -212,7 +211,7 @@ public class FlowableScalarXMapTest {
 
     @Test
     public void scalarDisposableRunDisposeRace() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             TestSubscriber<Integer> to = new TestSubscriber<Integer>();
             final ScalarSubscription<Integer> sd = new ScalarSubscription<Integer>(to, 1);
             to.onSubscribe(sd);
@@ -231,7 +230,7 @@ public class FlowableScalarXMapTest {
                 }
             };
 
-            TestHelper.race(r1, r2, Schedulers.single());
+            TestHelper.race(r1, r2);
         }
     }
 

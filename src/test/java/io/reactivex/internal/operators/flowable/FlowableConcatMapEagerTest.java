@@ -856,7 +856,7 @@ public class FlowableConcatMapEagerTest {
 
     @Test
     public void innerOuterRace() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             List<Throwable> errors = TestHelper.trackPluginErrors();
             try {
                 final PublishProcessor<Integer> ps1 = PublishProcessor.create();
@@ -887,7 +887,7 @@ public class FlowableConcatMapEagerTest {
                     }
                 };
 
-                TestHelper.race(r1, r2, Schedulers.single());
+                TestHelper.race(r1, r2);
 
                 to.assertSubscribed().assertNoValues().assertNotComplete();
 
@@ -966,7 +966,7 @@ public class FlowableConcatMapEagerTest {
 
     @Test
     public void nextCancelRace() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final PublishProcessor<Integer> ps1 = PublishProcessor.create();
 
             final TestSubscriber<Integer> to = ps1.concatMapEager(new Function<Integer, Flowable<Integer>>() {
@@ -989,7 +989,7 @@ public class FlowableConcatMapEagerTest {
                 }
             };
 
-            TestHelper.race(r1, r2, Schedulers.single());
+            TestHelper.race(r1, r2);
 
             to.assertEmpty();
         }
@@ -1136,7 +1136,7 @@ public class FlowableConcatMapEagerTest {
 
     @Test
     public void drainCancelRaceOnEmpty() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final PublishProcessor<Integer> pp = PublishProcessor.create();
 
             final TestSubscriber<Integer> ts = new TestSubscriber<Integer>(0L);

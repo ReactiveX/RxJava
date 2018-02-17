@@ -584,7 +584,7 @@ public class FlowableFlatMapMaybeTest {
 
     @Test
     public void requestCancelRace() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final TestSubscriber<Integer> to = Flowable.just(1).concatWith(Flowable.<Integer>never())
             .flatMapMaybe(Functions.justFunction(Maybe.just(2))).test(0);
 

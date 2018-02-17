@@ -24,7 +24,6 @@ import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.util.CrashingMappedIterable;
 import io.reactivex.processors.PublishProcessor;
-import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.TestSubscriber;
 
 public class MaybeConcatIterableTest {
@@ -61,7 +60,7 @@ public class MaybeConcatIterableTest {
     @SuppressWarnings("unchecked")
     @Test
     public void successCancelRace() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
 
             final PublishProcessor<Integer> pp = PublishProcessor.create();
 
@@ -84,7 +83,7 @@ public class MaybeConcatIterableTest {
                 }
             };
 
-            TestHelper.race(r1, r2, Schedulers.single());
+            TestHelper.race(r1, r2);
         }
     }
 

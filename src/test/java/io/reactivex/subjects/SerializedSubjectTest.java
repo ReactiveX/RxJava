@@ -25,7 +25,6 @@ import io.reactivex.disposables.*;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.plugins.RxJavaPlugins;
-import io.reactivex.schedulers.Schedulers;
 
 public class SerializedSubjectTest {
 
@@ -433,7 +432,7 @@ public class SerializedSubjectTest {
 
     @Test
     public void onNextOnNextRace() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final Subject<Integer> s = PublishSubject.<Integer>create().toSerialized();
 
             TestObserver<Integer> ts = s.test();
@@ -452,7 +451,7 @@ public class SerializedSubjectTest {
                 }
             };
 
-            TestHelper.race(r1, r2, Schedulers.single());
+            TestHelper.race(r1, r2);
 
             ts.assertSubscribed().assertNoErrors().assertNotComplete()
             .assertValueSet(Arrays.asList(1, 2));
@@ -461,7 +460,7 @@ public class SerializedSubjectTest {
 
     @Test
     public void onNextOnErrorRace() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final Subject<Integer> s = PublishSubject.<Integer>create().toSerialized();
 
             TestObserver<Integer> ts = s.test();
@@ -482,7 +481,7 @@ public class SerializedSubjectTest {
                 }
             };
 
-            TestHelper.race(r1, r2, Schedulers.single());
+            TestHelper.race(r1, r2);
 
             ts.assertError(ex).assertNotComplete();
 
@@ -494,7 +493,7 @@ public class SerializedSubjectTest {
 
     @Test
     public void onNextOnCompleteRace() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final Subject<Integer> s = PublishSubject.<Integer>create().toSerialized();
 
             TestObserver<Integer> ts = s.test();
@@ -513,7 +512,7 @@ public class SerializedSubjectTest {
                 }
             };
 
-            TestHelper.race(r1, r2, Schedulers.single());
+            TestHelper.race(r1, r2);
 
             ts.assertComplete().assertNoErrors();
 
@@ -525,7 +524,7 @@ public class SerializedSubjectTest {
 
     @Test
     public void onNextOnSubscribeRace() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final Subject<Integer> s = PublishSubject.<Integer>create().toSerialized();
 
             TestObserver<Integer> ts = s.test();
@@ -546,7 +545,7 @@ public class SerializedSubjectTest {
                 }
             };
 
-            TestHelper.race(r1, r2, Schedulers.single());
+            TestHelper.race(r1, r2);
 
             ts.assertValue(1).assertNotComplete().assertNoErrors();
         }
@@ -554,7 +553,7 @@ public class SerializedSubjectTest {
 
     @Test
     public void onCompleteOnSubscribeRace() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final Subject<Integer> s = PublishSubject.<Integer>create().toSerialized();
 
             TestObserver<Integer> ts = s.test();
@@ -575,7 +574,7 @@ public class SerializedSubjectTest {
                 }
             };
 
-            TestHelper.race(r1, r2, Schedulers.single());
+            TestHelper.race(r1, r2);
 
             ts.assertResult();
         }
@@ -583,7 +582,7 @@ public class SerializedSubjectTest {
 
     @Test
     public void onCompleteOnCompleteRace() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final Subject<Integer> s = PublishSubject.<Integer>create().toSerialized();
 
             TestObserver<Integer> ts = s.test();
@@ -602,7 +601,7 @@ public class SerializedSubjectTest {
                 }
             };
 
-            TestHelper.race(r1, r2, Schedulers.single());
+            TestHelper.race(r1, r2);
 
             ts.assertResult();
         }
@@ -610,7 +609,7 @@ public class SerializedSubjectTest {
 
     @Test
     public void onErrorOnErrorRace() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final Subject<Integer> s = PublishSubject.<Integer>create().toSerialized();
 
             TestObserver<Integer> ts = s.test();
@@ -633,7 +632,7 @@ public class SerializedSubjectTest {
                     }
                 };
 
-                TestHelper.race(r1, r2, Schedulers.single());
+                TestHelper.race(r1, r2);
 
                 ts.assertFailure(TestException.class);
 
@@ -646,7 +645,7 @@ public class SerializedSubjectTest {
 
     @Test
     public void onSubscribeOnSubscribeRace() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final Subject<Integer> s = PublishSubject.<Integer>create().toSerialized();
 
             TestObserver<Integer> ts = s.test();
@@ -668,7 +667,7 @@ public class SerializedSubjectTest {
                 }
             };
 
-            TestHelper.race(r1, r2, Schedulers.single());
+            TestHelper.race(r1, r2);
 
             ts.assertEmpty();
         }

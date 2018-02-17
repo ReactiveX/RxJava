@@ -392,7 +392,7 @@ public class FlowableToListTest {
 
     @Test
     public void onNextCancelRace() {
-        for (int i = 0; i < 1000; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final PublishProcessor<Integer> pp = PublishProcessor.create();
             final TestObserver<List<Integer>> ts = pp.toList().test();
 
@@ -415,7 +415,7 @@ public class FlowableToListTest {
 
     @Test
     public void onNextCancelRaceFlowable() {
-        for (int i = 0; i < 1000; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final PublishProcessor<Integer> pp = PublishProcessor.create();
             final TestSubscriber<List<Integer>> ts = pp.toList().toFlowable().test();
 
@@ -439,7 +439,7 @@ public class FlowableToListTest {
 
     @Test
     public void onCompleteCancelRaceFlowable() {
-        for (int i = 0; i < 1000; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final PublishProcessor<Integer> pp = PublishProcessor.create();
             final TestSubscriber<List<Integer>> ts = pp.toList().toFlowable().test();
 

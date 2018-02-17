@@ -14,6 +14,7 @@
 package io.reactivex.subjects;
 
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.mock;
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -26,8 +27,6 @@ import io.reactivex.exceptions.TestException;
 import io.reactivex.internal.fuseable.*;
 import io.reactivex.observers.*;
 import io.reactivex.plugins.RxJavaPlugins;
-import io.reactivex.schedulers.Schedulers;
-import static org.mockito.Mockito.mock;
 
 public class UnicastSubjectTest extends SubjectTest<Integer> {
 
@@ -223,7 +222,7 @@ public class UnicastSubjectTest extends SubjectTest<Integer> {
 
     @Test
     public void completeCancelRace() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final int[] calls = { 0 };
             final UnicastSubject<Object> up = UnicastSubject.create(100, new Runnable() {
                 @Override
@@ -248,7 +247,7 @@ public class UnicastSubjectTest extends SubjectTest<Integer> {
                 }
             };
 
-            TestHelper.race(r1, r2, Schedulers.single());
+            TestHelper.race(r1, r2);
 
             assertEquals(1, calls[0]);
         }
@@ -331,7 +330,7 @@ public class UnicastSubjectTest extends SubjectTest<Integer> {
 
     @Test
     public void fusedDrainCancel() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final UnicastSubject<Object> p = UnicastSubject.create();
 
             final TestObserver<Object> ts = ObserverFusion.newTest(QueueSubscription.ANY);
@@ -352,7 +351,7 @@ public class UnicastSubjectTest extends SubjectTest<Integer> {
                 }
             };
 
-            TestHelper.race(r1, r2, Schedulers.single());
+            TestHelper.race(r1, r2);
         }
     }
 

@@ -12,21 +12,19 @@
  */
 package io.reactivex.internal.operators.observable;
 
+import static org.junit.Assert.assertTrue;
+
+import java.util.List;
+
+import org.junit.Test;
+
 import io.reactivex.*;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.disposables.Disposables;
+import io.reactivex.disposables.*;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.Function;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.plugins.RxJavaPlugins;
-import io.reactivex.schedulers.Schedulers;
-import io.reactivex.subjects.PublishSubject;
-import io.reactivex.subjects.UnicastSubject;
-import org.junit.Test;
-
-import java.util.List;
-
-import static org.junit.Assert.assertTrue;
+import io.reactivex.subjects.*;
 
 public class ObservableConcatMapCompletableTest {
 
@@ -107,7 +105,7 @@ public class ObservableConcatMapCompletableTest {
 
     @Test
     public void onErrorRace() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             List<Throwable> errors = TestHelper.trackPluginErrors();
             try {
                 final PublishSubject<Integer> ps1 = PublishSubject.create();
@@ -136,7 +134,7 @@ public class ObservableConcatMapCompletableTest {
                     }
                 };
 
-                TestHelper.race(r1, r2, Schedulers.single());
+                TestHelper.race(r1, r2);
 
                 to.assertFailure(TestException.class);
 

@@ -271,7 +271,7 @@ public class ObservableAmbTest {
 
     @Test
     public void onNextRace() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final PublishSubject<Integer> ps1 = PublishSubject.create();
             final PublishSubject<Integer> ps2 = PublishSubject.create();
 
@@ -291,7 +291,7 @@ public class ObservableAmbTest {
                 }
             };
 
-            TestHelper.race(r1, r2, Schedulers.single());
+            TestHelper.race(r1, r2);
 
             to.assertSubscribed().assertNoErrors()
             .assertNotComplete().assertValueCount(1);
@@ -300,7 +300,7 @@ public class ObservableAmbTest {
 
     @Test
     public void onCompleteRace() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final PublishSubject<Integer> ps1 = PublishSubject.create();
             final PublishSubject<Integer> ps2 = PublishSubject.create();
 
@@ -320,7 +320,7 @@ public class ObservableAmbTest {
                 }
             };
 
-            TestHelper.race(r1, r2, Schedulers.single());
+            TestHelper.race(r1, r2);
 
             to.assertResult();
         }
@@ -328,7 +328,7 @@ public class ObservableAmbTest {
 
     @Test
     public void onErrorRace() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final PublishSubject<Integer> ps1 = PublishSubject.create();
             final PublishSubject<Integer> ps2 = PublishSubject.create();
 
@@ -352,7 +352,7 @@ public class ObservableAmbTest {
 
             List<Throwable> errors = TestHelper.trackPluginErrors();
             try {
-                TestHelper.race(r1, r2, Schedulers.single());
+                TestHelper.race(r1, r2);
             } finally {
                 RxJavaPlugins.reset();
             }

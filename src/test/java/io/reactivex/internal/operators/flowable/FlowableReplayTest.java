@@ -1305,7 +1305,7 @@ public class FlowableReplayTest {
 
     @Test
     public void connectRace() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final ConnectableFlowable<Integer> co = Flowable.range(1, 3).replay();
 
             Runnable r = new Runnable() {
@@ -1321,7 +1321,7 @@ public class FlowableReplayTest {
 
     @Test
     public void subscribeRace() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final ConnectableFlowable<Integer> co = Flowable.range(1, 3).replay();
 
             final TestSubscriber<Integer> to1 = new TestSubscriber<Integer>();
@@ -1347,7 +1347,7 @@ public class FlowableReplayTest {
 
     @Test
     public void addRemoveRace() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final ConnectableFlowable<Integer> co = Flowable.range(1, 3).replay();
 
             final TestSubscriber<Integer> to1 = new TestSubscriber<Integer>();
@@ -1445,7 +1445,7 @@ public class FlowableReplayTest {
 
     @Test
     public void subscribeOnNextRace() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final PublishProcessor<Integer> ps = PublishProcessor.create();
 
             final ConnectableFlowable<Integer> co = ps.replay();
@@ -1474,7 +1474,7 @@ public class FlowableReplayTest {
 
     @Test
     public void unsubscribeOnNextRace() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final PublishProcessor<Integer> ps = PublishProcessor.create();
 
             final ConnectableFlowable<Integer> co = ps.replay();
@@ -1505,7 +1505,7 @@ public class FlowableReplayTest {
 
     @Test
     public void unsubscribeReplayRace() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final ConnectableFlowable<Integer> co = Flowable.range(1, 1000).replay();
 
             final TestSubscriber<Integer> to1 = new TestSubscriber<Integer>();

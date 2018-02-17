@@ -25,7 +25,6 @@ import io.reactivex.functions.Function;
 import io.reactivex.internal.disposables.EmptyDisposable;
 import io.reactivex.internal.operators.observable.ObservableScalarXMap.ScalarDisposable;
 import io.reactivex.observers.TestObserver;
-import io.reactivex.schedulers.Schedulers;
 
 public class ObservableScalarXMapTest {
 
@@ -214,7 +213,7 @@ public class ObservableScalarXMapTest {
 
     @Test
     public void scalarDisposableRunDisposeRace() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             TestObserver<Integer> to = new TestObserver<Integer>();
             final ScalarDisposable<Integer> sd = new ScalarDisposable<Integer>(to, 1);
             to.onSubscribe(sd);
@@ -233,7 +232,7 @@ public class ObservableScalarXMapTest {
                 }
             };
 
-            TestHelper.race(r1, r2, Schedulers.single());
+            TestHelper.race(r1, r2);
         }
     }
 }

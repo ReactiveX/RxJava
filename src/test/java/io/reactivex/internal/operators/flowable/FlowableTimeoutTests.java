@@ -523,7 +523,7 @@ public class FlowableTimeoutTests {
 
     @Test
     public void onNextOnTimeoutRace() {
-        for (int i = 0; i < 1000; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final TestScheduler sch = new TestScheduler();
 
             final PublishProcessor<Integer> pp = PublishProcessor.create();
@@ -560,7 +560,7 @@ public class FlowableTimeoutTests {
 
     @Test
     public void onNextOnTimeoutRaceFallback() {
-        for (int i = 0; i < 1000; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final TestScheduler sch = new TestScheduler();
 
             final PublishProcessor<Integer> pp = PublishProcessor.create();

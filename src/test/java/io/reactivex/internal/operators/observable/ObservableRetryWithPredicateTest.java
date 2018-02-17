@@ -33,7 +33,6 @@ import io.reactivex.exceptions.*;
 import io.reactivex.functions.*;
 import io.reactivex.internal.functions.Functions;
 import io.reactivex.observers.*;
-import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subjects.PublishSubject;
 
 public class ObservableRetryWithPredicateTest {
@@ -390,7 +389,7 @@ public class ObservableRetryWithPredicateTest {
 
     @Test
     public void retryDisposeRace() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final PublishSubject<Integer> ps = PublishSubject.create();
 
             final TestObserver<Integer> to = ps.retry(Functions.alwaysTrue()).test();
@@ -411,7 +410,7 @@ public class ObservableRetryWithPredicateTest {
                 }
             };
 
-            TestHelper.race(r1, r2, Schedulers.single());
+            TestHelper.race(r1, r2);
 
             to.assertEmpty();
         }
@@ -438,7 +437,7 @@ public class ObservableRetryWithPredicateTest {
 
     @Test
     public void retryBiPredicateDisposeRace() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final PublishSubject<Integer> ps = PublishSubject.create();
 
             final TestObserver<Integer> to = ps.retry(new BiPredicate<Object, Object>() {
@@ -464,7 +463,7 @@ public class ObservableRetryWithPredicateTest {
                 }
             };
 
-            TestHelper.race(r1, r2, Schedulers.single());
+            TestHelper.race(r1, r2);
 
             to.assertEmpty();
         }

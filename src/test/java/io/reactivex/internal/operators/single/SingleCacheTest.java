@@ -19,7 +19,6 @@ import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.processors.PublishProcessor;
-import io.reactivex.schedulers.Schedulers;
 
 public class SingleCacheTest {
 
@@ -41,7 +40,7 @@ public class SingleCacheTest {
 
     @Test
     public void addRemoveRace() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             PublishProcessor<Integer> pp = PublishProcessor.create();
 
             final Single<Integer> cached = pp.single(-99).cache();
@@ -62,7 +61,7 @@ public class SingleCacheTest {
                 }
             };
 
-            TestHelper.race(r1, r2, Schedulers.single());
+            TestHelper.race(r1, r2);
         }
     }
 

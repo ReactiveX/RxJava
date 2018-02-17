@@ -163,7 +163,7 @@ public class ParallelRunOnTest {
 
     @Test
     public void nextCancelRace() {
-        for (int i = 0; i < 1000; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final PublishProcessor<Integer> pp = PublishProcessor.create();
 
             final TestSubscriber<Integer> ts = pp.parallel(1)
@@ -192,7 +192,7 @@ public class ParallelRunOnTest {
     @SuppressWarnings("unchecked")
     @Test
     public void nextCancelRaceBackpressured() {
-        for (int i = 0; i < 1000; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final PublishProcessor<Integer> pp = PublishProcessor.create();
 
             final TestSubscriber<Integer> ts = TestSubscriber.create(0L);
@@ -221,7 +221,7 @@ public class ParallelRunOnTest {
 
     @Test
     public void nextCancelRaceConditional() {
-        for (int i = 0; i < 1000; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final PublishProcessor<Integer> pp = PublishProcessor.create();
 
             final TestSubscriber<Integer> ts = pp.parallel(1)
@@ -251,7 +251,7 @@ public class ParallelRunOnTest {
     @SuppressWarnings("unchecked")
     @Test
     public void nextCancelRaceBackpressuredConditional() {
-        for (int i = 0; i < 1000; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final PublishProcessor<Integer> pp = PublishProcessor.create();
 
             final TestSubscriber<Integer> ts = TestSubscriber.create(0L);

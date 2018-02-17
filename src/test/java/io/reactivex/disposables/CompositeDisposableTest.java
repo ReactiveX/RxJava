@@ -25,7 +25,6 @@ import org.junit.Test;
 import io.reactivex.TestHelper;
 import io.reactivex.exceptions.CompositeException;
 import io.reactivex.functions.Action;
-import io.reactivex.schedulers.Schedulers;
 
 public class CompositeDisposableTest {
 
@@ -443,7 +442,7 @@ public class CompositeDisposableTest {
 
     @Test
     public void disposeRace() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final CompositeDisposable cd = new CompositeDisposable();
 
             Runnable run = new Runnable() {
@@ -453,13 +452,13 @@ public class CompositeDisposableTest {
                 }
             };
 
-            TestHelper.race(run, run, Schedulers.io());
+            TestHelper.race(run, run);
         }
     }
 
     @Test
     public void addRace() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final CompositeDisposable cd = new CompositeDisposable();
 
             Runnable run = new Runnable() {
@@ -469,13 +468,13 @@ public class CompositeDisposableTest {
                 }
             };
 
-            TestHelper.race(run, run, Schedulers.io());
+            TestHelper.race(run, run);
         }
     }
 
     @Test
     public void addAllRace() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final CompositeDisposable cd = new CompositeDisposable();
 
             Runnable run = new Runnable() {
@@ -485,13 +484,13 @@ public class CompositeDisposableTest {
                 }
             };
 
-            TestHelper.race(run, run, Schedulers.io());
+            TestHelper.race(run, run);
         }
     }
 
     @Test
     public void removeRace() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final CompositeDisposable cd = new CompositeDisposable();
 
             final Disposable d1 = Disposables.empty();
@@ -505,13 +504,13 @@ public class CompositeDisposableTest {
                 }
             };
 
-            TestHelper.race(run, run, Schedulers.io());
+            TestHelper.race(run, run);
         }
     }
 
     @Test
     public void deleteRace() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final CompositeDisposable cd = new CompositeDisposable();
 
             final Disposable d1 = Disposables.empty();
@@ -525,13 +524,13 @@ public class CompositeDisposableTest {
                 }
             };
 
-            TestHelper.race(run, run, Schedulers.io());
+            TestHelper.race(run, run);
         }
     }
 
     @Test
     public void clearRace() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final CompositeDisposable cd = new CompositeDisposable();
 
             final Disposable d1 = Disposables.empty();
@@ -545,13 +544,13 @@ public class CompositeDisposableTest {
                 }
             };
 
-            TestHelper.race(run, run, Schedulers.io());
+            TestHelper.race(run, run);
         }
     }
 
     @Test
     public void addDisposeRace() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final CompositeDisposable cd = new CompositeDisposable();
 
             Runnable run = new Runnable() {
@@ -568,13 +567,13 @@ public class CompositeDisposableTest {
                 }
             };
 
-            TestHelper.race(run, run2, Schedulers.io());
+            TestHelper.race(run, run2);
         }
     }
 
     @Test
     public void addAllDisposeRace() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final CompositeDisposable cd = new CompositeDisposable();
 
             Runnable run = new Runnable() {
@@ -591,13 +590,13 @@ public class CompositeDisposableTest {
                 }
             };
 
-            TestHelper.race(run, run2, Schedulers.io());
+            TestHelper.race(run, run2);
         }
     }
 
     @Test
     public void removeDisposeRace() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final CompositeDisposable cd = new CompositeDisposable();
 
             final Disposable d1 = Disposables.empty();
@@ -618,13 +617,13 @@ public class CompositeDisposableTest {
                 }
             };
 
-            TestHelper.race(run, run2, Schedulers.io());
+            TestHelper.race(run, run2);
         }
     }
 
     @Test
     public void deleteDisposeRace() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final CompositeDisposable cd = new CompositeDisposable();
 
             final Disposable d1 = Disposables.empty();
@@ -645,13 +644,13 @@ public class CompositeDisposableTest {
                 }
             };
 
-            TestHelper.race(run, run2, Schedulers.io());
+            TestHelper.race(run, run2);
         }
     }
 
     @Test
     public void clearDisposeRace() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final CompositeDisposable cd = new CompositeDisposable();
 
             final Disposable d1 = Disposables.empty();
@@ -672,13 +671,13 @@ public class CompositeDisposableTest {
                 }
             };
 
-            TestHelper.race(run, run2, Schedulers.io());
+            TestHelper.race(run, run2);
         }
     }
 
     @Test
     public void sizeDisposeRace() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final CompositeDisposable cd = new CompositeDisposable();
 
             final Disposable d1 = Disposables.empty();
@@ -699,7 +698,7 @@ public class CompositeDisposableTest {
                 }
             };
 
-            TestHelper.race(run, run2, Schedulers.io());
+            TestHelper.race(run, run2);
         }
     }
 

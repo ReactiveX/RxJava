@@ -470,7 +470,7 @@ public class FlowableFlatMapSingleTest {
 
     @Test
     public void requestCancelRace() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final TestSubscriber<Integer> to = Flowable.just(1).concatWith(Flowable.<Integer>never())
             .flatMapSingle(Functions.justFunction(Single.just(2))).test(0);
 

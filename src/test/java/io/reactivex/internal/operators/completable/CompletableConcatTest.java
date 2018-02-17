@@ -69,7 +69,7 @@ public class CompletableConcatTest {
 
     @Test
     public void errorRace() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             List<Throwable> errors = TestHelper.trackPluginErrors();
 
             try {
@@ -100,7 +100,7 @@ public class CompletableConcatTest {
                     }
                 };
 
-                TestHelper.race(r1, r2, Schedulers.single());
+                TestHelper.race(r1, r2);
 
                 to.assertFailure(TestException.class);
 
@@ -203,7 +203,7 @@ public class CompletableConcatTest {
         Completable[] a = new Completable[1024];
         Arrays.fill(a, Completable.complete());
 
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
 
             final Completable c = Completable.concatArray(a);
 
@@ -223,7 +223,7 @@ public class CompletableConcatTest {
                 }
             };
 
-            TestHelper.race(r1, r2, Schedulers.single());
+            TestHelper.race(r1, r2);
         }
     }
 
@@ -232,7 +232,7 @@ public class CompletableConcatTest {
         Completable[] a = new Completable[1024];
         Arrays.fill(a, Completable.complete());
 
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
 
             final Completable c = Completable.concat(Arrays.asList(a));
 
@@ -252,7 +252,7 @@ public class CompletableConcatTest {
                 }
             };
 
-            TestHelper.race(r1, r2, Schedulers.single());
+            TestHelper.race(r1, r2);
         }
     }
 

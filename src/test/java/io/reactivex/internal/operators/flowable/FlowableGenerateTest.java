@@ -219,7 +219,7 @@ public class FlowableGenerateTest {
             }
         }, Functions.emptyConsumer());
 
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final TestSubscriber<Object> ts = source.test(0L);
 
             Runnable r = new Runnable() {

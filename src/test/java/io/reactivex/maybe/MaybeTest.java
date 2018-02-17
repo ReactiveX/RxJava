@@ -2089,7 +2089,7 @@ public class MaybeTest {
     @SuppressWarnings("unchecked")
     @Test
     public void mergeArrayFusedRace() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final PublishProcessor<Integer> pp1 = PublishProcessor.create();
             final PublishProcessor<Integer> pp2 = PublishProcessor.create();
 
@@ -2114,7 +2114,7 @@ public class MaybeTest {
                     pp2.onNext(1);
                     pp2.onComplete();
                 }
-            }, Schedulers.single());
+            });
 
             ts
             .awaitDone(5, TimeUnit.SECONDS)

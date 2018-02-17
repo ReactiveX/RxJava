@@ -345,7 +345,7 @@ public class FlowableBlockingTest {
 
     @Test
     public void blockinsSubscribeCancelAsync() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
 
             final PublishProcessor<Integer> pp = PublishProcessor.create();

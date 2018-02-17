@@ -291,7 +291,7 @@ public class FlowableTakeLastTimedTest {
 
     @Test
     public void cancelCompleteRace() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final PublishProcessor<Integer> ps = PublishProcessor.create();
 
             final TestSubscriber<Integer> to = ps.takeLast(1, TimeUnit.DAYS).test();

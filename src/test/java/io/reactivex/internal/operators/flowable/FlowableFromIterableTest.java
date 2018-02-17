@@ -722,7 +722,7 @@ public class FlowableFromIterableTest {
 
     @Test
     public void requestRaceConditional() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final TestSubscriber<Integer> ts = new TestSubscriber<Integer>(0L);
 
             Runnable r = new Runnable() {
@@ -736,13 +736,13 @@ public class FlowableFromIterableTest {
             .filter(Functions.alwaysTrue())
             .subscribe(ts);
 
-            TestHelper.race(r, r, Schedulers.single());
+            TestHelper.race(r, r);
         }
     }
 
     @Test
     public void requestRaceConditional2() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final TestSubscriber<Integer> ts = new TestSubscriber<Integer>(0L);
 
             Runnable r = new Runnable() {
@@ -756,13 +756,13 @@ public class FlowableFromIterableTest {
             .filter(Functions.alwaysFalse())
             .subscribe(ts);
 
-            TestHelper.race(r, r, Schedulers.single());
+            TestHelper.race(r, r);
         }
     }
 
     @Test
     public void requestCancelConditionalRace() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final TestSubscriber<Integer> ts = new TestSubscriber<Integer>(0L);
 
             Runnable r1 = new Runnable() {
@@ -783,13 +783,13 @@ public class FlowableFromIterableTest {
             .filter(Functions.alwaysTrue())
             .subscribe(ts);
 
-            TestHelper.race(r1, r2, Schedulers.single());
+            TestHelper.race(r1, r2);
         }
     }
 
     @Test
     public void requestCancelConditionalRace2() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final TestSubscriber<Integer> ts = new TestSubscriber<Integer>(0L);
 
             Runnable r1 = new Runnable() {
@@ -810,13 +810,13 @@ public class FlowableFromIterableTest {
             .filter(Functions.alwaysTrue())
             .subscribe(ts);
 
-            TestHelper.race(r1, r2, Schedulers.single());
+            TestHelper.race(r1, r2);
         }
     }
 
     @Test
     public void requestCancelRace() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final TestSubscriber<Integer> ts = new TestSubscriber<Integer>(0L);
 
             Runnable r1 = new Runnable() {
@@ -836,13 +836,13 @@ public class FlowableFromIterableTest {
             Flowable.fromIterable(Arrays.asList(1, 2, 3, 4))
             .subscribe(ts);
 
-            TestHelper.race(r1, r2, Schedulers.single());
+            TestHelper.race(r1, r2);
         }
     }
 
     @Test
     public void requestCancelRace2() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final TestSubscriber<Integer> ts = new TestSubscriber<Integer>(0L);
 
             Runnable r1 = new Runnable() {
@@ -862,7 +862,7 @@ public class FlowableFromIterableTest {
             Flowable.fromIterable(Arrays.asList(1, 2, 3, 4))
             .subscribe(ts);
 
-            TestHelper.race(r1, r2, Schedulers.single());
+            TestHelper.race(r1, r2);
         }
     }
 

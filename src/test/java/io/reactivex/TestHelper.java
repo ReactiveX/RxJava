@@ -50,6 +50,19 @@ import io.reactivex.subscribers.TestSubscriber;
  */
 public enum TestHelper {
     ;
+
+    /**
+     * Number of times to loop a {@link #race(Runnable, Runnable)} invocation
+     * by default.
+     */
+    public static final int RACE_DEFAULT_LOOPS = 2500;
+
+    /**
+     * Number of times to loop a {@link #race(Runnable, Runnable)} invocation
+     * in tests with race conditions requiring more runs to check.
+     */
+    public static final int RACE_LONG_LOOPS = 10000;
+
     /**
      * Mocks a subscriber and prepares it to request Long.MAX_VALUE.
      * @param <T> the value type
@@ -344,6 +357,8 @@ public enum TestHelper {
      * <p>The method blocks until both have run to completion.
      * @param r1 the first runnable
      * @param r2 the second runnable
+     * @see #RACE_DEFAULT_LOOPS
+     * @see #RACE_LONG_LOOPS
      */
     public static void race(final Runnable r1, final Runnable r2) {
         race(r1, r2, Schedulers.single());
@@ -355,6 +370,8 @@ public enum TestHelper {
      * @param r1 the first runnable
      * @param r2 the second runnable
      * @param s the scheduler to use
+     * @see #RACE_DEFAULT_LOOPS
+     * @see #RACE_LONG_LOOPS
      */
     public static void race(final Runnable r1, final Runnable r2, Scheduler s) {
         final AtomicInteger count = new AtomicInteger(2);
