@@ -316,7 +316,7 @@ public class ObservableSequenceEqualTest {
 
     @Test
     public void onNextCancelRace() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final PublishSubject<Integer> ps = PublishSubject.create();
 
             final TestObserver<Boolean> to = Observable.sequenceEqual(Observable.never(), ps).test();
@@ -343,7 +343,7 @@ public class ObservableSequenceEqualTest {
 
     @Test
     public void onNextCancelRaceObservable() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final PublishSubject<Integer> ps = PublishSubject.create();
 
             final TestObserver<Boolean> to = Observable.sequenceEqual(Observable.never(), ps).toObservable().test();

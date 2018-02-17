@@ -154,7 +154,7 @@ public class FutureObserverTest {
 
     @Test
     public void cancelRace() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final FutureSubscriber<Integer> fo = new FutureSubscriber<Integer>();
 
             Runnable r = new Runnable() {
@@ -164,7 +164,7 @@ public class FutureObserverTest {
                 }
             };
 
-            TestHelper.race(r, r, Schedulers.single());
+            TestHelper.race(r, r);
         }
     }
 
@@ -185,7 +185,7 @@ public class FutureObserverTest {
     public void onErrorCancelRace() {
         RxJavaPlugins.setErrorHandler(Functions.emptyConsumer());
         try {
-            for (int i = 0; i < 500; i++) {
+            for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
                 final FutureSubscriber<Integer> fo = new FutureSubscriber<Integer>();
 
                 final TestException ex = new TestException();
@@ -204,7 +204,7 @@ public class FutureObserverTest {
                     }
                 };
 
-                TestHelper.race(r1, r2, Schedulers.single());
+                TestHelper.race(r1, r2);
             }
         } finally {
             RxJavaPlugins.reset();
@@ -213,7 +213,7 @@ public class FutureObserverTest {
 
     @Test
     public void onCompleteCancelRace() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final FutureSubscriber<Integer> fo = new FutureSubscriber<Integer>();
 
             if (i % 3 == 0) {
@@ -238,7 +238,7 @@ public class FutureObserverTest {
                 }
             };
 
-            TestHelper.race(r1, r2, Schedulers.single());
+            TestHelper.race(r1, r2);
         }
     }
 

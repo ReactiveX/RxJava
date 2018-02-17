@@ -294,7 +294,7 @@ public class FlowableSubscribeOnTest {
 
     @Test
     public void deferredRequestRace() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
 
             final TestSubscriber<Integer> ts = new TestSubscriber<Integer>(0L);
 

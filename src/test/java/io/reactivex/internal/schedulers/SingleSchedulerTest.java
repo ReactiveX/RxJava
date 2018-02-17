@@ -68,7 +68,7 @@ public class SingleSchedulerTest extends AbstractSchedulerTests {
     @Test
     public void startRace() {
         final Scheduler s = new SingleScheduler();
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             s.shutdown();
 
             Runnable r1 = new Runnable() {

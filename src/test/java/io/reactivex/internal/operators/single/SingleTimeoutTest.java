@@ -134,7 +134,7 @@ public class SingleTimeoutTest {
 
     @Test
     public void successTimeoutRace() {
-        for (int i = 0; i < 1000; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final SingleSubject<Integer> subj = SingleSubject.create();
             SingleSubject<Integer> fallback = SingleSubject.create();
 
@@ -172,7 +172,7 @@ public class SingleTimeoutTest {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
 
-            for (int i = 0; i < 1000; i++) {
+            for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
                 final SingleSubject<Integer> subj = SingleSubject.create();
                 SingleSubject<Integer> fallback = SingleSubject.create();
 

@@ -970,7 +970,7 @@ public class ReplaySubjectTest extends SubjectTest<Integer> {
 
     @Test
     public void subscribeCancelRace() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final TestObserver<Integer> ts = new TestObserver<Integer>();
 
             final ReplaySubject<Integer> rp = ReplaySubject.create();
@@ -989,7 +989,7 @@ public class ReplaySubjectTest extends SubjectTest<Integer> {
                 }
             };
 
-            TestHelper.race(r1, r2, Schedulers.single());
+            TestHelper.race(r1, r2);
         }
     }
 
@@ -1007,7 +1007,7 @@ public class ReplaySubjectTest extends SubjectTest<Integer> {
 
     @Test
     public void subscribeRace() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final ReplaySubject<Integer> rp = ReplaySubject.create();
 
             Runnable r1 = new Runnable() {
@@ -1017,7 +1017,7 @@ public class ReplaySubjectTest extends SubjectTest<Integer> {
                 }
             };
 
-            TestHelper.race(r1, r1, Schedulers.single());
+            TestHelper.race(r1, r1);
         }
     }
 
@@ -1036,7 +1036,7 @@ public class ReplaySubjectTest extends SubjectTest<Integer> {
 
     @Test
     public void cancelRace() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
 
             final ReplaySubject<Integer> rp = ReplaySubject.create();
             final TestObserver<Integer> ts1 = rp.test();
@@ -1056,7 +1056,7 @@ public class ReplaySubjectTest extends SubjectTest<Integer> {
                 }
             };
 
-            TestHelper.race(r1, r2, Schedulers.single());
+            TestHelper.race(r1, r2);
 
             assertFalse(rp.hasObservers());
         }

@@ -821,7 +821,7 @@ public class FlowableSwitchTest {
 
     @Test
     public void nextSourceErrorRace() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             List<Throwable> errors = TestHelper.trackPluginErrors();
             try {
 
@@ -868,7 +868,7 @@ public class FlowableSwitchTest {
 
     @Test
     public void outerInnerErrorRace() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             List<Throwable> errors = TestHelper.trackPluginErrors();
             try {
 
@@ -917,7 +917,7 @@ public class FlowableSwitchTest {
 
     @Test
     public void nextCancelRace() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final PublishProcessor<Integer> ps1 = PublishProcessor.create();
 
             final TestSubscriber<Integer> to = ps1.switchMap(new Function<Integer, Flowable<Integer>>() {
@@ -1114,7 +1114,7 @@ public class FlowableSwitchTest {
 
     @Test
     public void drainCancelRace() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
 
             final PublishProcessor<Integer> pp = PublishProcessor.create();

@@ -318,7 +318,7 @@ public class ObservableCacheTest {
 
     @Test
     public void subscribeEmitRace() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final PublishSubject<Integer> ps = PublishSubject.<Integer>create();
 
             final Observable<Integer> cache = ps.cache();
@@ -344,7 +344,7 @@ public class ObservableCacheTest {
                 }
             };
 
-            TestHelper.race(r1, r2, Schedulers.single());
+            TestHelper.race(r1, r2);
 
             to
             .awaitDone(5, TimeUnit.SECONDS)

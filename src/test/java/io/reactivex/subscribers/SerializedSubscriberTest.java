@@ -1015,7 +1015,7 @@ public class SerializedSubscriberTest {
 
     @Test
     public void onCompleteRace() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
 
             final SerializedSubscriber<Integer> so = new SerializedSubscriber<Integer>(ts);
@@ -1031,7 +1031,7 @@ public class SerializedSubscriberTest {
                 }
             };
 
-            TestHelper.race(r, r, Schedulers.single());
+            TestHelper.race(r, r);
 
             ts.awaitDone(5, TimeUnit.SECONDS)
             .assertResult();
@@ -1041,7 +1041,7 @@ public class SerializedSubscriberTest {
 
     @Test
     public void onNextOnCompleteRace() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
 
             final SerializedSubscriber<Integer> so = new SerializedSubscriber<Integer>(ts);
@@ -1064,7 +1064,7 @@ public class SerializedSubscriberTest {
                 }
             };
 
-            TestHelper.race(r1, r2, Schedulers.single());
+            TestHelper.race(r1, r2);
 
             ts.awaitDone(5, TimeUnit.SECONDS)
             .assertNoErrors()
@@ -1077,7 +1077,7 @@ public class SerializedSubscriberTest {
 
     @Test
     public void onNextOnErrorRace() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
 
             final SerializedSubscriber<Integer> so = new SerializedSubscriber<Integer>(ts);
@@ -1102,7 +1102,7 @@ public class SerializedSubscriberTest {
                 }
             };
 
-            TestHelper.race(r1, r2, Schedulers.single());
+            TestHelper.race(r1, r2);
 
             ts.awaitDone(5, TimeUnit.SECONDS)
             .assertError(ex)
@@ -1115,7 +1115,7 @@ public class SerializedSubscriberTest {
 
     @Test
     public void onNextOnErrorRaceDelayError() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
 
             final SerializedSubscriber<Integer> so = new SerializedSubscriber<Integer>(ts, true);
@@ -1140,7 +1140,7 @@ public class SerializedSubscriberTest {
                 }
             };
 
-            TestHelper.race(r1, r2, Schedulers.single());
+            TestHelper.race(r1, r2);
 
             ts.awaitDone(5, TimeUnit.SECONDS)
             .assertError(ex)
@@ -1177,7 +1177,7 @@ public class SerializedSubscriberTest {
 
     @Test
     public void onCompleteOnErrorRace() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
 
             final SerializedSubscriber<Integer> so = new SerializedSubscriber<Integer>(ts);
@@ -1202,7 +1202,7 @@ public class SerializedSubscriberTest {
                 }
             };
 
-            TestHelper.race(r1, r2, Schedulers.single());
+            TestHelper.race(r1, r2);
 
             ts.awaitDone(5, TimeUnit.SECONDS);
 

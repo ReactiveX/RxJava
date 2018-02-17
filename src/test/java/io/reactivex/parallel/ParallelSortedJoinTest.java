@@ -152,7 +152,7 @@ public class ParallelSortedJoinTest {
 
     @Test
     public void sortCancelRace() {
-        for (int i = 0; i < 1000; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final ReplayProcessor<Integer> pp = ReplayProcessor.create();
             pp.onNext(1);
             pp.onNext(2);
@@ -181,7 +181,7 @@ public class ParallelSortedJoinTest {
 
     @Test
     public void sortCancelRace2() {
-        for (int i = 0; i < 1000; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final ReplayProcessor<Integer> pp = ReplayProcessor.create();
             pp.onNext(1);
             pp.onNext(2);

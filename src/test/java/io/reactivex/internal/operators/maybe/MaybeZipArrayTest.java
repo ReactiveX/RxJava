@@ -15,7 +15,7 @@ package io.reactivex.internal.operators.maybe;
 
 import static org.junit.Assert.*;
 
-import java.util.*;
+import java.util.List;
 
 import org.junit.Test;
 
@@ -26,7 +26,6 @@ import io.reactivex.internal.functions.Functions;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.processors.PublishProcessor;
-import io.reactivex.schedulers.Schedulers;
 
 public class MaybeZipArrayTest {
 
@@ -114,7 +113,7 @@ public class MaybeZipArrayTest {
 
     @Test
     public void innerErrorRace() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             List<Throwable> errors = TestHelper.trackPluginErrors();
             try {
                 final PublishProcessor<Integer> pp0 = PublishProcessor.create();
@@ -139,7 +138,7 @@ public class MaybeZipArrayTest {
                     }
                 };
 
-                TestHelper.race(r1, r2, Schedulers.single());
+                TestHelper.race(r1, r2);
 
                 to.assertFailure(TestException.class);
 

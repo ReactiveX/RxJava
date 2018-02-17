@@ -13,27 +13,23 @@
 
 package io.reactivex.processors;
 
+import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
+
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
+
+import org.junit.*;
+import org.mockito.*;
+import org.reactivestreams.Subscriber;
+
 import io.reactivex.TestHelper;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.Consumer;
 import io.reactivex.internal.fuseable.QueueSubscription;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
-import io.reactivex.schedulers.Schedulers;
-import io.reactivex.subscribers.SubscriberFusion;
-import io.reactivex.subscribers.TestSubscriber;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.mockito.InOrder;
-import org.mockito.Mockito;
-import org.reactivestreams.Subscriber;
-
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicReference;
-
-import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.*;
+import io.reactivex.subscribers.*;
 
 public class AsyncProcessorTest extends FlowableProcessorTest<Object> {
 
@@ -467,7 +463,7 @@ public class AsyncProcessorTest extends FlowableProcessorTest<Object> {
     public void cancelRace() {
         AsyncProcessor<Object> p = AsyncProcessor.create();
 
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final TestSubscriber<Object> ts1 = p.test();
             final TestSubscriber<Object> ts2 = p.test();
 
@@ -485,14 +481,14 @@ public class AsyncProcessorTest extends FlowableProcessorTest<Object> {
                 }
             };
 
-            TestHelper.race(r1, r2, Schedulers.single());
+            TestHelper.race(r1, r2);
         }
     }
 
     @Test
     public void onErrorCancelRace() {
 
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final AsyncProcessor<Object> p = AsyncProcessor.create();
 
             final TestSubscriber<Object> ts1 = p.test();
@@ -513,7 +509,7 @@ public class AsyncProcessorTest extends FlowableProcessorTest<Object> {
                 }
             };
 
-            TestHelper.race(r1, r2, Schedulers.single());
+            TestHelper.race(r1, r2);
 
             if (ts1.errorCount() != 0) {
                 ts1.assertFailure(TestException.class);

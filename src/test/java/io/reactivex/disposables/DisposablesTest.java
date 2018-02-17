@@ -14,6 +14,7 @@
 package io.reactivex.disposables;
 
 import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.*;
 
 import java.io.IOException;
@@ -27,7 +28,6 @@ import io.reactivex.TestHelper;
 import io.reactivex.functions.Action;
 import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.plugins.RxJavaPlugins;
-import io.reactivex.schedulers.Schedulers;
 
 public class DisposablesTest {
 
@@ -123,7 +123,7 @@ public class DisposablesTest {
 
     @Test
     public void disposeRace() {
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final Disposable d = Disposables.empty();
 
             Runnable r = new Runnable() {
@@ -133,7 +133,7 @@ public class DisposablesTest {
                 }
             };
 
-            TestHelper.race(r, r, Schedulers.io());
+            TestHelper.race(r, r);
         }
     }
 

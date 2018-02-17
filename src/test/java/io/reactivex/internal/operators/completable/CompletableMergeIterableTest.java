@@ -21,14 +21,13 @@ import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.plugins.RxJavaPlugins;
-import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subjects.PublishSubject;
 
 public class CompletableMergeIterableTest {
 
     @Test
     public void errorRace() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             List<Throwable> errors = TestHelper.trackPluginErrors();
             try {
                 final PublishSubject<Integer> ps1 = PublishSubject.create();
@@ -52,7 +51,7 @@ public class CompletableMergeIterableTest {
                     }
                 };
 
-                TestHelper.race(r1, r2, Schedulers.single());
+                TestHelper.race(r1, r2);
 
                 to.assertFailure(TestException.class);
 

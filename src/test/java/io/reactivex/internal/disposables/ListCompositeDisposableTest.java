@@ -22,7 +22,6 @@ import org.junit.Test;
 import io.reactivex.TestHelper;
 import io.reactivex.disposables.*;
 import io.reactivex.exceptions.*;
-import io.reactivex.schedulers.Schedulers;
 
 public class ListCompositeDisposableTest {
 
@@ -179,7 +178,7 @@ public class ListCompositeDisposableTest {
 
     @Test
     public void disposeRace() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final ListCompositeDisposable cd = new ListCompositeDisposable();
 
             Runnable run = new Runnable() {
@@ -189,13 +188,13 @@ public class ListCompositeDisposableTest {
                 }
             };
 
-            TestHelper.race(run, run, Schedulers.io());
+            TestHelper.race(run, run);
         }
     }
 
     @Test
     public void addRace() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final ListCompositeDisposable cd = new ListCompositeDisposable();
 
             Runnable run = new Runnable() {
@@ -205,13 +204,13 @@ public class ListCompositeDisposableTest {
                 }
             };
 
-            TestHelper.race(run, run, Schedulers.io());
+            TestHelper.race(run, run);
         }
     }
 
     @Test
     public void addAllRace() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final ListCompositeDisposable cd = new ListCompositeDisposable();
 
             Runnable run = new Runnable() {
@@ -221,13 +220,13 @@ public class ListCompositeDisposableTest {
                 }
             };
 
-            TestHelper.race(run, run, Schedulers.io());
+            TestHelper.race(run, run);
         }
     }
 
     @Test
     public void removeRace() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final ListCompositeDisposable cd = new ListCompositeDisposable();
 
             final Disposable d1 = Disposables.empty();
@@ -241,13 +240,13 @@ public class ListCompositeDisposableTest {
                 }
             };
 
-            TestHelper.race(run, run, Schedulers.io());
+            TestHelper.race(run, run);
         }
     }
 
     @Test
     public void deleteRace() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final ListCompositeDisposable cd = new ListCompositeDisposable();
 
             final Disposable d1 = Disposables.empty();
@@ -261,13 +260,13 @@ public class ListCompositeDisposableTest {
                 }
             };
 
-            TestHelper.race(run, run, Schedulers.io());
+            TestHelper.race(run, run);
         }
     }
 
     @Test
     public void clearRace() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final ListCompositeDisposable cd = new ListCompositeDisposable();
 
             final Disposable d1 = Disposables.empty();
@@ -281,13 +280,13 @@ public class ListCompositeDisposableTest {
                 }
             };
 
-            TestHelper.race(run, run, Schedulers.io());
+            TestHelper.race(run, run);
         }
     }
 
     @Test
     public void addDisposeRace() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final ListCompositeDisposable cd = new ListCompositeDisposable();
 
             Runnable run = new Runnable() {
@@ -304,13 +303,13 @@ public class ListCompositeDisposableTest {
                 }
             };
 
-            TestHelper.race(run, run2, Schedulers.io());
+            TestHelper.race(run, run2);
         }
     }
 
     @Test
     public void addAllDisposeRace() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final ListCompositeDisposable cd = new ListCompositeDisposable();
 
             Runnable run = new Runnable() {
@@ -327,13 +326,13 @@ public class ListCompositeDisposableTest {
                 }
             };
 
-            TestHelper.race(run, run2, Schedulers.io());
+            TestHelper.race(run, run2);
         }
     }
 
     @Test
     public void removeDisposeRace() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final ListCompositeDisposable cd = new ListCompositeDisposable();
 
             final Disposable d1 = Disposables.empty();
@@ -354,13 +353,13 @@ public class ListCompositeDisposableTest {
                 }
             };
 
-            TestHelper.race(run, run2, Schedulers.io());
+            TestHelper.race(run, run2);
         }
     }
 
     @Test
     public void deleteDisposeRace() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final ListCompositeDisposable cd = new ListCompositeDisposable();
 
             final Disposable d1 = Disposables.empty();
@@ -381,13 +380,13 @@ public class ListCompositeDisposableTest {
                 }
             };
 
-            TestHelper.race(run, run2, Schedulers.io());
+            TestHelper.race(run, run2);
         }
     }
 
     @Test
     public void clearDisposeRace() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final ListCompositeDisposable cd = new ListCompositeDisposable();
 
             final Disposable d1 = Disposables.empty();
@@ -408,7 +407,7 @@ public class ListCompositeDisposableTest {
                 }
             };
 
-            TestHelper.race(run, run2, Schedulers.io());
+            TestHelper.race(run, run2);
         }
     }
 }

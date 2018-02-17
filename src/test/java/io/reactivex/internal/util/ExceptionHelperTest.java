@@ -13,14 +13,14 @@
 
 package io.reactivex.internal.util;
 
+import static org.junit.Assert.assertTrue;
+
 import java.util.concurrent.atomic.AtomicReference;
 
-import static org.junit.Assert.*;
 import org.junit.Test;
 
 import io.reactivex.TestHelper;
 import io.reactivex.exceptions.TestException;
-import io.reactivex.schedulers.Schedulers;
 
 public class ExceptionHelperTest {
     @Test
@@ -30,7 +30,7 @@ public class ExceptionHelperTest {
 
     @Test
     public void addRace() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
 
             final AtomicReference<Throwable> error = new AtomicReference<Throwable>();
 
@@ -43,7 +43,7 @@ public class ExceptionHelperTest {
                 }
             };
 
-            TestHelper.race(r, r, Schedulers.single());
+            TestHelper.race(r, r);
         }
     }
 

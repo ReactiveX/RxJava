@@ -26,7 +26,6 @@ import io.reactivex.exceptions.*;
 import io.reactivex.functions.*;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.plugins.RxJavaPlugins;
-import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subjects.PublishSubject;
 
 public class CompletableUsingTest {
@@ -440,7 +439,7 @@ public class CompletableUsingTest {
 
     @Test
     public void successDisposeRace() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
 
             final PublishSubject<Integer> ps = PublishSubject.create();
 
@@ -477,13 +476,13 @@ public class CompletableUsingTest {
                 }
             };
 
-            TestHelper.race(r1, r2, Schedulers.single());
+            TestHelper.race(r1, r2);
         }
     }
 
     @Test
     public void errorDisposeRace() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
 
             final PublishSubject<Integer> ps = PublishSubject.create();
 
@@ -520,13 +519,13 @@ public class CompletableUsingTest {
                 }
             };
 
-            TestHelper.race(r1, r2, Schedulers.single());
+            TestHelper.race(r1, r2);
         }
     }
 
     @Test
     public void emptyDisposeRace() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
 
             final PublishSubject<Integer> ps = PublishSubject.create();
 
@@ -562,7 +561,7 @@ public class CompletableUsingTest {
                 }
             };
 
-            TestHelper.race(r1, r2, Schedulers.single());
+            TestHelper.race(r1, r2);
         }
     }
 

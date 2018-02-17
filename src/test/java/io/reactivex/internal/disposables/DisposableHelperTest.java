@@ -23,7 +23,6 @@ import org.junit.Test;
 import io.reactivex.TestHelper;
 import io.reactivex.disposables.*;
 import io.reactivex.plugins.RxJavaPlugins;
-import io.reactivex.schedulers.Schedulers;
 
 public class DisposableHelperTest {
     @Test
@@ -53,7 +52,7 @@ public class DisposableHelperTest {
 
     @Test
     public void disposeRace() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final AtomicReference<Disposable> d = new AtomicReference<Disposable>();
 
             Runnable r = new Runnable() {
@@ -63,13 +62,13 @@ public class DisposableHelperTest {
                 }
             };
 
-            TestHelper.race(r, r, Schedulers.io());
+            TestHelper.race(r, r);
         }
     }
 
     @Test
     public void setReplace() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final AtomicReference<Disposable> d = new AtomicReference<Disposable>();
 
             Runnable r = new Runnable() {
@@ -79,13 +78,13 @@ public class DisposableHelperTest {
                 }
             };
 
-            TestHelper.race(r, r, Schedulers.io());
+            TestHelper.race(r, r);
         }
     }
 
     @Test
     public void setRace() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final AtomicReference<Disposable> d = new AtomicReference<Disposable>();
 
             Runnable r = new Runnable() {
@@ -95,7 +94,7 @@ public class DisposableHelperTest {
                 }
             };
 
-            TestHelper.race(r, r, Schedulers.io());
+            TestHelper.race(r, r);
         }
     }
 

@@ -636,7 +636,7 @@ public class BehaviorProcessorTest extends FlowableProcessorTest<Object> {
 
     @Test
     public void addRemoveRace() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final BehaviorProcessor<Object> p = BehaviorProcessor.create();
 
             final TestSubscriber<Object> ts = p.test();
@@ -655,14 +655,14 @@ public class BehaviorProcessorTest extends FlowableProcessorTest<Object> {
                 }
             };
 
-            TestHelper.race(r1, r2, Schedulers.single());
+            TestHelper.race(r1, r2);
         }
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @Test
     public void subscribeOnNextRace() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final BehaviorProcessor<Object> p = BehaviorProcessor.createDefault((Object)1);
 
             final TestSubscriber[] ts = { null };
@@ -681,7 +681,7 @@ public class BehaviorProcessorTest extends FlowableProcessorTest<Object> {
                 }
             };
 
-            TestHelper.race(r1, r2, Schedulers.single());
+            TestHelper.race(r1, r2);
 
             if (ts[0].valueCount() == 1) {
                 ts[0].assertValue(2).assertNoErrors().assertNotComplete();
@@ -759,7 +759,7 @@ public class BehaviorProcessorTest extends FlowableProcessorTest<Object> {
 
     @Test
     public void completeSubscribeRace() throws Exception {
-        for (int i = 0; i < 1000; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final BehaviorProcessor<Object> p = BehaviorProcessor.create();
 
             final TestSubscriber<Object> ts = new TestSubscriber<Object>();
@@ -786,7 +786,7 @@ public class BehaviorProcessorTest extends FlowableProcessorTest<Object> {
 
     @Test
     public void errorSubscribeRace() throws Exception {
-        for (int i = 0; i < 1000; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final BehaviorProcessor<Object> p = BehaviorProcessor.create();
 
             final TestSubscriber<Object> ts = new TestSubscriber<Object>();
@@ -815,7 +815,7 @@ public class BehaviorProcessorTest extends FlowableProcessorTest<Object> {
 
     @Test(timeout = 10000)
     public void subscriberCancelOfferRace() {
-        for (int i = 0; i < 1000; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final BehaviorProcessor<Integer> pp = BehaviorProcessor.create();
 
             final TestSubscriber<Integer> ts = pp.test(1);
@@ -824,7 +824,7 @@ public class BehaviorProcessorTest extends FlowableProcessorTest<Object> {
                 @Override
                 public void run() {
                     for (int i = 0; i < 2; i++) {
-                        while (!pp.offer(i)) ;
+                        while (!pp.offer(i)) { }
                     }
                 }
             };

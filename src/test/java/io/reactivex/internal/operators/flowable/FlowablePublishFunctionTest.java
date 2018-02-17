@@ -427,7 +427,7 @@ public class FlowablePublishFunctionTest {
 
     @Test
     public void sourceSubscriptionDelayed() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final TestSubscriber<Integer> ts1 = new TestSubscriber<Integer>(0L);
 
             Flowable.just(1)

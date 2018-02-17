@@ -30,7 +30,6 @@ import io.reactivex.functions.*;
 import io.reactivex.internal.functions.Functions;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.processors.PublishProcessor;
-import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.TestSubscriber;
 
 public class FlowableGroupJoinTest {
@@ -506,7 +505,7 @@ public class FlowableGroupJoinTest {
 
     @Test
     public void innerErrorRace() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final PublishProcessor<Object> ps1 = PublishProcessor.create();
             final PublishProcessor<Object> ps2 = PublishProcessor.create();
 
@@ -553,7 +552,7 @@ public class FlowableGroupJoinTest {
                     }
                 };
 
-                TestHelper.race(r1, r2, Schedulers.single());
+                TestHelper.race(r1, r2);
 
                 to.assertError(Throwable.class).assertSubscribed().assertNotComplete().assertValueCount(1);
 
@@ -578,7 +577,7 @@ public class FlowableGroupJoinTest {
 
     @Test
     public void outerErrorRace() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final PublishProcessor<Object> ps1 = PublishProcessor.create();
             final PublishProcessor<Object> ps2 = PublishProcessor.create();
 
@@ -626,7 +625,7 @@ public class FlowableGroupJoinTest {
                     }
                 };
 
-                TestHelper.race(r1, r2, Schedulers.single());
+                TestHelper.race(r1, r2);
 
                 to.assertError(Throwable.class).assertSubscribed().assertNotComplete().assertNoValues();
 

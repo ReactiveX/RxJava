@@ -1018,7 +1018,7 @@ public class SerializedObserverTest {
 
     @Test
     public void onCompleteRace() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             TestObserver<Integer> ts = new TestObserver<Integer>();
 
             final SerializedObserver<Integer> so = new SerializedObserver<Integer>(ts);
@@ -1034,7 +1034,7 @@ public class SerializedObserverTest {
                 }
             };
 
-            TestHelper.race(r, r, Schedulers.single());
+            TestHelper.race(r, r);
 
             ts.awaitDone(5, TimeUnit.SECONDS)
             .assertResult();
@@ -1044,7 +1044,7 @@ public class SerializedObserverTest {
 
     @Test
     public void onNextOnCompleteRace() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             TestObserver<Integer> ts = new TestObserver<Integer>();
 
             final SerializedObserver<Integer> so = new SerializedObserver<Integer>(ts);
@@ -1067,7 +1067,7 @@ public class SerializedObserverTest {
                 }
             };
 
-            TestHelper.race(r1, r2, Schedulers.single());
+            TestHelper.race(r1, r2);
 
             ts.awaitDone(5, TimeUnit.SECONDS)
             .assertNoErrors()
@@ -1080,7 +1080,7 @@ public class SerializedObserverTest {
 
     @Test
     public void onNextOnErrorRace() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             TestObserver<Integer> ts = new TestObserver<Integer>();
 
             final SerializedObserver<Integer> so = new SerializedObserver<Integer>(ts);
@@ -1105,7 +1105,7 @@ public class SerializedObserverTest {
                 }
             };
 
-            TestHelper.race(r1, r2, Schedulers.single());
+            TestHelper.race(r1, r2);
 
             ts.awaitDone(5, TimeUnit.SECONDS)
             .assertError(ex)
@@ -1118,7 +1118,7 @@ public class SerializedObserverTest {
 
     @Test
     public void onNextOnErrorRaceDelayError() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             TestObserver<Integer> ts = new TestObserver<Integer>();
 
             final SerializedObserver<Integer> so = new SerializedObserver<Integer>(ts, true);
@@ -1143,7 +1143,7 @@ public class SerializedObserverTest {
                 }
             };
 
-            TestHelper.race(r1, r2, Schedulers.single());
+            TestHelper.race(r1, r2);
 
             ts.awaitDone(5, TimeUnit.SECONDS)
             .assertError(ex)
@@ -1180,7 +1180,7 @@ public class SerializedObserverTest {
 
     @Test
     public void onCompleteOnErrorRace() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
 
             List<Throwable> errors = TestHelper.trackPluginErrors();
             try {
@@ -1208,7 +1208,7 @@ public class SerializedObserverTest {
                     }
                 };
 
-                TestHelper.race(r1, r2, Schedulers.single());
+                TestHelper.race(r1, r2);
 
                 ts.awaitDone(5, TimeUnit.SECONDS);
 

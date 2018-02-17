@@ -13,10 +13,11 @@
 
 package io.reactivex.internal.operators.single;
 
+import static org.junit.Assert.assertTrue;
+
 import java.util.List;
 import java.util.concurrent.CancellationException;
 
-import static org.junit.Assert.*;
 import org.junit.Test;
 
 import io.reactivex.*;
@@ -24,7 +25,6 @@ import io.reactivex.exceptions.TestException;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.processors.PublishProcessor;
-import io.reactivex.schedulers.Schedulers;
 
 public class SingleTakeUntilTest {
 
@@ -223,7 +223,7 @@ public class SingleTakeUntilTest {
 
     @Test
     public void onErrorRace() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             List<Throwable> errors = TestHelper.trackPluginErrors();
 
             try {
@@ -248,7 +248,7 @@ public class SingleTakeUntilTest {
                     }
                 };
 
-                TestHelper.race(r1, r2, Schedulers.single());
+                TestHelper.race(r1, r2);
 
                 to.assertFailure(TestException.class);
 

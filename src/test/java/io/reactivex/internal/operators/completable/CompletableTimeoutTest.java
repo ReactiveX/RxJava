@@ -106,7 +106,7 @@ public class CompletableTimeoutTest {
 
     @Test
     public void errorTimeoutRace() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             List<Throwable> errors = TestHelper.trackPluginErrors();
 
             try {
@@ -133,7 +133,7 @@ public class CompletableTimeoutTest {
                     }
                 };
 
-                TestHelper.race(r1, r2, Schedulers.single());
+                TestHelper.race(r1, r2);
 
                 to.assertTerminated();
 

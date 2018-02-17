@@ -13,17 +13,17 @@
 
 package io.reactivex.internal.operators.maybe;
 
+import static org.junit.Assert.assertEquals;
+
 import java.io.IOException;
 import java.util.List;
 
-import static org.junit.Assert.*;
 import org.junit.Test;
 
 import io.reactivex.*;
 import io.reactivex.disposables.Disposables;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.plugins.RxJavaPlugins;
-import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.TestSubscriber;
 
 public class MaybeConcatArrayTest {
@@ -83,7 +83,7 @@ public class MaybeConcatArrayTest {
     @SuppressWarnings("unchecked")
     @Test
     public void requestCancelRace() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final TestSubscriber<Integer> ts = Maybe.concatArray(Maybe.just(1), Maybe.just(2))
                     .test(0L);
 
@@ -101,14 +101,14 @@ public class MaybeConcatArrayTest {
                 }
             };
 
-            TestHelper.race(r1, r2, Schedulers.single());
+            TestHelper.race(r1, r2);
         }
     }
 
     @SuppressWarnings("unchecked")
     @Test
     public void requestCancelRaceDelayError() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final TestSubscriber<Integer> ts = Maybe.concatArrayDelayError(Maybe.just(1), Maybe.just(2))
                     .test(0L);
 
@@ -126,7 +126,7 @@ public class MaybeConcatArrayTest {
                 }
             };
 
-            TestHelper.race(r1, r2, Schedulers.single());
+            TestHelper.race(r1, r2);
         }
     }
 

@@ -529,7 +529,7 @@ public class FlowablePublishTest {
 
     @Test
     public void addRemoveRace() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
 
             final ConnectableFlowable<Integer> co = Flowable.<Integer>empty().publish();
 
@@ -618,7 +618,7 @@ public class FlowablePublishTest {
 
     @Test
     public void nextCancelRace() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
 
             final PublishProcessor<Integer> ps = PublishProcessor.create();
 
@@ -686,7 +686,7 @@ public class FlowablePublishTest {
 
     @Test
     public void subscribeDisconnectRace() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
 
             final PublishProcessor<Integer> ps = PublishProcessor.create();
 
@@ -768,7 +768,7 @@ public class FlowablePublishTest {
 
     @Test
     public void preNextConnect() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
 
             final ConnectableFlowable<Integer> co = Flowable.<Integer>empty().publish();
 
@@ -787,7 +787,7 @@ public class FlowablePublishTest {
 
     @Test
     public void connectRace() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
 
             final ConnectableFlowable<Integer> co = Flowable.<Integer>empty().publish();
 

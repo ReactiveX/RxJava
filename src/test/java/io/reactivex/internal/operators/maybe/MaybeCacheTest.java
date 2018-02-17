@@ -24,7 +24,6 @@ import io.reactivex.functions.*;
 import io.reactivex.internal.functions.Functions;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.processors.PublishProcessor;
-import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.TestSubscriber;
 
 public class MaybeCacheTest {
@@ -224,7 +223,7 @@ public class MaybeCacheTest {
 
     @Test
     public void addAddRace() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             PublishProcessor<Integer> pp = PublishProcessor.create();
 
             final Maybe<Integer> source = pp.singleElement().cache();
@@ -236,13 +235,13 @@ public class MaybeCacheTest {
                 }
             };
 
-            TestHelper.race(r, r, Schedulers.single());
+            TestHelper.race(r, r);
         }
     }
 
     @Test
     public void removeRemoveRace() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             PublishProcessor<Integer> pp = PublishProcessor.create();
 
             final Maybe<Integer> source = pp.singleElement().cache();
@@ -264,7 +263,7 @@ public class MaybeCacheTest {
                 }
             };
 
-            TestHelper.race(r1, r2, Schedulers.single());
+            TestHelper.race(r1, r2);
         }
     }
 

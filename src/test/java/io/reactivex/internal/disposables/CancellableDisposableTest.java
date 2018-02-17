@@ -24,7 +24,6 @@ import io.reactivex.TestHelper;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.Cancellable;
 import io.reactivex.plugins.RxJavaPlugins;
-import io.reactivex.schedulers.Schedulers;
 
 public class CancellableDisposableTest {
 
@@ -84,7 +83,7 @@ public class CancellableDisposableTest {
     @Test
     public void disposeRace() {
 
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final AtomicInteger count = new AtomicInteger();
 
             Cancellable c = new Cancellable() {
@@ -103,7 +102,7 @@ public class CancellableDisposableTest {
                 }
             };
 
-            TestHelper.race(r, r, Schedulers.io());
+            TestHelper.race(r, r);
 
             assertEquals(1, count.get());
         }

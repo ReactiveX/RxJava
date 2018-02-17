@@ -630,7 +630,7 @@ public class BehaviorSubjectTest extends SubjectTest<Integer> {
 
     @Test
     public void addRemoveRace() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final BehaviorSubject<Object> p = BehaviorSubject.create();
 
             final TestObserver<Object> ts = p.test();
@@ -649,14 +649,14 @@ public class BehaviorSubjectTest extends SubjectTest<Integer> {
                 }
             };
 
-            TestHelper.race(r1, r2, Schedulers.single());
+            TestHelper.race(r1, r2);
         }
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @Test
     public void subscribeOnNextRace() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final BehaviorSubject<Object> p = BehaviorSubject.createDefault((Object)1);
 
             final TestObserver[] ts = { null };
@@ -675,7 +675,7 @@ public class BehaviorSubjectTest extends SubjectTest<Integer> {
                 }
             };
 
-            TestHelper.race(r1, r2, Schedulers.single());
+            TestHelper.race(r1, r2);
 
             if (ts[0].valueCount() == 1) {
                 ts[0].assertValue(2).assertNoErrors().assertNotComplete();
@@ -718,7 +718,7 @@ public class BehaviorSubjectTest extends SubjectTest<Integer> {
 
     @Test
     public void completeSubscribeRace() throws Exception {
-        for (int i = 0; i < 1000; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final BehaviorSubject<Object> p = BehaviorSubject.create();
 
             final TestObserver<Object> ts = new TestObserver<Object>();
@@ -745,7 +745,7 @@ public class BehaviorSubjectTest extends SubjectTest<Integer> {
 
     @Test
     public void errorSubscribeRace() throws Exception {
-        for (int i = 0; i < 1000; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final BehaviorSubject<Object> p = BehaviorSubject.create();
 
             final TestObserver<Object> ts = new TestObserver<Object>();

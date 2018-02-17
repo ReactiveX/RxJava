@@ -13,22 +13,20 @@
 
 package io.reactivex.processors;
 
-import io.reactivex.Observable;
-import io.reactivex.TestHelper;
+import static org.junit.Assert.*;
+
+import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
+
+import org.junit.Test;
+
+import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.internal.fuseable.QueueSubscription;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.plugins.RxJavaPlugins;
-import io.reactivex.schedulers.Schedulers;
-import io.reactivex.subscribers.SubscriberFusion;
-import io.reactivex.subscribers.TestSubscriber;
-import org.junit.Test;
-
-import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
-
-import static org.junit.Assert.*;
+import io.reactivex.subscribers.*;
 
 public class UnicastProcessorTest extends FlowableProcessorTest<Object> {
 
@@ -188,7 +186,7 @@ public class UnicastProcessorTest extends FlowableProcessorTest<Object> {
 
     @Test
     public void completeCancelRace() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final int[] calls = { 0 };
             final UnicastProcessor<Object> up = UnicastProcessor.create(100, new Runnable() {
                 @Override
@@ -213,7 +211,7 @@ public class UnicastProcessorTest extends FlowableProcessorTest<Object> {
                 }
             };
 
-            TestHelper.race(r1, r2, Schedulers.single());
+            TestHelper.race(r1, r2);
 
             assertEquals(1, calls[0]);
         }
@@ -296,7 +294,7 @@ public class UnicastProcessorTest extends FlowableProcessorTest<Object> {
 
     @Test
     public void fusedDrainCancel() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final UnicastProcessor<Object> p = UnicastProcessor.create();
 
             final TestSubscriber<Object> ts = SubscriberFusion.newTest(QueueSubscription.ANY);
@@ -317,7 +315,7 @@ public class UnicastProcessorTest extends FlowableProcessorTest<Object> {
                 }
             };
 
-            TestHelper.race(r1, r2, Schedulers.single());
+            TestHelper.race(r1, r2);
         }
     }
 }

@@ -18,7 +18,7 @@ import static org.junit.Assert.*;
 import java.util.*;
 
 import org.junit.Test;
-import org.reactivestreams.*;
+import org.reactivestreams.Subscription;
 
 import io.reactivex.*;
 import io.reactivex.disposables.Disposables;
@@ -26,7 +26,6 @@ import io.reactivex.exceptions.TestException;
 import io.reactivex.internal.fuseable.QueueSubscription;
 import io.reactivex.internal.operators.maybe.MaybeMergeArray.MergeMaybeObserver;
 import io.reactivex.plugins.RxJavaPlugins;
-import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subjects.PublishSubject;
 import io.reactivex.subscribers.*;
 
@@ -133,7 +132,7 @@ public class MaybeMergeArrayTest {
     @SuppressWarnings("unchecked")
     @Test
     public void errorRace() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             List<Throwable> errors = TestHelper.trackPluginErrors();
 
             try {
@@ -159,7 +158,7 @@ public class MaybeMergeArrayTest {
                     }
                 };
 
-                TestHelper.race(r1, r2, Schedulers.single());
+                TestHelper.race(r1, r2);
 
                 ts.assertFailure(Throwable.class);
 

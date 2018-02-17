@@ -22,7 +22,6 @@ import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.Function;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.processors.PublishProcessor;
-import io.reactivex.schedulers.Schedulers;
 
 public class MaybeSwitchIfEmptyTest {
 
@@ -97,7 +96,7 @@ public class MaybeSwitchIfEmptyTest {
 
     @Test
     public void emptyCancelRace() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final PublishProcessor<Integer> pp = PublishProcessor.create();
 
             final TestObserver<Integer> ts = pp.singleElement().switchIfEmpty(Maybe.just(2)).test();
@@ -116,7 +115,7 @@ public class MaybeSwitchIfEmptyTest {
                 }
             };
 
-            TestHelper.race(r1, r2, Schedulers.single());
+            TestHelper.race(r1, r2);
         }
     }
 }

@@ -721,7 +721,7 @@ public class ObservableSwitchTest {
 
     @Test
     public void nextSourceErrorRace() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             List<Throwable> errors = TestHelper.trackPluginErrors();
             try {
 
@@ -768,7 +768,7 @@ public class ObservableSwitchTest {
 
     @Test
     public void outerInnerErrorRace() {
-        for (int i = 0; i < 5000; i++) {
+        for (int i = 0; i < TestHelper.RACE_LONG_LOOPS; i++) {
             List<Throwable> errors = TestHelper.trackPluginErrors();
             try {
 
@@ -819,7 +819,7 @@ public class ObservableSwitchTest {
 
     @Test
     public void nextCancelRace() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final PublishSubject<Integer> ps1 = PublishSubject.create();
 
             final TestObserver<Integer> to = ps1.switchMap(new Function<Integer, ObservableSource<Integer>>() {
@@ -989,7 +989,7 @@ public class ObservableSwitchTest {
 
     @Test
     public void outerInnerErrorRaceIgnoreDispose() {
-        for (int i = 0; i < 5000; i++) {
+        for (int i = 0; i < TestHelper.RACE_LONG_LOOPS; i++) {
             List<Throwable> errors = TestHelper.trackPluginErrors();
             try {
 

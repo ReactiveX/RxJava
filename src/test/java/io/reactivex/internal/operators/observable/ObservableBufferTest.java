@@ -1404,7 +1404,7 @@ public class ObservableBufferTest {
 
     @Test
     public void withTimeAndSizeCapacityRace() {
-        for (int i = 0; i < 1000; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final TestScheduler scheduler = new TestScheduler();
 
             final PublishSubject<Object> ps = PublishSubject.create();

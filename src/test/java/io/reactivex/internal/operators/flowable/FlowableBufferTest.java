@@ -1978,7 +1978,7 @@ public class FlowableBufferTest {
 
     @Test
     public void withTimeAndSizeCapacityRace() {
-        for (int i = 0; i < 1000; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final TestScheduler scheduler = new TestScheduler();
 
             final PublishProcessor<Object> ps = PublishProcessor.create();

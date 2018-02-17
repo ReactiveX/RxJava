@@ -59,7 +59,7 @@ public class ScheduledRunnableTest {
 
     @Test
     public void setFutureCancelRace() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             CompositeDisposable set = new CompositeDisposable();
             final ScheduledRunnable run = new ScheduledRunnable(Functions.EMPTY_RUNNABLE, set);
             set.add(run);
@@ -88,7 +88,7 @@ public class ScheduledRunnableTest {
 
     @Test
     public void setFutureRunRace() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             CompositeDisposable set = new CompositeDisposable();
             final ScheduledRunnable run = new ScheduledRunnable(Functions.EMPTY_RUNNABLE, set);
             set.add(run);
@@ -117,7 +117,7 @@ public class ScheduledRunnableTest {
 
     @Test
     public void disposeRace() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             CompositeDisposable set = new CompositeDisposable();
             final ScheduledRunnable run = new ScheduledRunnable(Functions.EMPTY_RUNNABLE, set);
             set.add(run);
@@ -137,7 +137,7 @@ public class ScheduledRunnableTest {
 
     @Test
     public void runDispose() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             CompositeDisposable set = new CompositeDisposable();
             final ScheduledRunnable run = new ScheduledRunnable(Functions.EMPTY_RUNNABLE, set);
             set.add(run);
@@ -260,7 +260,7 @@ public class ScheduledRunnableTest {
 
     @Test
     public void runFuture() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             CompositeDisposable set = new CompositeDisposable();
             final ScheduledRunnable run = new ScheduledRunnable(Functions.EMPTY_RUNNABLE, set);
             set.add(run);
@@ -287,7 +287,7 @@ public class ScheduledRunnableTest {
 
     @Test
     public void syncWorkerCancelRace() {
-        for (int i = 0; i < 10000; i++) {
+        for (int i = 0; i < TestHelper.RACE_LONG_LOOPS; i++) {
             final CompositeDisposable set = new CompositeDisposable();
             final AtomicBoolean interrupted = new AtomicBoolean();
             final AtomicInteger sync = new AtomicInteger(2);

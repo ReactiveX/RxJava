@@ -403,7 +403,7 @@ public class MaybeFlatMapIterableFlowableTest {
         final Integer[] a = new Integer[1000];
         Arrays.fill(a, 1);
 
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final PublishSubject<Integer> ps = PublishSubject.create();
 
             ps.onNext(1);
@@ -436,13 +436,13 @@ public class MaybeFlatMapIterableFlowableTest {
                 }
             };
 
-            TestHelper.race(r1, r2, Schedulers.single());
+            TestHelper.race(r1, r2);
         }
     }
 
     @Test
     public void cancelCreateInnerRace() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final PublishSubject<Integer> ps = PublishSubject.create();
 
             ps.onNext(1);
@@ -470,7 +470,7 @@ public class MaybeFlatMapIterableFlowableTest {
                 }
             };
 
-            TestHelper.race(r1, r2, Schedulers.single());
+            TestHelper.race(r1, r2);
         }
     }
 

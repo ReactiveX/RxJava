@@ -182,7 +182,7 @@ public class SchedulerTest {
     public void periodicDirectTaskRace() {
         final TestScheduler scheduler = new TestScheduler();
 
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final Disposable d = scheduler.schedulePeriodicallyDirect(Functions.EMPTY_RUNNABLE, 1, 1, TimeUnit.MILLISECONDS);
 
             Runnable r1 = new Runnable() {
@@ -199,7 +199,7 @@ public class SchedulerTest {
                 }
             };
 
-            TestHelper.race(r1, r2, Schedulers.io());
+            TestHelper.race(r1, r2);
         }
 
     }

@@ -13,18 +13,15 @@
 
 package io.reactivex.internal.operators.maybe;
 
-import io.reactivex.Maybe;
-import io.reactivex.Single;
-import io.reactivex.TestHelper;
+import static org.junit.Assert.*;
+
+import org.junit.Test;
+
+import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.Function;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.processors.PublishProcessor;
-import io.reactivex.schedulers.Schedulers;
-import org.junit.Test;
-
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 
 public class MaybeSwitchIfEmptySingleTest {
 
@@ -83,7 +80,7 @@ public class MaybeSwitchIfEmptySingleTest {
 
     @Test
     public void emptyCancelRace() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final PublishProcessor<Integer> pp = PublishProcessor.create();
 
             final TestObserver<Integer> ts = pp.singleElement().switchIfEmpty(Single.just(2)).test();
@@ -102,7 +99,7 @@ public class MaybeSwitchIfEmptySingleTest {
                 }
             };
 
-            TestHelper.race(r1, r2, Schedulers.single());
+            TestHelper.race(r1, r2);
         }
     }
 }
