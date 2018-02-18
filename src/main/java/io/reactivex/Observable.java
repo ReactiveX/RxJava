@@ -12337,7 +12337,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @see <a href="http://reactivex.io/documentation/operators/timeinterval.html">ReactiveX operators documentation: TimeInterval</a>
      */
     @CheckReturnValue
-    @SchedulerSupport(SchedulerSupport.NONE) // Trampoline scheduler is only used for creating timestamps.
+    @SchedulerSupport(SchedulerSupport.NONE)
     public final Observable<Timed<T>> timeInterval(TimeUnit unit) {
         return timeInterval(unit, Schedulers.computation());
     }
