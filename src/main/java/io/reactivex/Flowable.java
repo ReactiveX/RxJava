@@ -6706,12 +6706,16 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     /**
-     * Collects items emitted by the source Publisher into a single mutable data structure and returns
+     * Collects items emitted by the finite source Publisher into a single mutable data structure and returns
      * a Single that emits this structure.
      * <p>
      * <img width="640" height="330" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/collect.png" alt="">
      * <p>
      * This is a simplified version of {@code reduce} that does not need to return the state on each pass.
+     * <p>
+     * Note that this operator requires the upstream to signal {@code onComplete} for the accumulator object to
+     * be emitted. Sources that are infinite and never complete will never emit anything through this
+     * operator and an infinite source may lead to a fatal {@code OutOfMemoryError}.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>This operator does not support backpressure because by intent it will receive all values and reduce
@@ -6740,12 +6744,16 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     /**
-     * Collects items emitted by the source Publisher into a single mutable data structure and returns
+     * Collects items emitted by the finite source Publisher into a single mutable data structure and returns
      * a Single that emits this structure.
      * <p>
      * <img width="640" height="330" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/collect.png" alt="">
      * <p>
      * This is a simplified version of {@code reduce} that does not need to return the state on each pass.
+     * <p>
+     * Note that this operator requires the upstream to signal {@code onComplete} for the accumulator object to
+     * be emitted. Sources that are infinite and never complete will never emit anything through this
+     * operator and an infinite source may lead to a fatal {@code OutOfMemoryError}.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>This operator does not support backpressure because by intent it will receive all values and reduce
@@ -11148,7 +11156,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     /**
      * Returns a Maybe that applies a specified accumulator function to the first item emitted by a source
      * Publisher, then feeds the result of that function along with the second item emitted by the source
-     * Publisher into the same function, and so on until all items have been emitted by the source Publisher,
+     * Publisher into the same function, and so on until all items have been emitted by the finite source Publisher,
      * and emits the final result from the final call to your function as its sole item.
      * <p>
      * If the source is empty, a {@code NoSuchElementException} is signalled.
@@ -11158,6 +11166,10 @@ public abstract class Flowable<T> implements Publisher<T> {
      * This technique, which is called "reduce" here, is sometimes called "aggregate," "fold," "accumulate,"
      * "compress," or "inject" in other programming contexts. Groovy, for instance, has an {@code inject} method
      * that does a similar operation on lists.
+     * <p>
+     * Note that this operator requires the upstream to signal {@code onComplete} for the accumulator object to
+     * be emitted. Sources that are infinite and never complete will never emit anything through this
+     * operator and an infinite source may lead to a fatal {@code OutOfMemoryError}.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure of its downstream consumer and consumes the
@@ -11186,7 +11198,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * Returns a Single that applies a specified accumulator function to the first item emitted by a source
      * Publisher and a specified seed value, then feeds the result of that function along with the second item
      * emitted by a Publisher into the same function, and so on until all items have been emitted by the
-     * source Publisher, emitting the final result from the final call to your function as its sole item.
+     * finite source Publisher, emitting the final result from the final call to your function as its sole item.
      * <p>
      * <img width="640" height="325" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/reduceSeed.png" alt="">
      * <p>
@@ -11211,6 +11223,10 @@ public abstract class Flowable<T> implements Publisher<T> {
      *
      * source.reduceWith(() -&gt; new ArrayList&lt;&gt;(), (list, item) -&gt; list.add(item)));
      * </code></pre>
+     * <p>
+     * Note that this operator requires the upstream to signal {@code onComplete} for the accumulator object to
+     * be emitted. Sources that are infinite and never complete will never emit anything through this
+     * operator and an infinite source may lead to a fatal {@code OutOfMemoryError}.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure of its downstream consumer and consumes the
@@ -11244,7 +11260,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * Returns a Single that applies a specified accumulator function to the first item emitted by a source
      * Publisher and a seed value derived from calling a specified seedSupplier, then feeds the result
      * of that function along with the second item emitted by a Publisher into the same function, and so on until
-     * all items have been emitted by the source Publisher, emitting the final result from the final call to your
+     * all items have been emitted by the finite source Publisher, emitting the final result from the final call to your
      * function as its sole item.
      * <p>
      * <img width="640" height="325" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/reduceSeed.png" alt="">
@@ -11252,6 +11268,10 @@ public abstract class Flowable<T> implements Publisher<T> {
      * This technique, which is called "reduce" here, is sometimes called "aggregate," "fold," "accumulate,"
      * "compress," or "inject" in other programming contexts. Groovy, for instance, has an {@code inject} method
      * that does a similar operation on lists.
+     * <p>
+     * Note that this operator requires the upstream to signal {@code onComplete} for the accumulator object to
+     * be emitted. Sources that are infinite and never complete will never emit anything through this
+     * operator and an infinite source may lead to a fatal {@code OutOfMemoryError}.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure of its downstream consumer and consumes the
@@ -15175,12 +15195,16 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     /**
-     * Returns a Single that emits a single HashMap containing all items emitted by the source Publisher,
+     * Returns a Single that emits a single HashMap containing all items emitted by the finite source Publisher,
      * mapped by the keys returned by a specified {@code keySelector} function.
      * <p>
      * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/toMap.png" alt="">
      * <p>
      * If more than one source item maps to the same key, the HashMap will contain the latest of those items.
+     * <p>
+     * Note that this operator requires the upstream to signal {@code onComplete} for the accumulated map to
+     * be emitted. Sources that are infinite and never complete will never emit anything through this
+     * operator and an infinite source may lead to a fatal {@code OutOfMemoryError}.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream and consumes the source {@code Publisher} in an
@@ -15206,12 +15230,16 @@ public abstract class Flowable<T> implements Publisher<T> {
 
     /**
      * Returns a Single that emits a single HashMap containing values corresponding to items emitted by the
-     * source Publisher, mapped by the keys returned by a specified {@code keySelector} function.
+     * finite source Publisher, mapped by the keys returned by a specified {@code keySelector} function.
      * <p>
      * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/toMap.png" alt="">
      * <p>
      * If more than one source item maps to the same key, the HashMap will contain a single entry that
      * corresponds to the latest of those items.
+     * <p>
+     * Note that this operator requires the upstream to signal {@code onComplete} for the accumulated map to
+     * be emitted. Sources that are infinite and never complete will never emit anything through this
+     * operator and an infinite source may lead to a fatal {@code OutOfMemoryError}.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream and consumes the source {@code Publisher} in an
@@ -15241,9 +15269,13 @@ public abstract class Flowable<T> implements Publisher<T> {
 
     /**
      * Returns a Single that emits a single Map, returned by a specified {@code mapFactory} function, that
-     * contains keys and values extracted from the items emitted by the source Publisher.
+     * contains keys and values extracted from the items emitted by the finite source Publisher.
      * <p>
      * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/toMap.png" alt="">
+     * <p>
+     * Note that this operator requires the upstream to signal {@code onComplete} for the accumulated map to
+     * be emitted. Sources that are infinite and never complete will never emit anything through this
+     * operator and an infinite source may lead to a fatal {@code OutOfMemoryError}.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream and consumes the source {@code Publisher} in an
@@ -15277,9 +15309,13 @@ public abstract class Flowable<T> implements Publisher<T> {
 
     /**
      * Returns a Single that emits a single HashMap that contains an ArrayList of items emitted by the
-     * source Publisher keyed by a specified {@code keySelector} function.
+     * finite source Publisher keyed by a specified {@code keySelector} function.
      * <p>
      * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/toMultiMap.png" alt="">
+     * <p>
+     * Note that this operator requires the upstream to signal {@code onComplete} for the accumulated map to
+     * be emitted. Sources that are infinite and never complete will never emit anything through this
+     * operator and an infinite source may lead to a fatal {@code OutOfMemoryError}.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>This operator does not support backpressure as by intent it is requesting and buffering everything.</dd>
@@ -15306,10 +15342,14 @@ public abstract class Flowable<T> implements Publisher<T> {
 
     /**
      * Returns a Single that emits a single HashMap that contains an ArrayList of values extracted by a
-     * specified {@code valueSelector} function from items emitted by the source Publisher, keyed by a
+     * specified {@code valueSelector} function from items emitted by the finite source Publisher, keyed by a
      * specified {@code keySelector} function.
      * <p>
      * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/toMultiMap.png" alt="">
+     * <p>
+     * Note that this operator requires the upstream to signal {@code onComplete} for the accumulated map to
+     * be emitted. Sources that are infinite and never complete will never emit anything through this
+     * operator and an infinite source may lead to a fatal {@code OutOfMemoryError}.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream and consumes the source {@code Publisher} in an
@@ -15340,9 +15380,13 @@ public abstract class Flowable<T> implements Publisher<T> {
     /**
      * Returns a Single that emits a single Map, returned by a specified {@code mapFactory} function, that
      * contains a custom collection of values, extracted by a specified {@code valueSelector} function from
-     * items emitted by the source Publisher, and keyed by the {@code keySelector} function.
+     * items emitted by the finite source Publisher, and keyed by the {@code keySelector} function.
      * <p>
      * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/toMultiMap.png" alt="">
+     * <p>
+     * Note that this operator requires the upstream to signal {@code onComplete} for the accumulated map to
+     * be emitted. Sources that are infinite and never complete will never emit anything through this
+     * operator and an infinite source may lead to a fatal {@code OutOfMemoryError}.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream and consumes the source {@code Publisher} in an
@@ -15383,9 +15427,13 @@ public abstract class Flowable<T> implements Publisher<T> {
     /**
      * Returns a Single that emits a single Map, returned by a specified {@code mapFactory} function, that
      * contains an ArrayList of values, extracted by a specified {@code valueSelector} function from items
-     * emitted by the source Publisher and keyed by the {@code keySelector} function.
+     * emitted by the finite source Publisher and keyed by the {@code keySelector} function.
      * <p>
      * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/toMultiMap.png" alt="">
+     * <p>
+     * Note that this operator requires the upstream to signal {@code onComplete} for the accumulated map to
+     * be emitted. Sources that are infinite and never complete will never emit anything through this
+     * operator and an infinite source may lead to a fatal {@code OutOfMemoryError}.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream and consumes the source {@code Publisher} in an
@@ -15437,7 +15485,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     /**
-     * Returns a Single that emits a list that contains the items emitted by the source Publisher, in a
+     * Returns a Single that emits a list that contains the items emitted by the finite source Publisher, in a
      * sorted order. Each item emitted by the Publisher must implement {@link Comparable} with respect to all
      * other items in the sequence.
      *
@@ -15446,6 +15494,10 @@ public abstract class Flowable<T> implements Publisher<T> {
      *             sequence is terminated with a {@link ClassCastException}.
      * <p>
      * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/toSortedList.png" alt="">
+     * <p>
+     * Note that this operator requires the upstream to signal {@code onComplete} for the accumulated list to
+     * be emitted. Sources that are infinite and never complete will never emit anything through this
+     * operator and an infinite source may lead to a fatal {@code OutOfMemoryError}.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream and consumes the source {@code Publisher} in an
@@ -15465,10 +15517,14 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     /**
-     * Returns a Single that emits a list that contains the items emitted by the source Publisher, in a
+     * Returns a Single that emits a list that contains the items emitted by the finite source Publisher, in a
      * sorted order based on a specified comparison function.
      * <p>
      * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/toSortedList.f.png" alt="">
+     * <p>
+     * Note that this operator requires the upstream to signal {@code onComplete} for the accumulated list to
+     * be emitted. Sources that are infinite and never complete will never emit anything through this
+     * operator and an infinite source may lead to a fatal {@code OutOfMemoryError}.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream and consumes the source {@code Publisher} in an
@@ -15493,10 +15549,14 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     /**
-     * Returns a Single that emits a list that contains the items emitted by the source Publisher, in a
+     * Returns a Single that emits a list that contains the items emitted by the finite source Publisher, in a
      * sorted order based on a specified comparison function.
      * <p>
      * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/toSortedList.f.png" alt="">
+     * <p>
+     * Note that this operator requires the upstream to signal {@code onComplete} for the accumulated list to
+     * be emitted. Sources that are infinite and never complete will never emit anything through this
+     * operator and an infinite source may lead to a fatal {@code OutOfMemoryError}.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream and consumes the source {@code Publisher} in an
@@ -15524,7 +15584,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     /**
-     * Returns a Flowable that emits a list that contains the items emitted by the source Publisher, in a
+     * Returns a Flowable that emits a list that contains the items emitted by the finite source Publisher, in a
      * sorted order. Each item emitted by the Publisher must implement {@link Comparable} with respect to all
      * other items in the sequence.
      *
@@ -15533,6 +15593,10 @@ public abstract class Flowable<T> implements Publisher<T> {
      *             sequence is terminated with a {@link ClassCastException}.
      * <p>
      * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/toSortedList.png" alt="">
+     * <p>
+     * Note that this operator requires the upstream to signal {@code onComplete} for the accumulated list to
+     * be emitted. Sources that are infinite and never complete will never emit anything through this
+     * operator and an infinite source may lead to a fatal {@code OutOfMemoryError}.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream and consumes the source {@code Publisher} in an
