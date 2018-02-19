@@ -6713,7 +6713,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * <p>
      * This is a simplified version of {@code reduce} that does not need to return the state on each pass.
      * <p>
-     * Note that this operator requires the upstream to signal {@code onComplete} for the accumulator to
+     * Note that this operator requires the upstream to signal {@code onComplete} for the accumulator object to
      * be emitted. Sources that are infinite and never complete will never emit anything through this
      * operator and an infinite source may lead to a fatal {@code OutOfMemoryError}.
      * <dl>
@@ -6751,7 +6751,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * <p>
      * This is a simplified version of {@code reduce} that does not need to return the state on each pass.
      * <p>
-     * Note that this operator requires the upstream to signal {@code onComplete} for the accumulator to
+     * Note that this operator requires the upstream to signal {@code onComplete} for the accumulator object to
      * be emitted. Sources that are infinite and never complete will never emit anything through this
      * operator and an infinite source may lead to a fatal {@code OutOfMemoryError}.
      * <dl>
@@ -11084,7 +11084,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * "compress," or "inject" in other programming contexts. Groovy, for instance, has an {@code inject} method
      * that does a similar operation on lists.
      * <p>
-     * Note that this operator requires the upstream to signal {@code onComplete} for the accumulator to
+     * Note that this operator requires the upstream to signal {@code onComplete} for the accumulator object to
      * be emitted. Sources that are infinite and never complete will never emit anything through this
      * operator and an infinite source may lead to a fatal {@code OutOfMemoryError}.
      * <dl>
@@ -11141,7 +11141,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * source.reduceWith(() -&gt; new ArrayList&lt;&gt;(), (list, item) -&gt; list.add(item)));
      * </code></pre>
      * <p>
-     * Note that this operator requires the upstream to signal {@code onComplete} for the accumulated list to
+     * Note that this operator requires the upstream to signal {@code onComplete} for the accumulator object to
      * be emitted. Sources that are infinite and never complete will never emit anything through this
      * operator and an infinite source may lead to a fatal {@code OutOfMemoryError}.
      * <dl>
@@ -11186,7 +11186,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * "compress," or "inject" in other programming contexts. Groovy, for instance, has an {@code inject} method
      * that does a similar operation on lists.
      * <p>
-     * Note that this operator requires the upstream to signal {@code onComplete} for the accumulated list to
+     * Note that this operator requires the upstream to signal {@code onComplete} for the accumulator object to
      * be emitted. Sources that are infinite and never complete will never emit anything through this
      * operator and an infinite source may lead to a fatal {@code OutOfMemoryError}.
      * <dl>
