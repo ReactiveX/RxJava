@@ -182,7 +182,10 @@ public class InternalWrongNaming {
                 "FlowableSequenceEqualSingle",
                 "FlowableConcatWithSingle",
                 "FlowableConcatWithMaybe",
-                "FlowableConcatWithCompletable"
+                "FlowableConcatWithCompletable",
+                "FlowableMergeWithSingle",
+                "FlowableMergeWithMaybe",
+                "FlowableMergeWithCompletable"
         );
     }
 }

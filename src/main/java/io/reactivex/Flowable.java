@@ -5771,7 +5771,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     /**
-     * Runs the source observable to a terminal event, ignoring any values and rethrowing any exception.
+     * Runs the source Flowable to a terminal event, ignoring any values and rethrowing any exception.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator consumes the source {@code Flowable} in an unbounded manner
@@ -10110,6 +10110,89 @@ public abstract class Flowable<T> implements Publisher<T> {
     public final Flowable<T> mergeWith(Publisher<? extends T> other) {
         ObjectHelper.requireNonNull(other, "other is null");
         return merge(this, other);
+    }
+
+    /**
+     * Merges the sequence of items of this Flowable with the success value of the other SingleSource.
+     * <p>
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/merge.png" alt="">
+     * <p>
+     * The success value of the other {@code SingleSource} can get interleaved at any point of this
+     * {@code Flowable} sequence.
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The operator honors backpressure from downstream and ensures the success item from the
+     *  {@code SingleSource} is emitted only when there is a downstream demand.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code mergeWith} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param other the {@code SingleSource} whose success value to merge with
+     * @return the new Flowable instance
+     * @since 2.1.10 - experimental
+     */
+    @CheckReturnValue
+    @BackpressureSupport(BackpressureKind.FULL)
+    @SchedulerSupport(SchedulerSupport.NONE)
+    @Experimental
+    public final Flowable<T> mergeWith(@NonNull SingleSource<? extends T> other) {
+        ObjectHelper.requireNonNull(other, "other is null");
+        return RxJavaPlugins.onAssembly(new FlowableMergeWithSingle<T>(this, other));
+    }
+
+    /**
+     * Merges the sequence of items of this Flowable with the success value of the other MaybeSource
+     * or waits both to complete normally if the MaybeSource is empty.
+     * <p>
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/merge.png" alt="">
+     * <p>
+     * The success value of the other {@code MaybeSource} can get interleaved at any point of this
+     * {@code Flowable} sequence.
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The operator honors backpressure from downstream and ensures the success item from the
+     *  {@code MaybeSource} is emitted only when there is a downstream demand.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code mergeWith} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param other the {@code MaybeSource} which provides a success value to merge with or completes
+     * @return the new Flowable instance
+     * @since 2.1.10 - experimental
+     */
+    @CheckReturnValue
+    @BackpressureSupport(BackpressureKind.FULL)
+    @SchedulerSupport(SchedulerSupport.NONE)
+    @Experimental
+    public final Flowable<T> mergeWith(@NonNull MaybeSource<? extends T> other) {
+        ObjectHelper.requireNonNull(other, "other is null");
+        return RxJavaPlugins.onAssembly(new FlowableMergeWithMaybe<T>(this, other));
+    }
+
+    /**
+     * Relays the items of this Flowable and completes only when the other CompletableSource completes
+     * as well.
+     * <p>
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/merge.png" alt="">
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The operator doesn't interfere with backpressure which is determined by the source {@code Publisher}'s backpressure
+     *  behavior.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code mergeWith} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param other the {@code CompletableSource} to await for completion
+     * @return the new Flowable instance
+     * @since 2.1.10 - experimental
+     */
+    @CheckReturnValue
+    @BackpressureSupport(BackpressureKind.PASS_THROUGH)
+    @SchedulerSupport(SchedulerSupport.NONE)
+    @Experimental
+    public final Flowable<T> mergeWith(@NonNull CompletableSource other) {
+        ObjectHelper.requireNonNull(other, "other is null");
+        return RxJavaPlugins.onAssembly(new FlowableMergeWithCompletable<T>(this, other));
     }
 
     /**

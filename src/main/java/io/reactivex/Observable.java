@@ -8992,6 +8992,77 @@ public abstract class Observable<T> implements ObservableSource<T> {
     }
 
     /**
+     * Merges the sequence of items of this Observable with the success value of the other SingleSource.
+     * <p>
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/merge.png" alt="">
+     * <p>
+     * The success value of the other {@code SingleSource} can get interleaved at any point of this
+     * {@code Observable} sequence.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code mergeWith} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param other the {@code SingleSource} whose success value to merge with
+     * @return the new Observable instance
+     * @since 2.1.10 - experimental
+     */
+    @CheckReturnValue
+    @SchedulerSupport(SchedulerSupport.NONE)
+    @Experimental
+    public final Observable<T> mergeWith(@NonNull SingleSource<? extends T> other) {
+        ObjectHelper.requireNonNull(other, "other is null");
+        return RxJavaPlugins.onAssembly(new ObservableMergeWithSingle<T>(this, other));
+    }
+
+    /**
+     * Merges the sequence of items of this Observable with the success value of the other MaybeSource
+     * or waits both to complete normally if the MaybeSource is empty.
+     * <p>
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/merge.png" alt="">
+     * <p>
+     * The success value of the other {@code MaybeSource} can get interleaved at any point of this
+     * {@code Observable} sequence.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code mergeWith} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param other the {@code MaybeSource} which provides a success value to merge with or completes
+     * @return the new Observable instance
+     * @since 2.1.10 - experimental
+     */
+    @CheckReturnValue
+    @SchedulerSupport(SchedulerSupport.NONE)
+    @Experimental
+    public final Observable<T> mergeWith(@NonNull MaybeSource<? extends T> other) {
+        ObjectHelper.requireNonNull(other, "other is null");
+        return RxJavaPlugins.onAssembly(new ObservableMergeWithMaybe<T>(this, other));
+    }
+
+    /**
+     * Relays the items of this Observable and completes only when the other CompletableSource completes
+     * as well.
+     * <p>
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/merge.png" alt="">
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code mergeWith} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param other the {@code CompletableSource} to await for completion
+     * @return the new Observable instance
+     * @since 2.1.10 - experimental
+     */
+    @CheckReturnValue
+    @SchedulerSupport(SchedulerSupport.NONE)
+    @Experimental
+    public final Observable<T> mergeWith(@NonNull CompletableSource other) {
+        ObjectHelper.requireNonNull(other, "other is null");
+        return RxJavaPlugins.onAssembly(new ObservableMergeWithCompletable<T>(this, other));
+    }
+
+    /**
      * Modifies an ObservableSource to perform its emissions and notifications on a specified {@link Scheduler},
      * asynchronously with an unbounded buffer with {@link Flowable#bufferSize()} "island size".
      *
