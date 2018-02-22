@@ -41,7 +41,7 @@ public final class FlowableGroupBy<T, K, V> extends AbstractFlowableWithUpstream
     final boolean delayError;
     final Function<? super Consumer<Object>, ? extends Map<K, Object>> mapFactory;
 
-    public FlowableGroupBy(Flowable<T> source, Function<? super T, ? extends K> keySelector, Function<? super T, ? extends V> valueSelector, 
+    public FlowableGroupBy(Flowable<T> source, Function<? super T, ? extends K> keySelector, Function<? super T, ? extends V> valueSelector,
             int bufferSize, boolean delayError, Function<? super Consumer<Object>, ? extends Map<K, Object>> mapFactory) {
         super(source);
         this.keySelector = keySelector;
@@ -52,6 +52,7 @@ public final class FlowableGroupBy<T, K, V> extends AbstractFlowableWithUpstream
     }
 
     @Override
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     protected void subscribeActual(Subscriber<? super GroupedFlowable<K, V>> s) {
 
         final Map<Object, GroupedUnicast<K, V>> groups;
@@ -63,8 +64,8 @@ public final class FlowableGroupBy<T, K, V> extends AbstractFlowableWithUpstream
                 groups = new ConcurrentHashMap<Object, GroupedUnicast<K, V>>();
             } else {
                 evictedGroups = new ConcurrentLinkedQueue<GroupedUnicast<K, V>>();
-                Consumer<Object> evictionAction = (Consumer<Object>)(Consumer<?>) new EvictionAction<K, V>(evictedGroups);
-                groups = (Map<Object, GroupedUnicast<K,V>>)(Map<Object, ?>) mapFactory.apply(evictionAction);
+                Consumer<Object> evictionAction = (Consumer) new EvictionAction<K, V>(evictedGroups);
+                groups = (Map) mapFactory.apply(evictionAction);
             }
         } catch (Exception e) {
             Exceptions.throwIfFatal(e);
@@ -176,7 +177,7 @@ public final class FlowableGroupBy<T, K, V> extends AbstractFlowableWithUpstream
             }
 
             group.onNext(v);
-            
+
             if (evictedGroups != null) {
                 GroupedUnicast<K, V> evictedGroup;
                 while ((evictedGroup = evictedGroups.poll()) != null) {

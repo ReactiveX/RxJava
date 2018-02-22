@@ -1848,7 +1848,7 @@ public class FlowableGroupByTest {
         .test()
         .assertResult(1);
     }
-    
+
     @Test
     public void mapFactoryThrows() {
         final IOException ex = new IOException("boo");
@@ -1860,13 +1860,13 @@ public class FlowableGroupByTest {
                         throw ex;
                     }
                 };
-        Flowable.just(1) 
-          .groupBy(Functions.<Integer>identity(), Functions.identity(), true, 16, evictingMapFactory) 
-          .test() 
+        Flowable.just(1)
+          .groupBy(Functions.<Integer>identity(), Functions.identity(), true, 16, evictingMapFactory)
+          .test()
           .assertNoValues()
           .assertError(ex);
     }
-    
+
     @Test
     public void mapFactoryExpiryCompletesGroupedFlowable() {
         final List<Integer> completed = new CopyOnWriteArrayList<Integer>();
@@ -1887,7 +1887,7 @@ public class FlowableGroupByTest {
         ts.assertComplete();
         ts.assertValueCount(3);
     }
-    
+
     private static final Function<Integer, Integer> mod5 = new Function<Integer, Integer>() {
 
         @Override
@@ -1895,7 +1895,7 @@ public class FlowableGroupByTest {
             return n % 5;
         }
     };
-    
+
     @Test
     public void mapFactoryWithExpiringGuavaCacheDemonstrationCodeForUseInJavadoc() {
         //javadoc will be a version of this using lambdas and without assertions
@@ -1911,9 +1911,9 @@ public class FlowableGroupByTest {
                 .assertComplete();
         ts.assertValueCount(numValues);
         //the exact eviction behaviour of the guava cache is not specified so we make some approximate tests
-        assertTrue(completed.size() > numValues *0.9);
+        assertTrue(completed.size() > numValues * 0.9);
     }
-    
+
     @Test
     public void mapFactoryEvictionQueueClearedOnErrorCoverageOnly() {
         Function<Consumer<Object>, Map<Integer, Object>> evictingMapFactory = createEvictingMapFactorySynchronousOnly(1);
@@ -2045,7 +2045,7 @@ public class FlowableGroupByTest {
 
     private static Function<Consumer<Object>, Map<Integer, Object>> createEvictingMapFactoryGuava(final int maxSize) {
         Function<Consumer<Object>, Map<Integer, Object>> evictingMapFactory =  //
-                new Function<Consumer<Object>, Map<Integer, Object>>(){
+                new Function<Consumer<Object>, Map<Integer, Object>>() {
 
             @Override
             public Map<Integer, Object> apply(final Consumer<Object> notify) throws Exception {
@@ -2068,7 +2068,7 @@ public class FlowableGroupByTest {
 
     private static Function<Consumer<Object>, Map<Integer, Object>> createEvictingMapFactorySynchronousOnly(final int maxSize) {
         Function<Consumer<Object>, Map<Integer, Object>> evictingMapFactory =  //
-                new Function<Consumer<Object>, Map<Integer, Object>>(){
+                new Function<Consumer<Object>, Map<Integer, Object>>() {
 
                     @Override
                     public Map<Integer, Object> apply(final Consumer<Object> notify) throws Exception {

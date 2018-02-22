@@ -9717,25 +9717,25 @@ public abstract class Flowable<T> implements Publisher<T> {
      * {@link Subscriber} during its lifetime and if this {@code Subscriber} cancels before the
      * source terminates, the next emission by the source having the same key will trigger a new
      * {@code GroupedPublisher} emission. The {@code evictingMapFactory} is used to create a map that will
-     * be used to hold the {@link GroupedFlowable}s by key. The evicting map created by this factory must 
+     * be used to hold the {@link GroupedFlowable}s by key. The evicting map created by this factory must
      * notify the provided {@code Consumer<Object>} with the entry value (not the key!) when an entry in this
      * map has been evicted. The next source emission will bring about the  completion of the evicted
      * {@link GroupedFlowable}s and the arrival of an item with the same key as a completed {@link GroupedFlowable}
      * will prompt the creation and emission of a new {@link GroupedFlowable} with that key.
      * 
      * <p>A use case for specifying an {@code evictingMapFactory} is where the source is infinite and fast and
-     * over time the number of keys grows enough to be a concern in terms of the memory footprint of the 
+     * over time the number of keys grows enough to be a concern in terms of the memory footprint of the
      * internal hash map containing the {@link GroupedFlowable}s.
      * 
      * <p>The map created by an {@code evictingMapFactory} must be thread-safe.
      * 
      * <p>An example of an {@code evictingMapFactory} using <a href="https://google.github.io/guava/releases/24.0-jre/api/docs/com/google/common/cache/CacheBuilder.html">CacheBuilder</a> from the Guava library is below:
      * 
-     * <pre>
-     * Function&lt;Consumer&lt;Object&gt;, Map&lt;Integer, Object&gt;&gt; evictingMapFactory = 
+     * <pre><code>
+     * Function&lt;Consumer&lt;Object&gt;, Map&lt;Integer, Object&gt;&gt; evictingMapFactory =
      *   notify -&gt;
      *       CacheBuilder
-     *         .newBuilder() 
+     *         .newBuilder()
      *         .maximumSize(3)
      *         .removalListener(entry -&gt; {
      *              try {
@@ -9749,14 +9749,14 @@ public abstract class Flowable<T> implements Publisher<T> {
      *         .asMap();
      *
      * // Emit 1000 items but ensure that the
-     * // internal map never has more than 3 items in it           
+     * // internal map never has more than 3 items in it
      * Flowable
      *   .range(1, 1000)
      *   // note that number of keys is 10
      *   .groupBy(x -&gt; x % 10, x -&gt; x, true, 16, evictingMapFactory)
      *   .flatMap(g -&gt; g)
      *   .forEach(System.out::println);
-     * </pre>
+     * </code></pre>
      * 
      * <p>
      * <img width="640" height="360" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/groupBy.png" alt="">
@@ -9786,7 +9786,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @param bufferSize
      *            the hint for how many {@link GroupedFlowable}s and element in each {@link GroupedFlowable} should be buffered
      * @param evictingMapFactory
-     *            The factory used to create a map that will be used by the implementation to hold the 
+     *            The factory used to create a map that will be used by the implementation to hold the
      *            {@link GroupedFlowable}s. The evicting map created by this factory must
      *            notify the provided {@code Consumer<Object>} with the entry value (not the key!) when
      *            an entry in this map has been evicted. The next source emission will bring about the
@@ -9808,7 +9808,7 @@ public abstract class Flowable<T> implements Publisher<T> {
     @Beta
     public final <K, V> Flowable<GroupedFlowable<K, V>> groupBy(Function<? super T, ? extends K> keySelector,
             Function<? super T, ? extends V> valueSelector,
-            boolean delayError, int bufferSize, 
+            boolean delayError, int bufferSize,
             Function<? super Consumer<Object>, ? extends Map<K, Object>> evictingMapFactory) {
         ObjectHelper.requireNonNull(keySelector, "keySelector is null");
         ObjectHelper.requireNonNull(valueSelector, "valueSelector is null");
@@ -9817,7 +9817,7 @@ public abstract class Flowable<T> implements Publisher<T> {
 
         return RxJavaPlugins.onAssembly(new FlowableGroupBy<T, K, V>(this, keySelector, valueSelector, bufferSize, delayError, evictingMapFactory));
     }
-    
+
     /**
      * Returns a Flowable that correlates two Publishers when they overlap in time and groups the results.
      * <p>
