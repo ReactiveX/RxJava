@@ -91,8 +91,10 @@ javadoc {
     options.addStringOption("doctitle").value = ""
     options.addStringOption("header").value = ""
 
-    options.links("http://docs.oracle.com/javase/7/docs/api/")
-    options.links("http://www.reactive-streams.org/reactive-streams-${reactiveStreamsVersion}-javadoc/")
+    options.links(
+        "https://docs.oracle.com/javase/7/docs/api/",
+        "http://www.reactive-streams.org/reactive-streams-${reactiveStreamsVersion}-javadoc/"
+    )
 
     if (JavaVersion.current().isJava7()) {
         // "./gradle/stylesheet.css" only supports Java 7

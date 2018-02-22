@@ -28,7 +28,6 @@ import io.reactivex.disposables.Disposable;
  * Calling the {@code SingleObserver}'s method must happen in a serialized fashion, that is, they must not
  * be invoked concurrently by multiple threads in an overlapping fashion and the invocation pattern must
  * adhere to the following protocol:
- * <p>
  * <pre><code>    onSubscribe (onSuccess | onError)?</code></pre>
  * <p>
  * Subscribing a {@code SingleObserver} to multiple {@code SingleSource}s is not recommended. If such reuse

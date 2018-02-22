@@ -28,7 +28,6 @@ import io.reactivex.disposables.Disposable;
  * Calling the {@code CompletableObserver}'s method must happen in a serialized fashion, that is, they must not
  * be invoked concurrently by multiple threads in an overlapping fashion and the invocation pattern must
  * adhere to the following protocol:
- * <p>
  * <pre><code>    onSubscribe (onError | onComplete)?</code></pre>
  * <p>
  * Subscribing a {@code CompletableObserver} to multiple {@code CompletableSource}s is not recommended. If such reuse

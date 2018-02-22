@@ -28,7 +28,6 @@ import io.reactivex.disposables.Disposable;
  * Calling the {@code MaybeObserver}'s method must happen in a serialized fashion, that is, they must not
  * be invoked concurrently by multiple threads in an overlapping fashion and the invocation pattern must
  * adhere to the following protocol:
- * <p>
  * <pre><code>    onSubscribe (onSuccess | onError | onComplete)?</code></pre>
  * <p>
  * Note that unlike with the {@code Observable} protocol, {@link #onComplete()} is not called after the success item has been
