@@ -43,6 +43,7 @@ apply plugin: "me.champeau.gradle.jmh"
 apply plugin: "com.github.hierynomus.license"
 apply plugin: "com.jfrog.bintray"
 apply plugin: "com.jfrog.artifactory"
+apply plugin: "eclipse"
 
 sourceCompatibility = JavaVersion.VERSION_1_6
 targetCompatibility = JavaVersion.VERSION_1_6
@@ -55,7 +56,7 @@ def reactiveStreamsVersion = "1.0.2"
 def mockitoVersion = "2.1.0"
 def jmhLibVersion = "1.19"
 def testNgVersion = "6.11"
-
+def guavaVersion = "24.0-jre"
 // --------------------------------------
 
 repositories {
@@ -73,6 +74,7 @@ dependencies {
 
     testImplementation "org.reactivestreams:reactive-streams-tck:$reactiveStreamsVersion"
     testImplementation "org.testng:testng:$testNgVersion"
+    testImplementation "com.google.guava:guava:$guavaVersion"
 }
 
 javadoc {
