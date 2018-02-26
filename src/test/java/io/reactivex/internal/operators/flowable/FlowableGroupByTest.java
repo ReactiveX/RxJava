@@ -1996,7 +1996,7 @@ public class FlowableGroupByTest {
                 //remove first
                 K k = list.get(0);
                 list.remove(0);
-                v = map.get(k);
+                v = map.remove(k);
             } else {
                 v = null;
             }
@@ -2014,16 +2014,20 @@ public class FlowableGroupByTest {
 
         @Override
         public V remove(Object key) {
+            list.remove(key);
             return map.remove(key);
         }
 
         @Override
         public void putAll(Map<? extends K, ? extends V> m) {
-            map.putAll(m);
+           for (Entry<? extends K, ? extends V> entry: m.entrySet()) {
+               put(entry.getKey(), entry.getValue()); 
+           }
         }
 
         @Override
         public void clear() {
+            list.clear();
             map.clear();
         }
 
