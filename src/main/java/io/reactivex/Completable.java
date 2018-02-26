@@ -1369,15 +1369,132 @@ public abstract class Completable implements CompletableSource {
     }
 
     /**
-     * <strong>Advanced use without safeguards:</strong> lifts a CompletableOperator
-     * transformation into the chain of Completables.
+     * <strong>This method requires advanced knowledge about building operators, please consider
+     * other standard composition methods first;</strong>
+     * Returns a {@code Completable} which, when subscribed to, invokes the {@link CompletableOperator#apply(CompletableObserver) apply(CompletableObserver)} method
+     * of the provided {@link CompletableOperator} for each individual downstream {@link Completable} and allows the
+     * insertion of a custom operator by accessing the downstream's {@link CompletableObserver} during this subscription phase
+     * and providing a new {@code CompletableObserver}, containing the custom operator's intended business logic, that will be
+     * used in the subscription process going further upstream.
+     * <p>
+     * Generally, such a new {@code CompletableObserver} will wrap the downstream's {@code CompletableObserver} and forwards the
+     * {@code onError} and {@code onComplete} events from the upstream directly or according to the
+     * emission pattern the custom operator's business logic requires. In addition, such operator can intercept the
+     * flow control calls of {@code dispose} and {@code isDisposed} that would have traveled upstream and perform
+     * additional actions depending on the same business logic requirements.
+     * <p>
+     * Example:
+     * <pre><code>
+     * // Step 1: Create the consumer type that will be returned by the CompletableOperator.apply():
+     * 
+     * public final class CustomCompletableObserver implements CompletableObserver, Disposable {
+     *
+     *     // The donstream's CompletableObserver that will receive the onXXX events
+     *     final CompletableObserver downstream;
+     *
+     *     // The connection to the upstream source that will call this class' onXXX methods
+     *     Disposable upstream;
+     *
+     *     // The constructor takes the downstream subscriber and usually any other parameters
+     *     public CustomCompletableObserver(CompletableObserver downstream) {
+     *         this.downstream = downstream;
+     *     }
+     *
+     *     // In the subscription phase, the upstream sends a Disposable to this class
+     *     // and subsequently this class has to send a Disposable to the downstream.
+     *     // Note that relaying the upstream's Disposable directly is not allowed in RxJava
+     *     &#64;Override
+     *     public void onSubscribe(Disposable s) {
+     *         if (upstream != null) {
+     *             s.cancel();
+     *         } else {
+     *             upstream = s;
+     *             downstream.onSubscribe(this);
+     *         }
+     *     }
+     *
+     *     // Some operators may handle the upstream's error while others
+     *     // could just forward it to the downstream.
+     *     &#64;Override
+     *     public void onError(Throwable throwable) {
+     *         downstream.onError(throwable);
+     *     }
+     *
+     *     // When the upstream completes, usually the downstream should complete as well.
+     *     // In completable, this could also mean doing some side-effects
+     *     &#64;Override
+     *     public void onComplete() {
+     *         System.out.println("Sequence completed");
+     *         downstream.onComplete();
+     *     }
+     *
+     *     // Some operators may use their own resources which should be cleaned up if
+     *     // the downstream disposes the flow before it completed. Operators without
+     *     // resources can simply forward the dispose to the upstream.
+     *     // In some cases, a disposed flag may be set by this method so that other parts
+     *     // of this class may detect the dispose and stop sending events
+     *     // to the downstream.
+     *     &#64;Override
+     *     public void dispose() {
+     *         upstream.dispose();
+     *     }
+     *
+     *     // Some operators may simply forward the call to the upstream while others
+     *     // can return the disposed flag set in dispose().
+     *     &#64;Override
+     *     public boolean isDisposed() {
+     *         return upstream.isDisposed();
+     *     }
+     * }
+     *
+     * // Step 2: Create a class that implements the CompletableOperator interface and
+     * //         returns the custom consumer type from above in its apply() method.
+     * //         Such class may define additional parameters to be submitted to
+     * //         the custom consumer type.
+     *
+     * final class CustomCompletableOperator implements CompletableOperator {
+     *     &#64;Override
+     *     public CompletableObserver apply(CompletableObserver upstream) {
+     *         return new CustomCompletableObserver(upstream);
+     *     }
+     * }
+     *
+     * // Step 3: Apply the custom operator via lift() in a flow by creating an instance of it
+     * //         or reusing an existing one.
+     *
+     * Completable.complete()
+     * .lift(new CustomCompletableOperator())
+     * .test()
+     * .assertResult();
+     * </code></pre>
+     * <p>
+     * Creating custom operators can be complicated and it is recommended one consults the
+     * <a href="https://github.com/ReactiveX/RxJava/wiki/Writing-operators-for-2.0">RxJava wiki: Writing operators</a> page about
+     * the tools, requirements, rules, considerations and pitfalls of implementing them.
+     * <p>
+     * Note that implementing custom operators via this {@code lift()} method adds slightly more overhead by requiring
+     * an additional allocation and indirection per assembled flows. Instead, extending the abstract {@code Completable}
+     * class and creating a {@link CompletableTransformer} with it is recommended.
+     * <p>
+     * Note also that it is not possible to stop the subscription phase in {@code lift()} as the {@code apply()} method
+     * requires a non-null {@code CompletableObserver} instance to be returned, which is then unconditionally subscribed to
+     * the upstream {@code Completable}. For example, if the operator decided there is no reason to subscribe to the
+     * upstream source because of some optimization possibility or a failure to prepare the operator, it still has to
+     * return a {@code CompletableObserver} that should immediately dispose the upstream's {@code Disposable} in its
+     * {@code onSubscribe} method. Again, using a {@code CompletableTransformer} and extending the {@code Completable} is
+     * a better option as {@link #subscribeActual} can decide to not subscribe to its upstream after all.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code lift} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dd>{@code lift} does not operate by default on a particular {@link Scheduler}, however, the
+     *  {@link CompletableOperator} may use a {@code Scheduler} to support its own asynchronous behavior.</dd>
      * </dl>
-     * @param onLift the lifting function that transforms the child subscriber with a parent subscriber.
+     *
+     * @param onLift the {@link CompletableOperator} that receives the downstream's {@code CompletableObserver} and should return
+     *               a {@code CompletableObserver} with custom behavior to be used as the consumer for the current
+     *               {@code Completable}.
      * @return the new Completable instance
-     * @throws NullPointerException if onLift is null
+     * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Writing-operators-for-2.0">RxJava wiki: Writing operators</a>
+     * @see #compose(CompletableTransformer)
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
