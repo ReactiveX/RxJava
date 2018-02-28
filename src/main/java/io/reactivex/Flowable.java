@@ -10068,13 +10068,13 @@ public abstract class Flowable<T> implements Publisher<T> {
      * Returns a {@code Flowable} which, when subscribed to, invokes the {@link FlowableOperator#apply(Subscriber) apply(Subscriber)} method
      * of the provided {@link FlowableOperator} for each individual downstream {@link Subscriber} and allows the
      * insertion of a custom operator by accessing the downstream's {@link Subscriber} during this subscription phase
-     * and providing a new {@code Subscriber}, containing the custom operator's intended business logic, that will be 
+     * and providing a new {@code Subscriber}, containing the custom operator's intended business logic, that will be
      * used in the subscription process going further upstream.
      * <p>
      * Generally, such a new {@code Subscriber} will wrap the downstream's {@code Subscriber} and forwards the
      * {@code onNext}, {@code onError} and {@code onComplete} events from the upstream directly or according to the
-     * emission pattern the custom operator's business logic requires. In addition, such operator can intercept the 
-     * flow control calls of {@code cancel} and {@code request} that would have travelled upstream and perform
+     * emission pattern the custom operator's business logic requires. In addition, such operator can intercept the
+     * flow control calls of {@code cancel} and {@code request} that would have traveled upstream and perform
      * additional actions depending on the same business logic requirements.
      * <p>
      * Example:
@@ -10192,7 +10192,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * a better option as {@link #subscribeActual} can decide to not subscribe to its upstream after all.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
-     *  <dd>The {@code Subscriber} instance returned by the {@link FlowableOperator} is responsible to be 
+     *  <dd>The {@code Subscriber} instance returned by the {@link FlowableOperator} is responsible to be
      *  backpressure-aware or document the fact that the consumer of the returned {@code Publisher} has to apply one of
      *  the {@code onBackpressureXXX} operators.</dd>
      *  <dt><b>Scheduler:</b></dt>
