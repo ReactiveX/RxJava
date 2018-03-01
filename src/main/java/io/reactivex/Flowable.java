@@ -14114,6 +14114,98 @@ public abstract class Flowable<T> implements Publisher<T> {
         return switchMap0(mapper, bufferSize, false);
     }
 
+
+    /**
+     * Maps the upstream values into {@link CompletableSource}s, subscribes to the newer one while
+     * disposing the subscription to the previous {@code CompletableSource}, thus keeping at most one
+     * active {@code CompletableSource} running.
+     * <p>
+     * <img width="640" height="521" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/switchMapCompletable.f.png" alt="">
+     * <p>
+     * Since a {@code CompletableSource} doesn't produce any items, the resulting reactive type of
+     * this operator is a {@link Completable} that can only indicate successful completion or
+     * a failure in any of the inner {@code CompletableSource}s or the failure of the current
+     * {@link Flowable}.
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The operator consumes the current {@link Flowable} in an unbounded manner and otherwise
+     *  does not have backpressure in its return type because no items are ever produced.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code switchMapCompletable} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dt><b>Error handling:</b></dt>
+     *  <dd>If either this {@code Flowable} or the active {@code CompletableSource} signals an {@code onError},
+     *  the resulting {@code Completable} is terminated immediately with that {@code Throwable}.
+     *  Use the {@link #switchMapCompletableDelayError(Function)} to delay such inner failures until
+     *  every inner {@code CompletableSource}s and the main {@code Flowable} terminates in some fashion.
+     *  If they fail concurrently, the operator may combine the {@code Throwable}s into a
+     *  {@link io.reactivex.exceptions.CompositeException CompositeException}
+     *  and signal it to the downstream instead. If any inactivated (switched out) {@code CompletableSource}
+     *  signals an {@code onError} late, the {@code Throwable}s will be signalled to the global error handler via
+     *  {@link RxJavaPlugins#onError(Throwable)} method as {@code UndeliverableException} errors.
+     *  </dd>
+     * </dl>
+     * @param mapper the function called with each upstream item and should return a
+     *               {@link CompletableSource} to be subscribed to and awaited for
+     *               (non blockingly) for its terminal event
+     * @return the new Completable instance
+     * @since 2.1.11 - experimental
+     * @see #switchMapCompletableDelayError(Function)
+     */
+    @CheckReturnValue
+    @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
+    @SchedulerSupport(SchedulerSupport.NONE)
+    @Experimental
+    public final Completable switchMapCompletable(@NonNull Function<? super T, ? extends CompletableSource> mapper) {
+        ObjectHelper.requireNonNull(mapper, "mapper is null");
+        return RxJavaPlugins.onAssembly(new FlowableSwitchMapCompletable<T>(this, mapper, false));
+    }
+
+    /**
+     * Maps the upstream values into {@link CompletableSource}s, subscribes to the newer one while
+     * disposing the subscription to the previous {@code CompletableSource}, thus keeping at most one
+     * active {@code CompletableSource} running and delaying any main or inner errors until all
+     * of them terminate.
+     * <p>
+     * <img width="640" height="453" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/switchMapCompletableDelayError.f.png" alt="">
+     * <p>
+     * Since a {@code CompletableSource} doesn't produce any items, the resulting reactive type of
+     * this operator is a {@link Completable} that can only indicate successful completion or
+     * a failure in any of the inner {@code CompletableSource}s or the failure of the current
+     * {@link Flowable}.
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The operator consumes the current {@link Flowable} in an unbounded manner and otherwise
+     *  does not have backpressure in its return type because no items are ever produced.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code switchMapCompletableDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dt><b>Error handling:</b></dt>
+     *  <dd>Errors of this {@code Flowable} and all the {@code CompletableSource}s, who had the chance
+     *  to run to their completion, are delayed until
+     *  all of them terminate in some fashion. At this point, if there was only one failure, the respective
+     *  {@code Throwable} is emitted to the dowstream. It there were more than one failures, the
+     *  operator combines all {@code Throwable}s into a {@link io.reactivex.exceptions.CompositeException CompositeException}
+     *  and signals that to the downstream.
+     *  If any inactivated (switched out) {@code CompletableSource}
+     *  signals an {@code onError} late, the {@code Throwable}s will be signalled to the global error handler via
+     *  {@link RxJavaPlugins#onError(Throwable)} method as {@code UndeliverableException} errors.
+     *  </dd>
+     * </dl>
+     * @param mapper the function called with each upstream item and should return a
+     *               {@link CompletableSource} to be subscribed to and awaited for
+     *               (non blockingly) for its terminal event
+     * @return the new Completable instance
+     * @since 2.1.11 - experimental
+     * @see #switchMapCompletableDelayError(Function)
+     */
+    @CheckReturnValue
+    @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
+    @SchedulerSupport(SchedulerSupport.NONE)
+    @Experimental
+    public final Completable switchMapCompletableDelayError(@NonNull Function<? super T, ? extends CompletableSource> mapper) {
+        ObjectHelper.requireNonNull(mapper, "mapper is null");
+        return RxJavaPlugins.onAssembly(new FlowableSwitchMapCompletable<T>(this, mapper, true));
+    }
+
     /**
      * Returns a new Publisher by applying a function that you supply to each item emitted by the source
      * Publisher that returns a Publisher, and then emitting the items emitted by the most recently emitted
