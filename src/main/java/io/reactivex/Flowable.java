@@ -7493,7 +7493,7 @@ public abstract class Flowable<T> implements Publisher<T> {
 
     /**
      * Maps the upstream items into {@link SingleSource}s and subscribes to them one after the
-     * other succeeds or completes, emits their success value if available or terminates immediately if
+     * other succeeds, emits their success values or terminates immediately if
      * either this {@code Flowable} or the current inner {@code SingleSource} fail.
      * <p>
      * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concatMap.png" alt="">
@@ -7524,7 +7524,7 @@ public abstract class Flowable<T> implements Publisher<T> {
 
     /**
      * Maps the upstream items into {@link SingleSource}s and subscribes to them one after the
-     * other succeeds or completes, emits their success value if available or terminates immediately if
+     * other succeeds, emits their success values or terminates immediately if
      * either this {@code Flowable} or the current inner {@code SingleSource} fail.
      * <p>
      * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concatMap.png" alt="">
@@ -7561,7 +7561,7 @@ public abstract class Flowable<T> implements Publisher<T> {
 
     /**
      * Maps the upstream items into {@link SingleSource}s and subscribes to them one after the
-     * other terminates, emits their success value if available and delaying all errors
+     * other succeeds or fails, emits their success values and delays all errors
      * till both this {@code Flowable} and all inner {@code SingleSource}s terminate.
      * <p>
      * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concatMap.png" alt="">
@@ -7592,7 +7592,7 @@ public abstract class Flowable<T> implements Publisher<T> {
 
     /**
      * Maps the upstream items into {@link SingleSource}s and subscribes to them one after the
-     * other terminates, emits their success value if available and optionally delaying all errors
+     * other succeeds or fails, emits their success values and optionally delays all errors
      * till both this {@code Flowable} and all inner {@code SingleSource}s terminate.
      * <p>
      * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concatMap.png" alt="">
@@ -7629,7 +7629,7 @@ public abstract class Flowable<T> implements Publisher<T> {
 
     /**
      * Maps the upstream items into {@link SingleSource}s and subscribes to them one after the
-     * other terminates, emits their success value if available and optionally delaying all errors
+     * other succeeds or fails, emits their success values and optionally delays  errors
      * till both this {@code Flowable} and all inner {@code SingleSource}s terminate.
      * <p>
      * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concatMap.png" alt="">
