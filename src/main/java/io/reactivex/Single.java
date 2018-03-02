@@ -1296,7 +1296,8 @@ public abstract class Single<T> implements SingleSource<T> {
      * </dl>
      * @param <T> the common value type
      * @param <R> the result value type
-     * @param sources the Iterable sequence of SingleSource instances, must not be empty
+     * @param sources the Iterable sequence of SingleSource instances. An empty sequence will result in an
+     *                {@code onError} signal of {@link NoSuchElementException}.
      * @param zipper the function that receives an array with values from each SingleSource
      *               and should return a value to be emitted to downstream
      * @return the new Single instance
@@ -1740,7 +1741,8 @@ public abstract class Single<T> implements SingleSource<T> {
      * </dl>
      * @param <T> the common value type
      * @param <R> the result value type
-     * @param sources the array of SingleSource instances, must not be empty
+     * @param sources the array of SingleSource instances. An empty sequence will result in an
+     *                {@code onError} signal of {@link NoSuchElementException}.
      * @param zipper the function that receives an array with values from each SingleSource
      *               and should return a value to be emitted to downstream
      * @return the new Single instance
