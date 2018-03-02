@@ -148,13 +148,20 @@ public final class FlowableGenerateAsync<T, S> extends Flowable<T> {
 
         @Override
         public void onNext(T value) {
-            item = value;
-            itemState = ITEM_STATE_HAS_VALUE;
-            drain();
+            if (value != null) {
+                item = value;
+                itemState = ITEM_STATE_HAS_VALUE;
+                drain();
+            } else {
+                onError(new NullPointerException("value is null"));
+            }
         }
 
         @Override
         public void onError(Throwable error) {
+            if (error == null) {
+                error = new NullPointerException("error is null");
+            }
             if (errors.addThrowable(error)) {
                 itemState |= ITEM_STATE_DONE;
                 done = true;

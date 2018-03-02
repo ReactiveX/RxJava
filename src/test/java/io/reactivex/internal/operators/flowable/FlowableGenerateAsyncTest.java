@@ -650,7 +650,6 @@ public class FlowableGenerateAsyncTest {
         assertEquals(1, cleanup.get());
     }
 
-
     @Test
     public void empty() {
         final AtomicInteger cleanup = new AtomicInteger();
@@ -868,6 +867,72 @@ public class FlowableGenerateAsyncTest {
         ts.awaitDone(5, TimeUnit.SECONDS)
         .assertNoErrors()
         .assertComplete();
+        assertEquals(1, cleanup.get());
+    }
+
+
+    @Test
+    public void nullItem() {
+        final AtomicInteger cleanup = new AtomicInteger();
+
+        Flowable.generateAsync(
+                new Callable<SyncRange>() {
+                    @Override
+                    public SyncRange call() throws Exception {
+                        return null;
+                    }
+                },
+                new BiFunction<SyncRange, FlowableAsyncEmitter<Integer>, SyncRange>() {
+                    @Override
+                    public SyncRange apply(SyncRange state, final FlowableAsyncEmitter<Integer> emitter)
+                            throws Exception {
+                        emitter.onNext(null);
+                        return state;
+                    }
+                },
+                new Consumer<SyncRange>() {
+                    @Override
+                    public void accept(SyncRange state) throws Exception {
+                        cleanup.incrementAndGet();
+                    }
+                }
+        )
+        .test(0)
+        .assertFailure(NullPointerException.class);
+
+        assertEquals(1, cleanup.get());
+    }
+
+
+    @Test
+    public void nullThrowable() {
+        final AtomicInteger cleanup = new AtomicInteger();
+
+        Flowable.generateAsync(
+                new Callable<SyncRange>() {
+                    @Override
+                    public SyncRange call() throws Exception {
+                        return null;
+                    }
+                },
+                new BiFunction<SyncRange, FlowableAsyncEmitter<Integer>, SyncRange>() {
+                    @Override
+                    public SyncRange apply(SyncRange state, final FlowableAsyncEmitter<Integer> emitter)
+                            throws Exception {
+                        emitter.onError(null);
+                        return state;
+                    }
+                },
+                new Consumer<SyncRange>() {
+                    @Override
+                    public void accept(SyncRange state) throws Exception {
+                        cleanup.incrementAndGet();
+                    }
+                }
+        )
+        .test(0)
+        .assertFailure(NullPointerException.class);
+
         assertEquals(1, cleanup.get());
     }
 }
