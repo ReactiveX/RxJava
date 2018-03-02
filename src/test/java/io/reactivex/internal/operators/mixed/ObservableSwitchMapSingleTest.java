@@ -91,12 +91,12 @@ public class ObservableSwitchMapSingleTest {
 
     @Test
     public void switchOver() {
-        PublishSubject<Integer> pp = PublishSubject.create();
+        PublishSubject<Integer> ps = PublishSubject.create();
 
         final SingleSubject<Integer> ms1 = SingleSubject.create();
         final SingleSubject<Integer> ms2 = SingleSubject.create();
 
-        TestObserver<Integer> ts = pp.switchMapSingle(new Function<Integer, SingleSource<Integer>>() {
+        TestObserver<Integer> ts = ps.switchMapSingle(new Function<Integer, SingleSource<Integer>>() {
             @Override
             public SingleSource<Integer> apply(Integer v)
                     throws Exception {
@@ -109,32 +109,32 @@ public class ObservableSwitchMapSingleTest {
 
         ts.assertEmpty();
 
-        pp.onNext(1);
+        ps.onNext(1);
 
         ts.assertEmpty();
 
         assertTrue(ms1.hasObservers());
 
-        pp.onNext(2);
+        ps.onNext(2);
 
         assertFalse(ms1.hasObservers());
         assertTrue(ms2.hasObservers());
 
         ms2.onError(new TestException());
 
-        assertFalse(pp.hasObservers());
+        assertFalse(ps.hasObservers());
 
         ts.assertFailure(TestException.class);
     }
 
     @Test
     public void switchOverDelayError() {
-        PublishSubject<Integer> pp = PublishSubject.create();
+        PublishSubject<Integer> ps = PublishSubject.create();
 
         final SingleSubject<Integer> ms1 = SingleSubject.create();
         final SingleSubject<Integer> ms2 = SingleSubject.create();
 
-        TestObserver<Integer> ts = pp.switchMapSingleDelayError(new Function<Integer, SingleSource<Integer>>() {
+        TestObserver<Integer> ts = ps.switchMapSingleDelayError(new Function<Integer, SingleSource<Integer>>() {
             @Override
             public SingleSource<Integer> apply(Integer v)
                     throws Exception {
@@ -147,13 +147,13 @@ public class ObservableSwitchMapSingleTest {
 
         ts.assertEmpty();
 
-        pp.onNext(1);
+        ps.onNext(1);
 
         ts.assertEmpty();
 
         assertTrue(ms1.hasObservers());
 
-        pp.onNext(2);
+        ps.onNext(2);
 
         assertFalse(ms1.hasObservers());
         assertTrue(ms2.hasObservers());
@@ -162,20 +162,20 @@ public class ObservableSwitchMapSingleTest {
 
         ts.assertEmpty();
 
-        assertTrue(pp.hasObservers());
+        assertTrue(ps.hasObservers());
 
-        pp.onComplete();
+        ps.onComplete();
 
         ts.assertFailure(TestException.class);
     }
 
     @Test
     public void mainErrorInnerCompleteDelayError() {
-        PublishSubject<Integer> pp = PublishSubject.create();
+        PublishSubject<Integer> ps = PublishSubject.create();
 
         final SingleSubject<Integer> ms = SingleSubject.create();
 
-        TestObserver<Integer> ts = pp.switchMapSingleDelayError(new Function<Integer, SingleSource<Integer>>() {
+        TestObserver<Integer> ts = ps.switchMapSingleDelayError(new Function<Integer, SingleSource<Integer>>() {
             @Override
             public SingleSource<Integer> apply(Integer v)
                     throws Exception {
@@ -185,13 +185,13 @@ public class ObservableSwitchMapSingleTest {
 
         ts.assertEmpty();
 
-        pp.onNext(1);
+        ps.onNext(1);
 
         ts.assertEmpty();
 
         assertTrue(ms.hasObservers());
 
-        pp.onError(new TestException());
+        ps.onError(new TestException());
 
         assertTrue(ms.hasObservers());
 
@@ -204,11 +204,11 @@ public class ObservableSwitchMapSingleTest {
 
     @Test
     public void mainErrorInnerSuccessDelayError() {
-        PublishSubject<Integer> pp = PublishSubject.create();
+        PublishSubject<Integer> ps = PublishSubject.create();
 
         final SingleSubject<Integer> ms = SingleSubject.create();
 
-        TestObserver<Integer> ts = pp.switchMapSingleDelayError(new Function<Integer, SingleSource<Integer>>() {
+        TestObserver<Integer> ts = ps.switchMapSingleDelayError(new Function<Integer, SingleSource<Integer>>() {
             @Override
             public SingleSource<Integer> apply(Integer v)
                     throws Exception {
@@ -218,13 +218,13 @@ public class ObservableSwitchMapSingleTest {
 
         ts.assertEmpty();
 
-        pp.onNext(1);
+        ps.onNext(1);
 
         ts.assertEmpty();
 
         assertTrue(ms.hasObservers());
 
-        pp.onError(new TestException());
+        ps.onError(new TestException());
 
         assertTrue(ms.hasObservers());
 
@@ -289,11 +289,11 @@ public class ObservableSwitchMapSingleTest {
 
     @Test
     public void cancel() {
-        PublishSubject<Integer> pp = PublishSubject.create();
+        PublishSubject<Integer> ps = PublishSubject.create();
 
         final SingleSubject<Integer> ms = SingleSubject.create();
 
-        TestObserver<Integer> ts = pp.switchMapSingleDelayError(new Function<Integer, SingleSource<Integer>>() {
+        TestObserver<Integer> ts = ps.switchMapSingleDelayError(new Function<Integer, SingleSource<Integer>>() {
             @Override
             public SingleSource<Integer> apply(Integer v)
                     throws Exception {
@@ -303,16 +303,16 @@ public class ObservableSwitchMapSingleTest {
 
         ts.assertEmpty();
 
-        pp.onNext(1);
+        ps.onNext(1);
 
         ts.assertEmpty();
 
-        assertTrue(pp.hasObservers());
+        assertTrue(ps.hasObservers());
         assertTrue(ms.hasObservers());
 
         ts.cancel();
 
-        assertFalse(pp.hasObservers());
+        assertFalse(ps.hasObservers());
         assertFalse(ms.hasObservers());
     }
 
@@ -389,11 +389,11 @@ public class ObservableSwitchMapSingleTest {
     public void nextCancelRace() {
         for (int i = 0; i < TestHelper.RACE_LONG_LOOPS; i++) {
 
-            final PublishSubject<Integer> pp = PublishSubject.create();
+            final PublishSubject<Integer> ps = PublishSubject.create();
 
             final SingleSubject<Integer> ms = SingleSubject.create();
 
-            final TestObserver<Integer> ts = pp.switchMapSingleDelayError(new Function<Integer, SingleSource<Integer>>() {
+            final TestObserver<Integer> ts = ps.switchMapSingleDelayError(new Function<Integer, SingleSource<Integer>>() {
                 @Override
                 public SingleSource<Integer> apply(Integer v)
                         throws Exception {
@@ -404,7 +404,7 @@ public class ObservableSwitchMapSingleTest {
             Runnable r1 = new Runnable() {
                 @Override
                 public void run() {
-                    pp.onNext(1);
+                    ps.onNext(1);
                 }
             };
 
@@ -430,11 +430,11 @@ public class ObservableSwitchMapSingleTest {
 
             List<Throwable> errors = TestHelper.trackPluginErrors();
             try {
-                final PublishSubject<Integer> pp = PublishSubject.create();
+                final PublishSubject<Integer> ps = PublishSubject.create();
 
                 final SingleSubject<Integer> ms = SingleSubject.create();
 
-                final TestObserver<Integer> ts = pp.switchMapSingleDelayError(new Function<Integer, SingleSource<Integer>>() {
+                final TestObserver<Integer> ts = ps.switchMapSingleDelayError(new Function<Integer, SingleSource<Integer>>() {
                     @Override
                     public SingleSource<Integer> apply(Integer v)
                             throws Exception {
@@ -445,12 +445,12 @@ public class ObservableSwitchMapSingleTest {
                     }
                 }).test();
 
-                pp.onNext(1);
+                ps.onNext(1);
 
                 Runnable r1 = new Runnable() {
                     @Override
                     public void run() {
-                        pp.onNext(2);
+                        ps.onNext(2);
                     }
                 };
 
@@ -484,11 +484,11 @@ public class ObservableSwitchMapSingleTest {
 
             List<Throwable> errors = TestHelper.trackPluginErrors();
             try {
-                final PublishSubject<Integer> pp = PublishSubject.create();
+                final PublishSubject<Integer> ps = PublishSubject.create();
 
                 final SingleSubject<Integer> ms = SingleSubject.create();
 
-                final TestObserver<Integer> ts = pp.switchMapSingleDelayError(new Function<Integer, SingleSource<Integer>>() {
+                final TestObserver<Integer> ts = ps.switchMapSingleDelayError(new Function<Integer, SingleSource<Integer>>() {
                     @Override
                     public SingleSource<Integer> apply(Integer v)
                             throws Exception {
@@ -499,12 +499,12 @@ public class ObservableSwitchMapSingleTest {
                     }
                 }).test();
 
-                pp.onNext(1);
+                ps.onNext(1);
 
                 Runnable r1 = new Runnable() {
                     @Override
                     public void run() {
-                        pp.onError(ex);
+                        ps.onError(ex);
                     }
                 };
 
@@ -537,11 +537,11 @@ public class ObservableSwitchMapSingleTest {
     public void nextInnerSuccessRace() {
         for (int i = 0; i < TestHelper.RACE_LONG_LOOPS; i++) {
 
-            final PublishSubject<Integer> pp = PublishSubject.create();
+            final PublishSubject<Integer> ps = PublishSubject.create();
 
             final SingleSubject<Integer> ms = SingleSubject.create();
 
-            final TestObserver<Integer> ts = pp.switchMapSingleDelayError(new Function<Integer, SingleSource<Integer>>() {
+            final TestObserver<Integer> ts = ps.switchMapSingleDelayError(new Function<Integer, SingleSource<Integer>>() {
                 @Override
                 public SingleSource<Integer> apply(Integer v)
                         throws Exception {
@@ -552,12 +552,12 @@ public class ObservableSwitchMapSingleTest {
                 }
             }).test();
 
-            pp.onNext(1);
+            ps.onNext(1);
 
             Runnable r1 = new Runnable() {
                 @Override
                 public void run() {
-                    pp.onNext(2);
+                    ps.onNext(2);
                 }
             };
 
@@ -577,27 +577,27 @@ public class ObservableSwitchMapSingleTest {
 
     @Test
     public void checkDisposed() {
-        PublishSubject<Integer> pp = PublishSubject.create();
+        PublishSubject<Integer> ps = PublishSubject.create();
         SingleSubject<Integer> ms = SingleSubject.create();
 
-        TestHelper.checkDisposed(pp.switchMapSingle(Functions.justFunction(ms)));
+        TestHelper.checkDisposed(ps.switchMapSingle(Functions.justFunction(ms)));
     }
 
     @Test
     public void drainReentrant() {
-        final PublishSubject<Integer> pp = PublishSubject.create();
+        final PublishSubject<Integer> ps = PublishSubject.create();
 
         TestObserver<Integer> to = new TestObserver<Integer>() {
             @Override
             public void onNext(Integer t) {
                 super.onNext(t);
                 if (t == 1) {
-                    pp.onNext(2);
+                    ps.onNext(2);
                 }
             }
         };
 
-        pp.switchMapSingle(new Function<Integer, SingleSource<Integer>>() {
+        ps.switchMapSingle(new Function<Integer, SingleSource<Integer>>() {
             @Override
             public SingleSource<Integer> apply(Integer v)
                     throws Exception {
@@ -605,8 +605,8 @@ public class ObservableSwitchMapSingleTest {
                     }
         }).subscribe(to);
 
-        pp.onNext(1);
-        pp.onComplete();
+        ps.onNext(1);
+        ps.onComplete();
 
         to.assertResult(1, 2);
     }

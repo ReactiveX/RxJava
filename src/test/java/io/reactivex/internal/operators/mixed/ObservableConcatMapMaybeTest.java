@@ -140,18 +140,18 @@ public class ObservableConcatMapMaybeTest {
 
     @Test
     public void mainBoundaryErrorInnerSuccess() {
-        PublishSubject<Integer> pp = PublishSubject.create();
+        PublishSubject<Integer> ps = PublishSubject.create();
         MaybeSubject<Integer> ms = MaybeSubject.create();
 
-        TestObserver<Integer> ts = pp.concatMapMaybeDelayError(Functions.justFunction(ms), false).test();
+        TestObserver<Integer> ts = ps.concatMapMaybeDelayError(Functions.justFunction(ms), false).test();
 
         ts.assertEmpty();
 
-        pp.onNext(1);
+        ps.onNext(1);
 
         assertTrue(ms.hasObservers());
 
-        pp.onError(new TestException());
+        ps.onError(new TestException());
 
         assertTrue(ms.hasObservers());
 
@@ -164,18 +164,18 @@ public class ObservableConcatMapMaybeTest {
 
     @Test
     public void mainBoundaryErrorInnerEmpty() {
-        PublishSubject<Integer> pp = PublishSubject.create();
+        PublishSubject<Integer> ps = PublishSubject.create();
         MaybeSubject<Integer> ms = MaybeSubject.create();
 
-        TestObserver<Integer> ts = pp.concatMapMaybeDelayError(Functions.justFunction(ms), false).test();
+        TestObserver<Integer> ts = ps.concatMapMaybeDelayError(Functions.justFunction(ms), false).test();
 
         ts.assertEmpty();
 
-        pp.onNext(1);
+        ps.onNext(1);
 
         assertTrue(ms.hasObservers());
 
-        pp.onError(new TestException());
+        ps.onError(new TestException());
 
         assertTrue(ms.hasObservers());
 
@@ -260,11 +260,11 @@ public class ObservableConcatMapMaybeTest {
     public void innerErrorAfterMainError() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
-            final PublishSubject<Integer> pp = PublishSubject.create();
+            final PublishSubject<Integer> ps = PublishSubject.create();
 
             final AtomicReference<MaybeObserver<? super Integer>> obs = new AtomicReference<MaybeObserver<? super Integer>>();
 
-            TestObserver<Integer> ts = pp.concatMapMaybe(
+            TestObserver<Integer> ts = ps.concatMapMaybe(
                     new Function<Integer, MaybeSource<Integer>>() {
                         @Override
                         public MaybeSource<Integer> apply(Integer v)
@@ -281,9 +281,9 @@ public class ObservableConcatMapMaybeTest {
                     }
             ).test();
 
-            pp.onNext(1);
+            ps.onNext(1);
 
-            pp.onError(new TestException("outer"));
+            ps.onError(new TestException("outer"));
             obs.get().onError(new TestException("inner"));
 
             ts.assertFailureAndMessage(TestException.class, "outer");
@@ -317,9 +317,9 @@ public class ObservableConcatMapMaybeTest {
 
     @Test
     public void mapperCrash() {
-        final PublishSubject<Integer> pp = PublishSubject.create();
+        final PublishSubject<Integer> ps = PublishSubject.create();
 
-        TestObserver<Object> ts = pp
+        TestObserver<Object> ts = ps
         .concatMapMaybe(new Function<Integer, MaybeSource<? extends Object>>() {
             @Override
             public MaybeSource<? extends Object> apply(Integer v)
@@ -331,13 +331,13 @@ public class ObservableConcatMapMaybeTest {
 
         ts.assertEmpty();
 
-        assertTrue(pp.hasObservers());
+        assertTrue(ps.hasObservers());
 
-        pp.onNext(1);
+        ps.onNext(1);
 
         ts.assertFailure(TestException.class);
 
-        assertFalse(pp.hasObservers());
+        assertFalse(ps.hasObservers());
     }
 
     @Test

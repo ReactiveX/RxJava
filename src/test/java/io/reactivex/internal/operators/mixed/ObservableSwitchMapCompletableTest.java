@@ -58,16 +58,16 @@ public class ObservableSwitchMapCompletableTest {
 
     @Test
     public void innerError() {
-        PublishSubject<Integer> pp = PublishSubject.create();
+        PublishSubject<Integer> ps = PublishSubject.create();
         CompletableSubject cs = CompletableSubject.create();
 
-        TestObserver<Void> to = pp.switchMapCompletable(Functions.justFunction(cs))
+        TestObserver<Void> to = ps.switchMapCompletable(Functions.justFunction(cs))
         .test();
 
-        assertTrue(pp.hasObservers());
+        assertTrue(ps.hasObservers());
         assertFalse(cs.hasObservers());
 
-        pp.onNext(1);
+        ps.onNext(1);
 
         assertTrue(cs.hasObservers());
 
@@ -77,7 +77,7 @@ public class ObservableSwitchMapCompletableTest {
 
         to.assertFailure(TestException.class);
 
-        assertFalse(pp.hasObservers());
+        assertFalse(ps.hasObservers());
         assertFalse(cs.hasObservers());
     }
 
@@ -88,9 +88,9 @@ public class ObservableSwitchMapCompletableTest {
                 CompletableSubject.create()
         };
 
-        PublishSubject<Integer> pp = PublishSubject.create();
+        PublishSubject<Integer> ps = PublishSubject.create();
 
-        TestObserver<Void> to = pp.switchMapCompletable(new Function<Integer, CompletableSource>() {
+        TestObserver<Void> to = ps.switchMapCompletable(new Function<Integer, CompletableSource>() {
             @Override
             public CompletableSource apply(Integer v) throws Exception {
                 return css[v];
@@ -100,16 +100,16 @@ public class ObservableSwitchMapCompletableTest {
 
         to.assertEmpty();
 
-        pp.onNext(0);
+        ps.onNext(0);
 
         assertTrue(css[0].hasObservers());
 
-        pp.onNext(1);
+        ps.onNext(1);
 
         assertFalse(css[0].hasObservers());
         assertTrue(css[1].hasObservers());
 
-        pp.onComplete();
+        ps.onComplete();
 
         to.assertEmpty();
 
@@ -122,29 +122,29 @@ public class ObservableSwitchMapCompletableTest {
 
     @Test
     public void dispose() {
-        PublishSubject<Integer> pp = PublishSubject.create();
+        PublishSubject<Integer> ps = PublishSubject.create();
         CompletableSubject cs = CompletableSubject.create();
 
-        TestObserver<Void> to = pp.switchMapCompletable(Functions.justFunction(cs))
+        TestObserver<Void> to = ps.switchMapCompletable(Functions.justFunction(cs))
         .test();
 
-        pp.onNext(1);
+        ps.onNext(1);
 
-        assertTrue(pp.hasObservers());
+        assertTrue(ps.hasObservers());
         assertTrue(cs.hasObservers());
 
         to.dispose();
 
-        assertFalse(pp.hasObservers());
+        assertFalse(ps.hasObservers());
         assertFalse(cs.hasObservers());
     }
 
     @Test
     public void checkDisposed() {
-        PublishSubject<Integer> pp = PublishSubject.create();
+        PublishSubject<Integer> ps = PublishSubject.create();
         CompletableSubject cs = CompletableSubject.create();
 
-        TestHelper.checkDisposed(pp.switchMapCompletable(Functions.justFunction(cs)));
+        TestHelper.checkDisposed(ps.switchMapCompletable(Functions.justFunction(cs)));
     }
 
     @Test
@@ -188,17 +188,17 @@ public class ObservableSwitchMapCompletableTest {
     @Test
     public void onNextInnerCompleteRace() {
         for (int i = 0; i < TestHelper.RACE_LONG_LOOPS; i++) {
-            final PublishSubject<Integer> pp = PublishSubject.create();
+            final PublishSubject<Integer> ps = PublishSubject.create();
             final CompletableSubject cs = CompletableSubject.create();
 
-            TestObserver<Void> to = pp.switchMapCompletable(Functions.justFunction(cs)).test();
+            TestObserver<Void> to = ps.switchMapCompletable(Functions.justFunction(cs)).test();
 
-            pp.onNext(1);
+            ps.onNext(1);
 
             Runnable r1 = new Runnable() {
                 @Override
                 public void run() {
-                    pp.onNext(2);
+                    ps.onNext(2);
                 }
             };
 
@@ -221,17 +221,17 @@ public class ObservableSwitchMapCompletableTest {
         for (int i = 0; i < TestHelper.RACE_LONG_LOOPS; i++) {
             List<Throwable> errors = TestHelper.trackPluginErrors();
             try {
-                final PublishSubject<Integer> pp = PublishSubject.create();
+                final PublishSubject<Integer> ps = PublishSubject.create();
                 final CompletableSubject cs = CompletableSubject.create();
 
-                TestObserver<Void> to = pp.switchMapCompletable(Functions.justFunction(cs)).test();
+                TestObserver<Void> to = ps.switchMapCompletable(Functions.justFunction(cs)).test();
 
-                pp.onNext(1);
+                ps.onNext(1);
 
                 Runnable r1 = new Runnable() {
                     @Override
                     public void run() {
-                        pp.onNext(2);
+                        ps.onNext(2);
                     }
                 };
 
@@ -267,17 +267,17 @@ public class ObservableSwitchMapCompletableTest {
         for (int i = 0; i < TestHelper.RACE_LONG_LOOPS; i++) {
             List<Throwable> errors = TestHelper.trackPluginErrors();
             try {
-                final PublishSubject<Integer> pp = PublishSubject.create();
+                final PublishSubject<Integer> ps = PublishSubject.create();
                 final CompletableSubject cs = CompletableSubject.create();
 
-                TestObserver<Void> to = pp.switchMapCompletable(Functions.justFunction(cs)).test();
+                TestObserver<Void> to = ps.switchMapCompletable(Functions.justFunction(cs)).test();
 
-                pp.onNext(1);
+                ps.onNext(1);
 
                 Runnable r1 = new Runnable() {
                     @Override
                     public void run() {
-                        pp.onError(ex0);
+                        ps.onError(ex0);
                     }
                 };
 
@@ -330,33 +330,33 @@ public class ObservableSwitchMapCompletableTest {
 
     @Test
     public void innerErrorDelayed() {
-        final PublishSubject<Integer> pp = PublishSubject.create();
+        final PublishSubject<Integer> ps = PublishSubject.create();
         final CompletableSubject cs = CompletableSubject.create();
 
-        TestObserver<Void> to = pp.switchMapCompletableDelayError(Functions.justFunction(cs)).test();
+        TestObserver<Void> to = ps.switchMapCompletableDelayError(Functions.justFunction(cs)).test();
 
-        pp.onNext(1);
+        ps.onNext(1);
 
         cs.onError(new TestException());
 
         to.assertEmpty();
 
-        assertTrue(pp.hasObservers());
+        assertTrue(ps.hasObservers());
 
-        pp.onComplete();
+        ps.onComplete();
 
         to.assertFailure(TestException.class);
     }
 
     @Test
     public void mainCompletesinnerErrorDelayed() {
-        final PublishSubject<Integer> pp = PublishSubject.create();
+        final PublishSubject<Integer> ps = PublishSubject.create();
         final CompletableSubject cs = CompletableSubject.create();
 
-        TestObserver<Void> to = pp.switchMapCompletableDelayError(Functions.justFunction(cs)).test();
+        TestObserver<Void> to = ps.switchMapCompletableDelayError(Functions.justFunction(cs)).test();
 
-        pp.onNext(1);
-        pp.onComplete();
+        ps.onNext(1);
+        ps.onComplete();
 
         to.assertEmpty();
 
@@ -367,14 +367,14 @@ public class ObservableSwitchMapCompletableTest {
 
     @Test
     public void mainErrorDelayed() {
-        final PublishSubject<Integer> pp = PublishSubject.create();
+        final PublishSubject<Integer> ps = PublishSubject.create();
         final CompletableSubject cs = CompletableSubject.create();
 
-        TestObserver<Void> to = pp.switchMapCompletableDelayError(Functions.justFunction(cs)).test();
+        TestObserver<Void> to = ps.switchMapCompletableDelayError(Functions.justFunction(cs)).test();
 
-        pp.onNext(1);
+        ps.onNext(1);
 
-        pp.onError(new TestException());
+        ps.onError(new TestException());
 
         to.assertEmpty();
 

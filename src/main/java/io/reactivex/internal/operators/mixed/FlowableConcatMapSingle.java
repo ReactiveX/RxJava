@@ -255,10 +255,10 @@ public final class FlowableConcatMapSingle<T, R> extends Flowable<R> {
                             consumed = c;
                         }
 
-                        SingleSource<? extends R> ms;
+                        SingleSource<? extends R> ss;
 
                         try {
-                            ms = ObjectHelper.requireNonNull(mapper.apply(v), "The mapper returned a null SingleSource");
+                            ss = ObjectHelper.requireNonNull(mapper.apply(v), "The mapper returned a null SingleSource");
                         } catch (Throwable ex) {
                             Exceptions.throwIfFatal(ex);
                             upstream.cancel();
@@ -270,7 +270,7 @@ public final class FlowableConcatMapSingle<T, R> extends Flowable<R> {
                         }
 
                         state = STATE_ACTIVE;
-                        ms.subscribe(inner);
+                        ss.subscribe(inner);
                         break;
                     } else if (s == STATE_RESULT_VALUE) {
                         long e = emitted;

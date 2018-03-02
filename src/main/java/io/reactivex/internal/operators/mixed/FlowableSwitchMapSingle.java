@@ -115,10 +115,10 @@ public final class FlowableSwitchMapSingle<T, R> extends Flowable<R> {
                 current.dispose();
             }
 
-            SingleSource<? extends R> ms;
+            SingleSource<? extends R> ss;
 
             try {
-                ms = ObjectHelper.requireNonNull(mapper.apply(t), "The mapper returned a null SingleSource");
+                ss = ObjectHelper.requireNonNull(mapper.apply(t), "The mapper returned a null SingleSource");
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
                 upstream.cancel();
@@ -135,7 +135,7 @@ public final class FlowableSwitchMapSingle<T, R> extends Flowable<R> {
                     break;
                 }
                 if (inner.compareAndSet(current, observer)) {
-                    ms.subscribe(observer);
+                    ss.subscribe(observer);
                     break;
                 }
             }

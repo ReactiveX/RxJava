@@ -79,18 +79,18 @@ public class ObservableConcatMapSingleTest {
 
     @Test
     public void mainBoundaryErrorInnerSuccess() {
-        PublishSubject<Integer> pp = PublishSubject.create();
+        PublishSubject<Integer> ps = PublishSubject.create();
         SingleSubject<Integer> ms = SingleSubject.create();
 
-        TestObserver<Integer> ts = pp.concatMapSingleDelayError(Functions.justFunction(ms), false).test();
+        TestObserver<Integer> ts = ps.concatMapSingleDelayError(Functions.justFunction(ms), false).test();
 
         ts.assertEmpty();
 
-        pp.onNext(1);
+        ps.onNext(1);
 
         assertTrue(ms.hasObservers());
 
-        pp.onError(new TestException());
+        ps.onError(new TestException());
 
         assertTrue(ms.hasObservers());
 
@@ -175,11 +175,11 @@ public class ObservableConcatMapSingleTest {
     public void innerErrorAfterMainError() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
-            final PublishSubject<Integer> pp = PublishSubject.create();
+            final PublishSubject<Integer> ps = PublishSubject.create();
 
             final AtomicReference<SingleObserver<? super Integer>> obs = new AtomicReference<SingleObserver<? super Integer>>();
 
-            TestObserver<Integer> ts = pp.concatMapSingle(
+            TestObserver<Integer> ts = ps.concatMapSingle(
                     new Function<Integer, SingleSource<Integer>>() {
                         @Override
                         public SingleSource<Integer> apply(Integer v)
@@ -196,9 +196,9 @@ public class ObservableConcatMapSingleTest {
                     }
             ).test();
 
-            pp.onNext(1);
+            ps.onNext(1);
 
-            pp.onError(new TestException("outer"));
+            ps.onError(new TestException("outer"));
             obs.get().onError(new TestException("inner"));
 
             ts.assertFailureAndMessage(TestException.class, "outer");
@@ -232,9 +232,9 @@ public class ObservableConcatMapSingleTest {
 
     @Test
     public void mapperCrash() {
-        final PublishSubject<Integer> pp = PublishSubject.create();
+        final PublishSubject<Integer> ps = PublishSubject.create();
 
-        TestObserver<Object> ts = pp
+        TestObserver<Object> ts = ps
         .concatMapSingle(new Function<Integer, SingleSource<? extends Object>>() {
             @Override
             public SingleSource<? extends Object> apply(Integer v)
@@ -246,13 +246,13 @@ public class ObservableConcatMapSingleTest {
 
         ts.assertEmpty();
 
-        assertTrue(pp.hasObservers());
+        assertTrue(ps.hasObservers());
 
-        pp.onNext(1);
+        ps.onNext(1);
 
         ts.assertFailure(TestException.class);
 
-        assertFalse(pp.hasObservers());
+        assertFalse(ps.hasObservers());
     }
 
     @Test
@@ -264,16 +264,16 @@ public class ObservableConcatMapSingleTest {
 
     @Test
     public void mainCompletesWhileInnerActive() {
-        PublishSubject<Integer> pp = PublishSubject.create();
+        PublishSubject<Integer> ps = PublishSubject.create();
         SingleSubject<Integer> ms = SingleSubject.create();
 
-        TestObserver<Integer> ts = pp.concatMapSingleDelayError(Functions.justFunction(ms), false).test();
+        TestObserver<Integer> ts = ps.concatMapSingleDelayError(Functions.justFunction(ms), false).test();
 
         ts.assertEmpty();
 
-        pp.onNext(1);
-        pp.onNext(2);
-        pp.onComplete();
+        ps.onNext(1);
+        ps.onNext(2);
+        ps.onComplete();
 
         assertTrue(ms.hasObservers());
 

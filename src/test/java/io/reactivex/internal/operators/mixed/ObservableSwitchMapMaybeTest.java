@@ -122,12 +122,12 @@ public class ObservableSwitchMapMaybeTest {
 
     @Test
     public void switchOver() {
-        PublishSubject<Integer> pp = PublishSubject.create();
+        PublishSubject<Integer> ps = PublishSubject.create();
 
         final MaybeSubject<Integer> ms1 = MaybeSubject.create();
         final MaybeSubject<Integer> ms2 = MaybeSubject.create();
 
-        TestObserver<Integer> ts = pp.switchMapMaybe(new Function<Integer, MaybeSource<Integer>>() {
+        TestObserver<Integer> ts = ps.switchMapMaybe(new Function<Integer, MaybeSource<Integer>>() {
             @Override
             public MaybeSource<Integer> apply(Integer v)
                     throws Exception {
@@ -140,32 +140,32 @@ public class ObservableSwitchMapMaybeTest {
 
         ts.assertEmpty();
 
-        pp.onNext(1);
+        ps.onNext(1);
 
         ts.assertEmpty();
 
         assertTrue(ms1.hasObservers());
 
-        pp.onNext(2);
+        ps.onNext(2);
 
         assertFalse(ms1.hasObservers());
         assertTrue(ms2.hasObservers());
 
         ms2.onError(new TestException());
 
-        assertFalse(pp.hasObservers());
+        assertFalse(ps.hasObservers());
 
         ts.assertFailure(TestException.class);
     }
 
     @Test
     public void switchOverDelayError() {
-        PublishSubject<Integer> pp = PublishSubject.create();
+        PublishSubject<Integer> ps = PublishSubject.create();
 
         final MaybeSubject<Integer> ms1 = MaybeSubject.create();
         final MaybeSubject<Integer> ms2 = MaybeSubject.create();
 
-        TestObserver<Integer> ts = pp.switchMapMaybeDelayError(new Function<Integer, MaybeSource<Integer>>() {
+        TestObserver<Integer> ts = ps.switchMapMaybeDelayError(new Function<Integer, MaybeSource<Integer>>() {
             @Override
             public MaybeSource<Integer> apply(Integer v)
                     throws Exception {
@@ -178,13 +178,13 @@ public class ObservableSwitchMapMaybeTest {
 
         ts.assertEmpty();
 
-        pp.onNext(1);
+        ps.onNext(1);
 
         ts.assertEmpty();
 
         assertTrue(ms1.hasObservers());
 
-        pp.onNext(2);
+        ps.onNext(2);
 
         assertFalse(ms1.hasObservers());
         assertTrue(ms2.hasObservers());
@@ -193,20 +193,20 @@ public class ObservableSwitchMapMaybeTest {
 
         ts.assertEmpty();
 
-        assertTrue(pp.hasObservers());
+        assertTrue(ps.hasObservers());
 
-        pp.onComplete();
+        ps.onComplete();
 
         ts.assertFailure(TestException.class);
     }
 
     @Test
     public void mainErrorInnerCompleteDelayError() {
-        PublishSubject<Integer> pp = PublishSubject.create();
+        PublishSubject<Integer> ps = PublishSubject.create();
 
         final MaybeSubject<Integer> ms = MaybeSubject.create();
 
-        TestObserver<Integer> ts = pp.switchMapMaybeDelayError(new Function<Integer, MaybeSource<Integer>>() {
+        TestObserver<Integer> ts = ps.switchMapMaybeDelayError(new Function<Integer, MaybeSource<Integer>>() {
             @Override
             public MaybeSource<Integer> apply(Integer v)
                     throws Exception {
@@ -216,13 +216,13 @@ public class ObservableSwitchMapMaybeTest {
 
         ts.assertEmpty();
 
-        pp.onNext(1);
+        ps.onNext(1);
 
         ts.assertEmpty();
 
         assertTrue(ms.hasObservers());
 
-        pp.onError(new TestException());
+        ps.onError(new TestException());
 
         assertTrue(ms.hasObservers());
 
@@ -235,11 +235,11 @@ public class ObservableSwitchMapMaybeTest {
 
     @Test
     public void mainErrorInnerSuccessDelayError() {
-        PublishSubject<Integer> pp = PublishSubject.create();
+        PublishSubject<Integer> ps = PublishSubject.create();
 
         final MaybeSubject<Integer> ms = MaybeSubject.create();
 
-        TestObserver<Integer> ts = pp.switchMapMaybeDelayError(new Function<Integer, MaybeSource<Integer>>() {
+        TestObserver<Integer> ts = ps.switchMapMaybeDelayError(new Function<Integer, MaybeSource<Integer>>() {
             @Override
             public MaybeSource<Integer> apply(Integer v)
                     throws Exception {
@@ -249,13 +249,13 @@ public class ObservableSwitchMapMaybeTest {
 
         ts.assertEmpty();
 
-        pp.onNext(1);
+        ps.onNext(1);
 
         ts.assertEmpty();
 
         assertTrue(ms.hasObservers());
 
-        pp.onError(new TestException());
+        ps.onError(new TestException());
 
         assertTrue(ms.hasObservers());
 
@@ -320,11 +320,11 @@ public class ObservableSwitchMapMaybeTest {
 
     @Test
     public void cancel() {
-        PublishSubject<Integer> pp = PublishSubject.create();
+        PublishSubject<Integer> ps = PublishSubject.create();
 
         final MaybeSubject<Integer> ms = MaybeSubject.create();
 
-        TestObserver<Integer> ts = pp.switchMapMaybeDelayError(new Function<Integer, MaybeSource<Integer>>() {
+        TestObserver<Integer> ts = ps.switchMapMaybeDelayError(new Function<Integer, MaybeSource<Integer>>() {
             @Override
             public MaybeSource<Integer> apply(Integer v)
                     throws Exception {
@@ -334,16 +334,16 @@ public class ObservableSwitchMapMaybeTest {
 
         ts.assertEmpty();
 
-        pp.onNext(1);
+        ps.onNext(1);
 
         ts.assertEmpty();
 
-        assertTrue(pp.hasObservers());
+        assertTrue(ps.hasObservers());
         assertTrue(ms.hasObservers());
 
         ts.cancel();
 
-        assertFalse(pp.hasObservers());
+        assertFalse(ps.hasObservers());
         assertFalse(ms.hasObservers());
     }
 
@@ -421,11 +421,11 @@ public class ObservableSwitchMapMaybeTest {
     public void nextCancelRace() {
         for (int i = 0; i < TestHelper.RACE_LONG_LOOPS; i++) {
 
-            final PublishSubject<Integer> pp = PublishSubject.create();
+            final PublishSubject<Integer> ps = PublishSubject.create();
 
             final MaybeSubject<Integer> ms = MaybeSubject.create();
 
-            final TestObserver<Integer> ts = pp.switchMapMaybeDelayError(new Function<Integer, MaybeSource<Integer>>() {
+            final TestObserver<Integer> ts = ps.switchMapMaybeDelayError(new Function<Integer, MaybeSource<Integer>>() {
                 @Override
                 public MaybeSource<Integer> apply(Integer v)
                         throws Exception {
@@ -436,7 +436,7 @@ public class ObservableSwitchMapMaybeTest {
             Runnable r1 = new Runnable() {
                 @Override
                 public void run() {
-                    pp.onNext(1);
+                    ps.onNext(1);
                 }
             };
 
@@ -462,11 +462,11 @@ public class ObservableSwitchMapMaybeTest {
 
             List<Throwable> errors = TestHelper.trackPluginErrors();
             try {
-                final PublishSubject<Integer> pp = PublishSubject.create();
+                final PublishSubject<Integer> ps = PublishSubject.create();
 
                 final MaybeSubject<Integer> ms = MaybeSubject.create();
 
-                final TestObserver<Integer> ts = pp.switchMapMaybeDelayError(new Function<Integer, MaybeSource<Integer>>() {
+                final TestObserver<Integer> ts = ps.switchMapMaybeDelayError(new Function<Integer, MaybeSource<Integer>>() {
                     @Override
                     public MaybeSource<Integer> apply(Integer v)
                             throws Exception {
@@ -477,12 +477,12 @@ public class ObservableSwitchMapMaybeTest {
                     }
                 }).test();
 
-                pp.onNext(1);
+                ps.onNext(1);
 
                 Runnable r1 = new Runnable() {
                     @Override
                     public void run() {
-                        pp.onNext(2);
+                        ps.onNext(2);
                     }
                 };
 
@@ -516,11 +516,11 @@ public class ObservableSwitchMapMaybeTest {
 
             List<Throwable> errors = TestHelper.trackPluginErrors();
             try {
-                final PublishSubject<Integer> pp = PublishSubject.create();
+                final PublishSubject<Integer> ps = PublishSubject.create();
 
                 final MaybeSubject<Integer> ms = MaybeSubject.create();
 
-                final TestObserver<Integer> ts = pp.switchMapMaybeDelayError(new Function<Integer, MaybeSource<Integer>>() {
+                final TestObserver<Integer> ts = ps.switchMapMaybeDelayError(new Function<Integer, MaybeSource<Integer>>() {
                     @Override
                     public MaybeSource<Integer> apply(Integer v)
                             throws Exception {
@@ -531,12 +531,12 @@ public class ObservableSwitchMapMaybeTest {
                     }
                 }).test();
 
-                pp.onNext(1);
+                ps.onNext(1);
 
                 Runnable r1 = new Runnable() {
                     @Override
                     public void run() {
-                        pp.onError(ex);
+                        ps.onError(ex);
                     }
                 };
 
@@ -569,11 +569,11 @@ public class ObservableSwitchMapMaybeTest {
     public void nextInnerSuccessRace() {
         for (int i = 0; i < TestHelper.RACE_LONG_LOOPS; i++) {
 
-            final PublishSubject<Integer> pp = PublishSubject.create();
+            final PublishSubject<Integer> ps = PublishSubject.create();
 
             final MaybeSubject<Integer> ms = MaybeSubject.create();
 
-            final TestObserver<Integer> ts = pp.switchMapMaybeDelayError(new Function<Integer, MaybeSource<Integer>>() {
+            final TestObserver<Integer> ts = ps.switchMapMaybeDelayError(new Function<Integer, MaybeSource<Integer>>() {
                 @Override
                 public MaybeSource<Integer> apply(Integer v)
                         throws Exception {
@@ -584,12 +584,12 @@ public class ObservableSwitchMapMaybeTest {
                 }
             }).test();
 
-            pp.onNext(1);
+            ps.onNext(1);
 
             Runnable r1 = new Runnable() {
                 @Override
                 public void run() {
-                    pp.onNext(2);
+                    ps.onNext(2);
                 }
             };
 
@@ -609,27 +609,27 @@ public class ObservableSwitchMapMaybeTest {
 
     @Test
     public void checkDisposed() {
-        PublishSubject<Integer> pp = PublishSubject.create();
+        PublishSubject<Integer> ps = PublishSubject.create();
         MaybeSubject<Integer> ms = MaybeSubject.create();
 
-        TestHelper.checkDisposed(pp.switchMapMaybe(Functions.justFunction(ms)));
+        TestHelper.checkDisposed(ps.switchMapMaybe(Functions.justFunction(ms)));
     }
 
     @Test
     public void drainReentrant() {
-        final PublishSubject<Integer> pp = PublishSubject.create();
+        final PublishSubject<Integer> ps = PublishSubject.create();
 
         TestObserver<Integer> to = new TestObserver<Integer>() {
             @Override
             public void onNext(Integer t) {
                 super.onNext(t);
                 if (t == 1) {
-                    pp.onNext(2);
+                    ps.onNext(2);
                 }
             }
         };
 
-        pp.switchMapMaybe(new Function<Integer, MaybeSource<Integer>>() {
+        ps.switchMapMaybe(new Function<Integer, MaybeSource<Integer>>() {
             @Override
             public MaybeSource<Integer> apply(Integer v)
                     throws Exception {
@@ -637,8 +637,8 @@ public class ObservableSwitchMapMaybeTest {
                     }
         }).subscribe(to);
 
-        pp.onNext(1);
-        pp.onComplete();
+        ps.onNext(1);
+        ps.onComplete();
 
         to.assertResult(1, 2);
     }
