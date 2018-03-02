@@ -2272,6 +2272,139 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     /**
+     * Generates items by invoking a callback, for each downstream request one by one, that sets up an
+     * asynchronous call to some API that eventually responds with an item, an error or termination, while
+     * making sure there is only one such outstanding API call in progress and honoring the
+     * backpressure of the downstream.
+     * <p>
+     * This operator allows the bridging of the asynchronous and backpressurable world with the reactive world,
+     * where backpressure is the emergent effect of making sure there is only one outstanding API call
+     * at a time which responds with at most one item per invocation.
+     * <p>
+     * Note that the implementation may have one outstanding API call even if the downstream hasn't requested more
+     * and as such, the resulting item may get cached until the downstream requests for more.
+     * <p>
+     * During the async response, the invocation protocol of the {@link FlowableAsyncEmitter} should be as follows:
+     * <pre><code>
+     *     (onNext | onNothing)? (onError | onComplete)?
+     * </code></pre>
+     * In words, an {@code onNext} or {@code onNothing} (which indicates this particular API call resulted in no
+     * items and the next API call can proceed) may be followed by a terminal event.
+     * <p>
+     * The methods {@link FlowableAsyncEmitter#onNext(Object)}, {@link FlowableAsyncEmitter#onError(Throwable)},
+     * {@link FlowableAsyncEmitter#onComplete()} and {@link FlowableAsyncEmitter#onNothing()} should not be called
+     * concurrently with each other or outside the context of the generator. The rest of the
+     * {@link FlowableAsyncEmitter} methods are thread-safe.
+     * <p>
+     * <b>Example:</b><br>
+     * Let's assume there is an async API with the following interface definition:
+     * <pre><code>
+     * interface AsyncAPI&lt;T&gt; extends AutoCloseable {
+     *
+     *     CompletableFuture&lt;Void&gt; nextValue(Consumer&lt;? super T&gt; onValue);
+     *
+     * }
+     * </code></pre>
+     * When the call succeeds, the {@code onValue} is invoked with it. If there are no more items, the
+     * {@code CompletableFuture} returned by the last {@code nextValue} is completed (with null).
+     * If there is an error, the same {@code CompletableFuture} is completed exceptionally. Each
+     * {@code nextValue} invocation creates a fresh {@code CompletableFuture} which can be cancelled
+     * if necesary. {@code nextValue} should not be invoked again until the {@code onValue} callback
+     * has been notified.<br>
+     * An instance of this API can be obtained on demand, thus the state of this operator consists of the
+     * {@code AsyncAPI} instance supplied for each individual {@code Subscriber}. The API can be transformed into
+     * a {@code Flowable} as follows:
+     * <pre><code>
+     * Flowable&lt;Integer&gt; source = Flowable.&lt;Integer, AsyncAPI&lt;Integer&gt;&gt;generateAsync(
+     *
+     *     // create a fresh API instance for each individual Subscriber
+     *     () -&gt; new AsyncAPIImpl&lt;Integer&gt;(),
+     *
+     *     // this BiFunction will be called once the operator is ready to receive the next item
+     *     // and will invoke it again only when that item is delivered via emitter.onNext()
+     *     (state, emitter) -&gt; {
+     *
+     *         // issue the async API call
+     *         CompletableFuture&lt;Void&gt; f = state.nextValue(
+     *
+     *             // handle the value received
+     *             value -&gt; {
+     *
+     *                 // we have the option to signal that item
+     *                 if (value % 2 == 0) {
+     *                     emitter.onNext(value);
+     *                 } else if (value == 101) {
+     *                     // or stop altogether, which will also trigger a cleanup
+     *                     emitter.onComplete();
+     *                 } else {
+     *                     // or drop it and have the operator start a new call
+     *                     emitter.onNothing();
+     *                 }
+     *             }
+     *         );
+     *
+     *         // This API call may not produce further items or fail
+     *         f.whenComplete((done, error) -&gt; {
+     *             // As per the CompletableFuture API, error != null is the error outcome,
+     *             // done is always null due to the Void type
+     *             if (error != null) {
+     *                 emitter.onError(error);
+     *             } else {
+     *                 emitter.onComplete();
+     *             }
+     *         });
+     *
+     *         // In case the downstream cancels, the current API call
+     *         // should be cancelled as well
+     *         emitter.replaceCancellable(() -&gt; f.cancel(true));
+     *
+     *         // some sources may want to create a fresh state object
+     *         // after each invocation of this generator
+     *         return state;
+     *     },
+     *
+     *     // cleanup the state object
+     *     state -&gt; { state.close(); }
+     * )
+     * </code></pre>
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The operator honors downstream backpressure.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code generateAsync} does not operate by default on a particular {@link Scheduler}, however,
+     *  the signals emitted through the {@link FlowableAsyncEmitter} may happen on any thread,
+     *  depending on the asynchronous API.</dd>
+     * </dl>
+     * @param <T> the generated item type
+     * @param <S> the state associated with an individual subscription.
+     * @param initialState the {@link Callable} that returns a state object for each individual
+     *                     {@link Subscriber} to the returned {@code Flowable}.
+     * @param asyncGenerator the {@link BiFunction} called with the current state value and the
+     *                       {@link FlowableAsyncEmitter} object and should return a new state value
+     *                       as well as prepare and issue the async API call in a way that
+     *                       the call's outcome is (eventually) converted into {@code onNext}, {@code onError} or
+     *                       {@code onComplete} calls. The operator ensures the {@code BiFunction} is
+     *                       only invoked when the previous async call produced {@code onNext} item and
+     *                       this item has been delivered to the downstream.
+     * @param stateCleanup called at most once with the current state object to allow cleaning it up after
+     *                     the flow is cancelled or terminates via {@link FlowableAsyncEmitter#onError(Throwable)}
+     *                     or {@link FlowableAsyncEmitter#onComplete()}.
+     * @return the new Flowable instance
+     * @see #generate(Callable, BiFunction, Consumer)
+     * @see FlowableAsyncEmitter
+     */
+    @CheckReturnValue
+    @BackpressureSupport(BackpressureKind.FULL)
+    @SchedulerSupport(SchedulerSupport.NONE)
+    @Experimental
+    public static <T, S> Flowable<T> generateAsync(Callable<S> initialState, BiFunction<S, FlowableAsyncEmitter<T>, S> asyncGenerator, Consumer<? super S> stateCleanup) {
+        ObjectHelper.requireNonNull(initialState, "initialState is null");
+        ObjectHelper.requireNonNull(asyncGenerator, "asyncGenerator is null");
+        ObjectHelper.requireNonNull(stateCleanup, "stateCleanup is null");
+        return RxJavaPlugins.onAssembly(new FlowableGenerateAsync<T, S>(initialState, asyncGenerator, stateCleanup));
+    }
+
+    /**
      * Returns a Flowable that emits a {@code 0L} after the {@code initialDelay} and ever increasing numbers
      * after each {@code period} of time thereafter.
      * <p>
