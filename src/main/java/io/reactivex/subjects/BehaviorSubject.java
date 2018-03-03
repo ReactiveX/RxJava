@@ -410,10 +410,10 @@ public final class BehaviorSubject<T> extends Subject<T> {
     void remove(BehaviorDisposable<T> rs) {
         for (;;) {
             BehaviorDisposable<T>[] a = subscribers.get();
-            if (a == TERMINATED || a == EMPTY) {
+            int len = a.length;
+            if (len == 0) {
                 return;
             }
-            int len = a.length;
             int j = -1;
             for (int i = 0; i < len; i++) {
                 if (a[i] == rs) {

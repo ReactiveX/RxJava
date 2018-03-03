@@ -199,24 +199,6 @@ public final class ObservableInternalHelper {
         }
     }
 
-    static final class RepeatWhenOuterHandler
-    implements Function<Observable<Notification<Object>>, ObservableSource<?>> {
-        private final Function<? super Observable<Object>, ? extends ObservableSource<?>> handler;
-
-        RepeatWhenOuterHandler(Function<? super Observable<Object>, ? extends ObservableSource<?>> handler) {
-            this.handler = handler;
-        }
-
-        @Override
-        public ObservableSource<?> apply(Observable<Notification<Object>> no) throws Exception {
-            return handler.apply(no.map(MapToInt.INSTANCE));
-        }
-    }
-
-    public static Function<Observable<Notification<Object>>, ObservableSource<?>> repeatWhenHandler(final Function<? super Observable<Object>, ? extends ObservableSource<?>> handler) {
-        return new RepeatWhenOuterHandler(handler);
-    }
-
     public static <T> Callable<ConnectableObservable<T>> replayCallable(final Observable<T> parent) {
         return new ReplayCallable<T>(parent);
     }
@@ -235,42 +217,6 @@ public final class ObservableInternalHelper {
 
     public static <T, R> Function<Observable<T>, ObservableSource<R>> replayFunction(final Function<? super Observable<T>, ? extends ObservableSource<R>> selector, final Scheduler scheduler) {
         return new ReplayFunction<T, R>(selector, scheduler);
-    }
-
-    enum ErrorMapperFilter implements Function<Notification<Object>, Throwable>, Predicate<Notification<Object>> {
-        INSTANCE;
-
-        @Override
-        public Throwable apply(Notification<Object> t) throws Exception {
-            return t.getError();
-        }
-
-        @Override
-        public boolean test(Notification<Object> t) throws Exception {
-            return t.isOnError();
-        }
-    }
-
-    static final class RetryWhenInner
-    implements Function<Observable<Notification<Object>>, ObservableSource<?>> {
-        private final Function<? super Observable<Throwable>, ? extends ObservableSource<?>> handler;
-
-        RetryWhenInner(
-                Function<? super Observable<Throwable>, ? extends ObservableSource<?>> handler) {
-            this.handler = handler;
-        }
-
-        @Override
-        public ObservableSource<?> apply(Observable<Notification<Object>> no) throws Exception {
-            Observable<Throwable> map = no
-                    .takeWhile(ErrorMapperFilter.INSTANCE)
-                    .map(ErrorMapperFilter.INSTANCE);
-            return handler.apply(map);
-        }
-    }
-
-    public static <T> Function<Observable<Notification<Object>>, ObservableSource<?>> retryWhenHandler(final Function<? super Observable<Throwable>, ? extends ObservableSource<?>> handler) {
-        return new RetryWhenInner(handler);
     }
 
     static final class ZipIterableFunction<T, R>

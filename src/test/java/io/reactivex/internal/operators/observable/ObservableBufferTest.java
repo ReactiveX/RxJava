@@ -20,7 +20,7 @@ import static org.mockito.Mockito.*;
 import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.*;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.*;
 
 import org.junit.*;
 import org.mockito.*;
@@ -35,7 +35,7 @@ import io.reactivex.internal.functions.Functions;
 import io.reactivex.observers.*;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.schedulers.*;
-import io.reactivex.subjects.PublishSubject;
+import io.reactivex.subjects.*;
 
 public class ObservableBufferTest {
 
@@ -1792,6 +1792,94 @@ public class ObservableBufferTest {
 
             TestHelper.assertError(errors, 0, ProtocolViolationException.class);
             TestHelper.assertUndeliverable(errors, 1, TestException.class);
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
+
+    @Test
+    public void bufferExactBoundaryDoubleOnSubscribe() {
+        TestHelper.checkDoubleOnSubscribeObservable(
+                new Function<Observable<Object>, ObservableSource<List<Object>>>() {
+                    @Override
+                    public ObservableSource<List<Object>> apply(Observable<Object> f)
+                            throws Exception {
+                        return f.buffer(Observable.never());
+                    }
+                }
+        );
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void bufferExactBoundarySecondBufferCrash() {
+        PublishSubject<Integer> ps = PublishSubject.create();
+        PublishSubject<Integer> b = PublishSubject.create();
+
+        TestObserver<List<Integer>> to = ps.buffer(b, new Callable<List<Integer>>() {
+            int calls;
+            @Override
+            public List<Integer> call() throws Exception {
+                if (++calls == 2) {
+                    throw new TestException();
+                }
+                return new ArrayList<Integer>();
+            }
+        }).test();
+
+        b.onNext(1);
+
+        to.assertFailure(TestException.class);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void bufferExactBoundaryBadSource() {
+        Observable<Integer> ps = new Observable<Integer>() {
+            @Override
+            protected void subscribeActual(Observer<? super Integer> observer) {
+                observer.onSubscribe(Disposables.empty());
+                observer.onComplete();
+                observer.onNext(1);
+                observer.onComplete();
+            }
+        };
+
+        final AtomicReference<Observer<? super Integer>> ref = new AtomicReference<Observer<? super Integer>>();
+        Observable<Integer> b = new Observable<Integer>() {
+            @Override
+            protected void subscribeActual(Observer<? super Integer> observer) {
+                observer.onSubscribe(Disposables.empty());
+                ref.set(observer);
+            }
+        };
+
+        TestObserver<List<Integer>> to = ps.buffer(b).test();
+
+        ref.get().onNext(1);
+
+        to.assertResult(Collections.<Integer>emptyList());
+    }
+
+    @Test
+    public void bufferBoundaryErrorTwice() {
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            BehaviorSubject.createDefault(1)
+            .buffer(Functions.justCallable(new Observable<Integer>() {
+                @Override
+                protected void subscribeActual(Observer<? super Integer> s) {
+                    s.onSubscribe(Disposables.empty());
+                    s.onError(new TestException("first"));
+                    s.onError(new TestException("second"));
+                }
+            }))
+            .test()
+            .assertError(TestException.class)
+            .assertErrorMessage("first")
+            .assertNotComplete();
+
+            TestHelper.assertUndeliverable(errors, 0, TestException.class, "second");
         } finally {
             RxJavaPlugins.reset();
         }

@@ -29,8 +29,6 @@ public class ObservableInternalHelperTest {
         assertNotNull(ObservableInternalHelper.MapToInt.values()[0]);
         assertNotNull(ObservableInternalHelper.MapToInt.valueOf("INSTANCE"));
 
-        assertNotNull(ObservableInternalHelper.ErrorMapperFilter.values()[0]);
-        assertNotNull(ObservableInternalHelper.ErrorMapperFilter.valueOf("INSTANCE"));
     }
 
     @Test

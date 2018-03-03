@@ -185,10 +185,10 @@ public final class FlowableFlatMap<T, U> extends AbstractFlowableWithUpstream<T,
         void removeInner(InnerSubscriber<T, U> inner) {
             for (;;) {
                 InnerSubscriber<?, ?>[] a = subscribers.get();
-                if (a == CANCELLED || a == EMPTY) {
+                int n = a.length;
+                if (n == 0) {
                     return;
                 }
-                int n = a.length;
                 int j = -1;
                 for (int i = 0; i < n; i++) {
                     if (a[i] == inner) {

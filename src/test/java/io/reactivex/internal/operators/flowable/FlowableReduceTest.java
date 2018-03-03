@@ -29,6 +29,7 @@ import io.reactivex.functions.*;
 import io.reactivex.internal.fuseable.HasUpstreamPublisher;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.plugins.RxJavaPlugins;
+import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.TestSubscriber;
 
@@ -469,5 +470,60 @@ public class FlowableReduceTest {
             e.printStackTrace();
         }
         return "x" + x + "y" + y;
+    }
+
+    @Test
+    public void seedDoubleOnSubscribe() {
+        TestHelper.checkDoubleOnSubscribeFlowableToSingle(new Function<Flowable<Integer>, SingleSource<Integer>>() {
+            @Override
+            public SingleSource<Integer> apply(Flowable<Integer> o)
+                    throws Exception {
+                return o.reduce(0, new BiFunction<Integer, Integer, Integer>() {
+                    @Override
+                    public Integer apply(Integer a, Integer b) throws Exception {
+                        return a;
+                    }
+                });
+            }
+        });
+    }
+
+    @Test
+    public void seedDisposed() {
+        TestHelper.checkDisposed(PublishProcessor.<Integer>create().reduce(0, new BiFunction<Integer, Integer, Integer>() {
+                    @Override
+                    public Integer apply(Integer a, Integer b) throws Exception {
+                        return a;
+                    }
+                }));
+    }
+
+    @Test
+    public void seedBadSource() {
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            new Flowable<Integer>() {
+                @Override
+                protected void subscribeActual(Subscriber<? super Integer> observer) {
+                    observer.onSubscribe(new BooleanSubscription());
+                    observer.onComplete();
+                    observer.onNext(1);
+                    observer.onError(new TestException());
+                    observer.onComplete();
+                }
+            }
+            .reduce(0, new BiFunction<Integer, Integer, Integer>() {
+                @Override
+                public Integer apply(Integer a, Integer b) throws Exception {
+                    return a;
+                }
+            })
+            .test()
+            .assertResult(0);
+
+            TestHelper.assertUndeliverable(errors, 0, TestException.class);
+        } finally {
+            RxJavaPlugins.reset();
+        }
     }
 }

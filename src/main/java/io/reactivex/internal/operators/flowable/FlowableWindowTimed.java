@@ -390,9 +390,7 @@ public final class FlowableWindowTimed<T> extends AbstractFlowableWithUpstream<T
                             tm.dispose();
                             Disposable task = worker.schedulePeriodically(
                                     new ConsumerIndexHolder(producerIndex, this), timespan, timespan, unit);
-                            if (!timer.compareAndSet(tm, task)) {
-                                task.dispose();
-                            }
+                            timer.replace(task);
                         }
                     } else {
                         window = null;
@@ -549,9 +547,7 @@ public final class FlowableWindowTimed<T> extends AbstractFlowableWithUpstream<T
 
                                 Disposable task = worker.schedulePeriodically(
                                         new ConsumerIndexHolder(producerIndex, this), timespan, timespan, unit);
-                                if (!timer.compareAndSet(tm, task)) {
-                                    task.dispose();
-                                }
+                                timer.replace(task);
                             }
 
                         } else {

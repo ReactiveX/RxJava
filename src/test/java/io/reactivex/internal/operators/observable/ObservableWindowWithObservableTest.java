@@ -582,4 +582,60 @@ public class ObservableWindowWithObservableTest {
             }
         }, false, 1, 1, 1);
     }
+
+    @Test
+    public void boundaryError() {
+        BehaviorSubject.createDefault(1)
+        .window(Functions.justCallable(Observable.error(new TestException())))
+        .test()
+        .assertValueCount(1)
+        .assertNotComplete()
+        .assertError(TestException.class);
+    }
+
+    @Test
+    public void boundaryCallableCrashOnCall2() {
+        BehaviorSubject.createDefault(1)
+        .window(new Callable<Observable<Integer>>() {
+            int calls;
+            @Override
+            public Observable<Integer> call() throws Exception {
+                if (++calls == 2) {
+                    throw new TestException();
+                }
+                return Observable.just(1);
+            }
+        })
+        .test()
+        .assertError(TestException.class)
+        .assertNotComplete();
+    }
+
+    @Test
+    public void oneWindow() {
+        PublishSubject<Integer> ps = PublishSubject.create();
+
+        TestObserver<Observable<Integer>> to = BehaviorSubject.createDefault(1)
+        .window(Functions.justCallable(ps))
+        .take(1)
+        .test();
+
+        ps.onNext(1);
+
+        to
+        .assertValueCount(1)
+        .assertNoErrors()
+        .assertComplete();
+    }
+
+    @Test
+    public void boundaryDirectDoubleOnSubscribe() {
+        TestHelper.checkDoubleOnSubscribeObservable(new Function<Observable<Object>, Observable<Observable<Object>>>() {
+            @Override
+            public Observable<Observable<Object>> apply(Observable<Object> f)
+                    throws Exception {
+                return f.window(Observable.never()).takeLast(1);
+            }
+        });
+    }
 }

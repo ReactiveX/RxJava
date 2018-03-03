@@ -21,6 +21,7 @@ import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.BiFunction;
 import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
+import io.reactivex.plugins.RxJavaPlugins;
 
 /**
  * Reduce a sequence of values, starting from a seed value and by using
@@ -78,28 +79,36 @@ public final class FlowableReduceSeedSingle<T, R> extends Single<R> {
         @Override
         public void onNext(T value) {
             R v = this.value;
-            try {
-                this.value = ObjectHelper.requireNonNull(reducer.apply(v, value), "The reducer returned a null value");
-            } catch (Throwable ex) {
-                Exceptions.throwIfFatal(ex);
-                s.cancel();
-                onError(ex);
+            if (v != null) {
+                try {
+                    this.value = ObjectHelper.requireNonNull(reducer.apply(v, value), "The reducer returned a null value");
+                } catch (Throwable ex) {
+                    Exceptions.throwIfFatal(ex);
+                    s.cancel();
+                    onError(ex);
+                }
             }
         }
 
         @Override
         public void onError(Throwable e) {
-            value = null;
-            s = SubscriptionHelper.CANCELLED;
-            actual.onError(e);
+            if (value != null) {
+                value = null;
+                s = SubscriptionHelper.CANCELLED;
+                actual.onError(e);
+            } else {
+                RxJavaPlugins.onError(e);
+            }
         }
 
         @Override
         public void onComplete() {
             R v = value;
-            value = null;
-            s = SubscriptionHelper.CANCELLED;
-            actual.onSuccess(v);
+            if (v != null) {
+                value = null;
+                s = SubscriptionHelper.CANCELLED;
+                actual.onSuccess(v);
+            }
         }
 
         @Override

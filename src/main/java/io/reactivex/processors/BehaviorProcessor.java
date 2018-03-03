@@ -459,10 +459,10 @@ public final class BehaviorProcessor<T> extends FlowableProcessor<T> {
     void remove(BehaviorSubscription<T> rs) {
         for (;;) {
             BehaviorSubscription<T>[] a = subscribers.get();
-            if (a == TERMINATED || a == EMPTY) {
+            int len = a.length;
+            if (len == 0) {
                 return;
             }
-            int len = a.length;
             int j = -1;
             for (int i = 0; i < len; i++) {
                 if (a[i] == rs) {

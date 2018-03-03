@@ -20,6 +20,7 @@ import org.junit.Test;
 import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.Function;
+import io.reactivex.internal.fuseable.HasUpstreamMaybeSource;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.processors.PublishProcessor;
 
@@ -101,5 +102,13 @@ public class MaybeSwitchIfEmptySingleTest {
 
             TestHelper.race(r1, r2);
         }
+    }
+
+    @SuppressWarnings("rawtypes")
+    @Test
+    public void source() {
+        assertSame(Maybe.empty(),
+                ((HasUpstreamMaybeSource)(Maybe.<Integer>empty().switchIfEmpty(Single.just(1)))).source()
+        );
     }
 }

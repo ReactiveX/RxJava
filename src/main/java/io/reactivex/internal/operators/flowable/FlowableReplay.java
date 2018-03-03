@@ -57,7 +57,7 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
     public static <U, R> Flowable<R> multicastSelector(
             final Callable<? extends ConnectableFlowable<U>> connectableFactory,
             final Function<? super Flowable<U>, ? extends Publisher<R>> selector) {
-        return Flowable.unsafeCreate(new MultiCastPublisher<R, U>(connectableFactory, selector));
+        return new MulticastFlowable<R, U>(connectableFactory, selector);
     }
 
     /**
@@ -1100,17 +1100,17 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
         }
     }
 
-    static final class MultiCastPublisher<R, U> implements Publisher<R> {
+    static final class MulticastFlowable<R, U> extends Flowable<R> {
         private final Callable<? extends ConnectableFlowable<U>> connectableFactory;
         private final Function<? super Flowable<U>, ? extends Publisher<R>> selector;
 
-        MultiCastPublisher(Callable<? extends ConnectableFlowable<U>> connectableFactory, Function<? super Flowable<U>, ? extends Publisher<R>> selector) {
+        MulticastFlowable(Callable<? extends ConnectableFlowable<U>> connectableFactory, Function<? super Flowable<U>, ? extends Publisher<R>> selector) {
             this.connectableFactory = connectableFactory;
             this.selector = selector;
         }
 
         @Override
-        public void subscribe(Subscriber<? super R> child) {
+        protected void subscribeActual(Subscriber<? super R> child) {
             ConnectableFlowable<U> co;
             try {
                 co = ObjectHelper.requireNonNull(connectableFactory.call(), "The connectableFactory returned null");

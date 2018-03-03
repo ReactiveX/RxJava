@@ -20,6 +20,7 @@ import org.junit.Test;
 
 import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
+import io.reactivex.functions.Function;
 import io.reactivex.subjects.PublishSubject;
 
 public class ObservableHideTest {
@@ -42,6 +43,7 @@ public class ObservableHideTest {
         verify(o).onComplete();
         verify(o, never()).onError(any(Throwable.class));
     }
+
     @Test
     public void testHidingError() {
         PublishSubject<Integer> src = PublishSubject.create();
@@ -59,5 +61,21 @@ public class ObservableHideTest {
         verify(o, never()).onNext(any());
         verify(o, never()).onComplete();
         verify(o).onError(any(TestException.class));
+    }
+
+    @Test
+    public void doubleOnSubscribe() {
+        TestHelper.checkDoubleOnSubscribeObservable(new Function<Observable<Object>, ObservableSource<Object>>() {
+            @Override
+            public ObservableSource<Object> apply(Observable<Object> o)
+                    throws Exception {
+                return o.hide();
+            }
+        });
+    }
+
+    @Test
+    public void disposed() {
+        TestHelper.checkDisposed(PublishSubject.create().hide());
     }
 }
