@@ -69,14 +69,22 @@ public final class BlockingSingle<T> {
         Subscription subscription = single.subscribe(new SingleSubscriber<T>() {
             @Override
             public void onSuccess(T value) {
-                returnItem.set(value);
-                latch.countDown();
+                try {
+                    returnItem.set(value);
+                    latch.countDown();
+                } finally {
+                    unsubscribe();
+                }
             }
 
             @Override
             public void onError(Throwable error) {
-                returnException.set(error);
-                latch.countDown();
+                try {
+                    returnException.set(error);
+                    latch.countDown();
+                } finally {
+                    unsubscribe();
+                }
             }
         });
 

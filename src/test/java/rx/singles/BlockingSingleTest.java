@@ -23,7 +23,10 @@ import java.util.concurrent.Future;
 import org.junit.Test;
 
 import rx.Single;
+import rx.SingleSubscriber;
 import rx.exceptions.TestException;
+import rx.functions.Action0;
+import rx.subscriptions.Subscriptions;
 
 /**
  * Test suite for {@link BlockingSingle}.
@@ -73,6 +76,26 @@ public class BlockingSingleTest {
         Future<? extends String> future = blockingSingle.toFuture();
         String result = future.get();
         assertEquals("one", result);
+    }
+
+    @Test
+    public void testUnsubscribedAfterValue() {
+        final int[] calls = { 0 };
+
+        Single.create(new Single.OnSubscribe<Object>() {
+            @Override
+            public void call(SingleSubscriber<? super Object> singleSubscriber) {
+                singleSubscriber.onSuccess(new Object());
+                singleSubscriber.add(Subscriptions.create(new Action0() {
+                    @Override
+                    public void call() {
+                        calls[0]++;
+                    }
+                }));
+            }
+        }).toBlocking().value();
+
+        assertEquals(1, calls[0]);
     }
 
     private static final class TestCheckedException extends Exception {
