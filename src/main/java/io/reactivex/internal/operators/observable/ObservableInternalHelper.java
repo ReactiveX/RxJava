@@ -17,11 +17,8 @@ import java.util.concurrent.*;
 
 import io.reactivex.*;
 import io.reactivex.functions.*;
-import io.reactivex.internal.functions.Functions;
-import io.reactivex.internal.functions.ObjectHelper;
-import io.reactivex.internal.operators.single.SingleToObservable;
+import io.reactivex.internal.functions.*;
 import io.reactivex.observables.ConnectableObservable;
-import io.reactivex.plugins.RxJavaPlugins;
 
 /**
  * Helper utility class to support Observable with inner classes.
@@ -292,37 +289,6 @@ public final class ObservableInternalHelper {
 
     public static <T, R> Function<List<ObservableSource<? extends T>>, ObservableSource<? extends R>> zipIterable(final Function<? super Object[], ? extends R> zipper) {
         return new ZipIterableFunction<T, R>(zipper);
-    }
-
-    public static <T,R> Observable<R> switchMapSingle(Observable<T> source, final Function<? super T, ? extends SingleSource<? extends R>> mapper) {
-        return source.switchMap(convertSingleMapperToObservableMapper(mapper), 1);
-    }
-
-    public static <T,R> Observable<R> switchMapSingleDelayError(Observable<T> source,
-            Function<? super T, ? extends SingleSource<? extends R>> mapper) {
-        return source.switchMapDelayError(convertSingleMapperToObservableMapper(mapper), 1);
-    }
-
-    private static <T, R> Function<T, Observable<R>> convertSingleMapperToObservableMapper(
-            final Function<? super T, ? extends SingleSource<? extends R>> mapper) {
-        ObjectHelper.requireNonNull(mapper, "mapper is null");
-        return new ObservableMapper<T,R>(mapper);
-    }
-
-    static final class ObservableMapper<T,R> implements Function<T,Observable<R>> {
-
-        final Function<? super T, ? extends SingleSource<? extends R>> mapper;
-
-        ObservableMapper(Function<? super T, ? extends SingleSource<? extends R>> mapper) {
-            this.mapper = mapper;
-        }
-
-        @Override
-        public Observable<R> apply(T t) throws Exception {
-            return RxJavaPlugins.onAssembly(new SingleToObservable<R>(
-                ObjectHelper.requireNonNull(mapper.apply(t), "The mapper returned a null SingleSource")));
-        }
-
     }
 
     static final class ReplayCallable<T> implements Callable<ConnectableObservable<T>> {

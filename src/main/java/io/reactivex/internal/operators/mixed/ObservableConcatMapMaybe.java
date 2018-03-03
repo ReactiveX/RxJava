@@ -15,23 +15,20 @@ package io.reactivex.internal.operators.mixed;
 
 import java.util.concurrent.atomic.*;
 
-import org.reactivestreams.*;
-
 import io.reactivex.*;
 import io.reactivex.annotations.Experimental;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.exceptions.*;
+import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.internal.fuseable.SimplePlainQueue;
-import io.reactivex.internal.queue.SpscArrayQueue;
-import io.reactivex.internal.subscriptions.SubscriptionHelper;
+import io.reactivex.internal.queue.SpscLinkedArrayQueue;
 import io.reactivex.internal.util.*;
 import io.reactivex.plugins.RxJavaPlugins;
 
 /**
- * Maps each upstream item into a {@link SingleSource}, subscribes to them one after the other terminates
+ * Maps each upstream item into a {@link MaybeSource}, subscribes to them one after the other terminates
  * and relays their success values, optionally delaying any errors till the main and inner sources
  * terminate.
  *
@@ -41,18 +38,18 @@ import io.reactivex.plugins.RxJavaPlugins;
  * @since 2.1.11 - experimental
  */
 @Experimental
-public final class FlowableConcatMapSingle<T, R> extends Flowable<R> {
+public final class ObservableConcatMapMaybe<T, R> extends Observable<R> {
 
-    final Flowable<T> source;
+    final Observable<T> source;
 
-    final Function<? super T, ? extends SingleSource<? extends R>> mapper;
+    final Function<? super T, ? extends MaybeSource<? extends R>> mapper;
 
     final ErrorMode errorMode;
 
     final int prefetch;
 
-    public FlowableConcatMapSingle(Flowable<T> source,
-            Function<? super T, ? extends SingleSource<? extends R>> mapper,
+    public ObservableConcatMapMaybe(Observable<T> source,
+            Function<? super T, ? extends MaybeSource<? extends R>> mapper,
                     ErrorMode errorMode, int prefetch) {
         this.source = source;
         this.mapper = mapper;
@@ -61,82 +58,67 @@ public final class FlowableConcatMapSingle<T, R> extends Flowable<R> {
     }
 
     @Override
-    protected void subscribeActual(Subscriber<? super R> s) {
-        source.subscribe(new ConcatMapSingleSubscriber<T, R>(s, mapper, prefetch, errorMode));
+    protected void subscribeActual(Observer<? super R> s) {
+        source.subscribe(new ConcatMapMaybeMainObserver<T, R>(s, mapper, prefetch, errorMode));
     }
 
-    static final class ConcatMapSingleSubscriber<T, R>
+    static final class ConcatMapMaybeMainObserver<T, R>
     extends AtomicInteger
-    implements FlowableSubscriber<T>, Subscription {
+    implements Observer<T>, Disposable {
 
         private static final long serialVersionUID = -9140123220065488293L;
 
-        final Subscriber<? super R> downstream;
+        final Observer<? super R> downstream;
 
-        final Function<? super T, ? extends SingleSource<? extends R>> mapper;
-
-        final int prefetch;
-
-        final AtomicLong requested;
+        final Function<? super T, ? extends MaybeSource<? extends R>> mapper;
 
         final AtomicThrowable errors;
 
-        final ConcatMapSingleObserver<R> inner;
+        final ConcatMapMaybeObserver<R> inner;
 
         final SimplePlainQueue<T> queue;
 
         final ErrorMode errorMode;
 
-        Subscription upstream;
+        Disposable upstream;
 
         volatile boolean done;
 
         volatile boolean cancelled;
 
-        long emitted;
-
-        int consumed;
-
         R item;
 
         volatile int state;
 
-        /** No inner SingleSource is running. */
+        /** No inner MaybeSource is running. */
         static final int STATE_INACTIVE = 0;
-        /** An inner SingleSource is running but there are no results yet. */
+        /** An inner MaybeSource is running but there are no results yet. */
         static final int STATE_ACTIVE = 1;
-        /** The inner SingleSource succeeded with a value in {@link #item}. */
+        /** The inner MaybeSource succeeded with a value in {@link #item}. */
         static final int STATE_RESULT_VALUE = 2;
 
-        ConcatMapSingleSubscriber(Subscriber<? super R> downstream,
-                Function<? super T, ? extends SingleSource<? extends R>> mapper,
+        ConcatMapMaybeMainObserver(Observer<? super R> downstream,
+                Function<? super T, ? extends MaybeSource<? extends R>> mapper,
                         int prefetch, ErrorMode errorMode) {
             this.downstream = downstream;
             this.mapper = mapper;
-            this.prefetch = prefetch;
             this.errorMode = errorMode;
-            this.requested = new AtomicLong();
             this.errors = new AtomicThrowable();
-            this.inner = new ConcatMapSingleObserver<R>(this);
-            this.queue = new SpscArrayQueue<T>(prefetch);
+            this.inner = new ConcatMapMaybeObserver<R>(this);
+            this.queue = new SpscLinkedArrayQueue<T>(prefetch);
         }
 
         @Override
-        public void onSubscribe(Subscription s) {
-            if (SubscriptionHelper.validate(upstream, s)) {
+        public void onSubscribe(Disposable s) {
+            if (DisposableHelper.validate(upstream, s)) {
                 upstream = s;
                 downstream.onSubscribe(this);
-                s.request(prefetch);
             }
         }
 
         @Override
         public void onNext(T t) {
-            if (!queue.offer(t)) {
-                upstream.cancel();
-                onError(new MissingBackpressureException("queue full?!"));
-                return;
-            }
+            queue.offer(t);
             drain();
         }
 
@@ -160,20 +142,19 @@ public final class FlowableConcatMapSingle<T, R> extends Flowable<R> {
         }
 
         @Override
-        public void request(long n) {
-            BackpressureHelper.add(requested, n);
-            drain();
-        }
-
-        @Override
-        public void cancel() {
+        public void dispose() {
             cancelled = true;
-            upstream.cancel();
+            upstream.dispose();
             inner.dispose();
             if (getAndIncrement() != 0) {
                 queue.clear();
                 item = null;
             }
+        }
+
+        @Override
+        public boolean isDisposed() {
+            return cancelled;
         }
 
         void innerSuccess(R item) {
@@ -182,10 +163,15 @@ public final class FlowableConcatMapSingle<T, R> extends Flowable<R> {
             drain();
         }
 
+        void innerComplete() {
+            this.state = STATE_INACTIVE;
+            drain();
+        }
+
         void innerError(Throwable ex) {
             if (errors.addThrowable(ex)) {
                 if (errorMode != ErrorMode.END) {
-                    upstream.cancel();
+                    upstream.dispose();
                 }
                 this.state = STATE_INACTIVE;
                 drain();
@@ -200,12 +186,10 @@ public final class FlowableConcatMapSingle<T, R> extends Flowable<R> {
             }
 
             int missed = 1;
-            Subscriber<? super R> downstream = this.downstream;
+            Observer<? super R> downstream = this.downstream;
             ErrorMode errorMode = this.errorMode;
             SimplePlainQueue<T> queue = this.queue;
             AtomicThrowable errors = this.errors;
-            AtomicLong requested = this.requested;
-            int limit = prefetch - (prefetch >> 1);
 
             for (;;) {
 
@@ -247,21 +231,13 @@ public final class FlowableConcatMapSingle<T, R> extends Flowable<R> {
                             break;
                         }
 
-                        int c = consumed + 1;
-                        if (c == limit) {
-                            consumed = 0;
-                            upstream.request(limit);
-                        } else {
-                            consumed = c;
-                        }
-
-                        SingleSource<? extends R> ss;
+                        MaybeSource<? extends R> ms;
 
                         try {
-                            ss = ObjectHelper.requireNonNull(mapper.apply(v), "The mapper returned a null SingleSource");
+                            ms = ObjectHelper.requireNonNull(mapper.apply(v), "The mapper returned a null MaybeSource");
                         } catch (Throwable ex) {
                             Exceptions.throwIfFatal(ex);
-                            upstream.cancel();
+                            upstream.dispose();
                             queue.clear();
                             errors.addThrowable(ex);
                             ex = errors.terminate();
@@ -270,21 +246,14 @@ public final class FlowableConcatMapSingle<T, R> extends Flowable<R> {
                         }
 
                         state = STATE_ACTIVE;
-                        ss.subscribe(inner);
+                        ms.subscribe(inner);
                         break;
                     } else if (s == STATE_RESULT_VALUE) {
-                        long e = emitted;
-                        if (e != requested.get()) {
-                            R w = item;
-                            item = null;
+                        R w = item;
+                        item = null;
+                        downstream.onNext(w);
 
-                            downstream.onNext(w);
-
-                            emitted = e + 1;
-                            state = STATE_INACTIVE;
-                        } else {
-                            break;
-                        }
+                        state = STATE_INACTIVE;
                     } else {
                         break;
                     }
@@ -297,15 +266,15 @@ public final class FlowableConcatMapSingle<T, R> extends Flowable<R> {
             }
         }
 
-        static final class ConcatMapSingleObserver<R>
+        static final class ConcatMapMaybeObserver<R>
         extends AtomicReference<Disposable>
-        implements SingleObserver<R> {
+        implements MaybeObserver<R> {
 
             private static final long serialVersionUID = -3051469169682093892L;
 
-            final ConcatMapSingleSubscriber<?, R> parent;
+            final ConcatMapMaybeMainObserver<?, R> parent;
 
-            ConcatMapSingleObserver(ConcatMapSingleSubscriber<?, R> parent) {
+            ConcatMapMaybeObserver(ConcatMapMaybeMainObserver<?, R> parent) {
                 this.parent = parent;
             }
 
@@ -322,6 +291,11 @@ public final class FlowableConcatMapSingle<T, R> extends Flowable<R> {
             @Override
             public void onError(Throwable e) {
                 parent.innerError(e);
+            }
+
+            @Override
+            public void onComplete() {
+                parent.innerComplete();
             }
 
             void dispose() {

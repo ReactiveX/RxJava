@@ -15,8 +15,6 @@ package io.reactivex.internal.operators.mixed;
 
 import java.util.concurrent.atomic.*;
 
-import org.reactivestreams.*;
-
 import io.reactivex.*;
 import io.reactivex.annotations.Experimental;
 import io.reactivex.disposables.Disposable;
@@ -24,13 +22,12 @@ import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.internal.functions.ObjectHelper;
-import io.reactivex.internal.subscriptions.SubscriptionHelper;
-import io.reactivex.internal.util.*;
+import io.reactivex.internal.util.AtomicThrowable;
 import io.reactivex.plugins.RxJavaPlugins;
 
 /**
- * Maps the upstream items into {@link SingleSource}s and switches (subscribes) to the newer ones
- * while disposing the older ones and emits the latest success value, optionally delaying
+ * Maps the upstream items into {@link MaybeSource}s and switches (subscribes) to the newer ones
+ * while disposing the older ones and emits the latest success value if available, optionally delaying
  * errors from the main source or the inner sources.
  *
  * @param <T> the upstream value type
@@ -38,16 +35,16 @@ import io.reactivex.plugins.RxJavaPlugins;
  * @since 2.1.11 - experimental
  */
 @Experimental
-public final class FlowableSwitchMapSingle<T, R> extends Flowable<R> {
+public final class ObservableSwitchMapMaybe<T, R> extends Observable<R> {
 
-    final Flowable<T> source;
+    final Observable<T> source;
 
-    final Function<? super T, ? extends SingleSource<? extends R>> mapper;
+    final Function<? super T, ? extends MaybeSource<? extends R>> mapper;
 
     final boolean delayErrors;
 
-    public FlowableSwitchMapSingle(Flowable<T> source,
-            Function<? super T, ? extends SingleSource<? extends R>> mapper,
+    public ObservableSwitchMapMaybe(Observable<T> source,
+            Function<? super T, ? extends MaybeSource<? extends R>> mapper,
             boolean delayErrors) {
         this.source = source;
         this.mapper = mapper;
@@ -55,79 +52,73 @@ public final class FlowableSwitchMapSingle<T, R> extends Flowable<R> {
     }
 
     @Override
-    protected void subscribeActual(Subscriber<? super R> s) {
-        source.subscribe(new SwitchMapSingleSubscriber<T, R>(s, mapper, delayErrors));
+    protected void subscribeActual(Observer<? super R> s) {
+        source.subscribe(new SwitchMapMaybeMainObserver<T, R>(s, mapper, delayErrors));
     }
 
-    static final class SwitchMapSingleSubscriber<T, R> extends AtomicInteger
-    implements FlowableSubscriber<T>, Subscription {
+    static final class SwitchMapMaybeMainObserver<T, R> extends AtomicInteger
+    implements Observer<T>, Disposable {
 
         private static final long serialVersionUID = -5402190102429853762L;
 
-        final Subscriber<? super R> downstream;
+        final Observer<? super R> downstream;
 
-        final Function<? super T, ? extends SingleSource<? extends R>> mapper;
+        final Function<? super T, ? extends MaybeSource<? extends R>> mapper;
 
         final boolean delayErrors;
 
         final AtomicThrowable errors;
 
-        final AtomicLong requested;
+        final AtomicReference<SwitchMapMaybeObserver<R>> inner;
 
-        final AtomicReference<SwitchMapSingleObserver<R>> inner;
+        static final SwitchMapMaybeObserver<Object> INNER_DISPOSED =
+                new SwitchMapMaybeObserver<Object>(null);
 
-        static final SwitchMapSingleObserver<Object> INNER_DISPOSED =
-                new SwitchMapSingleObserver<Object>(null);
-
-        Subscription upstream;
+        Disposable upstream;
 
         volatile boolean done;
 
         volatile boolean cancelled;
 
-        long emitted;
-
-        SwitchMapSingleSubscriber(Subscriber<? super R> downstream,
-                Function<? super T, ? extends SingleSource<? extends R>> mapper,
+        SwitchMapMaybeMainObserver(Observer<? super R> downstream,
+                Function<? super T, ? extends MaybeSource<? extends R>> mapper,
                 boolean delayErrors) {
             this.downstream = downstream;
             this.mapper = mapper;
             this.delayErrors = delayErrors;
             this.errors = new AtomicThrowable();
-            this.requested = new AtomicLong();
-            this.inner = new AtomicReference<SwitchMapSingleObserver<R>>();
+            this.inner = new AtomicReference<SwitchMapMaybeObserver<R>>();
         }
 
         @Override
-        public void onSubscribe(Subscription s) {
-            if (SubscriptionHelper.validate(upstream, s)) {
+        public void onSubscribe(Disposable s) {
+            if (DisposableHelper.validate(upstream, s)) {
                 upstream = s;
                 downstream.onSubscribe(this);
-                s.request(Long.MAX_VALUE);
             }
         }
 
         @Override
         @SuppressWarnings({ "unchecked", "rawtypes" })
         public void onNext(T t) {
-            SwitchMapSingleObserver<R> current = inner.get();
+            SwitchMapMaybeObserver<R> current = inner.get();
             if (current != null) {
                 current.dispose();
             }
 
-            SingleSource<? extends R> ss;
+            MaybeSource<? extends R> ms;
 
             try {
-                ss = ObjectHelper.requireNonNull(mapper.apply(t), "The mapper returned a null SingleSource");
+                ms = ObjectHelper.requireNonNull(mapper.apply(t), "The mapper returned a null MaybeSource");
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
-                upstream.cancel();
-                inner.getAndSet((SwitchMapSingleObserver)INNER_DISPOSED);
+                upstream.dispose();
+                inner.getAndSet((SwitchMapMaybeObserver)INNER_DISPOSED);
                 onError(ex);
                 return;
             }
 
-            SwitchMapSingleObserver<R> observer = new SwitchMapSingleObserver<R>(this);
+            SwitchMapMaybeObserver<R> observer = new SwitchMapMaybeObserver<R>(this);
 
             for (;;) {
                 current = inner.get();
@@ -135,7 +126,7 @@ public final class FlowableSwitchMapSingle<T, R> extends Flowable<R> {
                     break;
                 }
                 if (inner.compareAndSet(current, observer)) {
-                    ss.subscribe(observer);
+                    ms.subscribe(observer);
                     break;
                 }
             }
@@ -162,30 +153,29 @@ public final class FlowableSwitchMapSingle<T, R> extends Flowable<R> {
 
         @SuppressWarnings({ "unchecked", "rawtypes" })
         void disposeInner() {
-            SwitchMapSingleObserver<R> current = inner.getAndSet((SwitchMapSingleObserver)INNER_DISPOSED);
+            SwitchMapMaybeObserver<R> current = inner.getAndSet((SwitchMapMaybeObserver)INNER_DISPOSED);
             if (current != null && current != INNER_DISPOSED) {
                 current.dispose();
             }
         }
 
         @Override
-        public void request(long n) {
-            BackpressureHelper.add(requested, n);
-            drain();
-        }
-
-        @Override
-        public void cancel() {
+        public void dispose() {
             cancelled = true;
-            upstream.cancel();
+            upstream.dispose();
             disposeInner();
         }
 
-        void innerError(SwitchMapSingleObserver<R> sender, Throwable ex) {
+        @Override
+        public boolean isDisposed() {
+            return cancelled;
+        }
+
+        void innerError(SwitchMapMaybeObserver<R> sender, Throwable ex) {
             if (inner.compareAndSet(sender, null)) {
                 if (errors.addThrowable(ex)) {
                     if (!delayErrors) {
-                        upstream.cancel();
+                        upstream.dispose();
                         disposeInner();
                     }
                     drain();
@@ -195,17 +185,21 @@ public final class FlowableSwitchMapSingle<T, R> extends Flowable<R> {
             RxJavaPlugins.onError(ex);
         }
 
+        void innerComplete(SwitchMapMaybeObserver<R> sender) {
+            if (inner.compareAndSet(sender, null)) {
+                drain();
+            }
+        }
+
         void drain() {
             if (getAndIncrement() != 0) {
                 return;
             }
 
             int missed = 1;
-            Subscriber<? super R> downstream = this.downstream;
+            Observer<? super R> downstream = this.downstream;
             AtomicThrowable errors = this.errors;
-            AtomicReference<SwitchMapSingleObserver<R>> inner = this.inner;
-            AtomicLong requested = this.requested;
-            long emitted = this.emitted;
+            AtomicReference<SwitchMapMaybeObserver<R>> inner = this.inner;
 
             for (;;) {
 
@@ -223,7 +217,7 @@ public final class FlowableSwitchMapSingle<T, R> extends Flowable<R> {
                     }
 
                     boolean d = done;
-                    SwitchMapSingleObserver<R> current = inner.get();
+                    SwitchMapMaybeObserver<R> current = inner.get();
                     boolean empty = current == null;
 
                     if (d && empty) {
@@ -236,18 +230,15 @@ public final class FlowableSwitchMapSingle<T, R> extends Flowable<R> {
                         return;
                     }
 
-                    if (empty || current.item == null || emitted == requested.get()) {
+                    if (empty || current.item == null) {
                         break;
                     }
 
                     inner.compareAndSet(current, null);
 
                     downstream.onNext(current.item);
-
-                    emitted++;
                 }
 
-                this.emitted = emitted;
                 missed = addAndGet(-missed);
                 if (missed == 0) {
                     break;
@@ -255,16 +246,16 @@ public final class FlowableSwitchMapSingle<T, R> extends Flowable<R> {
             }
         }
 
-        static final class SwitchMapSingleObserver<R>
-        extends AtomicReference<Disposable> implements SingleObserver<R> {
+        static final class SwitchMapMaybeObserver<R>
+        extends AtomicReference<Disposable> implements MaybeObserver<R> {
 
             private static final long serialVersionUID = 8042919737683345351L;
 
-            final SwitchMapSingleSubscriber<?, R> parent;
+            final SwitchMapMaybeMainObserver<?, R> parent;
 
             volatile R item;
 
-            SwitchMapSingleObserver(SwitchMapSingleSubscriber<?, R> parent) {
+            SwitchMapMaybeObserver(SwitchMapMaybeMainObserver<?, R> parent) {
                 this.parent = parent;
             }
 
@@ -282,6 +273,11 @@ public final class FlowableSwitchMapSingle<T, R> extends Flowable<R> {
             @Override
             public void onError(Throwable e) {
                 parent.innerError(this, e);
+            }
+
+            @Override
+            public void onComplete() {
+                parent.innerComplete(this);
             }
 
             void dispose() {
