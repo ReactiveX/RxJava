@@ -35,14 +35,12 @@ public final class ScheduledDirectPeriodicTask extends AbstractDirectTask implem
     public void run() {
         runner = Thread.currentThread();
         try {
-            try {
-                runnable.run();
-            } catch (Throwable ex) {
-                lazySet(FINISHED);
-                RxJavaPlugins.onError(ex);
-            }
-        } finally {
+            runnable.run();
             runner = null;
+        } catch (Throwable ex) {
+            runner = null;
+            lazySet(FINISHED);
+            RxJavaPlugins.onError(ex);
         }
     }
 }

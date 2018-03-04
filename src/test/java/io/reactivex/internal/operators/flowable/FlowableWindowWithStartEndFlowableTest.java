@@ -26,6 +26,7 @@ import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.*;
 import io.reactivex.internal.functions.Functions;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
+import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.processors.*;
 import io.reactivex.schedulers.TestScheduler;
 import io.reactivex.subscribers.*;
@@ -397,5 +398,36 @@ public class FlowableWindowWithStartEndFlowableTest {
         .flatMap(Functions.<Flowable<Integer>>identity())
         .test()
         .assertFailure(TestException.class);
+    }
+
+    @Test
+    public void windowCloseIngoresCancel() {
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            BehaviorProcessor.createDefault(1)
+            .window(BehaviorProcessor.createDefault(1), new Function<Integer, Publisher<Integer>>() {
+                @Override
+                public Publisher<Integer> apply(Integer f) throws Exception {
+                    return new Flowable<Integer>() {
+                        @Override
+                        protected void subscribeActual(
+                                Subscriber<? super Integer> s) {
+                            s.onSubscribe(new BooleanSubscription());
+                            s.onNext(1);
+                            s.onNext(2);
+                            s.onError(new TestException());
+                        }
+                    };
+                }
+            })
+            .test()
+            .assertValueCount(1)
+            .assertNoErrors()
+            .assertNotComplete();
+
+            TestHelper.assertUndeliverable(errors, 0, TestException.class);
+        } finally {
+            RxJavaPlugins.reset();
+        }
     }
 }

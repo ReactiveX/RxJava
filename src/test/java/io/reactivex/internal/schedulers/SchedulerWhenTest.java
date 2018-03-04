@@ -13,20 +13,24 @@
 
 package io.reactivex.internal.schedulers;
 
-import static io.reactivex.Flowable.just;
-import static io.reactivex.Flowable.merge;
+import static io.reactivex.Flowable.*;
 import static java.util.concurrent.TimeUnit.SECONDS;
+import static org.junit.Assert.*;
 
 import java.util.concurrent.Callable;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Test;
 
-import io.reactivex.Completable;
-import io.reactivex.Flowable;
-import io.reactivex.Scheduler;
+import io.reactivex.*;
+import io.reactivex.Scheduler.Worker;
+import io.reactivex.disposables.*;
+import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.Function;
-import io.reactivex.schedulers.Schedulers;
-import io.reactivex.schedulers.TestScheduler;
+import io.reactivex.internal.schedulers.SchedulerWhen.*;
+import io.reactivex.observers.DisposableCompletableObserver;
+import io.reactivex.processors.PublishProcessor;
+import io.reactivex.schedulers.*;
 import io.reactivex.subscribers.TestSubscriber;
 
 public class SchedulerWhenTest {
@@ -218,5 +222,175 @@ public class SchedulerWhenTest {
         });
 
         merge(just(just(1).subscribeOn(limited).observeOn(comp)).repeat(1000)).blockingSubscribe();
+    }
+
+    @Test
+    public void subscribedDisposable() {
+        SchedulerWhen.SUBSCRIBED.dispose();
+        assertFalse(SchedulerWhen.SUBSCRIBED.isDisposed());
+    }
+
+    @Test(expected = TestException.class)
+    public void combineCrashInConstructor() {
+        new SchedulerWhen(new Function<Flowable<Flowable<Completable>>, Completable>() {
+            @Override
+            public Completable apply(Flowable<Flowable<Completable>> v)
+                    throws Exception {
+                throw new TestException();
+            }
+        }, Schedulers.single());
+    }
+
+    @Test
+    public void disposed() {
+        SchedulerWhen sw = new SchedulerWhen(new Function<Flowable<Flowable<Completable>>, Completable>() {
+            @Override
+            public Completable apply(Flowable<Flowable<Completable>> v)
+                    throws Exception {
+                return Completable.never();
+            }
+        }, Schedulers.single());
+
+        assertFalse(sw.isDisposed());
+
+        sw.dispose();
+
+        assertTrue(sw.isDisposed());
+    }
+
+    @Test
+    public void scheduledActiondisposedSetRace() {
+        for (int i = 0; i < TestHelper.RACE_LONG_LOOPS; i++) {
+            final ScheduledAction sa = new ScheduledAction() {
+
+                private static final long serialVersionUID = -672980251643733156L;
+
+                @Override
+                protected Disposable callActual(Worker actualWorker,
+                        CompletableObserver actionCompletable) {
+                    return Disposables.empty();
+                }
+
+            };
+
+            assertFalse(sa.isDisposed());
+
+            Runnable r1 = new Runnable() {
+                @Override
+                public void run() {
+                    sa.dispose();
+                }
+            };
+
+            TestHelper.race(r1, r1);
+
+            assertTrue(sa.isDisposed());
+        }
+    }
+
+    @Test
+    public void scheduledActionStates() {
+        final AtomicInteger count = new AtomicInteger();
+        ScheduledAction sa = new ScheduledAction() {
+
+            private static final long serialVersionUID = -672980251643733156L;
+
+            @Override
+            protected Disposable callActual(Worker actualWorker,
+                    CompletableObserver actionCompletable) {
+                count.incrementAndGet();
+                return Disposables.empty();
+            }
+
+        };
+
+        assertFalse(sa.isDisposed());
+
+        sa.dispose();
+
+        assertTrue(sa.isDisposed());
+
+        sa.dispose();
+
+        assertTrue(sa.isDisposed());
+
+        // should not run when disposed
+        sa.call(Schedulers.single().createWorker(), null);
+
+        assertEquals(0, count.get());
+
+        // should not run when already scheduled
+        sa.set(Disposables.empty());
+
+        sa.call(Schedulers.single().createWorker(), null);
+
+        assertEquals(0, count.get());
+
+        // disposed while in call
+        sa = new ScheduledAction() {
+
+            private static final long serialVersionUID = -672980251643733156L;
+
+            @Override
+            protected Disposable callActual(Worker actualWorker,
+                    CompletableObserver actionCompletable) {
+                count.incrementAndGet();
+                dispose();
+                return Disposables.empty();
+            }
+
+        };
+
+        sa.call(Schedulers.single().createWorker(), null);
+
+        assertEquals(1, count.get());
+    }
+
+    @Test
+    public void onCompleteActionRunCrash() {
+        final AtomicInteger count = new AtomicInteger();
+
+        OnCompletedAction a = new OnCompletedAction(new Runnable() {
+            @Override
+            public void run() {
+                throw new TestException();
+            }
+        }, new DisposableCompletableObserver() {
+
+            @Override
+            public void onComplete() {
+                count.incrementAndGet();
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                count.decrementAndGet();
+                e.printStackTrace();
+            }
+        });
+
+        try {
+            a.run();
+            fail("Should have thrown");
+        } catch (TestException expected) {
+
+        }
+
+        assertEquals(1, count.get());
+    }
+
+    @Test
+    public void queueWorkerDispose() {
+        QueueWorker qw = new QueueWorker(PublishProcessor.<ScheduledAction>create(), Schedulers.single().createWorker());
+
+        assertFalse(qw.isDisposed());
+
+        qw.dispose();
+
+        assertTrue(qw.isDisposed());
+
+        qw.dispose();
+
+        assertTrue(qw.isDisposed());
     }
 }

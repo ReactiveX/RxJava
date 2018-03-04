@@ -25,10 +25,10 @@ import org.mockito.InOrder;
 import org.reactivestreams.*;
 
 import io.reactivex.*;
-import io.reactivex.Flowable;
 import io.reactivex.functions.*;
 import io.reactivex.plugins.RxJavaPlugins;
-import io.reactivex.subscribers.DefaultSubscriber;
+import io.reactivex.processors.PublishProcessor;
+import io.reactivex.subscribers.*;
 
 public class FlowableSingleTest {
 
@@ -760,11 +760,40 @@ public class FlowableSingleTest {
             }
         });
 
+        TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Flowable<Object>>() {
+            @Override
+            public Flowable<Object> apply(Flowable<Object> o) throws Exception {
+                return o.singleOrError().toFlowable();
+            }
+        });
+
         TestHelper.checkDoubleOnSubscribeFlowableToMaybe(new Function<Flowable<Object>, MaybeSource<Object>>() {
             @Override
             public MaybeSource<Object> apply(Flowable<Object> o) throws Exception {
                 return o.singleElement();
             }
         });
+
+        TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Flowable<Object>>() {
+            @Override
+            public Flowable<Object> apply(Flowable<Object> o) throws Exception {
+                return o.singleElement().toFlowable();
+            }
+        });
+    }
+
+    @Test
+    public void cancelAsFlowable() {
+        PublishProcessor<Integer> pp = PublishProcessor.create();
+
+        TestSubscriber<Integer> ts = pp.singleOrError().toFlowable().test();
+
+        assertTrue(pp.hasSubscribers());
+
+        ts.assertEmpty();
+
+        ts.cancel();
+
+        assertFalse(pp.hasSubscribers());
     }
 }

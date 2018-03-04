@@ -326,7 +326,6 @@ public final class FlowableWindowBoundarySupplier<T, B> extends AbstractFlowable
             }
             done = true;
             parent.onComplete();
-//            parent.next();
         }
     }
 }

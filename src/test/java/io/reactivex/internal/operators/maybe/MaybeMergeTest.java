@@ -98,4 +98,12 @@ public class MaybeMergeTest {
             .assertFailureAndMessage(TestException.class, "2", 0, 0);
         }
     }
+
+    @Test
+    public void scalar() {
+        Maybe.mergeDelayError(
+                Flowable.just(Maybe.just(1)))
+        .test()
+        .assertResult(1);
+    }
 }

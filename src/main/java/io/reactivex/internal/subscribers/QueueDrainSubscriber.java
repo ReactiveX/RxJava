@@ -69,7 +69,7 @@ public abstract class QueueDrainSubscriber<T, U, V> extends QueueDrainSubscriber
         final Subscriber<? super V> s = actual;
         final SimplePlainQueue<U> q = queue;
 
-        if (wip.get() == 0 && wip.compareAndSet(0, 1)) {
+        if (fastEnter()) {
             long r = requested.get();
             if (r != 0L) {
                 if (accept(s, value)) {
@@ -98,7 +98,7 @@ public abstract class QueueDrainSubscriber<T, U, V> extends QueueDrainSubscriber
         final Subscriber<? super V> s = actual;
         final SimplePlainQueue<U> q = queue;
 
-        if (wip.get() == 0 && wip.compareAndSet(0, 1)) {
+        if (fastEnter()) {
             long r = requested.get();
             if (r != 0L) {
                 if (q.isEmpty()) {

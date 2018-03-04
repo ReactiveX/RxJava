@@ -1755,4 +1755,16 @@ public class FlowableReplayTest {
         .test()
         .assertFailureAndMessage(NullPointerException.class, "The selector returned a null Publisher");
     }
+
+    @Test
+    public void multicastSelectorCallableConnectableCrash() {
+        FlowableReplay.multicastSelector(new Callable<ConnectableFlowable<Object>>() {
+            @Override
+            public ConnectableFlowable<Object> call() throws Exception {
+                throw new TestException();
+            }
+        }, Functions.<Flowable<Object>>identity())
+        .test()
+        .assertFailure(TestException.class);
+    }
 }

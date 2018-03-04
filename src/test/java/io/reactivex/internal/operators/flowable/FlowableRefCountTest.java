@@ -27,11 +27,13 @@ import org.mockito.InOrder;
 import org.reactivestreams.*;
 
 import io.reactivex.*;
-import io.reactivex.disposables.Disposable;
+import io.reactivex.disposables.*;
+import io.reactivex.exceptions.TestException;
 import io.reactivex.flowables.ConnectableFlowable;
 import io.reactivex.functions.*;
 import io.reactivex.internal.functions.Functions;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
+import io.reactivex.internal.util.ExceptionHelper;
 import io.reactivex.processors.ReplayProcessor;
 import io.reactivex.schedulers.*;
 import io.reactivex.subscribers.TestSubscriber;
@@ -785,5 +787,179 @@ public class FlowableRefCountTest {
         s.dispose();
 
         assertTrue(((Disposable)co).isDisposed());
+    }
+
+    static final class BadFlowableSubscribe extends ConnectableFlowable<Object> {
+
+        @Override
+        public void connect(Consumer<? super Disposable> connection) {
+            try {
+                connection.accept(Disposables.empty());
+            } catch (Throwable ex) {
+                throw ExceptionHelper.wrapOrThrow(ex);
+            }
+        }
+
+        @Override
+        protected void subscribeActual(Subscriber<? super Object> observer) {
+            throw new TestException("subscribeActual");
+        }
+    }
+
+    static final class BadFlowableDispose extends ConnectableFlowable<Object> implements Disposable {
+
+        @Override
+        public void dispose() {
+            throw new TestException("dispose");
+        }
+
+        @Override
+        public boolean isDisposed() {
+            return false;
+        }
+
+        @Override
+        public void connect(Consumer<? super Disposable> connection) {
+            try {
+                connection.accept(Disposables.empty());
+            } catch (Throwable ex) {
+                throw ExceptionHelper.wrapOrThrow(ex);
+            }
+        }
+
+        @Override
+        protected void subscribeActual(Subscriber<? super Object> observer) {
+        }
+    }
+
+    static final class BadFlowableConnect extends ConnectableFlowable<Object> {
+
+        @Override
+        public void connect(Consumer<? super Disposable> connection) {
+            throw new TestException("connect");
+        }
+
+        @Override
+        protected void subscribeActual(Subscriber<? super Object> observer) {
+            observer.onSubscribe(new BooleanSubscription());
+        }
+    }
+
+    @Test
+    public void badSourceSubscribe() {
+        BadFlowableSubscribe bo = new BadFlowableSubscribe();
+
+        try {
+            bo.refCount()
+            .test();
+            fail("Should have thrown");
+        } catch (NullPointerException ex) {
+            assertTrue(ex.getCause() instanceof TestException);
+        }
+    }
+
+    @Test
+    public void badSourceDispose() {
+        BadFlowableDispose bf = new BadFlowableDispose();
+
+        try {
+            bf.refCount()
+            .test()
+            .cancel();
+            fail("Should have thrown");
+        } catch (TestException expected) {
+        }
+    }
+
+    @Test
+    public void badSourceConnect() {
+        BadFlowableConnect bf = new BadFlowableConnect();
+
+        try {
+            bf.refCount()
+            .test();
+            fail("Should have thrown");
+        } catch (NullPointerException ex) {
+            assertTrue(ex.getCause() instanceof TestException);
+        }
+    }
+
+    static final class BadFlowableSubscribe2 extends ConnectableFlowable<Object> {
+
+        int count;
+
+        @Override
+        public void connect(Consumer<? super Disposable> connection) {
+            try {
+                connection.accept(Disposables.empty());
+            } catch (Throwable ex) {
+                throw ExceptionHelper.wrapOrThrow(ex);
+            }
+        }
+
+        @Override
+        protected void subscribeActual(Subscriber<? super Object> observer) {
+            if (++count == 1) {
+                observer.onSubscribe(new BooleanSubscription());
+            } else {
+                throw new TestException("subscribeActual");
+            }
+        }
+    }
+
+    @Test
+    public void badSourceSubscribe2() {
+        BadFlowableSubscribe2 bf = new BadFlowableSubscribe2();
+
+        Flowable<Object> o = bf.refCount();
+        o.test();
+        try {
+            o.test();
+            fail("Should have thrown");
+        } catch (NullPointerException ex) {
+            assertTrue(ex.getCause() instanceof TestException);
+        }
+    }
+
+    static final class BadFlowableConnect2 extends ConnectableFlowable<Object>
+    implements Disposable {
+
+        @Override
+        public void connect(Consumer<? super Disposable> connection) {
+            try {
+                connection.accept(Disposables.empty());
+            } catch (Throwable ex) {
+                throw ExceptionHelper.wrapOrThrow(ex);
+            }
+        }
+
+        @Override
+        protected void subscribeActual(Subscriber<? super Object> observer) {
+            observer.onSubscribe(new BooleanSubscription());
+            observer.onComplete();
+        }
+
+        @Override
+        public void dispose() {
+            throw new TestException("dispose");
+        }
+
+        @Override
+        public boolean isDisposed() {
+            return false;
+        }
+    }
+
+    @Test
+    public void badSourceCompleteDisconnect() {
+        BadFlowableConnect2 bf = new BadFlowableConnect2();
+
+        try {
+            bf.refCount()
+            .test();
+            fail("Should have thrown");
+        } catch (NullPointerException ex) {
+            assertTrue(ex.getCause() instanceof TestException);
+        }
     }
 }

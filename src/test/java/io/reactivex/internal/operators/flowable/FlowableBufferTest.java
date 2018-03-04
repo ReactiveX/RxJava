@@ -33,7 +33,7 @@ import io.reactivex.functions.*;
 import io.reactivex.internal.functions.Functions;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.plugins.RxJavaPlugins;
-import io.reactivex.processors.PublishProcessor;
+import io.reactivex.processors.*;
 import io.reactivex.schedulers.*;
 import io.reactivex.subscribers.*;
 
@@ -2432,6 +2432,127 @@ public class FlowableBufferTest {
 
             TestHelper.assertError(errors, 0, ProtocolViolationException.class);
             TestHelper.assertUndeliverable(errors, 1, TestException.class);
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
+
+    @Test
+    public void bufferExactBoundaryDoubleOnSubscribe() {
+        TestHelper.checkDoubleOnSubscribeFlowable(
+                new Function<Flowable<Object>, Flowable<List<Object>>>() {
+                    @Override
+                    public Flowable<List<Object>> apply(Flowable<Object> f)
+                            throws Exception {
+                        return f.buffer(Flowable.never());
+                    }
+                }
+        );
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void bufferExactBoundarySecondBufferCrash() {
+        PublishProcessor<Integer> pp = PublishProcessor.create();
+        PublishProcessor<Integer> b = PublishProcessor.create();
+
+        TestSubscriber<List<Integer>> to = pp.buffer(b, new Callable<List<Integer>>() {
+            int calls;
+            @Override
+            public List<Integer> call() throws Exception {
+                if (++calls == 2) {
+                    throw new TestException();
+                }
+                return new ArrayList<Integer>();
+            }
+        }).test();
+
+        b.onNext(1);
+
+        to.assertFailure(TestException.class);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void bufferExactBoundaryBadSource() {
+        Flowable<Integer> pp = new Flowable<Integer>() {
+            @Override
+            protected void subscribeActual(Subscriber<? super Integer> observer) {
+                observer.onSubscribe(new BooleanSubscription());
+                observer.onComplete();
+                observer.onNext(1);
+                observer.onComplete();
+            }
+        };
+
+        final AtomicReference<Subscriber<? super Integer>> ref = new AtomicReference<Subscriber<? super Integer>>();
+        Flowable<Integer> b = new Flowable<Integer>() {
+            @Override
+            protected void subscribeActual(Subscriber<? super Integer> observer) {
+                observer.onSubscribe(new BooleanSubscription());
+                ref.set(observer);
+            }
+        };
+
+        TestSubscriber<List<Integer>> ts = pp.buffer(b).test();
+
+        ref.get().onNext(1);
+
+        ts.assertResult(Collections.<Integer>emptyList());
+    }
+
+    @Test
+    public void bufferExactBoundaryCancelUpfront() {
+        PublishProcessor<Integer> pp = PublishProcessor.create();
+        PublishProcessor<Integer> b = PublishProcessor.create();
+
+        pp.buffer(b).test(0L, true)
+        .assertEmpty();
+
+        assertFalse(pp.hasSubscribers());
+        assertFalse(b.hasSubscribers());
+    }
+
+    @Test
+    public void bufferExactBoundaryDisposed() {
+        Flowable<Integer> pp = new Flowable<Integer>() {
+            @Override
+            protected void subscribeActual(Subscriber<? super Integer> s) {
+                s.onSubscribe(new BooleanSubscription());
+
+                Disposable d = (Disposable)s;
+
+                assertFalse(d.isDisposed());
+
+                d.dispose();
+
+                assertTrue(d.isDisposed());
+            }
+        };
+        PublishProcessor<Integer> b = PublishProcessor.create();
+
+        pp.buffer(b).test();
+    }
+
+    @Test
+    public void bufferBoundaryErrorTwice() {
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            BehaviorProcessor.createDefault(1)
+            .buffer(Functions.justCallable(new Flowable<Integer>() {
+                @Override
+                protected void subscribeActual(Subscriber<? super Integer> s) {
+                    s.onSubscribe(new BooleanSubscription());
+                    s.onError(new TestException("first"));
+                    s.onError(new TestException("second"));
+                }
+            }))
+            .test()
+            .assertError(TestException.class)
+            .assertErrorMessage("first")
+            .assertNotComplete();
+
+            TestHelper.assertUndeliverable(errors, 0, TestException.class, "second");
         } finally {
             RxJavaPlugins.reset();
         }

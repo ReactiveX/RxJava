@@ -323,36 +323,22 @@ public final class FlowableWindowBoundarySelector<T, B, V> extends AbstractFlowa
     static final class OperatorWindowBoundaryOpenSubscriber<T, B> extends DisposableSubscriber<B> {
         final WindowBoundaryMainSubscriber<T, B, ?> parent;
 
-        boolean done;
-
         OperatorWindowBoundaryOpenSubscriber(WindowBoundaryMainSubscriber<T, B, ?> parent) {
             this.parent = parent;
         }
 
         @Override
         public void onNext(B t) {
-            if (done) {
-                return;
-            }
             parent.open(t);
         }
 
         @Override
         public void onError(Throwable t) {
-            if (done) {
-                RxJavaPlugins.onError(t);
-                return;
-            }
-            done = true;
             parent.error(t);
         }
 
         @Override
         public void onComplete() {
-            if (done) {
-                return;
-            }
-            done = true;
             parent.onComplete();
         }
     }
@@ -370,12 +356,8 @@ public final class FlowableWindowBoundarySelector<T, B, V> extends AbstractFlowa
 
         @Override
         public void onNext(V t) {
-            if (done) {
-                return;
-            }
-            done = true;
             cancel();
-            parent.close(this);
+            onComplete();
         }
 
         @Override

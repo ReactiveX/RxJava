@@ -89,8 +89,8 @@ public final class ObservableReduceSeedSingle<T, R> extends Single<R> {
         @Override
         public void onError(Throwable e) {
             R v = value;
-            value = null;
             if (v != null) {
+                value = null;
                 actual.onError(e);
             } else {
                 RxJavaPlugins.onError(e);
@@ -100,8 +100,8 @@ public final class ObservableReduceSeedSingle<T, R> extends Single<R> {
         @Override
         public void onComplete() {
             R v = value;
-            value = null;
             if (v != null) {
+                value = null;
                 actual.onSuccess(v);
             }
         }

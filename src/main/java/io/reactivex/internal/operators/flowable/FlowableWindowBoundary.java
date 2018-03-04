@@ -93,6 +93,7 @@ public final class FlowableWindowBoundary<T, B> extends AbstractFlowableWithUpst
                         produced(1);
                     }
                 } else {
+                    s.cancel();
                     a.onError(new MissingBackpressureException("Could not deliver first window due to lack of requests"));
                     return;
                 }
@@ -254,11 +255,6 @@ public final class FlowableWindowBoundary<T, B> extends AbstractFlowableWithUpst
             }
         }
 
-        @Override
-        public boolean accept(Subscriber<? super Flowable<T>> a, Object v) {
-            // not used by this operator
-            return false;
-        }
     }
 
     static final class WindowBoundaryInnerSubscriber<T, B> extends DisposableSubscriber<B> {

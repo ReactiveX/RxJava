@@ -14,13 +14,20 @@
 package io.reactivex.internal.operators.observable;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
+
+import java.util.List;
+import java.util.concurrent.Callable;
 
 import org.junit.*;
 
 import io.reactivex.*;
+import io.reactivex.disposables.Disposables;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.*;
+import io.reactivex.plugins.RxJavaPlugins;
+import io.reactivex.subjects.PublishSubject;
 
 public class ObservableReduceTest {
     Observer<Object> observer;
@@ -234,5 +241,130 @@ public class ObservableReduceTest {
         assertEquals(21, r.intValue());
     }
 
+    @Test
+    public void reduceWithSingle() {
+        Observable.range(1, 5)
+        .reduceWith(new Callable<Integer>() {
+            @Override
+            public Integer call() throws Exception {
+                return 0;
+            }
+        }, new BiFunction<Integer, Integer, Integer>() {
+            @Override
+            public Integer apply(Integer a, Integer b) throws Exception {
+                return a + b;
+            }
+        })
+        .test()
+        .assertResult(15);
+    }
 
+    @Test
+    public void reduceMaybeDoubleOnSubscribe() {
+        TestHelper.checkDoubleOnSubscribeObservableToMaybe(new Function<Observable<Object>, MaybeSource<Object>>() {
+            @Override
+            public MaybeSource<Object> apply(Observable<Object> o)
+                    throws Exception {
+                return o.reduce(new BiFunction<Object, Object, Object>() {
+                    @Override
+                    public Object apply(Object a, Object b) throws Exception {
+                        return a;
+                    }
+                });
+            }
+        });
+    }
+
+    @Test
+    public void reduceMaybeCheckDisposed() {
+        TestHelper.checkDisposed(Observable.just(new Object()).reduce(new BiFunction<Object, Object, Object>() {
+                    @Override
+                    public Object apply(Object a, Object b) throws Exception {
+                        return a;
+                    }
+                }));
+    }
+
+    @Test
+    public void reduceMaybeBadSource() {
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            new Observable<Object>() {
+                @Override
+                protected void subscribeActual(Observer<? super Object> observer) {
+                    observer.onSubscribe(Disposables.empty());
+                    observer.onComplete();
+                    observer.onNext(1);
+                    observer.onError(new TestException());
+                    observer.onComplete();
+                }
+            }.reduce(new BiFunction<Object, Object, Object>() {
+                        @Override
+                        public Object apply(Object a, Object b) throws Exception {
+                            return a;
+                        }
+                    })
+            .test()
+            .assertResult();
+
+            TestHelper.assertUndeliverable(errors, 0, TestException.class);
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
+
+    @Test
+    public void seedDoubleOnSubscribe() {
+        TestHelper.checkDoubleOnSubscribeObservableToSingle(new Function<Observable<Integer>, SingleSource<Integer>>() {
+            @Override
+            public SingleSource<Integer> apply(Observable<Integer> o)
+                    throws Exception {
+                return o.reduce(0, new BiFunction<Integer, Integer, Integer>() {
+                    @Override
+                    public Integer apply(Integer a, Integer b) throws Exception {
+                        return a;
+                    }
+                });
+            }
+        });
+    }
+
+    @Test
+    public void seedDisposed() {
+        TestHelper.checkDisposed(PublishSubject.<Integer>create().reduce(0, new BiFunction<Integer, Integer, Integer>() {
+                    @Override
+                    public Integer apply(Integer a, Integer b) throws Exception {
+                        return a;
+                    }
+                }));
+    }
+
+    @Test
+    public void seedBadSource() {
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            new Observable<Integer>() {
+                @Override
+                protected void subscribeActual(Observer<? super Integer> observer) {
+                    observer.onSubscribe(Disposables.empty());
+                    observer.onComplete();
+                    observer.onNext(1);
+                    observer.onError(new TestException());
+                    observer.onComplete();
+                }
+            }
+            .reduce(0, new BiFunction<Integer, Integer, Integer>() {
+                @Override
+                public Integer apply(Integer a, Integer b) throws Exception {
+                    return a;
+                }
+            })
+            .test()
+            .assertResult(0);
+
+            TestHelper.assertUndeliverable(errors, 0, TestException.class);
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
 }

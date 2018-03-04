@@ -338,12 +338,8 @@ public final class ObservableWindowBoundarySelector<T, B, V> extends AbstractObs
 
         @Override
         public void onNext(V t) {
-            if (done) {
-                return;
-            }
-            done = true;
             dispose();
-            parent.close(this);
+            onComplete();
         }
 
         @Override

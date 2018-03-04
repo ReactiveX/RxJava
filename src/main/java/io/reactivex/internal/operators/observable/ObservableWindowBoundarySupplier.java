@@ -296,7 +296,6 @@ public final class ObservableWindowBoundarySupplier<T, B> extends AbstractObserv
             }
             done = true;
             parent.onComplete();
-//            parent.next();
         }
     }
 }

@@ -31,6 +31,7 @@ import io.reactivex.functions.Function;
 import io.reactivex.observers.*;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.schedulers.Schedulers;
+import io.reactivex.subjects.BehaviorSubject.BehaviorDisposable;
 
 public class BehaviorSubjectTest extends SubjectTest<Integer> {
 
@@ -770,5 +771,109 @@ public class BehaviorSubjectTest extends SubjectTest<Integer> {
 
             ts.assertFailure(TestException.class);
         }
+    }
+
+    @Test
+    public void behaviorDisposableDisposeState() {
+        BehaviorSubject<Integer> bs = BehaviorSubject.create();
+        bs.onNext(1);
+
+        TestObserver<Integer> to = new TestObserver<Integer>();
+
+        BehaviorDisposable<Integer> bd = new BehaviorDisposable<Integer>(to, bs);
+        to.onSubscribe(bd);
+
+        assertFalse(bd.isDisposed());
+
+        bd.dispose();
+
+        assertTrue(bd.isDisposed());
+
+        bd.dispose();
+
+        assertTrue(bd.isDisposed());
+
+        assertTrue(bd.test(2));
+
+        bd.emitFirst();
+
+        to.assertEmpty();
+
+        bd.emitNext(2, 0);
+    }
+
+    @Test
+    public void emitFirstDisposeRace() {
+        for (int i = 0; i < TestHelper.RACE_LONG_LOOPS; i++) {
+
+            BehaviorSubject<Integer> bs = BehaviorSubject.create();
+            bs.onNext(1);
+
+            TestObserver<Integer> to = new TestObserver<Integer>();
+
+            final BehaviorDisposable<Integer> bd = new BehaviorDisposable<Integer>(to, bs);
+            to.onSubscribe(bd);
+
+            Runnable r1 = new Runnable() {
+                @Override
+                public void run() {
+                    bd.emitFirst();
+                }
+            };
+            Runnable r2 = new Runnable() {
+                @Override
+                public void run() {
+                    bd.dispose();
+                }
+            };
+
+            TestHelper.race(r1, r2);
+        }
+    }
+
+    @Test
+    public void emitNextDisposeRace() {
+        for (int i = 0; i < TestHelper.RACE_LONG_LOOPS; i++) {
+
+            BehaviorSubject<Integer> bs = BehaviorSubject.create();
+            bs.onNext(1);
+
+            TestObserver<Integer> to = new TestObserver<Integer>();
+
+            final BehaviorDisposable<Integer> bd = new BehaviorDisposable<Integer>(to, bs);
+            to.onSubscribe(bd);
+
+            Runnable r1 = new Runnable() {
+                @Override
+                public void run() {
+                    bd.emitNext(2, 0);
+                }
+            };
+            Runnable r2 = new Runnable() {
+                @Override
+                public void run() {
+                    bd.dispose();
+                }
+            };
+
+            TestHelper.race(r1, r2);
+        }
+    }
+
+    @Test
+    public void emittingEmitNext() {
+        BehaviorSubject<Integer> bs = BehaviorSubject.create();
+        bs.onNext(1);
+
+        TestObserver<Integer> to = new TestObserver<Integer>();
+
+        final BehaviorDisposable<Integer> bd = new BehaviorDisposable<Integer>(to, bs);
+        to.onSubscribe(bd);
+
+        bd.emitting = true;
+        bd.emitNext(2, 1);
+        bd.emitNext(3, 2);
+
+        assertNotNull(bd.queue);
     }
 }

@@ -22,7 +22,7 @@ import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Test;
-import org.reactivestreams.Subscriber;
+import org.reactivestreams.*;
 
 import io.reactivex.*;
 import io.reactivex.exceptions.*;
@@ -614,5 +614,106 @@ public class FlowableWindowWithFlowableTest {
                 });
             }
         }, false, 1, 1, 1);
+    }
+
+    @Test
+    public void boundaryError() {
+        BehaviorProcessor.createDefault(1)
+        .window(Functions.justCallable(Flowable.error(new TestException())))
+        .test()
+        .assertValueCount(1)
+        .assertNotComplete()
+        .assertError(TestException.class);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void boundaryMissingBackpressure() {
+        BehaviorProcessor.createDefault(1)
+        .window(Functions.justCallable(Flowable.error(new TestException())))
+        .test(0)
+        .assertFailure(MissingBackpressureException.class);
+    }
+
+    @Test
+    public void boundaryCallableCrashOnCall2() {
+        BehaviorProcessor.createDefault(1)
+        .window(new Callable<Flowable<Integer>>() {
+            int calls;
+            @Override
+            public Flowable<Integer> call() throws Exception {
+                if (++calls == 2) {
+                    throw new TestException();
+                }
+                return Flowable.just(1);
+            }
+        })
+        .test()
+        .assertError(TestException.class)
+        .assertNotComplete();
+    }
+
+    @Test
+    public void boundarySecondMissingBackpressure() {
+        BehaviorProcessor.createDefault(1)
+        .window(Functions.justCallable(Flowable.just(1)))
+        .test(1)
+        .assertError(MissingBackpressureException.class)
+        .assertNotComplete();
+    }
+
+    @Test
+    public void oneWindow() {
+        PublishProcessor<Integer> pp = PublishProcessor.create();
+
+        TestSubscriber<Flowable<Integer>> ts = BehaviorProcessor.createDefault(1)
+        .window(Functions.justCallable(pp))
+        .take(1)
+        .test();
+
+        pp.onNext(1);
+
+        ts
+        .assertValueCount(1)
+        .assertNoErrors()
+        .assertComplete();
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void boundaryDirectMissingBackpressure() {
+        BehaviorProcessor.create()
+        .window(Flowable.error(new TestException()))
+        .test(0)
+        .assertFailure(MissingBackpressureException.class);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void boundaryDirectMissingBackpressureNoNullPointerException() {
+        BehaviorProcessor.createDefault(1)
+        .window(Flowable.error(new TestException()))
+        .test(0)
+        .assertFailure(MissingBackpressureException.class);
+    }
+
+    @Test
+    public void boundaryDirectSecondMissingBackpressure() {
+        BehaviorProcessor.createDefault(1)
+        .window(Flowable.just(1))
+        .test(1)
+        .assertError(MissingBackpressureException.class)
+        .assertNotComplete();
+    }
+
+    @Test
+    public void boundaryDirectDoubleOnSubscribe() {
+        TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Publisher<Flowable<Object>>>() {
+            @Override
+            public Publisher<Flowable<Object>> apply(Flowable<Object> f)
+                    throws Exception {
+                return f.window(Flowable.never()).takeLast(1);
+            }
+        });
     }
 }

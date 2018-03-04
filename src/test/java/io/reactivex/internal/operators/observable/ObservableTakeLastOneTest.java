@@ -20,6 +20,7 @@ import java.util.concurrent.atomic.*;
 import org.junit.Test;
 
 import io.reactivex.*;
+import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.*;
 import io.reactivex.observers.TestObserver;
 
@@ -105,5 +106,13 @@ public class ObservableTakeLastOneTest {
                 return f.takeLast(1);
             }
         });
+    }
+
+    @Test
+    public void error() {
+        Observable.error(new TestException())
+        .takeLast(1)
+        .test()
+        .assertFailure(TestException.class);
     }
 }
