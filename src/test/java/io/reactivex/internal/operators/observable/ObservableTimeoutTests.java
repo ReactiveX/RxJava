@@ -425,12 +425,6 @@ public class ObservableTimeoutTests {
     }
 
     @Test
-    public void newTimer() {
-        ObservableTimeoutTimed.NEW_TIMER.dispose();
-        assertTrue(ObservableTimeoutTimed.NEW_TIMER.isDisposed());
-    }
-
-    @Test
     public void badSource() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
@@ -514,5 +508,90 @@ public class ObservableTimeoutTests {
         assertFalse(ps.hasObservers());
 
         to.assertResult(1);
+    }
+
+    @Test
+    public void fallbackErrors() {
+        Observable.never()
+        .timeout(1, TimeUnit.MILLISECONDS, Observable.error(new TestException()))
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertFailure(TestException.class);
+    }
+
+    @Test
+    public void onNextOnTimeoutRace() {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
+            final TestScheduler sch = new TestScheduler();
+
+            final PublishSubject<Integer> pp = PublishSubject.create();
+
+            TestObserver<Integer> ts = pp.timeout(1, TimeUnit.SECONDS, sch).test();
+
+            Runnable r1 = new Runnable() {
+                @Override
+                public void run() {
+                    pp.onNext(1);
+                }
+            };
+
+            Runnable r2 = new Runnable() {
+                @Override
+                public void run() {
+                    sch.advanceTimeBy(1, TimeUnit.SECONDS);
+                }
+            };
+
+            TestHelper.race(r1, r2);
+
+            if (ts.valueCount() != 0) {
+                if (ts.errorCount() != 0) {
+                    ts.assertFailure(TimeoutException.class, 1);
+                } else {
+                    ts.assertValuesOnly(1);
+                }
+            } else {
+                ts.assertFailure(TimeoutException.class);
+            }
+        }
+    }
+
+    @Test
+    public void onNextOnTimeoutRaceFallback() {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
+            final TestScheduler sch = new TestScheduler();
+
+            final PublishSubject<Integer> pp = PublishSubject.create();
+
+            TestObserver<Integer> ts = pp.timeout(1, TimeUnit.SECONDS, sch, Observable.just(2)).test();
+
+            Runnable r1 = new Runnable() {
+                @Override
+                public void run() {
+                    pp.onNext(1);
+                }
+            };
+
+            Runnable r2 = new Runnable() {
+                @Override
+                public void run() {
+                    sch.advanceTimeBy(1, TimeUnit.SECONDS);
+                }
+            };
+
+            TestHelper.race(r1, r2);
+
+            if (ts.isTerminated()) {
+                int c = ts.valueCount();
+                if (c == 1) {
+                    int v = ts.values().get(0);
+                    assertTrue("" + v, v == 1 || v == 2);
+                } else {
+                    ts.assertResult(1, 2);
+                }
+            } else {
+                ts.assertValuesOnly(1);
+            }
+        }
     }
 }
