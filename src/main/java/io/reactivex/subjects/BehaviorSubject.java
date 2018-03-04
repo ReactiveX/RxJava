@@ -442,13 +442,10 @@ public final class BehaviorSubject<T> extends Subject<T> {
     @SuppressWarnings("unchecked")
     BehaviorDisposable<T>[] terminate(Object terminalValue) {
 
-        BehaviorDisposable<T>[] a = subscribers.get();
+        BehaviorDisposable<T>[] a = subscribers.getAndSet(TERMINATED);
         if (a != TERMINATED) {
-            a = subscribers.getAndSet(TERMINATED);
-            if (a != TERMINATED) {
-                // either this or atomics with lots of allocation
-                setCurrent(terminalValue);
-            }
+            // either this or atomics with lots of allocation
+            setCurrent(terminalValue);
         }
 
         return a;
@@ -456,12 +453,9 @@ public final class BehaviorSubject<T> extends Subject<T> {
 
     void setCurrent(Object o) {
         writeLock.lock();
-        try {
-            index++;
-            value.lazySet(o);
-        } finally {
-            writeLock.unlock();
-        }
+        index++;
+        value.lazySet(o);
+        writeLock.unlock();
     }
 
     static final class BehaviorDisposable<T> implements Disposable, NonThrowingPredicate<Object> {

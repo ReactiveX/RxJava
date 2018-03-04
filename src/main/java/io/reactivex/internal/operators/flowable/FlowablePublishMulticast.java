@@ -153,6 +153,8 @@ public final class FlowablePublishMulticast<T, R> extends AbstractFlowableWithUp
 
         int consumed;
 
+        long emitted;
+
         @SuppressWarnings("unchecked")
         MulticastProcessor(int prefetch, boolean delayError) {
             this.prefetch = prefetch;
@@ -261,10 +263,10 @@ public final class FlowablePublishMulticast<T, R> extends AbstractFlowableWithUp
         void remove(MulticastSubscription<T> s) {
             for (;;) {
                 MulticastSubscription<T>[] current = subscribers.get();
-                if (current == TERMINATED || current == EMPTY) {
+                int n = current.length;
+                if (n == 0) {
                     return;
                 }
-                int n = current.length;
                 int j = -1;
 
                 for (int i = 0; i < n; i++) {
@@ -323,6 +325,7 @@ public final class FlowablePublishMulticast<T, R> extends AbstractFlowableWithUp
             int upstreamConsumed = consumed;
             int localLimit = limit;
             boolean canRequest = sourceMode != QueueSubscription.SYNC;
+            long e = emitted;
 
             for (;;) {
                 MulticastSubscription<T>[] array = subscribers.get();
@@ -338,10 +341,15 @@ public final class FlowablePublishMulticast<T, R> extends AbstractFlowableWithUp
                             if (r > u) {
                                 r = u;
                             }
+                        } else {
+                            n--;
                         }
                     }
 
-                    long e = 0L;
+                    if (n == 0) {
+                        r = e;
+                    }
+
                     while (e != r) {
                         if (isDisposed()) {
                             q.clear();
@@ -425,12 +433,9 @@ public final class FlowablePublishMulticast<T, R> extends AbstractFlowableWithUp
                             return;
                         }
                     }
-
-                    for (MulticastSubscription<T> ms : array) {
-                        BackpressureHelper.produced(ms, e);
-                    }
                 }
 
+                emitted = e;
                 consumed = upstreamConsumed;
                 missed = wip.addAndGet(-missed);
                 if (missed == 0) {
@@ -464,7 +469,6 @@ public final class FlowablePublishMulticast<T, R> extends AbstractFlowableWithUp
     static final class MulticastSubscription<T>
     extends AtomicLong
     implements Subscription {
-
 
         private static final long serialVersionUID = 8664815189257569791L;
 

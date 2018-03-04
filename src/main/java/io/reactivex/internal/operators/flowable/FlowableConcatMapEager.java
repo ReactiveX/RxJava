@@ -132,10 +132,6 @@ public final class FlowableConcatMapEager<T, R> extends AbstractFlowableWithUpst
 
             subscribers.offer(inner);
 
-            if (cancelled) {
-                return;
-            }
-
             p.subscribe(inner);
 
             if (cancelled) {
