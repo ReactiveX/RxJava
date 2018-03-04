@@ -18,167 +18,199 @@ import java.util.concurrent.atomic.*;
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.disposables.DisposableHelper;
-import io.reactivex.internal.observers.QueueDrainObserver;
 import io.reactivex.internal.queue.MpscLinkedQueue;
-import io.reactivex.internal.util.NotificationLite;
-import io.reactivex.observers.*;
+import io.reactivex.internal.util.AtomicThrowable;
+import io.reactivex.observers.DisposableObserver;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.subjects.UnicastSubject;
 
 public final class ObservableWindowBoundary<T, B> extends AbstractObservableWithUpstream<T, Observable<T>> {
     final ObservableSource<B> other;
-    final int bufferSize;
+    final int capacityHint;
 
-    public ObservableWindowBoundary(ObservableSource<T> source, ObservableSource<B> other, int bufferSize) {
+    public ObservableWindowBoundary(ObservableSource<T> source, ObservableSource<B> other, int capacityHint) {
         super(source);
         this.other = other;
-        this.bufferSize = bufferSize;
+        this.capacityHint = capacityHint;
     }
 
     @Override
-    public void subscribeActual(Observer<? super Observable<T>> t) {
-        source.subscribe(new WindowBoundaryMainObserver<T, B>(new SerializedObserver<Observable<T>>(t), other, bufferSize));
+    public void subscribeActual(Observer<? super Observable<T>> observer) {
+        WindowBoundaryMainObserver<T, B> parent = new WindowBoundaryMainObserver<T, B>(observer, capacityHint);
+
+        observer.onSubscribe(parent);
+        other.subscribe(parent.boundaryObserver);
+
+        source.subscribe(parent);
     }
 
     static final class WindowBoundaryMainObserver<T, B>
-    extends QueueDrainObserver<T, Object, Observable<T>>
-    implements Disposable {
+    extends AtomicInteger
+    implements Observer<T>, Disposable, Runnable {
 
-        final ObservableSource<B> other;
-        final int bufferSize;
+        private static final long serialVersionUID = 2233020065421370272L;
 
-        Disposable s;
+        final Observer<? super Observable<T>> downstream;
 
-        final AtomicReference<Disposable> boundary = new AtomicReference<Disposable>();
+        final int capacityHint;
+
+        final WindowBoundaryInnerObserver<T, B> boundaryObserver;
+
+        final AtomicReference<Disposable> upstream;
+
+        final AtomicInteger windows;
+
+        final MpscLinkedQueue<Object> queue;
+
+        final AtomicThrowable errors;
+
+        final AtomicBoolean stopWindows;
+
+        static final Object NEXT_WINDOW = new Object();
+
+        volatile boolean done;
 
         UnicastSubject<T> window;
 
-        static final Object NEXT = new Object();
-
-        final AtomicLong windows = new AtomicLong();
-
-        WindowBoundaryMainObserver(Observer<? super Observable<T>> actual, ObservableSource<B> other,
-                int bufferSize) {
-            super(actual, new MpscLinkedQueue<Object>());
-            this.other = other;
-            this.bufferSize = bufferSize;
-            windows.lazySet(1);
+        WindowBoundaryMainObserver(Observer<? super Observable<T>> downstream, int capacityHint) {
+            this.downstream = downstream;
+            this.capacityHint = capacityHint;
+            this.boundaryObserver = new WindowBoundaryInnerObserver<T, B>(this);
+            this.upstream = new AtomicReference<Disposable>();
+            this.windows = new AtomicInteger(1);
+            this.queue = new MpscLinkedQueue<Object>();
+            this.errors = new AtomicThrowable();
+            this.stopWindows = new AtomicBoolean();
         }
 
         @Override
-        public void onSubscribe(Disposable s) {
-            if (DisposableHelper.validate(this.s, s)) {
-                this.s = s;
+        public void onSubscribe(Disposable d) {
+            if (DisposableHelper.setOnce(upstream, d)) {
 
-                Observer<? super Observable<T>> a = actual;
-                a.onSubscribe(this);
-
-                if (cancelled) {
-                    return;
-                }
-
-                UnicastSubject<T> w = UnicastSubject.create(bufferSize);
-
-                window = w;
-
-                a.onNext(w);
-
-                WindowBoundaryInnerObserver<T, B> inner = new WindowBoundaryInnerObserver<T, B>(this);
-
-                if (boundary.compareAndSet(null, inner)) {
-                    windows.getAndIncrement();
-                    other.subscribe(inner);
-                }
+                innerNext();
             }
         }
 
         @Override
         public void onNext(T t) {
-            if (fastEnter()) {
-                UnicastSubject<T> w = window;
-
-                w.onNext(t);
-
-                if (leave(-1) == 0) {
-                    return;
-                }
-            } else {
-                queue.offer(NotificationLite.next(t));
-                if (!enter()) {
-                    return;
-                }
-            }
-            drainLoop();
+            queue.offer(t);
+            drain();
         }
 
         @Override
-        public void onError(Throwable t) {
-            if (done) {
-                RxJavaPlugins.onError(t);
-                return;
+        public void onError(Throwable e) {
+            boundaryObserver.dispose();
+            if (errors.addThrowable(e)) {
+                done = true;
+                drain();
+            } else {
+                RxJavaPlugins.onError(e);
             }
-            error = t;
-            done = true;
-            if (enter()) {
-                drainLoop();
-            }
-
-            if (windows.decrementAndGet() == 0) {
-                DisposableHelper.dispose(boundary);
-            }
-
-            actual.onError(t);
         }
 
         @Override
         public void onComplete() {
-            if (done) {
-                return;
-            }
+            boundaryObserver.dispose();
             done = true;
-            if (enter()) {
-                drainLoop();
-            }
-
-            if (windows.decrementAndGet() == 0) {
-                DisposableHelper.dispose(boundary);
-            }
-
-            actual.onComplete();
-
+            drain();
         }
 
         @Override
         public void dispose() {
-            cancelled = true;
+            if (stopWindows.compareAndSet(false, true)) {
+                boundaryObserver.dispose();
+                if (windows.decrementAndGet() == 0) {
+                    DisposableHelper.dispose(upstream);
+                }
+            }
         }
 
         @Override
         public boolean isDisposed() {
-            return cancelled;
+            return stopWindows.get();
         }
 
-        void drainLoop() {
-            final MpscLinkedQueue<Object> q = (MpscLinkedQueue<Object>)queue;
-            final Observer<? super Observable<T>> a = actual;
+        @Override
+        public void run() {
+            if (windows.decrementAndGet() == 0) {
+                DisposableHelper.dispose(upstream);
+            }
+        }
+
+        void innerNext() {
+            queue.offer(NEXT_WINDOW);
+            drain();
+        }
+
+        void innerError(Throwable e) {
+            DisposableHelper.dispose(upstream);
+            if (errors.addThrowable(e)) {
+                done = true;
+                drain();
+            } else {
+                RxJavaPlugins.onError(e);
+            }
+        }
+
+        void innerComplete() {
+            DisposableHelper.dispose(upstream);
+            done = true;
+            drain();
+        }
+
+        @SuppressWarnings("unchecked")
+        void drain() {
+            if (getAndIncrement() != 0) {
+                return;
+            }
+
             int missed = 1;
-            UnicastSubject<T> w = window;
+            Observer<? super Observable<T>> downstream = this.downstream;
+            MpscLinkedQueue<Object> queue = this.queue;
+            AtomicThrowable errors = this.errors;
+
             for (;;) {
 
                 for (;;) {
+                    if (windows.get() == 0) {
+                        queue.clear();
+                        window = null;
+                        return;
+                    }
+
+                    UnicastSubject<T> w = window;
+
                     boolean d = done;
 
-                    Object o = q.poll();
+                    if (d && errors.get() != null) {
+                        queue.clear();
+                        Throwable ex = errors.terminate();
+                        if (w != null) {
+                            window = null;
+                            w.onError(ex);
+                        }
+                        downstream.onError(ex);
+                        return;
+                    }
 
-                    boolean empty = o == null;
+                    Object v = queue.poll();
+
+                    boolean empty = v == null;
 
                     if (d && empty) {
-                        DisposableHelper.dispose(boundary);
-                        Throwable e = error;
-                        if (e != null) {
-                            w.onError(e);
+                        Throwable ex = errors.terminate();
+                        if (ex == null) {
+                            if (w != null) {
+                                window = null;
+                                w.onComplete();
+                            }
+                            downstream.onComplete();
                         } else {
-                            w.onComplete();
+                            if (w != null) {
+                                window = null;
+                                w.onError(ex);
+                            }
+                            downstream.onError(ex);
                         }
                         return;
                     }
@@ -187,48 +219,35 @@ public final class ObservableWindowBoundary<T, B> extends AbstractObservableWith
                         break;
                     }
 
-                    if (o == NEXT) {
-                        w.onComplete();
-
-                        if (windows.decrementAndGet() == 0) {
-                            DisposableHelper.dispose(boundary);
-                            return;
-                        }
-
-                        if (cancelled) {
-                            continue;
-                        }
-
-                        w = UnicastSubject.create(bufferSize);
-
-                        windows.getAndIncrement();
-
-                        window = w;
-
-                        a.onNext(w);
-
+                    if (v != NEXT_WINDOW) {
+                        w.onNext((T)v);
                         continue;
                     }
 
-                    w.onNext(NotificationLite.<T>getValue(o));
+                    if (w != null) {
+                        window = null;
+                        w.onComplete();
+                    }
+
+                    if (!stopWindows.get()) {
+                        w = UnicastSubject.create(capacityHint, this);
+                        window = w;
+                        windows.getAndIncrement();
+
+                        downstream.onNext(w);
+                    }
                 }
 
-                missed = leave(-missed);
+                missed = addAndGet(-missed);
                 if (missed == 0) {
-                    return;
+                    break;
                 }
-            }
-        }
-
-        void next() {
-            queue.offer(NEXT);
-            if (enter()) {
-                drainLoop();
             }
         }
     }
 
     static final class WindowBoundaryInnerObserver<T, B> extends DisposableObserver<B> {
+
         final WindowBoundaryMainObserver<T, B> parent;
 
         boolean done;
@@ -242,7 +261,7 @@ public final class ObservableWindowBoundary<T, B> extends AbstractObservableWith
             if (done) {
                 return;
             }
-            parent.next();
+            parent.innerNext();
         }
 
         @Override
@@ -252,7 +271,7 @@ public final class ObservableWindowBoundary<T, B> extends AbstractObservableWith
                 return;
             }
             done = true;
-            parent.onError(t);
+            parent.innerError(t);
         }
 
         @Override
@@ -261,7 +280,7 @@ public final class ObservableWindowBoundary<T, B> extends AbstractObservableWith
                 return;
             }
             done = true;
-            parent.onComplete();
+            parent.innerComplete();
         }
     }
 }

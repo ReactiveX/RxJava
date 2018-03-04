@@ -19,17 +19,19 @@ import static org.mockito.Mockito.*;
 
 import java.util.*;
 import java.util.concurrent.*;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.*;
 
 import org.junit.Test;
 
 import io.reactivex.*;
 import io.reactivex.Observable;
 import io.reactivex.Observer;
+import io.reactivex.disposables.*;
 import io.reactivex.exceptions.*;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.functions.Functions;
 import io.reactivex.observers.*;
+import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.subjects.*;
 
 public class ObservableWindowWithObservableTest {
@@ -346,8 +348,8 @@ public class ObservableWindowWithObservableTest {
 
         boundary.onComplete();
 
-        // FIXME source still active because the open window
-        assertTrue(source.hasObservers());
+
+        assertFalse(source.hasObservers());
         assertFalse(boundary.hasObservers());
 
         ts.assertComplete();
@@ -374,10 +376,13 @@ public class ObservableWindowWithObservableTest {
 
         ts.dispose();
 
-        // FIXME source has subscribers because the open window
         assertTrue(source.hasObservers());
-        // FIXME boundary has subscribers because the open window
-        assertTrue(boundary.hasObservers());
+
+        assertFalse(boundary.hasObservers());
+
+        ts.values().get(0).test(true);
+
+        assertFalse(source.hasObservers());
 
         ts.assertNotComplete();
         ts.assertNoErrors();
@@ -637,5 +642,628 @@ public class ObservableWindowWithObservableTest {
                 return f.window(Observable.never()).takeLast(1);
             }
         });
+    }
+
+    @Test
+    public void upstreamDisposedWhenOutputsDisposed() {
+        PublishSubject<Integer> source = PublishSubject.create();
+        PublishSubject<Integer> boundary = PublishSubject.create();
+
+        TestObserver<Integer> to = source.window(boundary)
+        .take(1)
+        .flatMap(new Function<Observable<Integer>, ObservableSource<Integer>>() {
+            @Override
+            public ObservableSource<Integer> apply(
+                    Observable<Integer> w) throws Exception {
+                return w.take(1);
+            }
+        })
+        .test();
+
+        source.onNext(1);
+
+        assertFalse("source not disposed", source.hasObservers());
+        assertFalse("boundary not disposed", boundary.hasObservers());
+
+        to.assertResult(1);
+    }
+
+    @Test
+    public void mainAndBoundaryBothError() {
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            final AtomicReference<Observer<? super Object>> ref = new AtomicReference<Observer<? super Object>>();
+
+            TestObserver<Observable<Object>> to = Observable.error(new TestException("main"))
+            .window(new Observable<Object>() {
+                @Override
+                protected void subscribeActual(Observer<? super Object> observer) {
+                    observer.onSubscribe(Disposables.empty());
+                    ref.set(observer);
+                }
+            })
+            .test();
+
+            to
+            .assertValueCount(1)
+            .assertError(TestException.class)
+            .assertErrorMessage("main")
+            .assertNotComplete();
+
+            ref.get().onError(new TestException("inner"));
+
+            TestHelper.assertUndeliverable(errors, 0, TestException.class, "inner");
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
+
+    @Test
+    public void mainCompleteBoundaryErrorRace() {
+        final TestException ex = new TestException();
+
+        for (int i = 0; i < TestHelper.RACE_LONG_LOOPS; i++) {
+            List<Throwable> errors = TestHelper.trackPluginErrors();
+            try {
+                final AtomicReference<Observer<? super Object>> refMain = new AtomicReference<Observer<? super Object>>();
+                final AtomicReference<Observer<? super Object>> ref = new AtomicReference<Observer<? super Object>>();
+
+                TestObserver<Observable<Object>> to = new Observable<Object>() {
+                    @Override
+                    protected void subscribeActual(Observer<? super Object> observer) {
+                        observer.onSubscribe(Disposables.empty());
+                        refMain.set(observer);
+                    }
+                }
+                .window(new Observable<Object>() {
+                    @Override
+                    protected void subscribeActual(Observer<? super Object> observer) {
+                        observer.onSubscribe(Disposables.empty());
+                        ref.set(observer);
+                    }
+                })
+                .test();
+
+                Runnable r1 = new Runnable() {
+                    @Override
+                    public void run() {
+                        refMain.get().onComplete();
+                    }
+                };
+                Runnable r2 = new Runnable() {
+                    @Override
+                    public void run() {
+                        ref.get().onError(ex);
+                    }
+                };
+
+                TestHelper.race(r1, r2);
+
+                to
+                .assertValueCount(1)
+                .assertTerminated();
+
+                if (!errors.isEmpty()) {
+                    TestHelper.assertUndeliverable(errors, 0, TestException.class);
+                }
+            } finally {
+                RxJavaPlugins.reset();
+            }
+        }
+    }
+
+    @Test
+    public void mainNextBoundaryNextRace() {
+        for (int i = 0; i < TestHelper.RACE_LONG_LOOPS; i++) {
+            final AtomicReference<Observer<? super Object>> refMain = new AtomicReference<Observer<? super Object>>();
+            final AtomicReference<Observer<? super Object>> ref = new AtomicReference<Observer<? super Object>>();
+
+            TestObserver<Observable<Object>> to = new Observable<Object>() {
+                @Override
+                protected void subscribeActual(Observer<? super Object> observer) {
+                    observer.onSubscribe(Disposables.empty());
+                    refMain.set(observer);
+                }
+            }
+            .window(new Observable<Object>() {
+                @Override
+                protected void subscribeActual(Observer<? super Object> observer) {
+                    observer.onSubscribe(Disposables.empty());
+                    ref.set(observer);
+                }
+            })
+            .test();
+
+            Runnable r1 = new Runnable() {
+                @Override
+                public void run() {
+                    refMain.get().onNext(1);
+                }
+            };
+            Runnable r2 = new Runnable() {
+                @Override
+                public void run() {
+                    ref.get().onNext(1);
+                }
+            };
+
+            TestHelper.race(r1, r2);
+
+            to
+            .assertValueCount(2)
+            .assertNotComplete()
+            .assertNoErrors();
+        }
+    }
+
+    @Test
+    public void takeOneAnotherBoundary() {
+        final AtomicReference<Observer<? super Object>> refMain = new AtomicReference<Observer<? super Object>>();
+        final AtomicReference<Observer<? super Object>> ref = new AtomicReference<Observer<? super Object>>();
+
+        TestObserver<Observable<Object>> to = new Observable<Object>() {
+            @Override
+            protected void subscribeActual(Observer<? super Object> observer) {
+                observer.onSubscribe(Disposables.empty());
+                refMain.set(observer);
+            }
+        }
+        .window(new Observable<Object>() {
+            @Override
+            protected void subscribeActual(Observer<? super Object> observer) {
+                observer.onSubscribe(Disposables.empty());
+                ref.set(observer);
+            }
+        })
+        .test();
+
+        to.assertValueCount(1)
+        .assertNotTerminated()
+        .cancel();
+
+        ref.get().onNext(1);
+
+        to.assertValueCount(1)
+        .assertNotTerminated();
+    }
+
+    @Test
+    public void disposeMainBoundaryCompleteRace() {
+        for (int i = 0; i < TestHelper.RACE_LONG_LOOPS; i++) {
+            final AtomicReference<Observer<? super Object>> refMain = new AtomicReference<Observer<? super Object>>();
+            final AtomicReference<Observer<? super Object>> ref = new AtomicReference<Observer<? super Object>>();
+
+            final TestObserver<Observable<Object>> to = new Observable<Object>() {
+                 @Override
+                 protected void subscribeActual(Observer<? super Object> observer) {
+                     observer.onSubscribe(Disposables.empty());
+                     refMain.set(observer);
+                 }
+             }
+             .window(new Observable<Object>() {
+                 @Override
+                 protected void subscribeActual(Observer<? super Object> observer) {
+                     final AtomicInteger counter = new AtomicInteger();
+                     observer.onSubscribe(new Disposable() {
+
+                         @Override
+                         public void dispose() {
+                             // about a microsecond
+                             for (int i = 0; i < 100; i++) {
+                                 counter.incrementAndGet();
+                             }
+                         }
+
+                         @Override
+                         public boolean isDisposed() {
+                             return false;
+                         }
+                      });
+                     ref.set(observer);
+                 }
+             })
+             .test();
+
+             Runnable r1 = new Runnable() {
+                 @Override
+                 public void run() {
+                     to.cancel();
+                 }
+             };
+             Runnable r2 = new Runnable() {
+                 @Override
+                 public void run() {
+                     Observer<Object> o = ref.get();
+                     o.onNext(1);
+                     o.onComplete();
+                 }
+             };
+
+             TestHelper.race(r1, r2);
+        }
+    }
+
+    @Test
+    public void disposeMainBoundaryErrorRace() {
+        final TestException ex = new TestException();
+
+        for (int i = 0; i < TestHelper.RACE_LONG_LOOPS; i++) {
+           final AtomicReference<Observer<? super Object>> refMain = new AtomicReference<Observer<? super Object>>();
+           final AtomicReference<Observer<? super Object>> ref = new AtomicReference<Observer<? super Object>>();
+
+           final TestObserver<Observable<Object>> to = new Observable<Object>() {
+               @Override
+               protected void subscribeActual(Observer<? super Object> observer) {
+                   observer.onSubscribe(Disposables.empty());
+                   refMain.set(observer);
+               }
+           }
+           .window(new Observable<Object>() {
+               @Override
+               protected void subscribeActual(Observer<? super Object> observer) {
+                   final AtomicInteger counter = new AtomicInteger();
+                   observer.onSubscribe(new Disposable() {
+
+                       @Override
+                       public void dispose() {
+                           // about a microsecond
+                           for (int i = 0; i < 100; i++) {
+                               counter.incrementAndGet();
+                           }
+                       }
+
+                       @Override
+                       public boolean isDisposed() {
+                           return false;
+                       }
+                    });
+                   ref.set(observer);
+               }
+           })
+           .test();
+
+            Runnable r1 = new Runnable() {
+                @Override
+                public void run() {
+                    to.cancel();
+                }
+            };
+            Runnable r2 = new Runnable() {
+                @Override
+                public void run() {
+                    Observer<Object> o = ref.get();
+                    o.onNext(1);
+                    o.onError(ex);
+                }
+            };
+
+            TestHelper.race(r1, r2);
+        }
+    }
+
+    @Test
+    public void boundarySupplierDoubleOnSubscribe() {
+        TestHelper.checkDoubleOnSubscribeObservable(new Function<Observable<Object>, Observable<Observable<Object>>>() {
+            @Override
+            public Observable<Observable<Object>> apply(Observable<Object> f)
+                    throws Exception {
+                return f.window(Functions.justCallable(Observable.never())).takeLast(1);
+            }
+        });
+    }
+
+    @Test
+    public void selectorUpstreamDisposedWhenOutputsDisposed() {
+        PublishSubject<Integer> source = PublishSubject.create();
+        PublishSubject<Integer> boundary = PublishSubject.create();
+
+        TestObserver<Integer> to = source.window(Functions.justCallable(boundary))
+        .take(1)
+        .flatMap(new Function<Observable<Integer>, ObservableSource<Integer>>() {
+            @Override
+            public ObservableSource<Integer> apply(
+                    Observable<Integer> w) throws Exception {
+                return w.take(1);
+            }
+        })
+        .test();
+
+        source.onNext(1);
+
+        assertFalse("source not disposed", source.hasObservers());
+        assertFalse("boundary not disposed", boundary.hasObservers());
+
+        to.assertResult(1);
+    }
+
+    @Test
+    public void supplierMainAndBoundaryBothError() {
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            final AtomicReference<Observer<? super Object>> ref = new AtomicReference<Observer<? super Object>>();
+
+            TestObserver<Observable<Object>> to = Observable.error(new TestException("main"))
+            .window(Functions.justCallable(new Observable<Object>() {
+                @Override
+                protected void subscribeActual(Observer<? super Object> observer) {
+                    observer.onSubscribe(Disposables.empty());
+                    ref.set(observer);
+                }
+            }))
+            .test();
+
+            to
+            .assertValueCount(1)
+            .assertError(TestException.class)
+            .assertErrorMessage("main")
+            .assertNotComplete();
+
+            ref.get().onError(new TestException("inner"));
+
+            TestHelper.assertUndeliverable(errors, 0, TestException.class, "inner");
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
+
+    @Test
+    public void supplierMainCompleteBoundaryErrorRace() {
+        final TestException ex = new TestException();
+
+        for (int i = 0; i < TestHelper.RACE_LONG_LOOPS; i++) {
+            List<Throwable> errors = TestHelper.trackPluginErrors();
+            try {
+                final AtomicReference<Observer<? super Object>> refMain = new AtomicReference<Observer<? super Object>>();
+                final AtomicReference<Observer<? super Object>> ref = new AtomicReference<Observer<? super Object>>();
+
+                TestObserver<Observable<Object>> to = new Observable<Object>() {
+                    @Override
+                    protected void subscribeActual(Observer<? super Object> observer) {
+                        observer.onSubscribe(Disposables.empty());
+                        refMain.set(observer);
+                    }
+                }
+                .window(Functions.justCallable(new Observable<Object>() {
+                    @Override
+                    protected void subscribeActual(Observer<? super Object> observer) {
+                        observer.onSubscribe(Disposables.empty());
+                        ref.set(observer);
+                    }
+                }))
+                .test();
+
+                Runnable r1 = new Runnable() {
+                    @Override
+                    public void run() {
+                        refMain.get().onComplete();
+                    }
+                };
+                Runnable r2 = new Runnable() {
+                    @Override
+                    public void run() {
+                        ref.get().onError(ex);
+                    }
+                };
+
+                TestHelper.race(r1, r2);
+
+                to
+                .assertValueCount(1)
+                .assertTerminated();
+
+                if (!errors.isEmpty()) {
+                    TestHelper.assertUndeliverable(errors, 0, TestException.class);
+                }
+            } finally {
+                RxJavaPlugins.reset();
+            }
+        }
+    }
+
+    @Test
+    public void supplierMainNextBoundaryNextRace() {
+        for (int i = 0; i < TestHelper.RACE_LONG_LOOPS; i++) {
+            final AtomicReference<Observer<? super Object>> refMain = new AtomicReference<Observer<? super Object>>();
+            final AtomicReference<Observer<? super Object>> ref = new AtomicReference<Observer<? super Object>>();
+
+            TestObserver<Observable<Object>> to = new Observable<Object>() {
+                @Override
+                protected void subscribeActual(Observer<? super Object> observer) {
+                    observer.onSubscribe(Disposables.empty());
+                    refMain.set(observer);
+                }
+            }
+            .window(Functions.justCallable(new Observable<Object>() {
+                @Override
+                protected void subscribeActual(Observer<? super Object> observer) {
+                    observer.onSubscribe(Disposables.empty());
+                    ref.set(observer);
+                }
+            }))
+            .test();
+
+            Runnable r1 = new Runnable() {
+                @Override
+                public void run() {
+                    refMain.get().onNext(1);
+                }
+            };
+            Runnable r2 = new Runnable() {
+                @Override
+                public void run() {
+                    ref.get().onNext(1);
+                }
+            };
+
+            TestHelper.race(r1, r2);
+
+            to
+            .assertValueCount(2)
+            .assertNotComplete()
+            .assertNoErrors();
+        }
+    }
+
+    @Test
+    public void supplierTakeOneAnotherBoundary() {
+        final AtomicReference<Observer<? super Object>> refMain = new AtomicReference<Observer<? super Object>>();
+        final AtomicReference<Observer<? super Object>> ref = new AtomicReference<Observer<? super Object>>();
+
+        TestObserver<Observable<Object>> to = new Observable<Object>() {
+            @Override
+            protected void subscribeActual(Observer<? super Object> observer) {
+                observer.onSubscribe(Disposables.empty());
+                refMain.set(observer);
+            }
+        }
+        .window(Functions.justCallable(new Observable<Object>() {
+            @Override
+            protected void subscribeActual(Observer<? super Object> observer) {
+                observer.onSubscribe(Disposables.empty());
+                ref.set(observer);
+            }
+        }))
+        .test();
+
+        to.assertValueCount(1)
+        .assertNotTerminated()
+        .cancel();
+
+        ref.get().onNext(1);
+
+        to.assertValueCount(1)
+        .assertNotTerminated();
+    }
+
+    @Test
+    public void supplierDisposeMainBoundaryCompleteRace() {
+        for (int i = 0; i < TestHelper.RACE_LONG_LOOPS; i++) {
+            final AtomicReference<Observer<? super Object>> refMain = new AtomicReference<Observer<? super Object>>();
+            final AtomicReference<Observer<? super Object>> ref = new AtomicReference<Observer<? super Object>>();
+
+            final TestObserver<Observable<Object>> to = new Observable<Object>() {
+                 @Override
+                 protected void subscribeActual(Observer<? super Object> observer) {
+                     observer.onSubscribe(Disposables.empty());
+                     refMain.set(observer);
+                 }
+             }
+             .window(Functions.justCallable(new Observable<Object>() {
+                 @Override
+                 protected void subscribeActual(Observer<? super Object> observer) {
+                     final AtomicInteger counter = new AtomicInteger();
+                     observer.onSubscribe(new Disposable() {
+
+                         @Override
+                         public void dispose() {
+                             // about a microsecond
+                             for (int i = 0; i < 100; i++) {
+                                 counter.incrementAndGet();
+                             }
+                         }
+
+                         @Override
+                         public boolean isDisposed() {
+                             return false;
+                         }
+                      });
+                     ref.set(observer);
+                 }
+             }))
+             .test();
+
+             Runnable r1 = new Runnable() {
+                 @Override
+                 public void run() {
+                     to.cancel();
+                 }
+             };
+             Runnable r2 = new Runnable() {
+                 @Override
+                 public void run() {
+                     Observer<Object> o = ref.get();
+                     o.onNext(1);
+                     o.onComplete();
+                 }
+             };
+
+             TestHelper.race(r1, r2);
+        }
+    }
+
+    @Test
+    public void supplierDisposeMainBoundaryErrorRace() {
+        final TestException ex = new TestException();
+
+        for (int i = 0; i < TestHelper.RACE_LONG_LOOPS; i++) {
+            List<Throwable> errors = TestHelper.trackPluginErrors();
+            try {
+                final AtomicReference<Observer<? super Object>> refMain = new AtomicReference<Observer<? super Object>>();
+                final AtomicReference<Observer<? super Object>> ref = new AtomicReference<Observer<? super Object>>();
+
+                final TestObserver<Observable<Object>> to = new Observable<Object>() {
+                    @Override
+                    protected void subscribeActual(Observer<? super Object> observer) {
+                        observer.onSubscribe(Disposables.empty());
+                        refMain.set(observer);
+                    }
+                }
+                .window(new Callable<ObservableSource<Object>>() {
+                    int count;
+                    @Override
+                    public ObservableSource<Object> call() throws Exception {
+                        if (++count > 1) {
+                            return Observable.never();
+                        }
+                        return (new Observable<Object>() {
+                            @Override
+                            protected void subscribeActual(Observer<? super Object> observer) {
+                                final AtomicInteger counter = new AtomicInteger();
+                                observer.onSubscribe(new Disposable() {
+
+                                    @Override
+                                    public void dispose() {
+                                        // about a microsecond
+                                        for (int i = 0; i < 100; i++) {
+                                            counter.incrementAndGet();
+                                        }
+                                    }
+
+                                    @Override
+                                    public boolean isDisposed() {
+                                        return false;
+                                    }
+                                });
+                                ref.set(observer);
+                            }
+                        });
+                    }
+                })
+                .test();
+
+                Runnable r1 = new Runnable() {
+                    @Override
+                    public void run() {
+                        to.cancel();
+                    }
+                };
+                Runnable r2 = new Runnable() {
+                    @Override
+                    public void run() {
+                        Observer<Object> o = ref.get();
+                        o.onNext(1);
+                        o.onError(ex);
+                    }
+                };
+
+                TestHelper.race(r1, r2);
+
+                if (!errors.isEmpty()) {
+                    TestHelper.assertUndeliverable(errors, 0, TestException.class);
+                }
+            } finally {
+                RxJavaPlugins.reset();
+            }
+        }
     }
 }
