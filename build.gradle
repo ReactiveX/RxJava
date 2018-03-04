@@ -57,6 +57,7 @@ def mockitoVersion = "2.1.0"
 def jmhLibVersion = "1.19"
 def testNgVersion = "6.11"
 def guavaVersion = "24.0-jre"
+def jacocoVersion = "0.8.0"
 // --------------------------------------
 
 repositories {
@@ -257,7 +258,7 @@ task testng(type: Test) {
 check.dependsOn testng 
 
 jacoco {
-    toolVersion = "0.7.9" // See http://www.eclemma.org/jacoco/.
+    toolVersion = jacocoVersion // See http://www.eclemma.org/jacoco/.
 }
 
 task GCandMem(dependsOn: "check") doLast {
