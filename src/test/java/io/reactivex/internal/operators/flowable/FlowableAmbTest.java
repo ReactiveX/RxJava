@@ -94,16 +94,16 @@ public class FlowableAmbTest {
 
     @Test
     public void testAmb() {
-        Flowable<String> Flowable1 = createFlowable(new String[] {
+        Flowable<String> flowable1 = createFlowable(new String[] {
                 "1", "11", "111", "1111" }, 2000, null);
-        Flowable<String> Flowable2 = createFlowable(new String[] {
+        Flowable<String> flowable2 = createFlowable(new String[] {
                 "2", "22", "222", "2222" }, 1000, null);
-        Flowable<String> Flowable3 = createFlowable(new String[] {
+        Flowable<String> flowable3 = createFlowable(new String[] {
                 "3", "33", "333", "3333" }, 3000, null);
 
         @SuppressWarnings("unchecked")
-        Flowable<String> o = Flowable.ambArray(Flowable1,
-                Flowable2, Flowable3);
+        Flowable<String> o = Flowable.ambArray(flowable1,
+                flowable2, flowable3);
 
         @SuppressWarnings("unchecked")
         DefaultSubscriber<String> observer = mock(DefaultSubscriber.class);
@@ -124,16 +124,16 @@ public class FlowableAmbTest {
     public void testAmb2() {
         IOException expectedException = new IOException(
                 "fake exception");
-        Flowable<String> Flowable1 = createFlowable(new String[] {},
+        Flowable<String> flowable1 = createFlowable(new String[] {},
                 2000, new IOException("fake exception"));
-        Flowable<String> Flowable2 = createFlowable(new String[] {
+        Flowable<String> flowable2 = createFlowable(new String[] {
                 "2", "22", "222", "2222" }, 1000, expectedException);
-        Flowable<String> Flowable3 = createFlowable(new String[] {},
+        Flowable<String> flowable3 = createFlowable(new String[] {},
                 3000, new IOException("fake exception"));
 
         @SuppressWarnings("unchecked")
-        Flowable<String> o = Flowable.ambArray(Flowable1,
-                Flowable2, Flowable3);
+        Flowable<String> o = Flowable.ambArray(flowable1,
+                flowable2, flowable3);
 
         @SuppressWarnings("unchecked")
         DefaultSubscriber<String> observer = mock(DefaultSubscriber.class);
@@ -152,16 +152,16 @@ public class FlowableAmbTest {
 
     @Test
     public void testAmb3() {
-        Flowable<String> Flowable1 = createFlowable(new String[] {
+        Flowable<String> flowable1 = createFlowable(new String[] {
                 "1" }, 2000, null);
-        Flowable<String> Flowable2 = createFlowable(new String[] {},
+        Flowable<String> flowable2 = createFlowable(new String[] {},
                 1000, null);
-        Flowable<String> Flowable3 = createFlowable(new String[] {
+        Flowable<String> flowable3 = createFlowable(new String[] {
                 "3" }, 3000, null);
 
         @SuppressWarnings("unchecked")
-        Flowable<String> o = Flowable.ambArray(Flowable1,
-                Flowable2, Flowable3);
+        Flowable<String> o = Flowable.ambArray(flowable1,
+                flowable2, flowable3);
 
         @SuppressWarnings("unchecked")
         DefaultSubscriber<String> observer = mock(DefaultSubscriber.class);

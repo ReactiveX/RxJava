@@ -111,13 +111,13 @@ public class ObservableRetryTest {
     @Test
     public void testRetryIndefinitely() {
         Observer<String> observer = TestHelper.mockObserver();
-        int NUM_RETRIES = 20;
-        Observable<String> origin = Observable.unsafeCreate(new FuncWithErrors(NUM_RETRIES));
+        int numRetries = 20;
+        Observable<String> origin = Observable.unsafeCreate(new FuncWithErrors(numRetries));
         origin.retry().subscribe(new TestObserver<String>(observer));
 
         InOrder inOrder = inOrder(observer);
         // should show 3 attempts
-        inOrder.verify(observer, times(NUM_RETRIES + 1)).onNext("beginningEveryTime");
+        inOrder.verify(observer, times(numRetries + 1)).onNext("beginningEveryTime");
         // should have no errors
         inOrder.verify(observer, never()).onError(any(Throwable.class));
         // should have a single success
@@ -130,8 +130,8 @@ public class ObservableRetryTest {
     @Test
     public void testSchedulingNotificationHandler() {
         Observer<String> observer = TestHelper.mockObserver();
-        int NUM_RETRIES = 2;
-        Observable<String> origin = Observable.unsafeCreate(new FuncWithErrors(NUM_RETRIES));
+        int numRetries = 2;
+        Observable<String> origin = Observable.unsafeCreate(new FuncWithErrors(numRetries));
         TestObserver<String> to = new TestObserver<String>(observer);
         origin.retryWhen(new Function<Observable<? extends Throwable>, Observable<Object>>() {
             @Override
@@ -157,7 +157,7 @@ public class ObservableRetryTest {
         to.awaitTerminalEvent();
         InOrder inOrder = inOrder(observer);
         // should show 3 attempts
-        inOrder.verify(observer, times(1 + NUM_RETRIES)).onNext("beginningEveryTime");
+        inOrder.verify(observer, times(1 + numRetries)).onNext("beginningEveryTime");
         // should have no errors
         inOrder.verify(observer, never()).onError(any(Throwable.class));
         // should have a single success
@@ -170,8 +170,8 @@ public class ObservableRetryTest {
     @Test
     public void testOnNextFromNotificationHandler() {
         Observer<String> observer = TestHelper.mockObserver();
-        int NUM_RETRIES = 2;
-        Observable<String> origin = Observable.unsafeCreate(new FuncWithErrors(NUM_RETRIES));
+        int numRetries = 2;
+        Observable<String> origin = Observable.unsafeCreate(new FuncWithErrors(numRetries));
         origin.retryWhen(new Function<Observable<? extends Throwable>, Observable<Object>>() {
             @Override
             public Observable<Object> apply(Observable<? extends Throwable> t1) {
@@ -187,7 +187,7 @@ public class ObservableRetryTest {
 
         InOrder inOrder = inOrder(observer);
         // should show 3 attempts
-        inOrder.verify(observer, times(NUM_RETRIES + 1)).onNext("beginningEveryTime");
+        inOrder.verify(observer, times(numRetries + 1)).onNext("beginningEveryTime");
         // should have no errors
         inOrder.verify(observer, never()).onError(any(Throwable.class));
         // should have a single success
@@ -284,15 +284,15 @@ public class ObservableRetryTest {
 
     @Test
     public void testRetryFail() {
-        int NUM_RETRIES = 1;
-        int NUM_FAILURES = 2;
+        int numRetries = 1;
+        int numFailures = 2;
         Observer<String> observer = TestHelper.mockObserver();
-        Observable<String> origin = Observable.unsafeCreate(new FuncWithErrors(NUM_FAILURES));
-        origin.retry(NUM_RETRIES).subscribe(observer);
+        Observable<String> origin = Observable.unsafeCreate(new FuncWithErrors(numFailures));
+        origin.retry(numRetries).subscribe(observer);
 
         InOrder inOrder = inOrder(observer);
         // should show 2 attempts (first time fail, second time (1st retry) fail)
-        inOrder.verify(observer, times(1 + NUM_RETRIES)).onNext("beginningEveryTime");
+        inOrder.verify(observer, times(1 + numRetries)).onNext("beginningEveryTime");
         // should only retry once, fail again and emit onError
         inOrder.verify(observer, times(1)).onError(any(RuntimeException.class));
         // no success
@@ -303,14 +303,14 @@ public class ObservableRetryTest {
 
     @Test
     public void testRetrySuccess() {
-        int NUM_FAILURES = 1;
+        int numFailures = 1;
         Observer<String> observer = TestHelper.mockObserver();
-        Observable<String> origin = Observable.unsafeCreate(new FuncWithErrors(NUM_FAILURES));
+        Observable<String> origin = Observable.unsafeCreate(new FuncWithErrors(numFailures));
         origin.retry(3).subscribe(observer);
 
         InOrder inOrder = inOrder(observer);
         // should show 3 attempts
-        inOrder.verify(observer, times(1 + NUM_FAILURES)).onNext("beginningEveryTime");
+        inOrder.verify(observer, times(1 + numFailures)).onNext("beginningEveryTime");
         // should have no errors
         inOrder.verify(observer, never()).onError(any(Throwable.class));
         // should have a single success
@@ -322,14 +322,14 @@ public class ObservableRetryTest {
 
     @Test
     public void testInfiniteRetry() {
-        int NUM_FAILURES = 20;
+        int numFailures = 20;
         Observer<String> observer = TestHelper.mockObserver();
-        Observable<String> origin = Observable.unsafeCreate(new FuncWithErrors(NUM_FAILURES));
+        Observable<String> origin = Observable.unsafeCreate(new FuncWithErrors(numFailures));
         origin.retry().subscribe(observer);
 
         InOrder inOrder = inOrder(observer);
         // should show 3 attempts
-        inOrder.verify(observer, times(1 + NUM_FAILURES)).onNext("beginningEveryTime");
+        inOrder.verify(observer, times(1 + numFailures)).onNext("beginningEveryTime");
         // should have no errors
         inOrder.verify(observer, never()).onError(any(Throwable.class));
         // should have a single success

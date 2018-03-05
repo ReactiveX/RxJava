@@ -34,7 +34,7 @@ public class ObservableUnsubscribeOnTest {
 
     @Test(timeout = 5000)
     public void unsubscribeWhenSubscribeOnAndUnsubscribeOnAreOnSameThread() throws InterruptedException {
-        UIEventLoopScheduler UI_EVENT_LOOP = new UIEventLoopScheduler();
+        UIEventLoopScheduler uiEventLoop = new UIEventLoopScheduler();
         try {
             final ThreadSubscription subscription = new ThreadSubscription();
             final AtomicReference<Thread> subscribeThread = new AtomicReference<Thread>();
@@ -51,8 +51,8 @@ public class ObservableUnsubscribeOnTest {
             });
 
             TestObserver<Integer> observer = new TestObserver<Integer>();
-            w.subscribeOn(UI_EVENT_LOOP).observeOn(Schedulers.computation())
-            .unsubscribeOn(UI_EVENT_LOOP)
+            w.subscribeOn(uiEventLoop).observeOn(Schedulers.computation())
+            .unsubscribeOn(uiEventLoop)
             .take(2)
             .subscribe(observer);
 
@@ -69,18 +69,18 @@ public class ObservableUnsubscribeOnTest {
 
             System.out.println("unsubscribeThread: " + unsubscribeThread);
             System.out.println("subscribeThread.get(): " + subscribeThread.get());
-            assertTrue(unsubscribeThread.toString(), unsubscribeThread == UI_EVENT_LOOP.getThread());
+            assertTrue(unsubscribeThread.toString(), unsubscribeThread == uiEventLoop.getThread());
 
             observer.assertValues(1, 2);
             observer.assertTerminated();
         } finally {
-            UI_EVENT_LOOP.shutdown();
+            uiEventLoop.shutdown();
         }
     }
 
     @Test(timeout = 5000)
     public void unsubscribeWhenSubscribeOnAndUnsubscribeOnAreOnDifferentThreads() throws InterruptedException {
-        UIEventLoopScheduler UI_EVENT_LOOP = new UIEventLoopScheduler();
+        UIEventLoopScheduler uiEventLoop = new UIEventLoopScheduler();
         try {
             final ThreadSubscription subscription = new ThreadSubscription();
             final AtomicReference<Thread> subscribeThread = new AtomicReference<Thread>();
@@ -98,7 +98,7 @@ public class ObservableUnsubscribeOnTest {
 
             TestObserver<Integer> observer = new TestObserver<Integer>();
             w.subscribeOn(Schedulers.newThread()).observeOn(Schedulers.computation())
-            .unsubscribeOn(UI_EVENT_LOOP)
+            .unsubscribeOn(uiEventLoop)
             .take(2)
             .subscribe(observer);
 
@@ -113,15 +113,15 @@ public class ObservableUnsubscribeOnTest {
             assertNotSame(Thread.currentThread(), subscribeThread.get());
             // True for Schedulers.newThread()
 
-            System.out.println("UI Thread: " + UI_EVENT_LOOP.getThread());
+            System.out.println("UI Thread: " + uiEventLoop.getThread());
             System.out.println("unsubscribeThread: " + unsubscribeThread);
             System.out.println("subscribeThread.get(): " + subscribeThread.get());
-            assertSame(unsubscribeThread, UI_EVENT_LOOP.getThread());
+            assertSame(unsubscribeThread, uiEventLoop.getThread());
 
             observer.assertValues(1, 2);
             observer.assertTerminated();
         } finally {
-            UI_EVENT_LOOP.shutdown();
+            uiEventLoop.shutdown();
         }
     }
 

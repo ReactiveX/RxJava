@@ -112,13 +112,13 @@ public class FlowableRetryTest {
     @Test
     public void testRetryIndefinitely() {
         Subscriber<String> observer = TestHelper.mockSubscriber();
-        int NUM_RETRIES = 20;
-        Flowable<String> origin = Flowable.unsafeCreate(new FuncWithErrors(NUM_RETRIES));
+        int numRetries = 20;
+        Flowable<String> origin = Flowable.unsafeCreate(new FuncWithErrors(numRetries));
         origin.retry().subscribe(new TestSubscriber<String>(observer));
 
         InOrder inOrder = inOrder(observer);
         // should show 3 attempts
-        inOrder.verify(observer, times(NUM_RETRIES + 1)).onNext("beginningEveryTime");
+        inOrder.verify(observer, times(numRetries + 1)).onNext("beginningEveryTime");
         // should have no errors
         inOrder.verify(observer, never()).onError(any(Throwable.class));
         // should have a single success
@@ -131,8 +131,8 @@ public class FlowableRetryTest {
     @Test
     public void testSchedulingNotificationHandler() {
         Subscriber<String> observer = TestHelper.mockSubscriber();
-        int NUM_RETRIES = 2;
-        Flowable<String> origin = Flowable.unsafeCreate(new FuncWithErrors(NUM_RETRIES));
+        int numRetries = 2;
+        Flowable<String> origin = Flowable.unsafeCreate(new FuncWithErrors(numRetries));
         TestSubscriber<String> subscriber = new TestSubscriber<String>(observer);
         origin.retryWhen(new Function<Flowable<? extends Throwable>, Flowable<Object>>() {
             @Override
@@ -156,7 +156,7 @@ public class FlowableRetryTest {
         subscriber.awaitTerminalEvent();
         InOrder inOrder = inOrder(observer);
         // should show 3 attempts
-        inOrder.verify(observer, times(1 + NUM_RETRIES)).onNext("beginningEveryTime");
+        inOrder.verify(observer, times(1 + numRetries)).onNext("beginningEveryTime");
         // should have no errors
         inOrder.verify(observer, never()).onError(any(Throwable.class));
         // should have a single success
@@ -169,8 +169,8 @@ public class FlowableRetryTest {
     @Test
     public void testOnNextFromNotificationHandler() {
         Subscriber<String> observer = TestHelper.mockSubscriber();
-        int NUM_RETRIES = 2;
-        Flowable<String> origin = Flowable.unsafeCreate(new FuncWithErrors(NUM_RETRIES));
+        int numRetries = 2;
+        Flowable<String> origin = Flowable.unsafeCreate(new FuncWithErrors(numRetries));
         origin.retryWhen(new Function<Flowable<? extends Throwable>, Flowable<Object>>() {
             @Override
             public Flowable<Object> apply(Flowable<? extends Throwable> t1) {
@@ -186,7 +186,7 @@ public class FlowableRetryTest {
 
         InOrder inOrder = inOrder(observer);
         // should show 3 attempts
-        inOrder.verify(observer, times(NUM_RETRIES + 1)).onNext("beginningEveryTime");
+        inOrder.verify(observer, times(numRetries + 1)).onNext("beginningEveryTime");
         // should have no errors
         inOrder.verify(observer, never()).onError(any(Throwable.class));
         // should have a single success
@@ -283,15 +283,15 @@ public class FlowableRetryTest {
 
     @Test
     public void testRetryFail() {
-        int NUM_RETRIES = 1;
-        int NUM_FAILURES = 2;
+        int numRetries = 1;
+        int numFailures = 2;
         Subscriber<String> observer = TestHelper.mockSubscriber();
-        Flowable<String> origin = Flowable.unsafeCreate(new FuncWithErrors(NUM_FAILURES));
-        origin.retry(NUM_RETRIES).subscribe(observer);
+        Flowable<String> origin = Flowable.unsafeCreate(new FuncWithErrors(numFailures));
+        origin.retry(numRetries).subscribe(observer);
 
         InOrder inOrder = inOrder(observer);
         // should show 2 attempts (first time fail, second time (1st retry) fail)
-        inOrder.verify(observer, times(1 + NUM_RETRIES)).onNext("beginningEveryTime");
+        inOrder.verify(observer, times(1 + numRetries)).onNext("beginningEveryTime");
         // should only retry once, fail again and emit onError
         inOrder.verify(observer, times(1)).onError(any(RuntimeException.class));
         // no success
@@ -302,14 +302,14 @@ public class FlowableRetryTest {
 
     @Test
     public void testRetrySuccess() {
-        int NUM_FAILURES = 1;
+        int numFailures = 1;
         Subscriber<String> observer = TestHelper.mockSubscriber();
-        Flowable<String> origin = Flowable.unsafeCreate(new FuncWithErrors(NUM_FAILURES));
+        Flowable<String> origin = Flowable.unsafeCreate(new FuncWithErrors(numFailures));
         origin.retry(3).subscribe(observer);
 
         InOrder inOrder = inOrder(observer);
         // should show 3 attempts
-        inOrder.verify(observer, times(1 + NUM_FAILURES)).onNext("beginningEveryTime");
+        inOrder.verify(observer, times(1 + numFailures)).onNext("beginningEveryTime");
         // should have no errors
         inOrder.verify(observer, never()).onError(any(Throwable.class));
         // should have a single success
@@ -321,14 +321,14 @@ public class FlowableRetryTest {
 
     @Test
     public void testInfiniteRetry() {
-        int NUM_FAILURES = 20;
+        int numFailures = 20;
         Subscriber<String> observer = TestHelper.mockSubscriber();
-        Flowable<String> origin = Flowable.unsafeCreate(new FuncWithErrors(NUM_FAILURES));
+        Flowable<String> origin = Flowable.unsafeCreate(new FuncWithErrors(numFailures));
         origin.retry().subscribe(observer);
 
         InOrder inOrder = inOrder(observer);
         // should show 3 attempts
-        inOrder.verify(observer, times(1 + NUM_FAILURES)).onNext("beginningEveryTime");
+        inOrder.verify(observer, times(1 + numFailures)).onNext("beginningEveryTime");
         // should have no errors
         inOrder.verify(observer, never()).onError(any(Throwable.class));
         // should have a single success
@@ -710,10 +710,10 @@ public class FlowableRetryTest {
     public void testRetryWithBackpressure() throws InterruptedException {
         final int NUM_LOOPS = 1;
         for (int j = 0;j < NUM_LOOPS; j++) {
-            final int NUM_RETRIES = Flowable.bufferSize() * 2;
+            final int numRetries = Flowable.bufferSize() * 2;
             for (int i = 0; i < 400; i++) {
                 Subscriber<String> observer = TestHelper.mockSubscriber();
-                Flowable<String> origin = Flowable.unsafeCreate(new FuncWithErrors(NUM_RETRIES));
+                Flowable<String> origin = Flowable.unsafeCreate(new FuncWithErrors(numRetries));
                 TestSubscriber<String> ts = new TestSubscriber<String>(observer);
                 origin.retry().observeOn(Schedulers.computation()).subscribe(ts);
                 ts.awaitTerminalEvent(5, TimeUnit.SECONDS);
@@ -721,8 +721,8 @@ public class FlowableRetryTest {
                 InOrder inOrder = inOrder(observer);
                 // should have no errors
                 verify(observer, never()).onError(any(Throwable.class));
-                // should show NUM_RETRIES attempts
-                inOrder.verify(observer, times(NUM_RETRIES + 1)).onNext("beginningEveryTime");
+                // should show numRetries attempts
+                inOrder.verify(observer, times(numRetries + 1)).onNext("beginningEveryTime");
                 // should have a single success
                 inOrder.verify(observer, times(1)).onNext("onSuccessOnly");
                 // should have a single successful onComplete
@@ -735,7 +735,7 @@ public class FlowableRetryTest {
     @Test//(timeout = 15000)
     public void testRetryWithBackpressureParallel() throws InterruptedException {
         final int NUM_LOOPS = 1;
-        final int NUM_RETRIES = Flowable.bufferSize() * 2;
+        final int numRetries = Flowable.bufferSize() * 2;
         int ncpu = Runtime.getRuntime().availableProcessors();
         ExecutorService exec = Executors.newFixedThreadPool(Math.max(ncpu / 2, 2));
         try {
@@ -756,13 +756,13 @@ public class FlowableRetryTest {
                         public void run() {
                             final AtomicInteger nexts = new AtomicInteger();
                             try {
-                                Flowable<String> origin = Flowable.unsafeCreate(new FuncWithErrors(NUM_RETRIES));
+                                Flowable<String> origin = Flowable.unsafeCreate(new FuncWithErrors(numRetries));
                                 TestSubscriber<String> ts = new TestSubscriber<String>();
                                 origin.retry()
                                 .observeOn(Schedulers.computation()).subscribe(ts);
                                 ts.awaitTerminalEvent(2500, TimeUnit.MILLISECONDS);
                                 List<String> onNextEvents = new ArrayList<String>(ts.values());
-                                if (onNextEvents.size() != NUM_RETRIES + 2) {
+                                if (onNextEvents.size() != numRetries + 2) {
                                     for (Throwable t : ts.errors()) {
                                         onNextEvents.add(t.toString());
                                     }

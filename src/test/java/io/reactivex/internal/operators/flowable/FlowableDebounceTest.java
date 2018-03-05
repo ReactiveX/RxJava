@@ -53,12 +53,12 @@ public class FlowableDebounceTest {
     public void testDebounceWithCompleted() {
         Flowable<String> source = Flowable.unsafeCreate(new Publisher<String>() {
             @Override
-            public void subscribe(Subscriber<? super String> Subscriber) {
-                Subscriber.onSubscribe(new BooleanSubscription());
-                publishNext(Subscriber, 100, "one");    // Should be skipped since "two" will arrive before the timeout expires.
-                publishNext(Subscriber, 400, "two");    // Should be published since "three" will arrive after the timeout expires.
-                publishNext(Subscriber, 900, "three");   // Should be skipped since onComplete will arrive before the timeout expires.
-                publishCompleted(Subscriber, 1000);     // Should be published as soon as the timeout expires.
+            public void subscribe(Subscriber<? super String> subscriber) {
+                subscriber.onSubscribe(new BooleanSubscription());
+                publishNext(subscriber, 100, "one");    // Should be skipped since "two" will arrive before the timeout expires.
+                publishNext(subscriber, 400, "two");    // Should be published since "three" will arrive after the timeout expires.
+                publishNext(subscriber, 900, "three");   // Should be skipped since onComplete will arrive before the timeout expires.
+                publishCompleted(subscriber, 1000);     // Should be published as soon as the timeout expires.
             }
         });
 
@@ -79,18 +79,18 @@ public class FlowableDebounceTest {
     public void testDebounceNeverEmits() {
         Flowable<String> source = Flowable.unsafeCreate(new Publisher<String>() {
             @Override
-            public void subscribe(Subscriber<? super String> Subscriber) {
-                Subscriber.onSubscribe(new BooleanSubscription());
+            public void subscribe(Subscriber<? super String> subscriber) {
+                subscriber.onSubscribe(new BooleanSubscription());
                 // all should be skipped since they are happening faster than the 200ms timeout
-                publishNext(Subscriber, 100, "a");    // Should be skipped
-                publishNext(Subscriber, 200, "b");    // Should be skipped
-                publishNext(Subscriber, 300, "c");    // Should be skipped
-                publishNext(Subscriber, 400, "d");    // Should be skipped
-                publishNext(Subscriber, 500, "e");    // Should be skipped
-                publishNext(Subscriber, 600, "f");    // Should be skipped
-                publishNext(Subscriber, 700, "g");    // Should be skipped
-                publishNext(Subscriber, 800, "h");    // Should be skipped
-                publishCompleted(Subscriber, 900);     // Should be published as soon as the timeout expires.
+                publishNext(subscriber, 100, "a");    // Should be skipped
+                publishNext(subscriber, 200, "b");    // Should be skipped
+                publishNext(subscriber, 300, "c");    // Should be skipped
+                publishNext(subscriber, 400, "d");    // Should be skipped
+                publishNext(subscriber, 500, "e");    // Should be skipped
+                publishNext(subscriber, 600, "f");    // Should be skipped
+                publishNext(subscriber, 700, "g");    // Should be skipped
+                publishNext(subscriber, 800, "h");    // Should be skipped
+                publishCompleted(subscriber, 900);     // Should be published as soon as the timeout expires.
             }
         });
 
@@ -109,12 +109,12 @@ public class FlowableDebounceTest {
     public void testDebounceWithError() {
         Flowable<String> source = Flowable.unsafeCreate(new Publisher<String>() {
             @Override
-            public void subscribe(Subscriber<? super String> Subscriber) {
-                Subscriber.onSubscribe(new BooleanSubscription());
+            public void subscribe(Subscriber<? super String> subscriber) {
+                subscriber.onSubscribe(new BooleanSubscription());
                 Exception error = new TestException();
-                publishNext(Subscriber, 100, "one");    // Should be published since "two" will arrive after the timeout expires.
-                publishNext(Subscriber, 600, "two");    // Should be skipped since onError will arrive before the timeout expires.
-                publishError(Subscriber, 700, error);   // Should be published as soon as the timeout expires.
+                publishNext(subscriber, 100, "one");    // Should be published since "two" will arrive after the timeout expires.
+                publishNext(subscriber, 600, "two");    // Should be skipped since onError will arrive before the timeout expires.
+                publishError(subscriber, 700, error);   // Should be published as soon as the timeout expires.
             }
         });
 
@@ -131,29 +131,29 @@ public class FlowableDebounceTest {
         inOrder.verifyNoMoreInteractions();
     }
 
-    private <T> void publishCompleted(final Subscriber<T> Subscriber, long delay) {
+    private <T> void publishCompleted(final Subscriber<T> subscriber, long delay) {
         innerScheduler.schedule(new Runnable() {
             @Override
             public void run() {
-                Subscriber.onComplete();
+                subscriber.onComplete();
             }
         }, delay, TimeUnit.MILLISECONDS);
     }
 
-    private <T> void publishError(final Subscriber<T> Subscriber, long delay, final Exception error) {
+    private <T> void publishError(final Subscriber<T> subscriber, long delay, final Exception error) {
         innerScheduler.schedule(new Runnable() {
             @Override
             public void run() {
-                Subscriber.onError(error);
+                subscriber.onError(error);
             }
         }, delay, TimeUnit.MILLISECONDS);
     }
 
-    private <T> void publishNext(final Subscriber<T> Subscriber, final long delay, final T value) {
+    private <T> void publishNext(final Subscriber<T> subscriber, final long delay, final T value) {
         innerScheduler.schedule(new Runnable() {
             @Override
             public void run() {
-                Subscriber.onNext(value);
+                subscriber.onNext(value);
             }
         }, delay, TimeUnit.MILLISECONDS);
     }
@@ -340,12 +340,12 @@ public class FlowableDebounceTest {
         try {
             new Flowable<Integer>() {
                 @Override
-                protected void subscribeActual(Subscriber<? super Integer> Subscriber) {
-                    Subscriber.onSubscribe(new BooleanSubscription());
-                    Subscriber.onComplete();
-                    Subscriber.onNext(1);
-                    Subscriber.onError(new TestException());
-                    Subscriber.onComplete();
+                protected void subscribeActual(Subscriber<? super Integer> subscriber) {
+                    subscriber.onSubscribe(new BooleanSubscription());
+                    subscriber.onComplete();
+                    subscriber.onNext(1);
+                    subscriber.onError(new TestException());
+                    subscriber.onComplete();
                 }
             }
             .debounce(1, TimeUnit.SECONDS, new TestScheduler())
@@ -444,10 +444,10 @@ public class FlowableDebounceTest {
 
         new Flowable<Integer>() {
             @Override
-            protected void subscribeActual(Subscriber<? super Integer> Subscriber) {
-                Subscriber.onSubscribe(new BooleanSubscription());
+            protected void subscribeActual(Subscriber<? super Integer> subscriber) {
+                subscriber.onSubscribe(new BooleanSubscription());
                 to.cancel();
-                Subscriber.onComplete();
+                subscriber.onComplete();
             }
         }
         .debounce(Functions.justFunction(Flowable.never()))
@@ -468,9 +468,9 @@ public class FlowableDebounceTest {
                 }
                 return new Flowable<Integer>() {
                     @Override
-                    protected void subscribeActual(Subscriber<? super Integer> Subscriber) {
-                        Subscriber.onSubscribe(new BooleanSubscription());
-                        ref.set(Subscriber);
+                    protected void subscribeActual(Subscriber<? super Integer> subscriber) {
+                        subscriber.onSubscribe(new BooleanSubscription());
+                        ref.set(subscriber);
                     }
                 };
             }

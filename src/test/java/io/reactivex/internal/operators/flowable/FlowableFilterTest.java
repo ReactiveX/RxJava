@@ -39,7 +39,7 @@ public class FlowableFilterTest {
     @Test
     public void testFilter() {
         Flowable<String> w = Flowable.just("one", "two", "three");
-        Flowable<String> Flowable = w.filter(new Predicate<String>() {
+        Flowable<String> flowable = w.filter(new Predicate<String>() {
 
             @Override
             public boolean test(String t1) {
@@ -47,15 +47,15 @@ public class FlowableFilterTest {
             }
         });
 
-        Subscriber<String> Subscriber = TestHelper.mockSubscriber();
+        Subscriber<String> subscriber = TestHelper.mockSubscriber();
 
-        Flowable.subscribe(Subscriber);
+        flowable.subscribe(subscriber);
 
-        verify(Subscriber, Mockito.never()).onNext("one");
-        verify(Subscriber, times(1)).onNext("two");
-        verify(Subscriber, Mockito.never()).onNext("three");
-        verify(Subscriber, Mockito.never()).onError(any(Throwable.class));
-        verify(Subscriber, times(1)).onComplete();
+        verify(subscriber, Mockito.never()).onNext("one");
+        verify(subscriber, times(1)).onNext("two");
+        verify(subscriber, Mockito.never()).onNext("three");
+        verify(subscriber, Mockito.never()).onError(any(Throwable.class));
+        verify(subscriber, times(1)).onComplete();
     }
 
     /**
