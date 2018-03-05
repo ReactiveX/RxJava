@@ -14,6 +14,7 @@
 package io.reactivex.subjects;
 
 import io.reactivex.annotations.CheckReturnValue;
+import io.reactivex.annotations.Nullable;
 import java.lang.reflect.Array;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.*;
@@ -63,19 +64,19 @@ import io.reactivex.plugins.RxJavaPlugins;
  * observable.onNext(1);
  * // this will "clear" the cache
  * observable.onNext(EMPTY);
- * 
+ *
  * TestObserver&lt;Integer&gt; to2 = observable.test();
- * 
+ *
  * subject.onNext(2);
  * subject.onComplete();
- * 
+ *
  * // to1 received both non-empty items
  * to1.assertResult(1, 2);
- * 
+ *
  * // to2 received only 2 even though the current item was EMPTY
  * // when it got subscribed
  * to2.assertResult(2);
- * 
+ *
  * // Observers coming after the subject was terminated receive
  * // no items and only the onComplete event in this case.
  * observable.test().assertResult();
@@ -300,6 +301,7 @@ public final class BehaviorSubject<T> extends Subject<T> {
     }
 
     @Override
+    @Nullable
     public Throwable getThrowable() {
         Object o = value.get();
         if (NotificationLite.isError(o)) {
@@ -313,6 +315,7 @@ public final class BehaviorSubject<T> extends Subject<T> {
      * <p>The method is thread-safe.
      * @return a single value the Subject currently has or null if no such value exists
      */
+    @Nullable
     public T getValue() {
         Object o = value.get();
         if (NotificationLite.isComplete(o) || NotificationLite.isError(o)) {

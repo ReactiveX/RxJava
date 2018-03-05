@@ -14,6 +14,7 @@
 package io.reactivex.subjects;
 
 import io.reactivex.annotations.CheckReturnValue;
+import io.reactivex.annotations.Nullable;
 import java.util.concurrent.atomic.*;
 
 import io.reactivex.Observer;
@@ -263,6 +264,7 @@ public final class PublishSubject<T> extends Subject<T> {
     }
 
     @Override
+    @Nullable
     public Throwable getThrowable() {
         if (subscribers.get() == TERMINATED) {
             return error;

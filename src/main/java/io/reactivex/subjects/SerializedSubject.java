@@ -14,6 +14,7 @@
 package io.reactivex.subjects;
 
 import io.reactivex.Observer;
+import io.reactivex.annotations.Nullable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.util.*;
 import io.reactivex.internal.util.AppendOnlyLinkedArrayList.NonThrowingPredicate;
@@ -193,6 +194,7 @@ import io.reactivex.plugins.RxJavaPlugins;
     }
 
     @Override
+    @Nullable
     public Throwable getThrowable() {
         return actual.getThrowable();
     }
