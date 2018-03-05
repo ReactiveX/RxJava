@@ -180,8 +180,8 @@ public final class UnicastProcessor<T> extends FlowableProcessor<T> {
     }
 
     void doTerminate() {
-        Runnable r = onTerminate.get();
-        if (r != null && onTerminate.compareAndSet(r, null)) {
+        Runnable r = onTerminate.getAndSet(null);
+        if (r != null) {
             r.run();
         }
     }

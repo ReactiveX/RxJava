@@ -383,4 +383,79 @@ public class UnicastSubjectTest extends SubjectTest<Integer> {
 
         assertTrue(d.isDisposed());
     }
+
+    @Test
+    public void subscribeRace() {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
+            final UnicastSubject<Integer> us = UnicastSubject.create();
+
+            final TestObserver<Integer> ts1 = new TestObserver<Integer>();
+            final TestObserver<Integer> ts2 = new TestObserver<Integer>();
+
+            Runnable r1 = new Runnable() {
+                @Override
+                public void run() {
+                    us.subscribe(ts1);
+                }
+            };
+
+            Runnable r2 = new Runnable() {
+                @Override
+                public void run() {
+                    us.subscribe(ts2);
+                }
+            };
+
+            TestHelper.race(r1, r2);
+
+            if (ts1.errorCount() == 0) {
+                ts2.assertFailure(IllegalStateException.class);
+            } else
+            if (ts2.errorCount() == 0) {
+                ts1.assertFailure(IllegalStateException.class);
+            } else {
+                fail("Neither TestObserver failed");
+            }
+        }
+    }
+
+    @Test
+    public void hasObservers() {
+        UnicastSubject<Integer> us = UnicastSubject.create();
+
+        assertFalse(us.hasObservers());
+
+        TestObserver<Integer> to = us.test();
+
+        assertTrue(us.hasObservers());
+
+        to.cancel();
+
+        assertFalse(us.hasObservers());
+    }
+
+    @Test
+    public void drainFusedFailFast() {
+        UnicastSubject<Integer> us = UnicastSubject.create(false);
+
+
+        TestObserver<Integer> to = us.to(ObserverFusion.<Integer>test(QueueDisposable.ANY, false));
+
+        us.done = true;
+        us.drainFused(to);
+
+        to.assertResult();
+    }
+
+    @Test
+    public void drainFusedFailFastEmpty() {
+        UnicastSubject<Integer> us = UnicastSubject.create(false);
+
+
+        TestObserver<Integer> to = us.to(ObserverFusion.<Integer>test(QueueDisposable.ANY, false));
+
+        us.drainFused(to);
+
+        to.assertEmpty();
+    }
 }

@@ -29,6 +29,7 @@ import io.reactivex.flowables.ConnectableFlowable;
 import io.reactivex.functions.*;
 import io.reactivex.internal.functions.Functions;
 import io.reactivex.internal.fuseable.HasUpstreamPublisher;
+import io.reactivex.internal.operators.flowable.FlowablePublish.*;
 import io.reactivex.internal.schedulers.ImmediateThinScheduler;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.plugins.RxJavaPlugins;
@@ -893,5 +894,51 @@ public class FlowablePublishTest {
         sub[0].onSubscribe(bs);
 
         assertTrue(bs.isCancelled());
+    }
+
+    @Test
+    public void disposeRace() {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
+
+            final AtomicReference<Disposable> ref = new AtomicReference<Disposable>();
+
+            final ConnectableFlowable<Integer> co = new Flowable<Integer>() {
+                @Override
+                protected void subscribeActual(Subscriber<? super Integer> s) {
+                    s.onSubscribe(new BooleanSubscription());
+                    ref.set((Disposable)s);
+                }
+            }.publish();
+
+            co.connect();
+
+            Runnable r1 = new Runnable() {
+                @Override
+                public void run() {
+                    ref.get().dispose();
+                }
+            };
+
+            TestHelper.race(r1, r1);
+        }
+    }
+
+    @Test
+    public void removeNotPresent() {
+        final AtomicReference<PublishSubscriber<Integer>> ref = new AtomicReference<PublishSubscriber<Integer>>();
+
+        final ConnectableFlowable<Integer> co = new Flowable<Integer>() {
+            @Override
+            @SuppressWarnings("unchecked")
+            protected void subscribeActual(Subscriber<? super Integer> s) {
+                s.onSubscribe(new BooleanSubscription());
+                ref.set((PublishSubscriber<Integer>)s);
+            }
+        }.publish();
+
+        co.connect();
+
+        ref.get().add(new InnerSubscriber<Integer>(new TestSubscriber<Integer>()));
+        ref.get().remove(null);
     }
 }

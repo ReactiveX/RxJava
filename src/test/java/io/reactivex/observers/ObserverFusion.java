@@ -32,7 +32,7 @@ public enum ObserverFusion {
      * Use this as follows:
      * <pre>
      * source
-     * .to(ObserverFusion.test(0, QueueDisposable.ANY, false))
+     * .to(ObserverFusion.test(QueueDisposable.ANY, false))
      * .assertResult(0);
      * </pre>
      * @param <T> the value type
