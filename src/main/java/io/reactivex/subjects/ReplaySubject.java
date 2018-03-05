@@ -13,6 +13,7 @@
 
 package io.reactivex.subjects;
 
+import io.reactivex.annotations.Nullable;
 import java.lang.reflect.Array;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
@@ -395,6 +396,7 @@ public final class ReplaySubject<T> extends Subject<T> {
     }
 
     @Override
+    @Nullable
     public Throwable getThrowable() {
         Object o = buffer.get();
         if (NotificationLite.isError(o)) {
@@ -408,6 +410,7 @@ public final class ReplaySubject<T> extends Subject<T> {
      * <p>The method is thread-safe.
      * @return a single value the Subject currently has or null if no such value exists
      */
+    @Nullable
     public T getValue() {
         return buffer.getValue();
     }
@@ -542,6 +545,7 @@ public final class ReplaySubject<T> extends Subject<T> {
 
         int size();
 
+        @Nullable
         T getValue();
 
         T[] getValues(T[] array);
@@ -620,6 +624,7 @@ public final class ReplaySubject<T> extends Subject<T> {
         }
 
         @Override
+        @Nullable
         @SuppressWarnings("unchecked")
         public T getValue() {
             int s = size;
@@ -838,6 +843,7 @@ public final class ReplaySubject<T> extends Subject<T> {
         }
 
         @Override
+        @Nullable
         @SuppressWarnings("unchecked")
         public T getValue() {
             Node<Object> prev = null;
@@ -1080,6 +1086,7 @@ public final class ReplaySubject<T> extends Subject<T> {
         }
 
         @Override
+        @Nullable
         @SuppressWarnings("unchecked")
         public T getValue() {
             TimedNode<Object> prev = null;

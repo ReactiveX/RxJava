@@ -72,20 +72,20 @@ import io.reactivex.plugins.RxJavaPlugins;
  * Example usage:
  * <pre><code>
  * MaybeSubject&lt;Integer&gt; subject1 = MaybeSubject.create();
- * 
+ *
  * TestObserver&lt;Integer&gt; to1 = subject1.test();
- * 
+ *
  * // MaybeSubjects are empty by default
  * to1.assertEmpty();
- * 
+ *
  * subject1.onSuccess(1);
- * 
+ *
  * // onSuccess is a terminal event with MaybeSubjects
  * // TestObserver converts onSuccess into onNext + onComplete
  * to1.assertResult(1);
  *
  * TestObserver&lt;Integer&gt; to2 = subject1.test();
- * 
+ *
  * // late Observers receive the terminal signal (onSuccess) too
  * to2.assertResult(1);
  *
@@ -94,14 +94,14 @@ import io.reactivex.plugins.RxJavaPlugins;
  * MaybeSubject&lt;Integer&gt; subject2 = MaybeSubject.create();
  *
  * TestObserver&lt;Integer&gt; to3 = subject2.test();
- * 
+ *
  * subject2.onComplete();
- * 
+ *
  * // a completed MaybeSubject completes its MaybeObservers
  * to3.assertResult();
  *
  * TestObserver&lt;Integer&gt; to4 = subject1.test();
- * 
+ *
  * // late Observers receive the terminal signal (onComplete) too
  * to4.assertResult();
  * </code></pre>
@@ -263,6 +263,7 @@ public final class MaybeSubject<T> extends Maybe<T> implements MaybeObserver<T> 
      * Returns the success value if this MaybeSubject was terminated with a success value.
      * @return the success value or null
      */
+    @Nullable
     public T getValue() {
         if (observers.get() == TERMINATED) {
             return value;
@@ -282,6 +283,7 @@ public final class MaybeSubject<T> extends Maybe<T> implements MaybeObserver<T> 
      * Returns the terminal error if this MaybeSubject has been terminated with an error, null otherwise.
      * @return the terminal error or null if not terminated or not with an error
      */
+    @Nullable
     public Throwable getThrowable() {
         if (observers.get() == TERMINATED) {
             return error;

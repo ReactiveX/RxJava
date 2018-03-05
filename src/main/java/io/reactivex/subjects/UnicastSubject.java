@@ -105,37 +105,37 @@ import io.reactivex.internal.queue.SpscLinkedArrayQueue;
  * Example usage:
  * <pre><code>
  * UnicastSubject&lt;Integer&gt; subject = UnicastSubject.create();
- * 
+ *
  * TestObserver&lt;Integer&gt; to1 = subject.test();
- * 
+ *
  * // fresh UnicastSubjects are empty
  * to1.assertEmpty();
- * 
+ *
  * TestObserver&lt;Integer&gt; to2 = subject.test();
- * 
+ *
  * // A UnicastSubject only allows one Observer during its lifetime
  * to2.assertFailure(IllegalStateException.class);
- * 
+ *
  * subject.onNext(1);
  * to1.assertValue(1);
- * 
+ *
  * subject.onNext(2);
  * to1.assertValues(1, 2);
- * 
+ *
  * subject.onComplete();
  * to1.assertResult(1, 2);
- * 
+ *
  * // ----------------------------------------------------
- * 
+ *
  * UnicastSubject&lt;Integer&gt; subject2 = UnicastSubject.create();
- * 
+ *
  * // a UnicastSubject caches events util its single Observer subscribes
  * subject.onNext(1);
  * subject.onNext(2);
  * subject.onComplete();
- * 
+ *
  * TestObserver&lt;Integer&gt; to3 = subject2.test();
- * 
+ *
  * // the cached events are emitted in order
  * to3.assertResult(1, 2);
  * </code></pre>
@@ -498,6 +498,7 @@ public final class UnicastSubject<T> extends Subject<T> {
     }
 
     @Override
+    @Nullable
     public Throwable getThrowable() {
         if (done) {
             return error;

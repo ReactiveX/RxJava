@@ -13,6 +13,7 @@
 
 package io.reactivex.subjects;
 
+import io.reactivex.annotations.Nullable;
 import java.util.concurrent.atomic.*;
 
 import io.reactivex.*;
@@ -65,12 +66,12 @@ import io.reactivex.plugins.RxJavaPlugins;
  * Example usage:
  * <pre><code>
  * CompletableSubject subject = CompletableSubject.create();
- * 
+ *
  * TestObserver&lt;Void&gt; to1 = subject.test();
  *
  * // a fresh CompletableSubject is empty
  * to1.assertEmpty();
- * 
+ *
  * subject.onComplete();
  *
  * // a CompletableSubject is always void of items
@@ -213,6 +214,7 @@ public final class CompletableSubject extends Completable implements Completable
      * Returns the terminal error if this CompletableSubject has been terminated with an error, null otherwise.
      * @return the terminal error or null if not terminated or not with an error
      */
+    @Nullable
     public Throwable getThrowable() {
         if (observers.get() == TERMINATED) {
             return error;
