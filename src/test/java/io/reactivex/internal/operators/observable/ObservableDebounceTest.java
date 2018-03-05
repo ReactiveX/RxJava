@@ -20,6 +20,7 @@ import static org.mockito.Mockito.*;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.*;
 import org.mockito.InOrder;
@@ -32,7 +33,7 @@ import io.reactivex.internal.functions.Functions;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.schedulers.TestScheduler;
-import io.reactivex.subjects.PublishSubject;
+import io.reactivex.subjects.*;
 
 public class ObservableDebounceTest {
 
@@ -375,5 +376,78 @@ public class ObservableDebounceTest {
         Observable.just(1).debounce(Functions.justFunction(Observable.empty()))
         .test()
         .assertResult(1);
+    }
+
+    @Test
+    public void doubleOnSubscribe() {
+        TestHelper.checkDoubleOnSubscribeObservable(new Function<Observable<Object>, Observable<Object>>() {
+            @Override
+            public Observable<Object> apply(Observable<Object> o) throws Exception {
+                return o.debounce(Functions.justFunction(Observable.never()));
+            }
+        });
+    }
+
+    @Test
+    public void disposeInOnNext() {
+        final TestObserver<Integer> to = new TestObserver<Integer>();
+
+        BehaviorSubject.createDefault(1)
+        .debounce(new Function<Integer, ObservableSource<Object>>() {
+            @Override
+            public ObservableSource<Object> apply(Integer o) throws Exception {
+                to.cancel();
+                return Observable.never();
+            }
+        })
+        .subscribeWith(to)
+        .assertEmpty();
+
+        assertTrue(to.isDisposed());
+    }
+
+    @Test
+    public void disposedInOnComplete() {
+        final TestObserver<Integer> to = new TestObserver<Integer>();
+
+        new Observable<Integer>() {
+            @Override
+            protected void subscribeActual(Observer<? super Integer> observer) {
+                observer.onSubscribe(Disposables.empty());
+                to.cancel();
+                observer.onComplete();
+            }
+        }
+        .debounce(Functions.justFunction(Observable.never()))
+        .subscribeWith(to)
+        .assertEmpty();
+    }
+
+    @Test
+    public void emitLate() {
+        final AtomicReference<Observer<? super Integer>> ref = new AtomicReference<Observer<? super Integer>>();
+
+        TestObserver<Integer> to = Observable.range(1, 2)
+        .debounce(new Function<Integer, ObservableSource<Integer>>() {
+            @Override
+            public ObservableSource<Integer> apply(Integer o) throws Exception {
+                if (o != 1) {
+                    return Observable.never();
+                }
+                return new Observable<Integer>() {
+                    @Override
+                    protected void subscribeActual(Observer<? super Integer> observer) {
+                        observer.onSubscribe(Disposables.empty());
+                        ref.set(observer);
+                    }
+                };
+            }
+        })
+        .test();
+
+        ref.get().onNext(1);
+
+        to
+        .assertResult(2);
     }
 }

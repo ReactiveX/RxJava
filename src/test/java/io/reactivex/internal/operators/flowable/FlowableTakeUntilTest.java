@@ -20,6 +20,7 @@ import org.junit.Test;
 import org.reactivestreams.*;
 
 import io.reactivex.*;
+import io.reactivex.functions.Function;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.subscribers.TestSubscriber;
 
@@ -281,5 +282,15 @@ public class FlowableTakeUntilTest {
     @Test
     public void dispose() {
         TestHelper.checkDisposed(PublishProcessor.create().takeUntil(Flowable.never()));
+    }
+
+    @Test
+    public void doubleOnSubscribe() {
+        TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Integer>, Flowable<Integer>>() {
+            @Override
+            public Flowable<Integer> apply(Flowable<Integer> c) throws Exception {
+                return c.takeUntil(Flowable.never());
+            }
+        });
     }
 }

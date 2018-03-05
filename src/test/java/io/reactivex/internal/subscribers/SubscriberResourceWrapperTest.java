@@ -16,9 +16,12 @@ package io.reactivex.internal.subscribers;
 import static org.junit.Assert.*;
 
 import org.junit.Test;
+import org.reactivestreams.Subscriber;
 
+import io.reactivex.*;
 import io.reactivex.disposables.*;
 import io.reactivex.exceptions.TestException;
+import io.reactivex.functions.Function;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.subscribers.TestSubscriber;
 
@@ -79,5 +82,32 @@ public class SubscriberResourceWrapperTest {
         assertFalse(bs.isCancelled());
 
         ts.assertResult();
+    }
+
+    @Test
+    public void doubleOnSubscribe() {
+        TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Flowable<Object>>() {
+            @Override
+            public Flowable<Object> apply(Flowable<Object> o) throws Exception {
+                return o.lift(new FlowableOperator<Object, Object>() {
+                    @Override
+                    public Subscriber<? super Object> apply(
+                            Subscriber<? super Object> s) throws Exception {
+                        return new SubscriberResourceWrapper<Object>(s);
+                    }
+                });
+            }
+        });
+    }
+
+    @Test
+    public void badRequest() {
+        TestHelper.assertBadRequestReported(Flowable.never().lift(new FlowableOperator<Object, Object>() {
+            @Override
+            public Subscriber<? super Object> apply(
+                    Subscriber<? super Object> s) throws Exception {
+                return new SubscriberResourceWrapper<Object>(s);
+            }
+        }));
     }
 }

@@ -14,6 +14,7 @@
 package io.reactivex.internal.operators.observable;
 
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 import java.util.List;
@@ -24,8 +25,10 @@ import org.junit.*;
 import org.mockito.*;
 
 import io.reactivex.*;
+import io.reactivex.disposables.Disposables;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.Function;
+import io.reactivex.internal.operators.observable.ObservableTimer.TimerObserver;
 import io.reactivex.observables.ConnectableObservable;
 import io.reactivex.observers.*;
 import io.reactivex.plugins.RxJavaPlugins;
@@ -339,4 +342,16 @@ public class ObservableTimerTest {
         }
     }
 
+    @Test
+    public void cancelledAndRun() {
+        TestObserver<Long> to = new TestObserver<Long>();
+        to.onSubscribe(Disposables.empty());
+        TimerObserver tm = new TimerObserver(to);
+
+        tm.dispose();
+
+        tm.run();
+
+        to.assertEmpty();
+    }
 }

@@ -54,7 +54,7 @@ public final class SingleDelayWithSingle<T, U> extends Single<T> {
 
         @Override
         public void onSubscribe(Disposable d) {
-            if (DisposableHelper.set(this, d)) {
+            if (DisposableHelper.setOnce(this, d)) {
 
                 actual.onSubscribe(this);
             }

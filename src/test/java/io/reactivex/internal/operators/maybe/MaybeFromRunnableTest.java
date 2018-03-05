@@ -14,6 +14,7 @@
 package io.reactivex.internal.operators.maybe;
 
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
 
 import java.util.List;
 import java.util.concurrent.*;
@@ -157,5 +158,32 @@ public class MaybeFromRunnableTest {
         } finally {
             RxJavaPlugins.reset();
         }
+    }
+
+    @Test
+    public void disposedUpfront() {
+        Runnable run = mock(Runnable.class);
+
+        Maybe.fromRunnable(run)
+        .test(true)
+        .assertEmpty();
+
+        verify(run, never()).run();
+    }
+
+    @Test
+    public void cancelWhileRunning() {
+        final TestObserver<Object> to = new TestObserver<Object>();
+
+        Maybe.fromRunnable(new Runnable() {
+            @Override
+            public void run() {
+                to.dispose();
+            }
+        })
+        .subscribeWith(to)
+        .assertEmpty();
+
+        assertTrue(to.isDisposed());
     }
 }

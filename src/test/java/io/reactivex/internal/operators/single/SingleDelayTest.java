@@ -13,11 +13,11 @@
 
 package io.reactivex.internal.operators.single;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotEquals;
 
 import java.util.List;
 import java.util.concurrent.*;
-import java.util.concurrent.atomic.*;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.Test;
 import org.reactivestreams.Subscriber;
@@ -29,8 +29,7 @@ import io.reactivex.functions.*;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.plugins.RxJavaPlugins;
-import io.reactivex.schedulers.Schedulers;
-import io.reactivex.schedulers.TestScheduler;
+import io.reactivex.schedulers.*;
 import io.reactivex.subjects.PublishSubject;
 
 public class SingleDelayTest {
@@ -245,5 +244,29 @@ public class SingleDelayTest {
     @Test
     public void withCompletableDispose() {
         TestHelper.checkDisposed(Completable.complete().andThen(Single.just(1)));
+    }
+
+    @Test
+    public void withCompletableDoubleOnSubscribe() {
+
+        TestHelper.checkDoubleOnSubscribeCompletableToSingle(new Function<Completable, Single<Object>>() {
+            @Override
+            public Single<Object> apply(Completable c) throws Exception {
+                return c.andThen(Single.just((Object)1));
+            }
+        });
+
+    }
+
+    @Test
+    public void withSingleDoubleOnSubscribe() {
+
+        TestHelper.checkDoubleOnSubscribeSingle(new Function<Single<Object>, Single<Object>>() {
+            @Override
+            public Single<Object> apply(Single<Object> s) throws Exception {
+                return Single.just((Object)1).delaySubscription(s);
+            }
+        });
+
     }
 }

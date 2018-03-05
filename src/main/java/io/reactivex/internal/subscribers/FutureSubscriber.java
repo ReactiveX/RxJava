@@ -110,9 +110,7 @@ implements FlowableSubscriber<T>, Future<T>, Subscription {
 
     @Override
     public void onSubscribe(Subscription s) {
-        if (SubscriptionHelper.setOnce(this.s, s)) {
-            s.request(Long.MAX_VALUE);
-        }
+        SubscriptionHelper.setOnce(this.s, s, Long.MAX_VALUE);
     }
 
     @Override

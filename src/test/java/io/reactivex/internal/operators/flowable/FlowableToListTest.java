@@ -25,6 +25,7 @@ import org.reactivestreams.Subscriber;
 
 import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
+import io.reactivex.functions.Function;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.Schedulers;
@@ -465,5 +466,23 @@ public class FlowableToListTest {
                 .assertNoErrors();
             }
         }
+    }
+
+    @Test
+    public void doubleOnSubscribe() {
+        TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Flowable<List<Object>>>() {
+            @Override
+            public Flowable<List<Object>> apply(Flowable<Object> f)
+                    throws Exception {
+                return f.toList().toFlowable();
+            }
+        });
+        TestHelper.checkDoubleOnSubscribeFlowableToSingle(new Function<Flowable<Object>, Single<List<Object>>>() {
+            @Override
+            public Single<List<Object>> apply(Flowable<Object> f)
+                    throws Exception {
+                return f.toList();
+            }
+        });
     }
 }

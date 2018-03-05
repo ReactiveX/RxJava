@@ -93,8 +93,8 @@ public final class FlowableSamplePublisher<T> extends Flowable<T> {
             completeMain();
         }
 
-        boolean setOther(Subscription o) {
-            return SubscriptionHelper.setOnce(other, o);
+        void setOther(Subscription o) {
+            SubscriptionHelper.setOnce(other, o, Long.MAX_VALUE);
         }
 
         @Override
@@ -150,9 +150,7 @@ public final class FlowableSamplePublisher<T> extends Flowable<T> {
 
         @Override
         public void onSubscribe(Subscription s) {
-            if (parent.setOther(s)) {
-                s.request(Long.MAX_VALUE);
-            }
+            parent.setOther(s);
         }
 
         @Override

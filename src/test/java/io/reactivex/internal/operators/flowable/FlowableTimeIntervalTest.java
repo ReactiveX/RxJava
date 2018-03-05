@@ -19,7 +19,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.junit.*;
 import org.mockito.InOrder;
-import org.reactivestreams.Subscriber;
+import org.reactivestreams.*;
 
 import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
@@ -137,4 +137,14 @@ public class FlowableTimeIntervalTest {
         .assertFailure(TestException.class);
     }
 
+    @Test
+    public void doubleOnSubscribe() {
+        TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Publisher<Timed<Object>>>() {
+            @Override
+            public Publisher<Timed<Object>> apply(Flowable<Object> f)
+                    throws Exception {
+                return f.timeInterval();
+            }
+        });
+    }
 }

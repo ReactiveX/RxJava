@@ -239,4 +239,24 @@ public enum SubscriptionHelper implements Subscription {
             }
         }
     }
+
+    /**
+     * Atomically sets the subscription on the field if it is still null and issues a positive request
+     * to the given {@link Subscription}.
+     * <p>
+     * If the field is not null and doesn't contain the {@link #CANCELLED}
+     * instance, the {@link #reportSubscriptionSet()} is called.
+     * @param field the target field
+     * @param s the new subscription to set
+     * @param request the amount to request, positive (not verified)
+     * @return true if the operation succeeded, false if the target field was not null.
+     * @since 2.1.11
+     */
+    public static boolean setOnce(AtomicReference<Subscription> field, Subscription s, long request) {
+        if (setOnce(field, s)) {
+            s.request(request);
+            return true;
+        }
+        return false;
+    }
 }

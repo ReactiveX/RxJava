@@ -526,36 +526,16 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
         public void request(long n) {
             // ignore negative requests
             if (SubscriptionHelper.validate(n)) {
-                // In general, RxJava doesn't prevent concurrent requests (with each other or with
-                // a cancel) so we need a CAS-loop, but we need to handle
-                // request overflow and cancelled/not requested state as well.
-                for (;;) {
-                    // get the current request amount
-                    long r = get();
-                    // if child called cancel() do nothing
-                    if (r == CANCELLED) {
-                        return;
-                    }
-                    // ignore zero requests except any first that sets in zero
-                    if (r >= 0L && n == 0) {
-                        return;
-                    }
-                    // otherwise, increase the request count
-                    long u = BackpressureHelper.addCap(r, n);
-
-                    // try setting the new request value
-                    if (compareAndSet(r, u)) {
-                        // increment the total request counter
-                        BackpressureHelper.add(totalRequested, n);
-                        // if successful, notify the parent dispatcher this child can receive more
-                        // elements
-                        parent.manageRequests();
-
-                        parent.buffer.replay(this);
-                        return;
-                    }
-                    // otherwise, someone else changed the state (perhaps a concurrent
-                    // request or cancellation) so retry
+                // add to the current requested and cap it at MAX_VALUE
+                // except when there was a concurrent cancellation
+                if (BackpressureHelper.addCancel(this, n) != CANCELLED) {
+                    // increment the total request counter
+                    BackpressureHelper.add(totalRequested, n);
+                    // if successful, notify the parent dispatcher this child can receive more
+                    // elements
+                    parent.manageRequests();
+                    // try replaying any cached content
+                    parent.buffer.replay(this);
                 }
             }
         }

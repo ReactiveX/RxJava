@@ -139,9 +139,7 @@ public final class SingleTakeUntil<T, U> extends Single<T> {
 
         @Override
         public void onSubscribe(Subscription s) {
-            if (SubscriptionHelper.setOnce(this, s)) {
-                s.request(Long.MAX_VALUE);
-            }
+            SubscriptionHelper.setOnce(this, s, Long.MAX_VALUE);
         }
 
         @Override

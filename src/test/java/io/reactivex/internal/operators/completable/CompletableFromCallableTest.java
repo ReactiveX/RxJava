@@ -13,23 +13,22 @@
 
 package io.reactivex.internal.operators.completable;
 
-import io.reactivex.Completable;
-import java.util.concurrent.Callable;
-import java.util.concurrent.CountDownLatch;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
+
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import io.reactivex.Observer;
-import io.reactivex.TestHelper;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.observers.TestObserver;
-import io.reactivex.schedulers.Schedulers;
 import org.junit.Test;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
-import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import io.reactivex.*;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.exceptions.TestException;
+import io.reactivex.observers.TestObserver;
+import io.reactivex.schedulers.Schedulers;
 
 public class CompletableFromCallableTest {
     @Test(expected = NullPointerException.class)
@@ -163,5 +162,21 @@ public class CompletableFromCallableTest {
         // Observer must not be notified at all
         verify(observer).onSubscribe(any(Disposable.class));
         verifyNoMoreInteractions(observer);
+    }
+
+    @Test
+    public void fromActionErrorsDisposed() {
+        final AtomicInteger calls = new AtomicInteger();
+        Completable.fromCallable(new Callable<Object>() {
+            @Override
+            public Object call() throws Exception {
+                calls.incrementAndGet();
+                throw new TestException();
+            }
+        })
+        .test(true)
+        .assertEmpty();
+
+        assertEquals(1, calls.get());
     }
 }

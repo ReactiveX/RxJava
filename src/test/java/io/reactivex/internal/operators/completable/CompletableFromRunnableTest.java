@@ -13,11 +13,14 @@
 
 package io.reactivex.internal.operators.completable;
 
-import io.reactivex.Completable;
+import static org.junit.Assert.assertEquals;
+
 import java.util.concurrent.atomic.AtomicInteger;
+
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
+import io.reactivex.Completable;
+import io.reactivex.exceptions.TestException;
 
 public class CompletableFromRunnableTest {
     @Test(expected = NullPointerException.class)
@@ -95,5 +98,36 @@ public class CompletableFromRunnableTest {
         })
             .test()
             .assertFailure(UnsupportedOperationException.class);
+    }
+
+    @Test
+    public void fromRunnableDisposed() {
+        final AtomicInteger calls = new AtomicInteger();
+        Completable.fromRunnable(new Runnable() {
+            @Override
+            public void run() {
+                calls.incrementAndGet();
+            }
+        })
+        .test(true)
+        .assertEmpty();
+
+        assertEquals(1, calls.get());
+    }
+
+    @Test
+    public void fromRunnableErrorsDisposed() {
+        final AtomicInteger calls = new AtomicInteger();
+        Completable.fromRunnable(new Runnable() {
+            @Override
+            public void run() {
+                calls.incrementAndGet();
+                throw new TestException();
+            }
+        })
+        .test(true)
+        .assertEmpty();
+
+        assertEquals(1, calls.get());
     }
 }

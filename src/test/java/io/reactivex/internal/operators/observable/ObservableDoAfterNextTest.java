@@ -26,8 +26,7 @@ import io.reactivex.functions.Consumer;
 import io.reactivex.internal.functions.Functions;
 import io.reactivex.internal.fuseable.QueueSubscription;
 import io.reactivex.observers.*;
-import io.reactivex.processors.UnicastProcessor;
-import io.reactivex.subscribers.*;
+import io.reactivex.subjects.UnicastSubject;
 
 public class ObservableDoAfterNextTest {
 
@@ -51,6 +50,17 @@ public class ObservableDoAfterNextTest {
     @Test
     public void just() {
         Observable.just(1)
+        .doAfterNext(afterNext)
+        .subscribeWith(ts)
+        .assertResult(1);
+
+        assertEquals(Arrays.asList(1, -1), values);
+    }
+
+    @Test
+    public void justHidden() {
+        Observable.just(1)
+        .hide()
         .doAfterNext(afterNext)
         .subscribeWith(ts)
         .assertResult(1);
@@ -118,9 +128,9 @@ public class ObservableDoAfterNextTest {
 
     @Test
     public void asyncFused() {
-        TestSubscriber<Integer> ts0 = SubscriberFusion.newTest(QueueSubscription.ASYNC);
+        TestObserver<Integer> ts0 = ObserverFusion.newTest(QueueSubscription.ASYNC);
 
-        UnicastProcessor<Integer> up = UnicastProcessor.create();
+        UnicastSubject<Integer> up = UnicastSubject.create();
 
         TestHelper.emit(up, 1, 2, 3, 4, 5);
 
@@ -128,7 +138,7 @@ public class ObservableDoAfterNextTest {
         .doAfterNext(afterNext)
         .subscribe(ts0);
 
-        SubscriberFusion.assertFusion(ts0, QueueSubscription.ASYNC)
+        ObserverFusion.assertFusion(ts0, QueueSubscription.ASYNC)
         .assertResult(1, 2, 3, 4, 5);
 
         assertEquals(Arrays.asList(-1, -2, -3, -4, -5), values);
@@ -215,9 +225,9 @@ public class ObservableDoAfterNextTest {
 
     @Test
     public void asyncFusedConditional() {
-        TestSubscriber<Integer> ts0 = SubscriberFusion.newTest(QueueSubscription.ASYNC);
+        TestObserver<Integer> ts0 = ObserverFusion.newTest(QueueSubscription.ASYNC);
 
-        UnicastProcessor<Integer> up = UnicastProcessor.create();
+        UnicastSubject<Integer> up = UnicastSubject.create();
 
         TestHelper.emit(up, 1, 2, 3, 4, 5);
 
@@ -226,7 +236,7 @@ public class ObservableDoAfterNextTest {
         .filter(Functions.alwaysTrue())
         .subscribe(ts0);
 
-        SubscriberFusion.assertFusion(ts0, QueueSubscription.ASYNC)
+        ObserverFusion.assertFusion(ts0, QueueSubscription.ASYNC)
         .assertResult(1, 2, 3, 4, 5);
 
         assertEquals(Arrays.asList(-1, -2, -3, -4, -5), values);

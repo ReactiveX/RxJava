@@ -135,4 +135,15 @@ public class ObservableTimeIntervalTest {
         .test()
         .assertFailure(TestException.class);
     }
+
+    @Test
+    public void doubleOnSubscribe() {
+        TestHelper.checkDoubleOnSubscribeObservable(new Function<Observable<Object>, Observable<Timed<Object>>>() {
+            @Override
+            public Observable<Timed<Object>> apply(Observable<Object> f)
+                    throws Exception {
+                return f.timeInterval();
+            }
+        });
+    }
 }

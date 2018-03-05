@@ -17,6 +17,7 @@ import java.util.concurrent.*;
 
 import io.reactivex.*;
 import io.reactivex.disposables.*;
+import io.reactivex.exceptions.Exceptions;
 
 /**
  * Waits until the source Future completes or the wait times out; treats a {@code null}
@@ -50,17 +51,11 @@ public final class MaybeFromFuture<T> extends Maybe<T> {
                 } else {
                     v = future.get(timeout, unit);
                 }
-            } catch (InterruptedException ex) {
-                if (!d.isDisposed()) {
-                    observer.onError(ex);
+            } catch (Throwable ex) {
+                if (ex instanceof ExecutionException) {
+                    ex = ex.getCause();
                 }
-                return;
-            } catch (ExecutionException ex) {
-                if (!d.isDisposed()) {
-                    observer.onError(ex.getCause());
-                }
-                return;
-            } catch (TimeoutException ex) {
+                Exceptions.throwIfFatal(ex);
                 if (!d.isDisposed()) {
                     observer.onError(ex);
                 }

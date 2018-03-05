@@ -516,9 +516,7 @@ public final class ParallelJoin<T> extends Flowable<T> {
 
         @Override
         public void onSubscribe(Subscription s) {
-            if (SubscriptionHelper.setOnce(this, s)) {
-                s.request(prefetch);
-            }
+            SubscriptionHelper.setOnce(this, s, prefetch);
         }
 
         @Override

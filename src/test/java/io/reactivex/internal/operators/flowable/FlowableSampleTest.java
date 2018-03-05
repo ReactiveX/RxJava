@@ -24,6 +24,7 @@ import org.reactivestreams.*;
 
 import io.reactivex.*;
 import io.reactivex.exceptions.*;
+import io.reactivex.functions.Function;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.processors.*;
 import io.reactivex.schedulers.*;
@@ -443,5 +444,16 @@ public class FlowableSampleTest {
 
             ts.assertResult(1);
         }
+    }
+
+    @Test
+    public void doubleOnSubscribe() {
+        TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Flowable<Object>>() {
+            @Override
+            public Flowable<Object> apply(Flowable<Object> o)
+                    throws Exception {
+                return o.sample(1, TimeUnit.SECONDS);
+            }
+        });
     }
 }

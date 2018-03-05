@@ -190,14 +190,12 @@ public final class TrampolineScheduler extends Scheduler {
                 long t = worker.now(TimeUnit.MILLISECONDS);
                 if (execTime > t) {
                     long delay = execTime - t;
-                    if (delay > 0) {
-                        try {
-                            Thread.sleep(delay);
-                        } catch (InterruptedException e) {
-                            Thread.currentThread().interrupt();
-                            RxJavaPlugins.onError(e);
-                            return;
-                        }
+                    try {
+                        Thread.sleep(delay);
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                        RxJavaPlugins.onError(e);
+                        return;
                     }
                 }
 

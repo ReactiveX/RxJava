@@ -16,15 +16,20 @@ package io.reactivex.internal.util;
 import static org.junit.Assert.*;
 
 import java.io.IOException;
-import java.util.ArrayDeque;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.junit.Test;
-import org.reactivestreams.Subscription;
+import org.reactivestreams.*;
 
+import io.reactivex.Observer;
 import io.reactivex.TestHelper;
+import io.reactivex.disposables.*;
+import io.reactivex.exceptions.*;
 import io.reactivex.functions.BooleanSupplier;
+import io.reactivex.internal.queue.SpscArrayQueue;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
+import io.reactivex.observers.TestObserver;
 import io.reactivex.subscribers.TestSubscriber;
 
 public class QueueDrainHelperTest {
@@ -204,5 +209,673 @@ public class QueueDrainHelperTest {
         QueueDrainHelper.postComplete(ts, queue, state, isCancelled);
 
         ts.assertValue(1).assertNoErrors().assertNotComplete();
+    }
+
+    @Test
+    public void drainMaxLoopMissingBackpressure() {
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        ts.onSubscribe(new BooleanSubscription());
+
+        QueueDrain<Integer, Integer> qd = new QueueDrain<Integer, Integer>() {
+            @Override
+            public boolean cancelled() {
+                return false;
+            }
+
+            @Override
+            public boolean done() {
+                return false;
+            }
+
+            @Override
+            public Throwable error() {
+                return null;
+            }
+
+            @Override
+            public boolean enter() {
+                return true;
+            }
+
+            @Override
+            public long requested() {
+                return 0;
+            }
+
+            @Override
+            public long produced(long n) {
+                return 0;
+            }
+
+            @Override
+            public int leave(int m) {
+                return 0;
+            }
+
+            @Override
+            public boolean accept(Subscriber<? super Integer> a, Integer v) {
+                return false;
+            }
+        };
+
+        SpscArrayQueue<Integer> q = new SpscArrayQueue<Integer>(32);
+        q.offer(1);
+
+        QueueDrainHelper.drainMaxLoop(q, ts, false, null, qd);
+
+        ts.assertFailure(MissingBackpressureException.class);
+    }
+
+    @Test
+    public void drainMaxLoopMissingBackpressureWithResource() {
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        ts.onSubscribe(new BooleanSubscription());
+
+        QueueDrain<Integer, Integer> qd = new QueueDrain<Integer, Integer>() {
+            @Override
+            public boolean cancelled() {
+                return false;
+            }
+
+            @Override
+            public boolean done() {
+                return false;
+            }
+
+            @Override
+            public Throwable error() {
+                return null;
+            }
+
+            @Override
+            public boolean enter() {
+                return true;
+            }
+
+            @Override
+            public long requested() {
+                return 0;
+            }
+
+            @Override
+            public long produced(long n) {
+                return 0;
+            }
+
+            @Override
+            public int leave(int m) {
+                return 0;
+            }
+
+            @Override
+            public boolean accept(Subscriber<? super Integer> a, Integer v) {
+                return false;
+            }
+        };
+
+        SpscArrayQueue<Integer> q = new SpscArrayQueue<Integer>(32);
+        q.offer(1);
+
+        Disposable d = Disposables.empty();
+
+        QueueDrainHelper.drainMaxLoop(q, ts, false, d, qd);
+
+        ts.assertFailure(MissingBackpressureException.class);
+
+        assertTrue(d.isDisposed());
+    }
+
+    @Test
+    public void drainMaxLoopDontAccept() {
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        ts.onSubscribe(new BooleanSubscription());
+
+        QueueDrain<Integer, Integer> qd = new QueueDrain<Integer, Integer>() {
+            @Override
+            public boolean cancelled() {
+                return false;
+            }
+
+            @Override
+            public boolean done() {
+                return false;
+            }
+
+            @Override
+            public Throwable error() {
+                return null;
+            }
+
+            @Override
+            public boolean enter() {
+                return true;
+            }
+
+            @Override
+            public long requested() {
+                return 1;
+            }
+
+            @Override
+            public long produced(long n) {
+                return 0;
+            }
+
+            @Override
+            public int leave(int m) {
+                return 0;
+            }
+
+            @Override
+            public boolean accept(Subscriber<? super Integer> a, Integer v) {
+                return false;
+            }
+        };
+
+        SpscArrayQueue<Integer> q = new SpscArrayQueue<Integer>(32);
+        q.offer(1);
+
+        QueueDrainHelper.drainMaxLoop(q, ts, false, null, qd);
+
+        ts.assertEmpty();
+    }
+
+    @Test
+    public void checkTerminatedDelayErrorEmpty() {
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        ts.onSubscribe(new BooleanSubscription());
+
+        QueueDrain<Integer, Integer> qd = new QueueDrain<Integer, Integer>() {
+            @Override
+            public boolean cancelled() {
+                return false;
+            }
+
+            @Override
+            public boolean done() {
+                return false;
+            }
+
+            @Override
+            public Throwable error() {
+                return null;
+            }
+
+            @Override
+            public boolean enter() {
+                return true;
+            }
+
+            @Override
+            public long requested() {
+                return 0;
+            }
+
+            @Override
+            public long produced(long n) {
+                return 0;
+            }
+
+            @Override
+            public int leave(int m) {
+                return 0;
+            }
+
+            @Override
+            public boolean accept(Subscriber<? super Integer> a, Integer v) {
+                return false;
+            }
+        };
+
+        SpscArrayQueue<Integer> q = new SpscArrayQueue<Integer>(32);
+
+        QueueDrainHelper.checkTerminated(true, true, ts, true, q, qd);
+
+        ts.assertResult();
+    }
+
+    @Test
+    public void checkTerminatedDelayErrorNonEmpty() {
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        ts.onSubscribe(new BooleanSubscription());
+
+        QueueDrain<Integer, Integer> qd = new QueueDrain<Integer, Integer>() {
+            @Override
+            public boolean cancelled() {
+                return false;
+            }
+
+            @Override
+            public boolean done() {
+                return false;
+            }
+
+            @Override
+            public Throwable error() {
+                return null;
+            }
+
+            @Override
+            public boolean enter() {
+                return true;
+            }
+
+            @Override
+            public long requested() {
+                return 0;
+            }
+
+            @Override
+            public long produced(long n) {
+                return 0;
+            }
+
+            @Override
+            public int leave(int m) {
+                return 0;
+            }
+
+            @Override
+            public boolean accept(Subscriber<? super Integer> a, Integer v) {
+                return false;
+            }
+        };
+
+        SpscArrayQueue<Integer> q = new SpscArrayQueue<Integer>(32);
+
+        QueueDrainHelper.checkTerminated(true, false, ts, true, q, qd);
+
+        ts.assertEmpty();
+    }
+
+    @Test
+    public void checkTerminatedDelayErrorEmptyError() {
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        ts.onSubscribe(new BooleanSubscription());
+
+        QueueDrain<Integer, Integer> qd = new QueueDrain<Integer, Integer>() {
+            @Override
+            public boolean cancelled() {
+                return false;
+            }
+
+            @Override
+            public boolean done() {
+                return false;
+            }
+
+            @Override
+            public Throwable error() {
+                return new TestException();
+            }
+
+            @Override
+            public boolean enter() {
+                return true;
+            }
+
+            @Override
+            public long requested() {
+                return 0;
+            }
+
+            @Override
+            public long produced(long n) {
+                return 0;
+            }
+
+            @Override
+            public int leave(int m) {
+                return 0;
+            }
+
+            @Override
+            public boolean accept(Subscriber<? super Integer> a, Integer v) {
+                return false;
+            }
+        };
+
+        SpscArrayQueue<Integer> q = new SpscArrayQueue<Integer>(32);
+
+        QueueDrainHelper.checkTerminated(true, true, ts, true, q, qd);
+
+        ts.assertFailure(TestException.class);
+    }
+
+    @Test
+    public void checkTerminatedNonDelayErrorError() {
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        ts.onSubscribe(new BooleanSubscription());
+
+        QueueDrain<Integer, Integer> qd = new QueueDrain<Integer, Integer>() {
+            @Override
+            public boolean cancelled() {
+                return false;
+            }
+
+            @Override
+            public boolean done() {
+                return false;
+            }
+
+            @Override
+            public Throwable error() {
+                return new TestException();
+            }
+
+            @Override
+            public boolean enter() {
+                return true;
+            }
+
+            @Override
+            public long requested() {
+                return 0;
+            }
+
+            @Override
+            public long produced(long n) {
+                return 0;
+            }
+
+            @Override
+            public int leave(int m) {
+                return 0;
+            }
+
+            @Override
+            public boolean accept(Subscriber<? super Integer> a, Integer v) {
+                return false;
+            }
+        };
+
+        SpscArrayQueue<Integer> q = new SpscArrayQueue<Integer>(32);
+
+        QueueDrainHelper.checkTerminated(true, false, ts, false, q, qd);
+
+        ts.assertFailure(TestException.class);
+    }
+
+    @Test
+    public void observerCheckTerminatedDelayErrorEmpty() {
+        TestObserver<Integer> ts = new TestObserver<Integer>();
+        ts.onSubscribe(Disposables.empty());
+
+        ObservableQueueDrain<Integer, Integer> qd = new ObservableQueueDrain<Integer, Integer>() {
+            @Override
+            public boolean cancelled() {
+                return false;
+            }
+
+            @Override
+            public boolean done() {
+                return false;
+            }
+
+            @Override
+            public Throwable error() {
+                return null;
+            }
+
+            @Override
+            public boolean enter() {
+                return true;
+            }
+
+            @Override
+            public int leave(int m) {
+                return 0;
+            }
+
+            @Override
+            public void accept(Observer<? super Integer> a, Integer v) {
+            }
+        };
+
+        SpscArrayQueue<Integer> q = new SpscArrayQueue<Integer>(32);
+
+        QueueDrainHelper.checkTerminated(true, true, ts, true, q, null, qd);
+
+        ts.assertResult();
+    }
+
+    @Test
+    public void observerCheckTerminatedDelayErrorEmptyResource() {
+        TestObserver<Integer> ts = new TestObserver<Integer>();
+        ts.onSubscribe(Disposables.empty());
+
+        ObservableQueueDrain<Integer, Integer> qd = new ObservableQueueDrain<Integer, Integer>() {
+            @Override
+            public boolean cancelled() {
+                return false;
+            }
+
+            @Override
+            public boolean done() {
+                return false;
+            }
+
+            @Override
+            public Throwable error() {
+                return null;
+            }
+
+            @Override
+            public boolean enter() {
+                return true;
+            }
+
+            @Override
+            public int leave(int m) {
+                return 0;
+            }
+
+            @Override
+            public void accept(Observer<? super Integer> a, Integer v) {
+            }
+        };
+
+        SpscArrayQueue<Integer> q = new SpscArrayQueue<Integer>(32);
+
+        Disposable d = Disposables.empty();
+
+        QueueDrainHelper.checkTerminated(true, true, ts, true, q, d, qd);
+
+        ts.assertResult();
+
+        assertTrue(d.isDisposed());
+    }
+
+    @Test
+    public void observerCheckTerminatedDelayErrorNonEmpty() {
+        TestObserver<Integer> ts = new TestObserver<Integer>();
+        ts.onSubscribe(Disposables.empty());
+
+        ObservableQueueDrain<Integer, Integer> qd = new ObservableQueueDrain<Integer, Integer>() {
+            @Override
+            public boolean cancelled() {
+                return false;
+            }
+
+            @Override
+            public boolean done() {
+                return false;
+            }
+
+            @Override
+            public Throwable error() {
+                return null;
+            }
+
+            @Override
+            public boolean enter() {
+                return true;
+            }
+
+            @Override
+            public int leave(int m) {
+                return 0;
+            }
+
+            @Override
+            public void accept(Observer<? super Integer> a, Integer v) {
+            }
+        };
+
+        SpscArrayQueue<Integer> q = new SpscArrayQueue<Integer>(32);
+
+        QueueDrainHelper.checkTerminated(true, false, ts, true, q, null, qd);
+
+        ts.assertEmpty();
+    }
+
+    @Test
+    public void observerCheckTerminatedDelayErrorEmptyError() {
+        TestObserver<Integer> ts = new TestObserver<Integer>();
+        ts.onSubscribe(Disposables.empty());
+
+        ObservableQueueDrain<Integer, Integer> qd = new ObservableQueueDrain<Integer, Integer>() {
+            @Override
+            public boolean cancelled() {
+                return false;
+            }
+
+            @Override
+            public boolean done() {
+                return false;
+            }
+
+            @Override
+            public Throwable error() {
+                return new TestException();
+            }
+
+            @Override
+            public boolean enter() {
+                return true;
+            }
+
+            @Override
+            public int leave(int m) {
+                return 0;
+            }
+
+            @Override
+            public void accept(Observer<? super Integer> a, Integer v) {
+            }
+        };
+
+        SpscArrayQueue<Integer> q = new SpscArrayQueue<Integer>(32);
+
+        QueueDrainHelper.checkTerminated(true, true, ts, true, q, null, qd);
+
+        ts.assertFailure(TestException.class);
+    }
+
+    @Test
+    public void observerCheckTerminatedNonDelayErrorError() {
+        TestObserver<Integer> ts = new TestObserver<Integer>();
+        ts.onSubscribe(Disposables.empty());
+
+        ObservableQueueDrain<Integer, Integer> qd = new ObservableQueueDrain<Integer, Integer>() {
+            @Override
+            public boolean cancelled() {
+                return false;
+            }
+
+            @Override
+            public boolean done() {
+                return false;
+            }
+
+            @Override
+            public Throwable error() {
+                return new TestException();
+            }
+
+            @Override
+            public boolean enter() {
+                return true;
+            }
+
+            @Override
+            public int leave(int m) {
+                return 0;
+            }
+
+            @Override
+            public void accept(Observer<? super Integer> a, Integer v) {
+            }
+        };
+
+        SpscArrayQueue<Integer> q = new SpscArrayQueue<Integer>(32);
+
+        QueueDrainHelper.checkTerminated(true, false, ts, false, q, null, qd);
+
+        ts.assertFailure(TestException.class);
+    }
+    @Test
+    public void observerCheckTerminatedNonDelayErrorErrorResource() {
+        TestObserver<Integer> ts = new TestObserver<Integer>();
+        ts.onSubscribe(Disposables.empty());
+
+        ObservableQueueDrain<Integer, Integer> qd = new ObservableQueueDrain<Integer, Integer>() {
+            @Override
+            public boolean cancelled() {
+                return false;
+            }
+
+            @Override
+            public boolean done() {
+                return false;
+            }
+
+            @Override
+            public Throwable error() {
+                return new TestException();
+            }
+
+            @Override
+            public boolean enter() {
+                return true;
+            }
+
+            @Override
+            public int leave(int m) {
+                return 0;
+            }
+
+            @Override
+            public void accept(Observer<? super Integer> a, Integer v) {
+            }
+        };
+
+        SpscArrayQueue<Integer> q = new SpscArrayQueue<Integer>(32);
+
+        Disposable d = Disposables.empty();
+
+        QueueDrainHelper.checkTerminated(true, false, ts, false, q, d, qd);
+
+        ts.assertFailure(TestException.class);
+
+        assertTrue(d.isDisposed());
+    }
+
+    @Test
+    public void postCompleteAlreadyComplete() {
+
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+
+        Queue<Integer> q = new ArrayDeque<Integer>();
+        q.offer(1);
+
+        AtomicLong state = new AtomicLong(QueueDrainHelper.COMPLETED_MASK);
+
+        QueueDrainHelper.postComplete(ts, q, state, new BooleanSupplier() {
+            @Override
+            public boolean getAsBoolean() throws Exception {
+                return false;
+            }
+        });
     }
 }

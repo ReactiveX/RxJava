@@ -24,7 +24,7 @@ import org.junit.Test;
 import org.reactivestreams.Subscriber;
 
 import io.reactivex.*;
-import io.reactivex.functions.LongConsumer;
+import io.reactivex.functions.*;
 import io.reactivex.subscribers.TestSubscriber;
 
 public class FlowableSkipTest {
@@ -173,6 +173,17 @@ public class FlowableSkipTest {
     @Test
     public void dispose() {
         TestHelper.checkDisposed(Flowable.just(1).skip(2));
+    }
+
+    @Test
+    public void doubleOnSubscribe() {
+        TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Flowable<Object>>() {
+            @Override
+            public Flowable<Object> apply(Flowable<Object> o)
+                    throws Exception {
+                return o.skip(1);
+            }
+        });
     }
 
 }

@@ -26,6 +26,7 @@ import io.reactivex.*;
 import io.reactivex.Observable;
 import io.reactivex.Observer;
 import io.reactivex.exceptions.TestException;
+import io.reactivex.functions.Function;
 
 public class ObservableToListTest {
 
@@ -269,5 +270,23 @@ public class ObservableToListTest {
         .test()
         .assertFailure(NullPointerException.class)
         .assertErrorMessage("The collectionSupplier returned a null collection. Null values are generally not allowed in 2.x operators and sources.");
+    }
+
+    @Test
+    public void doubleOnSubscribe() {
+        TestHelper.checkDoubleOnSubscribeObservable(new Function<Observable<Object>, Observable<List<Object>>>() {
+            @Override
+            public Observable<List<Object>> apply(Observable<Object> f)
+                    throws Exception {
+                return f.toList().toObservable();
+            }
+        });
+        TestHelper.checkDoubleOnSubscribeObservableToSingle(new Function<Observable<Object>, Single<List<Object>>>() {
+            @Override
+            public Single<List<Object>> apply(Observable<Object> f)
+                    throws Exception {
+                return f.toList();
+            }
+        });
     }
 }

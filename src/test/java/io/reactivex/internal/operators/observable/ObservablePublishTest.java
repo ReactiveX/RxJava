@@ -720,4 +720,22 @@ public class ObservablePublishTest {
 
         assertTrue(bs.isDisposed());
     }
+
+    @Test
+    public void doubleOnSubscribe() {
+        TestHelper.checkDoubleOnSubscribeObservable(new Function<Observable<Object>, ObservableSource<Object>>() {
+            @Override
+            public ObservableSource<Object> apply(final Observable<Object> o)
+                    throws Exception {
+                return Observable.<Integer>never().publish(new Function<Observable<Integer>, ObservableSource<Object>>() {
+                    @Override
+                    public ObservableSource<Object> apply(Observable<Integer> v)
+                            throws Exception {
+                        return o;
+                    }
+                });
+            }
+        }
+        );
+    }
 }
