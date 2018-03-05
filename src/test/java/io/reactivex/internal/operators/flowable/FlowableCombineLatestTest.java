@@ -751,11 +751,11 @@ public class FlowableCombineLatestTest {
     public void testBackpressure() {
         BiFunction<String, Integer, String> combineLatestFunction = getConcatStringIntegerCombineLatestFunction();
 
-        int NUM = Flowable.bufferSize() * 4;
+        int num = Flowable.bufferSize() * 4;
         TestSubscriber<String> ts = new TestSubscriber<String>();
         Flowable.combineLatest(
                 Flowable.just("one", "two"),
-                Flowable.range(2, NUM),
+                Flowable.range(2, num),
                 combineLatestFunction
         )
         .observeOn(Schedulers.computation())
@@ -767,7 +767,7 @@ public class FlowableCombineLatestTest {
         assertEquals("two2", events.get(0));
         assertEquals("two3", events.get(1));
         assertEquals("two4", events.get(2));
-        assertEquals(NUM, events.size());
+        assertEquals(num, events.size());
     }
 
     @Test

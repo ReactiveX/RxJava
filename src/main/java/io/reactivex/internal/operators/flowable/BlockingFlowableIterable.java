@@ -125,9 +125,7 @@ public final class BlockingFlowableIterable<T> implements Iterable<T> {
 
         @Override
         public void onSubscribe(Subscription s) {
-            if (SubscriptionHelper.setOnce(this, s)) {
-                s.request(batchSize);
-            }
+            SubscriptionHelper.setOnce(this, s, batchSize);
         }
 
         @Override

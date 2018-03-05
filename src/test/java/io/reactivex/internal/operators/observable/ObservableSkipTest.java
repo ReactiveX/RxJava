@@ -21,6 +21,7 @@ import java.util.Arrays;
 import org.junit.Test;
 
 import io.reactivex.*;
+import io.reactivex.functions.Function;
 import io.reactivex.observers.TestObserver;
 
 public class ObservableSkipTest {
@@ -147,5 +148,16 @@ public class ObservableSkipTest {
     @Test
     public void dispose() {
         TestHelper.checkDisposed(Observable.just(1).skip(2));
+    }
+
+    @Test
+    public void doubleOnSubscribe() {
+        TestHelper.checkDoubleOnSubscribeObservable(new Function<Observable<Object>, Observable<Object>>() {
+            @Override
+            public Observable<Object> apply(Observable<Object> o)
+                    throws Exception {
+                return o.skip(1);
+            }
+        });
     }
 }

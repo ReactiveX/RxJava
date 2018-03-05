@@ -180,9 +180,7 @@ public final class FlowableCache<T> extends AbstractFlowableWithUpstream<T, T> {
 
         @Override
         public void onSubscribe(Subscription s) {
-            if (SubscriptionHelper.setOnce(connection, s)) {
-                s.request(Long.MAX_VALUE);
-            }
+            SubscriptionHelper.setOnce(connection, s, Long.MAX_VALUE);
         }
 
         /**

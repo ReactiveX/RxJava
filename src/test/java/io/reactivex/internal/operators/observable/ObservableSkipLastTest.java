@@ -24,6 +24,7 @@ import org.mockito.InOrder;
 
 import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
+import io.reactivex.functions.Function;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.schedulers.Schedulers;
 
@@ -119,5 +120,16 @@ public class ObservableSkipLastTest {
         .skipLast(1)
         .test()
         .assertFailure(TestException.class);
+    }
+
+    @Test
+    public void doubleOnSubscribe() {
+        TestHelper.checkDoubleOnSubscribeObservable(new Function<Observable<Object>, Observable<Object>>() {
+            @Override
+            public Observable<Object> apply(Observable<Object> o)
+                    throws Exception {
+                return o.skipLast(1);
+            }
+        });
     }
 }

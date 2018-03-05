@@ -16,11 +16,14 @@ package io.reactivex.internal.operators.completable;
 import static org.junit.Assert.*;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.junit.Test;
 
 import io.reactivex.*;
+import io.reactivex.disposables.*;
 import io.reactivex.exceptions.TestException;
+import io.reactivex.internal.operators.completable.CompletableAmb.Amb;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.processors.PublishProcessor;
@@ -162,4 +165,25 @@ public class CompletableAmbTest {
         Completable.ambArray(Completable.complete(), error).test().assertComplete();
     }
 
+    @Test
+    public void ambRace() {
+        TestObserver<Void> to = new TestObserver<Void>();
+        to.onSubscribe(Disposables.empty());
+
+        CompositeDisposable cd = new CompositeDisposable();
+        AtomicBoolean once = new AtomicBoolean();
+        Amb a = new Amb(once, cd, to);
+
+        a.onComplete();
+        a.onComplete();
+
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            a.onError(new TestException());
+
+            TestHelper.assertUndeliverable(errors, 0, TestException.class);
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
 }

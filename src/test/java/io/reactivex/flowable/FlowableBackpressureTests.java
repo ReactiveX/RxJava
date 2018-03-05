@@ -80,20 +80,20 @@ public class FlowableBackpressureTests {
 
     @Test
     public void testObserveOn() {
-        int NUM = (int) (Flowable.bufferSize() * 2.1);
+        int num = (int) (Flowable.bufferSize() * 2.1);
         AtomicInteger c = new AtomicInteger();
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
-        incrementingIntegers(c).observeOn(Schedulers.computation()).take(NUM).subscribe(ts);
+        incrementingIntegers(c).observeOn(Schedulers.computation()).take(num).subscribe(ts);
         ts.awaitTerminalEvent();
         ts.assertNoErrors();
         System.out.println("testObserveOn => Received: " + ts.valueCount() + "  Emitted: " + c.get());
-        assertEquals(NUM, ts.valueCount());
+        assertEquals(num, ts.valueCount());
         assertTrue(c.get() < Flowable.bufferSize() * 4);
     }
 
     @Test
     public void testObserveOnWithSlowConsumer() {
-        int NUM = (int) (Flowable.bufferSize() * 0.2);
+        int num = (int) (Flowable.bufferSize() * 0.2);
         AtomicInteger c = new AtomicInteger();
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         incrementingIntegers(c).observeOn(Schedulers.computation()).map(
@@ -108,28 +108,28 @@ public class FlowableBackpressureTests {
                     return i;
                 }
             }
-        ).take(NUM).subscribe(ts);
+        ).take(num).subscribe(ts);
         ts.awaitTerminalEvent();
         ts.assertNoErrors();
         System.out.println("testObserveOnWithSlowConsumer => Received: " + ts.valueCount() + "  Emitted: " + c.get());
-        assertEquals(NUM, ts.valueCount());
+        assertEquals(num, ts.valueCount());
         assertTrue(c.get() < Flowable.bufferSize() * 2);
     }
 
     @Test
     public void testMergeSync() {
-        int NUM = (int) (Flowable.bufferSize() * 4.1);
+        int num = (int) (Flowable.bufferSize() * 4.1);
         AtomicInteger c1 = new AtomicInteger();
         AtomicInteger c2 = new AtomicInteger();
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         Flowable<Integer> merged = Flowable.merge(incrementingIntegers(c1), incrementingIntegers(c2));
 
-        merged.take(NUM).subscribe(ts);
+        merged.take(num).subscribe(ts);
         ts.awaitTerminalEvent();
         ts.assertNoErrors();
-        System.out.println("Expected: " + NUM + " got: " + ts.valueCount());
+        System.out.println("Expected: " + num + " got: " + ts.valueCount());
         System.out.println("testMergeSync => Received: " + ts.valueCount() + "  Emitted: " + c1.get() + " / " + c2.get());
-        assertEquals(NUM, ts.valueCount());
+        assertEquals(num, ts.valueCount());
         // either one can starve the other, but neither should be capable of doing more than 5 batches (taking 4.1)
         // TODO is it possible to make this deterministic rather than one possibly starving the other?
         // benjchristensen => In general I'd say it's not worth trying to make it so, as "fair" algoritms generally take a performance hit
@@ -139,7 +139,7 @@ public class FlowableBackpressureTests {
 
     @Test
     public void testMergeAsync() {
-        int NUM = (int) (Flowable.bufferSize() * 4.1);
+        int num = (int) (Flowable.bufferSize() * 4.1);
         AtomicInteger c1 = new AtomicInteger();
         AtomicInteger c2 = new AtomicInteger();
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
@@ -147,11 +147,11 @@ public class FlowableBackpressureTests {
                 incrementingIntegers(c1).subscribeOn(Schedulers.computation()),
                 incrementingIntegers(c2).subscribeOn(Schedulers.computation()));
 
-        merged.take(NUM).subscribe(ts);
+        merged.take(num).subscribe(ts);
         ts.awaitTerminalEvent();
         ts.assertNoErrors();
         System.out.println("testMergeAsync => Received: " + ts.valueCount() + "  Emitted: " + c1.get() + " / " + c2.get());
-        assertEquals(NUM, ts.valueCount());
+        assertEquals(num, ts.valueCount());
         // either one can starve the other, but neither should be capable of doing more than 5 batches (taking 4.1)
         // TODO is it possible to make this deterministic rather than one possibly starving the other?
         // benjchristensen => In general I'd say it's not worth trying to make it so, as "fair" algoritms generally take a performance hit
@@ -167,7 +167,7 @@ public class FlowableBackpressureTests {
                 System.out.println("testMergeAsyncThenObserveOnLoop >> " + i);
             }
             // Verify there is no MissingBackpressureException
-            int NUM = (int) (Flowable.bufferSize() * 4.1);
+            int num = (int) (Flowable.bufferSize() * 4.1);
             AtomicInteger c1 = new AtomicInteger();
             AtomicInteger c2 = new AtomicInteger();
 
@@ -178,7 +178,7 @@ public class FlowableBackpressureTests {
 
             merged
             .observeOn(Schedulers.io())
-            .take(NUM)
+            .take(num)
             .subscribe(ts);
 
 
@@ -186,13 +186,13 @@ public class FlowableBackpressureTests {
             ts.assertComplete();
             ts.assertNoErrors();
             System.out.println("testMergeAsyncThenObserveOn => Received: " + ts.valueCount() + "  Emitted: " + c1.get() + " / " + c2.get());
-            assertEquals(NUM, ts.valueCount());
+            assertEquals(num, ts.valueCount());
         }
     }
 
     @Test
     public void testMergeAsyncThenObserveOn() {
-        int NUM = (int) (Flowable.bufferSize() * 4.1);
+        int num = (int) (Flowable.bufferSize() * 4.1);
         AtomicInteger c1 = new AtomicInteger();
         AtomicInteger c2 = new AtomicInteger();
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
@@ -200,11 +200,11 @@ public class FlowableBackpressureTests {
                 incrementingIntegers(c1).subscribeOn(Schedulers.computation()),
                 incrementingIntegers(c2).subscribeOn(Schedulers.computation()));
 
-        merged.observeOn(Schedulers.newThread()).take(NUM).subscribe(ts);
+        merged.observeOn(Schedulers.newThread()).take(num).subscribe(ts);
         ts.awaitTerminalEvent();
         ts.assertNoErrors();
         System.out.println("testMergeAsyncThenObserveOn => Received: " + ts.valueCount() + "  Emitted: " + c1.get() + " / " + c2.get());
-        assertEquals(NUM, ts.valueCount());
+        assertEquals(num, ts.valueCount());
         // either one can starve the other, but neither should be capable of doing more than 5 batches (taking 4.1)
         // TODO is it possible to make this deterministic rather than one possibly starving the other?
         // benjchristensen => In general I'd say it's not worth trying to make it so, as "fair" algoritms generally take a performance hit
@@ -215,7 +215,7 @@ public class FlowableBackpressureTests {
 
     @Test
     public void testFlatMapSync() {
-        int NUM = (int) (Flowable.bufferSize() * 2.1);
+        int num = (int) (Flowable.bufferSize() * 2.1);
         AtomicInteger c = new AtomicInteger();
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
 
@@ -226,20 +226,20 @@ public class FlowableBackpressureTests {
                 return incrementingIntegers(new AtomicInteger()).take(10);
             }
         })
-        .take(NUM).subscribe(ts);
+        .take(num).subscribe(ts);
 
         ts.awaitTerminalEvent();
         ts.assertNoErrors();
         System.out.println("testFlatMapSync => Received: " + ts.valueCount() + "  Emitted: " + c.get());
-        assertEquals(NUM, ts.valueCount());
-        // expect less than 1 buffer since the flatMap is emitting 10 each time, so it is NUM/10 that will be taken.
+        assertEquals(num, ts.valueCount());
+        // expect less than 1 buffer since the flatMap is emitting 10 each time, so it is num/10 that will be taken.
         assertTrue(c.get() < Flowable.bufferSize());
     }
 
     @Test
     @Ignore("The test is non-deterministic and can't be made deterministic")
     public void testFlatMapAsync() {
-        int NUM = (int) (Flowable.bufferSize() * 2.1);
+        int num = (int) (Flowable.bufferSize() * 2.1);
         AtomicInteger c = new AtomicInteger();
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
 
@@ -254,12 +254,12 @@ public class FlowableBackpressureTests {
             }
         }
         )
-        .take(NUM).subscribe(ts);
+        .take(num).subscribe(ts);
 
         ts.awaitTerminalEvent();
         ts.assertNoErrors();
         System.out.println("testFlatMapAsync => Received: " + ts.valueCount() + "  Emitted: " + c.get() + " Size: " + Flowable.bufferSize());
-        assertEquals(NUM, ts.valueCount());
+        assertEquals(num, ts.valueCount());
         // even though we only need 10, it will request at least Flowable.bufferSize(), and then as it drains keep requesting more
         // and then it will be non-deterministic when the take() causes the unsubscribe as it is scheduled on 10 different schedulers (threads)
         // normally this number is ~250 but can get up to ~1200 when Flowable.bufferSize() == 1024
@@ -268,7 +268,7 @@ public class FlowableBackpressureTests {
 
     @Test
     public void testZipSync() {
-        int NUM = (int) (Flowable.bufferSize() * 4.1);
+        int num = (int) (Flowable.bufferSize() * 4.1);
         AtomicInteger c1 = new AtomicInteger();
         AtomicInteger c2 = new AtomicInteger();
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
@@ -283,20 +283,20 @@ public class FlowableBackpressureTests {
                     }
                 });
 
-        zipped.take(NUM)
+        zipped.take(num)
         .subscribe(ts);
 
         ts.awaitTerminalEvent();
         ts.assertNoErrors();
         System.out.println("testZipSync => Received: " + ts.valueCount() + "  Emitted: " + c1.get() + " / " + c2.get());
-        assertEquals(NUM, ts.valueCount());
+        assertEquals(num, ts.valueCount());
         assertTrue(c1.get() < Flowable.bufferSize() * 7);
         assertTrue(c2.get() < Flowable.bufferSize() * 7);
     }
 
     @Test
     public void testZipAsync() {
-        int NUM = (int) (Flowable.bufferSize() * 2.1);
+        int num = (int) (Flowable.bufferSize() * 2.1);
         AtomicInteger c1 = new AtomicInteger();
         AtomicInteger c2 = new AtomicInteger();
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
@@ -310,11 +310,11 @@ public class FlowableBackpressureTests {
                     }
                 });
 
-        zipped.take(NUM).subscribe(ts);
+        zipped.take(num).subscribe(ts);
         ts.awaitTerminalEvent();
         ts.assertNoErrors();
         System.out.println("testZipAsync => Received: " + ts.valueCount() + "  Emitted: " + c1.get() + " / " + c2.get());
-        assertEquals(NUM, ts.valueCount());
+        assertEquals(num, ts.valueCount());
         int max = Flowable.bufferSize() * 5;
         assertTrue("" + c1.get() + " >= " + max, c1.get() < max);
         assertTrue("" + c2.get() + " >= " + max, c2.get() < max);
@@ -324,16 +324,16 @@ public class FlowableBackpressureTests {
     public void testSubscribeOnScheduling() {
         // in a loop for repeating the concurrency in this to increase chance of failure
         for (int i = 0; i < 100; i++) {
-            int NUM = (int) (Flowable.bufferSize() * 2.1);
+            int num = (int) (Flowable.bufferSize() * 2.1);
             AtomicInteger c = new AtomicInteger();
             ConcurrentLinkedQueue<Thread> threads = new ConcurrentLinkedQueue<Thread>();
             TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
             // observeOn is there to make it async and need backpressure
-            incrementingIntegers(c, threads).subscribeOn(Schedulers.computation()).observeOn(Schedulers.computation()).take(NUM).subscribe(ts);
+            incrementingIntegers(c, threads).subscribeOn(Schedulers.computation()).observeOn(Schedulers.computation()).take(num).subscribe(ts);
             ts.awaitTerminalEvent();
             ts.assertNoErrors();
             System.out.println("testSubscribeOnScheduling => Received: " + ts.valueCount() + "  Emitted: " + c.get());
-            assertEquals(NUM, ts.valueCount());
+            assertEquals(num, ts.valueCount());
             assertTrue(c.get() < Flowable.bufferSize() * 4);
             Thread first = null;
             for (Thread t : threads) {
@@ -354,7 +354,7 @@ public class FlowableBackpressureTests {
 
     @Test
     public void testTakeFilterSkipChainAsync() {
-        int NUM = (int) (Flowable.bufferSize() * 2.1);
+        int num = (int) (Flowable.bufferSize() * 2.1);
         AtomicInteger c = new AtomicInteger();
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         incrementingIntegers(c).observeOn(Schedulers.computation())
@@ -364,19 +364,19 @@ public class FlowableBackpressureTests {
                     public boolean test(Integer i) {
                         return i > 11000;
                     }
-                }).take(NUM).subscribe(ts);
+                }).take(num).subscribe(ts);
 
         ts.awaitTerminalEvent();
         ts.assertNoErrors();
 
         // emit 10000 that are skipped
         // emit next 1000 that are filtered out
-        // take NUM
-        // so emitted is at least 10000+1000+NUM + extra for buffer size/threshold
+        // take num
+        // so emitted is at least 10000+1000+num + extra for buffer size/threshold
         int expected = 10000 + 1000 + Flowable.bufferSize() * 3 + Flowable.bufferSize() / 2;
 
         System.out.println("testTakeFilterSkipChain => Received: " + ts.valueCount() + "  Emitted: " + c.get() + " Expected: " + expected);
-        assertEquals(NUM, ts.valueCount());
+        assertEquals(num, ts.valueCount());
         assertTrue(c.get() < expected);
     }
 
@@ -525,23 +525,23 @@ public class FlowableBackpressureTests {
             if (System.currentTimeMillis() - t > TimeUnit.SECONDS.toMillis(9)) {
                 break;
             }
-            int NUM = (int) (Flowable.bufferSize() * 1.1); // > 1 so that take doesn't prevent buffer overflow
+            int num = (int) (Flowable.bufferSize() * 1.1); // > 1 so that take doesn't prevent buffer overflow
             AtomicInteger c = new AtomicInteger();
             TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
             firehose(c).onBackpressureDrop()
             .observeOn(Schedulers.computation())
-            .map(SLOW_PASS_THRU).take(NUM).subscribe(ts);
+            .map(SLOW_PASS_THRU).take(num).subscribe(ts);
             ts.awaitTerminalEvent();
             ts.assertNoErrors();
 
             List<Integer> onNextEvents = ts.values();
-            assertEquals(NUM, onNextEvents.size());
+            assertEquals(num, onNextEvents.size());
 
-            Integer lastEvent = onNextEvents.get(NUM - 1);
+            Integer lastEvent = onNextEvents.get(num - 1);
 
             System.out.println("testOnBackpressureDrop => Received: " + onNextEvents.size() + "  Emitted: " + c.get() + " Last value: " + lastEvent);
             // it drop, so we should get some number far higher than what would have sequentially incremented
-            assertTrue(NUM - 1 <= lastEvent.intValue());
+            assertTrue(num - 1 <= lastEvent.intValue());
         }
     }
 
@@ -551,7 +551,7 @@ public class FlowableBackpressureTests {
             final AtomicInteger emitCount = new AtomicInteger();
             final AtomicInteger dropCount = new AtomicInteger();
             final AtomicInteger passCount = new AtomicInteger();
-            final int NUM = Flowable.bufferSize() * 3; // > 1 so that take doesn't prevent buffer overflow
+            final int num = Flowable.bufferSize() * 3; // > 1 so that take doesn't prevent buffer overflow
             TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
 
             firehose(emitCount)
@@ -569,19 +569,19 @@ public class FlowableBackpressureTests {
             })
             .observeOn(Schedulers.computation())
             .map(SLOW_PASS_THRU)
-            .take(NUM).subscribe(ts);
+            .take(num).subscribe(ts);
 
             ts.awaitTerminalEvent();
             ts.assertNoErrors();
 
             List<Integer> onNextEvents = ts.values();
-            Integer lastEvent = onNextEvents.get(NUM - 1);
+            Integer lastEvent = onNextEvents.get(num - 1);
             System.out.println(testName.getMethodName() + " => Received: " + onNextEvents.size() + " Passed: " + passCount.get() + " Dropped: " + dropCount.get() + "  Emitted: " + emitCount.get() + " Last value: " + lastEvent);
-            assertEquals(NUM, onNextEvents.size());
-            // in reality, NUM < passCount
-            assertTrue(NUM <= passCount.get());
+            assertEquals(num, onNextEvents.size());
+            // in reality, num < passCount
+            assertTrue(num <= passCount.get());
             // it drop, so we should get some number far higher than what would have sequentially incremented
-            assertTrue(NUM - 1 <= lastEvent.intValue());
+            assertTrue(num - 1 <= lastEvent.intValue());
             assertTrue(0 < dropCount.get());
             assertEquals(emitCount.get(), passCount.get() + dropCount.get());
         }
@@ -590,22 +590,22 @@ public class FlowableBackpressureTests {
     @Test(timeout = 10000)
     public void testOnBackpressureDropSynchronous() {
         for (int i = 0; i < 100; i++) {
-            int NUM = (int) (Flowable.bufferSize() * 1.1); // > 1 so that take doesn't prevent buffer overflow
+            int num = (int) (Flowable.bufferSize() * 1.1); // > 1 so that take doesn't prevent buffer overflow
             AtomicInteger c = new AtomicInteger();
             TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
             firehose(c).onBackpressureDrop()
-            .map(SLOW_PASS_THRU).take(NUM).subscribe(ts);
+            .map(SLOW_PASS_THRU).take(num).subscribe(ts);
             ts.awaitTerminalEvent();
             ts.assertNoErrors();
 
             List<Integer> onNextEvents = ts.values();
-            assertEquals(NUM, onNextEvents.size());
+            assertEquals(num, onNextEvents.size());
 
-            Integer lastEvent = onNextEvents.get(NUM - 1);
+            Integer lastEvent = onNextEvents.get(num - 1);
 
             System.out.println("testOnBackpressureDrop => Received: " + onNextEvents.size() + "  Emitted: " + c.get() + " Last value: " + lastEvent);
             // it drop, so we should get some number far higher than what would have sequentially incremented
-            assertTrue(NUM - 1 <= lastEvent.intValue());
+            assertTrue(num - 1 <= lastEvent.intValue());
         }
     }
 
@@ -613,7 +613,7 @@ public class FlowableBackpressureTests {
     public void testOnBackpressureDropSynchronousWithAction() {
         for (int i = 0; i < 100; i++) {
             final AtomicInteger dropCount = new AtomicInteger();
-            int NUM = (int) (Flowable.bufferSize() * 1.1); // > 1 so that take doesn't prevent buffer overflow
+            int num = (int) (Flowable.bufferSize() * 1.1); // > 1 so that take doesn't prevent buffer overflow
             AtomicInteger c = new AtomicInteger();
             TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
             firehose(c).onBackpressureDrop(new Consumer<Integer>() {
@@ -622,18 +622,18 @@ public class FlowableBackpressureTests {
                     dropCount.incrementAndGet();
                 }
             })
-            .map(SLOW_PASS_THRU).take(NUM).subscribe(ts);
+            .map(SLOW_PASS_THRU).take(num).subscribe(ts);
             ts.awaitTerminalEvent();
             ts.assertNoErrors();
 
             List<Integer> onNextEvents = ts.values();
-            assertEquals(NUM, onNextEvents.size());
+            assertEquals(num, onNextEvents.size());
 
-            Integer lastEvent = onNextEvents.get(NUM - 1);
+            Integer lastEvent = onNextEvents.get(num - 1);
 
             System.out.println("testOnBackpressureDrop => Received: " + onNextEvents.size() + " Dropped: " + dropCount.get() + "  Emitted: " + c.get() + " Last value: " + lastEvent);
             // it drop, so we should get some number far higher than what would have sequentially incremented
-            assertTrue(NUM - 1 <= lastEvent.intValue());
+            assertTrue(num - 1 <= lastEvent.intValue());
             // no drop in synchronous mode
             assertEquals(0, dropCount.get());
             assertEquals(c.get(), onNextEvents.size());
@@ -642,7 +642,7 @@ public class FlowableBackpressureTests {
 
     @Test(timeout = 2000)
     public void testOnBackpressureBuffer() {
-        int NUM = (int) (Flowable.bufferSize() * 1.1); // > 1 so that take doesn't prevent buffer overflow
+        int num = (int) (Flowable.bufferSize() * 1.1); // > 1 so that take doesn't prevent buffer overflow
         AtomicInteger c = new AtomicInteger();
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
 
@@ -654,14 +654,14 @@ public class FlowableBackpressureTests {
         })
         .onBackpressureBuffer()
         .observeOn(Schedulers.computation())
-        .map(SLOW_PASS_THRU).take(NUM).subscribe(ts);
+        .map(SLOW_PASS_THRU).take(num).subscribe(ts);
 
         ts.awaitTerminalEvent();
         ts.assertNoErrors();
         System.out.println("testOnBackpressureBuffer => Received: " + ts.valueCount() + "  Emitted: " + c.get());
-        assertEquals(NUM, ts.valueCount());
+        assertEquals(num, ts.valueCount());
         // it buffers, so we should get the right value sequentially
-        assertEquals(NUM - 1, ts.values().get(NUM - 1).intValue());
+        assertEquals(num - 1, ts.values().get(num - 1).intValue());
     }
 
     /**
@@ -694,8 +694,8 @@ public class FlowableBackpressureTests {
                         if (threadsSeen != null) {
                             threadsSeen.offer(Thread.currentThread());
                         }
-                        long _c = BackpressureHelper.add(requested, n);
-                        if (_c == 0) {
+                        long c = BackpressureHelper.add(requested, n);
+                        if (c == 0) {
                             while (!cancelled) {
                                 counter.incrementAndGet();
                                 s.onNext(i++);

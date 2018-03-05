@@ -325,4 +325,23 @@ public class FlowableIgnoreElementsTest {
 
         TestHelper.checkDisposed(Flowable.just(1).ignoreElements().toFlowable());
     }
+
+    @Test
+    public void doubleOnSubscribe() {
+        TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Flowable<Object>>() {
+            @Override
+            public Flowable<Object> apply(Flowable<Object> o)
+                    throws Exception {
+                return o.ignoreElements().toFlowable();
+            }
+        });
+
+        TestHelper.checkDoubleOnSubscribeFlowableToCompletable(new Function<Flowable<Object>, Completable>() {
+            @Override
+            public Completable apply(Flowable<Object> o)
+                    throws Exception {
+                return o.ignoreElements();
+            }
+        });
+    }
 }

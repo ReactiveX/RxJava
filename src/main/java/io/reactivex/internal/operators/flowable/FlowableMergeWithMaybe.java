@@ -98,10 +98,8 @@ public final class FlowableMergeWithMaybe<T> extends AbstractFlowableWithUpstrea
         }
 
         @Override
-        public void onSubscribe(Subscription d) {
-            if (SubscriptionHelper.setOnce(mainSubscription, d)) {
-                d.request(prefetch);
-            }
+        public void onSubscribe(Subscription s) {
+            SubscriptionHelper.setOnce(mainSubscription, s, prefetch);
         }
 
         @Override

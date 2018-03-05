@@ -1767,4 +1767,12 @@ public class FlowableReplayTest {
         .test()
         .assertFailure(TestException.class);
     }
+
+    @Test
+    public void badRequest() {
+        TestHelper.assertBadRequestReported(
+            Flowable.never()
+            .replay()
+        );
+    }
 }

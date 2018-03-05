@@ -20,6 +20,7 @@ import org.junit.Test;
 
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Function;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.subjects.PublishSubject;
 
@@ -259,5 +260,15 @@ public class ObservableTakeUntilTest {
     @Test
     public void dispose() {
         TestHelper.checkDisposed(PublishSubject.create().takeUntil(Observable.never()));
+    }
+
+    @Test
+    public void doubleOnSubscribe() {
+        TestHelper.checkDoubleOnSubscribeObservable(new Function<Observable<Integer>, Observable<Integer>>() {
+            @Override
+            public Observable<Integer> apply(Observable<Integer> c) throws Exception {
+                return c.takeUntil(Observable.never());
+            }
+        });
     }
 }

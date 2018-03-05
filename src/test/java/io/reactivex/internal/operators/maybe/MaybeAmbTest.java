@@ -20,6 +20,7 @@ import java.util.*;
 import org.junit.Test;
 
 import io.reactivex.*;
+import io.reactivex.disposables.Disposables;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.plugins.RxJavaPlugins;
@@ -107,5 +108,25 @@ public class MaybeAmbTest {
                 RxJavaPlugins.reset();
             }
         }
+    }
+
+    @Test
+    public void disposeNoFurtherSignals() {
+        @SuppressWarnings("unchecked")
+        TestObserver<Integer> to = Maybe.ambArray(new Maybe<Integer>() {
+            @Override
+            protected void subscribeActual(
+                    MaybeObserver<? super Integer> observer) {
+                observer.onSubscribe(Disposables.empty());
+                observer.onSuccess(1);
+                observer.onSuccess(2);
+                observer.onComplete();
+            }
+        }, Maybe.<Integer>never())
+        .test();
+
+        to.cancel();
+
+        to.assertResult(1);
     }
 }

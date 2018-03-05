@@ -15,6 +15,7 @@ package io.reactivex.internal.operators.observable;
 
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.internal.disposables.DisposableHelper;
 
 public final class ObservableSkip<T> extends AbstractObservableWithUpstream<T, T> {
     final long n;
@@ -40,9 +41,11 @@ public final class ObservableSkip<T> extends AbstractObservableWithUpstream<T, T
         }
 
         @Override
-        public void onSubscribe(Disposable s) {
-            this.d = s;
-            actual.onSubscribe(this);
+        public void onSubscribe(Disposable d) {
+            if (DisposableHelper.validate(this.d, d)) {
+                this.d = d;
+                actual.onSubscribe(this);
+            }
         }
 
         @Override

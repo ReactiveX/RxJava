@@ -18,10 +18,12 @@ import static org.junit.Assert.*;
 import java.util.List;
 
 import org.junit.Test;
+import org.reactivestreams.Subscriber;
 
 import io.reactivex.*;
 import io.reactivex.exceptions.*;
 import io.reactivex.functions.Function;
+import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.processors.PublishProcessor;
 
@@ -215,5 +217,29 @@ public class MaybeDelayOtherTest {
     @Test
     public void withOtherPublisherDispose() {
         TestHelper.checkDisposed(Maybe.just(1).delay(Flowable.just(1)));
+    }
+
+    @Test
+    public void withOtherPublisherDoubleOnSubscribe() {
+        TestHelper.checkDoubleOnSubscribeMaybe(new Function<Maybe<Integer>, MaybeSource<Integer>>() {
+            @Override
+            public MaybeSource<Integer> apply(Maybe<Integer> c) throws Exception {
+                return c.delay(Flowable.never());
+            }
+        });
+    }
+
+    @Test
+    public void otherPublisherNextSlipsThrough() {
+        Maybe.just(1).delay(new Flowable<Integer>() {
+            @Override
+            protected void subscribeActual(Subscriber<? super Integer> s) {
+                s.onSubscribe(new BooleanSubscription());
+                s.onNext(1);
+                s.onNext(2);
+            }
+        })
+        .test()
+        .assertResult(1);
     }
 }

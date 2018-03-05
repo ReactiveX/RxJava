@@ -78,7 +78,7 @@ public class FlowableMergeTest {
         final Flowable<String> o1 = Flowable.unsafeCreate(new TestSynchronousFlowable());
         final Flowable<String> o2 = Flowable.unsafeCreate(new TestSynchronousFlowable());
 
-        Flowable<Flowable<String>> FlowableOfFlowables = Flowable.unsafeCreate(new Publisher<Flowable<String>>() {
+        Flowable<Flowable<String>> flowableOfFlowables = Flowable.unsafeCreate(new Publisher<Flowable<String>>() {
 
             @Override
             public void subscribe(Subscriber<? super Flowable<String>> observer) {
@@ -90,7 +90,7 @@ public class FlowableMergeTest {
             }
 
         });
-        Flowable<String> m = Flowable.merge(FlowableOfFlowables);
+        Flowable<String> m = Flowable.merge(flowableOfFlowables);
         m.subscribe(stringObserver);
 
         verify(stringObserver, never()).onError(any(Throwable.class));

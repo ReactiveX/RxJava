@@ -98,10 +98,8 @@ public final class FlowableMergeWithSingle<T> extends AbstractFlowableWithUpstre
         }
 
         @Override
-        public void onSubscribe(Subscription d) {
-            if (SubscriptionHelper.setOnce(mainSubscription, d)) {
-                d.request(prefetch);
-            }
+        public void onSubscribe(Subscription s) {
+            SubscriptionHelper.setOnce(mainSubscription, s, prefetch);
         }
 
         @Override

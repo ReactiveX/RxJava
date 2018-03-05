@@ -14,36 +14,38 @@
 package io.reactivex.internal.operators.flowable;
 
 import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.*;
 import org.mockito.InOrder;
 import org.reactivestreams.*;
 
 import io.reactivex.*;
-import io.reactivex.disposables.*;
+import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.*;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.functions.Functions;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.plugins.RxJavaPlugins;
-import io.reactivex.processors.PublishProcessor;
+import io.reactivex.processors.*;
 import io.reactivex.schedulers.TestScheduler;
 import io.reactivex.subscribers.TestSubscriber;
 
 public class FlowableDebounceTest {
 
     private TestScheduler scheduler;
-    private Subscriber<String> observer;
+    private Subscriber<String> Subscriber;
     private Scheduler.Worker innerScheduler;
 
     @Before
     public void before() {
         scheduler = new TestScheduler();
-        observer = TestHelper.mockSubscriber();
+        Subscriber = TestHelper.mockSubscriber();
         innerScheduler = scheduler.createWorker();
     }
 
@@ -51,25 +53,25 @@ public class FlowableDebounceTest {
     public void testDebounceWithCompleted() {
         Flowable<String> source = Flowable.unsafeCreate(new Publisher<String>() {
             @Override
-            public void subscribe(Subscriber<? super String> observer) {
-                observer.onSubscribe(new BooleanSubscription());
-                publishNext(observer, 100, "one");    // Should be skipped since "two" will arrive before the timeout expires.
-                publishNext(observer, 400, "two");    // Should be published since "three" will arrive after the timeout expires.
-                publishNext(observer, 900, "three");   // Should be skipped since onComplete will arrive before the timeout expires.
-                publishCompleted(observer, 1000);     // Should be published as soon as the timeout expires.
+            public void subscribe(Subscriber<? super String> subscriber) {
+                subscriber.onSubscribe(new BooleanSubscription());
+                publishNext(subscriber, 100, "one");    // Should be skipped since "two" will arrive before the timeout expires.
+                publishNext(subscriber, 400, "two");    // Should be published since "three" will arrive after the timeout expires.
+                publishNext(subscriber, 900, "three");   // Should be skipped since onComplete will arrive before the timeout expires.
+                publishCompleted(subscriber, 1000);     // Should be published as soon as the timeout expires.
             }
         });
 
         Flowable<String> sampled = source.debounce(400, TimeUnit.MILLISECONDS, scheduler);
-        sampled.subscribe(observer);
+        sampled.subscribe(Subscriber);
 
         scheduler.advanceTimeTo(0, TimeUnit.MILLISECONDS);
-        InOrder inOrder = inOrder(observer);
+        InOrder inOrder = inOrder(Subscriber);
         // must go to 800 since it must be 400 after when two is sent, which is at 400
         scheduler.advanceTimeTo(800, TimeUnit.MILLISECONDS);
-        inOrder.verify(observer, times(1)).onNext("two");
+        inOrder.verify(Subscriber, times(1)).onNext("two");
         scheduler.advanceTimeTo(1000, TimeUnit.MILLISECONDS);
-        inOrder.verify(observer, times(1)).onComplete();
+        inOrder.verify(Subscriber, times(1)).onComplete();
         inOrder.verifyNoMoreInteractions();
     }
 
@@ -77,29 +79,29 @@ public class FlowableDebounceTest {
     public void testDebounceNeverEmits() {
         Flowable<String> source = Flowable.unsafeCreate(new Publisher<String>() {
             @Override
-            public void subscribe(Subscriber<? super String> observer) {
-                observer.onSubscribe(new BooleanSubscription());
+            public void subscribe(Subscriber<? super String> subscriber) {
+                subscriber.onSubscribe(new BooleanSubscription());
                 // all should be skipped since they are happening faster than the 200ms timeout
-                publishNext(observer, 100, "a");    // Should be skipped
-                publishNext(observer, 200, "b");    // Should be skipped
-                publishNext(observer, 300, "c");    // Should be skipped
-                publishNext(observer, 400, "d");    // Should be skipped
-                publishNext(observer, 500, "e");    // Should be skipped
-                publishNext(observer, 600, "f");    // Should be skipped
-                publishNext(observer, 700, "g");    // Should be skipped
-                publishNext(observer, 800, "h");    // Should be skipped
-                publishCompleted(observer, 900);     // Should be published as soon as the timeout expires.
+                publishNext(subscriber, 100, "a");    // Should be skipped
+                publishNext(subscriber, 200, "b");    // Should be skipped
+                publishNext(subscriber, 300, "c");    // Should be skipped
+                publishNext(subscriber, 400, "d");    // Should be skipped
+                publishNext(subscriber, 500, "e");    // Should be skipped
+                publishNext(subscriber, 600, "f");    // Should be skipped
+                publishNext(subscriber, 700, "g");    // Should be skipped
+                publishNext(subscriber, 800, "h");    // Should be skipped
+                publishCompleted(subscriber, 900);     // Should be published as soon as the timeout expires.
             }
         });
 
         Flowable<String> sampled = source.debounce(200, TimeUnit.MILLISECONDS, scheduler);
-        sampled.subscribe(observer);
+        sampled.subscribe(Subscriber);
 
         scheduler.advanceTimeTo(0, TimeUnit.MILLISECONDS);
-        InOrder inOrder = inOrder(observer);
-        inOrder.verify(observer, times(0)).onNext(anyString());
+        InOrder inOrder = inOrder(Subscriber);
+        inOrder.verify(Subscriber, times(0)).onNext(anyString());
         scheduler.advanceTimeTo(1000, TimeUnit.MILLISECONDS);
-        inOrder.verify(observer, times(1)).onComplete();
+        inOrder.verify(Subscriber, times(1)).onComplete();
         inOrder.verifyNoMoreInteractions();
     }
 
@@ -107,51 +109,51 @@ public class FlowableDebounceTest {
     public void testDebounceWithError() {
         Flowable<String> source = Flowable.unsafeCreate(new Publisher<String>() {
             @Override
-            public void subscribe(Subscriber<? super String> observer) {
-                observer.onSubscribe(new BooleanSubscription());
+            public void subscribe(Subscriber<? super String> subscriber) {
+                subscriber.onSubscribe(new BooleanSubscription());
                 Exception error = new TestException();
-                publishNext(observer, 100, "one");    // Should be published since "two" will arrive after the timeout expires.
-                publishNext(observer, 600, "two");    // Should be skipped since onError will arrive before the timeout expires.
-                publishError(observer, 700, error);   // Should be published as soon as the timeout expires.
+                publishNext(subscriber, 100, "one");    // Should be published since "two" will arrive after the timeout expires.
+                publishNext(subscriber, 600, "two");    // Should be skipped since onError will arrive before the timeout expires.
+                publishError(subscriber, 700, error);   // Should be published as soon as the timeout expires.
             }
         });
 
         Flowable<String> sampled = source.debounce(400, TimeUnit.MILLISECONDS, scheduler);
-        sampled.subscribe(observer);
+        sampled.subscribe(Subscriber);
 
         scheduler.advanceTimeTo(0, TimeUnit.MILLISECONDS);
-        InOrder inOrder = inOrder(observer);
+        InOrder inOrder = inOrder(Subscriber);
         // 100 + 400 means it triggers at 500
         scheduler.advanceTimeTo(500, TimeUnit.MILLISECONDS);
-        inOrder.verify(observer).onNext("one");
+        inOrder.verify(Subscriber).onNext("one");
         scheduler.advanceTimeTo(701, TimeUnit.MILLISECONDS);
-        inOrder.verify(observer).onError(any(TestException.class));
+        inOrder.verify(Subscriber).onError(any(TestException.class));
         inOrder.verifyNoMoreInteractions();
     }
 
-    private <T> void publishCompleted(final Subscriber<T> observer, long delay) {
+    private <T> void publishCompleted(final Subscriber<T> subscriber, long delay) {
         innerScheduler.schedule(new Runnable() {
             @Override
             public void run() {
-                observer.onComplete();
+                subscriber.onComplete();
             }
         }, delay, TimeUnit.MILLISECONDS);
     }
 
-    private <T> void publishError(final Subscriber<T> observer, long delay, final Exception error) {
+    private <T> void publishError(final Subscriber<T> subscriber, long delay, final Exception error) {
         innerScheduler.schedule(new Runnable() {
             @Override
             public void run() {
-                observer.onError(error);
+                subscriber.onError(error);
             }
         }, delay, TimeUnit.MILLISECONDS);
     }
 
-    private <T> void publishNext(final Subscriber<T> observer, final long delay, final T value) {
+    private <T> void publishNext(final Subscriber<T> subscriber, final long delay, final T value) {
         innerScheduler.schedule(new Runnable() {
             @Override
             public void run() {
-                observer.onNext(value);
+                subscriber.onNext(value);
             }
         }, delay, TimeUnit.MILLISECONDS);
     }
@@ -338,12 +340,12 @@ public class FlowableDebounceTest {
         try {
             new Flowable<Integer>() {
                 @Override
-                protected void subscribeActual(Subscriber<? super Integer> observer) {
-                    observer.onSubscribe(new BooleanSubscription());
-                    observer.onComplete();
-                    observer.onNext(1);
-                    observer.onError(new TestException());
-                    observer.onComplete();
+                protected void subscribeActual(Subscriber<? super Integer> subscriber) {
+                    subscriber.onSubscribe(new BooleanSubscription());
+                    subscriber.onComplete();
+                    subscriber.onNext(1);
+                    subscriber.onError(new TestException());
+                    subscriber.onComplete();
                 }
             }
             .debounce(1, TimeUnit.SECONDS, new TestScheduler())
@@ -406,5 +408,83 @@ public class FlowableDebounceTest {
         .test(0L)
         .awaitDone(5, TimeUnit.SECONDS)
         .assertFailure(MissingBackpressureException.class);
+    }
+
+    @Test
+    public void doubleOnSubscribe() {
+        TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Flowable<Object>>() {
+            @Override
+            public Flowable<Object> apply(Flowable<Object> o) throws Exception {
+                return o.debounce(Functions.justFunction(Flowable.never()));
+            }
+        });
+    }
+
+    @Test
+    public void disposeInOnNext() {
+        final TestSubscriber<Integer> to = new TestSubscriber<Integer>();
+
+        BehaviorProcessor.createDefault(1)
+        .debounce(new Function<Integer, Flowable<Object>>() {
+            @Override
+            public Flowable<Object> apply(Integer o) throws Exception {
+                to.cancel();
+                return Flowable.never();
+            }
+        })
+        .subscribeWith(to)
+        .assertEmpty();
+
+        assertTrue(to.isDisposed());
+    }
+
+    @Test
+    public void disposedInOnComplete() {
+        final TestSubscriber<Integer> to = new TestSubscriber<Integer>();
+
+        new Flowable<Integer>() {
+            @Override
+            protected void subscribeActual(Subscriber<? super Integer> subscriber) {
+                subscriber.onSubscribe(new BooleanSubscription());
+                to.cancel();
+                subscriber.onComplete();
+            }
+        }
+        .debounce(Functions.justFunction(Flowable.never()))
+        .subscribeWith(to)
+        .assertEmpty();
+    }
+
+    @Test
+    public void emitLate() {
+        final AtomicReference<Subscriber<? super Integer>> ref = new AtomicReference<Subscriber<? super Integer>>();
+
+        TestSubscriber<Integer> to = Flowable.range(1, 2)
+        .debounce(new Function<Integer, Flowable<Integer>>() {
+            @Override
+            public Flowable<Integer> apply(Integer o) throws Exception {
+                if (o != 1) {
+                    return Flowable.never();
+                }
+                return new Flowable<Integer>() {
+                    @Override
+                    protected void subscribeActual(Subscriber<? super Integer> subscriber) {
+                        subscriber.onSubscribe(new BooleanSubscription());
+                        ref.set(subscriber);
+                    }
+                };
+            }
+        })
+        .test();
+
+        ref.get().onNext(1);
+
+        to
+        .assertResult(2);
+    }
+
+    @Test
+    public void badRequestReported() {
+        TestHelper.assertBadRequestReported(Flowable.never().debounce(Functions.justFunction(Flowable.never())));
     }
 }

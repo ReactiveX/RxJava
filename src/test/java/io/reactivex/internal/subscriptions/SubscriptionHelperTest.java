@@ -14,7 +14,7 @@
 package io.reactivex.internal.subscriptions;
 
 import static org.junit.Assert.*;
-
+import static org.mockito.Mockito.*;
 import java.util.List;
 import java.util.concurrent.atomic.*;
 
@@ -22,6 +22,7 @@ import org.junit.Test;
 import org.reactivestreams.Subscription;
 
 import io.reactivex.TestHelper;
+import io.reactivex.exceptions.ProtocolViolationException;
 import io.reactivex.plugins.RxJavaPlugins;
 
 public class SubscriptionHelperTest {
@@ -228,6 +229,32 @@ public class SubscriptionHelperTest {
             assertSame(a, s.get());
             assertEquals(1, q.get());
             assertEquals(0, r.get());
+        }
+    }
+
+    @Test
+    public void setOnceAndRequest() {
+        AtomicReference<Subscription> ref = new AtomicReference<Subscription>();
+
+        Subscription sub = mock(Subscription.class);
+
+        assertTrue(SubscriptionHelper.setOnce(ref, sub, 1));
+
+        verify(sub).request(1);
+        verify(sub, never()).cancel();
+
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            sub = mock(Subscription.class);
+
+            assertFalse(SubscriptionHelper.setOnce(ref, sub, 1));
+
+            verify(sub, never()).request(anyLong());
+            verify(sub).cancel();
+
+            TestHelper.assertError(errors, 0, ProtocolViolationException.class);
+        } finally {
+            RxJavaPlugins.reset();
         }
     }
 }

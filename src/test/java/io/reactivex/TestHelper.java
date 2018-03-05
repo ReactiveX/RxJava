@@ -2051,6 +2051,110 @@ public enum TestHelper {
     }
 
     /**
+     * Check if the given transformed reactive type reports multiple onSubscribe calls to
+     * RxJavaPlugins.
+     * @param transform the transform to drive an operator
+     */
+    public static void checkDoubleOnSubscribeCompletableToFlowable(Function<Completable, ? extends Publisher<?>> transform) {
+        List<Throwable> errors = trackPluginErrors();
+        try {
+            final Boolean[] b = { null, null };
+            final CountDownLatch cdl = new CountDownLatch(1);
+
+            Completable source = new Completable() {
+                @Override
+                protected void subscribeActual(CompletableObserver observer) {
+                    try {
+                        Disposable d1 = Disposables.empty();
+
+                        observer.onSubscribe(d1);
+
+                        Disposable d2 = Disposables.empty();
+
+                        observer.onSubscribe(d2);
+
+                        b[0] = d1.isDisposed();
+                        b[1] = d2.isDisposed();
+                    } finally {
+                        cdl.countDown();
+                    }
+                }
+            };
+
+            Publisher<?> out = transform.apply(source);
+
+            out.subscribe(NoOpConsumer.INSTANCE);
+
+            try {
+                assertTrue("Timed out", cdl.await(5, TimeUnit.SECONDS));
+            } catch (InterruptedException ex) {
+                throw ExceptionHelper.wrapOrThrow(ex);
+            }
+
+            assertEquals("First disposed?", false, b[0]);
+            assertEquals("Second not disposed?", true, b[1]);
+
+            assertError(errors, 0, IllegalStateException.class, "Disposable already set!");
+        } catch (Throwable ex) {
+            throw ExceptionHelper.wrapOrThrow(ex);
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
+
+    /**
+     * Check if the given transformed reactive type reports multiple onSubscribe calls to
+     * RxJavaPlugins.
+     * @param transform the transform to drive an operator
+     */
+    public static void checkDoubleOnSubscribeCompletableToObservable(Function<Completable, ? extends ObservableSource<?>> transform) {
+        List<Throwable> errors = trackPluginErrors();
+        try {
+            final Boolean[] b = { null, null };
+            final CountDownLatch cdl = new CountDownLatch(1);
+
+            Completable source = new Completable() {
+                @Override
+                protected void subscribeActual(CompletableObserver observer) {
+                    try {
+                        Disposable d1 = Disposables.empty();
+
+                        observer.onSubscribe(d1);
+
+                        Disposable d2 = Disposables.empty();
+
+                        observer.onSubscribe(d2);
+
+                        b[0] = d1.isDisposed();
+                        b[1] = d2.isDisposed();
+                    } finally {
+                        cdl.countDown();
+                    }
+                }
+            };
+
+            ObservableSource<?> out = transform.apply(source);
+
+            out.subscribe(NoOpConsumer.INSTANCE);
+
+            try {
+                assertTrue("Timed out", cdl.await(5, TimeUnit.SECONDS));
+            } catch (InterruptedException ex) {
+                throw ExceptionHelper.wrapOrThrow(ex);
+            }
+
+            assertEquals("First disposed?", false, b[0]);
+            assertEquals("Second not disposed?", true, b[1]);
+
+            assertError(errors, 0, IllegalStateException.class, "Disposable already set!");
+        } catch (Throwable ex) {
+            throw ExceptionHelper.wrapOrThrow(ex);
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
+
+    /**
      * Check if the operator applied to a Maybe source propagates dispose properly.
      * @param <T> the source value type
      * @param <U> the output value type

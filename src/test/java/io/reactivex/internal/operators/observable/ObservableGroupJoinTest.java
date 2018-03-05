@@ -15,6 +15,7 @@
  */
 package io.reactivex.internal.operators.observable;
 
+import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -30,6 +31,7 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.*;
 import io.reactivex.functions.*;
 import io.reactivex.internal.functions.Functions;
+import io.reactivex.internal.operators.observable.ObservableGroupJoin.*;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.subjects.PublishSubject;
@@ -687,5 +689,40 @@ public class ObservableGroupJoinTest {
         ps2.onComplete();
 
         to.assertResult(2);
+    }
+
+    @Test
+    public void leftRightState() {
+        JoinSupport js = mock(JoinSupport.class);
+
+        LeftRightObserver o = new LeftRightObserver(js, false);
+
+        assertFalse(o.isDisposed());
+
+        o.onNext(1);
+        o.onNext(2);
+
+        o.dispose();
+
+        assertTrue(o.isDisposed());
+
+        verify(js).innerValue(false, 1);
+        verify(js).innerValue(false, 2);
+    }
+
+    @Test
+    public void leftRightEndState() {
+        JoinSupport js = mock(JoinSupport.class);
+
+        LeftRightEndObserver o = new LeftRightEndObserver(js, false, 0);
+
+        assertFalse(o.isDisposed());
+
+        o.onNext(1);
+        o.onNext(2);
+
+        assertTrue(o.isDisposed());
+
+        verify(js).innerClose(false, o);
     }
 }

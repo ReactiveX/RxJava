@@ -25,7 +25,9 @@ import org.junit.Test;
 import io.reactivex.Scheduler.Worker;
 import io.reactivex.internal.disposables.EmptyDisposable;
 import io.reactivex.internal.functions.Functions;
+import io.reactivex.internal.schedulers.TrampolineScheduler.*;
 import io.reactivex.schedulers.Schedulers;
+import static org.mockito.Mockito.*;
 
 public class TrampolineSchedulerInternalTest {
 
@@ -159,5 +161,51 @@ public class TrampolineSchedulerInternalTest {
         } finally {
             w.dispose();
         }
+    }
+
+    @Test
+    public void sleepingRunnableDisposedOnRun() {
+        TrampolineWorker w = new TrampolineWorker();
+
+        Runnable r = mock(Runnable.class);
+
+        SleepingRunnable run = new SleepingRunnable(r, w, 0);
+        w.dispose();
+        run.run();
+
+        verify(r, never()).run();
+    }
+
+    @Test
+    public void sleepingRunnableNoDelayRun() {
+        TrampolineWorker w = new TrampolineWorker();
+
+        Runnable r = mock(Runnable.class);
+
+        SleepingRunnable run = new SleepingRunnable(r, w, 0);
+
+        run.run();
+
+        verify(r).run();
+    }
+
+    @Test
+    public void sleepingRunnableDisposedOnDelayedRun() {
+        final TrampolineWorker w = new TrampolineWorker();
+
+        Runnable r = mock(Runnable.class);
+
+        SleepingRunnable run = new SleepingRunnable(r, w, System.currentTimeMillis() + 200);
+
+        Schedulers.single().scheduleDirect(new Runnable() {
+            @Override
+            public void run() {
+                w.dispose();
+            }
+        }, 100, TimeUnit.MILLISECONDS);
+
+        run.run();
+
+        verify(r, never()).run();
     }
 }

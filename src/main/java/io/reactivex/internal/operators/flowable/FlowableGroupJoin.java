@@ -417,9 +417,7 @@ public final class FlowableGroupJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> exte
 
         @Override
         public void onSubscribe(Subscription s) {
-            if (SubscriptionHelper.setOnce(this, s)) {
-                s.request(Long.MAX_VALUE);
-            }
+            SubscriptionHelper.setOnce(this, s, Long.MAX_VALUE);
         }
 
         @Override
@@ -470,9 +468,7 @@ public final class FlowableGroupJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> exte
 
         @Override
         public void onSubscribe(Subscription s) {
-            if (SubscriptionHelper.setOnce(this, s)) {
-                s.request(Long.MAX_VALUE);
-            }
+            SubscriptionHelper.setOnce(this, s, Long.MAX_VALUE);
         }
 
         @Override
