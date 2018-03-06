@@ -19,7 +19,7 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 
-import org.junit.Test;
+import org.junit.*;
 import org.reactivestreams.*;
 
 import io.reactivex.*;
@@ -940,5 +940,366 @@ public class FlowablePublishTest {
 
         ref.get().add(new InnerSubscriber<Integer>(new TestSubscriber<Integer>()));
         ref.get().remove(null);
+    }
+
+    @Test
+    @Ignore("publish() keeps consuming the upstream if there are no subscribers, 3.x should change this")
+    public void subscriberSwap() {
+        final ConnectableFlowable<Integer> co = Flowable.range(1, 5).publish();
+
+        co.connect();
+
+        TestSubscriber<Integer> ts1 = new TestSubscriber<Integer>() {
+            @Override
+            public void onNext(Integer t) {
+                super.onNext(t);
+                cancel();
+                onComplete();
+            }
+        };
+
+        co.subscribe(ts1);
+
+        ts1.assertResult(1);
+
+        TestSubscriber<Integer> ts2 = new TestSubscriber<Integer>(0);
+        co.subscribe(ts2);
+
+        ts2
+        .assertEmpty()
+        .requestMore(4)
+        .assertResult(2, 3, 4, 5);
+    }
+
+    @Test
+    public void subscriberLiveSwap() {
+        final ConnectableFlowable<Integer> co = Flowable.range(1, 5).publish();
+
+        final TestSubscriber<Integer> ts2 = new TestSubscriber<Integer>(0);
+
+        TestSubscriber<Integer> ts1 = new TestSubscriber<Integer>() {
+            @Override
+            public void onNext(Integer t) {
+                super.onNext(t);
+                cancel();
+                onComplete();
+                co.subscribe(ts2);
+            }
+        };
+
+        co.subscribe(ts1);
+
+        co.connect();
+
+        ts1.assertResult(1);
+
+        ts2
+        .assertEmpty()
+        .requestMore(4)
+        .assertResult(2, 3, 4, 5);
+    }
+
+    @Test
+    public void selectorSubscriberSwap() {
+        final AtomicReference<Flowable<Integer>> ref = new AtomicReference<Flowable<Integer>>();
+
+        Flowable.range(1, 5).publish(new Function<Flowable<Integer>, Publisher<Integer>>() {
+            @Override
+            public Publisher<Integer> apply(Flowable<Integer> f) throws Exception {
+                ref.set(f);
+                return Flowable.never();
+            }
+        }).test();
+
+        ref.get().take(2).test().assertResult(1, 2);
+
+        ref.get()
+        .test(0)
+        .assertEmpty()
+        .requestMore(2)
+        .assertValuesOnly(3, 4)
+        .requestMore(1)
+        .assertResult(3, 4, 5);
+    }
+
+    @Test
+    public void leavingSubscriberOverrequests() {
+        final AtomicReference<Flowable<Integer>> ref = new AtomicReference<Flowable<Integer>>();
+
+        PublishProcessor<Integer> pp = PublishProcessor.create();
+
+        pp.publish(new Function<Flowable<Integer>, Publisher<Integer>>() {
+            @Override
+            public Publisher<Integer> apply(Flowable<Integer> f) throws Exception {
+                ref.set(f);
+                return Flowable.never();
+            }
+        }).test();
+
+        TestSubscriber<Integer> ts1 = ref.get().take(2).test();
+
+        pp.onNext(1);
+        pp.onNext(2);
+
+        ts1.assertResult(1, 2);
+
+        pp.onNext(3);
+        pp.onNext(4);
+
+        TestSubscriber<Integer> ts2 = ref.get().test(0L);
+
+        ts2.assertEmpty();
+
+        ts2.requestMore(2);
+
+        ts2.assertValuesOnly(3, 4);
+    }
+
+    // call a transformer only if the input is non-empty
+    @Test
+    public void composeIfNotEmpty() {
+        final FlowableTransformer<Integer, Integer> transformer = new FlowableTransformer<Integer, Integer>() {
+            @Override
+            public Publisher<Integer> apply(Flowable<Integer> g) {
+                return g.map(new Function<Integer, Integer>() {
+                    @Override
+                    public Integer apply(Integer v) throws Exception {
+                        return v + 1;
+                    }
+                });
+            }
+        };
+
+        final AtomicInteger calls = new AtomicInteger();
+        Flowable.range(1, 5)
+        .publish(new Function<Flowable<Integer>, Publisher<Integer>>() {
+            @Override
+            public Publisher<Integer> apply(final Flowable<Integer> shared)
+                    throws Exception {
+                return shared.take(1).concatMap(new Function<Integer, Publisher<? extends Integer>>() {
+                    @Override
+                    public Publisher<? extends Integer> apply(Integer first)
+                            throws Exception {
+                        calls.incrementAndGet();
+                        return transformer.apply(Flowable.just(first).concatWith(shared));
+                    }
+                });
+            }
+        })
+        .test()
+        .assertResult(2, 3, 4, 5, 6);
+
+        assertEquals(1, calls.get());
+    }
+
+    // call a transformer only if the input is non-empty
+    @Test
+    public void composeIfNotEmptyNotFused() {
+        final FlowableTransformer<Integer, Integer> transformer = new FlowableTransformer<Integer, Integer>() {
+            @Override
+            public Publisher<Integer> apply(Flowable<Integer> g) {
+                return g.map(new Function<Integer, Integer>() {
+                    @Override
+                    public Integer apply(Integer v) throws Exception {
+                        return v + 1;
+                    }
+                });
+            }
+        };
+
+        final AtomicInteger calls = new AtomicInteger();
+        Flowable.range(1, 5).hide()
+        .publish(new Function<Flowable<Integer>, Publisher<Integer>>() {
+            @Override
+            public Publisher<Integer> apply(final Flowable<Integer> shared)
+                    throws Exception {
+                return shared.take(1).concatMap(new Function<Integer, Publisher<? extends Integer>>() {
+                    @Override
+                    public Publisher<? extends Integer> apply(Integer first)
+                            throws Exception {
+                        calls.incrementAndGet();
+                        return transformer.apply(Flowable.just(first).concatWith(shared));
+                    }
+                });
+            }
+        })
+        .test()
+        .assertResult(2, 3, 4, 5, 6);
+
+        assertEquals(1, calls.get());
+    }
+
+    // call a transformer only if the input is non-empty
+    @Test
+    public void composeIfNotEmptyIsEmpty() {
+        final FlowableTransformer<Integer, Integer> transformer = new FlowableTransformer<Integer, Integer>() {
+            @Override
+            public Publisher<Integer> apply(Flowable<Integer> g) {
+                return g.map(new Function<Integer, Integer>() {
+                    @Override
+                    public Integer apply(Integer v) throws Exception {
+                        return v + 1;
+                    }
+                });
+            }
+        };
+
+        final AtomicInteger calls = new AtomicInteger();
+        Flowable.<Integer>empty().hide()
+        .publish(new Function<Flowable<Integer>, Publisher<Integer>>() {
+            @Override
+            public Publisher<Integer> apply(final Flowable<Integer> shared)
+                    throws Exception {
+                return shared.take(1).concatMap(new Function<Integer, Publisher<? extends Integer>>() {
+                    @Override
+                    public Publisher<? extends Integer> apply(Integer first)
+                            throws Exception {
+                        calls.incrementAndGet();
+                        return transformer.apply(Flowable.just(first).concatWith(shared));
+                    }
+                });
+            }
+        })
+        .test()
+        .assertResult();
+
+        assertEquals(0, calls.get());
+    }
+
+    @Test
+    public void publishFunctionCancelOuterAfterOneInner() {
+        final AtomicReference<Flowable<Integer>> ref = new AtomicReference<Flowable<Integer>>();
+
+        PublishProcessor<Integer> pp = PublishProcessor.create();
+
+        final TestSubscriber<Integer> ts = pp.publish(new Function<Flowable<Integer>, Publisher<Integer>>() {
+            @Override
+            public Publisher<Integer> apply(Flowable<Integer> f) throws Exception {
+                ref.set(f);
+                return Flowable.never();
+            }
+        }).test();
+
+        ref.get().subscribe(new TestSubscriber<Integer>() {
+            @Override
+            public void onNext(Integer t) {
+                super.onNext(t);
+                onComplete();
+                ts.cancel();
+            }
+        });
+
+        pp.onNext(1);
+    }
+
+    @Test
+    public void publishFunctionCancelOuterAfterOneInnerBackpressured() {
+        final AtomicReference<Flowable<Integer>> ref = new AtomicReference<Flowable<Integer>>();
+
+        PublishProcessor<Integer> pp = PublishProcessor.create();
+
+        final TestSubscriber<Integer> ts = pp.publish(new Function<Flowable<Integer>, Publisher<Integer>>() {
+            @Override
+            public Publisher<Integer> apply(Flowable<Integer> f) throws Exception {
+                ref.set(f);
+                return Flowable.never();
+            }
+        }).test();
+
+        ref.get().subscribe(new TestSubscriber<Integer>(1L) {
+            @Override
+            public void onNext(Integer t) {
+                super.onNext(t);
+                onComplete();
+                ts.cancel();
+            }
+        });
+
+        pp.onNext(1);
+    }
+
+    @Test
+    public void publishCancelOneAsync() {
+        for (int i = 0; i < TestHelper.RACE_LONG_LOOPS; i++) {
+
+            final PublishProcessor<Integer> pp = PublishProcessor.create();
+
+            final AtomicReference<Flowable<Integer>> ref = new AtomicReference<Flowable<Integer>>();
+
+            pp.publish(new Function<Flowable<Integer>, Publisher<Integer>>() {
+                @Override
+                public Publisher<Integer> apply(Flowable<Integer> f) throws Exception {
+                    ref.set(f);
+                    return Flowable.never();
+                }
+            }).test();
+
+            final TestSubscriber<Integer> ts1 = ref.get().test();
+            TestSubscriber<Integer> ts2 = ref.get().test();
+
+            Runnable r1 = new Runnable() {
+                @Override
+                public void run() {
+                    pp.onNext(1);
+                }
+            };
+
+            Runnable r2 = new Runnable() {
+                @Override
+                public void run() {
+                    ts1.cancel();
+                }
+            };
+
+            TestHelper.race(r1, r2);
+
+            ts2.assertValuesOnly(1);
+        }
+    }
+
+    @Test
+    public void publishCancelOneAsync2() {
+        final PublishProcessor<Integer> pp = PublishProcessor.create();
+
+        ConnectableFlowable<Integer> co = pp.publish();
+
+        final TestSubscriber<Integer> ts1 = new TestSubscriber<Integer>();
+
+        final AtomicReference<InnerSubscriber<Integer>> ref = new AtomicReference<InnerSubscriber<Integer>>();
+
+        co.subscribe(new FlowableSubscriber<Integer>() {
+            @SuppressWarnings("unchecked")
+            @Override
+            public void onSubscribe(Subscription s) {
+                ts1.onSubscribe(new BooleanSubscription());
+                // pretend to be cancelled without removing it from the subscriber list
+                ref.set((InnerSubscriber<Integer>)s);
+            }
+
+            @Override
+            public void onNext(Integer t) {
+                ts1.onNext(t);
+            }
+
+            @Override
+            public void onError(Throwable t) {
+                ts1.onError(t);
+            }
+
+            @Override
+            public void onComplete() {
+                ts1.onComplete();
+            }
+        });
+        TestSubscriber<Integer> ts2 = co.test();
+
+        co.connect();
+
+        ref.get().set(Long.MIN_VALUE);
+
+        pp.onNext(1);
+
+        ts1.assertEmpty();
+        ts2.assertValuesOnly(1);
     }
 }

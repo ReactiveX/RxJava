@@ -153,8 +153,6 @@ public final class FlowablePublishMulticast<T, R> extends AbstractFlowableWithUp
 
         int consumed;
 
-        long emitted;
-
         @SuppressWarnings("unchecked")
         MulticastProcessor(int prefetch, boolean delayError) {
             this.prefetch = prefetch;
@@ -325,10 +323,12 @@ public final class FlowablePublishMulticast<T, R> extends AbstractFlowableWithUp
             int upstreamConsumed = consumed;
             int localLimit = limit;
             boolean canRequest = sourceMode != QueueSubscription.SYNC;
-            long e = emitted;
+            AtomicReference<MulticastSubscription<T>[]> subs = subscribers;
 
+            MulticastSubscription<T>[] array = subs.get();
+
+            outer:
             for (;;) {
-                MulticastSubscription<T>[] array = subscribers.get();
 
                 int n = array.length;
 
@@ -336,7 +336,7 @@ public final class FlowablePublishMulticast<T, R> extends AbstractFlowableWithUp
                     long r = Long.MAX_VALUE;
 
                     for (MulticastSubscription<T> ms : array) {
-                        long u = ms.get();
+                        long u = ms.get() - ms.emitted;
                         if (u != Long.MIN_VALUE) {
                             if (r > u) {
                                 r = u;
@@ -347,10 +347,10 @@ public final class FlowablePublishMulticast<T, R> extends AbstractFlowableWithUp
                     }
 
                     if (n == 0) {
-                        r = e;
+                        r = 0;
                     }
 
-                    while (e != r) {
+                    while (r != 0) {
                         if (isDisposed()) {
                             q.clear();
                             return;
@@ -393,21 +393,35 @@ public final class FlowablePublishMulticast<T, R> extends AbstractFlowableWithUp
                             break;
                         }
 
+                        boolean subscribersChange = false;
+
                         for (MulticastSubscription<T> ms : array) {
-                            if (ms.get() != Long.MIN_VALUE) {
+                            long msr = ms.get();
+                            if (msr != Long.MIN_VALUE) {
+                                if (msr != Long.MAX_VALUE) {
+                                    ms.emitted++;
+                                }
                                 ms.actual.onNext(v);
+                            } else {
+                                subscribersChange = true;
                             }
                         }
 
-                        e++;
+                        r--;
 
                         if (canRequest && ++upstreamConsumed == localLimit) {
                             upstreamConsumed = 0;
                             s.get().request(localLimit);
                         }
+
+                        MulticastSubscription<T>[] freshArray = subs.get();
+                        if (subscribersChange || freshArray != array) {
+                            array = freshArray;
+                            continue outer;
+                        }
                     }
 
-                    if (e == r) {
+                    if (r == 0) {
                         if (isDisposed()) {
                             q.clear();
                             return;
@@ -435,7 +449,6 @@ public final class FlowablePublishMulticast<T, R> extends AbstractFlowableWithUp
                     }
                 }
 
-                emitted = e;
                 consumed = upstreamConsumed;
                 missed = wip.addAndGet(-missed);
                 if (missed == 0) {
@@ -444,6 +457,7 @@ public final class FlowablePublishMulticast<T, R> extends AbstractFlowableWithUp
                 if (q == null) {
                     q = queue;
                 }
+                array = subs.get();
             }
         }
 
@@ -475,6 +489,8 @@ public final class FlowablePublishMulticast<T, R> extends AbstractFlowableWithUp
         final Subscriber<? super T> actual;
 
         final MulticastProcessor<T> parent;
+
+        long emitted;
 
         MulticastSubscription(Subscriber<? super T> actual, MulticastProcessor<T> parent) {
             this.actual = actual;
