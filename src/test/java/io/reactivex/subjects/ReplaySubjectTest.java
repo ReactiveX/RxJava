@@ -1197,6 +1197,12 @@ public class ReplaySubjectTest extends SubjectTest<Integer> {
         SizeBoundReplayBuffer<Integer> buf = (SizeBoundReplayBuffer<Integer>)source.buffer;
 
         assertNull(buf.head.value);
+
+        Object o = buf.head;
+
+        source.cleanupBuffer();
+
+        assertSame(o, buf.head);
     }
 
 
@@ -1214,6 +1220,12 @@ public class ReplaySubjectTest extends SubjectTest<Integer> {
         source.cleanupBuffer();
 
         assertNull(buf.head.value);
+
+        Object o = buf.head;
+
+        source.cleanupBuffer();
+
+        assertSame(o, buf.head);
     }
 
     @Test
@@ -1227,6 +1239,12 @@ public class ReplaySubjectTest extends SubjectTest<Integer> {
         SizeAndTimeBoundReplayBuffer<Integer> buf = (SizeAndTimeBoundReplayBuffer<Integer>)source.buffer;
 
         assertNull(buf.head.value);
+
+        Object o = buf.head;
+
+        source.cleanupBuffer();
+
+        assertSame(o, buf.head);
     }
 
     @Test
@@ -1248,5 +1266,11 @@ public class ReplaySubjectTest extends SubjectTest<Integer> {
         source.cleanupBuffer();
 
         assertNull(buf.head.value);
+
+        Object o = buf.head;
+
+        source.cleanupBuffer();
+
+        assertSame(o, buf.head);
     }
 }
