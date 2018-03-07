@@ -5379,8 +5379,9 @@ public abstract class Observable<T> implements ObservableSource<T> {
     /**
      * Returns an Observable that emits buffers of items it collects from the source ObservableSource. The resulting
      * ObservableSource emits connected, non-overlapping buffers, each containing {@code count} items. When the source
-     * ObservableSource completes or encounters an error, the resulting ObservableSource emits the current buffer and
-     * propagates the notification from the source ObservableSource.
+     * ObservableSource completes, the resulting ObservableSource emits the current buffer and propagates the notification
+     * from the source ObservableSource. Note that if the source ObservableSource issues an onError notification
+     * the event is passed on immediately without first emitting the buffer it is in the process of assembling.
      * <p>
      * <img width="640" height="320" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/buffer3.png" alt="">
      * <dl>
@@ -5403,8 +5404,9 @@ public abstract class Observable<T> implements ObservableSource<T> {
     /**
      * Returns an Observable that emits buffers of items it collects from the source ObservableSource. The resulting
      * ObservableSource emits buffers every {@code skip} items, each containing {@code count} items. When the source
-     * ObservableSource completes or encounters an error, the resulting ObservableSource emits the current buffer and
-     * propagates the notification from the source ObservableSource.
+     * ObservableSource completes, the resulting ObservableSource emits the current buffer and propagates the notification
+     * from the source ObservableSource. Note that if the source ObservableSource issues an onError notification
+     * the event is passed on immediately without first emitting the buffer it is in the process of assembling.
      * <p>
      * <img width="640" height="320" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/buffer4.png" alt="">
      * <dl>
@@ -5431,8 +5433,9 @@ public abstract class Observable<T> implements ObservableSource<T> {
     /**
      * Returns an Observable that emits buffers of items it collects from the source ObservableSource. The resulting
      * ObservableSource emits buffers every {@code skip} items, each containing {@code count} items. When the source
-     * ObservableSource completes or encounters an error, the resulting ObservableSource emits the current buffer and
-     * propagates the notification from the source ObservableSource.
+     * ObservableSource completes, the resulting ObservableSource emits the current buffer and propagates the notification
+     * from the source ObservableSource. Note that if the source ObservableSource issues an onError notification
+     * the event is passed on immediately without first emitting the buffer it is in the process of assembling.
      * <p>
      * <img width="640" height="320" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/buffer4.png" alt="">
      * <dl>
@@ -5466,8 +5469,9 @@ public abstract class Observable<T> implements ObservableSource<T> {
     /**
      * Returns an Observable that emits buffers of items it collects from the source ObservableSource. The resulting
      * ObservableSource emits connected, non-overlapping buffers, each containing {@code count} items. When the source
-     * ObservableSource completes or encounters an error, the resulting ObservableSource emits the current buffer and
-     * propagates the notification from the source ObservableSource.
+     * ObservableSource completes, the resulting ObservableSource emits the current buffer and propagates the notification
+     * from the source ObservableSource. Note that if the source ObservableSource issues an onError notification
+     * the event is passed on immediately without first emitting the buffer it is in the process of assembling.
      * <p>
      * <img width="640" height="320" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/buffer3.png" alt="">
      * <dl>
@@ -5495,8 +5499,9 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * Returns an Observable that emits buffers of items it collects from the source ObservableSource. The resulting
      * ObservableSource starts a new buffer periodically, as determined by the {@code timeskip} argument. It emits
      * each buffer after a fixed timespan, specified by the {@code timespan} argument. When the source
-     * ObservableSource completes or encounters an error, the resulting ObservableSource emits the current buffer and
-     * propagates the notification from the source ObservableSource.
+     * ObservableSource completes, the resulting ObservableSource emits the current buffer and propagates the notification
+     * from the source ObservableSource. Note that if the source ObservableSource issues an onError notification
+     * the event is passed on immediately without first emitting the buffer it is in the process of assembling.
      * <p>
      * <img width="640" height="320" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/buffer7.png" alt="">
      * <dl>
@@ -5524,8 +5529,10 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * Returns an Observable that emits buffers of items it collects from the source ObservableSource. The resulting
      * ObservableSource starts a new buffer periodically, as determined by the {@code timeskip} argument, and on the
      * specified {@code scheduler}. It emits each buffer after a fixed timespan, specified by the
-     * {@code timespan} argument. When the source ObservableSource completes or encounters an error, the resulting
-     * ObservableSource emits the current buffer and propagates the notification from the source ObservableSource.
+     * {@code timespan} argument. When the source ObservableSource completes, the resulting ObservableSource emits the
+     * current buffer and propagates the notification from the source ObservableSource. Note that if the source
+     * ObservableSource issues an onError notification the event is passed on immediately without first emitting the
+     * buffer it is in the process of assembling.
      * <p>
      * <img width="640" height="320" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/buffer7.s.png" alt="">
      * <dl>
@@ -5555,8 +5562,10 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * Returns an Observable that emits buffers of items it collects from the source ObservableSource. The resulting
      * ObservableSource starts a new buffer periodically, as determined by the {@code timeskip} argument, and on the
      * specified {@code scheduler}. It emits each buffer after a fixed timespan, specified by the
-     * {@code timespan} argument. When the source ObservableSource completes or encounters an error, the resulting
-     * ObservableSource emits the current buffer and propagates the notification from the source ObservableSource.
+     * {@code timespan} argument. When the source ObservableSource completes, the resulting ObservableSource emits the
+     * current buffer and propagates the notification from the source ObservableSource. Note that if the source
+     * ObservableSource issues an onError notification the event is passed on immediately without first emitting the
+     * buffer it is in the process of assembling.
      * <p>
      * <img width="640" height="320" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/buffer7.s.png" alt="">
      * <dl>
@@ -5592,8 +5601,10 @@ public abstract class Observable<T> implements ObservableSource<T> {
     /**
      * Returns an Observable that emits buffers of items it collects from the source ObservableSource. The resulting
      * ObservableSource emits connected, non-overlapping buffers, each of a fixed duration specified by the
-     * {@code timespan} argument. When the source ObservableSource completes or encounters an error, the resulting
-     * ObservableSource emits the current buffer and propagates the notification from the source ObservableSource.
+     * {@code timespan} argument. When the source ObservableSource completes, the resulting ObservableSource emits the
+     * current buffer and propagates the notification from the source ObservableSource. Note that if the source
+     * ObservableSource issues an onError notification the event is passed on immediately without first emitting the
+     * buffer it is in the process of assembling.
      * <p>
      * <img width="640" height="320" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/buffer5.png" alt="">
      * <dl>
@@ -5620,8 +5631,10 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * Returns an Observable that emits buffers of items it collects from the source ObservableSource. The resulting
      * ObservableSource emits connected, non-overlapping buffers, each of a fixed duration specified by the
      * {@code timespan} argument or a maximum size specified by the {@code count} argument (whichever is reached
-     * first). When the source ObservableSource completes or encounters an error, the resulting ObservableSource emits the
-     * current buffer and propagates the notification from the source ObservableSource.
+     * first). When the source ObservableSource completes, the resulting ObservableSource emits the current buffer and
+     * propagates the notification from the source ObservableSource. Note that if the source ObservableSource issues an
+     * onError notification the event is passed on immediately without first emitting the buffer it is in the process of
+     * assembling.
      * <p>
      * <img width="640" height="320" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/buffer6.png" alt="">
      * <dl>
@@ -5651,9 +5664,10 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * Returns an Observable that emits buffers of items it collects from the source ObservableSource. The resulting
      * ObservableSource emits connected, non-overlapping buffers, each of a fixed duration specified by the
      * {@code timespan} argument as measured on the specified {@code scheduler}, or a maximum size specified by
-     * the {@code count} argument (whichever is reached first). When the source ObservableSource completes or
-     * encounters an error, the resulting ObservableSource emits the current buffer and propagates the notification
-     * from the source ObservableSource.
+     * the {@code count} argument (whichever is reached first). When the source ObservableSource completes, the resulting
+     * ObservableSource emits the current buffer and propagates the notification from the source ObservableSource. Note
+     * that if the source ObservableSource issues an onError notification the event is passed on immediately without
+     * first emitting the buffer it is in the process of assembling.
      * <p>
      * <img width="640" height="320" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/buffer6.s.png" alt="">
      * <dl>
@@ -5685,9 +5699,10 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * Returns an Observable that emits buffers of items it collects from the source ObservableSource. The resulting
      * ObservableSource emits connected, non-overlapping buffers, each of a fixed duration specified by the
      * {@code timespan} argument as measured on the specified {@code scheduler}, or a maximum size specified by
-     * the {@code count} argument (whichever is reached first). When the source ObservableSource completes or
-     * encounters an error, the resulting ObservableSource emits the current buffer and propagates the notification
-     * from the source ObservableSource.
+     * the {@code count} argument (whichever is reached first). When the source ObservableSource completes, the resulting
+     * ObservableSource emits the current buffer and propagates the notification from the source ObservableSource. Note
+     * that if the source ObservableSource issues an onError notification the event is passed on immediately without
+     * first emitting the buffer it is in the process of assembling.
      * <p>
      * <img width="640" height="320" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/buffer6.s.png" alt="">
      * <dl>
@@ -5732,9 +5747,10 @@ public abstract class Observable<T> implements ObservableSource<T> {
     /**
      * Returns an Observable that emits buffers of items it collects from the source ObservableSource. The resulting
      * ObservableSource emits connected, non-overlapping buffers, each of a fixed duration specified by the
-     * {@code timespan} argument and on the specified {@code scheduler}. When the source ObservableSource completes or
-     * encounters an error, the resulting ObservableSource emits the current buffer and propagates the notification
-     * from the source ObservableSource.
+     * {@code timespan} argument and on the specified {@code scheduler}. When the source ObservableSource completes,
+     * the resulting ObservableSource emits the current buffer and propagates the notification from the source
+     * ObservableSource. Note that if the source ObservableSource issues an onError notification the event is passed on
+     * immediately without first emitting the buffer it is in the process of assembling.
      * <p>
      * <img width="640" height="320" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/buffer5.s.png" alt="">
      * <dl>
@@ -5762,7 +5778,9 @@ public abstract class Observable<T> implements ObservableSource<T> {
     /**
      * Returns an Observable that emits buffers of items it collects from the source ObservableSource. The resulting
      * ObservableSource emits buffers that it creates when the specified {@code openingIndicator} ObservableSource emits an
-     * item, and closes when the ObservableSource returned from {@code closingIndicator} emits an item.
+     * item, and closes when the ObservableSource returned from {@code closingIndicator} emits an item. If any of the
+     * source ObservableSource, {@code openingIndicator} or {@code closingIndicator} issues an onError notification the
+     * event is passed on immediately without first emitting the buffer it is in the process of assembling.
      * <p>
      * <img width="640" height="470" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/buffer2.png" alt="">
      * <dl>
@@ -5792,7 +5810,9 @@ public abstract class Observable<T> implements ObservableSource<T> {
     /**
      * Returns an Observable that emits buffers of items it collects from the source ObservableSource. The resulting
      * ObservableSource emits buffers that it creates when the specified {@code openingIndicator} ObservableSource emits an
-     * item, and closes when the ObservableSource returned from {@code closingIndicator} emits an item.
+     * item, and closes when the ObservableSource returned from {@code closingIndicator} emits an item. If any of the
+     * source ObservableSource, {@code openingIndicator} or {@code closingIndicator} issues an onError notification the
+     * event is passed on immediately without first emitting the buffer it is in the process of assembling.
      * <p>
      * <img width="640" height="470" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/buffer2.png" alt="">
      * <dl>
@@ -5834,7 +5854,9 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * <img width="640" height="395" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/buffer8.png" alt="">
      * <p>
      * Completion of either the source or the boundary ObservableSource causes the returned ObservableSource to emit the
-     * latest buffer and complete.
+     * latest buffer and complete. If either the source ObservableSource or the boundary ObservableSource issues an
+     * onError notification the event is passed on immediately without first emitting the buffer it is in the process of
+     * assembling.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>This version of {@code buffer} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -5862,7 +5884,9 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * <img width="640" height="395" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/buffer8.png" alt="">
      * <p>
      * Completion of either the source or the boundary ObservableSource causes the returned ObservableSource to emit the
-     * latest buffer and complete.
+     * latest buffer and complete. If either the source ObservableSource or the boundary ObservableSource issues an
+     * onError notification the event is passed on immediately without first emitting the buffer it is in the process of
+     * assembling.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>This version of {@code buffer} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -5893,7 +5917,9 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * <img width="640" height="395" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/buffer8.png" alt="">
      * <p>
      * Completion of either the source or the boundary ObservableSource causes the returned ObservableSource to emit the
-     * latest buffer and complete.
+     * latest buffer and complete. If either the source ObservableSource or the boundary ObservableSource issues an
+     * onError notification the event is passed on immediately without first emitting the buffer it is in the process of
+     * assembling.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>This version of {@code buffer} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -5923,10 +5949,12 @@ public abstract class Observable<T> implements ObservableSource<T> {
     /**
      * Returns an Observable that emits buffers of items it collects from the source ObservableSource. The resulting
      * ObservableSource emits connected, non-overlapping buffers. It emits the current buffer and replaces it with a
-     * new buffer whenever the ObservableSource produced by the specified {@code closingIndicator} emits an item.
+     * new buffer whenever the ObservableSource produced by the specified {@code boundarySupplier} emits an item.
      * <p>
      * <img width="640" height="395" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/buffer1.png" alt="">
      * <dl>
+     * If either the source ObservableSource or the boundary ObservableSource issues an onError notification the event
+     * is passed on immediately without first emitting the buffer it is in the process of assembling.
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>This version of {@code buffer} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -5934,7 +5962,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @param <B> the value type of the boundary-providing ObservableSource
      * @param boundarySupplier
      *            a {@link Callable} that produces an ObservableSource that governs the boundary between buffers.
-     *            Whenever the source {@code ObservableSource} emits an item, {@code buffer} emits the current buffer and
+     *            Whenever the supplied {@code ObservableSource} emits an item, {@code buffer} emits the current buffer and
      *            begins to fill a new one
      * @return an Observable that emits a connected, non-overlapping buffer of items from the source ObservableSource
      *         each time the ObservableSource created with the {@code closingIndicator} argument emits an item
@@ -5950,10 +5978,12 @@ public abstract class Observable<T> implements ObservableSource<T> {
     /**
      * Returns an Observable that emits buffers of items it collects from the source ObservableSource. The resulting
      * ObservableSource emits connected, non-overlapping buffers. It emits the current buffer and replaces it with a
-     * new buffer whenever the ObservableSource produced by the specified {@code closingIndicator} emits an item.
+     * new buffer whenever the ObservableSource produced by the specified {@code boundarySupplier} emits an item.
      * <p>
      * <img width="640" height="395" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/buffer1.png" alt="">
      * <dl>
+     * If either the source ObservableSource or the boundary ObservableSource issues an onError notification the event
+     * is passed on immediately without first emitting the buffer it is in the process of assembling.
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>This version of {@code buffer} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -5962,7 +5992,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @param <B> the value type of the boundary-providing ObservableSource
      * @param boundarySupplier
      *            a {@link Callable} that produces an ObservableSource that governs the boundary between buffers.
-     *            Whenever the source {@code ObservableSource} emits an item, {@code buffer} emits the current buffer and
+     *            Whenever the supplied {@code ObservableSource} emits an item, {@code buffer} emits the current buffer and
      *            begins to fill a new one
      * @param bufferSupplier
      *            a factory function that returns an instance of the collection subclass to be used and returned
