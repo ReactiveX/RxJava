@@ -30,6 +30,7 @@ import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.Function;
 import io.reactivex.observers.*;
 import io.reactivex.schedulers.*;
+import io.reactivex.subjects.ReplaySubject.*;
 
 public class ReplaySubjectTest extends SubjectTest<Integer> {
 
@@ -1183,5 +1184,93 @@ public class ReplaySubjectTest extends SubjectTest<Integer> {
         scheduler.advanceTimeBy(3, TimeUnit.SECONDS);
 
         source.test().assertResult();
+    }
+
+    @Test
+    public void noHeadRetentionCompleteSize() {
+        ReplaySubject<Integer> source = ReplaySubject.createWithSize(1);
+
+        source.onNext(1);
+        source.onNext(2);
+        source.onComplete();
+
+        SizeBoundReplayBuffer<Integer> buf = (SizeBoundReplayBuffer<Integer>)source.buffer;
+
+        assertNull(buf.head.value);
+
+        Object o = buf.head;
+
+        source.cleanupBuffer();
+
+        assertSame(o, buf.head);
+    }
+
+
+    @Test
+    public void noHeadRetentionSize() {
+        ReplaySubject<Integer> source = ReplaySubject.createWithSize(1);
+
+        source.onNext(1);
+        source.onNext(2);
+
+        SizeBoundReplayBuffer<Integer> buf = (SizeBoundReplayBuffer<Integer>)source.buffer;
+
+        assertNotNull(buf.head.value);
+
+        source.cleanupBuffer();
+
+        assertNull(buf.head.value);
+
+        Object o = buf.head;
+
+        source.cleanupBuffer();
+
+        assertSame(o, buf.head);
+    }
+
+    @Test
+    public void noHeadRetentionCompleteTime() {
+        ReplaySubject<Integer> source = ReplaySubject.createWithTime(1, TimeUnit.MINUTES, Schedulers.computation());
+
+        source.onNext(1);
+        source.onNext(2);
+        source.onComplete();
+
+        SizeAndTimeBoundReplayBuffer<Integer> buf = (SizeAndTimeBoundReplayBuffer<Integer>)source.buffer;
+
+        assertNull(buf.head.value);
+
+        Object o = buf.head;
+
+        source.cleanupBuffer();
+
+        assertSame(o, buf.head);
+    }
+
+    @Test
+    public void noHeadRetentionTime() {
+        TestScheduler sch = new TestScheduler();
+
+        ReplaySubject<Integer> source = ReplaySubject.createWithTime(1, TimeUnit.MILLISECONDS, sch);
+
+        source.onNext(1);
+
+        sch.advanceTimeBy(2, TimeUnit.MILLISECONDS);
+
+        source.onNext(2);
+
+        SizeAndTimeBoundReplayBuffer<Integer> buf = (SizeAndTimeBoundReplayBuffer<Integer>)source.buffer;
+
+        assertNotNull(buf.head.value);
+
+        source.cleanupBuffer();
+
+        assertNull(buf.head.value);
+
+        Object o = buf.head;
+
+        source.cleanupBuffer();
+
+        assertSame(o, buf.head);
     }
 }
