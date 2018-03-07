@@ -7490,6 +7490,25 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * represent.
      * <p>
      * <img width="640" height="335" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/dematerialize.png" alt="">
+     * <p>
+     * When the upstream signals an {@link Notification#createOnError(Throwable) onError} or
+     * {@link Notification#createOnComplete() onComplete} item, the
+     * returned Observable cancels the flow and terminates with that type of terminal event:
+     * <pre><code>
+     * Observable.just(createOnNext(1), createOnComplete(), createOnNext(2))
+     * .doOnCancel(() -&gt; System.out.println("Cancelled!"));
+     * .test()
+     * .assertResult(1);
+     * </code></pre>
+     * If the upstream signals {@code onError} or {@code onComplete} directly, the flow is terminated
+     * with the same event.
+     * <pre><code>
+     * Observable.just(createOnNext(1), createOnNext(2))
+     * .test()
+     * .assertResult(1, 2);
+     * </code></pre>
+     * If this behavior is not desired, the completion can be suppressed by applying {@link #concatWith(ObservableSource)}
+     * with a {@link #never()} source.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code dematerialize} does not operate by default on a particular {@link Scheduler}.</dd>
