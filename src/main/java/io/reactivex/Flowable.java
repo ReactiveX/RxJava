@@ -8250,6 +8250,25 @@ public abstract class Flowable<T> implements Publisher<T> {
      * represent.
      * <p>
      * <img width="640" height="335" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/dematerialize.png" alt="">
+     * <p>
+     * When the upstream signals an {@link Notification#createOnError(Throwable) onError} or
+     * {@link Notification#createOnComplete() onComplete} item, the
+     * returned Flowable cancels the flow and terminates with that type of terminal event:
+     * <pre><code>
+     * Flowable.just(createOnNext(1), createOnComplete(), createOnNext(2))
+     * .doOnCancel(() -&gt; System.out.println("Cancelled!"));
+     * .test()
+     * .assertResult(1);
+     * </code></pre>
+     * If the upstream signals {@code onError} or {@code onComplete} directly, the flow is terminated
+     * with the same event.
+     * <pre><code>
+     * Flowable.just(createOnNext(1), createOnNext(2))
+     * .test()
+     * .assertResult(1, 2);
+     * </code></pre>
+     * If this behavior is not desired, the completion can be suppressed by applying {@link #concatWith(Publisher)}
+     * with a {@link #never()} source.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator doesn't interfere with backpressure which is determined by the source {@code Publisher}'s
