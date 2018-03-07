@@ -6529,7 +6529,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @param <B> the value type of the boundary-providing Publisher
      * @param boundaryIndicatorSupplier
      *            a {@link Callable} that produces a Publisher that governs the boundary between buffers.
-     *            Whenever the source {@code Publisher} emits an item, {@code buffer} emits the current buffer and
+     *            Whenever the supplied {@code Publisher} emits an item, {@code buffer} emits the current buffer and
      *            begins to fill a new one
      * @return a Flowable that emits a connected, non-overlapping buffer of items from the source Publisher
      *         each time the Publisher created with the {@code closingIndicator} argument emits an item
@@ -6563,7 +6563,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @param <B> the value type of the boundary-providing Publisher
      * @param boundaryIndicatorSupplier
      *            a {@link Callable} that produces a Publisher that governs the boundary between buffers.
-     *            Whenever the source {@code Publisher} emits an item, {@code buffer} emits the current buffer and
+     *            Whenever the supplied {@code Publisher} emits an item, {@code buffer} emits the current buffer and
      *            begins to fill a new one
      * @param bufferSupplier
      *            a factory function that returns an instance of the collection subclass to be used and returned
