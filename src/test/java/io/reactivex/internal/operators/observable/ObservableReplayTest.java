@@ -1561,4 +1561,159 @@ public class ObservableReplayTest {
         .test()
         .assertFailureAndMessage(NullPointerException.class, "The connectableFactory returned a null ConnectableObservable");
     }
+
+    @Test
+    public void noHeadRetentionCompleteSize() {
+        PublishSubject<Integer> source = PublishSubject.create();
+
+        ObservableReplay<Integer> co = (ObservableReplay<Integer>)source
+                .replay(1);
+
+        co.connect();
+
+        BoundedReplayBuffer<Integer> buf = (BoundedReplayBuffer<Integer>)(co.current.get().buffer);
+
+        source.onNext(1);
+        source.onNext(2);
+        source.onComplete();
+
+        assertNull(buf.get().value);
+
+        Object o = buf.get();
+
+        buf.trimHead();
+
+        assertSame(o, buf.get());
+    }
+
+    @Test
+    public void noHeadRetentionErrorSize() {
+        PublishSubject<Integer> source = PublishSubject.create();
+
+        ObservableReplay<Integer> co = (ObservableReplay<Integer>)source
+                .replay(1);
+
+        co.connect();
+
+        BoundedReplayBuffer<Integer> buf = (BoundedReplayBuffer<Integer>)(co.current.get().buffer);
+
+        source.onNext(1);
+        source.onNext(2);
+        source.onError(new TestException());
+
+        assertNull(buf.get().value);
+
+        Object o = buf.get();
+
+        buf.trimHead();
+
+        assertSame(o, buf.get());
+    }
+
+    @Test
+    public void noHeadRetentionSize() {
+        PublishSubject<Integer> source = PublishSubject.create();
+
+        ObservableReplay<Integer> co = (ObservableReplay<Integer>)source
+                .replay(1);
+
+        co.connect();
+
+        BoundedReplayBuffer<Integer> buf = (BoundedReplayBuffer<Integer>)(co.current.get().buffer);
+
+        source.onNext(1);
+        source.onNext(2);
+
+        assertNotNull(buf.get().value);
+
+        buf.trimHead();
+
+        assertNull(buf.get().value);
+
+        Object o = buf.get();
+
+        buf.trimHead();
+
+        assertSame(o, buf.get());
+    }
+
+    @Test
+    public void noHeadRetentionCompleteTime() {
+        PublishSubject<Integer> source = PublishSubject.create();
+
+        ObservableReplay<Integer> co = (ObservableReplay<Integer>)source
+                .replay(1, TimeUnit.MINUTES, Schedulers.computation());
+
+        co.connect();
+
+        BoundedReplayBuffer<Integer> buf = (BoundedReplayBuffer<Integer>)(co.current.get().buffer);
+
+        source.onNext(1);
+        source.onNext(2);
+        source.onComplete();
+
+        assertNull(buf.get().value);
+
+        Object o = buf.get();
+
+        buf.trimHead();
+
+        assertSame(o, buf.get());
+    }
+
+    @Test
+    public void noHeadRetentionErrorTime() {
+        PublishSubject<Integer> source = PublishSubject.create();
+
+        ObservableReplay<Integer> co = (ObservableReplay<Integer>)source
+                .replay(1, TimeUnit.MINUTES, Schedulers.computation());
+
+        co.connect();
+
+        BoundedReplayBuffer<Integer> buf = (BoundedReplayBuffer<Integer>)(co.current.get().buffer);
+
+        source.onNext(1);
+        source.onNext(2);
+        source.onError(new TestException());
+
+        assertNull(buf.get().value);
+
+        Object o = buf.get();
+
+        buf.trimHead();
+
+        assertSame(o, buf.get());
+    }
+
+    @Test
+    public void noHeadRetentionTime() {
+        TestScheduler sch = new TestScheduler();
+
+        PublishSubject<Integer> source = PublishSubject.create();
+
+        ObservableReplay<Integer> co = (ObservableReplay<Integer>)source
+                .replay(1, TimeUnit.MILLISECONDS, sch);
+
+        co.connect();
+
+        BoundedReplayBuffer<Integer> buf = (BoundedReplayBuffer<Integer>)(co.current.get().buffer);
+
+        source.onNext(1);
+
+        sch.advanceTimeBy(2, TimeUnit.MILLISECONDS);
+
+        source.onNext(2);
+
+        assertNotNull(buf.get().value);
+
+        buf.trimHead();
+
+        assertNull(buf.get().value);
+
+        Object o = buf.get();
+
+        buf.trimHead();
+
+        assertSame(o, buf.get());
+    }
 }

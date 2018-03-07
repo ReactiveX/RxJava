@@ -806,6 +806,15 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
             truncateFinal();
         }
 
+        final void trimHead() {
+            Node head = get();
+            if (head.value != null) {
+                Node n = new Node(null, 0L);
+                n.lazySet(head.get());
+                set(n);
+            }
+        }
+
         @Override
         public final void replay(InnerSubscription<T> output) {
             synchronized (output) {
@@ -909,7 +918,7 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
          * based on its properties (i.e., truncate but the very last node).
          */
         void truncateFinal() {
-
+            trimHead();
         }
         /* test */ final  void collect(Collection<? super T> output) {
             Node n = getHead();
