@@ -938,4 +938,71 @@ public class ObservableFlatMapTest {
 
         assertEquals(1, counter.get());
     }
+
+    @Test
+    public void scalarQueueNoOverflow() {
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            final PublishSubject<Integer> ps = PublishSubject.create();
+
+            TestObserver<Integer> to = ps.flatMap(new Function<Integer, Observable<Integer>>() {
+                @Override
+                public Observable<Integer> apply(Integer v)
+                        throws Exception {
+                    return Observable.just(v + 1);
+                }
+            }, 1)
+            .subscribeWith(new TestObserver<Integer>() {
+                @Override
+                public void onNext(Integer t) {
+                    super.onNext(t);
+                    if (t == 1) {
+                        for (int i = 1; i < 10; i++) {
+                            ps.onNext(i);
+                        }
+                        ps.onComplete();
+                    }
+                }
+            });
+
+            ps.onNext(0);
+
+            if (!errors.isEmpty()) {
+                to.onError(new CompositeException(errors));
+            }
+
+            to.assertResult(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
+
+    @Test
+    public void scalarQueueNoOverflowHidden() {
+        final PublishSubject<Integer> ps = PublishSubject.create();
+
+        TestObserver<Integer> to = ps.flatMap(new Function<Integer, Observable<Integer>>() {
+            @Override
+            public Observable<Integer> apply(Integer v)
+                    throws Exception {
+                return Observable.just(v + 1).hide();
+            }
+        }, 1)
+        .subscribeWith(new TestObserver<Integer>() {
+            @Override
+            public void onNext(Integer t) {
+                super.onNext(t);
+                if (t == 1) {
+                    for (int i = 1; i < 10; i++) {
+                        ps.onNext(i);
+                    }
+                    ps.onComplete();
+                }
+            }
+        });
+
+        ps.onNext(0);
+
+        to.assertResult(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
+    }
 }

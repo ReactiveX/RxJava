@@ -143,15 +143,18 @@ public final class ObservableFlatMap<T, U> extends AbstractObservableWithUpstrea
         void subscribeInner(ObservableSource<? extends U> p) {
             for (;;) {
                 if (p instanceof Callable) {
-                    tryEmitScalar(((Callable<? extends U>)p));
-
-                    if (maxConcurrency != Integer.MAX_VALUE) {
+                    if (tryEmitScalar(((Callable<? extends U>)p)) && maxConcurrency != Integer.MAX_VALUE) {
+                        boolean empty = false;
                         synchronized (this) {
                             p = sources.poll();
                             if (p == null) {
                                 wip--;
-                                break;
+                                empty = true;
                             }
+                        }
+                        if (empty) {
+                            drain();
+                            break;
                         }
                     } else {
                         break;
@@ -214,7 +217,7 @@ public final class ObservableFlatMap<T, U> extends AbstractObservableWithUpstrea
             }
         }
 
-        void tryEmitScalar(Callable<? extends U> value) {
+        boolean tryEmitScalar(Callable<? extends U> value) {
             U u;
             try {
                 u = value.call();
@@ -222,18 +225,18 @@ public final class ObservableFlatMap<T, U> extends AbstractObservableWithUpstrea
                 Exceptions.throwIfFatal(ex);
                 errors.addThrowable(ex);
                 drain();
-                return;
+                return true;
             }
 
             if (u == null) {
-                return;
+                return true;
             }
 
 
             if (get() == 0 && compareAndSet(0, 1)) {
                 actual.onNext(u);
                 if (decrementAndGet() == 0) {
-                    return;
+                    return true;
                 }
             } else {
                 SimplePlainQueue<U> q = queue;
@@ -248,13 +251,14 @@ public final class ObservableFlatMap<T, U> extends AbstractObservableWithUpstrea
 
                 if (!q.offer(u)) {
                     onError(new IllegalStateException("Scalar queue full?!"));
-                    return;
+                    return true;
                 }
                 if (getAndIncrement() != 0) {
-                    return;
+                    return false;
                 }
             }
             drainLoop();
+            return true;
         }
 
         void tryEmit(U value, InnerObserver<T, U> inner) {
@@ -360,7 +364,14 @@ public final class ObservableFlatMap<T, U> extends AbstractObservableWithUpstrea
                 InnerObserver<?, ?>[] inner = observers.get();
                 int n = inner.length;
 
-                if (d && (svq == null || svq.isEmpty()) && n == 0) {
+                int nSources = 0;
+                if (maxConcurrency != Integer.MAX_VALUE) {
+                    synchronized (this) {
+                        nSources = sources.size();
+                    }
+                }
+
+                if (d && (svq == null || svq.isEmpty()) && n == 0 && nSources == 0) {
                     Throwable ex = errors.terminate();
                     if (ex != ExceptionHelper.TERMINATED) {
                         if (ex == null) {
