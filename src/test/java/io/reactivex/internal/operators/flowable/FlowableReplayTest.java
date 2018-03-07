@@ -21,13 +21,13 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 
-import io.reactivex.annotations.NonNull;
 import org.junit.*;
 import org.mockito.InOrder;
 import org.reactivestreams.*;
 
 import io.reactivex.*;
 import io.reactivex.Scheduler.Worker;
+import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.flowables.ConnectableFlowable;
@@ -1774,5 +1774,173 @@ public class FlowableReplayTest {
             Flowable.never()
             .replay()
         );
+    }
+
+    @Test
+    public void noHeadRetentionCompleteSize() {
+        PublishProcessor<Integer> source = PublishProcessor.create();
+
+        FlowableReplay<Integer> co = (FlowableReplay<Integer>)source
+                .replay(1);
+
+        // the backpressure coordination would not accept items from source otherwise
+        co.test();
+
+        co.connect();
+
+        BoundedReplayBuffer<Integer> buf = (BoundedReplayBuffer<Integer>)(co.current.get().buffer);
+
+        source.onNext(1);
+        source.onNext(2);
+        source.onComplete();
+
+        assertNull(buf.get().value);
+
+        Object o = buf.get();
+
+        buf.trimHead();
+
+        assertSame(o, buf.get());
+    }
+
+    @Test
+    public void noHeadRetentionErrorSize() {
+        PublishProcessor<Integer> source = PublishProcessor.create();
+
+        FlowableReplay<Integer> co = (FlowableReplay<Integer>)source
+                .replay(1);
+
+        co.test();
+
+        co.connect();
+
+        BoundedReplayBuffer<Integer> buf = (BoundedReplayBuffer<Integer>)(co.current.get().buffer);
+
+        source.onNext(1);
+        source.onNext(2);
+        source.onError(new TestException());
+
+        assertNull(buf.get().value);
+
+        Object o = buf.get();
+
+        buf.trimHead();
+
+        assertSame(o, buf.get());
+    }
+
+    @Test
+    public void noHeadRetentionSize() {
+        PublishProcessor<Integer> source = PublishProcessor.create();
+
+        FlowableReplay<Integer> co = (FlowableReplay<Integer>)source
+                .replay(1);
+
+        co.test();
+
+        co.connect();
+
+        BoundedReplayBuffer<Integer> buf = (BoundedReplayBuffer<Integer>)(co.current.get().buffer);
+
+        source.onNext(1);
+        source.onNext(2);
+
+        assertNotNull(buf.get().value);
+
+        buf.trimHead();
+
+        assertNull(buf.get().value);
+
+        Object o = buf.get();
+
+        buf.trimHead();
+
+        assertSame(o, buf.get());
+    }
+
+    @Test
+    public void noHeadRetentionCompleteTime() {
+        PublishProcessor<Integer> source = PublishProcessor.create();
+
+        FlowableReplay<Integer> co = (FlowableReplay<Integer>)source
+                .replay(1, TimeUnit.MINUTES, Schedulers.computation());
+
+        co.test();
+
+        co.connect();
+
+        BoundedReplayBuffer<Integer> buf = (BoundedReplayBuffer<Integer>)(co.current.get().buffer);
+
+        source.onNext(1);
+        source.onNext(2);
+        source.onComplete();
+
+        assertNull(buf.get().value);
+
+        Object o = buf.get();
+
+        buf.trimHead();
+
+        assertSame(o, buf.get());
+    }
+
+    @Test
+    public void noHeadRetentionErrorTime() {
+        PublishProcessor<Integer> source = PublishProcessor.create();
+
+        FlowableReplay<Integer> co = (FlowableReplay<Integer>)source
+                .replay(1, TimeUnit.MINUTES, Schedulers.computation());
+
+        co.test();
+
+        co.connect();
+
+        BoundedReplayBuffer<Integer> buf = (BoundedReplayBuffer<Integer>)(co.current.get().buffer);
+
+        source.onNext(1);
+        source.onNext(2);
+        source.onError(new TestException());
+
+        assertNull(buf.get().value);
+
+        Object o = buf.get();
+
+        buf.trimHead();
+
+        assertSame(o, buf.get());
+    }
+
+    @Test
+    public void noHeadRetentionTime() {
+        TestScheduler sch = new TestScheduler();
+
+        PublishProcessor<Integer> source = PublishProcessor.create();
+
+        FlowableReplay<Integer> co = (FlowableReplay<Integer>)source
+                .replay(1, TimeUnit.MILLISECONDS, sch);
+
+        co.test();
+
+        co.connect();
+
+        BoundedReplayBuffer<Integer> buf = (BoundedReplayBuffer<Integer>)(co.current.get().buffer);
+
+        source.onNext(1);
+
+        sch.advanceTimeBy(2, TimeUnit.MILLISECONDS);
+
+        source.onNext(2);
+
+        assertNotNull(buf.get().value);
+
+        buf.trimHead();
+
+        assertNull(buf.get().value);
+
+        Object o = buf.get();
+
+        buf.trimHead();
+
+        assertSame(o, buf.get());
     }
 }

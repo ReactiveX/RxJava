@@ -619,6 +619,16 @@ public final class ObservableReplay<T> extends ConnectableObservable<T> implemen
             // can't null out the head's value because of late replayers would see null
             setFirst(next);
         }
+
+        final void trimHead() {
+            Node head = get();
+            if (head.value != null) {
+                Node n = new Node(null);
+                n.lazySet(head.get());
+                set(n);
+            }
+        }
+
         /* test */ final void removeSome(int n) {
             Node head = get();
             while (n > 0) {
@@ -733,7 +743,7 @@ public final class ObservableReplay<T> extends ConnectableObservable<T> implemen
          * based on its properties (i.e., truncate but the very last node).
          */
         void truncateFinal() {
-
+            trimHead();
         }
         /* test */ final  void collect(Collection<? super T> output) {
             Node n = getHead();
