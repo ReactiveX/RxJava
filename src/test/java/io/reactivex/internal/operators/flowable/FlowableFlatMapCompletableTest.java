@@ -25,6 +25,7 @@ import io.reactivex.*;
 import io.reactivex.disposables.*;
 import io.reactivex.exceptions.*;
 import io.reactivex.functions.Function;
+import io.reactivex.internal.functions.Functions;
 import io.reactivex.internal.fuseable.*;
 import io.reactivex.observers.*;
 import io.reactivex.processors.PublishProcessor;
@@ -522,5 +523,22 @@ public class FlowableFlatMapCompletableTest {
         }, true, 1)
         .test()
         .assertFailure(TestException.class);
+    }
+
+    @Test
+    public void asyncMaxConcurrency() {
+        for (int itemCount = 1; itemCount <= 100000; itemCount *= 10) {
+            for (int concurrency = 1; concurrency <= 256; concurrency *= 2) {
+                Flowable.range(1, itemCount)
+                .flatMapCompletable(
+                        Functions.justFunction(Completable.complete()
+                        .subscribeOn(Schedulers.computation()))
+                        , false, concurrency)
+                .test()
+                .withTag("itemCount=" + itemCount + ", concurrency=" + concurrency)
+                .awaitDone(5, TimeUnit.SECONDS)
+                .assertResult();
+            }
+        }
     }
 }
