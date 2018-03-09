@@ -253,5 +253,10 @@ public class TestSchedulerTest {
         assertTrue(w.isDisposed());
     }
 
-
+    @Test
+    public void constructorTimeSetsTime() {
+        TestScheduler ts = new TestScheduler(5, TimeUnit.SECONDS);
+        assertEquals(5, ts.now(TimeUnit.SECONDS));
+        assertEquals(5000, ts.now(TimeUnit.MILLISECONDS));
+    }
 }
