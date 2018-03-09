@@ -36,14 +36,14 @@ public final class TestScheduler extends Scheduler {
     volatile long time;
 
     /**
-     * Creates a new TestScheduler without a particular time.
+     * Creates a new TestScheduler with initial virtual time of zero.
      */
     public TestScheduler() {
         // No-op.
     }
 
     /**
-     * Moves the Scheduler's clock to a particular moment in time.
+     * Creates a new TestScheduler with the specified initial virtual time.
      *
      * @param delayTime
      *          the point in time to move the Scheduler's clock to
