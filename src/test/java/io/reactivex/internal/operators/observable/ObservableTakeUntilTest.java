@@ -266,8 +266,8 @@ public class ObservableTakeUntilTest {
     public void doubleOnSubscribe() {
         TestHelper.checkDoubleOnSubscribeObservable(new Function<Observable<Integer>, Observable<Integer>>() {
             @Override
-            public Observable<Integer> apply(Observable<Integer> c) throws Exception {
-                return c.takeUntil(Observable.never());
+            public Observable<Integer> apply(Observable<Integer> o) throws Exception {
+                return o.takeUntil(Observable.never());
             }
         });
     }

@@ -183,4 +183,9 @@ public class CheckLocalVariablesInTests {
     public void completableSourceAsMs() throws Exception {
         findPattern("CompletableSource<.*>\\s+ms");
     }
+
+    @Test
+    public void observableAsC() throws Exception {
+        findPattern("Observable<.*>\\s+c\\b");
+    }
 }

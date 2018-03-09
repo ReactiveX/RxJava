@@ -3395,7 +3395,7 @@ public class CompletableTest {
     @Test(timeout = 5000)
     public void startWithObservableNormal() {
         final AtomicBoolean run = new AtomicBoolean();
-        Observable<Object> c = normal.completable
+        Observable<Object> o = normal.completable
                 .startWith(Observable.fromCallable(new Callable<Object>() {
                     @Override
                     public Object call() throws Exception {
@@ -3406,7 +3406,7 @@ public class CompletableTest {
 
         TestObserver<Object> to = new TestObserver<Object>();
 
-        c.subscribe(to);
+        o.subscribe(to);
 
         Assert.assertTrue("Did not start with other", run.get());
         normal.assertSubscriptions(1);
@@ -3418,12 +3418,12 @@ public class CompletableTest {
 
     @Test(timeout = 5000)
     public void startWithObservableError() {
-        Observable<Object> c = normal.completable
+        Observable<Object> o = normal.completable
                 .startWith(Observable.error(new TestException()));
 
         TestObserver<Object> to = new TestObserver<Object>();
 
-        c.subscribe(to);
+        o.subscribe(to);
 
         normal.assertSubscriptions(0);
 
