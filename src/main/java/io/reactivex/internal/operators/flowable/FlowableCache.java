@@ -50,16 +50,24 @@ public final class FlowableCache<T> extends AbstractFlowableWithUpstream<T, T> {
     protected void subscribeActual(Subscriber<? super T> t) {
         // we can connect first because we replay everything anyway
         ReplaySubscription<T> rp = new ReplaySubscription<T>(t, state);
-        state.addChild(rp);
-
         t.onSubscribe(rp);
+
+        boolean doReplay = true;
+        if (state.addChild(rp)) {
+            if (rp.requested.get() == ReplaySubscription.CANCELLED) {
+                state.removeChild(rp);
+                doReplay = false;
+            }
+        }
 
         // we ensure a single connection here to save an instance field of AtomicBoolean in state.
         if (!once.get() && once.compareAndSet(false, true)) {
             state.connect();
         }
 
-        // no need to call rp.replay() here because the very first request will trigger it anyway
+        if (doReplay) {
+            rp.replay();
+        }
     }
 
     /**
@@ -122,14 +130,15 @@ public final class FlowableCache<T> extends AbstractFlowableWithUpstream<T, T> {
         /**
          * Adds a ReplaySubscription to the subscribers array atomically.
          * @param p the target ReplaySubscription wrapping a downstream Subscriber with state
+         * @return true if the ReplaySubscription was added or false if the cache is already terminated
          */
-        public void addChild(ReplaySubscription<T> p) {
+        public boolean addChild(ReplaySubscription<T> p) {
             // guarding by connection to save on allocating another object
             // thus there are two distinct locks guarding the value-addition and child come-and-go
             for (;;) {
                 ReplaySubscription<T>[] a = subscribers.get();
                 if (a == TERMINATED) {
-                    return;
+                    return false;
                 }
                 int n = a.length;
                 @SuppressWarnings("unchecked")
@@ -137,7 +146,7 @@ public final class FlowableCache<T> extends AbstractFlowableWithUpstream<T, T> {
                 System.arraycopy(a, 0, b, 0, n);
                 b[n] = p;
                 if (subscribers.compareAndSet(a, b)) {
-                    return;
+                    return true;
                 }
             }
         }
@@ -240,12 +249,16 @@ public final class FlowableCache<T> extends AbstractFlowableWithUpstream<T, T> {
     extends AtomicInteger implements Subscription {
 
         private static final long serialVersionUID = -2557562030197141021L;
-        private static final long CANCELLED = -1;
+        private static final long CANCELLED = Long.MIN_VALUE;
         /** The actual child subscriber. */
         final Subscriber<? super T> child;
         /** The cache state object. */
         final CacheState<T> state;
 
+        /**
+         * Number of items requested and also the cancelled indicator if
+         * it contains {@link #CANCELLED}.
+         */
         final AtomicLong requested;
 
         /**
@@ -263,6 +276,9 @@ public final class FlowableCache<T> extends AbstractFlowableWithUpstream<T, T> {
          */
         int index;
 
+        /** Number of items emitted so far. */
+        long emitted;
+
         ReplaySubscription(Subscriber<? super T> child, CacheState<T> state) {
             this.child = child;
             this.state = state;
@@ -271,17 +287,8 @@ public final class FlowableCache<T> extends AbstractFlowableWithUpstream<T, T> {
         @Override
         public void request(long n) {
             if (SubscriptionHelper.validate(n)) {
-                for (;;) {
-                    long r = requested.get();
-                    if (r == CANCELLED) {
-                        return;
-                    }
-                    long u = BackpressureHelper.addCap(r, n);
-                    if (requested.compareAndSet(r, u)) {
-                        replay();
-                        return;
-                    }
-                }
+                BackpressureHelper.addCancel(requested, n);
+                replay();
             }
         }
 
@@ -303,12 +310,13 @@ public final class FlowableCache<T> extends AbstractFlowableWithUpstream<T, T> {
             int missed = 1;
             final Subscriber<? super T> child = this.child;
             AtomicLong rq = requested;
+            long e = emitted;
 
             for (;;) {
 
                 long r = rq.get();
 
-                if (r < 0L) {
+                if (r == CANCELLED) {
                     return;
                 }
 
@@ -326,9 +334,8 @@ public final class FlowableCache<T> extends AbstractFlowableWithUpstream<T, T> {
                     final int n = b.length - 1;
                     int j = index;
                     int k = currentIndexInBuffer;
-                    int valuesProduced = 0;
 
-                    while (j < s && r > 0) {
+                    while (j < s && e != r) {
                         if (rq.get() == CANCELLED) {
                             return;
                         }
@@ -344,15 +351,14 @@ public final class FlowableCache<T> extends AbstractFlowableWithUpstream<T, T> {
 
                         k++;
                         j++;
-                        r--;
-                        valuesProduced++;
+                        e++;
                     }
 
                     if (rq.get() == CANCELLED) {
                         return;
                     }
 
-                    if (r == 0) {
+                    if (r == e) {
                         Object o = b[k];
                         if (NotificationLite.isComplete(o)) {
                             child.onComplete();
@@ -364,15 +370,12 @@ public final class FlowableCache<T> extends AbstractFlowableWithUpstream<T, T> {
                         }
                     }
 
-                    if (valuesProduced != 0) {
-                        BackpressureHelper.producedCancel(rq, valuesProduced);
-                    }
-
                     index = j;
                     currentIndexInBuffer = k;
                     currentBuffer = b;
                 }
 
+                emitted = e;
                 missed = addAndGet(-missed);
                 if (missed == 0) {
                     break;

@@ -1227,4 +1227,20 @@ public class SerializedObserverTest {
         }
 
     }
+
+    @Test
+    public void nullOnNext() {
+
+        TestObserver<Integer> ts = new TestObserver<Integer>();
+
+        final SerializedObserver<Integer> so = new SerializedObserver<Integer>(ts);
+
+        Disposable d = Disposables.empty();
+
+        so.onSubscribe(d);
+
+        so.onNext(null);
+
+        ts.assertFailureAndMessage(NullPointerException.class, "onNext called with null. Null values are generally not allowed in 2.x operators and sources.");
+    }
 }

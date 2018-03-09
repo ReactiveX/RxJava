@@ -1215,7 +1215,8 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
                         buf = bufferFactory.call();
                     } catch (Throwable ex) {
                         Exceptions.throwIfFatal(ex);
-                        throw ExceptionHelper.wrapOrThrow(ex);
+                        EmptySubscription.error(ex, child);
+                        return;
                     }
                     // create a new subscriber to source
                     ReplaySubscriber<T> u = new ReplaySubscriber<T>(buf);

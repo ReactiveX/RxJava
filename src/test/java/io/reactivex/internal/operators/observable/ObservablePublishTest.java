@@ -738,4 +738,23 @@ public class ObservablePublishTest {
         }
         );
     }
+
+    @Test
+    public void disposedUpfront() {
+        ConnectableObservable<Integer> co = Observable.just(1)
+                .concatWith(Observable.<Integer>never())
+                .publish();
+
+        TestObserver<Integer> to1 = co.test();
+
+        TestObserver<Integer> to2 = co.test(true);
+
+        co.connect();
+
+        to1.assertValuesOnly(1);
+
+        to2.assertEmpty();
+
+        ((ObservablePublish<Integer>)co).current.get().remove(null);
+    }
 }

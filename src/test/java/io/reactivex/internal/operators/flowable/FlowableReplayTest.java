@@ -1943,4 +1943,40 @@ public class FlowableReplayTest {
 
         assertSame(o, buf.get());
     }
+
+    @Test(expected = TestException.class)
+    public void createBufferFactoryCrash() {
+        FlowableReplay.create(Flowable.just(1), new Callable<ReplayBuffer<Integer>>() {
+            @Override
+            public ReplayBuffer<Integer> call() throws Exception {
+                throw new TestException();
+            }
+        })
+        .connect();
+    }
+
+    @Test
+    public void createBufferFactoryCrashOnSubscribe() {
+        FlowableReplay.create(Flowable.just(1), new Callable<ReplayBuffer<Integer>>() {
+            @Override
+            public ReplayBuffer<Integer> call() throws Exception {
+                throw new TestException();
+            }
+        })
+        .test()
+        .assertFailure(TestException.class);
+    }
+
+    @Test
+    public void currentDisposedWhenConnecting() {
+        FlowableReplay<Integer> fr = (FlowableReplay<Integer>)FlowableReplay.create(Flowable.<Integer>never(), 16);
+        fr.connect();
+
+        fr.current.get().dispose();
+        assertTrue(fr.current.get().isDisposed());
+
+        fr.connect();
+
+        assertFalse(fr.current.get().isDisposed());
+    }
 }
