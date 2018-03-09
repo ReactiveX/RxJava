@@ -35,6 +35,25 @@ public final class TestScheduler extends Scheduler {
     // Storing time in nanoseconds internally.
     volatile long time;
 
+    /**
+     * Creates a new TestScheduler with initial virtual time of zero.
+     */
+    public TestScheduler() {
+        // No-op.
+    }
+
+    /**
+     * Creates a new TestScheduler with the specified initial virtual time.
+     *
+     * @param delayTime
+     *          the point in time to move the Scheduler's clock to
+     * @param unit
+     *          the units of time that {@code delayTime} is expressed in
+     */
+    public TestScheduler(long delayTime, TimeUnit unit) {
+        time = unit.toNanos(delayTime);
+    }
+
     static final class TimedRunnable implements Comparable<TimedRunnable> {
 
         final long time;
