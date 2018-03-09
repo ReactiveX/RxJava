@@ -148,13 +148,11 @@ public final class ObservablePublish<T> extends ConnectableObservable<T> impleme
         @SuppressWarnings("unchecked")
         @Override
         public void dispose() {
-            if (observers.get() != TERMINATED) {
-                InnerDisposable[] ps = observers.getAndSet(TERMINATED);
-                if (ps != TERMINATED) {
-                    current.compareAndSet(PublishObserver.this, null);
+            InnerDisposable[] ps = observers.getAndSet(TERMINATED);
+            if (ps != TERMINATED) {
+                current.compareAndSet(PublishObserver.this, null);
 
-                    DisposableHelper.dispose(s);
-                }
+                DisposableHelper.dispose(s);
             }
         }
 

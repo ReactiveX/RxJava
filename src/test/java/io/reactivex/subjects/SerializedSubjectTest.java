@@ -23,8 +23,10 @@ import io.reactivex.Observable;
 import io.reactivex.TestHelper;
 import io.reactivex.disposables.*;
 import io.reactivex.exceptions.TestException;
+import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.plugins.RxJavaPlugins;
+import io.reactivex.subscribers.*;
 
 public class SerializedSubjectTest {
 
@@ -671,5 +673,19 @@ public class SerializedSubjectTest {
 
             ts.assertEmpty();
         }
+    }
+
+    @Test
+    public void nullOnNext() {
+
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+
+        final SerializedSubscriber<Integer> so = new SerializedSubscriber<Integer>(ts);
+
+        so.onSubscribe(new BooleanSubscription());
+
+        so.onNext(null);
+
+        ts.assertFailureAndMessage(NullPointerException.class, "onNext called with null. Null values are generally not allowed in 2.x operators and sources.");
     }
 }

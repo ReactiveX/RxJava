@@ -21,13 +21,13 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 
-import io.reactivex.annotations.Nullable;
 import org.junit.Test;
 import org.mockito.InOrder;
 
 import io.reactivex.*;
 import io.reactivex.Observable;
 import io.reactivex.Observer;
+import io.reactivex.annotations.Nullable;
 import io.reactivex.disposables.*;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.*;
@@ -718,5 +718,29 @@ public class ObservableObserveOnTest {
         .test()
         .awaitDone(5, TimeUnit.SECONDS)
         .assertFailure(TestException.class);
+    }
+
+    @Test
+    public void outputFusedOneSignal() {
+        final BehaviorSubject<Integer> bs = BehaviorSubject.createDefault(1);
+
+        bs.observeOn(ImmediateThinScheduler.INSTANCE)
+        .concatMap(new Function<Integer, ObservableSource<Integer>>() {
+            @Override
+            public ObservableSource<Integer> apply(Integer v)
+                    throws Exception {
+                return Observable.just(v + 1);
+            }
+        })
+        .subscribeWith(new TestObserver<Integer>() {
+            @Override
+            public void onNext(Integer t) {
+                super.onNext(t);
+                if (t == 2) {
+                    bs.onNext(2);
+                }
+            }
+        })
+        .assertValuesOnly(2, 3);
     }
 }
