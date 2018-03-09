@@ -368,11 +368,11 @@ public class ObservableNullTests {
         FutureTask<Object> f = new FutureTask<Object>(Functions.EMPTY_RUNNABLE, null);
         f.run();
 
-        TestObserver<Object> ts = new TestObserver<Object>();
-        Observable.fromFuture(f).subscribe(ts);
-        ts.assertNoValues();
-        ts.assertNotComplete();
-        ts.assertError(NullPointerException.class);
+        TestObserver<Object> to = new TestObserver<Object>();
+        Observable.fromFuture(f).subscribe(to);
+        to.assertNoValues();
+        to.assertNotComplete();
+        to.assertError(NullPointerException.class);
     }
 
     @Test(expected = NullPointerException.class)

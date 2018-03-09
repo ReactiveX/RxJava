@@ -204,25 +204,25 @@ public class FlowableToSortedListTest {
     @Ignore("Single doesn't do backpressure")
     public void testBackpressureHonored() {
         Single<List<Integer>> w = Flowable.just(1, 3, 2, 5, 4).toSortedList();
-        TestObserver<List<Integer>> ts = new TestObserver<List<Integer>>();
+        TestObserver<List<Integer>> to = new TestObserver<List<Integer>>();
 
-        w.subscribe(ts);
+        w.subscribe(to);
 
-        ts.assertNoValues();
-        ts.assertNoErrors();
-        ts.assertNotComplete();
-
-//        ts.request(1);
-
-        ts.assertValue(Arrays.asList(1, 2, 3, 4, 5));
-        ts.assertNoErrors();
-        ts.assertComplete();
+        to.assertNoValues();
+        to.assertNoErrors();
+        to.assertNotComplete();
 
 //        ts.request(1);
 
-        ts.assertValue(Arrays.asList(1, 2, 3, 4, 5));
-        ts.assertNoErrors();
-        ts.assertComplete();
+        to.assertValue(Arrays.asList(1, 2, 3, 4, 5));
+        to.assertNoErrors();
+        to.assertComplete();
+
+//        ts.request(1);
+
+        to.assertValue(Arrays.asList(1, 2, 3, 4, 5));
+        to.assertNoErrors();
+        to.assertComplete();
     }
 
     @Test(timeout = 2000)
@@ -238,8 +238,8 @@ public class FlowableToSortedListTest {
                 Single<List<Integer>> sorted = source.toSortedList();
 
                 final CyclicBarrier cb = new CyclicBarrier(2);
-                final TestObserver<List<Integer>> ts = new TestObserver<List<Integer>>();
-                sorted.subscribe(ts);
+                final TestObserver<List<Integer>> to = new TestObserver<List<Integer>>();
+                sorted.subscribe(to);
                 w.schedule(new Runnable() {
                     @Override
                     public void run() {
@@ -250,10 +250,10 @@ public class FlowableToSortedListTest {
                 source.onNext(1);
                 await(cb);
                 source.onComplete();
-                ts.awaitTerminalEvent(1, TimeUnit.SECONDS);
-                ts.assertTerminated();
-                ts.assertNoErrors();
-                ts.assertValue(Arrays.asList(1));
+                to.awaitTerminalEvent(1, TimeUnit.SECONDS);
+                to.assertTerminated();
+                to.assertNoErrors();
+                to.assertValue(Arrays.asList(1));
             }
         } finally {
             w.dispose();

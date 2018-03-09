@@ -27,7 +27,7 @@ import org.reactivestreams.Subscriber;
 import io.reactivex.TestHelper;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.Consumer;
-import io.reactivex.internal.fuseable.QueueSubscription;
+import io.reactivex.internal.fuseable.QueueFuseable;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.subscribers.*;
 
@@ -391,13 +391,13 @@ public class AsyncProcessorTest extends FlowableProcessorTest<Object> {
     public void fusionLive() {
         AsyncProcessor<Integer> ap = new AsyncProcessor<Integer>();
 
-        TestSubscriber<Integer> ts = SubscriberFusion.newTest(QueueSubscription.ANY);
+        TestSubscriber<Integer> ts = SubscriberFusion.newTest(QueueFuseable.ANY);
 
         ap.subscribe(ts);
 
         ts
         .assertOf(SubscriberFusion.<Integer>assertFuseable())
-        .assertOf(SubscriberFusion.<Integer>assertFusionMode(QueueSubscription.ASYNC));
+        .assertOf(SubscriberFusion.<Integer>assertFusionMode(QueueFuseable.ASYNC));
 
         ts.assertNoValues().assertNoErrors().assertNotComplete();
 
@@ -416,13 +416,13 @@ public class AsyncProcessorTest extends FlowableProcessorTest<Object> {
         ap.onNext(1);
         ap.onComplete();
 
-        TestSubscriber<Integer> ts = SubscriberFusion.newTest(QueueSubscription.ANY);
+        TestSubscriber<Integer> ts = SubscriberFusion.newTest(QueueFuseable.ANY);
 
         ap.subscribe(ts);
 
         ts
         .assertOf(SubscriberFusion.<Integer>assertFuseable())
-        .assertOf(SubscriberFusion.<Integer>assertFusionMode(QueueSubscription.ASYNC))
+        .assertOf(SubscriberFusion.<Integer>assertFusionMode(QueueFuseable.ASYNC))
         .assertResult(1);
     }
 

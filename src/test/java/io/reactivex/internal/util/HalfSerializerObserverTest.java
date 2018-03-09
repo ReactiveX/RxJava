@@ -207,28 +207,28 @@ public class HalfSerializerObserverTest {
             final AtomicInteger wip = new AtomicInteger();
             final AtomicThrowable error = new AtomicThrowable();
 
-            final TestObserver<Integer> ts = new TestObserver<Integer>();
-            ts.onSubscribe(Disposables.empty());
+            final TestObserver<Integer> to = new TestObserver<Integer>();
+            to.onSubscribe(Disposables.empty());
 
             Runnable r1 = new Runnable() {
                 @Override
                 public void run() {
-                    HalfSerializer.onNext(ts, 1, wip, error);
+                    HalfSerializer.onNext(to, 1, wip, error);
                 }
             };
 
             Runnable r2 = new Runnable() {
                 @Override
                 public void run() {
-                    HalfSerializer.onComplete(ts, wip, error);
+                    HalfSerializer.onComplete(to, wip, error);
                 }
             };
 
             TestHelper.race(r1, r2);
 
-            ts.assertComplete().assertNoErrors();
+            to.assertComplete().assertNoErrors();
 
-            assertTrue(ts.valueCount() <= 1);
+            assertTrue(to.valueCount() <= 1);
         }
     }
 
@@ -239,32 +239,32 @@ public class HalfSerializerObserverTest {
             final AtomicInteger wip = new AtomicInteger();
             final AtomicThrowable error = new AtomicThrowable();
 
-            final TestObserver<Integer> ts = new TestObserver<Integer>();
+            final TestObserver<Integer> to = new TestObserver<Integer>();
 
-            ts.onSubscribe(Disposables.empty());
+            to.onSubscribe(Disposables.empty());
 
             final TestException ex = new TestException();
 
             Runnable r1 = new Runnable() {
                 @Override
                 public void run() {
-                    HalfSerializer.onError(ts, ex, wip, error);
+                    HalfSerializer.onError(to, ex, wip, error);
                 }
             };
 
             Runnable r2 = new Runnable() {
                 @Override
                 public void run() {
-                    HalfSerializer.onComplete(ts, wip, error);
+                    HalfSerializer.onComplete(to, wip, error);
                 }
             };
 
             TestHelper.race(r1, r2);
 
-            if (ts.completions() != 0) {
-                ts.assertResult();
+            if (to.completions() != 0) {
+                to.assertResult();
             } else {
-                ts.assertFailure(TestException.class);
+                to.assertFailure(TestException.class);
             }
         }
     }

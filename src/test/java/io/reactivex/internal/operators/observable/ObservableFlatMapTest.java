@@ -338,17 +338,17 @@ public class ObservableFlatMapTest {
             }
         }, m);
 
-        TestObserver<Integer> ts = new TestObserver<Integer>();
+        TestObserver<Integer> to = new TestObserver<Integer>();
 
-        source.subscribe(ts);
+        source.subscribe(to);
 
-        ts.awaitTerminalEvent();
-        ts.assertNoErrors();
+        to.awaitTerminalEvent();
+        to.assertNoErrors();
         Set<Integer> expected = new HashSet<Integer>(Arrays.asList(
                 10, 11, 20, 21, 30, 31, 40, 41, 50, 51, 60, 61, 70, 71, 80, 81, 90, 91, 100, 101
         ));
-        Assert.assertEquals(expected.size(), ts.valueCount());
-        Assert.assertTrue(expected.containsAll(ts.values()));
+        Assert.assertEquals(expected.size(), to.valueCount());
+        Assert.assertTrue(expected.containsAll(to.values()));
     }
     @Test
     public void testFlatMapSelectorMaxConcurrent() {
@@ -368,19 +368,19 @@ public class ObservableFlatMapTest {
             }
         }, m);
 
-        TestObserver<Integer> ts = new TestObserver<Integer>();
+        TestObserver<Integer> to = new TestObserver<Integer>();
 
-        source.subscribe(ts);
+        source.subscribe(to);
 
-        ts.awaitTerminalEvent();
-        ts.assertNoErrors();
+        to.awaitTerminalEvent();
+        to.assertNoErrors();
         Set<Integer> expected = new HashSet<Integer>(Arrays.asList(
                 1010, 1011, 2020, 2021, 3030, 3031, 4040, 4041, 5050, 5051,
                 6060, 6061, 7070, 7071, 8080, 8081, 9090, 9091, 10100, 10101
         ));
-        Assert.assertEquals(expected.size(), ts.valueCount());
-        System.out.println("--> testFlatMapSelectorMaxConcurrent: " + ts.values());
-        Assert.assertTrue(expected.containsAll(ts.values()));
+        Assert.assertEquals(expected.size(), to.valueCount());
+        System.out.println("--> testFlatMapSelectorMaxConcurrent: " + to.values());
+        Assert.assertTrue(expected.containsAll(to.values()));
     }
 
     @Test
@@ -414,14 +414,14 @@ public class ObservableFlatMapTest {
         Observable<Integer> source = Observable.fromIterable(Arrays.asList(10, 20, 30));
 
         Observer<Object> o = TestHelper.mockObserver();
-        TestObserver<Object> ts = new TestObserver<Object>(o);
+        TestObserver<Object> to = new TestObserver<Object>(o);
 
         Function<Throwable, Observable<Integer>> just = just(onError);
-        source.flatMap(just(onNext), just, just0(onComplete), m).subscribe(ts);
+        source.flatMap(just(onNext), just, just0(onComplete), m).subscribe(to);
 
-        ts.awaitTerminalEvent(1, TimeUnit.SECONDS);
-        ts.assertNoErrors();
-        ts.assertTerminated();
+        to.awaitTerminalEvent(1, TimeUnit.SECONDS);
+        to.assertNoErrors();
+        to.assertTerminated();
 
         verify(o, times(3)).onNext(1);
         verify(o, times(3)).onNext(2);
@@ -440,7 +440,7 @@ public class ObservableFlatMapTest {
             if (i % 10 == 0) {
                 System.out.println("flatMapRangeAsyncLoop > " + i);
             }
-            TestObserver<Integer> ts = new TestObserver<Integer>();
+            TestObserver<Integer> to = new TestObserver<Integer>();
             Observable.range(0, 1000)
             .flatMap(new Function<Integer, Observable<Integer>>() {
                 @Override
@@ -449,15 +449,15 @@ public class ObservableFlatMapTest {
                 }
             })
             .observeOn(Schedulers.computation())
-            .subscribe(ts);
+            .subscribe(to);
 
-            ts.awaitTerminalEvent(2500, TimeUnit.MILLISECONDS);
-            if (ts.completions() == 0) {
-                System.out.println(ts.valueCount());
+            to.awaitTerminalEvent(2500, TimeUnit.MILLISECONDS);
+            if (to.completions() == 0) {
+                System.out.println(to.valueCount());
             }
-            ts.assertTerminated();
-            ts.assertNoErrors();
-            List<Integer> list = ts.values();
+            to.assertTerminated();
+            to.assertNoErrors();
+            List<Integer> list = to.values();
             assertEquals(1000, list.size());
             boolean f = false;
             for (int j = 0; j < list.size(); j++) {
@@ -477,7 +477,7 @@ public class ObservableFlatMapTest {
             if (i % 10 == 0) {
                 System.out.println("flatMapRangeAsyncLoop > " + i);
             }
-            TestObserver<Integer> ts = new TestObserver<Integer>();
+            TestObserver<Integer> to = new TestObserver<Integer>();
             Observable.range(0, 1000)
             .flatMap(new Function<Integer, Observable<Integer>>() {
                 final Random rnd = new Random();
@@ -491,15 +491,15 @@ public class ObservableFlatMapTest {
                 }
             })
             .observeOn(Schedulers.computation())
-            .subscribe(ts);
+            .subscribe(to);
 
-            ts.awaitTerminalEvent(2500, TimeUnit.MILLISECONDS);
-            if (ts.completions() == 0) {
-                System.out.println(ts.valueCount());
+            to.awaitTerminalEvent(2500, TimeUnit.MILLISECONDS);
+            if (to.completions() == 0) {
+                System.out.println(to.valueCount());
             }
-            ts.assertTerminated();
-            ts.assertNoErrors();
-            List<Integer> list = ts.values();
+            to.assertTerminated();
+            to.assertNoErrors();
+            List<Integer> list = to.values();
             if (list.size() < 1000) {
                 Set<Integer> set = new HashSet<Integer>(list);
                 for (int j = 0; j < 1000; j++) {
@@ -515,37 +515,37 @@ public class ObservableFlatMapTest {
     @Test
     public void flatMapIntPassthruAsync() {
         for (int i = 0;i < 1000; i++) {
-            TestObserver<Integer> ts = new TestObserver<Integer>();
+            TestObserver<Integer> to = new TestObserver<Integer>();
 
             Observable.range(1, 1000).flatMap(new Function<Integer, Observable<Integer>>() {
                 @Override
                 public Observable<Integer> apply(Integer t) {
                     return Observable.just(1).subscribeOn(Schedulers.computation());
                 }
-            }).subscribe(ts);
+            }).subscribe(to);
 
-            ts.awaitTerminalEvent(5, TimeUnit.SECONDS);
-            ts.assertNoErrors();
-            ts.assertComplete();
-            ts.assertValueCount(1000);
+            to.awaitTerminalEvent(5, TimeUnit.SECONDS);
+            to.assertNoErrors();
+            to.assertComplete();
+            to.assertValueCount(1000);
         }
     }
     @Test
     public void flatMapTwoNestedSync() {
         for (final int n : new int[] { 1, 1000, 1000000 }) {
-            TestObserver<Integer> ts = new TestObserver<Integer>();
+            TestObserver<Integer> to = new TestObserver<Integer>();
 
             Observable.just(1, 2).flatMap(new Function<Integer, Observable<Integer>>() {
                 @Override
                 public Observable<Integer> apply(Integer t) {
                     return Observable.range(1, n);
                 }
-            }).subscribe(ts);
+            }).subscribe(to);
 
             System.out.println("flatMapTwoNestedSync >> @ " + n);
-            ts.assertNoErrors();
-            ts.assertComplete();
-            ts.assertValueCount(n * 2);
+            to.assertNoErrors();
+            to.assertComplete();
+            to.assertValueCount(n * 2);
         }
     }
 
@@ -762,7 +762,7 @@ public class ObservableFlatMapTest {
     @Test
     public void noCrossBoundaryFusion() {
         for (int i = 0; i < 500; i++) {
-            TestObserver<Object> ts = Observable.merge(
+            TestObserver<Object> to = Observable.merge(
                     Observable.just(1).observeOn(Schedulers.single()).map(new Function<Integer, Object>() {
                         @Override
                         public Object apply(Integer v) throws Exception {
@@ -780,7 +780,7 @@ public class ObservableFlatMapTest {
             .awaitDone(5, TimeUnit.SECONDS)
             .assertValueCount(2);
 
-            List<Object> list = ts.values();
+            List<Object> list = to.values();
 
             assertTrue(list.toString(), list.contains("RxSi"));
             assertTrue(list.toString(), list.contains("RxCo"));
@@ -793,20 +793,20 @@ public class ObservableFlatMapTest {
             List<Throwable> errors = TestHelper.trackPluginErrors();
             try {
 
-                final PublishSubject<Observable<Integer>> pp = PublishSubject.create();
+                final PublishSubject<Observable<Integer>> ps = PublishSubject.create();
 
-                final TestObserver<Integer> ts = pp.flatMap(Functions.<Observable<Integer>>identity()).test();
+                final TestObserver<Integer> to = ps.flatMap(Functions.<Observable<Integer>>identity()).test();
 
                 Runnable r1 = new Runnable() {
                     @Override
                     public void run() {
-                        ts.cancel();
+                        to.cancel();
                     }
                 };
                 Runnable r2 = new Runnable() {
                     @Override
                     public void run() {
-                        pp.onComplete();
+                        ps.onComplete();
                     }
                 };
 
@@ -826,20 +826,20 @@ public class ObservableFlatMapTest {
                 List<Throwable> errors = TestHelper.trackPluginErrors();
                 try {
 
-                    final PublishSubject<Observable<Integer>> pp = PublishSubject.create();
+                    final PublishSubject<Observable<Integer>> ps = PublishSubject.create();
 
-                    final TestObserver<Integer> ts = pp.flatMap(Functions.<Observable<Integer>>identity()).test();
+                    final TestObserver<Integer> to = ps.flatMap(Functions.<Observable<Integer>>identity()).test();
 
                     final PublishSubject<Integer> just = PublishSubject.create();
                     final PublishSubject<Integer> just2 = PublishSubject.create();
-                    pp.onNext(just);
-                    pp.onNext(just2);
+                    ps.onNext(just);
+                    ps.onNext(just2);
 
                     Runnable r1 = new Runnable() {
                         @Override
                         public void run() {
                             just2.onNext(1);
-                            ts.cancel();
+                            to.cancel();
                         }
                     };
                     Runnable r2 = new Runnable() {

@@ -35,13 +35,13 @@ public class SingleSubscribeOnTest {
         try {
             TestScheduler scheduler = new TestScheduler();
 
-            TestObserver<Integer> ts = Single.just(1)
+            TestObserver<Integer> to = Single.just(1)
             .subscribeOn(scheduler)
             .test();
 
             scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
 
-            ts.assertResult(1);
+            to.assertResult(1);
 
             assertTrue(list.toString(), list.isEmpty());
         } finally {

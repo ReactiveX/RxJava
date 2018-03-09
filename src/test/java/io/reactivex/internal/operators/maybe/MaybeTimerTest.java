@@ -38,7 +38,7 @@ public class MaybeTimerTest {
         try {
             for (Scheduler s : new Scheduler[] { Schedulers.single(), Schedulers.computation(), Schedulers.newThread(), Schedulers.io(), Schedulers.from(exec) }) {
                 final AtomicBoolean interrupted = new AtomicBoolean();
-                TestObserver<Long> ts = Maybe.timer(1, TimeUnit.MILLISECONDS, s)
+                TestObserver<Long> to = Maybe.timer(1, TimeUnit.MILLISECONDS, s)
                 .map(new Function<Long, Long>() {
                     @Override
                     public Long apply(Long v) throws Exception {
@@ -54,7 +54,7 @@ public class MaybeTimerTest {
 
                 Thread.sleep(500);
 
-                ts.cancel();
+                to.cancel();
 
                 Thread.sleep(500);
 

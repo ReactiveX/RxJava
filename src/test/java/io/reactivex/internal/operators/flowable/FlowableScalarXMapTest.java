@@ -178,9 +178,9 @@ public class FlowableScalarXMapTest {
 
     @Test
     public void scalarDisposableStateCheck() {
-        TestSubscriber<Integer> to = new TestSubscriber<Integer>();
-        ScalarSubscription<Integer> sd = new ScalarSubscription<Integer>(to, 1);
-        to.onSubscribe(sd);
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        ScalarSubscription<Integer> sd = new ScalarSubscription<Integer>(ts, 1);
+        ts.onSubscribe(sd);
 
         assertFalse(sd.isCancelled());
 
@@ -192,7 +192,7 @@ public class FlowableScalarXMapTest {
 
         assertTrue(sd.isEmpty());
 
-        to.assertResult(1);
+        ts.assertResult(1);
 
         try {
             sd.offer(1);
@@ -212,9 +212,9 @@ public class FlowableScalarXMapTest {
     @Test
     public void scalarDisposableRunDisposeRace() {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
-            TestSubscriber<Integer> to = new TestSubscriber<Integer>();
-            final ScalarSubscription<Integer> sd = new ScalarSubscription<Integer>(to, 1);
-            to.onSubscribe(sd);
+            TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+            final ScalarSubscription<Integer> sd = new ScalarSubscription<Integer>(ts, 1);
+            ts.onSubscribe(sd);
 
             Runnable r1 = new Runnable() {
                 @Override

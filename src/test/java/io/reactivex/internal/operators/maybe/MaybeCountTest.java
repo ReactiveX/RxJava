@@ -45,11 +45,11 @@ public class MaybeCountTest {
     public void dispose() {
         PublishProcessor<Integer> pp = PublishProcessor.create();
 
-        TestObserver<Long> ts = pp.singleElement().count().test();
+        TestObserver<Long> to = pp.singleElement().count().test();
 
         assertTrue(pp.hasSubscribers());
 
-        ts.cancel();
+        to.cancel();
 
         assertFalse(pp.hasSubscribers());
     }

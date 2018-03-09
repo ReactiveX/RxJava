@@ -487,15 +487,15 @@ public class ObservableMergeDelayErrorTest {
 
     @Test
     public void testErrorInParentObservable() {
-        TestObserver<Integer> ts = new TestObserver<Integer>();
+        TestObserver<Integer> to = new TestObserver<Integer>();
         Observable.mergeDelayError(
                 Observable.just(Observable.just(1), Observable.just(2))
                         .startWith(Observable.<Integer> error(new RuntimeException()))
-                ).subscribe(ts);
-        ts.awaitTerminalEvent();
-        ts.assertTerminated();
-        ts.assertValues(1, 2);
-        assertEquals(1, ts.errorCount());
+                ).subscribe(to);
+        to.awaitTerminalEvent();
+        to.assertTerminated();
+        to.assertValues(1, 2);
+        assertEquals(1, to.errorCount());
 
     }
 
@@ -516,12 +516,12 @@ public class ObservableMergeDelayErrorTest {
 
             Observer<String> stringObserver = TestHelper.mockObserver();
 
-            TestObserver<String> ts = new TestObserver<String>(stringObserver);
+            TestObserver<String> to = new TestObserver<String>(stringObserver);
             Observable<String> m = Observable.mergeDelayError(parentObservable);
-            m.subscribe(ts);
+            m.subscribe(to);
             System.out.println("testErrorInParentObservableDelayed | " + i);
-            ts.awaitTerminalEvent(2000, TimeUnit.MILLISECONDS);
-            ts.assertTerminated();
+            to.awaitTerminalEvent(2000, TimeUnit.MILLISECONDS);
+            to.assertTerminated();
 
             verify(stringObserver, times(2)).onNext("hello");
             verify(stringObserver, times(1)).onError(any(NullPointerException.class));

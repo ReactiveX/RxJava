@@ -18,7 +18,7 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 
 import io.reactivex.TestHelper;
-import io.reactivex.internal.fuseable.QueueSubscription;
+import io.reactivex.internal.fuseable.QueueFuseable;
 import io.reactivex.subscribers.TestSubscriber;
 
 public class DeferredScalarSubscriptionTest {
@@ -27,7 +27,7 @@ public class DeferredScalarSubscriptionTest {
     public void queueSubscriptionSyncRejected() {
         DeferredScalarSubscription<Integer> ds = new DeferredScalarSubscription<Integer>(new TestSubscriber<Integer>());
 
-        assertEquals(QueueSubscription.NONE, ds.requestFusion(QueueSubscription.SYNC));
+        assertEquals(QueueFuseable.NONE, ds.requestFusion(QueueFuseable.SYNC));
     }
 
     @Test

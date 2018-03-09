@@ -504,7 +504,7 @@ public class FlowableDoOnEachTest {
 
     @Test
     public void fused() {
-        TestSubscriber<Integer> ts = SubscriberFusion.newTest(QueueSubscription.ANY);
+        TestSubscriber<Integer> ts = SubscriberFusion.newTest(QueueFuseable.ANY);
 
         final int[] call = { 0, 0 };
 
@@ -524,7 +524,7 @@ public class FlowableDoOnEachTest {
         .subscribe(ts);
 
         ts.assertOf(SubscriberFusion.<Integer>assertFuseable())
-        .assertOf(SubscriberFusion.<Integer>assertFusionMode(QueueSubscription.SYNC))
+        .assertOf(SubscriberFusion.<Integer>assertFusionMode(QueueFuseable.SYNC))
         .assertResult(1, 2, 3, 4, 5);
 
         assertEquals(5, call[0]);
@@ -533,7 +533,7 @@ public class FlowableDoOnEachTest {
 
     @Test
     public void fusedOnErrorCrash() {
-        TestSubscriber<Integer> ts = SubscriberFusion.newTest(QueueSubscription.ANY);
+        TestSubscriber<Integer> ts = SubscriberFusion.newTest(QueueFuseable.ANY);
 
         final int[] call = { 0 };
 
@@ -553,7 +553,7 @@ public class FlowableDoOnEachTest {
         .subscribe(ts);
 
         ts.assertOf(SubscriberFusion.<Integer>assertFuseable())
-        .assertOf(SubscriberFusion.<Integer>assertFusionMode(QueueSubscription.SYNC))
+        .assertOf(SubscriberFusion.<Integer>assertFusionMode(QueueFuseable.SYNC))
         .assertFailure(TestException.class);
 
         assertEquals(0, call[0]);
@@ -561,7 +561,7 @@ public class FlowableDoOnEachTest {
 
     @Test
     public void fusedConditional() {
-        TestSubscriber<Integer> ts = SubscriberFusion.newTest(QueueSubscription.ANY);
+        TestSubscriber<Integer> ts = SubscriberFusion.newTest(QueueFuseable.ANY);
 
         final int[] call = { 0, 0 };
 
@@ -582,7 +582,7 @@ public class FlowableDoOnEachTest {
         .subscribe(ts);
 
         ts.assertOf(SubscriberFusion.<Integer>assertFuseable())
-        .assertOf(SubscriberFusion.<Integer>assertFusionMode(QueueSubscription.SYNC))
+        .assertOf(SubscriberFusion.<Integer>assertFusionMode(QueueFuseable.SYNC))
         .assertResult(1, 2, 3, 4, 5);
 
         assertEquals(5, call[0]);
@@ -591,7 +591,7 @@ public class FlowableDoOnEachTest {
 
     @Test
     public void fusedOnErrorCrashConditional() {
-        TestSubscriber<Integer> ts = SubscriberFusion.newTest(QueueSubscription.ANY);
+        TestSubscriber<Integer> ts = SubscriberFusion.newTest(QueueFuseable.ANY);
 
         final int[] call = { 0 };
 
@@ -612,7 +612,7 @@ public class FlowableDoOnEachTest {
         .subscribe(ts);
 
         ts.assertOf(SubscriberFusion.<Integer>assertFuseable())
-        .assertOf(SubscriberFusion.<Integer>assertFusionMode(QueueSubscription.SYNC))
+        .assertOf(SubscriberFusion.<Integer>assertFusionMode(QueueFuseable.SYNC))
         .assertFailure(TestException.class);
 
         assertEquals(0, call[0]);
@@ -620,7 +620,7 @@ public class FlowableDoOnEachTest {
 
     @Test
     public void fusedAsync() {
-        TestSubscriber<Integer> ts = SubscriberFusion.newTest(QueueSubscription.ANY);
+        TestSubscriber<Integer> ts = SubscriberFusion.newTest(QueueFuseable.ANY);
 
         final int[] call = { 0, 0 };
 
@@ -644,7 +644,7 @@ public class FlowableDoOnEachTest {
         TestHelper.emit(up, 1, 2, 3, 4, 5);
 
         ts.assertOf(SubscriberFusion.<Integer>assertFuseable())
-        .assertOf(SubscriberFusion.<Integer>assertFusionMode(QueueSubscription.ASYNC))
+        .assertOf(SubscriberFusion.<Integer>assertFusionMode(QueueFuseable.ASYNC))
         .assertResult(1, 2, 3, 4, 5);
 
         assertEquals(5, call[0]);
@@ -653,7 +653,7 @@ public class FlowableDoOnEachTest {
 
     @Test
     public void fusedAsyncConditional() {
-        TestSubscriber<Integer> ts = SubscriberFusion.newTest(QueueSubscription.ANY);
+        TestSubscriber<Integer> ts = SubscriberFusion.newTest(QueueFuseable.ANY);
 
         final int[] call = { 0, 0 };
 
@@ -678,7 +678,7 @@ public class FlowableDoOnEachTest {
         TestHelper.emit(up, 1, 2, 3, 4, 5);
 
         ts.assertOf(SubscriberFusion.<Integer>assertFuseable())
-        .assertOf(SubscriberFusion.<Integer>assertFusionMode(QueueSubscription.ASYNC))
+        .assertOf(SubscriberFusion.<Integer>assertFusionMode(QueueFuseable.ASYNC))
         .assertResult(1, 2, 3, 4, 5);
 
         assertEquals(5, call[0]);
@@ -687,7 +687,7 @@ public class FlowableDoOnEachTest {
 
     @Test
     public void fusedAsyncConditional2() {
-        TestSubscriber<Integer> ts = SubscriberFusion.newTest(QueueSubscription.ANY);
+        TestSubscriber<Integer> ts = SubscriberFusion.newTest(QueueFuseable.ANY);
 
         final int[] call = { 0, 0 };
 
@@ -712,7 +712,7 @@ public class FlowableDoOnEachTest {
         TestHelper.emit(up, 1, 2, 3, 4, 5);
 
         ts.assertOf(SubscriberFusion.<Integer>assertFuseable())
-        .assertOf(SubscriberFusion.<Integer>assertFusionMode(QueueSubscription.NONE))
+        .assertOf(SubscriberFusion.<Integer>assertFusionMode(QueueFuseable.NONE))
         .assertResult(1, 2, 3, 4, 5);
 
         assertEquals(5, call[0]);
@@ -736,7 +736,7 @@ public class FlowableDoOnEachTest {
 
     @Test
     public void doOnNextDoOnErrorFused() {
-        ConnectableFlowable<Integer> co = Flowable.just(1)
+        ConnectableFlowable<Integer> cf = Flowable.just(1)
         .doOnNext(new Consumer<Integer>() {
             @Override
             public void accept(Integer v) throws Exception {
@@ -751,8 +751,8 @@ public class FlowableDoOnEachTest {
         })
         .publish();
 
-        TestSubscriber<Integer> ts = co.test();
-        co.connect();
+        TestSubscriber<Integer> ts = cf.test();
+        cf.connect();
 
         ts.assertFailure(CompositeException.class);
 
@@ -762,7 +762,7 @@ public class FlowableDoOnEachTest {
 
     @Test
     public void doOnNextDoOnErrorCombinedFused() {
-        ConnectableFlowable<Integer> co = Flowable.just(1)
+        ConnectableFlowable<Integer> cf = Flowable.just(1)
                 .compose(new FlowableTransformer<Integer, Integer>() {
                     @Override
                     public Publisher<Integer> apply(Flowable<Integer> v) {
@@ -787,8 +787,8 @@ public class FlowableDoOnEachTest {
                 })
         .publish();
 
-        TestSubscriber<Integer> ts = co.test();
-        co.connect();
+        TestSubscriber<Integer> ts = cf.test();
+        cf.connect();
 
         ts.assertFailure(CompositeException.class);
 
@@ -798,7 +798,7 @@ public class FlowableDoOnEachTest {
 
     @Test
     public void doOnNextDoOnErrorFused2() {
-        ConnectableFlowable<Integer> co = Flowable.just(1)
+        ConnectableFlowable<Integer> cf = Flowable.just(1)
         .doOnNext(new Consumer<Integer>() {
             @Override
             public void accept(Integer v) throws Exception {
@@ -819,8 +819,8 @@ public class FlowableDoOnEachTest {
         })
         .publish();
 
-        TestSubscriber<Integer> ts = co.test();
-        co.connect();
+        TestSubscriber<Integer> ts = cf.test();
+        cf.connect();
 
         ts.assertFailure(CompositeException.class);
 
@@ -831,7 +831,7 @@ public class FlowableDoOnEachTest {
 
     @Test
     public void doOnNextDoOnErrorFusedConditional() {
-        ConnectableFlowable<Integer> co = Flowable.just(1)
+        ConnectableFlowable<Integer> cf = Flowable.just(1)
         .doOnNext(new Consumer<Integer>() {
             @Override
             public void accept(Integer v) throws Exception {
@@ -847,8 +847,8 @@ public class FlowableDoOnEachTest {
         .filter(Functions.alwaysTrue())
         .publish();
 
-        TestSubscriber<Integer> ts = co.test();
-        co.connect();
+        TestSubscriber<Integer> ts = cf.test();
+        cf.connect();
 
         ts.assertFailure(CompositeException.class);
 
@@ -858,7 +858,7 @@ public class FlowableDoOnEachTest {
 
     @Test
     public void doOnNextDoOnErrorFusedConditional2() {
-        ConnectableFlowable<Integer> co = Flowable.just(1)
+        ConnectableFlowable<Integer> cf = Flowable.just(1)
         .doOnNext(new Consumer<Integer>() {
             @Override
             public void accept(Integer v) throws Exception {
@@ -880,8 +880,8 @@ public class FlowableDoOnEachTest {
         .filter(Functions.alwaysTrue())
         .publish();
 
-        TestSubscriber<Integer> ts = co.test();
-        co.connect();
+        TestSubscriber<Integer> ts = cf.test();
+        cf.connect();
 
         ts.assertFailure(CompositeException.class);
 
@@ -892,7 +892,7 @@ public class FlowableDoOnEachTest {
 
     @Test
     public void doOnNextDoOnErrorCombinedFusedConditional() {
-        ConnectableFlowable<Integer> co = Flowable.just(1)
+        ConnectableFlowable<Integer> cf = Flowable.just(1)
                 .compose(new FlowableTransformer<Integer, Integer>() {
                     @Override
                     public Publisher<Integer> apply(Flowable<Integer> v) {
@@ -918,8 +918,8 @@ public class FlowableDoOnEachTest {
         .filter(Functions.alwaysTrue())
         .publish();
 
-        TestSubscriber<Integer> ts = co.test();
-        co.connect();
+        TestSubscriber<Integer> ts = cf.test();
+        cf.connect();
 
         ts.assertFailure(CompositeException.class);
 

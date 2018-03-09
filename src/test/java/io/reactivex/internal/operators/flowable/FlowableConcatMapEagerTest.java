@@ -859,46 +859,46 @@ public class FlowableConcatMapEagerTest {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             List<Throwable> errors = TestHelper.trackPluginErrors();
             try {
-                final PublishProcessor<Integer> ps1 = PublishProcessor.create();
-                final PublishProcessor<Integer> ps2 = PublishProcessor.create();
+                final PublishProcessor<Integer> pp1 = PublishProcessor.create();
+                final PublishProcessor<Integer> pp2 = PublishProcessor.create();
 
-                TestSubscriber<Integer> to = ps1.concatMapEager(new Function<Integer, Flowable<Integer>>() {
+                TestSubscriber<Integer> ts = pp1.concatMapEager(new Function<Integer, Flowable<Integer>>() {
                     @Override
                     public Flowable<Integer> apply(Integer v) throws Exception {
-                        return ps2;
+                        return pp2;
                     }
                 }).test();
 
                 final TestException ex1 = new TestException();
                 final TestException ex2 = new TestException();
 
-                ps1.onNext(1);
+                pp1.onNext(1);
 
                 Runnable r1 = new Runnable() {
                     @Override
                     public void run() {
-                        ps1.onError(ex1);
+                        pp1.onError(ex1);
                     }
                 };
                 Runnable r2 = new Runnable() {
                     @Override
                     public void run() {
-                        ps2.onError(ex2);
+                        pp2.onError(ex2);
                     }
                 };
 
                 TestHelper.race(r1, r2);
 
-                to.assertSubscribed().assertNoValues().assertNotComplete();
+                ts.assertSubscribed().assertNoValues().assertNotComplete();
 
-                Throwable ex = to.errors().get(0);
+                Throwable ex = ts.errors().get(0);
 
                 if (ex instanceof CompositeException) {
-                    List<Throwable> es = TestHelper.errorList(to);
+                    List<Throwable> es = TestHelper.errorList(ts);
                     TestHelper.assertError(es, 0, TestException.class);
                     TestHelper.assertError(es, 1, TestException.class);
                 } else {
-                    to.assertError(TestException.class);
+                    ts.assertError(TestException.class);
                     if (!errors.isEmpty()) {
                         TestHelper.assertUndeliverable(errors, 0, TestException.class);
                     }
@@ -943,7 +943,7 @@ public class FlowableConcatMapEagerTest {
         final UnicastProcessor<Integer> us = UnicastProcessor.create();
         us.onNext(1);
 
-        TestSubscriber<Integer> to = new TestSubscriber<Integer>() {
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>() {
             @Override
             public void onNext(Integer t) {
                 super.onNext(t);
@@ -958,18 +958,18 @@ public class FlowableConcatMapEagerTest {
                 return us;
             }
         }, 1, 128)
-        .subscribe(to);
+        .subscribe(ts);
 
-        to
+        ts
         .assertFailure(TestException.class, 1);
     }
 
     @Test
     public void nextCancelRace() {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
-            final PublishProcessor<Integer> ps1 = PublishProcessor.create();
+            final PublishProcessor<Integer> pp1 = PublishProcessor.create();
 
-            final TestSubscriber<Integer> to = ps1.concatMapEager(new Function<Integer, Flowable<Integer>>() {
+            final TestSubscriber<Integer> ts = pp1.concatMapEager(new Function<Integer, Flowable<Integer>>() {
                 @Override
                 public Flowable<Integer> apply(Integer v) throws Exception {
                     return Flowable.never();
@@ -979,37 +979,37 @@ public class FlowableConcatMapEagerTest {
             Runnable r1 = new Runnable() {
                 @Override
                 public void run() {
-                    ps1.onNext(1);
+                    pp1.onNext(1);
                 }
             };
             Runnable r2 = new Runnable() {
                 @Override
                 public void run() {
-                    to.cancel();
+                    ts.cancel();
                 }
             };
 
             TestHelper.race(r1, r2);
 
-            to.assertEmpty();
+            ts.assertEmpty();
         }
     }
 
     @Test
     public void mapperCancels() {
-        final TestSubscriber<Integer> to = new TestSubscriber<Integer>();
+        final TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
 
         Flowable.just(1).hide()
         .concatMapEager(new Function<Integer, Flowable<Integer>>() {
             @Override
             public Flowable<Integer> apply(Integer v) throws Exception {
-                to.cancel();
+                ts.cancel();
                 return Flowable.never();
             }
         }, 1, 128)
-        .subscribe(to);
+        .subscribe(ts);
 
-        to.assertEmpty();
+        ts.assertEmpty();
     }
 
     @Test

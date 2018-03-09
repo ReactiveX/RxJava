@@ -18,8 +18,8 @@ import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 import io.reactivex.internal.disposables.DisposableHelper;
-import io.reactivex.internal.fuseable.QueueDisposable;
-import io.reactivex.internal.util.*;
+import io.reactivex.internal.fuseable.*;
+import io.reactivex.internal.util.ExceptionHelper;
 
 /**
  * An Observer that records events and allows making assertions about them.
@@ -309,9 +309,9 @@ implements Observer<T>, Disposable, MaybeObserver<T>, SingleObserver<T>, Complet
 
     static String fusionModeToString(int mode) {
         switch (mode) {
-        case QueueDisposable.NONE : return "NONE";
-        case QueueDisposable.SYNC : return "SYNC";
-        case QueueDisposable.ASYNC : return "ASYNC";
+        case QueueFuseable.NONE : return "NONE";
+        case QueueFuseable.SYNC : return "SYNC";
+        case QueueFuseable.ASYNC : return "ASYNC";
         default: return "Unknown(" + mode + ")";
         }
     }

@@ -181,7 +181,7 @@ public class ObservableWindowWithTimeTest {
 
     @Test
     public void testTakeFlatMapCompletes() {
-        TestObserver<Integer> ts = new TestObserver<Integer>();
+        TestObserver<Integer> to = new TestObserver<Integer>();
 
         final AtomicInteger wip = new AtomicInteger();
 
@@ -215,11 +215,11 @@ public class ObservableWindowWithTimeTest {
                 System.out.println(pv);
             }
         })
-        .subscribe(ts);
+        .subscribe(to);
 
-        ts.awaitTerminalEvent(5, TimeUnit.SECONDS);
-        ts.assertComplete();
-        Assert.assertTrue(ts.valueCount() != 0);
+        to.awaitTerminalEvent(5, TimeUnit.SECONDS);
+        to.assertComplete();
+        Assert.assertTrue(to.valueCount() != 0);
     }
 
     @Test
@@ -306,107 +306,107 @@ public class ObservableWindowWithTimeTest {
     public void timeskipSkipping() {
         TestScheduler scheduler = new TestScheduler();
 
-        PublishSubject<Integer> pp = PublishSubject.create();
+        PublishSubject<Integer> ps = PublishSubject.create();
 
-        TestObserver<Integer> ts = pp.window(1, 2, TimeUnit.SECONDS, scheduler)
+        TestObserver<Integer> to = ps.window(1, 2, TimeUnit.SECONDS, scheduler)
         .flatMap(Functions.<Observable<Integer>>identity())
         .test();
 
-        pp.onNext(1);
-        pp.onNext(2);
+        ps.onNext(1);
+        ps.onNext(2);
 
         scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
 
-        pp.onNext(3);
-        pp.onNext(4);
+        ps.onNext(3);
+        ps.onNext(4);
 
         scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
 
-        pp.onNext(5);
-        pp.onNext(6);
+        ps.onNext(5);
+        ps.onNext(6);
 
         scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
 
-        pp.onNext(7);
-        pp.onComplete();
+        ps.onNext(7);
+        ps.onComplete();
 
-        ts.assertResult(1, 2, 5, 6);
+        to.assertResult(1, 2, 5, 6);
     }
 
     @Test
     public void timeskipOverlapping() {
         TestScheduler scheduler = new TestScheduler();
 
-        PublishSubject<Integer> pp = PublishSubject.create();
+        PublishSubject<Integer> ps = PublishSubject.create();
 
-        TestObserver<Integer> ts = pp.window(2, 1, TimeUnit.SECONDS, scheduler)
+        TestObserver<Integer> to = ps.window(2, 1, TimeUnit.SECONDS, scheduler)
         .flatMap(Functions.<Observable<Integer>>identity())
         .test();
 
-        pp.onNext(1);
-        pp.onNext(2);
+        ps.onNext(1);
+        ps.onNext(2);
 
         scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
 
-        pp.onNext(3);
-        pp.onNext(4);
+        ps.onNext(3);
+        ps.onNext(4);
 
         scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
 
-        pp.onNext(5);
-        pp.onNext(6);
+        ps.onNext(5);
+        ps.onNext(6);
 
         scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
 
-        pp.onNext(7);
-        pp.onComplete();
+        ps.onNext(7);
+        ps.onComplete();
 
-        ts.assertResult(1, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7);
+        to.assertResult(1, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7);
     }
 
     @Test
     public void exactOnError() {
         TestScheduler scheduler = new TestScheduler();
 
-        PublishSubject<Integer> pp = PublishSubject.create();
+        PublishSubject<Integer> ps = PublishSubject.create();
 
-        TestObserver<Integer> ts = pp.window(1, 1, TimeUnit.SECONDS, scheduler)
+        TestObserver<Integer> to = ps.window(1, 1, TimeUnit.SECONDS, scheduler)
         .flatMap(Functions.<Observable<Integer>>identity())
         .test();
 
-        pp.onError(new TestException());
+        ps.onError(new TestException());
 
-        ts.assertFailure(TestException.class);
+        to.assertFailure(TestException.class);
     }
 
     @Test
     public void overlappingOnError() {
         TestScheduler scheduler = new TestScheduler();
 
-        PublishSubject<Integer> pp = PublishSubject.create();
+        PublishSubject<Integer> ps = PublishSubject.create();
 
-        TestObserver<Integer> ts = pp.window(2, 1, TimeUnit.SECONDS, scheduler)
+        TestObserver<Integer> to = ps.window(2, 1, TimeUnit.SECONDS, scheduler)
         .flatMap(Functions.<Observable<Integer>>identity())
         .test();
 
-        pp.onError(new TestException());
+        ps.onError(new TestException());
 
-        ts.assertFailure(TestException.class);
+        to.assertFailure(TestException.class);
     }
 
     @Test
     public void skipOnError() {
         TestScheduler scheduler = new TestScheduler();
 
-        PublishSubject<Integer> pp = PublishSubject.create();
+        PublishSubject<Integer> ps = PublishSubject.create();
 
-        TestObserver<Integer> ts = pp.window(1, 2, TimeUnit.SECONDS, scheduler)
+        TestObserver<Integer> to = ps.window(1, 2, TimeUnit.SECONDS, scheduler)
         .flatMap(Functions.<Observable<Integer>>identity())
         .test();
 
-        pp.onError(new TestException());
+        ps.onError(new TestException());
 
-        ts.assertFailure(TestException.class);
+        to.assertFailure(TestException.class);
     }
 
     @Test
@@ -591,17 +591,17 @@ public class ObservableWindowWithTimeTest {
         TestScheduler scheduler = new TestScheduler();
         Subject<Integer> ps = PublishSubject.<Integer>create();
 
-        TestObserver<Observable<Integer>> ts = ps.window(5, TimeUnit.MILLISECONDS, scheduler, 100)
+        TestObserver<Observable<Integer>> to = ps.window(5, TimeUnit.MILLISECONDS, scheduler, 100)
         .test()
         .assertValueCount(1);
 
         scheduler.advanceTimeBy(5, TimeUnit.MILLISECONDS);
 
-        ts.assertValueCount(2)
+        to.assertValueCount(2)
         .assertNoErrors()
         .assertNotComplete();
 
-        ts.values().get(0).test().assertResult();
+        to.values().get(0).test().assertResult();
     }
 
     @Test
@@ -609,12 +609,12 @@ public class ObservableWindowWithTimeTest {
         TestScheduler scheduler = new TestScheduler();
         Subject<Integer> ps = PublishSubject.<Integer>create();
 
-        TestObserver<Observable<Integer>> ts = ps.window(5, TimeUnit.MILLISECONDS, scheduler, Long.MAX_VALUE, false)
+        TestObserver<Observable<Integer>> to = ps.window(5, TimeUnit.MILLISECONDS, scheduler, Long.MAX_VALUE, false)
         .test();
 
         scheduler.advanceTimeBy(100, TimeUnit.MILLISECONDS);
 
-        ts.assertValueCount(21)
+        to.assertValueCount(21)
         .assertNoErrors()
         .assertNotComplete();
     }
@@ -624,12 +624,12 @@ public class ObservableWindowWithTimeTest {
         TestScheduler scheduler = new TestScheduler();
         Subject<Integer> ps = PublishSubject.<Integer>create();
 
-        TestObserver<Observable<Integer>> ts = ps.window(5, TimeUnit.MILLISECONDS, scheduler, Long.MAX_VALUE, true)
+        TestObserver<Observable<Integer>> to = ps.window(5, TimeUnit.MILLISECONDS, scheduler, Long.MAX_VALUE, true)
         .test();
 
         scheduler.advanceTimeBy(100, TimeUnit.MILLISECONDS);
 
-        ts.assertValueCount(21)
+        to.assertValueCount(21)
         .assertNoErrors()
         .assertNotComplete();
     }
@@ -639,12 +639,12 @@ public class ObservableWindowWithTimeTest {
         TestScheduler scheduler = new TestScheduler();
         Subject<Integer> ps = PublishSubject.<Integer>create();
 
-        TestObserver<Observable<Integer>> ts = ps.window(5, TimeUnit.MILLISECONDS, scheduler, 5, false)
+        TestObserver<Observable<Integer>> to = ps.window(5, TimeUnit.MILLISECONDS, scheduler, 5, false)
         .test();
 
         scheduler.advanceTimeBy(100, TimeUnit.MILLISECONDS);
 
-        ts.assertValueCount(21)
+        to.assertValueCount(21)
         .assertNoErrors()
         .assertNotComplete();
     }
@@ -654,12 +654,12 @@ public class ObservableWindowWithTimeTest {
         TestScheduler scheduler = new TestScheduler();
         Subject<Integer> ps = PublishSubject.<Integer>create();
 
-        TestObserver<Observable<Integer>> ts = ps.window(5, TimeUnit.MILLISECONDS, scheduler, 5, true)
+        TestObserver<Observable<Integer>> to = ps.window(5, TimeUnit.MILLISECONDS, scheduler, 5, true)
         .test();
 
         scheduler.advanceTimeBy(100, TimeUnit.MILLISECONDS);
 
-        ts.assertValueCount(21)
+        to.assertValueCount(21)
         .assertNoErrors()
         .assertNotComplete();
     }
@@ -669,7 +669,7 @@ public class ObservableWindowWithTimeTest {
         TestScheduler scheduler = new TestScheduler();
         Subject<Integer> ps = PublishSubject.<Integer>create();
 
-        TestObserver<Observable<Integer>> ts = ps.window(5, TimeUnit.MILLISECONDS, scheduler, 2, true)
+        TestObserver<Observable<Integer>> to = ps.window(5, TimeUnit.MILLISECONDS, scheduler, 2, true)
         .test();
 
         ps.onNext(1);
@@ -677,7 +677,7 @@ public class ObservableWindowWithTimeTest {
 
         scheduler.advanceTimeBy(100, TimeUnit.MILLISECONDS);
 
-        ts.assertValueCount(22)
+        to.assertValueCount(22)
         .assertNoErrors()
         .assertNotComplete();
     }
@@ -687,7 +687,7 @@ public class ObservableWindowWithTimeTest {
         TestScheduler scheduler = new TestScheduler();
         Subject<Integer> ps = PublishSubject.<Integer>create();
 
-        TestObserver<Observable<Integer>> ts = ps.window(5, TimeUnit.MILLISECONDS, scheduler, 5, true)
+        TestObserver<Observable<Integer>> to = ps.window(5, TimeUnit.MILLISECONDS, scheduler, 5, true)
         .test();
 
         // window #1
@@ -702,7 +702,7 @@ public class ObservableWindowWithTimeTest {
         ps.onNext(5);
         ps.onNext(6);
 
-        ts.assertValueCount(2)
+        to.assertValueCount(2)
         .assertNoErrors()
         .assertNotComplete();
     }

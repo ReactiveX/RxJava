@@ -281,12 +281,12 @@ public class ObservableTakeTest {
     @Test(timeout = 2000)
     public void testTakeObserveOn() {
         Observer<Object> o = TestHelper.mockObserver();
-        TestObserver<Object> ts = new TestObserver<Object>(o);
+        TestObserver<Object> to = new TestObserver<Object>(o);
 
         INFINITE_OBSERVABLE
-        .observeOn(Schedulers.newThread()).take(1).subscribe(ts);
-        ts.awaitTerminalEvent();
-        ts.assertNoErrors();
+        .observeOn(Schedulers.newThread()).take(1).subscribe(to);
+        to.awaitTerminalEvent();
+        to.assertNoErrors();
 
         verify(o).onNext(1L);
         verify(o, never()).onNext(2L);
@@ -323,38 +323,38 @@ public class ObservableTakeTest {
     public void takeFinalValueThrows() {
         Observable<Integer> source = Observable.just(1).take(1);
 
-        TestObserver<Integer> ts = new TestObserver<Integer>() {
+        TestObserver<Integer> to = new TestObserver<Integer>() {
             @Override
             public void onNext(Integer t) {
                 throw new TestException();
             }
         };
 
-        source.safeSubscribe(ts);
+        source.safeSubscribe(to);
 
-        ts.assertNoValues();
-        ts.assertError(TestException.class);
-        ts.assertNotComplete();
+        to.assertNoValues();
+        to.assertError(TestException.class);
+        to.assertNotComplete();
     }
 
     @Test
     public void testReentrantTake() {
         final PublishSubject<Integer> source = PublishSubject.create();
 
-        TestObserver<Integer> ts = new TestObserver<Integer>();
+        TestObserver<Integer> to = new TestObserver<Integer>();
 
         source.take(1).doOnNext(new Consumer<Integer>() {
             @Override
             public void accept(Integer v) {
                 source.onNext(2);
             }
-        }).subscribe(ts);
+        }).subscribe(to);
 
         source.onNext(1);
 
-        ts.assertValue(1);
-        ts.assertNoErrors();
-        ts.assertComplete();
+        to.assertValue(1);
+        to.assertNoErrors();
+        to.assertComplete();
     }
 
     @Test

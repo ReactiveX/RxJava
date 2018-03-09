@@ -260,14 +260,14 @@ public class PublishProcessorTest extends FlowableProcessorTest<Object> {
      */
     @Test
     public void testReSubscribe() {
-        final PublishProcessor<Integer> ps = PublishProcessor.create();
+        final PublishProcessor<Integer> pp = PublishProcessor.create();
 
         Subscriber<Integer> o1 = TestHelper.mockSubscriber();
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>(o1);
-        ps.subscribe(ts);
+        pp.subscribe(ts);
 
         // emit
-        ps.onNext(1);
+        pp.onNext(1);
 
         // validate we got it
         InOrder inOrder1 = inOrder(o1);
@@ -278,14 +278,14 @@ public class PublishProcessorTest extends FlowableProcessorTest<Object> {
         ts.dispose();
 
         // emit again but nothing will be there to receive it
-        ps.onNext(2);
+        pp.onNext(2);
 
         Subscriber<Integer> o2 = TestHelper.mockSubscriber();
         TestSubscriber<Integer> ts2 = new TestSubscriber<Integer>(o2);
-        ps.subscribe(ts2);
+        pp.subscribe(ts2);
 
         // emit
-        ps.onNext(3);
+        pp.onNext(3);
 
         // validate we got it
         InOrder inOrder2 = inOrder(o2);

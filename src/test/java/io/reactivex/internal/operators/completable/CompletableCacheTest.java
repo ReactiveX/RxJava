@@ -85,50 +85,50 @@ public class CompletableCacheTest implements Consumer<Object>, Action {
     public void crossDispose() {
         PublishSubject<Integer> ps = PublishSubject.create();
 
-        final TestObserver<Void> ts1 = new TestObserver<Void>();
+        final TestObserver<Void> to1 = new TestObserver<Void>();
 
-        final TestObserver<Void> ts2 = new TestObserver<Void>() {
+        final TestObserver<Void> to2 = new TestObserver<Void>() {
             @Override
             public void onComplete() {
                 super.onComplete();
-                ts1.cancel();
+                to1.cancel();
             }
         };
 
         Completable c = ps.ignoreElements().cache();
 
-        c.subscribe(ts2);
-        c.subscribe(ts1);
+        c.subscribe(to2);
+        c.subscribe(to1);
 
         ps.onComplete();
 
-        ts1.assertEmpty();
-        ts2.assertResult();
+        to1.assertEmpty();
+        to2.assertResult();
     }
 
     @Test
     public void crossDisposeOnError() {
         PublishSubject<Integer> ps = PublishSubject.create();
 
-        final TestObserver<Void> ts1 = new TestObserver<Void>();
+        final TestObserver<Void> to1 = new TestObserver<Void>();
 
-        final TestObserver<Void> ts2 = new TestObserver<Void>() {
+        final TestObserver<Void> to2 = new TestObserver<Void>() {
             @Override
             public void onError(Throwable ex) {
                 super.onError(ex);
-                ts1.cancel();
+                to1.cancel();
             }
         };
 
         Completable c = ps.ignoreElements().cache();
 
-        c.subscribe(ts2);
-        c.subscribe(ts1);
+        c.subscribe(to2);
+        c.subscribe(to1);
 
         ps.onError(new TestException());
 
-        ts1.assertEmpty();
-        ts2.assertFailure(TestException.class);
+        to1.assertEmpty();
+        to2.assertFailure(TestException.class);
     }
 
     @Test
@@ -139,31 +139,31 @@ public class CompletableCacheTest implements Consumer<Object>, Action {
 
         assertFalse(ps.hasObservers());
 
-        TestObserver<Void> ts1 = c.test();
+        TestObserver<Void> to1 = c.test();
 
         assertTrue(ps.hasObservers());
 
-        ts1.cancel();
+        to1.cancel();
 
         assertTrue(ps.hasObservers());
 
-        TestObserver<Void> ts2 = c.test();
+        TestObserver<Void> to2 = c.test();
 
-        TestObserver<Void> ts3 = c.test();
-        ts3.cancel();
+        TestObserver<Void> to3 = c.test();
+        to3.cancel();
 
-        TestObserver<Void> ts4 = c.test(true);
-        ts3.cancel();
+        TestObserver<Void> to4 = c.test(true);
+        to3.cancel();
 
         ps.onComplete();
 
-        ts1.assertEmpty();
+        to1.assertEmpty();
 
-        ts2.assertResult();
+        to2.assertResult();
 
-        ts3.assertEmpty();
+        to3.assertEmpty();
 
-        ts4.assertEmpty();
+        to4.assertEmpty();
     }
 
     @Test
@@ -173,20 +173,20 @@ public class CompletableCacheTest implements Consumer<Object>, Action {
 
             final Completable c = ps.ignoreElements().cache();
 
-            final TestObserver<Void> ts1 = new TestObserver<Void>();
+            final TestObserver<Void> to1 = new TestObserver<Void>();
 
-            final TestObserver<Void> ts2 = new TestObserver<Void>();
+            final TestObserver<Void> to2 = new TestObserver<Void>();
 
             Runnable r1 = new Runnable() {
                 @Override
                 public void run() {
-                    c.subscribe(ts1);
+                    c.subscribe(to1);
                 }
             };
             Runnable r2 = new Runnable() {
                 @Override
                 public void run() {
-                    c.subscribe(ts2);
+                    c.subscribe(to2);
                 }
             };
 
@@ -194,8 +194,8 @@ public class CompletableCacheTest implements Consumer<Object>, Action {
 
             ps.onComplete();
 
-            ts1.assertResult();
-            ts2.assertResult();
+            to1.assertResult();
+            to2.assertResult();
         }
     }
 
@@ -206,20 +206,20 @@ public class CompletableCacheTest implements Consumer<Object>, Action {
 
             final Completable c = ps.ignoreElements().cache();
 
-            final TestObserver<Void> ts1 = c.test();
+            final TestObserver<Void> to1 = c.test();
 
-            final TestObserver<Void> ts2 = new TestObserver<Void>();
+            final TestObserver<Void> to2 = new TestObserver<Void>();
 
             Runnable r1 = new Runnable() {
                 @Override
                 public void run() {
-                    ts1.cancel();
+                    to1.cancel();
                 }
             };
             Runnable r2 = new Runnable() {
                 @Override
                 public void run() {
-                    c.subscribe(ts2);
+                    c.subscribe(to2);
                 }
             };
 
@@ -227,8 +227,8 @@ public class CompletableCacheTest implements Consumer<Object>, Action {
 
             ps.onComplete();
 
-            ts1.assertEmpty();
-            ts2.assertResult();
+            to1.assertEmpty();
+            to2.assertResult();
         }
     }
 
@@ -236,31 +236,31 @@ public class CompletableCacheTest implements Consumer<Object>, Action {
     public void doubleDispose() {
         PublishSubject<Integer> ps = PublishSubject.create();
 
-        final TestObserver<Void> ts = new TestObserver<Void>();
+        final TestObserver<Void> to = new TestObserver<Void>();
 
         ps.ignoreElements().cache()
         .subscribe(new CompletableObserver() {
 
             @Override
             public void onSubscribe(Disposable d) {
-                ts.onSubscribe(EmptyDisposable.INSTANCE);
+                to.onSubscribe(EmptyDisposable.INSTANCE);
                 d.dispose();
                 d.dispose();
             }
 
             @Override
             public void onComplete() {
-                ts.onComplete();
+                to.onComplete();
             }
 
             @Override
             public void onError(Throwable e) {
-                ts.onError(e);
+                to.onError(e);
             }
         });
 
         ps.onComplete();
 
-        ts.assertEmpty();
+        to.assertEmpty();
     }
 }

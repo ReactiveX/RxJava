@@ -35,13 +35,13 @@ public class CompletableSubscribeOnTest {
         try {
             TestScheduler scheduler = new TestScheduler();
 
-            TestObserver<Void> ts = Completable.complete()
+            TestObserver<Void> to = Completable.complete()
             .subscribeOn(scheduler)
             .test();
 
             scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
 
-            ts.assertResult();
+            to.assertResult();
 
             assertTrue(list.toString(), list.isEmpty());
         } finally {

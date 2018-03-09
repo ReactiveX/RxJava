@@ -26,7 +26,7 @@ import org.reactivestreams.Subscriber;
 import io.reactivex.*;
 import io.reactivex.functions.*;
 import io.reactivex.internal.functions.Functions;
-import io.reactivex.internal.fuseable.QueueDisposable;
+import io.reactivex.internal.fuseable.*;
 import io.reactivex.subscribers.*;
 
 public class FlowableRangeLongTest {
@@ -290,21 +290,21 @@ public class FlowableRangeLongTest {
 
     @Test
     public void fused() {
-        TestSubscriber<Long> to = SubscriberFusion.newTest(QueueDisposable.ANY);
+        TestSubscriber<Long> ts = SubscriberFusion.newTest(QueueFuseable.ANY);
 
-        Flowable.rangeLong(1, 2).subscribe(to);
+        Flowable.rangeLong(1, 2).subscribe(ts);
 
-        SubscriberFusion.assertFusion(to, QueueDisposable.SYNC)
+        SubscriberFusion.assertFusion(ts, QueueFuseable.SYNC)
         .assertResult(1L, 2L);
     }
 
     @Test
     public void fusedReject() {
-        TestSubscriber<Long> to = SubscriberFusion.newTest(QueueDisposable.ASYNC);
+        TestSubscriber<Long> ts = SubscriberFusion.newTest(QueueFuseable.ASYNC);
 
-        Flowable.rangeLong(1, 2).subscribe(to);
+        Flowable.rangeLong(1, 2).subscribe(ts);
 
-        SubscriberFusion.assertFusion(to, QueueDisposable.NONE)
+        SubscriberFusion.assertFusion(ts, QueueFuseable.NONE)
         .assertResult(1L, 2L);
     }
 

@@ -40,13 +40,13 @@ public class SingleDoAfterTerminateTest {
         }
     };
 
-    private final TestObserver<Integer> ts = new TestObserver<Integer>();
+    private final TestObserver<Integer> to = new TestObserver<Integer>();
 
     @Test
     public void just() {
         Single.just(1)
         .doAfterTerminate(afterTerminate)
-        .subscribeWith(ts)
+        .subscribeWith(to)
         .assertResult(1);
 
         assertAfterTerminateCalledOnce();
@@ -56,7 +56,7 @@ public class SingleDoAfterTerminateTest {
     public void error() {
         Single.<Integer>error(new TestException())
         .doAfterTerminate(afterTerminate)
-        .subscribeWith(ts)
+        .subscribeWith(to)
         .assertFailure(TestException.class);
 
         assertAfterTerminateCalledOnce();
@@ -72,7 +72,7 @@ public class SingleDoAfterTerminateTest {
         Single.just(1)
         .doAfterTerminate(afterTerminate)
         .filter(Functions.alwaysTrue())
-        .subscribeWith(ts)
+        .subscribeWith(to)
         .assertResult(1);
 
         assertAfterTerminateCalledOnce();
@@ -83,7 +83,7 @@ public class SingleDoAfterTerminateTest {
         Single.<Integer>error(new TestException())
         .doAfterTerminate(afterTerminate)
         .filter(Functions.alwaysTrue())
-        .subscribeWith(ts)
+        .subscribeWith(to)
         .assertFailure(TestException.class);
 
         assertAfterTerminateCalledOnce();

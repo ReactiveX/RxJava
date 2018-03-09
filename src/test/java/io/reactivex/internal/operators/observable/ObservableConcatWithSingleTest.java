@@ -27,60 +27,60 @@ public class ObservableConcatWithSingleTest {
 
     @Test
     public void normal() {
-        final TestObserver<Integer> ts = new TestObserver<Integer>();
+        final TestObserver<Integer> to = new TestObserver<Integer>();
 
         Observable.range(1, 5)
         .concatWith(Single.just(100))
-        .subscribe(ts);
+        .subscribe(to);
 
-        ts.assertResult(1, 2, 3, 4, 5, 100);
+        to.assertResult(1, 2, 3, 4, 5, 100);
     }
 
     @Test
     public void mainError() {
-        final TestObserver<Integer> ts = new TestObserver<Integer>();
+        final TestObserver<Integer> to = new TestObserver<Integer>();
 
         Observable.<Integer>error(new TestException())
         .concatWith(Single.just(100))
-        .subscribe(ts);
+        .subscribe(to);
 
-        ts.assertFailure(TestException.class);
+        to.assertFailure(TestException.class);
     }
 
     @Test
     public void otherError() {
-        final TestObserver<Integer> ts = new TestObserver<Integer>();
+        final TestObserver<Integer> to = new TestObserver<Integer>();
 
         Observable.range(1, 5)
         .concatWith(Single.<Integer>error(new TestException()))
-        .subscribe(ts);
+        .subscribe(to);
 
-        ts.assertFailure(TestException.class, 1, 2, 3, 4, 5);
+        to.assertFailure(TestException.class, 1, 2, 3, 4, 5);
     }
 
     @Test
     public void takeMain() {
-        final TestObserver<Integer> ts = new TestObserver<Integer>();
+        final TestObserver<Integer> to = new TestObserver<Integer>();
 
         Observable.range(1, 5)
         .concatWith(Single.just(100))
         .take(3)
-        .subscribe(ts);
+        .subscribe(to);
 
-        ts.assertResult(1, 2, 3);
+        to.assertResult(1, 2, 3);
     }
 
     @Test
     public void cancelOther() {
         SingleSubject<Object> other = SingleSubject.create();
 
-        TestObserver<Object> ts = Observable.empty()
+        TestObserver<Object> to = Observable.empty()
                 .concatWith(other)
                 .test();
 
         assertTrue(other.hasObservers());
 
-        ts.cancel();
+        to.cancel();
 
         assertFalse(other.hasObservers());
     }

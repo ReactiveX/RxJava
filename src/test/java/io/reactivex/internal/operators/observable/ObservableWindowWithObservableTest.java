@@ -253,7 +253,7 @@ public class ObservableWindowWithObservableTest {
     @Test
     public void testWindowNoDuplication() {
         final PublishSubject<Integer> source = PublishSubject.create();
-        final TestObserver<Integer> tsw = new TestObserver<Integer>() {
+        final TestObserver<Integer> tow = new TestObserver<Integer>() {
             boolean once;
             @Override
             public void onNext(Integer t) {
@@ -264,10 +264,10 @@ public class ObservableWindowWithObservableTest {
                 super.onNext(t);
             }
         };
-        TestObserver<Observable<Integer>> ts = new TestObserver<Observable<Integer>>() {
+        TestObserver<Observable<Integer>> to = new TestObserver<Observable<Integer>>() {
             @Override
             public void onNext(Observable<Integer> t) {
-                t.subscribe(tsw);
+                t.subscribe(tow);
                 super.onNext(t);
             }
         };
@@ -276,13 +276,13 @@ public class ObservableWindowWithObservableTest {
             public Observable<Object> call() {
                 return Observable.never();
             }
-        }).subscribe(ts);
+        }).subscribe(to);
 
         source.onNext(1);
         source.onComplete();
 
-        ts.assertValueCount(1);
-        tsw.assertValues(1, 2);
+        to.assertValueCount(1);
+        tow.assertValues(1, 2);
     }
 
     @Test
@@ -295,12 +295,12 @@ public class ObservableWindowWithObservableTest {
             }
         };
 
-        TestObserver<Observable<Integer>> ts = new TestObserver<Observable<Integer>>();
-        source.window(boundary).subscribe(ts);
+        TestObserver<Observable<Integer>> to = new TestObserver<Observable<Integer>>();
+        source.window(boundary).subscribe(to);
 
         // 2.0.2 - not anymore
         // assertTrue("Not cancelled!", ts.isCancelled());
-        ts.assertComplete();
+        to.assertComplete();
     }
 
     @Test
@@ -314,8 +314,8 @@ public class ObservableWindowWithObservableTest {
             }
         };
 
-        TestObserver<Observable<Integer>> ts = new TestObserver<Observable<Integer>>();
-        source.window(boundaryFunc).subscribe(ts);
+        TestObserver<Observable<Integer>> to = new TestObserver<Observable<Integer>>();
+        source.window(boundaryFunc).subscribe(to);
 
         assertTrue(source.hasObservers());
         assertTrue(boundary.hasObservers());
@@ -325,9 +325,9 @@ public class ObservableWindowWithObservableTest {
         assertFalse(source.hasObservers());
         assertFalse(boundary.hasObservers());
 
-        ts.assertComplete();
-        ts.assertNoErrors();
-        ts.assertValueCount(1);
+        to.assertComplete();
+        to.assertNoErrors();
+        to.assertValueCount(1);
     }
     @Test
     public void testMainUnsubscribedOnBoundaryCompletion() {
@@ -340,8 +340,8 @@ public class ObservableWindowWithObservableTest {
             }
         };
 
-        TestObserver<Observable<Integer>> ts = new TestObserver<Observable<Integer>>();
-        source.window(boundaryFunc).subscribe(ts);
+        TestObserver<Observable<Integer>> to = new TestObserver<Observable<Integer>>();
+        source.window(boundaryFunc).subscribe(to);
 
         assertTrue(source.hasObservers());
         assertTrue(boundary.hasObservers());
@@ -352,9 +352,9 @@ public class ObservableWindowWithObservableTest {
         assertFalse(source.hasObservers());
         assertFalse(boundary.hasObservers());
 
-        ts.assertComplete();
-        ts.assertNoErrors();
-        ts.assertValueCount(1);
+        to.assertComplete();
+        to.assertNoErrors();
+        to.assertValueCount(1);
     }
 
     @Test
@@ -368,25 +368,25 @@ public class ObservableWindowWithObservableTest {
             }
         };
 
-        TestObserver<Observable<Integer>> ts = new TestObserver<Observable<Integer>>();
-        source.window(boundaryFunc).subscribe(ts);
+        TestObserver<Observable<Integer>> to = new TestObserver<Observable<Integer>>();
+        source.window(boundaryFunc).subscribe(to);
 
         assertTrue(source.hasObservers());
         assertTrue(boundary.hasObservers());
 
-        ts.dispose();
+        to.dispose();
 
         assertTrue(source.hasObservers());
 
         assertFalse(boundary.hasObservers());
 
-        ts.values().get(0).test(true);
+        to.values().get(0).test(true);
 
         assertFalse(source.hasObservers());
 
-        ts.assertNotComplete();
-        ts.assertNoErrors();
-        ts.assertValueCount(1);
+        to.assertNotComplete();
+        to.assertNoErrors();
+        to.assertValueCount(1);
     }
 
     @Test
@@ -402,8 +402,8 @@ public class ObservableWindowWithObservableTest {
             }
         };
 
-        TestObserver<Observable<Integer>> ts = new TestObserver<Observable<Integer>>();
-        source.window(boundaryFunc).subscribe(ts);
+        TestObserver<Observable<Integer>> to = new TestObserver<Observable<Integer>>();
+        source.window(boundaryFunc).subscribe(to);
 
         source.onNext(1);
         boundary.onNext(1);
@@ -420,9 +420,9 @@ public class ObservableWindowWithObservableTest {
         source.onNext(4);
         source.onComplete();
 
-        ts.assertNoErrors();
-        ts.assertValueCount(4);
-        ts.assertComplete();
+        to.assertNoErrors();
+        to.assertValueCount(4);
+        to.assertComplete();
 
         assertFalse(source.hasObservers());
         assertFalse(boundary.hasObservers());

@@ -775,18 +775,18 @@ public class FlowableRefCountTest {
 
     @Test
     public void replayIsUnsubscribed() {
-        ConnectableFlowable<Integer> co = Flowable.just(1)
+        ConnectableFlowable<Integer> cf = Flowable.just(1)
         .replay();
 
-        assertTrue(((Disposable)co).isDisposed());
+        assertTrue(((Disposable)cf).isDisposed());
 
-        Disposable s = co.connect();
+        Disposable s = cf.connect();
 
-        assertFalse(((Disposable)co).isDisposed());
+        assertFalse(((Disposable)cf).isDisposed());
 
         s.dispose();
 
-        assertTrue(((Disposable)co).isDisposed());
+        assertTrue(((Disposable)cf).isDisposed());
     }
 
     static final class BadFlowableSubscribe extends ConnectableFlowable<Object> {

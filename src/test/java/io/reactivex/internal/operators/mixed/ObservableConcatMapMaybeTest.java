@@ -114,9 +114,9 @@ public class ObservableConcatMapMaybeTest {
         .assertComplete()
         .assertOf(new Consumer<TestObserver<Integer>>() {
             @Override
-            public void accept(TestObserver<Integer> ts) throws Exception {
+            public void accept(TestObserver<Integer> to) throws Exception {
                 for (int i = 0; i < 512; i ++) {
-                    ts.assertValueAt(i, (i + 1) * 2);
+                    to.assertValueAt(i, (i + 1) * 2);
                 }
             }
         });
@@ -143,9 +143,9 @@ public class ObservableConcatMapMaybeTest {
         PublishSubject<Integer> ps = PublishSubject.create();
         MaybeSubject<Integer> ms = MaybeSubject.create();
 
-        TestObserver<Integer> ts = ps.concatMapMaybeDelayError(Functions.justFunction(ms), false).test();
+        TestObserver<Integer> to = ps.concatMapMaybeDelayError(Functions.justFunction(ms), false).test();
 
-        ts.assertEmpty();
+        to.assertEmpty();
 
         ps.onNext(1);
 
@@ -155,11 +155,11 @@ public class ObservableConcatMapMaybeTest {
 
         assertTrue(ms.hasObservers());
 
-        ts.assertEmpty();
+        to.assertEmpty();
 
         ms.onSuccess(1);
 
-        ts.assertFailure(TestException.class, 1);
+        to.assertFailure(TestException.class, 1);
     }
 
     @Test
@@ -167,9 +167,9 @@ public class ObservableConcatMapMaybeTest {
         PublishSubject<Integer> ps = PublishSubject.create();
         MaybeSubject<Integer> ms = MaybeSubject.create();
 
-        TestObserver<Integer> ts = ps.concatMapMaybeDelayError(Functions.justFunction(ms), false).test();
+        TestObserver<Integer> to = ps.concatMapMaybeDelayError(Functions.justFunction(ms), false).test();
 
-        ts.assertEmpty();
+        to.assertEmpty();
 
         ps.onNext(1);
 
@@ -179,11 +179,11 @@ public class ObservableConcatMapMaybeTest {
 
         assertTrue(ms.hasObservers());
 
-        ts.assertEmpty();
+        to.assertEmpty();
 
         ms.onComplete();
 
-        ts.assertFailure(TestException.class);
+        to.assertFailure(TestException.class);
     }
 
     @Test
@@ -264,7 +264,7 @@ public class ObservableConcatMapMaybeTest {
 
             final AtomicReference<MaybeObserver<? super Integer>> obs = new AtomicReference<MaybeObserver<? super Integer>>();
 
-            TestObserver<Integer> ts = ps.concatMapMaybe(
+            TestObserver<Integer> to = ps.concatMapMaybe(
                     new Function<Integer, MaybeSource<Integer>>() {
                         @Override
                         public MaybeSource<Integer> apply(Integer v)
@@ -286,7 +286,7 @@ public class ObservableConcatMapMaybeTest {
             ps.onError(new TestException("outer"));
             obs.get().onError(new TestException("inner"));
 
-            ts.assertFailureAndMessage(TestException.class, "outer");
+            to.assertFailureAndMessage(TestException.class, "outer");
 
             TestHelper.assertUndeliverable(errors, 0, TestException.class, "inner");
         } finally {
@@ -308,8 +308,8 @@ public class ObservableConcatMapMaybeTest {
         .assertFailure(CompositeException.class)
         .assertOf(new Consumer<TestObserver<Object>>() {
             @Override
-            public void accept(TestObserver<Object> ts) throws Exception {
-                CompositeException ce = (CompositeException)ts.errors().get(0);
+            public void accept(TestObserver<Object> to) throws Exception {
+                CompositeException ce = (CompositeException)to.errors().get(0);
                 assertEquals(5, ce.getExceptions().size());
             }
         });
@@ -319,7 +319,7 @@ public class ObservableConcatMapMaybeTest {
     public void mapperCrash() {
         final PublishSubject<Integer> ps = PublishSubject.create();
 
-        TestObserver<Object> ts = ps
+        TestObserver<Object> to = ps
         .concatMapMaybe(new Function<Integer, MaybeSource<? extends Object>>() {
             @Override
             public MaybeSource<? extends Object> apply(Integer v)
@@ -329,13 +329,13 @@ public class ObservableConcatMapMaybeTest {
         })
         .test();
 
-        ts.assertEmpty();
+        to.assertEmpty();
 
         assertTrue(ps.hasObservers());
 
         ps.onNext(1);
 
-        ts.assertFailure(TestException.class);
+        to.assertFailure(TestException.class);
 
         assertFalse(ps.hasObservers());
     }

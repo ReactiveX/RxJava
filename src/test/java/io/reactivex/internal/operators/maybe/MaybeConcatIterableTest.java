@@ -64,7 +64,7 @@ public class MaybeConcatIterableTest {
 
             final PublishProcessor<Integer> pp = PublishProcessor.create();
 
-            final TestSubscriber<Integer> to = Maybe.concat(Arrays.asList(pp.singleElement()))
+            final TestSubscriber<Integer> ts = Maybe.concat(Arrays.asList(pp.singleElement()))
             .test();
 
             pp.onNext(1);
@@ -72,7 +72,7 @@ public class MaybeConcatIterableTest {
             Runnable r1 = new Runnable() {
                 @Override
                 public void run() {
-                    to.cancel();
+                    ts.cancel();
                 }
             };
 

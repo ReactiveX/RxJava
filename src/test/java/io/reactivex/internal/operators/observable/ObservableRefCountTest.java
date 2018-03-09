@@ -186,20 +186,20 @@ public class ObservableRefCountTest {
                 .publish().refCount();
 
         for (int i = 0; i < 10; i++) {
-            TestObserver<Long> ts1 = new TestObserver<Long>();
-            TestObserver<Long> ts2 = new TestObserver<Long>();
-            r.subscribe(ts1);
-            r.subscribe(ts2);
+            TestObserver<Long> to1 = new TestObserver<Long>();
+            TestObserver<Long> to2 = new TestObserver<Long>();
+            r.subscribe(to1);
+            r.subscribe(to2);
             try {
                 Thread.sleep(50);
             } catch (InterruptedException e) {
             }
-            ts1.dispose();
-            ts2.dispose();
-            ts1.assertNoErrors();
-            ts2.assertNoErrors();
-            assertTrue(ts1.valueCount() > 0);
-            assertTrue(ts2.valueCount() > 0);
+            to1.dispose();
+            to2.dispose();
+            to1.assertNoErrors();
+            to2.assertNoErrors();
+            assertTrue(to1.valueCount() > 0);
+            assertTrue(to2.valueCount() > 0);
         }
 
         assertEquals(10, subscribeCount.get());
@@ -494,19 +494,19 @@ public class ObservableRefCountTest {
         })
         .publish().refCount();
 
-        TestObserver<Integer> ts1 = new TestObserver<Integer>();
-        TestObserver<Integer> ts2 = new TestObserver<Integer>();
+        TestObserver<Integer> to1 = new TestObserver<Integer>();
+        TestObserver<Integer> to2 = new TestObserver<Integer>();
 
-        combined.subscribe(ts1);
-        combined.subscribe(ts2);
+        combined.subscribe(to1);
+        combined.subscribe(to2);
 
-        ts1.assertTerminated();
-        ts1.assertNoErrors();
-        ts1.assertValue(30);
+        to1.assertTerminated();
+        to1.assertNoErrors();
+        to1.assertValue(30);
 
-        ts2.assertTerminated();
-        ts2.assertNoErrors();
-        ts2.assertValue(30);
+        to2.assertTerminated();
+        to2.assertNoErrors();
+        to2.assertValue(30);
     }
 
     @Test(timeout = 10000)

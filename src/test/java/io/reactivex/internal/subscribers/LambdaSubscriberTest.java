@@ -290,11 +290,11 @@ public class LambdaSubscriberTest {
 
     @Test
     public void onNextThrowsCancelsUpstream() {
-        PublishProcessor<Integer> ps = PublishProcessor.create();
+        PublishProcessor<Integer> pp = PublishProcessor.create();
 
         final List<Throwable> errors = new ArrayList<Throwable>();
 
-        ps.subscribe(new Consumer<Integer>() {
+        pp.subscribe(new Consumer<Integer>() {
             @Override
             public void accept(Integer v) throws Exception {
                 throw new TestException();
@@ -306,12 +306,12 @@ public class LambdaSubscriberTest {
             }
         });
 
-        assertTrue("No observers?!", ps.hasSubscribers());
+        assertTrue("No observers?!", pp.hasSubscribers());
         assertTrue("Has errors already?!", errors.isEmpty());
 
-        ps.onNext(1);
+        pp.onNext(1);
 
-        assertFalse("Has observers?!", ps.hasSubscribers());
+        assertFalse("Has observers?!", pp.hasSubscribers());
         assertFalse("No errors?!", errors.isEmpty());
 
         assertTrue(errors.toString(), errors.get(0) instanceof TestException);
@@ -319,11 +319,11 @@ public class LambdaSubscriberTest {
 
     @Test
     public void onSubscribeThrowsCancelsUpstream() {
-        PublishProcessor<Integer> ps = PublishProcessor.create();
+        PublishProcessor<Integer> pp = PublishProcessor.create();
 
         final List<Throwable> errors = new ArrayList<Throwable>();
 
-        ps.subscribe(new Consumer<Integer>() {
+        pp.subscribe(new Consumer<Integer>() {
             @Override
             public void accept(Integer v) throws Exception {
             }
@@ -343,7 +343,7 @@ public class LambdaSubscriberTest {
             }
         });
 
-        assertFalse("Has observers?!", ps.hasSubscribers());
+        assertFalse("Has observers?!", pp.hasSubscribers());
         assertFalse("No errors?!", errors.isEmpty());
 
         assertTrue(errors.toString(), errors.get(0) instanceof TestException);

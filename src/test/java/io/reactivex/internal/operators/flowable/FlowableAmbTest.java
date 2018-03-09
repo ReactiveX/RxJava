@@ -353,20 +353,20 @@ public class FlowableAmbTest {
     @SuppressWarnings("unchecked")
     @Test
     public void ambIterable() {
-        PublishProcessor<Integer> ps1 = PublishProcessor.create();
-        PublishProcessor<Integer> ps2 = PublishProcessor.create();
+        PublishProcessor<Integer> pp1 = PublishProcessor.create();
+        PublishProcessor<Integer> pp2 = PublishProcessor.create();
 
         TestSubscriber<Integer> ts = TestSubscriber.create();
 
-        Flowable.amb(Arrays.asList(ps1, ps2)).subscribe(ts);
+        Flowable.amb(Arrays.asList(pp1, pp2)).subscribe(ts);
 
         ts.assertNoValues();
 
-        ps1.onNext(1);
-        ps1.onComplete();
+        pp1.onNext(1);
+        pp1.onComplete();
 
-        assertFalse(ps1.hasSubscribers());
-        assertFalse(ps2.hasSubscribers());
+        assertFalse(pp1.hasSubscribers());
+        assertFalse(pp2.hasSubscribers());
 
         ts.assertValue(1);
         ts.assertNoErrors();
@@ -376,20 +376,20 @@ public class FlowableAmbTest {
     @SuppressWarnings("unchecked")
     @Test
     public void ambIterable2() {
-        PublishProcessor<Integer> ps1 = PublishProcessor.create();
-        PublishProcessor<Integer> ps2 = PublishProcessor.create();
+        PublishProcessor<Integer> pp1 = PublishProcessor.create();
+        PublishProcessor<Integer> pp2 = PublishProcessor.create();
 
         TestSubscriber<Integer> ts = TestSubscriber.create();
 
-        Flowable.amb(Arrays.asList(ps1, ps2)).subscribe(ts);
+        Flowable.amb(Arrays.asList(pp1, pp2)).subscribe(ts);
 
         ts.assertNoValues();
 
-        ps2.onNext(2);
-        ps2.onComplete();
+        pp2.onNext(2);
+        pp2.onComplete();
 
-        assertFalse(ps1.hasSubscribers());
-        assertFalse(ps2.hasSubscribers());
+        assertFalse(pp1.hasSubscribers());
+        assertFalse(pp2.hasSubscribers());
 
         ts.assertValue(2);
         ts.assertNoErrors();
@@ -568,28 +568,28 @@ public class FlowableAmbTest {
     @Test
     public void onNextRace() {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
-            final PublishProcessor<Integer> ps1 = PublishProcessor.create();
-            final PublishProcessor<Integer> ps2 = PublishProcessor.create();
+            final PublishProcessor<Integer> pp1 = PublishProcessor.create();
+            final PublishProcessor<Integer> pp2 = PublishProcessor.create();
 
             @SuppressWarnings("unchecked")
-            TestSubscriber<Integer> to = Flowable.ambArray(ps1, ps2).test();
+            TestSubscriber<Integer> ts = Flowable.ambArray(pp1, pp2).test();
 
             Runnable r1 = new Runnable() {
                 @Override
                 public void run() {
-                    ps1.onNext(1);
+                    pp1.onNext(1);
                 }
             };
             Runnable r2 = new Runnable() {
                 @Override
                 public void run() {
-                    ps2.onNext(1);
+                    pp2.onNext(1);
                 }
             };
 
             TestHelper.race(r1, r2);
 
-            to.assertSubscribed().assertNoErrors()
+            ts.assertSubscribed().assertNoErrors()
             .assertNotComplete().assertValueCount(1);
         }
     }
@@ -597,52 +597,52 @@ public class FlowableAmbTest {
     @Test
     public void onCompleteRace() {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
-            final PublishProcessor<Integer> ps1 = PublishProcessor.create();
-            final PublishProcessor<Integer> ps2 = PublishProcessor.create();
+            final PublishProcessor<Integer> pp1 = PublishProcessor.create();
+            final PublishProcessor<Integer> pp2 = PublishProcessor.create();
 
             @SuppressWarnings("unchecked")
-            TestSubscriber<Integer> to = Flowable.ambArray(ps1, ps2).test();
+            TestSubscriber<Integer> ts = Flowable.ambArray(pp1, pp2).test();
 
             Runnable r1 = new Runnable() {
                 @Override
                 public void run() {
-                    ps1.onComplete();
+                    pp1.onComplete();
                 }
             };
             Runnable r2 = new Runnable() {
                 @Override
                 public void run() {
-                    ps2.onComplete();
+                    pp2.onComplete();
                 }
             };
 
             TestHelper.race(r1, r2);
 
-            to.assertResult();
+            ts.assertResult();
         }
     }
 
     @Test
     public void onErrorRace() {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
-            final PublishProcessor<Integer> ps1 = PublishProcessor.create();
-            final PublishProcessor<Integer> ps2 = PublishProcessor.create();
+            final PublishProcessor<Integer> pp1 = PublishProcessor.create();
+            final PublishProcessor<Integer> pp2 = PublishProcessor.create();
 
             @SuppressWarnings("unchecked")
-            TestSubscriber<Integer> to = Flowable.ambArray(ps1, ps2).test();
+            TestSubscriber<Integer> ts = Flowable.ambArray(pp1, pp2).test();
 
             final Throwable ex = new TestException();
 
             Runnable r1 = new Runnable() {
                 @Override
                 public void run() {
-                    ps1.onError(ex);
+                    pp1.onError(ex);
                 }
             };
             Runnable r2 = new Runnable() {
                 @Override
                 public void run() {
-                    ps2.onError(ex);
+                    pp2.onError(ex);
                 }
             };
 
@@ -653,7 +653,7 @@ public class FlowableAmbTest {
                 RxJavaPlugins.reset();
             }
 
-            to.assertFailure(TestException.class);
+            ts.assertFailure(TestException.class);
             if (!errors.isEmpty()) {
                 TestHelper.assertUndeliverable(errors, 0, TestException.class);
             }

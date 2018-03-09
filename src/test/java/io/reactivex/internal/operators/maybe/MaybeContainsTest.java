@@ -50,11 +50,11 @@ public class MaybeContainsTest {
     public void dispose() {
         PublishProcessor<Integer> pp = PublishProcessor.create();
 
-        TestObserver<Boolean> ts = pp.singleElement().contains(1).test();
+        TestObserver<Boolean> to = pp.singleElement().contains(1).test();
 
         assertTrue(pp.hasSubscribers());
 
-        ts.cancel();
+        to.cancel();
 
         assertFalse(pp.hasSubscribers());
     }

@@ -182,9 +182,9 @@ public class FlowableDistinctUntilChangedTest {
                 return a.equals(b);
             }
         })
-        .to(SubscriberFusion.<Integer>test(Long.MAX_VALUE, QueueSubscription.ANY, false))
+        .to(SubscriberFusion.<Integer>test(Long.MAX_VALUE, QueueFuseable.ANY, false))
         .assertOf(SubscriberFusion.<Integer>assertFuseable())
-        .assertOf(SubscriberFusion.<Integer>assertFusionMode(QueueSubscription.SYNC))
+        .assertOf(SubscriberFusion.<Integer>assertFusionMode(QueueFuseable.SYNC))
         .assertResult(1, 2, 3, 2, 4, 1, 2);
     }
 
@@ -203,9 +203,9 @@ public class FlowableDistinctUntilChangedTest {
                 return true;
             }
         })
-        .to(SubscriberFusion.<Integer>test(Long.MAX_VALUE, QueueSubscription.ANY, false))
+        .to(SubscriberFusion.<Integer>test(Long.MAX_VALUE, QueueFuseable.ANY, false))
         .assertOf(SubscriberFusion.<Integer>assertFuseable())
-        .assertOf(SubscriberFusion.<Integer>assertFusionMode(QueueSubscription.SYNC))
+        .assertOf(SubscriberFusion.<Integer>assertFusionMode(QueueFuseable.SYNC))
         .assertResult(1, 2, 3, 2, 4, 1, 2);
     }
 
@@ -272,7 +272,7 @@ public class FlowableDistinctUntilChangedTest {
 
     @Test
     public void fused() {
-        TestSubscriber<Integer> to = SubscriberFusion.newTest(QueueDisposable.ANY);
+        TestSubscriber<Integer> ts = SubscriberFusion.newTest(QueueFuseable.ANY);
 
         Flowable.just(1, 2, 2, 3, 3, 4, 5)
         .distinctUntilChanged(new BiPredicate<Integer, Integer>() {
@@ -281,17 +281,17 @@ public class FlowableDistinctUntilChangedTest {
                 return a.equals(b);
             }
         })
-        .subscribe(to);
+        .subscribe(ts);
 
-        to.assertOf(SubscriberFusion.<Integer>assertFuseable())
-        .assertOf(SubscriberFusion.<Integer>assertFusionMode(QueueDisposable.SYNC))
+        ts.assertOf(SubscriberFusion.<Integer>assertFuseable())
+        .assertOf(SubscriberFusion.<Integer>assertFusionMode(QueueFuseable.SYNC))
         .assertResult(1, 2, 3, 4, 5)
         ;
     }
 
     @Test
     public void fusedAsync() {
-        TestSubscriber<Integer> to = SubscriberFusion.newTest(QueueDisposable.ANY);
+        TestSubscriber<Integer> ts = SubscriberFusion.newTest(QueueFuseable.ANY);
 
         UnicastProcessor<Integer> up = UnicastProcessor.create();
 
@@ -302,12 +302,12 @@ public class FlowableDistinctUntilChangedTest {
                 return a.equals(b);
             }
         })
-        .subscribe(to);
+        .subscribe(ts);
 
         TestHelper.emit(up, 1, 2, 2, 3, 3, 4, 5);
 
-        to.assertOf(SubscriberFusion.<Integer>assertFuseable())
-        .assertOf(SubscriberFusion.<Integer>assertFusionMode(QueueDisposable.ASYNC))
+        ts.assertOf(SubscriberFusion.<Integer>assertFuseable())
+        .assertOf(SubscriberFusion.<Integer>assertFusionMode(QueueFuseable.ASYNC))
         .assertResult(1, 2, 3, 4, 5)
         ;
     }
@@ -438,7 +438,7 @@ public class FlowableDistinctUntilChangedTest {
 
     @Test
     public void conditionalFused() {
-        TestSubscriber<Integer> ts = SubscriberFusion.newTest(QueueSubscription.ANY);
+        TestSubscriber<Integer> ts = SubscriberFusion.newTest(QueueFuseable.ANY);
 
         Flowable.just(1, 2, 1, 3, 3, 4, 3, 5, 5)
         .distinctUntilChanged()
@@ -450,13 +450,13 @@ public class FlowableDistinctUntilChangedTest {
         })
         .subscribe(ts);
 
-        SubscriberFusion.assertFusion(ts, QueueSubscription.SYNC)
+        SubscriberFusion.assertFusion(ts, QueueFuseable.SYNC)
         .assertResult(2, 4);
     }
 
     @Test
     public void conditionalAsyncFused() {
-        TestSubscriber<Integer> ts = SubscriberFusion.newTest(QueueSubscription.ANY);
+        TestSubscriber<Integer> ts = SubscriberFusion.newTest(QueueFuseable.ANY);
         UnicastProcessor<Integer> up = UnicastProcessor.create();
 
         up
@@ -472,7 +472,7 @@ public class FlowableDistinctUntilChangedTest {
 
         TestHelper.emit(up, 1, 2, 1, 3, 3, 4, 3, 5, 5);
 
-        SubscriberFusion.assertFusion(ts, QueueSubscription.ASYNC)
+        SubscriberFusion.assertFusion(ts, QueueFuseable.ASYNC)
         .assertResult(2, 4);
     }
 

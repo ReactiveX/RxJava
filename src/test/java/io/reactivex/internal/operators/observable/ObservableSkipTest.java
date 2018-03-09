@@ -137,12 +137,12 @@ public class ObservableSkipTest {
 
     @Test
     public void testRequestOverflowDoesNotOccur() {
-        TestObserver<Integer> ts = new TestObserver<Integer>();
-        Observable.range(1, 10).skip(5).subscribe(ts);
-        ts.assertTerminated();
-        ts.assertComplete();
-        ts.assertNoErrors();
-        assertEquals(Arrays.asList(6,7,8,9,10), ts.values());
+        TestObserver<Integer> to = new TestObserver<Integer>();
+        Observable.range(1, 10).skip(5).subscribe(to);
+        to.assertTerminated();
+        to.assertComplete();
+        to.assertNoErrors();
+        assertEquals(Arrays.asList(6,7,8,9,10), to.values());
     }
 
     @Test

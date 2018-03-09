@@ -35,13 +35,13 @@ public class ObservableDetachTest {
 
         WeakReference<Object> wr = new WeakReference<Object>(o);
 
-        TestObserver<Object> ts = new TestObserver<Object>();
+        TestObserver<Object> to = new TestObserver<Object>();
 
-        Observable.just(o).count().toObservable().onTerminateDetach().subscribe(ts);
+        Observable.just(o).count().toObservable().onTerminateDetach().subscribe(to);
 
-        ts.assertValue(1L);
-        ts.assertComplete();
-        ts.assertNoErrors();
+        to.assertValue(1L);
+        to.assertComplete();
+        to.assertNoErrors();
 
         o = null;
 
@@ -54,35 +54,35 @@ public class ObservableDetachTest {
 
     @Test
     public void error() {
-        TestObserver<Object> ts = new TestObserver<Object>();
+        TestObserver<Object> to = new TestObserver<Object>();
 
-        Observable.error(new TestException()).onTerminateDetach().subscribe(ts);
+        Observable.error(new TestException()).onTerminateDetach().subscribe(to);
 
-        ts.assertNoValues();
-        ts.assertError(TestException.class);
-        ts.assertNotComplete();
+        to.assertNoValues();
+        to.assertError(TestException.class);
+        to.assertNotComplete();
     }
 
     @Test
     public void empty() {
-        TestObserver<Object> ts = new TestObserver<Object>();
+        TestObserver<Object> to = new TestObserver<Object>();
 
-        Observable.empty().onTerminateDetach().subscribe(ts);
+        Observable.empty().onTerminateDetach().subscribe(to);
 
-        ts.assertNoValues();
-        ts.assertNoErrors();
-        ts.assertComplete();
+        to.assertNoValues();
+        to.assertNoErrors();
+        to.assertComplete();
     }
 
     @Test
     public void range() {
-        TestObserver<Object> ts = new TestObserver<Object>();
+        TestObserver<Object> to = new TestObserver<Object>();
 
-        Observable.range(1, 1000).onTerminateDetach().subscribe(ts);
+        Observable.range(1, 1000).onTerminateDetach().subscribe(to);
 
-        ts.assertValueCount(1000);
-        ts.assertNoErrors();
-        ts.assertComplete();
+        to.assertValueCount(1000);
+        to.assertNoErrors();
+        to.assertComplete();
     }
 
 
@@ -93,17 +93,17 @@ public class ObservableDetachTest {
 //
 //        WeakReference<Object> wr = new WeakReference<Object>(o);
 //
-//        TestObserver<Object> ts = new TestObserver<Object>(0L);
+//        TestObserver<Object> to = new TestObserver<Object>(0L);
 //
 //        Observable.just(o).count().onTerminateDetach().subscribe(ts);
 //
-//        ts.assertNoValues();
+//        to.assertNoValues();
 //
-//        ts.request(1);
+//        to.request(1);
 //
-//        ts.assertValue(1L);
-//        ts.assertComplete();
-//        ts.assertNoErrors();
+//        to.assertValue(1L);
+//        to.assertComplete();
+//        to.assertNoErrors();
 //
 //        o = null;
 //
@@ -119,10 +119,10 @@ public class ObservableDetachTest {
 
         WeakReference<Object> wr = new WeakReference<Object>(o);
 
-        TestObserver<Long> ts = Observable.just(o).count().toObservable().onTerminateDetach().test();
+        TestObserver<Long> to = Observable.just(o).count().toObservable().onTerminateDetach().test();
 
         o = null;
-        ts.cancel();
+        to.cancel();
 
         System.gc();
         Thread.sleep(200);
@@ -136,26 +136,26 @@ public class ObservableDetachTest {
     public void deferredUpstreamProducer() {
 //        final AtomicReference<Subscriber<? super Object>> subscriber = new AtomicReference<Subscriber<? super Object>>();
 //
-//        TestObserver<Object> ts = new TestObserver<Object>(0);
+//        TestObserver<Object> to = new TestObserver<Object>(0);
 //
 //        Observable.unsafeCreate(new ObservableSource<Object>() {
 //            @Override
 //            public void subscribe(Subscriber<? super Object> t) {
 //                subscriber.set(t);
 //            }
-//        }).onTerminateDetach().subscribe(ts);
+//        }).onTerminateDetach().subscribe(to);
 //
-//        ts.request(2);
+//        to.request(2);
 //
 //        new ObservableRange(1, 3).subscribe(subscriber.get());
 //
-//        ts.assertValues(1, 2);
+//        to.assertValues(1, 2);
 //
-//        ts.request(1);
+//        to.request(1);
 //
-//        ts.assertValues(1, 2, 3);
-//        ts.assertComplete();
-//        ts.assertNoErrors();
+//        to.assertValues(1, 2, 3);
+//        to.assertComplete();
+//        to.assertNoErrors();
     }
 
     @Test

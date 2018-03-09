@@ -1100,29 +1100,29 @@ public class FlowableBufferTest {
     @Test
     public void timeAndSkipOverlap() {
 
-        PublishProcessor<Integer> ps = PublishProcessor.create();
+        PublishProcessor<Integer> pp = PublishProcessor.create();
 
         TestSubscriber<List<Integer>> ts = TestSubscriber.create();
 
-        ps.buffer(2, 1, TimeUnit.SECONDS, scheduler).subscribe(ts);
+        pp.buffer(2, 1, TimeUnit.SECONDS, scheduler).subscribe(ts);
 
-        ps.onNext(1);
-
-        scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
-
-        ps.onNext(2);
+        pp.onNext(1);
 
         scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
 
-        ps.onNext(3);
+        pp.onNext(2);
 
         scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
 
-        ps.onNext(4);
+        pp.onNext(3);
 
         scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
 
-        ps.onComplete();
+        pp.onNext(4);
+
+        scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
+
+        pp.onComplete();
 
         ts.assertValues(
                 Arrays.asList(1, 2),
@@ -1140,29 +1140,29 @@ public class FlowableBufferTest {
     @Test
     public void timeAndSkipSkip() {
 
-        PublishProcessor<Integer> ps = PublishProcessor.create();
+        PublishProcessor<Integer> pp = PublishProcessor.create();
 
         TestSubscriber<List<Integer>> ts = TestSubscriber.create();
 
-        ps.buffer(2, 3, TimeUnit.SECONDS, scheduler).subscribe(ts);
+        pp.buffer(2, 3, TimeUnit.SECONDS, scheduler).subscribe(ts);
 
-        ps.onNext(1);
-
-        scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
-
-        ps.onNext(2);
+        pp.onNext(1);
 
         scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
 
-        ps.onNext(3);
+        pp.onNext(2);
 
         scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
 
-        ps.onNext(4);
+        pp.onNext(3);
 
         scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
 
-        ps.onComplete();
+        pp.onNext(4);
+
+        scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
+
+        pp.onComplete();
 
         ts.assertValues(
                 Arrays.asList(1, 2),
@@ -1185,29 +1185,29 @@ public class FlowableBufferTest {
         });
 
         try {
-            PublishProcessor<Integer> ps = PublishProcessor.create();
+            PublishProcessor<Integer> pp = PublishProcessor.create();
 
             TestSubscriber<List<Integer>> ts = TestSubscriber.create();
 
-            ps.buffer(2, 1, TimeUnit.SECONDS).subscribe(ts);
+            pp.buffer(2, 1, TimeUnit.SECONDS).subscribe(ts);
 
-            ps.onNext(1);
-
-            scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
-
-            ps.onNext(2);
+            pp.onNext(1);
 
             scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
 
-            ps.onNext(3);
+            pp.onNext(2);
 
             scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
 
-            ps.onNext(4);
+            pp.onNext(3);
 
             scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
 
-            ps.onComplete();
+            pp.onNext(4);
+
+            scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
+
+            pp.onComplete();
 
             ts.assertValues(
                     Arrays.asList(1, 2),
@@ -1236,29 +1236,29 @@ public class FlowableBufferTest {
 
         try {
 
-            PublishProcessor<Integer> ps = PublishProcessor.create();
+            PublishProcessor<Integer> pp = PublishProcessor.create();
 
             TestSubscriber<List<Integer>> ts = TestSubscriber.create();
 
-            ps.buffer(2, 3, TimeUnit.SECONDS).subscribe(ts);
+            pp.buffer(2, 3, TimeUnit.SECONDS).subscribe(ts);
 
-            ps.onNext(1);
-
-            scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
-
-            ps.onNext(2);
+            pp.onNext(1);
 
             scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
 
-            ps.onNext(3);
+            pp.onNext(2);
 
             scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
 
-            ps.onNext(4);
+            pp.onNext(3);
 
             scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
 
-            ps.onComplete();
+            pp.onNext(4);
+
+            scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
+
+            pp.onComplete();
 
             ts.assertValues(
                     Arrays.asList(1, 2),
@@ -1849,9 +1849,9 @@ public class FlowableBufferTest {
     public void bufferTimedExactSupplierCrash() {
         TestScheduler scheduler = new TestScheduler();
 
-        PublishProcessor<Integer> ps = PublishProcessor.create();
+        PublishProcessor<Integer> pp = PublishProcessor.create();
 
-        TestSubscriber<List<Integer>> to = ps
+        TestSubscriber<List<Integer>> ts = pp
         .buffer(1, TimeUnit.MILLISECONDS, scheduler, 1, new Callable<List<Integer>>() {
             int calls;
             @Override
@@ -1864,13 +1864,13 @@ public class FlowableBufferTest {
         }, true)
         .test();
 
-        ps.onNext(1);
+        pp.onNext(1);
 
         scheduler.advanceTimeBy(1, TimeUnit.MILLISECONDS);
 
-        ps.onNext(2);
+        pp.onNext(2);
 
-        to
+        ts
         .assertFailure(TestException.class, Arrays.asList(1));
     }
 
@@ -1879,15 +1879,15 @@ public class FlowableBufferTest {
     public void bufferTimedExactBoundedError() {
         TestScheduler scheduler = new TestScheduler();
 
-        PublishProcessor<Integer> ps = PublishProcessor.create();
+        PublishProcessor<Integer> pp = PublishProcessor.create();
 
-        TestSubscriber<List<Integer>> to = ps
+        TestSubscriber<List<Integer>> ts = pp
         .buffer(1, TimeUnit.MILLISECONDS, scheduler, 1, Functions.<Integer>createArrayList(16), true)
         .test();
 
-        ps.onError(new TestException());
+        pp.onError(new TestException());
 
-        to
+        ts
         .assertFailure(TestException.class);
     }
 
@@ -1981,19 +1981,19 @@ public class FlowableBufferTest {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final TestScheduler scheduler = new TestScheduler();
 
-            final PublishProcessor<Object> ps = PublishProcessor.create();
+            final PublishProcessor<Object> pp = PublishProcessor.create();
 
-            TestSubscriber<List<Object>> ts = ps.buffer(1, TimeUnit.SECONDS, scheduler, 5).test();
+            TestSubscriber<List<Object>> ts = pp.buffer(1, TimeUnit.SECONDS, scheduler, 5).test();
 
-            ps.onNext(1);
-            ps.onNext(2);
-            ps.onNext(3);
-            ps.onNext(4);
+            pp.onNext(1);
+            pp.onNext(2);
+            pp.onNext(3);
+            pp.onNext(4);
 
             Runnable r1 = new Runnable() {
                 @Override
                 public void run() {
-                    ps.onNext(5);
+                    pp.onNext(5);
                 }
             };
 
@@ -2006,7 +2006,7 @@ public class FlowableBufferTest {
 
             TestHelper.race(r1, r2);
 
-            ps.onComplete();
+            pp.onComplete();
 
             int items = 0;
             for (List<Object> o : ts.values()) {
@@ -2456,7 +2456,7 @@ public class FlowableBufferTest {
         PublishProcessor<Integer> pp = PublishProcessor.create();
         PublishProcessor<Integer> b = PublishProcessor.create();
 
-        TestSubscriber<List<Integer>> to = pp.buffer(b, new Callable<List<Integer>>() {
+        TestSubscriber<List<Integer>> ts = pp.buffer(b, new Callable<List<Integer>>() {
             int calls;
             @Override
             public List<Integer> call() throws Exception {
@@ -2469,7 +2469,7 @@ public class FlowableBufferTest {
 
         b.onNext(1);
 
-        to.assertFailure(TestException.class);
+        ts.assertFailure(TestException.class);
     }
 
     @SuppressWarnings("unchecked")

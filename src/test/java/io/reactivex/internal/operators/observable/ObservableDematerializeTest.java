@@ -96,10 +96,10 @@ public class ObservableDematerializeTest {
 
         Observer<Integer> observer = TestHelper.mockObserver();
 
-        TestObserver<Integer> ts = new TestObserver<Integer>(observer);
-        dematerialize.subscribe(ts);
+        TestObserver<Integer> to = new TestObserver<Integer>(observer);
+        dematerialize.subscribe(to);
 
-        System.out.println(ts.errors());
+        System.out.println(to.errors());
 
         verify(observer, never()).onError(any(Throwable.class));
         verify(observer, times(1)).onComplete();

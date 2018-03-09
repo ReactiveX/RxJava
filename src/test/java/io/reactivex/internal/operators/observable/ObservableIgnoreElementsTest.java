@@ -57,26 +57,26 @@ public class ObservableIgnoreElementsTest {
 
     @Test
     public void testCompletedOkObservable() {
-        TestObserver<Object> ts = new TestObserver<Object>();
-        Observable.range(1, 10).ignoreElements().toObservable().subscribe(ts);
-        ts.assertNoErrors();
-        ts.assertNoValues();
-        ts.assertTerminated();
+        TestObserver<Object> to = new TestObserver<Object>();
+        Observable.range(1, 10).ignoreElements().toObservable().subscribe(to);
+        to.assertNoErrors();
+        to.assertNoValues();
+        to.assertTerminated();
         // FIXME no longer testable
 //        ts.assertUnsubscribed();
     }
 
     @Test
     public void testErrorReceivedObservable() {
-        TestObserver<Object> ts = new TestObserver<Object>();
+        TestObserver<Object> to = new TestObserver<Object>();
         TestException ex = new TestException("boo");
-        Observable.error(ex).ignoreElements().toObservable().subscribe(ts);
-        ts.assertNoValues();
-        ts.assertTerminated();
+        Observable.error(ex).ignoreElements().toObservable().subscribe(to);
+        to.assertNoValues();
+        to.assertTerminated();
         // FIXME no longer testable
 //        ts.assertUnsubscribed();
-        ts.assertError(TestException.class);
-        ts.assertErrorMessage("boo");
+        to.assertError(TestException.class);
+        to.assertErrorMessage("boo");
     }
 
     @Test
@@ -124,26 +124,26 @@ public class ObservableIgnoreElementsTest {
 
     @Test
     public void testCompletedOk() {
-        TestObserver<Object> ts = new TestObserver<Object>();
-        Observable.range(1, 10).ignoreElements().subscribe(ts);
-        ts.assertNoErrors();
-        ts.assertNoValues();
-        ts.assertTerminated();
+        TestObserver<Object> to = new TestObserver<Object>();
+        Observable.range(1, 10).ignoreElements().subscribe(to);
+        to.assertNoErrors();
+        to.assertNoValues();
+        to.assertTerminated();
         // FIXME no longer testable
 //        ts.assertUnsubscribed();
     }
 
     @Test
     public void testErrorReceived() {
-        TestObserver<Object> ts = new TestObserver<Object>();
+        TestObserver<Object> to = new TestObserver<Object>();
         TestException ex = new TestException("boo");
-        Observable.error(ex).ignoreElements().subscribe(ts);
-        ts.assertNoValues();
-        ts.assertTerminated();
+        Observable.error(ex).ignoreElements().subscribe(to);
+        to.assertNoValues();
+        to.assertTerminated();
         // FIXME no longer testable
 //        ts.assertUnsubscribed();
-        ts.assertError(TestException.class);
-        ts.assertErrorMessage("boo");
+        to.assertError(TestException.class);
+        to.assertErrorMessage("boo");
     }
 
     @Test
@@ -164,17 +164,17 @@ public class ObservableIgnoreElementsTest {
     @Test
     public void cancel() {
 
-        PublishSubject<Integer> pp = PublishSubject.create();
+        PublishSubject<Integer> ps = PublishSubject.create();
 
-        TestObserver<Integer> ts = pp.ignoreElements().<Integer>toObservable().test();
+        TestObserver<Integer> to = ps.ignoreElements().<Integer>toObservable().test();
 
-        assertTrue(pp.hasObservers());
+        assertTrue(ps.hasObservers());
 
-        ts.cancel();
+        to.cancel();
 
-        assertFalse(pp.hasObservers());
+        assertFalse(ps.hasObservers());
 
-        TestHelper.checkDisposed(pp.ignoreElements().<Integer>toObservable());
+        TestHelper.checkDisposed(ps.ignoreElements().<Integer>toObservable());
     }
 
     @Test

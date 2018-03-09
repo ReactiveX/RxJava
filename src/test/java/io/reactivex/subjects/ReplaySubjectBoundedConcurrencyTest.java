@@ -294,11 +294,11 @@ public class ReplaySubjectBoundedConcurrencyTest {
     public void testRaceForTerminalState() {
         final List<Integer> expected = Arrays.asList(1);
         for (int i = 0; i < 100000; i++) {
-            TestObserver<Integer> ts = new TestObserver<Integer>();
-            Observable.just(1).subscribeOn(Schedulers.computation()).cache().subscribe(ts);
-            ts.awaitTerminalEvent();
-            ts.assertValueSequence(expected);
-            ts.assertTerminated();
+            TestObserver<Integer> to = new TestObserver<Integer>();
+            Observable.just(1).subscribeOn(Schedulers.computation()).cache().subscribe(to);
+            to.awaitTerminalEvent();
+            to.assertValueSequence(expected);
+            to.assertTerminated();
         }
     }
 

@@ -957,7 +957,7 @@ public class SerializedObserverTest {
     public void testErrorReentry() {
         final AtomicReference<Observer<Integer>> serial = new AtomicReference<Observer<Integer>>();
 
-        TestObserver<Integer> ts = new TestObserver<Integer>() {
+        TestObserver<Integer> to = new TestObserver<Integer>() {
             @Override
             public void onNext(Integer v) {
                 serial.get().onError(new TestException());
@@ -965,20 +965,20 @@ public class SerializedObserverTest {
                 super.onNext(v);
             }
         };
-        SerializedObserver<Integer> sobs = new SerializedObserver<Integer>(ts);
+        SerializedObserver<Integer> sobs = new SerializedObserver<Integer>(to);
         sobs.onSubscribe(Disposables.empty());
         serial.set(sobs);
 
         sobs.onNext(1);
 
-        ts.assertValue(1);
-        ts.assertError(TestException.class);
+        to.assertValue(1);
+        to.assertError(TestException.class);
     }
     @Test
     public void testCompleteReentry() {
         final AtomicReference<Observer<Integer>> serial = new AtomicReference<Observer<Integer>>();
 
-        TestObserver<Integer> ts = new TestObserver<Integer>() {
+        TestObserver<Integer> to = new TestObserver<Integer>() {
             @Override
             public void onNext(Integer v) {
                 serial.get().onComplete();
@@ -986,22 +986,22 @@ public class SerializedObserverTest {
                 super.onNext(v);
             }
         };
-        SerializedObserver<Integer> sobs = new SerializedObserver<Integer>(ts);
+        SerializedObserver<Integer> sobs = new SerializedObserver<Integer>(to);
         sobs.onSubscribe(Disposables.empty());
         serial.set(sobs);
 
         sobs.onNext(1);
 
-        ts.assertValue(1);
-        ts.assertComplete();
-        ts.assertNoErrors();
+        to.assertValue(1);
+        to.assertComplete();
+        to.assertNoErrors();
     }
 
     @Test
     public void dispose() {
-        TestObserver<Integer> ts = new TestObserver<Integer>();
+        TestObserver<Integer> to = new TestObserver<Integer>();
 
-        SerializedObserver<Integer> so = new SerializedObserver<Integer>(ts);
+        SerializedObserver<Integer> so = new SerializedObserver<Integer>(to);
 
         Disposable d = Disposables.empty();
 
@@ -1009,7 +1009,7 @@ public class SerializedObserverTest {
 
         assertFalse(so.isDisposed());
 
-        ts.cancel();
+        to.cancel();
 
         assertTrue(so.isDisposed());
 
@@ -1019,9 +1019,9 @@ public class SerializedObserverTest {
     @Test
     public void onCompleteRace() {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
-            TestObserver<Integer> ts = new TestObserver<Integer>();
+            TestObserver<Integer> to = new TestObserver<Integer>();
 
-            final SerializedObserver<Integer> so = new SerializedObserver<Integer>(ts);
+            final SerializedObserver<Integer> so = new SerializedObserver<Integer>(to);
 
             Disposable d = Disposables.empty();
 
@@ -1036,7 +1036,7 @@ public class SerializedObserverTest {
 
             TestHelper.race(r, r);
 
-            ts.awaitDone(5, TimeUnit.SECONDS)
+            to.awaitDone(5, TimeUnit.SECONDS)
             .assertResult();
         }
 
@@ -1045,9 +1045,9 @@ public class SerializedObserverTest {
     @Test
     public void onNextOnCompleteRace() {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
-            TestObserver<Integer> ts = new TestObserver<Integer>();
+            TestObserver<Integer> to = new TestObserver<Integer>();
 
-            final SerializedObserver<Integer> so = new SerializedObserver<Integer>(ts);
+            final SerializedObserver<Integer> so = new SerializedObserver<Integer>(to);
 
             Disposable d = Disposables.empty();
 
@@ -1069,11 +1069,11 @@ public class SerializedObserverTest {
 
             TestHelper.race(r1, r2);
 
-            ts.awaitDone(5, TimeUnit.SECONDS)
+            to.awaitDone(5, TimeUnit.SECONDS)
             .assertNoErrors()
             .assertComplete();
 
-            assertTrue(ts.valueCount() <= 1);
+            assertTrue(to.valueCount() <= 1);
         }
 
     }
@@ -1081,9 +1081,9 @@ public class SerializedObserverTest {
     @Test
     public void onNextOnErrorRace() {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
-            TestObserver<Integer> ts = new TestObserver<Integer>();
+            TestObserver<Integer> to = new TestObserver<Integer>();
 
-            final SerializedObserver<Integer> so = new SerializedObserver<Integer>(ts);
+            final SerializedObserver<Integer> so = new SerializedObserver<Integer>(to);
 
             Disposable d = Disposables.empty();
 
@@ -1107,11 +1107,11 @@ public class SerializedObserverTest {
 
             TestHelper.race(r1, r2);
 
-            ts.awaitDone(5, TimeUnit.SECONDS)
+            to.awaitDone(5, TimeUnit.SECONDS)
             .assertError(ex)
             .assertNotComplete();
 
-            assertTrue(ts.valueCount() <= 1);
+            assertTrue(to.valueCount() <= 1);
         }
 
     }
@@ -1119,9 +1119,9 @@ public class SerializedObserverTest {
     @Test
     public void onNextOnErrorRaceDelayError() {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
-            TestObserver<Integer> ts = new TestObserver<Integer>();
+            TestObserver<Integer> to = new TestObserver<Integer>();
 
-            final SerializedObserver<Integer> so = new SerializedObserver<Integer>(ts, true);
+            final SerializedObserver<Integer> so = new SerializedObserver<Integer>(to, true);
 
             Disposable d = Disposables.empty();
 
@@ -1145,11 +1145,11 @@ public class SerializedObserverTest {
 
             TestHelper.race(r1, r2);
 
-            ts.awaitDone(5, TimeUnit.SECONDS)
+            to.awaitDone(5, TimeUnit.SECONDS)
             .assertError(ex)
             .assertNotComplete();
 
-            assertTrue(ts.valueCount() <= 1);
+            assertTrue(to.valueCount() <= 1);
         }
 
     }
@@ -1160,9 +1160,9 @@ public class SerializedObserverTest {
         List<Throwable> error = TestHelper.trackPluginErrors();
 
         try {
-            TestObserver<Integer> ts = new TestObserver<Integer>();
+            TestObserver<Integer> to = new TestObserver<Integer>();
 
-            final SerializedObserver<Integer> so = new SerializedObserver<Integer>(ts);
+            final SerializedObserver<Integer> so = new SerializedObserver<Integer>(to);
 
             so.onSubscribe(Disposables.empty());
 
@@ -1184,9 +1184,9 @@ public class SerializedObserverTest {
 
             List<Throwable> errors = TestHelper.trackPluginErrors();
             try {
-                TestObserver<Integer> ts = new TestObserver<Integer>();
+                TestObserver<Integer> to = new TestObserver<Integer>();
 
-                final SerializedObserver<Integer> so = new SerializedObserver<Integer>(ts);
+                final SerializedObserver<Integer> so = new SerializedObserver<Integer>(to);
 
                 Disposable d = Disposables.empty();
 
@@ -1210,12 +1210,12 @@ public class SerializedObserverTest {
 
                 TestHelper.race(r1, r2);
 
-                ts.awaitDone(5, TimeUnit.SECONDS);
+                to.awaitDone(5, TimeUnit.SECONDS);
 
-                if (ts.completions() != 0) {
-                    ts.assertResult();
+                if (to.completions() != 0) {
+                    to.assertResult();
                 } else {
-                    ts.assertFailure(TestException.class).assertError(ex);
+                    to.assertFailure(TestException.class).assertError(ex);
                 }
 
                 for (Throwable e : errors) {
@@ -1231,9 +1231,9 @@ public class SerializedObserverTest {
     @Test
     public void nullOnNext() {
 
-        TestObserver<Integer> ts = new TestObserver<Integer>();
+        TestObserver<Integer> to = new TestObserver<Integer>();
 
-        final SerializedObserver<Integer> so = new SerializedObserver<Integer>(ts);
+        final SerializedObserver<Integer> so = new SerializedObserver<Integer>(to);
 
         Disposable d = Disposables.empty();
 
@@ -1241,6 +1241,6 @@ public class SerializedObserverTest {
 
         so.onNext(null);
 
-        ts.assertFailureAndMessage(NullPointerException.class, "onNext called with null. Null values are generally not allowed in 2.x operators and sources.");
+        to.assertFailureAndMessage(NullPointerException.class, "onNext called with null. Null values are generally not allowed in 2.x operators and sources.");
     }
 }

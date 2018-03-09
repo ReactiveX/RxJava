@@ -490,15 +490,15 @@ public class SafeObserverTest {
 
     @Test
     public void dispose() {
-        TestObserver<Integer> ts = new TestObserver<Integer>();
+        TestObserver<Integer> to = new TestObserver<Integer>();
 
-        SafeObserver<Integer> so = new SafeObserver<Integer>(ts);
+        SafeObserver<Integer> so = new SafeObserver<Integer>(to);
 
         Disposable d = Disposables.empty();
 
         so.onSubscribe(d);
 
-        ts.dispose();
+        to.dispose();
 
         assertTrue(d.isDisposed());
 
@@ -507,9 +507,9 @@ public class SafeObserverTest {
 
     @Test
     public void onNextAfterComplete() {
-        TestObserver<Integer> ts = new TestObserver<Integer>();
+        TestObserver<Integer> to = new TestObserver<Integer>();
 
-        SafeObserver<Integer> so = new SafeObserver<Integer>(ts);
+        SafeObserver<Integer> so = new SafeObserver<Integer>(to);
 
         Disposable d = Disposables.empty();
 
@@ -523,14 +523,14 @@ public class SafeObserverTest {
 
         so.onComplete();
 
-        ts.assertResult();
+        to.assertResult();
     }
 
     @Test
     public void onNextNull() {
-        TestObserver<Integer> ts = new TestObserver<Integer>();
+        TestObserver<Integer> to = new TestObserver<Integer>();
 
-        SafeObserver<Integer> so = new SafeObserver<Integer>(ts);
+        SafeObserver<Integer> so = new SafeObserver<Integer>(to);
 
         Disposable d = Disposables.empty();
 
@@ -538,50 +538,50 @@ public class SafeObserverTest {
 
         so.onNext(null);
 
-        ts.assertFailure(NullPointerException.class);
+        to.assertFailure(NullPointerException.class);
     }
 
     @Test
     public void onNextWithoutOnSubscribe() {
-        TestObserver<Integer> ts = new TestObserver<Integer>();
+        TestObserver<Integer> to = new TestObserver<Integer>();
 
-        SafeObserver<Integer> so = new SafeObserver<Integer>(ts);
+        SafeObserver<Integer> so = new SafeObserver<Integer>(to);
 
         so.onNext(1);
 
-        ts.assertFailureAndMessage(NullPointerException.class, "Subscription not set!");
+        to.assertFailureAndMessage(NullPointerException.class, "Subscription not set!");
     }
 
     @Test
     public void onErrorWithoutOnSubscribe() {
-        TestObserver<Integer> ts = new TestObserver<Integer>();
+        TestObserver<Integer> to = new TestObserver<Integer>();
 
-        SafeObserver<Integer> so = new SafeObserver<Integer>(ts);
+        SafeObserver<Integer> so = new SafeObserver<Integer>(to);
 
         so.onError(new TestException());
 
-        ts.assertFailure(CompositeException.class);
+        to.assertFailure(CompositeException.class);
 
-        TestHelper.assertError(ts, 0, TestException.class);
-        TestHelper.assertError(ts, 1, NullPointerException.class, "Subscription not set!");
+        TestHelper.assertError(to, 0, TestException.class);
+        TestHelper.assertError(to, 1, NullPointerException.class, "Subscription not set!");
     }
 
     @Test
     public void onCompleteWithoutOnSubscribe() {
-        TestObserver<Integer> ts = new TestObserver<Integer>();
+        TestObserver<Integer> to = new TestObserver<Integer>();
 
-        SafeObserver<Integer> so = new SafeObserver<Integer>(ts);
+        SafeObserver<Integer> so = new SafeObserver<Integer>(to);
 
         so.onComplete();
 
-        ts.assertFailureAndMessage(NullPointerException.class, "Subscription not set!");
+        to.assertFailureAndMessage(NullPointerException.class, "Subscription not set!");
     }
 
     @Test
     public void onNextNormal() {
-        TestObserver<Integer> ts = new TestObserver<Integer>();
+        TestObserver<Integer> to = new TestObserver<Integer>();
 
-        SafeObserver<Integer> so = new SafeObserver<Integer>(ts);
+        SafeObserver<Integer> so = new SafeObserver<Integer>(to);
 
         Disposable d = Disposables.empty();
 
@@ -590,7 +590,7 @@ public class SafeObserverTest {
         so.onNext(1);
         so.onComplete();
 
-        ts.assertResult(1);
+        to.assertResult(1);
     }
 
     static final class CrashDummy implements Observer<Object>, Disposable {

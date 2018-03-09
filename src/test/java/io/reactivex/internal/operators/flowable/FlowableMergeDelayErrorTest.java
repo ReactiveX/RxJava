@@ -604,22 +604,22 @@ public class FlowableMergeDelayErrorTest {
     public void iterableMaxConcurrent() {
         TestSubscriber<Integer> ts = TestSubscriber.create();
 
-        PublishProcessor<Integer> ps1 = PublishProcessor.create();
-        PublishProcessor<Integer> ps2 = PublishProcessor.create();
+        PublishProcessor<Integer> pp1 = PublishProcessor.create();
+        PublishProcessor<Integer> pp2 = PublishProcessor.create();
 
-        Flowable.mergeDelayError(Arrays.asList(ps1, ps2), 1).subscribe(ts);
+        Flowable.mergeDelayError(Arrays.asList(pp1, pp2), 1).subscribe(ts);
 
-        assertTrue("ps1 has no subscribers?!", ps1.hasSubscribers());
-        assertFalse("ps2 has subscribers?!", ps2.hasSubscribers());
+        assertTrue("ps1 has no subscribers?!", pp1.hasSubscribers());
+        assertFalse("ps2 has subscribers?!", pp2.hasSubscribers());
 
-        ps1.onNext(1);
-        ps1.onComplete();
+        pp1.onNext(1);
+        pp1.onComplete();
 
-        assertFalse("ps1 has subscribers?!", ps1.hasSubscribers());
-        assertTrue("ps2 has no subscribers?!", ps2.hasSubscribers());
+        assertFalse("ps1 has subscribers?!", pp1.hasSubscribers());
+        assertTrue("ps2 has no subscribers?!", pp2.hasSubscribers());
 
-        ps2.onNext(2);
-        ps2.onComplete();
+        pp2.onNext(2);
+        pp2.onComplete();
 
         ts.assertValues(1, 2);
         ts.assertNoErrors();
@@ -631,22 +631,22 @@ public class FlowableMergeDelayErrorTest {
     public void iterableMaxConcurrentError() {
         TestSubscriber<Integer> ts = TestSubscriber.create();
 
-        PublishProcessor<Integer> ps1 = PublishProcessor.create();
-        PublishProcessor<Integer> ps2 = PublishProcessor.create();
+        PublishProcessor<Integer> pp1 = PublishProcessor.create();
+        PublishProcessor<Integer> pp2 = PublishProcessor.create();
 
-        Flowable.mergeDelayError(Arrays.asList(ps1, ps2), 1).subscribe(ts);
+        Flowable.mergeDelayError(Arrays.asList(pp1, pp2), 1).subscribe(ts);
 
-        assertTrue("ps1 has no subscribers?!", ps1.hasSubscribers());
-        assertFalse("ps2 has subscribers?!", ps2.hasSubscribers());
+        assertTrue("ps1 has no subscribers?!", pp1.hasSubscribers());
+        assertFalse("ps2 has subscribers?!", pp2.hasSubscribers());
 
-        ps1.onNext(1);
-        ps1.onError(new TestException());
+        pp1.onNext(1);
+        pp1.onError(new TestException());
 
-        assertFalse("ps1 has subscribers?!", ps1.hasSubscribers());
-        assertTrue("ps2 has no subscribers?!", ps2.hasSubscribers());
+        assertFalse("ps1 has subscribers?!", pp1.hasSubscribers());
+        assertTrue("ps2 has no subscribers?!", pp2.hasSubscribers());
 
-        ps2.onNext(2);
-        ps2.onError(new TestException());
+        pp2.onNext(2);
+        pp2.onError(new TestException());
 
         ts.assertValues(1, 2);
         ts.assertError(CompositeException.class);

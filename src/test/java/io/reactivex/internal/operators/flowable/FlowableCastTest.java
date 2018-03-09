@@ -56,17 +56,17 @@ public class FlowableCastTest {
     @Test
     public void castCrashUnsubscribes() {
 
-        PublishProcessor<Integer> ps = PublishProcessor.create();
+        PublishProcessor<Integer> pp = PublishProcessor.create();
 
         TestSubscriber<String> ts = TestSubscriber.create();
 
-        ps.cast(String.class).subscribe(ts);
+        pp.cast(String.class).subscribe(ts);
 
-        Assert.assertTrue("Not subscribed?", ps.hasSubscribers());
+        Assert.assertTrue("Not subscribed?", pp.hasSubscribers());
 
-        ps.onNext(1);
+        pp.onNext(1);
 
-        Assert.assertFalse("Subscribed?", ps.hasSubscribers());
+        Assert.assertFalse("Subscribed?", pp.hasSubscribers());
 
         ts.assertError(ClassCastException.class);
     }

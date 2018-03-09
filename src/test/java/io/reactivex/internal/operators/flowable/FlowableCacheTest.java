@@ -316,18 +316,18 @@ public class FlowableCacheTest {
     @Test
     public void subscribeEmitRace() {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
-            final PublishProcessor<Integer> ps = PublishProcessor.<Integer>create();
+            final PublishProcessor<Integer> pp = PublishProcessor.<Integer>create();
 
-            final Flowable<Integer> cache = ps.cache();
+            final Flowable<Integer> cache = pp.cache();
 
             cache.test();
 
-            final TestSubscriber<Integer> to = new TestSubscriber<Integer>();
+            final TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
 
             Runnable r1 = new Runnable() {
                 @Override
                 public void run() {
-                    cache.subscribe(to);
+                    cache.subscribe(ts);
                 }
             };
 
@@ -335,15 +335,15 @@ public class FlowableCacheTest {
                 @Override
                 public void run() {
                     for (int j = 0; j < 500; j++) {
-                        ps.onNext(j);
+                        pp.onNext(j);
                     }
-                    ps.onComplete();
+                    pp.onComplete();
                 }
             };
 
             TestHelper.race(r1, r2);
 
-            to
+            ts
             .awaitDone(5, TimeUnit.SECONDS)
             .assertSubscribed().assertValueCount(500).assertComplete().assertNoErrors();
         }
@@ -351,22 +351,22 @@ public class FlowableCacheTest {
 
     @Test
     public void observers() {
-        PublishProcessor<Integer> ps = PublishProcessor.create();
-        FlowableCache<Integer> cache = (FlowableCache<Integer>)Flowable.range(1, 5).concatWith(ps).cache();
+        PublishProcessor<Integer> pp = PublishProcessor.create();
+        FlowableCache<Integer> cache = (FlowableCache<Integer>)Flowable.range(1, 5).concatWith(pp).cache();
 
         assertFalse(cache.hasSubscribers());
 
         assertEquals(0, cache.cachedEventCount());
 
-        TestSubscriber<Integer> to = cache.test();
+        TestSubscriber<Integer> ts = cache.test();
 
         assertTrue(cache.hasSubscribers());
 
         assertEquals(5, cache.cachedEventCount());
 
-        ps.onComplete();
+        pp.onComplete();
 
-        to.assertResult(1, 2, 3, 4, 5);
+        ts.assertResult(1, 2, 3, 4, 5);
     }
 
     @Test
@@ -460,33 +460,33 @@ public class FlowableCacheTest {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final Flowable<Integer> cache = Flowable.range(1, 500).cache();
 
-            final TestSubscriber<Integer> to1 = new TestSubscriber<Integer>();
-            final TestSubscriber<Integer> to2 = new TestSubscriber<Integer>();
+            final TestSubscriber<Integer> ts1 = new TestSubscriber<Integer>();
+            final TestSubscriber<Integer> ts2 = new TestSubscriber<Integer>();
 
             Runnable r1 = new Runnable() {
                 @Override
                 public void run() {
-                    cache.subscribe(to1);
+                    cache.subscribe(ts1);
                 }
             };
 
             Runnable r2 = new Runnable() {
                 @Override
                 public void run() {
-                    cache.subscribe(to2);
+                    cache.subscribe(ts2);
                 }
             };
 
             TestHelper.race(r1, r2);
 
-            to1
+            ts1
             .awaitDone(5, TimeUnit.SECONDS)
             .assertSubscribed()
             .assertValueCount(500)
             .assertComplete()
             .assertNoErrors();
 
-            to2
+            ts2
             .awaitDone(5, TimeUnit.SECONDS)
             .assertSubscribed()
             .assertValueCount(500)
@@ -498,31 +498,31 @@ public class FlowableCacheTest {
     @Test
     public void subscribeCompleteRace() {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
-            final PublishProcessor<Integer> ps = PublishProcessor.<Integer>create();
+            final PublishProcessor<Integer> pp = PublishProcessor.<Integer>create();
 
-            final Flowable<Integer> cache = ps.cache();
+            final Flowable<Integer> cache = pp.cache();
 
             cache.test();
 
-            final TestSubscriber<Integer> to = new TestSubscriber<Integer>();
+            final TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
 
             Runnable r1 = new Runnable() {
                 @Override
                 public void run() {
-                    cache.subscribe(to);
+                    cache.subscribe(ts);
                 }
             };
 
             Runnable r2 = new Runnable() {
                 @Override
                 public void run() {
-                    ps.onComplete();
+                    pp.onComplete();
                 }
             };
 
             TestHelper.race(r1, r2);
 
-            to
+            ts
             .awaitDone(5, TimeUnit.SECONDS)
             .assertResult();
         }

@@ -39,13 +39,13 @@ public class UnicastProcessorTest extends FlowableProcessorTest<Object> {
     public void fusionLive() {
         UnicastProcessor<Integer> ap = UnicastProcessor.create();
 
-        TestSubscriber<Integer> ts = SubscriberFusion.newTest(QueueSubscription.ANY);
+        TestSubscriber<Integer> ts = SubscriberFusion.newTest(QueueFuseable.ANY);
 
         ap.subscribe(ts);
 
         ts
         .assertOf(SubscriberFusion.<Integer>assertFuseable())
-        .assertOf(SubscriberFusion.<Integer>assertFusionMode(QueueSubscription.ASYNC));
+        .assertOf(SubscriberFusion.<Integer>assertFusionMode(QueueFuseable.ASYNC));
 
         ts.assertNoValues().assertNoErrors().assertNotComplete();
 
@@ -64,13 +64,13 @@ public class UnicastProcessorTest extends FlowableProcessorTest<Object> {
         ap.onNext(1);
         ap.onComplete();
 
-        TestSubscriber<Integer> ts = SubscriberFusion.newTest(QueueSubscription.ANY);
+        TestSubscriber<Integer> ts = SubscriberFusion.newTest(QueueFuseable.ANY);
 
         ap.subscribe(ts);
 
         ts
         .assertOf(SubscriberFusion.<Integer>assertFuseable())
-        .assertOf(SubscriberFusion.<Integer>assertFusionMode(QueueSubscription.ASYNC))
+        .assertOf(SubscriberFusion.<Integer>assertFusionMode(QueueFuseable.ASYNC))
         .assertResult(1);
     }
 
@@ -95,7 +95,7 @@ public class UnicastProcessorTest extends FlowableProcessorTest<Object> {
         ap.onNext(1);
         ap.onError(new RuntimeException());
 
-        TestSubscriber<Integer> ts = SubscriberFusion.newTest(QueueSubscription.ANY);
+        TestSubscriber<Integer> ts = SubscriberFusion.newTest(QueueFuseable.ANY);
 
         ap.subscribe(ts);
         ts
@@ -263,11 +263,11 @@ public class UnicastProcessorTest extends FlowableProcessorTest<Object> {
     public void rejectSyncFusion() {
         UnicastProcessor<Object> p = UnicastProcessor.create();
 
-        TestSubscriber<Object> ts = SubscriberFusion.newTest(QueueSubscription.SYNC);
+        TestSubscriber<Object> ts = SubscriberFusion.newTest(QueueFuseable.SYNC);
 
         p.subscribe(ts);
 
-        SubscriberFusion.assertFusion(ts, QueueSubscription.NONE);
+        SubscriberFusion.assertFusion(ts, QueueFuseable.NONE);
     }
 
     @Test
@@ -297,7 +297,7 @@ public class UnicastProcessorTest extends FlowableProcessorTest<Object> {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final UnicastProcessor<Object> p = UnicastProcessor.create();
 
-            final TestSubscriber<Object> ts = SubscriberFusion.newTest(QueueSubscription.ANY);
+            final TestSubscriber<Object> ts = SubscriberFusion.newTest(QueueFuseable.ANY);
 
             p.subscribe(ts);
 
@@ -360,11 +360,11 @@ public class UnicastProcessorTest extends FlowableProcessorTest<Object> {
 
         assertFalse(us.hasSubscribers());
 
-        TestSubscriber<Integer> to = us.test();
+        TestSubscriber<Integer> ts = us.test();
 
         assertTrue(us.hasSubscribers());
 
-        to.cancel();
+        ts.cancel();
 
         assertFalse(us.hasSubscribers());
     }
@@ -374,12 +374,12 @@ public class UnicastProcessorTest extends FlowableProcessorTest<Object> {
         UnicastProcessor<Integer> us = UnicastProcessor.create(false);
 
 
-        TestSubscriber<Integer> to = us.to(SubscriberFusion.<Integer>test(1, QueueDisposable.ANY, false));
+        TestSubscriber<Integer> ts = us.to(SubscriberFusion.<Integer>test(1, QueueFuseable.ANY, false));
 
         us.done = true;
-        us.drainFused(to);
+        us.drainFused(ts);
 
-        to.assertResult();
+        ts.assertResult();
     }
 
     @Test
@@ -387,22 +387,22 @@ public class UnicastProcessorTest extends FlowableProcessorTest<Object> {
         UnicastProcessor<Integer> us = UnicastProcessor.create(false);
 
 
-        TestSubscriber<Integer> to = us.to(SubscriberFusion.<Integer>test(1, QueueDisposable.ANY, false));
+        TestSubscriber<Integer> ts = us.to(SubscriberFusion.<Integer>test(1, QueueFuseable.ANY, false));
 
-        us.drainFused(to);
+        us.drainFused(ts);
 
-        to.assertEmpty();
+        ts.assertEmpty();
     }
 
     @Test
     public void checkTerminatedFailFastEmpty() {
         UnicastProcessor<Integer> us = UnicastProcessor.create(false);
 
-        TestSubscriber<Integer> to = us.to(SubscriberFusion.<Integer>test(1, QueueDisposable.ANY, false));
+        TestSubscriber<Integer> ts = us.to(SubscriberFusion.<Integer>test(1, QueueFuseable.ANY, false));
 
-        us.checkTerminated(true, true, false, to, us.queue);
+        us.checkTerminated(true, true, false, ts, us.queue);
 
-        to.assertEmpty();
+        ts.assertEmpty();
     }
 
     @Test

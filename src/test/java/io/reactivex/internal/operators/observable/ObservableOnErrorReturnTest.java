@@ -130,9 +130,9 @@ public class ObservableOnErrorReturnTest {
 
         @SuppressWarnings("unchecked")
         DefaultObserver<String> observer = mock(DefaultObserver.class);
-        TestObserver<String> ts = new TestObserver<String>(observer);
-        observable.subscribe(ts);
-        ts.awaitTerminalEvent();
+        TestObserver<String> to = new TestObserver<String>(observer);
+        observable.subscribe(to);
+        to.awaitTerminalEvent();
 
         verify(observer, Mockito.never()).onError(any(Throwable.class));
         verify(observer, times(1)).onComplete();
@@ -144,7 +144,7 @@ public class ObservableOnErrorReturnTest {
 
     @Test
     public void testBackpressure() {
-        TestObserver<Integer> ts = new TestObserver<Integer>();
+        TestObserver<Integer> to = new TestObserver<Integer>();
         Observable.range(0, 100000)
                 .onErrorReturn(new Function<Throwable, Integer>() {
 
@@ -172,9 +172,9 @@ public class ObservableOnErrorReturnTest {
                     }
 
                 })
-                .subscribe(ts);
-        ts.awaitTerminalEvent();
-        ts.assertNoErrors();
+                .subscribe(to);
+        to.awaitTerminalEvent();
+        to.assertNoErrors();
     }
 
     private static class TestObservable implements ObservableSource<String> {

@@ -39,16 +39,16 @@ public class ObservableCacheTest {
 
         assertFalse("Source is connected!", source.isConnected());
 
-        TestObserver<Integer> ts = new TestObserver<Integer>();
+        TestObserver<Integer> to = new TestObserver<Integer>();
 
-        source.subscribe(ts);
+        source.subscribe(to);
 
         assertTrue("Source is not connected!", source.isConnected());
         assertFalse("Subscribers retained!", source.hasObservers());
 
-        ts.assertNoErrors();
-        ts.assertTerminated();
-        List<Integer> onNextEvents = ts.values();
+        to.assertNoErrors();
+        to.assertTerminated();
+        List<Integer> onNextEvents = to.values();
         assertEquals(1000, onNextEvents.size());
 
         for (int i = 0; i < 1000; i++) {
@@ -118,14 +118,14 @@ public class ObservableCacheTest {
 
     @Test
     public void testTake() {
-        TestObserver<Integer> ts = new TestObserver<Integer>();
+        TestObserver<Integer> to = new TestObserver<Integer>();
 
         ObservableCache<Integer> cached = (ObservableCache<Integer>)ObservableCache.from(Observable.range(1, 100));
-        cached.take(10).subscribe(ts);
+        cached.take(10).subscribe(to);
 
-        ts.assertNoErrors();
-        ts.assertComplete();
-        ts.assertValues(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
+        to.assertNoErrors();
+        to.assertComplete();
+        to.assertValues(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
 //        ts.assertUnsubscribed(); // FIXME no longer valid
         assertFalse(cached.hasObservers());
     }
@@ -134,24 +134,24 @@ public class ObservableCacheTest {
     public void testAsync() {
         Observable<Integer> source = Observable.range(1, 10000);
         for (int i = 0; i < 100; i++) {
-            TestObserver<Integer> ts1 = new TestObserver<Integer>();
+            TestObserver<Integer> to1 = new TestObserver<Integer>();
 
             ObservableCache<Integer> cached = (ObservableCache<Integer>)ObservableCache.from(source);
 
-            cached.observeOn(Schedulers.computation()).subscribe(ts1);
+            cached.observeOn(Schedulers.computation()).subscribe(to1);
 
-            ts1.awaitTerminalEvent(2, TimeUnit.SECONDS);
-            ts1.assertNoErrors();
-            ts1.assertComplete();
-            assertEquals(10000, ts1.values().size());
+            to1.awaitTerminalEvent(2, TimeUnit.SECONDS);
+            to1.assertNoErrors();
+            to1.assertComplete();
+            assertEquals(10000, to1.values().size());
 
-            TestObserver<Integer> ts2 = new TestObserver<Integer>();
-            cached.observeOn(Schedulers.computation()).subscribe(ts2);
+            TestObserver<Integer> to2 = new TestObserver<Integer>();
+            cached.observeOn(Schedulers.computation()).subscribe(to2);
 
-            ts2.awaitTerminalEvent(2, TimeUnit.SECONDS);
-            ts2.assertNoErrors();
-            ts2.assertComplete();
-            assertEquals(10000, ts2.values().size());
+            to2.awaitTerminalEvent(2, TimeUnit.SECONDS);
+            to2.assertNoErrors();
+            to2.assertComplete();
+            assertEquals(10000, to2.values().size());
         }
     }
     @Test
@@ -165,9 +165,9 @@ public class ObservableCacheTest {
 
         List<TestObserver<Long>> list = new ArrayList<TestObserver<Long>>(100);
         for (int i = 0; i < 100; i++) {
-            TestObserver<Long> ts = new TestObserver<Long>();
-            list.add(ts);
-            output.skip(i * 10).take(10).subscribe(ts);
+            TestObserver<Long> to = new TestObserver<Long>();
+            list.add(to);
+            output.skip(i * 10).take(10).subscribe(to);
         }
 
         List<Long> expected = new ArrayList<Long>();
@@ -175,16 +175,16 @@ public class ObservableCacheTest {
             expected.add((long)(i - 10));
         }
         int j = 0;
-        for (TestObserver<Long> ts : list) {
-            ts.awaitTerminalEvent(3, TimeUnit.SECONDS);
-            ts.assertNoErrors();
-            ts.assertComplete();
+        for (TestObserver<Long> to : list) {
+            to.awaitTerminalEvent(3, TimeUnit.SECONDS);
+            to.assertNoErrors();
+            to.assertComplete();
 
             for (int i = j * 10; i < j * 10 + 10; i++) {
                 expected.set(i - j * 10, (long)i);
             }
 
-            ts.assertValueSequence(expected);
+            to.assertValueSequence(expected);
 
             j++;
         }
@@ -204,14 +204,14 @@ public class ObservableCacheTest {
             }
         });
 
-        TestObserver<Integer> ts = new TestObserver<Integer>();
-        firehose.cache().observeOn(Schedulers.computation()).takeLast(100).subscribe(ts);
+        TestObserver<Integer> to = new TestObserver<Integer>();
+        firehose.cache().observeOn(Schedulers.computation()).takeLast(100).subscribe(to);
 
-        ts.awaitTerminalEvent(3, TimeUnit.SECONDS);
-        ts.assertNoErrors();
-        ts.assertComplete();
+        to.awaitTerminalEvent(3, TimeUnit.SECONDS);
+        to.assertNoErrors();
+        to.assertComplete();
 
-        assertEquals(100, ts.values().size());
+        assertEquals(100, to.values().size());
     }
 
     @Test
@@ -221,19 +221,19 @@ public class ObservableCacheTest {
                 .cache();
 
 
-        TestObserver<Integer> ts = new TestObserver<Integer>();
-        source.subscribe(ts);
+        TestObserver<Integer> to = new TestObserver<Integer>();
+        source.subscribe(to);
 
-        ts.assertValues(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
-        ts.assertNotComplete();
-        ts.assertError(TestException.class);
+        to.assertValues(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
+        to.assertNotComplete();
+        to.assertError(TestException.class);
 
-        TestObserver<Integer> ts2 = new TestObserver<Integer>();
-        source.subscribe(ts2);
+        TestObserver<Integer> to2 = new TestObserver<Integer>();
+        source.subscribe(to2);
 
-        ts2.assertValues(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
-        ts2.assertNotComplete();
-        ts2.assertError(TestException.class);
+        to2.assertValues(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
+        to2.assertNotComplete();
+        to2.assertError(TestException.class);
     }
 
     @Test
@@ -250,20 +250,20 @@ public class ObservableCacheTest {
         })
         .cache();
 
-        TestObserver<Integer> ts = new TestObserver<Integer>() {
+        TestObserver<Integer> to = new TestObserver<Integer>() {
             @Override
             public void onNext(Integer t) {
                 throw new TestException();
             }
         };
 
-        source.subscribe(ts);
+        source.subscribe(to);
 
         Assert.assertEquals(100, count.get());
 
-        ts.assertNoValues();
-        ts.assertNotComplete();
-        ts.assertError(TestException.class);
+        to.assertNoValues();
+        to.assertNotComplete();
+        to.assertError(TestException.class);
     }
 
     @Test

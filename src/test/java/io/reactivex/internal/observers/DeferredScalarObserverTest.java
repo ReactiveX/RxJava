@@ -20,8 +20,7 @@ import org.junit.Test;
 import io.reactivex.*;
 import io.reactivex.disposables.*;
 import io.reactivex.exceptions.TestException;
-import io.reactivex.internal.fuseable.QueueDisposable;
-import io.reactivex.internal.observers.DeferredScalarObserver;
+import io.reactivex.internal.fuseable.*;
 import io.reactivex.observers.*;
 
 public class DeferredScalarObserverTest {
@@ -106,7 +105,7 @@ public class DeferredScalarObserverTest {
 
     @Test
     public void fused() {
-        TestObserver<Integer> to = ObserverFusion.newTest(QueueDisposable.ANY);
+        TestObserver<Integer> to = ObserverFusion.newTest(QueueFuseable.ANY);
 
         TakeFirst source = new TakeFirst(to);
 
@@ -115,7 +114,7 @@ public class DeferredScalarObserverTest {
         source.onSubscribe(d);
 
         to.assertOf(ObserverFusion.<Integer>assertFuseable());
-        to.assertOf(ObserverFusion.<Integer>assertFusionMode(QueueDisposable.ASYNC));
+        to.assertOf(ObserverFusion.<Integer>assertFusionMode(QueueFuseable.ASYNC));
 
         source.onNext(1);
         source.onNext(1);
@@ -129,7 +128,7 @@ public class DeferredScalarObserverTest {
 
     @Test
     public void fusedReject() {
-        TestObserver<Integer> to = ObserverFusion.newTest(QueueDisposable.SYNC);
+        TestObserver<Integer> to = ObserverFusion.newTest(QueueFuseable.SYNC);
 
         TakeFirst source = new TakeFirst(to);
 
@@ -138,7 +137,7 @@ public class DeferredScalarObserverTest {
         source.onSubscribe(d);
 
         to.assertOf(ObserverFusion.<Integer>assertFuseable());
-        to.assertOf(ObserverFusion.<Integer>assertFusionMode(QueueDisposable.NONE));
+        to.assertOf(ObserverFusion.<Integer>assertFusionMode(QueueFuseable.NONE));
 
         source.onNext(1);
         source.onNext(1);
@@ -168,7 +167,7 @@ public class DeferredScalarObserverTest {
 
     @Test
     public void nonfusedTerminateMore() {
-        TestObserver<Integer> to = ObserverFusion.newTest(QueueDisposable.NONE);
+        TestObserver<Integer> to = ObserverFusion.newTest(QueueFuseable.NONE);
 
         TakeLast source = new TakeLast(to);
 
@@ -186,7 +185,7 @@ public class DeferredScalarObserverTest {
 
     @Test
     public void nonfusedError() {
-        TestObserver<Integer> to = ObserverFusion.newTest(QueueDisposable.NONE);
+        TestObserver<Integer> to = ObserverFusion.newTest(QueueFuseable.NONE);
 
         TakeLast source = new TakeLast(to);
 
@@ -204,7 +203,7 @@ public class DeferredScalarObserverTest {
 
     @Test
     public void fusedTerminateMore() {
-        TestObserver<Integer> to = ObserverFusion.newTest(QueueDisposable.ANY);
+        TestObserver<Integer> to = ObserverFusion.newTest(QueueFuseable.ANY);
 
         TakeLast source = new TakeLast(to);
 
@@ -222,7 +221,7 @@ public class DeferredScalarObserverTest {
 
     @Test
     public void fusedError() {
-        TestObserver<Integer> to = ObserverFusion.newTest(QueueDisposable.ANY);
+        TestObserver<Integer> to = ObserverFusion.newTest(QueueFuseable.ANY);
 
         TakeLast source = new TakeLast(to);
 
@@ -240,7 +239,7 @@ public class DeferredScalarObserverTest {
 
     @Test
     public void disposed() {
-        TestObserver<Integer> to = ObserverFusion.newTest(QueueDisposable.NONE);
+        TestObserver<Integer> to = ObserverFusion.newTest(QueueFuseable.NONE);
 
         TakeLast source = new TakeLast(to);
 
@@ -295,7 +294,7 @@ public class DeferredScalarObserverTest {
 
     @Test
     public void fusedEmpty() {
-        TestObserver<Integer> to = ObserverFusion.newTest(QueueDisposable.ANY);
+        TestObserver<Integer> to = ObserverFusion.newTest(QueueFuseable.ANY);
 
         TakeLast source = new TakeLast(to);
 
@@ -310,7 +309,7 @@ public class DeferredScalarObserverTest {
 
     @Test
     public void nonfusedEmpty() {
-        TestObserver<Integer> to = ObserverFusion.newTest(QueueDisposable.NONE);
+        TestObserver<Integer> to = ObserverFusion.newTest(QueueFuseable.NONE);
 
         TakeLast source = new TakeLast(to);
 
@@ -335,7 +334,7 @@ public class DeferredScalarObserverTest {
             public void onSubscribe(Disposable d) {
                 this.d = (QueueDisposable<Integer>)d;
                 to.onSubscribe(d);
-                this.d.requestFusion(QueueDisposable.ANY);
+                this.d.requestFusion(QueueFuseable.ANY);
             }
 
             @Override
@@ -385,7 +384,7 @@ public class DeferredScalarObserverTest {
             public void onSubscribe(Disposable d) {
                 this.d = (QueueDisposable<Integer>)d;
                 to.onSubscribe(d);
-                this.d.requestFusion(QueueDisposable.ANY);
+                this.d.requestFusion(QueueFuseable.ANY);
             }
 
             @Override
@@ -414,7 +413,7 @@ public class DeferredScalarObserverTest {
 
     @Test
     public void offerThrow() {
-        TestObserver<Integer> to = ObserverFusion.newTest(QueueDisposable.NONE);
+        TestObserver<Integer> to = ObserverFusion.newTest(QueueFuseable.NONE);
 
         TakeLast source = new TakeLast(to);
 
@@ -433,7 +432,7 @@ public class DeferredScalarObserverTest {
             public void onSubscribe(Disposable d) {
                 this.d = (QueueDisposable<Integer>)d;
                 to.onSubscribe(d);
-                this.d.requestFusion(QueueDisposable.ANY);
+                this.d.requestFusion(QueueFuseable.ANY);
             }
 
             @Override

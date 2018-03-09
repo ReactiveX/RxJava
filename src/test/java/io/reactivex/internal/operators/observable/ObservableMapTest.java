@@ -13,7 +13,8 @@
 
 package io.reactivex.internal.operators.observable;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNull;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import java.util.*;
@@ -25,7 +26,7 @@ import io.reactivex.Observable;
 import io.reactivex.Observer;
 import io.reactivex.functions.*;
 import io.reactivex.internal.functions.Functions;
-import io.reactivex.internal.fuseable.QueueDisposable;
+import io.reactivex.internal.fuseable.*;
 import io.reactivex.observers.*;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subjects.UnicastSubject;
@@ -349,19 +350,19 @@ public class ObservableMapTest {
 
     @Test
     public void fusedSync() {
-        TestObserver<Integer> to = ObserverFusion.newTest(QueueDisposable.ANY);
+        TestObserver<Integer> to = ObserverFusion.newTest(QueueFuseable.ANY);
 
         Observable.range(1, 5)
         .map(Functions.<Integer>identity())
         .subscribe(to);
 
-        ObserverFusion.assertFusion(to, QueueDisposable.SYNC)
+        ObserverFusion.assertFusion(to, QueueFuseable.SYNC)
         .assertResult(1, 2, 3, 4, 5);
     }
 
     @Test
     public void fusedAsync() {
-        TestObserver<Integer> to = ObserverFusion.newTest(QueueDisposable.ANY);
+        TestObserver<Integer> to = ObserverFusion.newTest(QueueFuseable.ANY);
 
         UnicastSubject<Integer> us = UnicastSubject.create();
 
@@ -371,19 +372,19 @@ public class ObservableMapTest {
 
         TestHelper.emit(us, 1, 2, 3, 4, 5);
 
-        ObserverFusion.assertFusion(to, QueueDisposable.ASYNC)
+        ObserverFusion.assertFusion(to, QueueFuseable.ASYNC)
         .assertResult(1, 2, 3, 4, 5);
     }
 
     @Test
     public void fusedReject() {
-        TestObserver<Integer> to = ObserverFusion.newTest(QueueDisposable.ANY | QueueDisposable.BOUNDARY);
+        TestObserver<Integer> to = ObserverFusion.newTest(QueueFuseable.ANY | QueueFuseable.BOUNDARY);
 
         Observable.range(1, 5)
         .map(Functions.<Integer>identity())
         .subscribe(to);
 
-        ObserverFusion.assertFusion(to, QueueDisposable.NONE)
+        ObserverFusion.assertFusion(to, QueueFuseable.NONE)
         .assertResult(1, 2, 3, 4, 5);
     }
 

@@ -38,7 +38,7 @@ public class MaybeDoAfterSuccessTest {
         }
     };
 
-    final TestObserver<Integer> ts = new TestObserver<Integer>() {
+    final TestObserver<Integer> to = new TestObserver<Integer>() {
         @Override
         public void onNext(Integer t) {
             super.onNext(t);
@@ -50,7 +50,7 @@ public class MaybeDoAfterSuccessTest {
     public void just() {
         Maybe.just(1)
         .doAfterSuccess(afterSuccess)
-        .subscribeWith(ts)
+        .subscribeWith(to)
         .assertResult(1);
 
         assertEquals(Arrays.asList(1, -1), values);
@@ -60,7 +60,7 @@ public class MaybeDoAfterSuccessTest {
     public void error() {
         Maybe.<Integer>error(new TestException())
         .doAfterSuccess(afterSuccess)
-        .subscribeWith(ts)
+        .subscribeWith(to)
         .assertFailure(TestException.class);
 
         assertTrue(values.isEmpty());
@@ -70,7 +70,7 @@ public class MaybeDoAfterSuccessTest {
     public void empty() {
         Maybe.<Integer>empty()
         .doAfterSuccess(afterSuccess)
-        .subscribeWith(ts)
+        .subscribeWith(to)
         .assertResult();
 
         assertTrue(values.isEmpty());
@@ -86,7 +86,7 @@ public class MaybeDoAfterSuccessTest {
         Maybe.just(1)
         .doAfterSuccess(afterSuccess)
         .filter(Functions.alwaysTrue())
-        .subscribeWith(ts)
+        .subscribeWith(to)
         .assertResult(1);
 
         assertEquals(Arrays.asList(1, -1), values);
@@ -97,7 +97,7 @@ public class MaybeDoAfterSuccessTest {
         Maybe.<Integer>error(new TestException())
         .doAfterSuccess(afterSuccess)
         .filter(Functions.alwaysTrue())
-        .subscribeWith(ts)
+        .subscribeWith(to)
         .assertFailure(TestException.class);
 
         assertTrue(values.isEmpty());
@@ -108,7 +108,7 @@ public class MaybeDoAfterSuccessTest {
         Maybe.<Integer>empty()
         .doAfterSuccess(afterSuccess)
         .filter(Functions.alwaysTrue())
-        .subscribeWith(ts)
+        .subscribeWith(to)
         .assertResult();
 
         assertTrue(values.isEmpty());

@@ -123,9 +123,9 @@ public class FlowableFlatMapMaybeTest {
 
     @Test
     public void mapperThrowsFlowable() {
-        PublishProcessor<Integer> ps = PublishProcessor.create();
+        PublishProcessor<Integer> pp = PublishProcessor.create();
 
-        TestSubscriber<Integer> to = ps
+        TestSubscriber<Integer> ts = pp
         .flatMapMaybe(new Function<Integer, MaybeSource<Integer>>() {
             @Override
             public MaybeSource<Integer> apply(Integer v) throws Exception {
@@ -134,20 +134,20 @@ public class FlowableFlatMapMaybeTest {
         })
         .test();
 
-        assertTrue(ps.hasSubscribers());
+        assertTrue(pp.hasSubscribers());
 
-        ps.onNext(1);
+        pp.onNext(1);
 
-        to.assertFailure(TestException.class);
+        ts.assertFailure(TestException.class);
 
-        assertFalse(ps.hasSubscribers());
+        assertFalse(pp.hasSubscribers());
     }
 
     @Test
     public void mapperReturnsNullFlowable() {
-        PublishProcessor<Integer> ps = PublishProcessor.create();
+        PublishProcessor<Integer> pp = PublishProcessor.create();
 
-        TestSubscriber<Integer> to = ps
+        TestSubscriber<Integer> ts = pp
         .flatMapMaybe(new Function<Integer, MaybeSource<Integer>>() {
             @Override
             public MaybeSource<Integer> apply(Integer v) throws Exception {
@@ -156,18 +156,18 @@ public class FlowableFlatMapMaybeTest {
         })
         .test();
 
-        assertTrue(ps.hasSubscribers());
+        assertTrue(pp.hasSubscribers());
 
-        ps.onNext(1);
+        pp.onNext(1);
 
-        to.assertFailure(NullPointerException.class);
+        ts.assertFailure(NullPointerException.class);
 
-        assertFalse(ps.hasSubscribers());
+        assertFalse(pp.hasSubscribers());
     }
 
     @Test
     public void normalDelayErrorAll() {
-        TestSubscriber<Integer> to = Flowable.range(1, 10).concatWith(Flowable.<Integer>error(new TestException()))
+        TestSubscriber<Integer> ts = Flowable.range(1, 10).concatWith(Flowable.<Integer>error(new TestException()))
         .flatMapMaybe(new Function<Integer, MaybeSource<Integer>>() {
             @Override
             public MaybeSource<Integer> apply(Integer v) throws Exception {
@@ -177,7 +177,7 @@ public class FlowableFlatMapMaybeTest {
         .test()
         .assertFailure(CompositeException.class);
 
-        List<Throwable> errors = TestHelper.compositeList(to.errors().get(0));
+        List<Throwable> errors = TestHelper.compositeList(ts.errors().get(0));
 
         for (int i = 0; i < 11; i++) {
             TestHelper.assertError(errors, i, TestException.class);
@@ -352,46 +352,46 @@ public class FlowableFlatMapMaybeTest {
 
     @Test
     public void successError() {
-        final PublishProcessor<Integer> ps = PublishProcessor.create();
+        final PublishProcessor<Integer> pp = PublishProcessor.create();
 
-        TestSubscriber<Integer> to = Flowable.range(1, 2)
+        TestSubscriber<Integer> ts = Flowable.range(1, 2)
         .flatMapMaybe(new Function<Integer, MaybeSource<Integer>>() {
             @Override
             public MaybeSource<Integer> apply(Integer v) throws Exception {
                 if (v == 2) {
-                    return ps.singleElement();
+                    return pp.singleElement();
                 }
                 return Maybe.error(new TestException());
             }
         }, true, Integer.MAX_VALUE)
         .test();
 
-        ps.onNext(1);
-        ps.onComplete();
+        pp.onNext(1);
+        pp.onComplete();
 
-        to
+        ts
         .assertFailure(TestException.class, 1);
     }
 
     @Test
     public void completeError() {
-        final PublishProcessor<Integer> ps = PublishProcessor.create();
+        final PublishProcessor<Integer> pp = PublishProcessor.create();
 
-        TestSubscriber<Integer> to = Flowable.range(1, 2)
+        TestSubscriber<Integer> ts = Flowable.range(1, 2)
         .flatMapMaybe(new Function<Integer, MaybeSource<Integer>>() {
             @Override
             public MaybeSource<Integer> apply(Integer v) throws Exception {
                 if (v == 2) {
-                    return ps.singleElement();
+                    return pp.singleElement();
                 }
                 return Maybe.error(new TestException());
             }
         }, true, Integer.MAX_VALUE)
         .test();
 
-        ps.onComplete();
+        pp.onComplete();
 
-        to
+        ts
         .assertFailure(TestException.class);
     }
 
@@ -451,72 +451,72 @@ public class FlowableFlatMapMaybeTest {
 
     @Test
     public void emissionQueueTrigger() {
-        final PublishProcessor<Integer> ps1 = PublishProcessor.create();
-        final PublishProcessor<Integer> ps2 = PublishProcessor.create();
+        final PublishProcessor<Integer> pp1 = PublishProcessor.create();
+        final PublishProcessor<Integer> pp2 = PublishProcessor.create();
 
-        TestSubscriber<Integer> to = new TestSubscriber<Integer>() {
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>() {
             @Override
             public void onNext(Integer t) {
                 super.onNext(t);
                 if (t == 1) {
-                    ps2.onNext(2);
-                    ps2.onComplete();
+                    pp2.onNext(2);
+                    pp2.onComplete();
                 }
             }
         };
 
-        Flowable.just(ps1, ps2)
+        Flowable.just(pp1, pp2)
                 .flatMapMaybe(new Function<PublishProcessor<Integer>, MaybeSource<Integer>>() {
                     @Override
                     public MaybeSource<Integer> apply(PublishProcessor<Integer> v) throws Exception {
                         return v.singleElement();
                     }
                 })
-        .subscribe(to);
+        .subscribe(ts);
 
-        ps1.onNext(1);
-        ps1.onComplete();
+        pp1.onNext(1);
+        pp1.onComplete();
 
-        to.assertResult(1, 2);
+        ts.assertResult(1, 2);
     }
 
     @Test
     public void emissionQueueTrigger2() {
-        final PublishProcessor<Integer> ps1 = PublishProcessor.create();
-        final PublishProcessor<Integer> ps2 = PublishProcessor.create();
-        final PublishProcessor<Integer> ps3 = PublishProcessor.create();
+        final PublishProcessor<Integer> pp1 = PublishProcessor.create();
+        final PublishProcessor<Integer> pp2 = PublishProcessor.create();
+        final PublishProcessor<Integer> pp3 = PublishProcessor.create();
 
-        TestSubscriber<Integer> to = new TestSubscriber<Integer>() {
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>() {
             @Override
             public void onNext(Integer t) {
                 super.onNext(t);
                 if (t == 1) {
-                    ps2.onNext(2);
-                    ps2.onComplete();
+                    pp2.onNext(2);
+                    pp2.onComplete();
                 }
             }
         };
 
-        Flowable.just(ps1, ps2, ps3)
+        Flowable.just(pp1, pp2, pp3)
                 .flatMapMaybe(new Function<PublishProcessor<Integer>, MaybeSource<Integer>>() {
                     @Override
                     public MaybeSource<Integer> apply(PublishProcessor<Integer> v) throws Exception {
                         return v.singleElement();
                     }
                 })
-        .subscribe(to);
+        .subscribe(ts);
 
-        ps1.onNext(1);
-        ps1.onComplete();
+        pp1.onNext(1);
+        pp1.onComplete();
 
-        ps3.onComplete();
+        pp3.onComplete();
 
-        to.assertResult(1, 2);
+        ts.assertResult(1, 2);
     }
 
     @Test
     public void disposeInner() {
-        final TestSubscriber<Object> to = new TestSubscriber<Object>();
+        final TestSubscriber<Object> ts = new TestSubscriber<Object>();
 
         Flowable.just(1).flatMapMaybe(new Function<Integer, MaybeSource<Object>>() {
             @Override
@@ -528,30 +528,30 @@ public class FlowableFlatMapMaybeTest {
 
                         assertFalse(((Disposable)observer).isDisposed());
 
-                        to.dispose();
+                        ts.dispose();
 
                         assertTrue(((Disposable)observer).isDisposed());
                     }
                 };
             }
         })
-        .subscribe(to);
+        .subscribe(ts);
 
-        to
+        ts
         .assertEmpty();
     }
 
     @Test
     public void innerSuccessCompletesAfterMain() {
-        PublishProcessor<Integer> ps = PublishProcessor.create();
+        PublishProcessor<Integer> pp = PublishProcessor.create();
 
-        TestSubscriber<Integer> to = Flowable.just(1).flatMapMaybe(Functions.justFunction(ps.singleElement()))
+        TestSubscriber<Integer> ts = Flowable.just(1).flatMapMaybe(Functions.justFunction(pp.singleElement()))
         .test();
 
-        ps.onNext(2);
-        ps.onComplete();
+        pp.onNext(2);
+        pp.onComplete();
 
-        to
+        ts
         .assertResult(2);
     }
 
@@ -585,19 +585,19 @@ public class FlowableFlatMapMaybeTest {
     @Test
     public void requestCancelRace() {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
-            final TestSubscriber<Integer> to = Flowable.just(1).concatWith(Flowable.<Integer>never())
+            final TestSubscriber<Integer> ts = Flowable.just(1).concatWith(Flowable.<Integer>never())
             .flatMapMaybe(Functions.justFunction(Maybe.just(2))).test(0);
 
             Runnable r1 = new Runnable() {
                 @Override
                 public void run() {
-                    to.request(1);
+                    ts.request(1);
                 }
             };
             Runnable r2 = new Runnable() {
                 @Override
                 public void run() {
-                    to.cancel();
+                    ts.cancel();
                 }
             };
 

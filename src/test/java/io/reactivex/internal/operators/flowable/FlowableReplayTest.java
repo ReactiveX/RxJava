@@ -46,14 +46,14 @@ public class FlowableReplayTest {
     public void testBufferedReplay() {
         PublishProcessor<Integer> source = PublishProcessor.create();
 
-        ConnectableFlowable<Integer> co = source.replay(3);
-        co.connect();
+        ConnectableFlowable<Integer> cf = source.replay(3);
+        cf.connect();
 
         {
             Subscriber<Object> observer1 = TestHelper.mockSubscriber();
             InOrder inOrder = inOrder(observer1);
 
-            co.subscribe(observer1);
+            cf.subscribe(observer1);
 
             source.onNext(1);
             source.onNext(2);
@@ -76,7 +76,7 @@ public class FlowableReplayTest {
             Subscriber<Object> observer1 = TestHelper.mockSubscriber();
             InOrder inOrder = inOrder(observer1);
 
-            co.subscribe(observer1);
+            cf.subscribe(observer1);
 
             inOrder.verify(observer1, times(1)).onNext(2);
             inOrder.verify(observer1, times(1)).onNext(3);
@@ -91,14 +91,14 @@ public class FlowableReplayTest {
     public void testBufferedWindowReplay() {
         PublishProcessor<Integer> source = PublishProcessor.create();
         TestScheduler scheduler = new TestScheduler();
-        ConnectableFlowable<Integer> co = source.replay(3, 100, TimeUnit.MILLISECONDS, scheduler);
-        co.connect();
+        ConnectableFlowable<Integer> cf = source.replay(3, 100, TimeUnit.MILLISECONDS, scheduler);
+        cf.connect();
 
         {
             Subscriber<Object> observer1 = TestHelper.mockSubscriber();
             InOrder inOrder = inOrder(observer1);
 
-            co.subscribe(observer1);
+            cf.subscribe(observer1);
 
             source.onNext(1);
             scheduler.advanceTimeBy(10, TimeUnit.MILLISECONDS);
@@ -128,7 +128,7 @@ public class FlowableReplayTest {
             Subscriber<Object> observer1 = TestHelper.mockSubscriber();
             InOrder inOrder = inOrder(observer1);
 
-            co.subscribe(observer1);
+            cf.subscribe(observer1);
 
             inOrder.verify(observer1, times(1)).onNext(4);
             inOrder.verify(observer1, times(1)).onNext(5);
@@ -143,14 +143,14 @@ public class FlowableReplayTest {
 
         PublishProcessor<Integer> source = PublishProcessor.create();
 
-        ConnectableFlowable<Integer> co = source.replay(100, TimeUnit.MILLISECONDS, scheduler);
-        co.connect();
+        ConnectableFlowable<Integer> cf = source.replay(100, TimeUnit.MILLISECONDS, scheduler);
+        cf.connect();
 
         {
             Subscriber<Object> observer1 = TestHelper.mockSubscriber();
             InOrder inOrder = inOrder(observer1);
 
-            co.subscribe(observer1);
+            cf.subscribe(observer1);
 
             source.onNext(1);
             scheduler.advanceTimeBy(60, TimeUnit.MILLISECONDS);
@@ -174,7 +174,7 @@ public class FlowableReplayTest {
             Subscriber<Object> observer1 = TestHelper.mockSubscriber();
             InOrder inOrder = inOrder(observer1);
 
-            co.subscribe(observer1);
+            cf.subscribe(observer1);
             inOrder.verify(observer1, never()).onNext(3);
 
             inOrder.verify(observer1, times(1)).onComplete();
@@ -371,14 +371,14 @@ public class FlowableReplayTest {
     public void testBufferedReplayError() {
         PublishProcessor<Integer> source = PublishProcessor.create();
 
-        ConnectableFlowable<Integer> co = source.replay(3);
-        co.connect();
+        ConnectableFlowable<Integer> cf = source.replay(3);
+        cf.connect();
 
         {
             Subscriber<Object> observer1 = TestHelper.mockSubscriber();
             InOrder inOrder = inOrder(observer1);
 
-            co.subscribe(observer1);
+            cf.subscribe(observer1);
 
             source.onNext(1);
             source.onNext(2);
@@ -402,7 +402,7 @@ public class FlowableReplayTest {
             Subscriber<Object> observer1 = TestHelper.mockSubscriber();
             InOrder inOrder = inOrder(observer1);
 
-            co.subscribe(observer1);
+            cf.subscribe(observer1);
 
             inOrder.verify(observer1, times(1)).onNext(2);
             inOrder.verify(observer1, times(1)).onNext(3);
@@ -419,14 +419,14 @@ public class FlowableReplayTest {
 
         PublishProcessor<Integer> source = PublishProcessor.create();
 
-        ConnectableFlowable<Integer> co = source.replay(100, TimeUnit.MILLISECONDS, scheduler);
-        co.connect();
+        ConnectableFlowable<Integer> cf = source.replay(100, TimeUnit.MILLISECONDS, scheduler);
+        cf.connect();
 
         {
             Subscriber<Object> observer1 = TestHelper.mockSubscriber();
             InOrder inOrder = inOrder(observer1);
 
-            co.subscribe(observer1);
+            cf.subscribe(observer1);
 
             source.onNext(1);
             scheduler.advanceTimeBy(60, TimeUnit.MILLISECONDS);
@@ -450,7 +450,7 @@ public class FlowableReplayTest {
             Subscriber<Object> observer1 = TestHelper.mockSubscriber();
             InOrder inOrder = inOrder(observer1);
 
-            co.subscribe(observer1);
+            cf.subscribe(observer1);
             inOrder.verify(observer1, never()).onNext(3);
 
             inOrder.verify(observer1, times(1)).onError(any(RuntimeException.class));
@@ -807,17 +807,17 @@ public class FlowableReplayTest {
                         requested.addAndGet(t);
                     }
                 });
-        ConnectableFlowable<Integer> co = source.replay();
+        ConnectableFlowable<Integer> cf = source.replay();
 
         TestSubscriber<Integer> ts1 = new TestSubscriber<Integer>(10L);
         TestSubscriber<Integer> ts2 = new TestSubscriber<Integer>(90L);
 
-        co.subscribe(ts1);
-        co.subscribe(ts2);
+        cf.subscribe(ts1);
+        cf.subscribe(ts2);
 
         ts2.request(10);
 
-        co.connect();
+        cf.connect();
 
         ts1.assertValueCount(10);
         ts1.assertNotTerminated();
@@ -838,17 +838,17 @@ public class FlowableReplayTest {
                         requested.addAndGet(t);
                     }
                 });
-        ConnectableFlowable<Integer> co = source.replay(50);
+        ConnectableFlowable<Integer> cf = source.replay(50);
 
         TestSubscriber<Integer> ts1 = new TestSubscriber<Integer>(10L);
         TestSubscriber<Integer> ts2 = new TestSubscriber<Integer>(90L);
 
-        co.subscribe(ts1);
-        co.subscribe(ts2);
+        cf.subscribe(ts1);
+        cf.subscribe(ts2);
 
         ts2.request(10);
 
-        co.connect();
+        cf.connect();
 
         ts1.assertValueCount(10);
         ts1.assertNotTerminated();
@@ -1306,12 +1306,12 @@ public class FlowableReplayTest {
     @Test
     public void connectRace() {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
-            final ConnectableFlowable<Integer> co = Flowable.range(1, 3).replay();
+            final ConnectableFlowable<Integer> cf = Flowable.range(1, 3).replay();
 
             Runnable r = new Runnable() {
                 @Override
                 public void run() {
-                    co.connect();
+                    cf.connect();
                 }
             };
 
@@ -1322,22 +1322,22 @@ public class FlowableReplayTest {
     @Test
     public void subscribeRace() {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
-            final ConnectableFlowable<Integer> co = Flowable.range(1, 3).replay();
+            final ConnectableFlowable<Integer> cf = Flowable.range(1, 3).replay();
 
-            final TestSubscriber<Integer> to1 = new TestSubscriber<Integer>();
-            final TestSubscriber<Integer> to2 = new TestSubscriber<Integer>();
+            final TestSubscriber<Integer> ts1 = new TestSubscriber<Integer>();
+            final TestSubscriber<Integer> ts2 = new TestSubscriber<Integer>();
 
             Runnable r1 = new Runnable() {
                 @Override
                 public void run() {
-                    co.subscribe(to1);
+                    cf.subscribe(ts1);
                 }
             };
 
             Runnable r2 = new Runnable() {
                 @Override
                 public void run() {
-                    co.subscribe(to2);
+                    cf.subscribe(ts2);
                 }
             };
 
@@ -1348,24 +1348,24 @@ public class FlowableReplayTest {
     @Test
     public void addRemoveRace() {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
-            final ConnectableFlowable<Integer> co = Flowable.range(1, 3).replay();
+            final ConnectableFlowable<Integer> cf = Flowable.range(1, 3).replay();
 
-            final TestSubscriber<Integer> to1 = new TestSubscriber<Integer>();
-            final TestSubscriber<Integer> to2 = new TestSubscriber<Integer>();
+            final TestSubscriber<Integer> ts1 = new TestSubscriber<Integer>();
+            final TestSubscriber<Integer> ts2 = new TestSubscriber<Integer>();
 
-            co.subscribe(to1);
+            cf.subscribe(ts1);
 
             Runnable r1 = new Runnable() {
                 @Override
                 public void run() {
-                    to1.cancel();
+                    ts1.cancel();
                 }
             };
 
             Runnable r2 = new Runnable() {
                 @Override
                 public void run() {
-                    co.subscribe(to2);
+                    cf.subscribe(ts2);
                 }
             };
 
@@ -1384,12 +1384,12 @@ public class FlowableReplayTest {
 
     @Test
     public void cancelOnArrival2() {
-        ConnectableFlowable<Integer> co = PublishProcessor.<Integer>create()
+        ConnectableFlowable<Integer> cf = PublishProcessor.<Integer>create()
         .replay(Integer.MAX_VALUE);
 
-        co.test();
+        cf.test();
 
-        co
+        cf
         .autoConnect()
         .test(Long.MAX_VALUE, true)
         .assertEmpty();
@@ -1397,11 +1397,11 @@ public class FlowableReplayTest {
 
     @Test
     public void connectConsumerThrows() {
-        ConnectableFlowable<Integer> co = Flowable.range(1, 2)
+        ConnectableFlowable<Integer> cf = Flowable.range(1, 2)
         .replay();
 
         try {
-            co.connect(new Consumer<Disposable>() {
+            cf.connect(new Consumer<Disposable>() {
                 @Override
                 public void accept(Disposable t) throws Exception {
                     throw new TestException();
@@ -1412,11 +1412,11 @@ public class FlowableReplayTest {
             // expected
         }
 
-        co.test().assertEmpty().cancel();
+        cf.test().assertEmpty().cancel();
 
-        co.connect();
+        cf.connect();
 
-        co.test().assertResult(1, 2);
+        cf.test().assertResult(1, 2);
     }
 
     @Test
@@ -1446,16 +1446,16 @@ public class FlowableReplayTest {
     @Test
     public void subscribeOnNextRace() {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
-            final PublishProcessor<Integer> ps = PublishProcessor.create();
+            final PublishProcessor<Integer> pp = PublishProcessor.create();
 
-            final ConnectableFlowable<Integer> co = ps.replay();
+            final ConnectableFlowable<Integer> cf = pp.replay();
 
-            final TestSubscriber<Integer> to1 = new TestSubscriber<Integer>();
+            final TestSubscriber<Integer> ts1 = new TestSubscriber<Integer>();
 
             Runnable r1 = new Runnable() {
                 @Override
                 public void run() {
-                    co.subscribe(to1);
+                    cf.subscribe(ts1);
                 }
             };
 
@@ -1463,7 +1463,7 @@ public class FlowableReplayTest {
                 @Override
                 public void run() {
                     for (int j = 0; j < 1000; j++) {
-                        ps.onNext(j);
+                        pp.onNext(j);
                     }
                 }
             };
@@ -1475,18 +1475,18 @@ public class FlowableReplayTest {
     @Test
     public void unsubscribeOnNextRace() {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
-            final PublishProcessor<Integer> ps = PublishProcessor.create();
+            final PublishProcessor<Integer> pp = PublishProcessor.create();
 
-            final ConnectableFlowable<Integer> co = ps.replay();
+            final ConnectableFlowable<Integer> cf = pp.replay();
 
-            final TestSubscriber<Integer> to1 = new TestSubscriber<Integer>();
+            final TestSubscriber<Integer> ts1 = new TestSubscriber<Integer>();
 
-            co.subscribe(to1);
+            cf.subscribe(ts1);
 
             Runnable r1 = new Runnable() {
                 @Override
                 public void run() {
-                    to1.dispose();
+                    ts1.dispose();
                 }
             };
 
@@ -1494,7 +1494,7 @@ public class FlowableReplayTest {
                 @Override
                 public void run() {
                     for (int j = 0; j < 1000; j++) {
-                        ps.onNext(j);
+                        pp.onNext(j);
                     }
                 }
             };
@@ -1506,23 +1506,23 @@ public class FlowableReplayTest {
     @Test
     public void unsubscribeReplayRace() {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
-            final ConnectableFlowable<Integer> co = Flowable.range(1, 1000).replay();
+            final ConnectableFlowable<Integer> cf = Flowable.range(1, 1000).replay();
 
-            final TestSubscriber<Integer> to1 = new TestSubscriber<Integer>();
+            final TestSubscriber<Integer> ts1 = new TestSubscriber<Integer>();
 
-            co.connect();
+            cf.connect();
 
             Runnable r1 = new Runnable() {
                 @Override
                 public void run() {
-                    co.subscribe(to1);
+                    cf.subscribe(ts1);
                 }
             };
 
             Runnable r2 = new Runnable() {
                 @Override
                 public void run() {
-                    to1.dispose();
+                    ts1.dispose();
                 }
             };
 
@@ -1532,90 +1532,90 @@ public class FlowableReplayTest {
 
     @Test
     public void reentrantOnNext() {
-        final PublishProcessor<Integer> ps = PublishProcessor.create();
+        final PublishProcessor<Integer> pp = PublishProcessor.create();
 
-        TestSubscriber<Integer> to = new TestSubscriber<Integer>() {
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>() {
             @Override
             public void onNext(Integer t) {
                 if (t == 1) {
-                    ps.onNext(2);
-                    ps.onComplete();
+                    pp.onNext(2);
+                    pp.onComplete();
                 }
                 super.onNext(t);
             }
         };
 
-        ps.replay().autoConnect().subscribe(to);
+        pp.replay().autoConnect().subscribe(ts);
 
-        ps.onNext(1);
+        pp.onNext(1);
 
-        to.assertResult(1, 2);
+        ts.assertResult(1, 2);
     }
 
     @Test
     public void reentrantOnNextBound() {
-        final PublishProcessor<Integer> ps = PublishProcessor.create();
+        final PublishProcessor<Integer> pp = PublishProcessor.create();
 
-        TestSubscriber<Integer> to = new TestSubscriber<Integer>() {
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>() {
             @Override
             public void onNext(Integer t) {
                 if (t == 1) {
-                    ps.onNext(2);
-                    ps.onComplete();
+                    pp.onNext(2);
+                    pp.onComplete();
                 }
                 super.onNext(t);
             }
         };
 
-        ps.replay(10).autoConnect().subscribe(to);
+        pp.replay(10).autoConnect().subscribe(ts);
 
-        ps.onNext(1);
+        pp.onNext(1);
 
-        to.assertResult(1, 2);
+        ts.assertResult(1, 2);
     }
 
     @Test
     public void reentrantOnNextCancel() {
-        final PublishProcessor<Integer> ps = PublishProcessor.create();
+        final PublishProcessor<Integer> pp = PublishProcessor.create();
 
-        TestSubscriber<Integer> to = new TestSubscriber<Integer>() {
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>() {
             @Override
             public void onNext(Integer t) {
                 if (t == 1) {
-                    ps.onNext(2);
+                    pp.onNext(2);
                     cancel();
                 }
                 super.onNext(t);
             }
         };
 
-        ps.replay().autoConnect().subscribe(to);
+        pp.replay().autoConnect().subscribe(ts);
 
-        ps.onNext(1);
+        pp.onNext(1);
 
-        to.assertValues(1);
+        ts.assertValues(1);
     }
 
     @Test
     public void reentrantOnNextCancelBounded() {
-        final PublishProcessor<Integer> ps = PublishProcessor.create();
+        final PublishProcessor<Integer> pp = PublishProcessor.create();
 
-        TestSubscriber<Integer> to = new TestSubscriber<Integer>() {
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>() {
             @Override
             public void onNext(Integer t) {
                 if (t == 1) {
-                    ps.onNext(2);
+                    pp.onNext(2);
                     cancel();
                 }
                 super.onNext(t);
             }
         };
 
-        ps.replay(10).autoConnect().subscribe(to);
+        pp.replay(10).autoConnect().subscribe(ts);
 
-        ps.onNext(1);
+        pp.onNext(1);
 
-        to.assertValues(1);
+        ts.assertValues(1);
     }
 
     @Test

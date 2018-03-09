@@ -24,7 +24,7 @@ import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.*;
 import io.reactivex.internal.functions.Functions;
-import io.reactivex.internal.fuseable.QueueSubscription;
+import io.reactivex.internal.fuseable.*;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.processors.UnicastProcessor;
 import io.reactivex.subscribers.*;
@@ -97,13 +97,13 @@ public class FlowableDoFinallyTest implements Action {
 
     @Test
     public void syncFused() {
-        TestSubscriber<Integer> ts = SubscriberFusion.newTest(QueueSubscription.SYNC);
+        TestSubscriber<Integer> ts = SubscriberFusion.newTest(QueueFuseable.SYNC);
 
         Flowable.range(1, 5)
         .doFinally(this)
         .subscribe(ts);
 
-        SubscriberFusion.assertFusion(ts, QueueSubscription.SYNC)
+        SubscriberFusion.assertFusion(ts, QueueFuseable.SYNC)
         .assertResult(1, 2, 3, 4, 5);
 
         assertEquals(1, calls);
@@ -111,13 +111,13 @@ public class FlowableDoFinallyTest implements Action {
 
     @Test
     public void syncFusedBoundary() {
-        TestSubscriber<Integer> ts = SubscriberFusion.newTest(QueueSubscription.SYNC | QueueSubscription.BOUNDARY);
+        TestSubscriber<Integer> ts = SubscriberFusion.newTest(QueueFuseable.SYNC | QueueFuseable.BOUNDARY);
 
         Flowable.range(1, 5)
         .doFinally(this)
         .subscribe(ts);
 
-        SubscriberFusion.assertFusion(ts, QueueSubscription.NONE)
+        SubscriberFusion.assertFusion(ts, QueueFuseable.NONE)
         .assertResult(1, 2, 3, 4, 5);
 
         assertEquals(1, calls);
@@ -125,7 +125,7 @@ public class FlowableDoFinallyTest implements Action {
 
     @Test
     public void asyncFused() {
-        TestSubscriber<Integer> ts = SubscriberFusion.newTest(QueueSubscription.ASYNC);
+        TestSubscriber<Integer> ts = SubscriberFusion.newTest(QueueFuseable.ASYNC);
 
         UnicastProcessor<Integer> up = UnicastProcessor.create();
         TestHelper.emit(up, 1, 2, 3, 4, 5);
@@ -134,7 +134,7 @@ public class FlowableDoFinallyTest implements Action {
         .doFinally(this)
         .subscribe(ts);
 
-        SubscriberFusion.assertFusion(ts, QueueSubscription.ASYNC)
+        SubscriberFusion.assertFusion(ts, QueueFuseable.ASYNC)
         .assertResult(1, 2, 3, 4, 5);
 
         assertEquals(1, calls);
@@ -142,7 +142,7 @@ public class FlowableDoFinallyTest implements Action {
 
     @Test
     public void asyncFusedBoundary() {
-        TestSubscriber<Integer> ts = SubscriberFusion.newTest(QueueSubscription.ASYNC | QueueSubscription.BOUNDARY);
+        TestSubscriber<Integer> ts = SubscriberFusion.newTest(QueueFuseable.ASYNC | QueueFuseable.BOUNDARY);
 
         UnicastProcessor<Integer> up = UnicastProcessor.create();
         TestHelper.emit(up, 1, 2, 3, 4, 5);
@@ -151,7 +151,7 @@ public class FlowableDoFinallyTest implements Action {
         .doFinally(this)
         .subscribe(ts);
 
-        SubscriberFusion.assertFusion(ts, QueueSubscription.NONE)
+        SubscriberFusion.assertFusion(ts, QueueFuseable.NONE)
         .assertResult(1, 2, 3, 4, 5);
 
         assertEquals(1, calls);
@@ -205,14 +205,14 @@ public class FlowableDoFinallyTest implements Action {
 
     @Test
     public void syncFusedConditional() {
-        TestSubscriber<Integer> ts = SubscriberFusion.newTest(QueueSubscription.SYNC);
+        TestSubscriber<Integer> ts = SubscriberFusion.newTest(QueueFuseable.SYNC);
 
         Flowable.range(1, 5)
         .doFinally(this)
         .filter(Functions.alwaysTrue())
         .subscribe(ts);
 
-        SubscriberFusion.assertFusion(ts, QueueSubscription.SYNC)
+        SubscriberFusion.assertFusion(ts, QueueFuseable.SYNC)
         .assertResult(1, 2, 3, 4, 5);
 
         assertEquals(1, calls);
@@ -220,13 +220,13 @@ public class FlowableDoFinallyTest implements Action {
 
     @Test
     public void nonFused() {
-        TestSubscriber<Integer> ts = SubscriberFusion.newTest(QueueSubscription.SYNC);
+        TestSubscriber<Integer> ts = SubscriberFusion.newTest(QueueFuseable.SYNC);
 
         Flowable.range(1, 5).hide()
         .doFinally(this)
         .subscribe(ts);
 
-        SubscriberFusion.assertFusion(ts, QueueSubscription.NONE)
+        SubscriberFusion.assertFusion(ts, QueueFuseable.NONE)
         .assertResult(1, 2, 3, 4, 5);
 
         assertEquals(1, calls);
@@ -234,14 +234,14 @@ public class FlowableDoFinallyTest implements Action {
 
     @Test
     public void nonFusedConditional() {
-        TestSubscriber<Integer> ts = SubscriberFusion.newTest(QueueSubscription.SYNC);
+        TestSubscriber<Integer> ts = SubscriberFusion.newTest(QueueFuseable.SYNC);
 
         Flowable.range(1, 5).hide()
         .doFinally(this)
         .filter(Functions.alwaysTrue())
         .subscribe(ts);
 
-        SubscriberFusion.assertFusion(ts, QueueSubscription.NONE)
+        SubscriberFusion.assertFusion(ts, QueueFuseable.NONE)
         .assertResult(1, 2, 3, 4, 5);
 
         assertEquals(1, calls);
@@ -249,14 +249,14 @@ public class FlowableDoFinallyTest implements Action {
 
     @Test
     public void syncFusedBoundaryConditional() {
-        TestSubscriber<Integer> ts = SubscriberFusion.newTest(QueueSubscription.SYNC | QueueSubscription.BOUNDARY);
+        TestSubscriber<Integer> ts = SubscriberFusion.newTest(QueueFuseable.SYNC | QueueFuseable.BOUNDARY);
 
         Flowable.range(1, 5)
         .doFinally(this)
         .filter(Functions.alwaysTrue())
         .subscribe(ts);
 
-        SubscriberFusion.assertFusion(ts, QueueSubscription.NONE)
+        SubscriberFusion.assertFusion(ts, QueueFuseable.NONE)
         .assertResult(1, 2, 3, 4, 5);
 
         assertEquals(1, calls);
@@ -264,7 +264,7 @@ public class FlowableDoFinallyTest implements Action {
 
     @Test
     public void asyncFusedConditional() {
-        TestSubscriber<Integer> ts = SubscriberFusion.newTest(QueueSubscription.ASYNC);
+        TestSubscriber<Integer> ts = SubscriberFusion.newTest(QueueFuseable.ASYNC);
 
         UnicastProcessor<Integer> up = UnicastProcessor.create();
         TestHelper.emit(up, 1, 2, 3, 4, 5);
@@ -274,7 +274,7 @@ public class FlowableDoFinallyTest implements Action {
         .filter(Functions.alwaysTrue())
         .subscribe(ts);
 
-        SubscriberFusion.assertFusion(ts, QueueSubscription.ASYNC)
+        SubscriberFusion.assertFusion(ts, QueueFuseable.ASYNC)
         .assertResult(1, 2, 3, 4, 5);
 
         assertEquals(1, calls);
@@ -282,7 +282,7 @@ public class FlowableDoFinallyTest implements Action {
 
     @Test
     public void asyncFusedBoundaryConditional() {
-        TestSubscriber<Integer> ts = SubscriberFusion.newTest(QueueSubscription.ASYNC | QueueSubscription.BOUNDARY);
+        TestSubscriber<Integer> ts = SubscriberFusion.newTest(QueueFuseable.ASYNC | QueueFuseable.BOUNDARY);
 
         UnicastProcessor<Integer> up = UnicastProcessor.create();
         TestHelper.emit(up, 1, 2, 3, 4, 5);
@@ -292,7 +292,7 @@ public class FlowableDoFinallyTest implements Action {
         .filter(Functions.alwaysTrue())
         .subscribe(ts);
 
-        SubscriberFusion.assertFusion(ts, QueueSubscription.NONE)
+        SubscriberFusion.assertFusion(ts, QueueFuseable.NONE)
         .assertResult(1, 2, 3, 4, 5);
 
         assertEquals(1, calls);
@@ -357,7 +357,7 @@ public class FlowableDoFinallyTest implements Action {
                 @SuppressWarnings("unchecked")
                 QueueSubscription<Integer> qs = (QueueSubscription<Integer>)s;
 
-                qs.requestFusion(QueueSubscription.ANY);
+                qs.requestFusion(QueueFuseable.ANY);
 
                 assertFalse(qs.isEmpty());
 
@@ -404,7 +404,7 @@ public class FlowableDoFinallyTest implements Action {
                 @SuppressWarnings("unchecked")
                 QueueSubscription<Integer> qs = (QueueSubscription<Integer>)s;
 
-                qs.requestFusion(QueueSubscription.ANY);
+                qs.requestFusion(QueueFuseable.ANY);
 
                 assertFalse(qs.isEmpty());
 

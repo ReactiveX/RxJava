@@ -31,7 +31,7 @@ public class ObservableDelaySubscriptionOtherTest {
     public void testNoPrematureSubscription() {
         PublishSubject<Object> other = PublishSubject.create();
 
-        TestObserver<Integer> ts = new TestObserver<Integer>();
+        TestObserver<Integer> to = new TestObserver<Integer>();
 
         final AtomicInteger subscribed = new AtomicInteger();
 
@@ -43,11 +43,11 @@ public class ObservableDelaySubscriptionOtherTest {
             }
         })
         .delaySubscription(other)
-        .subscribe(ts);
+        .subscribe(to);
 
-        ts.assertNotComplete();
-        ts.assertNoErrors();
-        ts.assertNoValues();
+        to.assertNotComplete();
+        to.assertNoErrors();
+        to.assertNoValues();
 
         Assert.assertEquals("Premature subscription", 0, subscribed.get());
 
@@ -55,16 +55,16 @@ public class ObservableDelaySubscriptionOtherTest {
 
         Assert.assertEquals("No subscription", 1, subscribed.get());
 
-        ts.assertValue(1);
-        ts.assertNoErrors();
-        ts.assertComplete();
+        to.assertValue(1);
+        to.assertNoErrors();
+        to.assertComplete();
     }
 
     @Test
     public void testNoMultipleSubscriptions() {
         PublishSubject<Object> other = PublishSubject.create();
 
-        TestObserver<Integer> ts = new TestObserver<Integer>();
+        TestObserver<Integer> to = new TestObserver<Integer>();
 
         final AtomicInteger subscribed = new AtomicInteger();
 
@@ -76,11 +76,11 @@ public class ObservableDelaySubscriptionOtherTest {
             }
         })
         .delaySubscription(other)
-        .subscribe(ts);
+        .subscribe(to);
 
-        ts.assertNotComplete();
-        ts.assertNoErrors();
-        ts.assertNoValues();
+        to.assertNotComplete();
+        to.assertNoErrors();
+        to.assertNoValues();
 
         Assert.assertEquals("Premature subscription", 0, subscribed.get());
 
@@ -89,16 +89,16 @@ public class ObservableDelaySubscriptionOtherTest {
 
         Assert.assertEquals("No subscription", 1, subscribed.get());
 
-        ts.assertValue(1);
-        ts.assertNoErrors();
-        ts.assertComplete();
+        to.assertValue(1);
+        to.assertNoErrors();
+        to.assertComplete();
     }
 
     @Test
     public void testCompleteTriggersSubscription() {
         PublishSubject<Object> other = PublishSubject.create();
 
-        TestObserver<Integer> ts = new TestObserver<Integer>();
+        TestObserver<Integer> to = new TestObserver<Integer>();
 
         final AtomicInteger subscribed = new AtomicInteger();
 
@@ -110,11 +110,11 @@ public class ObservableDelaySubscriptionOtherTest {
             }
         })
         .delaySubscription(other)
-        .subscribe(ts);
+        .subscribe(to);
 
-        ts.assertNotComplete();
-        ts.assertNoErrors();
-        ts.assertNoValues();
+        to.assertNotComplete();
+        to.assertNoErrors();
+        to.assertNoValues();
 
         Assert.assertEquals("Premature subscription", 0, subscribed.get());
 
@@ -122,16 +122,16 @@ public class ObservableDelaySubscriptionOtherTest {
 
         Assert.assertEquals("No subscription", 1, subscribed.get());
 
-        ts.assertValue(1);
-        ts.assertNoErrors();
-        ts.assertComplete();
+        to.assertValue(1);
+        to.assertNoErrors();
+        to.assertComplete();
     }
 
     @Test
     public void testNoPrematureSubscriptionToError() {
         PublishSubject<Object> other = PublishSubject.create();
 
-        TestObserver<Integer> ts = new TestObserver<Integer>();
+        TestObserver<Integer> to = new TestObserver<Integer>();
 
         final AtomicInteger subscribed = new AtomicInteger();
 
@@ -143,11 +143,11 @@ public class ObservableDelaySubscriptionOtherTest {
             }
         })
         .delaySubscription(other)
-        .subscribe(ts);
+        .subscribe(to);
 
-        ts.assertNotComplete();
-        ts.assertNoErrors();
-        ts.assertNoValues();
+        to.assertNotComplete();
+        to.assertNoErrors();
+        to.assertNoValues();
 
         Assert.assertEquals("Premature subscription", 0, subscribed.get());
 
@@ -155,16 +155,16 @@ public class ObservableDelaySubscriptionOtherTest {
 
         Assert.assertEquals("No subscription", 1, subscribed.get());
 
-        ts.assertNoValues();
-        ts.assertNotComplete();
-        ts.assertError(TestException.class);
+        to.assertNoValues();
+        to.assertNotComplete();
+        to.assertError(TestException.class);
     }
 
     @Test
     public void testNoSubscriptionIfOtherErrors() {
         PublishSubject<Object> other = PublishSubject.create();
 
-        TestObserver<Integer> ts = new TestObserver<Integer>();
+        TestObserver<Integer> to = new TestObserver<Integer>();
 
         final AtomicInteger subscribed = new AtomicInteger();
 
@@ -176,11 +176,11 @@ public class ObservableDelaySubscriptionOtherTest {
             }
         })
         .delaySubscription(other)
-        .subscribe(ts);
+        .subscribe(to);
 
-        ts.assertNotComplete();
-        ts.assertNoErrors();
-        ts.assertNoValues();
+        to.assertNotComplete();
+        to.assertNoErrors();
+        to.assertNoValues();
 
         Assert.assertEquals("Premature subscription", 0, subscribed.get());
 
@@ -188,9 +188,9 @@ public class ObservableDelaySubscriptionOtherTest {
 
         Assert.assertEquals("Premature subscription", 0, subscribed.get());
 
-        ts.assertNoValues();
-        ts.assertNotComplete();
-        ts.assertError(TestException.class);
+        to.assertNoValues();
+        to.assertNotComplete();
+        to.assertError(TestException.class);
     }
 
     @Test

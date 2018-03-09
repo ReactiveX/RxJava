@@ -352,9 +352,9 @@ public class FlowableOnErrorResumeNextViaFunctionTest {
     public void normalBackpressure() {
         TestSubscriber<Integer> ts = TestSubscriber.create(0);
 
-        PublishProcessor<Integer> ps = PublishProcessor.create();
+        PublishProcessor<Integer> pp = PublishProcessor.create();
 
-        ps.onErrorResumeNext(new Function<Throwable, Flowable<Integer>>() {
+        pp.onErrorResumeNext(new Function<Throwable, Flowable<Integer>>() {
             @Override
             public Flowable<Integer> apply(Throwable v) {
                 return Flowable.range(3, 2);
@@ -363,9 +363,9 @@ public class FlowableOnErrorResumeNextViaFunctionTest {
 
         ts.request(2);
 
-        ps.onNext(1);
-        ps.onNext(2);
-        ps.onError(new TestException("Forced failure"));
+        pp.onNext(1);
+        pp.onNext(2);
+        pp.onError(new TestException("Forced failure"));
 
         ts.assertValues(1, 2);
         ts.assertNoErrors();

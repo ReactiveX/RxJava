@@ -24,7 +24,7 @@ import org.junit.Test;
 
 import io.reactivex.*;
 import io.reactivex.functions.Consumer;
-import io.reactivex.internal.fuseable.QueueDisposable;
+import io.reactivex.internal.fuseable.*;
 import io.reactivex.observers.*;
 
 public class ObservableRangeLongTest {
@@ -99,12 +99,12 @@ public class ObservableRangeLongTest {
 
         Observable<Long> o = Observable.rangeLong(1, list.size());
 
-        TestObserver<Long> ts = new TestObserver<Long>();
+        TestObserver<Long> to = new TestObserver<Long>();
 
-        o.subscribe(ts);
+        o.subscribe(to);
 
-        ts.assertValueSequence(list);
-        ts.assertTerminated();
+        to.assertValueSequence(list);
+        to.assertTerminated();
     }
 
     @Test
@@ -136,12 +136,12 @@ public class ObservableRangeLongTest {
 
     @Test(timeout = 1000)
     public void testNearMaxValueWithoutBackpressure() {
-        TestObserver<Long> ts = new TestObserver<Long>();
-        Observable.rangeLong(Long.MAX_VALUE - 1L, 2L).subscribe(ts);
+        TestObserver<Long> to = new TestObserver<Long>();
+        Observable.rangeLong(Long.MAX_VALUE - 1L, 2L).subscribe(to);
 
-        ts.assertComplete();
-        ts.assertNoErrors();
-        ts.assertValues(Long.MAX_VALUE - 1, Long.MAX_VALUE);
+        to.assertComplete();
+        to.assertNoErrors();
+        to.assertValues(Long.MAX_VALUE - 1, Long.MAX_VALUE);
     }
 
     @Test
@@ -170,21 +170,21 @@ public class ObservableRangeLongTest {
 
     @Test
     public void fused() {
-        TestObserver<Long> to = ObserverFusion.newTest(QueueDisposable.ANY);
+        TestObserver<Long> to = ObserverFusion.newTest(QueueFuseable.ANY);
 
         Observable.rangeLong(1, 2).subscribe(to);
 
-        ObserverFusion.assertFusion(to, QueueDisposable.SYNC)
+        ObserverFusion.assertFusion(to, QueueFuseable.SYNC)
         .assertResult(1L, 2L);
     }
 
     @Test
     public void fusedReject() {
-        TestObserver<Long> to = ObserverFusion.newTest(QueueDisposable.ASYNC);
+        TestObserver<Long> to = ObserverFusion.newTest(QueueFuseable.ASYNC);
 
         Observable.rangeLong(1, 2).subscribe(to);
 
-        ObserverFusion.assertFusion(to, QueueDisposable.NONE)
+        ObserverFusion.assertFusion(to, QueueFuseable.NONE)
         .assertResult(1L, 2L);
     }
 

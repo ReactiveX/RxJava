@@ -186,7 +186,7 @@ public class ObservableOnExceptionResumeNextViaObservableTest {
 
     @Test
     public void testBackpressure() {
-        TestObserver<Integer> ts = new TestObserver<Integer>();
+        TestObserver<Integer> to = new TestObserver<Integer>();
         Observable.range(0, 100000)
                 .onExceptionResumeNext(Observable.just(1))
                 .observeOn(Schedulers.computation())
@@ -207,9 +207,9 @@ public class ObservableOnExceptionResumeNextViaObservableTest {
                     }
 
                 })
-                .subscribe(ts);
-        ts.awaitTerminalEvent();
-        ts.assertNoErrors();
+                .subscribe(to);
+        to.awaitTerminalEvent();
+        to.assertNoErrors();
     }
 
 

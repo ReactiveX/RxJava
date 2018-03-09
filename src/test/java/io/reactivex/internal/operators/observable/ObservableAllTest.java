@@ -146,7 +146,7 @@ public class ObservableAllTest {
 
     @Test
     public void testPredicateThrowsExceptionAndValueInCauseMessageObservable() {
-        TestObserver<Boolean> ts = new TestObserver<Boolean>();
+        TestObserver<Boolean> to = new TestObserver<Boolean>();
 
         final IllegalArgumentException ex = new IllegalArgumentException();
 
@@ -156,12 +156,12 @@ public class ObservableAllTest {
                 throw ex;
             }
         })
-        .subscribe(ts);
+        .subscribe(to);
 
-        ts.assertTerminated();
-        ts.assertNoValues();
-        ts.assertNotComplete();
-        ts.assertError(ex);
+        to.assertTerminated();
+        to.assertNoValues();
+        to.assertNotComplete();
+        to.assertError(ex);
         // FIXME need to decide about adding the value that probably caused the crash in some way
 //        assertTrue(ex.getCause().getMessage().contains("Boo!"));
     }
@@ -278,7 +278,7 @@ public class ObservableAllTest {
 
     @Test
     public void testPredicateThrowsExceptionAndValueInCauseMessage() {
-        TestObserver<Boolean> ts = new TestObserver<Boolean>();
+        TestObserver<Boolean> to = new TestObserver<Boolean>();
 
         final IllegalArgumentException ex = new IllegalArgumentException();
 
@@ -288,12 +288,12 @@ public class ObservableAllTest {
                 throw ex;
             }
         })
-        .subscribe(ts);
+        .subscribe(to);
 
-        ts.assertTerminated();
-        ts.assertNoValues();
-        ts.assertNotComplete();
-        ts.assertError(ex);
+        to.assertTerminated();
+        to.assertNoValues();
+        to.assertNotComplete();
+        to.assertError(ex);
         // FIXME need to decide about adding the value that probably caused the crash in some way
 //        assertTrue(ex.getCause().getMessage().contains("Boo!"));
     }

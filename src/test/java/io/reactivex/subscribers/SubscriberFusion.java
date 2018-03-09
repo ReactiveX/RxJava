@@ -32,12 +32,12 @@ public enum SubscriberFusion {
      * Use this as follows:
      * <pre>
      * source
-     * .to(SubscriberFusion.test(0, QueueSubscription.ANY, false))
+     * .to(SubscriberFusion.test(0, QueueFuseable.ANY, false))
      * .assertResult(0);
      * </pre>
      * @param <T> the value type
      * @param initialRequest the initial request amount, non-negative
-     * @param mode the fusion mode to request, see {@link QueueSubscription} constants.
+     * @param mode the fusion mode to request, see {@link QueueFuseable} constants.
      * @param cancelled should the TestSubscriber cancelled before the subscription even happens?
      * @return the new Function instance
      */
@@ -52,7 +52,7 @@ public enum SubscriberFusion {
      * Use this as follows:
      * <pre>
      * source
-     * .to(ObserverFusion.test(0, QueueDisposable.ANY, false))
+     * .to(ObserverFusion.test(0, QueueFuseable.ANY, false))
      * .assertOf(ObserverFusion.assertFuseable());
      * </pre>
      * @param <T> the value type
@@ -114,7 +114,7 @@ public enum SubscriberFusion {
      * Use this as follows:
      * <pre>
      * source
-     * .to(ObserverFusion.test(0, QueueDisposable.ANY, false))
+     * .to(ObserverFusion.test(0, QueueFuseable.ANY, false))
      * .assertOf(ObserverFusion.assertNotFuseable());
      * </pre>
      * @param <T> the value type
@@ -135,17 +135,17 @@ public enum SubscriberFusion {
 
     /**
      * Returns a Consumer that asserts on its TestSubscriber parameter that
-     * the upstream is Fuseable (sent a QueueSubscription subclass in onSubscribe)
+     * the upstream is Fuseable (sent a QueueFuseable.subclass in onSubscribe)
      * and the established the given fusion mode.
      * <p>
      * Use this as follows:
      * <pre>
      * source
-     * .to(SubscriberFusion.test(0, QueueSubscription.ANY, false))
-     * .assertOf(SubscriberFusion.assertFusionMode(QueueSubscription.SYNC));
+     * .to(SubscriberFusion.test(0, QueueFuseable.ANY, false))
+     * .assertOf(SubscriberFusion.assertFusionMode(QueueFuseable.SYNC));
      * </pre>
      * @param <T> the value type
-     * @param mode the expected established fusion mode, see {@link QueueSubscription} constants.
+     * @param mode the expected established fusion mode, see {@link QueueFuseable} constants.
      * @return the new Consumer instance
      */
     public static <T> Consumer<TestSubscriber<T>> assertFusionMode(final int mode) {
@@ -156,7 +156,7 @@ public enum SubscriberFusion {
      * Constructs a TestSubscriber with the given initial request and required fusion mode.
      * @param <T> the value type
      * @param initialRequest the initial request, non-negative
-     * @param mode the requested fusion mode, see {@link QueueSubscription} constants
+     * @param mode the requested fusion mode, see {@link QueueFuseable} constants
      * @return the new TestSubscriber
      */
     public static <T> TestSubscriber<T> newTest(long initialRequest, int mode) {
@@ -168,7 +168,7 @@ public enum SubscriberFusion {
     /**
      * Constructs a TestSubscriber with the given required fusion mode.
      * @param <T> the value type
-     * @param mode the requested fusion mode, see {@link QueueSubscription} constants
+     * @param mode the requested fusion mode, see {@link QueueFuseable} constants
      * @return the new TestSubscriber
      */
     public static <T> TestSubscriber<T> newTest(int mode) {
@@ -178,7 +178,7 @@ public enum SubscriberFusion {
     }
 
     /**
-     * Assert that the TestSubscriber received a fuseabe QueueSubscription and
+     * Assert that the TestSubscriber received a fuseabe QueueFuseable.and
      * is in the given fusion mode.
      * @param <T> the value type
      * @param ts the TestSubscriber instance

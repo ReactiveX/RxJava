@@ -39,23 +39,23 @@ public class UnicastSubjectTest extends SubjectTest<Integer> {
     public void fusionLive() {
         UnicastSubject<Integer> ap = UnicastSubject.create();
 
-        TestObserver<Integer> ts = ObserverFusion.newTest(QueueDisposable.ANY);
+        TestObserver<Integer> to = ObserverFusion.newTest(QueueFuseable.ANY);
 
-        ap.subscribe(ts);
+        ap.subscribe(to);
 
-        ts
+        to
         .assertOf(ObserverFusion.<Integer>assertFuseable())
-        .assertOf(ObserverFusion.<Integer>assertFusionMode(QueueDisposable.ASYNC));
+        .assertOf(ObserverFusion.<Integer>assertFusionMode(QueueFuseable.ASYNC));
 
-        ts.assertNoValues().assertNoErrors().assertNotComplete();
+        to.assertNoValues().assertNoErrors().assertNotComplete();
 
         ap.onNext(1);
 
-        ts.assertValue(1).assertNoErrors().assertNotComplete();
+        to.assertValue(1).assertNoErrors().assertNotComplete();
 
         ap.onComplete();
 
-        ts.assertResult(1);
+        to.assertResult(1);
     }
 
     @Test
@@ -64,13 +64,13 @@ public class UnicastSubjectTest extends SubjectTest<Integer> {
         ap.onNext(1);
         ap.onComplete();
 
-        TestObserver<Integer> ts = ObserverFusion.newTest(QueueDisposable.ANY);
+        TestObserver<Integer> to = ObserverFusion.newTest(QueueFuseable.ANY);
 
-        ap.subscribe(ts);
+        ap.subscribe(to);
 
-        ts
+        to
         .assertOf(ObserverFusion.<Integer>assertFuseable())
-        .assertOf(ObserverFusion.<Integer>assertFusionMode(QueueDisposable.ASYNC))
+        .assertOf(ObserverFusion.<Integer>assertFusionMode(QueueFuseable.ASYNC))
         .assertResult(1);
     }
 
@@ -79,10 +79,10 @@ public class UnicastSubjectTest extends SubjectTest<Integer> {
         UnicastSubject<Integer> ap = UnicastSubject.create(false);
         ap.onNext(1);
         ap.onError(new RuntimeException());
-        TestObserver<Integer> ts = TestObserver.create();
-        ap.subscribe(ts);
+        TestObserver<Integer> to = TestObserver.create();
+        ap.subscribe(to);
 
-        ts
+        to
                 .assertValueCount(0)
                 .assertError(RuntimeException.class);
     }
@@ -93,10 +93,10 @@ public class UnicastSubjectTest extends SubjectTest<Integer> {
         UnicastSubject<Integer> ap = UnicastSubject.create(16, noop, false);
         ap.onNext(1);
         ap.onError(new RuntimeException());
-        TestObserver<Integer> ts = TestObserver.create();
-        ap.subscribe(ts);
+        TestObserver<Integer> to = TestObserver.create();
+        ap.subscribe(to);
 
-        ts
+        to
                 .assertValueCount(0)
                 .assertError(RuntimeException.class);
     }
@@ -107,10 +107,10 @@ public class UnicastSubjectTest extends SubjectTest<Integer> {
         UnicastSubject<Integer> ap = UnicastSubject.create(16, noop, true);
         ap.onNext(1);
         ap.onError(new RuntimeException());
-        TestObserver<Integer> ts = TestObserver.create();
-        ap.subscribe(ts);
+        TestObserver<Integer> to = TestObserver.create();
+        ap.subscribe(to);
 
-        ts
+        to
                 .assertValueCount(1)
                 .assertError(RuntimeException.class);
     }
@@ -120,10 +120,10 @@ public class UnicastSubjectTest extends SubjectTest<Integer> {
         UnicastSubject<Integer> ap = UnicastSubject.create(false);
         ap.onNext(1);
         ap.onError(new RuntimeException());
-        TestObserver<Integer> ts = ObserverFusion.newTest(QueueDisposable.ANY);
-        ap.subscribe(ts);
+        TestObserver<Integer> to = ObserverFusion.newTest(QueueFuseable.ANY);
+        ap.subscribe(to);
 
-        ts
+        to
                 .assertValueCount(0)
                 .assertError(RuntimeException.class);
     }
@@ -135,10 +135,10 @@ public class UnicastSubjectTest extends SubjectTest<Integer> {
         ap.onNext(2);
         ap.onNext(3);
         ap.onComplete();
-        TestObserver<Integer> ts = ObserverFusion.newTest(QueueDisposable.ANY);
-        ap.subscribe(ts);
+        TestObserver<Integer> to = ObserverFusion.newTest(QueueFuseable.ANY);
+        ap.subscribe(to);
 
-        ts
+        to
                 .assertValueCount(3)
                 .assertComplete();
     }
@@ -150,10 +150,10 @@ public class UnicastSubjectTest extends SubjectTest<Integer> {
         ap.onNext(2);
         ap.onNext(3);
         ap.onComplete();
-        TestObserver<Integer> ts = TestObserver.create();
-        ap.subscribe(ts);
+        TestObserver<Integer> to = TestObserver.create();
+        ap.subscribe(to);
 
-        ts
+        to
                 .assertValueCount(3)
                 .assertComplete();
     }
@@ -231,12 +231,12 @@ public class UnicastSubjectTest extends SubjectTest<Integer> {
                 }
             });
 
-            final TestObserver<Object> ts = up.test();
+            final TestObserver<Object> to = up.test();
 
             Runnable r1 = new Runnable() {
                 @Override
                 public void run() {
-                    ts.cancel();
+                    to.cancel();
                 }
             };
 
@@ -299,11 +299,11 @@ public class UnicastSubjectTest extends SubjectTest<Integer> {
     public void rejectSyncFusion() {
         UnicastSubject<Object> p = UnicastSubject.create();
 
-        TestObserver<Object> ts = ObserverFusion.newTest(QueueDisposable.SYNC);
+        TestObserver<Object> to = ObserverFusion.newTest(QueueFuseable.SYNC);
 
-        p.subscribe(ts);
+        p.subscribe(to);
 
-        ObserverFusion.assertFusion(ts, QueueDisposable.NONE);
+        ObserverFusion.assertFusion(to, QueueFuseable.NONE);
     }
 
     @Test
@@ -317,7 +317,7 @@ public class UnicastSubjectTest extends SubjectTest<Integer> {
     public void multiSubscriber() {
         UnicastSubject<Object> p = UnicastSubject.create();
 
-        TestObserver<Object> ts = p.test();
+        TestObserver<Object> to = p.test();
 
         p.test()
         .assertFailure(IllegalStateException.class);
@@ -325,7 +325,7 @@ public class UnicastSubjectTest extends SubjectTest<Integer> {
         p.onNext(1);
         p.onComplete();
 
-        ts.assertResult(1);
+        to.assertResult(1);
     }
 
     @Test
@@ -333,9 +333,9 @@ public class UnicastSubjectTest extends SubjectTest<Integer> {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final UnicastSubject<Object> p = UnicastSubject.create();
 
-            final TestObserver<Object> ts = ObserverFusion.newTest(QueueSubscription.ANY);
+            final TestObserver<Object> to = ObserverFusion.newTest(QueueFuseable.ANY);
 
-            p.subscribe(ts);
+            p.subscribe(to);
 
             Runnable r1 = new Runnable() {
                 @Override
@@ -347,7 +347,7 @@ public class UnicastSubjectTest extends SubjectTest<Integer> {
             Runnable r2 = new Runnable() {
                 @Override
                 public void run() {
-                    ts.cancel();
+                    to.cancel();
                 }
             };
 
@@ -389,30 +389,30 @@ public class UnicastSubjectTest extends SubjectTest<Integer> {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final UnicastSubject<Integer> us = UnicastSubject.create();
 
-            final TestObserver<Integer> ts1 = new TestObserver<Integer>();
-            final TestObserver<Integer> ts2 = new TestObserver<Integer>();
+            final TestObserver<Integer> to1 = new TestObserver<Integer>();
+            final TestObserver<Integer> to2 = new TestObserver<Integer>();
 
             Runnable r1 = new Runnable() {
                 @Override
                 public void run() {
-                    us.subscribe(ts1);
+                    us.subscribe(to1);
                 }
             };
 
             Runnable r2 = new Runnable() {
                 @Override
                 public void run() {
-                    us.subscribe(ts2);
+                    us.subscribe(to2);
                 }
             };
 
             TestHelper.race(r1, r2);
 
-            if (ts1.errorCount() == 0) {
-                ts2.assertFailure(IllegalStateException.class);
+            if (to1.errorCount() == 0) {
+                to2.assertFailure(IllegalStateException.class);
             } else
-            if (ts2.errorCount() == 0) {
-                ts1.assertFailure(IllegalStateException.class);
+            if (to2.errorCount() == 0) {
+                to1.assertFailure(IllegalStateException.class);
             } else {
                 fail("Neither TestObserver failed");
             }
@@ -439,7 +439,7 @@ public class UnicastSubjectTest extends SubjectTest<Integer> {
         UnicastSubject<Integer> us = UnicastSubject.create(false);
 
 
-        TestObserver<Integer> to = us.to(ObserverFusion.<Integer>test(QueueDisposable.ANY, false));
+        TestObserver<Integer> to = us.to(ObserverFusion.<Integer>test(QueueFuseable.ANY, false));
 
         us.done = true;
         us.drainFused(to);
@@ -452,7 +452,7 @@ public class UnicastSubjectTest extends SubjectTest<Integer> {
         UnicastSubject<Integer> us = UnicastSubject.create(false);
 
 
-        TestObserver<Integer> to = us.to(ObserverFusion.<Integer>test(QueueDisposable.ANY, false));
+        TestObserver<Integer> to = us.to(ObserverFusion.<Integer>test(QueueFuseable.ANY, false));
 
         us.drainFused(to);
 

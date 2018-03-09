@@ -52,11 +52,11 @@ public class MaybeSwitchIfEmptySingleTest {
     public void dispose() {
         PublishProcessor<Integer> pp = PublishProcessor.create();
 
-        TestObserver<Integer> ts = pp.singleElement().switchIfEmpty(Single.just(2)).test();
+        TestObserver<Integer> to = pp.singleElement().switchIfEmpty(Single.just(2)).test();
 
         assertTrue(pp.hasSubscribers());
 
-        ts.cancel();
+        to.cancel();
 
         assertFalse(pp.hasSubscribers());
     }
@@ -84,7 +84,7 @@ public class MaybeSwitchIfEmptySingleTest {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final PublishProcessor<Integer> pp = PublishProcessor.create();
 
-            final TestObserver<Integer> ts = pp.singleElement().switchIfEmpty(Single.just(2)).test();
+            final TestObserver<Integer> to = pp.singleElement().switchIfEmpty(Single.just(2)).test();
 
             Runnable r1 = new Runnable() {
                 @Override
@@ -96,7 +96,7 @@ public class MaybeSwitchIfEmptySingleTest {
             Runnable r2 = new Runnable() {
                 @Override
                 public void run() {
-                    ts.cancel();
+                    to.cancel();
                 }
             };
 

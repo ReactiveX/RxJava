@@ -27,7 +27,7 @@ import io.reactivex.*;
 import io.reactivex.disposables.*;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.Consumer;
-import io.reactivex.internal.fuseable.QueueSubscription;
+import io.reactivex.internal.fuseable.QueueFuseable;
 import io.reactivex.observers.*;
 
 public class AsyncSubjectTest extends SubjectTest<Integer> {
@@ -151,13 +151,13 @@ public class AsyncSubjectTest extends SubjectTest<Integer> {
         AsyncSubject<String> subject = AsyncSubject.create();
 
         Observer<String> observer = TestHelper.mockObserver();
-        TestObserver<String> ts = new TestObserver<String>(observer);
-        subject.subscribe(ts);
+        TestObserver<String> to = new TestObserver<String>(observer);
+        subject.subscribe(to);
 
         subject.onNext("one");
         subject.onNext("two");
 
-        ts.dispose();
+        to.dispose();
 
         verify(observer, Mockito.never()).onNext(anyString());
         verify(observer, Mockito.never()).onError(any(Throwable.class));
@@ -282,8 +282,8 @@ public class AsyncSubjectTest extends SubjectTest<Integer> {
 //        AsyncSubject<String> ps = AsyncSubject.create();
 //
 //        ps.subscribe();
-//        TestObserver<String> ts = new TestObserver<String>();
-//        ps.subscribe(ts);
+//        TestObserver<String> to = new TestObserver<String>();
+//        ps.subscribe(to);
 //
 //        try {
 //            ps.onError(new RuntimeException("an exception"));
@@ -292,7 +292,7 @@ public class AsyncSubjectTest extends SubjectTest<Integer> {
 //            // ignore
 //        }
 //        // even though the onError above throws we should still receive it on the other subscriber
-//        assertEquals(1, ts.getOnErrorEvents().size());
+//        assertEquals(1, to.getOnErrorEvents().size());
 //    }
 
 
@@ -306,8 +306,8 @@ public class AsyncSubjectTest extends SubjectTest<Integer> {
 //
 //        ps.subscribe();
 //        ps.subscribe();
-//        TestObserver<String> ts = new TestObserver<String>();
-//        ps.subscribe(ts);
+//        TestObserver<String> to = new TestObserver<String>();
+//        ps.subscribe(to);
 //        ps.subscribe();
 //        ps.subscribe();
 //        ps.subscribe();
@@ -320,7 +320,7 @@ public class AsyncSubjectTest extends SubjectTest<Integer> {
 //            assertEquals(5, e.getExceptions().size());
 //        }
 //        // even though the onError above throws we should still receive it on the other subscriber
-//        assertEquals(1, ts.getOnErrorEvents().size());
+//        assertEquals(1, to.getOnErrorEvents().size());
 //    }
 
     @Test
@@ -391,23 +391,23 @@ public class AsyncSubjectTest extends SubjectTest<Integer> {
     public void fusionLive() {
         AsyncSubject<Integer> ap = new AsyncSubject<Integer>();
 
-        TestObserver<Integer> ts = ObserverFusion.newTest(QueueSubscription.ANY);
+        TestObserver<Integer> to = ObserverFusion.newTest(QueueFuseable.ANY);
 
-        ap.subscribe(ts);
+        ap.subscribe(to);
 
-        ts
+        to
         .assertOf(ObserverFusion.<Integer>assertFuseable())
-        .assertOf(ObserverFusion.<Integer>assertFusionMode(QueueSubscription.ASYNC));
+        .assertOf(ObserverFusion.<Integer>assertFusionMode(QueueFuseable.ASYNC));
 
-        ts.assertNoValues().assertNoErrors().assertNotComplete();
+        to.assertNoValues().assertNoErrors().assertNotComplete();
 
         ap.onNext(1);
 
-        ts.assertNoValues().assertNoErrors().assertNotComplete();
+        to.assertNoValues().assertNoErrors().assertNotComplete();
 
         ap.onComplete();
 
-        ts.assertResult(1);
+        to.assertResult(1);
     }
 
     @Test
@@ -416,13 +416,13 @@ public class AsyncSubjectTest extends SubjectTest<Integer> {
         ap.onNext(1);
         ap.onComplete();
 
-        TestObserver<Integer> ts = ObserverFusion.newTest(QueueSubscription.ANY);
+        TestObserver<Integer> to = ObserverFusion.newTest(QueueFuseable.ANY);
 
-        ap.subscribe(ts);
+        ap.subscribe(to);
 
-        ts
+        to
         .assertOf(ObserverFusion.<Integer>assertFuseable())
-        .assertOf(ObserverFusion.<Integer>assertFusionMode(QueueSubscription.ASYNC))
+        .assertOf(ObserverFusion.<Integer>assertFusionMode(QueueFuseable.ASYNC))
         .assertResult(1);
     }
 
@@ -464,20 +464,20 @@ public class AsyncSubjectTest extends SubjectTest<Integer> {
         AsyncSubject<Object> p = AsyncSubject.create();
 
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
-            final TestObserver<Object> ts1 = p.test();
-            final TestObserver<Object> ts2 = p.test();
+            final TestObserver<Object> to1 = p.test();
+            final TestObserver<Object> to2 = p.test();
 
             Runnable r1 = new Runnable() {
                 @Override
                 public void run() {
-                    ts1.cancel();
+                    to1.cancel();
                 }
             };
 
             Runnable r2 = new Runnable() {
                 @Override
                 public void run() {
-                    ts2.cancel();
+                    to2.cancel();
                 }
             };
 
@@ -491,12 +491,12 @@ public class AsyncSubjectTest extends SubjectTest<Integer> {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final AsyncSubject<Object> p = AsyncSubject.create();
 
-            final TestObserver<Object> ts1 = p.test();
+            final TestObserver<Object> to1 = p.test();
 
             Runnable r1 = new Runnable() {
                 @Override
                 public void run() {
-                    ts1.cancel();
+                    to1.cancel();
                 }
             };
 
@@ -511,10 +511,10 @@ public class AsyncSubjectTest extends SubjectTest<Integer> {
 
             TestHelper.race(r1, r2);
 
-            if (ts1.errorCount() != 0) {
-                ts1.assertFailure(TestException.class);
+            if (to1.errorCount() != 0) {
+                to1.assertFailure(TestException.class);
             } else {
-                ts1.assertEmpty();
+                to1.assertEmpty();
             }
         }
     }
@@ -523,66 +523,66 @@ public class AsyncSubjectTest extends SubjectTest<Integer> {
     public void onNextCrossCancel() {
         AsyncSubject<Object> p = AsyncSubject.create();
 
-        final TestObserver<Object> ts2 = new TestObserver<Object>();
-        TestObserver<Object> ts1 = new TestObserver<Object>() {
+        final TestObserver<Object> to2 = new TestObserver<Object>();
+        TestObserver<Object> to1 = new TestObserver<Object>() {
             @Override
             public void onNext(Object t) {
-                ts2.cancel();
+                to2.cancel();
                 super.onNext(t);
             }
         };
 
-        p.subscribe(ts1);
-        p.subscribe(ts2);
+        p.subscribe(to1);
+        p.subscribe(to2);
 
         p.onNext(1);
         p.onComplete();
 
-        ts1.assertResult(1);
-        ts2.assertEmpty();
+        to1.assertResult(1);
+        to2.assertEmpty();
     }
 
     @Test
     public void onErrorCrossCancel() {
         AsyncSubject<Object> p = AsyncSubject.create();
 
-        final TestObserver<Object> ts2 = new TestObserver<Object>();
-        TestObserver<Object> ts1 = new TestObserver<Object>() {
+        final TestObserver<Object> to2 = new TestObserver<Object>();
+        TestObserver<Object> to1 = new TestObserver<Object>() {
             @Override
             public void onError(Throwable t) {
-                ts2.cancel();
+                to2.cancel();
                 super.onError(t);
             }
         };
 
-        p.subscribe(ts1);
-        p.subscribe(ts2);
+        p.subscribe(to1);
+        p.subscribe(to2);
 
         p.onError(new TestException());
 
-        ts1.assertFailure(TestException.class);
-        ts2.assertEmpty();
+        to1.assertFailure(TestException.class);
+        to2.assertEmpty();
     }
 
     @Test
     public void onCompleteCrossCancel() {
         AsyncSubject<Object> p = AsyncSubject.create();
 
-        final TestObserver<Object> ts2 = new TestObserver<Object>();
-        TestObserver<Object> ts1 = new TestObserver<Object>() {
+        final TestObserver<Object> to2 = new TestObserver<Object>();
+        TestObserver<Object> to1 = new TestObserver<Object>() {
             @Override
             public void onComplete() {
-                ts2.cancel();
+                to2.cancel();
                 super.onComplete();
             }
         };
 
-        p.subscribe(ts1);
-        p.subscribe(ts2);
+        p.subscribe(to1);
+        p.subscribe(to2);
 
         p.onComplete();
 
-        ts1.assertResult();
-        ts2.assertEmpty();
+        to1.assertResult();
+        to2.assertEmpty();
     }
 }

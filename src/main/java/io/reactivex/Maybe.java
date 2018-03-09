@@ -4496,9 +4496,9 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final TestObserver<T> test() {
-        TestObserver<T> ts = new TestObserver<T>();
-        subscribe(ts);
-        return ts;
+        TestObserver<T> to = new TestObserver<T>();
+        subscribe(to);
+        return to;
     }
 
     /**
@@ -4514,13 +4514,13 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final TestObserver<T> test(boolean cancelled) {
-        TestObserver<T> ts = new TestObserver<T>();
+        TestObserver<T> to = new TestObserver<T>();
 
         if (cancelled) {
-            ts.cancel();
+            to.cancel();
         }
 
-        subscribe(ts);
-        return ts;
+        subscribe(to);
+        return to;
     }
 }

@@ -14,6 +14,7 @@
 package io.reactivex.subscribers;
 
 import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import java.util.List;
@@ -25,7 +26,7 @@ import org.reactivestreams.*;
 
 import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
-import io.reactivex.internal.subscriptions.*;
+import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.schedulers.Schedulers;
 
@@ -266,7 +267,7 @@ public class SerializedSubscriberTest {
                 final CountDownLatch latch = new CountDownLatch(1);
                 final CountDownLatch running = new CountDownLatch(2);
 
-                TestSubscriber<String> to = new TestSubscriber<String>(new DefaultSubscriber<String>() {
+                TestSubscriber<String> ts = new TestSubscriber<String>(new DefaultSubscriber<String>() {
 
                     @Override
                     public void onComplete() {
@@ -289,7 +290,7 @@ public class SerializedSubscriberTest {
                     }
 
                 });
-                Subscriber<String> o = serializedSubscriber(to);
+                Subscriber<String> o = serializedSubscriber(ts);
 
                 Future<?> f1 = tp1.submit(new OnNextThread(o, 1, onNextCount, running));
                 Future<?> f2 = tp2.submit(new OnNextThread(o, 1, onNextCount, running));
@@ -298,7 +299,7 @@ public class SerializedSubscriberTest {
 
                 firstOnNext.await();
 
-                Thread t1 = to.lastThread();
+                Thread t1 = ts.lastThread();
                 System.out.println("first onNext on thread: " + t1);
 
                 latch.countDown();
@@ -306,16 +307,16 @@ public class SerializedSubscriberTest {
                 waitOnThreads(f1, f2);
                 // not completed yet
 
-                assertEquals(2, to.valueCount());
+                assertEquals(2, ts.valueCount());
 
-                Thread t2 = to.lastThread();
+                Thread t2 = ts.lastThread();
                 System.out.println("second onNext on thread: " + t2);
 
                 assertSame(t1, t2);
 
-                System.out.println(to.values());
+                System.out.println(ts.values());
                 o.onComplete();
-                System.out.println(to.values());
+                System.out.println(ts.values());
             }
         } finally {
             tp1.shutdown();
@@ -347,7 +348,7 @@ public class SerializedSubscriberTest {
     @Test
     public void testThreadStarvation() throws InterruptedException {
 
-        TestSubscriber<String> to = new TestSubscriber<String>(new DefaultSubscriber<String>() {
+        TestSubscriber<String> ts = new TestSubscriber<String>(new DefaultSubscriber<String>() {
 
             @Override
             public void onComplete() {
@@ -369,7 +370,7 @@ public class SerializedSubscriberTest {
             }
 
         });
-        final Subscriber<String> o = serializedSubscriber(to);
+        final Subscriber<String> o = serializedSubscriber(ts);
 
         AtomicInteger p1 = new AtomicInteger();
         AtomicInteger p2 = new AtomicInteger();
@@ -839,7 +840,7 @@ public class SerializedSubscriberTest {
     @Ignore("Null values not permitted")
     public void testSerializeNull() {
         final AtomicReference<Subscriber<Integer>> serial = new AtomicReference<Subscriber<Integer>>();
-        TestSubscriber<Integer> to = new TestSubscriber<Integer>() {
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>() {
             @Override
             public void onNext(Integer t) {
                 if (t != null && t == 0) {
@@ -849,25 +850,25 @@ public class SerializedSubscriberTest {
             }
         };
 
-        SerializedSubscriber<Integer> sobs = new SerializedSubscriber<Integer>(to);
+        SerializedSubscriber<Integer> sobs = new SerializedSubscriber<Integer>(ts);
         serial.set(sobs);
 
         sobs.onNext(0);
 
-        to.assertValues(0, null);
+        ts.assertValues(0, null);
     }
 
     @Test
     @Ignore("Subscribers can't throw")
     public void testSerializeAllowsOnError() {
-        TestSubscriber<Integer> to = new TestSubscriber<Integer>() {
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>() {
             @Override
             public void onNext(Integer t) {
                 throw new TestException();
             }
         };
 
-        SerializedSubscriber<Integer> sobs = new SerializedSubscriber<Integer>(to);
+        SerializedSubscriber<Integer> sobs = new SerializedSubscriber<Integer>(ts);
 
         try {
             sobs.onNext(0);
@@ -875,14 +876,14 @@ public class SerializedSubscriberTest {
             sobs.onError(ex);
         }
 
-        to.assertError(TestException.class);
+        ts.assertError(TestException.class);
     }
 
     @Test
     @Ignore("Null values no longer permitted")
     public void testSerializeReentrantNullAndComplete() {
         final AtomicReference<Subscriber<Integer>> serial = new AtomicReference<Subscriber<Integer>>();
-        TestSubscriber<Integer> to = new TestSubscriber<Integer>() {
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>() {
             @Override
             public void onNext(Integer t) {
                 serial.get().onComplete();
@@ -890,7 +891,7 @@ public class SerializedSubscriberTest {
             }
         };
 
-        SerializedSubscriber<Integer> sobs = new SerializedSubscriber<Integer>(to);
+        SerializedSubscriber<Integer> sobs = new SerializedSubscriber<Integer>(ts);
         serial.set(sobs);
 
         try {
@@ -899,15 +900,15 @@ public class SerializedSubscriberTest {
             sobs.onError(ex);
         }
 
-        to.assertError(TestException.class);
-        to.assertNotComplete();
+        ts.assertError(TestException.class);
+        ts.assertNotComplete();
     }
 
     @Test
     @Ignore("Subscribers can't throw")
     public void testSerializeReentrantNullAndError() {
         final AtomicReference<Subscriber<Integer>> serial = new AtomicReference<Subscriber<Integer>>();
-        TestSubscriber<Integer> to = new TestSubscriber<Integer>() {
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>() {
             @Override
             public void onNext(Integer t) {
                 serial.get().onError(new RuntimeException());
@@ -915,7 +916,7 @@ public class SerializedSubscriberTest {
             }
         };
 
-        SerializedSubscriber<Integer> sobs = new SerializedSubscriber<Integer>(to);
+        SerializedSubscriber<Integer> sobs = new SerializedSubscriber<Integer>(ts);
         serial.set(sobs);
 
         try {
@@ -924,15 +925,15 @@ public class SerializedSubscriberTest {
             sobs.onError(ex);
         }
 
-        to.assertError(TestException.class);
-        to.assertNotComplete();
+        ts.assertError(TestException.class);
+        ts.assertNotComplete();
     }
 
     @Test
     @Ignore("Null values no longer permitted")
     public void testSerializeDrainPhaseThrows() {
         final AtomicReference<Subscriber<Integer>> serial = new AtomicReference<Subscriber<Integer>>();
-        TestSubscriber<Integer> to = new TestSubscriber<Integer>() {
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>() {
             @Override
             public void onNext(Integer t) {
                 if (t != null && t == 0) {
@@ -945,13 +946,13 @@ public class SerializedSubscriberTest {
             }
         };
 
-        SerializedSubscriber<Integer> sobs = new SerializedSubscriber<Integer>(to);
+        SerializedSubscriber<Integer> sobs = new SerializedSubscriber<Integer>(ts);
         serial.set(sobs);
 
         sobs.onNext(0);
 
-        to.assertError(TestException.class);
-        to.assertNotComplete();
+        ts.assertError(TestException.class);
+        ts.assertNotComplete();
     }
 
     @Test
@@ -1213,5 +1214,19 @@ public class SerializedSubscriberTest {
             }
         }
 
+    }
+
+    @Test
+    public void nullOnNext() {
+
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+
+        final SerializedSubscriber<Integer> so = new SerializedSubscriber<Integer>(ts);
+
+        so.onSubscribe(new BooleanSubscription());
+
+        so.onNext(null);
+
+        ts.assertFailureAndMessage(NullPointerException.class, "onNext called with null. Null values are generally not allowed in 2.x operators and sources.");
     }
 }
