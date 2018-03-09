@@ -796,4 +796,13 @@ public class FlowableSingleTest {
 
         assertFalse(pp.hasSubscribers());
     }
+
+    @Test
+    public void singleOrError() {
+        Flowable.empty()
+        .singleOrError()
+        .toFlowable()
+        .test()
+        .assertFailure(NoSuchElementException.class);
+    }
 }

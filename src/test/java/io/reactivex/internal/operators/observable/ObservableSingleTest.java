@@ -556,4 +556,13 @@ public class ObservableSingleTest {
             }
         });
     }
+
+    @Test
+    public void singleOrError() {
+        Observable.empty()
+        .singleOrError()
+        .toObservable()
+        .test()
+        .assertFailure(NoSuchElementException.class);
+    }
 }

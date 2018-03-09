@@ -36,7 +36,7 @@ public final class FlowableSingleMaybe<T> extends Maybe<T> implements FuseToFlow
 
     @Override
     public Flowable<T> fuseToFlowable() {
-        return RxJavaPlugins.onAssembly(new FlowableSingle<T>(source, null));
+        return RxJavaPlugins.onAssembly(new FlowableSingle<T>(source, null, false));
     }
 
     static final class SingleElementSubscriber<T>
