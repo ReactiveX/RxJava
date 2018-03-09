@@ -68,8 +68,9 @@ SingleObserver<Object>, CompletableObserver, MaybeObserver<Object> {
     /**
      * Wait for the terminal signal.
      * @param count if less than 1001, a spin-wait is used
+     * @return this
      */
-    public void await(int count) {
+    public PerfAsyncConsumer await(int count) {
         if (count <= 1000) {
             while (getCount() != 0) { }
         } else {
@@ -79,6 +80,7 @@ SingleObserver<Object>, CompletableObserver, MaybeObserver<Object> {
                 throw new RuntimeException(ex);
             }
         }
+        return this;
     }
 
 }
