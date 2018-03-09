@@ -525,7 +525,7 @@ public class FlowableUsingTest {
 
     @Test
     public void supplierDisposerCrash() {
-        TestSubscriber<Object> to = Flowable.using(new Callable<Object>() {
+        TestSubscriber<Object> ts = Flowable.using(new Callable<Object>() {
             @Override
             public Object call() throws Exception {
                 return 1;
@@ -544,7 +544,7 @@ public class FlowableUsingTest {
         .test()
         .assertFailure(CompositeException.class);
 
-        List<Throwable> errors = TestHelper.compositeList(to.errors().get(0));
+        List<Throwable> errors = TestHelper.compositeList(ts.errors().get(0));
 
         TestHelper.assertError(errors, 0, TestException.class, "First");
         TestHelper.assertError(errors, 1, TestException.class, "Second");
@@ -552,7 +552,7 @@ public class FlowableUsingTest {
 
     @Test
     public void eagerOnErrorDisposerCrash() {
-        TestSubscriber<Object> to = Flowable.using(new Callable<Object>() {
+        TestSubscriber<Object> ts = Flowable.using(new Callable<Object>() {
             @Override
             public Object call() throws Exception {
                 return 1;
@@ -571,7 +571,7 @@ public class FlowableUsingTest {
         .test()
         .assertFailure(CompositeException.class);
 
-        List<Throwable> errors = TestHelper.compositeList(to.errors().get(0));
+        List<Throwable> errors = TestHelper.compositeList(ts.errors().get(0));
 
         TestHelper.assertError(errors, 0, TestException.class, "First");
         TestHelper.assertError(errors, 1, TestException.class, "Second");

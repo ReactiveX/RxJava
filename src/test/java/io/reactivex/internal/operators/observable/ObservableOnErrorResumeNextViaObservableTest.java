@@ -135,10 +135,10 @@ public class ObservableOnErrorResumeNextViaObservableTest {
 
         @SuppressWarnings("unchecked")
         DefaultObserver<String> observer = mock(DefaultObserver.class);
-        TestObserver<String> ts = new TestObserver<String>(observer);
-        observable.subscribe(ts);
+        TestObserver<String> to = new TestObserver<String>(observer);
+        observable.subscribe(to);
 
-        ts.awaitTerminalEvent();
+        to.awaitTerminalEvent();
 
         verify(observer, Mockito.never()).onError(any(Throwable.class));
         verify(observer, times(1)).onComplete();
@@ -190,7 +190,7 @@ public class ObservableOnErrorResumeNextViaObservableTest {
 
     @Test
     public void testBackpressure() {
-        TestObserver<Integer> ts = new TestObserver<Integer>();
+        TestObserver<Integer> to = new TestObserver<Integer>();
         Observable.range(0, 100000)
                 .onErrorResumeNext(Observable.just(1))
                 .observeOn(Schedulers.computation())
@@ -211,8 +211,8 @@ public class ObservableOnErrorResumeNextViaObservableTest {
                     }
 
                 })
-                .subscribe(ts);
-        ts.awaitTerminalEvent();
-        ts.assertNoErrors();
+                .subscribe(to);
+        to.awaitTerminalEvent();
+        to.assertNoErrors();
     }
 }

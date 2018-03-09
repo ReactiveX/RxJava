@@ -202,14 +202,14 @@ public class ObservableWindowWithStartEndObservableTest {
         PublishSubject<Integer> open = PublishSubject.create();
         final PublishSubject<Integer> close = PublishSubject.create();
 
-        TestObserver<Observable<Integer>> ts = new TestObserver<Observable<Integer>>();
+        TestObserver<Observable<Integer>> to = new TestObserver<Observable<Integer>>();
 
         source.window(open, new Function<Integer, Observable<Integer>>() {
             @Override
             public Observable<Integer> apply(Integer t) {
                 return close;
             }
-        }).subscribe(ts);
+        }).subscribe(to);
 
         open.onNext(1);
         source.onNext(1);
@@ -223,9 +223,9 @@ public class ObservableWindowWithStartEndObservableTest {
 
         source.onComplete();
 
-        ts.assertComplete();
-        ts.assertNoErrors();
-        ts.assertValueCount(1);
+        to.assertComplete();
+        to.assertNoErrors();
+        to.assertValueCount(1);
 
         // 2.0.2 - not anymore
 //        assertTrue("Not cancelled!", ts.isCancelled());
@@ -240,21 +240,21 @@ public class ObservableWindowWithStartEndObservableTest {
         PublishSubject<Integer> open = PublishSubject.create();
         final PublishSubject<Integer> close = PublishSubject.create();
 
-        TestObserver<Observable<Integer>> ts = new TestObserver<Observable<Integer>>();
+        TestObserver<Observable<Integer>> to = new TestObserver<Observable<Integer>>();
 
         source.window(open, new Function<Integer, Observable<Integer>>() {
             @Override
             public Observable<Integer> apply(Integer t) {
                 return close;
             }
-        }).subscribe(ts);
+        }).subscribe(to);
 
         open.onNext(1);
 
         assertTrue(open.hasObservers());
         assertTrue(close.hasObservers());
 
-        ts.dispose();
+        to.dispose();
 
         // FIXME subject has subscribers because of the open window
         assertTrue(open.hasObservers());

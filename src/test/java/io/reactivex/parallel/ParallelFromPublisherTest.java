@@ -25,7 +25,7 @@ import io.reactivex.*;
 import io.reactivex.exceptions.*;
 import io.reactivex.functions.*;
 import io.reactivex.internal.functions.Functions;
-import io.reactivex.internal.fuseable.QueueSubscription;
+import io.reactivex.internal.fuseable.*;
 import io.reactivex.internal.subscribers.BasicFuseableSubscriber;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.processors.UnicastProcessor;
@@ -93,11 +93,11 @@ public class ParallelFromPublisherTest {
             public int requestFusion(int mode) {
                 QueueSubscription<T> fs = qs;
                 if (fs != null) {
-                    int m = fs.requestFusion(mode & ~QueueSubscription.BOUNDARY);
+                    int m = fs.requestFusion(mode & ~QueueFuseable.BOUNDARY);
                     this.sourceMode = m;
                     return m;
                 }
-                return QueueSubscription.NONE;
+                return QueueFuseable.NONE;
             }
 
             @Override

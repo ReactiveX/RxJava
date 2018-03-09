@@ -32,38 +32,38 @@ public class MaybeOfTypeTest {
 
     @Test
     public void normalDowncast() {
-        TestObserver<Number> ts = Maybe.just(1)
+        TestObserver<Number> to = Maybe.just(1)
         .ofType(Number.class)
         .test();
         // don't make this fluent, target type required!
-        ts.assertResult((Number)1);
+        to.assertResult((Number)1);
     }
 
     @Test
     public void notInstance() {
-        TestObserver<String> ts = Maybe.just(1)
+        TestObserver<String> to = Maybe.just(1)
         .ofType(String.class)
         .test();
         // don't make this fluent, target type required!
-        ts.assertResult();
+        to.assertResult();
     }
 
     @Test
     public void error() {
-        TestObserver<Number> ts = Maybe.<Integer>error(new TestException())
+        TestObserver<Number> to = Maybe.<Integer>error(new TestException())
         .ofType(Number.class)
         .test();
         // don't make this fluent, target type required!
-        ts.assertFailure(TestException.class);
+        to.assertFailure(TestException.class);
     }
 
     @Test
     public void errorNotInstance() {
-        TestObserver<String> ts = Maybe.<Integer>error(new TestException())
+        TestObserver<String> to = Maybe.<Integer>error(new TestException())
         .ofType(String.class)
         .test();
         // don't make this fluent, target type required!
-        ts.assertFailure(TestException.class);
+        to.assertFailure(TestException.class);
     }
 
     @Test

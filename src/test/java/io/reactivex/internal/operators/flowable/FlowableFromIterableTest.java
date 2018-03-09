@@ -551,7 +551,7 @@ public class FlowableFromIterableTest {
 
     @Test
     public void fusionWithConcatMap() {
-        TestSubscriber<Integer> to = new TestSubscriber<Integer>();
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
 
         Flowable.fromIterable(Arrays.asList(1, 2, 3, 4)).concatMap(
         new Function<Integer, Flowable  <Integer>>() {
@@ -559,11 +559,11 @@ public class FlowableFromIterableTest {
             public Flowable<Integer> apply(Integer v) {
                 return Flowable.range(v, 2);
             }
-        }).subscribe(to);
+        }).subscribe(ts);
 
-        to.assertValues(1, 2, 2, 3, 3, 4, 4, 5);
-        to.assertNoErrors();
-        to.assertComplete();
+        ts.assertValues(1, 2, 2, 3, 3, 4, 4, 5);
+        ts.assertNoErrors();
+        ts.assertComplete();
     }
 
     @Test
@@ -868,12 +868,12 @@ public class FlowableFromIterableTest {
 
     @Test
     public void fusionRejected() {
-        TestSubscriber<Integer> to = SubscriberFusion.newTest(QueueDisposable.ASYNC);
+        TestSubscriber<Integer> ts = SubscriberFusion.newTest(QueueFuseable.ASYNC);
 
         Flowable.fromIterable(Arrays.asList(1, 2, 3))
-        .subscribe(to);
+        .subscribe(ts);
 
-        SubscriberFusion.assertFusion(to, QueueDisposable.NONE)
+        SubscriberFusion.assertFusion(ts, QueueFuseable.NONE)
         .assertResult(1, 2, 3);
     }
 
@@ -886,7 +886,7 @@ public class FlowableFromIterableTest {
                 @SuppressWarnings("unchecked")
                 QueueSubscription<Integer> qd = (QueueSubscription<Integer>)d;
 
-                qd.requestFusion(QueueSubscription.ANY);
+                qd.requestFusion(QueueFuseable.ANY);
 
                 try {
                     assertEquals(1, qd.poll().intValue());
@@ -932,7 +932,7 @@ public class FlowableFromIterableTest {
 
     @Test
     public void hasNextCancels() {
-        final TestSubscriber<Integer> to = new TestSubscriber<Integer>();
+        final TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
 
         Flowable.fromIterable(new Iterable<Integer>() {
             @Override
@@ -943,7 +943,7 @@ public class FlowableFromIterableTest {
                     @Override
                     public boolean hasNext() {
                         if (++count == 2) {
-                            to.cancel();
+                            ts.cancel();
                         }
                         return true;
                     }
@@ -960,9 +960,9 @@ public class FlowableFromIterableTest {
                 };
             }
         })
-        .subscribe(to);
+        .subscribe(ts);
 
-        to.assertValue(1)
+        ts.assertValue(1)
         .assertNoErrors()
         .assertNotComplete();
     }

@@ -55,15 +55,15 @@ public class SingleCacheTest {
         PublishSubject<Integer> ps = PublishSubject.create();
         Single<Integer> cache = ps.single(-99).cache();
 
-        TestObserver<Integer> ts1 = cache.test();
+        TestObserver<Integer> to1 = cache.test();
 
-        TestObserver<Integer> ts2 = cache.test();
+        TestObserver<Integer> to2 = cache.test();
 
         ps.onNext(1);
         ps.onComplete();
 
-        ts1.assertResult(1);
-        ts2.assertResult(1);
+        to1.assertResult(1);
+        to2.assertResult(1);
     }
 
     @Test
@@ -71,17 +71,17 @@ public class SingleCacheTest {
         PublishSubject<Integer> ps = PublishSubject.create();
         Single<Integer> cache = ps.single(-99).cache();
 
-        TestObserver<Integer> ts1 = cache.test();
+        TestObserver<Integer> to1 = cache.test();
 
-        TestObserver<Integer> ts2 = cache.test();
+        TestObserver<Integer> to2 = cache.test();
 
-        ts1.cancel();
+        to1.cancel();
 
         ps.onNext(1);
         ps.onComplete();
 
-        ts1.assertNoValues().assertNoErrors().assertNotComplete();
-        ts2.assertResult(1);
+        to1.assertNoValues().assertNoErrors().assertNotComplete();
+        to2.assertResult(1);
     }
 
     @Test

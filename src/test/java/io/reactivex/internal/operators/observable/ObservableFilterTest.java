@@ -23,7 +23,7 @@ import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.*;
 import io.reactivex.internal.functions.Functions;
-import io.reactivex.internal.fuseable.QueueDisposable;
+import io.reactivex.internal.fuseable.*;
 import io.reactivex.observers.*;
 import io.reactivex.subjects.UnicastSubject;
 
@@ -94,7 +94,7 @@ public class ObservableFilterTest {
 
     @Test
     public void fusedSync() {
-        TestObserver<Integer> to = ObserverFusion.newTest(QueueDisposable.ANY);
+        TestObserver<Integer> to = ObserverFusion.newTest(QueueFuseable.ANY);
 
         Observable.range(1, 5)
         .filter(new Predicate<Integer>() {
@@ -105,13 +105,13 @@ public class ObservableFilterTest {
         })
         .subscribe(to);
 
-        ObserverFusion.assertFusion(to, QueueDisposable.SYNC)
+        ObserverFusion.assertFusion(to, QueueFuseable.SYNC)
         .assertResult(2, 4);
     }
 
     @Test
     public void fusedAsync() {
-        TestObserver<Integer> to = ObserverFusion.newTest(QueueDisposable.ANY);
+        TestObserver<Integer> to = ObserverFusion.newTest(QueueFuseable.ANY);
 
         UnicastSubject<Integer> us = UnicastSubject.create();
 
@@ -126,13 +126,13 @@ public class ObservableFilterTest {
 
         TestHelper.emit(us, 1, 2, 3, 4, 5);
 
-        ObserverFusion.assertFusion(to, QueueDisposable.ASYNC)
+        ObserverFusion.assertFusion(to, QueueFuseable.ASYNC)
         .assertResult(2, 4);
     }
 
     @Test
     public void fusedReject() {
-        TestObserver<Integer> to = ObserverFusion.newTest(QueueDisposable.ANY | QueueDisposable.BOUNDARY);
+        TestObserver<Integer> to = ObserverFusion.newTest(QueueFuseable.ANY | QueueFuseable.BOUNDARY);
 
         Observable.range(1, 5)
         .filter(new Predicate<Integer>() {
@@ -143,7 +143,7 @@ public class ObservableFilterTest {
         })
         .subscribe(to);
 
-        ObserverFusion.assertFusion(to, QueueDisposable.NONE)
+        ObserverFusion.assertFusion(to, QueueFuseable.NONE)
         .assertResult(2, 4);
     }
 

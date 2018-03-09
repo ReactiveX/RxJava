@@ -26,7 +26,7 @@ import io.reactivex.*;
 import io.reactivex.disposables.Disposables;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.*;
-import io.reactivex.internal.fuseable.QueueDisposable;
+import io.reactivex.internal.fuseable.*;
 import io.reactivex.observers.*;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.subjects.*;
@@ -142,7 +142,7 @@ public class ObservableDistinctUntilChangedTest {
     public void customComparator() {
         Observable<String> source = Observable.just("a", "b", "B", "A","a", "C");
 
-        TestObserver<String> ts = TestObserver.create();
+        TestObserver<String> to = TestObserver.create();
 
         source.distinctUntilChanged(new BiPredicate<String, String>() {
             @Override
@@ -150,18 +150,18 @@ public class ObservableDistinctUntilChangedTest {
                 return a.compareToIgnoreCase(b) == 0;
             }
         })
-        .subscribe(ts);
+        .subscribe(to);
 
-        ts.assertValues("a", "b", "A", "C");
-        ts.assertNoErrors();
-        ts.assertComplete();
+        to.assertValues("a", "b", "A", "C");
+        to.assertNoErrors();
+        to.assertComplete();
     }
 
     @Test
     public void customComparatorThrows() {
         Observable<String> source = Observable.just("a", "b", "B", "A","a", "C");
 
-        TestObserver<String> ts = TestObserver.create();
+        TestObserver<String> to = TestObserver.create();
 
         source.distinctUntilChanged(new BiPredicate<String, String>() {
             @Override
@@ -169,16 +169,16 @@ public class ObservableDistinctUntilChangedTest {
                 throw new TestException();
             }
         })
-        .subscribe(ts);
+        .subscribe(to);
 
-        ts.assertValue("a");
-        ts.assertNotComplete();
-        ts.assertError(TestException.class);
+        to.assertValue("a");
+        to.assertNotComplete();
+        to.assertError(TestException.class);
     }
 
     @Test
     public void fused() {
-        TestObserver<Integer> to = ObserverFusion.newTest(QueueDisposable.ANY);
+        TestObserver<Integer> to = ObserverFusion.newTest(QueueFuseable.ANY);
 
         Observable.just(1, 2, 2, 3, 3, 4, 5)
         .distinctUntilChanged(new BiPredicate<Integer, Integer>() {
@@ -190,14 +190,14 @@ public class ObservableDistinctUntilChangedTest {
         .subscribe(to);
 
         to.assertOf(ObserverFusion.<Integer>assertFuseable())
-        .assertOf(ObserverFusion.<Integer>assertFusionMode(QueueDisposable.SYNC))
+        .assertOf(ObserverFusion.<Integer>assertFusionMode(QueueFuseable.SYNC))
         .assertResult(1, 2, 3, 4, 5)
         ;
     }
 
     @Test
     public void fusedAsync() {
-        TestObserver<Integer> to = ObserverFusion.newTest(QueueDisposable.ANY);
+        TestObserver<Integer> to = ObserverFusion.newTest(QueueFuseable.ANY);
 
         UnicastSubject<Integer> up = UnicastSubject.create();
 
@@ -213,7 +213,7 @@ public class ObservableDistinctUntilChangedTest {
         TestHelper.emit(up, 1, 2, 2, 3, 3, 4, 5);
 
         to.assertOf(ObserverFusion.<Integer>assertFuseable())
-        .assertOf(ObserverFusion.<Integer>assertFusionMode(QueueDisposable.ASYNC))
+        .assertOf(ObserverFusion.<Integer>assertFusionMode(QueueFuseable.ASYNC))
         .assertResult(1, 2, 3, 4, 5)
         ;
     }
@@ -257,9 +257,9 @@ public class ObservableDistinctUntilChangedTest {
     public void mutableWithSelector() {
         Mutable m = new Mutable();
 
-        PublishSubject<Mutable> pp = PublishSubject.create();
+        PublishSubject<Mutable> ps = PublishSubject.create();
 
-        TestObserver<Mutable> ts = pp.distinctUntilChanged(new Function<Mutable, Object>() {
+        TestObserver<Mutable> to = ps.distinctUntilChanged(new Function<Mutable, Object>() {
             @Override
             public Object apply(Mutable m) throws Exception {
                 return m.value;
@@ -267,11 +267,11 @@ public class ObservableDistinctUntilChangedTest {
         })
         .test();
 
-        pp.onNext(m);
+        ps.onNext(m);
         m.value = 1;
-        pp.onNext(m);
-        pp.onComplete();
+        ps.onNext(m);
+        ps.onComplete();
 
-        ts.assertResult(m, m);
+        to.assertResult(m, m);
     }
 }

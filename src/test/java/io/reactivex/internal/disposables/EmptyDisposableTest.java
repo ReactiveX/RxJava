@@ -14,10 +14,11 @@
 package io.reactivex.internal.disposables;
 
 import static org.junit.Assert.*;
+
 import org.junit.Test;
 
 import io.reactivex.TestHelper;
-import io.reactivex.internal.fuseable.QueueDisposable;
+import io.reactivex.internal.fuseable.*;
 
 public class EmptyDisposableTest {
 
@@ -28,8 +29,8 @@ public class EmptyDisposableTest {
 
     @Test
     public void asyncFusion() {
-        assertEquals(QueueDisposable.NONE, EmptyDisposable.INSTANCE.requestFusion(QueueDisposable.SYNC));
-        assertEquals(QueueDisposable.ASYNC, EmptyDisposable.INSTANCE.requestFusion(QueueDisposable.ASYNC));
+        assertEquals(QueueFuseable.NONE, EmptyDisposable.INSTANCE.requestFusion(QueueFuseable.SYNC));
+        assertEquals(QueueFuseable.ASYNC, EmptyDisposable.INSTANCE.requestFusion(QueueFuseable.ASYNC));
     }
 
     @Test

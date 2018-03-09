@@ -393,17 +393,17 @@ public class ObservableConcatTest {
         final TestObservable<String> w2 = new TestObservable<String>(callOnce, okToContinue, "four", "five", "six");
 
         Observer<String> observer = TestHelper.mockObserver();
-        TestObserver<String> ts = new TestObserver<String>(observer);
+        TestObserver<String> to = new TestObserver<String>(observer);
 
         final Observable<String> concat = Observable.concat(Observable.unsafeCreate(w1), Observable.unsafeCreate(w2));
 
         try {
             // Subscribe
-            concat.subscribe(ts);
+            concat.subscribe(to);
             //Block main thread to allow Observable "w1" to complete and Observable "w2" to call onNext once.
             callOnce.await();
             // Unsubcribe
-            ts.dispose();
+            to.dispose();
             //Unblock the Observable to continue.
             okToContinue.countDown();
             w1.t.join();
@@ -435,19 +435,19 @@ public class ObservableConcatTest {
         final TestObservable<String> w2 = new TestObservable<String>(callOnce, okToContinue, "four", "five", "six");
 
         Observer<String> observer = TestHelper.mockObserver();
-        TestObserver<String> ts = new TestObserver<String>(observer);
+        TestObserver<String> to = new TestObserver<String>(observer);
 
         @SuppressWarnings("unchecked")
         TestObservable<Observable<String>> observableOfObservables = new TestObservable<Observable<String>>(Observable.unsafeCreate(w1), Observable.unsafeCreate(w2));
         Observable<String> concatF = Observable.concat(Observable.unsafeCreate(observableOfObservables));
 
-        concatF.subscribe(ts);
+        concatF.subscribe(to);
 
         try {
             //Block main thread to allow Observable "w1" to complete and Observable "w2" to call onNext exactly once.
             callOnce.await();
             //"four" from w2 has been processed by onNext()
-            ts.dispose();
+            to.dispose();
             //"five" and "six" will NOT be processed by onNext()
             //Unblock the Observable to continue.
             okToContinue.countDown();
@@ -672,12 +672,12 @@ public class ObservableConcatTest {
 
         });
 
-        TestObserver<String> ts = new TestObserver<String>();
-        Observable.concat(o, o).subscribe(ts);
-        ts.awaitTerminalEvent(500, TimeUnit.MILLISECONDS);
-        ts.assertTerminated();
-        ts.assertNoErrors();
-        ts.assertValues("hello", "hello");
+        TestObserver<String> to = new TestObserver<String>();
+        Observable.concat(o, o).subscribe(to);
+        to.awaitTerminalEvent(500, TimeUnit.MILLISECONDS);
+        to.assertTerminated();
+        to.assertNoErrors();
+        to.assertValues("hello", "hello");
     }
 
     @Test(timeout = 30000)
@@ -743,7 +743,7 @@ public class ObservableConcatTest {
             if (i % 1000 == 0) {
                 System.out.println("concatMapRangeAsyncLoop > " + i);
             }
-            TestObserver<Integer> ts = new TestObserver<Integer>();
+            TestObserver<Integer> to = new TestObserver<Integer>();
             Observable.range(0, 1000)
             .concatMap(new Function<Integer, Observable<Integer>>() {
                 @Override
@@ -751,13 +751,13 @@ public class ObservableConcatTest {
                     return Observable.fromIterable(Arrays.asList(t));
                 }
             })
-            .observeOn(Schedulers.computation()).subscribe(ts);
+            .observeOn(Schedulers.computation()).subscribe(to);
 
-            ts.awaitTerminalEvent(2500, TimeUnit.MILLISECONDS);
-            ts.assertTerminated();
-            ts.assertNoErrors();
-            assertEquals(1000, ts.valueCount());
-            assertEquals((Integer)999, ts.values().get(999));
+            to.awaitTerminalEvent(2500, TimeUnit.MILLISECONDS);
+            to.assertTerminated();
+            to.assertNoErrors();
+            assertEquals(1000, to.valueCount());
+            assertEquals((Integer)999, to.values().get(999));
         }
     }
 

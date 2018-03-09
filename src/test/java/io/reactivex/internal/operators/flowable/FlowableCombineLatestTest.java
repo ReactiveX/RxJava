@@ -1242,14 +1242,14 @@ public class FlowableCombineLatestTest {
 
     @Test
     public void cancelWhileSubscribing() {
-        final TestSubscriber<Object> to = new TestSubscriber<Object>();
+        final TestSubscriber<Object> ts = new TestSubscriber<Object>();
 
         Flowable.combineLatest(
                 Flowable.just(1)
                 .doOnNext(new Consumer<Integer>() {
                     @Override
                     public void accept(Integer v) throws Exception {
-                        to.cancel();
+                        ts.cancel();
                     }
                 }),
                 Flowable.never(),
@@ -1259,7 +1259,7 @@ public class FlowableCombineLatestTest {
                 return a;
             }
         })
-        .subscribe(to);
+        .subscribe(ts);
     }
 
     @Test
@@ -1267,10 +1267,10 @@ public class FlowableCombineLatestTest {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             List<Throwable> errors = TestHelper.trackPluginErrors();
             try {
-                final PublishProcessor<Integer> ps1 = PublishProcessor.create();
-                final PublishProcessor<Integer> ps2 = PublishProcessor.create();
+                final PublishProcessor<Integer> pp1 = PublishProcessor.create();
+                final PublishProcessor<Integer> pp2 = PublishProcessor.create();
 
-                TestSubscriber<Integer> to = Flowable.combineLatest(ps1, ps2, new BiFunction<Integer, Integer, Integer>() {
+                TestSubscriber<Integer> ts = Flowable.combineLatest(pp1, pp2, new BiFunction<Integer, Integer, Integer>() {
                     @Override
                     public Integer apply(Integer a, Integer b) throws Exception {
                         return a;
@@ -1283,30 +1283,30 @@ public class FlowableCombineLatestTest {
                 Runnable r1 = new Runnable() {
                     @Override
                     public void run() {
-                        ps1.onError(ex1);
+                        pp1.onError(ex1);
                     }
                 };
                 Runnable r2 = new Runnable() {
                     @Override
                     public void run() {
-                        ps2.onError(ex2);
+                        pp2.onError(ex2);
                     }
                 };
 
                 TestHelper.race(r1, r2);
 
-                if (to.errorCount() != 0) {
-                    if (to.errors().get(0) instanceof CompositeException) {
-                        to.assertSubscribed()
+                if (ts.errorCount() != 0) {
+                    if (ts.errors().get(0) instanceof CompositeException) {
+                        ts.assertSubscribed()
                         .assertNotComplete()
                         .assertNoValues();
 
-                        for (Throwable e : TestHelper.errorList(to)) {
+                        for (Throwable e : TestHelper.errorList(ts)) {
                             assertTrue(e.toString(), e instanceof TestException);
                         }
 
                     } else {
-                        to.assertFailure(TestException.class);
+                        ts.assertFailure(TestException.class);
                     }
                 }
 

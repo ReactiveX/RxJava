@@ -749,11 +749,11 @@ public class FlowableSubscriberTest {
 
     @Test
     public void methodTestCancelled() {
-        PublishProcessor<Integer> ps = PublishProcessor.create();
+        PublishProcessor<Integer> pp = PublishProcessor.create();
 
-        ps.test(Long.MAX_VALUE, true);
+        pp.test(Long.MAX_VALUE, true);
 
-        assertFalse(ps.hasSubscribers());
+        assertFalse(pp.hasSubscribers());
     }
 
     @Test
@@ -767,11 +767,11 @@ public class FlowableSubscriberTest {
 
     @Test
     public void methodTestNoCancel() {
-        PublishProcessor<Integer> ps = PublishProcessor.create();
+        PublishProcessor<Integer> pp = PublishProcessor.create();
 
-        ps.test(Long.MAX_VALUE, false);
+        pp.test(Long.MAX_VALUE, false);
 
-        assertTrue(ps.hasSubscribers());
+        assertTrue(pp.hasSubscribers());
     }
 
     @Test

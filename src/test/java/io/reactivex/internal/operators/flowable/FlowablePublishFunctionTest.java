@@ -84,17 +84,17 @@ public class FlowablePublishFunctionTest {
     public void canBeCancelled() {
         TestSubscriber<Integer> ts = TestSubscriber.create();
 
-        PublishProcessor<Integer> ps = PublishProcessor.create();
+        PublishProcessor<Integer> pp = PublishProcessor.create();
 
-        ps.publish(new Function<Flowable<Integer>, Flowable<Integer>>() {
+        pp.publish(new Function<Flowable<Integer>, Flowable<Integer>>() {
             @Override
             public Flowable<Integer> apply(Flowable<Integer> o) {
                 return Flowable.concat(o.take(5), o.takeLast(5));
             }
         }).subscribe(ts);
 
-        ps.onNext(1);
-        ps.onNext(2);
+        pp.onNext(1);
+        pp.onNext(2);
 
         ts.assertValues(1, 2);
         ts.assertNoErrors();
@@ -102,7 +102,7 @@ public class FlowablePublishFunctionTest {
 
         ts.cancel();
 
-        Assert.assertFalse("Source has subscribers?", ps.hasSubscribers());
+        Assert.assertFalse("Source has subscribers?", pp.hasSubscribers());
     }
 
     @Test
@@ -120,22 +120,22 @@ public class FlowablePublishFunctionTest {
     public void takeCompletes() {
         TestSubscriber<Integer> ts = TestSubscriber.create();
 
-        PublishProcessor<Integer> ps = PublishProcessor.create();
+        PublishProcessor<Integer> pp = PublishProcessor.create();
 
-        ps.publish(new Function<Flowable<Integer>, Flowable<Integer>>() {
+        pp.publish(new Function<Flowable<Integer>, Flowable<Integer>>() {
             @Override
             public Flowable<Integer> apply(Flowable<Integer> o) {
                 return o.take(1);
             }
         }).subscribe(ts);
 
-        ps.onNext(1);
+        pp.onNext(1);
 
         ts.assertValues(1);
         ts.assertNoErrors();
         ts.assertComplete();
 
-        Assert.assertFalse("Source has subscribers?", ps.hasSubscribers());
+        Assert.assertFalse("Source has subscribers?", pp.hasSubscribers());
 
     }
 
@@ -151,9 +151,9 @@ public class FlowablePublishFunctionTest {
             }
         };
 
-        PublishProcessor<Integer> ps = PublishProcessor.create();
+        PublishProcessor<Integer> pp = PublishProcessor.create();
 
-        ps.publish(new Function<Flowable<Integer>, Flowable<Integer>>() {
+        pp.publish(new Function<Flowable<Integer>, Flowable<Integer>>() {
             @Override
             public Flowable<Integer> apply(Flowable<Integer> o) {
                 return o.take(1);
@@ -167,54 +167,54 @@ public class FlowablePublishFunctionTest {
     public void takeCompletesUnsafe() {
         TestSubscriber<Integer> ts = TestSubscriber.create();
 
-        PublishProcessor<Integer> ps = PublishProcessor.create();
+        PublishProcessor<Integer> pp = PublishProcessor.create();
 
-        ps.publish(new Function<Flowable<Integer>, Flowable<Integer>>() {
+        pp.publish(new Function<Flowable<Integer>, Flowable<Integer>>() {
             @Override
             public Flowable<Integer> apply(Flowable<Integer> o) {
                 return o.take(1);
             }
         }).subscribe(ts);
 
-        ps.onNext(1);
+        pp.onNext(1);
 
         ts.assertValues(1);
         ts.assertNoErrors();
         ts.assertComplete();
 
-        Assert.assertFalse("Source has subscribers?", ps.hasSubscribers());
+        Assert.assertFalse("Source has subscribers?", pp.hasSubscribers());
     }
 
     @Test
     public void directCompletesUnsafe() {
         TestSubscriber<Integer> ts = TestSubscriber.create();
 
-        PublishProcessor<Integer> ps = PublishProcessor.create();
+        PublishProcessor<Integer> pp = PublishProcessor.create();
 
-        ps.publish(new Function<Flowable<Integer>, Flowable<Integer>>() {
+        pp.publish(new Function<Flowable<Integer>, Flowable<Integer>>() {
             @Override
             public Flowable<Integer> apply(Flowable<Integer> o) {
                 return o;
             }
         }).subscribe(ts);
 
-        ps.onNext(1);
-        ps.onComplete();
+        pp.onNext(1);
+        pp.onComplete();
 
         ts.assertValues(1);
         ts.assertNoErrors();
         ts.assertComplete();
 
-        Assert.assertFalse("Source has subscribers?", ps.hasSubscribers());
+        Assert.assertFalse("Source has subscribers?", pp.hasSubscribers());
     }
 
     @Test
     public void overflowMissingBackpressureException() {
         TestSubscriber<Integer> ts = TestSubscriber.create(0);
 
-        PublishProcessor<Integer> ps = PublishProcessor.create();
+        PublishProcessor<Integer> pp = PublishProcessor.create();
 
-        ps.publish(new Function<Flowable<Integer>, Flowable<Integer>>() {
+        pp.publish(new Function<Flowable<Integer>, Flowable<Integer>>() {
             @Override
             public Flowable<Integer> apply(Flowable<Integer> o) {
                 return o;
@@ -222,7 +222,7 @@ public class FlowablePublishFunctionTest {
         }).subscribe(ts);
 
         for (int i = 0; i < Flowable.bufferSize() * 2; i++) {
-            ps.onNext(i);
+            pp.onNext(i);
         }
 
         ts.assertNoValues();
@@ -231,16 +231,16 @@ public class FlowablePublishFunctionTest {
 
         Assert.assertEquals("Could not emit value due to lack of requests",
                 ts.errors().get(0).getMessage());
-        Assert.assertFalse("Source has subscribers?", ps.hasSubscribers());
+        Assert.assertFalse("Source has subscribers?", pp.hasSubscribers());
     }
 
     @Test
     public void overflowMissingBackpressureExceptionDelayed() {
         TestSubscriber<Integer> ts = TestSubscriber.create(0);
 
-        PublishProcessor<Integer> ps = PublishProcessor.create();
+        PublishProcessor<Integer> pp = PublishProcessor.create();
 
-        new FlowablePublishMulticast<Integer, Integer>(ps, new Function<Flowable<Integer>, Flowable<Integer>>() {
+        new FlowablePublishMulticast<Integer, Integer>(pp, new Function<Flowable<Integer>, Flowable<Integer>>() {
             @Override
             public Flowable<Integer> apply(Flowable<Integer> o) {
                 return o;
@@ -248,7 +248,7 @@ public class FlowablePublishFunctionTest {
         }, Flowable.bufferSize(), true).subscribe(ts);
 
         for (int i = 0; i < Flowable.bufferSize() * 2; i++) {
-            ps.onNext(i);
+            pp.onNext(i);
         }
 
         ts.request(Flowable.bufferSize());
@@ -258,7 +258,7 @@ public class FlowablePublishFunctionTest {
         ts.assertNotComplete();
 
         Assert.assertEquals("Could not emit value due to lack of requests", ts.errors().get(0).getMessage());
-        Assert.assertFalse("Source has subscribers?", ps.hasSubscribers());
+        Assert.assertFalse("Source has subscribers?", pp.hasSubscribers());
     }
 
     @Test

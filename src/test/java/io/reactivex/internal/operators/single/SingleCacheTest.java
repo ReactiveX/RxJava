@@ -28,12 +28,12 @@ public class SingleCacheTest {
 
         Single<Integer> cached = pp.single(-99).cache();
 
-        TestObserver<Integer> ts = cached.test(true);
+        TestObserver<Integer> to = cached.test(true);
 
         pp.onNext(1);
         pp.onComplete();
 
-        ts.assertEmpty();
+        to.assertEmpty();
 
         cached.test().assertResult(1);
     }
@@ -45,12 +45,12 @@ public class SingleCacheTest {
 
             final Single<Integer> cached = pp.single(-99).cache();
 
-            final TestObserver<Integer> ts1 = cached.test();
+            final TestObserver<Integer> to1 = cached.test();
 
             Runnable r1 = new Runnable() {
                 @Override
                 public void run() {
-                    ts1.cancel();
+                    to1.cancel();
                 }
             };
 

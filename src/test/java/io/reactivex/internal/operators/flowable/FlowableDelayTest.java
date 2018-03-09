@@ -768,17 +768,17 @@ public class FlowableDelayTest {
     public void testErrorRunsBeforeOnNext() {
         TestScheduler test = new TestScheduler();
 
-        PublishProcessor<Integer> ps = PublishProcessor.create();
+        PublishProcessor<Integer> pp = PublishProcessor.create();
 
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
 
-        ps.delay(1, TimeUnit.SECONDS, test).subscribe(ts);
+        pp.delay(1, TimeUnit.SECONDS, test).subscribe(ts);
 
-        ps.onNext(1);
+        pp.onNext(1);
 
         test.advanceTimeBy(500, TimeUnit.MILLISECONDS);
 
-        ps.onError(new TestException());
+        pp.onError(new TestException());
 
         test.advanceTimeBy(1, TimeUnit.SECONDS);
 
@@ -789,7 +789,7 @@ public class FlowableDelayTest {
 
     @Test
     public void testDelaySupplierSimple() {
-        final PublishProcessor<Integer> ps = PublishProcessor.create();
+        final PublishProcessor<Integer> pp = PublishProcessor.create();
 
         Flowable<Integer> source = Flowable.range(1, 5);
 
@@ -798,7 +798,7 @@ public class FlowableDelayTest {
         source.delaySubscription(Flowable.defer(new Callable<Publisher<Integer>>() {
             @Override
             public Publisher<Integer> call() {
-                return ps;
+                return pp;
             }
         })).subscribe(ts);
 
@@ -806,7 +806,7 @@ public class FlowableDelayTest {
         ts.assertNoErrors();
         ts.assertNotComplete();
 
-        ps.onNext(1);
+        pp.onNext(1);
 
         ts.assertValues(1, 2, 3, 4, 5);
         ts.assertComplete();
@@ -815,7 +815,7 @@ public class FlowableDelayTest {
 
     @Test
     public void testDelaySupplierCompletes() {
-        final PublishProcessor<Integer> ps = PublishProcessor.create();
+        final PublishProcessor<Integer> pp = PublishProcessor.create();
 
         Flowable<Integer> source = Flowable.range(1, 5);
 
@@ -824,7 +824,7 @@ public class FlowableDelayTest {
         source.delaySubscription(Flowable.defer(new Callable<Publisher<Integer>>() {
             @Override
             public Publisher<Integer> call() {
-                return ps;
+                return pp;
             }
         })).subscribe(ts);
 
@@ -833,7 +833,7 @@ public class FlowableDelayTest {
         ts.assertNotComplete();
 
         // FIXME should this complete the source instead of consuming it?
-        ps.onComplete();
+        pp.onComplete();
 
         ts.assertValues(1, 2, 3, 4, 5);
         ts.assertComplete();
@@ -842,7 +842,7 @@ public class FlowableDelayTest {
 
     @Test
     public void testDelaySupplierErrors() {
-        final PublishProcessor<Integer> ps = PublishProcessor.create();
+        final PublishProcessor<Integer> pp = PublishProcessor.create();
 
         Flowable<Integer> source = Flowable.range(1, 5);
 
@@ -851,7 +851,7 @@ public class FlowableDelayTest {
         source.delaySubscription(Flowable.defer(new Callable<Publisher<Integer>>() {
             @Override
             public Publisher<Integer> call() {
-                return ps;
+                return pp;
             }
         })).subscribe(ts);
 
@@ -859,7 +859,7 @@ public class FlowableDelayTest {
         ts.assertNoErrors();
         ts.assertNotComplete();
 
-        ps.onError(new TestException());
+        pp.onError(new TestException());
 
         ts.assertNoValues();
         ts.assertNotComplete();

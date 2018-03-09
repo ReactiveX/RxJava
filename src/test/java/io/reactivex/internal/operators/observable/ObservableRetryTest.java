@@ -60,7 +60,7 @@ public class ObservableRetryTest {
             }
 
         });
-        TestObserver<String> ts = new TestObserver<String>(consumer);
+        TestObserver<String> to = new TestObserver<String>(consumer);
         producer.retryWhen(new Function<Observable<? extends Throwable>, Observable<Object>>() {
 
             @Override
@@ -86,9 +86,9 @@ public class ObservableRetryTest {
                                 Observable.timer(t.count * 1L, TimeUnit.MILLISECONDS);
                     }}).cast(Object.class);
             }
-        }).subscribe(ts);
-        ts.awaitTerminalEvent();
-        ts.assertNoErrors();
+        }).subscribe(to);
+        to.awaitTerminalEvent();
+        to.assertNoErrors();
 
         InOrder inOrder = inOrder(consumer);
         inOrder.verify(consumer, never()).onError(any(Throwable.class));
@@ -451,7 +451,7 @@ public class ObservableRetryTest {
     public void testSourceObservableCallsUnsubscribe() throws InterruptedException {
         final AtomicInteger subsCount = new AtomicInteger(0);
 
-        final TestObserver<String> ts = new TestObserver<String>();
+        final TestObserver<String> to = new TestObserver<String>();
 
         ObservableSource<String> onSubscribe = new ObservableSource<String>() {
             @Override
@@ -474,7 +474,7 @@ public class ObservableRetryTest {
             }
         };
 
-        Observable.unsafeCreate(onSubscribe).retry(3).subscribe(ts);
+        Observable.unsafeCreate(onSubscribe).retry(3).subscribe(to);
         assertEquals(4, subsCount.get()); // 1 + 3 retries
     }
 
@@ -482,7 +482,7 @@ public class ObservableRetryTest {
     public void testSourceObservableRetry1() throws InterruptedException {
         final AtomicInteger subsCount = new AtomicInteger(0);
 
-        final TestObserver<String> ts = new TestObserver<String>();
+        final TestObserver<String> to = new TestObserver<String>();
 
         ObservableSource<String> onSubscribe = new ObservableSource<String>() {
             @Override
@@ -493,7 +493,7 @@ public class ObservableRetryTest {
             }
         };
 
-        Observable.unsafeCreate(onSubscribe).retry(1).subscribe(ts);
+        Observable.unsafeCreate(onSubscribe).retry(1).subscribe(to);
         assertEquals(2, subsCount.get());
     }
 
@@ -501,7 +501,7 @@ public class ObservableRetryTest {
     public void testSourceObservableRetry0() throws InterruptedException {
         final AtomicInteger subsCount = new AtomicInteger(0);
 
-        final TestObserver<String> ts = new TestObserver<String>();
+        final TestObserver<String> to = new TestObserver<String>();
 
         ObservableSource<String> onSubscribe = new ObservableSource<String>() {
             @Override
@@ -512,7 +512,7 @@ public class ObservableRetryTest {
             }
         };
 
-        Observable.unsafeCreate(onSubscribe).retry(0).subscribe(ts);
+        Observable.unsafeCreate(onSubscribe).retry(0).subscribe(to);
         assertEquals(1, subsCount.get());
     }
 
@@ -663,9 +663,9 @@ public class ObservableRetryTest {
             for (int i = 0; i < 400; i++) {
                 Observer<String> observer = TestHelper.mockObserver();
                 Observable<String> origin = Observable.unsafeCreate(new FuncWithErrors(NUM_RETRIES));
-                TestObserver<String> ts = new TestObserver<String>(observer);
-                origin.retry().observeOn(Schedulers.computation()).subscribe(ts);
-                ts.awaitTerminalEvent(5, TimeUnit.SECONDS);
+                TestObserver<String> to = new TestObserver<String>(observer);
+                origin.retry().observeOn(Schedulers.computation()).subscribe(to);
+                to.awaitTerminalEvent(5, TimeUnit.SECONDS);
 
                 InOrder inOrder = inOrder(observer);
                 // should have no errors
@@ -706,16 +706,16 @@ public class ObservableRetryTest {
                             final AtomicInteger nexts = new AtomicInteger();
                             try {
                                 Observable<String> origin = Observable.unsafeCreate(new FuncWithErrors(NUM_RETRIES));
-                                TestObserver<String> ts = new TestObserver<String>();
+                                TestObserver<String> to = new TestObserver<String>();
                                 origin.retry()
-                                .observeOn(Schedulers.computation()).subscribe(ts);
-                                ts.awaitTerminalEvent(2500, TimeUnit.MILLISECONDS);
-                                List<String> onNextEvents = new ArrayList<String>(ts.values());
+                                .observeOn(Schedulers.computation()).subscribe(to);
+                                to.awaitTerminalEvent(2500, TimeUnit.MILLISECONDS);
+                                List<String> onNextEvents = new ArrayList<String>(to.values());
                                 if (onNextEvents.size() != NUM_RETRIES + 2) {
-                                    for (Throwable t : ts.errors()) {
+                                    for (Throwable t : to.errors()) {
                                         onNextEvents.add(t.toString());
                                     }
-                                    for (long err = ts.completions(); err != 0; err--) {
+                                    for (long err = to.completions(); err != 0; err--) {
                                         onNextEvents.add("onComplete");
                                     }
                                     data.put(j, onNextEvents);

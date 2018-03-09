@@ -26,7 +26,7 @@ import org.reactivestreams.Subscriber;
 import io.reactivex.*;
 import io.reactivex.functions.*;
 import io.reactivex.internal.functions.Functions;
-import io.reactivex.internal.fuseable.QueueDisposable;
+import io.reactivex.internal.fuseable.*;
 import io.reactivex.subscribers.*;
 
 public class FlowableRangeTest {
@@ -283,12 +283,12 @@ public class FlowableRangeTest {
 
     @Test
     public void requestWrongFusion() {
-        TestSubscriber<Integer> to = SubscriberFusion.newTest(QueueDisposable.ASYNC);
+        TestSubscriber<Integer> ts = SubscriberFusion.newTest(QueueFuseable.ASYNC);
 
         Flowable.range(1, 5)
-        .subscribe(to);
+        .subscribe(ts);
 
-        SubscriberFusion.assertFusion(to, QueueDisposable.NONE)
+        SubscriberFusion.assertFusion(ts, QueueFuseable.NONE)
         .assertResult(1, 2, 3, 4, 5);
     }
 
@@ -301,21 +301,21 @@ public class FlowableRangeTest {
 
     @Test
     public void fused() {
-        TestSubscriber<Integer> to = SubscriberFusion.newTest(QueueDisposable.ANY);
+        TestSubscriber<Integer> ts = SubscriberFusion.newTest(QueueFuseable.ANY);
 
-        Flowable.range(1, 2).subscribe(to);
+        Flowable.range(1, 2).subscribe(ts);
 
-        SubscriberFusion.assertFusion(to, QueueDisposable.SYNC)
+        SubscriberFusion.assertFusion(ts, QueueFuseable.SYNC)
         .assertResult(1, 2);
     }
 
     @Test
     public void fusedReject() {
-        TestSubscriber<Integer> to = SubscriberFusion.newTest(QueueDisposable.ASYNC);
+        TestSubscriber<Integer> ts = SubscriberFusion.newTest(QueueFuseable.ASYNC);
 
-        Flowable.range(1, 2).subscribe(to);
+        Flowable.range(1, 2).subscribe(ts);
 
-        SubscriberFusion.assertFusion(to, QueueDisposable.NONE)
+        SubscriberFusion.assertFusion(ts, QueueFuseable.NONE)
         .assertResult(1, 2);
     }
 

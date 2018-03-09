@@ -23,10 +23,10 @@ public class FlowableAutoConnectTest {
 
     @Test
     public void autoConnectImmediately() {
-        PublishProcessor<Integer> ps = PublishProcessor.create();
+        PublishProcessor<Integer> pp = PublishProcessor.create();
 
-        ps.publish().autoConnect(0);
+        pp.publish().autoConnect(0);
 
-        assertTrue(ps.hasSubscribers());
+        assertTrue(pp.hasSubscribers());
     }
 }

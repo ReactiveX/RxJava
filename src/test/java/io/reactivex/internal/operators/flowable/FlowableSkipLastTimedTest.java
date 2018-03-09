@@ -197,21 +197,21 @@ public class FlowableSkipLastTimedTest {
     public void onNextDisposeRace() {
         TestScheduler scheduler = new TestScheduler();
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
-            final PublishProcessor<Integer> ps = PublishProcessor.create();
+            final PublishProcessor<Integer> pp = PublishProcessor.create();
 
-            final TestSubscriber<Integer> to = ps.skipLast(1, TimeUnit.DAYS, scheduler).test();
+            final TestSubscriber<Integer> ts = pp.skipLast(1, TimeUnit.DAYS, scheduler).test();
 
             Runnable r1 = new Runnable() {
                 @Override
                 public void run() {
-                    ps.onComplete();
+                    pp.onComplete();
                 }
             };
 
             Runnable r2 = new Runnable() {
                 @Override
                 public void run() {
-                    to.cancel();
+                    ts.cancel();
                 }
             };
 

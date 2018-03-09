@@ -291,12 +291,12 @@ public class FlowableBlockingTest {
 
     @Test
     public void onCompleteDelayed() {
-        TestSubscriber<Object> to = new TestSubscriber<Object>();
+        TestSubscriber<Object> ts = new TestSubscriber<Object>();
 
         Flowable.empty().delay(100, TimeUnit.MILLISECONDS)
-        .blockingSubscribe(to);
+        .blockingSubscribe(ts);
 
-        to.assertResult();
+        ts.assertResult();
     }
 
     @Test
@@ -306,24 +306,24 @@ public class FlowableBlockingTest {
 
     @Test
     public void disposeUpFront() {
-        TestSubscriber<Object> to = new TestSubscriber<Object>();
-        to.dispose();
-        Flowable.just(1).blockingSubscribe(to);
+        TestSubscriber<Object> ts = new TestSubscriber<Object>();
+        ts.dispose();
+        Flowable.just(1).blockingSubscribe(ts);
 
-        to.assertEmpty();
+        ts.assertEmpty();
     }
 
     @SuppressWarnings("rawtypes")
     @Test
     public void delayed() throws Exception {
-        final TestSubscriber<Object> to = new TestSubscriber<Object>();
+        final TestSubscriber<Object> ts = new TestSubscriber<Object>();
         final Subscriber[] s = { null };
 
         Schedulers.single().scheduleDirect(new Runnable() {
             @SuppressWarnings("unchecked")
             @Override
             public void run() {
-                to.dispose();
+                ts.dispose();
                 s[0].onNext(1);
             }
         }, 200, TimeUnit.MILLISECONDS);
@@ -334,13 +334,13 @@ public class FlowableBlockingTest {
                 observer.onSubscribe(new BooleanSubscription());
                 s[0] = observer;
             }
-        }.blockingSubscribe(to);
+        }.blockingSubscribe(ts);
 
-        while (!to.isDisposed()) {
+        while (!ts.isDisposed()) {
             Thread.sleep(100);
         }
 
-        to.assertEmpty();
+        ts.assertEmpty();
     }
 
     @Test

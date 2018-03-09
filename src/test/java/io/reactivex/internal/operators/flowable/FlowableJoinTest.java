@@ -339,9 +339,9 @@ public class FlowableJoinTest {
 
     @Test
     public void rightClose() {
-        PublishProcessor<Integer> ps = PublishProcessor.create();
+        PublishProcessor<Integer> pp = PublishProcessor.create();
 
-        TestSubscriber<Integer> to = ps.join(Flowable.just(2),
+        TestSubscriber<Integer> ts = pp.join(Flowable.just(2),
                 Functions.justFunction(Flowable.never()),
                 Functions.justFunction(Flowable.empty()),
                 new BiFunction<Integer, Integer, Integer>() {
@@ -353,16 +353,16 @@ public class FlowableJoinTest {
         .test()
         .assertEmpty();
 
-        ps.onNext(1);
+        pp.onNext(1);
 
-        to.assertEmpty();
+        ts.assertEmpty();
     }
 
     @Test
     public void resultSelectorThrows2() {
-        PublishProcessor<Integer> ps = PublishProcessor.create();
+        PublishProcessor<Integer> pp = PublishProcessor.create();
 
-        TestSubscriber<Integer> to = ps.join(
+        TestSubscriber<Integer> ts = pp.join(
                 Flowable.just(2),
                 Functions.justFunction(Flowable.never()),
                 Functions.justFunction(Flowable.never()),
@@ -374,10 +374,10 @@ public class FlowableJoinTest {
                 })
         .test();
 
-        ps.onNext(1);
-        ps.onComplete();
+        pp.onNext(1);
+        pp.onComplete();
 
-        to.assertFailure(TestException.class);
+        ts.assertFailure(TestException.class);
     }
 
     @Test
@@ -417,7 +417,7 @@ public class FlowableJoinTest {
             @SuppressWarnings("rawtypes")
             final Subscriber[] o = { null };
 
-            TestSubscriber<Integer> to = Flowable.just(1)
+            TestSubscriber<Integer> ts = Flowable.just(1)
             .join(Flowable.just(2),
                     Functions.justFunction(Flowable.never()),
                     Functions.justFunction(new Flowable<Integer>() {
@@ -438,7 +438,7 @@ public class FlowableJoinTest {
 
             o[0].onError(new TestException("Second"));
 
-            to
+            ts
             .assertFailureAndMessage(TestException.class, "First");
 
             TestHelper.assertUndeliverable(errors, 0, TestException.class, "Second");

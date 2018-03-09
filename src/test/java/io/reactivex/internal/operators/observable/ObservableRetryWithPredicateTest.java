@@ -277,7 +277,7 @@ public class ObservableRetryWithPredicateTest {
 
     @Test
     public void testIssue2826() {
-        TestObserver<Integer> ts = new TestObserver<Integer>();
+        TestObserver<Integer> to = new TestObserver<Integer>();
         final RuntimeException e = new RuntimeException("You shall not pass");
         final AtomicInteger c = new AtomicInteger();
         Observable.just(1).map(new Function<Integer, Integer>() {
@@ -286,11 +286,11 @@ public class ObservableRetryWithPredicateTest {
                 c.incrementAndGet();
                 throw e;
             }
-        }).retry(retry5).subscribe(ts);
+        }).retry(retry5).subscribe(to);
 
-        ts.assertTerminated();
+        to.assertTerminated();
         assertEquals(6, c.get());
-        assertEquals(Collections.singletonList(e), ts.errors());
+        assertEquals(Collections.singletonList(e), to.errors());
     }
     @Test
     public void testJustAndRetry() throws Exception {

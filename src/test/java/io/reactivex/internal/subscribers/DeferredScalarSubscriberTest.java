@@ -106,13 +106,13 @@ public class DeferredScalarSubscriberTest {
 
     @Test
     public void unsubscribeComposes() {
-        PublishProcessor<Integer> ps = PublishProcessor.create();
+        PublishProcessor<Integer> pp = PublishProcessor.create();
         TestSubscriber<Integer> ts = TestSubscriber.create(0L);
         TestingDeferredScalarSubscriber ds = new TestingDeferredScalarSubscriber(ts);
 
-        ps.subscribe(ds);
+        pp.subscribe(ds);
 
-        assertTrue("No subscribers?", ps.hasSubscribers());
+        assertTrue("No subscribers?", pp.hasSubscribers());
 
         ts.cancel();
 
@@ -125,7 +125,7 @@ public class DeferredScalarSubscriberTest {
         ts.assertNoErrors();
         ts.assertNotComplete();
 
-        assertFalse("Subscribers?", ps.hasSubscribers());
+        assertFalse("Subscribers?", pp.hasSubscribers());
         assertTrue("Deferred not unsubscribed?", ds.isCancelled());
     }
 

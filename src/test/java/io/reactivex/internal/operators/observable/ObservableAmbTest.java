@@ -176,10 +176,10 @@ public class ObservableAmbTest {
         //this stream emits second
         Observable<Integer> o2 = Observable.just(1).doOnSubscribe(incrementer)
                 .delay(100, TimeUnit.MILLISECONDS).subscribeOn(Schedulers.computation());
-        TestObserver<Integer> ts = new TestObserver<Integer>();
-        Observable.ambArray(o1, o2).subscribe(ts);
-        ts.awaitTerminalEvent(5, TimeUnit.SECONDS);
-        ts.assertNoErrors();
+        TestObserver<Integer> to = new TestObserver<Integer>();
+        Observable.ambArray(o1, o2).subscribe(to);
+        to.awaitTerminalEvent(5, TimeUnit.SECONDS);
+        to.assertNoErrors();
         assertEquals(2, count.get());
     }
 
@@ -210,9 +210,9 @@ public class ObservableAmbTest {
         PublishSubject<Integer> source2 = PublishSubject.create();
         PublishSubject<Integer> source3 = PublishSubject.create();
 
-        TestObserver<Integer> ts = new TestObserver<Integer>();
+        TestObserver<Integer> to = new TestObserver<Integer>();
 
-        Observable.ambArray(source1, source2, source3).subscribe(ts);
+        Observable.ambArray(source1, source2, source3).subscribe(to);
 
         assertTrue("Source 1 doesn't have subscribers!", source1.hasObservers());
         assertTrue("Source 2 doesn't have subscribers!", source2.hasObservers());

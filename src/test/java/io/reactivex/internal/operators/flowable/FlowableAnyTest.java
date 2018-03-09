@@ -239,7 +239,7 @@ public class FlowableAnyTest {
     @Test
     @Ignore("Single doesn't do backpressure")
     public void testBackpressureIfNoneRequestedNoneShouldBeDelivered() {
-        TestObserver<Boolean> ts = new TestObserver<Boolean>();
+        TestObserver<Boolean> to = new TestObserver<Boolean>();
 
         Flowable.just(1).any(new Predicate<Integer>() {
             @Override
@@ -247,32 +247,32 @@ public class FlowableAnyTest {
                 return true;
             }
         })
-        .subscribe(ts);
+        .subscribe(to);
 
-        ts.assertNoValues();
-        ts.assertNoErrors();
-        ts.assertNotComplete();
+        to.assertNoValues();
+        to.assertNoErrors();
+        to.assertNotComplete();
     }
 
     @Test
     public void testBackpressureIfOneRequestedOneShouldBeDelivered() {
-        TestObserver<Boolean> ts = new TestObserver<Boolean>();
+        TestObserver<Boolean> to = new TestObserver<Boolean>();
         Flowable.just(1).any(new Predicate<Integer>() {
             @Override
             public boolean test(Integer v) {
                 return true;
             }
-        }).subscribe(ts);
+        }).subscribe(to);
 
-        ts.assertTerminated();
-        ts.assertNoErrors();
-        ts.assertComplete();
-        ts.assertValue(true);
+        to.assertTerminated();
+        to.assertNoErrors();
+        to.assertComplete();
+        to.assertValue(true);
     }
 
     @Test
     public void testPredicateThrowsExceptionAndValueInCauseMessage() {
-        TestObserver<Boolean> ts = new TestObserver<Boolean>();
+        TestObserver<Boolean> to = new TestObserver<Boolean>();
         final IllegalArgumentException ex = new IllegalArgumentException();
 
         Flowable.just("Boo!").any(new Predicate<String>() {
@@ -280,12 +280,12 @@ public class FlowableAnyTest {
             public boolean test(String v) {
                 throw ex;
             }
-        }).subscribe(ts);
+        }).subscribe(to);
 
-        ts.assertTerminated();
-        ts.assertNoValues();
-        ts.assertNotComplete();
-        ts.assertError(ex);
+        to.assertTerminated();
+        to.assertNoValues();
+        to.assertNotComplete();
+        to.assertError(ex);
         // FIXME value as last cause?
 //        assertTrue(ex.getCause().getMessage().contains("Boo!"));
     }

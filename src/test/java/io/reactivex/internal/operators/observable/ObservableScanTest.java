@@ -115,7 +115,7 @@ public class ObservableScanTest {
 
     @Test
     public void shouldNotEmitUntilAfterSubscription() {
-        TestObserver<Integer> ts = new TestObserver<Integer>();
+        TestObserver<Integer> to = new TestObserver<Integer>();
         Observable.range(1, 100).scan(0, new BiFunction<Integer, Integer, Integer>() {
 
             @Override
@@ -131,9 +131,9 @@ public class ObservableScanTest {
                 return t1 > 0;
             }
 
-        }).subscribe(ts);
+        }).subscribe(to);
 
-        assertEquals(100, ts.values().size());
+        assertEquals(100, to.values().size());
     }
 
     @Test
@@ -219,18 +219,18 @@ public class ObservableScanTest {
     public void testInitialValueEmittedNoProducer() {
         PublishSubject<Integer> source = PublishSubject.create();
 
-        TestObserver<Integer> ts = new TestObserver<Integer>();
+        TestObserver<Integer> to = new TestObserver<Integer>();
 
         source.scan(0, new BiFunction<Integer, Integer, Integer>() {
             @Override
             public Integer apply(Integer t1, Integer t2) {
                 return t1 + t2;
             }
-        }).subscribe(ts);
+        }).subscribe(to);
 
-        ts.assertNoErrors();
-        ts.assertNotComplete();
-        ts.assertValue(0);
+        to.assertNoErrors();
+        to.assertNotComplete();
+        to.assertValue(0);
     }
 
     @Test

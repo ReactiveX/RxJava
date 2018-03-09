@@ -61,13 +61,13 @@ public class SingleFromPublisherTest {
     public void dispose() {
         PublishProcessor<Integer> pp = PublishProcessor.create();
 
-        TestObserver<Integer> ts = Single.fromPublisher(pp).test();
+        TestObserver<Integer> to = Single.fromPublisher(pp).test();
 
         assertTrue(pp.hasSubscribers());
 
         pp.onNext(1);
 
-        ts.cancel();
+        to.cancel();
 
         assertFalse(pp.hasSubscribers());
     }

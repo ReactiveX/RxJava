@@ -82,9 +82,9 @@ public class ObservableConcatMapSingleTest {
         PublishSubject<Integer> ps = PublishSubject.create();
         SingleSubject<Integer> ms = SingleSubject.create();
 
-        TestObserver<Integer> ts = ps.concatMapSingleDelayError(Functions.justFunction(ms), false).test();
+        TestObserver<Integer> to = ps.concatMapSingleDelayError(Functions.justFunction(ms), false).test();
 
-        ts.assertEmpty();
+        to.assertEmpty();
 
         ps.onNext(1);
 
@@ -94,11 +94,11 @@ public class ObservableConcatMapSingleTest {
 
         assertTrue(ms.hasObservers());
 
-        ts.assertEmpty();
+        to.assertEmpty();
 
         ms.onSuccess(1);
 
-        ts.assertFailure(TestException.class, 1);
+        to.assertFailure(TestException.class, 1);
     }
 
     @Test
@@ -179,7 +179,7 @@ public class ObservableConcatMapSingleTest {
 
             final AtomicReference<SingleObserver<? super Integer>> obs = new AtomicReference<SingleObserver<? super Integer>>();
 
-            TestObserver<Integer> ts = ps.concatMapSingle(
+            TestObserver<Integer> to = ps.concatMapSingle(
                     new Function<Integer, SingleSource<Integer>>() {
                         @Override
                         public SingleSource<Integer> apply(Integer v)
@@ -201,7 +201,7 @@ public class ObservableConcatMapSingleTest {
             ps.onError(new TestException("outer"));
             obs.get().onError(new TestException("inner"));
 
-            ts.assertFailureAndMessage(TestException.class, "outer");
+            to.assertFailureAndMessage(TestException.class, "outer");
 
             TestHelper.assertUndeliverable(errors, 0, TestException.class, "inner");
         } finally {
@@ -223,8 +223,8 @@ public class ObservableConcatMapSingleTest {
         .assertFailure(CompositeException.class)
         .assertOf(new Consumer<TestObserver<Object>>() {
             @Override
-            public void accept(TestObserver<Object> ts) throws Exception {
-                CompositeException ce = (CompositeException)ts.errors().get(0);
+            public void accept(TestObserver<Object> to) throws Exception {
+                CompositeException ce = (CompositeException)to.errors().get(0);
                 assertEquals(5, ce.getExceptions().size());
             }
         });
@@ -234,7 +234,7 @@ public class ObservableConcatMapSingleTest {
     public void mapperCrash() {
         final PublishSubject<Integer> ps = PublishSubject.create();
 
-        TestObserver<Object> ts = ps
+        TestObserver<Object> to = ps
         .concatMapSingle(new Function<Integer, SingleSource<? extends Object>>() {
             @Override
             public SingleSource<? extends Object> apply(Integer v)
@@ -244,13 +244,13 @@ public class ObservableConcatMapSingleTest {
         })
         .test();
 
-        ts.assertEmpty();
+        to.assertEmpty();
 
         assertTrue(ps.hasObservers());
 
         ps.onNext(1);
 
-        ts.assertFailure(TestException.class);
+        to.assertFailure(TestException.class);
 
         assertFalse(ps.hasObservers());
     }
@@ -267,9 +267,9 @@ public class ObservableConcatMapSingleTest {
         PublishSubject<Integer> ps = PublishSubject.create();
         SingleSubject<Integer> ms = SingleSubject.create();
 
-        TestObserver<Integer> ts = ps.concatMapSingleDelayError(Functions.justFunction(ms), false).test();
+        TestObserver<Integer> to = ps.concatMapSingleDelayError(Functions.justFunction(ms), false).test();
 
-        ts.assertEmpty();
+        to.assertEmpty();
 
         ps.onNext(1);
         ps.onNext(2);
@@ -277,10 +277,10 @@ public class ObservableConcatMapSingleTest {
 
         assertTrue(ms.hasObservers());
 
-        ts.assertEmpty();
+        to.assertEmpty();
 
         ms.onSuccess(1);
 
-        ts.assertResult(1, 1);
+        to.assertResult(1, 1);
     }
 }

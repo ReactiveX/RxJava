@@ -800,7 +800,7 @@ public class FlowableCreateTest {
     @Test
     public void serializedConcurrentOnNextOnComplete() {
         for (BackpressureStrategy m : BackpressureStrategy.values()) {
-            TestSubscriber<Object> to = Flowable.create(new FlowableOnSubscribe<Object>() {
+            TestSubscriber<Object> ts = Flowable.create(new FlowableOnSubscribe<Object>() {
                 @Override
                 public void subscribe(FlowableEmitter<Object> e) throws Exception {
                     final FlowableEmitter<Object> f = e.serialize();
@@ -831,7 +831,7 @@ public class FlowableCreateTest {
             .assertSubscribed().assertComplete()
             .assertNoErrors();
 
-            int c = to.valueCount();
+            int c = ts.valueCount();
             assertTrue("" + c, c >= 100);
         }
     }

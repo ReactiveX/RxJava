@@ -110,9 +110,9 @@ public class FlowableFlatMapSingleTest {
 
     @Test
     public void mapperThrowsFlowable() {
-        PublishProcessor<Integer> ps = PublishProcessor.create();
+        PublishProcessor<Integer> pp = PublishProcessor.create();
 
-        TestSubscriber<Integer> to = ps
+        TestSubscriber<Integer> ts = pp
         .flatMapSingle(new Function<Integer, SingleSource<Integer>>() {
             @Override
             public SingleSource<Integer> apply(Integer v) throws Exception {
@@ -121,20 +121,20 @@ public class FlowableFlatMapSingleTest {
         })
         .test();
 
-        assertTrue(ps.hasSubscribers());
+        assertTrue(pp.hasSubscribers());
 
-        ps.onNext(1);
+        pp.onNext(1);
 
-        to.assertFailure(TestException.class);
+        ts.assertFailure(TestException.class);
 
-        assertFalse(ps.hasSubscribers());
+        assertFalse(pp.hasSubscribers());
     }
 
     @Test
     public void mapperReturnsNullFlowable() {
-        PublishProcessor<Integer> ps = PublishProcessor.create();
+        PublishProcessor<Integer> pp = PublishProcessor.create();
 
-        TestSubscriber<Integer> to = ps
+        TestSubscriber<Integer> ts = pp
         .flatMapSingle(new Function<Integer, SingleSource<Integer>>() {
             @Override
             public SingleSource<Integer> apply(Integer v) throws Exception {
@@ -143,18 +143,18 @@ public class FlowableFlatMapSingleTest {
         })
         .test();
 
-        assertTrue(ps.hasSubscribers());
+        assertTrue(pp.hasSubscribers());
 
-        ps.onNext(1);
+        pp.onNext(1);
 
-        to.assertFailure(NullPointerException.class);
+        ts.assertFailure(NullPointerException.class);
 
-        assertFalse(ps.hasSubscribers());
+        assertFalse(pp.hasSubscribers());
     }
 
     @Test
     public void normalDelayErrorAll() {
-        TestSubscriber<Integer> to = Flowable.range(1, 10).concatWith(Flowable.<Integer>error(new TestException()))
+        TestSubscriber<Integer> ts = Flowable.range(1, 10).concatWith(Flowable.<Integer>error(new TestException()))
         .flatMapSingle(new Function<Integer, SingleSource<Integer>>() {
             @Override
             public SingleSource<Integer> apply(Integer v) throws Exception {
@@ -164,7 +164,7 @@ public class FlowableFlatMapSingleTest {
         .test()
         .assertFailure(CompositeException.class);
 
-        List<Throwable> errors = TestHelper.compositeList(to.errors().get(0));
+        List<Throwable> errors = TestHelper.compositeList(ts.errors().get(0));
 
         for (int i = 0; i < 11; i++) {
             TestHelper.assertError(errors, i, TestException.class);
@@ -284,24 +284,24 @@ public class FlowableFlatMapSingleTest {
 
     @Test
     public void successError() {
-        final PublishProcessor<Integer> ps = PublishProcessor.create();
+        final PublishProcessor<Integer> pp = PublishProcessor.create();
 
-        TestSubscriber<Integer> to = Flowable.range(1, 2)
+        TestSubscriber<Integer> ts = Flowable.range(1, 2)
         .flatMapSingle(new Function<Integer, SingleSource<Integer>>() {
             @Override
             public SingleSource<Integer> apply(Integer v) throws Exception {
                 if (v == 2) {
-                    return ps.singleOrError();
+                    return pp.singleOrError();
                 }
                 return Single.error(new TestException());
             }
         }, true, Integer.MAX_VALUE)
         .test();
 
-        ps.onNext(1);
-        ps.onComplete();
+        pp.onNext(1);
+        pp.onComplete();
 
-        to
+        ts
         .assertFailure(TestException.class, 1);
     }
 
@@ -371,38 +371,38 @@ public class FlowableFlatMapSingleTest {
 
     @Test
     public void emissionQueueTrigger() {
-        final PublishProcessor<Integer> ps1 = PublishProcessor.create();
-        final PublishProcessor<Integer> ps2 = PublishProcessor.create();
+        final PublishProcessor<Integer> pp1 = PublishProcessor.create();
+        final PublishProcessor<Integer> pp2 = PublishProcessor.create();
 
-        TestSubscriber<Integer> to = new TestSubscriber<Integer>() {
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>() {
             @Override
             public void onNext(Integer t) {
                 super.onNext(t);
                 if (t == 1) {
-                    ps2.onNext(2);
-                    ps2.onComplete();
+                    pp2.onNext(2);
+                    pp2.onComplete();
                 }
             }
         };
 
-        Flowable.just(ps1, ps2)
+        Flowable.just(pp1, pp2)
                 .flatMapSingle(new Function<PublishProcessor<Integer>, SingleSource<Integer>>() {
                     @Override
                     public SingleSource<Integer> apply(PublishProcessor<Integer> v) throws Exception {
                         return v.singleOrError();
                     }
                 })
-        .subscribe(to);
+        .subscribe(ts);
 
-        ps1.onNext(1);
-        ps1.onComplete();
+        pp1.onNext(1);
+        pp1.onComplete();
 
-        to.assertResult(1, 2);
+        ts.assertResult(1, 2);
     }
 
     @Test
     public void disposeInner() {
-        final TestSubscriber<Object> to = new TestSubscriber<Object>();
+        final TestSubscriber<Object> ts = new TestSubscriber<Object>();
 
         Flowable.just(1).flatMapSingle(new Function<Integer, SingleSource<Object>>() {
             @Override
@@ -414,30 +414,30 @@ public class FlowableFlatMapSingleTest {
 
                         assertFalse(((Disposable)observer).isDisposed());
 
-                        to.dispose();
+                        ts.dispose();
 
                         assertTrue(((Disposable)observer).isDisposed());
                     }
                 };
             }
         })
-        .subscribe(to);
+        .subscribe(ts);
 
-        to
+        ts
         .assertEmpty();
     }
 
     @Test
     public void innerSuccessCompletesAfterMain() {
-        PublishProcessor<Integer> ps = PublishProcessor.create();
+        PublishProcessor<Integer> pp = PublishProcessor.create();
 
-        TestSubscriber<Integer> to = Flowable.just(1).flatMapSingle(Functions.justFunction(ps.singleOrError()))
+        TestSubscriber<Integer> ts = Flowable.just(1).flatMapSingle(Functions.justFunction(pp.singleOrError()))
         .test();
 
-        ps.onNext(2);
-        ps.onComplete();
+        pp.onNext(2);
+        pp.onComplete();
 
-        to
+        ts
         .assertResult(2);
     }
 
@@ -471,19 +471,19 @@ public class FlowableFlatMapSingleTest {
     @Test
     public void requestCancelRace() {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
-            final TestSubscriber<Integer> to = Flowable.just(1).concatWith(Flowable.<Integer>never())
+            final TestSubscriber<Integer> ts = Flowable.just(1).concatWith(Flowable.<Integer>never())
             .flatMapSingle(Functions.justFunction(Single.just(2))).test(0);
 
             Runnable r1 = new Runnable() {
                 @Override
                 public void run() {
-                    to.request(1);
+                    ts.request(1);
                 }
             };
             Runnable r2 = new Runnable() {
                 @Override
                 public void run() {
-                    to.cancel();
+                    ts.cancel();
                 }
             };
 

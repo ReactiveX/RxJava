@@ -422,36 +422,36 @@ public class FlowableDebounceTest {
 
     @Test
     public void disposeInOnNext() {
-        final TestSubscriber<Integer> to = new TestSubscriber<Integer>();
+        final TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
 
         BehaviorProcessor.createDefault(1)
         .debounce(new Function<Integer, Flowable<Object>>() {
             @Override
             public Flowable<Object> apply(Integer o) throws Exception {
-                to.cancel();
+                ts.cancel();
                 return Flowable.never();
             }
         })
-        .subscribeWith(to)
+        .subscribeWith(ts)
         .assertEmpty();
 
-        assertTrue(to.isDisposed());
+        assertTrue(ts.isDisposed());
     }
 
     @Test
     public void disposedInOnComplete() {
-        final TestSubscriber<Integer> to = new TestSubscriber<Integer>();
+        final TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
 
         new Flowable<Integer>() {
             @Override
             protected void subscribeActual(Subscriber<? super Integer> subscriber) {
                 subscriber.onSubscribe(new BooleanSubscription());
-                to.cancel();
+                ts.cancel();
                 subscriber.onComplete();
             }
         }
         .debounce(Functions.justFunction(Flowable.never()))
-        .subscribeWith(to)
+        .subscribeWith(ts)
         .assertEmpty();
     }
 
@@ -459,7 +459,7 @@ public class FlowableDebounceTest {
     public void emitLate() {
         final AtomicReference<Subscriber<? super Integer>> ref = new AtomicReference<Subscriber<? super Integer>>();
 
-        TestSubscriber<Integer> to = Flowable.range(1, 2)
+        TestSubscriber<Integer> ts = Flowable.range(1, 2)
         .debounce(new Function<Integer, Flowable<Integer>>() {
             @Override
             public Flowable<Integer> apply(Integer o) throws Exception {
@@ -479,7 +479,7 @@ public class FlowableDebounceTest {
 
         ref.get().onNext(1);
 
-        to
+        ts
         .assertResult(2);
     }
 

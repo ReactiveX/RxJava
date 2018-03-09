@@ -26,7 +26,7 @@ import io.reactivex.*;
 import io.reactivex.exceptions.*;
 import io.reactivex.functions.*;
 import io.reactivex.internal.functions.Functions;
-import io.reactivex.internal.fuseable.QueueSubscription;
+import io.reactivex.internal.fuseable.*;
 import io.reactivex.internal.operators.flowable.FlowableFlattenIterable.FlattenIterableSubscriber;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.internal.util.ExceptionHelper;
@@ -395,9 +395,9 @@ public class FlowableFlattenIterableTest {
             }
         };
 
-        PublishProcessor<Integer> ps = PublishProcessor.create();
+        PublishProcessor<Integer> pp = PublishProcessor.create();
 
-        ps
+        pp
         .concatMapIterable(new Function<Integer, Iterable<Integer>>() {
             @Override
             public Iterable<Integer> apply(Integer v) {
@@ -406,13 +406,13 @@ public class FlowableFlattenIterableTest {
         })
         .subscribe(ts);
 
-        ps.onNext(1);
+        pp.onNext(1);
 
         ts.assertNoValues();
         ts.assertError(TestException.class);
         ts.assertNotComplete();
 
-        Assert.assertFalse("PublishProcessor has Subscribers?!", ps.hasSubscribers());
+        Assert.assertFalse("PublishProcessor has Subscribers?!", pp.hasSubscribers());
     }
 
     @Test
@@ -498,9 +498,9 @@ public class FlowableFlattenIterableTest {
             }
         };
 
-        PublishProcessor<Integer> ps = PublishProcessor.create();
+        PublishProcessor<Integer> pp = PublishProcessor.create();
 
-        ps
+        pp
         .concatMapIterable(new Function<Integer, Iterable<Integer>>() {
             @Override
             public Iterable<Integer> apply(Integer v) {
@@ -510,13 +510,13 @@ public class FlowableFlattenIterableTest {
         .take(1)
         .subscribe(ts);
 
-        ps.onNext(1);
+        pp.onNext(1);
 
         ts.assertValue(1);
         ts.assertNoErrors();
         ts.assertComplete();
 
-        Assert.assertFalse("PublishProcessor has Subscribers?!", ps.hasSubscribers());
+        Assert.assertFalse("PublishProcessor has Subscribers?!", pp.hasSubscribers());
         Assert.assertEquals(1, counter.get());
     }
 
@@ -617,7 +617,7 @@ public class FlowableFlattenIterableTest {
                 @SuppressWarnings("unchecked")
                 QueueSubscription<Integer> qs = (QueueSubscription<Integer>)s;
 
-                assertEquals(QueueSubscription.SYNC, qs.requestFusion(QueueSubscription.ANY));
+                assertEquals(QueueFuseable.SYNC, qs.requestFusion(QueueFuseable.ANY));
 
                 try {
                     assertFalse("Source reports being empty!", qs.isEmpty());
@@ -672,7 +672,7 @@ public class FlowableFlattenIterableTest {
 
     @Test
     public void mixedInnerSource() {
-        TestSubscriber<Integer> ts = SubscriberFusion.newTest(QueueSubscription.ANY);
+        TestSubscriber<Integer> ts = SubscriberFusion.newTest(QueueFuseable.ANY);
 
         Flowable.just(1, 2, 3)
         .flatMapIterable(new Function<Integer, Iterable<Integer>>() {
@@ -686,13 +686,13 @@ public class FlowableFlattenIterableTest {
         })
         .subscribe(ts);
 
-        SubscriberFusion.assertFusion(ts, QueueSubscription.SYNC)
+        SubscriberFusion.assertFusion(ts, QueueFuseable.SYNC)
         .assertResult(1, 2, 1, 2);
     }
 
     @Test
     public void mixedInnerSource2() {
-        TestSubscriber<Integer> ts = SubscriberFusion.newTest(QueueSubscription.ANY);
+        TestSubscriber<Integer> ts = SubscriberFusion.newTest(QueueFuseable.ANY);
 
         Flowable.just(1, 2, 3)
         .flatMapIterable(new Function<Integer, Iterable<Integer>>() {
@@ -706,13 +706,13 @@ public class FlowableFlattenIterableTest {
         })
         .subscribe(ts);
 
-        SubscriberFusion.assertFusion(ts, QueueSubscription.SYNC)
+        SubscriberFusion.assertFusion(ts, QueueFuseable.SYNC)
         .assertResult(1, 2);
     }
 
     @Test
     public void fusionRejected() {
-        TestSubscriber<Integer> ts = SubscriberFusion.newTest(QueueSubscription.ANY);
+        TestSubscriber<Integer> ts = SubscriberFusion.newTest(QueueFuseable.ANY);
 
         Flowable.just(1, 2, 3).hide()
         .flatMapIterable(new Function<Integer, Iterable<Integer>>() {
@@ -723,7 +723,7 @@ public class FlowableFlattenIterableTest {
         })
         .subscribe(ts);
 
-        SubscriberFusion.assertFusion(ts, QueueSubscription.NONE)
+        SubscriberFusion.assertFusion(ts, QueueFuseable.NONE)
         .assertResult(1, 2, 1, 2, 1, 2);
     }
 
@@ -745,7 +745,7 @@ public class FlowableFlattenIterableTest {
                 @SuppressWarnings("unchecked")
                 QueueSubscription<Integer> qs = (QueueSubscription<Integer>)s;
 
-                assertEquals(QueueSubscription.SYNC, qs.requestFusion(QueueSubscription.ANY));
+                assertEquals(QueueFuseable.SYNC, qs.requestFusion(QueueFuseable.ANY));
 
                 try {
                     assertFalse("Source reports being empty!", qs.isEmpty());
@@ -1085,16 +1085,16 @@ public class FlowableFlattenIterableTest {
 
         f.onSubscribe(new BooleanSubscription());
 
-        f.fusionMode = QueueSubscription.NONE;
+        f.fusionMode = QueueFuseable.NONE;
 
-        assertEquals(QueueSubscription.NONE, f.requestFusion(QueueSubscription.SYNC));
+        assertEquals(QueueFuseable.NONE, f.requestFusion(QueueFuseable.SYNC));
 
-        assertEquals(QueueSubscription.NONE, f.requestFusion(QueueSubscription.ASYNC));
+        assertEquals(QueueFuseable.NONE, f.requestFusion(QueueFuseable.ASYNC));
 
-        f.fusionMode = QueueSubscription.SYNC;
+        f.fusionMode = QueueFuseable.SYNC;
 
-        assertEquals(QueueSubscription.SYNC, f.requestFusion(QueueSubscription.SYNC));
+        assertEquals(QueueFuseable.SYNC, f.requestFusion(QueueFuseable.SYNC));
 
-        assertEquals(QueueSubscription.NONE, f.requestFusion(QueueSubscription.ASYNC));
+        assertEquals(QueueFuseable.NONE, f.requestFusion(QueueFuseable.ASYNC));
 }
 }

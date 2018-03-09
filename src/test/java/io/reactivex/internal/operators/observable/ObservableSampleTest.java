@@ -323,17 +323,17 @@ public class ObservableSampleTest {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final TestScheduler scheduler = new TestScheduler();
 
-            final PublishSubject<Integer> pp = PublishSubject.create();
+            final PublishSubject<Integer> ps = PublishSubject.create();
 
-            TestObserver<Integer> ts = pp.sample(1, TimeUnit.SECONDS, scheduler, true)
+            TestObserver<Integer> to = ps.sample(1, TimeUnit.SECONDS, scheduler, true)
             .test();
 
-            pp.onNext(1);
+            ps.onNext(1);
 
             Runnable r1 = new Runnable() {
                 @Override
                 public void run() {
-                    pp.onComplete();
+                    ps.onComplete();
                 }
             };
 
@@ -346,7 +346,7 @@ public class ObservableSampleTest {
 
             TestHelper.race(r1, r2);
 
-            ts.assertResult(1);
+            to.assertResult(1);
         }
     }
 
@@ -369,18 +369,18 @@ public class ObservableSampleTest {
     @Test
     public void emitLastOtherRunCompleteRace() {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
-            final PublishSubject<Integer> pp = PublishSubject.create();
+            final PublishSubject<Integer> ps = PublishSubject.create();
             final PublishSubject<Integer> sampler = PublishSubject.create();
 
-            TestObserver<Integer> ts = pp.sample(sampler, true)
+            TestObserver<Integer> to = ps.sample(sampler, true)
             .test();
 
-            pp.onNext(1);
+            ps.onNext(1);
 
             Runnable r1 = new Runnable() {
                 @Override
                 public void run() {
-                    pp.onComplete();
+                    ps.onComplete();
                 }
             };
 
@@ -393,24 +393,24 @@ public class ObservableSampleTest {
 
             TestHelper.race(r1, r2);
 
-            ts.assertResult(1);
+            to.assertResult(1);
         }
     }
 
     @Test
     public void emitLastOtherCompleteCompleteRace() {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
-            final PublishSubject<Integer> pp = PublishSubject.create();
+            final PublishSubject<Integer> ps = PublishSubject.create();
             final PublishSubject<Integer> sampler = PublishSubject.create();
 
-            TestObserver<Integer> ts = pp.sample(sampler, true).test();
+            TestObserver<Integer> to = ps.sample(sampler, true).test();
 
-            pp.onNext(1);
+            ps.onNext(1);
 
             Runnable r1 = new Runnable() {
                 @Override
                 public void run() {
-                    pp.onComplete();
+                    ps.onComplete();
                 }
             };
 
@@ -423,7 +423,7 @@ public class ObservableSampleTest {
 
             TestHelper.race(r1, r2);
 
-            ts.assertResult(1);
+            to.assertResult(1);
         }
     }
 

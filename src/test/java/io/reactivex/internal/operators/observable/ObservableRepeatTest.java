@@ -162,20 +162,20 @@ public class ObservableRepeatTest {
                 .repeat(3)
                 .distinct();
 
-        TestObserver<Integer> ts = new TestObserver<Integer>();
+        TestObserver<Integer> to = new TestObserver<Integer>();
 
-        src.subscribe(ts);
+        src.subscribe(to);
 
-        ts.assertNoErrors();
-        ts.assertTerminated();
-        ts.assertValues(1, 2, 3);
+        to.assertNoErrors();
+        to.assertTerminated();
+        to.assertValues(1, 2, 3);
     }
 
     /** Issue #2844: wrong target of request. */
     @Test(timeout = 3000)
     public void testRepeatRetarget() {
         final List<Integer> concatBase = new ArrayList<Integer>();
-        TestObserver<Integer> ts = new TestObserver<Integer>();
+        TestObserver<Integer> to = new TestObserver<Integer>();
         Observable.just(1, 2)
         .repeat(5)
         .concatMap(new Function<Integer, Observable<Integer>>() {
@@ -187,11 +187,11 @@ public class ObservableRepeatTest {
                         .delay(200, TimeUnit.MILLISECONDS);
             }
         })
-        .subscribe(ts);
+        .subscribe(to);
 
-        ts.awaitTerminalEvent();
-        ts.assertNoErrors();
-        ts.assertNoValues();
+        to.awaitTerminalEvent();
+        to.assertNoErrors();
+        to.assertNoValues();
 
         assertEquals(Arrays.asList(1, 2, 1, 2, 1, 2, 1, 2, 1, 2), concatBase);
     }

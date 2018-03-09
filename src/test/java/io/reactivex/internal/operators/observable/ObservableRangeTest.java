@@ -14,6 +14,7 @@
 package io.reactivex.internal.operators.observable;
 
 import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import java.util.ArrayList;
@@ -23,7 +24,7 @@ import org.junit.Test;
 
 import io.reactivex.*;
 import io.reactivex.functions.Consumer;
-import io.reactivex.internal.fuseable.QueueDisposable;
+import io.reactivex.internal.fuseable.QueueFuseable;
 import io.reactivex.observers.*;
 
 public class ObservableRangeTest {
@@ -99,12 +100,12 @@ public class ObservableRangeTest {
 
         Observable<Integer> o = Observable.range(1, list.size());
 
-        TestObserver<Integer> ts = new TestObserver<Integer>();
+        TestObserver<Integer> to = new TestObserver<Integer>();
 
-        o.subscribe(ts);
+        o.subscribe(to);
 
-        ts.assertValueSequence(list);
-        ts.assertTerminated();
+        to.assertValueSequence(list);
+        to.assertTerminated();
     }
 
     @Test
@@ -136,12 +137,12 @@ public class ObservableRangeTest {
 
     @Test(timeout = 1000)
     public void testNearMaxValueWithoutBackpressure() {
-        TestObserver<Integer> ts = new TestObserver<Integer>();
-        Observable.range(Integer.MAX_VALUE - 1, 2).subscribe(ts);
+        TestObserver<Integer> to = new TestObserver<Integer>();
+        Observable.range(Integer.MAX_VALUE - 1, 2).subscribe(to);
 
-        ts.assertComplete();
-        ts.assertNoErrors();
-        ts.assertValues(Integer.MAX_VALUE - 1, Integer.MAX_VALUE);
+        to.assertComplete();
+        to.assertNoErrors();
+        to.assertValues(Integer.MAX_VALUE - 1, Integer.MAX_VALUE);
     }
 
     @Test
@@ -156,12 +157,12 @@ public class ObservableRangeTest {
 
     @Test
     public void requestWrongFusion() {
-        TestObserver<Integer> to = ObserverFusion.newTest(QueueDisposable.ASYNC);
+        TestObserver<Integer> to = ObserverFusion.newTest(QueueFuseable.ASYNC);
 
         Observable.range(1, 5)
         .subscribe(to);
 
-        ObserverFusion.assertFusion(to, QueueDisposable.NONE)
+        ObserverFusion.assertFusion(to, QueueFuseable.NONE)
         .assertResult(1, 2, 3, 4, 5);
     }
 }

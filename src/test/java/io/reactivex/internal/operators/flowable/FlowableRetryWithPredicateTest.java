@@ -392,7 +392,7 @@ public class FlowableRetryWithPredicateTest {
     @Test
     public void predicateThrows() {
 
-        TestSubscriber<Object> to = Flowable.error(new TestException("Outer"))
+        TestSubscriber<Object> ts = Flowable.error(new TestException("Outer"))
         .retry(new Predicate<Throwable>() {
             @Override
             public boolean test(Throwable e) throws Exception {
@@ -402,7 +402,7 @@ public class FlowableRetryWithPredicateTest {
         .test()
         .assertFailure(CompositeException.class);
 
-        List<Throwable> errors = TestHelper.compositeList(to.errors().get(0));
+        List<Throwable> errors = TestHelper.compositeList(ts.errors().get(0));
 
         TestHelper.assertError(errors, 0, TestException.class, "Outer");
         TestHelper.assertError(errors, 1, TestException.class, "Inner");
@@ -419,36 +419,36 @@ public class FlowableRetryWithPredicateTest {
     @Test
     public void retryDisposeRace() {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
-            final PublishProcessor<Integer> ps = PublishProcessor.create();
+            final PublishProcessor<Integer> pp = PublishProcessor.create();
 
-            final TestSubscriber<Integer> to = ps.retry(Functions.alwaysTrue()).test();
+            final TestSubscriber<Integer> ts = pp.retry(Functions.alwaysTrue()).test();
 
             final TestException ex = new TestException();
 
             Runnable r1 = new Runnable() {
                 @Override
                 public void run() {
-                    ps.onError(ex);
+                    pp.onError(ex);
                 }
             };
 
             Runnable r2 = new Runnable() {
                 @Override
                 public void run() {
-                    to.cancel();
+                    ts.cancel();
                 }
             };
 
             TestHelper.race(r1, r2);
 
-            to.assertEmpty();
+            ts.assertEmpty();
         }
     }
 
     @Test
     public void bipredicateThrows() {
 
-        TestSubscriber<Object> to = Flowable.error(new TestException("Outer"))
+        TestSubscriber<Object> ts = Flowable.error(new TestException("Outer"))
         .retry(new BiPredicate<Integer, Throwable>() {
             @Override
             public boolean test(Integer n, Throwable e) throws Exception {
@@ -458,7 +458,7 @@ public class FlowableRetryWithPredicateTest {
         .test()
         .assertFailure(CompositeException.class);
 
-        List<Throwable> errors = TestHelper.compositeList(to.errors().get(0));
+        List<Throwable> errors = TestHelper.compositeList(ts.errors().get(0));
 
         TestHelper.assertError(errors, 0, TestException.class, "Outer");
         TestHelper.assertError(errors, 1, TestException.class, "Inner");
@@ -467,9 +467,9 @@ public class FlowableRetryWithPredicateTest {
     @Test
     public void retryBiPredicateDisposeRace() {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
-            final PublishProcessor<Integer> ps = PublishProcessor.create();
+            final PublishProcessor<Integer> pp = PublishProcessor.create();
 
-            final TestSubscriber<Integer> to = ps.retry(new BiPredicate<Object, Object>() {
+            final TestSubscriber<Integer> ts = pp.retry(new BiPredicate<Object, Object>() {
                 @Override
                 public boolean test(Object t1, Object t2) throws Exception {
                     return true;
@@ -481,20 +481,20 @@ public class FlowableRetryWithPredicateTest {
             Runnable r1 = new Runnable() {
                 @Override
                 public void run() {
-                    ps.onError(ex);
+                    pp.onError(ex);
                 }
             };
 
             Runnable r2 = new Runnable() {
                 @Override
                 public void run() {
-                    to.cancel();
+                    ts.cancel();
                 }
             };
 
             TestHelper.race(r1, r2);
 
-            to.assertEmpty();
+            ts.assertEmpty();
         }
     }
 }

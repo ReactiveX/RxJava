@@ -66,7 +66,7 @@ public class ObservableCovarianceTest {
     @Test
     public void testGroupByCompose() {
         Observable<Movie> movies = Observable.just(new HorrorMovie(), new ActionMovie(), new Movie());
-        TestObserver<String> ts = new TestObserver<String>();
+        TestObserver<String> to = new TestObserver<String>();
         movies
         .groupBy(new Function<Movie, Object>() {
             @Override
@@ -105,11 +105,11 @@ public class ObservableCovarianceTest {
                 });
             }
         })
-        .subscribe(ts);
-        ts.assertTerminated();
-        ts.assertNoErrors();
+        .subscribe(to);
+        to.assertTerminated();
+        to.assertNoErrors();
         //        System.out.println(ts.getOnNextEvents());
-        assertEquals(6, ts.valueCount());
+        assertEquals(6, to.valueCount());
     }
 
     @SuppressWarnings("unused")

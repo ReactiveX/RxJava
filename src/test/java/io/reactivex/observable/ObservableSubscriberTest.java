@@ -174,10 +174,10 @@ public class ObservableSubscriberTest {
 
     @Test
     public void safeSubscriberAlreadySafe() {
-        TestObserver<Integer> ts = new TestObserver<Integer>();
-        Observable.just(1).safeSubscribe(new SafeObserver<Integer>(ts));
+        TestObserver<Integer> to = new TestObserver<Integer>();
+        Observable.just(1).safeSubscribe(new SafeObserver<Integer>(to));
 
-        ts.assertResult(1);
+        to.assertResult(1);
     }
 
 

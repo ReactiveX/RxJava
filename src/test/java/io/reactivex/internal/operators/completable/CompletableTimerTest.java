@@ -38,7 +38,7 @@ public class CompletableTimerTest {
         try {
             for (Scheduler s : new Scheduler[] { Schedulers.single(), Schedulers.computation(), Schedulers.newThread(), Schedulers.io(), Schedulers.from(exec) }) {
                 final AtomicBoolean interrupted = new AtomicBoolean();
-                TestObserver<Void> ts = Completable.timer(1, TimeUnit.MILLISECONDS, s)
+                TestObserver<Void> to = Completable.timer(1, TimeUnit.MILLISECONDS, s)
                 .doOnComplete(new Action() {
                     @Override
                     public void run() throws Exception {
@@ -53,7 +53,7 @@ public class CompletableTimerTest {
 
                 Thread.sleep(500);
 
-                ts.cancel();
+                to.cancel();
 
                 Thread.sleep(500);
 

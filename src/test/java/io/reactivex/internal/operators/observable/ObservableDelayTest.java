@@ -218,10 +218,10 @@ public class ObservableDelayTest {
         Observable<Integer> result = Observable.just(1, 2, 3).delaySubscription(100, TimeUnit.MILLISECONDS, scheduler);
 
         Observer<Object> o = TestHelper.mockObserver();
-        TestObserver<Object> ts = new TestObserver<Object>(o);
+        TestObserver<Object> to = new TestObserver<Object>(o);
 
-        result.subscribe(ts);
-        ts.dispose();
+        result.subscribe(to);
+        to.dispose();
         scheduler.advanceTimeBy(100, TimeUnit.MILLISECONDS);
 
         verify(o, never()).onNext(any());
@@ -640,7 +640,7 @@ public class ObservableDelayTest {
 
     @Test
     public void testBackpressureWithTimedDelay() {
-        TestObserver<Integer> ts = new TestObserver<Integer>();
+        TestObserver<Integer> to = new TestObserver<Integer>();
         Observable.range(1, Flowable.bufferSize() * 2)
                 .delay(100, TimeUnit.MILLISECONDS)
                 .observeOn(Schedulers.computation())
@@ -659,16 +659,16 @@ public class ObservableDelayTest {
                         return t;
                     }
 
-                }).subscribe(ts);
+                }).subscribe(to);
 
-        ts.awaitTerminalEvent();
-        ts.assertNoErrors();
-        assertEquals(Flowable.bufferSize() * 2, ts.valueCount());
+        to.awaitTerminalEvent();
+        to.assertNoErrors();
+        assertEquals(Flowable.bufferSize() * 2, to.valueCount());
     }
 
     @Test
     public void testBackpressureWithSubscriptionTimedDelay() {
-        TestObserver<Integer> ts = new TestObserver<Integer>();
+        TestObserver<Integer> to = new TestObserver<Integer>();
         Observable.range(1, Flowable.bufferSize() * 2)
                 .delaySubscription(100, TimeUnit.MILLISECONDS)
                 .delay(100, TimeUnit.MILLISECONDS)
@@ -688,16 +688,16 @@ public class ObservableDelayTest {
                         return t;
                     }
 
-                }).subscribe(ts);
+                }).subscribe(to);
 
-        ts.awaitTerminalEvent();
-        ts.assertNoErrors();
-        assertEquals(Flowable.bufferSize() * 2, ts.valueCount());
+        to.awaitTerminalEvent();
+        to.assertNoErrors();
+        assertEquals(Flowable.bufferSize() * 2, to.valueCount());
     }
 
     @Test
     public void testBackpressureWithSelectorDelay() {
-        TestObserver<Integer> ts = new TestObserver<Integer>();
+        TestObserver<Integer> to = new TestObserver<Integer>();
         Observable.range(1, Flowable.bufferSize() * 2)
                 .delay(new Function<Integer, Observable<Long>>() {
 
@@ -723,16 +723,16 @@ public class ObservableDelayTest {
                         return t;
                     }
 
-                }).subscribe(ts);
+                }).subscribe(to);
 
-        ts.awaitTerminalEvent();
-        ts.assertNoErrors();
-        assertEquals(Flowable.bufferSize() * 2, ts.valueCount());
+        to.awaitTerminalEvent();
+        to.assertNoErrors();
+        assertEquals(Flowable.bufferSize() * 2, to.valueCount());
     }
 
     @Test
     public void testBackpressureWithSelectorDelayAndSubscriptionDelay() {
-        TestObserver<Integer> ts = new TestObserver<Integer>();
+        TestObserver<Integer> to = new TestObserver<Integer>();
         Observable.range(1, Flowable.bufferSize() * 2)
                 .delay(Observable.timer(500, TimeUnit.MILLISECONDS)
                 , new Function<Integer, Observable<Long>>() {
@@ -759,11 +759,11 @@ public class ObservableDelayTest {
                         return t;
                     }
 
-                }).subscribe(ts);
+                }).subscribe(to);
 
-        ts.awaitTerminalEvent();
-        ts.assertNoErrors();
-        assertEquals(Flowable.bufferSize() * 2, ts.valueCount());
+        to.awaitTerminalEvent();
+        to.assertNoErrors();
+        assertEquals(Flowable.bufferSize() * 2, to.valueCount());
     }
 
     @Test
@@ -772,9 +772,9 @@ public class ObservableDelayTest {
 
         PublishSubject<Integer> ps = PublishSubject.create();
 
-        TestObserver<Integer> ts = new TestObserver<Integer>();
+        TestObserver<Integer> to = new TestObserver<Integer>();
 
-        ps.delay(1, TimeUnit.SECONDS, test).subscribe(ts);
+        ps.delay(1, TimeUnit.SECONDS, test).subscribe(to);
 
         ps.onNext(1);
 
@@ -784,9 +784,9 @@ public class ObservableDelayTest {
 
         test.advanceTimeBy(1, TimeUnit.SECONDS);
 
-        ts.assertNoValues();
-        ts.assertError(TestException.class);
-        ts.assertNotComplete();
+        to.assertNoValues();
+        to.assertError(TestException.class);
+        to.assertNotComplete();
     }
 
     @Test
@@ -795,19 +795,19 @@ public class ObservableDelayTest {
 
         Observable<Integer> source = Observable.range(1, 5);
 
-        TestObserver<Integer> ts = new TestObserver<Integer>();
+        TestObserver<Integer> to = new TestObserver<Integer>();
 
-        source.delaySubscription(ps).subscribe(ts);
+        source.delaySubscription(ps).subscribe(to);
 
-        ts.assertNoValues();
-        ts.assertNoErrors();
-        ts.assertNotComplete();
+        to.assertNoValues();
+        to.assertNoErrors();
+        to.assertNotComplete();
 
         ps.onNext(1);
 
-        ts.assertValues(1, 2, 3, 4, 5);
-        ts.assertComplete();
-        ts.assertNoErrors();
+        to.assertValues(1, 2, 3, 4, 5);
+        to.assertComplete();
+        to.assertNoErrors();
     }
 
     @Test
@@ -816,20 +816,20 @@ public class ObservableDelayTest {
 
         Observable<Integer> source = Observable.range(1, 5);
 
-        TestObserver<Integer> ts = new TestObserver<Integer>();
+        TestObserver<Integer> to = new TestObserver<Integer>();
 
-        source.delaySubscription(ps).subscribe(ts);
+        source.delaySubscription(ps).subscribe(to);
 
-        ts.assertNoValues();
-        ts.assertNoErrors();
-        ts.assertNotComplete();
+        to.assertNoValues();
+        to.assertNoErrors();
+        to.assertNotComplete();
 
         // FIXME should this complete the source instead of consuming it?
         ps.onComplete();
 
-        ts.assertValues(1, 2, 3, 4, 5);
-        ts.assertComplete();
-        ts.assertNoErrors();
+        to.assertValues(1, 2, 3, 4, 5);
+        to.assertComplete();
+        to.assertNoErrors();
     }
 
     @Test
@@ -838,19 +838,19 @@ public class ObservableDelayTest {
 
         Observable<Integer> source = Observable.range(1, 5);
 
-        TestObserver<Integer> ts = new TestObserver<Integer>();
+        TestObserver<Integer> to = new TestObserver<Integer>();
 
-        source.delaySubscription(ps).subscribe(ts);
+        source.delaySubscription(ps).subscribe(to);
 
-        ts.assertNoValues();
-        ts.assertNoErrors();
-        ts.assertNotComplete();
+        to.assertNoValues();
+        to.assertNoErrors();
+        to.assertNotComplete();
 
         ps.onError(new TestException());
 
-        ts.assertNoValues();
-        ts.assertNotComplete();
-        ts.assertError(TestException.class);
+        to.assertNoValues();
+        to.assertNotComplete();
+        to.assertError(TestException.class);
     }
 
     @Test

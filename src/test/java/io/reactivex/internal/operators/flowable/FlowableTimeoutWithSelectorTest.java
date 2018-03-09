@@ -416,13 +416,13 @@ public class FlowableTimeoutWithSelectorTest {
     public void emptyInner() {
         PublishProcessor<Integer> pp = PublishProcessor.create();
 
-        TestSubscriber<Integer> to = pp
+        TestSubscriber<Integer> ts = pp
         .timeout(Functions.justFunction(Flowable.empty()))
         .test();
 
         pp.onNext(1);
 
-        to.assertFailure(TimeoutException.class, 1);
+        ts.assertFailure(TimeoutException.class, 1);
     }
 
     @Test
@@ -431,7 +431,7 @@ public class FlowableTimeoutWithSelectorTest {
         try {
             PublishProcessor<Integer> pp = PublishProcessor.create();
 
-            TestSubscriber<Integer> to = pp
+            TestSubscriber<Integer> ts = pp
             .timeout(Functions.justFunction(new Flowable<Integer>() {
                 @Override
                 protected void subscribeActual(Subscriber<? super Integer> observer) {
@@ -446,7 +446,7 @@ public class FlowableTimeoutWithSelectorTest {
 
             pp.onNext(1);
 
-            to.assertFailureAndMessage(TestException.class, "First", 1);
+            ts.assertFailureAndMessage(TestException.class, "First", 1);
 
             TestHelper.assertUndeliverable(errors, 0, TestException.class, "Second");
         } finally {
@@ -460,7 +460,7 @@ public class FlowableTimeoutWithSelectorTest {
         try {
             PublishProcessor<Integer> pp = PublishProcessor.create();
 
-            TestSubscriber<Integer> to = pp
+            TestSubscriber<Integer> ts = pp
             .timeout(Functions.justFunction(new Flowable<Integer>() {
                 @Override
                 protected void subscribeActual(Subscriber<? super Integer> observer) {
@@ -475,7 +475,7 @@ public class FlowableTimeoutWithSelectorTest {
 
             pp.onNext(1);
 
-            to.assertFailureAndMessage(TestException.class, "First", 1);
+            ts.assertFailureAndMessage(TestException.class, "First", 1);
 
             TestHelper.assertUndeliverable(errors, 0, TestException.class, "Second");
         } finally {
@@ -515,7 +515,7 @@ public class FlowableTimeoutWithSelectorTest {
     public void selectorTake() {
         PublishProcessor<Integer> pp = PublishProcessor.create();
 
-        TestSubscriber<Integer> to = pp
+        TestSubscriber<Integer> ts = pp
         .timeout(Functions.justFunction(Flowable.never()))
         .take(1)
         .test();
@@ -526,14 +526,14 @@ public class FlowableTimeoutWithSelectorTest {
 
         assertFalse(pp.hasSubscribers());
 
-        to.assertResult(1);
+        ts.assertResult(1);
     }
 
     @Test
     public void selectorFallbackTake() {
         PublishProcessor<Integer> pp = PublishProcessor.create();
 
-        TestSubscriber<Integer> to = pp
+        TestSubscriber<Integer> ts = pp
         .timeout(Functions.justFunction(Flowable.never()), Flowable.just(2))
         .take(1)
         .test();
@@ -544,7 +544,7 @@ public class FlowableTimeoutWithSelectorTest {
 
         assertFalse(pp.hasSubscribers());
 
-        to.assertResult(1);
+        ts.assertResult(1);
     }
 
     @Test

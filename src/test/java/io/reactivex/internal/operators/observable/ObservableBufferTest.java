@@ -344,7 +344,7 @@ public class ObservableBufferTest {
         Observable<Integer> source = Observable.never();
 
         Observer<List<Integer>> o = TestHelper.mockObserver();
-        TestObserver<List<Integer>> ts = new TestObserver<List<Integer>>(o);
+        TestObserver<List<Integer>> to = new TestObserver<List<Integer>>(o);
 
         source.buffer(100, 200, TimeUnit.MILLISECONDS, scheduler)
         .doOnNext(new Consumer<List<Integer>>() {
@@ -353,7 +353,7 @@ public class ObservableBufferTest {
                 System.out.println(pv);
             }
         })
-        .subscribe(ts);
+        .subscribe(to);
 
         InOrder inOrder = Mockito.inOrder(o);
 
@@ -361,7 +361,7 @@ public class ObservableBufferTest {
 
         inOrder.verify(o, times(5)).onNext(Arrays.<Integer> asList());
 
-        ts.dispose();
+        to.dispose();
 
         scheduler.advanceTimeBy(999, TimeUnit.MILLISECONDS);
 
@@ -1104,9 +1104,9 @@ public class ObservableBufferTest {
 
     @Test
     public void boundaryCancel() {
-        PublishSubject<Object> pp = PublishSubject.create();
+        PublishSubject<Object> ps = PublishSubject.create();
 
-        TestObserver<Collection<Object>> ts = pp
+        TestObserver<Collection<Object>> to = ps
         .buffer(Functions.justCallable(Observable.never()), new Callable<Collection<Object>>() {
             @Override
             public Collection<Object> call() throws Exception {
@@ -1115,11 +1115,11 @@ public class ObservableBufferTest {
         })
         .test();
 
-        assertTrue(pp.hasObservers());
+        assertTrue(ps.hasObservers());
 
-        ts.dispose();
+        to.dispose();
 
-        assertFalse(pp.hasObservers());
+        assertFalse(ps.hasObservers());
     }
 
     @Test
@@ -1173,9 +1173,9 @@ public class ObservableBufferTest {
     @SuppressWarnings("unchecked")
     @Test
     public void boundaryMainError() {
-        PublishSubject<Object> pp = PublishSubject.create();
+        PublishSubject<Object> ps = PublishSubject.create();
 
-        TestObserver<Collection<Object>> ts = pp
+        TestObserver<Collection<Object>> to = ps
         .buffer(Functions.justCallable(Observable.never()), new Callable<Collection<Object>>() {
             @Override
             public Collection<Object> call() throws Exception {
@@ -1184,17 +1184,17 @@ public class ObservableBufferTest {
         })
         .test();
 
-        pp.onError(new TestException());
+        ps.onError(new TestException());
 
-        ts.assertFailure(TestException.class);
+        to.assertFailure(TestException.class);
     }
 
     @SuppressWarnings("unchecked")
     @Test
     public void boundaryBoundaryError() {
-        PublishSubject<Object> pp = PublishSubject.create();
+        PublishSubject<Object> ps = PublishSubject.create();
 
-        TestObserver<Collection<Object>> ts = pp
+        TestObserver<Collection<Object>> to = ps
         .buffer(Functions.justCallable(Observable.error(new TestException())), new Callable<Collection<Object>>() {
             @Override
             public Collection<Object> call() throws Exception {
@@ -1203,9 +1203,9 @@ public class ObservableBufferTest {
         })
         .test();
 
-        pp.onError(new TestException());
+        ps.onError(new TestException());
 
-        ts.assertFailure(TestException.class);
+        to.assertFailure(TestException.class);
     }
 
     @Test
@@ -1409,7 +1409,7 @@ public class ObservableBufferTest {
 
             final PublishSubject<Object> ps = PublishSubject.create();
 
-            TestObserver<List<Object>> ts = ps.buffer(1, TimeUnit.SECONDS, scheduler, 5).test();
+            TestObserver<List<Object>> to = ps.buffer(1, TimeUnit.SECONDS, scheduler, 5).test();
 
             ps.onNext(1);
             ps.onNext(2);
@@ -1435,7 +1435,7 @@ public class ObservableBufferTest {
             ps.onComplete();
 
             int items = 0;
-            for (List<Object> o : ts.values()) {
+            for (List<Object> o : to.values()) {
                 items += o.size();
             }
 
@@ -1512,7 +1512,7 @@ public class ObservableBufferTest {
 
         PublishSubject<Integer> closeIndicator = PublishSubject.create();
 
-        TestObserver<List<Integer>> ts = source
+        TestObserver<List<Integer>> to = source
         .buffer(openIndicator, Functions.justFunction(closeIndicator))
         .test();
 
@@ -1527,7 +1527,7 @@ public class ObservableBufferTest {
 
         source.onComplete();
 
-        ts.assertResult(Collections.<Integer>emptyList());
+        to.assertResult(Collections.<Integer>emptyList());
 
         assertFalse(openIndicator.hasObservers());
         assertFalse(closeIndicator.hasObservers());
@@ -1635,7 +1635,7 @@ public class ObservableBufferTest {
 
         PublishSubject<Integer> closeIndicator = PublishSubject.create();
 
-        TestObserver<List<Integer>> ts = source
+        TestObserver<List<Integer>> to = source
         .buffer(openIndicator, Functions.justFunction(closeIndicator))
         .test();
 
@@ -1652,7 +1652,7 @@ public class ObservableBufferTest {
 
         assertFalse(source.hasObservers());
 
-        ts.assertResult(Collections.<Integer>emptyList());
+        to.assertResult(Collections.<Integer>emptyList());
     }
 
     @Test
@@ -1664,7 +1664,7 @@ public class ObservableBufferTest {
 
         PublishSubject<Integer> closeIndicator = PublishSubject.create();
 
-        TestObserver<List<Integer>> ts = source
+        TestObserver<List<Integer>> to = source
         .buffer(openIndicator, Functions.justFunction(closeIndicator))
         .test();
 
@@ -1681,7 +1681,7 @@ public class ObservableBufferTest {
 
         assertFalse(source.hasObservers());
 
-        ts.assertResult(Collections.<Integer>emptyList());
+        to.assertResult(Collections.<Integer>emptyList());
     }
 
     @Test
@@ -1693,7 +1693,7 @@ public class ObservableBufferTest {
 
         PublishSubject<Integer> closeIndicator = PublishSubject.create();
 
-        TestObserver<List<Integer>> ts = source
+        TestObserver<List<Integer>> to = source
         .buffer(openIndicator, Functions.justFunction(closeIndicator))
         .take(1)
         .test();
@@ -1705,7 +1705,7 @@ public class ObservableBufferTest {
         assertFalse(openIndicator.hasObservers());
         assertFalse(closeIndicator.hasObservers());
 
-        ts.assertResult(Collections.<Integer>emptyList());
+        to.assertResult(Collections.<Integer>emptyList());
     }
 
     @Test

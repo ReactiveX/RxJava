@@ -77,12 +77,12 @@ public class ObservableFromTest {
 
     @Test
     public void fusionRejected() {
-        TestObserver<Integer> to = ObserverFusion.newTest(QueueDisposable.ASYNC);
+        TestObserver<Integer> to = ObserverFusion.newTest(QueueFuseable.ASYNC);
 
         Observable.fromArray(1, 2, 3)
         .subscribe(to);
 
-        ObserverFusion.assertFusion(to, QueueDisposable.NONE)
+        ObserverFusion.assertFusion(to, QueueFuseable.NONE)
         .assertResult(1, 2, 3);
     }
 }

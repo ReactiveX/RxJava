@@ -146,40 +146,40 @@ public class FlowableAllTest {
     @Test
     @Ignore("No backpressure in Single")
     public void testBackpressureIfNoneRequestedNoneShouldBeDelivered() {
-        TestObserver<Boolean> ts = new TestObserver<Boolean>();
+        TestObserver<Boolean> to = new TestObserver<Boolean>();
         Flowable.empty().all(new Predicate<Object>() {
             @Override
             public boolean test(Object t1) {
                 return false;
             }
-        }).subscribe(ts);
+        }).subscribe(to);
 
-        ts.assertNoValues();
-        ts.assertNoErrors();
-        ts.assertNotComplete();
+        to.assertNoValues();
+        to.assertNoErrors();
+        to.assertNotComplete();
     }
 
     @Test
     public void testBackpressureIfOneRequestedOneShouldBeDelivered() {
-        TestObserver<Boolean> ts = new TestObserver<Boolean>();
+        TestObserver<Boolean> to = new TestObserver<Boolean>();
 
         Flowable.empty().all(new Predicate<Object>() {
             @Override
             public boolean test(Object t) {
                 return false;
             }
-        }).subscribe(ts);
+        }).subscribe(to);
 
-        ts.assertTerminated();
-        ts.assertNoErrors();
-        ts.assertComplete();
+        to.assertTerminated();
+        to.assertNoErrors();
+        to.assertComplete();
 
-        ts.assertValue(true);
+        to.assertValue(true);
     }
 
     @Test
     public void testPredicateThrowsExceptionAndValueInCauseMessage() {
-        TestObserver<Boolean> ts = new TestObserver<Boolean>();
+        TestObserver<Boolean> to = new TestObserver<Boolean>();
 
         final IllegalArgumentException ex = new IllegalArgumentException();
 
@@ -189,12 +189,12 @@ public class FlowableAllTest {
                 throw ex;
             }
         })
-        .subscribe(ts);
+        .subscribe(to);
 
-        ts.assertTerminated();
-        ts.assertNoValues();
-        ts.assertNotComplete();
-        ts.assertError(ex);
+        to.assertTerminated();
+        to.assertNoValues();
+        to.assertNotComplete();
+        to.assertError(ex);
         // FIXME need to decide about adding the value that probably caused the crash in some way
 //        assertTrue(ex.getCause().getMessage().contains("Boo!"));
     }

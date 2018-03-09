@@ -135,9 +135,9 @@ public class BehaviorSubjectTest extends SubjectTest<Integer> {
         Observer<Object> observerB = TestHelper.mockObserver();
         Observer<Object> observerC = TestHelper.mockObserver();
 
-        TestObserver<Object> ts = new TestObserver<Object>(observerA);
+        TestObserver<Object> to = new TestObserver<Object>(observerA);
 
-        channel.subscribe(ts);
+        channel.subscribe(to);
         channel.subscribe(observerB);
 
         InOrder inOrderA = inOrder(observerA);
@@ -152,7 +152,7 @@ public class BehaviorSubjectTest extends SubjectTest<Integer> {
         inOrderA.verify(observerA).onNext(42);
         inOrderB.verify(observerB).onNext(42);
 
-        ts.dispose();
+        to.dispose();
         inOrderA.verifyNoMoreInteractions();
 
         channel.onNext(4711);
@@ -367,8 +367,8 @@ public class BehaviorSubjectTest extends SubjectTest<Integer> {
 //        BehaviorSubject<String> ps = BehaviorSubject.create();
 //
 //        ps.subscribe();
-//        TestObserver<String> ts = new TestObserver<T>();
-//        ps.subscribe(ts);
+//        TestObserver<String> to = new TestObserver<T>();
+//        ps.subscribe(to);
 //
 //        try {
 //            ps.onError(new RuntimeException("an exception"));
@@ -377,7 +377,7 @@ public class BehaviorSubjectTest extends SubjectTest<Integer> {
 //            // ignore
 //        }
 //        // even though the onError above throws we should still receive it on the other subscriber
-//        assertEquals(1, ts.getOnErrorEvents().size());
+//        assertEquals(1, to.getOnErrorEvents().size());
 //    }
 
     // FIXME RS subscribers are not allowed to throw
@@ -390,8 +390,8 @@ public class BehaviorSubjectTest extends SubjectTest<Integer> {
 //
 //        ps.subscribe();
 //        ps.subscribe();
-//        TestObserver<String> ts = new TestObserver<String>();
-//        ps.subscribe(ts);
+//        TestObserver<String> to = new TestObserver<String>();
+//        ps.subscribe(to);
 //        ps.subscribe();
 //        ps.subscribe();
 //        ps.subscribe();
@@ -404,7 +404,7 @@ public class BehaviorSubjectTest extends SubjectTest<Integer> {
 //            assertEquals(5, e.getExceptions().size());
 //        }
 //        // even though the onError above throws we should still receive it on the other subscriber
-//        assertEquals(1, ts.getOnErrorEvents().size());
+//        assertEquals(1, to.getOnErrorEvents().size());
 //    }
     @Test
     public void testEmissionSubscriptionRace() throws Exception {
@@ -619,14 +619,14 @@ public class BehaviorSubjectTest extends SubjectTest<Integer> {
     public void cancelOnArrival2() {
         BehaviorSubject<Object> p = BehaviorSubject.create();
 
-        TestObserver<Object> ts = p.test();
+        TestObserver<Object> to = p.test();
 
         p.test(true).assertEmpty();
 
         p.onNext(1);
         p.onComplete();
 
-        ts.assertResult(1);
+        to.assertResult(1);
     }
 
     @Test
@@ -634,7 +634,7 @@ public class BehaviorSubjectTest extends SubjectTest<Integer> {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final BehaviorSubject<Object> p = BehaviorSubject.create();
 
-            final TestObserver<Object> ts = p.test();
+            final TestObserver<Object> to = p.test();
 
             Runnable r1 = new Runnable() {
                 @Override
@@ -646,7 +646,7 @@ public class BehaviorSubjectTest extends SubjectTest<Integer> {
             Runnable r2 = new Runnable() {
                 @Override
                 public void run() {
-                    ts.cancel();
+                    to.cancel();
                 }
             };
 
@@ -660,12 +660,12 @@ public class BehaviorSubjectTest extends SubjectTest<Integer> {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final BehaviorSubject<Object> p = BehaviorSubject.createDefault((Object)1);
 
-            final TestObserver[] ts = { null };
+            final TestObserver[] to = { null };
 
             Runnable r1 = new Runnable() {
                 @Override
                 public void run() {
-                    ts[0] = p.test();
+                    to[0] = p.test();
                 }
             };
 
@@ -678,10 +678,10 @@ public class BehaviorSubjectTest extends SubjectTest<Integer> {
 
             TestHelper.race(r1, r2);
 
-            if (ts[0].valueCount() == 1) {
-                ts[0].assertValue(2).assertNoErrors().assertNotComplete();
+            if (to[0].valueCount() == 1) {
+                to[0].assertValue(2).assertNoErrors().assertNotComplete();
             } else {
-                ts[0].assertValues(1, 2).assertNoErrors().assertNotComplete();
+                to[0].assertValues(1, 2).assertNoErrors().assertNotComplete();
             }
         }
     }
@@ -722,12 +722,12 @@ public class BehaviorSubjectTest extends SubjectTest<Integer> {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final BehaviorSubject<Object> p = BehaviorSubject.create();
 
-            final TestObserver<Object> ts = new TestObserver<Object>();
+            final TestObserver<Object> to = new TestObserver<Object>();
 
             Runnable r1 = new Runnable() {
                 @Override
                 public void run() {
-                    p.subscribe(ts);
+                    p.subscribe(to);
                 }
             };
 
@@ -740,7 +740,7 @@ public class BehaviorSubjectTest extends SubjectTest<Integer> {
 
             TestHelper.race(r1, r2);
 
-            ts.assertResult();
+            to.assertResult();
         }
     }
 
@@ -749,14 +749,14 @@ public class BehaviorSubjectTest extends SubjectTest<Integer> {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final BehaviorSubject<Object> p = BehaviorSubject.create();
 
-            final TestObserver<Object> ts = new TestObserver<Object>();
+            final TestObserver<Object> to = new TestObserver<Object>();
 
             final TestException ex = new TestException();
 
             Runnable r1 = new Runnable() {
                 @Override
                 public void run() {
-                    p.subscribe(ts);
+                    p.subscribe(to);
                 }
             };
 
@@ -769,7 +769,7 @@ public class BehaviorSubjectTest extends SubjectTest<Integer> {
 
             TestHelper.race(r1, r2);
 
-            ts.assertFailure(TestException.class);
+            to.assertFailure(TestException.class);
         }
     }
 

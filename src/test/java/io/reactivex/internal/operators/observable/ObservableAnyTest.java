@@ -246,7 +246,7 @@ public class ObservableAnyTest {
 
     @Test
     public void testPredicateThrowsExceptionAndValueInCauseMessageObservable() {
-        TestObserver<Boolean> ts = new TestObserver<Boolean>();
+        TestObserver<Boolean> to = new TestObserver<Boolean>();
         final IllegalArgumentException ex = new IllegalArgumentException();
 
         Observable.just("Boo!").any(new Predicate<String>() {
@@ -254,12 +254,12 @@ public class ObservableAnyTest {
             public boolean test(String v) {
                 throw ex;
             }
-        }).subscribe(ts);
+        }).subscribe(to);
 
-        ts.assertTerminated();
-        ts.assertNoValues();
-        ts.assertNotComplete();
-        ts.assertError(ex);
+        to.assertTerminated();
+        to.assertNoValues();
+        to.assertNotComplete();
+        to.assertError(ex);
         // FIXME value as last cause?
 //        assertTrue(ex.getCause().getMessage().contains("Boo!"));
     }
@@ -467,7 +467,7 @@ public class ObservableAnyTest {
 
     @Test
     public void testPredicateThrowsExceptionAndValueInCauseMessage() {
-        TestObserver<Boolean> ts = new TestObserver<Boolean>();
+        TestObserver<Boolean> to = new TestObserver<Boolean>();
         final IllegalArgumentException ex = new IllegalArgumentException();
 
         Observable.just("Boo!").any(new Predicate<String>() {
@@ -475,12 +475,12 @@ public class ObservableAnyTest {
             public boolean test(String v) {
                 throw ex;
             }
-        }).subscribe(ts);
+        }).subscribe(to);
 
-        ts.assertTerminated();
-        ts.assertNoValues();
-        ts.assertNotComplete();
-        ts.assertError(ex);
+        to.assertTerminated();
+        to.assertNoValues();
+        to.assertNotComplete();
+        to.assertError(ex);
         // FIXME value as last cause?
 //        assertTrue(ex.getCause().getMessage().contains("Boo!"));
     }

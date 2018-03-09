@@ -221,12 +221,12 @@ public class ObservableTakeWhileTest {
                 return t1 < 2;
             }
         });
-        TestObserver<Integer> ts = new TestObserver<Integer>();
+        TestObserver<Integer> to = new TestObserver<Integer>();
 
-        source.subscribe(ts);
+        source.subscribe(to);
 
-        ts.assertNoErrors();
-        ts.assertValue(1);
+        to.assertNoErrors();
+        to.assertValue(1);
 
         // 2.0.2 - not anymore
 //        Assert.assertTrue("Not cancelled!", ts.isCancelled());
@@ -234,17 +234,17 @@ public class ObservableTakeWhileTest {
 
     @Test
     public void testErrorCauseIncludesLastValue() {
-        TestObserver<String> ts = new TestObserver<String>();
+        TestObserver<String> to = new TestObserver<String>();
         Observable.just("abc").takeWhile(new Predicate<String>() {
             @Override
             public boolean test(String t1) {
                 throw new TestException();
             }
-        }).subscribe(ts);
+        }).subscribe(to);
 
-        ts.assertTerminated();
-        ts.assertNoValues();
-        ts.assertError(TestException.class);
+        to.assertTerminated();
+        to.assertNoValues();
+        to.assertError(TestException.class);
         // FIXME last cause value not recorded
 //        assertTrue(ts.getOnErrorEvents().get(0).getCause().getMessage().contains("abc"));
     }

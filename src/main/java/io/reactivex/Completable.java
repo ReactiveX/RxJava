@@ -2286,9 +2286,9 @@ public abstract class Completable implements CompletableSource {
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final TestObserver<Void> test() {
-        TestObserver<Void> ts = new TestObserver<Void>();
-        subscribe(ts);
-        return ts;
+        TestObserver<Void> to = new TestObserver<Void>();
+        subscribe(to);
+        return to;
     }
 
     /**
@@ -2305,12 +2305,12 @@ public abstract class Completable implements CompletableSource {
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final TestObserver<Void> test(boolean cancelled) {
-        TestObserver<Void> ts = new TestObserver<Void>();
+        TestObserver<Void> to = new TestObserver<Void>();
 
         if (cancelled) {
-            ts.cancel();
+            to.cancel();
         }
-        subscribe(ts);
-        return ts;
+        subscribe(to);
+        return to;
     }
 }

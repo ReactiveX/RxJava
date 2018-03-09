@@ -208,19 +208,19 @@ public class FlowableTakeLastTimedTest {
 
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>(0L);
 
-        PublishProcessor<Integer> ps = PublishProcessor.create();
+        PublishProcessor<Integer> pp = PublishProcessor.create();
 
-        ps.takeLast(1000, TimeUnit.MILLISECONDS, scheduler).subscribe(ts);
+        pp.takeLast(1000, TimeUnit.MILLISECONDS, scheduler).subscribe(ts);
 
-        ps.onNext(1);
+        pp.onNext(1);
         scheduler.advanceTimeBy(500, TimeUnit.MILLISECONDS);
-        ps.onNext(2);
+        pp.onNext(2);
         scheduler.advanceTimeBy(500, TimeUnit.MILLISECONDS);
-        ps.onNext(3);
+        pp.onNext(3);
         scheduler.advanceTimeBy(500, TimeUnit.MILLISECONDS);
-        ps.onNext(4);
+        pp.onNext(4);
         scheduler.advanceTimeBy(500, TimeUnit.MILLISECONDS);
-        ps.onComplete();
+        pp.onComplete();
         scheduler.advanceTimeBy(500, TimeUnit.MILLISECONDS);
 
         ts.assertNoValues();
@@ -292,21 +292,21 @@ public class FlowableTakeLastTimedTest {
     @Test
     public void cancelCompleteRace() {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
-            final PublishProcessor<Integer> ps = PublishProcessor.create();
+            final PublishProcessor<Integer> pp = PublishProcessor.create();
 
-            final TestSubscriber<Integer> to = ps.takeLast(1, TimeUnit.DAYS).test();
+            final TestSubscriber<Integer> ts = pp.takeLast(1, TimeUnit.DAYS).test();
 
             Runnable r1 = new Runnable() {
                 @Override
                 public void run() {
-                    ps.onComplete();
+                    pp.onComplete();
                 }
             };
 
             Runnable r2 = new Runnable() {
                 @Override
                 public void run() {
-                    to.cancel();
+                    ts.cancel();
                 }
             };
 

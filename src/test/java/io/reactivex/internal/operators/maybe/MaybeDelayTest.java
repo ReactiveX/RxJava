@@ -66,25 +66,25 @@ public class MaybeDelayTest {
     public void disposeDuringDelay() {
         TestScheduler scheduler = new TestScheduler();
 
-        TestObserver<Integer> ts = Maybe.just(1).delay(100, TimeUnit.MILLISECONDS, scheduler)
+        TestObserver<Integer> to = Maybe.just(1).delay(100, TimeUnit.MILLISECONDS, scheduler)
         .test();
 
-        ts.cancel();
+        to.cancel();
 
         scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
 
-        ts.assertEmpty();
+        to.assertEmpty();
     }
 
     @Test
     public void dispose() {
         PublishProcessor<Integer> pp = PublishProcessor.create();
 
-        TestObserver<Integer> ts = pp.singleElement().delay(100, TimeUnit.MILLISECONDS).test();
+        TestObserver<Integer> to = pp.singleElement().delay(100, TimeUnit.MILLISECONDS).test();
 
         assertTrue(pp.hasSubscribers());
 
-        ts.cancel();
+        to.cancel();
 
         assertFalse(pp.hasSubscribers());
     }

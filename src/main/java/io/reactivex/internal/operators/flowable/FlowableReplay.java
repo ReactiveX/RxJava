@@ -64,13 +64,13 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
      * Child Subscribers will observe the events of the ConnectableObservable on the
      * specified scheduler.
      * @param <T> the value type
-     * @param co the ConnectableFlowable to wrap
+     * @param cf the ConnectableFlowable to wrap
      * @param scheduler the target scheduler
      * @return the new ConnectableObservable instance
      */
-    public static <T> ConnectableFlowable<T> observeOn(final ConnectableFlowable<T> co, final Scheduler scheduler) {
-        final Flowable<T> observable = co.observeOn(scheduler);
-        return RxJavaPlugins.onAssembly(new ConnectableFlowableReplay<T>(co, observable));
+    public static <T> ConnectableFlowable<T> observeOn(final ConnectableFlowable<T> cf, final Scheduler scheduler) {
+        final Flowable<T> observable = cf.observeOn(scheduler);
+        return RxJavaPlugins.onAssembly(new ConnectableFlowableReplay<T>(cf, observable));
     }
 
     /**
@@ -1100,9 +1100,9 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
 
         @Override
         protected void subscribeActual(Subscriber<? super R> child) {
-            ConnectableFlowable<U> co;
+            ConnectableFlowable<U> cf;
             try {
-                co = ObjectHelper.requireNonNull(connectableFactory.call(), "The connectableFactory returned null");
+                cf = ObjectHelper.requireNonNull(connectableFactory.call(), "The connectableFactory returned null");
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 EmptySubscription.error(e, child);
@@ -1111,7 +1111,7 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
 
             Publisher<R> observable;
             try {
-                observable = ObjectHelper.requireNonNull(selector.apply(co), "The selector returned a null Publisher");
+                observable = ObjectHelper.requireNonNull(selector.apply(cf), "The selector returned a null Publisher");
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
                 EmptySubscription.error(e, child);
@@ -1122,7 +1122,7 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
 
             observable.subscribe(srw);
 
-            co.connect(new DisposableConsumer(srw));
+            cf.connect(new DisposableConsumer(srw));
         }
 
         final class DisposableConsumer implements Consumer<Disposable> {
@@ -1140,17 +1140,17 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
     }
 
     static final class ConnectableFlowableReplay<T> extends ConnectableFlowable<T> {
-        private final ConnectableFlowable<T> co;
+        private final ConnectableFlowable<T> cf;
         private final Flowable<T> observable;
 
-        ConnectableFlowableReplay(ConnectableFlowable<T> co, Flowable<T> observable) {
-            this.co = co;
+        ConnectableFlowableReplay(ConnectableFlowable<T> cf, Flowable<T> observable) {
+            this.cf = cf;
             this.observable = observable;
         }
 
         @Override
         public void connect(Consumer<? super Disposable> connection) {
-            co.connect(connection);
+            cf.connect(connection);
         }
 
         @Override

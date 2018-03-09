@@ -29,7 +29,7 @@ import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.Function;
-import io.reactivex.internal.fuseable.QueueDisposable;
+import io.reactivex.internal.fuseable.*;
 import io.reactivex.internal.util.CrashingIterable;
 import io.reactivex.observers.*;
 
@@ -118,12 +118,12 @@ public class ObservableFromIterableTest {
     public void testNoBackpressure() {
         Observable<Integer> o = Observable.fromIterable(Arrays.asList(1, 2, 3, 4, 5));
 
-        TestObserver<Integer> ts = new TestObserver<Integer>();
+        TestObserver<Integer> to = new TestObserver<Integer>();
 
-        o.subscribe(ts);
+        o.subscribe(to);
 
-        ts.assertValues(1, 2, 3, 4, 5);
-        ts.assertTerminated();
+        to.assertValues(1, 2, 3, 4, 5);
+        to.assertTerminated();
     }
 
     @Test
@@ -131,13 +131,13 @@ public class ObservableFromIterableTest {
         Observable<Integer> o = Observable.fromIterable(Arrays.asList(1, 2, 3));
 
         for (int i = 0; i < 10; i++) {
-            TestObserver<Integer> ts = new TestObserver<Integer>();
+            TestObserver<Integer> to = new TestObserver<Integer>();
 
-            o.subscribe(ts);
+            o.subscribe(to);
 
-            ts.assertValues(1, 2, 3);
-            ts.assertNoErrors();
-            ts.assertComplete();
+            to.assertValues(1, 2, 3);
+            to.assertNoErrors();
+            to.assertComplete();
         }
     }
 
@@ -302,12 +302,12 @@ public class ObservableFromIterableTest {
 
     @Test
     public void fusionRejected() {
-        TestObserver<Integer> to = ObserverFusion.newTest(QueueDisposable.ASYNC);
+        TestObserver<Integer> to = ObserverFusion.newTest(QueueFuseable.ASYNC);
 
         Observable.fromIterable(Arrays.asList(1, 2, 3))
         .subscribe(to);
 
-        ObserverFusion.assertFusion(to, QueueDisposable.NONE)
+        ObserverFusion.assertFusion(to, QueueFuseable.NONE)
         .assertResult(1, 2, 3);
     }
 
@@ -320,7 +320,7 @@ public class ObservableFromIterableTest {
                 @SuppressWarnings("unchecked")
                 QueueDisposable<Integer> qd = (QueueDisposable<Integer>)d;
 
-                qd.requestFusion(QueueDisposable.ANY);
+                qd.requestFusion(QueueFuseable.ANY);
 
                 try {
                     assertEquals(1, qd.poll().intValue());

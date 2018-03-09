@@ -64,13 +64,13 @@ public class ObservableObserveOnTest {
         Observer<String> observer = TestHelper.mockObserver();
 
         InOrder inOrder = inOrder(observer);
-        TestObserver<String> ts = new TestObserver<String>(observer);
+        TestObserver<String> to = new TestObserver<String>(observer);
 
-        obs.observeOn(Schedulers.computation()).subscribe(ts);
+        obs.observeOn(Schedulers.computation()).subscribe(to);
 
-        ts.awaitTerminalEvent(1000, TimeUnit.MILLISECONDS);
-        if (ts.errors().size() > 0) {
-            for (Throwable t : ts.errors()) {
+        to.awaitTerminalEvent(1000, TimeUnit.MILLISECONDS);
+        if (to.errors().size() > 0) {
+            for (Throwable t : to.errors()) {
                 t.printStackTrace();
             }
             fail("failed with exception");
@@ -388,13 +388,13 @@ public class ObservableObserveOnTest {
         final TestScheduler testScheduler = new TestScheduler();
 
         final Observer<Integer> observer = TestHelper.mockObserver();
-        TestObserver<Integer> ts = new TestObserver<Integer>(observer);
+        TestObserver<Integer> to = new TestObserver<Integer>(observer);
 
         Observable.just(1, 2, 3)
                 .observeOn(testScheduler)
-                .subscribe(ts);
+                .subscribe(to);
 
-        ts.dispose();
+        to.dispose();
         testScheduler.advanceTimeBy(1, TimeUnit.SECONDS);
 
         final InOrder inOrder = inOrder(observer);
@@ -429,23 +429,23 @@ public class ObservableObserveOnTest {
             }
         });
 
-        TestObserver<Integer> ts = new TestObserver<Integer>();
+        TestObserver<Integer> to = new TestObserver<Integer>();
         o
                 .take(7)
                 .observeOn(Schedulers.newThread())
-                .subscribe(ts);
+                .subscribe(to);
 
-        ts.awaitTerminalEvent();
-        ts.assertValues(0, 1, 2, 3, 4, 5, 6);
+        to.awaitTerminalEvent();
+        to.assertValues(0, 1, 2, 3, 4, 5, 6);
         assertEquals(7, generated.get());
     }
 
     @Test
     public void testAsyncChild() {
-        TestObserver<Integer> ts = new TestObserver<Integer>();
-        Observable.range(0, 100000).observeOn(Schedulers.newThread()).observeOn(Schedulers.newThread()).subscribe(ts);
-        ts.awaitTerminalEvent();
-        ts.assertNoErrors();
+        TestObserver<Integer> to = new TestObserver<Integer>();
+        Observable.range(0, 100000).observeOn(Schedulers.newThread()).observeOn(Schedulers.newThread()).subscribe(to);
+        to.awaitTerminalEvent();
+        to.assertNoErrors();
     }
 
     @Test
@@ -566,33 +566,33 @@ public class ObservableObserveOnTest {
 
     @Test
     public void outputFused() {
-        TestObserver<Integer> to = ObserverFusion.newTest(QueueDisposable.ANY);
+        TestObserver<Integer> to = ObserverFusion.newTest(QueueFuseable.ANY);
 
         Observable.range(1, 5).hide()
         .observeOn(Schedulers.single())
         .subscribe(to);
 
-        ObserverFusion.assertFusion(to, QueueDisposable.ASYNC)
+        ObserverFusion.assertFusion(to, QueueFuseable.ASYNC)
         .awaitDone(5, TimeUnit.SECONDS)
         .assertResult(1, 2, 3, 4, 5);
     }
 
     @Test
     public void outputFusedReject() {
-        TestObserver<Integer> to = ObserverFusion.newTest(QueueDisposable.SYNC);
+        TestObserver<Integer> to = ObserverFusion.newTest(QueueFuseable.SYNC);
 
         Observable.range(1, 5).hide()
         .observeOn(Schedulers.single())
         .subscribe(to);
 
-        ObserverFusion.assertFusion(to, QueueDisposable.NONE)
+        ObserverFusion.assertFusion(to, QueueFuseable.NONE)
         .awaitDone(5, TimeUnit.SECONDS)
         .assertResult(1, 2, 3, 4, 5);
     }
 
     @Test
     public void inputOutputAsyncFusedError() {
-        TestObserver<Integer> to = ObserverFusion.newTest(QueueDisposable.ANY);
+        TestObserver<Integer> to = ObserverFusion.newTest(QueueFuseable.ANY);
 
         UnicastSubject<Integer> us = UnicastSubject.create();
 
@@ -605,14 +605,14 @@ public class ObservableObserveOnTest {
         .awaitDone(5, TimeUnit.SECONDS)
         .assertFailure(TestException.class);
 
-        ObserverFusion.assertFusion(to, QueueDisposable.ASYNC)
+        ObserverFusion.assertFusion(to, QueueFuseable.ASYNC)
         .awaitDone(5, TimeUnit.SECONDS)
         .assertFailure(TestException.class);
     }
 
     @Test
     public void inputOutputAsyncFusedErrorDelayed() {
-        TestObserver<Integer> to = ObserverFusion.newTest(QueueDisposable.ANY);
+        TestObserver<Integer> to = ObserverFusion.newTest(QueueFuseable.ANY);
 
         UnicastSubject<Integer> us = UnicastSubject.create();
 
@@ -625,7 +625,7 @@ public class ObservableObserveOnTest {
         .awaitDone(5, TimeUnit.SECONDS)
         .assertFailure(TestException.class);
 
-        ObserverFusion.assertFusion(to, QueueDisposable.ASYNC)
+        ObserverFusion.assertFusion(to, QueueFuseable.ASYNC)
         .awaitDone(5, TimeUnit.SECONDS)
         .assertFailure(TestException.class);
     }
@@ -643,7 +643,7 @@ public class ObservableObserveOnTest {
             @Override
             public void onSubscribe(Disposable d) {
                 this.d = d;
-                ((QueueDisposable<?>)d).requestFusion(QueueDisposable.ANY);
+                ((QueueDisposable<?>)d).requestFusion(QueueFuseable.ANY);
             }
 
             @Override

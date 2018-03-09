@@ -101,17 +101,17 @@ public class ObservableMaterializeTest {
 
     @Test
     public void testWithCompletionCausingError() {
-        TestObserver<Notification<Integer>> ts = new TestObserver<Notification<Integer>>();
+        TestObserver<Notification<Integer>> to = new TestObserver<Notification<Integer>>();
         final RuntimeException ex = new RuntimeException("boo");
         Observable.<Integer>empty().materialize().doOnNext(new Consumer<Object>() {
             @Override
             public void accept(Object t) {
                 throw ex;
             }
-        }).subscribe(ts);
-        ts.assertError(ex);
-        ts.assertNoValues();
-        ts.assertTerminated();
+        }).subscribe(to);
+        to.assertError(ex);
+        to.assertNoValues();
+        to.assertTerminated();
     }
 
     private static class TestLocalObserver extends DefaultObserver<Notification<String>> {

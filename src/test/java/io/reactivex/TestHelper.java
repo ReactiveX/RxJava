@@ -217,8 +217,8 @@ public enum TestHelper {
         }
     }
 
-    public static void assertError(TestObserver<?> ts, int index, Class<? extends Throwable> clazz) {
-        Throwable ex = ts.errors().get(0);
+    public static void assertError(TestObserver<?> to, int index, Class<? extends Throwable> clazz) {
+        Throwable ex = to.errors().get(0);
         try {
             if (ex instanceof CompositeException) {
                 CompositeException ce = (CompositeException) ex;
@@ -244,8 +244,8 @@ public enum TestHelper {
         }
     }
 
-    public static void assertError(TestObserver<?> ts, int index, Class<? extends Throwable> clazz, String message) {
-        Throwable ex = ts.errors().get(0);
+    public static void assertError(TestObserver<?> to, int index, Class<? extends Throwable> clazz, String message) {
+        Throwable ex = to.errors().get(0);
         if (ex instanceof CompositeException) {
             CompositeException ce = (CompositeException) ex;
             List<Throwable> cel = ce.getExceptions();
@@ -514,14 +514,14 @@ public enum TestHelper {
     public static <T> Consumer<TestObserver<T>> observerSingleNot(final T value) {
         return new Consumer<TestObserver<T>>() {
             @Override
-            public void accept(TestObserver<T> ts) throws Exception {
-                ts
+            public void accept(TestObserver<T> to) throws Exception {
+                to
                 .assertSubscribed()
                 .assertValueCount(1)
                 .assertNoErrors()
                 .assertComplete();
 
-                T v = ts.values().get(0);
+                T v = to.values().get(0);
                 assertNotEquals(value, v);
             }
         };
@@ -2271,16 +2271,16 @@ public enum TestHelper {
     /**
      * Check if the TestSubscriber has a CompositeException with the specified class
      * of Throwables in the given order.
-     * @param ts the TestSubscriber instance
+     * @param to the TestSubscriber instance
      * @param classes the array of expected Throwables inside the Composite
      */
-    public static void assertCompositeExceptions(TestObserver<?> ts, Class<? extends Throwable>... classes) {
-        ts
+    public static void assertCompositeExceptions(TestObserver<?> to, Class<? extends Throwable>... classes) {
+        to
         .assertSubscribed()
         .assertError(CompositeException.class)
         .assertNotComplete();
 
-        List<Throwable> list = compositeList(ts.errors().get(0));
+        List<Throwable> list = compositeList(to.errors().get(0));
 
         assertEquals(classes.length, list.size());
 
@@ -2292,18 +2292,18 @@ public enum TestHelper {
     /**
      * Check if the TestSubscriber has a CompositeException with the specified class
      * of Throwables in the given order.
-     * @param ts the TestSubscriber instance
+     * @param to the TestSubscriber instance
      * @param classes the array of subsequent Class and String instances representing the
      * expected Throwable class and the expected error message
      */
     @SuppressWarnings("unchecked")
-    public static void assertCompositeExceptions(TestObserver<?> ts, Object... classes) {
-        ts
+    public static void assertCompositeExceptions(TestObserver<?> to, Object... classes) {
+        to
         .assertSubscribed()
         .assertError(CompositeException.class)
         .assertNotComplete();
 
-        List<Throwable> list = compositeList(ts.errors().get(0));
+        List<Throwable> list = compositeList(to.errors().get(0));
 
         assertEquals(classes.length, list.size());
 
@@ -2357,9 +2357,9 @@ public enum TestHelper {
                         QueueDisposable<Object> qd = (QueueDisposable<Object>) d;
                         state[0] = true;
 
-                        int m = qd.requestFusion(QueueDisposable.ANY);
+                        int m = qd.requestFusion(QueueFuseable.ANY);
 
-                        if (m != QueueDisposable.NONE) {
+                        if (m != QueueFuseable.NONE) {
                             state[1] = true;
 
                             state[2] = qd.isEmpty();
@@ -2423,9 +2423,9 @@ public enum TestHelper {
                         QueueSubscription<Object> qd = (QueueSubscription<Object>) d;
                         state[0] = true;
 
-                        int m = qd.requestFusion(QueueSubscription.ANY);
+                        int m = qd.requestFusion(QueueFuseable.ANY);
 
-                        if (m != QueueSubscription.NONE) {
+                        if (m != QueueFuseable.NONE) {
                             state[1] = true;
 
                             state[2] = qd.isEmpty();
@@ -2481,11 +2481,11 @@ public enum TestHelper {
 
     /**
      * Returns an expanded error list of the given test consumer.
-     * @param to the test consumer instance
+     * @param ts the test consumer instance
      * @return the list
      */
-    public static List<Throwable> errorList(TestSubscriber<?> to) {
-        return compositeList(to.errors().get(0));
+    public static List<Throwable> errorList(TestSubscriber<?> ts) {
+        return compositeList(ts.errors().get(0));
     }
 
     /**
@@ -2557,23 +2557,23 @@ public enum TestHelper {
 
             if (o instanceof Publisher) {
                 Publisher<?> os = (Publisher<?>) o;
-                TestSubscriber<Object> to = new TestSubscriber<Object>();
+                TestSubscriber<Object> ts = new TestSubscriber<Object>();
 
-                os.subscribe(to);
+                os.subscribe(ts);
 
-                to.awaitDone(5, TimeUnit.SECONDS);
+                ts.awaitDone(5, TimeUnit.SECONDS);
 
-                to.assertSubscribed();
+                ts.assertSubscribed();
 
                 if (expected != null) {
-                    to.assertValues(expected);
+                    ts.assertValues(expected);
                 }
                 if (error) {
-                    to.assertError(TestException.class)
+                    ts.assertError(TestException.class)
                     .assertErrorMessage("error")
                     .assertNotComplete();
                 } else {
-                    to.assertNoErrors().assertComplete();
+                    ts.assertNoErrors().assertComplete();
                 }
             }
 
@@ -2716,23 +2716,23 @@ public enum TestHelper {
 
             if (o instanceof Publisher) {
                 Publisher<?> os = (Publisher<?>) o;
-                TestSubscriber<Object> to = new TestSubscriber<Object>();
+                TestSubscriber<Object> ts = new TestSubscriber<Object>();
 
-                os.subscribe(to);
+                os.subscribe(ts);
 
-                to.awaitDone(5, TimeUnit.SECONDS);
+                ts.awaitDone(5, TimeUnit.SECONDS);
 
-                to.assertSubscribed();
+                ts.assertSubscribed();
 
                 if (expected != null) {
-                    to.assertValues(expected);
+                    ts.assertValues(expected);
                 }
                 if (error) {
-                    to.assertError(TestException.class)
+                    ts.assertError(TestException.class)
                     .assertErrorMessage("error")
                     .assertNotComplete();
                 } else {
-                    to.assertNoErrors().assertComplete();
+                    ts.assertNoErrors().assertComplete();
                 }
             }
 

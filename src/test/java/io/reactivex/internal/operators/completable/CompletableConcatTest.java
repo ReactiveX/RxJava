@@ -73,30 +73,30 @@ public class CompletableConcatTest {
             List<Throwable> errors = TestHelper.trackPluginErrors();
 
             try {
-                final PublishProcessor<Integer> ps1 = PublishProcessor.create();
-                final PublishProcessor<Integer> ps2 = PublishProcessor.create();
+                final PublishProcessor<Integer> pp1 = PublishProcessor.create();
+                final PublishProcessor<Integer> pp2 = PublishProcessor.create();
 
-                TestObserver<Void> to = Completable.concat(ps1.map(new Function<Integer, Completable>() {
+                TestObserver<Void> to = Completable.concat(pp1.map(new Function<Integer, Completable>() {
                     @Override
                     public Completable apply(Integer v) throws Exception {
-                        return ps2.ignoreElements();
+                        return pp2.ignoreElements();
                     }
                 })).test();
 
-                ps1.onNext(1);
+                pp1.onNext(1);
 
                 final TestException ex = new TestException();
 
                 Runnable r1 = new Runnable() {
                     @Override
                     public void run() {
-                        ps1.onError(ex);
+                        pp1.onError(ex);
                     }
                 };
                 Runnable r2 = new Runnable() {
                     @Override
                     public void run() {
-                        ps2.onError(ex);
+                        pp2.onError(ex);
                     }
                 };
 

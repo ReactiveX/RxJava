@@ -231,25 +231,25 @@ public class FlowableToListTest {
     @Ignore("Single doesn't do backpressure")
     public void testBackpressureHonored() {
         Single<List<Integer>> w = Flowable.just(1, 2, 3, 4, 5).toList();
-        TestObserver<List<Integer>> ts = new TestObserver<List<Integer>>();
+        TestObserver<List<Integer>> to = new TestObserver<List<Integer>>();
 
-        w.subscribe(ts);
+        w.subscribe(to);
 
-        ts.assertNoValues();
-        ts.assertNoErrors();
-        ts.assertNotComplete();
-
-//        ts.request(1);
-
-        ts.assertValue(Arrays.asList(1, 2, 3, 4, 5));
-        ts.assertNoErrors();
-        ts.assertComplete();
+        to.assertNoValues();
+        to.assertNoErrors();
+        to.assertNotComplete();
 
 //        ts.request(1);
 
-        ts.assertValue(Arrays.asList(1, 2, 3, 4, 5));
-        ts.assertNoErrors();
-        ts.assertComplete();
+        to.assertValue(Arrays.asList(1, 2, 3, 4, 5));
+        to.assertNoErrors();
+        to.assertComplete();
+
+//        ts.request(1);
+
+        to.assertValue(Arrays.asList(1, 2, 3, 4, 5));
+        to.assertNoErrors();
+        to.assertComplete();
     }
     @Test(timeout = 2000)
     @Ignore("PublishProcessor no longer emits without requests so this test fails due to the race of onComplete and request")
@@ -264,8 +264,8 @@ public class FlowableToListTest {
                 Single<List<Integer>> sorted = source.toList();
 
                 final CyclicBarrier cb = new CyclicBarrier(2);
-                final TestObserver<List<Integer>> ts = new TestObserver<List<Integer>>();
-                sorted.subscribe(ts);
+                final TestObserver<List<Integer>> to = new TestObserver<List<Integer>>();
+                sorted.subscribe(to);
 
                 w.schedule(new Runnable() {
                     @Override
@@ -277,10 +277,10 @@ public class FlowableToListTest {
                 source.onNext(1);
                 await(cb);
                 source.onComplete();
-                ts.awaitTerminalEvent(1, TimeUnit.SECONDS);
-                ts.assertTerminated();
-                ts.assertNoErrors();
-                ts.assertValue(Arrays.asList(1));
+                to.awaitTerminalEvent(1, TimeUnit.SECONDS);
+                to.assertTerminated();
+                to.assertNoErrors();
+                to.assertValue(Arrays.asList(1));
             }
         } finally {
             w.dispose();
@@ -395,7 +395,7 @@ public class FlowableToListTest {
     public void onNextCancelRace() {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             final PublishProcessor<Integer> pp = PublishProcessor.create();
-            final TestObserver<List<Integer>> ts = pp.toList().test();
+            final TestObserver<List<Integer>> to = pp.toList().test();
 
             Runnable r1 = new Runnable() {
                 @Override
@@ -406,7 +406,7 @@ public class FlowableToListTest {
             Runnable r2 = new Runnable() {
                 @Override
                 public void run() {
-                    ts.cancel();
+                    to.cancel();
                 }
             };
 

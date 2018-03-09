@@ -1026,23 +1026,23 @@ public class ObservableTest {
 
     @Test
     public void testMergeWith() {
-        TestObserver<Integer> ts = new TestObserver<Integer>();
-        Observable.just(1).mergeWith(Observable.just(2)).subscribe(ts);
-        ts.assertValues(1, 2);
+        TestObserver<Integer> to = new TestObserver<Integer>();
+        Observable.just(1).mergeWith(Observable.just(2)).subscribe(to);
+        to.assertValues(1, 2);
     }
 
     @Test
     public void testConcatWith() {
-        TestObserver<Integer> ts = new TestObserver<Integer>();
-        Observable.just(1).concatWith(Observable.just(2)).subscribe(ts);
-        ts.assertValues(1, 2);
+        TestObserver<Integer> to = new TestObserver<Integer>();
+        Observable.just(1).concatWith(Observable.just(2)).subscribe(to);
+        to.assertValues(1, 2);
     }
 
     @Test
     public void testAmbWith() {
-        TestObserver<Integer> ts = new TestObserver<Integer>();
-        Observable.just(1).ambWith(Observable.just(2)).subscribe(ts);
-        ts.assertValue(1);
+        TestObserver<Integer> to = new TestObserver<Integer>();
+        Observable.just(1).ambWith(Observable.just(2)).subscribe(to);
+        to.assertValue(1);
     }
 
     @Test
@@ -1072,7 +1072,7 @@ public class ObservableTest {
 
     @Test
     public void testCompose() {
-        TestObserver<String> ts = new TestObserver<String>();
+        TestObserver<String> to = new TestObserver<String>();
         Observable.just(1, 2, 3).compose(new ObservableTransformer<Integer, String>() {
             @Override
             public Observable<String> apply(Observable<Integer> t1) {
@@ -1084,10 +1084,10 @@ public class ObservableTest {
                 });
             }
         })
-        .subscribe(ts);
-        ts.assertTerminated();
-        ts.assertNoErrors();
-        ts.assertValues("1", "2", "3");
+        .subscribe(to);
+        to.assertTerminated();
+        to.assertNoErrors();
+        to.assertValues("1", "2", "3");
     }
 
     @Test

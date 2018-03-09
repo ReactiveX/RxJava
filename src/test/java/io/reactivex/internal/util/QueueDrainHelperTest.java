@@ -598,8 +598,8 @@ public class QueueDrainHelperTest {
 
     @Test
     public void observerCheckTerminatedDelayErrorEmpty() {
-        TestObserver<Integer> ts = new TestObserver<Integer>();
-        ts.onSubscribe(Disposables.empty());
+        TestObserver<Integer> to = new TestObserver<Integer>();
+        to.onSubscribe(Disposables.empty());
 
         ObservableQueueDrain<Integer, Integer> qd = new ObservableQueueDrain<Integer, Integer>() {
             @Override
@@ -634,15 +634,15 @@ public class QueueDrainHelperTest {
 
         SpscArrayQueue<Integer> q = new SpscArrayQueue<Integer>(32);
 
-        QueueDrainHelper.checkTerminated(true, true, ts, true, q, null, qd);
+        QueueDrainHelper.checkTerminated(true, true, to, true, q, null, qd);
 
-        ts.assertResult();
+        to.assertResult();
     }
 
     @Test
     public void observerCheckTerminatedDelayErrorEmptyResource() {
-        TestObserver<Integer> ts = new TestObserver<Integer>();
-        ts.onSubscribe(Disposables.empty());
+        TestObserver<Integer> to = new TestObserver<Integer>();
+        to.onSubscribe(Disposables.empty());
 
         ObservableQueueDrain<Integer, Integer> qd = new ObservableQueueDrain<Integer, Integer>() {
             @Override
@@ -679,17 +679,17 @@ public class QueueDrainHelperTest {
 
         Disposable d = Disposables.empty();
 
-        QueueDrainHelper.checkTerminated(true, true, ts, true, q, d, qd);
+        QueueDrainHelper.checkTerminated(true, true, to, true, q, d, qd);
 
-        ts.assertResult();
+        to.assertResult();
 
         assertTrue(d.isDisposed());
     }
 
     @Test
     public void observerCheckTerminatedDelayErrorNonEmpty() {
-        TestObserver<Integer> ts = new TestObserver<Integer>();
-        ts.onSubscribe(Disposables.empty());
+        TestObserver<Integer> to = new TestObserver<Integer>();
+        to.onSubscribe(Disposables.empty());
 
         ObservableQueueDrain<Integer, Integer> qd = new ObservableQueueDrain<Integer, Integer>() {
             @Override
@@ -724,15 +724,15 @@ public class QueueDrainHelperTest {
 
         SpscArrayQueue<Integer> q = new SpscArrayQueue<Integer>(32);
 
-        QueueDrainHelper.checkTerminated(true, false, ts, true, q, null, qd);
+        QueueDrainHelper.checkTerminated(true, false, to, true, q, null, qd);
 
-        ts.assertEmpty();
+        to.assertEmpty();
     }
 
     @Test
     public void observerCheckTerminatedDelayErrorEmptyError() {
-        TestObserver<Integer> ts = new TestObserver<Integer>();
-        ts.onSubscribe(Disposables.empty());
+        TestObserver<Integer> to = new TestObserver<Integer>();
+        to.onSubscribe(Disposables.empty());
 
         ObservableQueueDrain<Integer, Integer> qd = new ObservableQueueDrain<Integer, Integer>() {
             @Override
@@ -767,15 +767,15 @@ public class QueueDrainHelperTest {
 
         SpscArrayQueue<Integer> q = new SpscArrayQueue<Integer>(32);
 
-        QueueDrainHelper.checkTerminated(true, true, ts, true, q, null, qd);
+        QueueDrainHelper.checkTerminated(true, true, to, true, q, null, qd);
 
-        ts.assertFailure(TestException.class);
+        to.assertFailure(TestException.class);
     }
 
     @Test
     public void observerCheckTerminatedNonDelayErrorError() {
-        TestObserver<Integer> ts = new TestObserver<Integer>();
-        ts.onSubscribe(Disposables.empty());
+        TestObserver<Integer> to = new TestObserver<Integer>();
+        to.onSubscribe(Disposables.empty());
 
         ObservableQueueDrain<Integer, Integer> qd = new ObservableQueueDrain<Integer, Integer>() {
             @Override
@@ -810,14 +810,14 @@ public class QueueDrainHelperTest {
 
         SpscArrayQueue<Integer> q = new SpscArrayQueue<Integer>(32);
 
-        QueueDrainHelper.checkTerminated(true, false, ts, false, q, null, qd);
+        QueueDrainHelper.checkTerminated(true, false, to, false, q, null, qd);
 
-        ts.assertFailure(TestException.class);
+        to.assertFailure(TestException.class);
     }
     @Test
     public void observerCheckTerminatedNonDelayErrorErrorResource() {
-        TestObserver<Integer> ts = new TestObserver<Integer>();
-        ts.onSubscribe(Disposables.empty());
+        TestObserver<Integer> to = new TestObserver<Integer>();
+        to.onSubscribe(Disposables.empty());
 
         ObservableQueueDrain<Integer, Integer> qd = new ObservableQueueDrain<Integer, Integer>() {
             @Override
@@ -854,9 +854,9 @@ public class QueueDrainHelperTest {
 
         Disposable d = Disposables.empty();
 
-        QueueDrainHelper.checkTerminated(true, false, ts, false, q, d, qd);
+        QueueDrainHelper.checkTerminated(true, false, to, false, q, d, qd);
 
-        ts.assertFailure(TestException.class);
+        to.assertFailure(TestException.class);
 
         assertTrue(d.isDisposed());
     }

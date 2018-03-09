@@ -25,7 +25,7 @@ import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.Function;
-import io.reactivex.internal.fuseable.QueueDisposable;
+import io.reactivex.internal.fuseable.*;
 import io.reactivex.internal.util.CrashingIterable;
 import io.reactivex.observers.*;
 import io.reactivex.schedulers.Schedulers;
@@ -86,7 +86,7 @@ public class SingleFlatMapIterableObservableTest {
 
     @Test
     public void fused() {
-        TestObserver<Integer> to = ObserverFusion.newTest(QueueDisposable.ANY);
+        TestObserver<Integer> to = ObserverFusion.newTest(QueueFuseable.ANY);
 
         Single.just(1).flattenAsObservable(new Function<Integer, Iterable<Integer>>() {
             @Override
@@ -97,14 +97,14 @@ public class SingleFlatMapIterableObservableTest {
         .subscribe(to);
 
         to.assertOf(ObserverFusion.<Integer>assertFuseable())
-        .assertOf(ObserverFusion.<Integer>assertFusionMode(QueueDisposable.ASYNC))
+        .assertOf(ObserverFusion.<Integer>assertFusionMode(QueueFuseable.ASYNC))
         .assertResult(1, 2);
         ;
     }
 
     @Test
     public void fusedNoSync() {
-        TestObserver<Integer> to = ObserverFusion.newTest(QueueDisposable.SYNC);
+        TestObserver<Integer> to = ObserverFusion.newTest(QueueFuseable.SYNC);
 
         Single.just(1).flattenAsObservable(new Function<Integer, Iterable<Integer>>() {
             @Override
@@ -115,7 +115,7 @@ public class SingleFlatMapIterableObservableTest {
         .subscribe(to);
 
         to.assertOf(ObserverFusion.<Integer>assertFuseable())
-        .assertOf(ObserverFusion.<Integer>assertFusionMode(QueueDisposable.NONE))
+        .assertOf(ObserverFusion.<Integer>assertFusionMode(QueueFuseable.NONE))
         .assertResult(1, 2);
         ;
     }
@@ -295,7 +295,7 @@ public class SingleFlatMapIterableObservableTest {
             public void onSubscribe(Disposable d) {
                 qd = (QueueDisposable<Integer>)d;
 
-                assertEquals(QueueDisposable.ASYNC, qd.requestFusion(QueueDisposable.ANY));
+                assertEquals(QueueFuseable.ASYNC, qd.requestFusion(QueueFuseable.ANY));
             }
 
             @Override

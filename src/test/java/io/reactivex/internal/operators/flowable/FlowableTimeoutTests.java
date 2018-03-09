@@ -480,36 +480,36 @@ public class FlowableTimeoutTests {
 
     @Test
     public void timedTake() {
-        PublishProcessor<Integer> ps = PublishProcessor.create();
+        PublishProcessor<Integer> pp = PublishProcessor.create();
 
-        TestSubscriber<Integer> to = ps.timeout(1, TimeUnit.DAYS)
+        TestSubscriber<Integer> ts = pp.timeout(1, TimeUnit.DAYS)
         .take(1)
         .test();
 
-        assertTrue(ps.hasSubscribers());
+        assertTrue(pp.hasSubscribers());
 
-        ps.onNext(1);
+        pp.onNext(1);
 
-        assertFalse(ps.hasSubscribers());
+        assertFalse(pp.hasSubscribers());
 
-        to.assertResult(1);
+        ts.assertResult(1);
     }
 
     @Test
     public void timedFallbackTake() {
-        PublishProcessor<Integer> ps = PublishProcessor.create();
+        PublishProcessor<Integer> pp = PublishProcessor.create();
 
-        TestSubscriber<Integer> to = ps.timeout(1, TimeUnit.DAYS, Flowable.just(2))
+        TestSubscriber<Integer> ts = pp.timeout(1, TimeUnit.DAYS, Flowable.just(2))
         .take(1)
         .test();
 
-        assertTrue(ps.hasSubscribers());
+        assertTrue(pp.hasSubscribers());
 
-        ps.onNext(1);
+        pp.onNext(1);
 
-        assertFalse(ps.hasSubscribers());
+        assertFalse(pp.hasSubscribers());
 
-        to.assertResult(1);
+        ts.assertResult(1);
     }
 
     @Test

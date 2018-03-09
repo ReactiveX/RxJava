@@ -328,14 +328,14 @@ public class ObservableTimeoutWithSelectorTest {
 
         }).when(o).onComplete();
 
-        final TestObserver<Integer> ts = new TestObserver<Integer>(o);
+        final TestObserver<Integer> to = new TestObserver<Integer>(o);
 
         new Thread(new Runnable() {
 
             @Override
             public void run() {
                 PublishSubject<Integer> source = PublishSubject.create();
-                source.timeout(timeoutFunc, Observable.just(3)).subscribe(ts);
+                source.timeout(timeoutFunc, Observable.just(3)).subscribe(to);
                 source.onNext(1); // start timeout
                 try {
                     if (!enteredTimeoutOne.await(30, TimeUnit.SECONDS)) {
@@ -568,7 +568,7 @@ public class ObservableTimeoutWithSelectorTest {
                     }
                 };
 
-                TestObserver<Integer> ts = ps.timeout(Functions.justFunction(pp2)).test();
+                TestObserver<Integer> to = ps.timeout(Functions.justFunction(pp2)).test();
 
                 ps.onNext(0);
 
@@ -590,7 +590,7 @@ public class ObservableTimeoutWithSelectorTest {
 
                 TestHelper.race(r1, r2);
 
-                ts.assertValueAt(0, 0);
+                to.assertValueAt(0, 0);
 
                 if (!errors.isEmpty()) {
                     TestHelper.assertUndeliverable(errors, 0, TestException.class);
@@ -623,7 +623,7 @@ public class ObservableTimeoutWithSelectorTest {
                     }
                 };
 
-                TestObserver<Integer> ts = ps.timeout(Functions.justFunction(pp2), Observable.<Integer>never()).test();
+                TestObserver<Integer> to = ps.timeout(Functions.justFunction(pp2), Observable.<Integer>never()).test();
 
                 ps.onNext(0);
 
@@ -645,7 +645,7 @@ public class ObservableTimeoutWithSelectorTest {
 
                 TestHelper.race(r1, r2);
 
-                ts.assertValueAt(0, 0);
+                to.assertValueAt(0, 0);
 
                 if (!errors.isEmpty()) {
                     TestHelper.assertUndeliverable(errors, 0, TestException.class);
@@ -678,7 +678,7 @@ public class ObservableTimeoutWithSelectorTest {
                     }
                 };
 
-                TestObserver<Integer> ts = ps.timeout(Functions.justFunction(pp2)).test();
+                TestObserver<Integer> to = ps.timeout(Functions.justFunction(pp2)).test();
 
                 ps.onNext(0);
 
@@ -700,7 +700,7 @@ public class ObservableTimeoutWithSelectorTest {
 
                 TestHelper.race(r1, r2);
 
-                ts.assertValueAt(0, 0);
+                to.assertValueAt(0, 0);
 
                 if (!errors.isEmpty()) {
                     TestHelper.assertUndeliverable(errors, 0, TestException.class);
@@ -733,7 +733,7 @@ public class ObservableTimeoutWithSelectorTest {
                     }
                 };
 
-                TestObserver<Integer> ts = ps.timeout(Functions.justFunction(pp2)).test();
+                TestObserver<Integer> to = ps.timeout(Functions.justFunction(pp2)).test();
 
                 ps.onNext(0);
 
@@ -753,7 +753,7 @@ public class ObservableTimeoutWithSelectorTest {
 
                 TestHelper.race(r1, r2);
 
-                ts.assertValueAt(0, 0);
+                to.assertValueAt(0, 0);
 
                 if (!errors.isEmpty()) {
                     TestHelper.assertUndeliverable(errors, 0, TestException.class);
@@ -786,7 +786,7 @@ public class ObservableTimeoutWithSelectorTest {
                     }
                 };
 
-                TestObserver<Integer> ts = ps.timeout(Functions.justFunction(pp2), Observable.<Integer>never()).test();
+                TestObserver<Integer> to = ps.timeout(Functions.justFunction(pp2), Observable.<Integer>never()).test();
 
                 ps.onNext(0);
 
@@ -806,7 +806,7 @@ public class ObservableTimeoutWithSelectorTest {
 
                 TestHelper.race(r1, r2);
 
-                ts.assertValueAt(0, 0);
+                to.assertValueAt(0, 0);
 
                 if (!errors.isEmpty()) {
                     TestHelper.assertUndeliverable(errors, 0, TestException.class);

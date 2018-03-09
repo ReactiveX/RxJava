@@ -154,7 +154,7 @@ public class XFlatMapTest {
     public void flowableCompletable() throws Exception {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
-            TestObserver<Void> ts = Flowable.just(1)
+            TestObserver<Void> to = Flowable.just(1)
             .subscribeOn(Schedulers.io())
             .flatMapCompletable(new Function<Integer, Completable>() {
                 @Override
@@ -167,13 +167,13 @@ public class XFlatMapTest {
 
             cb.await();
 
-            beforeCancelSleep(ts);
+            beforeCancelSleep(to);
 
-            ts.cancel();
+            to.cancel();
 
             Thread.sleep(SLEEP_AFTER_CANCEL);
 
-            ts.assertEmpty();
+            to.assertEmpty();
 
             assertTrue(errors.toString(), errors.isEmpty());
         } finally {
@@ -217,7 +217,7 @@ public class XFlatMapTest {
     public void observableFlowable() throws Exception {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
-            TestObserver<Integer> ts = Observable.just(1)
+            TestObserver<Integer> to = Observable.just(1)
             .subscribeOn(Schedulers.io())
             .flatMap(new Function<Integer, Observable<Integer>>() {
                 @Override
@@ -230,13 +230,13 @@ public class XFlatMapTest {
 
             cb.await();
 
-            beforeCancelSleep(ts);
+            beforeCancelSleep(to);
 
-            ts.cancel();
+            to.cancel();
 
             Thread.sleep(SLEEP_AFTER_CANCEL);
 
-            ts.assertEmpty();
+            to.assertEmpty();
 
             assertTrue(errors.toString(), errors.isEmpty());
         } finally {
@@ -248,7 +248,7 @@ public class XFlatMapTest {
     public void observerSingle() throws Exception {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
-            TestObserver<Integer> ts = Observable.just(1)
+            TestObserver<Integer> to = Observable.just(1)
             .subscribeOn(Schedulers.io())
             .flatMapSingle(new Function<Integer, Single<Integer>>() {
                 @Override
@@ -261,13 +261,13 @@ public class XFlatMapTest {
 
             cb.await();
 
-            beforeCancelSleep(ts);
+            beforeCancelSleep(to);
 
-            ts.cancel();
+            to.cancel();
 
             Thread.sleep(SLEEP_AFTER_CANCEL);
 
-            ts.assertEmpty();
+            to.assertEmpty();
 
             assertTrue(errors.toString(), errors.isEmpty());
         } finally {
@@ -279,7 +279,7 @@ public class XFlatMapTest {
     public void observerMaybe() throws Exception {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
-            TestObserver<Integer> ts = Observable.just(1)
+            TestObserver<Integer> to = Observable.just(1)
             .subscribeOn(Schedulers.io())
             .flatMapMaybe(new Function<Integer, Maybe<Integer>>() {
                 @Override
@@ -292,13 +292,13 @@ public class XFlatMapTest {
 
             cb.await();
 
-            beforeCancelSleep(ts);
+            beforeCancelSleep(to);
 
-            ts.cancel();
+            to.cancel();
 
             Thread.sleep(SLEEP_AFTER_CANCEL);
 
-            ts.assertEmpty();
+            to.assertEmpty();
 
             assertTrue(errors.toString(), errors.isEmpty());
         } finally {
@@ -310,7 +310,7 @@ public class XFlatMapTest {
     public void observerCompletable() throws Exception {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
-            TestObserver<Void> ts = Observable.just(1)
+            TestObserver<Void> to = Observable.just(1)
             .subscribeOn(Schedulers.io())
             .flatMapCompletable(new Function<Integer, Completable>() {
                 @Override
@@ -323,13 +323,13 @@ public class XFlatMapTest {
 
             cb.await();
 
-            beforeCancelSleep(ts);
+            beforeCancelSleep(to);
 
-            ts.cancel();
+            to.cancel();
 
             Thread.sleep(SLEEP_AFTER_CANCEL);
 
-            ts.assertEmpty();
+            to.assertEmpty();
 
             assertTrue(errors.toString(), errors.isEmpty());
         } finally {
@@ -341,7 +341,7 @@ public class XFlatMapTest {
     public void observerCompletable2() throws Exception {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
-            TestObserver<Void> ts = Observable.just(1)
+            TestObserver<Void> to = Observable.just(1)
             .subscribeOn(Schedulers.io())
             .flatMapCompletable(new Function<Integer, Completable>() {
                 @Override
@@ -355,13 +355,13 @@ public class XFlatMapTest {
 
             cb.await();
 
-            beforeCancelSleep(ts);
+            beforeCancelSleep(to);
 
-            ts.cancel();
+            to.cancel();
 
             Thread.sleep(SLEEP_AFTER_CANCEL);
 
-            ts.assertEmpty();
+            to.assertEmpty();
 
             assertTrue(errors.toString(), errors.isEmpty());
         } finally {
@@ -373,7 +373,7 @@ public class XFlatMapTest {
     public void singleSingle() throws Exception {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
-            TestObserver<Integer> ts = Single.just(1)
+            TestObserver<Integer> to = Single.just(1)
             .subscribeOn(Schedulers.io())
             .flatMap(new Function<Integer, Single<Integer>>() {
                 @Override
@@ -386,13 +386,13 @@ public class XFlatMapTest {
 
             cb.await();
 
-            beforeCancelSleep(ts);
+            beforeCancelSleep(to);
 
-            ts.cancel();
+            to.cancel();
 
             Thread.sleep(SLEEP_AFTER_CANCEL);
 
-            ts.assertEmpty();
+            to.assertEmpty();
 
             assertTrue(errors.toString(), errors.isEmpty());
         } finally {
@@ -404,7 +404,7 @@ public class XFlatMapTest {
     public void singleMaybe() throws Exception {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
-            TestObserver<Integer> ts = Single.just(1)
+            TestObserver<Integer> to = Single.just(1)
             .subscribeOn(Schedulers.io())
             .flatMapMaybe(new Function<Integer, Maybe<Integer>>() {
                 @Override
@@ -417,13 +417,13 @@ public class XFlatMapTest {
 
             cb.await();
 
-            beforeCancelSleep(ts);
+            beforeCancelSleep(to);
 
-            ts.cancel();
+            to.cancel();
 
             Thread.sleep(SLEEP_AFTER_CANCEL);
 
-            ts.assertEmpty();
+            to.assertEmpty();
 
             assertTrue(errors.toString(), errors.isEmpty());
         } finally {
@@ -435,7 +435,7 @@ public class XFlatMapTest {
     public void singleCompletable() throws Exception {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
-            TestObserver<Void> ts = Single.just(1)
+            TestObserver<Void> to = Single.just(1)
             .subscribeOn(Schedulers.io())
             .flatMapCompletable(new Function<Integer, Completable>() {
                 @Override
@@ -448,13 +448,13 @@ public class XFlatMapTest {
 
             cb.await();
 
-            beforeCancelSleep(ts);
+            beforeCancelSleep(to);
 
-            ts.cancel();
+            to.cancel();
 
             Thread.sleep(SLEEP_AFTER_CANCEL);
 
-            ts.assertEmpty();
+            to.assertEmpty();
 
             assertTrue(errors.toString(), errors.isEmpty());
         } finally {
@@ -466,7 +466,7 @@ public class XFlatMapTest {
     public void singleCompletable2() throws Exception {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
-            TestObserver<Integer> ts = Single.just(1)
+            TestObserver<Integer> to = Single.just(1)
             .subscribeOn(Schedulers.io())
             .flatMapCompletable(new Function<Integer, Completable>() {
                 @Override
@@ -480,13 +480,13 @@ public class XFlatMapTest {
 
             cb.await();
 
-            beforeCancelSleep(ts);
+            beforeCancelSleep(to);
 
-            ts.cancel();
+            to.cancel();
 
             Thread.sleep(SLEEP_AFTER_CANCEL);
 
-            ts.assertEmpty();
+            to.assertEmpty();
 
             assertTrue(errors.toString(), errors.isEmpty());
         } finally {
@@ -498,7 +498,7 @@ public class XFlatMapTest {
     public void maybeSingle() throws Exception {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
-            TestObserver<Integer> ts = Maybe.just(1)
+            TestObserver<Integer> to = Maybe.just(1)
             .subscribeOn(Schedulers.io())
             .flatMapSingle(new Function<Integer, Single<Integer>>() {
                 @Override
@@ -511,13 +511,13 @@ public class XFlatMapTest {
 
             cb.await();
 
-            beforeCancelSleep(ts);
+            beforeCancelSleep(to);
 
-            ts.cancel();
+            to.cancel();
 
             Thread.sleep(SLEEP_AFTER_CANCEL);
 
-            ts.assertEmpty();
+            to.assertEmpty();
 
             assertTrue(errors.toString(), errors.isEmpty());
         } finally {
@@ -529,7 +529,7 @@ public class XFlatMapTest {
     public void maybeMaybe() throws Exception {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
-            TestObserver<Integer> ts = Maybe.just(1)
+            TestObserver<Integer> to = Maybe.just(1)
             .subscribeOn(Schedulers.io())
             .flatMap(new Function<Integer, Maybe<Integer>>() {
                 @Override
@@ -542,13 +542,13 @@ public class XFlatMapTest {
 
             cb.await();
 
-            beforeCancelSleep(ts);
+            beforeCancelSleep(to);
 
-            ts.cancel();
+            to.cancel();
 
             Thread.sleep(SLEEP_AFTER_CANCEL);
 
-            ts.assertEmpty();
+            to.assertEmpty();
 
             assertTrue(errors.toString(), errors.isEmpty());
         } finally {
@@ -560,7 +560,7 @@ public class XFlatMapTest {
     public void maybeCompletable() throws Exception {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
-            TestObserver<Void> ts = Maybe.just(1)
+            TestObserver<Void> to = Maybe.just(1)
             .subscribeOn(Schedulers.io())
             .flatMapCompletable(new Function<Integer, Completable>() {
                 @Override
@@ -573,13 +573,13 @@ public class XFlatMapTest {
 
             cb.await();
 
-            beforeCancelSleep(ts);
+            beforeCancelSleep(to);
 
-            ts.cancel();
+            to.cancel();
 
             Thread.sleep(SLEEP_AFTER_CANCEL);
 
-            ts.assertEmpty();
+            to.assertEmpty();
 
             assertTrue(errors.toString(), errors.isEmpty());
         } finally {
@@ -591,7 +591,7 @@ public class XFlatMapTest {
     public void maybeCompletable2() throws Exception {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
-            TestObserver<Void> ts = Maybe.just(1)
+            TestObserver<Void> to = Maybe.just(1)
             .subscribeOn(Schedulers.io())
             .flatMapCompletable(new Function<Integer, Completable>() {
                 @Override
@@ -605,13 +605,13 @@ public class XFlatMapTest {
 
             cb.await();
 
-            beforeCancelSleep(ts);
+            beforeCancelSleep(to);
 
-            ts.cancel();
+            to.cancel();
 
             Thread.sleep(SLEEP_AFTER_CANCEL);
 
-            ts.assertEmpty();
+            to.assertEmpty();
 
             assertTrue(errors.toString(), errors.isEmpty());
         } finally {

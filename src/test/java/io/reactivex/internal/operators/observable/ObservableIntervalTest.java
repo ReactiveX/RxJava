@@ -39,14 +39,14 @@ public class ObservableIntervalTest {
 
     @Test
     public void cancelledOnRun() {
-        TestObserver<Long> ts = new TestObserver<Long>();
-        IntervalObserver is = new IntervalObserver(ts);
-        ts.onSubscribe(is);
+        TestObserver<Long> to = new TestObserver<Long>();
+        IntervalObserver is = new IntervalObserver(to);
+        to.onSubscribe(is);
 
         is.dispose();
 
         is.run();
 
-        ts.assertEmpty();
+        to.assertEmpty();
     }
 }

@@ -19,7 +19,7 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.Test;
-import org.reactivestreams.*;
+import org.reactivestreams.Subscription;
 
 import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
@@ -121,7 +121,7 @@ public class MaybeFlatMapIterableFlowableTest {
 
     @Test
     public void fused() {
-        TestSubscriber<Integer> to = SubscriberFusion.newTest(QueueDisposable.ANY);
+        TestSubscriber<Integer> ts = SubscriberFusion.newTest(QueueFuseable.ANY);
 
         Maybe.just(1).flattenAsFlowable(new Function<Integer, Iterable<Integer>>() {
             @Override
@@ -129,17 +129,17 @@ public class MaybeFlatMapIterableFlowableTest {
                 return Arrays.asList(v, v + 1);
             }
         })
-        .subscribe(to);
+        .subscribe(ts);
 
-        to.assertOf(SubscriberFusion.<Integer>assertFuseable())
-        .assertOf(SubscriberFusion.<Integer>assertFusionMode(QueueDisposable.ASYNC))
+        ts.assertOf(SubscriberFusion.<Integer>assertFuseable())
+        .assertOf(SubscriberFusion.<Integer>assertFusionMode(QueueFuseable.ASYNC))
         .assertResult(1, 2);
         ;
     }
 
     @Test
     public void fusedNoSync() {
-        TestSubscriber<Integer> to = SubscriberFusion.newTest(QueueDisposable.SYNC);
+        TestSubscriber<Integer> ts = SubscriberFusion.newTest(QueueFuseable.SYNC);
 
         Maybe.just(1).flattenAsFlowable(new Function<Integer, Iterable<Integer>>() {
             @Override
@@ -147,10 +147,10 @@ public class MaybeFlatMapIterableFlowableTest {
                 return Arrays.asList(v, v + 1);
             }
         })
-        .subscribe(to);
+        .subscribe(ts);
 
-        to.assertOf(SubscriberFusion.<Integer>assertFuseable())
-        .assertOf(SubscriberFusion.<Integer>assertFusionMode(QueueDisposable.NONE))
+        ts.assertOf(SubscriberFusion.<Integer>assertFuseable())
+        .assertOf(SubscriberFusion.<Integer>assertFusionMode(QueueFuseable.NONE))
         .assertResult(1, 2);
         ;
     }
@@ -305,7 +305,7 @@ public class MaybeFlatMapIterableFlowableTest {
             public void onSubscribe(Subscription d) {
                 qd = (QueueSubscription<Integer>)d;
 
-                assertEquals(QueueSubscription.ASYNC, qd.requestFusion(QueueSubscription.ANY));
+                assertEquals(QueueFuseable.ASYNC, qd.requestFusion(QueueFuseable.ANY));
             }
 
             @Override

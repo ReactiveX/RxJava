@@ -313,36 +313,36 @@ public class FlowableWithLatestFromTest {
 
     @Test
     public void manySources() {
-        PublishProcessor<String> ps1 = PublishProcessor.create();
-        PublishProcessor<String> ps2 = PublishProcessor.create();
-        PublishProcessor<String> ps3 = PublishProcessor.create();
+        PublishProcessor<String> pp1 = PublishProcessor.create();
+        PublishProcessor<String> pp2 = PublishProcessor.create();
+        PublishProcessor<String> pp3 = PublishProcessor.create();
         PublishProcessor<String> main = PublishProcessor.create();
 
         TestSubscriber<String> ts = new TestSubscriber<String>();
 
-        main.withLatestFrom(new Flowable[] { ps1, ps2, ps3 }, toArray)
+        main.withLatestFrom(new Flowable[] { pp1, pp2, pp3 }, toArray)
         .subscribe(ts);
 
         main.onNext("1");
         ts.assertNoValues();
-        ps1.onNext("a");
+        pp1.onNext("a");
         ts.assertNoValues();
-        ps2.onNext("A");
+        pp2.onNext("A");
         ts.assertNoValues();
-        ps3.onNext("=");
+        pp3.onNext("=");
         ts.assertNoValues();
 
         main.onNext("2");
         ts.assertValues("[2, a, A, =]");
 
-        ps2.onNext("B");
+        pp2.onNext("B");
 
         ts.assertValues("[2, a, A, =]");
 
-        ps3.onComplete();
+        pp3.onComplete();
         ts.assertValues("[2, a, A, =]");
 
-        ps1.onNext("b");
+        pp1.onNext("b");
 
         main.onNext("3");
 
@@ -353,43 +353,43 @@ public class FlowableWithLatestFromTest {
         ts.assertNoErrors();
         ts.assertComplete();
 
-        assertFalse("ps1 has subscribers?", ps1.hasSubscribers());
-        assertFalse("ps2 has subscribers?", ps2.hasSubscribers());
-        assertFalse("ps3 has subscribers?", ps3.hasSubscribers());
+        assertFalse("ps1 has subscribers?", pp1.hasSubscribers());
+        assertFalse("ps2 has subscribers?", pp2.hasSubscribers());
+        assertFalse("ps3 has subscribers?", pp3.hasSubscribers());
     }
 
     @Test
     public void manySourcesIterable() {
-        PublishProcessor<String> ps1 = PublishProcessor.create();
-        PublishProcessor<String> ps2 = PublishProcessor.create();
-        PublishProcessor<String> ps3 = PublishProcessor.create();
+        PublishProcessor<String> pp1 = PublishProcessor.create();
+        PublishProcessor<String> pp2 = PublishProcessor.create();
+        PublishProcessor<String> pp3 = PublishProcessor.create();
         PublishProcessor<String> main = PublishProcessor.create();
 
         TestSubscriber<String> ts = new TestSubscriber<String>();
 
-        main.withLatestFrom(Arrays.<Flowable<?>>asList(ps1, ps2, ps3), toArray)
+        main.withLatestFrom(Arrays.<Flowable<?>>asList(pp1, pp2, pp3), toArray)
         .subscribe(ts);
 
         main.onNext("1");
         ts.assertNoValues();
-        ps1.onNext("a");
+        pp1.onNext("a");
         ts.assertNoValues();
-        ps2.onNext("A");
+        pp2.onNext("A");
         ts.assertNoValues();
-        ps3.onNext("=");
+        pp3.onNext("=");
         ts.assertNoValues();
 
         main.onNext("2");
         ts.assertValues("[2, a, A, =]");
 
-        ps2.onNext("B");
+        pp2.onNext("B");
 
         ts.assertValues("[2, a, A, =]");
 
-        ps3.onComplete();
+        pp3.onComplete();
         ts.assertValues("[2, a, A, =]");
 
-        ps1.onNext("b");
+        pp1.onNext("b");
 
         main.onNext("3");
 
@@ -400,9 +400,9 @@ public class FlowableWithLatestFromTest {
         ts.assertNoErrors();
         ts.assertComplete();
 
-        assertFalse("ps1 has subscribers?", ps1.hasSubscribers());
-        assertFalse("ps2 has subscribers?", ps2.hasSubscribers());
-        assertFalse("ps3 has subscribers?", ps3.hasSubscribers());
+        assertFalse("ps1 has subscribers?", pp1.hasSubscribers());
+        assertFalse("ps2 has subscribers?", pp2.hasSubscribers());
+        assertFalse("ps3 has subscribers?", pp3.hasSubscribers());
     }
 
     @Test
@@ -439,12 +439,12 @@ public class FlowableWithLatestFromTest {
 
     @Test
     public void backpressureNoSignal() {
-        PublishProcessor<String> ps1 = PublishProcessor.create();
-        PublishProcessor<String> ps2 = PublishProcessor.create();
+        PublishProcessor<String> pp1 = PublishProcessor.create();
+        PublishProcessor<String> pp2 = PublishProcessor.create();
 
         TestSubscriber<String> ts = new TestSubscriber<String>(0);
 
-        Flowable.range(1, 10).withLatestFrom(new Flowable<?>[] { ps1, ps2 }, toArray)
+        Flowable.range(1, 10).withLatestFrom(new Flowable<?>[] { pp1, pp2 }, toArray)
         .subscribe(ts);
 
         ts.assertNoValues();
@@ -455,24 +455,24 @@ public class FlowableWithLatestFromTest {
         ts.assertNoErrors();
         ts.assertComplete();
 
-        assertFalse("ps1 has subscribers?", ps1.hasSubscribers());
-        assertFalse("ps2 has subscribers?", ps2.hasSubscribers());
+        assertFalse("ps1 has subscribers?", pp1.hasSubscribers());
+        assertFalse("ps2 has subscribers?", pp2.hasSubscribers());
     }
 
     @Test
     public void backpressureWithSignal() {
-        PublishProcessor<String> ps1 = PublishProcessor.create();
-        PublishProcessor<String> ps2 = PublishProcessor.create();
+        PublishProcessor<String> pp1 = PublishProcessor.create();
+        PublishProcessor<String> pp2 = PublishProcessor.create();
 
         TestSubscriber<String> ts = new TestSubscriber<String>(0);
 
-        Flowable.range(1, 3).withLatestFrom(new Flowable<?>[] { ps1, ps2 }, toArray)
+        Flowable.range(1, 3).withLatestFrom(new Flowable<?>[] { pp1, pp2 }, toArray)
         .subscribe(ts);
 
         ts.assertNoValues();
 
-        ps1.onNext("1");
-        ps2.onNext("1");
+        pp1.onNext("1");
+        pp2.onNext("1");
 
         ts.request(1);
 
@@ -488,8 +488,8 @@ public class FlowableWithLatestFromTest {
         ts.assertNoErrors();
         ts.assertComplete();
 
-        assertFalse("ps1 has subscribers?", ps1.hasSubscribers());
-        assertFalse("ps2 has subscribers?", ps2.hasSubscribers());
+        assertFalse("ps1 has subscribers?", pp1.hasSubscribers());
+        assertFalse("ps2 has subscribers?", pp2.hasSubscribers());
     }
 
     @Test

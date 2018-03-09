@@ -136,7 +136,7 @@ public class ObservableTakeUntilPredicateTest {
 
     @Test
     public void testErrorIncludesLastValueAsCause() {
-        TestObserver<String> ts = new TestObserver<String>();
+        TestObserver<String> to = new TestObserver<String>();
         final TestException e = new TestException("Forced failure");
         Predicate<String> predicate = (new Predicate<String>() {
             @Override
@@ -144,11 +144,11 @@ public class ObservableTakeUntilPredicateTest {
                     throw e;
             }
         });
-        Observable.just("abc").takeUntil(predicate).subscribe(ts);
+        Observable.just("abc").takeUntil(predicate).subscribe(to);
 
-        ts.assertTerminated();
-        ts.assertNotComplete();
-        ts.assertError(TestException.class);
+        to.assertTerminated();
+        to.assertNotComplete();
+        to.assertError(TestException.class);
         // FIXME last cause value is not saved
 //        assertTrue(ts.errors().get(0).getCause().getMessage().contains("abc"));
     }
