@@ -196,24 +196,20 @@ extends AbstractFlowableWithUpstream<T, U> {
 
             BufferBoundarySubscriber<T, U, B> bs = new BufferBoundarySubscriber<T, U, B>(this);
 
-            Disposable o = other.get();
-
-            if (!other.compareAndSet(o, bs)) {
-                return;
-            }
-
-            U b;
-            synchronized (this) {
-                b = buffer;
-                if (b == null) {
-                    return;
+            if (DisposableHelper.replace(other, bs)) {
+                U b;
+                synchronized (this) {
+                    b = buffer;
+                    if (b == null) {
+                        return;
+                    }
+                    buffer = next;
                 }
-                buffer = next;
+
+                boundary.subscribe(bs);
+
+                fastPathEmitMax(b, false, this);
             }
-
-            boundary.subscribe(bs);
-
-            fastPathEmitMax(b, false, this);
         }
 
         @Override

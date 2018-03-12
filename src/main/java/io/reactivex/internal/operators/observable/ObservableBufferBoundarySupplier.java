@@ -190,24 +190,20 @@ extends AbstractObservableWithUpstream<T, U> {
 
             BufferBoundaryObserver<T, U, B> bs = new BufferBoundaryObserver<T, U, B>(this);
 
-            Disposable o = other.get();
-
-            if (!other.compareAndSet(o, bs)) {
-                return;
-            }
-
-            U b;
-            synchronized (this) {
-                b = buffer;
-                if (b == null) {
-                    return;
+            if (DisposableHelper.replace(other, bs)) {
+                U b;
+                synchronized (this) {
+                    b = buffer;
+                    if (b == null) {
+                        return;
+                    }
+                    buffer = next;
                 }
-                buffer = next;
+
+                boundary.subscribe(bs);
+
+                fastPathEmit(b, false, this);
             }
-
-            boundary.subscribe(bs);
-
-            fastPathEmit(b, false, this);
         }
 
         @Override

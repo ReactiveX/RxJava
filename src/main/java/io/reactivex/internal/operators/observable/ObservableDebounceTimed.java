@@ -51,7 +51,7 @@ public final class ObservableDebounceTimed<T> extends AbstractObservableWithUpst
 
         Disposable s;
 
-        final AtomicReference<Disposable> timer = new AtomicReference<Disposable>();
+        Disposable timer;
 
         volatile long index;
 
@@ -80,18 +80,15 @@ public final class ObservableDebounceTimed<T> extends AbstractObservableWithUpst
             long idx = index + 1;
             index = idx;
 
-            Disposable d = timer.get();
+            Disposable d = timer;
             if (d != null) {
                 d.dispose();
             }
 
             DebounceEmitter<T> de = new DebounceEmitter<T>(t, idx, this);
-            if (timer.compareAndSet(d, de)) {
-                d = worker.schedule(de, timeout, unit);
-
-                de.setResource(d);
-            }
-
+            timer = de;
+            d = worker.schedule(de, timeout, unit);
+            de.setResource(d);
         }
 
         @Override
@@ -99,6 +96,10 @@ public final class ObservableDebounceTimed<T> extends AbstractObservableWithUpst
             if (done) {
                 RxJavaPlugins.onError(t);
                 return;
+            }
+            Disposable d = timer;
+            if (d != null) {
+                d.dispose();
             }
             done = true;
             actual.onError(t);
@@ -112,16 +113,17 @@ public final class ObservableDebounceTimed<T> extends AbstractObservableWithUpst
             }
             done = true;
 
-            Disposable d = timer.get();
-            if (d != DisposableHelper.DISPOSED) {
-                @SuppressWarnings("unchecked")
-                DebounceEmitter<T> de = (DebounceEmitter<T>)d;
-                if (de != null) {
-                    de.run();
-                }
-                actual.onComplete();
-                worker.dispose();
+            Disposable d = timer;
+            if (d != null) {
+                d.dispose();
             }
+            @SuppressWarnings("unchecked")
+            DebounceEmitter<T> de = (DebounceEmitter<T>)d;
+            if (de != null) {
+                de.run();
+            }
+            actual.onComplete();
+            worker.dispose();
         }
 
         @Override

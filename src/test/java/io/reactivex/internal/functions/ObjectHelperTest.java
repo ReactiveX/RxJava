@@ -58,4 +58,11 @@ public class ObjectHelperTest {
         assertEquals(0, ObjectHelper.compare(0, 0));
         assertEquals(1, ObjectHelper.compare(2, 0));
     }
+
+    @Test
+    public void compareLong() {
+        assertEquals(-1, ObjectHelper.compare(0L, 2L));
+        assertEquals(0, ObjectHelper.compare(0L, 0L));
+        assertEquals(1, ObjectHelper.compare(2L, 0L));
+    }
 }

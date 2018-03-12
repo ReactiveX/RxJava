@@ -30,7 +30,10 @@ import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.*;
 import io.reactivex.functions.*;
+import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.internal.functions.Functions;
+import io.reactivex.internal.operators.flowable.FlowableBufferBoundarySupplier.BufferBoundarySupplierSubscriber;
+import io.reactivex.internal.operators.flowable.FlowableBufferTimed.*;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.processors.*;
@@ -2556,5 +2559,204 @@ public class FlowableBufferTest {
         } finally {
             RxJavaPlugins.reset();
         }
+    }
+
+    @Test
+    public void bufferBoundarySupplierDisposed() {
+        TestSubscriber<List<Integer>> ts = new TestSubscriber<List<Integer>>();
+        BufferBoundarySupplierSubscriber<Integer, List<Integer>, Integer> sub =
+                new BufferBoundarySupplierSubscriber<Integer, List<Integer>, Integer>(
+                        ts, Functions.justCallable((List<Integer>)new ArrayList<Integer>()),
+                        Functions.justCallable(Flowable.<Integer>never())
+        );
+
+        BooleanSubscription bs = new BooleanSubscription();
+
+        sub.onSubscribe(bs);
+
+        assertFalse(sub.isDisposed());
+
+        sub.dispose();
+
+        assertTrue(sub.isDisposed());
+
+        sub.next();
+
+        assertSame(DisposableHelper.DISPOSED, sub.other.get());
+
+        sub.cancel();
+        sub.cancel();
+
+        assertTrue(bs.isCancelled());
+    }
+
+    @Test
+    public void bufferBoundarySupplierBufferAlreadyCleared() {
+        TestSubscriber<List<Integer>> ts = new TestSubscriber<List<Integer>>();
+        BufferBoundarySupplierSubscriber<Integer, List<Integer>, Integer> sub =
+                new BufferBoundarySupplierSubscriber<Integer, List<Integer>, Integer>(
+                        ts, Functions.justCallable((List<Integer>)new ArrayList<Integer>()),
+                        Functions.justCallable(Flowable.<Integer>never())
+        );
+
+        BooleanSubscription bs = new BooleanSubscription();
+
+        sub.onSubscribe(bs);
+
+        sub.buffer = null;
+
+        sub.next();
+
+        sub.onNext(1);
+
+        sub.onComplete();
+    }
+
+    @Test
+    public void timedDoubleOnSubscribe() {
+        TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Publisher<List<Object>>>() {
+            @Override
+            public Publisher<List<Object>> apply(Flowable<Object> f)
+                    throws Exception {
+                return f.buffer(1, TimeUnit.SECONDS);
+            }
+        });
+    }
+
+    @Test
+    public void timedCancelledUpfront() {
+        TestScheduler sch = new TestScheduler();
+
+        TestSubscriber<List<Object>> ts = Flowable.never()
+        .buffer(1, TimeUnit.MILLISECONDS, sch)
+        .test(1L, true);
+
+        sch.advanceTimeBy(1, TimeUnit.MILLISECONDS);
+
+        ts.assertEmpty();
+    }
+
+    @Test
+    public void timedInternalState() {
+        TestScheduler sch = new TestScheduler();
+
+        TestSubscriber<List<Integer>> ts = new TestSubscriber<List<Integer>>();
+
+        BufferExactUnboundedSubscriber<Integer, List<Integer>> sub = new BufferExactUnboundedSubscriber<Integer, List<Integer>>(
+                ts, Functions.justCallable((List<Integer>)new ArrayList<Integer>()), 1, TimeUnit.SECONDS, sch);
+
+        sub.onSubscribe(new BooleanSubscription());
+
+        assertFalse(sub.isDisposed());
+
+        sub.onError(new TestException());
+        sub.onNext(1);
+        sub.onComplete();
+
+        sub.run();
+
+        sub.dispose();
+
+        assertTrue(sub.isDisposed());
+
+        sub.buffer = new ArrayList<Integer>();
+        sub.enter();
+        sub.onComplete();
+    }
+
+    @Test
+    public void timedSkipDoubleOnSubscribe() {
+        TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Publisher<List<Object>>>() {
+            @Override
+            public Publisher<List<Object>> apply(Flowable<Object> f)
+                    throws Exception {
+                return f.buffer(2, 1, TimeUnit.SECONDS);
+            }
+        });
+    }
+
+    @Test
+    public void timedSizedDoubleOnSubscribe() {
+        TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Publisher<List<Object>>>() {
+            @Override
+            public Publisher<List<Object>> apply(Flowable<Object> f)
+                    throws Exception {
+                return f.buffer(2, TimeUnit.SECONDS, 10);
+            }
+        });
+    }
+
+    @Test
+    public void timedSkipInternalState() {
+        TestScheduler sch = new TestScheduler();
+
+        TestSubscriber<List<Integer>> ts = new TestSubscriber<List<Integer>>();
+
+        BufferSkipBoundedSubscriber<Integer, List<Integer>> sub = new BufferSkipBoundedSubscriber<Integer, List<Integer>>(
+                ts, Functions.justCallable((List<Integer>)new ArrayList<Integer>()), 1, 1, TimeUnit.SECONDS, sch.createWorker());
+
+        sub.onSubscribe(new BooleanSubscription());
+
+        sub.enter();
+        sub.onComplete();
+
+        sub.cancel();
+
+        sub.run();
+    }
+
+    @Test
+    public void timedSkipCancelWhenSecondBuffer() {
+        TestScheduler sch = new TestScheduler();
+
+        final TestSubscriber<List<Integer>> ts = new TestSubscriber<List<Integer>>();
+
+        BufferSkipBoundedSubscriber<Integer, List<Integer>> sub = new BufferSkipBoundedSubscriber<Integer, List<Integer>>(
+                ts, new Callable<List<Integer>>() {
+                    int calls;
+                    @Override
+                    public List<Integer> call() throws Exception {
+                        if (++calls == 2) {
+                            ts.cancel();
+                        }
+                        return new ArrayList<Integer>();
+                    }
+                }, 1, 1, TimeUnit.SECONDS, sch.createWorker());
+
+        sub.onSubscribe(new BooleanSubscription());
+
+        sub.run();
+
+        assertTrue(ts.isCancelled());
+    }
+
+    @Test
+    public void timedSizeBufferAlreadyCleared() {
+        TestScheduler sch = new TestScheduler();
+
+        TestSubscriber<List<Integer>> ts = new TestSubscriber<List<Integer>>();
+
+        BufferExactBoundedSubscriber<Integer, List<Integer>> sub =
+                new BufferExactBoundedSubscriber<Integer, List<Integer>>(
+                        ts, Functions.justCallable((List<Integer>)new ArrayList<Integer>()),
+                        1, TimeUnit.SECONDS, 1, false, sch.createWorker())
+        ;
+
+        BooleanSubscription bs = new BooleanSubscription();
+
+        sub.onSubscribe(bs);
+
+        sub.producerIndex++;
+
+        sub.run();
+
+        assertFalse(sub.isDisposed());
+
+        sub.enter();
+        sub.onComplete();
+
+        assertTrue(sub.isDisposed());
+
+        sub.run();
     }
 }

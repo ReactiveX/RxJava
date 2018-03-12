@@ -2059,4 +2059,10 @@ public class TestSubscriberTest {
             // expected
         }
     }
+
+    @Test(timeout = 1000)
+    public void awaitCount0() {
+        TestSubscriber<Integer> ts = TestSubscriber.create();
+        ts.awaitCount(0, TestWaitStrategy.SLEEP_1MS, 0);
+    }
 }

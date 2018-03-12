@@ -349,6 +349,22 @@ public class CompositeExceptionTest {
         assertSame(e, new CompositeException(e).getCause().getCause());
         assertSame(e, new CompositeException(new RuntimeException(e)).getCause().getCause().getCause());
     }
+
+    @Test
+    public void rootCauseEval() {
+        final TestException ex0 = new TestException();
+        Throwable throwable = new Throwable() {
+
+            private static final long serialVersionUID = 3597694032723032281L;
+
+            @Override
+            public synchronized Throwable getCause() {
+                return ex0;
+            }
+        };
+        CompositeException ex = new CompositeException(throwable);
+        assertSame(ex, ex.getRootCause(ex));
+    }
 }
 
 final class BadException extends Throwable {
