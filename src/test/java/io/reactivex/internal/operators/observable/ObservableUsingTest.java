@@ -567,4 +567,45 @@ public class ObservableUsingTest {
         .assertFailureAndMessage(NullPointerException.class, "The sourceSupplier returned a null ObservableSource")
         ;
     }
+
+    @Test
+    public void doubleOnSubscribe() {
+        TestHelper.checkDoubleOnSubscribeObservable(new Function<Observable<Object>, ObservableSource<Object>>() {
+            @Override
+            public ObservableSource<Object> apply(Observable<Object> o)
+                    throws Exception {
+                return Observable.using(Functions.justCallable(1), Functions.justFunction(o), Functions.emptyConsumer());
+            }
+        });
+    }
+
+    @Test
+    public void eagerDisposedOnComplete() {
+        final TestObserver<Integer> to = new TestObserver<Integer>();
+
+        Observable.using(Functions.justCallable(1), Functions.justFunction(new Observable<Integer>() {
+            @Override
+            protected void subscribeActual(Observer<? super Integer> observer) {
+                observer.onSubscribe(Disposables.empty());
+                to.cancel();
+                observer.onComplete();
+            }
+        }), Functions.emptyConsumer(), true)
+        .subscribe(to);
+    }
+
+    @Test
+    public void eagerDisposedOnError() {
+        final TestObserver<Integer> to = new TestObserver<Integer>();
+
+        Observable.using(Functions.justCallable(1), Functions.justFunction(new Observable<Integer>() {
+            @Override
+            protected void subscribeActual(Observer<? super Integer> observer) {
+                observer.onSubscribe(Disposables.empty());
+                to.cancel();
+                observer.onError(new TestException());
+            }
+        }), Functions.emptyConsumer(), true)
+        .subscribe(to);
+    }
 }

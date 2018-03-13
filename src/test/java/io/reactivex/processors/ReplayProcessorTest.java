@@ -1678,4 +1678,9 @@ public class ReplayProcessorTest extends FlowableProcessorTest<Object> {
 
         assertSame(o, buf.head);
     }
+
+    @Test
+    public void invalidRequest() {
+        TestHelper.assertBadRequestReported(ReplayProcessor.create());
+    }
 }

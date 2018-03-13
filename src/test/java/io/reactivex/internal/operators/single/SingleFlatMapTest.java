@@ -223,4 +223,21 @@ public class SingleFlatMapTest {
         .test()
         .assertFailure(TestException.class);
     }
+
+    @Test
+    public void doubleOnSubscribe() {
+        TestHelper.checkDoubleOnSubscribeSingle(new Function<Single<Object>, SingleSource<Object>>() {
+            @Override
+            public SingleSource<Object> apply(Single<Object> s)
+                    throws Exception {
+                return s.flatMap(new Function<Object, SingleSource<? extends Object>>() {
+                    @Override
+                    public SingleSource<? extends Object> apply(Object v)
+                            throws Exception {
+                        return Single.just(v);
+                    }
+                });
+            }
+        });
+    }
 }

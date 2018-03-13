@@ -19,9 +19,11 @@ import java.util.List;
 import java.util.concurrent.CancellationException;
 
 import org.junit.Test;
+import org.reactivestreams.Subscriber;
 
 import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
+import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.processors.PublishProcessor;
@@ -273,5 +275,20 @@ public class SingleTakeUntilTest {
         } finally {
             RxJavaPlugins.reset();
         }
+    }
+
+    @Test
+    public void flowableCancelDelayed() {
+        Single.never()
+        .takeUntil(new Flowable<Integer>() {
+            @Override
+            protected void subscribeActual(Subscriber<? super Integer> s) {
+                s.onSubscribe(new BooleanSubscription());
+                s.onNext(1);
+                s.onNext(2);
+            }
+        })
+        .test()
+        .assertFailure(CancellationException.class);
     }
 }

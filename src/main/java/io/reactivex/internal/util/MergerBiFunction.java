@@ -58,8 +58,7 @@ public final class MergerBiFunction<T> implements BiFunction<List<T>, List<T>, L
             while (at.hasNext()) {
                 both.add(at.next());
             }
-        } else
-        if (s2 != null) {
+        } else {
             both.add(s2);
             while (bt.hasNext()) {
                 both.add(bt.next());

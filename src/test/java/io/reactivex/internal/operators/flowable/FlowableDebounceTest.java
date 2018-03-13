@@ -30,6 +30,7 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.*;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.functions.Functions;
+import io.reactivex.internal.operators.flowable.FlowableDebounceTimed.*;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.processors.*;
@@ -486,5 +487,62 @@ public class FlowableDebounceTest {
     @Test
     public void badRequestReported() {
         TestHelper.assertBadRequestReported(Flowable.never().debounce(Functions.justFunction(Flowable.never())));
+    }
+
+    @Test
+    public void timedDoubleOnSubscribe() {
+        TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Publisher<Object>>() {
+            @Override
+            public Publisher<Object> apply(Flowable<Object> f)
+                    throws Exception {
+                return f.debounce(1, TimeUnit.SECONDS);
+            }
+        });
+    }
+
+    @Test
+    public void timedDisposedIgnoredBySource() {
+        final TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+
+        new Flowable<Integer>() {
+            @Override
+            protected void subscribeActual(
+                    org.reactivestreams.Subscriber<? super Integer> s) {
+                s.onSubscribe(new BooleanSubscription());
+                ts.cancel();
+                s.onNext(1);
+                s.onComplete();
+            }
+        }
+        .debounce(1, TimeUnit.SECONDS)
+        .subscribe(ts);
+    }
+
+    @Test
+    public void timedBadRequest() {
+        TestHelper.assertBadRequestReported(Flowable.never().debounce(1, TimeUnit.SECONDS));
+    }
+
+    @Test
+    public void timedLateEmit() {
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        DebounceTimedSubscriber<Integer> sub = new DebounceTimedSubscriber<Integer>(
+                ts, 1, TimeUnit.SECONDS, new TestScheduler().createWorker());
+
+        sub.onSubscribe(new BooleanSubscription());
+
+        DebounceEmitter<Integer> de = new DebounceEmitter<Integer>(1, 50, sub);
+        de.emit();
+        de.emit();
+
+        ts.assertEmpty();
+    }
+
+    @Test
+    public void timedError() {
+        Flowable.error(new TestException())
+        .debounce(1, TimeUnit.SECONDS)
+        .test()
+        .assertFailure(TestException.class);
     }
 }

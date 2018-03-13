@@ -127,11 +127,13 @@ public final class ObservableBuffer<T, U extends Collection<? super T>> extends 
         @Override
         public void onComplete() {
             U b = buffer;
-            buffer = null;
-            if (b != null && !b.isEmpty()) {
-                actual.onNext(b);
+            if (b != null) {
+                buffer = null;
+                if (!b.isEmpty()) {
+                    actual.onNext(b);
+                }
+                actual.onComplete();
             }
-            actual.onComplete();
         }
     }
 

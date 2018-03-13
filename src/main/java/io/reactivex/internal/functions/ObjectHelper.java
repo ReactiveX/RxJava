@@ -71,7 +71,7 @@ public final class ObjectHelper {
     }
 
     /**
-     * Compares two integer values similar to Long.compare.
+     * Compares two long values similar to Long.compare.
      * @param v1 the first value
      * @param v2 the second value
      * @return the comparison result

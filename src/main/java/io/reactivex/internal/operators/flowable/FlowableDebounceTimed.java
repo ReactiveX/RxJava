@@ -58,7 +58,7 @@ public final class FlowableDebounceTimed<T> extends AbstractFlowableWithUpstream
 
         Subscription s;
 
-        final SequentialDisposable timer = new SequentialDisposable();
+        Disposable timer;
 
         volatile long index;
 
@@ -88,17 +88,15 @@ public final class FlowableDebounceTimed<T> extends AbstractFlowableWithUpstream
             long idx = index + 1;
             index = idx;
 
-            Disposable d = timer.get();
+            Disposable d = timer;
             if (d != null) {
                 d.dispose();
             }
 
             DebounceEmitter<T> de = new DebounceEmitter<T>(t, idx, this);
-            if (timer.replace(de)) {
-                d = worker.schedule(de, timeout, unit);
-
-                de.setResource(d);
-            }
+            timer = de;
+            d = worker.schedule(de, timeout, unit);
+            de.setResource(d);
         }
 
         @Override
@@ -108,6 +106,10 @@ public final class FlowableDebounceTimed<T> extends AbstractFlowableWithUpstream
                 return;
             }
             done = true;
+            Disposable d = timer;
+            if (d != null) {
+                d.dispose();
+            }
             actual.onError(t);
             worker.dispose();
         }
@@ -119,17 +121,18 @@ public final class FlowableDebounceTimed<T> extends AbstractFlowableWithUpstream
             }
             done = true;
 
-            Disposable d = timer.get();
-            if (!DisposableHelper.isDisposed(d)) {
-                @SuppressWarnings("unchecked")
-                DebounceEmitter<T> de = (DebounceEmitter<T>)d;
-                if (de != null) {
-                    de.emit();
-                }
-                DisposableHelper.dispose(timer);
-                actual.onComplete();
-                worker.dispose();
+            Disposable d = timer;
+            if (d != null) {
+                d.dispose();
             }
+            @SuppressWarnings("unchecked")
+            DebounceEmitter<T> de = (DebounceEmitter<T>)d;
+            if (de != null) {
+                de.emit();
+            }
+
+            actual.onComplete();
+            worker.dispose();
         }
 
         @Override

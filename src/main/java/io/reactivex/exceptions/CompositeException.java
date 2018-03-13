@@ -278,7 +278,7 @@ public final class CompositeException extends RuntimeException {
      * @param e the {@link Throwable} {@code e}.
      * @return The root cause of {@code e}. If {@code e.getCause()} returns {@code null} or {@code e}, just return {@code e} itself.
      */
-    private Throwable getRootCause(Throwable e) {
+    /*private */Throwable getRootCause(Throwable e) {
         Throwable root = e.getCause();
         if (root == null || cause == root) {
             return e;

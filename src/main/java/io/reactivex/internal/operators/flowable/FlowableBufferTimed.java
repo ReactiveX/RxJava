@@ -177,8 +177,8 @@ public final class FlowableBufferTimed<T, U extends Collection<? super T>> exten
 
         @Override
         public void cancel() {
+            cancelled = true;
             s.cancel();
-
             DisposableHelper.dispose(timer);
         }
 
@@ -199,14 +199,10 @@ public final class FlowableBufferTimed<T, U extends Collection<? super T>> exten
 
             synchronized (this) {
                 current = buffer;
-                if (current != null) {
-                    buffer = next;
+                if (current == null) {
+                    return;
                 }
-            }
-
-            if (current == null) {
-                DisposableHelper.dispose(timer);
-                return;
+                buffer = next;
             }
 
             fastPathEmitMax(current, false, this);
@@ -324,9 +320,10 @@ public final class FlowableBufferTimed<T, U extends Collection<? super T>> exten
 
         @Override
         public void cancel() {
-            clear();
+            cancelled = true;
             s.cancel();
             w.dispose();
+            clear();
         }
 
         void clear() {

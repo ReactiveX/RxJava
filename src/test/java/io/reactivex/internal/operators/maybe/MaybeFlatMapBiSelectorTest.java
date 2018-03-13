@@ -20,6 +20,7 @@ import org.junit.Test;
 import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.*;
+import io.reactivex.observers.TestObserver;
 import io.reactivex.processors.PublishProcessor;
 
 public class MaybeFlatMapBiSelectorTest {
@@ -209,5 +210,26 @@ public class MaybeFlatMapBiSelectorTest {
         })
         .test()
         .assertFailure(NullPointerException.class);
+    }
+
+    @Test
+    public void mapperCancels() {
+        final TestObserver<Integer> to = new TestObserver<Integer>();
+
+        Maybe.just(1)
+        .flatMap(new Function<Integer, MaybeSource<Integer>>() {
+            @Override
+            public MaybeSource<Integer> apply(Integer v) throws Exception {
+                to.cancel();
+                return Maybe.just(2);
+            }
+        }, new BiFunction<Integer, Integer, Integer>() {
+            @Override
+            public Integer apply(Integer a, Integer b) throws Exception {
+                throw new IllegalStateException();
+            }
+        })
+        .subscribeWith(to)
+        .assertEmpty();
     }
 }
