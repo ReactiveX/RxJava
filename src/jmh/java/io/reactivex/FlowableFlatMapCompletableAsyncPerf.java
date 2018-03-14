@@ -29,7 +29,7 @@ import io.reactivex.schedulers.Schedulers;
 @OutputTimeUnit(TimeUnit.SECONDS)
 @Fork(value = 1)
 @State(Scope.Thread)
-public class FlowableFlatMapCompletablePerf implements Action {
+public class FlowableFlatMapCompletableAsyncPerf implements Action {
 
     @Param({"1", "10", "100", "1000", "10000", "100000", "1000000"})
     int items;
