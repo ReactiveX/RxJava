@@ -2827,4 +2827,99 @@ public enum TestHelper {
             tss[i].assertFailure(IllegalArgumentException.class);
         }
     }
+
+    public static <T> Observable<T> rejectObservableFusion() {
+        return new Observable<T>() {
+            @Override
+            protected void subscribeActual(Observer<? super T> observer) {
+                observer.onSubscribe(new QueueDisposable<T>() {
+
+                    @Override
+                    public int requestFusion(int mode) {
+                        return 0;
+                    }
+
+                    @Override
+                    public boolean offer(T value) {
+                        throw new IllegalStateException();
+                    }
+
+                    @Override
+                    public boolean offer(T v1, T v2) {
+                        throw new IllegalStateException();
+                    }
+
+                    @Override
+                    public T poll() throws Exception {
+                        return null;
+                    }
+
+                    @Override
+                    public boolean isEmpty() {
+                        return true;
+                    }
+
+                    @Override
+                    public void clear() {
+                    }
+
+                    @Override
+                    public void dispose() {
+                    }
+
+                    @Override
+                    public boolean isDisposed() {
+                        return false;
+                    }
+                });
+            }
+        };
+    }
+
+    public static <T> Flowable<T> rejectFlowableFusion() {
+        return new Flowable<T>() {
+            @Override
+            protected void subscribeActual(Subscriber<? super T> observer) {
+                observer.onSubscribe(new QueueSubscription<T>() {
+
+                    @Override
+                    public int requestFusion(int mode) {
+                        return 0;
+                    }
+
+                    @Override
+                    public boolean offer(T value) {
+                        throw new IllegalStateException();
+                    }
+
+                    @Override
+                    public boolean offer(T v1, T v2) {
+                        throw new IllegalStateException();
+                    }
+
+                    @Override
+                    public T poll() throws Exception {
+                        return null;
+                    }
+
+                    @Override
+                    public boolean isEmpty() {
+                        return true;
+                    }
+
+                    @Override
+                    public void clear() {
+                    }
+
+                    @Override
+                    public void cancel() {
+                    }
+
+                    @Override
+                    public void request(long n) {
+                    }
+                });
+            }
+        };
+    }
 }
