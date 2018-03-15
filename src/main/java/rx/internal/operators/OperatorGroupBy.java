@@ -246,7 +246,11 @@ public final class OperatorGroupBy<T, K, V> implements Operator<GroupedObservabl
                 K evictedKey;
                 while ((evictedKey = evictedKeys.poll()) != null) {
                     GroupedUnicast<K, V> g = groupsCopy.remove(evictedKey);
-                    g.onComplete();
+                    // do a null check on g because cancel(K) could have cleared
+                    // the map
+                    if (g != null) {
+                        g.onComplete();
+                    }
                 }
             }
 
