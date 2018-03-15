@@ -13,7 +13,6 @@
 
 package io.reactivex.internal.operators.mixed;
 
-import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.*;
 
 import io.reactivex.*;
@@ -21,7 +20,7 @@ import io.reactivex.annotations.Experimental;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.Function;
-import io.reactivex.internal.disposables.*;
+import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.internal.fuseable.*;
 import io.reactivex.internal.queue.SpscLinkedArrayQueue;
@@ -57,7 +56,7 @@ public final class ObservableConcatMapCompletable<T> extends Completable {
 
     @Override
     protected void subscribeActual(CompletableObserver s) {
-        if (!tryScalarSource(source, mapper, s)) {
+        if (!ScalarXMapZHelper.tryAsCompletable(source, mapper, s)) {
             source.subscribe(new ConcatMapCompletableObserver<T>(s, mapper, errorMode, prefetch));
         }
     }
@@ -300,31 +299,5 @@ public final class ObservableConcatMapCompletable<T> extends Completable {
                 DisposableHelper.dispose(this);
             }
         }
-    }
-
-    static <T> boolean tryScalarSource(Observable<T> source, Function<? super T, ? extends CompletableSource> mapper, CompletableObserver observer) {
-        if (source instanceof Callable) {
-            @SuppressWarnings("unchecked")
-            Callable<T> call = (Callable<T>) source;
-            CompletableSource cs = null;
-            try {
-                T item = call.call();
-                if (item != null) {
-                    cs = ObjectHelper.requireNonNull(mapper.apply(item), "The mapper returned a null CompletableSource");
-                }
-            } catch (Throwable ex) {
-                Exceptions.throwIfFatal(ex);
-                EmptyDisposable.error(ex, observer);
-                return true;
-            }
-
-            if (cs == null) {
-                EmptyDisposable.complete(observer);
-            } else {
-                cs.subscribe(observer);
-            }
-            return true;
-        }
-        return false;
     }
 }

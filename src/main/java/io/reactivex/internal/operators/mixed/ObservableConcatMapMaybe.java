@@ -59,7 +59,9 @@ public final class ObservableConcatMapMaybe<T, R> extends Observable<R> {
 
     @Override
     protected void subscribeActual(Observer<? super R> s) {
-        source.subscribe(new ConcatMapMaybeMainObserver<T, R>(s, mapper, prefetch, errorMode));
+        if (!ScalarXMapZHelper.tryAsMaybe(source, mapper, s)) {
+            source.subscribe(new ConcatMapMaybeMainObserver<T, R>(s, mapper, prefetch, errorMode));
+        }
     }
 
     static final class ConcatMapMaybeMainObserver<T, R>

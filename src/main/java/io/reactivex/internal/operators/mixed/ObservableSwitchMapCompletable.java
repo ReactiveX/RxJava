@@ -51,7 +51,9 @@ public final class ObservableSwitchMapCompletable<T> extends Completable {
 
     @Override
     protected void subscribeActual(CompletableObserver s) {
-        source.subscribe(new SwitchMapCompletableObserver<T>(s, mapper, delayErrors));
+        if (!ScalarXMapZHelper.tryAsCompletable(source, mapper, s)) {
+            source.subscribe(new SwitchMapCompletableObserver<T>(s, mapper, delayErrors));
+        }
     }
 
     static final class SwitchMapCompletableObserver<T> implements Observer<T>, Disposable {

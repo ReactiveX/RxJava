@@ -14,6 +14,7 @@
 package io.reactivex.internal.operators.maybe;
 
 import io.reactivex.*;
+import io.reactivex.annotations.Experimental;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.internal.fuseable.HasUpstreamMaybeSource;
@@ -40,17 +41,29 @@ public final class MaybeToObservable<T> extends Observable<T> implements HasUpst
 
     @Override
     protected void subscribeActual(Observer<? super T> s) {
-        source.subscribe(new MaybeToFlowableSubscriber<T>(s));
+        source.subscribe(create(s));
     }
 
-    static final class MaybeToFlowableSubscriber<T> extends DeferredScalarDisposable<T>
+    /**
+     * Creates a {@link MaybeObserver} wrapper around a {@link Observer}.
+     * @param <T> the value type
+     * @param downstream the downstream {@code Observer} to talk to
+     * @return the new MaybeObserver instance
+     * @since 2.1.11 - experimental
+     */
+    @Experimental
+    public static <T> MaybeObserver<T> create(Observer<? super T> downstream) {
+        return new MaybeToObservableObserver<T>(downstream);
+    }
+
+    static final class MaybeToObservableObserver<T> extends DeferredScalarDisposable<T>
     implements MaybeObserver<T> {
 
         private static final long serialVersionUID = 7603343402964826922L;
 
         Disposable d;
 
-        MaybeToFlowableSubscriber(Observer<? super T> actual) {
+        MaybeToObservableObserver(Observer<? super T> actual) {
             super(actual);
         }
 

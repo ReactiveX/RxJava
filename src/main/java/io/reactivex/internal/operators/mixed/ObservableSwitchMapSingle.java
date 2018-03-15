@@ -53,7 +53,9 @@ public final class ObservableSwitchMapSingle<T, R> extends Observable<R> {
 
     @Override
     protected void subscribeActual(Observer<? super R> s) {
-        source.subscribe(new SwitchMapSingleMainObserver<T, R>(s, mapper, delayErrors));
+        if (!ScalarXMapZHelper.tryAsSingle(source, mapper, s)) {
+            source.subscribe(new SwitchMapSingleMainObserver<T, R>(s, mapper, delayErrors));
+        }
     }
 
     static final class SwitchMapSingleMainObserver<T, R> extends AtomicInteger
