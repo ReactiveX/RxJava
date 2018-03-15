@@ -15,6 +15,8 @@ package io.reactivex.internal.operators.completable;
 
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.internal.disposables.DisposableHelper;
+import io.reactivex.internal.observers.BasicQueueDisposable;
 
 /**
  * Wraps a Completable and exposes it as an Observable.
@@ -34,8 +36,12 @@ public final class CompletableToObservable<T> extends Observable<T> {
         source.subscribe(new ObserverCompletableObserver(observer));
     }
 
-    static final class ObserverCompletableObserver implements CompletableObserver {
-        private final Observer<?> observer;
+    static final class ObserverCompletableObserver extends BasicQueueDisposable<Void>
+    implements CompletableObserver {
+
+        final Observer<?> observer;
+
+        Disposable upstream;
 
         ObserverCompletableObserver(Observer<?> observer) {
             this.observer = observer;
@@ -53,7 +59,40 @@ public final class CompletableToObservable<T> extends Observable<T> {
 
         @Override
         public void onSubscribe(Disposable d) {
-            observer.onSubscribe(d);
+            if (DisposableHelper.validate(upstream, d)) {
+                this.upstream = d;
+                observer.onSubscribe(this);
+            }
+        }
+
+        @Override
+        public int requestFusion(int mode) {
+            return mode & ASYNC;
+        }
+
+        @Override
+        public Void poll() throws Exception {
+            return null; // always empty
+        }
+
+        @Override
+        public boolean isEmpty() {
+            return true;
+        }
+
+        @Override
+        public void clear() {
+            // always empty
+        }
+
+        @Override
+        public void dispose() {
+            upstream.dispose();
+        }
+
+        @Override
+        public boolean isDisposed() {
+            return upstream.isDisposed();
         }
     }
 }

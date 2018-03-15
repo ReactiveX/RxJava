@@ -21,7 +21,8 @@ import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.internal.functions.ObjectHelper;
-import io.reactivex.internal.queue.*;
+import io.reactivex.internal.fuseable.*;
+import io.reactivex.internal.queue.SpscLinkedArrayQueue;
 import io.reactivex.internal.util.AtomicThrowable;
 import io.reactivex.plugins.RxJavaPlugins;
 
@@ -181,6 +182,8 @@ public final class ObservableSwitchMap<T, R> extends AbstractObservableWithUpstr
             }
 
             final Observer<? super R> a = actual;
+            final AtomicReference<SwitchMapInnerObserver<T, R>> active = this.active;
+            final boolean delayErrors = this.delayErrors;
 
             int missing = 1;
 
@@ -218,66 +221,85 @@ public final class ObservableSwitchMap<T, R> extends AbstractObservableWithUpstr
                 SwitchMapInnerObserver<T, R> inner = active.get();
 
                 if (inner != null) {
-                    SpscLinkedArrayQueue<R> q = inner.queue;
+                    SimpleQueue<R> q = inner.queue;
 
-                    if (inner.done) {
-                        boolean empty = q.isEmpty();
-                        if (delayErrors) {
-                            if (empty) {
-                                active.compareAndSet(inner, null);
-                                continue;
+                    if (q != null) {
+                        if (inner.done) {
+                            boolean empty = q.isEmpty();
+                            if (delayErrors) {
+                                if (empty) {
+                                    active.compareAndSet(inner, null);
+                                    continue;
+                                }
+                            } else {
+                                Throwable ex = errors.get();
+                                if (ex != null) {
+                                    a.onError(errors.terminate());
+                                    return;
+                                }
+                                if (empty) {
+                                    active.compareAndSet(inner, null);
+                                    continue;
+                                }
                             }
-                        } else {
-                            Throwable ex = errors.get();
-                            if (ex != null) {
-                                a.onError(errors.terminate());
+                        }
+
+                        boolean retry = false;
+
+                        for (;;) {
+                            if (cancelled) {
                                 return;
                             }
-                            if (empty) {
+                            if (inner != active.get()) {
+                                retry = true;
+                                break;
+                            }
+
+                            if (!delayErrors) {
+                                Throwable ex = errors.get();
+                                if (ex != null) {
+                                    a.onError(errors.terminate());
+                                    return;
+                                }
+                            }
+
+                            boolean d = inner.done;
+                            R v;
+
+                            try {
+                                v = q.poll();
+                            } catch (Throwable ex) {
+                                Exceptions.throwIfFatal(ex);
+                                errors.addThrowable(ex);
                                 active.compareAndSet(inner, null);
-                                continue;
+                                if (!delayErrors) {
+                                    disposeInner();
+                                    s.dispose();
+                                    done = true;
+                                } else {
+                                    inner.cancel();
+                                }
+                                v = null;
+                                retry = true;
                             }
-                        }
-                    }
+                            boolean empty = v == null;
 
-                    boolean retry = false;
-
-                    for (;;) {
-                        if (cancelled) {
-                            return;
-                        }
-                        if (inner != active.get()) {
-                            retry = true;
-                            break;
-                        }
-
-                        if (!delayErrors) {
-                            Throwable ex = errors.get();
-                            if (ex != null) {
-                                a.onError(errors.terminate());
-                                return;
+                            if (d && empty) {
+                                active.compareAndSet(inner, null);
+                                retry = true;
+                                break;
                             }
+
+                            if (empty) {
+                                break;
+                            }
+
+                            a.onNext(v);
                         }
 
-                        boolean d = inner.done;
-                        R v = q.poll();
-                        boolean empty = v == null;
-
-                        if (d && empty) {
-                            active.compareAndSet(inner, null);
-                            retry = true;
-                            break;
+                        if (retry) {
+                            continue;
                         }
-
-                        if (empty) {
-                            break;
-                        }
-
-                        a.onNext(v);
-                    }
-
-                    if (retry) {
-                        continue;
                     }
                 }
 
@@ -306,25 +328,49 @@ public final class ObservableSwitchMap<T, R> extends AbstractObservableWithUpstr
         private static final long serialVersionUID = 3837284832786408377L;
         final SwitchMapObserver<T, R> parent;
         final long index;
-        final SpscLinkedArrayQueue<R> queue;
+
+        final int bufferSize;
+
+        volatile SimpleQueue<R> queue;
 
         volatile boolean done;
 
         SwitchMapInnerObserver(SwitchMapObserver<T, R> parent, long index, int bufferSize) {
             this.parent = parent;
             this.index = index;
-            this.queue = new SpscLinkedArrayQueue<R>(bufferSize);
+            this.bufferSize = bufferSize;
         }
 
         @Override
         public void onSubscribe(Disposable s) {
-            DisposableHelper.setOnce(this, s);
+            if (DisposableHelper.setOnce(this, s)) {
+                if (s instanceof QueueDisposable) {
+                    @SuppressWarnings("unchecked")
+                    QueueDisposable<R> qd = (QueueDisposable<R>) s;
+
+                    int m = qd.requestFusion(QueueDisposable.ANY);
+                    if (m == QueueDisposable.SYNC) {
+                        queue = qd;
+                        done = true;
+                        parent.drain();
+                        return;
+                    }
+                    if (m == QueueDisposable.ASYNC) {
+                        queue = qd;
+                        return;
+                    }
+                }
+
+                queue = new SpscLinkedArrayQueue<R>(bufferSize);
+            }
         }
 
         @Override
         public void onNext(R t) {
             if (index == parent.unique) {
-                queue.offer(t);
+                if (t != null) {
+                    queue.offer(t);
+                }
                 parent.drain();
             }
         }
