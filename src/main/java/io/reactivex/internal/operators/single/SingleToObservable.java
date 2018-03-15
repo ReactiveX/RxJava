@@ -16,6 +16,7 @@ import io.reactivex.*;
 import io.reactivex.annotations.Experimental;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.disposables.DisposableHelper;
+import io.reactivex.internal.observers.DeferredScalarDisposable;
 
 /**
  * Wraps a Single and exposes it as an Observable.
@@ -48,14 +49,14 @@ public final class SingleToObservable<T> extends Observable<T> {
     }
 
     static final class SingleToObservableObserver<T>
-    implements SingleObserver<T>, Disposable {
+    extends DeferredScalarDisposable<T>
+    implements SingleObserver<T> {
 
-        final Observer<? super T> actual;
-
+        private static final long serialVersionUID = 3786543492451018833L;
         Disposable d;
 
         SingleToObservableObserver(Observer<? super T> actual) {
-            this.actual = actual;
+            super(actual);
         }
 
         @Override
@@ -69,23 +70,19 @@ public final class SingleToObservable<T> extends Observable<T> {
 
         @Override
         public void onSuccess(T value) {
-            actual.onNext(value);
-            actual.onComplete();
+            complete(value);
         }
 
         @Override
         public void onError(Throwable e) {
-            actual.onError(e);
+            error(e);
         }
 
         @Override
         public void dispose() {
+            super.dispose();
             d.dispose();
         }
 
-        @Override
-        public boolean isDisposed() {
-            return d.isDisposed();
-        }
     }
 }

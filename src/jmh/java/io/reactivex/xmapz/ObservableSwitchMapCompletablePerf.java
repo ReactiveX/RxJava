@@ -32,9 +32,9 @@ public class ObservableSwitchMapCompletablePerf {
     @Param({ "1", "10", "100", "1000", "10000", "100000", "1000000" })
     public int count;
 
-    Observable<Integer> switchMapToObservableEmpty;
+    Observable<Integer> observableConvert;
 
-    Completable switchMapCompletableEmpty;
+    Completable observableDedicated;
 
     Observable<Integer> observablePlain;
 
@@ -53,7 +53,7 @@ public class ObservableSwitchMapCompletablePerf {
             }
         });
 
-        switchMapToObservableEmpty = source.switchMap(new Function<Integer, Observable<? extends Integer>>() {
+        observableConvert = source.switchMap(new Function<Integer, Observable<? extends Integer>>() {
             @Override
             public Observable<? extends Integer> apply(Integer v)
                     throws Exception {
@@ -61,7 +61,7 @@ public class ObservableSwitchMapCompletablePerf {
             }
         });
 
-        switchMapCompletableEmpty = source.switchMapCompletable(new Function<Integer, Completable>() {
+        observableDedicated = source.switchMapCompletable(new Function<Integer, Completable>() {
             @Override
             public Completable apply(Integer v)
                     throws Exception {
@@ -76,12 +76,12 @@ public class ObservableSwitchMapCompletablePerf {
     }
 
     @Benchmark
-    public Object switchMapToObservableEmpty(Blackhole bh) {
-        return switchMapToObservableEmpty.subscribeWith(new PerfConsumer(bh));
+    public Object observableConvert(Blackhole bh) {
+        return observableConvert.subscribeWith(new PerfConsumer(bh));
     }
 
     @Benchmark
-    public Object switchMapCompletableEmpty(Blackhole bh) {
-        return switchMapCompletableEmpty.subscribeWith(new PerfConsumer(bh));
+    public Object observableDedicated(Blackhole bh) {
+        return observableDedicated.subscribeWith(new PerfConsumer(bh));
     }
 }

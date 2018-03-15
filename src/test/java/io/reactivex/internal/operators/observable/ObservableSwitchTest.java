@@ -29,6 +29,7 @@ import io.reactivex.exceptions.*;
 import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.functions.Functions;
+import io.reactivex.internal.schedulers.ImmediateThinScheduler;
 import io.reactivex.internal.util.ExceptionHelper;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.plugins.RxJavaPlugins;
@@ -1053,5 +1054,116 @@ public class ObservableSwitchTest {
                 RxJavaPlugins.reset();
             }
         }
+    }
+
+    @Test
+    public void asyncFused() {
+        Observable.just(1).hide()
+        .switchMap(Functions.justFunction(
+                Observable.range(1, 5)
+                .observeOn(ImmediateThinScheduler.INSTANCE)
+        ))
+        .test()
+        .assertResult(1, 2, 3, 4, 5);
+    }
+
+    @Test
+    public void syncFusedMaybe() {
+        Observable.range(1, 5).hide()
+        .switchMap(Functions.justFunction(
+                Maybe.just(1).toObservable()
+        ))
+        .test()
+        .assertResult(1, 1, 1, 1, 1);
+    }
+
+    @Test
+    public void syncFusedSingle() {
+        Observable.range(1, 5).hide()
+        .switchMap(Functions.justFunction(
+                Single.just(1).toObservable()
+        ))
+        .test()
+        .assertResult(1, 1, 1, 1, 1);
+    }
+
+    @Test
+    public void syncFusedCompletable() {
+        Observable.range(1, 5).hide()
+        .switchMap(Functions.justFunction(
+                Completable.complete().toObservable()
+        ))
+        .test()
+        .assertResult();
+    }
+
+    @Test
+    public void asyncFusedRejecting() {
+        Observable.just(1).hide()
+        .switchMap(Functions.justFunction(
+                TestHelper.rejectObservableFusion()
+        ))
+        .test()
+        .assertEmpty();
+    }
+
+    @Test
+    public void asyncFusedPollCrash() {
+        PublishSubject<Integer> ps = PublishSubject.create();
+
+        TestObserver<Integer> to = ps
+        .switchMap(Functions.justFunction(
+                Observable.range(1, 5)
+                .observeOn(ImmediateThinScheduler.INSTANCE)
+                .map(new Function<Integer, Integer>() {
+                    @Override
+                    public Integer apply(Integer v) throws Exception {
+                        throw new TestException();
+                    }
+                })
+        ))
+        .test();
+
+        to.assertEmpty();
+
+        ps.onNext(1);
+
+        to
+        .assertFailure(TestException.class);
+
+        assertFalse(ps.hasObservers());
+    }
+
+    @Test
+    public void asyncFusedPollCrashDelayError() {
+        PublishSubject<Integer> ps = PublishSubject.create();
+
+        TestObserver<Integer> to = ps
+        .switchMapDelayError(Functions.justFunction(
+                Observable.range(1, 5)
+                .observeOn(ImmediateThinScheduler.INSTANCE)
+                .map(new Function<Integer, Integer>() {
+                    @Override
+                    public Integer apply(Integer v) throws Exception {
+                        throw new TestException();
+                    }
+                })
+        ))
+        .test();
+
+        to.assertEmpty();
+
+        ps.onNext(1);
+
+        assertTrue(ps.hasObservers());
+
+        to.assertEmpty();
+
+        ps.onComplete();
+
+        to
+        .assertFailure(TestException.class);
+
+        assertFalse(ps.hasObservers());
     }
 }

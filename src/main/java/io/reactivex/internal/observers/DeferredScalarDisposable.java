@@ -72,14 +72,15 @@ public class DeferredScalarDisposable<T> extends BasicIntQueueDisposable<T> {
         if ((state & (FUSED_READY | FUSED_CONSUMED | TERMINATED | DISPOSED)) != 0) {
             return;
         }
+        Observer<? super T> a = actual;
         if (state == FUSED_EMPTY) {
             this.value = value;
             lazySet(FUSED_READY);
+            a.onNext(null);
         } else {
             lazySet(TERMINATED);
+            a.onNext(value);
         }
-        Observer<? super T> a = actual;
-        a.onNext(value);
         if (get() != DISPOSED) {
             a.onComplete();
         }
