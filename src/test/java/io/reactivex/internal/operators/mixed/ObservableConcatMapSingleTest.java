@@ -256,8 +256,23 @@ public class ObservableConcatMapSingleTest {
     }
 
     @Test
+    public void mapperCrashScalar() {
+        TestObserver<Object> to = Observable.just(1)
+        .concatMapSingle(new Function<Integer, SingleSource<? extends Object>>() {
+            @Override
+            public SingleSource<? extends Object> apply(Integer v)
+                    throws Exception {
+                        throw new TestException();
+                    }
+        })
+        .test();
+
+        to.assertFailure(TestException.class);
+    }
+
+    @Test
     public void disposed() {
-        TestHelper.checkDisposed(Observable.just(1)
+        TestHelper.checkDisposed(Observable.just(1).hide()
                 .concatMapSingle(Functions.justFunction(Single.never()))
         );
     }
@@ -282,5 +297,17 @@ public class ObservableConcatMapSingleTest {
         ms.onSuccess(1);
 
         to.assertResult(1, 1);
+    }
+
+    @Test
+    public void scalarEmptySource() {
+        SingleSubject<Integer> ss = SingleSubject.create();
+
+        Observable.empty()
+        .concatMapSingle(Functions.justFunction(ss))
+        .test()
+        .assertResult();
+
+        assertFalse(ss.hasObservers());
     }
 }

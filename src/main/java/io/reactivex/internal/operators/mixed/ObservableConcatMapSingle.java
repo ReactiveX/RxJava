@@ -59,7 +59,9 @@ public final class ObservableConcatMapSingle<T, R> extends Observable<R> {
 
     @Override
     protected void subscribeActual(Observer<? super R> s) {
-        source.subscribe(new ConcatMapSingleMainObserver<T, R>(s, mapper, prefetch, errorMode));
+        if (!ScalarXMapZHelper.tryAsSingle(source, mapper, s)) {
+            source.subscribe(new ConcatMapSingleMainObserver<T, R>(s, mapper, prefetch, errorMode));
+        }
     }
 
     static final class ConcatMapSingleMainObserver<T, R>

@@ -384,4 +384,48 @@ public class ObservableSwitchMapCompletableTest {
 
         to.assertFailure(TestException.class);
     }
+
+    @Test
+    public void scalarMapperCrash() {
+        TestObserver<Void> to = Observable.just(1)
+        .switchMapCompletable(new Function<Integer, CompletableSource>() {
+            @Override
+            public CompletableSource apply(Integer v)
+                    throws Exception {
+                        throw new TestException();
+                    }
+        })
+        .test();
+
+        to.assertFailure(TestException.class);
+    }
+
+    @Test
+    public void scalarEmptySource() {
+        CompletableSubject cs = CompletableSubject.create();
+
+        Observable.empty()
+        .switchMapCompletable(Functions.justFunction(cs))
+        .test()
+        .assertResult();
+
+        assertFalse(cs.hasObservers());
+    }
+
+    @Test
+    public void scalarSource() {
+        CompletableSubject cs = CompletableSubject.create();
+
+        TestObserver<Void> to = Observable.just(1)
+        .switchMapCompletable(Functions.justFunction(cs))
+        .test();
+
+        assertTrue(cs.hasObservers());
+
+        to.assertEmpty();
+
+        cs.onComplete();
+
+        to.assertResult();
+    }
 }

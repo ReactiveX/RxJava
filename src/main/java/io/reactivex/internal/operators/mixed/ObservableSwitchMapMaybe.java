@@ -53,7 +53,9 @@ public final class ObservableSwitchMapMaybe<T, R> extends Observable<R> {
 
     @Override
     protected void subscribeActual(Observer<? super R> s) {
-        source.subscribe(new SwitchMapMaybeMainObserver<T, R>(s, mapper, delayErrors));
+        if (!ScalarXMapZHelper.tryAsMaybe(source, mapper, s)) {
+            source.subscribe(new SwitchMapMaybeMainObserver<T, R>(s, mapper, delayErrors));
+        }
     }
 
     static final class SwitchMapMaybeMainObserver<T, R> extends AtomicInteger

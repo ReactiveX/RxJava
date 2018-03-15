@@ -341,9 +341,36 @@ public class ObservableConcatMapMaybeTest {
     }
 
     @Test
+    public void scalarMapperCrash() {
+        TestObserver<Object> to = Observable.just(1)
+        .concatMapMaybe(new Function<Integer, MaybeSource<? extends Object>>() {
+            @Override
+            public MaybeSource<? extends Object> apply(Integer v)
+                    throws Exception {
+                        throw new TestException();
+                    }
+        })
+        .test();
+
+        to.assertFailure(TestException.class);
+    }
+
+    @Test
     public void disposed() {
-        TestHelper.checkDisposed(Observable.just(1)
+        TestHelper.checkDisposed(Observable.just(1).hide()
                 .concatMapMaybe(Functions.justFunction(Maybe.never()))
         );
+    }
+
+    @Test
+    public void scalarEmptySource() {
+        MaybeSubject<Integer> ms = MaybeSubject.create();
+
+        Observable.empty()
+        .concatMapMaybe(Functions.justFunction(ms))
+        .test()
+        .assertResult();
+
+        assertFalse(ms.hasObservers());
     }
 }
