@@ -6516,9 +6516,10 @@ public abstract class Flowable<T> implements Publisher<T> {
      * new buffer whenever the Publisher produced by the specified {@code boundaryIndicatorSupplier} emits an item.
      * <p>
      * <img width="640" height="395" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/buffer1.png" alt="">
-     * <dl>
-     * If either the source Publisher or the boundary Publisher issues an onError notification the event is passed on
+     * <p>
+     * If either the source {@code Publisher} or the boundary {@code Publisher} issues an {@code onError} notification the event is passed on
      * immediately without first emitting the buffer it is in the process of assembling.
+     * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>This operator does not support backpressure as it is instead controlled by the given Publishers and
      *      buffers data. It requests {@code Long.MAX_VALUE} upstream and does not obey downstream requests.</dd>
@@ -6540,7 +6541,6 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <B> Flowable<List<T>> buffer(Callable<? extends Publisher<B>> boundaryIndicatorSupplier) {
         return buffer(boundaryIndicatorSupplier, ArrayListSupplier.<T>asCallable());
-
     }
 
     /**
@@ -6549,9 +6549,10 @@ public abstract class Flowable<T> implements Publisher<T> {
      * new buffer whenever the Publisher produced by the specified {@code boundaryIndicatorSupplier} emits an item.
      * <p>
      * <img width="640" height="395" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/buffer1.png" alt="">
-     * <dl>
-     * If either the source Publisher or the boundary Publisher issues an onError notification the event is passed on
+     * <p>
+     * If either the source {@code Publisher} or the boundary {@code Publisher} issues an {@code onError} notification the event is passed on
      * immediately without first emitting the buffer it is in the process of assembling.
+     * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>This operator does not support backpressure as it is instead controlled by the given Publishers and
      *      buffers data. It requests {@code Long.MAX_VALUE} upstream and does not obey downstream requests.</dd>

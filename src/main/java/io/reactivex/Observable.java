@@ -5952,9 +5952,10 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * new buffer whenever the ObservableSource produced by the specified {@code boundarySupplier} emits an item.
      * <p>
      * <img width="640" height="395" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/buffer1.png" alt="">
-     * <dl>
-     * If either the source ObservableSource or the boundary ObservableSource issues an onError notification the event
+     * <p>
+     * If either the source {@code ObservableSource} or the boundary {@code ObservableSource} issues an {@code onError} notification the event
      * is passed on immediately without first emitting the buffer it is in the process of assembling.
+     * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>This version of {@code buffer} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -5972,7 +5973,6 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <B> Observable<List<T>> buffer(Callable<? extends ObservableSource<B>> boundarySupplier) {
         return buffer(boundarySupplier, ArrayListSupplier.<T>asCallable());
-
     }
 
     /**
@@ -5981,9 +5981,10 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * new buffer whenever the ObservableSource produced by the specified {@code boundarySupplier} emits an item.
      * <p>
      * <img width="640" height="395" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/buffer1.png" alt="">
-     * <dl>
-     * If either the source ObservableSource or the boundary ObservableSource issues an onError notification the event
+     * <p>
+     * If either the source {@code ObservableSource} or the boundary {@code ObservableSource} issues an {@code onError} notification the event
      * is passed on immediately without first emitting the buffer it is in the process of assembling.
+     * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>This version of {@code buffer} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
