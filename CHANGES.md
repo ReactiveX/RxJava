@@ -2,6 +2,53 @@
 
 The changelog of version 1.x can be found at https://github.com/ReactiveX/RxJava/blob/1.x/CHANGES.md
 
+### Version 2.1.11 - March 20, 2018 ([Maven](http://search.maven.org/#artifactdetails%7Cio.reactivex.rxjava2%7Crxjava%7C2.1.11%7C))
+
+#### API changes
+
+- [Pull 5871](https://github.com/ReactiveX/RxJava/pull/5871): Add `Flowable.concatMapCompletable{DelayError}` operator.
+- [Pull 5870](https://github.com/ReactiveX/RxJava/pull/5870): Add `Flowable.switchMapCompletable{DelayError}` operator.
+- [Pull 5872](https://github.com/ReactiveX/RxJava/pull/5872): Add `Flowable.concatMap{Maybe,Single}{DelayError}` operators. 
+- [Pull 5873](https://github.com/ReactiveX/RxJava/pull/5873): Add `Flowable.switchMap{Maybe,Single}{DelayError}` operators.
+- [Pull 5875](https://github.com/ReactiveX/RxJava/pull/5875): Add `Observable` `switchMapX` and `concatMapX` operators.
+- [Pull 5906](https://github.com/ReactiveX/RxJava/pull/5906): Add public constructor for `TestScheduler` that takes the initial virtual time.
+
+#### Performance enhancements
+
+- [Pull 5915](https://github.com/ReactiveX/RxJava/pull/5915): Optimize `Observable.concatMapCompletable`.
+- [Pull 5918](https://github.com/ReactiveX/RxJava/pull/5918): Improve the scalar source performance of `Observable.(concat|switch)Map{Completable|Single|Maybe}`.
+- [Pull 5919](https://github.com/ReactiveX/RxJava/pull/5919): Add fusion to `Observable.switchMap` inner source.
+
+#### Documentation changes
+
+- [Pull 5863](https://github.com/ReactiveX/RxJava/pull/5863): Expand the documentation of the `Flowable.lift()` operator.
+- [Pull 5865](https://github.com/ReactiveX/RxJava/pull/5865): Improve the JavaDoc of the other `lift()` operators.
+- [Pull 5876](https://github.com/ReactiveX/RxJava/pull/5876): Add note about `NoSuchElementException` to `Single.zip()`.
+- [Pull 5897](https://github.com/ReactiveX/RxJava/pull/5897): Clarify `dematerialize()` and terminal items/signals.
+- [Pull 5895](https://github.com/ReactiveX/RxJava/pull/5895): Fix `buffer()` documentation to correctly describe `onError` behavior.
+
+#### Bugfixes
+
+- [Pull 5887](https://github.com/ReactiveX/RxJava/pull/5887): Fix `window(Observable|Callable)` upstream handling.
+- [Pull 5888](https://github.com/ReactiveX/RxJava/pull/5888): Fix `Flowable.window(Publisher|Callable)` upstream handling.
+- [Pull 5892](https://github.com/ReactiveX/RxJava/pull/5892): Fix the extra retention problem in `ReplaySubject`.
+- [Pull 5900](https://github.com/ReactiveX/RxJava/pull/5900): Fix `Observable.flatMap` scalar `maxConcurrency` overflow.
+- [Pull 5893](https://github.com/ReactiveX/RxJava/pull/5893): Fix `publish(-|Function)` subscriber swap possible data loss.
+- [Pull 5898](https://github.com/ReactiveX/RxJava/pull/5898): Fix excess item retention in the other `replay` components.
+- [Pull 5904](https://github.com/ReactiveX/RxJava/pull/5904): Fix `Flowable.singleOrError().toFlowable()` not signalling `NoSuchElementException`.
+- [Pull 5883](https://github.com/ReactiveX/RxJava/pull/5883): Fix `FlowableWindowBoundary` not cancelling the upstream on a missing backpressure case, causing `NullPointerException`.
+
+#### Other changes
+
+- [Pull 5890](https://github.com/ReactiveX/RxJava/pull/5890): Added `@Nullable` annotations to subjects.
+- [Pull 5886](https://github.com/ReactiveX/RxJava/pull/5886): Upgrade the algorithm of Observable.timeout(time|selector) operators.
+- Coverage improvements
+  - [Pull 5883](https://github.com/ReactiveX/RxJava/pull/5883): Improve coverage and fix small mistakes/untaken paths in operators.
+  - [Pull 5889](https://github.com/ReactiveX/RxJava/pull/5889): Cleanup, coverage and related component fixes
+  - [Pull 5891](https://github.com/ReactiveX/RxJava/pull/5891): Improve coverage & related cleanup 03/05.
+  - [Pull 5905](https://github.com/ReactiveX/RxJava/pull/5905): Coverage improvements, logical fixes and cleanups 03/08.
+  - [Pull 5910](https://github.com/ReactiveX/RxJava/pull/5910): Improve coverage, fix operator logic 03/12.
+
 ### Version 2.1.10 - February 24, 2018 ([Maven](http://search.maven.org/#artifactdetails%7Cio.reactivex.rxjava2%7Crxjava%7C2.1.10%7C))
 
 #### API changes
