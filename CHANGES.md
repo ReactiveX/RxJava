@@ -1,5 +1,11 @@
 # RxJava Releases #
 
+### Version 1.3.7 - March 21, 2018 ([Maven](http://search.maven.org/#artifactdetails%7Cio.reactivex%7Crxjava%7C1.3.7%7C))
+
+#### Bugfixes
+
+- [Pull 5917](https://github.com/ReactiveX/RxJava/pull/5917): Fix and deprecate evicting `groupBy` and add a new overload with the corrected signature.
+
 ### Version 1.3.6 - February 15, 2018 ([Maven](http://search.maven.org/#artifactdetails%7Cio.reactivex%7Crxjava%7C1.3.6%7C))
 
 #### Bugfixes
