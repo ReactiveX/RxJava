@@ -2354,7 +2354,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * Returns a Flowable that emits items based on applying a specified function to the item emitted by the
      * source Single, where that function returns a Publisher.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.flatMapObservable.png" alt="">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.flatMapPublisher.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The returned {@code Flowable} honors the backpressure of the downstream consumer
