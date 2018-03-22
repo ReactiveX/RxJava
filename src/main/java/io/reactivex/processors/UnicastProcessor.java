@@ -457,6 +457,7 @@ public final class UnicastProcessor<T> extends FlowableProcessor<T> {
     }
 
     @Override
+    @Nullable
     public Throwable getThrowable() {
         if (done) {
             return error;

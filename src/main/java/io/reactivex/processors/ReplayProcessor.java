@@ -354,6 +354,7 @@ public final class ReplayProcessor<T> extends FlowableProcessor<T> {
     }
 
     @Override
+    @Nullable
     public Throwable getThrowable() {
         ReplayBuffer<T> b = buffer;
         if (b.isDone()) {
@@ -510,6 +511,7 @@ public final class ReplayProcessor<T> extends FlowableProcessor<T> {
 
         int size();
 
+        @Nullable
         T getValue();
 
         T[] getValues(T[] array);
@@ -598,6 +600,7 @@ public final class ReplayProcessor<T> extends FlowableProcessor<T> {
         }
 
         @Override
+        @Nullable
         public T getValue() {
             int s = size;
             if (s == 0) {
@@ -1091,6 +1094,7 @@ public final class ReplayProcessor<T> extends FlowableProcessor<T> {
         }
 
         @Override
+        @Nullable
         public T getValue() {
             TimedNode<T> h = head;
 
