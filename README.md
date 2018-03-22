@@ -90,9 +90,9 @@ RxJava 2 features several base classes you can discover operators on:
 The dataflows in RxJava consist of a source, zero or more intermediate steps followed by a data consumer or combinator step (where the step is responsible to consume the dataflow by some means):
 
 ```java
+source.operator1().operator2().operator3().subscribe(consumer);
 
-
-source.flatMap(value -> source.operator1().operator2().operator3())
+source.flatMap(value -> source.operator1().operator2().operator3());
 ```
 
 Here, if we imagine ourselves on `operator2`, looking to the left towards the source, is called the **upstream**. Looking to the right towards the subscriber/consumer, is called the **downstream**. This is often more apparent when each element is written on a separate line:
