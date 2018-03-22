@@ -13,6 +13,7 @@
 
 package io.reactivex.processors;
 
+import io.reactivex.annotations.Nullable;
 import org.reactivestreams.*;
 
 import io.reactivex.internal.util.*;
@@ -187,6 +188,7 @@ import io.reactivex.plugins.RxJavaPlugins;
     }
 
     @Override
+    @Nullable
     public Throwable getThrowable() {
         return actual.getThrowable();
     }

@@ -261,6 +261,7 @@ public final class PublishProcessor<T> extends FlowableProcessor<T> {
     }
 
     @Override
+    @Nullable
     public Throwable getThrowable() {
         if (subscribers.get() == TERMINATED) {
             return error;

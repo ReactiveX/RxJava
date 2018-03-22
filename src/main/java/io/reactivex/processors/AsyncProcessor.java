@@ -138,6 +138,7 @@ public final class AsyncProcessor<T> extends FlowableProcessor<T> {
     }
 
     @Override
+    @Nullable
     public Throwable getThrowable() {
         return subscribers.get() == TERMINATED ? error : null;
     }
@@ -244,6 +245,7 @@ public final class AsyncProcessor<T> extends FlowableProcessor<T> {
      * <p>The method is thread-safe.
      * @return a single value the Subject currently has or null if no such value exists
      */
+    @Nullable
     public T getValue() {
         return subscribers.get() == TERMINATED ? value : null;
     }
