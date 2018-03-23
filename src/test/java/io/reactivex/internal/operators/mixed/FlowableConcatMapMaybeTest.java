@@ -27,7 +27,9 @@ import io.reactivex.disposables.Disposables;
 import io.reactivex.exceptions.*;
 import io.reactivex.functions.*;
 import io.reactivex.internal.functions.Functions;
+import io.reactivex.internal.operators.mixed.FlowableConcatMapMaybe.ConcatMapMaybeSubscriber;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
+import io.reactivex.internal.util.ErrorMode;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.Schedulers;
@@ -367,5 +369,29 @@ public class FlowableConcatMapMaybeTest {
         ts.assertFailure(TestException.class);
 
         assertFalse(pp.hasSubscribers());
+    }
+
+    @Test(timeout = 10000)
+    public void cancelNoConcurrentClean() {
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        ConcatMapMaybeSubscriber<Integer, Integer> operator =
+                new ConcatMapMaybeSubscriber<Integer, Integer>(
+                        ts, Functions.justFunction(Maybe.<Integer>never()), 16, ErrorMode.IMMEDIATE);
+
+        operator.onSubscribe(new BooleanSubscription());
+
+        operator.queue.offer(1);
+
+        operator.getAndIncrement();
+
+        ts.cancel();
+
+        assertFalse(operator.queue.isEmpty());
+
+        operator.addAndGet(-2);
+
+        operator.cancel();
+
+        assertTrue(operator.queue.isEmpty());
     }
 }

@@ -26,7 +26,9 @@ import io.reactivex.disposables.Disposables;
 import io.reactivex.exceptions.*;
 import io.reactivex.functions.*;
 import io.reactivex.internal.functions.Functions;
+import io.reactivex.internal.operators.mixed.FlowableConcatMapSingle.ConcatMapSingleSubscriber;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
+import io.reactivex.internal.util.ErrorMode;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.subjects.SingleSubject;
@@ -282,5 +284,29 @@ public class FlowableConcatMapSingleTest {
         ts.assertFailure(TestException.class);
 
         assertFalse(pp.hasSubscribers());
+    }
+
+    @Test(timeout = 10000)
+    public void cancelNoConcurrentClean() {
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        ConcatMapSingleSubscriber<Integer, Integer> operator =
+                new ConcatMapSingleSubscriber<Integer, Integer>(
+                        ts, Functions.justFunction(Single.<Integer>never()), 16, ErrorMode.IMMEDIATE);
+
+        operator.onSubscribe(new BooleanSubscription());
+
+        operator.queue.offer(1);
+
+        operator.getAndIncrement();
+
+        ts.cancel();
+
+        assertFalse(operator.queue.isEmpty());
+
+        operator.addAndGet(-2);
+
+        operator.cancel();
+
+        assertTrue(operator.queue.isEmpty());
     }
 }
