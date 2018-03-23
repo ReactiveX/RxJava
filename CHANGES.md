@@ -2,6 +2,12 @@
 
 The changelog of version 1.x can be found at https://github.com/ReactiveX/RxJava/blob/1.x/CHANGES.md
 
+### Version 2.1.12 - March 23, 2018 ([Maven](http://search.maven.org/#artifactdetails%7Cio.reactivex.rxjava2%7Crxjava%7C2.1.12%7C))
+
+#### Bugfixes
+
+- [Pull 5928](https://github.com/ReactiveX/RxJava/pull/5928): Fix `concatMapSingle` & `concatMapMaybe` dispose-cleanup crash.
+
 ### Version 2.1.11 - March 20, 2018 ([Maven](http://search.maven.org/#artifactdetails%7Cio.reactivex.rxjava2%7Crxjava%7C2.1.11%7C))
 
 #### API changes
