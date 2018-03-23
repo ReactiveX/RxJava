@@ -18,6 +18,7 @@ import java.util.concurrent.atomic.*;
 
 import io.reactivex.annotations.Experimental;
 import io.reactivex.annotations.Nullable;
+import io.reactivex.annotations.NonNull;
 import org.reactivestreams.*;
 
 import io.reactivex.internal.functions.ObjectHelper;
@@ -74,6 +75,7 @@ public final class UnicastProcessor<T> extends FlowableProcessor<T> {
      * @return an UnicastSubject instance
      */
     @CheckReturnValue
+    @NonNull
     public static <T> UnicastProcessor<T> create() {
         return new UnicastProcessor<T>(bufferSize());
     }
@@ -85,6 +87,7 @@ public final class UnicastProcessor<T> extends FlowableProcessor<T> {
      * @return an UnicastProcessor instance
      */
     @CheckReturnValue
+    @NonNull
     public static <T> UnicastProcessor<T> create(int capacityHint) {
         return new UnicastProcessor<T>(capacityHint);
     }
@@ -98,6 +101,7 @@ public final class UnicastProcessor<T> extends FlowableProcessor<T> {
      */
     @CheckReturnValue
     @Experimental
+    @NonNull
     public static <T> UnicastProcessor<T> create(boolean delayError) {
         return new UnicastProcessor<T>(bufferSize(), null, delayError);
     }
@@ -115,6 +119,7 @@ public final class UnicastProcessor<T> extends FlowableProcessor<T> {
      * @return an UnicastProcessor instance
      */
     @CheckReturnValue
+    @NonNull
     public static <T> UnicastProcessor<T> create(int capacityHint, Runnable onCancelled) {
         ObjectHelper.requireNonNull(onCancelled, "onTerminate");
         return new UnicastProcessor<T>(capacityHint, onCancelled);
@@ -136,6 +141,7 @@ public final class UnicastProcessor<T> extends FlowableProcessor<T> {
      */
     @CheckReturnValue
     @Experimental
+    @NonNull
     public static <T> UnicastProcessor<T> create(int capacityHint, Runnable onCancelled, boolean delayError) {
         ObjectHelper.requireNonNull(onCancelled, "onTerminate");
         return new UnicastProcessor<T>(capacityHint, onCancelled, delayError);

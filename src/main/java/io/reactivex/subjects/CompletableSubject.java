@@ -18,6 +18,7 @@ import java.util.concurrent.atomic.*;
 
 import io.reactivex.*;
 import io.reactivex.annotations.CheckReturnValue;
+import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.plugins.RxJavaPlugins;
@@ -101,6 +102,7 @@ public final class CompletableSubject extends Completable implements Completable
      * @return the new CompletableSubject instance
      */
     @CheckReturnValue
+    @NonNull
     public static CompletableSubject create() {
         return new CompletableSubject();
     }

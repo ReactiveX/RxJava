@@ -129,6 +129,7 @@ public final class MaybeSubject<T> extends Maybe<T> implements MaybeObserver<T> 
      * @return the new MaybeSubject instance
      */
     @CheckReturnValue
+    @NonNull
     public static <T> MaybeSubject<T> create() {
         return new MaybeSubject<T>();
     }

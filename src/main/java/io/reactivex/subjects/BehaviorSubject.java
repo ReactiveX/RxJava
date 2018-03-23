@@ -15,6 +15,7 @@ package io.reactivex.subjects;
 
 import io.reactivex.annotations.CheckReturnValue;
 import io.reactivex.annotations.Nullable;
+import io.reactivex.annotations.NonNull;
 import java.lang.reflect.Array;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.*;
@@ -180,6 +181,7 @@ public final class BehaviorSubject<T> extends Subject<T> {
      * @return the constructed {@link BehaviorSubject}
      */
     @CheckReturnValue
+    @NonNull
     public static <T> BehaviorSubject<T> create() {
         return new BehaviorSubject<T>();
     }
@@ -196,6 +198,7 @@ public final class BehaviorSubject<T> extends Subject<T> {
      * @return the constructed {@link BehaviorSubject}
      */
     @CheckReturnValue
+    @NonNull
     public static <T> BehaviorSubject<T> createDefault(T defaultValue) {
         return new BehaviorSubject<T>(defaultValue);
     }

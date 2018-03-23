@@ -14,6 +14,7 @@
 package io.reactivex.subjects;
 
 import io.reactivex.annotations.Nullable;
+import io.reactivex.annotations.NonNull;
 import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -129,6 +130,7 @@ public final class AsyncSubject<T> extends Subject<T> {
      * @return the new AsyncProcessor instance
      */
     @CheckReturnValue
+    @NonNull
     public static <T> AsyncSubject<T> create() {
         return new AsyncSubject<T>();
     }
