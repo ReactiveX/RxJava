@@ -392,9 +392,10 @@ allow further customization of the backpressure behavior.
 Many frequently used operator has overloads that can deal with the other types. These are usually named with the suffix of the target type:
 
 | Operator | Overloads |
+|----------|-----------|
 | `flatMap` | `flatMapSingle`, `flatMapMaybe`, `flatMapCompletable`, `flatMapIterable` |
 | `concatMap` | `concatMapSingle`, `concatMapMaybe`, `concatMapCompletable`, `concatMapIterable` |
-| `switchMap` | `switchMapSingle`, `switchMapMaybe`, `switchMapCompletable`, `switchMapIterable` |
+| `switchMap` | `switchMapSingle`, `switchMapMaybe`, `switchMapCompletable` |
 
 The reason these operators have a suffix instead of simply having the same name with different signature is type erasure. Java doesn't consider signatures such as `operator(Function<T, Single<R>>)` and `operator(Function<T, Maybe<R>>)` different (unlike C#) and due to erasure, the two `operator`s would end up as duplicate methods with the same signature.
 
