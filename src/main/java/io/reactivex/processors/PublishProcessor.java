@@ -76,6 +76,7 @@ public final class PublishProcessor<T> extends FlowableProcessor<T> {
      * @return the new PublishProcessor
      */
     @CheckReturnValue
+    @NonNull
     public static <T> PublishProcessor<T> create() {
         return new PublishProcessor<T>();
     }

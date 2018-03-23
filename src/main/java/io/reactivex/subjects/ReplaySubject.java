@@ -158,6 +158,7 @@ public final class ReplaySubject<T> extends Subject<T> {
      * @return the created subject
      */
     @CheckReturnValue
+    @NonNull
     public static <T> ReplaySubject<T> create() {
         return new ReplaySubject<T>(new UnboundedReplayBuffer<T>(16));
     }
@@ -178,6 +179,7 @@ public final class ReplaySubject<T> extends Subject<T> {
      * @return the created subject
      */
     @CheckReturnValue
+    @NonNull
     public static <T> ReplaySubject<T> create(int capacityHint) {
         return new ReplaySubject<T>(new UnboundedReplayBuffer<T>(capacityHint));
     }
@@ -203,6 +205,7 @@ public final class ReplaySubject<T> extends Subject<T> {
      * @return the created subject
      */
     @CheckReturnValue
+    @NonNull
     public static <T> ReplaySubject<T> createWithSize(int maxSize) {
         return new ReplaySubject<T>(new SizeBoundReplayBuffer<T>(maxSize));
     }
@@ -257,6 +260,7 @@ public final class ReplaySubject<T> extends Subject<T> {
      * @return the created subject
      */
     @CheckReturnValue
+    @NonNull
     public static <T> ReplaySubject<T> createWithTime(long maxAge, TimeUnit unit, Scheduler scheduler) {
         return new ReplaySubject<T>(new SizeAndTimeBoundReplayBuffer<T>(Integer.MAX_VALUE, maxAge, unit, scheduler));
     }
@@ -296,6 +300,7 @@ public final class ReplaySubject<T> extends Subject<T> {
      * @return the created subject
      */
     @CheckReturnValue
+    @NonNull
     public static <T> ReplaySubject<T> createWithTimeAndSize(long maxAge, TimeUnit unit, Scheduler scheduler, int maxSize) {
         return new ReplaySubject<T>(new SizeAndTimeBoundReplayBuffer<T>(maxSize, maxAge, unit, scheduler));
     }

@@ -189,6 +189,7 @@ public final class BehaviorProcessor<T> extends FlowableProcessor<T> {
      * @return the constructed {@link BehaviorProcessor}
      */
     @CheckReturnValue
+    @NonNull
     public static <T> BehaviorProcessor<T> create() {
         return new BehaviorProcessor<T>();
     }
@@ -205,6 +206,7 @@ public final class BehaviorProcessor<T> extends FlowableProcessor<T> {
      * @return the constructed {@link BehaviorProcessor}
      */
     @CheckReturnValue
+    @NonNull
     public static <T> BehaviorProcessor<T> createDefault(T defaultValue) {
         ObjectHelper.requireNonNull(defaultValue, "defaultValue is null");
         return new BehaviorProcessor<T>(defaultValue);

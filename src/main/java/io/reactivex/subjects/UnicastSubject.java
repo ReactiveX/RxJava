@@ -15,6 +15,7 @@ package io.reactivex.subjects;
 
 import io.reactivex.annotations.Experimental;
 import io.reactivex.annotations.Nullable;
+import io.reactivex.annotations.NonNull;
 import io.reactivex.plugins.RxJavaPlugins;
 
 import java.util.concurrent.atomic.*;
@@ -180,6 +181,7 @@ public final class UnicastSubject<T> extends Subject<T> {
      * @return an UnicastSubject instance
      */
     @CheckReturnValue
+    @NonNull
     public static <T> UnicastSubject<T> create() {
         return new UnicastSubject<T>(bufferSize(), true);
     }
@@ -191,6 +193,7 @@ public final class UnicastSubject<T> extends Subject<T> {
      * @return an UnicastSubject instance
      */
     @CheckReturnValue
+    @NonNull
     public static <T> UnicastSubject<T> create(int capacityHint) {
         return new UnicastSubject<T>(capacityHint, true);
     }
@@ -208,6 +211,7 @@ public final class UnicastSubject<T> extends Subject<T> {
      * @return an UnicastSubject instance
      */
     @CheckReturnValue
+    @NonNull
     public static <T> UnicastSubject<T> create(int capacityHint, Runnable onTerminate) {
         return new UnicastSubject<T>(capacityHint, onTerminate, true);
     }
@@ -228,6 +232,7 @@ public final class UnicastSubject<T> extends Subject<T> {
      */
     @CheckReturnValue
     @Experimental
+    @NonNull
     public static <T> UnicastSubject<T> create(int capacityHint, Runnable onTerminate, boolean delayError) {
         return new UnicastSubject<T>(capacityHint, onTerminate, delayError);
     }
@@ -245,6 +250,7 @@ public final class UnicastSubject<T> extends Subject<T> {
      */
     @CheckReturnValue
     @Experimental
+    @NonNull
     public static <T> UnicastSubject<T> create(boolean delayError) {
         return new UnicastSubject<T>(bufferSize(), delayError);
     }

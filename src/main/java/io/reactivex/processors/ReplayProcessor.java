@@ -117,6 +117,7 @@ public final class ReplayProcessor<T> extends FlowableProcessor<T> {
      * @return the created ReplayProcessor
      */
     @CheckReturnValue
+    @NonNull
     public static <T> ReplayProcessor<T> create() {
         return new ReplayProcessor<T>(new UnboundedReplayBuffer<T>(16));
     }
@@ -137,6 +138,7 @@ public final class ReplayProcessor<T> extends FlowableProcessor<T> {
      * @return the created subject
      */
     @CheckReturnValue
+    @NonNull
     public static <T> ReplayProcessor<T> create(int capacityHint) {
         return new ReplayProcessor<T>(new UnboundedReplayBuffer<T>(capacityHint));
     }
@@ -162,6 +164,7 @@ public final class ReplayProcessor<T> extends FlowableProcessor<T> {
      * @return the created subject
      */
     @CheckReturnValue
+    @NonNull
     public static <T> ReplayProcessor<T> createWithSize(int maxSize) {
         return new ReplayProcessor<T>(new SizeBoundReplayBuffer<T>(maxSize));
     }
@@ -216,6 +219,7 @@ public final class ReplayProcessor<T> extends FlowableProcessor<T> {
      * @return the created subject
      */
     @CheckReturnValue
+    @NonNull
     public static <T> ReplayProcessor<T> createWithTime(long maxAge, TimeUnit unit, Scheduler scheduler) {
         return new ReplayProcessor<T>(new SizeAndTimeBoundReplayBuffer<T>(Integer.MAX_VALUE, maxAge, unit, scheduler));
     }
@@ -255,6 +259,7 @@ public final class ReplayProcessor<T> extends FlowableProcessor<T> {
      * @return the created subject
      */
     @CheckReturnValue
+    @NonNull
     public static <T> ReplayProcessor<T> createWithTimeAndSize(long maxAge, TimeUnit unit, Scheduler scheduler, int maxSize) {
         return new ReplayProcessor<T>(new SizeAndTimeBoundReplayBuffer<T>(maxSize, maxAge, unit, scheduler));
     }
