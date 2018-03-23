@@ -148,7 +148,7 @@ public final class ObservableConcatMapMaybe<T, R> extends Observable<R> {
             cancelled = true;
             upstream.dispose();
             inner.dispose();
-            if (getAndIncrement() != 0) {
+            if (getAndIncrement() == 0) {
                 queue.clear();
                 item = null;
             }

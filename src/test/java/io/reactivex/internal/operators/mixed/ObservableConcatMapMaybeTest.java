@@ -26,6 +26,8 @@ import io.reactivex.disposables.Disposables;
 import io.reactivex.exceptions.*;
 import io.reactivex.functions.*;
 import io.reactivex.internal.functions.Functions;
+import io.reactivex.internal.operators.mixed.ObservableConcatMapMaybe.ConcatMapMaybeMainObserver;
+import io.reactivex.internal.util.ErrorMode;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.schedulers.Schedulers;
@@ -372,5 +374,29 @@ public class ObservableConcatMapMaybeTest {
         .assertResult();
 
         assertFalse(ms.hasObservers());
+    }
+
+    @Test(timeout = 10000)
+    public void cancelNoConcurrentClean() {
+        TestObserver<Integer> to = new TestObserver<Integer>();
+        ConcatMapMaybeMainObserver<Integer, Integer> operator =
+                new ConcatMapMaybeMainObserver<Integer, Integer>(
+                        to, Functions.justFunction(Maybe.<Integer>never()), 16, ErrorMode.IMMEDIATE);
+
+        operator.onSubscribe(Disposables.empty());
+
+        operator.queue.offer(1);
+
+        operator.getAndIncrement();
+
+        to.dispose();
+
+        assertFalse(operator.queue.isEmpty());
+
+        operator.addAndGet(-2);
+
+        operator.dispose();
+
+        assertTrue(operator.queue.isEmpty());
     }
 }

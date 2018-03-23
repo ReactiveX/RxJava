@@ -170,7 +170,7 @@ public final class FlowableConcatMapMaybe<T, R> extends Flowable<R> {
             cancelled = true;
             upstream.cancel();
             inner.dispose();
-            if (getAndIncrement() != 0) {
+            if (getAndIncrement() == 0) {
                 queue.clear();
                 item = null;
             }
