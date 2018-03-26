@@ -19,6 +19,7 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import rx.*;
 import rx.Observable.Operator;
+import rx.plugins.RxJavaHooks;
 
 /**
  * An {@code Observable} that emits the first {@code num} items emitted by the source {@code Observable}.
@@ -66,6 +67,8 @@ public final class OperatorTake<T> implements Operator<T, T> {
                     } finally {
                         unsubscribe();
                     }
+                } else {
+                    RxJavaHooks.onError(e);
                 }
             }
 

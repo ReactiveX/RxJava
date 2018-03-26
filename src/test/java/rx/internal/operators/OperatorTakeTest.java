@@ -19,7 +19,7 @@ import static org.junit.Assert.*;
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 
-import java.util.Arrays;
+import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 
@@ -27,10 +27,13 @@ import org.junit.Test;
 import org.mockito.InOrder;
 
 import rx.*;
+import rx.Observable;
 import rx.Observable.OnSubscribe;
+import rx.Observer;
 import rx.exceptions.TestException;
 import rx.functions.*;
 import rx.observers.*;
+import rx.plugins.RxJavaHooks;
 import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
 
@@ -457,4 +460,39 @@ public class OperatorTakeTest {
         ts.assertCompleted();
     }
 
+    @Test
+    public void crashReportedToHooks() {
+        final List<Throwable> errors = Collections.synchronizedList(new ArrayList<Throwable>());
+        RxJavaHooks.setOnError(new Action1<Throwable>() {
+            @Override
+            public void call(Throwable error) {
+                errors.add(error);
+            }
+        });
+
+        try {
+            Observable.just("1")
+                .take(1)
+                .toSingle()
+                .subscribe(
+                        new Action1<String>() {
+                            @Override
+                            public void call(String it) {
+                                throw new TestException("bla");
+                            }
+                        },
+                        new Action1<Throwable>() {
+                            @Override
+                            public void call(Throwable error) {
+                                errors.add(new AssertionError());
+                            }
+                        }
+                );
+            
+            assertEquals("" + errors, 1, errors.size());
+            assertTrue("" + errors.get(0), errors.get(0).getMessage().equals("bla"));
+        } finally {
+            RxJavaHooks.setOnError(null);
+        }
+    }
 }
