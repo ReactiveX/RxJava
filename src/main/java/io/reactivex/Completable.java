@@ -2182,7 +2182,8 @@ public abstract class Completable implements CompletableSource {
      * </dl>
      *
      * @param <T> the value type
-     * @return a {@link Maybe} that emits a single item T or an error.
+     * @return a {@link Maybe} that only calls {@code onComplete} or {@code onError}, based on which one is
+     *         called by the source Completable.
      */
     @CheckReturnValue
     @SuppressWarnings("unchecked")
