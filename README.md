@@ -329,7 +329,7 @@ Sometimes, there is an implicit data dependency between the previous sequence an
 AtomicInteger count = new AtomicInteger();
 
 Observable.range(1, 10)
-  .doOnNext(ingored -> count.incrementAndGet())
+  .doOnNext(ignored -> count.incrementAndGet())
   .ignoreElements()
   .andThen(Single.just(count.get()))
   .subscribe(System.out::println);
@@ -341,7 +341,7 @@ Unfortunately, this prints `0` because `Single.just(count.get())` is evaluated a
 AtomicInteger count = new AtomicInteger();
 
 Observable.range(1, 10)
-  .doOnNext(ingored -> count.incrementAndGet())
+  .doOnNext(ignored -> count.incrementAndGet())
   .ignoreElements()
   .andThen(Single.defer(() -> Single.just(count.get())))
   .subscribe(System.out::println);
@@ -353,7 +353,7 @@ or
 AtomicInteger count = new AtomicInteger();
 
 Observable.range(1, 10)
-  .doOnNext(ingored -> count.incrementAndGet())
+  .doOnNext(ignored -> count.incrementAndGet())
   .ignoreElements()
   .andThen(Single.fromCallable(() -> count.get()))
   .subscribe(System.out::println);
