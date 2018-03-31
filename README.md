@@ -1,5 +1,13 @@
 # RxJava: Reactive Extensions for the JVM
 
+## End-of-Life notice
+
+As of March 31, 2018, The RxJava 1.x branch and version is end-of-life (EOL). No further development, bugfixes, documentation changes, PRs, releases or maintenance will be performed by the project on the 1.x line.
+
+Users are encouraged to migrate to [2.x](https://github.com/ReactiveX/RxJava) which is currently the only official RxJava version being managed.
+
+----------------------------------
+
 <a href='https://travis-ci.org/ReactiveX/RxJava/builds'><img src='https://travis-ci.org/ReactiveX/RxJava.svg?branch=1.x'></a>
 [![codecov.io](http://codecov.io/github/ReactiveX/RxJava/coverage.svg?branch=1.x)](http://codecov.io/github/ReactiveX/RxJava?branch=1.x)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.reactivex/rxjava/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.reactivex/rxjava)
