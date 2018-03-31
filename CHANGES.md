@@ -1,5 +1,15 @@
 # RxJava Releases #
 
+### Version 1.3.8 - March 31, 2018 ([Maven](http://search.maven.org/#artifactdetails%7Cio.reactivex%7Crxjava%7C1.3.8%7C))
+
+RxJava 1.x is now officially **end-of-life (EOL)**. No further developments, bugfixes, enhancements, javadoc changes, maintenance will be provided by this project after version **1.3.8**.
+
+Users are encourage to [migrate to 2.x](https://github.com/ReactiveX/RxJava/wiki/What's-different-in-2.0). In accordance, the wiki will be updated in the coming months to describe 2.x features and properties.
+
+#### Bugfixes
+
+- [Pull 5935](https://github.com/ReactiveX/RxJava/pull/5935): Fix `take()` to route late errors to `RxJavaHooks`.
+
 ### Version 1.3.7 - March 21, 2018 ([Maven](http://search.maven.org/#artifactdetails%7Cio.reactivex%7Crxjava%7C1.3.7%7C))
 
 #### Bugfixes
