@@ -28,7 +28,7 @@ import io.reactivex.schedulers.Schedulers;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@Target({ElementType.METHOD, ElementType.TYPE})
+@Target({ElementType.CONSTRUCTOR, ElementType.METHOD, ElementType.TYPE})
 public @interface SchedulerSupport {
     /**
      * A special value indicating the operator/class doesn't use schedulers.
