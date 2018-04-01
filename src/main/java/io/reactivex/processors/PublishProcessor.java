@@ -189,9 +189,6 @@ public final class PublishProcessor<T> extends FlowableProcessor<T> {
     @Override
     public void onNext(T t) {
         ObjectHelper.requireNonNull(t, "onNext called with null. Null values are generally not allowed in 2.x operators and sources.");
-        if (subscribers.get() == TERMINATED) {
-            return;
-        }
         for (PublishSubscription<T> s : subscribers.get()) {
             s.onNext(t);
         }
