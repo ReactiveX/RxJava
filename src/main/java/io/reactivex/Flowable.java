@@ -5416,6 +5416,10 @@ public abstract class Flowable<T> implements Publisher<T> {
      *  (i.e., no backpressure applied to it).</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code blockingFirst} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dt><b>Error handling:</b></dt>
+     *  <dd>If the source signals an error, the operator wraps a checked {@link Exception}
+     *  into {@link RuntimeException} and throws that. Otherwise, {@code RuntimeException}s and
+     *  {@link Error}s are rethrown as they are.</dd>
      * </dl>
      *
      * @return the first item emitted by this {@code Flowable}
@@ -5445,6 +5449,10 @@ public abstract class Flowable<T> implements Publisher<T> {
      *  (i.e., no backpressure applied to it).</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code blockingFirst} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dt><b>Error handling:</b></dt>
+     *  <dd>If the source signals an error, the operator wraps a checked {@link Exception}
+     *  into {@link RuntimeException} and throws that. Otherwise, {@code RuntimeException}s and
+     *  {@link Error}s are rethrown as they are.</dd>
      * </dl>
      *
      * @param defaultItem
@@ -5484,6 +5492,10 @@ public abstract class Flowable<T> implements Publisher<T> {
      *  (i.e., no backpressure applied to it).</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code blockingForEach} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dt><b>Error handling:</b></dt>
+     *  <dd>If the source signals an error, the operator wraps a checked {@link Exception}
+     *  into {@link RuntimeException} and throws that. Otherwise, {@code RuntimeException}s and
+     *  {@link Error}s are rethrown as they are.</dd>
      * </dl>
      *
      * @param onNext
@@ -5566,6 +5578,10 @@ public abstract class Flowable<T> implements Publisher<T> {
      *  (i.e., no backpressure applied to it).</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code blockingLast} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dt><b>Error handling:</b></dt>
+     *  <dd>If the source signals an error, the operator wraps a checked {@link Exception}
+     *  into {@link RuntimeException} and throws that. Otherwise, {@code RuntimeException}s and
+     *  {@link Error}s are rethrown as they are.</dd>
      * </dl>
      *
      * @return the last item emitted by this {@code Flowable}
@@ -5597,6 +5613,10 @@ public abstract class Flowable<T> implements Publisher<T> {
      *  (i.e., no backpressure applied to it).</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code blockingLast} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dt><b>Error handling:</b></dt>
+     *  <dd>If the source signals an error, the operator wraps a checked {@link Exception}
+     *  into {@link RuntimeException} and throws that. Otherwise, {@code RuntimeException}s and
+     *  {@link Error}s are rethrown as they are.</dd>
      * </dl>
      *
      * @param defaultItem
@@ -5704,6 +5724,10 @@ public abstract class Flowable<T> implements Publisher<T> {
      *  (i.e., no backpressure applied to it).</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code blockingSingle} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dt><b>Error handling:</b></dt>
+     *  <dd>If the source signals an error, the operator wraps a checked {@link Exception}
+     *  into {@link RuntimeException} and throws that. Otherwise, {@code RuntimeException}s and
+     *  {@link Error}s are rethrown as they are.</dd>
      * </dl>
      *
      * @return the single item emitted by this {@code Flowable}
@@ -5728,6 +5752,10 @@ public abstract class Flowable<T> implements Publisher<T> {
      *  (i.e., no backpressure applied to it).</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code blockingSingle} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dt><b>Error handling:</b></dt>
+     *  <dd>If the source signals an error, the operator wraps a checked {@link Exception}
+     *  into {@link RuntimeException} and throws that. Otherwise, {@code RuntimeException}s and
+     *  {@link Error}s are rethrown as they are.</dd>
      * </dl>
      *
      * @param defaultItem
