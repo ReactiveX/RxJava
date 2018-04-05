@@ -2481,6 +2481,10 @@ public abstract class Single<T> implements SingleSource<T> {
      * <dl>
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code blockingGet} does not operate by default on a particular {@link Scheduler}.</dd>
+     * <dt><b>Error handling:</b></dt>
+     * <dd>If the source signals an error, the operator wraps a checked {@link Exception}
+     * into {@link RuntimeException} and throws that. Otherwise, {@code RuntimeException}s and
+     * {@link Error}s are rethrown as they are.</dd>
      * </dl>
      * @return the success value
      */
