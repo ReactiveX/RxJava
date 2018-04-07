@@ -91,7 +91,7 @@ public class AppendOnlyLinkedArrayList<T> {
                     break;
                 }
                 if (consumer.test((T)o)) {
-                    break;
+                    return;
                 }
             }
             a = (Object[])a[c];
