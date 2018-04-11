@@ -149,7 +149,7 @@ Observable.create(emitter -> {
          long time = System.currentTimeMillis();
          emitter.onNext(time);
          if (time % 2 != 0) {
-             emitter.onError(new IllegalStateException("Odd millisecond!");
+             emitter.onError(new IllegalStateException("Odd millisecond!"));
              break;
          }
      }
