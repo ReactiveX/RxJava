@@ -3523,11 +3523,10 @@ public abstract class Single<T> implements SingleSource<T> {
      * @return a {@link Completable} that calls {@code onComplete} on it's observer when the source {@link Single}
      *         calls {@code onSuccess}.
      * @see <a href="http://reactivex.io/documentation/completable.html">ReactiveX documentation: Completable</a>
-     * @since 2.1.13 - experimental
+     * @since 2.1.13
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
-    @Experimental
     public final Completable ignoreElement() {
         return RxJavaPlugins.onAssembly(new CompletableFromSingle<T>(this));
     }
