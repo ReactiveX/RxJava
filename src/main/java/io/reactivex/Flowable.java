@@ -6885,7 +6885,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *
      * @param <R> the type of the inner Publisher sources and thus the output type
      * @param mapper
-     *            a function that, when applied to an item emitted by the source Publisher, returns an
+     *            a function that, when applied to an item emitted by the source Publisher, returns a
      *            Publisher
      * @return a Flowable that emits the result of applying the transformation function to each item emitted
      *         by the source Publisher and concatenating the Publishers obtained from this transformation
@@ -6917,7 +6917,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *
      * @param <R> the type of the inner Publisher sources and thus the output type
      * @param mapper
-     *            a function that, when applied to an item emitted by the source Publisher, returns an
+     *            a function that, when applied to an item emitted by the source Publisher, returns a
      *            Publisher
      * @param prefetch
      *            the number of elements to prefetch from the current Flowable
@@ -9190,7 +9190,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *
      * @param <R> the value type of the inner Publishers and the output type
      * @param mapper
-     *            a function that, when applied to an item emitted by the source Publisher, returns an
+     *            a function that, when applied to an item emitted by the source Publisher, returns a
      *            Publisher
      * @return a Flowable that emits the result of applying the transformation function to each item emitted
      *         by the source Publisher and merging the results of the Publishers obtained from this
@@ -9222,7 +9222,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *
      * @param <R> the value type of the inner Publishers and the output type
      * @param mapper
-     *            a function that, when applied to an item emitted by the source Publisher, returns an
+     *            a function that, when applied to an item emitted by the source Publisher, returns a
      *            Publisher
      * @param delayErrors
      *            if true, exceptions from the current Flowable and all inner Publishers are delayed until all of them terminate
@@ -9258,7 +9258,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *
      * @param <R> the value type of the inner Publishers and the output type
      * @param mapper
-     *            a function that, when applied to an item emitted by the source Publisher, returns an
+     *            a function that, when applied to an item emitted by the source Publisher, returns a
      *            Publisher
      * @param maxConcurrency
      *         the maximum number of Publishers that may be subscribed to concurrently
@@ -9294,7 +9294,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *
      * @param <R> the value type of the inner Publishers and the output type
      * @param mapper
-     *            a function that, when applied to an item emitted by the source Publisher, returns an
+     *            a function that, when applied to an item emitted by the source Publisher, returns a
      *            Publisher
      * @param maxConcurrency
      *         the maximum number of Publishers that may be subscribed to concurrently
@@ -9333,7 +9333,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *
      * @param <R> the value type of the inner Publishers and the output type
      * @param mapper
-     *            a function that, when applied to an item emitted by the source Publisher, returns an
+     *            a function that, when applied to an item emitted by the source Publisher, returns a
      *            Publisher
      * @param maxConcurrency
      *         the maximum number of Publishers that may be subscribed to concurrently
@@ -14497,7 +14497,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *
      * @param <R> the element type of the inner Publishers and the output
      * @param mapper
-     *            a function that, when applied to an item emitted by the source Publisher, returns an
+     *            a function that, when applied to an item emitted by the source Publisher, returns a
      *            Publisher
      * @return a Flowable that emits the items emitted by the Publisher returned from applying {@code func} to the most recently emitted item emitted by the source Publisher
      * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
@@ -14530,7 +14530,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *
      * @param <R> the element type of the inner Publishers and the output
      * @param mapper
-     *            a function that, when applied to an item emitted by the source Publisher, returns an
+     *            a function that, when applied to an item emitted by the source Publisher, returns a
      *            Publisher
      * @param bufferSize
      *            the number of elements to prefetch from the current active inner Publisher
@@ -14658,7 +14658,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *
      * @param <R> the element type of the inner Publishers and the output
      * @param mapper
-     *            a function that, when applied to an item emitted by the source Publisher, returns an
+     *            a function that, when applied to an item emitted by the source Publisher, returns a
      *            Publisher
      * @return a Flowable that emits the items emitted by the Publisher returned from applying {@code func} to the most recently emitted item emitted by the source Publisher
      * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
@@ -14693,7 +14693,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *
      * @param <R> the element type of the inner Publishers and the output
      * @param mapper
-     *            a function that, when applied to an item emitted by the source Publisher, returns an
+     *            a function that, when applied to an item emitted by the source Publisher, returns a
      *            Publisher
      * @param bufferSize
      *            the number of elements to prefetch from the current active inner Publisher

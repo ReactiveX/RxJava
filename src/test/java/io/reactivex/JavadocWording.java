@@ -868,7 +868,9 @@ public class JavadocWording {
         }
         
         // remove linebreaks and multi-spaces
-        String javadoc2 = m.javadoc.replace("\n", " ").replace("\r", " ").replaceAll("\\s+", " ");
+        String javadoc2 = m.javadoc.replace("\n", " ").replace("\r", " ")
+                .replace(" * ", " ")
+                .replaceAll("\\s+", " ");
         
         // strip {@xxx } tags
         int kk = 0;
