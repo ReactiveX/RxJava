@@ -3517,7 +3517,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * <img width="640" height="436" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.ignoreElement.png" alt="">
      * <dl>
      * <dt><b>Scheduler:</b></dt>
-     * <dd>{@code toCompletable} does not operate by default on a particular {@link Scheduler}.</dd>
+     * <dd>{@code ignoreElement} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
      * @return a {@link Completable} that calls {@code onComplete} on it's observer when the source {@link Single}
