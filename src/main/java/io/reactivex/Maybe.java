@@ -3139,7 +3139,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * 
      * public final class CustomMaybeObserver&lt;T&gt; implements MaybeObserver&lt;T&gt;, Disposable {
      *
-     *     // The donstream's MaybeObserver that will receive the onXXX events
+     *     // The downstream's MaybeObserver that will receive the onXXX events
      *     final MaybeObserver&lt;? super String&gt; downstream;
      *
      *     // The connection to the upstream source that will call this class' onXXX methods

@@ -1397,7 +1397,7 @@ public abstract class Completable implements CompletableSource {
      * 
      * public final class CustomCompletableObserver implements CompletableObserver, Disposable {
      *
-     *     // The donstream's CompletableObserver that will receive the onXXX events
+     *     // The downstream's CompletableObserver that will receive the onXXX events
      *     final CompletableObserver downstream;
      *
      *     // The connection to the upstream source that will call this class' onXXX methods

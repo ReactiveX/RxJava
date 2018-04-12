@@ -49,7 +49,7 @@ import io.reactivex.plugins.RxJavaPlugins;
  * <p>
  * <img width="640" height="415" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/ReplayProcessor.t.png" alt="">
  * </li>
- * <li>{@link #createWithTimeAndSize(long, TimeUnit, Scheduler, int)}: retaims no more than the given number of items
+ * <li>{@link #createWithTimeAndSize(long, TimeUnit, Scheduler, int)}: retains no more than the given number of items
  * which are also no older than the specified time and replays them to new {@code Subscriber}s (which could mean all items age out).
  * <p>
  * <img width="640" height="404" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/ReplayProcessor.nt.png" alt="">

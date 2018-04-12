@@ -2517,7 +2517,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * 
      * public final class CustomSingleObserver&lt;T&gt; implements SingleObserver&lt;T&gt;, Disposable {
      *
-     *     // The donstream's SingleObserver that will receive the onXXX events
+     *     // The downstream's SingleObserver that will receive the onXXX events
      *     final SingleObserver&lt;? super String&gt; downstream;
      *
      *     // The connection to the upstream source that will call this class' onXXX methods
