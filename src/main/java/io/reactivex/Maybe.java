@@ -3084,7 +3084,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     /**
      * Ignores the item emitted by the source Maybe and only calls {@code onComplete} or {@code onError}.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/ignoreElements.png" alt="">
+     * <img width="640" height="389" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.ignoreElement.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code ignoreElement} does not operate by default on a particular {@link Scheduler}.</dd>
