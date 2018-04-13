@@ -256,7 +256,7 @@ Flowable.range(1, 10)
   .blockingSubscribe(System.out::println);
 ```
 
-### Dependend sub-flows
+### Dependent sub-flows
 
 `flatMap` is a powerful operator and helps in a lot of situations. For example, given a service that returns a `Flowable`, we'd like to call another service with values emitted by the first service:
 
