@@ -254,6 +254,7 @@ public class SingleMiscTest {
     }
 
     @Test
+    @SuppressWarnings("deprecation")
     public void toCompletable() {
         Single.just(1)
         .toCompletable()
@@ -262,6 +263,19 @@ public class SingleMiscTest {
 
         Single.error(new TestException())
         .toCompletable()
+        .test()
+        .assertFailure(TestException.class);
+    }
+
+    @Test
+    public void ignoreElement() {
+        Single.just(1)
+        .ignoreElement()
+        .test()
+        .assertResult();
+
+        Single.error(new TestException())
+        .ignoreElement()
         .test()
         .assertFailure(TestException.class);
     }
