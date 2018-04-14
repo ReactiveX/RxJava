@@ -2978,7 +2978,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      *
      * @param <R> the result value type
      * @param mapper
-     *            a function that, when applied to the item emitted by the source Maybe, returns an
+     *            a function that, when applied to the item emitted by the source Maybe, returns a
      *            Flowable
      * @return the Flowable returned from {@code func} when applied to the item emitted by the source Maybe
      * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
@@ -3139,7 +3139,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * 
      * public final class CustomMaybeObserver&lt;T&gt; implements MaybeObserver&lt;T&gt;, Disposable {
      *
-     *     // The donstream's MaybeObserver that will receive the onXXX events
+     *     // The downstream's MaybeObserver that will receive the onXXX events
      *     final MaybeObserver&lt;? super String&gt; downstream;
      *
      *     // The connection to the upstream source that will call this class' onXXX methods

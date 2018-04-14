@@ -2365,7 +2365,7 @@ public abstract class Single<T> implements SingleSource<T> {
      *
      * @param <R> the result value type
      * @param mapper
-     *            a function that, when applied to the item emitted by the source Single, returns an
+     *            a function that, when applied to the item emitted by the source Single, returns a
      *            Flowable
      * @return the Flowable returned from {@code func} when applied to the item emitted by the source Single
      * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
@@ -2517,7 +2517,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * 
      * public final class CustomSingleObserver&lt;T&gt; implements SingleObserver&lt;T&gt;, Disposable {
      *
-     *     // The donstream's SingleObserver that will receive the onXXX events
+     *     // The downstream's SingleObserver that will receive the onXXX events
      *     final SingleObserver&lt;? super String&gt; downstream;
      *
      *     // The connection to the upstream source that will call this class' onXXX methods

@@ -816,6 +816,7 @@ public class JavadocWording {
             }
         }
 
+        jdx = 0;
         for (;;) {
             idx = m.javadoc.indexOf(wrongPre + " {@link " + word, jdx);
             if (idx >= 0) {
@@ -832,6 +833,7 @@ public class JavadocWording {
             }
         }
 
+        jdx = 0;
         for (;;) {
             idx = m.javadoc.indexOf(wrongPre + " {@linkplain " + word, jdx);
             if (idx >= 0) {
@@ -848,6 +850,7 @@ public class JavadocWording {
             }
         }
 
+        jdx = 0;
         for (;;) {
             idx = m.javadoc.indexOf(wrongPre + " {@code " + word, jdx);
             if (idx >= 0) {
@@ -863,7 +866,43 @@ public class JavadocWording {
                 break;
             }
         }
+        
+        // remove linebreaks and multi-spaces
+        String javadoc2 = m.javadoc.replace("\n", " ").replace("\r", " ")
+                .replace(" * ", " ")
+                .replaceAll("\\s+", " ");
+        
+        // strip {@xxx } tags
+        int kk = 0;
+        for (;;) {
+            int jj = javadoc2.indexOf("{@", kk);
+            if (jj < 0) {
+                break;
+            }
+            int nn = javadoc2.indexOf(" ", jj + 2);
+            int mm = javadoc2.indexOf("}", jj + 2);
+            
+            javadoc2 = javadoc2.substring(0, jj) + javadoc2.substring(nn + 1, mm) + javadoc2.substring(mm + 1);
 
+            kk = mm + 1;
+        }
+        
+        jdx = 0;
+        for (;;) {
+            idx = javadoc2.indexOf(wrongPre + " " + word, jdx);
+            if (idx >= 0) {
+                e.append("java.lang.RuntimeException: a/an typo ")
+                .append(word)
+                .append("\r\n at io.reactivex.")
+                .append(baseTypeName)
+                .append(" (")
+                .append(baseTypeName)
+                .append(".java:").append(m.javadocLine).append(")\r\n\r\n");
+                jdx = idx + wrongPre.length() + 1 + word.length();
+            } else {
+                break;
+            }
+        }
     }
 
     static void missingClosingDD(StringBuilder e, RxMethod m, String baseTypeName) {

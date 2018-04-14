@@ -9386,7 +9386,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * 
      * public final class CustomObserver&lt;T&gt; implements Observer&lt;T&gt;, Disposable {
      *
-     *     // The donstream's Observer that will receive the onXXX events
+     *     // The downstream's Observer that will receive the onXXX events
      *     final Observer&lt;? super String&gt; downstream;
      *
      *     // The connection to the upstream source that will call this class' onXXX methods
@@ -12250,7 +12250,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *  <dd>Errors of this {@code Observable} and all the {@code CompletableSource}s, who had the chance
      *  to run to their completion, are delayed until
      *  all of them terminate in some fashion. At this point, if there was only one failure, the respective
-     *  {@code Throwable} is emitted to the dowstream. It there were more than one failures, the
+     *  {@code Throwable} is emitted to the downstream. It there were more than one failures, the
      *  operator combines all {@code Throwable}s into a {@link io.reactivex.exceptions.CompositeException CompositeException}
      *  and signals that to the downstream.
      *  If any inactivated (switched out) {@code CompletableSource}

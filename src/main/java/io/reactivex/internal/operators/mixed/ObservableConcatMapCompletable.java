@@ -28,7 +28,7 @@ import io.reactivex.internal.util.*;
 import io.reactivex.plugins.RxJavaPlugins;
 
 /**
- * Maps the upstream intems into {@link CompletableSource}s and subscribes to them one after the
+ * Maps the upstream items into {@link CompletableSource}s and subscribes to them one after the
  * other completes or terminates (in error-delaying mode).
  * @param <T> the upstream value type
  * @since 2.1.11 - experimental
