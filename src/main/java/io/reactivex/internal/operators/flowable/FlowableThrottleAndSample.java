@@ -1,3 +1,15 @@
+/**
+ * Copyright (c) 2016-present, RxJava Contributors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is
+ * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
+ * the License for the specific language governing permissions and limitations under the License.
+ */
 package io.reactivex.internal.operators.flowable;
 
 import io.reactivex.Flowable;
@@ -22,11 +34,11 @@ import java.util.concurrent.atomic.AtomicReference;
 
 public final class FlowableThrottleAndSample<T> extends AbstractFlowableWithUpstream<T, T> {
 
-    private final long windowDuration;
-    private final TimeUnit unit;
-    private final Scheduler scheduler;
+    final long windowDuration;
+    final TimeUnit unit;
+    final Scheduler scheduler;
 
-    private final boolean emitLast;
+    final boolean emitLast;
 
     public FlowableThrottleAndSample(@NonNull final Flowable<T> source, final long windowDuration,
                                      final TimeUnit unit, final Scheduler scheduler, final boolean emitLast) {
@@ -49,18 +61,18 @@ public final class FlowableThrottleAndSample<T> extends AbstractFlowableWithUpst
 
     abstract static class ThrottleAndSampleSubscriber<T> extends AtomicReference<T> implements FlowableSubscriber<T>, Subscription, Runnable {
 
-        private static final long serialVersionUID = -7130465637537281443L;
+        static final long serialVersionUID = -7130465637537281443L;
 
-        protected final Subscriber<? super T> actual;
-        private final long windowDuration;
-        private final TimeUnit unit;
-        private final Scheduler.Worker worker;
+        final Subscriber<? super T> actual;
+        final long windowDuration;
+        final TimeUnit unit;
+        final Scheduler.Worker worker;
 
         final AtomicLong requested = new AtomicLong();
 
-        private final SequentialDisposable timer = new SequentialDisposable(Disposables.disposed());
+        final SequentialDisposable timer = new SequentialDisposable(Disposables.disposed());
 
-        private Subscription subscription;
+        Subscription subscription;
 
         boolean isDone;
 

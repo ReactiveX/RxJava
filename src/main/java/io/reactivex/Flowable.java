@@ -15511,8 +15511,10 @@ public abstract class Flowable<T> implements Publisher<T> {
      * Optionally emits the very last upstream item when the upstream completes.
      * <p>
      * <dl>
-     * <dt><b>Scheduler:</b></dt>
-     * <dd>{@code throttleAndSample} operates by default on the {@code computation} {@link Scheduler}.</dd>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>This operator does not support backpressure as it uses time to control data flow.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code throttleAndSample} operates by default on the {@code computation} {@link Scheduler}.</dd>
      * </dl>
      *
      * @param windowDuration time to wait before emitting another item after emitting the last item
@@ -15532,8 +15534,10 @@ public abstract class Flowable<T> implements Publisher<T> {
      * Optionally emits the very last upstream item when the upstream completes.
      * <p>
      * <dl>
-     * <dt><b>Scheduler:</b></dt>
-     * <dd>{@code throttleAndSample} operates by default on the {@code computation} {@link Scheduler}.</dd>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>This operator does not support backpressure as it uses time to control data flow.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code throttleAndSample} operates by default on the {@code computation} {@link Scheduler}.</dd>
      * </dl>
      *
      * @param windowDuration time to wait before emitting another item after emitting the last item
@@ -15554,6 +15558,14 @@ public abstract class Flowable<T> implements Publisher<T> {
      * Returns a Flowable that emits an item immediately and then no frequently than specified duration,
      * unless more than specified duration has passed. In which case the next item is emitted immediately.
      * Optionally emits the very last upstream item when the upstream completes.
+     * <p>
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>This operator does not support backpressure as it uses time to control data flow.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>You specify which {@link Scheduler} this operator will use.</dd>
+     * </dl>
+     * <dl>
      *
      * @param windowDuration time to wait before emitting another item after emitting the last item
      * @param unit           the unit of time of {@code windowDuration}
@@ -15572,6 +15584,14 @@ public abstract class Flowable<T> implements Publisher<T> {
      * Returns a Flowable that emits an item immediately and then no frequently than specified duration,
      * unless more than specified duration has passed. In which case the next item is emitted immediately.
      * Optionally emits the very last upstream item when the upstream completes.
+     * <p>
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>This operator does not support backpressure as it uses time to control data flow.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>You specify which {@link Scheduler} this operator will use.</dd>
+     * </dl>
+     * <dl>
      *
      * @param windowDuration time to wait before emitting another item after emitting the last item
      * @param unit           the unit of time of {@code windowDuration}
