@@ -15519,6 +15519,8 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @param unit           the unit of time of {@code windowDuration}
      * @return a Flowable that performs the throttle and sample operation
      */
+    @CheckReturnValue
+    @BackpressureSupport(BackpressureKind.ERROR)
     @SchedulerSupport(SchedulerSupport.COMPUTATION)
     public final Flowable<T> throttleAndSample(long windowDuration, TimeUnit unit) {
         return throttleAndSample(windowDuration, unit, Schedulers.computation(), false);
@@ -15541,6 +15543,8 @@ public abstract class Flowable<T> implements Publisher<T> {
      *                       if false, an unsampled last item is ignored.
      * @return a Flowable that performs the throttle and sample operation
      */
+    @CheckReturnValue
+    @BackpressureSupport(BackpressureKind.ERROR)
     @SchedulerSupport(SchedulerSupport.COMPUTATION)
     public final Flowable<T> throttleAndSample(long windowDuration, TimeUnit unit, boolean emitLast) {
         return throttleAndSample(windowDuration, unit, Schedulers.computation(), emitLast);
@@ -15557,6 +15561,9 @@ public abstract class Flowable<T> implements Publisher<T> {
      *                       event
      * @return a Flowable that performs the throttle and sample operation
      */
+    @CheckReturnValue
+    @BackpressureSupport(BackpressureKind.ERROR)
+    @SchedulerSupport(SchedulerSupport.CUSTOM)
     public final Flowable<T> throttleAndSample(long windowDuration, TimeUnit unit, Scheduler scheduler) {
         return throttleAndSample(windowDuration, unit, scheduler, false);
     }
@@ -15575,6 +15582,9 @@ public abstract class Flowable<T> implements Publisher<T> {
      *                       if false, an unsampled last item is ignored.
      * @return a Flowable that performs the throttle and sample operation
      */
+    @CheckReturnValue
+    @BackpressureSupport(BackpressureKind.ERROR)
+    @SchedulerSupport(SchedulerSupport.CUSTOM)
     public final Flowable<T> throttleAndSample(long windowDuration, TimeUnit unit, Scheduler scheduler, boolean emitLast) {
         ObjectHelper.requireNonNull(unit, "unit is null");
         ObjectHelper.requireNonNull(scheduler, "scheduler is null");

@@ -179,6 +179,12 @@ public class ParamValidationCheckerTest {
         addOverride(new ParamOverride(Flowable.class, 0, ParamMode.ANY, "throttleWithTimeout", Long.TYPE, TimeUnit.class, Scheduler.class));
 
         // negative time is considered as zero time
+        addOverride(new ParamOverride(Flowable.class, 0, ParamMode.ANY, "throttleAndSample", Long.TYPE, TimeUnit.class));
+        addOverride(new ParamOverride(Flowable.class, 0, ParamMode.ANY, "throttleAndSample", Long.TYPE, TimeUnit.class, Scheduler.class));
+        addOverride(new ParamOverride(Flowable.class, 0, ParamMode.ANY, "throttleAndSample", Long.TYPE, TimeUnit.class, Boolean.TYPE));
+        addOverride(new ParamOverride(Flowable.class, 0, ParamMode.ANY, "throttleAndSample", Long.TYPE, TimeUnit.class, Scheduler.class, Boolean.TYPE));
+
+        // negative time is considered as zero time
         addOverride(new ParamOverride(Flowable.class, 0, ParamMode.ANY, "take", Long.TYPE, TimeUnit.class));
         addOverride(new ParamOverride(Flowable.class, 0, ParamMode.ANY, "take", Long.TYPE, TimeUnit.class, Scheduler.class));
 
