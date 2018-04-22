@@ -14667,20 +14667,77 @@ public abstract class Flowable<T> implements Publisher<T> {
         return RxJavaPlugins.onAssembly(new FlowableThrottleFirstTimed<T>(this, skipDuration, unit, scheduler));
     }
 
+    /**
+     * Returns a Flowable that emits an item immediately and then no frequently than specified duration,
+     * unless more than specified duration has passed. In which case the next item is emitted immediately.
+     * Optionally emits the very last upstream item when the upstream completes.
+     * <p>
+     * <dl>
+     * <dt><b>Scheduler:</b></dt>
+     * <dd>{@code throttleAndSample} operates by default on the {@code computation} {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param windowDuration time to wait before emitting another item after emitting the last item
+     * @param unit           the unit of time of {@code windowDuration}
+     * @return a Flowable that performs the throttle and sample operation
+     */
     @SchedulerSupport(SchedulerSupport.COMPUTATION)
     public final Flowable<T> throttleAndSample(long windowDuration, TimeUnit unit) {
         return throttleAndSample(windowDuration, unit, Schedulers.computation(), false);
     }
 
+
+    /**
+     * Returns a Flowable that emits an item immediately and then no frequently than specified duration,
+     * unless more than specified duration has passed. In which case the next item is emitted immediately.
+     * Optionally emits the very last upstream item when the upstream completes.
+     * <p>
+     * <dl>
+     * <dt><b>Scheduler:</b></dt>
+     * <dd>{@code throttleAndSample} operates by default on the {@code computation} {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param windowDuration time to wait before emitting another item after emitting the last item
+     * @param unit           the unit of time of {@code windowDuration}
+     * @param emitLast       if true and the upstream completes while there is still an unsampled item available,
+     *                       that item is emitted to downstream before completion.
+     *                       if false, an unsampled last item is ignored.
+     * @return a Flowable that performs the throttle and sample operation
+     */
     @SchedulerSupport(SchedulerSupport.COMPUTATION)
     public final Flowable<T> throttleAndSample(long windowDuration, TimeUnit unit, boolean emitLast) {
         return throttleAndSample(windowDuration, unit, Schedulers.computation(), emitLast);
     }
 
+    /**
+     * Returns a Flowable that emits an item immediately and then no frequently than specified duration,
+     * unless more than specified duration has passed. In which case the next item is emitted immediately.
+     * Optionally emits the very last upstream item when the upstream completes.
+     *
+     * @param windowDuration time to wait before emitting another item after emitting the last item
+     * @param unit           the unit of time of {@code windowDuration}
+     * @param scheduler      the {@link Scheduler} to use internally to manage the timers that handle timeout for each
+     *                       event
+     * @return a Flowable that performs the throttle and sample operation
+     */
     public final Flowable<T> throttleAndSample(long windowDuration, TimeUnit unit, Scheduler scheduler) {
         return throttleAndSample(windowDuration, unit, scheduler, false);
     }
 
+    /**
+     * Returns a Flowable that emits an item immediately and then no frequently than specified duration,
+     * unless more than specified duration has passed. In which case the next item is emitted immediately.
+     * Optionally emits the very last upstream item when the upstream completes.
+     *
+     * @param windowDuration time to wait before emitting another item after emitting the last item
+     * @param unit           the unit of time of {@code windowDuration}
+     * @param scheduler      the {@link Scheduler} to use internally to manage the timers that handle timeout for each
+     *                       event
+     * @param emitLast       if true and the upstream completes while there is still an unsampled item available,
+     *                       that item is emitted to downstream before completion.
+     *                       if false, an unsampled last item is ignored.
+     * @return a Flowable that performs the throttle and sample operation
+     */
     public final Flowable<T> throttleAndSample(long windowDuration, TimeUnit unit, Scheduler scheduler, boolean emitLast) {
         ObjectHelper.requireNonNull(unit, "unit is null");
         ObjectHelper.requireNonNull(scheduler, "scheduler is null");

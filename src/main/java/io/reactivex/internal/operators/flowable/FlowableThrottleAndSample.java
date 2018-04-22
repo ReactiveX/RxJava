@@ -83,29 +83,17 @@ public final class FlowableThrottleAndSample<T> extends AbstractFlowableWithUpst
 
         @Override
         public void onNext(final T value) {
-            // Desired bahavior
-            // source: -1-2-3-45------6-7-8-
-            // Output: -1---3---5-----6---8-
-
             final Disposable throttling = timer.get();
             if (throttling.isDisposed()) {
-                // Initial item comes or item comes after windowDuration
-                //   - Emmit item, start timer
                 emit(value);
                 timer.replace(worker.schedule(this, windowDuration, unit));
             } else {
-                // Timer is started and item comes (We need to throttle)
-                //   - Store item
                 set(value);
             }
         }
 
         @Override
         public void run() {
-            // Timer ended
-            //   - Check if we have an item to publish
-            //      - If we do, publish, start throttle timer
-            //      - If we do not, do not restart throttle timer
             final Disposable throttling = timer.get();
             throttling.dispose();
             final T value = getAndSet(null);
