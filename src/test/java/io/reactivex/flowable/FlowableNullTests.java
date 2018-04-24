@@ -2252,16 +2252,6 @@ public class FlowableNullTests {
     }
 
     @Test(expected = NullPointerException.class)
-    public void throttleAndSampleUnitNull() {
-        just1.throttleAndSample(1, null, Schedulers.single());
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void throttleAndSampleSchedulerNull() {
-        just1.throttleAndSample(1, TimeUnit.SECONDS, null);
-    }
-
-    @Test(expected = NullPointerException.class)
     public void throttleWithTimeoutUnitNull() {
         just1.throttleWithTimeout(1, null, Schedulers.single());
     }

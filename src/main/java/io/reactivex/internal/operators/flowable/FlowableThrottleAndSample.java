@@ -16,7 +16,6 @@ import io.reactivex.Flowable;
 import io.reactivex.FlowableSubscriber;
 import io.reactivex.Scheduler;
 import io.reactivex.annotations.NonNull;
-import io.reactivex.disposables.Disposable;
 import io.reactivex.disposables.Disposables;
 import io.reactivex.exceptions.MissingBackpressureException;
 import io.reactivex.internal.disposables.DisposableHelper;
@@ -29,8 +28,7 @@ import org.reactivestreams.Subscriber;
 import org.reactivestreams.Subscription;
 
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicLong;
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.atomic.*;
 
 public final class FlowableThrottleAndSample<T> extends AbstractFlowableWithUpstream<T, T> {
 
@@ -68,9 +66,10 @@ public final class FlowableThrottleAndSample<T> extends AbstractFlowableWithUpst
         final TimeUnit unit;
         final Scheduler.Worker worker;
 
-        final AtomicLong requested = new AtomicLong();
+        final AtomicInteger timerInProgress;
+        final SequentialDisposable timer;
 
-        final SequentialDisposable timer = new SequentialDisposable(Disposables.disposed());
+        final AtomicLong requested = new AtomicLong();
 
         Subscription subscription;
 
@@ -82,6 +81,8 @@ public final class FlowableThrottleAndSample<T> extends AbstractFlowableWithUpst
             this.windowDuration = windowDuration;
             this.unit = unit;
             this.worker = worker;
+            this.timerInProgress = new AtomicInteger(0);
+            this.timer = new SequentialDisposable(Disposables.disposed());
         }
 
         @Override
@@ -95,23 +96,19 @@ public final class FlowableThrottleAndSample<T> extends AbstractFlowableWithUpst
 
         @Override
         public void onNext(final T value) {
-            final Disposable throttling = timer.get();
-            if (throttling.isDisposed()) {
-                emit(value);
-                timer.replace(worker.schedule(this, windowDuration, unit));
-            } else {
-                set(value);
+            set(value);
+            if (timerInProgress.incrementAndGet() == 1) {
+                emit(getAndSet(null));
+                timer.update(worker.schedule(this, windowDuration, unit));
             }
         }
 
-        @Override
-        public void run() {
-            final Disposable throttling = timer.get();
-            throttling.dispose();
-            final T value = getAndSet(null);
-            if (value != null) {
-                emit(value);
+        protected void emitFromRun() {
+            timer.update(Disposables.disposed());
+            if (timerInProgress.decrementAndGet() != 0) {
+                emit(getAndSet(null));
                 timer.replace(worker.schedule(this, windowDuration, unit));
+                timerInProgress.set(1);
             }
         }
 
@@ -154,16 +151,14 @@ public final class FlowableThrottleAndSample<T> extends AbstractFlowableWithUpst
             worker.dispose();
         }
 
-        void emit(final T value) {
-            if (value != null) {
-                long r = requested.get();
-                if (r != 0L) {
-                    actual.onNext(value);
-                    BackpressureHelper.produced(requested, 1);
-                } else {
-                    cancel();
-                    actual.onError(new MissingBackpressureException("Couldn't emit value due to lack of requests!"));
-                }
+        void emit(@NonNull final T value) {
+            long r = requested.get();
+            if (r != 0L) {
+                actual.onNext(value);
+                BackpressureHelper.produced(requested, 1);
+            } else {
+                cancel();
+                actual.onError(new MissingBackpressureException("Couldn't emit value due to lack of requests!"));
             }
         }
 
@@ -180,6 +175,11 @@ public final class FlowableThrottleAndSample<T> extends AbstractFlowableWithUpst
         }
 
         @Override
+        public void run() {
+            emitFromRun();
+        }
+
+        @Override
         void complete() {
             actual.onComplete();
         }
@@ -189,18 +189,33 @@ public final class FlowableThrottleAndSample<T> extends AbstractFlowableWithUpst
 
         private static final long serialVersionUID = -7139995637537281443L;
 
+        final AtomicInteger wip;
+
         ThrottleAndSampleEmitLast(final Subscriber<? super T> actual, final long windowDuration,
                                   final TimeUnit unit, final Scheduler.Worker worker) {
             super(actual, windowDuration, unit, worker);
+            this.wip = new AtomicInteger(1);
         }
 
         @Override
         void complete() {
-            final T value = getAndSet(null);
-            if (value != null) {
-                emit(value);
+            if (wip.decrementAndGet() == 0) {
+                final T value = getAndSet(null);
+                if (value != null) {
+                    emit(value);
+                }
+                actual.onComplete();
             }
-            actual.onComplete();
+        }
+
+        @Override
+        public void run() {
+            if (wip.incrementAndGet() == 2) {
+                emitFromRun();
+                if (wip.decrementAndGet() == 0) {
+                    actual.onComplete();
+                }
+            }
         }
     }
 }
