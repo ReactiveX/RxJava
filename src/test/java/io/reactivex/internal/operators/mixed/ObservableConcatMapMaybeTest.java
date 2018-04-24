@@ -399,4 +399,21 @@ public class ObservableConcatMapMaybeTest {
 
         assertTrue(operator.queue.isEmpty());
     }
+
+    @Test
+    public void checkUnboundedInnerQueue() {
+        MaybeSubject<Integer> ms = MaybeSubject.create();
+        
+        @SuppressWarnings("unchecked")
+        TestObserver<Integer> to = Observable
+                .fromArray(ms, Maybe.just(2), Maybe.just(3), Maybe.just(4))
+                .concatMapMaybe(Functions.<Maybe<Integer>>identity(), 2)
+                .test();
+
+        to.assertEmpty();
+
+        ms.onSuccess(1);
+
+        to.assertResult(1, 2, 3, 4);
+    }
 }
