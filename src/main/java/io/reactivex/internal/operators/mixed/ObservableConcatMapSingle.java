@@ -18,12 +18,12 @@ import java.util.concurrent.atomic.*;
 import io.reactivex.*;
 import io.reactivex.annotations.Experimental;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.exceptions.*;
+import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.internal.fuseable.SimplePlainQueue;
-import io.reactivex.internal.queue.SpscArrayQueue;
+import io.reactivex.internal.queue.SpscLinkedArrayQueue;
 import io.reactivex.internal.util.*;
 import io.reactivex.plugins.RxJavaPlugins;
 
@@ -107,7 +107,7 @@ public final class ObservableConcatMapSingle<T, R> extends Observable<R> {
             this.errorMode = errorMode;
             this.errors = new AtomicThrowable();
             this.inner = new ConcatMapSingleObserver<R>(this);
-            this.queue = new SpscArrayQueue<T>(prefetch);
+            this.queue = new SpscLinkedArrayQueue<T>(prefetch);
         }
 
         @Override
