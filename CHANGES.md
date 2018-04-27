@@ -2,6 +2,30 @@
 
 The changelog of version 1.x can be found at https://github.com/ReactiveX/RxJava/blob/1.x/CHANGES.md
 
+### Version 2.1.13 - April 27, 2018 ([Maven](http://search.maven.org/#artifactdetails%7Cio.reactivex.rxjava2%7Crxjava%7C2.1.13%7C))
+
+#### API changes
+
+- [Pull 5957](https://github.com/ReactiveX/RxJava/pull/5957): Add `Single.ignoreElement`, deprecate `Single.toCompletable` (will be removed in 3.0).
+
+#### Documentation changes
+
+- [Pull 5936](https://github.com/ReactiveX/RxJava/pull/5936): Fix `Completable.toMaybe()` `@return` javadoc.
+- [Pull 5948](https://github.com/ReactiveX/RxJava/pull/5948): Fix `Observable` javadoc mentioning `doOnCancel` instead of `doOnDispose`.
+- [Pull 5951](https://github.com/ReactiveX/RxJava/pull/5951): Update `blockingX` JavaDoc to mention wrapping of checked Exceptions.
+
+#### Bugfixes
+
+- [Pull 5952](https://github.com/ReactiveX/RxJava/pull/5952): Fixed conditional iteration breaking in `AppendOnlyLinkedArrayList.forEachWhile`.
+- [Pull 5972](https://github.com/ReactiveX/RxJava/pull/5972): Fix `Observable.concatMapSingle` dropping upstream items.
+
+#### Other changes
+
+- [Pull 5930](https://github.com/ReactiveX/RxJava/pull/5930): Add `@NonNull` annotations to create methods of `Subject`s and `Processor`s.
+- [Pull 5940](https://github.com/ReactiveX/RxJava/pull/5940): Allow `@SchedulerSupport` annotation on constructors.
+- [Pull 5942](https://github.com/ReactiveX/RxJava/pull/5942): Removed `TERMINATED` check in `PublishSubject.onNext` and `PublishProcessor.onNext`.
+- [Pull 5959](https://github.com/ReactiveX/RxJava/pull/5959): Fix some typos and grammar mistakes. 
+
 ### Version 2.1.12 - March 23, 2018 ([Maven](http://search.maven.org/#artifactdetails%7Cio.reactivex.rxjava2%7Crxjava%7C2.1.12%7C))
 
 #### Bugfixes
