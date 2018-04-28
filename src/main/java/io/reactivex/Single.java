@@ -341,7 +341,7 @@ public abstract class Single<T> implements SingleSource<T> {
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Flowable<T> concatArrayEager(SingleSource<? extends T>... sources) {
-        return Flowable.fromArray(sources).concatMapEager((Function)SingleToPublisher.instance());
+        return Flowable.fromArray(sources).concatMapEager(SingleInternalHelper.<T>toFlowable());
     }
 
     /**
@@ -365,7 +365,7 @@ public abstract class Single<T> implements SingleSource<T> {
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Flowable<T> concatEager(Iterable<? extends SingleSource<? extends T>> sources) {
-        return Flowable.fromIterable(sources).concatMapEager((Function)SingleToPublisher.instance());
+        return Flowable.fromIterable(sources).concatMapEager(SingleInternalHelper.<T>toFlowable());
     }
 
     /**
