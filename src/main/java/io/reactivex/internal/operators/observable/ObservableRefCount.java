@@ -21,6 +21,7 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 import io.reactivex.internal.disposables.*;
 import io.reactivex.observables.ConnectableObservable;
+import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.schedulers.Schedulers;
 
 /**
@@ -65,7 +66,7 @@ public final class ObservableRefCount<T> extends Observable<T> {
         boolean connect = false;
         synchronized (this) {
             conn = connection;
-            if (conn == null || conn.terminated) {
+            if (conn == null) {
                 conn = new RefConnection(this);
                 connection = conn;
             }
@@ -91,7 +92,7 @@ public final class ObservableRefCount<T> extends Observable<T> {
     void cancel(RefConnection rc) {
         SequentialDisposable sd;
         synchronized (this) {
-            if (rc.terminated) {
+            if (connection == null) {
                 return;
             }
             long c = rc.subscriberCount - 1;
@@ -112,12 +113,11 @@ public final class ObservableRefCount<T> extends Observable<T> {
 
     void terminated(RefConnection rc) {
         synchronized (this) {
-            if (!rc.terminated) {
-                rc.terminated = true;
+            if (connection != null) {
+                connection = null;
                 if (source instanceof Disposable) {
                     ((Disposable)source).dispose();
                 }
-                connection = null;
             }
         }
     }
@@ -125,11 +125,11 @@ public final class ObservableRefCount<T> extends Observable<T> {
     void timeout(RefConnection rc) {
         synchronized (this) {
             if (rc.subscriberCount == 0 && rc == connection) {
+                connection = null;
                 DisposableHelper.dispose(rc);
                 if (source instanceof Disposable) {
                     ((Disposable)source).dispose();
                 }
-                connection = null;
             }
         }
     }
@@ -146,8 +146,6 @@ public final class ObservableRefCount<T> extends Observable<T> {
         long subscriberCount;
 
         boolean connected;
-
-        boolean terminated;
 
         RefConnection(ObservableRefCount<?> parent) {
             this.parent = parent;
@@ -192,16 +190,18 @@ public final class ObservableRefCount<T> extends Observable<T> {
         public void onError(Throwable t) {
             if (compareAndSet(false, true)) {
                 parent.terminated(connection);
+                actual.onError(t);
+            } else {
+                RxJavaPlugins.onError(t);
             }
-            actual.onError(t);
         }
 
         @Override
         public void onComplete() {
             if (compareAndSet(false, true)) {
                 parent.terminated(connection);
+                actual.onComplete();
             }
-            actual.onComplete();
         }
 
         @Override

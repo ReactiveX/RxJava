@@ -30,12 +30,14 @@ import io.reactivex.*;
 import io.reactivex.Observable;
 import io.reactivex.Observer;
 import io.reactivex.disposables.*;
-import io.reactivex.exceptions.TestException;
+import io.reactivex.exceptions.*;
 import io.reactivex.functions.*;
 import io.reactivex.internal.functions.Functions;
+import io.reactivex.internal.operators.observable.ObservableRefCount.RefConnection;
 import io.reactivex.internal.util.ExceptionHelper;
 import io.reactivex.observables.ConnectableObservable;
 import io.reactivex.observers.TestObserver;
+import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.schedulers.*;
 import io.reactivex.subjects.*;
 
@@ -1180,5 +1182,97 @@ public class ObservableRefCountTest {
             .withTag("Round: " + i)
             .assertResult(1, 2, 3, 4, 5);
         }
+    }
+
+    static final class BadObservableDoubleOnX extends ConnectableObservable<Object>
+    implements Disposable {
+
+        @Override
+        public void connect(Consumer<? super Disposable> connection) {
+            try {
+                connection.accept(Disposables.empty());
+            } catch (Throwable ex) {
+                throw ExceptionHelper.wrapOrThrow(ex);
+            }
+        }
+
+        @Override
+        protected void subscribeActual(Observer<? super Object> observer) {
+            observer.onSubscribe(Disposables.empty());
+            observer.onSubscribe(Disposables.empty());
+            observer.onComplete();
+            observer.onComplete();
+            observer.onError(new TestException());
+        }
+
+        @Override
+        public void dispose() {
+        }
+
+        @Override
+        public boolean isDisposed() {
+            return false;
+        }
+    }
+
+    @Test
+    public void doubleOnX() {
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            new BadObservableDoubleOnX()
+            .refCount()
+            .test()
+            .assertResult();
+
+            TestHelper.assertError(errors, 0, ProtocolViolationException.class);
+            TestHelper.assertUndeliverable(errors, 1, TestException.class);
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
+
+    @Test
+    public void cancelTerminateStateExclusion() {
+        ObservableRefCount<Object> o = (ObservableRefCount<Object>)PublishSubject.create()
+        .publish()
+        .refCount();
+
+        o.cancel(null);
+
+        RefConnection rc = new RefConnection(o);
+        o.connection = null;
+        rc.subscriberCount = 0;
+        o.timeout(rc);
+
+        rc.subscriberCount = 1;
+        o.timeout(rc);
+
+        o.connection = rc;
+        o.timeout(rc);
+
+        rc.subscriberCount = 0;
+        o.timeout(rc);
+
+        // -------------------
+
+        rc.subscriberCount = 2;
+        rc.connected = false;
+        o.connection = rc;
+        o.cancel(rc);
+
+        rc.subscriberCount = 1;
+        rc.connected = false;
+        o.connection = rc;
+        o.cancel(rc);
+
+        rc.subscriberCount = 2;
+        rc.connected = true;
+        o.connection = rc;
+        o.cancel(rc);
+
+        rc.subscriberCount = 1;
+        rc.connected = true;
+        o.connection = rc;
+        o.cancel(rc);
     }
 }
