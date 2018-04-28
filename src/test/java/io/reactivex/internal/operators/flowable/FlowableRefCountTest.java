@@ -17,6 +17,7 @@ import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
+import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.util.*;
 import java.util.concurrent.*;
@@ -968,15 +969,15 @@ public class FlowableRefCountTest {
     public void blockingSourceAsnycCancel() throws Exception {
         BehaviorProcessor<Integer> bp = BehaviorProcessor.createDefault(1);
 
-        Flowable<Integer> o = bp
+        Flowable<Integer> f = bp
         .replay(1)
         .refCount();
 
-        o.subscribe();
+        f.subscribe();
 
         final AtomicBoolean interrupted = new AtomicBoolean();
 
-        o.switchMap(new Function<Integer, Publisher<? extends Object>>() {
+        f.switchMap(new Function<Integer, Publisher<? extends Object>>() {
             @Override
             public Publisher<? extends Object> apply(Integer v) throws Exception {
                 return Flowable.create(new FlowableOnSubscribe<Object>() {
@@ -996,5 +997,204 @@ public class FlowableRefCountTest {
         .assertResult();
 
         assertTrue(interrupted.get());
+    }
+
+    static <T> FlowableTransformer<T, T> refCount(final int n) {
+        return refCount(n, 0, TimeUnit.NANOSECONDS, Schedulers.trampoline());
+    }
+
+    static <T> FlowableTransformer<T, T> refCount(final long time, final TimeUnit unit) {
+        return refCount(1, time, unit, Schedulers.computation());
+    }
+
+    static <T> FlowableTransformer<T, T> refCount(final long time, final TimeUnit unit, final Scheduler scheduler) {
+        return refCount(1, time, unit, scheduler);
+    }
+
+    static <T> FlowableTransformer<T, T> refCount(final int n, final long time, final TimeUnit unit) {
+        return refCount(1, time, unit, Schedulers.computation());
+    }
+
+    static <T> FlowableTransformer<T, T> refCount(final int n, final long time, final TimeUnit unit, final Scheduler scheduler) {
+        return new FlowableTransformer<T, T>() {
+            @Override
+            public Publisher<T> apply(Flowable<T> f) {
+                return new FlowableRefCount<T>((ConnectableFlowable<T>)f, n, time, unit, scheduler);
+            }
+        };
+    }
+
+    @Test
+    public void byCount() {
+        final int[] subscriptions = { 0 };
+
+        Flowable<Integer> source = Flowable.range(1, 5)
+        .doOnSubscribe(new Consumer<Subscription>() {
+            @Override
+            public void accept(Subscription s) throws Exception {
+                subscriptions[0]++;
+            }
+        })
+        .publish()
+        .compose(FlowableRefCountTest.<Integer>refCount(2));
+
+        for (int i = 0; i < 3; i++) {
+            TestSubscriber<Integer> ts1 = source.test();
+
+            ts1.assertEmpty();
+
+            TestSubscriber<Integer> ts2 = source.test();
+
+            ts1.assertResult(1, 2, 3, 4, 5);
+            ts2.assertResult(1, 2, 3, 4, 5);
+        }
+
+        assertEquals(3, subscriptions[0]);
+    }
+
+    @Test
+    public void resubscribeBeforeTimeout() throws Exception {
+        final int[] subscriptions = { 0 };
+
+        PublishProcessor<Integer> pp = PublishProcessor.create();
+
+        Flowable<Integer> source = pp
+        .doOnSubscribe(new Consumer<Subscription>() {
+            @Override
+            public void accept(Subscription s) throws Exception {
+                subscriptions[0]++;
+            }
+        })
+        .publish()
+        .compose(FlowableRefCountTest.<Integer>refCount(500, TimeUnit.MILLISECONDS));
+
+        TestSubscriber<Integer> ts1 = source.test(0);
+
+        assertEquals(1, subscriptions[0]);
+
+        ts1.cancel();
+
+        Thread.sleep(100);
+
+        ts1 = source.test(0);
+
+        assertEquals(1, subscriptions[0]);
+
+        Thread.sleep(500);
+
+        assertEquals(1, subscriptions[0]);
+
+        pp.onNext(1);
+        pp.onNext(2);
+        pp.onNext(3);
+        pp.onNext(4);
+        pp.onNext(5);
+        pp.onComplete();
+
+        ts1.requestMore(5)
+        .assertResult(1, 2, 3, 4, 5);
+    }
+
+    @Test
+    public void letitTimeout() throws Exception {
+        final int[] subscriptions = { 0 };
+
+        PublishProcessor<Integer> pp = PublishProcessor.create();
+
+        Flowable<Integer> source = pp
+        .doOnSubscribe(new Consumer<Subscription>() {
+            @Override
+            public void accept(Subscription s) throws Exception {
+                subscriptions[0]++;
+            }
+        })
+        .publish()
+        .compose(FlowableRefCountTest.<Integer>refCount(1, 100, TimeUnit.MILLISECONDS));
+
+        TestSubscriber<Integer> ts1 = source.test(0);
+
+        assertEquals(1, subscriptions[0]);
+
+        ts1.cancel();
+
+        assertTrue(pp.hasSubscribers());
+
+        Thread.sleep(200);
+
+        assertFalse(pp.hasSubscribers());
+    }
+
+    @Test
+    public void error() {
+        Flowable.<Integer>error(new IOException())
+        .publish()
+        .compose(FlowableRefCountTest.<Integer>refCount(500, TimeUnit.MILLISECONDS))
+        .test()
+        .assertFailure(IOException.class);
+    }
+
+    @Test(expected = ClassCastException.class)
+    public void badUpstream() {
+        Flowable.range(1, 5)
+        .compose(FlowableRefCountTest.<Integer>refCount(500, TimeUnit.MILLISECONDS, Schedulers.single()))
+        ;
+    }
+
+    @Test
+    public void comeAndGo() {
+        PublishProcessor<Integer> pp = PublishProcessor.create();
+
+        Flowable<Integer> source = pp
+        .publish()
+        .compose(FlowableRefCountTest.<Integer>refCount(1));
+
+        TestSubscriber<Integer> ts1 = source.test(0);
+
+        assertTrue(pp.hasSubscribers());
+
+        for (int i = 0; i < 3; i++) {
+            TestSubscriber<Integer> ts2 = source.test();
+            ts1.cancel();
+            ts1 = ts2;
+        }
+
+        ts1.cancel();
+
+        assertFalse(pp.hasSubscribers());
+    }
+
+    @Test
+    public void unsubscribeSubscribeRace() {
+        for (int i = 0; i < 1000; i++) {
+
+            final Flowable<Integer> source = Flowable.range(1, 5)
+                    .replay()
+                    .compose(FlowableRefCountTest.<Integer>refCount(1))
+                    ;
+
+            final TestSubscriber<Integer> ts1 = source.test(0);
+
+            final TestSubscriber<Integer> ts2 = new TestSubscriber<Integer>(0);
+
+            Runnable r1 = new Runnable() {
+                @Override
+                public void run() {
+                    ts1.cancel();
+                }
+            };
+
+            Runnable r2 = new Runnable() {
+                @Override
+                public void run() {
+                    source.subscribe(ts2);
+                }
+            };
+
+            TestHelper.race(r1, r2, Schedulers.single());
+
+            ts2.requestMore(6) // FIXME RxJava replay() doesn't issue onComplete without request
+            .withTag("Round: " + i)
+            .assertResult(1, 2, 3, 4, 5);
+        }
     }
 }
