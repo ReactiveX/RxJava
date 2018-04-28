@@ -114,18 +114,17 @@ public final class FlowableRefCount<T> extends Flowable<T> {
         sd.replace(scheduler.scheduleDirect(rc, timeout, unit));
     }
 
-    void clear(RefConnection rc) {
-        connection = null;
-        DisposableHelper.dispose(rc);
-        if (source instanceof Disposable) {
-            ((Disposable)source).dispose();
-        }
-    }
 
     void terminated(RefConnection rc) {
         synchronized (this) {
             if (connection != null) {
-                clear(rc);
+                connection = null;
+                if (rc.timer != null) {
+                    rc.timer.dispose();
+                }
+                if (source instanceof Disposable) {
+                    ((Disposable)source).dispose();
+                }
             }
         }
     }
@@ -133,7 +132,11 @@ public final class FlowableRefCount<T> extends Flowable<T> {
     void timeout(RefConnection rc) {
         synchronized (this) {
             if (rc.subscriberCount == 0 && rc == connection) {
-                clear(rc);
+                connection = null;
+                DisposableHelper.dispose(rc);
+                if (source instanceof Disposable) {
+                    ((Disposable)source).dispose();
+                }
             }
         }
     }
