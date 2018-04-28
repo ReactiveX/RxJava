@@ -36,7 +36,7 @@ import io.reactivex.internal.util.ExceptionHelper;
 import io.reactivex.observables.ConnectableObservable;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.schedulers.*;
-import io.reactivex.subjects.ReplaySubject;
+import io.reactivex.subjects.*;
 
 public class ObservableRefCountTest {
 
@@ -813,6 +813,7 @@ public class ObservableRefCountTest {
 
         @Override
         protected void subscribeActual(Observer<? super Object> observer) {
+            observer.onSubscribe(Disposables.empty());
         }
     }
 
@@ -945,5 +946,39 @@ public class ObservableRefCountTest {
         } catch (NullPointerException ex) {
             assertTrue(ex.getCause() instanceof TestException);
         }
+    }
+
+    @Test(timeout = 7500)
+    public void blockingSourceAsnycCancel() throws Exception {
+        BehaviorSubject<Integer> bs = BehaviorSubject.createDefault(1);
+
+        Observable<Integer> o = bs
+        .replay(1)
+        .refCount();
+
+        o.subscribe();
+
+        final AtomicBoolean interrupted = new AtomicBoolean();
+
+        o.switchMap(new Function<Integer, ObservableSource<? extends Object>>() {
+            @Override
+            public ObservableSource<? extends Object> apply(Integer v) throws Exception {
+                return Observable.create(new ObservableOnSubscribe<Object>() {
+                    @Override
+                    public void subscribe(ObservableEmitter<Object> emitter) throws Exception {
+                        while (!emitter.isDisposed()) {
+                            Thread.sleep(100);
+                        }
+                        interrupted.set(true);
+                    }
+                });
+            }
+        })
+        .take(500, TimeUnit.MILLISECONDS)
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertResult();
+
+        assertTrue(interrupted.get());
     }
 }

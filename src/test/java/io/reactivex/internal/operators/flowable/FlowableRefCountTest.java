@@ -34,7 +34,7 @@ import io.reactivex.functions.*;
 import io.reactivex.internal.functions.Functions;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.internal.util.ExceptionHelper;
-import io.reactivex.processors.ReplayProcessor;
+import io.reactivex.processors.*;
 import io.reactivex.schedulers.*;
 import io.reactivex.subscribers.TestSubscriber;
 
@@ -829,6 +829,7 @@ public class FlowableRefCountTest {
 
         @Override
         protected void subscribeActual(Subscriber<? super Object> observer) {
+            observer.onSubscribe(new BooleanSubscription());
         }
     }
 
@@ -961,5 +962,39 @@ public class FlowableRefCountTest {
         } catch (NullPointerException ex) {
             assertTrue(ex.getCause() instanceof TestException);
         }
+    }
+
+    @Test(timeout = 7500)
+    public void blockingSourceAsnycCancel() throws Exception {
+        BehaviorProcessor<Integer> bp = BehaviorProcessor.createDefault(1);
+
+        Flowable<Integer> o = bp
+        .replay(1)
+        .refCount();
+
+        o.subscribe();
+
+        final AtomicBoolean interrupted = new AtomicBoolean();
+
+        o.switchMap(new Function<Integer, Publisher<? extends Object>>() {
+            @Override
+            public Publisher<? extends Object> apply(Integer v) throws Exception {
+                return Flowable.create(new FlowableOnSubscribe<Object>() {
+                    @Override
+                    public void subscribe(FlowableEmitter<Object> emitter) throws Exception {
+                        while (!emitter.isCancelled()) {
+                            Thread.sleep(100);
+                        }
+                        interrupted.set(true);
+                    }
+                }, BackpressureStrategy.MISSING);
+            }
+        })
+        .takeUntil(Flowable.timer(500, TimeUnit.MILLISECONDS))
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertResult();
+
+        assertTrue(interrupted.get());
     }
 }
