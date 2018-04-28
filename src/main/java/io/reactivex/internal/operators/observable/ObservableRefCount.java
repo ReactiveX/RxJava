@@ -111,13 +111,18 @@ public final class ObservableRefCount<T> extends Observable<T> {
         sd.replace(scheduler.scheduleDirect(rc, timeout, unit));
     }
 
+    void clear(RefConnection rc) {
+        connection = null;
+        DisposableHelper.dispose(rc);
+        if (source instanceof Disposable) {
+            ((Disposable)source).dispose();
+        }
+    }
+
     void terminated(RefConnection rc) {
         synchronized (this) {
             if (connection != null) {
-                connection = null;
-                if (source instanceof Disposable) {
-                    ((Disposable)source).dispose();
-                }
+                clear(rc);
             }
         }
     }
@@ -125,11 +130,7 @@ public final class ObservableRefCount<T> extends Observable<T> {
     void timeout(RefConnection rc) {
         synchronized (this) {
             if (rc.subscriberCount == 0 && rc == connection) {
-                connection = null;
-                DisposableHelper.dispose(rc);
-                if (source instanceof Disposable) {
-                    ((Disposable)source).dispose();
-                }
+                clear(rc);
             }
         }
     }
