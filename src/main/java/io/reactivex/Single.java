@@ -321,6 +321,54 @@ public abstract class Single<T> implements SingleSource<T> {
     }
 
     /**
+     * Concatenates a sequence of SingleSource eagerly into a single stream of values.
+     * <p>
+     * Eager concatenation means that once a subscriber subscribes, this operator subscribes to all of the
+     * source SingleSources. The operator buffers the value emitted by these SingleSources and then drains them
+     * in order, each one after the previous one completes.
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The operator honors backpressure from downstream.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>This method does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param <T> the value type
+     * @param sources a sequence of Single that need to be eagerly concatenated
+     * @return the new Flowable instance with the specified concatenation behavior
+     */
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    @BackpressureSupport(BackpressureKind.FULL)
+    @CheckReturnValue
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public static <T> Flowable<T> concatArrayEager(SingleSource<? extends T>... sources) {
+        return Flowable.fromArray(sources).concatMapEager((Function)SingleToPublisher.instance());
+    }
+
+    /**
+     * Concatenates a sequence of SingleSources eagerly into a single stream of values.
+     * <p>
+     * Eager concatenation means that once a subscriber subscribes, this operator subscribes to all of the
+     * source SingleSources. The operator buffers the values emitted by these SingleSources and then drains them
+     * in order, each one after the previous one completes.
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>Backpressure is honored towards the downstream.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>This method does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param <T> the value type
+     * @param sources a sequence of SingleSource that need to be eagerly concatenated
+     * @return the new Flowable instance with the specified concatenation behavior
+     */
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    @BackpressureSupport(BackpressureKind.FULL)
+    @CheckReturnValue
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public static <T> Flowable<T> concatEager(Iterable<? extends SingleSource<? extends T>> sources) {
+        return Flowable.fromIterable(sources).concatMapEager((Function)SingleToPublisher.instance());
+    }
+
+    /**
      * Provides an API (via a cold Completable) that bridges the reactive world with the callback-style world.
      * <p>
      * Example:

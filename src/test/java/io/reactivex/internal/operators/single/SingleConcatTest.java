@@ -14,9 +14,12 @@
 package io.reactivex.internal.operators.single;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
 
+import io.reactivex.processors.PublishProcessor;
+import io.reactivex.subscribers.TestSubscriber;
 import org.junit.Test;
 
 import io.reactivex.*;
@@ -65,6 +68,44 @@ public class SingleConcatTest {
             .assertNoErrors()
             .assertComplete();
         }
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void concatArrayEagerTest() {
+        PublishProcessor<String> pp1 = PublishProcessor.create();
+        PublishProcessor<String> pp2 = PublishProcessor.create();
+
+        TestSubscriber<String> ts = Single.concatArrayEager(pp1.single("1"), pp2.single("2")).test();
+
+        assertTrue(pp1.hasSubscribers());
+        assertTrue(pp2.hasSubscribers());
+
+        pp2.onComplete();
+        ts.assertEmpty();
+        pp1.onComplete();
+
+        ts.assertResult("1", "2");
+        ts.assertComplete();
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void concatEagerIterableTest() {
+        PublishProcessor<String> pp1 = PublishProcessor.create();
+        PublishProcessor<String> pp2 = PublishProcessor.create();
+
+        TestSubscriber<String> ts = Single.concatEager(Arrays.asList(pp1.single("2"), pp2.single("1"))).test();
+
+        assertTrue(pp1.hasSubscribers());
+        assertTrue(pp2.hasSubscribers());
+
+        pp2.onComplete();
+        ts.assertEmpty();
+        pp1.onComplete();
+
+        ts.assertResult("2", "1");
+        ts.assertComplete();
     }
 
     @SuppressWarnings("unchecked")
