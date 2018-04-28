@@ -60,7 +60,7 @@ import io.reactivex.schedulers.Schedulers;
 public abstract class Single<T> implements SingleSource<T> {
 
     /**
-     * Runs multiple Single sources and signals the events of the first one that signals (cancelling
+     * Runs multiple SingleSources and signals the events of the first one that signals (cancelling
      * the rest).
      * <dl>
      * <dt><b>Scheduler:</b></dt>
@@ -80,7 +80,7 @@ public abstract class Single<T> implements SingleSource<T> {
     }
 
     /**
-     * Runs multiple Single sources and signals the events of the first one that signals (cancelling
+     * Runs multiple SingleSources and signals the events of the first one that signals (cancelling
      * the rest).
      * <dl>
      * <dt><b>Scheduler:</b></dt>
@@ -106,7 +106,7 @@ public abstract class Single<T> implements SingleSource<T> {
     }
 
     /**
-     * Concatenate the single values, in a non-overlapping fashion, of the Single sources provided by
+     * Concatenate the single values, in a non-overlapping fashion, of the SingleSources provided by
      * an Iterable sequence.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
@@ -127,7 +127,7 @@ public abstract class Single<T> implements SingleSource<T> {
     }
 
     /**
-     * Concatenate the single values, in a non-overlapping fashion, of the Single sources provided by
+     * Concatenate the single values, in a non-overlapping fashion, of the SingleSources provided by
      * an Observable sequence.
      * <dl>
      * <dt><b>Scheduler:</b></dt>
@@ -147,7 +147,7 @@ public abstract class Single<T> implements SingleSource<T> {
     }
 
     /**
-     * Concatenate the single values, in a non-overlapping fashion, of the Single sources provided by
+     * Concatenate the single values, in a non-overlapping fashion, of the SingleSources provided by
      * a Publisher sequence.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
@@ -169,7 +169,7 @@ public abstract class Single<T> implements SingleSource<T> {
     }
 
     /**
-     * Concatenate the single values, in a non-overlapping fashion, of the Single sources provided by
+     * Concatenate the single values, in a non-overlapping fashion, of the SingleSources provided by
      * a Publisher sequence and prefetched by the specified amount.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
@@ -299,7 +299,7 @@ public abstract class Single<T> implements SingleSource<T> {
     }
 
     /**
-     * Concatenate the single values, in a non-overlapping fashion, of the Single sources provided in
+     * Concatenate the single values, in a non-overlapping fashion, of the SingleSources provided in
      * an array.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
@@ -345,7 +345,7 @@ public abstract class Single<T> implements SingleSource<T> {
     }
 
     /**
-     * Concatenates a Publisher sequence of Single sources eagerly into a single stream of values.
+     * Concatenates a Publisher sequence of SingleSources eagerly into a single stream of values.
      * <p>
      * Eager concatenation means that once a subscriber subscribes, this operator subscribes to all of the
      * emitted source Publishers as they are observed. The operator buffers the values emitted by these
