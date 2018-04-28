@@ -110,6 +110,25 @@ public class SingleConcatTest {
 
     @SuppressWarnings("unchecked")
     @Test
+    public void concatEagerPublisherTest() {
+        PublishProcessor<String> pp1 = PublishProcessor.create();
+        PublishProcessor<String> pp2 = PublishProcessor.create();
+
+        TestSubscriber<String> ts = Single.concatEager(Flowable.just(pp1.single("1"), pp2.single("2"))).test();
+
+        assertTrue(pp1.hasSubscribers());
+        assertTrue(pp2.hasSubscribers());
+
+        pp2.onComplete();
+        ts.assertEmpty();
+        pp1.onComplete();
+
+        ts.assertResult("1", "2");
+        ts.assertComplete();
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
     public void concatObservable() {
         for (int i = 1; i < 100; i++) {
             Single<Integer>[] array = new Single[i];
