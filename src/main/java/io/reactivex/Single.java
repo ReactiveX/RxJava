@@ -345,7 +345,7 @@ public abstract class Single<T> implements SingleSource<T> {
     }
 
     /**
-     * Concatenates a Publisher sequence of Publishers eagerly into a single stream of values.
+     * Concatenates a Publisher sequence of Single sources eagerly into a single stream of values.
      * <p>
      * Eager concatenation means that once a subscriber subscribes, this operator subscribes to all of the
      * emitted source Publishers as they are observed. The operator buffers the values emitted by these
