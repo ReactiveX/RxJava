@@ -226,6 +226,11 @@ public class ParamValidationCheckerTest {
         addOverride(new ParamOverride(Flowable.class, 0, ParamMode.ANY, "throttleLast", Long.TYPE, TimeUnit.class));
         addOverride(new ParamOverride(Flowable.class, 0, ParamMode.ANY, "throttleLast", Long.TYPE, TimeUnit.class, Scheduler.class));
 
+        // negative time is considered as zero time
+        addOverride(new ParamOverride(Flowable.class, 0, ParamMode.ANY, "throttleLatest", Long.TYPE, TimeUnit.class));
+        addOverride(new ParamOverride(Flowable.class, 0, ParamMode.ANY, "throttleLatest", Long.TYPE, TimeUnit.class, Scheduler.class));
+        addOverride(new ParamOverride(Flowable.class, 0, ParamMode.ANY, "throttleLatest", Long.TYPE, TimeUnit.class, Boolean.TYPE));
+        addOverride(new ParamOverride(Flowable.class, 0, ParamMode.ANY, "throttleLatest", Long.TYPE, TimeUnit.class, Scheduler.class, Boolean.TYPE));
 
         // negative buffer time is considered as zero buffer time
         addOverride(new ParamOverride(Flowable.class, 0, ParamMode.ANY, "window", Long.TYPE, TimeUnit.class));
@@ -470,6 +475,11 @@ public class ParamValidationCheckerTest {
         addOverride(new ParamOverride(Observable.class, 0, ParamMode.ANY, "throttleLast", Long.TYPE, TimeUnit.class));
         addOverride(new ParamOverride(Observable.class, 0, ParamMode.ANY, "throttleLast", Long.TYPE, TimeUnit.class, Scheduler.class));
 
+        // negative time is considered as zero time
+        addOverride(new ParamOverride(Observable.class, 0, ParamMode.ANY, "throttleLatest", Long.TYPE, TimeUnit.class));
+        addOverride(new ParamOverride(Observable.class, 0, ParamMode.ANY, "throttleLatest", Long.TYPE, TimeUnit.class, Scheduler.class));
+        addOverride(new ParamOverride(Observable.class, 0, ParamMode.ANY, "throttleLatest", Long.TYPE, TimeUnit.class, Boolean.TYPE));
+        addOverride(new ParamOverride(Observable.class, 0, ParamMode.ANY, "throttleLatest", Long.TYPE, TimeUnit.class, Scheduler.class, Boolean.TYPE));
 
         // negative buffer time is considered as zero buffer time
         addOverride(new ParamOverride(Observable.class, 0, ParamMode.ANY, "window", Long.TYPE, TimeUnit.class));
