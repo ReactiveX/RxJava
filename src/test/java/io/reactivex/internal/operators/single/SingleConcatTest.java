@@ -108,7 +108,6 @@ public class SingleConcatTest {
         ts.assertComplete();
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void concatEagerPublisherTest() {
         PublishProcessor<String> pp1 = PublishProcessor.create();

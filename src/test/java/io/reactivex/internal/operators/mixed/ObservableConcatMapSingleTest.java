@@ -340,7 +340,7 @@ public class ObservableConcatMapSingleTest {
     @Test
     public void checkUnboundedInnerQueue() {
         SingleSubject<Integer> ss = SingleSubject.create();
-        
+
         @SuppressWarnings("unchecked")
         TestObserver<Integer> to = Observable
                 .fromArray(ss, Single.just(2), Single.just(3), Single.just(4))
