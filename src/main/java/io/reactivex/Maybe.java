@@ -3503,7 +3503,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     }
 
     /**
-     * Instructs a Maybe to pass control to another MaybeSource rather than invoking
+     * Instructs a Maybe to pass control to another {@link MaybeSource} rather than invoking
      * {@link MaybeObserver#onError onError} if it encounters an error.
      * <p>
      * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/onErrorResumeNext.png" alt="">
@@ -3516,7 +3516,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * </dl>
      *
      * @param next
-     *            the next Maybe source that will take over if the source Maybe encounters
+     *            the next {@code MaybeSource} that will take over if the source Maybe encounters
      *            an error
      * @return the new Maybe instance
      * @see <a href="http://reactivex.io/documentation/operators/catch.html">ReactiveX operators documentation: Catch</a>
@@ -4348,14 +4348,14 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     }
 
     /**
-     * If this Maybe source didn't signal an event before the timeoutIndicator MaybeSource signals, a
-     * TimeoutException is signalled instead.
+     * If the current {@code Maybe} didn't signal an event before the {@code timeoutIndicator} {@link MaybeSource} signals, a
+     * {@link TimeoutException} is signaled instead.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code timeout} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * @param <U> the value type of the
-     * @param timeoutIndicator the MaybeSource that indicates the timeout by signalling onSuccess
+     * @param timeoutIndicator the {@code MaybeSource} that indicates the timeout by signaling onSuccess
      * or onComplete.
      * @return the new Maybe instance
      */
@@ -4367,17 +4367,17 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     }
 
     /**
-     * If the current Maybe source didn't signal an event before the timeoutIndicator MaybeSource signals,
-     * the current Maybe is cancelled and the {@code fallback} MaybeSource subscribed to
+     * If the current {@code Maybe} didn't signal an event before the {@code timeoutIndicator} {@link MaybeSource} signals,
+     * the current {@code Maybe} is cancelled and the {@code fallback} {@code MaybeSource} subscribed to
      * as a continuation.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code timeout} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * @param <U> the value type of the
-     * @param timeoutIndicator the MaybeSource that indicates the timeout by signalling onSuccess
-     * or onComplete.
-     * @param fallback the MaybeSource that is subscribed to if the current Maybe times out
+     * @param timeoutIndicator the {@code MaybeSource} that indicates the timeout by signaling {@code onSuccess}
+     * or {@code onComplete}.
+     * @param fallback the {@code MaybeSource} that is subscribed to if the current {@code Maybe} times out
      * @return the new Maybe instance
      */
     @CheckReturnValue
@@ -4389,8 +4389,8 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     }
 
     /**
-     * If this Maybe source didn't signal an event before the timeoutIndicator Publisher signals, a
-     * TimeoutException is signalled instead.
+     * If the current {@code Maybe} source didn't signal an event before the {@code timeoutIndicator} {@link Publisher} signals, a
+     * {@link TimeoutException} is signaled instead.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The {@code timeoutIndicator} {@link Publisher} is consumed in an unbounded manner and
@@ -4399,8 +4399,8 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      *  <dd>{@code timeout} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * @param <U> the value type of the
-     * @param timeoutIndicator the MaybeSource that indicates the timeout by signalling onSuccess
-     * or onComplete.
+     * @param timeoutIndicator the {@code MaybeSource} that indicates the timeout by signaling {@code onSuccess}
+     * or {@code onComplete}.
      * @return the new Maybe instance
      */
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
@@ -4412,8 +4412,8 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     }
 
     /**
-     * If the current Maybe source didn't signal an event before the timeoutIndicator Publisher signals,
-     * the current Maybe is cancelled and the {@code fallback} MaybeSource subscribed to
+     * If the current {@code Maybe} didn't signal an event before the {@code timeoutIndicator} {@link Publisher} signals,
+     * the current {@code Maybe} is cancelled and the {@code fallback} {@code MaybeSource} subscribed to
      * as a continuation.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
@@ -4423,9 +4423,9 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      *  <dd>{@code timeout} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * @param <U> the value type of the
-     * @param timeoutIndicator the MaybeSource that indicates the timeout by signalling onSuccess
-     * or onComplete
-     * @param fallback the MaybeSource that is subscribed to if the current Maybe times out
+     * @param timeoutIndicator the {@code MaybeSource} that indicates the timeout by signaling {@code onSuccess}
+     * or {@code onComplete}
+     * @param fallback the {@code MaybeSource} that is subscribed to if the current {@code Maybe} times out
      * @return the new Maybe instance
      */
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)

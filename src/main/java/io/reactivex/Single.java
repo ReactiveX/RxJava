@@ -336,7 +336,6 @@ public abstract class Single<T> implements SingleSource<T> {
      * @param sources a sequence of Single that need to be eagerly concatenated
      * @return the new Flowable instance with the specified concatenation behavior
      */
-    @SuppressWarnings({ "rawtypes", "unchecked" })
     @BackpressureSupport(BackpressureKind.FULL)
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -362,7 +361,6 @@ public abstract class Single<T> implements SingleSource<T> {
      * @param sources a sequence of Publishers that need to be eagerly concatenated
      * @return the new Publisher instance with the specified concatenation behavior
      */
-    @SuppressWarnings({ "rawtypes", "unchecked" })
     @BackpressureSupport(BackpressureKind.FULL)
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -386,7 +384,6 @@ public abstract class Single<T> implements SingleSource<T> {
      * @param sources a sequence of SingleSource that need to be eagerly concatenated
      * @return the new Flowable instance with the specified concatenation behavior
      */
-    @SuppressWarnings({ "rawtypes", "unchecked" })
     @BackpressureSupport(BackpressureKind.FULL)
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -436,14 +433,14 @@ public abstract class Single<T> implements SingleSource<T> {
     }
 
     /**
-     * Calls a Callable for each individual SingleObserver to return the actual Single source to
+     * Calls a {@link Callable} for each individual {@link SingleObserver} to return the actual {@link SingleSource} to
      * be subscribed to.
      * <dl>
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code defer} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * @param <T> the value type
-     * @param singleSupplier the Callable that is called for each individual SingleObserver and
+     * @param singleSupplier the {@code Callable} that is called for each individual {@code SingleObserver} and
      * returns a SingleSource instance to subscribe to
      * @return the new Single instance
      */

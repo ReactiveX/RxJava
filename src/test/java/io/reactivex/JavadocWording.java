@@ -866,12 +866,12 @@ public class JavadocWording {
                 break;
             }
         }
-        
+
         // remove linebreaks and multi-spaces
         String javadoc2 = m.javadoc.replace("\n", " ").replace("\r", " ")
                 .replace(" * ", " ")
                 .replaceAll("\\s+", " ");
-        
+
         // strip {@xxx } tags
         int kk = 0;
         for (;;) {
@@ -881,12 +881,12 @@ public class JavadocWording {
             }
             int nn = javadoc2.indexOf(" ", jj + 2);
             int mm = javadoc2.indexOf("}", jj + 2);
-            
+
             javadoc2 = javadoc2.substring(0, jj) + javadoc2.substring(nn + 1, mm) + javadoc2.substring(mm + 1);
 
             kk = mm + 1;
         }
-        
+
         jdx = 0;
         for (;;) {
             idx = javadoc2.indexOf(wrongPre + " " + word, jdx);
