@@ -207,4 +207,19 @@ public class FlowableLimitTest implements LongConsumer, Action {
             ts.assertResult(1, 2, 3, 4, 5);
         }
     }
+
+    @Test
+    public void errorAfterLimitReached() {
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            Flowable.error(new TestException())
+            .limit(0)
+            .test()
+            .assertResult();
+
+            TestHelper.assertUndeliverable(errors, 0, TestException.class);
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
 }
