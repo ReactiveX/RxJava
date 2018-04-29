@@ -12039,9 +12039,10 @@ public abstract class Observable<T> implements ObservableSource<T> {
 
     /**
      * Operator implementations (both source and intermediate) should implement this method that
-     * performs the necessary business logic.
-     * <p>There is no need to call any of the plugin hooks on the current Observable instance or
-     * the Subscriber.
+     * performs the necessary business logic and handles the incoming {@link Observer}s.
+     * <p>There is no need to call any of the plugin hooks on the current {@code Observable} instance or
+     * the {@code Observer}; all hooks and basic safeguards have been
+     * applied by {@link #subscribe(Observer)} before this method gets called.
      * @param observer the incoming Observer, never null
      */
     protected abstract void subscribeActual(Observer<? super T> observer);

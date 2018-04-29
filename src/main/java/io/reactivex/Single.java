@@ -3304,7 +3304,10 @@ public abstract class Single<T> implements SingleSource<T> {
     }
 
     /**
-     * Override this method in subclasses to handle the incoming SingleObservers.
+     * Implement this method in subclasses to handle the incoming {@link SingleObserver}s.
+     * <p>There is no need to call any of the plugin hooks on the current {@code Single} instance or
+     * the {@code SingleObserver}; all hooks and basic safeguards have been
+     * applied by {@link #subscribe(SingleObserver)} before this method gets called.
      * @param observer the SingleObserver to handle, not null
      */
     protected abstract void subscribeActual(@NonNull SingleObserver<? super T> observer);
