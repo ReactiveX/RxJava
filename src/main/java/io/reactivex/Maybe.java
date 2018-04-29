@@ -4082,7 +4082,10 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     }
 
     /**
-     * Override this method in subclasses to handle the incoming MaybeObservers.
+     * Implement this method in subclasses to handle the incoming {@link MaybeObserver}s.
+     * <p>There is no need to call any of the plugin hooks on the current {@code Maybe} instance or
+     * the {@code MaybeObserver}; all hooks and basic safeguards have been
+     * applied by {@link #subscribe(MaybeObserver)} before this method gets called.
      * @param observer the MaybeObserver to handle, not null
      */
     protected abstract void subscribeActual(MaybeObserver<? super T> observer);

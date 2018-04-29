@@ -14333,9 +14333,10 @@ public abstract class Flowable<T> implements Publisher<T> {
 
     /**
      * Operator implementations (both source and intermediate) should implement this method that
-     * performs the necessary business logic.
-     * <p>There is no need to call any of the plugin hooks on the current Flowable instance or
-     * the Subscriber.
+     * performs the necessary business logic and handles the incoming {@link Subscriber}s.
+     * <p>There is no need to call any of the plugin hooks on the current {@code Flowable} instance or
+     * the {@code Subscriber}; all hooks and basic safeguards have been
+     * applied by {@link #subscribe(Subscriber)} before this method gets called.
      * @param s the incoming Subscriber, never null
      */
     protected abstract void subscribeActual(Subscriber<? super T> s);

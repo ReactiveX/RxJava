@@ -1927,8 +1927,11 @@ public abstract class Completable implements CompletableSource {
     }
 
     /**
-     * Implement this to handle the incoming CompletableObserver and
+     * Implement this method to handle the incoming {@link CompletableObserver}s and
      * perform the business logic in your operator.
+     * <p>There is no need to call any of the plugin hooks on the current {@code Completable} instance or
+     * the {@code CompletableObserver}; all hooks and basic safeguards have been
+     * applied by {@link #subscribe(CompletableObserver)} before this method gets called.
      * @param s the CompletableObserver instance, never null
      */
     protected abstract void subscribeActual(CompletableObserver s);
