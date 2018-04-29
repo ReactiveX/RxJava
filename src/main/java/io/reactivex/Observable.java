@@ -5314,11 +5314,18 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * Runs the source observable to a terminal event, ignoring any values and rethrowing any exception.
      * <p>
      * <img width="640" height="270" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/blockingSubscribe.o.0.png" alt="">
+     * <p>
+     * Note that calling this method will block the caller thread until the upstream terminates
+     * normally or with an error. Therefore, calling this method from special threads such as the
+     * Android Main Thread or the Swing Event Dispatch Thread is not recommended.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code blockingSubscribe} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * @since 2.0
+     * @see #blockingSubscribe(Consumer)
+     * @see #blockingSubscribe(Consumer, Consumer)
+     * @see #blockingSubscribe(Consumer, Consumer, Action)
      */
     @SchedulerSupport(SchedulerSupport.NONE)
     public final void blockingSubscribe() {
@@ -5330,15 +5337,23 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * <p>
      * <img width="640" height="393" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/blockingSubscribe.o.1.png" alt="">
      * <p>
-     * If the Observable emits an error, it is wrapped into an
+     * If the {@code Observable} emits an error, it is wrapped into an
      * {@link io.reactivex.exceptions.OnErrorNotImplementedException OnErrorNotImplementedException}
      * and routed to the RxJavaPlugins.onError handler.
+     * Using the overloads {@link #blockingSubscribe(Consumer, Consumer)}
+     * or {@link #blockingSubscribe(Consumer, Consumer, Action)} instead is recommended.
+     * <p>
+     * Note that calling this method will block the caller thread until the upstream terminates
+     * normally or with an error. Therefore, calling this method from special threads such as the
+     * Android Main Thread or the Swing Event Dispatch Thread is not recommended.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code blockingSubscribe} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * @param onNext the callback action for each source value
      * @since 2.0
+     * @see #blockingSubscribe(Consumer, Consumer)
+     * @see #blockingSubscribe(Consumer, Consumer, Action)
      */
     @SchedulerSupport(SchedulerSupport.NONE)
     public final void blockingSubscribe(Consumer<? super T> onNext) {
@@ -5349,6 +5364,10 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * Subscribes to the source and calls the given callbacks <strong>on the current thread</strong>.
      * <p>
      * <img width="640" height="396" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/blockingSubscribe.o.2.png" alt="">
+     * <p>
+     * Note that calling this method will block the caller thread until the upstream terminates
+     * normally or with an error. Therefore, calling this method from special threads such as the
+     * Android Main Thread or the Swing Event Dispatch Thread is not recommended.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code blockingSubscribe} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -5356,6 +5375,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * @param onNext the callback action for each source value
      * @param onError the callback action for an error event
      * @since 2.0
+     * @see #blockingSubscribe(Consumer, Consumer, Action)
      */
     @SchedulerSupport(SchedulerSupport.NONE)
     public final void blockingSubscribe(Consumer<? super T> onNext, Consumer<? super Throwable> onError) {
@@ -5367,6 +5387,10 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * Subscribes to the source and calls the given callbacks <strong>on the current thread</strong>.
      * <p>
      * <img width="640" height="394" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/blockingSubscribe.o.png" alt="">
+     * <p>
+     * Note that calling this method will block the caller thread until the upstream terminates
+     * normally or with an error. Therefore, calling this method from special threads such as the
+     * Android Main Thread or the Swing Event Dispatch Thread is not recommended.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code blockingSubscribe} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -5382,18 +5406,24 @@ public abstract class Observable<T> implements ObservableSource<T> {
     }
 
     /**
-     * Subscribes to the source and calls the Observer methods <strong>on the current thread</strong>.
+     * Subscribes to the source and calls the {@link Observer} methods <strong>on the current thread</strong>.
+     * <p>
+     * Note that calling this method will block the caller thread until the upstream terminates
+     * normally, with an error or the {@code Observer} disposes the {@link Disposable} it receives via
+     * {@link Observer#onSubscribe(Disposable)}.
+     * Therefore, calling this method from special threads such as the
+     * Android Main Thread or the Swing Event Dispatch Thread is not recommended.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code blockingSubscribe} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * The a dispose() call is composed through.
-     * @param subscriber the subscriber to forward events and calls to in the current thread
+     * @param observer the {@code Observer} instance to forward events and calls to in the current thread
      * @since 2.0
      */
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final void blockingSubscribe(Observer<? super T> subscriber) {
-        ObservableBlockingSubscribe.subscribe(this, subscriber);
+    public final void blockingSubscribe(Observer<? super T> observer) {
+        ObservableBlockingSubscribe.subscribe(this, observer);
     }
 
     /**

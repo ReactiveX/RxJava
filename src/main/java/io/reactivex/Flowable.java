@@ -5801,6 +5801,10 @@ public abstract class Flowable<T> implements Publisher<T> {
 
     /**
      * Runs the source Flowable to a terminal event, ignoring any values and rethrowing any exception.
+     * <p>
+     * Note that calling this method will block the caller thread until the upstream terminates
+     * normally or with an error. Therefore, calling this method from special threads such as the
+     * Android Main Thread or the Swing Event Dispatch Thread is not recommended.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator consumes the source {@code Flowable} in an unbounded manner
@@ -5809,6 +5813,9 @@ public abstract class Flowable<T> implements Publisher<T> {
      *  <dd>{@code blockingSubscribe} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * @since 2.0
+     * @see #blockingSubscribe(Consumer)
+     * @see #blockingSubscribe(Consumer, Consumer)
+     * @see #blockingSubscribe(Consumer, Consumer, Action)
      */
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -5822,6 +5829,12 @@ public abstract class Flowable<T> implements Publisher<T> {
      * If the Flowable emits an error, it is wrapped into an
      * {@link io.reactivex.exceptions.OnErrorNotImplementedException OnErrorNotImplementedException}
      * and routed to the RxJavaPlugins.onError handler.
+     * Using the overloads {@link #blockingSubscribe(Consumer, Consumer)}
+     * or {@link #blockingSubscribe(Consumer, Consumer, Action)} instead is recommended.
+     * <p>
+     * Note that calling this method will block the caller thread until the upstream terminates
+     * normally or with an error. Therefore, calling this method from special threads such as the
+     * Android Main Thread or the Swing Event Dispatch Thread is not recommended.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator consumes the source {@code Flowable} in an unbounded manner
@@ -5831,6 +5844,8 @@ public abstract class Flowable<T> implements Publisher<T> {
      * </dl>
      * @param onNext the callback action for each source value
      * @since 2.0
+     * @see #blockingSubscribe(Consumer, Consumer)
+     * @see #blockingSubscribe(Consumer, Consumer, Action)
      */
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -5840,6 +5855,10 @@ public abstract class Flowable<T> implements Publisher<T> {
 
     /**
      * Subscribes to the source and calls the given callbacks <strong>on the current thread</strong>.
+     * <p>
+     * Note that calling this method will block the caller thread until the upstream terminates
+     * normally or with an error. Therefore, calling this method from special threads such as the
+     * Android Main Thread or the Swing Event Dispatch Thread is not recommended.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator consumes the source {@code Flowable} in an unbounded manner
@@ -5850,6 +5869,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @param onNext the callback action for each source value
      * @param onError the callback action for an error event
      * @since 2.0
+     * @see #blockingSubscribe(Consumer, Consumer, Action)
      */
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -5860,6 +5880,10 @@ public abstract class Flowable<T> implements Publisher<T> {
 
     /**
      * Subscribes to the source and calls the given callbacks <strong>on the current thread</strong>.
+     * <p>
+     * Note that calling this method will block the caller thread until the upstream terminates
+     * normally or with an error. Therefore, calling this method from special threads such as the
+     * Android Main Thread or the Swing Event Dispatch Thread is not recommended.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator consumes the source {@code Flowable} in an unbounded manner
@@ -5879,7 +5903,13 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     /**
-     * Subscribes to the source and calls the Subscriber methods <strong>on the current thread</strong>.
+     * Subscribes to the source and calls the {@link Subscriber} methods <strong>on the current thread</strong>.
+     * <p>
+     * Note that calling this method will block the caller thread until the upstream terminates
+     * normally, with an error or the {@code Subscriber} cancels the {@link Subscription} it receives via
+     * {@link Subscriber#onSubscribe(Subscription)}.
+     * Therefore, calling this method from special threads such as the
+     * Android Main Thread or the Swing Event Dispatch Thread is not recommended.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The supplied {@code Subscriber} determines how backpressure is applied.</dd>
