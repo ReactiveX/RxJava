@@ -19,6 +19,7 @@ import org.reactivestreams.*;
 
 import io.reactivex.*;
 import io.reactivex.internal.subscriptions.*;
+import io.reactivex.plugins.RxJavaPlugins;
 
 public final class FlowableTake<T> extends AbstractFlowableWithUpstream<T, T> {
     final long limit;
@@ -75,6 +76,8 @@ public final class FlowableTake<T> extends AbstractFlowableWithUpstream<T, T> {
                 done = true;
                 subscription.cancel();
                 actual.onError(t);
+            } else {
+                RxJavaPlugins.onError(t);
             }
         }
         @Override
