@@ -60,7 +60,7 @@ import io.reactivex.schedulers.Schedulers;
 public abstract class Single<T> implements SingleSource<T> {
 
     /**
-     * Runs multiple Single sources and signals the events of the first one that signals (cancelling
+     * Runs multiple SingleSources and signals the events of the first one that signals (cancelling
      * the rest).
      * <dl>
      * <dt><b>Scheduler:</b></dt>
@@ -80,7 +80,7 @@ public abstract class Single<T> implements SingleSource<T> {
     }
 
     /**
-     * Runs multiple Single sources and signals the events of the first one that signals (cancelling
+     * Runs multiple SingleSources and signals the events of the first one that signals (cancelling
      * the rest).
      * <dl>
      * <dt><b>Scheduler:</b></dt>
@@ -106,7 +106,7 @@ public abstract class Single<T> implements SingleSource<T> {
     }
 
     /**
-     * Concatenate the single values, in a non-overlapping fashion, of the Single sources provided by
+     * Concatenate the single values, in a non-overlapping fashion, of the SingleSources provided by
      * an Iterable sequence.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
@@ -127,7 +127,7 @@ public abstract class Single<T> implements SingleSource<T> {
     }
 
     /**
-     * Concatenate the single values, in a non-overlapping fashion, of the Single sources provided by
+     * Concatenate the single values, in a non-overlapping fashion, of the SingleSources provided by
      * an Observable sequence.
      * <dl>
      * <dt><b>Scheduler:</b></dt>
@@ -147,7 +147,7 @@ public abstract class Single<T> implements SingleSource<T> {
     }
 
     /**
-     * Concatenate the single values, in a non-overlapping fashion, of the Single sources provided by
+     * Concatenate the single values, in a non-overlapping fashion, of the SingleSources provided by
      * a Publisher sequence.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
@@ -169,7 +169,7 @@ public abstract class Single<T> implements SingleSource<T> {
     }
 
     /**
-     * Concatenate the single values, in a non-overlapping fashion, of the Single sources provided by
+     * Concatenate the single values, in a non-overlapping fashion, of the SingleSources provided by
      * a Publisher sequence and prefetched by the specified amount.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
@@ -299,7 +299,7 @@ public abstract class Single<T> implements SingleSource<T> {
     }
 
     /**
-     * Concatenate the single values, in a non-overlapping fashion, of the Single sources provided in
+     * Concatenate the single values, in a non-overlapping fashion, of the SingleSources provided in
      * an array.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
@@ -318,6 +318,80 @@ public abstract class Single<T> implements SingleSource<T> {
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public static <T> Flowable<T> concatArray(SingleSource<? extends T>... sources) {
         return RxJavaPlugins.onAssembly(new FlowableConcatMap(Flowable.fromArray(sources), SingleInternalHelper.toFlowable(), 2, ErrorMode.BOUNDARY));
+    }
+
+    /**
+     * Concatenates a sequence of SingleSource eagerly into a single stream of values.
+     * <p>
+     * Eager concatenation means that once a subscriber subscribes, this operator subscribes to all of the
+     * source SingleSources. The operator buffers the value emitted by these SingleSources and then drains them
+     * in order, each one after the previous one completes.
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The operator honors backpressure from downstream.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>This method does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param <T> the value type
+     * @param sources a sequence of Single that need to be eagerly concatenated
+     * @return the new Flowable instance with the specified concatenation behavior
+     */
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    @BackpressureSupport(BackpressureKind.FULL)
+    @CheckReturnValue
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public static <T> Flowable<T> concatArrayEager(SingleSource<? extends T>... sources) {
+        return Flowable.fromArray(sources).concatMapEager(SingleInternalHelper.<T>toFlowable());
+    }
+
+    /**
+     * Concatenates a Publisher sequence of SingleSources eagerly into a single stream of values.
+     * <p>
+     * Eager concatenation means that once a subscriber subscribes, this operator subscribes to all of the
+     * emitted source Publishers as they are observed. The operator buffers the values emitted by these
+     * Publishers and then drains them in order, each one after the previous one completes.
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>Backpressure is honored towards the downstream and the outer Publisher is
+     *  expected to support backpressure. Violating this assumption, the operator will
+     *  signal {@link io.reactivex.exceptions.MissingBackpressureException}.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>This method does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param <T> the value type
+     * @param sources a sequence of Publishers that need to be eagerly concatenated
+     * @return the new Publisher instance with the specified concatenation behavior
+     */
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    @BackpressureSupport(BackpressureKind.FULL)
+    @CheckReturnValue
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public static <T> Flowable<T> concatEager(Publisher<? extends SingleSource<? extends T>> sources) {
+        return Flowable.fromPublisher(sources).concatMapEager(SingleInternalHelper.<T>toFlowable());
+    }
+
+    /**
+     * Concatenates a sequence of SingleSources eagerly into a single stream of values.
+     * <p>
+     * Eager concatenation means that once a subscriber subscribes, this operator subscribes to all of the
+     * source SingleSources. The operator buffers the values emitted by these SingleSources and then drains them
+     * in order, each one after the previous one completes.
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>Backpressure is honored towards the downstream.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>This method does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param <T> the value type
+     * @param sources a sequence of SingleSource that need to be eagerly concatenated
+     * @return the new Flowable instance with the specified concatenation behavior
+     */
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    @BackpressureSupport(BackpressureKind.FULL)
+    @CheckReturnValue
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public static <T> Flowable<T> concatEager(Iterable<? extends SingleSource<? extends T>> sources) {
+        return Flowable.fromIterable(sources).concatMapEager(SingleInternalHelper.<T>toFlowable());
     }
 
     /**
