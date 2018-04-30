@@ -2173,6 +2173,9 @@ public abstract class Single<T> implements SingleSource<T> {
      * is executed once per subscription.
      * <p>Note that the {@code onFinally} action is shared between subscriptions and as such
      * should be thread-safe.
+     * <p>
+     * <img width="1040" height="472" src="https://user-images.githubusercontent.com/4089934/39448132-dca93836-4cbb-11e8-9b13-ce078a8ba206.png" alt="">
+     * </p>
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code doFinally} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -2192,6 +2195,9 @@ public abstract class Single<T> implements SingleSource<T> {
     /**
      * Calls the shared consumer with the Disposable sent through the onSubscribe for each
      * SingleObserver that subscribes to the current Single.
+     * <p>
+     * <img width="640" height="437" src="https://user-images.githubusercontent.com/4089934/39448136-dd05bcbe-4cbb-11e8-823d-d9d0c3501f24.png" alt="">
+     * </p>
      * <dl>
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code doOnSubscribe} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -2210,6 +2216,9 @@ public abstract class Single<T> implements SingleSource<T> {
     /**
      * Calls the shared consumer with the success value sent via onSuccess for each
      * SingleObserver that subscribes to the current Single.
+     * <p>
+     * <img width="640" height="346" src="https://user-images.githubusercontent.com/4089934/39448137-dd21fdca-4cbb-11e8-848d-45c3af91b76f.png" alt="">
+     * </p>
      * <dl>
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code doOnSuccess} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -2246,6 +2255,9 @@ public abstract class Single<T> implements SingleSource<T> {
     /**
      * Calls the shared consumer with the error sent via onError for each
      * SingleObserver that subscribes to the current Single.
+     * <p>
+     * <img width="640" height="350" src="https://user-images.githubusercontent.com/4089934/39448135-dce99bce-4cbb-11e8-9d52-8e30084f9aa4.png" alt="">
+     * </p>
      * <dl>
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code doOnError} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -2264,6 +2276,9 @@ public abstract class Single<T> implements SingleSource<T> {
     /**
      * Calls the shared {@code Action} if a SingleObserver subscribed to the current Single
      * disposes the common Disposable it received via onSubscribe.
+     * <p>
+     * <img width="640" height="350" src="https://user-images.githubusercontent.com/4089934/39448133-dcca516a-4cbb-11e8-9143-b935cf0dd64c.png" alt="">
+     * </p>
      * <dl>
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code doOnDispose} does not operate by default on a particular {@link Scheduler}.</dd>
