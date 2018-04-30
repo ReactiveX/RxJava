@@ -510,12 +510,15 @@ public abstract class Scheduler {
         }
     }
 
-    static class PeriodicDirectTask
+    static final class PeriodicDirectTask
     implements Disposable, Runnable, SchedulerRunnableIntrospection {
+
+        @NonNull
         final Runnable run;
+
         @NonNull
         final Worker worker;
-        @NonNull
+
         volatile boolean disposed;
 
         PeriodicDirectTask(@NonNull Runnable run, @NonNull Worker worker) {
@@ -554,12 +557,17 @@ public abstract class Scheduler {
     }
 
     static final class DisposeTask implements Disposable, Runnable, SchedulerRunnableIntrospection {
+
+        @NonNull
         final Runnable decoratedRun;
+
+        @NonNull
         final Worker w;
 
+        @Nullable
         Thread runner;
 
-        DisposeTask(Runnable decoratedRun, Worker w) {
+        DisposeTask(@NonNull Runnable decoratedRun, @NonNull Worker w) {
             this.decoratedRun = decoratedRun;
             this.w = w;
         }
