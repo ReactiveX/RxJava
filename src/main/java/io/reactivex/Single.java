@@ -2244,6 +2244,9 @@ public abstract class Single<T> implements SingleSource<T> {
      * is executed once per subscription.
      * <p>Note that the {@code onFinally} action is shared between subscriptions and as such
      * should be thread-safe.
+     * <p>
+     * <img width="640" height="291" src="https://raw.githubusercontent.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.doFinally.png" alt="">
+     * </p>
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code doFinally} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -2263,6 +2266,9 @@ public abstract class Single<T> implements SingleSource<T> {
     /**
      * Calls the shared consumer with the Disposable sent through the onSubscribe for each
      * SingleObserver that subscribes to the current Single.
+     * <p>
+     * <img width="640" height="347" src="https://raw.githubusercontent.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.doOnSubscribe.png" alt="">
+     * </p>
      * <dl>
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code doOnSubscribe} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -2281,6 +2287,9 @@ public abstract class Single<T> implements SingleSource<T> {
     /**
      * Calls the shared consumer with the success value sent via onSuccess for each
      * SingleObserver that subscribes to the current Single.
+     * <p>
+     * <img width="640" height="347" src="https://raw.githubusercontent.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.doOnSuccess.2.png" alt="">
+     * </p>
      * <dl>
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code doOnSuccess} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -2317,6 +2326,9 @@ public abstract class Single<T> implements SingleSource<T> {
     /**
      * Calls the shared consumer with the error sent via onError for each
      * SingleObserver that subscribes to the current Single.
+     * <p>
+     * <img width="640" height="349" src="https://raw.githubusercontent.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.doOnError.2.png" alt="">
+     * </p>
      * <dl>
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code doOnError} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -2335,6 +2347,9 @@ public abstract class Single<T> implements SingleSource<T> {
     /**
      * Calls the shared {@code Action} if a SingleObserver subscribed to the current Single
      * disposes the common Disposable it received via onSubscribe.
+     * <p>
+     * <img width="640" height="332" src="https://raw.githubusercontent.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.doOnDispose.png" alt="">
+     * </p>
      * <dl>
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code doOnDispose} does not operate by default on a particular {@link Scheduler}.</dd>
