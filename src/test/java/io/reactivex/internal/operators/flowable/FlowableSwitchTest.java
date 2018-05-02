@@ -33,7 +33,7 @@ import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.internal.util.ExceptionHelper;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.processors.PublishProcessor;
-import io.reactivex.schedulers.TestScheduler;
+import io.reactivex.schedulers.*;
 import io.reactivex.subscribers.*;
 
 public class FlowableSwitchTest {
@@ -1144,12 +1144,16 @@ public class FlowableSwitchTest {
     @Test
     public void fusedInnerCrash() {
         Flowable.just(1).hide()
-        .switchMap(Functions.justFunction(Flowable.just(1).map(new Function<Integer, Object>() {
-            @Override
-            public Object apply(Integer v) throws Exception {
-                throw new TestException();
-            }
-        })))
+        .switchMap(Functions.justFunction(Flowable.just(1)
+                .map(new Function<Integer, Object>() {
+                    @Override
+                    public Object apply(Integer v) throws Exception {
+                        throw new TestException();
+                    }
+                })
+                .compose(TestHelper.<Object>flowableStripBoundary())
+            )
+        )
         .test()
         .assertFailure(TestException.class);
     }
@@ -1173,5 +1177,31 @@ public class FlowableSwitchTest {
         assertFalse(inner.hasSubscribers());
 
         ts.assertFailure(TestException.class);
+    }
+
+    @Test
+    public void fusedBoundary() {
+        String thread = Thread.currentThread().getName();
+
+        Flowable.range(1, 10000)
+        .switchMap(new Function<Integer, Flowable<? extends Object>>() {
+            @Override
+            public Flowable<? extends Object> apply(Integer v)
+                    throws Exception {
+                return Flowable.just(2).hide()
+                .observeOn(Schedulers.single())
+                .map(new Function<Integer, Object>() {
+                    @Override
+                    public Object apply(Integer w) throws Exception {
+                        return Thread.currentThread().getName();
+                    }
+                });
+            }
+        })
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertNever(thread)
+        .assertNoErrors()
+        .assertComplete();
     }
 }
