@@ -2922,4 +2922,214 @@ public enum TestHelper {
             }
         };
     }
+
+    static final class FlowableStripBoundary<T> extends Flowable<T> implements FlowableTransformer<T, T> {
+
+        final Flowable<T> source;
+
+        FlowableStripBoundary(Flowable<T> source) {
+            this.source = source;
+        }
+
+        @Override
+        public Flowable<T> apply(Flowable<T> upstream) {
+            return new FlowableStripBoundary<T>(upstream);
+        }
+
+        @Override
+        protected void subscribeActual(Subscriber<? super T> s) {
+            source.subscribe(new StripBoundarySubscriber<T>(s));
+        }
+
+        static final class StripBoundarySubscriber<T> implements FlowableSubscriber<T>, QueueSubscription<T> {
+
+            final Subscriber<? super T> actual;
+
+            Subscription upstream;
+
+            QueueSubscription<T> qs;
+
+            StripBoundarySubscriber(Subscriber<? super T> actual) {
+                this.actual = actual;
+            }
+
+            @SuppressWarnings("unchecked")
+            @Override
+            public void onSubscribe(Subscription subscription) {
+                this.upstream = subscription;
+                if (subscription instanceof QueueSubscription) {
+                    qs = (QueueSubscription<T>)subscription;
+                }
+                actual.onSubscribe(this);
+            }
+
+            @Override
+            public void onNext(T t) {
+                actual.onNext(t);
+            }
+
+            @Override
+            public void onError(Throwable throwable) {
+                actual.onError(throwable);
+            }
+
+            @Override
+            public void onComplete() {
+                actual.onComplete();
+            }
+
+            @Override
+            public int requestFusion(int mode) {
+                QueueSubscription<T> fs = qs;
+                if (fs != null) {
+                    return fs.requestFusion(mode & ~BOUNDARY);
+                }
+                return NONE;
+            }
+
+            @Override
+            public boolean offer(T value) {
+                throw new UnsupportedOperationException("Should not be called");
+            }
+
+            @Override
+            public boolean offer(T v1, T v2) {
+                throw new UnsupportedOperationException("Should not be called");
+            }
+
+            @Override
+            public T poll() throws Exception {
+                return qs.poll();
+            }
+
+            @Override
+            public void clear() {
+                qs.clear();
+            }
+
+            @Override
+            public boolean isEmpty() {
+                return qs.isEmpty();
+            }
+
+            @Override
+            public void request(long n) {
+                upstream.request(n);
+            }
+
+            @Override
+            public void cancel() {
+                upstream.cancel();
+            }
+        }
+    }
+
+    public static <T> FlowableTransformer<T, T> flowableStripBoundary() {
+        return new FlowableStripBoundary<T>(null);
+    }
+
+    static final class ObservableStripBoundary<T> extends Observable<T> implements ObservableTransformer<T, T> {
+
+        final Observable<T> source;
+
+        ObservableStripBoundary(Observable<T> source) {
+            this.source = source;
+        }
+
+        @Override
+        public Observable<T> apply(Observable<T> upstream) {
+            return new ObservableStripBoundary<T>(upstream);
+        }
+
+        @Override
+        protected void subscribeActual(Observer<? super T> s) {
+            source.subscribe(new StripBoundaryObserver<T>(s));
+        }
+
+        static final class StripBoundaryObserver<T> implements Observer<T>, QueueDisposable<T> {
+
+            final Observer<? super T> actual;
+
+            Disposable upstream;
+
+            QueueDisposable<T> qd;
+
+            StripBoundaryObserver(Observer<? super T> actual) {
+                this.actual = actual;
+            }
+
+            @SuppressWarnings("unchecked")
+            @Override
+            public void onSubscribe(Disposable d) {
+                this.upstream = d;
+                if (d instanceof QueueDisposable) {
+                    qd = (QueueDisposable<T>)d;
+                }
+                actual.onSubscribe(this);
+            }
+
+            @Override
+            public void onNext(T t) {
+                actual.onNext(t);
+            }
+
+            @Override
+            public void onError(Throwable throwable) {
+                actual.onError(throwable);
+            }
+
+            @Override
+            public void onComplete() {
+                actual.onComplete();
+            }
+
+            @Override
+            public int requestFusion(int mode) {
+                QueueDisposable<T> fs = qd;
+                if (fs != null) {
+                    return fs.requestFusion(mode & ~BOUNDARY);
+                }
+                return NONE;
+            }
+
+            @Override
+            public boolean offer(T value) {
+                throw new UnsupportedOperationException("Should not be called");
+            }
+
+            @Override
+            public boolean offer(T v1, T v2) {
+                throw new UnsupportedOperationException("Should not be called");
+            }
+
+            @Override
+            public T poll() throws Exception {
+                return qd.poll();
+            }
+
+            @Override
+            public void clear() {
+                qd.clear();
+            }
+
+            @Override
+            public boolean isEmpty() {
+                return qd.isEmpty();
+            }
+
+            @Override
+            public void dispose() {
+                upstream.dispose();
+            }
+
+            @Override
+            public boolean isDisposed() {
+                return upstream.isDisposed();
+            }
+        }
+    }
+
+    public static <T> ObservableTransformer<T, T> observableStripBoundary() {
+        return new ObservableStripBoundary<T>(null);
+    }
 }

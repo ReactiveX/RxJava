@@ -348,7 +348,7 @@ public final class ObservableSwitchMap<T, R> extends AbstractObservableWithUpstr
                     @SuppressWarnings("unchecked")
                     QueueDisposable<R> qd = (QueueDisposable<R>) s;
 
-                    int m = qd.requestFusion(QueueDisposable.ANY);
+                    int m = qd.requestFusion(QueueDisposable.ANY | QueueDisposable.BOUNDARY);
                     if (m == QueueDisposable.SYNC) {
                         queue = qd;
                         done = true;

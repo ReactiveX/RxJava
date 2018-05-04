@@ -359,7 +359,7 @@ public final class FlowableSwitchMap<T, R> extends AbstractFlowableWithUpstream<
                     @SuppressWarnings("unchecked")
                     QueueSubscription<R> qs = (QueueSubscription<R>) s;
 
-                    int m = qs.requestFusion(QueueSubscription.ANY);
+                    int m = qs.requestFusion(QueueSubscription.ANY | QueueSubscription.BOUNDARY);
                     if (m == QueueSubscription.SYNC) {
                         fusionMode = m;
                         queue = qs;
