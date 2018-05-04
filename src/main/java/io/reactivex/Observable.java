@@ -74,7 +74,7 @@ import io.reactivex.schedulers.*;
  *         &#64;Override public void onStart() {
  *             System.out.println("Start!");
  *         }
- *         &#64;Override public void onNext(Integer t) {
+ *         &#64;Override public void onNext(String t) {
  *             System.out.println(t);
  *         }
  *         &#64;Override public void onError(Throwable t) {
