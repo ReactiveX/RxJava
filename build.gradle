@@ -126,6 +126,12 @@ gitPublish {
             into 'api'
         }
     }
+
+    preserve {
+        include '1.x/**'
+        include '2.x/**'
+    }
+
     commitMessage = 'Publishing a new page'
 }
 
