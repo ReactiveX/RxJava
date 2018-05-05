@@ -107,6 +107,12 @@ javadoc {
     }
 }
 
+
+
+if (project.hasProperty('githubToken')) {
+    System.setProperty('org.ajoberstar.grgit.auth.username', project.githubToken)
+}
+
 gitPublish {
 
     repoUri = 'https://github.com/rpmcdougall/RxJava.git'
