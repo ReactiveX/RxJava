@@ -108,31 +108,27 @@ javadoc {
 }
 
 
+if (rootProject.hasProperty("releaseMode")) {
+    gitPublish {
 
-if (project.hasProperty('githubToken')) {
-    System.setProperty('org.ajoberstar.grgit.auth.username', project.githubToken)
-}
+        repoUri = 'https://github.com/rpmcdougall/RxJava.git'
 
-gitPublish {
+        // branch will be created if it doesn't exist
+        branch = 'gh-pages-test'
 
-    repoUri = 'https://github.com/rpmcdougall/RxJava.git'
+        contents {
+            from 'build/docs'
+        }
 
-    // branch will be created if it doesn't exist
-    branch = 'gh-pages'
+        preserve {
+            include '1.x/**'
+            include '2.x/**'
+            include 'images/**'
+        }
 
-    contents {
-        from 'build/docs'
+        commitMessage = 'Publishing javadocs for version ' + project.properties["release.version"]
     }
-
-    preserve {
-        include '1.x/**'
-        include '2.x/**'
-        include 'images/**'
-    }
-
-    commitMessage = 'Publishing javadocs for version ' + project.properties["release.version"]
 }
-
 
 
 animalsniffer {
