@@ -88,6 +88,7 @@ fi
 # clear the existing tag
 echo -e "Removing to 2.x/javadoc/${buildTag}" 
 rm -r 2.x/javadoc/${buildTag}
+
 # copy the new doc
 echo -e "Copying to 2.x/javadoc/${buildTag}" 
 yes | cp -rf ./build/docs/javadoc/ 2.x/javadoc/${buildTag}/
@@ -98,7 +99,7 @@ echo -e "Staging new files"
 git add *.html
 git add *.css
 git add *.js
-git add javadoc/package-list
+git add *package-list*
 
 # remove tracked but deleted files
 echo -e "Removing deleted files"
