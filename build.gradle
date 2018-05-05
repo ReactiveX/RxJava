@@ -115,7 +115,7 @@ if (project.hasProperty('githubToken')) {
 
 gitPublish {
 
-    repoUri = 'https://github.com/rpmcdougall/RxJava.git'
+    repoUri = 'https://github.com/ReactiveX/RxJava.git'
 
     // branch will be created if it doesn't exist
     branch = 'gh-pages'
