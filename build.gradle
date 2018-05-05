@@ -123,7 +123,7 @@ javadoc {
                 exclude 'rx/**'
                 exclude 'resources/**'
                 into '2.x/javadoc'
-                into '2..x/javadoc/' + project.properties["release.version"]
+                into '2.x/javadoc/' + project.properties["release.version"]
             }
 
         }
