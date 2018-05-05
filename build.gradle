@@ -132,7 +132,7 @@ gitPublish {
         include '2.x/**'
     }
 
-    commitMessage = 'Publishing a new page'
+    commitMessage = 'Publishing javadocs for version ' + project.properties["release.version"]
 }
 
 
