@@ -50,10 +50,8 @@ git fetch --all
 git branch -a
 git checkout -b gh-pages origin-pages/gh-pages
 
-# for snapshots, only replace the 2.x/javadoc/snapshot directory
-#if [ "$buildTag" != "snapshot" ]; then
-# for now
-if [ "$buildTag" != "" ]; then
+# releases should update 2 extra locations
+if [ "$buildTag" != "snapshot" ]; then
 	# for releases, add a new directory with the new version
 	# and carefully replace the others
 	
@@ -110,12 +108,13 @@ git add -u
 echo -e "commit Travis build: $TRAVIS_BUILD_NUMBER for $buildTag"
 git commit --message "Travis build: $TRAVIS_BUILD_NUMBER for $buildTag"
 
+# debug file list
+#find -name "*.html"
 
 # push it
 echo -e "Pushing back changes."
-#git push --quiet --set-upstream origin-pages gh-pages
-# just print the result for now
-find -name "*.html"
+git push --quiet --set-upstream origin-pages gh-pages
+
 
 # we are done
 echo -e "JavaDocs pushback complete."
