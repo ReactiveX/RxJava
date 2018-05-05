@@ -9,7 +9,7 @@ targetRepo=github.com/ReactiveX/RxJava.git
 # =======================================================================
 
 # only for main pushes, for now
-if [ "$TRAVIS_PULL_REQUEST" == "true" ]; then
+if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then
 	echo -e "Pull request detected, skipping JavaDocs pushback."
 	exit 0
 fi
