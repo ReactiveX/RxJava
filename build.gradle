@@ -109,28 +109,35 @@ javadoc {
 
 
 
-if (rootProject.hasProperty("releaseMode") && rootProject.releaseMode == "full") {
+//if (rootProject.hasProperty("releaseMode") && rootProject.releaseMode == "full") {
     gitPublish {
 
         repoUri = 'https://github.com/rpmcdougall/RxJava.git'
 
         // branch will be created if it doesn't exist
-        branch = 'gh-pages'
+        branch = 'gh-pages-test'
 
         contents {
             from 'build/docs'
+            from(javadoc) {
+                exclude 'rx/**'
+                exclude 'resources/**'
+                into '2.x/javadoc'
+                into '2..x/' + project.properties["release.version"]
+            }
+
         }
 
         preserve {
             include '1.x/**'
-            include '2.x/**'
+            include '2.x/**/'
             include 'images/**'
             include 'javadoc/rx/**'
             include 'javadoc/resources/**'
         }
         commitMessage = 'Publishing javadocs for version ' + project.properties["release.version"]
     }
-}
+//}
 
 
 animalsniffer {
