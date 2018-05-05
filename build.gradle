@@ -115,7 +115,7 @@ javadoc {
         repoUri = 'https://github.com/rpmcdougall/RxJava.git'
 
         // branch will be created if it doesn't exist
-        branch = 'gh-pages-test'
+        branch = 'gh-pages-copyspec'
 
         contents {
             from 'build/docs'
@@ -123,7 +123,7 @@ javadoc {
                 exclude 'rx/**'
                 exclude 'resources/**'
                 into '2.x/javadoc'
-                into '2..x/' + project.properties["release.version"]
+                into '2..x/javadoc/' + project.properties["release.version"]
             }
 
         }
