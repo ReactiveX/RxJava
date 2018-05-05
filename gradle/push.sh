@@ -69,7 +69,7 @@ if [ "$buildTag" != "" ]; then
 
 	# copy the new doc
     echo -e "Copying to javadoc/" 
-	yes | cp -rf ./build/docs/javadoc/ javadoc/
+	yes | cp -rf ./build/docs/javadoc/ .
 	
 	# 2.) 2.x javadoc
 	# remove the io subdir
@@ -82,7 +82,7 @@ if [ "$buildTag" != "" ]; then
 
 	# copy the new doc
     echo -e "Copying to 2.x/javadoc/" 
-	yes | cp -rf ./build/docs/javadoc/ 2.x/javadoc/
+	yes | cp -rf ./build/docs/javadoc/ 2.x/
 fi
 
 # 3.) create a version/snapshot specific copy of the docs
