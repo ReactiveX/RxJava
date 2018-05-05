@@ -950,6 +950,7 @@ public class FlowableCreateTest {
                 @Override
                 public void subscribe(FlowableEmitter<Object> emitter) throws Exception {
                     assertTrue(emitter.toString().contains(entry.getValue().getSimpleName()));
+                    assertTrue(emitter.serialize().toString().contains(entry.getValue().getSimpleName()));
                 }
             }, entry.getKey()).test().assertEmpty();
         }
