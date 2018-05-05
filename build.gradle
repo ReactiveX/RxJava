@@ -122,7 +122,7 @@ javadoc {
             from(javadoc) {
                 exclude 'rx/**'
                 exclude 'resources/**'
-                into '2.x/javadoc'
+                into '2.x/javadoc/'
                 into '2.x/javadoc/' + project.properties["release.version"]
             }
 
@@ -130,7 +130,7 @@ javadoc {
 
         preserve {
             include '1.x/**'
-            include '2.x/**/'
+            include '2.x/javadoc/2.*.**'
             include 'images/**'
             include 'javadoc/rx/**'
             include 'javadoc/resources/**'
