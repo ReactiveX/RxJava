@@ -650,6 +650,7 @@ public class ObservableCreateTest {
             @Override
             public void subscribe(ObservableEmitter<Object> emitter) throws Exception {
                 assertTrue(emitter.toString().contains(ObservableCreate.CreateEmitter.class.getSimpleName()));
+                assertTrue(emitter.serialize().toString().contains(ObservableCreate.CreateEmitter.class.getSimpleName()));
             }
         }).test().assertEmpty();
     }
