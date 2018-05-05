@@ -9,18 +9,19 @@ targetRepo=github.com/ReactiveX/RxJava.git
 # =======================================================================
 
 # only for main pushes, for now
- if [ "$TRAVIS_PULL_REQUEST" == "true" ]; then
+if [ "$TRAVIS_PULL_REQUEST" == "true" ]; then
 	echo -e "Pull request detected, skipping JavaDocs pushback."
 	exit 0
 fi
 
 # get the current build tag if any
 buildTag="$TRAVIS_TAG"
+echo -e "Travis tag: '$buildTag'"
 
-if [ "$buildTag" == ""]; then
-   buildTag = "snapshot"
+if [ "$buildTag" == "" ]; then
+   buildTag="snapshot"
 else
-   buildTag = "${buildTag:1}"
+   buildTag="${buildTag:1}"
 fi
 
 echo -e "JavaDocs pushback for tag: $buildTag"
