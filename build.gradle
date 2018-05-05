@@ -109,7 +109,7 @@ javadoc {
 
 
 
-//if (rootProject.hasProperty("releaseMode") && rootProject.releaseMode == "full") {
+if (rootProject.hasProperty("releaseMode") && rootProject.releaseMode == "full") {
     gitPublish {
 
         repoUri = 'https://github.com/rpmcdougall/RxJava.git'
@@ -125,12 +125,12 @@ javadoc {
             include '1.x/**'
             include '2.x/**'
             include 'images/**'
-            include 'javadoc/rx'
-            include 'javadoc/resources'
+            include 'javadoc/rx/**'
+            include 'javadoc/resources/**'
         }
         commitMessage = 'Publishing javadocs for version ' + project.properties["release.version"]
     }
-//}
+}
 
 
 animalsniffer {
