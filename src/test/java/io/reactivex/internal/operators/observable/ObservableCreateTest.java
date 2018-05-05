@@ -643,4 +643,14 @@ public class ObservableCreateTest {
             RxJavaPlugins.reset();
         }
     }
+
+    @Test
+    public void emitterHasToString() {
+        Observable.create(new ObservableOnSubscribe<Object>() {
+            @Override
+            public void subscribe(ObservableEmitter<Object> emitter) throws Exception {
+                assertTrue(emitter.toString().contains(ObservableCreate.CreateEmitter.class.getSimpleName()));
+            }
+        }).test();
+    }
 }
