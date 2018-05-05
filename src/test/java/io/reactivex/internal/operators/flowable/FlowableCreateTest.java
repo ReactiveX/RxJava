@@ -942,7 +942,7 @@ public class FlowableCreateTest {
         emitterMap.put(BackpressureStrategy.MISSING, FlowableCreate.MissingEmitter.class);
         emitterMap.put(BackpressureStrategy.ERROR, FlowableCreate.ErrorAsyncEmitter.class);
         emitterMap.put(BackpressureStrategy.DROP, FlowableCreate.DropAsyncEmitter.class);
-        emitterMap.put(BackpressureStrategy.LATEST, FlowableCreate.DropAsyncEmitter.class);
+        emitterMap.put(BackpressureStrategy.LATEST, FlowableCreate.LatestAsyncEmitter.class);
         emitterMap.put(BackpressureStrategy.BUFFER, FlowableCreate.BufferAsyncEmitter.class);
 
         for (final Map.Entry<BackpressureStrategy, Class<? extends FlowableEmitter>> entry : emitterMap.entrySet()) {
@@ -951,7 +951,7 @@ public class FlowableCreateTest {
                 public void subscribe(FlowableEmitter<Object> emitter) throws Exception {
                     assertTrue(emitter.toString().contains(entry.getValue().getSimpleName()));
                 }
-            }, entry.getKey()).test();
+            }, entry.getKey()).test().assertEmpty();
         }
     }
 }

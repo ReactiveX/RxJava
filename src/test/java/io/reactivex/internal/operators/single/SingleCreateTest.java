@@ -315,6 +315,6 @@ public class SingleCreateTest {
             public void subscribe(SingleEmitter<Object> emitter) throws Exception {
                 assertTrue(emitter.toString().contains(SingleCreate.Emitter.class.getSimpleName()));
             }
-        }).test();
+        }).test().assertEmpty();
     }
 }

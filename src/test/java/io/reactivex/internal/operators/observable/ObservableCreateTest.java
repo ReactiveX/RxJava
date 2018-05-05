@@ -651,6 +651,6 @@ public class ObservableCreateTest {
             public void subscribe(ObservableEmitter<Object> emitter) throws Exception {
                 assertTrue(emitter.toString().contains(ObservableCreate.CreateEmitter.class.getSimpleName()));
             }
-        }).test();
+        }).test().assertEmpty();
     }
 }
