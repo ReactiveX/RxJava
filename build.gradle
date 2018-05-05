@@ -115,21 +115,19 @@ if (project.hasProperty('githubToken')) {
 
 gitPublish {
 
-    repoUri = 'https://github.com/ReactiveX/RxJava.git'
+    repoUri = 'https://github.com/rpmcdougall/RxJava.git'
 
     // branch will be created if it doesn't exist
     branch = 'gh-pages'
 
     contents {
-        from 'build/docs/javadoc'
-        from(javadoc) {
-            into 'api'
-        }
+        from 'build/docs'
     }
 
     preserve {
         include '1.x/**'
         include '2.x/**'
+        include 'images/**'
     }
 
     commitMessage = 'Publishing javadocs for version ' + project.properties["release.version"]
