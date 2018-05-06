@@ -12,6 +12,9 @@ buildscript {
     classpath "me.champeau.gradle:jmh-gradle-plugin:0.4.4"
     classpath "com.jfrog.bintray.gradle:gradle-bintray-plugin:1.7.3"
     classpath "org.jfrog.buildinfo:build-info-extractor-gradle:4.5.2"
+      classpath 'org.ajoberstar:grgit:2.1.1'
+      classpath 'org.ajoberstar:gradle-git-publish:0.3.3'
+
   }
 }
 
@@ -44,6 +47,7 @@ apply plugin: "com.github.hierynomus.license"
 apply plugin: "com.jfrog.bintray"
 apply plugin: "com.jfrog.artifactory"
 apply plugin: "eclipse"
+apply plugin: 'org.ajoberstar.git-publish'
 
 sourceCompatibility = JavaVersion.VERSION_1_6
 targetCompatibility = JavaVersion.VERSION_1_6
@@ -102,6 +106,39 @@ javadoc {
         options.addStringOption("stylesheetfile", rootProject.file("./gradle/stylesheet.css").toString())
     }
 }
+
+
+
+if (rootProject.hasProperty("releaseMode") && rootProject.releaseMode == "full") {
+    gitPublish {
+
+        repoUri = 'https://github.com/rpmcdougall/RxJava.git'
+
+        // branch will be created if it doesn't exist
+        branch = 'cpstest'
+
+        contents {
+            from 'build/docs'
+            from(javadoc) {
+                exclude 'rx/**'
+                exclude 'resources/**'
+                into '2.x/javadoc/'
+                into '2.x/javadoc/' + project.properties["release.version"]
+            }
+
+        }
+
+        preserve {
+            include '1.x/**'
+            include '2.x/javadoc/**/**'
+            include 'images/**'
+            include 'javadoc/rx/**'
+            include 'javadoc/resources/**'
+        }
+        commitMessage = 'Publishing javadocs for version ' + project.properties["release.version"]
+    }
+}
+
 
 animalsniffer {
     annotation = "io.reactivex.internal.util.SuppressAnimalSniffer"
