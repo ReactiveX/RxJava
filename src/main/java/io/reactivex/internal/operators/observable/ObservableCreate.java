@@ -126,6 +126,11 @@ public final class ObservableCreate<T> extends Observable<T> {
         public boolean isDisposed() {
             return DisposableHelper.isDisposed(get());
         }
+
+        @Override
+        public String toString() {
+            return String.format("%s{%s}", getClass().getSimpleName(), super.toString());
+        }
     }
 
     /**
@@ -278,6 +283,11 @@ public final class ObservableCreate<T> extends Observable<T> {
         @Override
         public ObservableEmitter<T> serialize() {
             return this;
+        }
+
+        @Override
+        public String toString() {
+            return emitter.toString();
         }
     }
 

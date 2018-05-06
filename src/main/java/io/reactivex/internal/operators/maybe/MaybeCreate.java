@@ -145,5 +145,10 @@ public final class MaybeCreate<T> extends Maybe<T> {
         public boolean isDisposed() {
             return DisposableHelper.isDisposed(get());
         }
+
+        @Override
+        public String toString() {
+            return String.format("%s{%s}", getClass().getSimpleName(), super.toString());
+        }
     }
 }

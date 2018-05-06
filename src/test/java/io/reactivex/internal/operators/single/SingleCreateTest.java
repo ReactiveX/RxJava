@@ -307,4 +307,14 @@ public class SingleCreateTest {
             RxJavaPlugins.reset();
         }
     }
+
+    @Test
+    public void emitterHasToString() {
+        Single.create(new SingleOnSubscribe<Object>() {
+            @Override
+            public void subscribe(SingleEmitter<Object> emitter) throws Exception {
+                assertTrue(emitter.toString().contains(SingleCreate.Emitter.class.getSimpleName()));
+            }
+        }).test().assertEmpty();
+    }
 }

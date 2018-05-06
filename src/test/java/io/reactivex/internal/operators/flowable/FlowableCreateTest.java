@@ -16,7 +16,9 @@ package io.reactivex.internal.operators.flowable;
 import static org.junit.Assert.*;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.Test;
 import org.reactivestreams.*;
@@ -929,6 +931,28 @@ public class FlowableCreateTest {
             } finally {
                 RxJavaPlugins.reset();
             }
+        }
+    }
+
+    @Test
+    public void emittersHasToString() {
+        Map<BackpressureStrategy, Class<? extends FlowableEmitter>> emitterMap =
+                new HashMap<BackpressureStrategy, Class<? extends FlowableEmitter>>();
+
+        emitterMap.put(BackpressureStrategy.MISSING, FlowableCreate.MissingEmitter.class);
+        emitterMap.put(BackpressureStrategy.ERROR, FlowableCreate.ErrorAsyncEmitter.class);
+        emitterMap.put(BackpressureStrategy.DROP, FlowableCreate.DropAsyncEmitter.class);
+        emitterMap.put(BackpressureStrategy.LATEST, FlowableCreate.LatestAsyncEmitter.class);
+        emitterMap.put(BackpressureStrategy.BUFFER, FlowableCreate.BufferAsyncEmitter.class);
+
+        for (final Map.Entry<BackpressureStrategy, Class<? extends FlowableEmitter>> entry : emitterMap.entrySet()) {
+            Flowable.create(new FlowableOnSubscribe<Object>() {
+                @Override
+                public void subscribe(FlowableEmitter<Object> emitter) throws Exception {
+                    assertTrue(emitter.toString().contains(entry.getValue().getSimpleName()));
+                    assertTrue(emitter.serialize().toString().contains(entry.getValue().getSimpleName()));
+                }
+            }, entry.getKey()).test().assertEmpty();
         }
     }
 }

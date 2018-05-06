@@ -335,4 +335,14 @@ public class MaybeCreateTest {
             RxJavaPlugins.reset();
         }
     }
+
+    @Test
+    public void emitterHasToString() {
+        Maybe.create(new MaybeOnSubscribe<Object>() {
+            @Override
+            public void subscribe(MaybeEmitter<Object> emitter) throws Exception {
+                assertTrue(emitter.toString().contains(MaybeCreate.Emitter.class.getSimpleName()));
+            }
+        }).test().assertEmpty();
+    }
 }

@@ -233,6 +233,11 @@ public final class FlowableCreate<T> extends Flowable<T> {
         public FlowableEmitter<T> serialize() {
             return this;
         }
+
+        @Override
+        public String toString() {
+            return emitter.toString();
+        }
     }
 
     abstract static class BaseEmitter<T>
@@ -337,6 +342,11 @@ public final class FlowableCreate<T> extends Flowable<T> {
         @Override
         public final FlowableEmitter<T> serialize() {
             return new SerializedEmitter<T>(this);
+        }
+
+        @Override
+        public String toString() {
+            return String.format("%s{%s}", getClass().getSimpleName(), super.toString());
         }
     }
 

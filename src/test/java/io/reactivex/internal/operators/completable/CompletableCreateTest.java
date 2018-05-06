@@ -297,4 +297,14 @@ public class CompletableCreateTest {
             RxJavaPlugins.reset();
         }
     }
+
+    @Test
+    public void emitterHasToString() {
+        Completable.create(new CompletableOnSubscribe() {
+            @Override
+            public void subscribe(CompletableEmitter emitter) throws Exception {
+                assertTrue(emitter.toString().contains(CompletableCreate.Emitter.class.getSimpleName()));
+            }
+        }).test().assertEmpty();
+    }
 }
