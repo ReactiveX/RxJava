@@ -8,15 +8,6 @@ RxJava is a Java VM implementation of [Reactive Extensions](http://reactivex.io)
 
 It extends the [observer pattern](http://en.wikipedia.org/wiki/Observer_pattern) to support sequences of data/events and adds operators that allow you to compose sequences together declaratively while abstracting away concerns about things like low-level threading, synchronization, thread-safety and concurrent data structures.
 
-#### Version 1.x ([Javadoc](http://reactivex.io/RxJava/1.x/javadoc/))
-
-Looking for version 1.x? Jump [to the 1.x branch](https://github.com/ReactiveX/RxJava/tree/1.x).
-
-Timeline plans for the 1.x line:
-
-  - **June 1, 2017** - feature freeze (no new operators), only bugfixes
-  - **March 31, 2018** - end of life, no further development
-
 #### Version 2.x ([Javadoc](http://reactivex.io/RxJava/2.x/javadoc/))
 
 - single dependency: [Reactive-Streams](https://github.com/reactive-streams/reactive-streams-jvm)  
@@ -30,6 +21,10 @@ Timeline plans for the 1.x line:
 Version 2.x and 1.x will live side-by-side for several years. They will have different group ids (`io.reactivex.rxjava2` vs `io.reactivex`) and namespaces (`io.reactivex` vs `rx`). 
 
 See the differences between version 1.x and 2.x in the wiki article [What's different in 2.0](https://github.com/ReactiveX/RxJava/wiki/What's-different-in-2.0). Learn more about RxJava in general on the <a href="https://github.com/ReactiveX/RxJava/wiki">Wiki Home</a>.
+
+#### Version 1.x
+
+The [1.x version](https://github.com/ReactiveX/RxJava/tree/1.x) is end-of-life as of **March 31, 2018**. No further development, support, maintenance, PRs and updates will happen. The [Javadoc]([Javadoc](http://reactivex.io/RxJava/1.x/javadoc/)) of the very last version, **1.3.8**, will remain accessible.
 
 ## Getting started
 
@@ -527,6 +522,8 @@ All code inside the `io.reactivex.internal.*` packages is considered private API
 
 - [Wiki](https://github.com/ReactiveX/RxJava/wiki)
 - [Javadoc](http://reactivex.io/RxJava/2.x/javadoc/)
+- [Latest snaphot Javadoc](http://reactivex.io/RxJava/2.x/javadoc/snapshot/)
+- Javadoc of a specific [release version](https://github.com/ReactiveX/RxJava/tags): `http://reactivex.io/RxJava/2.x/javadoc/2.x.y/`
 
 ## Binaries
 
