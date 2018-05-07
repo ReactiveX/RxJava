@@ -538,6 +538,7 @@ public class ParamValidationCheckerTest {
         defaultValues.put(Iterable.class, Collections.emptyList());
         defaultValues.put(Object.class, 1);
         defaultValues.put(Class.class, Integer.class);
+        defaultValues.put(String.class, "");
         Object af = new AllFunctionals();
         for (Class<?> interfaces : AllFunctionals.class.getInterfaces()) {
             defaultValues.put(interfaces, af);
