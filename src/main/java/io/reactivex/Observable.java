@@ -13,6 +13,7 @@
 
 package io.reactivex;
 
+import java.io.InputStream;
 import java.util.*;
 import java.util.concurrent.*;
 
@@ -13597,6 +13598,56 @@ public abstract class Observable<T> implements ObservableSource<T> {
             Exceptions.throwIfFatal(ex);
             throw ExceptionHelper.wrapOrThrow(ex);
         }
+    }
+
+    /**
+     * Apply toString() to build data for an InputStream of the observed values.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code toInputStream} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @return the InputStream of string values.
+     */
+    @CheckReturnValue
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final InputStream toInputStream() {
+        return ReactiveInputStream.toStrings(this);
+    }
+
+    /**
+     * Serialize every element into to build data for an InputStream of the
+     * observed values.
+     * The method is useful for passing results to an external system, e.g. a
+     * REST server.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code toInputStream} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param toBytes the function applied to serialize each element.
+     * @return a new input stream for reading the elements.
+     */
+    @CheckReturnValue
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final InputStream toInputStream(Function<? super T, byte[]> toBytes) {
+        ObjectHelper.requireNonNull(toBytes, "toBytes is null");
+        return new ReactiveInputStream<T>(this, toBytes);
+    }
+
+    /**
+     * Apply toString() to build an InputStream of the observed values
+     * separated by a delimiter.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code toInputStream} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param delimiter a value to write between observed values.
+     * @return the InputStream of string values.
+     */
+    @CheckReturnValue
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final InputStream toInputStream(final String delimiter) {
+        ObjectHelper.requireNonNull(delimiter, "delimiter is null");
+        return ReactiveInputStream.toStrings(this, delimiter);
     }
 
     /**
