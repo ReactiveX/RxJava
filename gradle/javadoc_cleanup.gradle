@@ -1,0 +1,22 @@
+// remove the excessive whitespaces between method arguments in the javadocs
+task javadocCleanup(dependsOn: "javadoc") doLast {
+    fixJavadocFile(rootProject.file('build/docs/javadoc/io/reactivex/Flowable.html'));
+    fixJavadocFile(rootProject.file('build/docs/javadoc/io/reactivex/Observable.html'));
+    fixJavadocFile(rootProject.file('build/docs/javadoc/io/reactivex/Single.html'));
+    fixJavadocFile(rootProject.file('build/docs/javadoc/io/reactivex/Maybe.html'));
+    fixJavadocFile(rootProject.file('build/docs/javadoc/io/reactivex/Completable.html'));
+
+    fixJavadocFile(rootProject.file('build/docs/javadoc/io/reactivex/flowables/ConnectableFlowable.html'));
+    fixJavadocFile(rootProject.file('build/docs/javadoc/io/reactivex/observables/ConnectableObservable.html'));
+}
+
+def fixJavadocFile(file) {
+    println("Cleaning up: " + file);
+    String fileContents = file.getText('UTF-8')
+
+    fileContents = fileContents.replaceAll(",\\s{4,}", ",\n        ");
+
+    file.setText(fileContents, 'UTF-8');
+}
+
+build.dependsOn javadocCleanup 
