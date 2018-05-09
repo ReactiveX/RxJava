@@ -8,6 +8,9 @@ task javadocCleanup(dependsOn: "javadoc") doLast {
 
     fixJavadocFile(rootProject.file('build/docs/javadoc/io/reactivex/flowables/ConnectableFlowable.html'));
     fixJavadocFile(rootProject.file('build/docs/javadoc/io/reactivex/observables/ConnectableObservable.html'));
+
+    fixJavadocFile(rootProject.file('build/docs/javadoc/io/reactivex/subjects/ReplaySubject.html'));
+    fixJavadocFile(rootProject.file('build/docs/javadoc/io/reactivex/processors/ReplayProcessor.html'));
 }
 
 def fixJavadocFile(file) {
