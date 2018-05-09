@@ -369,3 +369,4 @@ if (rootProject.hasProperty("releaseMode")) {
    }
 }
 
+apply from: file("gradle/javadoc_cleanup.gradle")
