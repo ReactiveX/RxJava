@@ -452,126 +452,123 @@ public final class MulticastProcessor<T> extends FlowableProcessor<T> {
         AtomicReference<MulticastSubscription<T>[]> subs = subscribers;
         int c = consumed;
         int lim = limit;
-        SimpleQueue<T> q = queue;
         int fm = fusionMode;
 
         outer:
         for (;;) {
 
-            MulticastSubscription<T>[] as = subs.get();
-            int n = as.length;
+            SimpleQueue<T> q = queue;
 
-            if (n != 0) {
-                long r = -1L;
+            if (q != null) {
+                MulticastSubscription<T>[] as = subs.get();
+                int n = as.length;
 
-                for (MulticastSubscription<T> a : as) {
-                    long ra = a.get();
-                    if (ra >= 0L) {
-                        if (r == -1L) {
-                            r = ra - a.emitted;
-                        } else {
-                            r = Math.min(r, ra - a.emitted);
-                        }
-                    }
-                }
+                if (n != 0) {
+                    long r = -1L;
 
-                while (r > 0L) {
-                    MulticastSubscription<T>[] bs = subs.get();
-
-                    if (bs == TERMINATED) {
-                        q.clear();
-                        return;
-                    }
-
-                    if (as != bs) {
-                        continue outer;
-                    }
-
-                    boolean d = done;
-
-                    T v;
-
-                    try {
-                        v = q != null ? q.poll() : null;
-                    } catch (Throwable ex) {
-                        Exceptions.throwIfFatal(ex);
-                        SubscriptionHelper.cancel(upstream);
-                        d = true;
-                        v = null;
-                        error = ex;
-                        done = true;
-                    }
-                    boolean empty = v == null;
-
-                    if (d && empty) {
-                        Throwable ex = error;
-                        if (ex != null) {
-                            for (MulticastSubscription<T> inner : subs.getAndSet(TERMINATED)) {
-                                inner.onError(ex);
-                            }
-                        } else {
-                            for (MulticastSubscription<T> inner : subs.getAndSet(TERMINATED)) {
-                                inner.onComplete();
+                    for (MulticastSubscription<T> a : as) {
+                        long ra = a.get();
+                        if (ra >= 0L) {
+                            if (r == -1L) {
+                                r = ra - a.emitted;
+                            } else {
+                                r = Math.min(r, ra - a.emitted);
                             }
                         }
-                        return;
                     }
 
-                    if (empty) {
-                        break;
-                    }
+                    while (r > 0L) {
+                        MulticastSubscription<T>[] bs = subs.get();
 
-                    for (MulticastSubscription<T> inner : as) {
-                        inner.onNext(v);
-                    }
+                        if (bs == TERMINATED) {
+                            q.clear();
+                            return;
+                        }
 
-                    r--;
+                        if (as != bs) {
+                            continue outer;
+                        }
 
-                    if (fm != QueueSubscription.SYNC) {
-                        if (++c == lim) {
-                            c = 0;
-                            upstream.get().request(lim);
+                        boolean d = done;
+
+                        T v;
+
+                        try {
+                            v = q.poll();
+                        } catch (Throwable ex) {
+                            Exceptions.throwIfFatal(ex);
+                            SubscriptionHelper.cancel(upstream);
+                            d = true;
+                            v = null;
+                            error = ex;
+                            done = true;
+                        }
+                        boolean empty = v == null;
+
+                        if (d && empty) {
+                            Throwable ex = error;
+                            if (ex != null) {
+                                for (MulticastSubscription<T> inner : subs.getAndSet(TERMINATED)) {
+                                    inner.onError(ex);
+                                }
+                            } else {
+                                for (MulticastSubscription<T> inner : subs.getAndSet(TERMINATED)) {
+                                    inner.onComplete();
+                                }
+                            }
+                            return;
+                        }
+
+                        if (empty) {
+                            break;
+                        }
+
+                        for (MulticastSubscription<T> inner : as) {
+                            inner.onNext(v);
+                        }
+
+                        r--;
+
+                        if (fm != QueueSubscription.SYNC) {
+                            if (++c == lim) {
+                                c = 0;
+                                upstream.get().request(lim);
+                            }
                         }
                     }
-                }
 
-                if (r == 0) {
-                    MulticastSubscription<T>[] bs = subs.get();
+                    if (r == 0) {
+                        MulticastSubscription<T>[] bs = subs.get();
 
-                    if (bs == TERMINATED) {
-                        q.clear();
-                        return;
-                    }
-
-                    if (as != bs) {
-                        continue outer;
-                    }
-
-                    if (done && q.isEmpty()) {
-                        Throwable ex = error;
-                        if (ex != null) {
-                            for (MulticastSubscription<T> inner : subs.getAndSet(TERMINATED)) {
-                                inner.onError(ex);
-                            }
-                        } else {
-                            for (MulticastSubscription<T> inner : subs.getAndSet(TERMINATED)) {
-                                inner.onComplete();
-                            }
+                        if (bs == TERMINATED) {
+                            q.clear();
+                            return;
                         }
-                        return;
+
+                        if (as != bs) {
+                            continue outer;
+                        }
+
+                        if (done && q.isEmpty()) {
+                            Throwable ex = error;
+                            if (ex != null) {
+                                for (MulticastSubscription<T> inner : subs.getAndSet(TERMINATED)) {
+                                    inner.onError(ex);
+                                }
+                            } else {
+                                for (MulticastSubscription<T> inner : subs.getAndSet(TERMINATED)) {
+                                    inner.onComplete();
+                                }
+                            }
+                            return;
+                        }
                     }
                 }
             }
 
-            int w = wip.get();
-            if (w == missed) {
-                consumed = c;
-                missed = wip.addAndGet(-missed);
-                if (missed == 0) {
-                    break;
-                }
-            } else {
-                missed = w;
+            missed = wip.addAndGet(-missed);
+            if (missed == 0) {
+                break;
             }
         }
     }

@@ -17,6 +17,7 @@ import static org.junit.Assert.*;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import org.junit.Test;
 import org.reactivestreams.Subscription;
@@ -26,7 +27,6 @@ import io.reactivex.exceptions.*;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.plugins.RxJavaPlugins;
-import io.reactivex.processors.UnicastProcessor;
 import io.reactivex.subscribers.TestSubscriber;
 
 public class MulticastProcessorTest {
@@ -523,4 +523,271 @@ public class MulticastProcessorTest {
         ts1.assertResult(1, 2, 3);
         ts2.assertResult(3);
     }
+
+    @Test
+    public void rejectedFusion() {
+
+        MulticastProcessor<Integer> mp = MulticastProcessor.create();
+
+        TestHelper.<Integer>rejectFlowableFusion()
+        .subscribe(mp);
+
+        mp.test().assertEmpty();
+    }
+
+    @Test
+    public void addRemoveRaceNoRefCount() {
+        for (int i = 0; i < TestHelper.RACE_LONG_LOOPS; i++) {
+            final MulticastProcessor<Integer> mp = MulticastProcessor.create();
+
+            final TestSubscriber<Integer> ts = mp.test();
+            final TestSubscriber<Integer> ts2 = new TestSubscriber<Integer>();
+
+            Runnable r1 = new Runnable() {
+                @Override
+                public void run() {
+                    ts.cancel();
+                }
+            };
+
+            Runnable r2 = new Runnable() {
+                @Override
+                public void run() {
+                    mp.subscribe(ts2);
+                }
+            };
+
+            TestHelper.race(r1, r2);
+
+            assertTrue(mp.hasSubscribers());
+        }
+    }
+
+    @Test
+    public void addRemoveRaceNoRefCountNonEmpty() {
+        for (int i = 0; i < TestHelper.RACE_LONG_LOOPS; i++) {
+            final MulticastProcessor<Integer> mp = MulticastProcessor.create();
+
+            mp.test();
+            final TestSubscriber<Integer> ts = mp.test();
+            final TestSubscriber<Integer> ts2 = new TestSubscriber<Integer>();
+
+            Runnable r1 = new Runnable() {
+                @Override
+                public void run() {
+                    ts.cancel();
+                }
+            };
+
+            Runnable r2 = new Runnable() {
+                @Override
+                public void run() {
+                    mp.subscribe(ts2);
+                }
+            };
+
+            TestHelper.race(r1, r2);
+
+            assertTrue(mp.hasSubscribers());
+        }
+    }
+
+    @Test
+    public void addRemoveRaceWitRefCount() {
+        for (int i = 0; i < TestHelper.RACE_LONG_LOOPS; i++) {
+            final MulticastProcessor<Integer> mp = MulticastProcessor.create(true);
+
+            final TestSubscriber<Integer> ts = mp.test();
+            final TestSubscriber<Integer> ts2 = new TestSubscriber<Integer>();
+
+            Runnable r1 = new Runnable() {
+                @Override
+                public void run() {
+                    ts.cancel();
+                }
+            };
+
+            Runnable r2 = new Runnable() {
+                @Override
+                public void run() {
+                    mp.subscribe(ts2);
+                }
+            };
+
+            TestHelper.race(r1, r2);
+        }
+    }
+
+    @Test
+    public void cancelUpfront() {
+        MulticastProcessor<Integer> mp = MulticastProcessor.create();
+
+        mp.test(0, true).assertEmpty();
+
+        assertFalse(mp.hasSubscribers());
+    }
+
+
+    @Test
+    public void cancelUpfrontOtherConsumersPresent() {
+        MulticastProcessor<Integer> mp = MulticastProcessor.create();
+
+        mp.test();
+
+        mp.test(0, true).assertEmpty();
+
+        assertTrue(mp.hasSubscribers());
+    }
+
+    @Test
+    public void consumerRequestRace() {
+        for (int i = 0; i < TestHelper.RACE_LONG_LOOPS; i++) {
+            final MulticastProcessor<Integer> mp = MulticastProcessor.create(true);
+            mp.startUnbounded();
+            mp.onNext(1);
+            mp.onNext(2);
+
+            final TestSubscriber<Integer> ts = mp.test();
+
+            Runnable r1 = new Runnable() {
+                @Override
+                public void run() {
+                    ts.request(1);
+                }
+            };
+
+            Runnable r2 = new Runnable() {
+                @Override
+                public void run() {
+                    ts.request(1);
+                }
+            };
+
+            TestHelper.race(r1, r2);
+
+            ts.assertValuesOnly(1, 2);
+        }
+    }
+
+    @Test
+    public void consumerUpstreamRace() {
+        for (int i = 0; i < TestHelper.RACE_LONG_LOOPS; i++) {
+            final MulticastProcessor<Integer> mp = MulticastProcessor.create(true);
+
+            final Flowable<Integer> source = Flowable.range(1, 5);
+
+            final TestSubscriber<Integer> ts = mp.test();
+
+            Runnable r1 = new Runnable() {
+                @Override
+                public void run() {
+                    ts.request(5);
+                }
+            };
+
+            Runnable r2 = new Runnable() {
+                @Override
+                public void run() {
+                    source.subscribe(mp);
+                }
+            };
+
+            TestHelper.race(r1, r2);
+
+            ts
+            .awaitDone(5, TimeUnit.SECONDS)
+            .assertResult(1, 2, 3, 4, 5);
+        }
+    }
+
+    @Test
+    public void emitCancelRace() {
+        for (int i = 0; i < TestHelper.RACE_LONG_LOOPS; i++) {
+            final MulticastProcessor<Integer> mp = MulticastProcessor.create(true);
+            mp.startUnbounded();
+
+            final TestSubscriber<Integer> ts = mp.test();
+
+            Runnable r1 = new Runnable() {
+                @Override
+                public void run() {
+                    ts.cancel();
+                }
+            };
+
+            Runnable r2 = new Runnable() {
+                @Override
+                public void run() {
+                    mp.onNext(1);
+                }
+            };
+
+            TestHelper.race(r1, r2);
+        }
+    }
+
+    @Test
+    public void cancelCancelDrain() {
+        for (int i = 0; i < TestHelper.RACE_LONG_LOOPS; i++) {
+            final MulticastProcessor<Integer> mp = MulticastProcessor.create(true);
+
+            final TestSubscriber<Integer> ts1 = mp.test();
+            final TestSubscriber<Integer> ts2 = mp.test();
+
+            mp.test();
+
+            Runnable r1 = new Runnable() {
+                @Override
+                public void run() {
+                    ts1.cancel();
+                }
+            };
+
+            Runnable r2 = new Runnable() {
+                @Override
+                public void run() {
+                    ts2.cancel();
+                }
+            };
+
+            TestHelper.race(r1, r2);
+        }
+    }
+
+    @Test
+    public void requestCancelRace() {
+        for (int i = 0; i < TestHelper.RACE_LONG_LOOPS; i++) {
+            final MulticastProcessor<Integer> mp = MulticastProcessor.create(true);
+
+            final TestSubscriber<Integer> ts1 = mp.test();
+
+            Runnable r1 = new Runnable() {
+                @Override
+                public void run() {
+                    ts1.cancel();
+                }
+            };
+
+            Runnable r2 = new Runnable() {
+                @Override
+                public void run() {
+                    ts1.request(1);
+                }
+            };
+
+            TestHelper.race(r1, r2);
+        }
+    }
+
+    @Test
+    public void noUpstream() {
+        MulticastProcessor<Integer> mp = MulticastProcessor.create();
+
+        TestSubscriber<Integer> ts = mp.test(0);
+
+        ts.request(1);
+
+        assertTrue(mp.hasSubscribers());
+    }
+
 }
