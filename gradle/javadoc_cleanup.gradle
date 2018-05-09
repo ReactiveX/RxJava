@@ -14,9 +14,17 @@ def fixJavadocFile(file) {
     println("Cleaning up: " + file);
     String fileContents = file.getText('UTF-8')
 
+    // lots of spaces after the previous method argument
     fileContents = fileContents.replaceAll(",\\s{4,}", ",\n        ");
+
+    // lots of spaces after the @NonNull annotations
+    fileContents = fileContents.replaceAll("@NonNull</a>\\s{4,}", "@NonNull</a> ");
+
+    // lots of spaces after the @Nullable annotations
+    fileContents = fileContents.replaceAll("@Nullable</a>\\s{4,}", "@Nullable</a> ");
 
     file.setText(fileContents, 'UTF-8');
 }
 
+javadocJar.dependsOn javadocCleanup
 build.dependsOn javadocCleanup 
