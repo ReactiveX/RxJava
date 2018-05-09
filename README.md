@@ -437,7 +437,7 @@ someSource.concatWith(s -> Single.just(2))
 Unfortunately, this approach doesn't work and the example does not print `2` at all. In fact, since version 2.1.10, it doesn't
 even compile because at least 4 `concatWith` overloads exist and the compiler finds the code above ambiguous.
 
-The user in such situations probably wanted to defer some computation until the `sameSource` has completed, thus the correct
+The user in such situations probably wanted to defer some computation until the `someSource` has completed, thus the correct
 unambiguous operator should have been `defer`:
 
 ```java
