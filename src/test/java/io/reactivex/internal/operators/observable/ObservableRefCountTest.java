@@ -985,31 +985,6 @@ public class ObservableRefCountTest {
         assertTrue(interrupted.get());
     }
 
-    static <T> ObservableTransformer<T, T> refCount(final int n) {
-        return refCount(n, 0, TimeUnit.NANOSECONDS, Schedulers.trampoline());
-    }
-
-    static <T> ObservableTransformer<T, T> refCount(final long time, final TimeUnit unit) {
-        return refCount(1, time, unit, Schedulers.computation());
-    }
-
-    static <T> ObservableTransformer<T, T> refCount(final long time, final TimeUnit unit, final Scheduler scheduler) {
-        return refCount(1, time, unit, scheduler);
-    }
-
-    static <T> ObservableTransformer<T, T> refCount(final int n, final long time, final TimeUnit unit) {
-        return refCount(1, time, unit, Schedulers.computation());
-    }
-
-    static <T> ObservableTransformer<T, T> refCount(final int n, final long time, final TimeUnit unit, final Scheduler scheduler) {
-        return new ObservableTransformer<T, T>() {
-            @Override
-            public Observable<T> apply(Observable<T> f) {
-                return new ObservableRefCount<T>((ConnectableObservable<T>)f, n, time, unit, scheduler);
-            }
-        };
-    }
-
     @Test
     public void byCount() {
         final int[] subscriptions = { 0 };
@@ -1022,7 +997,7 @@ public class ObservableRefCountTest {
             }
         })
         .publish()
-        .compose(ObservableRefCountTest.<Integer>refCount(2));
+        .refCount(2);
 
         for (int i = 0; i < 3; i++) {
             TestObserver<Integer> to1 = source.test();
@@ -1052,7 +1027,7 @@ public class ObservableRefCountTest {
             }
         })
         .publish()
-        .compose(ObservableRefCountTest.<Integer>refCount(500, TimeUnit.MILLISECONDS));
+        .refCount(500, TimeUnit.MILLISECONDS);
 
         TestObserver<Integer> to1 = source.test();
 
@@ -1095,7 +1070,7 @@ public class ObservableRefCountTest {
             }
         })
         .publish()
-        .compose(ObservableRefCountTest.<Integer>refCount(1, 100, TimeUnit.MILLISECONDS));
+        .refCount(1, 100, TimeUnit.MILLISECONDS);
 
         TestObserver<Integer> to1 = source.test();
 
@@ -1114,16 +1089,9 @@ public class ObservableRefCountTest {
     public void error() {
         Observable.<Integer>error(new IOException())
         .publish()
-        .compose(ObservableRefCountTest.<Integer>refCount(500, TimeUnit.MILLISECONDS))
+        .refCount(500, TimeUnit.MILLISECONDS)
         .test()
         .assertFailure(IOException.class);
-    }
-
-    @Test(expected = ClassCastException.class)
-    public void badUpstream() {
-        Observable.range(1, 5)
-        .compose(ObservableRefCountTest.<Integer>refCount(500, TimeUnit.MILLISECONDS, Schedulers.single()))
-        ;
     }
 
     @Test
@@ -1132,7 +1100,7 @@ public class ObservableRefCountTest {
 
         Observable<Integer> source = ps
         .publish()
-        .compose(ObservableRefCountTest.<Integer>refCount(1));
+        .refCount(1);
 
         TestObserver<Integer> to1 = source.test();
 
@@ -1155,7 +1123,7 @@ public class ObservableRefCountTest {
 
             final Observable<Integer> source = Observable.range(1, 5)
                     .replay()
-                    .compose(ObservableRefCountTest.<Integer>refCount(1))
+                    .refCount(1)
                     ;
 
             final TestObserver<Integer> to1 = source.test();
@@ -1221,6 +1189,38 @@ public class ObservableRefCountTest {
         try {
             new BadObservableDoubleOnX()
             .refCount()
+            .test()
+            .assertResult();
+
+            TestHelper.assertError(errors, 0, ProtocolViolationException.class);
+            TestHelper.assertUndeliverable(errors, 1, TestException.class);
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
+
+    @Test
+    public void doubleOnXCount() {
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            new BadObservableDoubleOnX()
+            .refCount(1)
+            .test()
+            .assertResult();
+
+            TestHelper.assertError(errors, 0, ProtocolViolationException.class);
+            TestHelper.assertUndeliverable(errors, 1, TestException.class);
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
+
+    @Test
+    public void doubleOnXTime() {
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            new BadObservableDoubleOnX()
+            .refCount(5, TimeUnit.SECONDS, Schedulers.single())
             .test()
             .assertResult();
 

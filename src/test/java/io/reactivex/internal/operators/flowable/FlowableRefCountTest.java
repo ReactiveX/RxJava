@@ -1001,31 +1001,6 @@ public class FlowableRefCountTest {
         assertTrue(interrupted.get());
     }
 
-    static <T> FlowableTransformer<T, T> refCount(final int n) {
-        return refCount(n, 0, TimeUnit.NANOSECONDS, Schedulers.trampoline());
-    }
-
-    static <T> FlowableTransformer<T, T> refCount(final long time, final TimeUnit unit) {
-        return refCount(1, time, unit, Schedulers.computation());
-    }
-
-    static <T> FlowableTransformer<T, T> refCount(final long time, final TimeUnit unit, final Scheduler scheduler) {
-        return refCount(1, time, unit, scheduler);
-    }
-
-    static <T> FlowableTransformer<T, T> refCount(final int n, final long time, final TimeUnit unit) {
-        return refCount(1, time, unit, Schedulers.computation());
-    }
-
-    static <T> FlowableTransformer<T, T> refCount(final int n, final long time, final TimeUnit unit, final Scheduler scheduler) {
-        return new FlowableTransformer<T, T>() {
-            @Override
-            public Publisher<T> apply(Flowable<T> f) {
-                return new FlowableRefCount<T>((ConnectableFlowable<T>)f, n, time, unit, scheduler);
-            }
-        };
-    }
-
     @Test
     public void byCount() {
         final int[] subscriptions = { 0 };
@@ -1038,7 +1013,7 @@ public class FlowableRefCountTest {
             }
         })
         .publish()
-        .compose(FlowableRefCountTest.<Integer>refCount(2));
+        .refCount(2);
 
         for (int i = 0; i < 3; i++) {
             TestSubscriber<Integer> ts1 = source.test();
@@ -1068,7 +1043,7 @@ public class FlowableRefCountTest {
             }
         })
         .publish()
-        .compose(FlowableRefCountTest.<Integer>refCount(500, TimeUnit.MILLISECONDS));
+        .refCount(500, TimeUnit.MILLISECONDS);
 
         TestSubscriber<Integer> ts1 = source.test(0);
 
@@ -1111,7 +1086,7 @@ public class FlowableRefCountTest {
             }
         })
         .publish()
-        .compose(FlowableRefCountTest.<Integer>refCount(1, 100, TimeUnit.MILLISECONDS));
+        .refCount(1, 100, TimeUnit.MILLISECONDS);
 
         TestSubscriber<Integer> ts1 = source.test(0);
 
@@ -1130,16 +1105,9 @@ public class FlowableRefCountTest {
     public void error() {
         Flowable.<Integer>error(new IOException())
         .publish()
-        .compose(FlowableRefCountTest.<Integer>refCount(500, TimeUnit.MILLISECONDS))
+        .refCount(500, TimeUnit.MILLISECONDS)
         .test()
         .assertFailure(IOException.class);
-    }
-
-    @Test(expected = ClassCastException.class)
-    public void badUpstream() {
-        Flowable.range(1, 5)
-        .compose(FlowableRefCountTest.<Integer>refCount(500, TimeUnit.MILLISECONDS, Schedulers.single()))
-        ;
     }
 
     @Test
@@ -1148,7 +1116,7 @@ public class FlowableRefCountTest {
 
         Flowable<Integer> source = pp
         .publish()
-        .compose(FlowableRefCountTest.<Integer>refCount(1));
+        .refCount(1);
 
         TestSubscriber<Integer> ts1 = source.test(0);
 
@@ -1171,7 +1139,7 @@ public class FlowableRefCountTest {
 
             final Flowable<Integer> source = Flowable.range(1, 5)
                     .replay()
-                    .compose(FlowableRefCountTest.<Integer>refCount(1))
+                    .refCount(1)
                     ;
 
             final TestSubscriber<Integer> ts1 = source.test(0);
@@ -1237,6 +1205,38 @@ public class FlowableRefCountTest {
         try {
             new BadFlowableDoubleOnX()
             .refCount()
+            .test()
+            .assertResult();
+
+            TestHelper.assertError(errors, 0, ProtocolViolationException.class);
+            TestHelper.assertUndeliverable(errors, 1, TestException.class);
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
+
+    @Test
+    public void doubleOnXCount() {
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            new BadFlowableDoubleOnX()
+            .refCount(1)
+            .test()
+            .assertResult();
+
+            TestHelper.assertError(errors, 0, ProtocolViolationException.class);
+            TestHelper.assertUndeliverable(errors, 1, TestException.class);
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
+
+    @Test
+    public void doubleOnXTime() {
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            new BadFlowableDoubleOnX()
+            .refCount(5, TimeUnit.SECONDS, Schedulers.single())
             .test()
             .assertResult();
 
