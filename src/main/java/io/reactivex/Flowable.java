@@ -15537,6 +15537,158 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     /**
+     * Throttles items from the upstream {@code Flowable} by first emitting the next
+     * item from upstream, then periodically emitting the latest item (if any) when
+     * the specified timeout elapses between them.
+     * <p>
+     * <img width="640" height="325" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/throttleLatest.png" alt="">
+     * <p>
+     * Unlike the option with {@link #throttleLatest(long, TimeUnit, boolean)}, the very last item being held back
+     * (if any) is not emitted when the upstream completes.
+     * <p>
+     * If no items were emitted from the upstream during this timeout phase, the next
+     * upstream item is emitted immediately and the timeout window starts from then.
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>This operator does not support backpressure as it uses time to control data flow.
+     *  If the downstream is not ready to receive items, a
+     *  {@link io.reactivex.exceptions.MissingBackpressureException MissingBackpressureException}
+     *  will be signaled.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code throttleLatest} operates by default on the {@code computation} {@link Scheduler}.</dd>
+     * </dl>
+     * @param timeout the time to wait after an item emission towards the downstream
+     *                before trying to emit the latest item from upstream again
+     * @param unit    the time unit
+     * @return the new Flowable instance
+     * @since 2.1.14 - experimental
+     * @see #throttleLatest(long, TimeUnit, boolean)
+     * @see #throttleLatest(long, TimeUnit, Scheduler)
+     */
+    @Experimental
+    @CheckReturnValue
+    @BackpressureSupport(BackpressureKind.ERROR)
+    @SchedulerSupport(SchedulerSupport.COMPUTATION)
+    public final Flowable<T> throttleLatest(long timeout, TimeUnit unit) {
+        return throttleLatest(timeout, unit, Schedulers.computation(), false);
+    }
+
+    /**
+     * Throttles items from the upstream {@code Flowable} by first emitting the next
+     * item from upstream, then periodically emitting the latest item (if any) when
+     * the specified timeout elapses between them.
+     * <p>
+     * <img width="640" height="325" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/throttleLatest.e.png" alt="">
+     * <p>
+     * If no items were emitted from the upstream during this timeout phase, the next
+     * upstream item is emitted immediately and the timeout window starts from then.
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>This operator does not support backpressure as it uses time to control data flow.
+     *  If the downstream is not ready to receive items, a
+     *  {@link io.reactivex.exceptions.MissingBackpressureException MissingBackpressureException}
+     *  will be signaled.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code throttleLatest} operates by default on the {@code computation} {@link Scheduler}.</dd>
+     * </dl>
+     * @param timeout the time to wait after an item emission towards the downstream
+     *                before trying to emit the latest item from upstream again
+     * @param unit    the time unit
+     * @param emitLast If {@code true}, the very last item from the upstream will be emitted
+     *                 immediately when the upstream completes, regardless if there is
+     *                 a timeout window active or not. If {@code false}, the very last
+     *                 upstream item is ignored and the flow terminates.
+     * @return the new Flowable instance
+     * @since 2.1.14 - experimental
+     * @see #throttleLatest(long, TimeUnit, Scheduler, boolean)
+     */
+    @Experimental
+    @CheckReturnValue
+    @BackpressureSupport(BackpressureKind.ERROR)
+    @SchedulerSupport(SchedulerSupport.COMPUTATION)
+    public final Flowable<T> throttleLatest(long timeout, TimeUnit unit, boolean emitLast) {
+        return throttleLatest(timeout, unit, Schedulers.computation(), emitLast);
+    }
+
+    /**
+     * Throttles items from the upstream {@code Flowable} by first emitting the next
+     * item from upstream, then periodically emitting the latest item (if any) when
+     * the specified timeout elapses between them.
+     * <p>
+     * <img width="640" height="325" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/throttleLatest.s.png" alt="">
+     * <p>
+     * Unlike the option with {@link #throttleLatest(long, TimeUnit, Scheduler, boolean)}, the very last item being held back
+     * (if any) is not emitted when the upstream completes.
+     * <p>
+     * If no items were emitted from the upstream during this timeout phase, the next
+     * upstream item is emitted immediately and the timeout window starts from then.
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>This operator does not support backpressure as it uses time to control data flow.
+     *  If the downstream is not ready to receive items, a
+     *  {@link io.reactivex.exceptions.MissingBackpressureException MissingBackpressureException}
+     *  will be signaled.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>You specify which {@link Scheduler} this operator will use.</dd>
+     * </dl>
+     * @param timeout the time to wait after an item emission towards the downstream
+     *                before trying to emit the latest item from upstream again
+     * @param unit    the time unit
+     * @param scheduler the {@link Scheduler} where the timed wait and latest item
+     *                  emission will be performed
+     * @return the new Flowable instance
+     * @since 2.1.14 - experimental
+     * @see #throttleLatest(long, TimeUnit, Scheduler, boolean)
+     */
+    @Experimental
+    @CheckReturnValue
+    @BackpressureSupport(BackpressureKind.ERROR)
+    @SchedulerSupport(SchedulerSupport.CUSTOM)
+    public final Flowable<T> throttleLatest(long timeout, TimeUnit unit, Scheduler scheduler) {
+        return throttleLatest(timeout, unit, scheduler, false);
+    }
+
+    /**
+     * Throttles items from the upstream {@code Flowable} by first emitting the next
+     * item from upstream, then periodically emitting the latest item (if any) when
+     * the specified timeout elapses between them.
+     * <p>
+     * <img width="640" height="325" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/throttleLatest.se.png" alt="">
+     * <p>
+     * If no items were emitted from the upstream during this timeout phase, the next
+     * upstream item is emitted immediately and the timeout window starts from then.
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>This operator does not support backpressure as it uses time to control data flow.
+     *  If the downstream is not ready to receive items, a
+     *  {@link io.reactivex.exceptions.MissingBackpressureException MissingBackpressureException}
+     *  will be signaled.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>You specify which {@link Scheduler} this operator will use.</dd>
+     * </dl>
+     * @param timeout the time to wait after an item emission towards the downstream
+     *                before trying to emit the latest item from upstream again
+     * @param unit    the time unit
+     * @param scheduler the {@link Scheduler} where the timed wait and latest item
+     *                  emission will be performed
+     * @param emitLast If {@code true}, the very last item from the upstream will be emitted
+     *                 immediately when the upstream completes, regardless if there is
+     *                 a timeout window active or not. If {@code false}, the very last
+     *                 upstream item is ignored and the flow terminates.
+     * @return the new Flowable instance
+     * @since 2.1.14 - experimental
+     */
+    @Experimental
+    @CheckReturnValue
+    @BackpressureSupport(BackpressureKind.ERROR)
+    @SchedulerSupport(SchedulerSupport.CUSTOM)
+    public final Flowable<T> throttleLatest(long timeout, TimeUnit unit, Scheduler scheduler, boolean emitLast) {
+        ObjectHelper.requireNonNull(unit, "unit is null");
+        ObjectHelper.requireNonNull(scheduler, "scheduler is null");
+        return RxJavaPlugins.onAssembly(new FlowableThrottleLatest<T>(this, timeout, unit, scheduler, emitLast));
+    }
+
+    /**
      * Returns a Flowable that only emits those items emitted by the source Publisher that are not followed
      * by another emitted item within a specified time window.
      * <p>
