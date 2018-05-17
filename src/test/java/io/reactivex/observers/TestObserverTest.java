@@ -1434,7 +1434,7 @@ public class TestObserverTest {
                 .assertResult(1)
                 ;
             }
-            fail("Should have thrown!");
+            throw new RuntimeException("Should have thrown!");
         } catch (AssertionError ex) {
             assertTrue(ex.toString(), ex.toString().contains("testing with item=2"));
         }
@@ -1466,7 +1466,7 @@ public class TestObserverTest {
 
         try {
             to.assertValuesOnly(5);
-            fail();
+            throw new RuntimeException();
         } catch (AssertionError ex) {
             // expected
         }
@@ -1481,7 +1481,7 @@ public class TestObserverTest {
 
         try {
             to.assertValuesOnly();
-            fail();
+            throw new RuntimeException();
         } catch (AssertionError ex) {
             // expected
         }
@@ -1496,7 +1496,131 @@ public class TestObserverTest {
 
         try {
             to.assertValuesOnly();
-            fail();
+            throw new RuntimeException();
+        } catch (AssertionError ex) {
+            // expected
+        }
+    }
+
+    @Test
+    public void assertValueSetOnly() {
+        TestObserver<Integer> to = TestObserver.create();
+        to.onSubscribe(Disposables.empty());
+        to.assertValueSetOnly(Collections.<Integer>emptySet());
+
+        to.onNext(5);
+        to.assertValueSetOnly(Collections.singleton(5));
+
+        to.onNext(-1);
+        to.assertValueSetOnly(new HashSet<Integer>(Arrays.asList(5, -1)));
+    }
+
+    @Test
+    public void assertValueSetOnlyThrowsOnUnexpectedValue() {
+        TestObserver<Integer> to = TestObserver.create();
+        to.onSubscribe(Disposables.empty());
+        to.assertValueSetOnly(Collections.<Integer>emptySet());
+
+        to.onNext(5);
+        to.assertValueSetOnly(Collections.singleton(5));
+
+        to.onNext(-1);
+
+        try {
+            to.assertValueSetOnly(Collections.singleton(5));
+            throw new RuntimeException();
+        } catch (AssertionError ex) {
+            // expected
+        }
+    }
+
+    @Test
+    public void assertValueSetOnlyThrowsWhenCompleted() {
+        TestObserver<Integer> to = TestObserver.create();
+        to.onSubscribe(Disposables.empty());
+
+        to.onComplete();
+
+        try {
+            to.assertValueSetOnly(Collections.<Integer>emptySet());
+            throw new RuntimeException();
+        } catch (AssertionError ex) {
+            // expected
+        }
+    }
+
+    @Test
+    public void assertValueSetOnlyThrowsWhenErrored() {
+        TestObserver<Integer> to = TestObserver.create();
+        to.onSubscribe(Disposables.empty());
+
+        to.onError(new TestException());
+
+        try {
+            to.assertValueSetOnly(Collections.<Integer>emptySet());
+            throw new RuntimeException();
+        } catch (AssertionError ex) {
+            // expected
+        }
+    }
+
+    @Test
+    public void assertValueSequenceOnly() {
+        TestObserver<Integer> to = TestObserver.create();
+        to.onSubscribe(Disposables.empty());
+        to.assertValueSequenceOnly(Collections.<Integer>emptyList());
+
+        to.onNext(5);
+        to.assertValueSequenceOnly(Collections.singletonList(5));
+
+        to.onNext(-1);
+        to.assertValueSequenceOnly(Arrays.asList(5, -1));
+    }
+
+    @Test
+    public void assertValueSequenceOnlyThrowsOnUnexpectedValue() {
+        TestObserver<Integer> to = TestObserver.create();
+        to.onSubscribe(Disposables.empty());
+        to.assertValueSequenceOnly(Collections.<Integer>emptyList());
+
+        to.onNext(5);
+        to.assertValueSequenceOnly(Collections.singletonList(5));
+
+        to.onNext(-1);
+
+        try {
+            to.assertValueSequenceOnly(Collections.singletonList(5));
+            throw new RuntimeException();
+        } catch (AssertionError ex) {
+            // expected
+        }
+    }
+
+    @Test
+    public void assertValueSequenceOnlyThrowsWhenCompleted() {
+        TestObserver<Integer> to = TestObserver.create();
+        to.onSubscribe(Disposables.empty());
+
+        to.onComplete();
+
+        try {
+            to.assertValueSequenceOnly(Collections.<Integer>emptyList());
+            throw new RuntimeException();
+        } catch (AssertionError ex) {
+            // expected
+        }
+    }
+
+    @Test
+    public void assertValueSequenceOnlyThrowsWhenErrored() {
+        TestObserver<Integer> to = TestObserver.create();
+        to.onSubscribe(Disposables.empty());
+
+        to.onError(new TestException());
+
+        try {
+            to.assertValueSequenceOnly(Collections.<Integer>emptyList());
+            throw new RuntimeException();
         } catch (AssertionError ex) {
             // expected
         }
