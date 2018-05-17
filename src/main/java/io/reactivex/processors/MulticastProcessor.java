@@ -19,6 +19,7 @@ import org.reactivestreams.*;
 
 import io.reactivex.annotations.*;
 import io.reactivex.exceptions.*;
+import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.internal.fuseable.*;
 import io.reactivex.internal.queue.*;
 import io.reactivex.internal.subscriptions.*;
@@ -51,11 +52,11 @@ import io.reactivex.plugins.RxJavaPlugins;
  * upstream when all {@link Subscriber}s have cancelled. Late {@code Subscriber}s will then be
  * immediately completed.
  * <p>
- * Because of {@code MulticastProcessor} implements the {@link Subscriber} interface, calling
+ * Because {@code MulticastProcessor} implements the {@link Subscriber} interface, calling
  * {@code onSubscribe} is mandatory (<a href="https://github.com/reactive-streams/reactive-streams-jvm#2.12">Rule 2.12</a>).
- * If {@code MulticastProcessor} shoud run standalone, i.e., without subscribing the {@code MulticastProcessor} to another {@link Publisher},
+ * If {@code MulticastProcessor} should run standalone, i.e., without subscribing the {@code MulticastProcessor} to another {@link Publisher},
  * use {@link #start()} or {@link #startUnbounded()} methods to initialize the internal buffer.
- * Failing to do so will lead to {@link NullPointerException} at runtime.
+ * Failing to do so will lead to a {@link NullPointerException} at runtime.
  * <p>
  * Use {@link #offer(Object)} to try and offer/emit items but don't fail if the
  * internal buffer is full.
@@ -165,10 +166,11 @@ public final class MulticastProcessor<T> extends FlowableProcessor<T> {
      * @param <T> the input and output value type
      * @return the new MulticastProcessor instance
      */
+    @CheckReturnValue
+    @NonNull
     public static <T> MulticastProcessor<T> create() {
         return new MulticastProcessor<T>(bufferSize(), false);
     }
-
 
     /**
      * Constructs a fresh instance with the default Flowable.bufferSize() prefetch
@@ -178,6 +180,8 @@ public final class MulticastProcessor<T> extends FlowableProcessor<T> {
      * is cancelled
      * @return the new MulticastProcessor instance
      */
+    @CheckReturnValue
+    @NonNull
     public static <T> MulticastProcessor<T> create(boolean refCount) {
         return new MulticastProcessor<T>(bufferSize(), refCount);
     }
@@ -188,6 +192,8 @@ public final class MulticastProcessor<T> extends FlowableProcessor<T> {
      * @param <T> the input and output value type
      * @return the new MulticastProcessor instance
      */
+    @CheckReturnValue
+    @NonNull
     public static <T> MulticastProcessor<T> create(int bufferSize) {
         return new MulticastProcessor<T>(bufferSize, false);
     }
@@ -201,6 +207,8 @@ public final class MulticastProcessor<T> extends FlowableProcessor<T> {
      * @param <T> the input and output value type
      * @return the new MulticastProcessor instance
      */
+    @CheckReturnValue
+    @NonNull
     public static <T> MulticastProcessor<T> create(int bufferSize, boolean refCount) {
         return new MulticastProcessor<T>(bufferSize, refCount);
     }
@@ -214,6 +222,7 @@ public final class MulticastProcessor<T> extends FlowableProcessor<T> {
      */
     @SuppressWarnings("unchecked")
     MulticastProcessor(int bufferSize, boolean refCount) {
+        ObjectHelper.verifyPositive(bufferSize, "bufferSize");
         this.bufferSize = bufferSize;
         this.limit = bufferSize - (bufferSize >> 2);
         this.wip = new AtomicInteger();
@@ -283,9 +292,7 @@ public final class MulticastProcessor<T> extends FlowableProcessor<T> {
             return;
         }
         if (fusionMode == QueueSubscription.NONE) {
-            if (t == null) {
-                throw new NullPointerException("t is null");
-            }
+            ObjectHelper.requireNonNull(t, "onNext called with null. Null values are generally not allowed in 2.x operators and sources.");
             if (!queue.offer(t)) {
                 SubscriptionHelper.cancel(upstream);
                 onError(new MissingBackpressureException());
@@ -305,9 +312,7 @@ public final class MulticastProcessor<T> extends FlowableProcessor<T> {
         if (once.get()) {
             return false;
         }
-        if (t == null) {
-            throw new NullPointerException("t is null");
-        }
+        ObjectHelper.requireNonNull(t, "offer called with null. Null values are generally not allowed in 2.x operators and sources.");
         if (fusionMode == QueueSubscription.NONE) {
             if (queue.offer(t)) {
                 drain();
@@ -319,9 +324,7 @@ public final class MulticastProcessor<T> extends FlowableProcessor<T> {
 
     @Override
     public void onError(Throwable t) {
-        if (t == null) {
-            throw new NullPointerException("t is null");
-        }
+        ObjectHelper.requireNonNull(t, "onError called with null. Null values are generally not allowed in 2.x operators and sources.");
         if (once.compareAndSet(false, true)) {
             error = t;
             done = true;

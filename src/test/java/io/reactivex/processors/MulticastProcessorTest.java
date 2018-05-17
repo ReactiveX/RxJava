@@ -61,7 +61,6 @@ public class MulticastProcessorTest {
         mp.test().assertResult();
     }
 
-
     @Test
     public void error() {
         MulticastProcessor<Integer> mp = MulticastProcessor.create();
@@ -127,14 +126,11 @@ public class MulticastProcessorTest {
         mp.test(0)
         .assertEmpty()
         .requestMore(1)
-        .assertValues(0)
-        .assertNotComplete()
+        .assertValuesOnly(0)
         .requestMore(2)
-        .assertValues(0, 1, 2)
-        .assertNotComplete()
+        .assertValuesOnly(0, 1, 2)
         .requestMore(3)
-        .assertValues(0, 1, 2, 3, 4, 5)
-        .assertNotComplete()
+        .assertValuesOnly(0, 1, 2, 3, 4, 5)
         .requestMore(4)
         .assertResult(0, 1, 2, 3, 4, 5, 6, 7, 8, 9);
     }
