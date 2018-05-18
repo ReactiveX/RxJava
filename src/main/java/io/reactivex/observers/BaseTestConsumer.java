@@ -588,6 +588,21 @@ public abstract class BaseTestConsumer<T, U extends BaseTestConsumer<T, U>> impl
     }
 
     /**
+     * Assert that the TestObserver/TestSubscriber received only the specified values in any order without terminating.
+     * @param expected the collection of values expected in any order
+     * @return this;
+     * @since 2.1.14 - experimental
+     */
+    @SuppressWarnings("unchecked")
+    @Experimental
+    public final U assertValueSetOnly(Collection<? extends T> expected) {
+        return assertSubscribed()
+                .assertValueSet(expected)
+                .assertNoErrors()
+                .assertNotComplete();
+    }
+
+    /**
      * Assert that the TestObserver/TestSubscriber received only the specified sequence of values in the same order.
      * @param sequence the sequence of expected values in order
      * @return this;
@@ -623,6 +638,21 @@ public abstract class BaseTestConsumer<T, U extends BaseTestConsumer<T, U>> impl
             throw fail("Fewer values received than expected (" + i + ")");
         }
         return (U)this;
+    }
+
+    /**
+     * Assert that the TestObserver/TestSubscriber received only the specified values in the specified order without terminating.
+     * @param sequence the sequence of expected values in order
+     * @return this;
+     * @since 2.1.14 - experimental
+     */
+    @SuppressWarnings("unchecked")
+    @Experimental
+    public final U assertValueSequenceOnly(Iterable<? extends T> sequence) {
+        return assertSubscribed()
+                .assertValueSequence(sequence)
+                .assertNoErrors()
+                .assertNotComplete();
     }
 
     /**
