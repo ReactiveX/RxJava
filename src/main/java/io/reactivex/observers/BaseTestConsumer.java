@@ -591,7 +591,7 @@ public abstract class BaseTestConsumer<T, U extends BaseTestConsumer<T, U>> impl
      * Assert that the TestObserver/TestSubscriber received only the specified values in any order without terminating.
      * @param expected the collection of values expected in any order
      * @return this;
-     * @since 2.1.14
+     * @since 2.1.14 - Experimental
      */
     @SuppressWarnings("unchecked")
     @Experimental
@@ -644,7 +644,7 @@ public abstract class BaseTestConsumer<T, U extends BaseTestConsumer<T, U>> impl
      * Assert that the TestObserver/TestSubscriber received only the specified values in the specified order without terminating.
      * @param sequence the sequence of expected values in order
      * @return this;
-     * @since 2.1.14
+     * @since 2.1.14 - Experimental
      */
     @SuppressWarnings("unchecked")
     @Experimental
