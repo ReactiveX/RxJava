@@ -1455,8 +1455,8 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Observable<T> concatEager(ObservableSource<? extends ObservableSource<? extends T>> sources, int maxConcurrency, int prefetch) {
-        ObjectHelper.requireNonNull(maxConcurrency, "maxConcurrency is null");
-        ObjectHelper.requireNonNull(prefetch, "prefetch is null");
+        ObjectHelper.verifyPositive(maxConcurrency, "maxConcurrency");
+        ObjectHelper.verifyPositive(prefetch, "prefetch");
         return wrap(sources).concatMapEager((Function)Functions.identity(), maxConcurrency, prefetch);
     }
 
@@ -1507,8 +1507,8 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public static <T> Observable<T> concatEager(Iterable<? extends ObservableSource<? extends T>> sources, int maxConcurrency, int prefetch) {
-        ObjectHelper.requireNonNull(maxConcurrency, "maxConcurrency is null");
-        ObjectHelper.requireNonNull(prefetch, "prefetch is null");
+        ObjectHelper.verifyPositive(maxConcurrency, "maxConcurrency");
+        ObjectHelper.verifyPositive(prefetch, "prefetch");
         return fromIterable(sources).concatMapEagerDelayError((Function)Functions.identity(), maxConcurrency, prefetch, false);
     }
 
