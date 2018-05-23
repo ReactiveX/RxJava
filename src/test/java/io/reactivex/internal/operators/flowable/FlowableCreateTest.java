@@ -934,6 +934,7 @@ public class FlowableCreateTest {
         }
     }
 
+    @SuppressWarnings("rawtypes")
     @Test
     public void emittersHasToString() {
         Map<BackpressureStrategy, Class<? extends FlowableEmitter>> emitterMap =
