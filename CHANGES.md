@@ -2,6 +2,42 @@
 
 The changelog of version 1.x can be found at https://github.com/ReactiveX/RxJava/blob/1.x/CHANGES.md
 
+### Version 2.1.14 - May 23, 2018 ([Maven](http://search.maven.org/#artifactdetails%7Cio.reactivex.rxjava2%7Crxjava%7C2.1.14%7C))
+
+#### API changes
+
+- [Pull 5976](https://github.com/ReactiveX/RxJava/pull/5976): Add `Single.concatEager()`.
+- [Pull 5986](https://github.com/ReactiveX/RxJava/pull/5986): Add `ConnectableObservable.refCount()` and `ConnectableFlowable.refCount()` with minimum consumer count & disconnect grace period.
+- [Pull 5979](https://github.com/ReactiveX/RxJava/pull/5979): Add `Observable.throttleLatest` and `Flowable.throttleLatest()`.
+- [Pull 6002](https://github.com/ReactiveX/RxJava/pull/6002): Add `MulticastProcessor`.
+- [Pull 6010](https://github.com/ReactiveX/RxJava/pull/6010): Add `assertValueSetOnly` and `assertValueSequenceOnly` to `TestObserver`/`TestSubscriber`.
+
+#### Deprecations
+
+- [Pull 5982](https://github.com/ReactiveX/RxJava/pull/5982): Deprecate `getValues()` in `Subject`s/`FlowableProcessor`s to be removed in 3.x.
+
+#### Documentation changes
+
+- [Pull 5977](https://github.com/ReactiveX/RxJava/pull/5977): `Maybe`/`Single` JavaDocs; annotation cleanup.
+- [Pull 5981](https://github.com/ReactiveX/RxJava/pull/5981): Improve JavaDocs of the `subscribeActual` methods.
+- [Pull 5984](https://github.com/ReactiveX/RxJava/pull/5984): Add `blockingSubscribe` JavaDoc clarifications.
+- [Pull 5987](https://github.com/ReactiveX/RxJava/pull/5987): Add marble diagrams to some `Single.doOnX` methods.
+- [Pull 5992](https://github.com/ReactiveX/RxJava/pull/5992): `Observable` javadoc cleanup. 
+
+#### Bugfixes
+
+- [Pull 5975](https://github.com/ReactiveX/RxJava/pull/5975): Fix `refCount()` connect/subscribe/cancel deadlock.
+- [Pull 5978](https://github.com/ReactiveX/RxJava/pull/5978): `Flowable.take` to route post-cancel errors to plugin error handler.
+- [Pull 5991](https://github.com/ReactiveX/RxJava/pull/5991): Fix `switchMap` to indicate boundary fusion.
+
+#### Other changes
+
+- [Pull 5985](https://github.com/ReactiveX/RxJava/pull/5985): Cleanup in the `Scheduler` class.
+- [Pull 5996](https://github.com/ReactiveX/RxJava/pull/5996): Automatically publish the generated JavaDocs from CI.
+- [Pull 5995](https://github.com/ReactiveX/RxJava/pull/5995): Implement `toString` method for some `Emitter`s.
+- [Pull 6005](https://github.com/ReactiveX/RxJava/pull/6005): JavaDocs HTML formatting and whitespace cleanup.
+- [Pull 6014](https://github.com/ReactiveX/RxJava/pull/6014): Fix & prevent `null` checks on primitives.
+
 ### Version 2.1.13 - April 27, 2018 ([Maven](http://search.maven.org/#artifactdetails%7Cio.reactivex.rxjava2%7Crxjava%7C2.1.13%7C))
 
 #### API changes
