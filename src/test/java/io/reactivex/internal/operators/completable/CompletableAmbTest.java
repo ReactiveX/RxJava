@@ -186,4 +186,78 @@ public class CompletableAmbTest {
             RxJavaPlugins.reset();
         }
     }
+
+
+    @Test
+    public void untilCompletableMainComplete() {
+        CompletableSubject main = CompletableSubject.create();
+        CompletableSubject other = CompletableSubject.create();
+
+        TestObserver<Void> to = main.ambWith(other).test();
+
+        assertTrue("Main no observers?", main.hasObservers());
+        assertTrue("Other no observers?", other.hasObservers());
+
+        main.onComplete();
+
+        assertFalse("Main has observers?", main.hasObservers());
+        assertFalse("Other has observers?", other.hasObservers());
+
+        to.assertResult();
+    }
+
+    @Test
+    public void untilCompletableMainError() {
+        CompletableSubject main = CompletableSubject.create();
+        CompletableSubject other = CompletableSubject.create();
+
+        TestObserver<Void> to = main.ambWith(other).test();
+
+        assertTrue("Main no observers?", main.hasObservers());
+        assertTrue("Other no observers?", other.hasObservers());
+
+        main.onError(new TestException());
+
+        assertFalse("Main has observers?", main.hasObservers());
+        assertFalse("Other has observers?", other.hasObservers());
+
+        to.assertFailure(TestException.class);
+    }
+
+    @Test
+    public void untilCompletableOtherOnComplete() {
+        CompletableSubject main = CompletableSubject.create();
+        CompletableSubject other = CompletableSubject.create();
+
+        TestObserver<Void> to = main.ambWith(other).test();
+
+        assertTrue("Main no observers?", main.hasObservers());
+        assertTrue("Other no observers?", other.hasObservers());
+
+        other.onComplete();
+
+        assertFalse("Main has observers?", main.hasObservers());
+        assertFalse("Other has observers?", other.hasObservers());
+
+        to.assertResult();
+    }
+
+    @Test
+    public void untilCompletableOtherError() {
+        CompletableSubject main = CompletableSubject.create();
+        CompletableSubject other = CompletableSubject.create();
+
+        TestObserver<Void> to = main.ambWith(other).test();
+
+        assertTrue("Main no observers?", main.hasObservers());
+        assertTrue("Other no observers?", other.hasObservers());
+
+        other.onError(new TestException());
+
+        assertFalse("Main has observers?", main.hasObservers());
+        assertFalse("Other has observers?", other.hasObservers());
+
+        to.assertFailure(TestException.class);
+    }
+
 }
