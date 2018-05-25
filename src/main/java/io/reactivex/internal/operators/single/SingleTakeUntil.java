@@ -69,6 +69,7 @@ public final class SingleTakeUntil<T, U> extends Single<T> {
         @Override
         public void dispose() {
             DisposableHelper.dispose(this);
+            other.dispose();
         }
 
         @Override

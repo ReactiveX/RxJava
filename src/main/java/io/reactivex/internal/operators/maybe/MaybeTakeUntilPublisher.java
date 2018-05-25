@@ -137,6 +137,7 @@ public final class MaybeTakeUntilPublisher<T, U> extends AbstractMaybeWithUpstre
 
             @Override
             public void onNext(Object value) {
+                SubscriptionHelper.cancel(this);
                 parent.otherComplete();
             }
 

@@ -20,6 +20,7 @@ import org.junit.Test;
 
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.Function;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.subjects.PublishSubject;
@@ -271,4 +272,134 @@ public class ObservableTakeUntilTest {
             }
         });
     }
+
+
+    @Test
+    public void untilPublisherMainSuccess() {
+        PublishSubject<Integer> main = PublishSubject.create();
+        PublishSubject<Integer> other = PublishSubject.create();
+
+        TestObserver<Integer> to = main.takeUntil(other).test();
+
+        assertTrue("Main no observers?", main.hasObservers());
+        assertTrue("Other no observers?", other.hasObservers());
+
+        main.onNext(1);
+        main.onNext(2);
+        main.onComplete();
+
+        assertFalse("Main has observers?", main.hasObservers());
+        assertFalse("Other has observers?", other.hasObservers());
+
+        to.assertResult(1, 2);
+    }
+
+    @Test
+    public void untilPublisherMainComplete() {
+        PublishSubject<Integer> main = PublishSubject.create();
+        PublishSubject<Integer> other = PublishSubject.create();
+
+        TestObserver<Integer> to = main.takeUntil(other).test();
+
+        assertTrue("Main no observers?", main.hasObservers());
+        assertTrue("Other no observers?", other.hasObservers());
+
+        main.onComplete();
+
+        assertFalse("Main has observers?", main.hasObservers());
+        assertFalse("Other has observers?", other.hasObservers());
+
+        to.assertResult();
+    }
+
+    @Test
+    public void untilPublisherMainError() {
+        PublishSubject<Integer> main = PublishSubject.create();
+        PublishSubject<Integer> other = PublishSubject.create();
+
+        TestObserver<Integer> to = main.takeUntil(other).test();
+
+        assertTrue("Main no observers?", main.hasObservers());
+        assertTrue("Other no observers?", other.hasObservers());
+
+        main.onError(new TestException());
+
+        assertFalse("Main has observers?", main.hasObservers());
+        assertFalse("Other has observers?", other.hasObservers());
+
+        to.assertFailure(TestException.class);
+    }
+
+    @Test
+    public void untilPublisherOtherOnNext() {
+        PublishSubject<Integer> main = PublishSubject.create();
+        PublishSubject<Integer> other = PublishSubject.create();
+
+        TestObserver<Integer> to = main.takeUntil(other).test();
+
+        assertTrue("Main no observers?", main.hasObservers());
+        assertTrue("Other no observers?", other.hasObservers());
+
+        other.onNext(1);
+
+        assertFalse("Main has observers?", main.hasObservers());
+        assertFalse("Other has observers?", other.hasObservers());
+
+        to.assertResult();
+    }
+
+    @Test
+    public void untilPublisherOtherOnComplete() {
+        PublishSubject<Integer> main = PublishSubject.create();
+        PublishSubject<Integer> other = PublishSubject.create();
+
+        TestObserver<Integer> to = main.takeUntil(other).test();
+
+        assertTrue("Main no observers?", main.hasObservers());
+        assertTrue("Other no observers?", other.hasObservers());
+
+        other.onComplete();
+
+        assertFalse("Main has observers?", main.hasObservers());
+        assertFalse("Other has observers?", other.hasObservers());
+
+        to.assertResult();
+    }
+
+    @Test
+    public void untilPublisherOtherError() {
+        PublishSubject<Integer> main = PublishSubject.create();
+        PublishSubject<Integer> other = PublishSubject.create();
+
+        TestObserver<Integer> to = main.takeUntil(other).test();
+
+        assertTrue("Main no observers?", main.hasObservers());
+        assertTrue("Other no observers?", other.hasObservers());
+
+        other.onError(new TestException());
+
+        assertFalse("Main has observers?", main.hasObservers());
+        assertFalse("Other has observers?", other.hasObservers());
+
+        to.assertFailure(TestException.class);
+    }
+
+    @Test
+    public void untilPublisherDispose() {
+        PublishSubject<Integer> main = PublishSubject.create();
+        PublishSubject<Integer> other = PublishSubject.create();
+
+        TestObserver<Integer> to = main.takeUntil(other).test();
+
+        assertTrue("Main no observers?", main.hasObservers());
+        assertTrue("Other no observers?", other.hasObservers());
+
+        to.dispose();
+
+        assertFalse("Main has observers?", main.hasObservers());
+        assertFalse("Other has observers?", other.hasObservers());
+
+        to.assertEmpty();
+    }
+
 }
