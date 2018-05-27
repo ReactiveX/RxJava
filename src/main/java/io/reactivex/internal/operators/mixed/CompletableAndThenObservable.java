@@ -72,12 +72,12 @@ public final class CompletableAndThenObservable<R> extends Observable<R> {
 
         @Override
         public void onComplete() {
-            ObservableSource<? extends R> p = other;
-            if (p == null) {
+            ObservableSource<? extends R> o = other;
+            if (o == null) {
                 downstream.onComplete();
             } else {
                 other = null;
-                p.subscribe(this);
+                o.subscribe(this);
             }
         }
 

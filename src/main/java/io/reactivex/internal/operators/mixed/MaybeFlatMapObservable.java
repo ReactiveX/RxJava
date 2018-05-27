@@ -96,17 +96,17 @@ public final class MaybeFlatMapObservable<T, R> extends Observable<R> {
 
         @Override
         public void onSuccess(T t) {
-            ObservableSource<? extends R> p;
+            ObservableSource<? extends R> o;
 
             try {
-                p = ObjectHelper.requireNonNull(mapper.apply(t), "The mapper returned a null Publisher");
+                o = ObjectHelper.requireNonNull(mapper.apply(t), "The mapper returned a null Publisher");
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
                 downstream.onError(ex);
                 return;
             }
 
-            p.subscribe(this);
+            o.subscribe(this);
         }
 
     }
