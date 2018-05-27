@@ -129,16 +129,16 @@ public class SingleFlatMapTest {
         .test()
         .assertResult(1, 2, 3, 4, 5);
     }
-    
+
     @Test(expected = NullPointerException.class)
     public void flatMapPublisherMapperNull() {
         Single.just(1).flatMapPublisher(null);
     }
-    
+
     @Test
     public void flatMapPublisherMapperThrows() {
         final TestException ex = new TestException();
-        Single.just(1) 
+        Single.just(1)
         .flatMapPublisher(new Function<Integer, Publisher<Integer>>() {
             @Override
             public Publisher<Integer> apply(Integer v) throws Exception {
@@ -149,11 +149,11 @@ public class SingleFlatMapTest {
         .assertNoValues()
         .assertError(ex);
     }
-    
+
     @Test
     public void flatMapPublisherSingleError() {
         final TestException ex = new TestException();
-        Single.<Integer>error(ex) 
+        Single.<Integer>error(ex)
         .flatMapPublisher(new Function<Integer, Publisher<Integer>>() {
             @Override
             public Publisher<Integer> apply(Integer v) throws Exception {
@@ -164,7 +164,7 @@ public class SingleFlatMapTest {
         .assertNoValues()
         .assertError(ex);
     }
-    
+
     @Test
     public void flatMapPublisherCancelDuringSingle() {
         final AtomicBoolean disposed = new AtomicBoolean();
@@ -182,18 +182,18 @@ public class SingleFlatMapTest {
             }
         })
         .test()
-        .assertNoValues() 
+        .assertNoValues()
         .assertNotTerminated();
         assertFalse(disposed.get());
         ts.cancel();
         assertTrue(disposed.get());
         ts.assertNotTerminated();
     }
-    
+
     @Test
     public void flatMapPublisherCancelDuringFlowable() {
         final AtomicBoolean disposed = new AtomicBoolean();
-        TestSubscriber<Integer> ts = 
+        TestSubscriber<Integer> ts =
         Single.just(1)
         .flatMapPublisher(new Function<Integer, Publisher<Integer>>() {
             @Override
@@ -208,7 +208,7 @@ public class SingleFlatMapTest {
             }
         })
         .test()
-        .assertNoValues() 
+        .assertNoValues()
         .assertNotTerminated();
         assertFalse(disposed.get());
         ts.cancel();

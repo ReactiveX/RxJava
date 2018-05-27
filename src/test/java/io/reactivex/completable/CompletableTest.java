@@ -14,6 +14,7 @@
 package io.reactivex.completable;
 
 import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 import java.util.*;
@@ -26,7 +27,7 @@ import org.reactivestreams.*;
 import io.reactivex.*;
 import io.reactivex.Observable;
 import io.reactivex.Observer;
-import io.reactivex.disposables.Disposable;
+import io.reactivex.disposables.*;
 import io.reactivex.exceptions.*;
 import io.reactivex.functions.*;
 import io.reactivex.internal.disposables.*;
@@ -4428,6 +4429,7 @@ public class CompletableTest {
         Completable.unsafeCreate(new CompletableSource() {
                 @Override
                 public void subscribe(CompletableObserver cs) {
+                    cs.onSubscribe(Disposables.empty());
                     cs.onError(e);
                 }
             })

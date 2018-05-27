@@ -28,6 +28,7 @@ import io.reactivex.internal.observers.*;
 import io.reactivex.internal.operators.completable.*;
 import io.reactivex.internal.operators.flowable.*;
 import io.reactivex.internal.operators.maybe.*;
+import io.reactivex.internal.operators.mixed.*;
 import io.reactivex.internal.operators.observable.*;
 import io.reactivex.internal.operators.single.*;
 import io.reactivex.internal.util.*;
@@ -2535,7 +2536,8 @@ public abstract class Single<T> implements SingleSource<T> {
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> Observable<R> flatMapObservable(Function<? super T, ? extends ObservableSource<? extends R>> mapper) {
-        return toObservable().flatMap(mapper);
+        ObjectHelper.requireNonNull(mapper, "mapper is null");
+        return RxJavaPlugins.onAssembly(new SingleFlatMapObservable<T, R>(this, mapper));
     }
 
     /**

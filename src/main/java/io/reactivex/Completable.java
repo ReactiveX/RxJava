@@ -24,9 +24,8 @@ import io.reactivex.internal.functions.*;
 import io.reactivex.internal.fuseable.*;
 import io.reactivex.internal.observers.*;
 import io.reactivex.internal.operators.completable.*;
-import io.reactivex.internal.operators.flowable.FlowableDelaySubscriptionOther;
 import io.reactivex.internal.operators.maybe.*;
-import io.reactivex.internal.operators.observable.ObservableDelaySubscriptionOther;
+import io.reactivex.internal.operators.mixed.*;
 import io.reactivex.internal.operators.single.SingleDelayWithCompletable;
 import io.reactivex.internal.util.ExceptionHelper;
 import io.reactivex.observers.TestObserver;
@@ -872,7 +871,7 @@ public abstract class Completable implements CompletableSource {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <T> Observable<T> andThen(ObservableSource<T> next) {
         ObjectHelper.requireNonNull(next, "next is null");
-        return RxJavaPlugins.onAssembly(new ObservableDelaySubscriptionOther<T, Object>(next, toObservable()));
+        return RxJavaPlugins.onAssembly(new CompletableAndThenObservable<T>(this, next));
     }
 
     /**
@@ -897,7 +896,7 @@ public abstract class Completable implements CompletableSource {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <T> Flowable<T> andThen(Publisher<T> next) {
         ObjectHelper.requireNonNull(next, "next is null");
-        return RxJavaPlugins.onAssembly(new FlowableDelaySubscriptionOther<T, Object>(next, toFlowable()));
+        return RxJavaPlugins.onAssembly(new CompletableAndThenPublisher<T>(this, next));
     }
 
     /**
