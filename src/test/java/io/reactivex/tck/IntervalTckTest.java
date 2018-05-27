@@ -23,6 +23,10 @@ import io.reactivex.Flowable;
 @Test
 public class IntervalTckTest extends BaseTck<Long> {
 
+    public IntervalTckTest() {
+        super(50);
+    }
+
     @Override
     public Publisher<Long> createPublisher(long elements) {
         return
