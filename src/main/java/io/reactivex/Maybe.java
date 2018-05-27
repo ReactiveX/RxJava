@@ -27,6 +27,7 @@ import io.reactivex.internal.fuseable.*;
 import io.reactivex.internal.observers.BlockingMultiObserver;
 import io.reactivex.internal.operators.flowable.*;
 import io.reactivex.internal.operators.maybe.*;
+import io.reactivex.internal.operators.mixed.*;
 import io.reactivex.internal.util.*;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.plugins.RxJavaPlugins;
@@ -2961,7 +2962,8 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> Observable<R> flatMapObservable(Function<? super T, ? extends ObservableSource<? extends R>> mapper) {
-        return toObservable().flatMap(mapper);
+        ObjectHelper.requireNonNull(mapper, "mapper is null");
+        return RxJavaPlugins.onAssembly(new MaybeFlatMapObservable<T, R>(this, mapper));
     }
 
     /**
@@ -2987,7 +2989,8 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> Flowable<R> flatMapPublisher(Function<? super T, ? extends Publisher<? extends R>> mapper) {
-        return toFlowable().flatMap(mapper);
+        ObjectHelper.requireNonNull(mapper, "mapper is null");
+        return RxJavaPlugins.onAssembly(new MaybeFlatMapPublisher<T, R>(this, mapper));
     }
 
     /**
