@@ -70,7 +70,7 @@ public class ObservableTakeUntilTest {
 
         verify(result, times(1)).onNext("one");
         verify(result, times(1)).onNext("two");
-        verify(sSource, times(1)).dispose();
+        verify(sSource, never()).dispose(); // no longer disposing itself on terminal events
         verify(sOther, times(1)).dispose();
 
     }
@@ -95,7 +95,7 @@ public class ObservableTakeUntilTest {
         verify(result, times(1)).onNext("two");
         verify(result, times(0)).onNext("three");
         verify(result, times(1)).onError(error);
-        verify(sSource, times(1)).dispose();
+        verify(sSource, never()).dispose(); // no longer disposing itself on terminal events
         verify(sOther, times(1)).dispose();
 
     }
@@ -122,7 +122,7 @@ public class ObservableTakeUntilTest {
         verify(result, times(1)).onError(error);
         verify(result, times(0)).onComplete();
         verify(sSource, times(1)).dispose();
-        verify(sOther, times(1)).dispose();
+        verify(sOther, never()).dispose(); // no longer disposing itself on termination
 
     }
 
@@ -149,7 +149,7 @@ public class ObservableTakeUntilTest {
         verify(result, times(0)).onNext("three");
         verify(result, times(1)).onComplete();
         verify(sSource, times(1)).dispose();
-        verify(sOther, times(1)).dispose(); // unsubscribed since SafeSubscriber unsubscribes after onComplete
+        verify(sOther, never()).dispose(); // no longer disposing itself on terminal events
 
     }
 
