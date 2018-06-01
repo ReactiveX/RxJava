@@ -85,6 +85,12 @@ public final class CompositeDisposable implements Disposable, DisposableContaine
         return disposed;
     }
 
+    /**
+     * Adds a disposable to this container or disposes it if the
+     * container has been disposed.
+     * @param d the disposable to add, not null
+     * @return true if successful, false if this container has been disposed
+     */
     @Override
     public boolean add(@NonNull Disposable d) {
         ObjectHelper.requireNonNull(d, "d is null");
@@ -135,6 +141,12 @@ public final class CompositeDisposable implements Disposable, DisposableContaine
         return false;
     }
 
+    /**
+     * Removes and disposes the given disposable if it is part of this
+     * container.
+     * @param d the disposable to remove and dispose, not null
+     * @return true if the operation was successful
+     */
     @Override
     public boolean remove(@NonNull Disposable d) {
         if (delete(d)) {
@@ -144,6 +156,12 @@ public final class CompositeDisposable implements Disposable, DisposableContaine
         return false;
     }
 
+    /**
+     * Removes (but does not dispose) the given disposable if it is part of this
+     * container.
+     * @param d the disposable to remove, not null
+     * @return true if the operation was successful
+     */
     @Override
     public boolean delete(@NonNull Disposable d) {
         ObjectHelper.requireNonNull(d, "Disposable item is null");
