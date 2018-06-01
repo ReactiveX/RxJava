@@ -1948,16 +1948,16 @@ public class FlowableGroupByTest {
             }
         };
     }
-    
+
     private static final class TestTicker extends Ticker {
-        long tick = 0;
+        long tick;
 
         @Override
         public long read() {
             return tick;
         }
     }
-    
+
     @Test
     public void testGroupByEvictionCancellationOfSource5933() {
         PublishProcessor<Integer> source = PublishProcessor.create();
@@ -2022,11 +2022,11 @@ public class FlowableGroupByTest {
         source.onNext(1);
         source.onNext(1);
         ts.awaitCount(3);
-        
+
         // Advance time far enough to evict the group.
         // NOTE -- Comment this line out to make the test "pass".
         testTicker.tick = TimeUnit.SECONDS.toNanos(6);
-        
+
         // Send more data in the group (triggering eviction and recreation)
         source.onNext(1);
 
@@ -2042,12 +2042,12 @@ public class FlowableGroupByTest {
         assertTrue(list.contains("Source canceled"));
         assertEquals(Arrays.asList(
                 "Group completed", // this is here when eviction occurs
-                "Outer group by canceled", 
+                "Outer group by canceled",
                 "Group canceled",
                 "Source canceled"  // This is *not* here when eviction occurs
         ), list);
     }
-    
+
     @Test
     public void testCancellationOfUpstreamWhenGroupedFlowableCompletes() {
         final AtomicBoolean cancelled = new AtomicBoolean();
