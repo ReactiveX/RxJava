@@ -79,6 +79,8 @@ public final class LambdaObserver<T> extends AtomicReference<Disposable>
                 Exceptions.throwIfFatal(e);
                 RxJavaPlugins.onError(new CompositeException(t, e));
             }
+        } else {
+            RxJavaPlugins.onError(t);
         }
     }
 

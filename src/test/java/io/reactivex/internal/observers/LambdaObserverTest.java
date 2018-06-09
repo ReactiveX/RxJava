@@ -15,6 +15,7 @@ package io.reactivex.internal.observers;
 
 import static org.junit.Assert.*;
 
+import java.io.IOException;
 import java.util.*;
 
 import io.reactivex.internal.functions.Functions;
@@ -362,5 +363,33 @@ public class LambdaObserverTest {
                 Functions.<Disposable>emptyConsumer());
 
         assertTrue(o.hasCustomOnError());
+    }
+
+    @Test
+    public void disposedObserverShouldReportErrorOnGlobalErrorHandler() {
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            final List<Throwable> observerErrors = Collections.synchronizedList(new ArrayList<Throwable>());
+
+            LambdaObserver<Integer> o = new LambdaObserver<Integer>(Functions.<Integer>emptyConsumer(),
+                    new Consumer<Throwable>() {
+                        @Override
+                        public void accept(Throwable t) {
+                            observerErrors.add(t);
+                        }
+                    },
+                    Functions.EMPTY_ACTION,
+                    Functions.<Disposable>emptyConsumer());
+
+            o.dispose();
+            o.onError(new IOException());
+            o.onError(new IOException());
+
+            assertTrue(observerErrors.isEmpty());
+            TestHelper.assertUndeliverable(errors, 0, IOException.class);
+            TestHelper.assertUndeliverable(errors, 1, IOException.class);
+        } finally {
+            RxJavaPlugins.reset();
+        }
     }
 }
