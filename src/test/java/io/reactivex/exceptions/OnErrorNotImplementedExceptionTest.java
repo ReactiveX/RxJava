@@ -67,6 +67,12 @@ public class OnErrorNotImplementedExceptionTest {
     }
 
     @Test
+    public void flowableBoundedBlockingSubscribe1() {
+        Flowable.error(new TestException())
+                .blockingSubscribe(Functions.emptyConsumer(), 128);
+    }
+
+    @Test
     public void observableSubscribe0() {
         Observable.error(new TestException())
         .subscribe();

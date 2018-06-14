@@ -5856,6 +5856,38 @@ public abstract class Flowable<T> implements Publisher<T> {
     /**
      * Subscribes to the source and calls the given callbacks <strong>on the current thread</strong>.
      * <p>
+     * If the Flowable emits an error, it is wrapped into an
+     * {@link io.reactivex.exceptions.OnErrorNotImplementedException OnErrorNotImplementedException}
+     * and routed to the RxJavaPlugins.onError handler.
+     * Using the overloads {@link #blockingSubscribe(Consumer, Consumer)}
+     * or {@link #blockingSubscribe(Consumer, Consumer, Action)} instead is recommended.
+     * <p>
+     * Note that calling this method will block the caller thread until the upstream terminates
+     * normally or with an error. Therefore, calling this method from special threads such as the
+     * Android Main Thread or the Swing Event Dispatch Thread is not recommended.
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The operator consumes the source {@code Flowable} in an bounded manner (up to bufferSize
+     *  outstanding request amount for items).</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code blockingSubscribe} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param onNext the callback action for each source value
+     * @param bufferSize the size of the buffer
+     * @since 2.1.15 - experimental
+     * @see #blockingSubscribe(Consumer, Consumer)
+     * @see #blockingSubscribe(Consumer, Consumer, Action)
+     */
+    @BackpressureSupport(BackpressureKind.FULL)
+    @SchedulerSupport(SchedulerSupport.NONE)
+    @Experimental
+    public final void blockingSubscribe(Consumer<? super T> onNext, int bufferSize) {
+        FlowableBlockingSubscribe.subscribe(this, onNext, Functions.ON_ERROR_MISSING, Functions.EMPTY_ACTION, bufferSize);
+    }
+
+    /**
+     * Subscribes to the source and calls the given callbacks <strong>on the current thread</strong>.
+     * <p>
      * Note that calling this method will block the caller thread until the upstream terminates
      * normally or with an error. Therefore, calling this method from special threads such as the
      * Android Main Thread or the Swing Event Dispatch Thread is not recommended.
@@ -5877,6 +5909,32 @@ public abstract class Flowable<T> implements Publisher<T> {
         FlowableBlockingSubscribe.subscribe(this, onNext, onError, Functions.EMPTY_ACTION);
     }
 
+    /**
+     * Subscribes to the source and calls the given callbacks <strong>on the current thread</strong>.
+     * <p>
+     * Note that calling this method will block the caller thread until the upstream terminates
+     * normally or with an error. Therefore, calling this method from special threads such as the
+     * Android Main Thread or the Swing Event Dispatch Thread is not recommended.
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The operator consumes the source {@code Flowable} in an bounded manner (up to bufferSize
+     *  outstanding request amount for items).</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code blockingSubscribe} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param onNext the callback action for each source value
+     * @param onError the callback action for an error event
+     * @param bufferSize the size of the buffer
+     * @since 2.1.15 - experimental
+     * @see #blockingSubscribe(Consumer, Consumer, Action)
+     */
+    @BackpressureSupport(BackpressureKind.FULL)
+    @SchedulerSupport(SchedulerSupport.NONE)
+    @Experimental
+    public final void blockingSubscribe(Consumer<? super T> onNext, Consumer<? super Throwable> onError,
+        int bufferSize) {
+        FlowableBlockingSubscribe.subscribe(this, onNext, onError, Functions.EMPTY_ACTION, bufferSize);
+    }
 
     /**
      * Subscribes to the source and calls the given callbacks <strong>on the current thread</strong>.
@@ -5900,6 +5958,33 @@ public abstract class Flowable<T> implements Publisher<T> {
     @SchedulerSupport(SchedulerSupport.NONE)
     public final void blockingSubscribe(Consumer<? super T> onNext, Consumer<? super Throwable> onError, Action onComplete) {
         FlowableBlockingSubscribe.subscribe(this, onNext, onError, onComplete);
+    }
+
+    /**
+     * Subscribes to the source and calls the given callbacks <strong>on the current thread</strong>.
+     * <p>
+     * Note that calling this method will block the caller thread until the upstream terminates
+     * normally or with an error. Therefore, calling this method from special threads such as the
+     * Android Main Thread or the Swing Event Dispatch Thread is not recommended.
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The operator consumes the source {@code Flowable} in an bounded manner (up to bufferSize
+     *  outstanding request amount for items).</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code blockingSubscribe} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param onNext the callback action for each source value
+     * @param onError the callback action for an error event
+     * @param onComplete the callback action for the completion event.
+     * @param bufferSize the size of the buffer
+     * @since 2.1.15 - experimental
+     */
+    @BackpressureSupport(BackpressureKind.FULL)
+    @SchedulerSupport(SchedulerSupport.NONE)
+    @Experimental
+    public final void blockingSubscribe(Consumer<? super T> onNext, Consumer<? super Throwable> onError, Action onComplete,
+        int bufferSize) {
+        FlowableBlockingSubscribe.subscribe(this, onNext, onError, onComplete, bufferSize);
     }
 
     /**
