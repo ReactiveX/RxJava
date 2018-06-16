@@ -63,7 +63,7 @@ public final class FlowableBlockingSubscribe {
                 if (bs.isCancelled()) {
                     break;
                 }
-                if (o == BlockingSubscriber.TERMINATED
+                if (v == BlockingSubscriber.TERMINATED
                         || NotificationLite.acceptFull(v, subscriber)) {
                     break;
                 }
