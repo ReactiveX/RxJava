@@ -8035,12 +8035,11 @@ public abstract class Flowable<T> implements Publisher<T> {
      * will be emitted by the resulting Publisher.
      * <p>
      * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/debounce.png" alt="">
-     * <p>
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>This operator does not support backpressure as it uses time to control data flow.</dd>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>This version of {@code debounce} operates by default on the {@code computation} {@link Scheduler}.</dd>
+     *  <dd>{@code debounce} operates by default on the {@code computation} {@link Scheduler}.</dd>
      * </dl>
      *
      * @param timeout
@@ -8053,6 +8052,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *         newer items
      * @see <a href="http://reactivex.io/documentation/operators/debounce.html">ReactiveX operators documentation: Debounce</a>
      * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Backpressure">RxJava wiki: Backpressure</a>
+     * @see #throttleWithTimeout(long, TimeUnit)
      */
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.ERROR)
@@ -8070,7 +8070,6 @@ public abstract class Flowable<T> implements Publisher<T> {
      * will be emitted by the resulting Publisher.
      * <p>
      * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/debounce.s.png" alt="">
-     * <p>
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>This operator does not support backpressure as it uses time to control data flow.</dd>
@@ -8090,6 +8089,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *         newer items
      * @see <a href="http://reactivex.io/documentation/operators/debounce.html">ReactiveX operators documentation: Debounce</a>
      * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Backpressure">RxJava wiki: Backpressure</a>
+     * @see #throttleWithTimeout(long, TimeUnit, Scheduler)
      */
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.ERROR)
@@ -15761,21 +15761,19 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     /**
-     * Alias to {@link #debounce(long, TimeUnit)}
-     * <p>
      * Returns a Flowable that mirrors the source Publisher, except that it drops items emitted by the
      * source Publisher that are followed by newer items before a timeout value expires. The timer resets on
-     * each emission.
+     * each emission (alias to {@link #debounce(long, TimeUnit)}).
      * <p>
      * <em>Note:</em> If items keep being emitted by the source Publisher faster than the timeout then no items
      * will be emitted by the resulting Publisher.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/debounce.png" alt="">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/throttleWithTimeout.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>This operator does not support backpressure as it uses time to control data flow.</dd>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>This version of {@code throttleWithTimeout} operates by default on the {@code computation} {@link Scheduler}.</dd>
+     *  <dd>{@code throttleWithTimeout} operates by default on the {@code computation} {@link Scheduler}.</dd>
      * </dl>
      *
      * @param timeout
@@ -15798,16 +15796,14 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     /**
-     * Alias to {@link #debounce(long, TimeUnit, Scheduler)}
-     * <p>
      * Returns a Flowable that mirrors the source Publisher, except that it drops items emitted by the
      * source Publisher that are followed by newer items before a timeout value expires on a specified
-     * Scheduler. The timer resets on each emission.
+     * Scheduler. The timer resets on each emission (alias to {@link #debounce(long, TimeUnit, Scheduler)}).
      * <p>
      * <em>Note:</em> If items keep being emitted by the source Publisher faster than the timeout then no items
      * will be emitted by the resulting Publisher.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/debounce.s.png" alt="">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/throttleWithTimeout.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>This operator does not support backpressure as it uses time to control data flow.</dd>
