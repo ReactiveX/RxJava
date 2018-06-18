@@ -13174,7 +13174,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * <em>Note:</em> If items keep being emitted by the source ObservableSource faster than the timeout then no items
      * will be emitted by the resulting ObservableSource.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/debounce.png" alt="">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/throttleWithTimeout.png" alt="">
      * <p>
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
@@ -13206,7 +13206,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * <em>Note:</em> If items keep being emitted by the source ObservableSource faster than the timeout then no items
      * will be emitted by the resulting ObservableSource.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/throttleWithTimeout.png" alt="">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/throttleWithTimeout.s.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>You specify which {@link Scheduler} this operator will use.</dd>
@@ -13236,7 +13236,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * Returns an Observable that emits records of the time interval between consecutive items emitted by the
      * source ObservableSource.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/throttleWithTimeout.png" alt="">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/timeInterval.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code timeInterval} does not operate on any particular scheduler but uses the current time

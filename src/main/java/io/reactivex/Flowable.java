@@ -15803,7 +15803,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * <em>Note:</em> If items keep being emitted by the source Publisher faster than the timeout then no items
      * will be emitted by the resulting Publisher.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/throttleWithTimeout.png" alt="">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/throttleWithTimeout.s.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>This operator does not support backpressure as it uses time to control data flow.</dd>
