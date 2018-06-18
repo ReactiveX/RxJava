@@ -7196,23 +7196,17 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * will be emitted by the resulting ObservableSource.
      * <p>
      * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/debounce.png" alt="">
-     * <p>
-     * Information on debounce vs throttle:
-     * <ul>
-     * <li><a href="http://drupalmotion.com/article/debounce-and-throttle-visual-explanation">Debounce and Throttle: visual explanation</a></li>
-     * <li><a href="http://unscriptable.com/2009/03/20/debouncing-javascript-methods/">Debouncing: javascript methods</a></li>
-     * <li><a href="http://www.illyriad.co.uk/blog/index.php/2011/09/javascript-dont-spam-your-server-debounce-and-throttle/">Javascript - don't spam your server: debounce and throttle</a></li>
-     * </ul>
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>This version of {@code debounce} operates by default on the {@code computation} {@link Scheduler}.</dd>
+     *  <dd>{@code debounce} operates by default on the {@code computation} {@link Scheduler}.</dd>
      * </dl>
      *
      * @param timeout
-     *            the time each item has to be "the most recent" of those emitted by the source ObservableSource to
-     *            ensure that it's not dropped
+     *            the length of the window of time that must pass after the emission of an item from the source
+     *            ObservableSource in which that ObservableSource emits no items in order for the item to be emitted by the
+     *            resulting ObservableSource
      * @param unit
-     *            the {@link TimeUnit} for the timeout
+     *            the unit of time for the specified {@code timeout}
      * @return an Observable that filters out items from the source ObservableSource that are too quickly followed by
      *         newer items
      * @see <a href="http://reactivex.io/documentation/operators/debounce.html">ReactiveX operators documentation: Debounce</a>
@@ -7233,13 +7227,6 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * will be emitted by the resulting ObservableSource.
      * <p>
      * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/debounce.s.png" alt="">
-     * <p>
-     * Information on debounce vs throttle:
-     * <ul>
-     * <li><a href="http://drupalmotion.com/article/debounce-and-throttle-visual-explanation">Debounce and Throttle: visual explanation</a></li>
-     * <li><a href="http://unscriptable.com/2009/03/20/debouncing-javascript-methods/">Debouncing: javascript methods</a></li>
-     * <li><a href="http://www.illyriad.co.uk/blog/index.php/2011/09/javascript-dont-spam-your-server-debounce-and-throttle/">Javascript - don't spam your server: debounce and throttle</a></li>
-     * </ul>
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>You specify which {@link Scheduler} this operator will use.</dd>
@@ -7249,7 +7236,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *            the time each item has to be "the most recent" of those emitted by the source ObservableSource to
      *            ensure that it's not dropped
      * @param unit
-     *            the unit of time for the specified timeout
+     *            the unit of time for the specified {@code timeout}
      * @param scheduler
      *            the {@link Scheduler} to use internally to manage the timers that handle the timeout for each
      *            item
@@ -13180,20 +13167,15 @@ public abstract class Observable<T> implements ObservableSource<T> {
     }
 
     /**
-     * Returns an Observable that only emits those items emitted by the source ObservableSource that are not followed
-     * by another emitted item within a specified time window.
+     * Returns an Observable that mirrors the source ObservableSource, except that it drops items emitted by the
+     * source ObservableSource that are followed by newer items before a timeout value expires. The timer resets on
+     * each emission (alias to {@link #debounce(long, TimeUnit, Scheduler)}).
      * <p>
-     * <em>Note:</em> If the source ObservableSource keeps emitting items more frequently than the length of the time
-     * window then no items will be emitted by the resulting ObservableSource.
+     * <em>Note:</em> If items keep being emitted by the source ObservableSource faster than the timeout then no items
+     * will be emitted by the resulting ObservableSource.
      * <p>
      * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/throttleWithTimeout.png" alt="">
      * <p>
-     * Information on debounce vs throttle:
-     * <ul>
-     * <li><a href="http://drupalmotion.com/article/debounce-and-throttle-visual-explanation">Debounce and Throttle: visual explanation</a></li>
-     * <li><a href="http://unscriptable.com/2009/03/20/debouncing-javascript-methods/">Debouncing: javascript methods</a></li>
-     * <li><a href="http://www.illyriad.co.uk/blog/index.php/2011/09/javascript-dont-spam-your-server-debounce-and-throttle/">Javascript - don't spam your server: debounce and throttle</a></li>
-     * </ul>
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code throttleWithTimeout} operates by default on the {@code computation} {@link Scheduler}.</dd>
@@ -13204,8 +13186,9 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *            ObservableSource in which that ObservableSource emits no items in order for the item to be emitted by the
      *            resulting ObservableSource
      * @param unit
-     *            the {@link TimeUnit} of {@code timeout}
-     * @return an Observable that filters out items that are too quickly followed by newer items
+     *            the unit of time for the specified {@code timeout}
+     * @return an Observable that filters out items from the source ObservableSource that are too quickly followed by
+     *         newer items
      * @see <a href="http://reactivex.io/documentation/operators/debounce.html">ReactiveX operators documentation: Debounce</a>
      * @see #debounce(long, TimeUnit)
      */
@@ -13216,21 +13199,14 @@ public abstract class Observable<T> implements ObservableSource<T> {
     }
 
     /**
-     * Returns an Observable that only emits those items emitted by the source ObservableSource that are not followed
-     * by another emitted item within a specified time window, where the time window is governed by a specified
-     * Scheduler.
+     * Returns an Observable that mirrors the source ObservableSource, except that it drops items emitted by the
+     * source ObservableSource that are followed by newer items before a timeout value expires on a specified
+     * Scheduler. The timer resets on each emission (Alias to {@link #debounce(long, TimeUnit, Scheduler)}).
      * <p>
-     * <em>Note:</em> If the source ObservableSource keeps emitting items more frequently than the length of the time
-     * window then no items will be emitted by the resulting ObservableSource.
+     * <em>Note:</em> If items keep being emitted by the source ObservableSource faster than the timeout then no items
+     * will be emitted by the resulting ObservableSource.
      * <p>
      * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/throttleWithTimeout.s.png" alt="">
-     * <p>
-     * Information on debounce vs throttle:
-     * <ul>
-     * <li><a href="http://drupalmotion.com/article/debounce-and-throttle-visual-explanation">Debounce and Throttle: visual explanation</a></li>
-     * <li><a href="http://unscriptable.com/2009/03/20/debouncing-javascript-methods/">Debouncing: javascript methods</a></li>
-     * <li><a href="http://www.illyriad.co.uk/blog/index.php/2011/09/javascript-dont-spam-your-server-debounce-and-throttle/">Javascript - don't spam your server: debounce and throttle</a></li>
-     * </ul>
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>You specify which {@link Scheduler} this operator will use.</dd>
@@ -13241,11 +13217,12 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *            ObservableSource in which that ObservableSource emits no items in order for the item to be emitted by the
      *            resulting ObservableSource
      * @param unit
-     *            the {@link TimeUnit} of {@code timeout}
+     *            the unit of time for the specified {@code timeout}
      * @param scheduler
      *            the {@link Scheduler} to use internally to manage the timers that handle the timeout for each
      *            item
-     * @return an Observable that filters out items that are too quickly followed by newer items
+     * @return an Observable that filters out items from the source ObservableSource that are too quickly followed by
+     *         newer items
      * @see <a href="http://reactivex.io/documentation/operators/debounce.html">ReactiveX operators documentation: Debounce</a>
      * @see #debounce(long, TimeUnit, Scheduler)
      */
