@@ -131,7 +131,7 @@ public final class PublishSubject<T> extends Subject<T> {
 
 
     @Override
-    public void subscribeActual(Observer<? super T> t) {
+    protected void subscribeActual(Observer<? super T> t) {
         PublishDisposable<T> ps = new PublishDisposable<T>(t, this);
         t.onSubscribe(ps);
         if (add(ps)) {
