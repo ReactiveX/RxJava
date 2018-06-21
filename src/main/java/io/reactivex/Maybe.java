@@ -52,6 +52,8 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     /**
      * Runs multiple MaybeSources and signals the events of the first one that signals (cancelling
      * the rest).
+     * <p>
+     * <img width="640" height="519" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.amb.png" alt="">
      * <dl>
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code amb} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -71,6 +73,8 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     /**
      * Runs multiple MaybeSources and signals the events of the first one that signals (cancelling
      * the rest).
+     * <p>
+     * <img width="640" height="519" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.ambArray.png" alt="">
      * <dl>
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code ambArray} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -96,6 +100,8 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     /**
      * Concatenate the single values, in a non-overlapping fashion, of the MaybeSource sources provided by
      * an Iterable sequence.
+     * <p>
+     * <img width="640" height="526" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.concat.i.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The returned {@code Flowable} honors the backpressure of the downstream consumer.</dd>
@@ -215,6 +221,8 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     /**
      * Concatenate the single values, in a non-overlapping fashion, of the MaybeSource sources provided by
      * a Publisher sequence.
+     * <p>
+     * <img width="640" height="416" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.concat.p.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The returned {@code Flowable} honors the backpressure of the downstream consumer and
@@ -237,6 +245,8 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     /**
      * Concatenate the single values, in a non-overlapping fashion, of the MaybeSource sources provided by
      * a Publisher sequence.
+     * <p>
+     * <img width="640" height="416" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.concat.pn.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The returned {@code Flowable} honors the backpressure of the downstream consumer and
@@ -263,6 +273,8 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     /**
      * Concatenate the single values, in a non-overlapping fashion, of the MaybeSource sources in the array.
      * <dl>
+     * <p>
+     * <img width="640" height="526" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.concatArray.png" alt="">
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The returned {@code Flowable} honors the backpressure of the downstream consumer.</dd>
      *  <dt><b>Scheduler:</b></dt>
@@ -291,7 +303,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * Concatenates a variable number of MaybeSource sources and delays errors from any of them
      * till all terminate.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concat.png" alt="">
+     * <img width="640" height="425" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.concatArrayDelayError.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream.</dd>
@@ -323,6 +335,8 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * Eager concatenation means that once a subscriber subscribes, this operator subscribes to all of the
      * source MaybeSources. The operator buffers the value emitted by these MaybeSources and then drains them
      * in order, each one after the previous one completes.
+     * <p>
+     * <img width="640" height="489" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.concatArrayEager.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream.</dd>
@@ -344,7 +358,8 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     /**
      * Concatenates the Iterable sequence of MaybeSources into a single sequence by subscribing to each MaybeSource,
      * one after the other, one at a time and delays any errors till the all inner MaybeSources terminate.
-     *
+     * <p>
+     * <img width="640" height="469" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.concatDelayError.i.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator honors backpressure from downstream.</dd>
@@ -368,7 +383,8 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     /**
      * Concatenates the Publisher sequence of Publishers into a single sequence by subscribing to each inner Publisher,
      * one after the other, one at a time and delays any errors till the all inner and the outer Publishers terminate.
-     *
+     * <p>
+     * <img width="640" height="360" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.concatDelayError.p.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>{@code concatDelayError} fully supports backpressure.</dd>
@@ -394,6 +410,8 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * Eager concatenation means that once a subscriber subscribes, this operator subscribes to all of the
      * source MaybeSources. The operator buffers the values emitted by these MaybeSources and then drains them
      * in order, each one after the previous one completes.
+     * <p>
+     * <img width="640" height="526" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.concatEager.i.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>Backpressure is honored towards the downstream.</dd>
@@ -418,6 +436,8 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * Eager concatenation means that once a subscriber subscribes, this operator subscribes to all of the
      * emitted source Publishers as they are observed. The operator buffers the values emitted by these
      * Publishers and then drains them in order, each one after the previous one completes.
+     * <p>
+     * <img width="640" height="511" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.concatEager.p.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>Backpressure is honored towards the downstream and the outer Publisher is
