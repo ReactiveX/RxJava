@@ -28,17 +28,67 @@ import io.reactivex.plugins.RxJavaPlugins;
  *
  * <p>
  * <img width="640" height="278" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/PublishProcessor.png" alt="">
- *
- * <p>The processor does not coordinate backpressure for its subscribers and implements a weaker onSubscribe which
- * calls requests Long.MAX_VALUE from the incoming Subscriptions. This makes it possible to subscribe the PublishProcessor
- * to multiple sources (note on serialization though) unlike the standard Subscriber contract. Child subscribers, however, are not overflown but receive an
- * IllegalStateException in case their requested amount is zero.
- *
- * <p>The implementation of onXXX methods are technically thread-safe but non-serialized calls
- * to them may lead to undefined state in the currently subscribed Subscribers.
- *
- * <p>Due to the nature Flowables are constructed, the PublishProcessor can't be instantiated through
- * {@code new} but must be created via the {@link #create()} method.
+ * <p>
+ * This processor does not have a public constructor by design; a new empty instance of this
+ * {@code PublishProcessor} can be created via the {@link #create()} method.
+ * <p>
+ * Since a {@code PublishProcessor} is a Reactive Streams {@code Processor} type,
+ * {@code null}s are not allowed (<a href="https://github.com/reactive-streams/reactive-streams-jvm#2.13">Rule 2.13</a>) as
+ * parameters to {@link #onNext(Object)} and {@link #onError(Throwable)}. Such calls will result in a
+ * {@link NullPointerException} being thrown and the processor's state is not changed.
+ * <p>
+ * {@code PublishProcessor} is a {@link io.reactivex.Flowable} as well as a {@link FlowableProcessor},
+ * however, it does not coordinate backpressure between different subscribers and between an
+ * upstream source and a subscriber. If an upstream item is received via {@link #onNext(Object)}, if
+ * a subscriber is not ready to receive an item, that subscriber is terminated via a {@link MissingBackpressureException}.
+ * To avoid this case, use {@link #offer(Object)} and retry sometime later if it returned false.
+ * The {@code PublishProcessor}'s {@link Subscriber}-side consumes items in an unbounded manner.
+ * <p>
+ * For a multicasting processor type that also coordinates between the downstream {@code Subscriber}s and the upstream
+ * source as well, consider using {@link MulticastProcessor}.
+ * <p>
+ * When this {@code PublishProcessor} is terminated via {@link #onError(Throwable)} or {@link #onComplete()},
+ * late {@link Subscriber}s only receive the respective terminal event.
+ * <p>
+ * Unlike a {@link BehaviorProcessor}, a {@code PublishProcessor} doesn't retain/cache items, therefore, a new
+ * {@code Subscriber} won't receive any past items.
+ * <p>
+ * Even though {@code PublishProcessor} implements the {@link Subscriber} interface, calling
+ * {@code onSubscribe} is not required (<a href="https://github.com/reactive-streams/reactive-streams-jvm#2.12">Rule 2.12</a>)
+ * if the processor is used as a standalone source. However, calling {@code onSubscribe}
+ * after the {@code PublishProcessor} reached its terminal state will result in the
+ * given {@link Subscription} being canceled immediately.
+ * <p>
+ * Calling {@link #onNext(Object)}, {@link #offer(Object)}, {@link #onError(Throwable)} and {@link #onComplete()}
+ * is required to be serialized (called from the same thread or called non-overlappingly from different threads
+ * through external means of serialization). The {@link #toSerialized()} method available to all {@link FlowableProcessor}s
+ * provides such serialization and also protects against reentrance (i.e., when a downstream {@code Subscriber}
+ * consuming this processor also wants to call {@link #onNext(Object)} on this processor recursively).
+ * Note that serializing over {@link #offer(Object)} is not supported through {@code toSerialized()} because it is a method
+ * available on the {@code PublishProcessor} and {@code BehaviorProcessor} classes only.
+ * <p>
+ * This {@code PublishProcessor} supports the standard state-peeking methods {@link #hasComplete()}, {@link #hasThrowable()},
+ * {@link #getThrowable()} and {@link #hasSubscribers()}.
+ * <dl>
+ *  <dt><b>Backpressure:</b></dt>
+ *  <dd>The processor does not coordinate backpressure for its subscribers and implements a weaker {@code onSubscribe} which
+ *  calls requests Long.MAX_VALUE from the incoming Subscriptions. This makes it possible to subscribe the {@code PublishProcessor}
+ *  to multiple sources (note on serialization though) unlike the standard {@code Subscriber} contract. Child subscribers, however, are not overflown but receive an
+ *  {@link IllegalStateException} in case their requested amount is zero.</dd>
+ *  <dt><b>Scheduler:</b></dt>
+ *  <dd>{@code PublishProcessor} does not operate by default on a particular {@link io.reactivex.Scheduler} and
+ *  the {@code Subscriber}s get notified on the thread the respective {@code onXXX} methods were invoked.</dd>
+ *  <dt><b>Error handling:</b></dt>
+ *  <dd>When the {@link #onError(Throwable)} is called, the {@code PublishProcessor} enters into a terminal state
+ *  and emits the same {@code Throwable} instance to the last set of {@code Subscriber}s. During this emission,
+ *  if one or more {@code Subscriber}s cancel their respective {@code Subscription}s, the
+ *  {@code Throwable} is delivered to the global error handler via
+ *  {@link io.reactivex.plugins.RxJavaPlugins#onError(Throwable)} (multiple times if multiple {@code Subscriber}s
+ *  cancel at once).
+ *  If there were no {@code Subscriber}s subscribed to this {@code PublishProcessor} when the {@code onError()}
+ *  was called, the global error handler is not invoked.
+ *  </dd>
+ * </dl>
  *
  * Example usage:
  * <pre> {@code
@@ -55,6 +105,7 @@ import io.reactivex.plugins.RxJavaPlugins;
 
   } </pre>
  * @param <T> the value type multicasted to Subscribers.
+ * @see MulticastProcessor
  */
 public final class PublishProcessor<T> extends FlowableProcessor<T> {
     /** The terminated indicator for the subscribers array. */
@@ -113,9 +164,9 @@ public final class PublishProcessor<T> extends FlowableProcessor<T> {
 
     /**
      * Tries to add the given subscriber to the subscribers array atomically
-     * or returns false if the subject has terminated.
+     * or returns false if this processor has terminated.
      * @param ps the subscriber to add
-     * @return true if successful, false if the subject has terminated
+     * @return true if successful, false if this processor has terminated
      */
     boolean add(PublishSubscription<T> ps) {
         for (;;) {
@@ -137,8 +188,8 @@ public final class PublishProcessor<T> extends FlowableProcessor<T> {
     }
 
     /**
-     * Atomically removes the given subscriber if it is subscribed to the subject.
-     * @param ps the subject to remove
+     * Atomically removes the given subscriber if it is subscribed to this processor.
+     * @param ps the subscription wrapping a subscriber to remove
      */
     @SuppressWarnings("unchecked")
     void remove(PublishSubscription<T> ps) {
@@ -182,7 +233,7 @@ public final class PublishProcessor<T> extends FlowableProcessor<T> {
             s.cancel();
             return;
         }
-        // PublishSubject doesn't bother with request coordination.
+        // PublishProcessor doesn't bother with request coordination.
         s.request(Long.MAX_VALUE);
     }
 
@@ -288,7 +339,7 @@ public final class PublishProcessor<T> extends FlowableProcessor<T> {
         private static final long serialVersionUID = 3562861878281475070L;
         /** The actual subscriber. */
         final Subscriber<? super T> actual;
-        /** The subject state. */
+        /** The parent processor servicing this subscriber. */
         final PublishProcessor<T> parent;
 
         /**
