@@ -92,7 +92,7 @@ public final class PublishProcessor<T> extends FlowableProcessor<T> {
 
 
     @Override
-    public void subscribeActual(Subscriber<? super T> t) {
+    protected void subscribeActual(Subscriber<? super T> t) {
         PublishSubscription<T> ps = new PublishSubscription<T>(t, this);
         t.onSubscribe(ps);
         if (add(ps)) {
