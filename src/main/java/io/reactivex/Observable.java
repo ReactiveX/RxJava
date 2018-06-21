@@ -5018,20 +5018,18 @@ public abstract class Observable<T> implements ObservableSource<T> {
     }
 
     /**
-     * Invokes a method on each item emitted by this {@code Observable} and blocks until the Observable
-     * completes.
-     * <p>
-     * <em>Note:</em> This will block even if the underlying Observable is asynchronous.
+     * Consumes the upstream {@code Observable} in a blocking fashion and invokes the given
+     * {@code Consumer} with each upstream item on the <em>current thread</em> until the
+     * upstream terminates.
      * <p>
      * <img width="640" height="330" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/blockingForEach.o.png" alt="">
      * <p>
-     * This is similar to {@link Observable#subscribe(Observer)}, but it blocks. Because it blocks it does not
-     * need the {@link Observer#onComplete()} or {@link Observer#onError(Throwable)} methods. If the
-     * underlying Observable terminates with an error, rather than calling {@code onError}, this method will
-     * throw an exception.
-     *
-     * <p>The difference between this method and {@link #subscribe(Consumer)} is that the {@code onNext} action
-     * is executed on the emission thread instead of the current thread.
+     * <em>Note:</em> the method will only return if the upstream terminates or the current
+     * thread is interrupted.
+     * <p>
+     * <p>This method executes the {@code Consumer} on the current thread while
+     * {@link #subscribe(Consumer)} executes the consumer on the original caller thread of the
+     * sequence.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code blockingForEach} does not operate by default on a particular {@link Scheduler}.</dd>

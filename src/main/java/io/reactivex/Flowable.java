@@ -5472,20 +5472,18 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     /**
-     * Invokes a method on each item emitted by this {@code Flowable} and blocks until the Flowable
-     * completes.
-     * <p>
-     * <em>Note:</em> This will block even if the underlying Flowable is asynchronous.
+     * Consumes the upstream {@code Flowable} in a blocking fashion and invokes the given
+     * {@code Consumer} with each upstream item on the <em>current thread</em> until the
+     * upstream terminates.
      * <p>
      * <img width="640" height="330" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/B.forEach.png" alt="">
      * <p>
-     * This is similar to {@link Flowable#subscribe(Subscriber)}, but it blocks. Because it blocks it does not
-     * need the {@link Subscriber#onComplete()} or {@link Subscriber#onError(Throwable)} methods. If the
-     * underlying Flowable terminates with an error, rather than calling {@code onError}, this method will
-     * throw an exception.
-     *
-     * <p>The difference between this method and {@link #subscribe(Consumer)} is that the {@code onNext} action
-     * is executed on the emission thread instead of the current thread.
+     * <em>Note:</em> the method will only return if the upstream terminates or the current
+     * thread is interrupted.
+     * <p>
+     * <p>This method executes the {@code Consumer} on the current thread while
+     * {@link #subscribe(Consumer)} executes the consumer on the original caller thread of the
+     * sequence.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The operator consumes the source {@code Flowable} in an unbounded manner
