@@ -102,7 +102,7 @@ import io.reactivex.plugins.RxJavaPlugins;
  * such inaccessible items to be cleaned up by GC once no consumer references them anymore.
  * <dl>
  *  <dt><b>Backpressure:</b></dt>
- *  <dd>This {@code ReplayProcessor} respects the individual backpressure behavior of its {@codeSubscriber}s but
+ *  <dd>This {@code ReplayProcessor} respects the individual backpressure behavior of its {@code Subscriber}s but
  *  does not coordinate their request amounts towards the upstream (because there might not be any) and
  *  consumes the upstream in an unbounded manner (requesting {@code Long.MAX_VALUE}).
  *  Note that {@code Subscriber}s receive a continuous sequence of values after they subscribed even
@@ -208,7 +208,7 @@ public final class ReplayProcessor<T> extends FlowableProcessor<T> {
      * <p>
      * If a {@code Subscriber} subscribes while the {@code ReplayProcessor} is active, it will observe all items in the
      * buffer at that point in time and each item observed afterwards, even if the buffer evicts items due to
-     * the size constraint in the mean time. In other words, once a {@coed Subscriber} subscribes, it will receive items
+     * the size constraint in the mean time. In other words, once a {@code Subscriber} subscribes, it will receive items
      * without gaps in the sequence.
      *
      * @param <T>
