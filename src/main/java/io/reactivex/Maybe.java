@@ -272,9 +272,9 @@ public abstract class Maybe<T> implements MaybeSource<T> {
 
     /**
      * Concatenate the single values, in a non-overlapping fashion, of the MaybeSource sources in the array.
-     * <dl>
      * <p>
      * <img width="640" height="526" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.concatArray.png" alt="">
+     * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The returned {@code Flowable} honors the backpressure of the downstream consumer.</dd>
      *  <dt><b>Scheduler:</b></dt>

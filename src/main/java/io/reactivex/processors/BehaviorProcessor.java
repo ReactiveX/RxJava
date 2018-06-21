@@ -85,11 +85,13 @@ import io.reactivex.plugins.RxJavaPlugins;
  * after the {@code BehaviorProcessor} reached its terminal state will result in the
  * given {@code Subscription} being cancelled immediately.
  * <p>
- * Calling {@link #onNext(Object)}, {@link #onError(Throwable)} and {@link #onComplete()}
+ * Calling {@link #onNext(Object)}, {@link #offer(Object)}, {@link #onError(Throwable)} and {@link #onComplete()}
  * is required to be serialized (called from the same thread or called non-overlappingly from different threads
  * through external means of serialization). The {@link #toSerialized()} method available to all {@code FlowableProcessor}s
  * provides such serialization and also protects against reentrance (i.e., when a downstream {@code Subscriber}
  * consuming this processor also wants to call {@link #onNext(Object)} on this processor recursively).
+ * Note that serializing over {@link #offer(Object)} is not supported through {@code toSerialized()} because it is a method
+ * available on the {@code PublishProcessor} and {@code BehaviorProcessor} classes only.
  * <p>
  * This {@code BehaviorProcessor} supports the standard state-peeking methods {@link #hasComplete()}, {@link #hasThrowable()},
  * {@link #getThrowable()} and {@link #hasSubscribers()} as well as means to read the latest observed value
@@ -127,34 +129,34 @@ import io.reactivex.plugins.RxJavaPlugins;
  * Example usage:
  * <pre> {@code
 
-  // observer will receive all events.
+  // subscriber will receive all events.
   BehaviorProcessor<Object> processor = BehaviorProcessor.create("default");
-  processor.subscribe(observer);
+  processor.subscribe(subscriber);
   processor.onNext("one");
   processor.onNext("two");
   processor.onNext("three");
 
-  // observer will receive the "one", "two" and "three" events, but not "zero"
+  // subscriber will receive the "one", "two" and "three" events, but not "zero"
   BehaviorProcessor<Object> processor = BehaviorProcessor.create("default");
   processor.onNext("zero");
   processor.onNext("one");
-  processor.subscribe(observer);
+  processor.subscribe(subscriber);
   processor.onNext("two");
   processor.onNext("three");
 
-  // observer will receive only onComplete
+  // subscriber will receive only onComplete
   BehaviorProcessor<Object> processor = BehaviorProcessor.create("default");
   processor.onNext("zero");
   processor.onNext("one");
   processor.onComplete();
-  processor.subscribe(observer);
+  processor.subscribe(subscriber);
 
-  // observer will receive only onError
+  // subscriber will receive only onError
   BehaviorProcessor<Object> processor = BehaviorProcessor.create("default");
   processor.onNext("zero");
   processor.onNext("one");
   processor.onError(new RuntimeException("error"));
-  processor.subscribe(observer);
+  processor.subscribe(subscriber);
   } </pre>
  *
  * @param <T>

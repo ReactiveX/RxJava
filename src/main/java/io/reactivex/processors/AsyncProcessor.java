@@ -28,9 +28,90 @@ import io.reactivex.plugins.RxJavaPlugins;
  * <p>
  * <img width="640" height="239" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/AsyncProcessor.png" alt="">
  * <p>
- * The implementation of onXXX methods are technically thread-safe but non-serialized calls
- * to them may lead to undefined state in the currently subscribed Subscribers.
+ * This processor does not have a public constructor by design; a new empty instance of this
+ * {@code AsyncProcessor} can be created via the {@link #create()} method.
+ * <p>
+ * Since an {@code AsyncProcessor} is a Reactive Streams {@code Processor} type,
+ * {@code null}s are not allowed (<a href="https://github.com/reactive-streams/reactive-streams-jvm#2.13">Rule 2.13</a>)
+ * as parameters to {@link #onNext(Object)} and {@link #onError(Throwable)}. Such calls will result in a
+ * {@link NullPointerException} being thrown and the processor's state is not changed.
+ * <p>
+ * {@code AsyncProcessor} is a {@link io.reactivex.Flowable} as well as a {@link FlowableProcessor} and supports backpressure from the downstream but
+ * its {@link Subscriber}-side consumes items in an unbounded manner.
+ * <p>
+ * When this {@code AsyncProcessor} is terminated via {@link #onError(Throwable)}, the
+ * last observed item (if any) is cleared and late {@link Subscriber}s only receive
+ * the {@code onError} event.
+ * <p>
+ * The {@code AsyncProcessor} caches the latest item internally and it emits this item only when {@code onComplete} is called.
+ * Therefore, it is not recommended to use this {@code Processor} with infinite or never-completing sources.
+ * <p>
+ * Even though {@code AsyncProcessor} implements the {@link Subscriber} interface, calling
+ * {@code onSubscribe} is not required (<a href="https://github.com/reactive-streams/reactive-streams-jvm#2.12">Rule 2.12</a>)
+ * if the processor is used as a standalone source. However, calling {@code onSubscribe}
+ * after the {@code AsyncProcessor} reached its terminal state will result in the
+ * given {@link Subscription} being canceled immediately.
+ * <p>
+ * Calling {@link #onNext(Object)}, {@link #onError(Throwable)} and {@link #onComplete()}
+ * is required to be serialized (called from the same thread or called non-overlappingly from different threads
+ * through external means of serialization). The {@link #toSerialized()} method available to all {@code FlowableProcessor}s
+ * provides such serialization and also protects against reentrance (i.e., when a downstream {@code Subscriber}
+ * consuming this processor also wants to call {@link #onNext(Object)} on this processor recursively).
+ * The implementation of {@code onXXX} methods are technically thread-safe but non-serialized calls
+ * to them may lead to undefined state in the currently subscribed {@code Subscriber}s.
+ * <p>
+ * This {@code AsyncProcessor} supports the standard state-peeking methods {@link #hasComplete()}, {@link #hasThrowable()},
+ * {@link #getThrowable()} and {@link #hasSubscribers()} as well as means to read the very last observed value -
+ * after this {@code AsyncProcessor} has been completed - in a non-blocking and thread-safe
+ * manner via {@link #hasValue()}, {@link #getValue()}, {@link #getValues()} or {@link #getValues(Object[])}.
+ * <dl>
+ *  <dt><b>Backpressure:</b></dt>
+ *  <dd>The {@code AsyncProcessor} honors the backpressure of the downstream {@code Subscriber}s and won't emit
+ *  its single value to a particular {@code Subscriber} until that {@code Subscriber} has requested an item.
+ *  When the {@code AsyncProcessor} is subscribed to a {@link io.reactivex.Flowable}, the processor consumes this
+ *  {@code Flowable} in an unbounded manner (requesting `Long.MAX_VALUE`) as only the very last upstream item is
+ *  retained by it.
+ *  </dd>
+ *  <dt><b>Scheduler:</b></dt>
+ *  <dd>{@code AsyncProcessor} does not operate by default on a particular {@link io.reactivex.Scheduler} and
+ *  the {@code Subscriber}s get notified on the thread where the terminating {@code onError} or {@code onComplete}
+ *  methods were invoked.</dd>
+ *  <dt><b>Error handling:</b></dt>
+ *  <dd>When the {@link #onError(Throwable)} is called, the {@code AsyncProcessor} enters into a terminal state
+ *  and emits the same {@code Throwable} instance to the last set of {@code Subscriber}s. During this emission,
+ *  if one or more {@code Subscriber}s dispose their respective {@code Subscription}s, the
+ *  {@code Throwable} is delivered to the global error handler via
+ *  {@link io.reactivex.plugins.RxJavaPlugins#onError(Throwable)} (multiple times if multiple {@code Subscriber}s
+ *  cancel at once).
+ *  If there were no {@code Subscriber}s subscribed to this {@code AsyncProcessor} when the {@code onError()}
+ *  was called, the global error handler is not invoked.
+ *  </dd>
+ * </dl>
+ * <p>
+ * Example usage:
+ * <pre><code>
+ * AsyncProcessor&lt;Object&gt; processor = AsyncProcessor.create();
+ * 
+ * TestSubscriber&lt;Object&gt; ts1 = processor.test();
  *
+ * ts1.assertEmpty();
+ *
+ * processor.onNext(1);
+ *
+ * // AsyncProcessor only emits when onComplete was called.
+ * ts1.assertEmpty();
+ *
+ * processor.onNext(2);
+ * processor.onComplete();
+ *
+ * // onComplete triggers the emission of the last cached item and the onComplete event.
+ * ts1.assertResult(2);
+ *
+ * TestSubscriber&lt;Object&gt; ts2 = processor.test();
+ *
+ * // late Subscribers receive the last cached item too
+ * ts2.assertResult(2);
+ * </code></pre>
  * @param <T> the value type
  */
 public final class AsyncProcessor<T> extends FlowableProcessor<T> {
@@ -75,7 +156,7 @@ public final class AsyncProcessor<T> extends FlowableProcessor<T> {
             s.cancel();
             return;
         }
-        // PublishSubject doesn't bother with request coordination.
+        // AsyncProcessor doesn't bother with request coordination.
         s.request(Long.MAX_VALUE);
     }
 
@@ -168,9 +249,9 @@ public final class AsyncProcessor<T> extends FlowableProcessor<T> {
 
     /**
      * Tries to add the given subscriber to the subscribers array atomically
-     * or returns false if the subject has terminated.
+     * or returns false if the processor has terminated.
      * @param ps the subscriber to add
-     * @return true if successful, false if the subject has terminated
+     * @return true if successful, false if the processor has terminated
      */
     boolean add(AsyncSubscription<T> ps) {
         for (;;) {
@@ -192,8 +273,8 @@ public final class AsyncProcessor<T> extends FlowableProcessor<T> {
     }
 
     /**
-     * Atomically removes the given subscriber if it is subscribed to the subject.
-     * @param ps the subject to remove
+     * Atomically removes the given subscriber if it is subscribed to this processor.
+     * @param ps the subscriber's subscription wrapper to remove
      */
     @SuppressWarnings("unchecked")
     void remove(AsyncSubscription<T> ps) {
@@ -232,18 +313,18 @@ public final class AsyncProcessor<T> extends FlowableProcessor<T> {
     }
 
     /**
-     * Returns true if the subject has any value.
+     * Returns true if this processor has any value.
      * <p>The method is thread-safe.
-     * @return true if the subject has any value
+     * @return true if this processor has any value
      */
     public boolean hasValue() {
         return subscribers.get() == TERMINATED && value != null;
     }
 
     /**
-     * Returns a single value the Subject currently has or null if no such value exists.
+     * Returns a single value this processor currently has or null if no such value exists.
      * <p>The method is thread-safe.
-     * @return a single value the Subject currently has or null if no such value exists
+     * @return a single value this processor currently has or null if no such value exists
      */
     @Nullable
     public T getValue() {
@@ -251,9 +332,9 @@ public final class AsyncProcessor<T> extends FlowableProcessor<T> {
     }
 
     /**
-     * Returns an Object array containing snapshot all values of the Subject.
+     * Returns an Object array containing snapshot all values of this processor.
      * <p>The method is thread-safe.
-     * @return the array containing the snapshot of all values of the Subject
+     * @return the array containing the snapshot of all values of this processor
      * @deprecated in 2.1.14; put the result of {@link #getValue()} into an array manually, will be removed in 3.x
      */
     @Deprecated
@@ -263,7 +344,7 @@ public final class AsyncProcessor<T> extends FlowableProcessor<T> {
     }
 
     /**
-     * Returns a typed array containing a snapshot of all values of the Subject.
+     * Returns a typed array containing a snapshot of all values of this processor.
      * <p>The method follows the conventions of Collection.toArray by setting the array element
      * after the last value to null (if the capacity permits).
      * <p>The method is thread-safe.

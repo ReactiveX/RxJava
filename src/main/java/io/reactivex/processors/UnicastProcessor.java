@@ -29,18 +29,122 @@ import io.reactivex.internal.util.BackpressureHelper;
 import io.reactivex.plugins.RxJavaPlugins;
 
 /**
- * Processor that allows only a single Subscriber to subscribe to it during its lifetime.
- *
- * <p>This processor buffers notifications and replays them to the Subscriber as requested.
- *
- * <p>This processor holds an unbounded internal buffer.
- *
- * <p>If more than one Subscriber attempts to subscribe to this Processor, they
- * will receive an IllegalStateException if this Processor hasn't terminated yet,
+ * A {@link FlowableProcessor} variant that queues up events until a single {@link Subscriber} subscribes to it, replays
+ * those events to it until the {@code Subscriber} catches up and then switches to relaying events live to
+ * this single {@code Subscriber} until this {@code UnicastProcessor} terminates or the {@code Subscriber} cancels
+ * its subscription.
+ * <p>
+ * <img width="640" height="370" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/UnicastProcessor.png" alt="">
+ * <p>
+ * This processor does not have a public constructor by design; a new empty instance of this
+ * {@code UnicastProcessor} can be created via the following {@code create} methods that
+ * allow specifying the retention policy for items:
+ * <ul>
+ * <li>{@link #create()} - creates an empty, unbounded {@code UnicastProcessor} that
+ *     caches all items and the terminal event it receives.</li>
+ * <li>{@link #create(int)} - creates an empty, unbounded {@code UnicastProcessor}
+ *     with a hint about how many <b>total</b> items one expects to retain.</li>
+ * <li>{@link #create(boolean)} - creates an empty, unbounded {@code UnicastProcessor} that
+ *     optionally delays an error it receives and replays it after the regular items have been emitted.</li>
+ * <li>{@link #create(int, Runnable)} - creates an empty, unbounded {@code UnicastProcessor}
+ *     with a hint about how many <b>total</b> items one expects to retain and a callback that will be
+ *     called exactly once when the {@code UnicastProcessor} gets terminated or the single {@code Subscriber} cancels.</li>
+ * <li>{@link #create(int, Runnable, boolean)} - creates an empty, unbounded {@code UnicastProcessor}
+ *     with a hint about how many <b>total</b> items one expects to retain and a callback that will be
+ *     called exactly once when the {@code UnicastProcessor} gets terminated or the single {@code Subscriber} cancels
+ *     and optionally delays an error it receives and replays it after the regular items have been emitted.</li>
+ * </ul>
+ * <p>
+ * If more than one {@code Subscriber} attempts to subscribe to this Processor, they
+ * will receive an {@link IllegalStateException} if this {@link UnicastProcessor} hasn't terminated yet,
  * or the Subscribers receive the terminal event (error or completion) if this
  * Processor has terminated.
  * <p>
- * <img width="640" height="370" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/UnicastProcessor.png" alt="">
+ * The {@code UnicastProcessor} buffers notifications and replays them to the single {@code Subscriber} as requested,
+ * for which it holds upstream items an unbounded internal buffer until they can be emitted.
+ * <p>
+ * Since a {@code UnicastProcessor} is a Reactive Streams {@code Processor},
+ * {@code null}s are not allowed (<a href="https://github.com/reactive-streams/reactive-streams-jvm#2.13">Rule 2.13</a>) as
+ * parameters to {@link #onNext(Object)} and {@link #onError(Throwable)}. Such calls will result in a
+ * {@link NullPointerException} being thrown and the processor's state is not changed.
+ * <p>
+ * Since a {@code UnicastProcessor} is a {@link io.reactivex.Flowable} as well as a {@link FlowableProcessor}, it
+ * honors the downstream backpressure but consumes an upstream source in an unbounded manner (requesting {@code Long.MAX_VALUE}).
+ * <p>
+ * When this {@code UnicastProcessor} is terminated via {@link #onError(Throwable)} the current or late single {@code Subscriber}
+ * may receive the {@code Throwable} before any available items could be emitted. To make sure an {@code onError} event is delivered
+ * to the {@code Subscriber} after the normal items, create a {@code UnicastProcessor} with the {@link #create(boolean)} or
+ * {@link #create(int, Runnable, boolean)} factory methods.
+ * <p>
+ * Even though {@code UnicastProcessor} implements the {@code Subscriber} interface, calling
+ * {@code onSubscribe} is not required (<a href="https://github.com/reactive-streams/reactive-streams-jvm#2.12">Rule 2.12</a>)
+ * if the processor is used as a standalone source. However, calling {@code onSubscribe}
+ * after the {@code UnicastProcessor} reached its terminal state will result in the
+ * given {@code Subscription} being canceled immediately.
+ * <p>
+ * Calling {@link #onNext(Object)}, {@link #onError(Throwable)} and {@link #onComplete()}
+ * is required to be serialized (called from the same thread or called non-overlappingly from different threads
+ * through external means of serialization). The {@link #toSerialized()} method available to all {@link FlowableProcessor}s
+ * provides such serialization and also protects against reentrance (i.e., when a downstream {@code Subscriber}
+ * consuming this processor also wants to call {@link #onNext(Object)} on this processor recursively).
+ * <p>
+ * This {@code UnicastProcessor} supports the standard state-peeking methods {@link #hasComplete()}, {@link #hasThrowable()},
+ * {@link #getThrowable()} and {@link #hasSubscribers()}.
+ * <dl>
+ *  <dt><b>Backpressure:</b></dt>
+ *  <dd>{@code UnicastProcessor} honors the downstream backpressure but consumes an upstream source
+ *  (if any) in an unbounded manner (requesting {@code Long.MAX_VALUE}).</dd>
+ *  <dt><b>Scheduler:</b></dt>
+ *  <dd>{@code UnicastProcessor} does not operate by default on a particular {@link io.reactivex.Scheduler} and
+ *  the single {@code Subscriber} gets notified on the thread the respective {@code onXXX} methods were invoked.</dd>
+ *  <dt><b>Error handling:</b></dt>
+ *  <dd>When the {@link #onError(Throwable)} is called, the {@code UnicastProcessor} enters into a terminal state
+ *  and emits the same {@code Throwable} instance to the current single {@code Subscriber}. During this emission,
+ *  if the single {@code Subscriber}s cancels its respective {@code Subscription}s, the
+ *  {@code Throwable} is delivered to the global error handler via
+ *  {@link io.reactivex.plugins.RxJavaPlugins#onError(Throwable)}.
+ *  If there were no {@code Subscriber}s subscribed to this {@code UnicastProcessor} when the {@code onError()}
+ *  was called, the global error handler is not invoked.
+ *  </dd>
+ * </dl>
+ * <p>
+ * Example usage:
+ * <pre><code>
+ * UnicastProcessor&lt;Integer&gt; processor = UnicastProcessor.create();
+ *
+ * TestSubscriber&lt;Integer&gt; ts1 = processor.test();
+ *
+ * // fresh UnicastProcessors are empty
+ * ts1.assertEmpty();
+ *
+ * TestSubscriber&lt;Integer&gt; ts2 = processor.test();
+ *
+ * // A UnicastProcessor only allows one Subscriber during its lifetime
+ * ts2.assertFailure(IllegalStateException.class);
+ *
+ * processor.onNext(1);
+ * ts1.assertValue(1);
+ *
+ * processor.onNext(2);
+ * ts1.assertValues(1, 2);
+ *
+ * processor.onComplete();
+ * ts1.assertResult(1, 2);
+ *
+ * // ----------------------------------------------------
+ *
+ * UnicastProcessor&lt;Integer&gt; processor2 = UnicastProcessor.create();
+ *
+ * // a UnicastProcessor caches events until its single Subscriber subscribes
+ * processor2.onNext(1);
+ * processor2.onNext(2);
+ * processor2.onComplete();
+ *
+ * TestSubscriber&lt;Integer&gt; ts3 = processor2.test();
+ *
+ * // the cached events are emitted in order
+ * ts3.assertResult(1, 2);
+ * </code></pre>
  *
  * @param <T> the value type received and emitted by this Processor subclass
  * @since 2.0

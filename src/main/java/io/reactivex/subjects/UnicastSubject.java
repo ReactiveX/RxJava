@@ -90,14 +90,13 @@ import io.reactivex.internal.queue.SpscLinkedArrayQueue;
  * <dl>
  *  <dt><b>Scheduler:</b></dt>
  *  <dd>{@code UnicastSubject} does not operate by default on a particular {@link io.reactivex.Scheduler} and
- *  the {@code Observer}s get notified on the thread the respective {@code onXXX} methods were invoked.</dd>
+ *  the single {@code Observer} gets notified on the thread the respective {@code onXXX} methods were invoked.</dd>
  *  <dt><b>Error handling:</b></dt>
  *  <dd>When the {@link #onError(Throwable)} is called, the {@code UnicastSubject} enters into a terminal state
- *  and emits the same {@code Throwable} instance to the last set of {@code Observer}s. During this emission,
- *  if one or more {@code Observer}s dispose their respective {@code Disposable}s, the
+ *  and emits the same {@code Throwable} instance to the current single {@code Observer}. During this emission,
+ *  if the single {@code Observer}s disposes its respective {@code Disposable}, the
  *  {@code Throwable} is delivered to the global error handler via
- *  {@link io.reactivex.plugins.RxJavaPlugins#onError(Throwable)} (multiple times if multiple {@code Observer}s
- *  cancel at once).
+ *  {@link io.reactivex.plugins.RxJavaPlugins#onError(Throwable)}.
  *  If there were no {@code Observer}s subscribed to this {@code UnicastSubject} when the {@code onError()}
  *  was called, the global error handler is not invoked.
  *  </dd>
@@ -130,10 +129,10 @@ import io.reactivex.internal.queue.SpscLinkedArrayQueue;
  *
  * UnicastSubject&lt;Integer&gt; subject2 = UnicastSubject.create();
  *
- * // a UnicastSubject caches events util its single Observer subscribes
- * subject.onNext(1);
- * subject.onNext(2);
- * subject.onComplete();
+ * // a UnicastSubject caches events until its single Observer subscribes
+ * subject2.onNext(1);
+ * subject2.onNext(2);
+ * subject2.onComplete();
  *
  * TestObserver&lt;Integer&gt; to3 = subject2.test();
  *
