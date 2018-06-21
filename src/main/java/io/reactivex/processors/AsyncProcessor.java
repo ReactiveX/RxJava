@@ -31,7 +31,7 @@ import io.reactivex.plugins.RxJavaPlugins;
  * This processor does not have a public constructor by design; a new empty instance of this
  * {@code AsyncProcessor} can be created via the {@link #create()} method.
  * <p>
- * Since a {@code AsyncProcessor} is a Reactive Streams {@code Processor} type,
+ * Since an {@code AsyncProcessor} is a Reactive Streams {@code Processor} type,
  * {@code null}s are not allowed (<a href="https://github.com/reactive-streams/reactive-streams-jvm#2.13">Rule 2.13</a>)
  * as parameters to {@link #onNext(Object)} and {@link #onError(Throwable)}. Such calls will result in a
  * {@link NullPointerException} being thrown and the processor's state is not changed.
