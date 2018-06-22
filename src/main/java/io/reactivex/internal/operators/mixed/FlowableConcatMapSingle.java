@@ -213,6 +213,7 @@ public final class FlowableConcatMapSingle<T, R> extends Flowable<R> {
                     if (cancelled) {
                         queue.clear();
                         item = null;
+                        break;
                     }
 
                     int s = state;

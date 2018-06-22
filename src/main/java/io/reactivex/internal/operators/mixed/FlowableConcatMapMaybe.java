@@ -218,6 +218,7 @@ public final class FlowableConcatMapMaybe<T, R> extends Flowable<R> {
                     if (cancelled) {
                         queue.clear();
                         item = null;
+                        break;
                     }
 
                     int s = state;
