@@ -2,6 +2,41 @@
 
 The changelog of version 1.x can be found at https://github.com/ReactiveX/RxJava/blob/1.x/CHANGES.md
 
+### Version 2.1.15 - June 22, 2018 ([Maven](http://search.maven.org/#artifactdetails%7Cio.reactivex.rxjava2%7Crxjava%7C2.1.15%7C))
+
+#### API changes
+
+- [Pull 6026](https://github.com/ReactiveX/RxJava/pull/6026): Add `blockingSubscribe` overload with prefetch amount allowing bounded backpressure.
+- [Pull 6052](https://github.com/ReactiveX/RxJava/pull/6052): Change `{PublishSubject|PublishProcessor}.subscribeActual` to `protected`. They were accidentally made public and there is no reason to call them outside of RxJava internals.
+
+#### Documentation changes
+
+- [Pull 6031](https://github.com/ReactiveX/RxJava/pull/6031): Inline `CompositeDisposable` JavaDoc.
+- [Pull 6042](https://github.com/ReactiveX/RxJava/pull/6042): Fix `MulticastProcessor` JavaDoc comment.
+- [Pull 6049](https://github.com/ReactiveX/RxJava/pull/6049): Make it explicit that `throttleWithTimout` is an alias of `debounce`.
+- [Pull 6053](https://github.com/ReactiveX/RxJava/pull/6053): Add `Maybe` marble diagrams 06/21/a
+- [Pull 6057](https://github.com/ReactiveX/RxJava/pull/6057): Use different wording on `blockingForEach()` JavaDocs.
+- [Pull 6054](https://github.com/ReactiveX/RxJava/pull/6054): Expand `{X}Processor` JavaDocs by syncing with `{X}Subject` docs.
+
+#### Performance enhancements
+
+- [Pull 6021](https://github.com/ReactiveX/RxJava/pull/6021): Add full implementation for `Single.flatMapPublisher` so it doesn't batch requests.
+- [Pull 6024](https://github.com/ReactiveX/RxJava/pull/6024): Dedicated `{Single|Maybe}.flatMap{Publisher|Observable}` & `andThen(Observable|Publisher)` implementations.
+- [Pull 6028](https://github.com/ReactiveX/RxJava/pull/6028): Improve `Observable.takeUntil`.
+
+#### Bugfixes
+
+- [Pull 6019](https://github.com/ReactiveX/RxJava/pull/6019): Fix `Single.takeUntil`, `Maybe.takeUntil` dispose behavior.
+- [Pull 5947](https://github.com/ReactiveX/RxJava/pull/5947): Fix `groupBy` eviction so that source is cancelled and reduce volatile reads.
+- [Pull 6036](https://github.com/ReactiveX/RxJava/pull/6036): Fix disposed `LambdaObserver.onError` to route to global error handler.
+- [Pull 6045](https://github.com/ReactiveX/RxJava/pull/6045): Fix check in `BlockingSubscriber` that would always be false due to wrong variable.
+
+#### Other changes
+
+- [Pull 6022](https://github.com/ReactiveX/RxJava/pull/6022): Add TCK for `MulticastProcessor` & `{0..1}.flatMapPublisher`
+- [Pull 6029](https://github.com/ReactiveX/RxJava/pull/6029): Upgrade to Gradle 4.3.1, add `TakeUntilPerf`.
+- [Pull 6033](https://github.com/ReactiveX/RxJava/pull/6033): Update & fix grammar of `DESIGN.md`
+
 ### Version 2.1.14 - May 23, 2018 ([Maven](http://search.maven.org/#artifactdetails%7Cio.reactivex.rxjava2%7Crxjava%7C2.1.14%7C))
 
 #### API changes
