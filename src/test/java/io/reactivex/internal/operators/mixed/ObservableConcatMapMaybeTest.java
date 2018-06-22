@@ -416,4 +416,34 @@ public class ObservableConcatMapMaybeTest {
 
         to.assertResult(1, 2, 3, 4);
     }
+
+    @Test
+    public void innerSuccessDisposeRace() {
+        for (int i = 0; i < TestHelper.RACE_LONG_LOOPS; i++) {
+
+            final MaybeSubject<Integer> ms = MaybeSubject.create();
+
+            final TestObserver<Integer> to = Observable.just(1)
+                    .hide()
+                    .concatMapMaybe(Functions.justFunction(ms))
+                    .test();
+
+            Runnable r1 = new Runnable() {
+                @Override
+                public void run() {
+                    ms.onSuccess(1);
+                }
+            };
+            Runnable r2 = new Runnable() {
+                @Override
+                public void run() {
+                    to.dispose();
+                }
+            };
+
+            TestHelper.race(r1, r2);
+
+            to.assertNoErrors();
+        }
+    }
 }

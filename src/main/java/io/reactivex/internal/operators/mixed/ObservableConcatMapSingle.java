@@ -194,6 +194,7 @@ public final class ObservableConcatMapSingle<T, R> extends Observable<R> {
                     if (cancelled) {
                         queue.clear();
                         item = null;
+                        break;
                     }
 
                     int s = state;
