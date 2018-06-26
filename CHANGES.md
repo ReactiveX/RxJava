@@ -2,6 +2,14 @@
 
 The changelog of version 1.x can be found at https://github.com/ReactiveX/RxJava/blob/1.x/CHANGES.md
 
+### Version 2.1.16 - June 26, 2018 ([Maven](http://search.maven.org/#artifactdetails%7Cio.reactivex.rxjava2%7Crxjava%7C2.1.16%7C))
+
+This is a hotfix release for a late-identified issue with `concatMapMaybe` and `concatMapSingle`.
+
+#### Bugfixes
+
+- [Pull 6060](https://github.com/ReactiveX/RxJava/pull/6060): Fix `concatMap{Single|Maybe}` null emission on success-dispose race.
+
 ### Version 2.1.15 - June 22, 2018 ([Maven](http://search.maven.org/#artifactdetails%7Cio.reactivex.rxjava2%7Crxjava%7C2.1.15%7C))
 
 #### API changes
