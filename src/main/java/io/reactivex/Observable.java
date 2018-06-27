@@ -1558,6 +1558,41 @@ public abstract class Observable<T> implements ObservableSource<T> {
         ObjectHelper.requireNonNull(source, "source is null");
         return RxJavaPlugins.onAssembly(new ObservableCreate<T>(source));
     }
+    
+    /**
+     * Returns an Observable that applies a specified {@code accumulator} function to the {@code seed} value
+     * then feeds the result of that function into the same function, and so on until the subscription is disposed,
+     * emitting the result of each of these iterations.
+     * <p>
+     * Note that the ObservableSource that results from this method will emit {@code seed} as its first
+     * emitted item.
+     * <p>
+     * Note that the {@code seed} is shared among all subscribers to the resulting ObservableSource
+     * and may cause problems if it is mutable. To make sure each subscriber gets its own value, defer
+     * the application of this operator via {@link #defer(Callable)}:
+     * <pre><code>
+     * Observable.defer(
+     *         () -&gt; Observable.createScan(new ArrayList&lt;&gt;(), list -&gt; list.add(0)));
+     * </code></pre>
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code scan} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param seed the initial value to be emitted and fed into the {@code accumulator}
+     * @param accumulator an accumulator function to be sequentially invoked with the {@code seed},
+     * with the result of that call, with that result, and so on
+     * @param <T> the type of the seed, the accumulated value, and the emitted items
+     * @return an Observable that emits {@code seed} followed by the results of each call to the
+     * accumulator function
+     * @see #scan(Object, BiFunction)
+     */
+    @CheckReturnValue
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public static <T> Observable<T> createScan(T seed, Function<T, T> accumulator) {
+        ObjectHelper.requireNonNull(seed, "seed is null");
+        ObjectHelper.requireNonNull(accumulator, "accumulator is null");
+        return RxJavaPlugins.onAssembly(new ObservableCreateScan<T>(seed, accumulator));
+    }
 
     /**
      * Returns an Observable that calls an ObservableSource factory to create an ObservableSource for each new Observer
