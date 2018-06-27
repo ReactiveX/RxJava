@@ -5027,7 +5027,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * <em>Note:</em> the method will only return if the upstream terminates or the current
      * thread is interrupted.
      * <p>
-     * <p>This method executes the {@code Consumer} on the current thread while
+     * This method executes the {@code Consumer} on the current thread while
      * {@link #subscribe(Consumer)} executes the consumer on the original caller thread of the
      * sequence.
      * <dl>
