@@ -51,7 +51,7 @@ import io.reactivex.schedulers.Schedulers;
  * <p>
  * <img width="640" height="301" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.legend.png" alt="">
  * <p>
- * For more information see the <a href="http://reactivex.io/documentation/observable.html">ReactiveX
+ * For more information see the <a href="http://reactivex.io/documentation/single.html">ReactiveX
  * documentation</a>.
  *
  * @param <T>
@@ -3591,7 +3591,6 @@ public abstract class Single<T> implements SingleSource<T> {
      *
      * @return a {@link Completable} that calls {@code onComplete} on it's subscriber when the source {@link Single}
      *         calls {@code onSuccess}.
-     * @see <a href="http://reactivex.io/documentation/completable.html">ReactiveX documentation: Completable</a>
      * @since 2.0
      * @deprecated see {@link #ignoreElement()} instead, will be removed in 3.0
      */
@@ -3614,7 +3613,6 @@ public abstract class Single<T> implements SingleSource<T> {
      *
      * @return a {@link Completable} that calls {@code onComplete} on it's observer when the source {@link Single}
      *         calls {@code onSuccess}.
-     * @see <a href="http://reactivex.io/documentation/completable.html">ReactiveX documentation: Completable</a>
      * @since 2.1.13
      */
     @CheckReturnValue
