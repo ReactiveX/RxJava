@@ -91,6 +91,7 @@ javadoc {
     options.addStringOption("top").value = ""
     options.addStringOption("doctitle").value = ""
     options.addStringOption("header").value = ""
+    options.stylesheetFile = new File(projectDir, "gradle/stylesheet.css");
 
     options.links(
         "https://docs.oracle.com/javase/7/docs/api/",
