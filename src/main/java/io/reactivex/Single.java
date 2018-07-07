@@ -1162,6 +1162,8 @@ public abstract class Single<T> implements SingleSource<T> {
 
     /**
      * Returns a singleton instance of a never-signalling Single (only calls onSubscribe).
+     * <p>
+     * <img width="640" height="244" src="https://raw.githubusercontent.com/UMFsimke/RxJava/Images/Images/Never.png" alt="">
      * <dl>
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code never} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -2603,7 +2605,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * Example:
      * <pre><code>
      * // Step 1: Create the consumer type that will be returned by the SingleOperator.apply():
-     * 
+     *
      * public final class CustomSingleObserver&lt;T&gt; implements SingleObserver&lt;T&gt;, Disposable {
      *
      *     // The downstream's SingleObserver that will receive the onXXX events
