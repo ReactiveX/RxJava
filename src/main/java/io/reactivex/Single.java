@@ -1999,7 +1999,7 @@ public abstract class Single<T> implements SingleSource<T> {
     /**
      * Delays the emission of the success or error signal from the current Single by the specified amount.
      * <p>
-     * <img width="640" height="457" src="https://raw.githubusercontent.com/UMFsimke/RxJava/Images/Images/Delay.png" alt="">
+     * <img width="640" height="457" src="https://raw.githubusercontent.com/UMFsimke/RxJava/Images/Images/DelayIncludingError.png" alt="">
      * <dl>
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code delay} operates by default on the {@code computation} {@link Scheduler}.</dd>
@@ -2046,7 +2046,7 @@ public abstract class Single<T> implements SingleSource<T> {
     /**
      * Delays the emission of the success or error signal from the current Single by the specified amount.
      * <p>
-     * <img width="640" height="457" src="https://raw.githubusercontent.com/UMFsimke/RxJava/Images/Images/DelayScheduler.png" alt="">
+     * <img width="640" height="457" src="https://raw.githubusercontent.com/UMFsimke/RxJava/Images/Images/DelaySchedulerIncludingError.png" alt="">
      * <dl>
      * <dt><b>Scheduler:</b></dt>
      * <dd>you specify the {@link Scheduler} where the non-blocking wait and emission happens</dd>
