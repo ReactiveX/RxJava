@@ -1163,7 +1163,7 @@ public abstract class Single<T> implements SingleSource<T> {
     /**
      * Returns a singleton instance of a never-signalling Single (only calls onSubscribe).
      * <p>
-     * <img width="640" height="244" src="https://raw.githubusercontent.com/UMFsimke/RxJava/Images/Images/Never.png" alt="">
+     * <img width="640" height="244" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.never.png" alt="">
      * <dl>
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code never} does not operate by default on a particular {@link Scheduler}.</dd>
