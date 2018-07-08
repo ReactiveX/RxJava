@@ -1875,6 +1875,8 @@ public abstract class Single<T> implements SingleSource<T> {
     /**
      * Hides the identity of the current Single, including the Disposable that is sent
      * to the downstream via {@code onSubscribe()}.
+     * <p>
+     * <img width="640" height="470" src="https://raw.githubusercontent.com/UMFsimke/RxJava/Images/Images/Hide.png" alt="">
      * <dl>
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code hide} does not operate by default on a particular {@link Scheduler}.</dd>
