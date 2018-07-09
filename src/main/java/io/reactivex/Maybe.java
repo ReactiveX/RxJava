@@ -3090,6 +3090,8 @@ public abstract class Maybe<T> implements MaybeSource<T> {
 
     /**
      * Hides the identity of this Maybe and its Disposable.
+     * <p>
+     * <img width="640" height="300" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.hide.png" alt="">
      * <p>Allows preventing certain identity-based
      * optimizations (fusion).
      * <dl>
