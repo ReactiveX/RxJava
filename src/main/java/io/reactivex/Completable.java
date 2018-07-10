@@ -2032,6 +2032,32 @@ public abstract class Completable implements CompletableSource {
     }
 
     /**
+     * Terminates the downstream if this or the other {@code Completable}
+     * terminates (wins the termination race) while disposing the connection to the losing source.
+     * <p>
+     * <img width="640" height="468" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Completable.takeuntil.c.png" alt="">
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code takeUntil} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dt><b>Error handling:</b></dt>
+     *  <dd>If both this and the other sources signal an error, only one of the errors
+     *  is signaled to the downstream and the other error is signaled to the global
+     *  error handler via {@link RxJavaPlugins#onError(Throwable)}.</dd>
+     * </dl>
+     * @param other the other completable source to observe for the terminal signals
+     * @return the new Completable instance
+     * @since 2.1.17 - experimental
+     */
+    @CheckReturnValue
+    @Experimental
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final Completable takeUntil(CompletableSource other) {
+        ObjectHelper.requireNonNull(other, "other is null");
+
+        return RxJavaPlugins.onAssembly(new CompletableTakeUntilCompletable(this, other));
+    }
+
+    /**
      * Returns a Completable that runs this Completable and emits a TimeoutException in case
      * this Completable doesn't complete within the given time.
      * <dl>
