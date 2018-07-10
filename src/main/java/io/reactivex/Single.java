@@ -1980,6 +1980,8 @@ public abstract class Single<T> implements SingleSource<T> {
     /**
      * Delays the emission of the success signal from the current Single by the specified amount.
      * An error signal will not be delayed.
+     * <p>
+     * <img width="640" height="457" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.delay.png" alt="">
      * <dl>
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code delay} operates by default on the {@code computation} {@link Scheduler}.</dd>
@@ -1998,6 +2000,8 @@ public abstract class Single<T> implements SingleSource<T> {
 
     /**
      * Delays the emission of the success or error signal from the current Single by the specified amount.
+     * <p>
+     * <img width="640" height="457" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.delay.e.png" alt="">
      * <dl>
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code delay} operates by default on the {@code computation} {@link Scheduler}.</dd>
@@ -2019,6 +2023,8 @@ public abstract class Single<T> implements SingleSource<T> {
     /**
      * Delays the emission of the success signal from the current Single by the specified amount.
      * An error signal will not be delayed.
+     * <p>
+     * <img width="640" height="457" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.delay.s.png" alt="">
      * <dl>
      * <dt><b>Scheduler:</b></dt>
      * <dd>you specify the {@link Scheduler} where the non-blocking wait and emission happens</dd>
@@ -2041,6 +2047,8 @@ public abstract class Single<T> implements SingleSource<T> {
 
     /**
      * Delays the emission of the success or error signal from the current Single by the specified amount.
+     * <p>
+     * <img width="640" height="457" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.delay.se.png" alt="">
      * <dl>
      * <dt><b>Scheduler:</b></dt>
      * <dd>you specify the {@link Scheduler} where the non-blocking wait and emission happens</dd>
