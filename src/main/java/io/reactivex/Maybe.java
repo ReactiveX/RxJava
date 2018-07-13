@@ -34,18 +34,78 @@ import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.schedulers.Schedulers;
 
 /**
- * Represents a deferred computation and emission of a maybe value or exception.
+ * The {@code Maybe} class represents a deferred computation and emission of a single value, no value at all or an exception.
  * <p>
- * <img width="640" height="370" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/maybe.png" alt="">
+ * The {@code Maybe} class implements the {@link MaybeSource} base interface and the default consumer
+ * type it interacts with is the {@link MaybeObserver} via the {@link #subscribe(MaybeObserver)} method.
  * <p>
- * The main consumer type of Maybe is {@link MaybeObserver} whose methods are called
- * in a sequential fashion following this protocol:<br>
- * {@code onSubscribe (onSuccess | onError | onComplete)?}.
+ * The {@code Maybe} operates with the following sequential protocol:
+ * <pre><code>
+ *     onSubscribe (onSuccess | onError | onComplete)?
+ * </code></pre>
  * <p>
  * Note that {@code onSuccess}, {@code onError} and {@code onComplete} are mutually exclusive events; unlike {@code Observable},
  * {@code onSuccess} is never followed by {@code onError} or {@code onComplete}.
+ * <p>
+ * Like {@link Observable}, a running {@code Maybe} can be stopped through the {@link Disposable} instance
+ * provided to consumers through {@link MaybeObserver#onSubscribe}.
+ * <p>
+ * Like an {@code Observable}, a {@code Maybe} is lazy, can be either "hot" or "cold", synchronous or
+ * asynchronous. {@code Maybe} instances returned by the methods of this class are <em>cold</em>
+ * and there is a standard <em>hot</em> implementation in the form of a subject:
+ * {@link io.reactivex.subjects.MaybeSubject MaybeSubject}.
+ * <p>
+ * The documentation for this class makes use of marble diagrams. The following legend explains these diagrams:
+ * <p>
+ * <img width="640" height="370" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/maybe.png" alt="">
+ * <p>
+ * See {@link Flowable} or {@link Observable} for the
+ * implementation of the Reactive Pattern for a stream or vector of values.
+ * <p>
+ * Example:
+ * <pre><code>
+ * Disposable d = Maybe.just("Hello World")
+ *    .delay(10, TimeUnit.SECONDS, Schedulers.io())
+ *    .subscribeWith(new DisposableMaybeObserver&lt;String&gt;() {
+ *        &#64;Override
+ *        public void onStart() {
+ *            System.out.println("Started");
+ *        }
+ *
+ *        &#64;Override
+ *        public void onSuccess(String value) {
+ *            System.out.println("Success: " + value);
+ *        }
+ *
+ *        &#64;Override
+ *        public void onError(Throwable error) {
+ *            error.printStackTrace();
+ *        }
+ *
+ *        &#64;Override
+ *        public void onComplete() {
+ *            System.out.println("Done!");
+ *        }
+ *    });
+ * 
+ * Thread.sleep(5000);
+ * 
+ * d.dispose();
+ * </code></pre>
+ * <p>
+ * Note that by design, subscriptions via {@link #subscribe(MaybeObserver)} can't be cancelled/disposed
+ * from the outside (hence the
+ * {@code void} return of the {@link #subscribe(MaybeObserver)} method) and it is the
+ * responsibility of the implementor of the {@code MaybeObserver} to allow this to happen.
+ * RxJava supports such usage with the standard
+ * {@link io.reactivex.observers.DisposableMaybeObserver DisposableMaybeObserver} instance.
+ * For convenience, the {@link #subscribeWith(MaybeObserver)} method is provided as well to
+ * allow working with a {@code MaybeObserver} (or subclass) instance to be applied with in
+ * a fluent manner (such as in the example above).
+ *
  * @param <T> the value type
  * @since 2.0
+ * @see io.reactivex.observers.DisposableMaybeObserver
  */
 public abstract class Maybe<T> implements MaybeSource<T> {
 
