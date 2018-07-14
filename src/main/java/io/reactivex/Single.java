@@ -37,26 +37,79 @@ import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.schedulers.Schedulers;
 
 /**
- * The Single class implements the Reactive Pattern for a single value response.
- * See {@link Flowable} or {@link Observable} for the
- * implementation of the Reactive Pattern for a stream or vector of values.
+ * The {@code Single} class implements the Reactive Pattern for a single value response.
  * <p>
- * {@code Single} behaves the same as {@link Observable} except that it can only emit either a single successful
- * value, or an error (there is no "onComplete" notification as there is for {@link Observable})
+ * {@code Single} behaves similarly to {@link Observable} except that it can only emit either a single successful
+ * value or an error (there is no "onComplete" notification as there is for an {@link Observable}).
  * <p>
- * Like an {@link Observable}, a {@code Single} is lazy, can be either "hot" or "cold", synchronous or
- * asynchronous.
+ * The {@code Single} class implements the {@link SingleSource} base interface and the default consumer
+ * type it interacts with is the {@link SingleObserver} via the {@link #subscribe(SingleObserver)} method.
+ * <p>
+ * The {@code Single} operates with the following sequential protocol:
+ * <pre>
+ *     <code>onSubscribe (onSuccess | onError)?</code>
+ * </pre>
+ * <p>
+ * Note that {@code onSuccess} and {@code onError} are mutually exclusive events; unlike {@code Observable},
+ * {@code onSuccess} is never followed by {@code onError}.
+ * <p>
+ * Like {@code Observable}, a running {@code Single} can be stopped through the {@link Disposable} instance
+ * provided to consumers through {@link SingleObserver#onSubscribe}.
+ * <p>
+ * Like an {@code Observable}, a {@code Single} is lazy, can be either "hot" or "cold", synchronous or
+ * asynchronous. {@code Single} instances returned by the methods of this class are <em>cold</em>
+ * and there is a standard <em>hot</em> implementation in the form of a subject:
+ * {@link io.reactivex.subjects.SingleSubject SingleSubject}.
  * <p>
  * The documentation for this class makes use of marble diagrams. The following legend explains these diagrams:
  * <p>
  * <img width="640" height="301" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.legend.png" alt="">
  * <p>
+ * See {@link Flowable} or {@link Observable} for the
+ * implementation of the Reactive Pattern for a stream or vector of values.
+ * <p>
  * For more information see the <a href="http://reactivex.io/documentation/single.html">ReactiveX
  * documentation</a>.
+ * <p>
+ * Example:
+ * <pre><code>
+ * Disposable d = Single.just("Hello World")
+ *    .delay(10, TimeUnit.SECONDS, Schedulers.io())
+ *    .subscribeWith(new DisposableSingleObserver&lt;String&gt;() {
+ *        &#64;Override
+ *        public void onStart() {
+ *            System.out.println("Started");
+ *        }
  *
+ *        &#64;Override
+ *        public void onSuccess(String value) {
+ *            System.out.println("Success: " + value);
+ *        }
+ *
+ *        &#64;Override
+ *        public void onError(Throwable error) {
+ *            error.printStackTrace();
+ *        }
+ *    });
+ * 
+ * Thread.sleep(5000);
+ * 
+ * d.dispose();
+ * </code></pre>
+ * <p>
+ * Note that by design, subscriptions via {@link #subscribe(SingleObserver)} can't be cancelled/disposed
+ * from the outside (hence the
+ * {@code void} return of the {@link #subscribe(SingleObserver)} method) and it is the
+ * responsibility of the implementor of the {@code SingleObserver} to allow this to happen.
+ * RxJava supports such usage with the standard
+ * {@link io.reactivex.observers.DisposableSingleObserver DisposableSingleObserver} instance.
+ * For convenience, the {@link #subscribeWith(SingleObserver)} method is provided as well to
+ * allow working with a {@code SingleObserver} (or subclass) instance to be applied with in
+ * a fluent manner (such as in the example above).
  * @param <T>
  *            the type of the item emitted by the Single
  * @since 2.0
+ * @see io.reactivex.observers.DisposableSingleObserver
  */
 public abstract class Single<T> implements SingleSource<T> {
 

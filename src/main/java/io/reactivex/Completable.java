@@ -33,9 +33,74 @@ import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.schedulers.Schedulers;
 
 /**
- * Represents a deferred computation without any value but only indication for completion or exception.
+ * The {@code Completable} class represents a deferred computation without any value but
+ * only indication for completion or exception.
+ * <p>
+ * {@code Completable} behaves similarly to {@link Observable} except that it can only emit either
+ * a completion or error signal (there is no {@code onNext} or {@code onSuccess} as with the other
+ * reactive types).
+ * <p>
+ * The {@code Completable} class implements the {@link CompletableSource} base interface and the default consumer
+ * type it interacts with is the {@link CompletableObserver} via the {@link #subscribe(CompletableObserver)} method.
+ * The {@code Completable} operates with the following sequential protocol:
+ * <pre><code>
+ *     onSubscribe (onError | onComplete)?
+ * </code></pre>
+ * <p>
+ * Note that as with the {@code Observable} protocol, {@code onError} and {@code onComplete} are mutually exclusive events.
+ * <p>
+ * Like {@link Observable}, a running {@code Completable} can be stopped through the {@link Disposable} instance
+ * provided to consumers through {@link SingleObserver#onSubscribe}.
+ * <p>
+ * Like an {@code Observable}, a {@code Completable} is lazy, can be either "hot" or "cold", synchronous or
+ * asynchronous. {@code Completable} instances returned by the methods of this class are <em>cold</em>
+ * and there is a standard <em>hot</em> implementation in the form of a subject:
+ * {@link io.reactivex.subjects.CompletableSubject CompletableSubject}.
+ * <p>
+ * The documentation for this class makes use of marble diagrams. The following legend explains these diagrams:
+ * <p>
+ * <img width="640" height="577" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Completable.png" alt="">
+ * <p>
+ * See {@link Flowable} or {@link Observable} for the
+ * implementation of the Reactive Pattern for a stream or vector of values.
+ * <p>
+ * Example:
+ * <pre><code>
+ * Disposable d = Completable.complete()
+ *    .delay(10, TimeUnit.SECONDS, Schedulers.io())
+ *    .subscribeWith(new DisposableCompletableObserver() {
+ *        &#64;Override
+ *        public void onStart() {
+ *            System.out.println("Started");
+ *        }
  *
- * The class follows a similar event pattern as Reactive-Streams: onSubscribe (onError|onComplete)?
+ *        &#64;Override
+ *        public void onError(Throwable error) {
+ *            error.printStackTrace();
+ *        }
+ *
+ *        &#64;Override
+ *        public void onComplete() {
+ *            System.out.println("Done!");
+ *        }
+ *    });
+ * 
+ * Thread.sleep(5000);
+ * 
+ * d.dispose();
+ * </code></pre>
+ * <p>
+ * Note that by design, subscriptions via {@link #subscribe(CompletableObserver)} can't be cancelled/disposed
+ * from the outside (hence the
+ * {@code void} return of the {@link #subscribe(CompletableObserver)} method) and it is the
+ * responsibility of the implementor of the {@code CompletableObserver} to allow this to happen.
+ * RxJava supports such usage with the standard
+ * {@link io.reactivex.observers.DisposableCompletableObserver DisposableCompletableObserver} instance.
+ * For convenience, the {@link #subscribeWith(CompletableObserver)} method is provided as well to
+ * allow working with a {@code CompletableObserver} (or subclass) instance to be applied with in
+ * a fluent manner (such as in the example above).
+ *
+ * @see io.reactivex.observers.DisposableCompletableObserver
  */
 public abstract class Completable implements CompletableSource {
     /**
