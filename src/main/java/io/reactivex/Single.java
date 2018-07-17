@@ -2852,7 +2852,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * Instructs a Single to emit an item (returned by a specified function) rather than invoking
      * {@link SingleObserver#onError onError} if it encounters an error.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.onErrorReturn.png" alt="">
+     * <img width="640" height="451" src="https://raw.githubusercontent.com/UMFsimke/RxJava/Images/Images/onErrorReturn.png" alt="">
      * <p>
      * By default, when a Single encounters an error that prevents it from emitting the expected item to its
      * subscriber, the Single invokes its subscriber's {@link SingleObserver#onError} method, and then quits
@@ -2883,6 +2883,8 @@ public abstract class Single<T> implements SingleSource<T> {
 
     /**
      * Signals the specified value as success in case the current Single signals an error.
+     * <p>
+     * <img width="640" height="451" src="https://raw.githubusercontent.com/UMFsimke/RxJava/Images/Images/onErrorReturnItem.png" alt="">
      * <dl>
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code onErrorReturnItem} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -2902,7 +2904,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * Instructs a Single to pass control to another Single rather than invoking
      * {@link SingleObserver#onError(Throwable)} if it encounters an error.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/onErrorResumeNext.png" alt="">
+     * <img width="640" height="451" src="https://raw.githubusercontent.com/UMFsimke/RxJava/Images/Images/onErrorResumeNext.png" alt="">
      * <p>
      * By default, when a Single encounters an error that prevents it from emitting the expected item to
      * its {@link SingleObserver}, the Single invokes its SingleObserver's {@code onError} method, and then quits
@@ -2936,7 +2938,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * Instructs a Single to pass control to another Single rather than invoking
      * {@link SingleObserver#onError(Throwable)} if it encounters an error.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/onErrorResumeNext.png" alt="">
+     * <img width="640" height="451" src="https://raw.githubusercontent.com/UMFsimke/RxJava/Images/Images/onErrorResumeNextWithFn.png" alt="">
      * <p>
      * By default, when a Single encounters an error that prevents it from emitting the expected item to
      * its {@link SingleObserver}, the Single invokes its SingleObserver's {@code onError} method, and then quits
