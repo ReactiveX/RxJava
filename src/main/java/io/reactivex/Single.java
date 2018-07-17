@@ -454,6 +454,8 @@ public abstract class Single<T> implements SingleSource<T> {
 
     /**
      * Signals a Throwable returned by the callback function for each individual SingleObserver.
+     * <p>
+     * <img width="640" height="283" src="https://raw.githubusercontent.com/UMFsimke/RxJava/Images/Images/ErrorCallable.png" alt="">
      * <dl>
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code error} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -474,7 +476,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * Returns a Single that invokes a subscriber's {@link SingleObserver#onError onError} method when the
      * subscriber subscribes to it.
      * <p>
-     * <img width="640" height="190" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.error.png" alt="">
+     * <img width="640" height="283" src="https://raw.githubusercontent.com/UMFsimke/RxJava/Images/Images/Error.png" alt="">
      * <dl>
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code error} does not operate by default on a particular {@link Scheduler}.</dd>
