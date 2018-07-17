@@ -3048,6 +3048,8 @@ public abstract class Single<T> implements SingleSource<T> {
 
     /**
      * Re-subscribes to the current Single until the given BooleanSupplier returns true.
+     * <p>
+     * <img width="640" height="463" src="https://raw.githubusercontent.com/UMFsimke/RxJava/Images/Images/RepeatUntil.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The returned {@code Flowable} honors the backpressure of the downstream consumer.</dd>
