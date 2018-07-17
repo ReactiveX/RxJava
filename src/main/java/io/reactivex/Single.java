@@ -3051,6 +3051,8 @@ public abstract class Single<T> implements SingleSource<T> {
 
     /**
      * Repeatedly re-subscribes to the current Single and emits each success value.
+     * <p>
+     * <img width="640" height="457" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.repeat.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The returned {@code Flowable} honors the backpressure of the downstream consumer.</dd>
@@ -3069,6 +3071,8 @@ public abstract class Single<T> implements SingleSource<T> {
 
     /**
      * Re-subscribes to the current Single at most the given number of times and emits each success value.
+     * <p>
+     * <img width="640" height="457" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.repeat.n.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The returned {@code Flowable} honors the backpressure of the downstream consumer.</dd>
@@ -3090,6 +3094,8 @@ public abstract class Single<T> implements SingleSource<T> {
      * Re-subscribes to the current Single if
      * the Publisher returned by the handler function signals a value in response to a
      * value signalled through the Flowable the handle receives.
+     * <p>
+     * <img width="640" height="1478" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.repeatWhen.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The returned {@code Flowable} honors the backpressure of the downstream consumer.
