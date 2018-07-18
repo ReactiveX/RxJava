@@ -116,6 +116,8 @@ public abstract class Single<T> implements SingleSource<T> {
     /**
      * Runs multiple SingleSources and signals the events of the first one that signals (cancelling
      * the rest).
+     * <p>
+     * <img width="640" height="515" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.amb.png" alt="">
      * <dl>
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code amb} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -136,6 +138,8 @@ public abstract class Single<T> implements SingleSource<T> {
     /**
      * Runs multiple SingleSources and signals the events of the first one that signals (cancelling
      * the rest).
+     * <p>
+     * <img width="640" height="515" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.ambArray.png" alt="">
      * <dl>
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code ambArray} does not operate by default on a particular {@link Scheduler}.</dd>
