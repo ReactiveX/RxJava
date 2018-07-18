@@ -903,6 +903,8 @@ public abstract class Completable implements CompletableSource {
      * Returns a Completable instance which manages a resource along
      * with a custom Completable instance while the subscription is active.
      * <p>
+     * <img width="640" height="388" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Completable.using.png" alt="">
+     * <p>
      * This overload disposes eagerly before the terminal event is emitted.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
@@ -926,6 +928,8 @@ public abstract class Completable implements CompletableSource {
      * Returns a Completable instance which manages a resource along
      * with a custom Completable instance while the subscription is active and performs eager or lazy
      * resource disposition.
+     * <p>
+     * <img width="640" height="332" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Completable.using.b.png" alt="">
      * <p>
      * If this overload performs a lazy cancellation after the terminal event is emitted.
      * Exceptions thrown at this time will be delivered to RxJavaPlugins only.
@@ -959,6 +963,8 @@ public abstract class Completable implements CompletableSource {
     /**
      * Wraps the given CompletableSource into a Completable
      * if not already Completable.
+     * <p>
+     * <img width="640" height="354" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Completable.wrap.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code wrap} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -980,6 +986,8 @@ public abstract class Completable implements CompletableSource {
     /**
      * Returns a Completable that emits the a terminated event of either this Completable
      * or the other Completable whichever fires first.
+     * <p>
+     * <img width="640" height="484" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Completable.ambWith.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code ambWith} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -1001,6 +1009,8 @@ public abstract class Completable implements CompletableSource {
      * will subscribe to the {@code next} ObservableSource. An error event from this Completable will be
      * propagated to the downstream subscriber and will result in skipping the subscription of the
      * Observable.
+     * <p>
+     * <img width="640" height="278" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Completable.andThen.o.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code andThen} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -1022,6 +1032,8 @@ public abstract class Completable implements CompletableSource {
      * will subscribe to the {@code next} Flowable. An error event from this Completable will be
      * propagated to the downstream subscriber and will result in skipping the subscription of the
      * Publisher.
+     * <p>
+     * <img width="640" height="249" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Completable.andThen.p.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The returned {@code Flowable} honors the backpressure of the downstream consumer
@@ -1047,6 +1059,8 @@ public abstract class Completable implements CompletableSource {
      * will subscribe to the {@code next} SingleSource. An error event from this Completable will be
      * propagated to the downstream subscriber and will result in skipping the subscription of the
      * Single.
+     * <p>
+     * <img width="640" height="437" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Completable.andThen.s.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code andThen} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -1068,6 +1082,8 @@ public abstract class Completable implements CompletableSource {
      * will subscribe to the {@code next} MaybeSource. An error event from this Completable will be
      * propagated to the downstream subscriber and will result in skipping the subscription of the
      * Maybe.
+     * <p>
+     * <img width="640" height="280" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Completable.andThen.m.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code andThen} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -1088,6 +1104,8 @@ public abstract class Completable implements CompletableSource {
      * Returns a Completable that first runs this Completable
      * and then the other completable.
      * <p>
+     * <img width="640" height="437" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Completable.andThen.c.png" alt="">
+     * <p>
      * This is an alias for {@link #concatWith(CompletableSource)}.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
@@ -1105,6 +1123,8 @@ public abstract class Completable implements CompletableSource {
 
     /**
      * Calls the specified converter function during assembly time and returns its resulting value.
+     * <p>
+     * <img width="640" height="751" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Completable.as.png" alt="">
      * <p>
      * This allows fluent conversion to any other type.
      * <dl>
@@ -1128,6 +1148,8 @@ public abstract class Completable implements CompletableSource {
     /**
      * Subscribes to and awaits the termination of this Completable instance in a blocking manner and
      * rethrows any exception emitted.
+     * <p>
+     * <img width="640" height="432" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Completable.blockingAwait.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code blockingAwait} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -1148,6 +1170,8 @@ public abstract class Completable implements CompletableSource {
     /**
      * Subscribes to and awaits the termination of this Completable instance in a blocking manner
      * with a specific timeout and rethrows any exception emitted within the timeout window.
+     * <p>
+     * <img width="640" height="348" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Completable.blockingAwait.t.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code blockingAwait} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -1174,6 +1198,8 @@ public abstract class Completable implements CompletableSource {
     /**
      * Subscribes to this Completable instance and blocks until it terminates, then returns null or
      * the emitted exception if any.
+     * <p>
+     * <img width="640" height="435" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Completable.blockingGet.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code blockingGet} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -1192,6 +1218,8 @@ public abstract class Completable implements CompletableSource {
     /**
      * Subscribes to this Completable instance and blocks until it terminates or the specified timeout
      * elapses, then returns null for normal termination or the emitted exception if any.
+     * <p>
+     * <img width="640" height="348" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Completable.blockingGet.t.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code blockingGet} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -1216,6 +1244,8 @@ public abstract class Completable implements CompletableSource {
      * subscribes to the result Completable, caches its terminal event
      * and relays/replays it to observers.
      * <p>
+     * <img width="640" height="375" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Completable.cache.png" alt="">
+     * <p>
      * Note that this operator doesn't allow disposing the connection
      * of the upstream source.
      * <dl>
@@ -1235,6 +1265,8 @@ public abstract class Completable implements CompletableSource {
     /**
      * Calls the given transformer function with this instance and returns the function's resulting
      * Completable.
+     * <p>
+     * <img width="640" height="625" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Completable.compose.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code compose} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -2308,6 +2340,8 @@ public abstract class Completable implements CompletableSource {
 
     /**
      * Allows fluent conversion to another type via a function callback.
+     * <p>
+     * <img width="640" height="751" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Completable.to.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code to} does not operate by default on a particular {@link Scheduler}.</dd>
