@@ -554,6 +554,8 @@ public abstract class Single<T> implements SingleSource<T> {
      * Allows you to defer execution of passed function until SingleObserver subscribes to the {@link Single}.
      * It makes passed function "lazy".
      * Result of the function invocation will be emitted by the {@link Single}.
+     * <p>
+     * <img width="640" height="467" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.fromCallable.png" alt="">
      * <dl>
      *   <dt><b>Scheduler:</b></dt>
      *   <dd>{@code fromCallable} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -714,6 +716,8 @@ public abstract class Single<T> implements SingleSource<T> {
      * Note that even though {@link Publisher} appears to be a functional interface, it
      * is not recommended to implement it through a lambda as the specification requires
      * state management that is not achievable with a stateless lambda.
+     * <p>
+     * <img width="640" height="322" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.fromPublisher.png" alt="">
      * <dl>
      * <dt><b>Backpressure:</b></dt>
      * <dd>The {@code publisher} is consumed in an unbounded fashion but will be cancelled
@@ -738,6 +742,8 @@ public abstract class Single<T> implements SingleSource<T> {
      * Wraps a specific ObservableSource into a Single and signals its single element or error.
      * <p>If the ObservableSource is empty, a NoSuchElementException is signalled.
      * If the source has more than one element, an IndexOutOfBoundsException is signalled.
+     * <p>
+     * <img width="640" height="343" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.fromObservable.png" alt="">
      * <dl>
      *   <dt><b>Scheduler:</b></dt>
      *   <dd>{@code fromObservable} does not operate by default on a particular {@link Scheduler}.</dd>
