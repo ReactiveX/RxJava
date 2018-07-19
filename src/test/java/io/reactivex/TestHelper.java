@@ -482,7 +482,7 @@ public enum TestHelper {
     }
 
     /**
-     * Returns an Consumer that asserts the TestSubscriber has exaclty one value + completed
+     * Returns an Consumer that asserts the TestSubscriber has exactly one value + completed
      * normally and that single value is not the value specified.
      * @param <T> the value type
      * @param value the value not expected
@@ -505,7 +505,7 @@ public enum TestHelper {
     }
 
     /**
-     * Returns an Consumer that asserts the TestObserver has exaclty one value + completed
+     * Returns an Consumer that asserts the TestObserver has exactly one value + completed
      * normally and that single value is not the value specified.
      * @param <T> the value type
      * @param value the value not expected
