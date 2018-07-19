@@ -30,4 +30,9 @@ public final class SingleJust<T> extends Single<T> {
         s.onSuccess(value);
     }
 
+    @Override
+    protected T blockingGetStored() {
+      return value;
+    }
+
 }

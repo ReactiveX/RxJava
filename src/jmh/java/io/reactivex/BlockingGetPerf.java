@@ -13,6 +13,8 @@
 
 package io.reactivex;
 
+import io.reactivex.subjects.SingleSubject;
+import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 
 import org.openjdk.jmh.annotations.*;
@@ -29,6 +31,8 @@ public class BlockingGetPerf {
     Observable<Integer> observable;
 
     Single<Integer> single;
+    Single<Integer> singleDeferred;
+    SingleSubject<Integer> singleSubject;
 
     Maybe<Integer> maybe;
 
@@ -41,6 +45,15 @@ public class BlockingGetPerf {
         observable = Observable.just(1);
 
         single = Single.just(1);
+
+        singleDeferred = Single.defer(new Callable<Single<Integer>>() {
+          public Single<Integer> call() {
+            return Single.just(1);
+          }
+        });
+
+        singleSubject = SingleSubject.create();
+        singleDeferred.subscribe(singleSubject);
 
         maybe = Maybe.just(1);
 
@@ -70,6 +83,16 @@ public class BlockingGetPerf {
     @Benchmark
     public Object single() {
         return single.blockingGet();
+    }
+
+    @Benchmark
+    public Object singleDeferred() {
+        return singleDeferred.blockingGet();
+    }
+
+    @Benchmark
+    public Object singleSubject() {
+        return singleSubject.blockingGet();
     }
 
     @Benchmark
