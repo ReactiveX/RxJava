@@ -511,7 +511,7 @@ public abstract class Completable implements CompletableSource {
      * Returns a Completable instance that subscribes to the given publisher, ignores all values and
      * emits only the terminal event.
      * <p>
-     * <img width="640" height="442" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Completable.fromPublisher.png" alt="">
+     * <img width="640" height="422" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Completable.fromPublisher.png" alt="">
      * <p>
      * The {@link Publisher} must follow the
      * <a href="https://github.com/reactive-streams/reactive-streams-jvm#reactive-streams">Reactive-Streams specification</a>.
@@ -2427,8 +2427,6 @@ public abstract class Completable implements CompletableSource {
 
     /**
      * Converts this Completable into a {@link Maybe}.
-     * <p>
-     * <img width="640" height="293" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Completable.toObservable.png" alt="">
      * <dl>
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code toMaybe} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -2451,6 +2449,8 @@ public abstract class Completable implements CompletableSource {
     /**
      * Returns an Observable which when subscribed to subscribes to this Completable and
      * relays the terminal events to the subscriber.
+     * <p>
+     * <img width="640" height="293" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Completable.toObservable.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code toObservable} does not operate by default on a particular {@link Scheduler}.</dd>
