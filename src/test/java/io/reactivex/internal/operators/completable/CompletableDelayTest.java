@@ -13,17 +13,18 @@
 
 package io.reactivex.internal.operators.completable;
 
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
+import static org.junit.Assert.assertNotEquals;
+
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicReference;
 
-import io.reactivex.functions.Consumer;
 import org.junit.Test;
 
-import io.reactivex.Completable;
-import io.reactivex.schedulers.Schedulers;
-
-import static org.junit.Assert.assertNotEquals;
+import io.reactivex.*;
+import io.reactivex.exceptions.TestException;
+import io.reactivex.functions.*;
+import io.reactivex.observers.TestObserver;
+import io.reactivex.schedulers.*;
 
 public class CompletableDelayTest {
 
@@ -58,4 +59,65 @@ public class CompletableDelayTest {
         assertNotEquals(Thread.currentThread(), thread.get());
     }
 
+    @Test
+    public void disposed() {
+        TestHelper.checkDisposed(Completable.never().delay(1, TimeUnit.MINUTES));
+    }
+
+    @Test
+    public void doubleOnSubscribe() {
+        TestHelper.checkDoubleOnSubscribeCompletable(new Function<Completable, CompletableSource>() {
+            @Override
+            public CompletableSource apply(Completable c) throws Exception {
+                return c.delay(1, TimeUnit.MINUTES);
+            }
+        });
+    }
+
+    @Test
+    public void normal() {
+        Completable.complete()
+        .delay(1, TimeUnit.MILLISECONDS)
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertResult();
+    }
+
+    @Test
+    public void errorNotDelayed() {
+        TestScheduler scheduler = new TestScheduler();
+
+        TestObserver<Void> to = Completable.error(new TestException())
+        .delay(100, TimeUnit.MILLISECONDS, scheduler, false)
+        .test();
+
+        to.assertEmpty();
+
+        scheduler.advanceTimeBy(1, TimeUnit.MILLISECONDS);
+
+        to.assertFailure(TestException.class);
+
+        scheduler.advanceTimeBy(100, TimeUnit.MILLISECONDS);
+
+        to.assertFailure(TestException.class);
+    }
+
+    @Test
+    public void errorDelayed() {
+        TestScheduler scheduler = new TestScheduler();
+
+        TestObserver<Void> to = Completable.error(new TestException())
+        .delay(100, TimeUnit.MILLISECONDS, scheduler, true)
+        .test();
+
+        to.assertEmpty();
+
+        scheduler.advanceTimeBy(1, TimeUnit.MILLISECONDS);
+
+        to.assertEmpty();
+
+        scheduler.advanceTimeBy(99, TimeUnit.MILLISECONDS);
+
+        to.assertFailure(TestException.class);
+    }
 }
