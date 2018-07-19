@@ -14,9 +14,11 @@
 package io.reactivex.internal.operators.completable;
 
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 
 import io.reactivex.*;
-import io.reactivex.disposables.*;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.internal.disposables.DisposableHelper;
 
 public final class CompletableDelay extends Completable {
 
@@ -40,54 +42,70 @@ public final class CompletableDelay extends Completable {
 
     @Override
     protected void subscribeActual(final CompletableObserver s) {
-        final CompositeDisposable set = new CompositeDisposable();
-
-        source.subscribe(new Delay(set, s));
+        source.subscribe(new Delay(s, delay, unit, scheduler, delayError));
     }
 
-    final class Delay implements CompletableObserver {
+    static final class Delay extends AtomicReference<Disposable>
+    implements CompletableObserver, Runnable, Disposable {
 
-        private final CompositeDisposable set;
-        final CompletableObserver s;
+        private static final long serialVersionUID = 465972761105851022L;
 
-        Delay(CompositeDisposable set, CompletableObserver s) {
-            this.set = set;
-            this.s = s;
-        }
+        final CompletableObserver downstream;
 
-        @Override
-        public void onComplete() {
-            set.add(scheduler.scheduleDirect(new OnComplete(), delay, unit));
-        }
+        final long delay;
 
-        @Override
-        public void onError(final Throwable e) {
-            set.add(scheduler.scheduleDirect(new OnError(e), delayError ? delay : 0, unit));
+        final TimeUnit unit;
+
+        final Scheduler scheduler;
+
+        final boolean delayError;
+
+        Throwable error;
+
+        Delay(CompletableObserver downstream, long delay, TimeUnit unit, Scheduler scheduler, boolean delayError) {
+            this.downstream = downstream;
+            this.delay = delay;
+            this.unit = unit;
+            this.scheduler = scheduler;
+            this.delayError = delayError;
         }
 
         @Override
         public void onSubscribe(Disposable d) {
-            set.add(d);
-            s.onSubscribe(set);
-        }
-
-        final class OnComplete implements Runnable {
-            @Override
-            public void run() {
-                s.onComplete();
+            if (DisposableHelper.setOnce(this, d)) {
+                downstream.onSubscribe(this);
             }
         }
 
-        final class OnError implements Runnable {
-            private final Throwable e;
+        @Override
+        public void onComplete() {
+            DisposableHelper.replace(this, scheduler.scheduleDirect(this, delay, unit));
+        }
 
-            OnError(Throwable e) {
-                this.e = e;
-            }
+        @Override
+        public void onError(final Throwable e) {
+            error = e;
+            DisposableHelper.replace(this, scheduler.scheduleDirect(this, delayError ? delay : 0, unit));
+        }
 
-            @Override
-            public void run() {
-                s.onError(e);
+        @Override
+        public void dispose() {
+            DisposableHelper.dispose(this);
+        }
+
+        @Override
+        public boolean isDisposed() {
+            return DisposableHelper.isDisposed(get());
+        }
+
+        @Override
+        public void run() {
+            Throwable e = error;
+            error = null;
+            if (e != null) {
+                downstream.onError(e);
+            } else {
+                downstream.onComplete();
             }
         }
     }
