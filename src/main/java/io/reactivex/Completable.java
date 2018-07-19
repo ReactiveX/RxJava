@@ -2230,6 +2230,8 @@ public abstract class Completable implements CompletableSource {
     /**
      * Returns a Completable which subscribes the child subscriber on the specified scheduler, making
      * sure the subscription side-effects happen on that specific thread of the scheduler.
+     * <p>
+     * <img width="640" height="686" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Completable.subscribeOn.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code subscribeOn} operates on a {@link Scheduler} you specify.</dd>
@@ -2405,6 +2407,8 @@ public abstract class Completable implements CompletableSource {
     /**
      * Returns a Flowable which when subscribed to subscribes to this Completable and
      * relays the terminal events to the subscriber.
+     * <p>
+     * <img width="640" height="585" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Completable.toFlowable.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The returned {@code Flowable} honors the backpressure of the downstream consumer.</dd>
@@ -2427,6 +2431,8 @@ public abstract class Completable implements CompletableSource {
 
     /**
      * Converts this Completable into a {@link Maybe}.
+     * <p>
+     * <img width="640" height="585" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Completable.toMaybe.png" alt="">
      * <dl>
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code toMaybe} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -2471,6 +2477,8 @@ public abstract class Completable implements CompletableSource {
     /**
      * Converts this Completable into a Single which when this Completable completes normally,
      * calls the given supplier and emits its returned value through onSuccess.
+     * <p>
+     * <img width="640" height="583" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Completable.toSingle.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code toSingle} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -2490,6 +2498,8 @@ public abstract class Completable implements CompletableSource {
     /**
      * Converts this Completable into a Single which when this Completable completes normally,
      * emits the given value through onSuccess.
+     * <p>
+     * <img width="640" height="583" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Completable.toSingleDefault.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code toSingleDefault} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -2509,6 +2519,8 @@ public abstract class Completable implements CompletableSource {
     /**
      * Returns a Completable which makes sure when a subscriber cancels the subscription, the
      * dispose is called on the specified scheduler.
+     * <p>
+     * <img width="640" height="716" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Completable.unsubscribeOn.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code unsubscribeOn} calls dispose() of the upstream on the {@link Scheduler} you specify.</dd>
