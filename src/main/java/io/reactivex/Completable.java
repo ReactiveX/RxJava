@@ -577,6 +577,7 @@ public abstract class Completable implements CompletableSource {
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code mergeArray} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dt><b>Error handling:</b></dt>
      *  <dd>If any of the source {@code CompletableSource}s signal a {@code Throwable} via {@code onError}, the resulting
      *  {@code Completable} terminates with that {@code Throwable} and all other source {@code CompletableSource}s are cancelled.
      *  If more than one {@code CompletableSource} signals an error, the resulting {@code Completable} may terminate with the
@@ -653,6 +654,7 @@ public abstract class Completable implements CompletableSource {
      *  and expects the other {@code Publisher} to honor it as well.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code merge} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dt><b>Error handling:</b></dt>
      *  <dd>If any of the source {@code CompletableSource}s signal a {@code Throwable} via {@code onError}, the resulting
      *  {@code Completable} terminates with that {@code Throwable} and all other source {@code CompletableSource}s are cancelled.
      *  If more than one {@code CompletableSource} signals an error, the resulting {@code Completable} may terminate with the
@@ -689,6 +691,7 @@ public abstract class Completable implements CompletableSource {
      *  and expects the other {@code Publisher} to honor it as well.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code merge} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dt><b>Error handling:</b></dt>
      *  <dd>If any of the source {@code CompletableSource}s signal a {@code Throwable} via {@code onError}, the resulting
      *  {@code Completable} terminates with that {@code Throwable} and all other source {@code CompletableSource}s are cancelled.
      *  If more than one {@code CompletableSource} signals an error, the resulting {@code Completable} may terminate with the
