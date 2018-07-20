@@ -284,10 +284,10 @@ Page layout container styles
     margin:10px 0 0 0;
     color:#4E4E4E;
 }
-/*.contentContainer .description dl dd, */.contentContainer .details dl dd, .serializedFormContainer dl dd {
-    margin:5px 0 10px 0px;
+.contentContainer .description dl dd, .contentContainer .details dl dd, .serializedFormContainer dl dd {
+    /* margin:5px 0 10px 0px; */
     font-size:14px;
-    font-family:'DejaVu Sans Mono',monospace;
+    font-family:'DejaVu Serif', Georgia, "Times New Roman", Times, serif;
 }
 .serializedFormContainer dl.nameValue dt {
     margin-left:1px;
