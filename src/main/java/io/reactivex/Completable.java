@@ -264,6 +264,8 @@ public abstract class Completable implements CompletableSource {
     /**
      * Provides an API (via a cold Completable) that bridges the reactive world with the callback-style world.
      * <p>
+     * <img width="640" height="442" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Completable.create.png" alt="">
+     * <p>
      * Example:
      * <pre><code>
      * Completable.create(emitter -&gt; {
@@ -305,6 +307,8 @@ public abstract class Completable implements CompletableSource {
      * Constructs a Completable instance by wrapping the given source callback
      * <strong>without any safeguards; you should manage the lifecycle and response
      * to downstream cancellation/dispose</strong>.
+     * <p>
+     * <img width="640" height="260" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Completable.unsafeCreate.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code unsafeCreate} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -1585,6 +1589,8 @@ public abstract class Completable implements CompletableSource {
      * and providing a new {@code CompletableObserver}, containing the custom operator's intended business logic, that will be
      * used in the subscription process going further upstream.
      * <p>
+     * <img width="640" height="313" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Completable.lift.png" alt="">
+     * <p>
      * Generally, such a new {@code CompletableObserver} will wrap the downstream's {@code CompletableObserver} and forwards the
      * {@code onError} and {@code onComplete} events from the upstream directly or according to the
      * emission pattern the custom operator's business logic requires. In addition, such operator can intercept the
@@ -1831,6 +1837,8 @@ public abstract class Completable implements CompletableSource {
 
     /**
      * Returns a Completable that repeatedly subscribes to this Completable until cancelled.
+     * <p>
+     * <img width="640" height="373" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Completable.repeat.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code repeat} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -1845,6 +1853,8 @@ public abstract class Completable implements CompletableSource {
 
     /**
      * Returns a Completable that subscribes repeatedly at most the given times to this Completable.
+     * <p>
+     * <img width="640" height="408" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Completable.repeat.n.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code repeat} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -1862,6 +1872,8 @@ public abstract class Completable implements CompletableSource {
     /**
      * Returns a Completable that repeatedly subscribes to this Completable so long as the given
      * stop supplier returns false.
+     * <p>
+     * <img width="640" height="381" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Completable.repeatUntil.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code repeatUntil} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -1879,6 +1891,8 @@ public abstract class Completable implements CompletableSource {
     /**
      * Returns a Completable instance that repeats when the Publisher returned by the handler
      * emits an item or completes when this Publisher emits a completed event.
+     * <p>
+     * <img width="640" height="586" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Completable.repeatWhen.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code repeatWhen} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -1897,6 +1911,8 @@ public abstract class Completable implements CompletableSource {
 
     /**
      * Returns a Completable that retries this Completable as long as it emits an onError event.
+     * <p>
+     * <img width="640" height="368" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Completable.retry.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code retry} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -1912,6 +1928,8 @@ public abstract class Completable implements CompletableSource {
     /**
      * Returns a Completable that retries this Completable in case of an error as long as the predicate
      * returns true.
+     * <p>
+     * <img width="640" height="325" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Completable.retry.ff.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code retry} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -1929,6 +1947,8 @@ public abstract class Completable implements CompletableSource {
     /**
      * Returns a Completable that when this Completable emits an error, retries at most the given
      * number of times before giving up and emitting the last error.
+     * <p>
+     * <img width="640" height="451" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Completable.retry.n.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code retry} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -1946,6 +1966,8 @@ public abstract class Completable implements CompletableSource {
     /**
      * Returns a Completable that when this Completable emits an error, retries at most times
      * or until the predicate returns false, whichever happens first and emitting the last error.
+     * <p>
+     * <img width="640" height="361" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Completable.retry.nf.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code retry} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -1968,6 +1990,8 @@ public abstract class Completable implements CompletableSource {
     /**
      * Returns a Completable that when this Completable emits an error, calls the given predicate with
      * the latest exception to decide whether to resubscribe to this or not.
+     * <p>
+     * <img width="640" height="336" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Completable.retry.f.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code retry} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -1987,6 +2011,8 @@ public abstract class Completable implements CompletableSource {
      * Returns a Completable which given a Publisher and when this Completable emits an error, delivers
      * that error through a Flowable and the Publisher should signal a value indicating a retry in response
      * or a terminal event indicating a termination.
+     * <p>
+     * <img width="640" height="586" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Completable.retryWhen.png" alt="">
      * <p>
      * Note that the inner {@code Publisher} returned by the handler function should signal
      * either {@code onNext}, {@code onError} or {@code onComplete} in response to the received
@@ -2030,6 +2056,8 @@ public abstract class Completable implements CompletableSource {
     /**
      * Returns a Completable which first runs the other Completable
      * then this completable if the other completed normally.
+     * <p>
+     * <img width="640" height="437" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Completable.startWith.c.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code startWith} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -2048,6 +2076,8 @@ public abstract class Completable implements CompletableSource {
     /**
      * Returns an Observable which first delivers the events
      * of the other Observable then runs this CompletableConsumable.
+     * <p>
+     * <img width="640" height="289" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Completable.startWith.o.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code startWith} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -2066,6 +2096,8 @@ public abstract class Completable implements CompletableSource {
     /**
      * Returns a Flowable which first delivers the events
      * of the other Publisher then runs this Completable.
+     * <p>
+     * <img width="640" height="250" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Completable.startWith.p.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The returned {@code Flowable} honors the backpressure of the downstream consumer
@@ -2109,6 +2141,8 @@ public abstract class Completable implements CompletableSource {
     /**
      * Subscribes to this CompletableConsumable and returns a Disposable which can be used to cancel
      * the subscription.
+     * <p>
+     * <img width="640" height="352" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Completable.subscribe.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code subscribe} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -2153,6 +2187,8 @@ public abstract class Completable implements CompletableSource {
     /**
      * Subscribes a given CompletableObserver (subclass) to this Completable and returns the given
      * CompletableObserver as is.
+     * <p>
+     * <img width="640" height="349" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Completable.subscribeWith.png" alt="">
      * <p>Usage example:
      * <pre><code>
      * Completable source = Completable.complete().delay(1, TimeUnit.SECONDS);
@@ -2183,6 +2219,8 @@ public abstract class Completable implements CompletableSource {
 
     /**
      * Subscribes to this Completable and calls back either the onError or onComplete functions.
+     * <p>
+     * <img width="640" height="352" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Completable.subscribe.ff.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code subscribe} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -2206,6 +2244,8 @@ public abstract class Completable implements CompletableSource {
     /**
      * Subscribes to this Completable and calls the given Action when this Completable
      * completes normally.
+     * <p>
+     * <img width="640" height="352" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Completable.subscribe.f.png" alt="">
      * <p>
      * If the Completable emits an error, it is wrapped into an
      * {@link io.reactivex.exceptions.OnErrorNotImplementedException OnErrorNotImplementedException}
@@ -2277,6 +2317,8 @@ public abstract class Completable implements CompletableSource {
     /**
      * Returns a Completable that runs this Completable and emits a TimeoutException in case
      * this Completable doesn't complete within the given time.
+     * <p>
+     * <img width="640" height="348" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Completable.timeout.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code timeout} signals the TimeoutException on the {@code computation} {@link Scheduler}.</dd>
@@ -2295,6 +2337,8 @@ public abstract class Completable implements CompletableSource {
     /**
      * Returns a Completable that runs this Completable and switches to the other Completable
      * in case this Completable doesn't complete within the given time.
+     * <p>
+     * <img width="640" height="308" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Completable.timeout.c.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code timeout} subscribes to the other CompletableSource on
@@ -2317,6 +2361,8 @@ public abstract class Completable implements CompletableSource {
      * Returns a Completable that runs this Completable and emits a TimeoutException in case
      * this Completable doesn't complete within the given time while "waiting" on the specified
      * Scheduler.
+     * <p>
+     * <img width="640" height="348" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Completable.timeout.s.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code timeout} signals the TimeoutException on the {@link Scheduler} you specify.</dd>
@@ -2337,6 +2383,8 @@ public abstract class Completable implements CompletableSource {
      * Returns a Completable that runs this Completable and switches to the other Completable
      * in case this Completable doesn't complete within the given time while "waiting" on
      * the specified scheduler.
+     * <p>
+     * <img width="640" height="308" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Completable.timeout.sc.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code timeout} subscribes to the other CompletableSource on
@@ -2542,6 +2590,8 @@ public abstract class Completable implements CompletableSource {
     /**
      * Creates a TestObserver and subscribes
      * it to this Completable.
+     * <p>
+     * <img width="640" height="458" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Completable.test.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code test} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -2561,6 +2611,8 @@ public abstract class Completable implements CompletableSource {
      * Creates a TestObserver optionally in cancelled state, then subscribes it to this Completable.
      * @param cancelled if true, the TestObserver will be cancelled before subscribing to this
      * Completable.
+     * <p>
+     * <img width="640" height="499" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Completable.test.b.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code test} does not operate by default on a particular {@link Scheduler}.</dd>
