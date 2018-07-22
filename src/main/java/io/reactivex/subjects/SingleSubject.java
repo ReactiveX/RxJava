@@ -19,6 +19,7 @@ import io.reactivex.*;
 import io.reactivex.annotations.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.functions.ObjectHelper;
+import io.reactivex.internal.util.ExceptionHelper;
 import io.reactivex.plugins.RxJavaPlugins;
 
 /**
@@ -122,6 +123,11 @@ public final class SingleSubject<T> extends Single<T> implements SingleObserver<
     SingleSubject() {
         once = new AtomicBoolean();
         observers = new AtomicReference<SingleDisposable<T>[]>(EMPTY);
+    }
+
+    @Override
+    protected final T blockingGetStored() {
+        return getValue();
     }
 
     @Override

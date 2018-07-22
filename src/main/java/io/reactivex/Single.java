@@ -2657,9 +2657,23 @@ public abstract class Single<T> implements SingleSource<T> {
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final T blockingGet() {
+        T value = blockingGetStored();
+        if (value != null) {
+          return value;
+        }
         BlockingMultiObserver<T> observer = new BlockingMultiObserver<T>();
         subscribe(observer);
         return observer.blockingGet();
+    }
+
+    /**
+     * Returns the {@code Single}s already stored value, if implemented by a subclass. This may be
+     * used to quickly return known values immediately without creating a new blocking subscription
+     * in calls to {@link blockingGet}.
+     */
+    @Nullable
+    protected T blockingGetStored() {
+      return null;
     }
 
     /**
