@@ -9414,7 +9414,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *     &#64;Override
      *     public void onSubscribe(Disposable s) {
      *         if (upstream != null) {
-     *             s.cancel();
+     *             s.dispose();
      *         } else {
      *             upstream = s;
      *             downstream.onSubscribe(this);
@@ -9473,10 +9473,10 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * //         Such class may define additional parameters to be submitted to
      * //         the custom consumer type.
      *
-     * final class CustomOperator&lt;T&gt; implements ObservableOperator&lt;String&gt; {
+     * final class CustomOperator&lt;T&gt; implements ObservableOperator&lt;String, T&gt; {
      *     &#64;Override
-     *     public Observer&lt;? super String&gt; apply(Observer&lt;? super T&gt; upstream) {
-     *         return new CustomObserver&lt;T&gt;(upstream);
+     *     public Observer&lt;T&gt; apply(Observer&lt;? super String&gt; downstream) {
+     *         return new CustomObserver&lt;T&gt;(downstream);
      *     }
      * }
      *
