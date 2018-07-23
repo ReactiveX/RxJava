@@ -2,6 +2,40 @@
 
 The changelog of version 1.x can be found at https://github.com/ReactiveX/RxJava/blob/1.x/CHANGES.md
 
+### Version 2.1.17 - July 23, 2018 ([Maven](http://search.maven.org/#artifactdetails%7Cio.reactivex.rxjava2%7Crxjava%7C2.1.17%7C))
+
+#### API changes
+
+  - [Pull 6079](https://github.com/ReactiveX/RxJava/pull/6079): Add `Completable.takeUntil(Completable)` operator.
+  - [Pull 6085](https://github.com/ReactiveX/RxJava/pull/6085): Add `Completable.fromMaybe` operator.
+
+#### Performance improvements
+
+  - [Pull 6096](https://github.com/ReactiveX/RxJava/pull/6096): Improve `Completable.delay` operator internals.
+
+#### Documentation changes
+- [Pull 6066](https://github.com/ReactiveX/RxJava/pull/6066): Fix links for `Single` class.
+- [Pull 6070](https://github.com/ReactiveX/RxJava/pull/6070): Adjust JavaDocs `dl`/`dd` entry stylesheet.
+- [Pull 6080](https://github.com/ReactiveX/RxJava/pull/6080): Improve class JavaDoc of `Single`, `Maybe` and `Completable`.
+- [Pull 6102](https://github.com/ReactiveX/RxJava/pull/6102): Adjust JavaDoc stylesheet of  `dt`/`dd` within the method details.
+- [Pull 6103](https://github.com/ReactiveX/RxJava/pull/6103): Fix `Completable` `mergeX` JavaDoc missing `dt` before `dd`.
+- [Pull 6104](https://github.com/ReactiveX/RxJava/pull/6104): Fixing javadoc's code example of `Observable#lift`.
+- Marble diagrams ([Tracking issue 5789](https://github.com/ReactiveX/RxJava/issues/5789))
+  - [Pull 6074](https://github.com/ReactiveX/RxJava/pull/6074): `Single.never` method.
+  - [Pull 6075](https://github.com/ReactiveX/RxJava/pull/6075): `Single.filter` method.
+  - [Pull 6078](https://github.com/ReactiveX/RxJava/pull/6078): `Maybe.hide` marble diagram.
+  - [Pull 6076](https://github.com/ReactiveX/RxJava/pull/6076): `Single.delay` method.
+  - [Pull 6077](https://github.com/ReactiveX/RxJava/pull/6077): `Single.hide` operator.
+  - [Pull 6083](https://github.com/ReactiveX/RxJava/pull/6083): Add `Completable` marble diagrams (07/17a).
+  - [Pull 6081](https://github.com/ReactiveX/RxJava/pull/6081): `Single.repeat` operators.
+  - [Pull 6085](https://github.com/ReactiveX/RxJava/pull/6085): More `Completable` marbles.
+  - [Pull 6084](https://github.com/ReactiveX/RxJava/pull/6084): `Single.repeatUntil` operator.
+  - [Pull 6090](https://github.com/ReactiveX/RxJava/pull/6090): Add missing `Completable` marbles (+17, 07/18a).
+  - [Pull 6091](https://github.com/ReactiveX/RxJava/pull/6091): `Single.amb` operators.
+  - [Pull 6097](https://github.com/ReactiveX/RxJava/pull/6097): Add missing `Completable` marbles (+19, 07/19a).
+  - [Pull 6098](https://github.com/ReactiveX/RxJava/pull/6098): Several more `Completable` marbles (7/19b).
+  - [Pull 6101](https://github.com/ReactiveX/RxJava/pull/6101): Final set of missing `Completable` marbles (+26).
+  
 ### Version 2.1.16 - June 26, 2018 ([Maven](http://search.maven.org/#artifactdetails%7Cio.reactivex.rxjava2%7Crxjava%7C2.1.16%7C))
 
 This is a hotfix release for a late-identified issue with `concatMapMaybe` and `concatMapSingle`.
