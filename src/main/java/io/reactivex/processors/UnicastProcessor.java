@@ -16,7 +16,6 @@ package io.reactivex.processors;
 import io.reactivex.annotations.CheckReturnValue;
 import java.util.concurrent.atomic.*;
 
-import io.reactivex.annotations.Experimental;
 import io.reactivex.annotations.Nullable;
 import io.reactivex.annotations.NonNull;
 import org.reactivestreams.*;
@@ -198,13 +197,13 @@ public final class UnicastProcessor<T> extends FlowableProcessor<T> {
 
     /**
      * Creates an UnicastProcessor with default internal buffer capacity hint and delay error flag.
+     * <p>History: 2.0.8 - experimental
      * @param <T> the value type
      * @param delayError deliver pending onNext events before onError
      * @return an UnicastProcessor instance
-     * @since 2.0.8 - experimental
+     * @since 2.2
      */
     @CheckReturnValue
-    @Experimental
     @NonNull
     public static <T> UnicastProcessor<T> create(boolean delayError) {
         return new UnicastProcessor<T>(bufferSize(), null, delayError);
@@ -235,16 +234,15 @@ public final class UnicastProcessor<T> extends FlowableProcessor<T> {
      *
      * <p>The callback, if not null, is called exactly once and
      * non-overlapped with any active replay.
-     *
+     * <p>History: 2.0.8 - experimental
      * @param <T> the value type
      * @param capacityHint the hint to size the internal unbounded buffer
      * @param onCancelled the non null callback
      * @param delayError deliver pending onNext events before onError
      * @return an UnicastProcessor instance
-     * @since 2.0.8 - experimental
+     * @since 2.2
      */
     @CheckReturnValue
-    @Experimental
     @NonNull
     public static <T> UnicastProcessor<T> create(int capacityHint, Runnable onCancelled, boolean delayError) {
         ObjectHelper.requireNonNull(onCancelled, "onTerminate");
@@ -274,10 +272,11 @@ public final class UnicastProcessor<T> extends FlowableProcessor<T> {
     /**
      * Creates an UnicastProcessor with the given capacity hint and callback
      * for when the Processor is terminated normally or its single Subscriber cancels.
+     * <p>History: 2.0.8 - experimental
      * @param capacityHint the capacity hint for the internal, unbounded queue
      * @param onTerminate the callback to run when the Processor is terminated or cancelled, null not allowed
      * @param delayError deliver pending onNext events before onError
-     * @since 2.0.8 - experimental
+     * @since 2.2
      */
     UnicastProcessor(int capacityHint, Runnable onTerminate, boolean delayError) {
         this.queue = new SpscLinkedArrayQueue<T>(ObjectHelper.verifyPositive(capacityHint, "capacityHint"));

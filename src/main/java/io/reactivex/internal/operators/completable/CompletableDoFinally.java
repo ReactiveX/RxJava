@@ -16,7 +16,6 @@ package io.reactivex.internal.operators.completable;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import io.reactivex.*;
-import io.reactivex.annotations.Experimental;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.Action;
@@ -25,10 +24,9 @@ import io.reactivex.plugins.RxJavaPlugins;
 
 /**
  * Execute an action after an onError, onComplete or a dispose event.
- *
- * @since 2.0.1 - experimental
+ * <p>History: 2.0.1 - experimental
+ * @since 2.1
  */
-@Experimental
 public final class CompletableDoFinally extends Completable {
 
     final CompletableSource source;

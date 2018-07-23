@@ -23,9 +23,9 @@ import io.reactivex.internal.util.*;
 /**
  * Merges an Observable and a Completable by emitting the items of the Observable and waiting until
  * both the Observable and Completable complete normally.
- *
+ * <p>History: 2.1.10 - experimental
  * @param <T> the element type of the Observable
- * @since 2.1.10 - experimental
+ * @since 2.2
  */
 public final class ObservableMergeWithCompletable<T> extends AbstractObservableWithUpstream<T, T> {
 

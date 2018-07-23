@@ -94,11 +94,11 @@ public interface FlowableEmitter<T> extends Emitter<T> {
      * <p>
      * Unlike {@link #onError(Throwable)}, the {@code RxJavaPlugins.onError} is not called
      * if the error could not be delivered.
+     * <p>History: 2.1.1 - experimental
      * @param t the throwable error to signal if possible
      * @return true if successful, false if the downstream is not able to accept further
      * events
-     * @since 2.1.1 - experimental
+     * @since 2.2
      */
-    @Experimental
     boolean tryOnError(@NonNull Throwable t);
 }

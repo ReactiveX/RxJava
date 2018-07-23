@@ -431,9 +431,9 @@ public final class ReplaySubject<T> extends Subject<T> {
      * <p>
      * The method must be called sequentially, similar to the standard
      * {@code onXXX} methods.
-     * @since 2.1.11 - experimental
+     * <p>History: 2.1.11 - experimental
+     * @since 2.2
      */
-    @Experimental
     public void cleanupBuffer() {
         buffer.trimHead();
     }

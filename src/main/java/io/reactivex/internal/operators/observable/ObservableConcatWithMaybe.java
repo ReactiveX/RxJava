@@ -22,8 +22,9 @@ import io.reactivex.internal.disposables.DisposableHelper;
 /**
  * Subscribe to a main Observable first, then when it completes normally, subscribe to a Maybe,
  * signal its success value followed by a completion or signal its error or completion signal as is.
+ * <p>History: 2.1.10 - experimental
  * @param <T> the element type of the main source and output type
- * @since 2.1.10 - experimental
+ * @since 2.2
  */
 public final class ObservableConcatWithMaybe<T> extends AbstractObservableWithUpstream<T, T> {
 

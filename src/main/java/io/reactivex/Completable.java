@@ -458,10 +458,12 @@ public abstract class Completable implements CompletableSource {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code fromMaybe} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
+     * <p>History: 2.1.17 - beta
      * @param <T> the value type of the {@link MaybeSource} element
      * @param maybe the Maybe instance to subscribe to, not null
      * @return the new Completable instance
      * @throws NullPointerException if single is null
+     * @since 2.2
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -1138,14 +1140,13 @@ public abstract class Completable implements CompletableSource {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code as} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     *
+     * <p>History: 2.1.7 - experimental
      * @param <R> the resulting object type
      * @param converter the function that receives the current Completable instance and returns a value
      * @return the converted value
      * @throws NullPointerException if converter is null
-     * @since 2.1.7 - experimental
+     * @since 2.2
      */
-    @Experimental
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> R as(@NonNull CompletableConverter<? extends R> converter) {
@@ -1827,11 +1828,11 @@ public abstract class Completable implements CompletableSource {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code onTerminateDetach} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
+     * <p>History: 2.1.5 - experimental
      * @return a Completable which nulls out references to the upstream producer and downstream CompletableObserver if
      * the sequence is terminated or downstream calls dispose()
-     * @since 2.1.5 - experimental
+     * @since 2.2
      */
-    @Experimental
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Completable onTerminateDetach() {
@@ -1975,15 +1976,15 @@ public abstract class Completable implements CompletableSource {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code retry} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
+     * <p>History: 2.1.8 - experimental
      * @param times the number of times the returned Completable should retry this Completable
      * @param predicate the predicate that is called with the latest throwable and should return
      * true to indicate the returned Completable should resubscribe to this Completable.
      * @return the new Completable instance
      * @throws NullPointerException if predicate is null
      * @throws IllegalArgumentException if times is negative
-     * @since 2.1.8 - experimental
+     * @since 2.2
      */
-    @Experimental
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Completable retry(long times, Predicate<? super Throwable> predicate) {
@@ -2304,12 +2305,12 @@ public abstract class Completable implements CompletableSource {
      *  is signaled to the downstream and the other error is signaled to the global
      *  error handler via {@link RxJavaPlugins#onError(Throwable)}.</dd>
      * </dl>
+     * <p>History: 2.1.17 - experimental
      * @param other the other completable source to observe for the terminal signals
      * @return the new Completable instance
-     * @since 2.1.17 - experimental
+     * @since 2.2
      */
     @CheckReturnValue
-    @Experimental
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Completable takeUntil(CompletableSource other) {
         ObjectHelper.requireNonNull(other, "other is null");

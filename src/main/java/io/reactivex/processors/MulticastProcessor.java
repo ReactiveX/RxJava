@@ -123,10 +123,10 @@ import io.reactivex.plugins.RxJavaPlugins;
 
     mp2.test().assertResult(1, 2, 3, 4);
  * </code></pre>
+ * <p>History: 2.1.14 - experimental
  * @param <T> the input and output value type
- * @since 2.1.14 - experimental
+ * @since 2.2
  */
-@Experimental
 @BackpressureSupport(BackpressureKind.FULL)
 @SchedulerSupport(SchedulerSupport.NONE)
 public final class MulticastProcessor<T> extends FlowableProcessor<T> {

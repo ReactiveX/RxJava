@@ -24,8 +24,9 @@ import io.reactivex.plugins.RxJavaPlugins;
 
 /**
  * Calls an action after pushing the current item or an error to the downstream.
+ * <p>History: 2.0.6 - experimental
  * @param <T> the value type
- * @since 2.0.6 - experimental
+ * @since 2.1
  */
 public final class SingleDoAfterTerminate<T> extends Single<T> {
 

@@ -1104,11 +1104,10 @@ public final class RxJavaPlugins {
 
     /**
      * Sets the specific hook function.
-     * <p>History: 2.0.6 - experimental
+     * <p>History: 2.0.6 - experimental; 2.1 - beta
      * @param handler the hook function to set, null allowed
-     * @since 2.1 - beta
+     * @since 2.2
      */
-    @Beta
     @SuppressWarnings("rawtypes")
     public static void setOnParallelAssembly(@Nullable Function<? super ParallelFlowable, ? extends ParallelFlowable> handler) {
         if (lockdown) {
@@ -1119,11 +1118,10 @@ public final class RxJavaPlugins {
 
     /**
      * Returns the current hook function.
-     * <p>History: 2.0.6 - experimental
+     * <p>History: 2.0.6 - experimental; 2.1 - beta
      * @return the hook function, may be null
-     * @since 2.1 - beta
+     * @since 2.2
      */
-    @Beta
     @SuppressWarnings("rawtypes")
     @Nullable
     public static Function<? super ParallelFlowable, ? extends ParallelFlowable> getOnParallelAssembly() {
@@ -1132,13 +1130,12 @@ public final class RxJavaPlugins {
 
     /**
      * Calls the associated hook function.
-     * <p>History: 2.0.6 - experimental
+     * <p>History: 2.0.6 - experimental; 2.1 - beta
      * @param <T> the value type of the source
      * @param source the hook's input value
      * @return the value returned by the hook
-     * @since 2.1 - beta
+     * @since 2.2
      */
-    @Beta
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @NonNull
     public static <T> ParallelFlowable<T> onAssembly(@NonNull ParallelFlowable<T> source) {

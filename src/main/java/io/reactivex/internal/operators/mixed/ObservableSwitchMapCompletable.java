@@ -16,7 +16,6 @@ package io.reactivex.internal.operators.mixed;
 import java.util.concurrent.atomic.AtomicReference;
 
 import io.reactivex.*;
-import io.reactivex.annotations.Experimental;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.Function;
@@ -29,11 +28,10 @@ import io.reactivex.plugins.RxJavaPlugins;
  * Maps the upstream values into {@link CompletableSource}s, subscribes to the newer one while
  * disposing the subscription to the previous {@code CompletableSource}, thus keeping at most one
  * active {@code CompletableSource} running.
- *
+ * <p>History: 2.1.11 - experimental
  * @param <T> the upstream value type
- * @since 2.1.11 - experimental
+ * @since 2.2
  */
-@Experimental
 public final class ObservableSwitchMapCompletable<T> extends Completable {
 
     final Observable<T> source;

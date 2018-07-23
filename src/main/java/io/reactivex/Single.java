@@ -1060,16 +1060,16 @@ public abstract class Single<T> implements SingleSource<T> {
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code mergeDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
+     * <p>History: 2.1.9 - experimental
      * @param <T> the common and resulting value type
      * @param sources the Iterable sequence of SingleSource sources
      * @return the new Flowable instance
-     * @since 2.1.9 - experimental
      * @see #merge(Iterable)
+     * @since 2.2
      */
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
-    @Experimental
     public static <T> Flowable<T> mergeDelayError(Iterable<? extends SingleSource<? extends T>> sources) {
         return mergeDelayError(Flowable.fromIterable(sources));
     }
@@ -1083,17 +1083,17 @@ public abstract class Single<T> implements SingleSource<T> {
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code mergeDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
+     * <p>History: 2.1.9 - experimental
      * @param <T> the common and resulting value type
      * @param sources the Flowable sequence of SingleSource sources
      * @return the new Flowable instance
      * @see #merge(Publisher)
-     * @since 2.1.9 - experimental
+     * @since 2.2
      */
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    @Experimental
     public static <T> Flowable<T> mergeDelayError(Publisher<? extends SingleSource<? extends T>> sources) {
         ObjectHelper.requireNonNull(sources, "sources is null");
         return RxJavaPlugins.onAssembly(new FlowableFlatMapPublisher(sources, SingleInternalHelper.toFlowable(), true, Integer.MAX_VALUE, Flowable.bufferSize()));
@@ -1114,7 +1114,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code mergeDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     *
+     * <p>History: 2.1.9 - experimental
      * @param <T> the common value type
      * @param source1
      *            a SingleSource to be merged
@@ -1123,13 +1123,12 @@ public abstract class Single<T> implements SingleSource<T> {
      * @return a Flowable that emits all of the items emitted by the source Singles
      * @see <a href="http://reactivex.io/documentation/operators/merge.html">ReactiveX operators documentation: Merge</a>
      * @see #merge(SingleSource, SingleSource)
-     * @since 2.1.9 - experimental
+     * @since 2.2
      */
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     @SuppressWarnings("unchecked")
-    @Experimental
     public static <T> Flowable<T> mergeDelayError(
             SingleSource<? extends T> source1, SingleSource<? extends T> source2
      ) {
@@ -1152,7 +1151,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code mergeDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     *
+     * <p>History: 2.1.9 - experimental
      * @param <T> the common value type
      * @param source1
      *            a SingleSource to be merged
@@ -1163,13 +1162,12 @@ public abstract class Single<T> implements SingleSource<T> {
      * @return a Flowable that emits all of the items emitted by the source Singles
      * @see <a href="http://reactivex.io/documentation/operators/merge.html">ReactiveX operators documentation: Merge</a>
      * @see #merge(SingleSource, SingleSource, SingleSource)
-     * @since 2.1.9 - experimental
+     * @since 2.2
      */
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     @SuppressWarnings("unchecked")
-    @Experimental
     public static <T> Flowable<T> mergeDelayError(
             SingleSource<? extends T> source1, SingleSource<? extends T> source2,
             SingleSource<? extends T> source3
@@ -1194,7 +1192,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code mergeDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     *
+     * <p>History: 2.1.9 - experimental
      * @param <T> the common value type
      * @param source1
      *            a SingleSource to be merged
@@ -1207,13 +1205,12 @@ public abstract class Single<T> implements SingleSource<T> {
      * @return a Flowable that emits all of the items emitted by the source Singles
      * @see <a href="http://reactivex.io/documentation/operators/merge.html">ReactiveX operators documentation: Merge</a>
      * @see #merge(SingleSource, SingleSource, SingleSource, SingleSource)
-     * @since 2.1.9 - experimental
+     * @since 2.2
      */
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     @SuppressWarnings("unchecked")
-    @Experimental
     public static <T> Flowable<T> mergeDelayError(
             SingleSource<? extends T> source1, SingleSource<? extends T> source2,
             SingleSource<? extends T> source3, SingleSource<? extends T> source4
@@ -1925,14 +1922,13 @@ public abstract class Single<T> implements SingleSource<T> {
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code as} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     *
+     * <p>History: 2.1.7 - experimental
      * @param <R> the resulting object type
      * @param converter the function that receives the current Single instance and returns a value
      * @return the converted value
      * @throws NullPointerException if converter is null
-     * @since 2.1.7 - experimental
+     * @since 2.2
      */
-    @Experimental
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final <R> R as(@NonNull SingleConverter<T, ? extends R> converter) {
@@ -2073,14 +2069,13 @@ public abstract class Single<T> implements SingleSource<T> {
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code delay} operates by default on the {@code computation} {@link Scheduler}.</dd>
      * </dl>
-     *
+     * <p>History: 2.1.5 - experimental
      * @param time the amount of time the success or error signal should be delayed for
      * @param unit the time unit
      * @param delayError if true, both success and error signals are delayed. if false, only success signals are delayed.
      * @return the new Single instance
-     * @since 2.1.5 - experimental
+     * @since 2.2
      */
-    @Experimental
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.COMPUTATION)
     public final Single<T> delay(long time, TimeUnit unit, boolean delayError) {
@@ -2120,7 +2115,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * <dt><b>Scheduler:</b></dt>
      * <dd>you specify the {@link Scheduler} where the non-blocking wait and emission happens</dd>
      * </dl>
-     *
+     * <p>History: 2.1.5 - experimental
      * @param time the amount of time the success or error signal should be delayed for
      * @param unit the time unit
      * @param scheduler the target scheduler to use for the non-blocking wait and emission
@@ -2129,9 +2124,8 @@ public abstract class Single<T> implements SingleSource<T> {
      * @throws NullPointerException
      *             if unit is null, or
      *             if scheduler is null
-     * @since 2.1.5 - experimental
+     * @since 2.2
      */
-    @Experimental
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.CUSTOM)
     public final Single<T> delay(final long time, final TimeUnit unit, final Scheduler scheduler, boolean delayError) {
@@ -3052,11 +3046,11 @@ public abstract class Single<T> implements SingleSource<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code onTerminateDetach} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
+     * <p>History: 2.1.5 - experimental
      * @return a Single which nulls out references to the upstream producer and downstream SingleObserver if
      * the sequence is terminated or downstream calls dispose()
-     * @since 2.1.5 - experimental
+     * @since 2.2
      */
-    @Experimental
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Single<T> onTerminateDetach() {
@@ -3210,13 +3204,13 @@ public abstract class Single<T> implements SingleSource<T> {
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code retry} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
+     * <p>History: 2.1.8 - experimental
      * @param times the number of times to resubscribe if the current Single fails
      * @param predicate the predicate called with the failure Throwable
      *                  and should return true if a resubscription should happen
      * @return the new Single instance
-     * @since 2.1.8 - experimental
+     * @since 2.2
      */
-    @Experimental
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Single<T> retry(long times, Predicate<? super Throwable> predicate) {
@@ -3798,14 +3792,14 @@ public abstract class Single<T> implements SingleSource<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code unsubscribeOn} calls dispose() of the upstream on the {@link Scheduler} you specify.</dd>
      * </dl>
+     * <p>History: 2.0.9 - experimental
      * @param scheduler the target scheduler where to execute the cancellation
      * @return the new Single instance
      * @throws NullPointerException if scheduler is null
-     * @since 2.0.9 - experimental
+     * @since 2.2
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.CUSTOM)
-    @Experimental
     public final Single<T> unsubscribeOn(final Scheduler scheduler) {
         ObjectHelper.requireNonNull(scheduler, "scheduler is null");
         return RxJavaPlugins.onAssembly(new SingleUnsubscribeOn<T>(this, scheduler));

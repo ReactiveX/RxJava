@@ -25,11 +25,10 @@ import io.reactivex.plugins.RxJavaPlugins;
 
 /**
  * Execute an action after an onError, onComplete or a cancel event.
- *
+ * <p>History: 2.0.1 - experimental
  * @param <T> the value type
- * @since 2.0.1 - experimental
+ * @since 2.1
  */
-@Experimental
 public final class FlowableDoFinally<T> extends AbstractFlowableWithUpstream<T, T> {
 
     final Action onFinally;

@@ -26,10 +26,10 @@ import io.reactivex.plugins.RxJavaPlugins;
 /**
  * Maps each 'rail' of the source ParallelFlowable with a mapper function
  * and handle any failure based on a handler function.
- *
+ * <p>History: 2.0.8 - experimental
  * @param <T> the input value type
  * @param <R> the output value type
- * @since 2.0.8 - experimental
+ * @since 2.2
  */
 public final class ParallelMapTry<T, R> extends ParallelFlowable<R> {
 

@@ -17,13 +17,11 @@ import io.reactivex.annotations.*;
 
 /**
  * Interface to compose ParallelFlowable.
- *
+ * <p>History: 2.0.8 - experimental
  * @param <Upstream> the upstream value type
  * @param <Downstream> the downstream value type
- * 
- * @since 2.0.8 - experimental
+ * @since 2.2
  */
-@Experimental
 public interface ParallelTransformer<Upstream, Downstream> {
     /**
      * Applies a function to the upstream ParallelFlowable and returns a ParallelFlowable with

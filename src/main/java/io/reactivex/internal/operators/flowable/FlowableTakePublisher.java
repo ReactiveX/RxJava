@@ -20,9 +20,9 @@ import io.reactivex.internal.operators.flowable.FlowableTake.TakeSubscriber;
 
 /**
  * Take with a generic Publisher source.
- *
+ * <p>History: 2.0.7 - experimental
  * @param <T> the value type
- * @since 2.0.7 - experimental
+ * @since 2.1
  */
 public final class FlowableTakePublisher<T> extends Flowable<T> {
 

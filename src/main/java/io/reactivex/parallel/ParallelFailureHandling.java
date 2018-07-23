@@ -13,14 +13,13 @@
 
 package io.reactivex.parallel;
 
-import io.reactivex.annotations.Experimental;
 import io.reactivex.functions.BiFunction;
 
 /**
  * Enumerations for handling failure within a parallel operator.
- * @since 2.0.8 - experimental
+ * <p>History: 2.0.8 - experimental
+ * @since 2.2
  */
-@Experimental
 public enum ParallelFailureHandling implements BiFunction<Long, Throwable, ParallelFailureHandling> {
     /**
      * The current rail is stopped and the error is dropped.
