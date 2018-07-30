@@ -5392,14 +5392,13 @@ public abstract class Flowable<T> implements Publisher<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code as} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     *
+     * <p>History: 2.1.7 - experimental
      * @param <R> the resulting object type
      * @param converter the function that receives the current Flowable instance and returns a value
      * @return the converted value
      * @throws NullPointerException if converter is null
-     * @since 2.1.7 - experimental
+     * @since 2.2
      */
-    @Experimental
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.SPECIAL)
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -5870,15 +5869,15 @@ public abstract class Flowable<T> implements Publisher<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code blockingSubscribe} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
+     * <p>History: 2.1.15 - experimental
      * @param onNext the callback action for each source value
      * @param bufferSize the size of the buffer
-     * @since 2.1.15 - experimental
      * @see #blockingSubscribe(Consumer, Consumer)
      * @see #blockingSubscribe(Consumer, Consumer, Action)
+     * @since 2.2
      */
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
-    @Experimental
     public final void blockingSubscribe(Consumer<? super T> onNext, int bufferSize) {
         FlowableBlockingSubscribe.subscribe(this, onNext, Functions.ON_ERROR_MISSING, Functions.EMPTY_ACTION, bufferSize);
     }
@@ -5920,15 +5919,15 @@ public abstract class Flowable<T> implements Publisher<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code blockingSubscribe} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
+     * <p>History: 2.1.15 - experimental
      * @param onNext the callback action for each source value
      * @param onError the callback action for an error event
      * @param bufferSize the size of the buffer
-     * @since 2.1.15 - experimental
+     * @since 2.2
      * @see #blockingSubscribe(Consumer, Consumer, Action)
      */
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
-    @Experimental
     public final void blockingSubscribe(Consumer<? super T> onNext, Consumer<? super Throwable> onError,
         int bufferSize) {
         FlowableBlockingSubscribe.subscribe(this, onNext, onError, Functions.EMPTY_ACTION, bufferSize);
@@ -5971,15 +5970,15 @@ public abstract class Flowable<T> implements Publisher<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code blockingSubscribe} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
+     * <p>History: 2.1.15 - experimental
      * @param onNext the callback action for each source value
      * @param onError the callback action for an error event
      * @param onComplete the callback action for the completion event.
      * @param bufferSize the size of the buffer
-     * @since 2.1.15 - experimental
+     * @since 2.2
      */
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
-    @Experimental
     public final void blockingSubscribe(Consumer<? super T> onNext, Consumer<? super Throwable> onError, Action onComplete,
         int bufferSize) {
         FlowableBlockingSubscribe.subscribe(this, onNext, onError, onComplete, bufferSize);
@@ -7067,17 +7066,17 @@ public abstract class Flowable<T> implements Publisher<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code concatMapCompletable} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
+     * <p>History: 2.1.11 - experimental
      * @param mapper the function called with the upstream item and should return
      *               a {@code CompletableSource} to become the next source to
      *               be subscribed to
      * @return a new Completable instance
-     * @since 2.1.11 - experimental
      * @see #concatMapCompletableDelayError(Function)
+     * @since 2.2
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     @BackpressureSupport(BackpressureKind.FULL)
-    @Experimental
     public final Completable concatMapCompletable(Function<? super T, ? extends CompletableSource> mapper) {
         return concatMapCompletable(mapper, 2);
     }
@@ -7094,6 +7093,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code concatMapCompletable} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
+     * <p>History: 2.1.11 - experimental
      * @param mapper the function called with the upstream item and should return
      *               a {@code CompletableSource} to become the next source to
      *               be subscribed to
@@ -7102,13 +7102,12 @@ public abstract class Flowable<T> implements Publisher<T> {
      *                 The operator replenishes after half of the prefetch amount has been consumed
      *                 and turned into {@code CompletableSource}s.
      * @return a new Completable instance
-     * @since 2.1.11 - experimental
      * @see #concatMapCompletableDelayError(Function, boolean, int)
+     * @since 2.2
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     @BackpressureSupport(BackpressureKind.FULL)
-    @Experimental
     public final Completable concatMapCompletable(Function<? super T, ? extends CompletableSource> mapper, int prefetch) {
         ObjectHelper.requireNonNull(mapper, "mapper is null");
         ObjectHelper.verifyPositive(prefetch, "prefetch");
@@ -7128,17 +7127,17 @@ public abstract class Flowable<T> implements Publisher<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code concatMapCompletableDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
+     * <p>History: 2.1.11 - experimental
      * @param mapper the function called with the upstream item and should return
      *               a {@code CompletableSource} to become the next source to
      *               be subscribed to
      * @return a new Completable instance
-     * @since 2.1.11 - experimental
      * @see #concatMapCompletable(Function, int)
+     * @since 2.2
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     @BackpressureSupport(BackpressureKind.FULL)
-    @Experimental
     public final Completable concatMapCompletableDelayError(Function<? super T, ? extends CompletableSource> mapper) {
         return concatMapCompletableDelayError(mapper, true, 2);
     }
@@ -7156,6 +7155,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code concatMapCompletableDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
+     * <p>History: 2.1.11 - experimental
      * @param mapper the function called with the upstream item and should return
      *               a {@code CompletableSource} to become the next source to
      *               be subscribed to
@@ -7166,13 +7166,12 @@ public abstract class Flowable<T> implements Publisher<T> {
      *                   {@code CompletableSource} terminates and only then is
      *                   it emitted to the downstream.
      * @return a new Completable instance
-     * @since 2.1.11 - experimental
      * @see #concatMapCompletable(Function)
+     * @since 2.2
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     @BackpressureSupport(BackpressureKind.FULL)
-    @Experimental
     public final Completable concatMapCompletableDelayError(Function<? super T, ? extends CompletableSource> mapper, boolean tillTheEnd) {
         return concatMapCompletableDelayError(mapper, tillTheEnd, 2);
     }
@@ -7190,6 +7189,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code concatMapCompletableDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
+     * <p>History: 2.1.11 - experimental
      * @param mapper the function called with the upstream item and should return
      *               a {@code CompletableSource} to become the next source to
      *               be subscribed to
@@ -7204,13 +7204,12 @@ public abstract class Flowable<T> implements Publisher<T> {
      *                 The operator replenishes after half of the prefetch amount has been consumed
      *                 and turned into {@code CompletableSource}s.
      * @return a new Completable instance
-     * @since 2.1.11 - experimental
      * @see #concatMapCompletable(Function, int)
+     * @since 2.2
      */
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     @BackpressureSupport(BackpressureKind.FULL)
-    @Experimental
     public final Completable concatMapCompletableDelayError(Function<? super T, ? extends CompletableSource> mapper, boolean tillTheEnd, int prefetch) {
         ObjectHelper.requireNonNull(mapper, "mapper is null");
         ObjectHelper.verifyPositive(prefetch, "prefetch");
@@ -7495,19 +7494,19 @@ public abstract class Flowable<T> implements Publisher<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code concatMapMaybe} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
+     * <p>History: 2.1.11 - experimental
      * @param <R> the result type of the inner {@code MaybeSource}s
      * @param mapper the function called with the upstream item and should return
      *               a {@code MaybeSource} to become the next source to
      *               be subscribed to
      * @return a new Flowable instance
-     * @since 2.1.11 - experimental
      * @see #concatMapMaybeDelayError(Function)
      * @see #concatMapMaybe(Function, int)
+     * @since 2.2
      */
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
-    @Experimental
     public final <R> Flowable<R> concatMapMaybe(Function<? super T, ? extends MaybeSource<? extends R>> mapper) {
         return concatMapMaybe(mapper, 2);
     }
@@ -7526,6 +7525,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code concatMapMaybe} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
+     * <p>History: 2.1.11 - experimental
      * @param <R> the result type of the inner {@code MaybeSource}s
      * @param mapper the function called with the upstream item and should return
      *               a {@code MaybeSource} to become the next source to
@@ -7535,14 +7535,13 @@ public abstract class Flowable<T> implements Publisher<T> {
      *                 The operator replenishes after half of the prefetch amount has been consumed
      *                 and turned into {@code MaybeSource}s.
      * @return a new Flowable instance
-     * @since 2.1.11 - experimental
      * @see #concatMapMaybe(Function)
      * @see #concatMapMaybeDelayError(Function, boolean, int)
+     * @since 2.2
      */
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
-    @Experimental
     public final <R> Flowable<R> concatMapMaybe(Function<? super T, ? extends MaybeSource<? extends R>> mapper, int prefetch) {
         ObjectHelper.requireNonNull(mapper, "mapper is null");
         ObjectHelper.verifyPositive(prefetch, "prefetch");
@@ -7563,19 +7562,19 @@ public abstract class Flowable<T> implements Publisher<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code concatMapMaybeDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
+     * <p>History: 2.1.11 - experimental
      * @param <R> the result type of the inner {@code MaybeSource}s
      * @param mapper the function called with the upstream item and should return
      *               a {@code MaybeSource} to become the next source to
      *               be subscribed to
      * @return a new Flowable instance
-     * @since 2.1.11 - experimental
      * @see #concatMapMaybe(Function)
      * @see #concatMapMaybeDelayError(Function, boolean)
+     * @since 2.2
      */
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
-    @Experimental
     public final <R> Flowable<R> concatMapMaybeDelayError(Function<? super T, ? extends MaybeSource<? extends R>> mapper) {
         return concatMapMaybeDelayError(mapper, true, 2);
     }
@@ -7594,6 +7593,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code concatMapMaybeDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
+     * <p>History: 2.1.11 - experimental
      * @param <R> the result type of the inner {@code MaybeSource}s
      * @param mapper the function called with the upstream item and should return
      *               a {@code MaybeSource} to become the next source to
@@ -7605,14 +7605,13 @@ public abstract class Flowable<T> implements Publisher<T> {
      *                   {@code MaybeSource} terminates and only then is
      *                   it emitted to the downstream.
      * @return a new Flowable instance
-     * @since 2.1.11 - experimental
      * @see #concatMapMaybe(Function, int)
      * @see #concatMapMaybeDelayError(Function, boolean, int)
+     * @since 2.2
      */
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
-    @Experimental
     public final <R> Flowable<R> concatMapMaybeDelayError(Function<? super T, ? extends MaybeSource<? extends R>> mapper, boolean tillTheEnd) {
         return concatMapMaybeDelayError(mapper, tillTheEnd, 2);
     }
@@ -7631,6 +7630,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code concatMapMaybeDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
+     * <p>History: 2.1.11 - experimental
      * @param <R> the result type of the inner {@code MaybeSource}s
      * @param mapper the function called with the upstream item and should return
      *               a {@code MaybeSource} to become the next source to
@@ -7646,13 +7646,12 @@ public abstract class Flowable<T> implements Publisher<T> {
      *                 The operator replenishes after half of the prefetch amount has been consumed
      *                 and turned into {@code MaybeSource}s.
      * @return a new Flowable instance
-     * @since 2.1.11 - experimental
      * @see #concatMapMaybe(Function, int)
+     * @since 2.2
      */
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
-    @Experimental
     public final <R> Flowable<R> concatMapMaybeDelayError(Function<? super T, ? extends MaybeSource<? extends R>> mapper, boolean tillTheEnd, int prefetch) {
         ObjectHelper.requireNonNull(mapper, "mapper is null");
         ObjectHelper.verifyPositive(prefetch, "prefetch");
@@ -7673,19 +7672,19 @@ public abstract class Flowable<T> implements Publisher<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code concatMapSingle} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
+     * <p>History: 2.1.11 - experimental
      * @param <R> the result type of the inner {@code SingleSource}s
      * @param mapper the function called with the upstream item and should return
      *               a {@code SingleSource} to become the next source to
      *               be subscribed to
      * @return a new Flowable instance
-     * @since 2.1.11 - experimental
      * @see #concatMapSingleDelayError(Function)
      * @see #concatMapSingle(Function, int)
+     * @since 2.2
      */
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
-    @Experimental
     public final <R> Flowable<R> concatMapSingle(Function<? super T, ? extends SingleSource<? extends R>> mapper) {
         return concatMapSingle(mapper, 2);
     }
@@ -7704,6 +7703,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code concatMapSingle} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
+     * <p>History: 2.1.11 - experimental
      * @param <R> the result type of the inner {@code SingleSource}s
      * @param mapper the function called with the upstream item and should return
      *               a {@code SingleSource} to become the next source to
@@ -7713,14 +7713,13 @@ public abstract class Flowable<T> implements Publisher<T> {
      *                 The operator replenishes after half of the prefetch amount has been consumed
      *                 and turned into {@code SingleSource}s.
      * @return a new Flowable instance
-     * @since 2.1.11 - experimental
      * @see #concatMapSingle(Function)
      * @see #concatMapSingleDelayError(Function, boolean, int)
+     * @since 2.2
      */
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
-    @Experimental
     public final <R> Flowable<R> concatMapSingle(Function<? super T, ? extends SingleSource<? extends R>> mapper, int prefetch) {
         ObjectHelper.requireNonNull(mapper, "mapper is null");
         ObjectHelper.verifyPositive(prefetch, "prefetch");
@@ -7741,19 +7740,19 @@ public abstract class Flowable<T> implements Publisher<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code concatMapSingleDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
+     * <p>History: 2.1.11 - experimental
      * @param <R> the result type of the inner {@code SingleSource}s
      * @param mapper the function called with the upstream item and should return
      *               a {@code SingleSource} to become the next source to
      *               be subscribed to
      * @return a new Flowable instance
-     * @since 2.1.11 - experimental
      * @see #concatMapSingle(Function)
      * @see #concatMapSingleDelayError(Function, boolean)
+     * @since 2.2
      */
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
-    @Experimental
     public final <R> Flowable<R> concatMapSingleDelayError(Function<? super T, ? extends SingleSource<? extends R>> mapper) {
         return concatMapSingleDelayError(mapper, true, 2);
     }
@@ -7772,6 +7771,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code concatMapSingleDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
+     * <p>History: 2.1.11 - experimental
      * @param <R> the result type of the inner {@code SingleSource}s
      * @param mapper the function called with the upstream item and should return
      *               a {@code SingleSource} to become the next source to
@@ -7783,14 +7783,13 @@ public abstract class Flowable<T> implements Publisher<T> {
      *                   {@code SingleSource} terminates and only then is
      *                   it emitted to the downstream.
      * @return a new Flowable instance
-     * @since 2.1.11 - experimental
      * @see #concatMapSingle(Function, int)
      * @see #concatMapSingleDelayError(Function, boolean, int)
+     * @since 2.2
      */
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
-    @Experimental
     public final <R> Flowable<R> concatMapSingleDelayError(Function<? super T, ? extends SingleSource<? extends R>> mapper, boolean tillTheEnd) {
         return concatMapSingleDelayError(mapper, tillTheEnd, 2);
     }
@@ -7809,6 +7808,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code concatMapSingleDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
+     * <p>History: 2.1.11 - experimental
      * @param <R> the result type of the inner {@code SingleSource}s
      * @param mapper the function called with the upstream item and should return
      *               a {@code SingleSource} to become the next source to
@@ -7824,13 +7824,12 @@ public abstract class Flowable<T> implements Publisher<T> {
      *                 The operator replenishes after half of the prefetch amount has been consumed
      *                 and turned into {@code SingleSource}s.
      * @return a new Flowable instance
-     * @since 2.1.11 - experimental
      * @see #concatMapSingle(Function, int)
+     * @since 2.2
      */
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
-    @Experimental
     public final <R> Flowable<R> concatMapSingleDelayError(Function<? super T, ? extends SingleSource<? extends R>> mapper, boolean tillTheEnd, int prefetch) {
         ObjectHelper.requireNonNull(mapper, "mapper is null");
         ObjectHelper.verifyPositive(prefetch, "prefetch");
@@ -7877,14 +7876,14 @@ public abstract class Flowable<T> implements Publisher<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code concatWith} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
+     * <p>History: 2.1.10 - experimental
      * @param other the SingleSource whose signal should be emitted after this {@code Flowable} completes normally.
      * @return the new Flowable instance
-     * @since 2.1.10 - experimental
+     * @since 2.2
      */
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
-    @Experimental
     public final Flowable<T> concatWith(@NonNull SingleSource<? extends T> other) {
         ObjectHelper.requireNonNull(other, "other is null");
         return RxJavaPlugins.onAssembly(new FlowableConcatWithSingle<T>(this, other));
@@ -7902,14 +7901,14 @@ public abstract class Flowable<T> implements Publisher<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code concatWith} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
+     * <p>History: 2.1.10 - experimental
      * @param other the MaybeSource whose signal should be emitted after this Flowable completes normally.
      * @return the new Flowable instance
-     * @since 2.1.10 - experimental
+     * @since 2.2
      */
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
-    @Experimental
     public final Flowable<T> concatWith(@NonNull MaybeSource<? extends T> other) {
         ObjectHelper.requireNonNull(other, "other is null");
         return RxJavaPlugins.onAssembly(new FlowableConcatWithMaybe<T>(this, other));
@@ -7929,14 +7928,14 @@ public abstract class Flowable<T> implements Publisher<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code concatWith} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
+     * <p>History: 2.1.10 - experimental
      * @param other the {@code CompletableSource} to subscribe to once the current {@code Flowable} completes normally
      * @return the new Flowable instance
-     * @since 2.1.10 - experimental
+     * @since 2.2
      */
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
     @SchedulerSupport(SchedulerSupport.NONE)
-    @Experimental
     public final Flowable<T> concatWith(@NonNull CompletableSource other) {
         ObjectHelper.requireNonNull(other, "other is null");
         return RxJavaPlugins.onAssembly(new FlowableConcatWithCompletable<T>(this, other));
@@ -10468,7 +10467,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code groupBy} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     *
+     * <p>History: 2.1.10 - beta
      * @param keySelector
      *            a function that extracts the key for each item
      * @param valueSelector
@@ -10493,12 +10492,11 @@ public abstract class Flowable<T> implements Publisher<T> {
      *         key value
      * @see <a href="http://reactivex.io/documentation/operators/groupby.html">ReactiveX operators documentation: GroupBy</a>
      *
-     * @since 2.1.10
+     * @since 2.2
      */
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
-    @Beta
     public final <K, V> Flowable<GroupedFlowable<K, V>> groupBy(Function<? super T, ? extends K> keySelector,
             Function<? super T, ? extends V> valueSelector,
             boolean delayError, int bufferSize,
@@ -10936,16 +10934,15 @@ public abstract class Flowable<T> implements Publisher<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code limit} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-
+     * <p>History: 2.1.6 - experimental
      * @param count the maximum number of items and the total request amount, non-negative.
      *              Zero will immediately cancel the upstream on subscription and complete
      *              the downstream.
      * @return the new Flowable instance
      * @see #take(long)
      * @see #rebatchRequests(int)
-     * @since 2.1.6 - experimental
+     * @since 2.2
      */
-    @Experimental
     @BackpressureSupport(BackpressureKind.SPECIAL)
     @SchedulerSupport(SchedulerSupport.NONE)
     @CheckReturnValue
@@ -11050,15 +11047,14 @@ public abstract class Flowable<T> implements Publisher<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code mergeWith} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     *
+     * <p>History: 2.1.10 - experimental
      * @param other the {@code SingleSource} whose success value to merge with
      * @return the new Flowable instance
-     * @since 2.1.10 - experimental
+     * @since 2.2
      */
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
-    @Experimental
     public final Flowable<T> mergeWith(@NonNull SingleSource<? extends T> other) {
         ObjectHelper.requireNonNull(other, "other is null");
         return RxJavaPlugins.onAssembly(new FlowableMergeWithSingle<T>(this, other));
@@ -11079,15 +11075,14 @@ public abstract class Flowable<T> implements Publisher<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code mergeWith} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     *
+     * <p>History: 2.1.10 - experimental
      * @param other the {@code MaybeSource} which provides a success value to merge with or completes
      * @return the new Flowable instance
-     * @since 2.1.10 - experimental
+     * @since 2.2
      */
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
-    @Experimental
     public final Flowable<T> mergeWith(@NonNull MaybeSource<? extends T> other) {
         ObjectHelper.requireNonNull(other, "other is null");
         return RxJavaPlugins.onAssembly(new FlowableMergeWithMaybe<T>(this, other));
@@ -11105,15 +11100,14 @@ public abstract class Flowable<T> implements Publisher<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code mergeWith} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     *
+     * <p>History: 2.1.10 - experimental
      * @param other the {@code CompletableSource} to await for completion
      * @return the new Flowable instance
-     * @since 2.1.10 - experimental
+     * @since 2.2
      */
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
     @SchedulerSupport(SchedulerSupport.NONE)
-    @Experimental
     public final Flowable<T> mergeWith(@NonNull CompletableSource other) {
         ObjectHelper.requireNonNull(other, "other is null");
         return RxJavaPlugins.onAssembly(new FlowableMergeWithCompletable<T>(this, other));
@@ -11842,14 +11836,13 @@ public abstract class Flowable<T> implements Publisher<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code parallel} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * <p>History: 2.0.5 - experimental
+     * <p>History: 2.0.5 - experimental; 2.1 - beta
      * @return the new ParallelFlowable instance
-     * @since 2.1 - beta
+     * @since 2.2
      */
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     @CheckReturnValue
-    @Beta
     public final ParallelFlowable<T> parallel() {
         return ParallelFlowable.from(this);
     }
@@ -11872,15 +11865,14 @@ public abstract class Flowable<T> implements Publisher<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code parallel} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * <p>History: 2.0.5 - experimental
+     * <p>History: 2.0.5 - experimental; 2.1 - beta
      * @param parallelism the number of 'rails' to use
      * @return the new ParallelFlowable instance
-     * @since 2.1 - beta
+     * @since 2.2
      */
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     @CheckReturnValue
-    @Beta
     public final ParallelFlowable<T> parallel(int parallelism) {
         ObjectHelper.verifyPositive(parallelism, "parallelism");
         return ParallelFlowable.from(this, parallelism);
@@ -11905,16 +11897,15 @@ public abstract class Flowable<T> implements Publisher<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code parallel} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * <p>History: 2.0.5 - experimental
+     * <p>History: 2.0.5 - experimental; 2.1 - beta
      * @param parallelism the number of 'rails' to use
      * @param prefetch the number of items each 'rail' should prefetch
      * @return the new ParallelFlowable instance
-     * @since 2.1 - beta
+     * @since 2.2
      */
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     @CheckReturnValue
-    @Beta
     public final ParallelFlowable<T> parallel(int parallelism, int prefetch) {
         ObjectHelper.verifyPositive(parallelism, "parallelism");
         ObjectHelper.verifyPositive(prefetch, "prefetch");
@@ -14402,13 +14393,12 @@ public abstract class Flowable<T> implements Publisher<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code subscribe} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * <p>History: 2.0.7 - experimental
+     * <p>History: 2.0.7 - experimental; 2.1 - beta
      * @param s the FlowableSubscriber that will consume signals from this Flowable
-     * @since 2.1 - beta
+     * @since 2.2
      */
     @BackpressureSupport(BackpressureKind.SPECIAL)
     @SchedulerSupport(SchedulerSupport.NONE)
-    @Beta
     public final void subscribe(FlowableSubscriber<? super T> s) {
         ObjectHelper.requireNonNull(s, "s is null");
         try {
@@ -14525,7 +14515,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>You specify which {@link Scheduler} this operator will use.</dd>
      * </dl>
-     *
+     * <p>History: 2.1.1 - experimental
      * @param scheduler
      *            the {@link Scheduler} to perform subscription actions on
      * @param requestOn if true, requests are rerouted to the given Scheduler as well (strong pipelining)
@@ -14536,12 +14526,11 @@ public abstract class Flowable<T> implements Publisher<T> {
      * @see <a href="http://reactivex.io/documentation/operators/subscribeon.html">ReactiveX operators documentation: SubscribeOn</a>
      * @see <a href="http://www.grahamlea.com/2014/07/rxjava-threading-examples/">RxJava Threading Examples</a>
      * @see #observeOn
-     * @since 2.1.1 - experimental
+     * @since 2.2
      */
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.PASS_THROUGH)
     @SchedulerSupport(SchedulerSupport.CUSTOM)
-    @Experimental
     public final Flowable<T> subscribeOn(@NonNull Scheduler scheduler, boolean requestOn) {
         ObjectHelper.requireNonNull(scheduler, "scheduler is null");
         return RxJavaPlugins.onAssembly(new FlowableSubscribeOn<T>(this, scheduler, requestOn));
@@ -14675,17 +14664,17 @@ public abstract class Flowable<T> implements Publisher<T> {
      *  {@link RxJavaPlugins#onError(Throwable)} method as {@code UndeliverableException} errors.
      *  </dd>
      * </dl>
+     * <p>History: 2.1.11 - experimental
      * @param mapper the function called with each upstream item and should return a
      *               {@link CompletableSource} to be subscribed to and awaited for
      *               (non blockingly) for its terminal event
      * @return the new Completable instance
-     * @since 2.1.11 - experimental
      * @see #switchMapCompletableDelayError(Function)
+     * @since 2.2
      */
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @SchedulerSupport(SchedulerSupport.NONE)
-    @Experimental
     public final Completable switchMapCompletable(@NonNull Function<? super T, ? extends CompletableSource> mapper) {
         ObjectHelper.requireNonNull(mapper, "mapper is null");
         return RxJavaPlugins.onAssembly(new FlowableSwitchMapCompletable<T>(this, mapper, false));
@@ -14721,17 +14710,17 @@ public abstract class Flowable<T> implements Publisher<T> {
      *  {@link RxJavaPlugins#onError(Throwable)} method as {@code UndeliverableException} errors.
      *  </dd>
      * </dl>
+     * <p>History: 2.1.11 - experimental
      * @param mapper the function called with each upstream item and should return a
      *               {@link CompletableSource} to be subscribed to and awaited for
      *               (non blockingly) for its terminal event
      * @return the new Completable instance
-     * @since 2.1.11 - experimental
      * @see #switchMapCompletableDelayError(Function)
+     * @since 2.2
      */
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @SchedulerSupport(SchedulerSupport.NONE)
-    @Experimental
     public final Completable switchMapCompletableDelayError(@NonNull Function<? super T, ? extends CompletableSource> mapper) {
         ObjectHelper.requireNonNull(mapper, "mapper is null");
         return RxJavaPlugins.onAssembly(new FlowableSwitchMapCompletable<T>(this, mapper, true));
@@ -14846,18 +14835,18 @@ public abstract class Flowable<T> implements Publisher<T> {
      *  {@link io.reactivex.plugins.RxJavaPlugins#onError(Throwable)} as
      *  {@link io.reactivex.exceptions.UndeliverableException UndeliverableException}</dd>
      * </dl>
+     * <p>History: 2.1.11 - experimental
      * @param <R> the output value type
      * @param mapper the function called with the current upstream event and should
      *               return a {@code MaybeSource} to replace the current active inner source
      *               and get subscribed to.
      * @return the new Flowable instance
-     * @since 2.1.11 - experimental
      * @see #switchMapMaybe(Function)
+     * @since 2.2
      */
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @SchedulerSupport(SchedulerSupport.NONE)
-    @Experimental
     public final <R> Flowable<R> switchMapMaybe(@NonNull Function<? super T, ? extends MaybeSource<? extends R>> mapper) {
         ObjectHelper.requireNonNull(mapper, "mapper is null");
         return RxJavaPlugins.onAssembly(new FlowableSwitchMapMaybe<T, R>(this, mapper, false));
@@ -14876,18 +14865,18 @@ public abstract class Flowable<T> implements Publisher<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code switchMapMaybeDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
+     * <p>History: 2.1.11 - experimental
      * @param <R> the output value type
      * @param mapper the function called with the current upstream event and should
      *               return a {@code MaybeSource} to replace the current active inner source
      *               and get subscribed to.
      * @return the new Flowable instance
-     * @since 2.1.11 - experimental
      * @see #switchMapMaybe(Function)
+     * @since 2.2
      */
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @SchedulerSupport(SchedulerSupport.NONE)
-    @Experimental
     public final <R> Flowable<R> switchMapMaybeDelayError(@NonNull Function<? super T, ? extends MaybeSource<? extends R>> mapper) {
         ObjectHelper.requireNonNull(mapper, "mapper is null");
         return RxJavaPlugins.onAssembly(new FlowableSwitchMapMaybe<T, R>(this, mapper, true));
@@ -14916,18 +14905,18 @@ public abstract class Flowable<T> implements Publisher<T> {
      *  {@link io.reactivex.plugins.RxJavaPlugins#onError(Throwable)} as
      *  {@link io.reactivex.exceptions.UndeliverableException UndeliverableException}</dd>
      * </dl>
+     * <p>History: 2.1.11 - experimental
      * @param <R> the output value type
      * @param mapper the function called with the current upstream event and should
      *               return a {@code SingleSource} to replace the current active inner source
      *               and get subscribed to.
      * @return the new Flowable instance
-     * @since 2.1.11 - experimental
      * @see #switchMapSingle(Function)
+     * @since 2.2
      */
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @SchedulerSupport(SchedulerSupport.NONE)
-    @Experimental
     public final <R> Flowable<R> switchMapSingle(@NonNull Function<? super T, ? extends SingleSource<? extends R>> mapper) {
         ObjectHelper.requireNonNull(mapper, "mapper is null");
         return RxJavaPlugins.onAssembly(new FlowableSwitchMapSingle<T, R>(this, mapper, false));
@@ -14946,18 +14935,18 @@ public abstract class Flowable<T> implements Publisher<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code switchMapSingleDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
+     * <p>History: 2.1.11 - experimental
      * @param <R> the output value type
      * @param mapper the function called with the current upstream event and should
      *               return a {@code SingleSource} to replace the current active inner source
      *               and get subscribed to.
      * @return the new Flowable instance
-     * @since 2.1.11 - experimental
      * @see #switchMapSingle(Function)
+     * @since 2.2
      */
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.UNBOUNDED_IN)
     @SchedulerSupport(SchedulerSupport.NONE)
-    @Experimental
     public final <R> Flowable<R> switchMapSingleDelayError(@NonNull Function<? super T, ? extends SingleSource<? extends R>> mapper) {
         ObjectHelper.requireNonNull(mapper, "mapper is null");
         return RxJavaPlugins.onAssembly(new FlowableSwitchMapSingle<T, R>(this, mapper, true));
@@ -15627,15 +15616,15 @@ public abstract class Flowable<T> implements Publisher<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code throttleLatest} operates by default on the {@code computation} {@link Scheduler}.</dd>
      * </dl>
+     * <p>History: 2.1.14 - experimental
      * @param timeout the time to wait after an item emission towards the downstream
      *                before trying to emit the latest item from upstream again
      * @param unit    the time unit
      * @return the new Flowable instance
-     * @since 2.1.14 - experimental
+     * @since 2.2
      * @see #throttleLatest(long, TimeUnit, boolean)
      * @see #throttleLatest(long, TimeUnit, Scheduler)
      */
-    @Experimental
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.ERROR)
     @SchedulerSupport(SchedulerSupport.COMPUTATION)
@@ -15661,6 +15650,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code throttleLatest} operates by default on the {@code computation} {@link Scheduler}.</dd>
      * </dl>
+     * <p>History: 2.1.14 - experimental
      * @param timeout the time to wait after an item emission towards the downstream
      *                before trying to emit the latest item from upstream again
      * @param unit    the time unit
@@ -15669,10 +15659,9 @@ public abstract class Flowable<T> implements Publisher<T> {
      *                 a timeout window active or not. If {@code false}, the very last
      *                 upstream item is ignored and the flow terminates.
      * @return the new Flowable instance
-     * @since 2.1.14 - experimental
      * @see #throttleLatest(long, TimeUnit, Scheduler, boolean)
+     * @since 2.2
      */
-    @Experimental
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.ERROR)
     @SchedulerSupport(SchedulerSupport.COMPUTATION)
@@ -15701,16 +15690,16 @@ public abstract class Flowable<T> implements Publisher<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>You specify which {@link Scheduler} this operator will use.</dd>
      * </dl>
+     * <p>History: 2.1.14 - experimental
      * @param timeout the time to wait after an item emission towards the downstream
      *                before trying to emit the latest item from upstream again
      * @param unit    the time unit
      * @param scheduler the {@link Scheduler} where the timed wait and latest item
      *                  emission will be performed
      * @return the new Flowable instance
-     * @since 2.1.14 - experimental
      * @see #throttleLatest(long, TimeUnit, Scheduler, boolean)
+     * @since 2.2
      */
-    @Experimental
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.ERROR)
     @SchedulerSupport(SchedulerSupport.CUSTOM)
@@ -15736,6 +15725,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>You specify which {@link Scheduler} this operator will use.</dd>
      * </dl>
+     * <p>History: 2.1.14 - experimental
      * @param timeout the time to wait after an item emission towards the downstream
      *                before trying to emit the latest item from upstream again
      * @param unit    the time unit
@@ -15746,9 +15736,8 @@ public abstract class Flowable<T> implements Publisher<T> {
      *                 a timeout window active or not. If {@code false}, the very last
      *                 upstream item is ignored and the flow terminates.
      * @return the new Flowable instance
-     * @since 2.1.14 - experimental
+     * @since 2.2
      */
-    @Experimental
     @CheckReturnValue
     @BackpressureSupport(BackpressureKind.ERROR)
     @SchedulerSupport(SchedulerSupport.CUSTOM)

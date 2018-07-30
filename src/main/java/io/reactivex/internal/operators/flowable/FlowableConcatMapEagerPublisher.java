@@ -22,9 +22,10 @@ import io.reactivex.internal.util.ErrorMode;
 
 /**
  * ConcatMapEager which works with an arbitrary Publisher source.
+ * <p>History: 2.0.7 - experimental
  * @param <T> the input value type
  * @param <R> the output type
- * @since 2.0.7 - experimental
+ * @since 2.1
  */
 public final class FlowableConcatMapEagerPublisher<T, R> extends Flowable<R> {
 

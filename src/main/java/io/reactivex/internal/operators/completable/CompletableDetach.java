@@ -14,16 +14,14 @@
 package io.reactivex.internal.operators.completable;
 
 import io.reactivex.*;
-import io.reactivex.annotations.Experimental;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.disposables.DisposableHelper;
 
 /**
  * Breaks the references between the upstream and downstream when the Completable terminates.
- * 
- * @since 2.1.5 - experimental
+ * <p>History: 2.1.5 - experimental
+ * @since 2.2
  */
-@Experimental
 public final class CompletableDetach extends Completable {
 
     final CompletableSource source;

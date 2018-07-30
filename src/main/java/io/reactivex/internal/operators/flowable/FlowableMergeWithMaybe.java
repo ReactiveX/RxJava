@@ -29,9 +29,9 @@ import io.reactivex.plugins.RxJavaPlugins;
 /**
  * Merges an Observable and a Maybe by emitting the items of the Observable and the success
  * value of the Maybe and waiting until both the Observable and Maybe terminate normally.
- *
+ * <p>History: 2.1.10 - experimental
  * @param <T> the element type of the Observable
- * @since 2.1.10 - experimental
+ * @since 2.2
  */
 public final class FlowableMergeWithMaybe<T> extends AbstractFlowableWithUpstream<T, T> {
 

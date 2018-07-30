@@ -14,17 +14,15 @@
 package io.reactivex.internal.operators.single;
 
 import io.reactivex.*;
-import io.reactivex.annotations.Experimental;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.disposables.DisposableHelper;
 
 /**
  * Breaks the references between the upstream and downstream when the Maybe terminates.
- *
+ * <p>History: 2.1.5 - experimental
  * @param <T> the value type
- * @since 2.1.5 - experimental
+ * @since 2.2
  */
-@Experimental
 public final class SingleDetach<T> extends Single<T> {
 
     final SingleSource<T> source;

@@ -34,11 +34,10 @@ import org.reactivestreams.*;
  * Use {@code runOn()} to introduce where each 'rail' should run on thread-vise.
  * Use {@code sequential()} to merge the sources back into a single Flowable.
  *
- * <p>History: 2.0.5 - experimental
+ * <p>History: 2.0.5 - experimental; 2.1 - beta
  * @param <T> the value type
- * @since 2.1 - beta
+ * @since 2.2
  */
-@Beta
 public abstract class ParallelFlowable<T> {
 
     /**
@@ -126,14 +125,13 @@ public abstract class ParallelFlowable<T> {
      * Calls the specified converter function during assembly time and returns its resulting value.
      * <p>
      * This allows fluent conversion to any other type.
-     *
+     * <p>History: 2.1.7 - experimental
      * @param <R> the resulting object type
      * @param converter the function that receives the current ParallelFlowable instance and returns a value
      * @return the converted value
      * @throws NullPointerException if converter is null
-     * @since 2.1.7 - experimental
+     * @since 2.2
      */
-    @Experimental
     @CheckReturnValue
     @NonNull
     public final <R> R as(@NonNull ParallelFlowableConverter<T, R> converter) {
@@ -160,15 +158,15 @@ public abstract class ParallelFlowable<T> {
      * handles errors based on the given {@link ParallelFailureHandling} enumeration value.
      * <p>
      * Note that the same mapper function may be called from multiple threads concurrently.
+     * <p>History: 2.0.8 - experimental
      * @param <R> the output value type
      * @param mapper the mapper function turning Ts into Us.
      * @param errorHandler the enumeration that defines how to handle errors thrown
      *                     from the mapper function
      * @return the new ParallelFlowable instance
-     * @since 2.0.8 - experimental
+     * @since 2.2
      */
     @CheckReturnValue
-    @Experimental
     @NonNull
     public final <R> ParallelFlowable<R> map(@NonNull Function<? super T, ? extends R> mapper, @NonNull ParallelFailureHandling errorHandler) {
         ObjectHelper.requireNonNull(mapper, "mapper");
@@ -181,16 +179,16 @@ public abstract class ParallelFlowable<T> {
      * handles errors based on the returned value by the handler function.
      * <p>
      * Note that the same mapper function may be called from multiple threads concurrently.
+     * <p>History: 2.0.8 - experimental
      * @param <R> the output value type
      * @param mapper the mapper function turning Ts into Us.
      * @param errorHandler the function called with the current repeat count and
      *                     failure Throwable and should return one of the {@link ParallelFailureHandling}
      *                     enumeration values to indicate how to proceed.
      * @return the new ParallelFlowable instance
-     * @since 2.0.8 - experimental
+     * @since 2.2
      */
     @CheckReturnValue
-    @Experimental
     @NonNull
     public final <R> ParallelFlowable<R> map(@NonNull Function<? super T, ? extends R> mapper, @NonNull BiFunction<? super Long, ? super Throwable, ParallelFailureHandling> errorHandler) {
         ObjectHelper.requireNonNull(mapper, "mapper");
@@ -216,14 +214,14 @@ public abstract class ParallelFlowable<T> {
      * handles errors based on the given {@link ParallelFailureHandling} enumeration value.
      * <p>
      * Note that the same predicate may be called from multiple threads concurrently.
+     * <p>History: 2.0.8 - experimental
      * @param predicate the function returning true to keep a value or false to drop a value
      * @param errorHandler the enumeration that defines how to handle errors thrown
      *                     from the predicate
      * @return the new ParallelFlowable instance
-     * @since 2.0.8 - experimental
+     * @since 2.2
      */
     @CheckReturnValue
-    @Experimental
     public final ParallelFlowable<T> filter(@NonNull Predicate<? super T> predicate, @NonNull ParallelFailureHandling errorHandler) {
         ObjectHelper.requireNonNull(predicate, "predicate");
         ObjectHelper.requireNonNull(errorHandler, "errorHandler is null");
@@ -236,15 +234,15 @@ public abstract class ParallelFlowable<T> {
      * handles errors based on the returned value by the handler function.
      * <p>
      * Note that the same predicate may be called from multiple threads concurrently.
+     * <p>History: 2.0.8 - experimental
      * @param predicate the function returning true to keep a value or false to drop a value
      * @param errorHandler the function called with the current repeat count and
      *                     failure Throwable and should return one of the {@link ParallelFailureHandling}
      *                     enumeration values to indicate how to proceed.
      * @return the new ParallelFlowable instance
-     * @since 2.0.8 - experimental
+     * @since 2.2
      */
     @CheckReturnValue
-    @Experimental
     public final ParallelFlowable<T> filter(@NonNull Predicate<? super T> predicate, @NonNull BiFunction<? super Long, ? super Throwable, ParallelFailureHandling> errorHandler) {
         ObjectHelper.requireNonNull(predicate, "predicate");
         ObjectHelper.requireNonNull(errorHandler, "errorHandler is null");
@@ -401,15 +399,15 @@ public abstract class ParallelFlowable<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code sequentialDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
+     * <p>History: 2.0.7 - experimental
      * @return the new Flowable instance
      * @see ParallelFlowable#sequentialDelayError(int)
      * @see ParallelFlowable#sequential()
-     * @since 2.0.7 - experimental
+     * @since 2.2
      */
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
     @CheckReturnValue
-    @Experimental
     @NonNull
     public final Flowable<T> sequentialDelayError() {
         return sequentialDelayError(Flowable.bufferSize());
@@ -426,11 +424,12 @@ public abstract class ParallelFlowable<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code sequentialDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
+     * <p>History: 2.0.7 - experimental
      * @param prefetch the prefetch amount to use for each rail
      * @return the new Flowable instance
      * @see ParallelFlowable#sequential()
      * @see ParallelFlowable#sequentialDelayError()
-     * @since 2.0.7 - experimental
+     * @since 2.2
      */
     @BackpressureSupport(BackpressureKind.FULL)
     @SchedulerSupport(SchedulerSupport.NONE)
@@ -541,15 +540,14 @@ public abstract class ParallelFlowable<T> {
     /**
      * Call the specified consumer with the current element passing through any 'rail' and
      * handles errors based on the given {@link ParallelFailureHandling} enumeration value.
-     *
+     * <p>History: 2.0.8 - experimental
      * @param onNext the callback
      * @param errorHandler the enumeration that defines how to handle errors thrown
      *                     from the onNext consumer
      * @return the new ParallelFlowable instance
-     * @since 2.0.8 - experimental
+     * @since 2.2
      */
     @CheckReturnValue
-    @Experimental
     @NonNull
     public final ParallelFlowable<T> doOnNext(@NonNull Consumer<? super T> onNext, @NonNull ParallelFailureHandling errorHandler) {
         ObjectHelper.requireNonNull(onNext, "onNext is null");
@@ -560,16 +558,15 @@ public abstract class ParallelFlowable<T> {
     /**
      * Call the specified consumer with the current element passing through any 'rail' and
      * handles errors based on the returned value by the handler function.
-     *
+     * <p>History: 2.0.8 - experimental
      * @param onNext the callback
      * @param errorHandler the function called with the current repeat count and
      *                     failure Throwable and should return one of the {@link ParallelFailureHandling}
      *                     enumeration values to indicate how to proceed.
      * @return the new ParallelFlowable instance
-     * @since 2.0.8 - experimental
+     * @since 2.2
      */
     @CheckReturnValue
-    @Experimental
     @NonNull
     public final ParallelFlowable<T> doOnNext(@NonNull Consumer<? super T> onNext, @NonNull BiFunction<? super Long, ? super Throwable, ParallelFailureHandling> errorHandler) {
         ObjectHelper.requireNonNull(onNext, "onNext is null");

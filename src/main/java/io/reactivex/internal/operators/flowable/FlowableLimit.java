@@ -18,17 +18,15 @@ import java.util.concurrent.atomic.AtomicLong;
 import org.reactivestreams.*;
 
 import io.reactivex.*;
-import io.reactivex.annotations.Experimental;
 import io.reactivex.internal.subscriptions.*;
 import io.reactivex.plugins.RxJavaPlugins;
 
 /**
  * Limits both the total request amount and items received from the upstream.
- *
+ * <p>History: 2.1.6 - experimental
  * @param <T> the source and output value type
- * @since 2.1.6 - experimental
+ * @since 2.2
  */
-@Experimental
 public final class FlowableLimit<T> extends AbstractFlowableWithUpstream<T, T> {
 
     final long n;

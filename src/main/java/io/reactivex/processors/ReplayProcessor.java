@@ -433,9 +433,9 @@ public final class ReplayProcessor<T> extends FlowableProcessor<T> {
      * <p>
      * The method must be called sequentially, similar to the standard
      * {@code onXXX} methods.
-     * @since 2.1.11 - experimental
+     * <p>History: 2.1.11 - experimental
+     * @since 2.2
      */
-    @Experimental
     public void cleanupBuffer() {
         buffer.trimHead();
     }

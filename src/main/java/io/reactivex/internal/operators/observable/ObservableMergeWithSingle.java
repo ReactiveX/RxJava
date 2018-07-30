@@ -26,9 +26,9 @@ import io.reactivex.plugins.RxJavaPlugins;
 /**
  * Merges an Observable and a Single by emitting the items of the Observable and the success
  * value of the Single and waiting until both the Observable and Single terminate normally.
- *
+ * <p>History: 2.1.10 - experimental
  * @param <T> the element type of the Observable
- * @since 2.1.10 - experimental
+ * @since 2.2
  */
 public final class ObservableMergeWithSingle<T> extends AbstractObservableWithUpstream<T, T> {
 

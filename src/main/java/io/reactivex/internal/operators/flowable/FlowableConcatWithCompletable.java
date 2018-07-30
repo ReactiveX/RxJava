@@ -25,8 +25,9 @@ import io.reactivex.internal.subscriptions.SubscriptionHelper;
 /**
  * Subscribe to a main Flowable first, then when it completes normally, subscribe to a Completable
  * and terminate when it terminates.
+ * <p>History: 2.1.10 - experimental
  * @param <T> the element type of the main source and output type
- * @since 2.1.10 - experimental
+ * @since 2.2
  */
 public final class FlowableConcatWithCompletable<T> extends AbstractFlowableWithUpstream<T, T> {
 

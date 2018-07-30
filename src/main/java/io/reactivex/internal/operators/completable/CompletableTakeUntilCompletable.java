@@ -16,16 +16,15 @@ package io.reactivex.internal.operators.completable;
 import java.util.concurrent.atomic.*;
 
 import io.reactivex.*;
-import io.reactivex.annotations.Experimental;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.plugins.RxJavaPlugins;
 
 /**
  * Terminates the sequence if either the main or the other Completable terminate.
- * @since 2.1.17 - experimental
+ * <p>History: 2.1.17 - experimental
+ * @since 2.2
  */
-@Experimental
 public final class CompletableTakeUntilCompletable extends Completable {
 
     final Completable source;

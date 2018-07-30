@@ -26,9 +26,9 @@ import io.reactivex.plugins.RxJavaPlugins;
 /**
  * Calls a Consumer for each upstream value passing by
  * and handles any failure with a handler function.
- *
+ * <p>History: 2.0.8 - experimental
  * @param <T> the input value type
- * @since 2.0.8 - experimental
+ * @since 2.2
  */
 public final class ParallelDoOnNextTry<T> extends ParallelFlowable<T> {
 

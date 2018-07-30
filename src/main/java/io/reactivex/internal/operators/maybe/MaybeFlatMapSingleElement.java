@@ -16,7 +16,6 @@ package io.reactivex.internal.operators.maybe;
 import java.util.concurrent.atomic.AtomicReference;
 
 import io.reactivex.*;
-import io.reactivex.annotations.Experimental;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.Function;
@@ -25,12 +24,11 @@ import io.reactivex.internal.functions.ObjectHelper;
 
 /**
  * Maps the success value of the source MaybeSource into a Single.
+ * <p>History: 2.0.2 - experimental
  * @param <T> the input value type
  * @param <R> the result value type
- * 
- * @since 2.0.2 - experimental
+ * @since 2.1
  */
-@Experimental
 public final class MaybeFlatMapSingleElement<T, R> extends Maybe<R> {
 
     final MaybeSource<T> source;

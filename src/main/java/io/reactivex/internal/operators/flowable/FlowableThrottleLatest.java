@@ -19,7 +19,6 @@ import java.util.concurrent.atomic.*;
 import org.reactivestreams.*;
 
 import io.reactivex.*;
-import io.reactivex.annotations.Experimental;
 import io.reactivex.exceptions.MissingBackpressureException;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.internal.util.BackpressureHelper;
@@ -31,11 +30,10 @@ import io.reactivex.internal.util.BackpressureHelper;
  * it tries to emit the latest item from upstream. If there was no upstream item,
  * in the meantime, the next upstream item is emitted immediately and the
  * timed process repeats.
- *
+ * <p>History: 2.1.14 - experimental
  * @param <T> the upstream and downstream value type
- * @since 2.1.14 - experimental
+ * @since 2.2
  */
-@Experimental
 public final class FlowableThrottleLatest<T> extends AbstractFlowableWithUpstream<T, T> {
 
     final long timeout;

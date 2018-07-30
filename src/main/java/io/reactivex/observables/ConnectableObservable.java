@@ -93,12 +93,12 @@ public abstract class ConnectableObservable<T> extends Observable<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>This {@code refCount} overload does not operate on any particular {@link Scheduler}.</dd>
      * </dl>
+     * <p>History: 2.1.14 - experimental
      * @param subscriberCount the number of subscribers required to connect to the upstream
      * @return the new Observable instance
-     * @since 2.1.14 - experimental
+     * @since 2.2
      */
     @CheckReturnValue
-    @Experimental
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Observable<T> refCount(int subscriberCount) {
         return refCount(subscriberCount, 0, TimeUnit.NANOSECONDS, Schedulers.trampoline());
@@ -112,14 +112,14 @@ public abstract class ConnectableObservable<T> extends Observable<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>This {@code refCount} overload operates on the {@code computation} {@link Scheduler}.</dd>
      * </dl>
+     * <p>History: 2.1.14 - experimental
      * @param timeout the time to wait before disconnecting after all subscribers unsubscribed
      * @param unit the time unit of the timeout
      * @return the new Observable instance
-     * @since 2.1.14 - experimental
      * @see #refCount(long, TimeUnit, Scheduler)
+     * @since 2.2
      */
     @CheckReturnValue
-    @Experimental
     @SchedulerSupport(SchedulerSupport.COMPUTATION)
     public final Observable<T> refCount(long timeout, TimeUnit unit) {
         return refCount(1, timeout, unit, Schedulers.computation());
@@ -133,14 +133,14 @@ public abstract class ConnectableObservable<T> extends Observable<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>This {@code refCount} overload operates on the specified {@link Scheduler}.</dd>
      * </dl>
+     * <p>History: 2.1.14 - experimental
      * @param timeout the time to wait before disconnecting after all subscribers unsubscribed
      * @param unit the time unit of the timeout
      * @param scheduler the target scheduler to wait on before disconnecting
      * @return the new Observable instance
-     * @since 2.1.14 - experimental
+     * @since 2.2
      */
     @CheckReturnValue
-    @Experimental
     @SchedulerSupport(SchedulerSupport.CUSTOM)
     public final Observable<T> refCount(long timeout, TimeUnit unit, Scheduler scheduler) {
         return refCount(1, timeout, unit, scheduler);
@@ -154,15 +154,15 @@ public abstract class ConnectableObservable<T> extends Observable<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>This {@code refCount} overload operates on the {@code computation} {@link Scheduler}.</dd>
      * </dl>
+     * <p>History: 2.1.14 - experimental
      * @param subscriberCount the number of subscribers required to connect to the upstream
      * @param timeout the time to wait before disconnecting after all subscribers unsubscribed
      * @param unit the time unit of the timeout
      * @return the new Observable instance
-     * @since 2.1.14 - experimental
      * @see #refCount(int, long, TimeUnit, Scheduler)
+     * @since 2.2
      */
     @CheckReturnValue
-    @Experimental
     @SchedulerSupport(SchedulerSupport.COMPUTATION)
     public final Observable<T> refCount(int subscriberCount, long timeout, TimeUnit unit) {
         return refCount(subscriberCount, timeout, unit, Schedulers.computation());
@@ -176,15 +176,15 @@ public abstract class ConnectableObservable<T> extends Observable<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>This {@code refCount} overload operates on the specified {@link Scheduler}.</dd>
      * </dl>
+     * <p>History: 2.1.14 - experimental
      * @param subscriberCount the number of subscribers required to connect to the upstream
      * @param timeout the time to wait before disconnecting after all subscribers unsubscribed
      * @param unit the time unit of the timeout
      * @param scheduler the target scheduler to wait on before disconnecting
      * @return the new Observable instance
-     * @since 2.1.14 - experimental
+     * @since 2.2
      */
     @CheckReturnValue
-    @Experimental
     @SchedulerSupport(SchedulerSupport.CUSTOM)
     public final Observable<T> refCount(int subscriberCount, long timeout, TimeUnit unit, Scheduler scheduler) {
         ObjectHelper.verifyPositive(subscriberCount, "subscriberCount");

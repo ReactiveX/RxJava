@@ -16,7 +16,6 @@ package io.reactivex.internal.operators.mixed;
 import java.util.concurrent.Callable;
 
 import io.reactivex.*;
-import io.reactivex.annotations.Experimental;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.disposables.EmptyDisposable;
@@ -28,9 +27,9 @@ import io.reactivex.internal.operators.single.SingleToObservable;
  * Utility class to extract a value from a scalar source reactive type,
  * map it to a 0-1 type then subscribe the output type's consumer to it,
  * saving on the overhead of the regular subscription channel.
- * @since 2.1.11 - experimental
+ * <p>History: 2.1.11 - experimental
+ * @since 2.2
  */
-@Experimental
 final class ScalarXMapZHelper {
 
     private ScalarXMapZHelper() {

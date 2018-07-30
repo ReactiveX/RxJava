@@ -14,7 +14,6 @@
 package io.reactivex.internal.operators.maybe;
 
 import io.reactivex.*;
-import io.reactivex.annotations.Experimental;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.internal.fuseable.HasUpstreamMaybeSource;
@@ -46,12 +45,12 @@ public final class MaybeToObservable<T> extends Observable<T> implements HasUpst
 
     /**
      * Creates a {@link MaybeObserver} wrapper around a {@link Observer}.
+     * <p>History: 2.1.11 - experimental
      * @param <T> the value type
      * @param downstream the downstream {@code Observer} to talk to
      * @return the new MaybeObserver instance
-     * @since 2.1.11 - experimental
+     * @since 2.2
      */
-    @Experimental
     public static <T> MaybeObserver<T> create(Observer<? super T> downstream) {
         return new MaybeToObservableObserver<T>(downstream);
     }

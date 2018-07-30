@@ -18,12 +18,11 @@ import io.reactivex.annotations.*;
 /**
  * Convenience interface and callback used by the {@link Single#as} operator to turn a Single into another
  * value fluently.
- *
+ * <p>History: 2.1.7 - experimental
  * @param <T> the upstream type
  * @param <R> the output type
- * @since 2.1.7 - experimental
+ * @since 2.2
  */
-@Experimental
 public interface SingleConverter<T, R> {
     /**
      * Applies a function to the upstream Single and returns a converted value of type {@code R}.

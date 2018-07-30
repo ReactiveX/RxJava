@@ -26,9 +26,9 @@ import io.reactivex.internal.util.*;
 /**
  * Merges a Flowable and a Completable by emitting the items of the Flowable and waiting until
  * both the Flowable and Completable complete normally.
- *
+ * <p>History: 2.1.10 - experimental
  * @param <T> the element type of the Flowable
- * @since 2.1.10 - experimental
+ * @since 2.2
  */
 public final class FlowableMergeWithCompletable<T> extends AbstractFlowableWithUpstream<T, T> {
 

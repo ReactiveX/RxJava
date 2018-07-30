@@ -23,10 +23,10 @@ import io.reactivex.internal.subscribers.*;
 
 /**
  * Calls a consumer after pushing the current item to the downstream.
+ * <p>History: 2.0.1 - experimental
  * @param <T> the value type
- * @since 2.0.1 - experimental
+ * @since 2.1
  */
-@Experimental
 public final class FlowableDoAfterNext<T> extends AbstractFlowableWithUpstream<T, T> {
 
     final Consumer<? super T> onAfterNext;

@@ -18,11 +18,10 @@ import io.reactivex.annotations.*;
 /**
  * Convenience interface and callback used by the {@link Completable#as} operator to turn a Completable into another
  * value fluently.
- *
+ * <p>History: 2.1.7 - experimental
  * @param <R> the output type
- * @since 2.1.7 - experimental
+ * @since 2.2
  */
-@Experimental
 public interface CompletableConverter<R> {
     /**
      * Applies a function to the upstream Completable and returns a converted value of type {@code R}.

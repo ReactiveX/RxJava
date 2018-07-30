@@ -13,7 +13,6 @@
 package io.reactivex.internal.operators.single;
 
 import io.reactivex.*;
-import io.reactivex.annotations.Experimental;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.disposables.DisposableHelper;
 import io.reactivex.internal.observers.DeferredScalarDisposable;
@@ -38,12 +37,12 @@ public final class SingleToObservable<T> extends Observable<T> {
 
     /**
      * Creates a {@link SingleObserver} wrapper around a {@link Observer}.
+     * <p>History: 2.0.1 - experimental
      * @param <T> the value type
      * @param downstream the downstream {@code Observer} to talk to
      * @return the new SingleObserver instance
-     * @since 2.1.11 - experimental
+     * @since 2.2
      */
-    @Experimental
     public static <T> SingleObserver<T> create(Observer<? super T> downstream) {
         return new SingleToObservableObserver<T>(downstream);
     }
