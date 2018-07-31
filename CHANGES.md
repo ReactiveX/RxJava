@@ -2,6 +2,86 @@
 
 The changelog of version 1.x can be found at https://github.com/ReactiveX/RxJava/blob/1.x/CHANGES.md
 
+### Version 2.2.0 - July 31, 2018 ([Maven](http://search.maven.org/#artifactdetails%7Cio.reactivex.rxjava2%7Crxjava%7C2.2.0%7C))
+
+#### Summary
+
+Version 2.2.0 is the next minor release of the 2.x era and contains the standardization of many experimental API additions from the past year since version 2.1.0. Therefore, the following components are now considered stable and will be supported throughout the rest of the life of RxJava 2.x.
+
+**Classes, Enums, Annotations**
+
+- **Annotation**: N/A
+- **Subject**: `MulticastProcessor`
+- **Classes**: `ParallelFlowable`, `UndeliverableException`, `OnErrorNotImplementedException`
+- **Enum**: `ParallelFailureHandling`
+- **Interfaces**: `{Completable|Single|Maybe|Observable|Flowable|Parallel}Emitter`, `{Completable|Single|Maybe|Observable|Flowable|Parallel}Converter`, `LambdaConsumerIntrospection`, `ScheduledRunnableIntrospection`
+
+**Operators**
+
+- **`Flowable`**: `as`, `concatMap{Single|Maybe|Completable}`, `limit`, `parallel`, `switchMap{Single|Maybe|Completable}`, `throttleLatest`
+- **`Observable`**: `as`, `concatMap{Single|Maybe|Completable}`, `switchMap{Single|Maybe|Completable}`, `throttleLatest`
+- **`Single`**: `as`, `mergeDelayError`, `onTerminateDetach`, `unsubscribeOn`
+- **`Maybe`**: `as`, `mergeDelayError`, `switchIfEmpty`
+- **`Completable`**: `as`, `fromMaybe`, `onTerminateDetach`, `takeUntil`
+- **`ParallelFlowable`**: `as`, `map|filter|doOnNext(errorHandling)`˙, `sequentialDelayError`
+- **`Connectable{Flowable, Observable}`**: `refCount(count + timeout)`
+- **`Subject`/`FlowableProcessor`**: `offer`, `cleanupBuffer`, `create(..., delayError)`
+- **`Test{Observer, Subscriber}`**: `assertValueAt`, `assertValuesOnly`, `assertValueSetOnly`
+
+*(For the complete list and details on the promotions, see [PR 6105](https://github.com/ReactiveX/RxJava/pull/6105).)*
+
+Release 2.2.0 is functionally identical to 2.1.17. Also to clarify, just like with previous minor version increments with RxJava, there won't be any further development or updates on the version 2.1.x (patch) level. 
+
+##### Other promotions
+
+All Experimental/Beta APIs introduced up to version 2.1.17 are now standard with 2.2.
+
+#### Project statistics
+
+- Unique contributors: **75**
+- Issues closed: [**283**](https://github.com/ReactiveX/RxJava/issues?utf8=%E2%9C%93&q=is%3Aissue+is%3Aclosed+created%3A2017-04-29..2018-07-31+label%3A2.x+)
+- Bugs reported: [**20**](https://github.com/ReactiveX/RxJava/issues?utf8=%E2%9C%93&q=is%3Aissue+is%3Aclosed+created%3A2017-04-29..2018-07-31+label%3A2.x+label%3Abug)
+  - by community: [**19**](https://github.com/ReactiveX/RxJava/issues?utf8=%E2%9C%93&q=is%3Aissue+is%3Aclosed+created%3A2017-04-29..2018-07-31+label%3A2.x+label%3Abug+-author%3Aakarnokd) (95%)
+- Commits: [**320**](https://github.com/ReactiveX/RxJava/compare/v2.1.0...2.x)
+- PRs: [**296**](https://github.com/ReactiveX/RxJava/pulls?q=is%3Apr+is%3Aclosed+created%3A2017-04-29..2018-07-31+label%3A2.x)
+  - PRs accepted: [**268**](https://github.com/ReactiveX/RxJava/pulls?q=is%3Apr+is%3Aclosed+created%3A2017-04-29..2018-07-31+label%3A2.x) (90.54%)
+  - Community PRs: [**96**](https://github.com/ReactiveX/RxJava/pulls?utf8=%E2%9C%93&q=is%3Apr+is%3Aclosed+created%3A2017-04-29..2018-07-31+label%3A2.x+-author%3Aakarnokd+) (35.82% of all accepted)
+- Bugs fixed: [**39**](https://github.com/ReactiveX/RxJava/pulls?utf8=%E2%9C%93&q=is%3Apr+is%3Aclosed+merged%3A2017-04-29..2018-07-31+label%3A2.x+label%3Abug)
+  - by community: [**8**](https://github.com/ReactiveX/RxJava/pulls?utf8=%E2%9C%93&q=is%3Apr+is%3Aclosed+merged%3A2017-04-29..2018-07-31+label%3A2.x+label%3Abug+-author%3Aakarnokd) (20.51%)
+- Documentation enhancements: [**117**](https://github.com/ReactiveX/RxJava/pulls?utf8=%E2%9C%93&q=is%3Apr+is%3Aclosed+merged%3A2017-04-29..2018-07-31+label%3A2.x+label%3Adocumentation)
+  - by community: [**40**](https://github.com/ReactiveX/RxJava/pulls?utf8=%E2%9C%93&q=is%3Apr+is%3Aclosed+merged%3A2017-04-29..2018-07-31+label%3A2.x+label%3Adocumentation+-author%3Aakarnokd) (34.19%)
+- Cleanup: [**50**](https://github.com/ReactiveX/RxJava/pulls?utf8=%E2%9C%93&q=is%3Apr+is%3Aclosed+merged%3A2017-04-29..2018-07-31+label%3A2.x+label%3Acleanup)
+  - by community: [**21**](https://github.com/ReactiveX/RxJava/pulls?utf8=%E2%9C%93&q=is%3Apr+is%3Aclosed+merged%3A2017-04-29..2018-07-31+label%3A2.x+label%3Acleanup+-author%3Aakarnokd) (42%)
+- Performance enhancements: [**12**](https://github.com/ReactiveX/RxJava/pulls?utf8=%E2%9C%93&q=is%3Apr+is%3Aclosed+merged%3A2017-04-29..2018-07-31+label%3A2.x+label%3A%22performance%22+)
+  - by community: [**1**](https://github.com/ReactiveX/RxJava/pulls?utf8=%E2%9C%93&q=is%3Apr+is%3Aclosed+merged%3A2017-04-29..2018-07-31+label%3A2.x+label%3A%22performance%22+-author%3Aakarnokd) (8.33%)
+- Lines
+  - added: **70,465**
+  - removed: **12,373**
+
+#### Acknowledgements
+
+The project would like to thank the following contributors for their work on various code and documentation improvements (in the order they appear on the [commit](https://github.com/ReactiveX/RxJava/commits/2.x) page):
+
+@lcybo, @jnlopar, @UMFsimke, @apodkutin, @sircelsius, 
+@romanzes, @Kiskae, @RomanWuattier, @satoshun, @hans123456,
+@fjoshuajr, @davidmoten, @vanniktech, @antego, @strekha,
+@artfullyContrived, @VeskoI, @Desislav-Petrov, @Apsaliya, @sidjain270592,
+@Milack27, @mekarthedev, @kjkrum, @zhyuri, @artem-zinnatullin,
+@vpriscan, @aaronhe42, @adamsp, @bangarharshit, @zhukic,
+@afeozzz, @btilbrook-nextfaze, @eventualbuddha, @shaishavgandhi05, @lukaszguz,
+@runningcode, @kimkevin, @JakeWharton, @hzsweers, @ggikko,
+@philleonard, @sadegh, @dsrees, @benwicks, @dweebo,
+@dimsuz, @levaja, @takuaraki, @PhilGlass, @bmaslakov,
+@tylerbwong, @AllanWang, @NickFirmani, @plackemacher, @matgabriel,
+@jemaystermind, @ansman, @Ganapathi004, @leonardortlima, @pwittchen,
+@youngam, @Sroka, @serj-lotutovici, @nathankooij, @mithunsasidharan,
+@devisnik, @mg6maciej, @Rémon S, @hvesalai, @kojilin, 
+@ragunathjawahar, @brucezz, @paulblessing, @cypressf, @langara 
+
+**(75 contributors)**
+
+The project would also thank its tireless reviewer @vanniktech for all his efforts on verifying and providing feedback on the many PRs from the project lead himself. :+1:
+
 ### Version 2.1.17 - July 23, 2018 ([Maven](http://search.maven.org/#artifactdetails%7Cio.reactivex.rxjava2%7Crxjava%7C2.1.17%7C))
 
 #### API changes
