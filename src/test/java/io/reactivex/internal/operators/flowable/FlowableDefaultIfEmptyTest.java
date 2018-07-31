@@ -27,11 +27,11 @@ public class FlowableDefaultIfEmptyTest {
     @Test
     public void testDefaultIfEmpty() {
         Flowable<Integer> source = Flowable.just(1, 2, 3);
-        Flowable<Integer> observable = source.defaultIfEmpty(10);
+        Flowable<Integer> flowable = source.defaultIfEmpty(10);
 
         Subscriber<Integer> subscriber = TestHelper.mockSubscriber();
 
-        observable.subscribe(subscriber);
+        flowable.subscribe(subscriber);
 
         verify(subscriber, never()).onNext(10);
         verify(subscriber).onNext(1);
@@ -44,11 +44,11 @@ public class FlowableDefaultIfEmptyTest {
     @Test
     public void testDefaultIfEmptyWithEmpty() {
         Flowable<Integer> source = Flowable.empty();
-        Flowable<Integer> observable = source.defaultIfEmpty(10);
+        Flowable<Integer> flowable = source.defaultIfEmpty(10);
 
         Subscriber<Integer> subscriber = TestHelper.mockSubscriber();
 
-        observable.subscribe(subscriber);
+        flowable.subscribe(subscriber);
 
         verify(subscriber).onNext(10);
         verify(subscriber).onComplete();
@@ -58,7 +58,7 @@ public class FlowableDefaultIfEmptyTest {
     @Test
     @Ignore("Subscribers should not throw")
     public void testEmptyButClientThrows() {
-        final Subscriber<Integer> o = TestHelper.mockSubscriber();
+        final Subscriber<Integer> subscriber = TestHelper.mockSubscriber();
 
         Flowable.<Integer>empty().defaultIfEmpty(1).subscribe(new DefaultSubscriber<Integer>() {
             @Override
@@ -68,18 +68,18 @@ public class FlowableDefaultIfEmptyTest {
 
             @Override
             public void onError(Throwable e) {
-                o.onError(e);
+                subscriber.onError(e);
             }
 
             @Override
             public void onComplete() {
-                o.onComplete();
+                subscriber.onComplete();
             }
         });
 
-        verify(o).onError(any(TestException.class));
-        verify(o, never()).onNext(any(Integer.class));
-        verify(o, never()).onComplete();
+        verify(subscriber).onError(any(TestException.class));
+        verify(subscriber, never()).onNext(any(Integer.class));
+        verify(subscriber, never()).onComplete();
     }
 
     @Test

@@ -43,11 +43,11 @@ public class FlowableJoinTest {
         }
     };
 
-    <T> Function<Integer, Flowable<T>> just(final Flowable<T> observable) {
+    <T> Function<Integer, Flowable<T>> just(final Flowable<T> flowable) {
         return new Function<Integer, Flowable<T>>() {
             @Override
             public Flowable<T> apply(Integer t1) {
-                return observable;
+                return flowable;
             }
         };
     }
@@ -386,10 +386,10 @@ public class FlowableJoinTest {
         try {
             new Flowable<Integer>() {
                 @Override
-                protected void subscribeActual(Subscriber<? super Integer> observer) {
-                    observer.onSubscribe(new BooleanSubscription());
-                    observer.onError(new TestException("First"));
-                    observer.onError(new TestException("Second"));
+                protected void subscribeActual(Subscriber<? super Integer> subscriber) {
+                    subscriber.onSubscribe(new BooleanSubscription());
+                    subscriber.onError(new TestException("First"));
+                    subscriber.onError(new TestException("Second"));
                 }
             }
             .join(Flowable.just(2),
@@ -422,10 +422,10 @@ public class FlowableJoinTest {
                     Functions.justFunction(Flowable.never()),
                     Functions.justFunction(new Flowable<Integer>() {
                         @Override
-                        protected void subscribeActual(Subscriber<? super Integer> observer) {
-                            o[0] = observer;
-                            observer.onSubscribe(new BooleanSubscription());
-                            observer.onError(new TestException("First"));
+                        protected void subscribeActual(Subscriber<? super Integer> subscriber) {
+                            o[0] = subscriber;
+                            subscriber.onSubscribe(new BooleanSubscription());
+                            subscriber.onError(new TestException("First"));
                         }
                     }),
                     new BiFunction<Integer, Integer, Integer>() {

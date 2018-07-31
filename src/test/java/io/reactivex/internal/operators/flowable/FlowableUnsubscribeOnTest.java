@@ -97,13 +97,13 @@ public class FlowableUnsubscribeOnTest {
                 }
             });
 
-            TestSubscriber<Integer> observer = new TestSubscriber<Integer>();
+            TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
             w.subscribeOn(Schedulers.newThread()).observeOn(Schedulers.computation())
             .unsubscribeOn(uiEventLoop)
             .take(2)
-            .subscribe(observer);
+            .subscribe(ts);
 
-            observer.awaitTerminalEvent(1, TimeUnit.SECONDS);
+            ts.awaitTerminalEvent(1, TimeUnit.SECONDS);
 
             Thread unsubscribeThread = subscription.getThread();
 
@@ -119,8 +119,8 @@ public class FlowableUnsubscribeOnTest {
             System.out.println("subscribeThread.get(): " + subscribeThread.get());
             assertSame(unsubscribeThread, uiEventLoop.getThread());
 
-            observer.assertValues(1, 2);
-            observer.assertTerminated();
+            ts.assertValues(1, 2);
+            ts.assertTerminated();
         } finally {
             uiEventLoop.shutdown();
         }
@@ -250,12 +250,12 @@ public class FlowableUnsubscribeOnTest {
         try {
             new Flowable<Integer>() {
                 @Override
-                protected void subscribeActual(Subscriber<? super Integer> observer) {
-                    observer.onSubscribe(new BooleanSubscription());
-                    observer.onNext(1);
-                    observer.onNext(2);
-                    observer.onError(new TestException());
-                    observer.onComplete();
+                protected void subscribeActual(Subscriber<? super Integer> subscriber) {
+                    subscriber.onSubscribe(new BooleanSubscription());
+                    subscriber.onNext(1);
+                    subscriber.onNext(2);
+                    subscriber.onError(new TestException());
+                    subscriber.onComplete();
                 }
             }
             .unsubscribeOn(Schedulers.single())

@@ -118,10 +118,10 @@ public class FlowableTakeTest {
         try {
             Flowable<String> source = Flowable.unsafeCreate(new Publisher<String>() {
                 @Override
-                public void subscribe(Subscriber<? super String> observer) {
-                    observer.onSubscribe(new BooleanSubscription());
-                    observer.onNext("one");
-                    observer.onError(new Throwable("test failed"));
+                public void subscribe(Subscriber<? super String> subscriber) {
+                    subscriber.onSubscribe(new BooleanSubscription());
+                    subscriber.onNext("one");
+                    subscriber.onError(new Throwable("test failed"));
                 }
             });
 
@@ -149,10 +149,10 @@ public class FlowableTakeTest {
         final BooleanSubscription bs = new BooleanSubscription();
         Flowable<String> source = Flowable.unsafeCreate(new Publisher<String>() {
             @Override
-            public void subscribe(Subscriber<? super String> observer) {
+            public void subscribe(Subscriber<? super String> subscriber) {
                 subscribed.set(true);
-                observer.onSubscribe(bs);
-                observer.onError(new Throwable("test failed"));
+                subscriber.onSubscribe(bs);
+                subscriber.onError(new Throwable("test failed"));
             }
         });
 
@@ -252,8 +252,8 @@ public class FlowableTakeTest {
         }
 
         @Override
-        public void subscribe(final Subscriber<? super String> observer) {
-            observer.onSubscribe(new BooleanSubscription());
+        public void subscribe(final Subscriber<? super String> subscriber) {
+            subscriber.onSubscribe(new BooleanSubscription());
             System.out.println("TestFlowable subscribed to ...");
             t = new Thread(new Runnable() {
 
@@ -263,9 +263,9 @@ public class FlowableTakeTest {
                         System.out.println("running TestFlowable thread");
                         for (String s : values) {
                             System.out.println("TestFlowable onNext: " + s);
-                            observer.onNext(s);
+                            subscriber.onNext(s);
                         }
-                        observer.onComplete();
+                        subscriber.onComplete();
                     } catch (Throwable e) {
                         throw new RuntimeException(e);
                     }
@@ -295,18 +295,18 @@ public class FlowableTakeTest {
 
     @Test(timeout = 2000)
     public void testTakeObserveOn() {
-        Subscriber<Object> o = TestHelper.mockSubscriber();
-        TestSubscriber<Object> ts = new TestSubscriber<Object>(o);
+        Subscriber<Object> subscriber = TestHelper.mockSubscriber();
+        TestSubscriber<Object> ts = new TestSubscriber<Object>(subscriber);
 
         INFINITE_OBSERVABLE.onBackpressureDrop()
         .observeOn(Schedulers.newThread()).take(1).subscribe(ts);
         ts.awaitTerminalEvent();
         ts.assertNoErrors();
 
-        verify(o).onNext(1L);
-        verify(o, never()).onNext(2L);
-        verify(o).onComplete();
-        verify(o, never()).onError(any(Throwable.class));
+        verify(subscriber).onNext(1L);
+        verify(subscriber, never()).onNext(2L);
+        verify(subscriber).onComplete();
+        verify(subscriber, never()).onError(any(Throwable.class));
     }
 
     @Test
@@ -479,8 +479,8 @@ public class FlowableTakeTest {
     public void doubleOnSubscribe() {
         TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Flowable<Object>>() {
             @Override
-            public Flowable<Object> apply(Flowable<Object> o) throws Exception {
-                return o.take(2);
+            public Flowable<Object> apply(Flowable<Object> f) throws Exception {
+                return f.take(2);
             }
         });
     }

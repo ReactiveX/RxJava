@@ -155,7 +155,7 @@ public class FlowableTakeUntilTest {
 
     private static class TestObservable implements Publisher<String> {
 
-        Subscriber<? super String> observer;
+        Subscriber<? super String> subscriber;
         Subscription s;
 
         TestObservable(Subscription s) {
@@ -164,23 +164,23 @@ public class FlowableTakeUntilTest {
 
         /* used to simulate subscription */
         public void sendOnCompleted() {
-            observer.onComplete();
+            subscriber.onComplete();
         }
 
         /* used to simulate subscription */
         public void sendOnNext(String value) {
-            observer.onNext(value);
+            subscriber.onNext(value);
         }
 
         /* used to simulate subscription */
         public void sendOnError(Throwable e) {
-            observer.onError(e);
+            subscriber.onError(e);
         }
 
         @Override
-        public void subscribe(Subscriber<? super String> observer) {
-            this.observer = observer;
-            observer.onSubscribe(s);
+        public void subscribe(Subscriber<? super String> subscriber) {
+            this.subscriber = subscriber;
+            subscriber.onSubscribe(s);
         }
     }
 

@@ -48,8 +48,8 @@ public class FlowableDematerializeTest {
     @Test
     public void testDematerialize2() {
         Throwable exception = new Throwable("test");
-        Flowable<Integer> observable = Flowable.error(exception);
-        Flowable<Integer> dematerialize = observable.materialize().dematerialize();
+        Flowable<Integer> flowable = Flowable.error(exception);
+        Flowable<Integer> dematerialize = flowable.materialize().dematerialize();
 
         Subscriber<Integer> subscriber = TestHelper.mockSubscriber();
 
@@ -63,8 +63,8 @@ public class FlowableDematerializeTest {
     @Test
     public void testDematerialize3() {
         Exception exception = new Exception("test");
-        Flowable<Integer> observable = Flowable.error(exception);
-        Flowable<Integer> dematerialize = observable.materialize().dematerialize();
+        Flowable<Integer> flowable = Flowable.error(exception);
+        Flowable<Integer> dematerialize = flowable.materialize().dematerialize();
 
         Subscriber<Integer> subscriber = TestHelper.mockSubscriber();
 
@@ -78,8 +78,8 @@ public class FlowableDematerializeTest {
     @Test
     public void testErrorPassThru() {
         Exception exception = new Exception("test");
-        Flowable<Integer> observable = Flowable.error(exception);
-        Flowable<Integer> dematerialize = observable.dematerialize();
+        Flowable<Integer> flowable = Flowable.error(exception);
+        Flowable<Integer> dematerialize = flowable.dematerialize();
 
         Subscriber<Integer> subscriber = TestHelper.mockSubscriber();
 
@@ -92,8 +92,8 @@ public class FlowableDematerializeTest {
 
     @Test
     public void testCompletePassThru() {
-        Flowable<Integer> observable = Flowable.empty();
-        Flowable<Integer> dematerialize = observable.dematerialize();
+        Flowable<Integer> flowable = Flowable.empty();
+        Flowable<Integer> dematerialize = flowable.dematerialize();
 
         Subscriber<Integer> subscriber = TestHelper.mockSubscriber();
 
@@ -113,13 +113,13 @@ public class FlowableDematerializeTest {
 
         Flowable<Integer> result = source.materialize().dematerialize();
 
-        Subscriber<Integer> o = TestHelper.mockSubscriber();
+        Subscriber<Integer> subscriber = TestHelper.mockSubscriber();
 
-        result.subscribe(o);
+        result.subscribe(subscriber);
 
-        verify(o).onNext(1);
-        verify(o).onComplete();
-        verify(o, never()).onError(any(Throwable.class));
+        verify(subscriber).onNext(1);
+        verify(subscriber).onComplete();
+        verify(subscriber, never()).onError(any(Throwable.class));
     }
 
     @Test
@@ -128,13 +128,13 @@ public class FlowableDematerializeTest {
 
         Flowable<Integer> result = source.materialize().dematerialize();
 
-        Subscriber<Integer> o = TestHelper.mockSubscriber();
+        Subscriber<Integer> subscriber = TestHelper.mockSubscriber();
 
-        result.subscribe(o);
+        result.subscribe(subscriber);
 
-        verify(o, never()).onNext(any(Integer.class));
-        verify(o, never()).onComplete();
-        verify(o).onError(any(TestException.class));
+        verify(subscriber, never()).onNext(any(Integer.class));
+        verify(subscriber, never()).onComplete();
+        verify(subscriber).onError(any(TestException.class));
     }
 
     @Test
@@ -146,8 +146,8 @@ public class FlowableDematerializeTest {
     public void doubleOnSubscribe() {
         TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Flowable<Object>>() {
             @Override
-            public Flowable<Object> apply(Flowable<Object> o) throws Exception {
-                return o.dematerialize();
+            public Flowable<Object> apply(Flowable<Object> f) throws Exception {
+                return f.dematerialize();
             }
         });
     }
@@ -158,12 +158,12 @@ public class FlowableDematerializeTest {
         try {
             new Flowable<Object>() {
                 @Override
-                protected void subscribeActual(Subscriber<? super Object> observer) {
-                    observer.onSubscribe(new BooleanSubscription());
-                    observer.onNext(Notification.createOnComplete());
-                    observer.onNext(Notification.createOnNext(1));
-                    observer.onNext(Notification.createOnError(new TestException("First")));
-                    observer.onError(new TestException("Second"));
+                protected void subscribeActual(Subscriber<? super Object> subscriber) {
+                    subscriber.onSubscribe(new BooleanSubscription());
+                    subscriber.onNext(Notification.createOnComplete());
+                    subscriber.onNext(Notification.createOnNext(1));
+                    subscriber.onNext(Notification.createOnError(new TestException("First")));
+                    subscriber.onError(new TestException("Second"));
                 }
             }
             .dematerialize()

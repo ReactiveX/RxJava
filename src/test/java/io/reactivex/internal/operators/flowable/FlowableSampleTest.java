@@ -49,24 +49,24 @@ public class FlowableSampleTest {
     public void testSample() {
         Flowable<Long> source = Flowable.unsafeCreate(new Publisher<Long>() {
             @Override
-            public void subscribe(final Subscriber<? super Long> observer1) {
-                observer1.onSubscribe(new BooleanSubscription());
+            public void subscribe(final Subscriber<? super Long> subscriber1) {
+                subscriber1.onSubscribe(new BooleanSubscription());
                 innerScheduler.schedule(new Runnable() {
                     @Override
                     public void run() {
-                        observer1.onNext(1L);
+                        subscriber1.onNext(1L);
                     }
                 }, 1, TimeUnit.SECONDS);
                 innerScheduler.schedule(new Runnable() {
                     @Override
                     public void run() {
-                        observer1.onNext(2L);
+                        subscriber1.onNext(2L);
                     }
                 }, 2, TimeUnit.SECONDS);
                 innerScheduler.schedule(new Runnable() {
                     @Override
                     public void run() {
-                        observer1.onComplete();
+                        subscriber1.onComplete();
                     }
                 }, 3, TimeUnit.SECONDS);
             }
@@ -268,7 +268,7 @@ public class FlowableSampleTest {
     @Test
     public void testSampleUnsubscribe() {
         final Subscription s = mock(Subscription.class);
-        Flowable<Integer> o = Flowable.unsafeCreate(
+        Flowable<Integer> f = Flowable.unsafeCreate(
                 new Publisher<Integer>() {
                     @Override
                     public void subscribe(Subscriber<? super Integer> subscriber) {
@@ -276,7 +276,7 @@ public class FlowableSampleTest {
                     }
                 }
         );
-        o.throttleLast(1, TimeUnit.MILLISECONDS).subscribe().dispose();
+        f.throttleLast(1, TimeUnit.MILLISECONDS).subscribe().dispose();
         verify(s).cancel();
     }
 
@@ -450,9 +450,9 @@ public class FlowableSampleTest {
     public void doubleOnSubscribe() {
         TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Flowable<Object>>() {
             @Override
-            public Flowable<Object> apply(Flowable<Object> o)
+            public Flowable<Object> apply(Flowable<Object> f)
                     throws Exception {
-                return o.sample(1, TimeUnit.SECONDS);
+                return f.sample(1, TimeUnit.SECONDS);
             }
         });
     }

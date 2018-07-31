@@ -191,22 +191,22 @@ public class FlowableElementAtTest {
     public void doubleOnSubscribe() {
         TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Publisher<Object>>() {
             @Override
-            public Publisher<Object> apply(Flowable<Object> o) throws Exception {
-                return o.elementAt(0).toFlowable();
+            public Publisher<Object> apply(Flowable<Object> f) throws Exception {
+                return f.elementAt(0).toFlowable();
             }
         });
 
         TestHelper.checkDoubleOnSubscribeFlowableToMaybe(new Function<Flowable<Object>, Maybe<Object>>() {
             @Override
-            public Maybe<Object> apply(Flowable<Object> o) throws Exception {
-                return o.elementAt(0);
+            public Maybe<Object> apply(Flowable<Object> f) throws Exception {
+                return f.elementAt(0);
             }
         });
 
         TestHelper.checkDoubleOnSubscribeFlowableToSingle(new Function<Flowable<Object>, Single<Object>>() {
             @Override
-            public Single<Object> apply(Flowable<Object> o) throws Exception {
-                return o.elementAt(0, 1);
+            public Single<Object> apply(Flowable<Object> f) throws Exception {
+                return f.elementAt(0, 1);
             }
         });
     }
@@ -338,13 +338,13 @@ public class FlowableElementAtTest {
         try {
             new Flowable<Integer>() {
                 @Override
-                protected void subscribeActual(Subscriber<? super Integer> observer) {
-                    observer.onSubscribe(new BooleanSubscription());
+                protected void subscribeActual(Subscriber<? super Integer> subscriber) {
+                    subscriber.onSubscribe(new BooleanSubscription());
 
-                    observer.onNext(1);
-                    observer.onNext(2);
-                    observer.onError(new TestException());
-                    observer.onComplete();
+                    subscriber.onNext(1);
+                    subscriber.onNext(2);
+                    subscriber.onError(new TestException());
+                    subscriber.onComplete();
                 }
             }
             .elementAt(0, 1)

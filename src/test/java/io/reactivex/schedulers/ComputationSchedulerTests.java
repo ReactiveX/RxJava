@@ -91,9 +91,9 @@ public class ComputationSchedulerTests extends AbstractSchedulerConcurrencyTests
 
     @Test
     public final void testComputationThreadPool1() {
-        Flowable<Integer> o1 = Flowable.<Integer> just(1, 2, 3, 4, 5);
-        Flowable<Integer> o2 = Flowable.<Integer> just(6, 7, 8, 9, 10);
-        Flowable<String> o = Flowable.<Integer> merge(o1, o2).map(new Function<Integer, String>() {
+        Flowable<Integer> f1 = Flowable.<Integer> just(1, 2, 3, 4, 5);
+        Flowable<Integer> f2 = Flowable.<Integer> just(6, 7, 8, 9, 10);
+        Flowable<String> f = Flowable.<Integer> merge(f1, f2).map(new Function<Integer, String>() {
 
             @Override
             public String apply(Integer t) {
@@ -102,7 +102,7 @@ public class ComputationSchedulerTests extends AbstractSchedulerConcurrencyTests
             }
         });
 
-        o.subscribeOn(Schedulers.computation()).blockingForEach(new Consumer<String>() {
+        f.subscribeOn(Schedulers.computation()).blockingForEach(new Consumer<String>() {
 
             @Override
             public void accept(String t) {
@@ -117,9 +117,9 @@ public class ComputationSchedulerTests extends AbstractSchedulerConcurrencyTests
 
         final String currentThreadName = Thread.currentThread().getName();
 
-        Flowable<Integer> o1 = Flowable.<Integer> just(1, 2, 3, 4, 5);
-        Flowable<Integer> o2 = Flowable.<Integer> just(6, 7, 8, 9, 10);
-        Flowable<String> o = Flowable.<Integer> merge(o1, o2).subscribeOn(Schedulers.computation()).map(new Function<Integer, String>() {
+        Flowable<Integer> f1 = Flowable.<Integer> just(1, 2, 3, 4, 5);
+        Flowable<Integer> f2 = Flowable.<Integer> just(6, 7, 8, 9, 10);
+        Flowable<String> f = Flowable.<Integer> merge(f1, f2).subscribeOn(Schedulers.computation()).map(new Function<Integer, String>() {
 
             @Override
             public String apply(Integer t) {
@@ -129,7 +129,7 @@ public class ComputationSchedulerTests extends AbstractSchedulerConcurrencyTests
             }
         });
 
-        o.blockingForEach(new Consumer<String>() {
+        f.blockingForEach(new Consumer<String>() {
 
             @Override
             public void accept(String t) {

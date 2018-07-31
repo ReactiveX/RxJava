@@ -35,15 +35,15 @@ public class FlowableTimeIntervalTest {
     private Subscriber<Timed<Integer>> subscriber;
 
     private TestScheduler testScheduler;
-    private PublishProcessor<Integer> subject;
+    private PublishProcessor<Integer> processor;
     private Flowable<Timed<Integer>> flowable;
 
     @Before
     public void setUp() {
         subscriber = TestHelper.mockSubscriber();
         testScheduler = new TestScheduler();
-        subject = PublishProcessor.create();
-        flowable = subject.timeInterval(testScheduler);
+        processor = PublishProcessor.create();
+        flowable = processor.timeInterval(testScheduler);
     }
 
     @Test
@@ -52,12 +52,12 @@ public class FlowableTimeIntervalTest {
         flowable.subscribe(subscriber);
 
         testScheduler.advanceTimeBy(1000, TIME_UNIT);
-        subject.onNext(1);
+        processor.onNext(1);
         testScheduler.advanceTimeBy(2000, TIME_UNIT);
-        subject.onNext(2);
+        processor.onNext(2);
         testScheduler.advanceTimeBy(3000, TIME_UNIT);
-        subject.onNext(3);
-        subject.onComplete();
+        processor.onNext(3);
+        processor.onComplete();
 
         inOrder.verify(subscriber, times(1)).onNext(
                 new Timed<Integer>(1, 1000, TIME_UNIT));

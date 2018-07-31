@@ -180,7 +180,7 @@ public class FlowableDoOnEachTest {
 //                        public Flowable<?> apply(Integer integer) {
 //                            return Flowable.create(new Publisher<Object>() {
 //                                @Override
-//                                public void subscribe(Subscriber<Object> o) {
+//                                public void subscribe(Subscriber<Object> subscriber) {
 //                                    throw new NullPointerException("Test NPE");
 //                                }
 //                            });
@@ -728,8 +728,8 @@ public class FlowableDoOnEachTest {
     public void doubleOnSubscribe() {
         TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Flowable<Object>>() {
             @Override
-            public Flowable<Object> apply(Flowable<Object> o) throws Exception {
-                return o.doOnEach(new TestSubscriber<Object>());
+            public Flowable<Object> apply(Flowable<Object> f) throws Exception {
+                return f.doOnEach(new TestSubscriber<Object>());
             }
         });
     }

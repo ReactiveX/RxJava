@@ -51,15 +51,15 @@ public class FlowableCountTest {
     public void doubleOnSubscribe() {
         TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Flowable<Long>>() {
             @Override
-            public Flowable<Long> apply(Flowable<Object> o) throws Exception {
-                return o.count().toFlowable();
+            public Flowable<Long> apply(Flowable<Object> f) throws Exception {
+                return f.count().toFlowable();
             }
         });
 
         TestHelper.checkDoubleOnSubscribeFlowableToSingle(new Function<Flowable<Object>, SingleSource<Long>>() {
             @Override
-            public SingleSource<Long> apply(Flowable<Object> o) throws Exception {
-                return o.count();
+            public SingleSource<Long> apply(Flowable<Object> f) throws Exception {
+                return f.count();
             }
         });
     }

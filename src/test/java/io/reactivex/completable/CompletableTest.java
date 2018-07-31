@@ -2465,8 +2465,8 @@ public class CompletableTest {
         }).retryWhen(new Function<Flowable<? extends Throwable>, Publisher<Object>>() {
             @SuppressWarnings({ "rawtypes", "unchecked" })
             @Override
-            public Publisher<Object> apply(Flowable<? extends Throwable> o) {
-                return (Publisher)o;
+            public Publisher<Object> apply(Flowable<? extends Throwable> f) {
+                return (Publisher)f;
             }
         });
 

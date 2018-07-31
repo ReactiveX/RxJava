@@ -95,14 +95,14 @@ public class FlowableRangeLongTest {
 
     @Test
     public void testBackpressureViaRequest() {
-        Flowable<Long> o = Flowable.rangeLong(1, Flowable.bufferSize());
+        Flowable<Long> f = Flowable.rangeLong(1, Flowable.bufferSize());
 
         TestSubscriber<Long> ts = new TestSubscriber<Long>(0L);
 
         ts.assertNoValues();
         ts.request(1);
 
-        o.subscribe(ts);
+        f.subscribe(ts);
 
         ts.assertValue(1L);
 
@@ -123,14 +123,14 @@ public class FlowableRangeLongTest {
             list.add(i);
         }
 
-        Flowable<Long> o = Flowable.rangeLong(1, list.size());
+        Flowable<Long> f = Flowable.rangeLong(1, list.size());
 
         TestSubscriber<Long> ts = new TestSubscriber<Long>(0L);
 
         ts.assertNoValues();
         ts.request(Long.MAX_VALUE); // infinite
 
-        o.subscribe(ts);
+        f.subscribe(ts);
 
         ts.assertValueSequence(list);
         ts.assertTerminated();

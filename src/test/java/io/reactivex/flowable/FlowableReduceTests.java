@@ -25,8 +25,8 @@ public class FlowableReduceTests {
 
     @Test
     public void reduceIntsFlowable() {
-        Flowable<Integer> o = Flowable.just(1, 2, 3);
-        int value = o.reduce(new BiFunction<Integer, Integer, Integer>() {
+        Flowable<Integer> f = Flowable.just(1, 2, 3);
+        int value = f.reduce(new BiFunction<Integer, Integer, Integer>() {
             @Override
             public Integer apply(Integer t1, Integer t2) {
                 return t1 + t2;
@@ -80,8 +80,8 @@ public class FlowableReduceTests {
 
     @Test
     public void reduceInts() {
-        Flowable<Integer> o = Flowable.just(1, 2, 3);
-        int value = o.reduce(new BiFunction<Integer, Integer, Integer>() {
+        Flowable<Integer> f = Flowable.just(1, 2, 3);
+        int value = f.reduce(new BiFunction<Integer, Integer, Integer>() {
             @Override
             public Integer apply(Integer t1, Integer t2) {
                 return t1 + t2;

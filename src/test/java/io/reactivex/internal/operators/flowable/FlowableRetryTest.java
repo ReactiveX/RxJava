@@ -356,8 +356,8 @@ public class FlowableRetryTest {
         doThrow(new RuntimeException()).when(throwException).accept(Mockito.anyInt());
 
         // create a retrying observable based on a PublishProcessor
-        PublishProcessor<Integer> subject = PublishProcessor.create();
-        subject
+        PublishProcessor<Integer> processor = PublishProcessor.create();
+        processor
         // record item
         .doOnNext(record)
         // throw a RuntimeException
@@ -369,13 +369,13 @@ public class FlowableRetryTest {
 
         inOrder.verifyNoMoreInteractions();
 
-        subject.onNext(1);
+        processor.onNext(1);
         inOrder.verify(record).accept(1);
 
-        subject.onNext(2);
+        processor.onNext(2);
         inOrder.verify(record).accept(2);
 
-        subject.onNext(3);
+        processor.onNext(3);
         inOrder.verify(record).accept(3);
 
         inOrder.verifyNoMoreInteractions();
@@ -391,8 +391,8 @@ public class FlowableRetryTest {
         }
 
         @Override
-        public void subscribe(final Subscriber<? super String> o) {
-            o.onSubscribe(new Subscription() {
+        public void subscribe(final Subscriber<? super String> subscriber) {
+            subscriber.onSubscribe(new Subscription() {
                 final AtomicLong req = new AtomicLong();
                 // 0 = not set, 1 = fast path, 2 = backpressure
                 final AtomicInteger path = new AtomicInteger(0);
@@ -401,30 +401,30 @@ public class FlowableRetryTest {
                 @Override
                 public void request(long n) {
                     if (n == Long.MAX_VALUE && path.compareAndSet(0, 1)) {
-                        o.onNext("beginningEveryTime");
+                        subscriber.onNext("beginningEveryTime");
                         int i = count.getAndIncrement();
                         if (i < numFailures) {
-                            o.onError(new RuntimeException("forced failure: " + (i + 1)));
+                            subscriber.onError(new RuntimeException("forced failure: " + (i + 1)));
                         } else {
-                            o.onNext("onSuccessOnly");
-                            o.onComplete();
+                            subscriber.onNext("onSuccessOnly");
+                            subscriber.onComplete();
                         }
                         return;
                     }
                     if (n > 0 && req.getAndAdd(n) == 0 && (path.get() == 2 || path.compareAndSet(0, 2)) && !done) {
                         int i = count.getAndIncrement();
                         if (i < numFailures) {
-                            o.onNext("beginningEveryTime");
-                            o.onError(new RuntimeException("forced failure: " + (i + 1)));
+                            subscriber.onNext("beginningEveryTime");
+                            subscriber.onError(new RuntimeException("forced failure: " + (i + 1)));
                             done = true;
                         } else {
                             do {
                                 if (i == numFailures) {
-                                    o.onNext("beginningEveryTime");
+                                    subscriber.onNext("beginningEveryTime");
                                 } else
                                 if (i > numFailures) {
-                                    o.onNext("onSuccessOnly");
-                                    o.onComplete();
+                                    subscriber.onNext("onSuccessOnly");
+                                    subscriber.onComplete();
                                     done = true;
                                     break;
                                 }
@@ -444,17 +444,17 @@ public class FlowableRetryTest {
 
     @Test
     public void testUnsubscribeFromRetry() {
-        PublishProcessor<Integer> subject = PublishProcessor.create();
+        PublishProcessor<Integer> processor = PublishProcessor.create();
         final AtomicInteger count = new AtomicInteger(0);
-        Disposable sub = subject.retry().subscribe(new Consumer<Integer>() {
+        Disposable sub = processor.retry().subscribe(new Consumer<Integer>() {
             @Override
             public void accept(Integer n) {
                 count.incrementAndGet();
             }
         });
-        subject.onNext(1);
+        processor.onNext(1);
         sub.dispose();
-        subject.onNext(2);
+        processor.onNext(2);
         assertEquals(1, count.get());
     }
 
@@ -664,11 +664,11 @@ public class FlowableRetryTest {
 
         // Flowable that always fails after 100ms
         SlowFlowable so = new SlowFlowable(100, 0);
-        Flowable<Long> o = Flowable.unsafeCreate(so).retry(5);
+        Flowable<Long> f = Flowable.unsafeCreate(so).retry(5);
 
         AsyncSubscriber<Long> async = new AsyncSubscriber<Long>(subscriber);
 
-        o.subscribe(async);
+        f.subscribe(async);
 
         async.await();
 
@@ -687,12 +687,12 @@ public class FlowableRetryTest {
         Subscriber<Long> subscriber = TestHelper.mockSubscriber();
 
         // Flowable that sends every 100ms (timeout fails instead)
-        SlowFlowable so = new SlowFlowable(100, 10);
-        Flowable<Long> o = Flowable.unsafeCreate(so).timeout(80, TimeUnit.MILLISECONDS).retry(5);
+        SlowFlowable sf = new SlowFlowable(100, 10);
+        Flowable<Long> f = Flowable.unsafeCreate(sf).timeout(80, TimeUnit.MILLISECONDS).retry(5);
 
         AsyncSubscriber<Long> async = new AsyncSubscriber<Long>(subscriber);
 
-        o.subscribe(async);
+        f.subscribe(async);
 
         async.await();
 
@@ -701,7 +701,7 @@ public class FlowableRetryTest {
         inOrder.verify(subscriber, times(1)).onError(any(Throwable.class));
         inOrder.verify(subscriber, never()).onComplete();
 
-        assertEquals("Start 6 threads, retry 5 then fail on 6", 6, so.efforts.get());
+        assertEquals("Start 6 threads, retry 5 then fail on 6", 6, sf.efforts.get());
     }
 
     @Test//(timeout = 15000)
@@ -878,12 +878,12 @@ public class FlowableRetryTest {
         Flowable<String> origin = Flowable.unsafeCreate(new Publisher<String>() {
 
             @Override
-            public void subscribe(Subscriber<? super String> o) {
-                o.onSubscribe(new BooleanSubscription());
+            public void subscribe(Subscriber<? super String> subscriber) {
+                subscriber.onSubscribe(new BooleanSubscription());
                 for (int i = 0; i < NUM_MSG; i++) {
-                    o.onNext("msg:" + count.incrementAndGet());
+                    subscriber.onNext("msg:" + count.incrementAndGet());
                 }
-                o.onComplete();
+                subscriber.onComplete();
             }
         });
 
@@ -923,8 +923,8 @@ public class FlowableRetryTest {
         .concatWith(Flowable.<Integer>error(new TestException()))
         .retryWhen((Function)new Function<Flowable, Flowable>() {
             @Override
-            public Flowable apply(Flowable o) {
-                return o.take(2);
+            public Flowable apply(Flowable f) {
+                return f.take(2);
             }
         }).subscribe(ts);
 
@@ -944,8 +944,8 @@ public class FlowableRetryTest {
         .subscribeOn(Schedulers.trampoline())
         .retryWhen((Function)new Function<Flowable, Flowable>() {
             @Override
-            public Flowable apply(Flowable o) {
-                return o.take(2);
+            public Flowable apply(Flowable f) {
+                return f.take(2);
             }
         }).subscribe(ts);
 
@@ -1000,7 +1000,7 @@ public class FlowableRetryTest {
 
     @Test
     public void shouldDisposeInnerObservable() {
-      final PublishProcessor<Object> subject = PublishProcessor.create();
+      final PublishProcessor<Object> processor = PublishProcessor.create();
       final Disposable disposable = Flowable.error(new RuntimeException("Leak"))
           .retryWhen(new Function<Flowable<Throwable>, Flowable<Object>>() {
             @Override
@@ -1008,15 +1008,15 @@ public class FlowableRetryTest {
                 return errors.switchMap(new Function<Throwable, Flowable<Object>>() {
                     @Override
                     public Flowable<Object> apply(Throwable ignore) throws Exception {
-                        return subject;
+                        return processor;
                     }
                 });
             }
         })
           .subscribe();
 
-      assertTrue(subject.hasSubscribers());
+      assertTrue(processor.hasSubscribers());
       disposable.dispose();
-      assertFalse(subject.hasSubscribers());
+      assertFalse(processor.hasSubscribers());
     }
 }

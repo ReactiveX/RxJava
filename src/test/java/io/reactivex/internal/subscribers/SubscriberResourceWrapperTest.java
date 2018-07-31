@@ -88,8 +88,8 @@ public class SubscriberResourceWrapperTest {
     public void doubleOnSubscribe() {
         TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Flowable<Object>>() {
             @Override
-            public Flowable<Object> apply(Flowable<Object> o) throws Exception {
-                return o.lift(new FlowableOperator<Object, Object>() {
+            public Flowable<Object> apply(Flowable<Object> f) throws Exception {
+                return f.lift(new FlowableOperator<Object, Object>() {
                     @Override
                     public Subscriber<? super Object> apply(
                             Subscriber<? super Object> s) throws Exception {

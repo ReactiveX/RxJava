@@ -47,13 +47,13 @@ public class FlowableThrottleFirstTest {
     public void testThrottlingWithCompleted() {
         Flowable<String> source = Flowable.unsafeCreate(new Publisher<String>() {
             @Override
-            public void subscribe(Subscriber<? super String> observer) {
-                observer.onSubscribe(new BooleanSubscription());
-                publishNext(observer, 100, "one");    // publish as it's first
-                publishNext(observer, 300, "two");    // skip as it's last within the first 400
-                publishNext(observer, 900, "three");   // publish
-                publishNext(observer, 905, "four");   // skip
-                publishCompleted(observer, 1000);     // Should be published as soon as the timeout expires.
+            public void subscribe(Subscriber<? super String> subscriber) {
+                subscriber.onSubscribe(new BooleanSubscription());
+                publishNext(subscriber, 100, "one");    // publish as it's first
+                publishNext(subscriber, 300, "two");    // skip as it's last within the first 400
+                publishNext(subscriber, 900, "three");   // publish
+                publishNext(subscriber, 905, "four");   // skip
+                publishCompleted(subscriber, 1000);     // Should be published as soon as the timeout expires.
             }
         });
 
@@ -75,12 +75,12 @@ public class FlowableThrottleFirstTest {
     public void testThrottlingWithError() {
         Flowable<String> source = Flowable.unsafeCreate(new Publisher<String>() {
             @Override
-            public void subscribe(Subscriber<? super String> observer) {
-                observer.onSubscribe(new BooleanSubscription());
+            public void subscribe(Subscriber<? super String> subscriber) {
+                subscriber.onSubscribe(new BooleanSubscription());
                 Exception error = new TestException();
-                publishNext(observer, 100, "one");    // Should be published since it is first
-                publishNext(observer, 200, "two");    // Should be skipped since onError will arrive before the timeout expires
-                publishError(observer, 300, error);   // Should be published as soon as the timeout expires.
+                publishNext(subscriber, 100, "one");    // Should be published since it is first
+                publishNext(subscriber, 200, "two");    // Should be skipped since onError will arrive before the timeout expires
+                publishError(subscriber, 300, error);   // Should be published as soon as the timeout expires.
             }
         });
 
@@ -95,29 +95,29 @@ public class FlowableThrottleFirstTest {
         inOrder.verifyNoMoreInteractions();
     }
 
-    private <T> void publishCompleted(final Subscriber<T> observer, long delay) {
+    private <T> void publishCompleted(final Subscriber<T> subscriber, long delay) {
         innerScheduler.schedule(new Runnable() {
             @Override
             public void run() {
-                observer.onComplete();
+                subscriber.onComplete();
             }
         }, delay, TimeUnit.MILLISECONDS);
     }
 
-    private <T> void publishError(final Subscriber<T> observer, long delay, final Exception error) {
+    private <T> void publishError(final Subscriber<T> subscriber, long delay, final Exception error) {
         innerScheduler.schedule(new Runnable() {
             @Override
             public void run() {
-                observer.onError(error);
+                subscriber.onError(error);
             }
         }, delay, TimeUnit.MILLISECONDS);
     }
 
-    private <T> void publishNext(final Subscriber<T> observer, long delay, final T value) {
+    private <T> void publishNext(final Subscriber<T> subscriber, long delay, final T value) {
         innerScheduler.schedule(new Runnable() {
             @Override
             public void run() {
-                observer.onNext(value);
+                subscriber.onNext(value);
             }
         }, delay, TimeUnit.MILLISECONDS);
     }
@@ -173,14 +173,14 @@ public class FlowableThrottleFirstTest {
         try {
             new Flowable<Integer>() {
                 @Override
-                protected void subscribeActual(Subscriber<? super Integer> observer) {
-                    observer.onSubscribe(new BooleanSubscription());
-                    observer.onNext(1);
-                    observer.onNext(2);
-                    observer.onComplete();
-                    observer.onNext(3);
-                    observer.onError(new TestException());
-                    observer.onComplete();
+                protected void subscribeActual(Subscriber<? super Integer> subscriber) {
+                    subscriber.onSubscribe(new BooleanSubscription());
+                    subscriber.onNext(1);
+                    subscriber.onNext(2);
+                    subscriber.onComplete();
+                    subscriber.onNext(3);
+                    subscriber.onError(new TestException());
+                    subscriber.onComplete();
                 }
             }
             .throttleFirst(1, TimeUnit.DAYS)

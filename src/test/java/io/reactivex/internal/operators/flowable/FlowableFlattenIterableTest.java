@@ -583,8 +583,8 @@ public class FlowableFlattenIterableTest {
     public void badSource() {
         TestHelper.checkBadSourceFlowable(new Function<Flowable<Integer>, Object>() {
             @Override
-            public Object apply(Flowable<Integer> o) throws Exception {
-                return o.flatMapIterable(new Function<Object, Iterable<Integer>>() {
+            public Object apply(Flowable<Integer> f) throws Exception {
+                return f.flatMapIterable(new Function<Object, Iterable<Integer>>() {
                     @Override
                     public Iterable<Integer> apply(Object v) throws Exception {
                         return Arrays.asList(10, 20);

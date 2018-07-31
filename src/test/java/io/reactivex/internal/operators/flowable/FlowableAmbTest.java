@@ -102,11 +102,11 @@ public class FlowableAmbTest {
                 "3", "33", "333", "3333" }, 3000, null);
 
         @SuppressWarnings("unchecked")
-        Flowable<String> o = Flowable.ambArray(flowable1,
+        Flowable<String> f = Flowable.ambArray(flowable1,
                 flowable2, flowable3);
 
         Subscriber<String> subscriber = TestHelper.mockSubscriber();
-        o.subscribe(subscriber);
+        f.subscribe(subscriber);
 
         scheduler.advanceTimeBy(100000, TimeUnit.MILLISECONDS);
 
@@ -131,11 +131,11 @@ public class FlowableAmbTest {
                 3000, new IOException("fake exception"));
 
         @SuppressWarnings("unchecked")
-        Flowable<String> o = Flowable.ambArray(flowable1,
+        Flowable<String> f = Flowable.ambArray(flowable1,
                 flowable2, flowable3);
 
         Subscriber<String> subscriber = TestHelper.mockSubscriber();
-        o.subscribe(subscriber);
+        f.subscribe(subscriber);
 
         scheduler.advanceTimeBy(100000, TimeUnit.MILLISECONDS);
 
@@ -158,11 +158,11 @@ public class FlowableAmbTest {
                 "3" }, 3000, null);
 
         @SuppressWarnings("unchecked")
-        Flowable<String> o = Flowable.ambArray(flowable1,
+        Flowable<String> f = Flowable.ambArray(flowable1,
                 flowable2, flowable3);
 
         Subscriber<String> subscriber = TestHelper.mockSubscriber();
-        o.subscribe(subscriber);
+        f.subscribe(subscriber);
 
         scheduler.advanceTimeBy(100000, TimeUnit.MILLISECONDS);
         InOrder inOrder = inOrder(subscriber);
@@ -177,7 +177,7 @@ public class FlowableAmbTest {
         ts.request(3);
         final AtomicLong requested1 = new AtomicLong();
         final AtomicLong requested2 = new AtomicLong();
-        Flowable<Integer> o1 = Flowable.unsafeCreate(new Publisher<Integer>() {
+        Flowable<Integer> f1 = Flowable.unsafeCreate(new Publisher<Integer>() {
 
             @Override
             public void subscribe(Subscriber<? super Integer> s) {
@@ -197,7 +197,7 @@ public class FlowableAmbTest {
             }
 
         });
-        Flowable<Integer> o2 = Flowable.unsafeCreate(new Publisher<Integer>() {
+        Flowable<Integer> f2 = Flowable.unsafeCreate(new Publisher<Integer>() {
 
             @Override
             public void subscribe(Subscriber<? super Integer> s) {
@@ -217,7 +217,7 @@ public class FlowableAmbTest {
             }
 
         });
-        Flowable.ambArray(o1, o2).subscribe(ts);
+        Flowable.ambArray(f1, f2).subscribe(ts);
         assertEquals(3, requested1.get());
         assertEquals(3, requested2.get());
     }
@@ -249,13 +249,13 @@ public class FlowableAmbTest {
         };
 
         //this aync stream should emit first
-        Flowable<Integer> o1 = Flowable.just(1).doOnSubscribe(incrementer)
+        Flowable<Integer> f1 = Flowable.just(1).doOnSubscribe(incrementer)
                 .delay(100, TimeUnit.MILLISECONDS).subscribeOn(Schedulers.computation());
         //this stream emits second
-        Flowable<Integer> o2 = Flowable.just(1).doOnSubscribe(incrementer)
+        Flowable<Integer> f2 = Flowable.just(1).doOnSubscribe(incrementer)
                 .delay(100, TimeUnit.MILLISECONDS).subscribeOn(Schedulers.computation());
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
-        Flowable.ambArray(o1, o2).subscribe(ts);
+        Flowable.ambArray(f1, f2).subscribe(ts);
         ts.request(1);
         ts.awaitTerminalEvent(5, TimeUnit.SECONDS);
         ts.assertNoErrors();
@@ -266,14 +266,14 @@ public class FlowableAmbTest {
     @Test
     public void testSecondaryRequestsPropagatedToChildren() throws InterruptedException {
         //this aync stream should emit first
-        Flowable<Integer> o1 = Flowable.fromArray(1, 2, 3)
+        Flowable<Integer> f1 = Flowable.fromArray(1, 2, 3)
                 .delay(100, TimeUnit.MILLISECONDS).subscribeOn(Schedulers.computation());
         //this stream emits second
-        Flowable<Integer> o2 = Flowable.fromArray(4, 5, 6)
+        Flowable<Integer> f2 = Flowable.fromArray(4, 5, 6)
                 .delay(200, TimeUnit.MILLISECONDS).subscribeOn(Schedulers.computation());
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>(1L);
 
-        Flowable.ambArray(o1, o2).subscribe(ts);
+        Flowable.ambArray(f1, f2).subscribe(ts);
         // before first emission request 20 more
         // this request should suffice to emit all
         ts.request(20);

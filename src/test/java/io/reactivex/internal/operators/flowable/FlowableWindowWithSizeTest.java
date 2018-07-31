@@ -204,7 +204,7 @@ public class FlowableWindowWithSizeTest {
 
         final List<Integer> list = new ArrayList<Integer>();
 
-        final Subscriber<Integer> o = TestHelper.mockSubscriber();
+        final Subscriber<Integer> subscriber = TestHelper.mockSubscriber();
 
         source.subscribe(new DefaultSubscriber<Flowable<Integer>>() {
             @Override
@@ -220,28 +220,28 @@ public class FlowableWindowWithSizeTest {
                     }
                     @Override
                     public void onError(Throwable e) {
-                        o.onError(e);
+                        subscriber.onError(e);
                     }
                     @Override
                     public void onComplete() {
-                        o.onComplete();
+                        subscriber.onComplete();
                     }
                 });
             }
             @Override
             public void onError(Throwable e) {
-                o.onError(e);
+                subscriber.onError(e);
             }
             @Override
             public void onComplete() {
-                o.onComplete();
+                subscriber.onComplete();
             }
         });
 
         assertEquals(Arrays.asList(1, 2, 3), list);
 
-        verify(o, never()).onError(any(Throwable.class));
-        verify(o, times(1)).onComplete(); // 1 inner
+        verify(subscriber, never()).onError(any(Throwable.class));
+        verify(subscriber, times(1)).onComplete(); // 1 inner
     }
 
     public static Flowable<Integer> hotStream() {
@@ -343,22 +343,22 @@ public class FlowableWindowWithSizeTest {
     public void doubleOnSubscribe() {
         TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Flowable<Flowable<Object>>>() {
             @Override
-            public Flowable<Flowable<Object>> apply(Flowable<Object> o) throws Exception {
-                return o.window(1);
+            public Flowable<Flowable<Object>> apply(Flowable<Object> f) throws Exception {
+                return f.window(1);
             }
         });
 
         TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Flowable<Flowable<Object>>>() {
             @Override
-            public Flowable<Flowable<Object>> apply(Flowable<Object> o) throws Exception {
-                return o.window(2, 1);
+            public Flowable<Flowable<Object>> apply(Flowable<Object> f) throws Exception {
+                return f.window(2, 1);
             }
         });
 
         TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Flowable<Flowable<Object>>>() {
             @Override
-            public Flowable<Flowable<Object>> apply(Flowable<Object> o) throws Exception {
-                return o.window(1, 2);
+            public Flowable<Flowable<Object>> apply(Flowable<Object> f) throws Exception {
+                return f.window(1, 2);
             }
         });
     }

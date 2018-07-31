@@ -59,16 +59,16 @@ public class FlowableRetryWithPredicateTest {
     public void testWithNothingToRetry() {
         Flowable<Integer> source = Flowable.range(0, 3);
 
-        Subscriber<Integer> o = TestHelper.mockSubscriber();
-        InOrder inOrder = inOrder(o);
+        Subscriber<Integer> subscriber = TestHelper.mockSubscriber();
+        InOrder inOrder = inOrder(subscriber);
 
-        source.retry(retryTwice).subscribe(o);
+        source.retry(retryTwice).subscribe(subscriber);
 
-        inOrder.verify(o).onNext(0);
-        inOrder.verify(o).onNext(1);
-        inOrder.verify(o).onNext(2);
-        inOrder.verify(o).onComplete();
-        verify(o, never()).onError(any(Throwable.class));
+        inOrder.verify(subscriber).onNext(0);
+        inOrder.verify(subscriber).onNext(1);
+        inOrder.verify(subscriber).onNext(2);
+        inOrder.verify(subscriber).onComplete();
+        verify(subscriber, never()).onError(any(Throwable.class));
     }
     @Test
     public void testRetryTwice() {
@@ -90,19 +90,19 @@ public class FlowableRetryWithPredicateTest {
             }
         });
 
-        Subscriber<Integer> o = TestHelper.mockSubscriber();
-        InOrder inOrder = inOrder(o);
+        Subscriber<Integer> subscriber = TestHelper.mockSubscriber();
+        InOrder inOrder = inOrder(subscriber);
 
-        source.retry(retryTwice).subscribe(o);
+        source.retry(retryTwice).subscribe(subscriber);
 
-        inOrder.verify(o).onNext(0);
-        inOrder.verify(o).onNext(1);
-        inOrder.verify(o).onNext(0);
-        inOrder.verify(o).onNext(1);
-        inOrder.verify(o).onNext(2);
-        inOrder.verify(o).onNext(3);
-        inOrder.verify(o).onComplete();
-        verify(o, never()).onError(any(Throwable.class));
+        inOrder.verify(subscriber).onNext(0);
+        inOrder.verify(subscriber).onNext(1);
+        inOrder.verify(subscriber).onNext(0);
+        inOrder.verify(subscriber).onNext(1);
+        inOrder.verify(subscriber).onNext(2);
+        inOrder.verify(subscriber).onNext(3);
+        inOrder.verify(subscriber).onComplete();
+        verify(subscriber, never()).onError(any(Throwable.class));
 
     }
     @Test
@@ -117,19 +117,19 @@ public class FlowableRetryWithPredicateTest {
             }
         });
 
-        Subscriber<Integer> o = TestHelper.mockSubscriber();
-        InOrder inOrder = inOrder(o);
+        Subscriber<Integer> subscriber = TestHelper.mockSubscriber();
+        InOrder inOrder = inOrder(subscriber);
 
-        source.retry(retryTwice).subscribe(o);
+        source.retry(retryTwice).subscribe(subscriber);
 
-        inOrder.verify(o).onNext(0);
-        inOrder.verify(o).onNext(1);
-        inOrder.verify(o).onNext(0);
-        inOrder.verify(o).onNext(1);
-        inOrder.verify(o).onNext(0);
-        inOrder.verify(o).onNext(1);
-        inOrder.verify(o).onError(any(TestException.class));
-        verify(o, never()).onComplete();
+        inOrder.verify(subscriber).onNext(0);
+        inOrder.verify(subscriber).onNext(1);
+        inOrder.verify(subscriber).onNext(0);
+        inOrder.verify(subscriber).onNext(1);
+        inOrder.verify(subscriber).onNext(0);
+        inOrder.verify(subscriber).onNext(1);
+        inOrder.verify(subscriber).onError(any(TestException.class));
+        verify(subscriber, never()).onComplete();
 
     }
     @Test
@@ -152,19 +152,19 @@ public class FlowableRetryWithPredicateTest {
             }
         });
 
-        Subscriber<Integer> o = TestHelper.mockSubscriber();
-        InOrder inOrder = inOrder(o);
+        Subscriber<Integer> subscriber = TestHelper.mockSubscriber();
+        InOrder inOrder = inOrder(subscriber);
 
-        source.retry(retryOnTestException).subscribe(o);
+        source.retry(retryOnTestException).subscribe(subscriber);
 
-        inOrder.verify(o).onNext(0);
-        inOrder.verify(o).onNext(1);
-        inOrder.verify(o).onNext(0);
-        inOrder.verify(o).onNext(1);
-        inOrder.verify(o).onNext(2);
-        inOrder.verify(o).onNext(3);
-        inOrder.verify(o).onComplete();
-        verify(o, never()).onError(any(Throwable.class));
+        inOrder.verify(subscriber).onNext(0);
+        inOrder.verify(subscriber).onNext(1);
+        inOrder.verify(subscriber).onNext(0);
+        inOrder.verify(subscriber).onNext(1);
+        inOrder.verify(subscriber).onNext(2);
+        inOrder.verify(subscriber).onNext(3);
+        inOrder.verify(subscriber).onComplete();
+        verify(subscriber, never()).onError(any(Throwable.class));
     }
     @Test
     public void testRetryOnSpecificExceptionAndNotOther() {
@@ -188,35 +188,35 @@ public class FlowableRetryWithPredicateTest {
             }
         });
 
-        Subscriber<Integer> o = TestHelper.mockSubscriber();
-        InOrder inOrder = inOrder(o);
+        Subscriber<Integer> subscriber = TestHelper.mockSubscriber();
+        InOrder inOrder = inOrder(subscriber);
 
-        source.retry(retryOnTestException).subscribe(o);
+        source.retry(retryOnTestException).subscribe(subscriber);
 
-        inOrder.verify(o).onNext(0);
-        inOrder.verify(o).onNext(1);
-        inOrder.verify(o).onNext(0);
-        inOrder.verify(o).onNext(1);
-        inOrder.verify(o).onNext(2);
-        inOrder.verify(o).onNext(3);
-        inOrder.verify(o).onError(te);
-        verify(o, never()).onError(ioe);
-        verify(o, never()).onComplete();
+        inOrder.verify(subscriber).onNext(0);
+        inOrder.verify(subscriber).onNext(1);
+        inOrder.verify(subscriber).onNext(0);
+        inOrder.verify(subscriber).onNext(1);
+        inOrder.verify(subscriber).onNext(2);
+        inOrder.verify(subscriber).onNext(3);
+        inOrder.verify(subscriber).onError(te);
+        verify(subscriber, never()).onError(ioe);
+        verify(subscriber, never()).onComplete();
     }
 
     @Test
     public void testUnsubscribeFromRetry() {
-        PublishProcessor<Integer> subject = PublishProcessor.create();
+        PublishProcessor<Integer> processor = PublishProcessor.create();
         final AtomicInteger count = new AtomicInteger(0);
-        Disposable sub = subject.retry(retryTwice).subscribe(new Consumer<Integer>() {
+        Disposable sub = processor.retry(retryTwice).subscribe(new Consumer<Integer>() {
             @Override
             public void accept(Integer n) {
                 count.incrementAndGet();
             }
         });
-        subject.onNext(1);
+        processor.onNext(1);
         sub.dispose();
-        subject.onNext(2);
+        processor.onNext(2);
         assertEquals(1, count.get());
     }
 
@@ -227,13 +227,13 @@ public class FlowableRetryWithPredicateTest {
 
         // Flowable that always fails after 100ms
         FlowableRetryTest.SlowFlowable so = new FlowableRetryTest.SlowFlowable(100, 0);
-        Flowable<Long> o = Flowable
+        Flowable<Long> f = Flowable
                 .unsafeCreate(so)
                 .retry(retry5);
 
         FlowableRetryTest.AsyncSubscriber<Long> async = new FlowableRetryTest.AsyncSubscriber<Long>(subscriber);
 
-        o.subscribe(async);
+        f.subscribe(async);
 
         async.await();
 
@@ -253,14 +253,14 @@ public class FlowableRetryWithPredicateTest {
 
         // Flowable that sends every 100ms (timeout fails instead)
         FlowableRetryTest.SlowFlowable so = new FlowableRetryTest.SlowFlowable(100, 10);
-        Flowable<Long> o = Flowable
+        Flowable<Long> f = Flowable
                 .unsafeCreate(so)
                 .timeout(80, TimeUnit.MILLISECONDS)
                 .retry(retry5);
 
         FlowableRetryTest.AsyncSubscriber<Long> async = new FlowableRetryTest.AsyncSubscriber<Long>(subscriber);
 
-        o.subscribe(async);
+        f.subscribe(async);
 
         async.await();
 

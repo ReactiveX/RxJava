@@ -333,8 +333,8 @@ public class FlowableTakeLastTest {
     public void doubleOnSubscribe() {
         TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Flowable<Object>>() {
             @Override
-            public Flowable<Object> apply(Flowable<Object> o) throws Exception {
-                return o.takeLast(5);
+            public Flowable<Object> apply(Flowable<Object> f) throws Exception {
+                return f.takeLast(5);
             }
         });
     }

@@ -14072,19 +14072,19 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> toFlowable(BackpressureStrategy strategy) {
-        Flowable<T> o = new FlowableFromObservable<T>(this);
+        Flowable<T> f = new FlowableFromObservable<T>(this);
 
         switch (strategy) {
             case DROP:
-                return o.onBackpressureDrop();
+                return f.onBackpressureDrop();
             case LATEST:
-                return o.onBackpressureLatest();
+                return f.onBackpressureLatest();
             case MISSING:
-                return o;
+                return f;
             case ERROR:
-                return RxJavaPlugins.onAssembly(new FlowableOnBackpressureError<T>(o));
+                return RxJavaPlugins.onAssembly(new FlowableOnBackpressureError<T>(f));
             default:
-                return o.onBackpressureBuffer();
+                return f.onBackpressureBuffer();
         }
     }
 

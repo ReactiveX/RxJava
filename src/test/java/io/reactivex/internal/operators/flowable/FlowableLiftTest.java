@@ -33,7 +33,7 @@ public class FlowableLiftTest {
             Flowable.just(1)
             .lift(new FlowableOperator<Object, Integer>() {
                 @Override
-                public Subscriber<? super Integer> apply(Subscriber<? super Object> o) throws Exception {
+                public Subscriber<? super Integer> apply(Subscriber<? super Object> subscriber) throws Exception {
                     throw new TestException();
                 }
             })

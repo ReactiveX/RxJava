@@ -1692,15 +1692,15 @@ public enum TestHelper {
 
             Flowable<T> source = new Flowable<T>() {
                 @Override
-                protected void subscribeActual(Subscriber<? super T> observer) {
+                protected void subscribeActual(Subscriber<? super T> subscriber) {
                     try {
                         BooleanSubscription d1 = new BooleanSubscription();
 
-                        observer.onSubscribe(d1);
+                        subscriber.onSubscribe(d1);
 
                         BooleanSubscription d2 = new BooleanSubscription();
 
-                        observer.onSubscribe(d2);
+                        subscriber.onSubscribe(d2);
 
                         b[0] = d1.isCancelled();
                         b[1] = d2.isCancelled();
@@ -1746,15 +1746,15 @@ public enum TestHelper {
 
             Flowable<T> source = new Flowable<T>() {
                 @Override
-                protected void subscribeActual(Subscriber<? super T> observer) {
+                protected void subscribeActual(Subscriber<? super T> subscriber) {
                     try {
                         BooleanSubscription d1 = new BooleanSubscription();
 
-                        observer.onSubscribe(d1);
+                        subscriber.onSubscribe(d1);
 
                         BooleanSubscription d2 = new BooleanSubscription();
 
-                        observer.onSubscribe(d2);
+                        subscriber.onSubscribe(d2);
 
                         b[0] = d1.isCancelled();
                         b[1] = d2.isCancelled();
@@ -1800,15 +1800,15 @@ public enum TestHelper {
 
             Flowable<T> source = new Flowable<T>() {
                 @Override
-                protected void subscribeActual(Subscriber<? super T> observer) {
+                protected void subscribeActual(Subscriber<? super T> subscriber) {
                     try {
                         BooleanSubscription d1 = new BooleanSubscription();
 
-                        observer.onSubscribe(d1);
+                        subscriber.onSubscribe(d1);
 
                         BooleanSubscription d2 = new BooleanSubscription();
 
-                        observer.onSubscribe(d2);
+                        subscriber.onSubscribe(d2);
 
                         b[0] = d1.isCancelled();
                         b[1] = d2.isCancelled();
@@ -1853,15 +1853,15 @@ public enum TestHelper {
 
             Flowable<T> source = new Flowable<T>() {
                 @Override
-                protected void subscribeActual(Subscriber<? super T> observer) {
+                protected void subscribeActual(Subscriber<? super T> subscriber) {
                     try {
                         BooleanSubscription d1 = new BooleanSubscription();
 
-                        observer.onSubscribe(d1);
+                        subscriber.onSubscribe(d1);
 
                         BooleanSubscription d2 = new BooleanSubscription();
 
-                        observer.onSubscribe(d2);
+                        subscriber.onSubscribe(d2);
 
                         b[0] = d1.isCancelled();
                         b[1] = d2.isCancelled();
@@ -2669,24 +2669,24 @@ public enum TestHelper {
         try {
             Flowable<T> bad = new Flowable<T>() {
                 @Override
-                protected void subscribeActual(Subscriber<? super T> observer) {
-                    observer.onSubscribe(new BooleanSubscription());
+                protected void subscribeActual(Subscriber<? super T> subscriber) {
+                    subscriber.onSubscribe(new BooleanSubscription());
 
                     if (goodValue != null) {
-                        observer.onNext(goodValue);
+                        subscriber.onNext(goodValue);
                     }
 
                     if (error) {
-                        observer.onError(new TestException("error"));
+                        subscriber.onError(new TestException("error"));
                     } else {
-                        observer.onComplete();
+                        subscriber.onComplete();
                     }
 
                     if (badValue != null) {
-                        observer.onNext(badValue);
+                        subscriber.onNext(badValue);
                     }
-                    observer.onError(new TestException("second"));
-                    observer.onComplete();
+                    subscriber.onError(new TestException("second"));
+                    subscriber.onComplete();
                 }
             };
 
@@ -2879,8 +2879,8 @@ public enum TestHelper {
     public static <T> Flowable<T> rejectFlowableFusion() {
         return new Flowable<T>() {
             @Override
-            protected void subscribeActual(Subscriber<? super T> observer) {
-                observer.onSubscribe(new QueueSubscription<T>() {
+            protected void subscribeActual(Subscriber<? super T> subscriber) {
+                subscriber.onSubscribe(new QueueSubscription<T>() {
 
                     @Override
                     public int requestFusion(int mode) {

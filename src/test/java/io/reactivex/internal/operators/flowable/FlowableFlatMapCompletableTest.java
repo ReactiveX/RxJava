@@ -399,8 +399,8 @@ public class FlowableFlatMapCompletableTest {
     public void badSource() {
         TestHelper.checkBadSourceFlowable(new Function<Flowable<Integer>, Object>() {
             @Override
-            public Object apply(Flowable<Integer> o) throws Exception {
-                return o.flatMapCompletable(new Function<Integer, CompletableSource>() {
+            public Object apply(Flowable<Integer> f) throws Exception {
+                return f.flatMapCompletable(new Function<Integer, CompletableSource>() {
                     @Override
                     public CompletableSource apply(Integer v) throws Exception {
                         return Completable.complete();
@@ -475,8 +475,8 @@ public class FlowableFlatMapCompletableTest {
     public void badSourceFlowable() {
         TestHelper.checkBadSourceFlowable(new Function<Flowable<Integer>, Object>() {
             @Override
-            public Object apply(Flowable<Integer> o) throws Exception {
-                return o.flatMapCompletable(new Function<Integer, CompletableSource>() {
+            public Object apply(Flowable<Integer> f) throws Exception {
+                return f.flatMapCompletable(new Function<Integer, CompletableSource>() {
                     @Override
                     public CompletableSource apply(Integer v) throws Exception {
                         return Completable.complete();

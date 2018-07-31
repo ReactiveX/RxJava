@@ -191,24 +191,74 @@ public class CheckLocalVariablesInTests {
 
     @Test
     public void subscriberAsObserver() throws Exception {
-        findPattern("Subscriber<.*>\\s+observer(0-9)?\\b");
+        findPattern("Subscriber<.*>\\s+observer[0-9]?\\b");
     }
 
     @Test
     public void subscriberAsO() throws Exception {
-        findPattern("Subscriber<.*>\\s+o(0-9)?\\b");
+        findPattern("Subscriber<.*>\\s+o[0-9]?\\b");
+    }
+
+    @Test
+    public void singleAsObservable() throws Exception {
+        findPattern("Single<.*>\\s+observable\\b");
+    }
+
+    @Test
+    public void singleAsFlowable() throws Exception {
+        findPattern("Single<.*>\\s+flowable\\b");
     }
 
     public void observerAsSubscriber() throws Exception {
-        findPattern("Observer<.*>\\s+subscriber(0-9)?\\b");
+        findPattern("Observer<.*>\\s+subscriber[0-9]?\\b");
     }
 
     public void observerAsS() throws Exception {
-        findPattern("Observer<.*>\\s+s(0-9)?\\b");
+        findPattern("Observer<.*>\\s+s[0-9]?\\b");
     }
 
     @Test
     public void flowableAsObservable() throws Exception {
-        findPattern("Flowable<.*>\\s+observable(0-9)?\\b");
+        findPattern("Flowable<.*>\\s+observable[0-9]?\\b");
+    }
+
+    @Test
+    public void flowableAsO() throws Exception {
+        findPattern("Flowable<.*>\\s+o[0-9]?\\b");
+    }
+
+    @Test
+    public void flowableNoArgAsO() throws Exception {
+        findPattern("Flowable\\s+o[0-9]?\\b");
+    }
+
+    @Test
+    public void flowableNoArgAsObservable() throws Exception {
+        findPattern("Flowable\\s+observable[0-9]?\\b");
+    }
+
+    @Test
+    public void processorAsSubject() throws Exception {
+        findPattern("Processor<.*>\\s+subject(0-9)?\\b");
+    }
+
+    @Test
+    public void maybeAsObservable() throws Exception {
+        findPattern("Maybe<.*>\\s+observable\\b");
+    }
+
+    @Test
+    public void maybeAsFlowable() throws Exception {
+        findPattern("Maybe<.*>\\s+flowable\\b");
+    }
+
+    @Test
+    public void completableAsObservable() throws Exception {
+        findPattern("Completable\\s+observable\\b");
+    }
+
+    @Test
+    public void completableAsFlowable() throws Exception {
+        findPattern("Completable\\s+flowable\\b");
     }
 }

@@ -51,35 +51,35 @@ public class FlowableWithLatestFromTest {
         PublishProcessor<Integer> source = PublishProcessor.create();
         PublishProcessor<Integer> other = PublishProcessor.create();
 
-        Subscriber<Integer> o = TestHelper.mockSubscriber();
-        InOrder inOrder = inOrder(o);
+        Subscriber<Integer> subscriber = TestHelper.mockSubscriber();
+        InOrder inOrder = inOrder(subscriber);
 
         Flowable<Integer> result = source.withLatestFrom(other, COMBINER);
 
-        result.subscribe(o);
+        result.subscribe(subscriber);
 
         source.onNext(1);
-        inOrder.verify(o, never()).onNext(anyInt());
+        inOrder.verify(subscriber, never()).onNext(anyInt());
 
         other.onNext(1);
-        inOrder.verify(o, never()).onNext(anyInt());
+        inOrder.verify(subscriber, never()).onNext(anyInt());
 
         source.onNext(2);
-        inOrder.verify(o).onNext((2 << 8) + 1);
+        inOrder.verify(subscriber).onNext((2 << 8) + 1);
 
         other.onNext(2);
-        inOrder.verify(o, never()).onNext(anyInt());
+        inOrder.verify(subscriber, never()).onNext(anyInt());
 
         other.onComplete();
-        inOrder.verify(o, never()).onComplete();
+        inOrder.verify(subscriber, never()).onComplete();
 
         source.onNext(3);
-        inOrder.verify(o).onNext((3 << 8) + 2);
+        inOrder.verify(subscriber).onNext((3 << 8) + 2);
 
         source.onComplete();
-        inOrder.verify(o).onComplete();
+        inOrder.verify(subscriber).onComplete();
 
-        verify(o, never()).onError(any(Throwable.class));
+        verify(subscriber, never()).onError(any(Throwable.class));
     }
 
     @Test
@@ -641,12 +641,12 @@ public class FlowableWithLatestFromTest {
         try {
             new Flowable<Integer>() {
                 @Override
-                protected void subscribeActual(Subscriber<? super Integer> observer) {
-                    observer.onSubscribe(new BooleanSubscription());
-                    observer.onError(new TestException("First"));
-                    observer.onNext(1);
-                    observer.onError(new TestException("Second"));
-                    observer.onComplete();
+                protected void subscribeActual(Subscriber<? super Integer> subscriber) {
+                    subscriber.onSubscribe(new BooleanSubscription());
+                    subscriber.onError(new TestException("First"));
+                    subscriber.onNext(1);
+                    subscriber.onError(new TestException("Second"));
+                    subscriber.onComplete();
                 }
             }.withLatestFrom(Flowable.just(2), Flowable.just(3), new Function3<Integer, Integer, Integer, Object>() {
                 @Override

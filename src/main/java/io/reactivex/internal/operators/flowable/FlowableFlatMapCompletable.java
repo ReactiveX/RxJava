@@ -50,8 +50,8 @@ public final class FlowableFlatMapCompletable<T> extends AbstractFlowableWithUps
     }
 
     @Override
-    protected void subscribeActual(Subscriber<? super T> observer) {
-        source.subscribe(new FlatMapCompletableMainSubscriber<T>(observer, mapper, delayErrors, maxConcurrency));
+    protected void subscribeActual(Subscriber<? super T> subscriber) {
+        source.subscribe(new FlatMapCompletableMainSubscriber<T>(subscriber, mapper, delayErrors, maxConcurrency));
     }
 
     static final class FlatMapCompletableMainSubscriber<T> extends BasicIntQueueSubscription<T>
@@ -74,10 +74,10 @@ public final class FlowableFlatMapCompletable<T> extends AbstractFlowableWithUps
 
         volatile boolean cancelled;
 
-        FlatMapCompletableMainSubscriber(Subscriber<? super T> observer,
+        FlatMapCompletableMainSubscriber(Subscriber<? super T> subscriber,
                 Function<? super T, ? extends CompletableSource> mapper, boolean delayErrors,
                 int maxConcurrency) {
-            this.actual = observer;
+            this.actual = subscriber;
             this.mapper = mapper;
             this.delayErrors = delayErrors;
             this.errors = new AtomicThrowable();

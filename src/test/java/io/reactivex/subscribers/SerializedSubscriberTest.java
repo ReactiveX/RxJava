@@ -39,8 +39,8 @@ public class SerializedSubscriberTest {
         subscriber = TestHelper.mockSubscriber();
     }
 
-    private Subscriber<String> serializedSubscriber(Subscriber<String> o) {
-        return new SerializedSubscriber<String>(o);
+    private Subscriber<String> serializedSubscriber(Subscriber<String> subscriber) {
+        return new SerializedSubscriber<String>(subscriber);
     }
 
     @Test
@@ -290,10 +290,10 @@ public class SerializedSubscriberTest {
                     }
 
                 });
-                Subscriber<String> o = serializedSubscriber(ts);
+                Subscriber<String> subscriber = serializedSubscriber(ts);
 
-                Future<?> f1 = tp1.submit(new OnNextThread(o, 1, onNextCount, running));
-                Future<?> f2 = tp2.submit(new OnNextThread(o, 1, onNextCount, running));
+                Future<?> f1 = tp1.submit(new OnNextThread(subscriber, 1, onNextCount, running));
+                Future<?> f2 = tp2.submit(new OnNextThread(subscriber, 1, onNextCount, running));
 
                 running.await(); // let one of the OnNextThread actually run before proceeding
 
@@ -315,7 +315,7 @@ public class SerializedSubscriberTest {
                 assertSame(t1, t2);
 
                 System.out.println(ts.values());
-                o.onComplete();
+                subscriber.onComplete();
                 System.out.println(ts.values());
             }
         } finally {
@@ -370,16 +370,16 @@ public class SerializedSubscriberTest {
             }
 
         });
-        final Subscriber<String> o = serializedSubscriber(ts);
+        final Subscriber<String> subscriber = serializedSubscriber(ts);
 
         AtomicInteger p1 = new AtomicInteger();
         AtomicInteger p2 = new AtomicInteger();
 
-        o.onSubscribe(new BooleanSubscription());
+        subscriber.onSubscribe(new BooleanSubscription());
         ResourceSubscriber<String> as1 = new ResourceSubscriber<String>() {
             @Override
             public void onNext(String t) {
-                o.onNext(t);
+                subscriber.onNext(t);
             }
 
             @Override
@@ -396,7 +396,7 @@ public class SerializedSubscriberTest {
         ResourceSubscriber<String> as2 = new ResourceSubscriber<String>() {
             @Override
             public void onNext(String t) {
-                o.onNext(t);
+                subscriber.onNext(t);
             }
 
             @Override

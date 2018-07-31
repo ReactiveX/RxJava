@@ -34,16 +34,16 @@ public class FlowableAsObservableTest {
 
         assertFalse(dst instanceof PublishProcessor);
 
-        Subscriber<Object> o = TestHelper.mockSubscriber();
+        Subscriber<Object> subscriber = TestHelper.mockSubscriber();
 
-        dst.subscribe(o);
+        dst.subscribe(subscriber);
 
         src.onNext(1);
         src.onComplete();
 
-        verify(o).onNext(1);
-        verify(o).onComplete();
-        verify(o, never()).onError(any(Throwable.class));
+        verify(subscriber).onNext(1);
+        verify(subscriber).onComplete();
+        verify(subscriber, never()).onError(any(Throwable.class));
     }
     @Test
     public void testHidingError() {
@@ -53,14 +53,14 @@ public class FlowableAsObservableTest {
 
         assertFalse(dst instanceof PublishProcessor);
 
-        Subscriber<Integer> o = TestHelper.mockSubscriber();
+        Subscriber<Integer> subscriber = TestHelper.mockSubscriber();
 
-        dst.subscribe(o);
+        dst.subscribe(subscriber);
 
         src.onError(new TestException());
 
-        verify(o, never()).onNext(Mockito.<Integer>any());
-        verify(o, never()).onComplete();
-        verify(o).onError(any(TestException.class));
+        verify(subscriber, never()).onNext(Mockito.<Integer>any());
+        verify(subscriber, never()).onComplete();
+        verify(subscriber).onError(any(TestException.class));
     }
 }

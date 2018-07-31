@@ -453,8 +453,8 @@ public class FlowableZipTest {
 
         Subscriber<String> obs = TestHelper.mockSubscriber();
 
-        Flowable<String> o = Flowable.zip(oA, oB, getConcat2Strings());
-        o.subscribe(obs);
+        Flowable<String> f = Flowable.zip(oA, oB, getConcat2Strings());
+        f.subscribe(obs);
 
         InOrder io = inOrder(obs);
 
@@ -503,8 +503,8 @@ public class FlowableZipTest {
 
         Subscriber<String> obs = TestHelper.mockSubscriber();
 
-        Flowable<String> o = Flowable.zip(oA, oB, getConcat2Strings());
-        o.subscribe(obs);
+        Flowable<String> f = Flowable.zip(oA, oB, getConcat2Strings());
+        f.subscribe(obs);
 
         InOrder io = inOrder(obs);
 
@@ -858,7 +858,7 @@ public class FlowableZipTest {
     public void testEmitNull() {
         Flowable<Integer> oi = Flowable.just(1, null, 3);
         Flowable<String> os = Flowable.just("a", "b", null);
-        Flowable<String> o = Flowable.zip(oi, os, new BiFunction<Integer, String, String>() {
+        Flowable<String> f = Flowable.zip(oi, os, new BiFunction<Integer, String, String>() {
 
             @Override
             public String apply(Integer t1, String t2) {
@@ -868,7 +868,7 @@ public class FlowableZipTest {
         });
 
         final ArrayList<String> list = new ArrayList<String>();
-        o.subscribe(new Consumer<String>() {
+        f.subscribe(new Consumer<String>() {
 
             @Override
             public void accept(String s) {
@@ -906,7 +906,7 @@ public class FlowableZipTest {
     public void testEmitMaterializedNotifications() {
         Flowable<Notification<Integer>> oi = Flowable.just(1, 2, 3).materialize();
         Flowable<Notification<String>> os = Flowable.just("a", "b", "c").materialize();
-        Flowable<String> o = Flowable.zip(oi, os, new BiFunction<Notification<Integer>, Notification<String>, String>() {
+        Flowable<String> f = Flowable.zip(oi, os, new BiFunction<Notification<Integer>, Notification<String>, String>() {
 
             @Override
             public String apply(Notification<Integer> t1, Notification<String> t2) {
@@ -916,7 +916,7 @@ public class FlowableZipTest {
         });
 
         final ArrayList<String> list = new ArrayList<String>();
-        o.subscribe(new Consumer<String>() {
+        f.subscribe(new Consumer<String>() {
 
             @Override
             public void accept(String s) {
@@ -935,7 +935,7 @@ public class FlowableZipTest {
     @Test
     public void testStartEmptyFlowables() {
 
-        Flowable<String> o = Flowable.zip(Flowable.<Integer> empty(), Flowable.<String> empty(), new BiFunction<Integer, String, String>() {
+        Flowable<String> f = Flowable.zip(Flowable.<Integer> empty(), Flowable.<String> empty(), new BiFunction<Integer, String, String>() {
 
             @Override
             public String apply(Integer t1, String t2) {
@@ -945,7 +945,7 @@ public class FlowableZipTest {
         });
 
         final ArrayList<String> list = new ArrayList<String>();
-        o.subscribe(new Consumer<String>() {
+        f.subscribe(new Consumer<String>() {
 
             @Override
             public void accept(String s) {
@@ -963,7 +963,7 @@ public class FlowableZipTest {
         final Object invoked = new Object();
         Collection<Flowable<Object>> observables = Collections.emptyList();
 
-        Flowable<Object> o = Flowable.zip(observables, new Function<Object[], Object>() {
+        Flowable<Object> f = Flowable.zip(observables, new Function<Object[], Object>() {
             @Override
             public Object apply(final Object[] args) {
                 assertEquals("No argument should have been passed", 0, args.length);
@@ -972,7 +972,7 @@ public class FlowableZipTest {
         });
 
         TestSubscriber<Object> ts = new TestSubscriber<Object>();
-        o.subscribe(ts);
+        f.subscribe(ts);
         ts.awaitTerminalEvent(200, TimeUnit.MILLISECONDS);
         ts.assertNoValues();
     }
@@ -987,7 +987,7 @@ public class FlowableZipTest {
         final Object invoked = new Object();
         Collection<Flowable<Object>> observables = Collections.emptyList();
 
-        Flowable<Object> o = Flowable.zip(observables, new Function<Object[], Object>() {
+        Flowable<Object> f = Flowable.zip(observables, new Function<Object[], Object>() {
             @Override
             public Object apply(final Object[] args) {
                 assertEquals("No argument should have been passed", 0, args.length);
@@ -995,18 +995,18 @@ public class FlowableZipTest {
             }
         });
 
-        o.blockingLast();
+        f.blockingLast();
     }
 
     @Test
     public void testBackpressureSync() {
         AtomicInteger generatedA = new AtomicInteger();
         AtomicInteger generatedB = new AtomicInteger();
-        Flowable<Integer> o1 = createInfiniteFlowable(generatedA);
-        Flowable<Integer> o2 = createInfiniteFlowable(generatedB);
+        Flowable<Integer> f1 = createInfiniteFlowable(generatedA);
+        Flowable<Integer> f2 = createInfiniteFlowable(generatedB);
 
         TestSubscriber<String> ts = new TestSubscriber<String>();
-        Flowable.zip(o1, o2, new BiFunction<Integer, Integer, String>() {
+        Flowable.zip(f1, f2, new BiFunction<Integer, Integer, String>() {
 
             @Override
             public String apply(Integer t1, Integer t2) {
@@ -1026,11 +1026,11 @@ public class FlowableZipTest {
     public void testBackpressureAsync() {
         AtomicInteger generatedA = new AtomicInteger();
         AtomicInteger generatedB = new AtomicInteger();
-        Flowable<Integer> o1 = createInfiniteFlowable(generatedA).subscribeOn(Schedulers.computation());
-        Flowable<Integer> o2 = createInfiniteFlowable(generatedB).subscribeOn(Schedulers.computation());
+        Flowable<Integer> f1 = createInfiniteFlowable(generatedA).subscribeOn(Schedulers.computation());
+        Flowable<Integer> f2 = createInfiniteFlowable(generatedB).subscribeOn(Schedulers.computation());
 
         TestSubscriber<String> ts = new TestSubscriber<String>();
-        Flowable.zip(o1, o2, new BiFunction<Integer, Integer, String>() {
+        Flowable.zip(f1, f2, new BiFunction<Integer, Integer, String>() {
 
             @Override
             public String apply(Integer t1, Integer t2) {
@@ -1050,11 +1050,11 @@ public class FlowableZipTest {
     public void testDownstreamBackpressureRequestsWithFiniteSyncFlowables() {
         AtomicInteger generatedA = new AtomicInteger();
         AtomicInteger generatedB = new AtomicInteger();
-        Flowable<Integer> o1 = createInfiniteFlowable(generatedA).take(Flowable.bufferSize() * 2);
-        Flowable<Integer> o2 = createInfiniteFlowable(generatedB).take(Flowable.bufferSize() * 2);
+        Flowable<Integer> f1 = createInfiniteFlowable(generatedA).take(Flowable.bufferSize() * 2);
+        Flowable<Integer> f2 = createInfiniteFlowable(generatedB).take(Flowable.bufferSize() * 2);
 
         TestSubscriber<String> ts = new TestSubscriber<String>();
-        Flowable.zip(o1, o2, new BiFunction<Integer, Integer, String>() {
+        Flowable.zip(f1, f2, new BiFunction<Integer, Integer, String>() {
 
             @Override
             public String apply(Integer t1, Integer t2) {
@@ -1075,11 +1075,11 @@ public class FlowableZipTest {
     public void testDownstreamBackpressureRequestsWithInfiniteAsyncFlowables() {
         AtomicInteger generatedA = new AtomicInteger();
         AtomicInteger generatedB = new AtomicInteger();
-        Flowable<Integer> o1 = createInfiniteFlowable(generatedA).subscribeOn(Schedulers.computation());
-        Flowable<Integer> o2 = createInfiniteFlowable(generatedB).subscribeOn(Schedulers.computation());
+        Flowable<Integer> f1 = createInfiniteFlowable(generatedA).subscribeOn(Schedulers.computation());
+        Flowable<Integer> f2 = createInfiniteFlowable(generatedB).subscribeOn(Schedulers.computation());
 
         TestSubscriber<String> ts = new TestSubscriber<String>();
-        Flowable.zip(o1, o2, new BiFunction<Integer, Integer, String>() {
+        Flowable.zip(f1, f2, new BiFunction<Integer, Integer, String>() {
 
             @Override
             public String apply(Integer t1, Integer t2) {
@@ -1100,11 +1100,11 @@ public class FlowableZipTest {
     public void testDownstreamBackpressureRequestsWithInfiniteSyncFlowables() {
         AtomicInteger generatedA = new AtomicInteger();
         AtomicInteger generatedB = new AtomicInteger();
-        Flowable<Integer> o1 = createInfiniteFlowable(generatedA);
-        Flowable<Integer> o2 = createInfiniteFlowable(generatedB);
+        Flowable<Integer> f1 = createInfiniteFlowable(generatedA);
+        Flowable<Integer> f2 = createInfiniteFlowable(generatedB);
 
         TestSubscriber<String> ts = new TestSubscriber<String>();
-        Flowable.zip(o1, o2, new BiFunction<Integer, Integer, String>() {
+        Flowable.zip(f1, f2, new BiFunction<Integer, Integer, String>() {
 
             @Override
             public String apply(Integer t1, Integer t2) {
@@ -1122,7 +1122,7 @@ public class FlowableZipTest {
     }
 
     private Flowable<Integer> createInfiniteFlowable(final AtomicInteger generated) {
-        Flowable<Integer> observable = Flowable.fromIterable(new Iterable<Integer>() {
+        Flowable<Integer> flowable = Flowable.fromIterable(new Iterable<Integer>() {
             @Override
             public Iterator<Integer> iterator() {
                 return new Iterator<Integer>() {
@@ -1143,7 +1143,7 @@ public class FlowableZipTest {
                 };
             }
         });
-        return observable;
+        return flowable;
     }
 
     Flowable<Integer> OBSERVABLE_OF_5_INTEGERS = OBSERVABLE_OF_5_INTEGERS(new AtomicInteger());
@@ -1152,18 +1152,18 @@ public class FlowableZipTest {
         return Flowable.unsafeCreate(new Publisher<Integer>() {
 
             @Override
-            public void subscribe(final Subscriber<? super Integer> o) {
+            public void subscribe(final Subscriber<? super Integer> subscriber) {
                 BooleanSubscription bs = new BooleanSubscription();
-                o.onSubscribe(bs);
+                subscriber.onSubscribe(bs);
                 for (int i = 1; i <= 5; i++) {
                     if (bs.isCancelled()) {
                         break;
                     }
                     numEmitted.incrementAndGet();
-                    o.onNext(i);
+                    subscriber.onNext(i);
                     Thread.yield();
                 }
-                o.onComplete();
+                subscriber.onComplete();
             }
 
         });
@@ -1173,9 +1173,9 @@ public class FlowableZipTest {
         return Flowable.unsafeCreate(new Publisher<Integer>() {
 
             @Override
-            public void subscribe(final Subscriber<? super Integer> o) {
+            public void subscribe(final Subscriber<? super Integer> subscriber) {
                 final BooleanSubscription bs = new BooleanSubscription();
-                o.onSubscribe(bs);
+                subscriber.onSubscribe(bs);
                 Thread t = new Thread(new Runnable() {
 
                     @Override
@@ -1184,10 +1184,10 @@ public class FlowableZipTest {
                         System.out.println("Starting thread: " + Thread.currentThread());
                         int i = 1;
                         while (!bs.isCancelled()) {
-                            o.onNext(i++);
+                            subscriber.onNext(i++);
                             Thread.yield();
                         }
-                        o.onComplete();
+                        subscriber.onComplete();
                         latch.countDown();
                         System.out.println("Ending thread: " + Thread.currentThread());
                     }

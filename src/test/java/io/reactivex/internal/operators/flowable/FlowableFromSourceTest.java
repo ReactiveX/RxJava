@@ -659,12 +659,12 @@ public class FlowableFromSourceTest {
 
     static final class PublishAsyncEmitter implements FlowableOnSubscribe<Integer>, FlowableSubscriber<Integer> {
 
-        final PublishProcessor<Integer> subject;
+        final PublishProcessor<Integer> processor;
 
         FlowableEmitter<Integer> current;
 
         PublishAsyncEmitter() {
-            this.subject = PublishProcessor.create();
+            this.processor = PublishProcessor.create();
         }
 
         long requested() {
@@ -695,7 +695,7 @@ public class FlowableFromSourceTest {
 
             };
 
-            subject.subscribe(as);
+            processor.subscribe(as);
 
             t.setCancellable(new Cancellable() {
                 @Override
@@ -712,32 +712,32 @@ public class FlowableFromSourceTest {
 
         @Override
         public void onNext(Integer t) {
-            subject.onNext(t);
+            processor.onNext(t);
         }
 
         @Override
         public void onError(Throwable e) {
-            subject.onError(e);
+            processor.onError(e);
         }
 
         @Override
         public void onComplete() {
-            subject.onComplete();
+            processor.onComplete();
         }
     }
 
     static final class PublishAsyncEmitterNoCancel implements FlowableOnSubscribe<Integer>, FlowableSubscriber<Integer> {
 
-        final PublishProcessor<Integer> subject;
+        final PublishProcessor<Integer> processor;
 
         PublishAsyncEmitterNoCancel() {
-            this.subject = PublishProcessor.create();
+            this.processor = PublishProcessor.create();
         }
 
         @Override
         public void subscribe(final FlowableEmitter<Integer> t) {
 
-            subject.subscribe(new FlowableSubscriber<Integer>() {
+            processor.subscribe(new FlowableSubscriber<Integer>() {
 
                 @Override
                 public void onSubscribe(Subscription s) {
@@ -769,17 +769,17 @@ public class FlowableFromSourceTest {
 
         @Override
         public void onNext(Integer t) {
-            subject.onNext(t);
+            processor.onNext(t);
         }
 
         @Override
         public void onError(Throwable e) {
-            subject.onError(e);
+            processor.onError(e);
         }
 
         @Override
         public void onComplete() {
-            subject.onComplete();
+            processor.onComplete();
         }
     }
 

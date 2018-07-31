@@ -38,7 +38,7 @@ public class FlowableOnErrorReturnTest {
         Flowable<String> w = Flowable.unsafeCreate(f);
         final AtomicReference<Throwable> capturedException = new AtomicReference<Throwable>();
 
-        Flowable<String> observable = w.onErrorReturn(new Function<Throwable, String>() {
+        Flowable<String> flowable = w.onErrorReturn(new Function<Throwable, String>() {
 
             @Override
             public String apply(Throwable e) {
@@ -49,7 +49,7 @@ public class FlowableOnErrorReturnTest {
         });
 
         Subscriber<String> subscriber = TestHelper.mockSubscriber();
-        observable.subscribe(subscriber);
+        flowable.subscribe(subscriber);
 
         try {
             f.t.join();
@@ -73,7 +73,7 @@ public class FlowableOnErrorReturnTest {
         Flowable<String> w = Flowable.unsafeCreate(f);
         final AtomicReference<Throwable> capturedException = new AtomicReference<Throwable>();
 
-        Flowable<String> observable = w.onErrorReturn(new Function<Throwable, String>() {
+        Flowable<String> flowable = w.onErrorReturn(new Function<Throwable, String>() {
 
             @Override
             public String apply(Throwable e) {
@@ -84,7 +84,7 @@ public class FlowableOnErrorReturnTest {
         });
 
         Subscriber<String> subscriber = TestHelper.mockSubscriber();
-        observable.subscribe(subscriber);
+        flowable.subscribe(subscriber);
 
         try {
             f.t.join();
@@ -119,7 +119,7 @@ public class FlowableOnErrorReturnTest {
             }
         });
 
-        Flowable<String> observable = w.onErrorReturn(new Function<Throwable, String>() {
+        Flowable<String> flowable = w.onErrorReturn(new Function<Throwable, String>() {
 
             @Override
             public String apply(Throwable t1) {
@@ -130,7 +130,7 @@ public class FlowableOnErrorReturnTest {
 
         Subscriber<String> subscriber = TestHelper.mockSubscriber();
         TestSubscriber<String> ts = new TestSubscriber<String>(subscriber, Long.MAX_VALUE);
-        observable.subscribe(ts);
+        flowable.subscribe(ts);
         ts.awaitTerminalEvent();
 
         verify(subscriber, Mockito.never()).onError(any(Throwable.class));

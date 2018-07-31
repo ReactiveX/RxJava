@@ -46,69 +46,69 @@ public class TestSubscriberTest {
     @Test
     public void testAssert() {
         Flowable<Integer> oi = Flowable.fromIterable(Arrays.asList(1, 2));
-        TestSubscriber<Integer> o = new TestSubscriber<Integer>();
-        oi.subscribe(o);
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        oi.subscribe(ts);
 
-        o.assertValues(1, 2);
-        o.assertValueCount(2);
-        o.assertTerminated();
+        ts.assertValues(1, 2);
+        ts.assertValueCount(2);
+        ts.assertTerminated();
     }
 
     @Test
     public void testAssertNotMatchCount() {
         Flowable<Integer> oi = Flowable.fromIterable(Arrays.asList(1, 2));
-        TestSubscriber<Integer> o = new TestSubscriber<Integer>();
-        oi.subscribe(o);
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        oi.subscribe(ts);
 
         thrown.expect(AssertionError.class);
         // FIXME different message pattern
         // thrown.expectMessage("Number of items does not match. Provided: 1  Actual: 2");
 
-        o.assertValues(1);
-        o.assertValueCount(2);
-        o.assertTerminated();
+        ts.assertValues(1);
+        ts.assertValueCount(2);
+        ts.assertTerminated();
     }
 
     @Test
     public void testAssertNotMatchValue() {
         Flowable<Integer> oi = Flowable.fromIterable(Arrays.asList(1, 2));
-        TestSubscriber<Integer> o = new TestSubscriber<Integer>();
-        oi.subscribe(o);
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        oi.subscribe(ts);
 
         thrown.expect(AssertionError.class);
         // FIXME different message pattern
         // thrown.expectMessage("Value at index: 1 expected to be [3] (Integer) but was: [2] (Integer)");
 
 
-        o.assertValues(1, 3);
-        o.assertValueCount(2);
-        o.assertTerminated();
+        ts.assertValues(1, 3);
+        ts.assertValueCount(2);
+        ts.assertTerminated();
     }
 
     @Test
     public void assertNeverAtNotMatchingValue() {
         Flowable<Integer> oi = Flowable.fromIterable(Arrays.asList(1, 2));
-        TestSubscriber<Integer> o = new TestSubscriber<Integer>();
-        oi.subscribe(o);
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        oi.subscribe(ts);
 
-        o.assertNever(3);
-        o.assertValueCount(2);
-        o.assertTerminated();
+        ts.assertNever(3);
+        ts.assertValueCount(2);
+        ts.assertTerminated();
     }
 
     @Test
     public void assertNeverAtMatchingValue() {
         Flowable<Integer> oi = Flowable.fromIterable(Arrays.asList(1, 2));
-        TestSubscriber<Integer> o = new TestSubscriber<Integer>();
-        oi.subscribe(o);
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        oi.subscribe(ts);
 
-        o.assertValues(1, 2);
+        ts.assertValues(1, 2);
 
         thrown.expect(AssertionError.class);
 
-        o.assertNever(2);
-        o.assertValueCount(2);
-        o.assertTerminated();
+        ts.assertNever(2);
+        ts.assertValueCount(2);
+        ts.assertTerminated();
     }
 
     @Test
@@ -146,8 +146,8 @@ public class TestSubscriberTest {
     @Test
     public void testAssertTerminalEventNotReceived() {
         PublishProcessor<Integer> p = PublishProcessor.create();
-        TestSubscriber<Integer> o = new TestSubscriber<Integer>();
-        p.subscribe(o);
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        p.subscribe(ts);
 
         p.onNext(1);
         p.onNext(2);
@@ -156,9 +156,9 @@ public class TestSubscriberTest {
         // FIXME different message pattern
         // thrown.expectMessage("No terminal events received.");
 
-        o.assertValues(1, 2);
-        o.assertValueCount(2);
-        o.assertTerminated();
+        ts.assertValues(1, 2);
+        ts.assertValueCount(2);
+        ts.assertTerminated();
     }
 
     @Test

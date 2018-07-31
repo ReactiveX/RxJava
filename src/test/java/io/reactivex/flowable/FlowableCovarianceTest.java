@@ -56,12 +56,12 @@ public class FlowableCovarianceTest {
         };
 
         // this one would work without the covariance generics
-        Flowable<Media> o = Flowable.just(new Movie(), new TVSeason(), new Album());
-        o.toSortedList(sortFunction);
+        Flowable<Media> f = Flowable.just(new Movie(), new TVSeason(), new Album());
+        f.toSortedList(sortFunction);
 
         // this one would NOT work without the covariance generics
-        Flowable<Movie> o2 = Flowable.just(new Movie(), new ActionMovie(), new HorrorMovie());
-        o2.toSortedList(sortFunction);
+        Flowable<Movie> f2 = Flowable.just(new Movie(), new ActionMovie(), new HorrorMovie());
+        f2.toSortedList(sortFunction);
     }
 
     @Test

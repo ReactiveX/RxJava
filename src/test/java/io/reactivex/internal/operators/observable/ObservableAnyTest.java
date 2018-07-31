@@ -267,7 +267,7 @@ public class ObservableAnyTest {
     @Test
     public void testAnyWithTwoItems() {
         Observable<Integer> w = Observable.just(1, 2);
-        Single<Boolean> observable = w.any(new Predicate<Integer>() {
+        Single<Boolean> single = w.any(new Predicate<Integer>() {
             @Override
             public boolean test(Integer v) {
                 return true;
@@ -276,7 +276,7 @@ public class ObservableAnyTest {
 
         SingleObserver<Boolean> observer = TestHelper.mockSingleObserver();
 
-        observable.subscribe(observer);
+        single.subscribe(observer);
 
         verify(observer, never()).onSuccess(false);
         verify(observer, times(1)).onSuccess(true);
@@ -286,11 +286,11 @@ public class ObservableAnyTest {
     @Test
     public void testIsEmptyWithTwoItems() {
         Observable<Integer> w = Observable.just(1, 2);
-        Single<Boolean> observable = w.isEmpty();
+        Single<Boolean> single = w.isEmpty();
 
         SingleObserver<Boolean> observer = TestHelper.mockSingleObserver();
 
-        observable.subscribe(observer);
+        single.subscribe(observer);
 
         verify(observer, never()).onSuccess(true);
         verify(observer, times(1)).onSuccess(false);
@@ -300,7 +300,7 @@ public class ObservableAnyTest {
     @Test
     public void testAnyWithOneItem() {
         Observable<Integer> w = Observable.just(1);
-        Single<Boolean> observable = w.any(new Predicate<Integer>() {
+        Single<Boolean> single = w.any(new Predicate<Integer>() {
             @Override
             public boolean test(Integer v) {
                 return true;
@@ -309,7 +309,7 @@ public class ObservableAnyTest {
 
         SingleObserver<Boolean> observer = TestHelper.mockSingleObserver();
 
-        observable.subscribe(observer);
+        single.subscribe(observer);
 
         verify(observer, never()).onSuccess(false);
         verify(observer, times(1)).onSuccess(true);
@@ -319,11 +319,11 @@ public class ObservableAnyTest {
     @Test
     public void testIsEmptyWithOneItem() {
         Observable<Integer> w = Observable.just(1);
-        Single<Boolean> observable = w.isEmpty();
+        Single<Boolean> single = w.isEmpty();
 
         SingleObserver<Boolean> observer = TestHelper.mockSingleObserver();
 
-        observable.subscribe(observer);
+        single.subscribe(observer);
 
         verify(observer, never()).onSuccess(true);
         verify(observer, times(1)).onSuccess(false);
@@ -333,7 +333,7 @@ public class ObservableAnyTest {
     @Test
     public void testAnyWithEmpty() {
         Observable<Integer> w = Observable.empty();
-        Single<Boolean> observable = w.any(new Predicate<Integer>() {
+        Single<Boolean> single = w.any(new Predicate<Integer>() {
             @Override
             public boolean test(Integer v) {
                 return true;
@@ -342,7 +342,7 @@ public class ObservableAnyTest {
 
         SingleObserver<Boolean> observer = TestHelper.mockSingleObserver();
 
-        observable.subscribe(observer);
+        single.subscribe(observer);
 
         verify(observer, times(1)).onSuccess(false);
         verify(observer, never()).onSuccess(true);
@@ -352,11 +352,11 @@ public class ObservableAnyTest {
     @Test
     public void testIsEmptyWithEmpty() {
         Observable<Integer> w = Observable.empty();
-        Single<Boolean> observable = w.isEmpty();
+        Single<Boolean> single = w.isEmpty();
 
         SingleObserver<Boolean> observer = TestHelper.mockSingleObserver();
 
-        observable.subscribe(observer);
+        single.subscribe(observer);
 
         verify(observer, times(1)).onSuccess(true);
         verify(observer, never()).onSuccess(false);
@@ -366,7 +366,7 @@ public class ObservableAnyTest {
     @Test
     public void testAnyWithPredicate1() {
         Observable<Integer> w = Observable.just(1, 2, 3);
-        Single<Boolean> observable = w.any(new Predicate<Integer>() {
+        Single<Boolean> single = w.any(new Predicate<Integer>() {
             @Override
             public boolean test(Integer t1) {
                 return t1 < 2;
@@ -375,7 +375,7 @@ public class ObservableAnyTest {
 
         SingleObserver<Boolean> observer = TestHelper.mockSingleObserver();
 
-        observable.subscribe(observer);
+        single.subscribe(observer);
 
         verify(observer, never()).onSuccess(false);
         verify(observer, times(1)).onSuccess(true);
@@ -385,7 +385,7 @@ public class ObservableAnyTest {
     @Test
     public void testExists1() {
         Observable<Integer> w = Observable.just(1, 2, 3);
-        Single<Boolean> observable = w.any(new Predicate<Integer>() {
+        Single<Boolean> single = w.any(new Predicate<Integer>() {
             @Override
             public boolean test(Integer t1) {
                 return t1 < 2;
@@ -394,7 +394,7 @@ public class ObservableAnyTest {
 
         SingleObserver<Boolean> observer = TestHelper.mockSingleObserver();
 
-        observable.subscribe(observer);
+        single.subscribe(observer);
 
         verify(observer, never()).onSuccess(false);
         verify(observer, times(1)).onSuccess(true);
@@ -404,7 +404,7 @@ public class ObservableAnyTest {
     @Test
     public void testAnyWithPredicate2() {
         Observable<Integer> w = Observable.just(1, 2, 3);
-        Single<Boolean> observable = w.any(new Predicate<Integer>() {
+        Single<Boolean> single = w.any(new Predicate<Integer>() {
             @Override
             public boolean test(Integer t1) {
                 return t1 < 1;
@@ -413,7 +413,7 @@ public class ObservableAnyTest {
 
         SingleObserver<Boolean> observer = TestHelper.mockSingleObserver();
 
-        observable.subscribe(observer);
+        single.subscribe(observer);
 
         verify(observer, times(1)).onSuccess(false);
         verify(observer, never()).onSuccess(true);
@@ -424,7 +424,7 @@ public class ObservableAnyTest {
     public void testAnyWithEmptyAndPredicate() {
         // If the source is empty, always output false.
         Observable<Integer> w = Observable.empty();
-        Single<Boolean> observable = w.any(new Predicate<Integer>() {
+        Single<Boolean> single = w.any(new Predicate<Integer>() {
             @Override
             public boolean test(Integer t) {
                 return true;
@@ -433,7 +433,7 @@ public class ObservableAnyTest {
 
         SingleObserver<Boolean> observer = TestHelper.mockSingleObserver();
 
-        observable.subscribe(observer);
+        single.subscribe(observer);
 
         verify(observer, times(1)).onSuccess(false);
         verify(observer, never()).onSuccess(true);

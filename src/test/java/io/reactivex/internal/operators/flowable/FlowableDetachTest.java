@@ -169,8 +169,8 @@ public class FlowableDetachTest {
     public void doubleOnSubscribe() {
         TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Flowable<Object>>() {
             @Override
-            public Flowable<Object> apply(Flowable<Object> o) throws Exception {
-                return o.onTerminateDetach();
+            public Flowable<Object> apply(Flowable<Object> f) throws Exception {
+                return f.onTerminateDetach();
             }
         });
     }

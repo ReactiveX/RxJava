@@ -27,11 +27,11 @@ public class FlowableCastTest {
     @Test
     public void testCast() {
         Flowable<?> source = Flowable.just(1, 2);
-        Flowable<Integer> observable = source.cast(Integer.class);
+        Flowable<Integer> flowable = source.cast(Integer.class);
 
         Subscriber<Integer> subscriber = TestHelper.mockSubscriber();
 
-        observable.subscribe(subscriber);
+        flowable.subscribe(subscriber);
 
         verify(subscriber, times(1)).onNext(1);
         verify(subscriber, times(1)).onNext(1);
@@ -42,11 +42,11 @@ public class FlowableCastTest {
     @Test
     public void testCastWithWrongType() {
         Flowable<?> source = Flowable.just(1, 2);
-        Flowable<Boolean> observable = source.cast(Boolean.class);
+        Flowable<Boolean> flowable = source.cast(Boolean.class);
 
         Subscriber<Boolean> subscriber = TestHelper.mockSubscriber();
 
-        observable.subscribe(subscriber);
+        flowable.subscribe(subscriber);
 
         verify(subscriber, times(1)).onError(any(ClassCastException.class));
     }

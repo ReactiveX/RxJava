@@ -103,12 +103,12 @@ public class PublishProcessorTest extends FlowableProcessorTest<Object> {
         inOrderC.verifyNoMoreInteractions();
     }
 
-    private void assertCompletedSubscriber(Subscriber<String> observer) {
-        verify(observer, times(1)).onNext("one");
-        verify(observer, times(1)).onNext("two");
-        verify(observer, times(1)).onNext("three");
-        verify(observer, Mockito.never()).onError(any(Throwable.class));
-        verify(observer, times(1)).onComplete();
+    private void assertCompletedSubscriber(Subscriber<String> subscriber) {
+        verify(subscriber, times(1)).onNext("one");
+        verify(subscriber, times(1)).onNext("two");
+        verify(subscriber, times(1)).onNext("three");
+        verify(subscriber, Mockito.never()).onError(any(Throwable.class));
+        verify(subscriber, times(1)).onComplete();
     }
 
     @Test
@@ -134,12 +134,12 @@ public class PublishProcessorTest extends FlowableProcessorTest<Object> {
         // todo bug?            assertNeverSubscriber(anotherSubscriber);
     }
 
-    private void assertErrorSubscriber(Subscriber<String> observer) {
-        verify(observer, times(1)).onNext("one");
-        verify(observer, times(1)).onNext("two");
-        verify(observer, times(1)).onNext("three");
-        verify(observer, times(1)).onError(testException);
-        verify(observer, Mockito.never()).onComplete();
+    private void assertErrorSubscriber(Subscriber<String> subscriber) {
+        verify(subscriber, times(1)).onNext("one");
+        verify(subscriber, times(1)).onNext("two");
+        verify(subscriber, times(1)).onNext("three");
+        verify(subscriber, times(1)).onError(testException);
+        verify(subscriber, Mockito.never()).onComplete();
     }
 
     @Test
@@ -164,12 +164,12 @@ public class PublishProcessorTest extends FlowableProcessorTest<Object> {
         assertCompletedStartingWithThreeSubscriber(anotherSubscriber);
     }
 
-    private void assertCompletedStartingWithThreeSubscriber(Subscriber<String> observer) {
-        verify(observer, Mockito.never()).onNext("one");
-        verify(observer, Mockito.never()).onNext("two");
-        verify(observer, times(1)).onNext("three");
-        verify(observer, Mockito.never()).onError(any(Throwable.class));
-        verify(observer, times(1)).onComplete();
+    private void assertCompletedStartingWithThreeSubscriber(Subscriber<String> subscriber) {
+        verify(subscriber, Mockito.never()).onNext("one");
+        verify(subscriber, Mockito.never()).onNext("two");
+        verify(subscriber, times(1)).onNext("three");
+        verify(subscriber, Mockito.never()).onError(any(Throwable.class));
+        verify(subscriber, times(1)).onComplete();
     }
 
     @Test
@@ -196,12 +196,12 @@ public class PublishProcessorTest extends FlowableProcessorTest<Object> {
         assertCompletedStartingWithThreeSubscriber(anotherSubscriber);
     }
 
-    private void assertObservedUntilTwo(Subscriber<String> observer) {
-        verify(observer, times(1)).onNext("one");
-        verify(observer, times(1)).onNext("two");
-        verify(observer, Mockito.never()).onNext("three");
-        verify(observer, Mockito.never()).onError(any(Throwable.class));
-        verify(observer, Mockito.never()).onComplete();
+    private void assertObservedUntilTwo(Subscriber<String> subscriber) {
+        verify(subscriber, times(1)).onNext("one");
+        verify(subscriber, times(1)).onNext("two");
+        verify(subscriber, Mockito.never()).onNext("three");
+        verify(subscriber, Mockito.never()).onError(any(Throwable.class));
+        verify(subscriber, Mockito.never()).onComplete();
     }
 
     @Test
@@ -262,16 +262,16 @@ public class PublishProcessorTest extends FlowableProcessorTest<Object> {
     public void testReSubscribe() {
         final PublishProcessor<Integer> pp = PublishProcessor.create();
 
-        Subscriber<Integer> o1 = TestHelper.mockSubscriber();
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>(o1);
+        Subscriber<Integer> subscriber1 = TestHelper.mockSubscriber();
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>(subscriber1);
         pp.subscribe(ts);
 
         // emit
         pp.onNext(1);
 
         // validate we got it
-        InOrder inOrder1 = inOrder(o1);
-        inOrder1.verify(o1, times(1)).onNext(1);
+        InOrder inOrder1 = inOrder(subscriber1);
+        inOrder1.verify(subscriber1, times(1)).onNext(1);
         inOrder1.verifyNoMoreInteractions();
 
         // unsubscribe
@@ -280,16 +280,16 @@ public class PublishProcessorTest extends FlowableProcessorTest<Object> {
         // emit again but nothing will be there to receive it
         pp.onNext(2);
 
-        Subscriber<Integer> o2 = TestHelper.mockSubscriber();
-        TestSubscriber<Integer> ts2 = new TestSubscriber<Integer>(o2);
+        Subscriber<Integer> subscriber2 = TestHelper.mockSubscriber();
+        TestSubscriber<Integer> ts2 = new TestSubscriber<Integer>(subscriber2);
         pp.subscribe(ts2);
 
         // emit
         pp.onNext(3);
 
         // validate we got it
-        InOrder inOrder2 = inOrder(o2);
-        inOrder2.verify(o2, times(1)).onNext(3);
+        InOrder inOrder2 = inOrder(subscriber2);
+        inOrder2.verify(subscriber2, times(1)).onNext(3);
         inOrder2.verifyNoMoreInteractions();
 
         ts2.dispose();
@@ -302,8 +302,8 @@ public class PublishProcessorTest extends FlowableProcessorTest<Object> {
         PublishProcessor<String> src = PublishProcessor.create();
 
         for (int i = 0; i < 10; i++) {
-            final Subscriber<Object> o = TestHelper.mockSubscriber();
-            InOrder inOrder = inOrder(o);
+            final Subscriber<Object> subscriber = TestHelper.mockSubscriber();
+            InOrder inOrder = inOrder(subscriber);
             String v = "" + i;
             System.out.printf("Turn: %d%n", i);
             src.firstElement().toFlowable()
@@ -317,24 +317,24 @@ public class PublishProcessorTest extends FlowableProcessorTest<Object> {
                 .subscribe(new DefaultSubscriber<String>() {
                     @Override
                     public void onNext(String t) {
-                        o.onNext(t);
+                        subscriber.onNext(t);
                     }
 
                     @Override
                     public void onError(Throwable e) {
-                        o.onError(e);
+                        subscriber.onError(e);
                     }
 
                     @Override
                     public void onComplete() {
-                        o.onComplete();
+                        subscriber.onComplete();
                     }
                 });
             src.onNext(v);
 
-            inOrder.verify(o).onNext(v + ", " + v);
-            inOrder.verify(o).onComplete();
-            verify(o, never()).onError(any(Throwable.class));
+            inOrder.verify(subscriber).onNext(v + ", " + v);
+            inOrder.verify(subscriber).onComplete();
+            verify(subscriber, never()).onError(any(Throwable.class));
         }
     }
 

@@ -115,16 +115,16 @@ public class FlowableConversionTest {
         public CylonDetectorObservable<R> apply(final Publisher<T> onSubscribe) {
             return CylonDetectorObservable.create(new Publisher<R>() {
                 @Override
-                public void subscribe(Subscriber<? super R> o) {
+                public void subscribe(Subscriber<? super R> subscriber) {
                     try {
-                        Subscriber<? super T> st = operator.apply(o);
+                        Subscriber<? super T> st = operator.apply(subscriber);
                         try {
                             onSubscribe.subscribe(st);
                         } catch (Throwable e) {
                             st.onError(e);
                         }
                     } catch (Throwable e) {
-                        o.onError(e);
+                        subscriber.onError(e);
                     }
 
                 }});

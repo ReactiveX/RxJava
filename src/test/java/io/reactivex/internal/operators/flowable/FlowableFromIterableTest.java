@@ -122,14 +122,14 @@ public class FlowableFromIterableTest {
         for (int i = 1; i <= Flowable.bufferSize() + 1; i++) {
             list.add(i);
         }
-        Flowable<Integer> o = Flowable.fromIterable(list);
+        Flowable<Integer> f = Flowable.fromIterable(list);
 
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>(0L);
 
         ts.assertNoValues();
         ts.request(1);
 
-        o.subscribe(ts);
+        f.subscribe(ts);
 
         ts.assertValue(1);
         ts.request(2);
@@ -142,14 +142,14 @@ public class FlowableFromIterableTest {
 
     @Test
     public void testNoBackpressure() {
-        Flowable<Integer> o = Flowable.fromIterable(Arrays.asList(1, 2, 3, 4, 5));
+        Flowable<Integer> f = Flowable.fromIterable(Arrays.asList(1, 2, 3, 4, 5));
 
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>(0L);
 
         ts.assertNoValues();
         ts.request(Long.MAX_VALUE); // infinite
 
-        o.subscribe(ts);
+        f.subscribe(ts);
 
         ts.assertValues(1, 2, 3, 4, 5);
         ts.assertTerminated();
@@ -157,12 +157,12 @@ public class FlowableFromIterableTest {
 
     @Test
     public void testSubscribeMultipleTimes() {
-        Flowable<Integer> o = Flowable.fromIterable(Arrays.asList(1, 2, 3));
+        Flowable<Integer> f = Flowable.fromIterable(Arrays.asList(1, 2, 3));
 
         for (int i = 0; i < 10; i++) {
             TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
 
-            o.subscribe(ts);
+            f.subscribe(ts);
 
             ts.assertValues(1, 2, 3);
             ts.assertNoErrors();
@@ -172,12 +172,12 @@ public class FlowableFromIterableTest {
 
     @Test
     public void testFromIterableRequestOverflow() throws InterruptedException {
-        Flowable<Integer> o = Flowable.fromIterable(Arrays.asList(1,2,3,4));
+        Flowable<Integer> f = Flowable.fromIterable(Arrays.asList(1,2,3,4));
 
         final int expectedCount = 4;
         final CountDownLatch latch = new CountDownLatch(expectedCount);
 
-        o.subscribeOn(Schedulers.computation())
+        f.subscribeOn(Schedulers.computation())
         .subscribe(new DefaultSubscriber<Integer>() {
 
             @Override

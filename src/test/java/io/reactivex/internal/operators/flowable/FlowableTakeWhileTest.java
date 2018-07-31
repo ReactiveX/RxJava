@@ -110,10 +110,10 @@ public class FlowableTakeWhileTest {
         try {
             Flowable<String> source = Flowable.unsafeCreate(new Publisher<String>() {
                 @Override
-                public void subscribe(Subscriber<? super String> observer) {
-                    observer.onSubscribe(new BooleanSubscription());
-                    observer.onNext("one");
-                    observer.onError(new TestException("test failed"));
+                public void subscribe(Subscriber<? super String> subscriber) {
+                    subscriber.onSubscribe(new BooleanSubscription());
+                    subscriber.onNext("one");
+                    subscriber.onError(new TestException("test failed"));
                 }
             });
 
@@ -201,9 +201,9 @@ public class FlowableTakeWhileTest {
         }
 
         @Override
-        public void subscribe(final Subscriber<? super String> observer) {
+        public void subscribe(final Subscriber<? super String> subscriber) {
             System.out.println("TestFlowable subscribed to ...");
-            observer.onSubscribe(s);
+            subscriber.onSubscribe(s);
             t = new Thread(new Runnable() {
 
                 @Override
@@ -212,9 +212,9 @@ public class FlowableTakeWhileTest {
                         System.out.println("running TestFlowable thread");
                         for (String s : values) {
                             System.out.println("TestFlowable onNext: " + s);
-                            observer.onNext(s);
+                            subscriber.onNext(s);
                         }
-                        observer.onComplete();
+                        subscriber.onComplete();
                     } catch (Throwable e) {
                         throw new RuntimeException(e);
                     }
@@ -292,8 +292,8 @@ public class FlowableTakeWhileTest {
     public void doubleOnSubscribe() {
         TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Flowable<Object>>() {
             @Override
-            public Flowable<Object> apply(Flowable<Object> o) throws Exception {
-                return o.takeWhile(Functions.alwaysTrue());
+            public Flowable<Object> apply(Flowable<Object> f) throws Exception {
+                return f.takeWhile(Functions.alwaysTrue());
             }
         });
     }
@@ -302,10 +302,10 @@ public class FlowableTakeWhileTest {
     public void badSource() {
         new Flowable<Integer>() {
             @Override
-            protected void subscribeActual(Subscriber<? super Integer> observer) {
-                observer.onSubscribe(new BooleanSubscription());
-                observer.onComplete();
-                observer.onComplete();
+            protected void subscribeActual(Subscriber<? super Integer> subscriber) {
+                subscriber.onSubscribe(new BooleanSubscription());
+                subscriber.onComplete();
+                subscriber.onComplete();
             }
         }
         .takeWhile(Functions.alwaysTrue())

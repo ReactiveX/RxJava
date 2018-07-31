@@ -48,7 +48,7 @@ public final class BlockingFlowableNext<T> implements Iterable<T> {
     // test needs to access the observer.waiting flag
     static final class NextIterator<T> implements Iterator<T> {
 
-        private final NextSubscriber<T> observer;
+        private final NextSubscriber<T> subscriber;
         private final Publisher<? extends T> items;
         private T next;
         private boolean hasNext = true;
@@ -56,9 +56,9 @@ public final class BlockingFlowableNext<T> implements Iterable<T> {
         private Throwable error;
         private boolean started;
 
-        NextIterator(Publisher<? extends T> items, NextSubscriber<T> observer) {
+        NextIterator(Publisher<? extends T> items, NextSubscriber<T> subscriber) {
             this.items = items;
-            this.observer = observer;
+            this.subscriber = subscriber;
         }
 
         @Override
@@ -82,12 +82,12 @@ public final class BlockingFlowableNext<T> implements Iterable<T> {
                 if (!started) {
                     started = true;
                     // if not started, start now
-                    observer.setWaiting();
+                    subscriber.setWaiting();
                     Flowable.<T>fromPublisher(items)
-                    .materialize().subscribe(observer);
+                    .materialize().subscribe(subscriber);
                 }
 
-                Notification<T> nextNotification = observer.takeNext();
+                Notification<T> nextNotification = subscriber.takeNext();
                 if (nextNotification.isOnNext()) {
                     isNextConsumed = false;
                     next = nextNotification.getValue();
@@ -105,7 +105,7 @@ public final class BlockingFlowableNext<T> implements Iterable<T> {
                 }
                 throw new IllegalStateException("Should not reach here");
             } catch (InterruptedException e) {
-                observer.dispose();
+                subscriber.dispose();
                 error = e;
                 throw ExceptionHelper.wrapOrThrow(e);
             }

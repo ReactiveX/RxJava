@@ -40,7 +40,7 @@ public class FlowableSubscribeOnTest {
         final CountDownLatch latch = new CountDownLatch(1);
         final CountDownLatch doneLatch = new CountDownLatch(1);
 
-        TestSubscriber<Integer> observer = new TestSubscriber<Integer>();
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
 
         Flowable
         .unsafeCreate(new Publisher<Integer>() {
@@ -64,16 +64,16 @@ public class FlowableSubscribeOnTest {
                     doneLatch.countDown();
                 }
             }
-        }).subscribeOn(Schedulers.computation()).subscribe(observer);
+        }).subscribeOn(Schedulers.computation()).subscribe(ts);
 
         // wait for scheduling
         scheduled.await();
         // trigger unsubscribe
-        observer.dispose();
+        ts.dispose();
         latch.countDown();
         doneLatch.await();
-        observer.assertNoErrors();
-        observer.assertComplete();
+        ts.assertNoErrors();
+        ts.assertComplete();
     }
 
     @Test

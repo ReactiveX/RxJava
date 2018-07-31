@@ -35,8 +35,8 @@ public class FlowableErrorHandlingTests {
     public void testOnNextError() throws InterruptedException {
         final CountDownLatch latch = new CountDownLatch(1);
         final AtomicReference<Throwable> caughtError = new AtomicReference<Throwable>();
-        Flowable<Long> o = Flowable.interval(50, TimeUnit.MILLISECONDS);
-        Subscriber<Long> observer = new DefaultSubscriber<Long>() {
+        Flowable<Long> f = Flowable.interval(50, TimeUnit.MILLISECONDS);
+        Subscriber<Long> subscriber = new DefaultSubscriber<Long>() {
 
             @Override
             public void onComplete() {
@@ -56,7 +56,7 @@ public class FlowableErrorHandlingTests {
                 throw new RuntimeException("forced failure");
             }
         };
-        o.safeSubscribe(observer);
+        f.safeSubscribe(subscriber);
 
         latch.await(2000, TimeUnit.MILLISECONDS);
         assertNotNull(caughtError.get());
@@ -71,8 +71,8 @@ public class FlowableErrorHandlingTests {
     public void testOnNextErrorAcrossThread() throws InterruptedException {
         final CountDownLatch latch = new CountDownLatch(1);
         final AtomicReference<Throwable> caughtError = new AtomicReference<Throwable>();
-        Flowable<Long> o = Flowable.interval(50, TimeUnit.MILLISECONDS);
-        Subscriber<Long> observer = new DefaultSubscriber<Long>() {
+        Flowable<Long> f = Flowable.interval(50, TimeUnit.MILLISECONDS);
+        Subscriber<Long> subscriber = new DefaultSubscriber<Long>() {
 
             @Override
             public void onComplete() {
@@ -92,8 +92,8 @@ public class FlowableErrorHandlingTests {
                 throw new RuntimeException("forced failure");
             }
         };
-        o.observeOn(Schedulers.newThread())
-        .safeSubscribe(observer);
+        f.observeOn(Schedulers.newThread())
+        .safeSubscribe(subscriber);
 
         latch.await(2000, TimeUnit.MILLISECONDS);
         assertNotNull(caughtError.get());

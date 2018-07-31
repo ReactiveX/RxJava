@@ -45,20 +45,20 @@ public class FlowableGroupJoinTest {
         }
     };
 
-    <T> Function<Integer, Flowable<T>> just(final Flowable<T> observable) {
+    <T> Function<Integer, Flowable<T>> just(final Flowable<T> flowable) {
         return new Function<Integer, Flowable<T>>() {
             @Override
             public Flowable<T> apply(Integer t1) {
-                return observable;
+                return flowable;
             }
         };
     }
 
-    <T, R> Function<T, Flowable<R>> just2(final Flowable<R> observable) {
+    <T, R> Function<T, Flowable<R>> just2(final Flowable<R> flowable) {
         return new Function<T, Flowable<R>>() {
             @Override
             public Flowable<R> apply(T t1) {
-                return observable;
+                return flowable;
             }
         };
     }

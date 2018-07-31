@@ -163,15 +163,15 @@ public class FlowableSkipUntilTest {
     public void doubleOnSubscribe() {
         TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Flowable<Object>>() {
             @Override
-            public Flowable<Object> apply(Flowable<Object> o) throws Exception {
-                return o.skipUntil(Flowable.never());
+            public Flowable<Object> apply(Flowable<Object> f) throws Exception {
+                return f.skipUntil(Flowable.never());
             }
         });
 
         TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Flowable<Object>>() {
             @Override
-            public Flowable<Object> apply(Flowable<Object> o) throws Exception {
-                return Flowable.never().skipUntil(o);
+            public Flowable<Object> apply(Flowable<Object> f) throws Exception {
+                return Flowable.never().skipUntil(f);
             }
         });
     }

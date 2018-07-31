@@ -24,8 +24,8 @@ public final class SubscriberCompletableObserver<T> implements CompletableObserv
 
     Disposable d;
 
-    public SubscriberCompletableObserver(Subscriber<? super T> observer) {
-        this.subscriber = observer;
+    public SubscriberCompletableObserver(Subscriber<? super T> subscriber) {
+        this.subscriber = subscriber;
     }
 
     @Override

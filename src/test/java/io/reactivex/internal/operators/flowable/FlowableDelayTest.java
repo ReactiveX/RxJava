@@ -194,38 +194,38 @@ public class FlowableDelayTest {
     public void testDelaySubscription() {
         Flowable<Integer> result = Flowable.just(1, 2, 3).delaySubscription(100, TimeUnit.MILLISECONDS, scheduler);
 
-        Subscriber<Object> o = TestHelper.mockSubscriber();
-        InOrder inOrder = inOrder(o);
+        Subscriber<Object> subscriber = TestHelper.mockSubscriber();
+        InOrder inOrder = inOrder(subscriber);
 
-        result.subscribe(o);
+        result.subscribe(subscriber);
 
-        inOrder.verify(o, never()).onNext(any());
-        inOrder.verify(o, never()).onComplete();
+        inOrder.verify(subscriber, never()).onNext(any());
+        inOrder.verify(subscriber, never()).onComplete();
 
         scheduler.advanceTimeBy(100, TimeUnit.MILLISECONDS);
 
-        inOrder.verify(o, times(1)).onNext(1);
-        inOrder.verify(o, times(1)).onNext(2);
-        inOrder.verify(o, times(1)).onNext(3);
-        inOrder.verify(o, times(1)).onComplete();
+        inOrder.verify(subscriber, times(1)).onNext(1);
+        inOrder.verify(subscriber, times(1)).onNext(2);
+        inOrder.verify(subscriber, times(1)).onNext(3);
+        inOrder.verify(subscriber, times(1)).onComplete();
 
-        verify(o, never()).onError(any(Throwable.class));
+        verify(subscriber, never()).onError(any(Throwable.class));
     }
 
     @Test
     public void testDelaySubscriptionCancelBeforeTime() {
         Flowable<Integer> result = Flowable.just(1, 2, 3).delaySubscription(100, TimeUnit.MILLISECONDS, scheduler);
 
-        Subscriber<Object> o = TestHelper.mockSubscriber();
-        TestSubscriber<Object> ts = new TestSubscriber<Object>(o);
+        Subscriber<Object> subscriber = TestHelper.mockSubscriber();
+        TestSubscriber<Object> ts = new TestSubscriber<Object>(subscriber);
 
         result.subscribe(ts);
         ts.dispose();
         scheduler.advanceTimeBy(100, TimeUnit.MILLISECONDS);
 
-        verify(o, never()).onNext(any());
-        verify(o, never()).onComplete();
-        verify(o, never()).onError(any(Throwable.class));
+        verify(subscriber, never()).onNext(any());
+        verify(subscriber, never()).onComplete();
+        verify(subscriber, never()).onError(any(Throwable.class));
     }
 
     @Test
@@ -245,22 +245,22 @@ public class FlowableDelayTest {
             }
         };
 
-        Subscriber<Object> o = TestHelper.mockSubscriber();
-        InOrder inOrder = inOrder(o);
+        Subscriber<Object> subscriber = TestHelper.mockSubscriber();
+        InOrder inOrder = inOrder(subscriber);
 
-        source.delay(delayFunc).subscribe(o);
+        source.delay(delayFunc).subscribe(subscriber);
 
         for (int i = 0; i < n; i++) {
             source.onNext(i);
             delays.get(i).onNext(i);
-            inOrder.verify(o).onNext(i);
+            inOrder.verify(subscriber).onNext(i);
         }
         source.onComplete();
 
-        inOrder.verify(o).onComplete();
+        inOrder.verify(subscriber).onComplete();
         inOrder.verifyNoMoreInteractions();
 
-        verify(o, never()).onError(any(Throwable.class));
+        verify(subscriber, never()).onError(any(Throwable.class));
     }
 
     @Test
@@ -275,18 +275,18 @@ public class FlowableDelayTest {
                 return delay;
             }
         };
-        Subscriber<Object> o = TestHelper.mockSubscriber();
-        InOrder inOrder = inOrder(o);
+        Subscriber<Object> subscriber = TestHelper.mockSubscriber();
+        InOrder inOrder = inOrder(subscriber);
 
-        source.delay(delayFunc).subscribe(o);
+        source.delay(delayFunc).subscribe(subscriber);
 
         source.onNext(1);
         delay.onNext(1);
         delay.onNext(2);
 
-        inOrder.verify(o).onNext(1);
+        inOrder.verify(subscriber).onNext(1);
         inOrder.verifyNoMoreInteractions();
-        verify(o, never()).onError(any(Throwable.class));
+        verify(subscriber, never()).onError(any(Throwable.class));
     }
 
     @Test
@@ -301,18 +301,18 @@ public class FlowableDelayTest {
                 return delay;
             }
         };
-        Subscriber<Object> o = TestHelper.mockSubscriber();
-        InOrder inOrder = inOrder(o);
+        Subscriber<Object> subscriber = TestHelper.mockSubscriber();
+        InOrder inOrder = inOrder(subscriber);
 
-        source.delay(delayFunc).subscribe(o);
+        source.delay(delayFunc).subscribe(subscriber);
         source.onNext(1);
         source.onError(new TestException());
         delay.onNext(1);
 
-        inOrder.verify(o).onError(any(TestException.class));
+        inOrder.verify(subscriber).onError(any(TestException.class));
         inOrder.verifyNoMoreInteractions();
-        verify(o, never()).onNext(any());
-        verify(o, never()).onComplete();
+        verify(subscriber, never()).onNext(any());
+        verify(subscriber, never()).onComplete();
     }
 
     @Test
@@ -326,16 +326,16 @@ public class FlowableDelayTest {
                 throw new TestException();
             }
         };
-        Subscriber<Object> o = TestHelper.mockSubscriber();
-        InOrder inOrder = inOrder(o);
+        Subscriber<Object> subscriber = TestHelper.mockSubscriber();
+        InOrder inOrder = inOrder(subscriber);
 
-        source.delay(delayFunc).subscribe(o);
+        source.delay(delayFunc).subscribe(subscriber);
         source.onNext(1);
 
-        inOrder.verify(o).onError(any(TestException.class));
+        inOrder.verify(subscriber).onError(any(TestException.class));
         inOrder.verifyNoMoreInteractions();
-        verify(o, never()).onNext(any());
-        verify(o, never()).onComplete();
+        verify(subscriber, never()).onNext(any());
+        verify(subscriber, never()).onComplete();
     }
 
     @Test
@@ -350,17 +350,17 @@ public class FlowableDelayTest {
                 return delay;
             }
         };
-        Subscriber<Object> o = TestHelper.mockSubscriber();
-        InOrder inOrder = inOrder(o);
+        Subscriber<Object> subscriber = TestHelper.mockSubscriber();
+        InOrder inOrder = inOrder(subscriber);
 
-        source.delay(delayFunc).subscribe(o);
+        source.delay(delayFunc).subscribe(subscriber);
         source.onNext(1);
         delay.onError(new TestException());
 
-        inOrder.verify(o).onError(any(TestException.class));
+        inOrder.verify(subscriber).onError(any(TestException.class));
         inOrder.verifyNoMoreInteractions();
-        verify(o, never()).onNext(any());
-        verify(o, never()).onComplete();
+        verify(subscriber, never()).onNext(any());
+        verify(subscriber, never()).onComplete();
     }
 
     @Test
@@ -375,10 +375,10 @@ public class FlowableDelayTest {
             }
         };
 
-        Subscriber<Object> o = TestHelper.mockSubscriber();
-        InOrder inOrder = inOrder(o);
+        Subscriber<Object> subscriber = TestHelper.mockSubscriber();
+        InOrder inOrder = inOrder(subscriber);
 
-        source.delay(delay, delayFunc).subscribe(o);
+        source.delay(delay, delayFunc).subscribe(subscriber);
 
         source.onNext(1);
         delay.onNext(1);
@@ -386,10 +386,10 @@ public class FlowableDelayTest {
         source.onNext(2);
         delay.onNext(2);
 
-        inOrder.verify(o).onNext(2);
+        inOrder.verify(subscriber).onNext(2);
         inOrder.verifyNoMoreInteractions();
-        verify(o, never()).onError(any(Throwable.class));
-        verify(o, never()).onComplete();
+        verify(subscriber, never()).onError(any(Throwable.class));
+        verify(subscriber, never()).onComplete();
     }
 
     @Test
@@ -410,20 +410,20 @@ public class FlowableDelayTest {
             }
         };
 
-        Subscriber<Object> o = TestHelper.mockSubscriber();
-        InOrder inOrder = inOrder(o);
+        Subscriber<Object> subscriber = TestHelper.mockSubscriber();
+        InOrder inOrder = inOrder(subscriber);
 
-        source.delay(Flowable.defer(subFunc), delayFunc).subscribe(o);
+        source.delay(Flowable.defer(subFunc), delayFunc).subscribe(subscriber);
 
         source.onNext(1);
         delay.onNext(1);
 
         source.onNext(2);
 
-        inOrder.verify(o).onError(any(TestException.class));
+        inOrder.verify(subscriber).onError(any(TestException.class));
         inOrder.verifyNoMoreInteractions();
-        verify(o, never()).onNext(any());
-        verify(o, never()).onComplete();
+        verify(subscriber, never()).onNext(any());
+        verify(subscriber, never()).onComplete();
     }
 
     @Test
@@ -444,20 +444,20 @@ public class FlowableDelayTest {
             }
         };
 
-        Subscriber<Object> o = TestHelper.mockSubscriber();
-        InOrder inOrder = inOrder(o);
+        Subscriber<Object> subscriber = TestHelper.mockSubscriber();
+        InOrder inOrder = inOrder(subscriber);
 
-        source.delay(Flowable.defer(subFunc), delayFunc).subscribe(o);
+        source.delay(Flowable.defer(subFunc), delayFunc).subscribe(subscriber);
 
         source.onNext(1);
         delay.onError(new TestException());
 
         source.onNext(2);
 
-        inOrder.verify(o).onError(any(TestException.class));
+        inOrder.verify(subscriber).onError(any(TestException.class));
         inOrder.verifyNoMoreInteractions();
-        verify(o, never()).onNext(any());
-        verify(o, never()).onComplete();
+        verify(subscriber, never()).onNext(any());
+        verify(subscriber, never()).onComplete();
     }
 
     @Test
@@ -471,18 +471,18 @@ public class FlowableDelayTest {
                 return Flowable.empty();
             }
         };
-        Subscriber<Object> o = TestHelper.mockSubscriber();
-        InOrder inOrder = inOrder(o);
+        Subscriber<Object> subscriber = TestHelper.mockSubscriber();
+        InOrder inOrder = inOrder(subscriber);
 
-        source.delay(delayFunc).subscribe(o);
+        source.delay(delayFunc).subscribe(subscriber);
 
         source.onNext(1);
         source.onComplete();
 
-        inOrder.verify(o).onNext(1);
-        inOrder.verify(o).onComplete();
+        inOrder.verify(subscriber).onNext(1);
+        inOrder.verify(subscriber).onComplete();
         inOrder.verifyNoMoreInteractions();
-        verify(o, never()).onError(any(Throwable.class));
+        verify(subscriber, never()).onError(any(Throwable.class));
     }
 
     @Test
@@ -504,10 +504,10 @@ public class FlowableDelayTest {
             }
         };
 
-        Subscriber<Object> o = TestHelper.mockSubscriber();
-        InOrder inOrder = inOrder(o);
+        Subscriber<Object> subscriber = TestHelper.mockSubscriber();
+        InOrder inOrder = inOrder(subscriber);
 
-        source.delay(Flowable.defer(subFunc), delayFunc).subscribe(o);
+        source.delay(Flowable.defer(subFunc), delayFunc).subscribe(subscriber);
 
         source.onNext(1);
         sdelay.onComplete();
@@ -515,10 +515,10 @@ public class FlowableDelayTest {
         source.onNext(2);
         delay.onNext(2);
 
-        inOrder.verify(o).onNext(2);
+        inOrder.verify(subscriber).onNext(2);
         inOrder.verifyNoMoreInteractions();
-        verify(o, never()).onError(any(Throwable.class));
-        verify(o, never()).onComplete();
+        verify(subscriber, never()).onError(any(Throwable.class));
+        verify(subscriber, never()).onComplete();
     }
 
     @Test
@@ -589,27 +589,27 @@ public class FlowableDelayTest {
             }
         });
 
-        Subscriber<Object> o = TestHelper.mockSubscriber();
-        InOrder inOrder = inOrder(o);
+        Subscriber<Object> subscriber = TestHelper.mockSubscriber();
+        InOrder inOrder = inOrder(subscriber);
 
-        result.subscribe(o);
+        result.subscribe(subscriber);
 
         for (int i = 0; i < n; i++) {
             source.onNext(i);
         }
         source.onComplete();
 
-        inOrder.verify(o, never()).onNext(anyInt());
-        inOrder.verify(o, never()).onComplete();
+        inOrder.verify(subscriber, never()).onNext(anyInt());
+        inOrder.verify(subscriber, never()).onComplete();
 
         for (int i = n - 1; i >= 0; i--) {
             subjects.get(i).onComplete();
-            inOrder.verify(o).onNext(i);
+            inOrder.verify(subscriber).onNext(i);
         }
 
-        inOrder.verify(o).onComplete();
+        inOrder.verify(subscriber).onComplete();
 
-        verify(o, never()).onError(any(Throwable.class));
+        verify(subscriber, never()).onError(any(Throwable.class));
     }
 
     @Test
@@ -624,11 +624,11 @@ public class FlowableDelayTest {
             }
 
         });
-        TestSubscriber<Integer> observer = new TestSubscriber<Integer>();
-        delayed.subscribe(observer);
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        delayed.subscribe(ts);
         // all will be delivered after 500ms since range does not delay between them
         scheduler.advanceTimeBy(500L, TimeUnit.MILLISECONDS);
-        observer.assertValues(1, 2, 3, 4, 5);
+        ts.assertValues(1, 2, 3, 4, 5);
     }
 
     @Test
@@ -902,16 +902,16 @@ public class FlowableDelayTest {
     public void testDelaySubscriptionDisposeBeforeTime() {
         Flowable<Integer> result = Flowable.just(1, 2, 3).delaySubscription(100, TimeUnit.MILLISECONDS, scheduler);
 
-        Subscriber<Object> o = TestHelper.mockSubscriber();
-        TestSubscriber<Object> ts = new TestSubscriber<Object>(o);
+        Subscriber<Object> subscriber = TestHelper.mockSubscriber();
+        TestSubscriber<Object> ts = new TestSubscriber<Object>(subscriber);
 
         result.subscribe(ts);
         ts.dispose();
         scheduler.advanceTimeBy(100, TimeUnit.MILLISECONDS);
 
-        verify(o, never()).onNext(any());
-        verify(o, never()).onComplete();
-        verify(o, never()).onError(any(Throwable.class));
+        verify(subscriber, never()).onNext(any());
+        verify(subscriber, never()).onComplete();
+        verify(subscriber, never()).onError(any(Throwable.class));
     }
 
     @Test
@@ -947,15 +947,15 @@ public class FlowableDelayTest {
     public void doubleOnSubscribe() {
         TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Flowable<Object>>() {
             @Override
-            public Flowable<Object> apply(Flowable<Object> o) throws Exception {
-                return o.delay(1, TimeUnit.SECONDS);
+            public Flowable<Object> apply(Flowable<Object> f) throws Exception {
+                return f.delay(1, TimeUnit.SECONDS);
             }
         });
 
         TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Flowable<Object>>() {
             @Override
-            public Flowable<Object> apply(Flowable<Object> o) throws Exception {
-                return o.delay(Functions.justFunction(Flowable.never()));
+            public Flowable<Object> apply(Flowable<Object> f) throws Exception {
+                return f.delay(Functions.justFunction(Flowable.never()));
             }
         });
     }

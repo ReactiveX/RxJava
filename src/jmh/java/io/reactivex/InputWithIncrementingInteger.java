@@ -94,7 +94,7 @@ public abstract class InputWithIncrementingInteger {
     }
 
     public Iterable<Integer> iterable;
-    public Flowable<Integer> observable;
+    public Flowable<Integer> flowable;
     public Flowable<Integer> firehose;
     public Blackhole bh;
 
@@ -104,7 +104,7 @@ public abstract class InputWithIncrementingInteger {
     public void setup(final Blackhole bh) {
         this.bh = bh;
         final int size = getSize();
-        observable = Flowable.range(0, size);
+        flowable = Flowable.range(0, size);
 
         firehose = Flowable.unsafeCreate(new IncrementingPublisher(size));
         iterable = new IncrementingIterable(size);

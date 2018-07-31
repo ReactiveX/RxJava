@@ -119,10 +119,10 @@ public class ObservableToSortedListTest {
     @Test
     public void testSortedList() {
         Observable<Integer> w = Observable.just(1, 3, 2, 5, 4);
-        Single<List<Integer>> observable = w.toSortedList();
+        Single<List<Integer>> single = w.toSortedList();
 
         SingleObserver<List<Integer>> observer = TestHelper.mockSingleObserver();
-        observable.subscribe(observer);
+        single.subscribe(observer);
         verify(observer, times(1)).onSuccess(Arrays.asList(1, 2, 3, 4, 5));
         verify(observer, Mockito.never()).onError(any(Throwable.class));
     }
@@ -130,7 +130,7 @@ public class ObservableToSortedListTest {
     @Test
     public void testSortedListWithCustomFunction() {
         Observable<Integer> w = Observable.just(1, 3, 2, 5, 4);
-        Single<List<Integer>> observable = w.toSortedList(new Comparator<Integer>() {
+        Single<List<Integer>> single = w.toSortedList(new Comparator<Integer>() {
 
             @Override
             public int compare(Integer t1, Integer t2) {
@@ -140,7 +140,7 @@ public class ObservableToSortedListTest {
         });
 
         SingleObserver<List<Integer>> observer = TestHelper.mockSingleObserver();
-        observable.subscribe(observer);
+        single.subscribe(observer);
         verify(observer, times(1)).onSuccess(Arrays.asList(5, 4, 3, 2, 1));
         verify(observer, Mockito.never()).onError(any(Throwable.class));
     }

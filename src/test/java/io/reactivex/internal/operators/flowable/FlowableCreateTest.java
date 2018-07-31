@@ -223,14 +223,14 @@ public class FlowableCreateTest {
     public void wrap() {
         Flowable.fromPublisher(new Publisher<Integer>() {
             @Override
-            public void subscribe(Subscriber<? super Integer> observer) {
-                observer.onSubscribe(new BooleanSubscription());
-                observer.onNext(1);
-                observer.onNext(2);
-                observer.onNext(3);
-                observer.onNext(4);
-                observer.onNext(5);
-                observer.onComplete();
+            public void subscribe(Subscriber<? super Integer> subscriber) {
+                subscriber.onSubscribe(new BooleanSubscription());
+                subscriber.onNext(1);
+                subscriber.onNext(2);
+                subscriber.onNext(3);
+                subscriber.onNext(4);
+                subscriber.onNext(5);
+                subscriber.onComplete();
             }
         })
         .test()
@@ -241,14 +241,14 @@ public class FlowableCreateTest {
     public void unsafe() {
         Flowable.unsafeCreate(new Publisher<Integer>() {
             @Override
-            public void subscribe(Subscriber<? super Integer> observer) {
-                observer.onSubscribe(new BooleanSubscription());
-                observer.onNext(1);
-                observer.onNext(2);
-                observer.onNext(3);
-                observer.onNext(4);
-                observer.onNext(5);
-                observer.onComplete();
+            public void subscribe(Subscriber<? super Integer> subscriber) {
+                subscriber.onSubscribe(new BooleanSubscription());
+                subscriber.onNext(1);
+                subscriber.onNext(2);
+                subscriber.onNext(3);
+                subscriber.onNext(4);
+                subscriber.onNext(5);
+                subscriber.onComplete();
             }
         })
         .test()

@@ -364,18 +364,18 @@ public class FlowableTimeoutTests {
 
     @Test
     public void shouldUnsubscribeFromUnderlyingSubscriptionOnDispose() {
-        final PublishProcessor<String> subject = PublishProcessor.create();
+        final PublishProcessor<String> processor = PublishProcessor.create();
         final TestScheduler scheduler = new TestScheduler();
 
-        final TestSubscriber<String> observer = subject
+        final TestSubscriber<String> subscriber = processor
                 .timeout(100, TimeUnit.MILLISECONDS, scheduler)
                 .test();
 
-        assertTrue(subject.hasSubscribers());
+        assertTrue(processor.hasSubscribers());
 
-        observer.dispose();
+        subscriber.dispose();
 
-        assertFalse(subject.hasSubscribers());
+        assertFalse(processor.hasSubscribers());
     }
 
     @Test
@@ -431,14 +431,14 @@ public class FlowableTimeoutTests {
         try {
             new Flowable<Integer>() {
                 @Override
-                protected void subscribeActual(Subscriber<? super Integer> observer) {
-                    observer.onSubscribe(new BooleanSubscription());
+                protected void subscribeActual(Subscriber<? super Integer> subscriber) {
+                    subscriber.onSubscribe(new BooleanSubscription());
 
-                    observer.onNext(1);
-                    observer.onComplete();
-                    observer.onNext(2);
-                    observer.onError(new TestException());
-                    observer.onComplete();
+                    subscriber.onNext(1);
+                    subscriber.onComplete();
+                    subscriber.onNext(2);
+                    subscriber.onError(new TestException());
+                    subscriber.onComplete();
                 }
             }
             .timeout(1, TimeUnit.DAYS)
@@ -457,14 +457,14 @@ public class FlowableTimeoutTests {
         try {
             new Flowable<Integer>() {
                 @Override
-                protected void subscribeActual(Subscriber<? super Integer> observer) {
-                    observer.onSubscribe(new BooleanSubscription());
+                protected void subscribeActual(Subscriber<? super Integer> subscriber) {
+                    subscriber.onSubscribe(new BooleanSubscription());
 
-                    observer.onNext(1);
-                    observer.onComplete();
-                    observer.onNext(2);
-                    observer.onError(new TestException());
-                    observer.onComplete();
+                    subscriber.onNext(1);
+                    subscriber.onComplete();
+                    subscriber.onNext(2);
+                    subscriber.onError(new TestException());
+                    subscriber.onComplete();
                 }
             }
             .timeout(1, TimeUnit.DAYS, Flowable.just(3))

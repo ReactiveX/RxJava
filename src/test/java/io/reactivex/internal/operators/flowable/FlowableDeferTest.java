@@ -69,12 +69,12 @@ public class FlowableDeferTest {
 
         Flowable<String> result = Flowable.defer(factory);
 
-        Subscriber<String> o = TestHelper.mockSubscriber();
+        Subscriber<String> subscriber = TestHelper.mockSubscriber();
 
-        result.subscribe(o);
+        result.subscribe(subscriber);
 
-        verify(o).onError(any(TestException.class));
-        verify(o, never()).onNext(any(String.class));
-        verify(o, never()).onComplete();
+        verify(subscriber).onError(any(TestException.class));
+        verify(subscriber, never()).onNext(any(String.class));
+        verify(subscriber, never()).onComplete();
     }
 }

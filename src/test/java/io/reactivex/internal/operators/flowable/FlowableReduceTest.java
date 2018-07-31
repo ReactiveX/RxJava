@@ -476,9 +476,9 @@ public class FlowableReduceTest {
     public void seedDoubleOnSubscribe() {
         TestHelper.checkDoubleOnSubscribeFlowableToSingle(new Function<Flowable<Integer>, SingleSource<Integer>>() {
             @Override
-            public SingleSource<Integer> apply(Flowable<Integer> o)
+            public SingleSource<Integer> apply(Flowable<Integer> f)
                     throws Exception {
-                return o.reduce(0, new BiFunction<Integer, Integer, Integer>() {
+                return f.reduce(0, new BiFunction<Integer, Integer, Integer>() {
                     @Override
                     public Integer apply(Integer a, Integer b) throws Exception {
                         return a;
@@ -504,12 +504,12 @@ public class FlowableReduceTest {
         try {
             new Flowable<Integer>() {
                 @Override
-                protected void subscribeActual(Subscriber<? super Integer> observer) {
-                    observer.onSubscribe(new BooleanSubscription());
-                    observer.onComplete();
-                    observer.onNext(1);
-                    observer.onError(new TestException());
-                    observer.onComplete();
+                protected void subscribeActual(Subscriber<? super Integer> subscriber) {
+                    subscriber.onSubscribe(new BooleanSubscription());
+                    subscriber.onComplete();
+                    subscriber.onNext(1);
+                    subscriber.onError(new TestException());
+                    subscriber.onComplete();
                 }
             }
             .reduce(0, new BiFunction<Integer, Integer, Integer>() {
