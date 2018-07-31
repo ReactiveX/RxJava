@@ -35,9 +35,9 @@ public final class SingleOnErrorReturn<T> extends Single<T> {
 
 
     @Override
-    protected void subscribeActual(final SingleObserver<? super T> s) {
+    protected void subscribeActual(final SingleObserver<? super T> observer) {
 
-        source.subscribe(new OnErrorReturn(s));
+        source.subscribe(new OnErrorReturn(observer));
     }
 
     final class OnErrorReturn implements SingleObserver<T> {

@@ -170,10 +170,10 @@ public class CompletableConcatTest {
 
         Completable.concatArray(new Completable() {
             @Override
-            protected void subscribeActual(CompletableObserver s) {
-                s.onSubscribe(Disposables.empty());
+            protected void subscribeActual(CompletableObserver observer) {
+                observer.onSubscribe(Disposables.empty());
                 to.cancel();
-                s.onComplete();
+                observer.onComplete();
             }
         }, Completable.complete())
         .subscribe(to);
@@ -194,10 +194,10 @@ public class CompletableConcatTest {
 
         Completable.concat(Arrays.asList(new Completable() {
             @Override
-            protected void subscribeActual(CompletableObserver s) {
-                s.onSubscribe(Disposables.empty());
+            protected void subscribeActual(CompletableObserver observer) {
+                observer.onSubscribe(Disposables.empty());
                 to.cancel();
-                s.onComplete();
+                observer.onComplete();
             }
         }, Completable.complete()))
         .subscribe(to);

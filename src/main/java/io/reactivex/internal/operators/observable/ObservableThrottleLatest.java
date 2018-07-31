@@ -52,8 +52,8 @@ public final class ObservableThrottleLatest<T> extends AbstractObservableWithUps
     }
 
     @Override
-    protected void subscribeActual(Observer<? super T> s) {
-        source.subscribe(new ThrottleLatestObserver<T>(s, timeout, unit, scheduler.createWorker(), emitLast));
+    protected void subscribeActual(Observer<? super T> observer) {
+        source.subscribe(new ThrottleLatestObserver<T>(observer, timeout, unit, scheduler.createWorker(), emitLast));
     }
 
     static final class ThrottleLatestObserver<T>

@@ -27,11 +27,11 @@ public final class ObservableRepeat<T> extends AbstractObservableWithUpstream<T,
     }
 
     @Override
-    public void subscribeActual(Observer<? super T> s) {
+    public void subscribeActual(Observer<? super T> observer) {
         SequentialDisposable sd = new SequentialDisposable();
-        s.onSubscribe(sd);
+        observer.onSubscribe(sd);
 
-        RepeatObserver<T> rs = new RepeatObserver<T>(s, count != Long.MAX_VALUE ? count - 1 : Long.MAX_VALUE, sd, source);
+        RepeatObserver<T> rs = new RepeatObserver<T>(observer, count != Long.MAX_VALUE ? count - 1 : Long.MAX_VALUE, sd, source);
         rs.subscribeNext();
     }
 

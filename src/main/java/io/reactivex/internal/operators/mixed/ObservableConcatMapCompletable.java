@@ -54,9 +54,9 @@ public final class ObservableConcatMapCompletable<T> extends Completable {
     }
 
     @Override
-    protected void subscribeActual(CompletableObserver s) {
-        if (!ScalarXMapZHelper.tryAsCompletable(source, mapper, s)) {
-            source.subscribe(new ConcatMapCompletableObserver<T>(s, mapper, errorMode, prefetch));
+    protected void subscribeActual(CompletableObserver observer) {
+        if (!ScalarXMapZHelper.tryAsCompletable(source, mapper, observer)) {
+            source.subscribe(new ConcatMapCompletableObserver<T>(observer, mapper, errorMode, prefetch));
         }
     }
 

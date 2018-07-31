@@ -39,8 +39,8 @@ public final class CompletableDoFinally extends Completable {
     }
 
     @Override
-    protected void subscribeActual(CompletableObserver s) {
-        source.subscribe(new DoFinallyObserver(s, onFinally));
+    protected void subscribeActual(CompletableObserver observer) {
+        source.subscribe(new DoFinallyObserver(observer, onFinally));
     }
 
     static final class DoFinallyObserver extends AtomicInteger implements CompletableObserver, Disposable {

@@ -1662,7 +1662,7 @@ public class ObservableNullTests {
     public void liftReturnsNull() {
         just1.lift(new ObservableOperator<Object, Integer>() {
             @Override
-            public Observer<? super Integer> apply(Observer<? super Object> s) {
+            public Observer<? super Integer> apply(Observer<? super Object> observer) {
                 return null;
             }
         }).blockingSubscribe();

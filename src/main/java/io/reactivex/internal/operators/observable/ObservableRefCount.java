@@ -59,7 +59,7 @@ public final class ObservableRefCount<T> extends Observable<T> {
     }
 
     @Override
-    protected void subscribeActual(Observer<? super T> s) {
+    protected void subscribeActual(Observer<? super T> observer) {
 
         RefConnection conn;
 
@@ -82,7 +82,7 @@ public final class ObservableRefCount<T> extends Observable<T> {
             }
         }
 
-        source.subscribe(new RefCountObserver<T>(s, this, conn));
+        source.subscribe(new RefCountObserver<T>(observer, this, conn));
 
         if (connect) {
             source.connect(conn);

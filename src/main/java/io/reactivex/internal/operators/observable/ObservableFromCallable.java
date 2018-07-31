@@ -31,9 +31,9 @@ public final class ObservableFromCallable<T> extends Observable<T> implements Ca
         this.callable = callable;
     }
     @Override
-    public void subscribeActual(Observer<? super T> s) {
-        DeferredScalarDisposable<T> d = new DeferredScalarDisposable<T>(s);
-        s.onSubscribe(d);
+    public void subscribeActual(Observer<? super T> observer) {
+        DeferredScalarDisposable<T> d = new DeferredScalarDisposable<T>(observer);
+        observer.onSubscribe(d);
         if (d.isDisposed()) {
             return;
         }
@@ -43,7 +43,7 @@ public final class ObservableFromCallable<T> extends Observable<T> implements Ca
         } catch (Throwable e) {
             Exceptions.throwIfFatal(e);
             if (!d.isDisposed()) {
-                s.onError(e);
+                observer.onError(e);
             } else {
                 RxJavaPlugins.onError(e);
             }

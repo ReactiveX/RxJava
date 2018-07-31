@@ -30,8 +30,8 @@ public final class CompletableObserveOn extends Completable {
     }
 
     @Override
-    protected void subscribeActual(final CompletableObserver s) {
-        source.subscribe(new ObserveOnCompletableObserver(s, scheduler));
+    protected void subscribeActual(final CompletableObserver observer) {
+        source.subscribe(new ObserveOnCompletableObserver(observer, scheduler));
     }
 
     static final class ObserveOnCompletableObserver

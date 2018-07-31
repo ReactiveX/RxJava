@@ -143,9 +143,9 @@ public class CompletableTakeUntilTest {
 
             new Completable() {
                 @Override
-                protected void subscribeActual(CompletableObserver s) {
-                    s.onSubscribe(Disposables.empty());
-                    s.onError(new TestException());
+                protected void subscribeActual(CompletableObserver observer) {
+                    observer.onSubscribe(Disposables.empty());
+                    observer.onError(new TestException());
                 }
             }.takeUntil(Completable.complete())
             .test()
@@ -165,9 +165,9 @@ public class CompletableTakeUntilTest {
 
             new Completable() {
                 @Override
-                protected void subscribeActual(CompletableObserver s) {
-                    s.onSubscribe(Disposables.empty());
-                    s.onComplete();
+                protected void subscribeActual(CompletableObserver observer) {
+                    observer.onSubscribe(Disposables.empty());
+                    observer.onComplete();
                 }
             }.takeUntil(Completable.complete())
             .test()
@@ -190,9 +190,9 @@ public class CompletableTakeUntilTest {
             Completable.complete()
             .takeUntil(new Completable() {
                 @Override
-                protected void subscribeActual(CompletableObserver s) {
-                    s.onSubscribe(Disposables.empty());
-                    ref.set(s);
+                protected void subscribeActual(CompletableObserver observer) {
+                    observer.onSubscribe(Disposables.empty());
+                    ref.set(observer);
                 }
             })
             .test()
@@ -217,9 +217,9 @@ public class CompletableTakeUntilTest {
             Completable.complete()
             .takeUntil(new Completable() {
                 @Override
-                protected void subscribeActual(CompletableObserver s) {
-                    s.onSubscribe(Disposables.empty());
-                    ref.set(s);
+                protected void subscribeActual(CompletableObserver observer) {
+                    observer.onSubscribe(Disposables.empty());
+                    ref.set(observer);
                 }
             })
             .test()

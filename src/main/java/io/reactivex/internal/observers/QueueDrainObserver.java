@@ -62,11 +62,11 @@ public abstract class QueueDrainObserver<T, U, V> extends QueueDrainSubscriberPa
     }
 
     protected final void fastPathEmit(U value, boolean delayError, Disposable dispose) {
-        final Observer<? super V> s = actual;
+        final Observer<? super V> observer = actual;
         final SimplePlainQueue<U> q = queue;
 
         if (wip.get() == 0 && wip.compareAndSet(0, 1)) {
-            accept(s, value);
+            accept(observer, value);
             if (leave(-1) == 0) {
                 return;
             }
@@ -76,7 +76,7 @@ public abstract class QueueDrainObserver<T, U, V> extends QueueDrainSubscriberPa
                 return;
             }
         }
-        QueueDrainHelper.drainLoop(q, s, delayError, dispose, this);
+        QueueDrainHelper.drainLoop(q, observer, delayError, dispose, this);
     }
 
     /**
@@ -86,12 +86,12 @@ public abstract class QueueDrainObserver<T, U, V> extends QueueDrainSubscriberPa
      * @param disposable the resource to dispose if the drain terminates
      */
     protected final void fastPathOrderedEmit(U value, boolean delayError, Disposable disposable) {
-        final Observer<? super V> s = actual;
+        final Observer<? super V> observer = actual;
         final SimplePlainQueue<U> q = queue;
 
         if (wip.get() == 0 && wip.compareAndSet(0, 1)) {
             if (q.isEmpty()) {
-                accept(s, value);
+                accept(observer, value);
                 if (leave(-1) == 0) {
                     return;
                 }
@@ -104,7 +104,7 @@ public abstract class QueueDrainObserver<T, U, V> extends QueueDrainSubscriberPa
                 return;
             }
         }
-        QueueDrainHelper.drainLoop(q, s, delayError, disposable, this);
+        QueueDrainHelper.drainLoop(q, observer, delayError, disposable, this);
     }
 
     @Override

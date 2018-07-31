@@ -37,8 +37,8 @@ public final class SingleDoOnSubscribe<T> extends Single<T> {
     }
 
     @Override
-    protected void subscribeActual(final SingleObserver<? super T> s) {
-        source.subscribe(new DoOnSubscribeSingleObserver<T>(s, onSubscribe));
+    protected void subscribeActual(final SingleObserver<? super T> observer) {
+        source.subscribe(new DoOnSubscribeSingleObserver<T>(observer, onSubscribe));
     }
 
     static final class DoOnSubscribeSingleObserver<T> implements SingleObserver<T> {

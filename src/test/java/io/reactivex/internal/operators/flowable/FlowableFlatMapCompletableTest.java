@@ -455,14 +455,14 @@ public class FlowableFlatMapCompletableTest {
             public CompletableSource apply(Integer v) throws Exception {
                 return new Completable() {
                     @Override
-                    protected void subscribeActual(CompletableObserver s) {
-                        s.onSubscribe(Disposables.empty());
+                    protected void subscribeActual(CompletableObserver observer) {
+                        observer.onSubscribe(Disposables.empty());
 
-                        assertFalse(((Disposable)s).isDisposed());
+                        assertFalse(((Disposable)observer).isDisposed());
 
-                        ((Disposable)s).dispose();
+                        ((Disposable)observer).dispose();
 
-                        assertTrue(((Disposable)s).isDisposed());
+                        assertTrue(((Disposable)observer).isDisposed());
                     }
                 };
             }
@@ -494,14 +494,14 @@ public class FlowableFlatMapCompletableTest {
             public CompletableSource apply(Integer v) throws Exception {
                 return new Completable() {
                     @Override
-                    protected void subscribeActual(CompletableObserver s) {
-                        s.onSubscribe(Disposables.empty());
+                    protected void subscribeActual(CompletableObserver observer) {
+                        observer.onSubscribe(Disposables.empty());
 
-                        assertFalse(((Disposable)s).isDisposed());
+                        assertFalse(((Disposable)observer).isDisposed());
 
-                        ((Disposable)s).dispose();
+                        ((Disposable)observer).dispose();
 
-                        assertTrue(((Disposable)s).isDisposed());
+                        assertTrue(((Disposable)observer).isDisposed());
                     }
                 };
             }

@@ -209,15 +209,27 @@ public class CheckLocalVariablesInTests {
         findPattern("Single<.*>\\s+flowable\\b");
     }
 
+    @Test
     public void observerAsSubscriber() throws Exception {
         findPattern("Observer<.*>\\s+subscriber[0-9]?\\b");
     }
 
+    @Test
     public void observerAsS() throws Exception {
         findPattern("Observer<.*>\\s+s[0-9]?\\b");
     }
 
     @Test
+    public void observerNoArgAsSubscriber() throws Exception {
+        findPattern("Observer\\s+subscriber[0-9]?\\b");
+    }
+
+    @Test
+    public void observerNoArgAsS() throws Exception {
+        findPattern("Observer\\s+s[0-9]?\\b");
+    }
+
+@Test
     public void flowableAsObservable() throws Exception {
         findPattern("Flowable<.*>\\s+observable[0-9]?\\b");
     }

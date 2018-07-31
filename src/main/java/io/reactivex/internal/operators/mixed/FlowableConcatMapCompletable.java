@@ -57,8 +57,8 @@ public final class FlowableConcatMapCompletable<T> extends Completable {
     }
 
     @Override
-    protected void subscribeActual(CompletableObserver s) {
-        source.subscribe(new ConcatMapCompletableObserver<T>(s, mapper, errorMode, prefetch));
+    protected void subscribeActual(CompletableObserver observer) {
+        source.subscribe(new ConcatMapCompletableObserver<T>(observer, mapper, errorMode, prefetch));
     }
 
     static final class ConcatMapCompletableObserver<T>

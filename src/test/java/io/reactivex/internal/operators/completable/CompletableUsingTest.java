@@ -411,14 +411,14 @@ public class CompletableUsingTest {
                 public CompletableSource apply(Object v) throws Exception {
                     return Completable.wrap(new CompletableSource() {
                         @Override
-                        public void subscribe(CompletableObserver s) {
+                        public void subscribe(CompletableObserver observer) {
                             Disposable d1 = Disposables.empty();
 
-                            s.onSubscribe(d1);
+                            observer.onSubscribe(d1);
 
                             Disposable d2 = Disposables.empty();
 
-                            s.onSubscribe(d2);
+                            observer.onSubscribe(d2);
 
                             assertFalse(d1.isDisposed());
 

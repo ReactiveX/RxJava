@@ -215,9 +215,9 @@ public final class AsyncSubject<T> extends Subject<T> {
     }
 
     @Override
-    protected void subscribeActual(Observer<? super T> s) {
-        AsyncDisposable<T> as = new AsyncDisposable<T>(s, this);
-        s.onSubscribe(as);
+    protected void subscribeActual(Observer<? super T> observer) {
+        AsyncDisposable<T> as = new AsyncDisposable<T>(observer, this);
+        observer.onSubscribe(as);
         if (add(as)) {
             if (as.isDisposed()) {
                 remove(as);
@@ -225,7 +225,7 @@ public final class AsyncSubject<T> extends Subject<T> {
         } else {
             Throwable ex = error;
             if (ex != null) {
-                s.onError(ex);
+                observer.onError(ex);
             } else {
                 T v = value;
                 if (v != null) {

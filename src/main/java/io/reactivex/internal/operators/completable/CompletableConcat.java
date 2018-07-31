@@ -36,8 +36,8 @@ public final class CompletableConcat extends Completable {
     }
 
     @Override
-    public void subscribeActual(CompletableObserver s) {
-        sources.subscribe(new CompletableConcatSubscriber(s, prefetch));
+    public void subscribeActual(CompletableObserver observer) {
+        sources.subscribe(new CompletableConcatSubscriber(observer, prefetch));
     }
 
     static final class CompletableConcatSubscriber

@@ -61,11 +61,11 @@ public class MaybeDoOnEventTest {
 
             new Maybe<Integer>() {
                 @Override
-                protected void subscribeActual(MaybeObserver<? super Integer> s) {
-                    s.onSubscribe(bs);
-                    s.onError(new TestException("Second"));
-                    s.onComplete();
-                    s.onSuccess(1);
+                protected void subscribeActual(MaybeObserver<? super Integer> observer) {
+                    observer.onSubscribe(bs);
+                    observer.onError(new TestException("Second"));
+                    observer.onComplete();
+                    observer.onSuccess(1);
                 }
             }
             .doOnSubscribe(new Consumer<Disposable>() {

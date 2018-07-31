@@ -27,12 +27,12 @@ public final class CompletableMergeArray extends Completable {
     }
 
     @Override
-    public void subscribeActual(final CompletableObserver s) {
+    public void subscribeActual(final CompletableObserver observer) {
         final CompositeDisposable set = new CompositeDisposable();
         final AtomicBoolean once = new AtomicBoolean();
 
-        InnerCompletableObserver shared = new InnerCompletableObserver(s, once, set, sources.length + 1);
-        s.onSubscribe(set);
+        InnerCompletableObserver shared = new InnerCompletableObserver(observer, once, set, sources.length + 1);
+        observer.onSubscribe(set);
 
         for (CompletableSource c : sources) {
             if (set.isDisposed()) {

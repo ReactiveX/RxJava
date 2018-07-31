@@ -177,18 +177,18 @@ public class ObservableMergeWithMaybeTest {
     public void onErrorMainOverflow() {
         List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
-            final AtomicReference<Observer<?>> subscriber = new AtomicReference<Observer<?>>();
+            final AtomicReference<Observer<?>> observerRef = new AtomicReference<Observer<?>>();
             TestObserver<Integer> to = new Observable<Integer>() {
                 @Override
-                protected void subscribeActual(Observer<? super Integer> s) {
-                    s.onSubscribe(Disposables.empty());
-                    subscriber.set(s);
+                protected void subscribeActual(Observer<? super Integer> observer) {
+                    observer.onSubscribe(Disposables.empty());
+                    observerRef.set(observer);
                 }
             }
             .mergeWith(Maybe.<Integer>error(new IOException()))
             .test();
 
-            subscriber.get().onError(new TestException());
+            observerRef.get().onError(new TestException());
 
             to.assertFailure(IOException.class)
             ;

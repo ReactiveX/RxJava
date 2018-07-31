@@ -147,7 +147,7 @@ public class FlowableConversionTest {
 
     @Test
     public void testConversionBetweenObservableClasses() {
-        final TestObserver<String> subscriber = new TestObserver<String>(new DefaultObserver<String>() {
+        final TestObserver<String> to = new TestObserver<String>(new DefaultObserver<String>() {
 
             @Override
             public void onComplete() {
@@ -196,10 +196,10 @@ public class FlowableConversionTest {
                     return a + n + "\n";
                 }
             })
-            .subscribe(subscriber);
+            .subscribe(to);
 
-        subscriber.assertNoErrors();
-        subscriber.assertComplete();
+        to.assertNoErrors();
+        to.assertComplete();
     }
 
     @Test

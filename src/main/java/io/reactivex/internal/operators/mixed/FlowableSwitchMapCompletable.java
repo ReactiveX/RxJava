@@ -51,8 +51,8 @@ public final class FlowableSwitchMapCompletable<T> extends Completable {
     }
 
     @Override
-    protected void subscribeActual(CompletableObserver s) {
-        source.subscribe(new SwitchMapCompletableObserver<T>(s, mapper, delayErrors));
+    protected void subscribeActual(CompletableObserver observer) {
+        source.subscribe(new SwitchMapCompletableObserver<T>(observer, mapper, delayErrors));
     }
 
     static final class SwitchMapCompletableObserver<T> implements FlowableSubscriber<T>, Disposable {

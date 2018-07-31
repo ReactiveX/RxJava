@@ -556,18 +556,18 @@ public enum TestHelper {
     /**
      * Calls onSubscribe twice and checks if it doesn't affect the first Disposable while
      * reporting it to plugin error handler.
-     * @param subscriber the target
+     * @param observer the target
      */
-    public static void doubleOnSubscribe(Observer<?> subscriber) {
+    public static void doubleOnSubscribe(Observer<?> observer) {
         List<Throwable> errors = trackPluginErrors();
         try {
             Disposable d1 = Disposables.empty();
 
-            subscriber.onSubscribe(d1);
+            observer.onSubscribe(d1);
 
             Disposable d2 = Disposables.empty();
 
-            subscriber.onSubscribe(d2);
+            observer.onSubscribe(d2);
 
             assertFalse(d1.isDisposed());
 
@@ -582,18 +582,18 @@ public enum TestHelper {
     /**
      * Calls onSubscribe twice and checks if it doesn't affect the first Disposable while
      * reporting it to plugin error handler.
-     * @param subscriber the target
+     * @param observer the target
      */
-    public static void doubleOnSubscribe(SingleObserver<?> subscriber) {
+    public static void doubleOnSubscribe(SingleObserver<?> observer) {
         List<Throwable> errors = trackPluginErrors();
         try {
             Disposable d1 = Disposables.empty();
 
-            subscriber.onSubscribe(d1);
+            observer.onSubscribe(d1);
 
             Disposable d2 = Disposables.empty();
 
-            subscriber.onSubscribe(d2);
+            observer.onSubscribe(d2);
 
             assertFalse(d1.isDisposed());
 
@@ -608,18 +608,18 @@ public enum TestHelper {
     /**
      * Calls onSubscribe twice and checks if it doesn't affect the first Disposable while
      * reporting it to plugin error handler.
-     * @param subscriber the target
+     * @param observer the target
      */
-    public static void doubleOnSubscribe(CompletableObserver subscriber) {
+    public static void doubleOnSubscribe(CompletableObserver observer) {
         List<Throwable> errors = trackPluginErrors();
         try {
             Disposable d1 = Disposables.empty();
 
-            subscriber.onSubscribe(d1);
+            observer.onSubscribe(d1);
 
             Disposable d2 = Disposables.empty();
 
-            subscriber.onSubscribe(d2);
+            observer.onSubscribe(d2);
 
             assertFalse(d1.isDisposed());
 
@@ -634,18 +634,18 @@ public enum TestHelper {
     /**
      * Calls onSubscribe twice and checks if it doesn't affect the first Disposable while
      * reporting it to plugin error handler.
-     * @param subscriber the target
+     * @param observer the target
      */
-    public static void doubleOnSubscribe(MaybeObserver<?> subscriber) {
+    public static void doubleOnSubscribe(MaybeObserver<?> observer) {
         List<Throwable> errors = trackPluginErrors();
         try {
             Disposable d1 = Disposables.empty();
 
-            subscriber.onSubscribe(d1);
+            observer.onSubscribe(d1);
 
             Disposable d2 = Disposables.empty();
 
-            subscriber.onSubscribe(d2);
+            observer.onSubscribe(d2);
 
             assertFalse(d1.isDisposed());
 
@@ -3042,8 +3042,8 @@ public enum TestHelper {
         }
 
         @Override
-        protected void subscribeActual(Observer<? super T> s) {
-            source.subscribe(new StripBoundaryObserver<T>(s));
+        protected void subscribeActual(Observer<? super T> observer) {
+            source.subscribe(new StripBoundaryObserver<T>(observer));
         }
 
         static final class StripBoundaryObserver<T> implements Observer<T>, QueueDisposable<T> {

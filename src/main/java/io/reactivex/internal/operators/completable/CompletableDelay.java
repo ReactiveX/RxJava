@@ -41,8 +41,8 @@ public final class CompletableDelay extends Completable {
     }
 
     @Override
-    protected void subscribeActual(final CompletableObserver s) {
-        source.subscribe(new Delay(s, delay, unit, scheduler, delayError));
+    protected void subscribeActual(final CompletableObserver observer) {
+        source.subscribe(new Delay(observer, delay, unit, scheduler, delayError));
     }
 
     static final class Delay extends AtomicReference<Disposable>

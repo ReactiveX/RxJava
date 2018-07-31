@@ -31,9 +31,9 @@ public final class CompletableCreate extends Completable {
     }
 
     @Override
-    protected void subscribeActual(CompletableObserver s) {
-        Emitter parent = new Emitter(s);
-        s.onSubscribe(parent);
+    protected void subscribeActual(CompletableObserver observer) {
+        Emitter parent = new Emitter(observer);
+        observer.onSubscribe(parent);
 
         try {
             source.subscribe(parent);

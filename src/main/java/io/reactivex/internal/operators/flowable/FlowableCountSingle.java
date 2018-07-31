@@ -30,8 +30,8 @@ public final class FlowableCountSingle<T> extends Single<Long> implements FuseTo
     }
 
     @Override
-    protected void subscribeActual(SingleObserver<? super Long> s) {
-        source.subscribe(new CountSubscriber(s));
+    protected void subscribeActual(SingleObserver<? super Long> observer) {
+        source.subscribe(new CountSubscriber(observer));
     }
 
     @Override

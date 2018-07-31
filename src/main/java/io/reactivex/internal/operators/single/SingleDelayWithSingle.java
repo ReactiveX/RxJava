@@ -32,8 +32,8 @@ public final class SingleDelayWithSingle<T, U> extends Single<T> {
     }
 
     @Override
-    protected void subscribeActual(SingleObserver<? super T> subscriber) {
-        other.subscribe(new OtherObserver<T, U>(subscriber, source));
+    protected void subscribeActual(SingleObserver<? super T> observer) {
+        other.subscribe(new OtherObserver<T, U>(observer, source));
     }
 
     static final class OtherObserver<T, U>

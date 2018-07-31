@@ -56,12 +56,12 @@ public final class ObservableGroupJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> ex
     }
 
     @Override
-    protected void subscribeActual(Observer<? super R> s) {
+    protected void subscribeActual(Observer<? super R> observer) {
 
         GroupJoinDisposable<TLeft, TRight, TLeftEnd, TRightEnd, R> parent =
-                new GroupJoinDisposable<TLeft, TRight, TLeftEnd, TRightEnd, R>(s, leftEnd, rightEnd, resultSelector);
+                new GroupJoinDisposable<TLeft, TRight, TLeftEnd, TRightEnd, R>(observer, leftEnd, rightEnd, resultSelector);
 
-        s.onSubscribe(parent);
+        observer.onSubscribe(parent);
 
         LeftRightObserver left = new LeftRightObserver(parent, true);
         parent.disposables.add(left);

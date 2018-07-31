@@ -29,18 +29,18 @@ public final class SingleDefer<T> extends Single<T> {
     }
 
     @Override
-    protected void subscribeActual(SingleObserver<? super T> s) {
+    protected void subscribeActual(SingleObserver<? super T> observer) {
         SingleSource<? extends T> next;
 
         try {
             next = ObjectHelper.requireNonNull(singleSupplier.call(), "The singleSupplier returned a null SingleSource");
         } catch (Throwable e) {
             Exceptions.throwIfFatal(e);
-            EmptyDisposable.error(e, s);
+            EmptyDisposable.error(e, observer);
             return;
         }
 
-        next.subscribe(s);
+        next.subscribe(observer);
     }
 
 }

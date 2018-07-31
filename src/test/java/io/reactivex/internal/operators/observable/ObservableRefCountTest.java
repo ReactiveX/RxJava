@@ -232,22 +232,22 @@ public class ObservableRefCountTest {
                     }
                 });
 
-        TestObserver<Long> s = new TestObserver<Long>();
-        o.publish().refCount().subscribeOn(Schedulers.newThread()).subscribe(s);
+        TestObserver<Long> observer = new TestObserver<Long>();
+        o.publish().refCount().subscribeOn(Schedulers.newThread()).subscribe(observer);
         System.out.println("send unsubscribe");
         // wait until connected
         subscribeLatch.await();
         // now unsubscribe
-        s.dispose();
+        observer.dispose();
         System.out.println("DONE sending unsubscribe ... now waiting");
         if (!unsubscribeLatch.await(3000, TimeUnit.MILLISECONDS)) {
-            System.out.println("Errors: " + s.errors());
-            if (s.errors().size() > 0) {
-                s.errors().get(0).printStackTrace();
+            System.out.println("Errors: " + observer.errors());
+            if (observer.errors().size() > 0) {
+                observer.errors().get(0).printStackTrace();
             }
             fail("timed out waiting for unsubscribe");
         }
-        s.assertNoErrors();
+        observer.assertNoErrors();
     }
 
     @Test
@@ -277,12 +277,12 @@ public class ObservableRefCountTest {
                     }
                 });
 
-        TestObserver<Long> s = new TestObserver<Long>();
+        TestObserver<Long> observer = new TestObserver<Long>();
 
-        o.publish().refCount().subscribeOn(Schedulers.computation()).subscribe(s);
+        o.publish().refCount().subscribeOn(Schedulers.computation()).subscribe(observer);
         System.out.println("send unsubscribe");
         // now immediately unsubscribe while subscribeOn is racing to subscribe
-        s.dispose();
+        observer.dispose();
 
         // this generally will mean it won't even subscribe as it is already unsubscribed by the time connect() gets scheduled
         // give time to the counter to update
@@ -297,11 +297,11 @@ public class ObservableRefCountTest {
         assertEquals(0, subUnsubCount.get());
 
         System.out.println("DONE sending unsubscribe ... now waiting");
-        System.out.println("Errors: " + s.errors());
-        if (s.errors().size() > 0) {
-            s.errors().get(0).printStackTrace();
+        System.out.println("Errors: " + observer.errors());
+        if (observer.errors().size() > 0) {
+            observer.errors().get(0).printStackTrace();
         }
-        s.assertNoErrors();
+        observer.assertNoErrors();
     }
 
     private Observable<Long> synchronousInterval() {

@@ -247,17 +247,17 @@ public final class ObservableGroupBy<T, K, V> extends AbstractObservableWithUpst
         }
 
         @Override
-        public void subscribe(Observer<? super T> s) {
+        public void subscribe(Observer<? super T> observer) {
             if (once.compareAndSet(false, true)) {
-                s.onSubscribe(this);
-                actual.lazySet(s);
+                observer.onSubscribe(this);
+                actual.lazySet(observer);
                 if (cancelled.get()) {
                     actual.lazySet(null);
                 } else {
                     drain();
                 }
             } else {
-                EmptyDisposable.error(new IllegalStateException("Only one Observer allowed!"), s);
+                EmptyDisposable.error(new IllegalStateException("Only one Observer allowed!"), observer);
             }
         }
 

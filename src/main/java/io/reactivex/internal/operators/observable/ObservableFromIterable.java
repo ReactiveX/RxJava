@@ -29,13 +29,13 @@ public final class ObservableFromIterable<T> extends Observable<T> {
     }
 
     @Override
-    public void subscribeActual(Observer<? super T> s) {
+    public void subscribeActual(Observer<? super T> observer) {
         Iterator<? extends T> it;
         try {
             it = source.iterator();
         } catch (Throwable e) {
             Exceptions.throwIfFatal(e);
-            EmptyDisposable.error(e, s);
+            EmptyDisposable.error(e, observer);
             return;
         }
         boolean hasNext;
@@ -43,16 +43,16 @@ public final class ObservableFromIterable<T> extends Observable<T> {
             hasNext = it.hasNext();
         } catch (Throwable e) {
             Exceptions.throwIfFatal(e);
-            EmptyDisposable.error(e, s);
+            EmptyDisposable.error(e, observer);
             return;
         }
         if (!hasNext) {
-            EmptyDisposable.complete(s);
+            EmptyDisposable.complete(observer);
             return;
         }
 
-        FromIterableDisposable<T> d = new FromIterableDisposable<T>(s, it);
-        s.onSubscribe(d);
+        FromIterableDisposable<T> d = new FromIterableDisposable<T>(observer, it);
+        observer.onSubscribe(d);
 
         if (!d.fusionMode) {
             d.run();

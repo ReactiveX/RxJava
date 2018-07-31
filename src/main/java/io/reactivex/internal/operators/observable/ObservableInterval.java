@@ -36,9 +36,9 @@ public final class ObservableInterval extends Observable<Long> {
     }
 
     @Override
-    public void subscribeActual(Observer<? super Long> s) {
-        IntervalObserver is = new IntervalObserver(s);
-        s.onSubscribe(is);
+    public void subscribeActual(Observer<? super Long> observer) {
+        IntervalObserver is = new IntervalObserver(observer);
+        observer.onSubscribe(is);
 
         Scheduler sch = scheduler;
 

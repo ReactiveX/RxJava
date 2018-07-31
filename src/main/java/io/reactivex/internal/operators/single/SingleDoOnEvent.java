@@ -32,21 +32,21 @@ public final class SingleDoOnEvent<T> extends Single<T> {
     }
 
     @Override
-    protected void subscribeActual(final SingleObserver<? super T> s) {
+    protected void subscribeActual(final SingleObserver<? super T> observer) {
 
-        source.subscribe(new DoOnEvent(s));
+        source.subscribe(new DoOnEvent(observer));
     }
 
     final class DoOnEvent implements SingleObserver<T> {
-        private final SingleObserver<? super T> s;
+        private final SingleObserver<? super T> downstream;
 
-        DoOnEvent(SingleObserver<? super T> s) {
-            this.s = s;
+        DoOnEvent(SingleObserver<? super T> observer) {
+            this.downstream = observer;
         }
 
         @Override
         public void onSubscribe(Disposable d) {
-            s.onSubscribe(d);
+            downstream.onSubscribe(d);
         }
 
         @Override
@@ -55,11 +55,11 @@ public final class SingleDoOnEvent<T> extends Single<T> {
                 onEvent.accept(value, null);
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
-                s.onError(ex);
+                downstream.onError(ex);
                 return;
             }
 
-            s.onSuccess(value);
+            downstream.onSuccess(value);
         }
 
         @Override
@@ -70,7 +70,7 @@ public final class SingleDoOnEvent<T> extends Single<T> {
                 Exceptions.throwIfFatal(ex);
                 e = new CompositeException(e, ex);
             }
-            s.onError(e);
+            downstream.onError(e);
         }
     }
 }

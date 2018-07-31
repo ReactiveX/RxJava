@@ -106,9 +106,9 @@ public class CompletableTest {
 
         public final Completable completable = Completable.unsafeCreate(new CompletableSource() {
             @Override
-            public void subscribe(CompletableObserver s) {
+            public void subscribe(CompletableObserver observer) {
                 getAndIncrement();
-                EmptyDisposable.complete(s);
+                EmptyDisposable.complete(observer);
             }
         });
 
@@ -131,9 +131,9 @@ public class CompletableTest {
 
         public final Completable completable = Completable.unsafeCreate(new CompletableSource() {
             @Override
-            public void subscribe(CompletableObserver s) {
+            public void subscribe(CompletableObserver observer) {
                 getAndIncrement();
-                EmptyDisposable.error(new TestException(), s);
+                EmptyDisposable.error(new TestException(), observer);
             }
         });
 
@@ -379,7 +379,7 @@ public class CompletableTest {
     public void createOnSubscribeThrowsNPE() {
         Completable c = Completable.unsafeCreate(new CompletableSource() {
             @Override
-            public void subscribe(CompletableObserver s) { throw new NullPointerException(); }
+            public void subscribe(CompletableObserver observer) { throw new NullPointerException(); }
         });
 
         c.blockingAwait();
@@ -391,7 +391,7 @@ public class CompletableTest {
         try {
             Completable c = Completable.unsafeCreate(new CompletableSource() {
                 @Override
-                public void subscribe(CompletableObserver s) {
+                public void subscribe(CompletableObserver observer) {
                     throw new TestException();
                 }
             });
@@ -2727,9 +2727,9 @@ public class CompletableTest {
 
         Completable c = Completable.unsafeCreate(new CompletableSource() {
             @Override
-            public void subscribe(CompletableObserver s) {
+            public void subscribe(CompletableObserver observer) {
                 name.set(Thread.currentThread().getName());
-                EmptyDisposable.complete(s);
+                EmptyDisposable.complete(observer);
             }
         }).subscribeOn(Schedulers.computation());
 
@@ -2744,9 +2744,9 @@ public class CompletableTest {
 
         Completable c = Completable.unsafeCreate(new CompletableSource() {
             @Override
-            public void subscribe(CompletableObserver s) {
+            public void subscribe(CompletableObserver observer) {
                 name.set(Thread.currentThread().getName());
-                EmptyDisposable.error(new TestException(), s);
+                EmptyDisposable.error(new TestException(), observer);
             }
         }).subscribeOn(Schedulers.computation());
 
@@ -3762,9 +3762,9 @@ public class CompletableTest {
         Completable.error(e)
             .andThen(new Single<String>() {
                 @Override
-                public void subscribeActual(SingleObserver<? super String> s) {
+                public void subscribeActual(SingleObserver<? super String> observer) {
                     hasRun.set(true);
-                    s.onSuccess("foo");
+                    observer.onSuccess("foo");
                 }
             })
             .toFlowable().subscribe(ts);
@@ -4239,8 +4239,8 @@ public class CompletableTest {
         TestSubscriber<String> ts = new TestSubscriber<String>();
 
         Completable completable = Completable.unsafeCreate(new CompletableSource() {
-            @Override public void subscribe(CompletableObserver s) {
-                s.onComplete();
+            @Override public void subscribe(CompletableObserver observer) {
+                observer.onComplete();
             }
         });
         completable.<String>toFlowable().subscribe(ts);

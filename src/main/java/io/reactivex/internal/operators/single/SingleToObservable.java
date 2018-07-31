@@ -31,8 +31,8 @@ public final class SingleToObservable<T> extends Observable<T> {
     }
 
     @Override
-    public void subscribeActual(final Observer<? super T> s) {
-        source.subscribe(create(s));
+    public void subscribeActual(final Observer<? super T> observer) {
+        source.subscribe(create(observer));
     }
 
     /**

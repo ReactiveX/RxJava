@@ -230,12 +230,12 @@ public class ObservableDoOnEachTest {
         try {
             Observable.wrap(new ObservableSource<Object>() {
                 @Override
-                public void subscribe(Observer<? super Object> s) {
-                    s.onSubscribe(Disposables.empty());
-                    s.onNext(1);
-                    s.onNext(2);
-                    s.onError(new IOException());
-                    s.onComplete();
+                public void subscribe(Observer<? super Object> observer) {
+                    observer.onSubscribe(Disposables.empty());
+                    observer.onNext(1);
+                    observer.onNext(2);
+                    observer.onError(new IOException());
+                    observer.onComplete();
                 }
             })
             .doOnNext(new Consumer<Object>() {
@@ -260,9 +260,9 @@ public class ObservableDoOnEachTest {
         try {
             Observable.wrap(new ObservableSource<Object>() {
                 @Override
-                public void subscribe(Observer<? super Object> s) {
-                    s.onSubscribe(Disposables.empty());
-                    s.onError(new TestException());
+                public void subscribe(Observer<? super Object> observer) {
+                    observer.onSubscribe(Disposables.empty());
+                    observer.onError(new TestException());
                 }
             })
             .doAfterTerminate(new Action() {
@@ -287,9 +287,9 @@ public class ObservableDoOnEachTest {
         try {
             Observable.wrap(new ObservableSource<Object>() {
                 @Override
-                public void subscribe(Observer<? super Object> s) {
-                    s.onSubscribe(Disposables.empty());
-                    s.onComplete();
+                public void subscribe(Observer<? super Object> observer) {
+                    observer.onSubscribe(Disposables.empty());
+                    observer.onComplete();
                 }
             })
             .doAfterTerminate(new Action() {
@@ -311,9 +311,9 @@ public class ObservableDoOnEachTest {
     public void onCompleteCrash() {
         Observable.wrap(new ObservableSource<Object>() {
             @Override
-            public void subscribe(Observer<? super Object> s) {
-                s.onSubscribe(Disposables.empty());
-                s.onComplete();
+            public void subscribe(Observer<? super Object> observer) {
+                observer.onSubscribe(Disposables.empty());
+                observer.onComplete();
             }
         })
         .doOnComplete(new Action() {
@@ -333,12 +333,12 @@ public class ObservableDoOnEachTest {
         try {
             Observable.wrap(new ObservableSource<Object>() {
                 @Override
-                public void subscribe(Observer<? super Object> s) {
-                    s.onSubscribe(Disposables.empty());
-                    s.onNext(1);
-                    s.onNext(2);
-                    s.onError(new IOException());
-                    s.onComplete();
+                public void subscribe(Observer<? super Object> observer) {
+                    observer.onSubscribe(Disposables.empty());
+                    observer.onNext(1);
+                    observer.onNext(2);
+                    observer.onError(new IOException());
+                    observer.onComplete();
                 }
             })
             .doOnNext(new Consumer<Object>() {
@@ -364,9 +364,9 @@ public class ObservableDoOnEachTest {
         try {
             Observable.wrap(new ObservableSource<Object>() {
                 @Override
-                public void subscribe(Observer<? super Object> s) {
-                    s.onSubscribe(Disposables.empty());
-                    s.onError(new TestException());
+                public void subscribe(Observer<? super Object> observer) {
+                    observer.onSubscribe(Disposables.empty());
+                    observer.onError(new TestException());
                 }
             })
             .doAfterTerminate(new Action() {
@@ -408,9 +408,9 @@ public class ObservableDoOnEachTest {
         try {
             Observable.wrap(new ObservableSource<Object>() {
                 @Override
-                public void subscribe(Observer<? super Object> s) {
-                    s.onSubscribe(Disposables.empty());
-                    s.onComplete();
+                public void subscribe(Observer<? super Object> observer) {
+                    observer.onSubscribe(Disposables.empty());
+                    observer.onComplete();
                 }
             })
             .doAfterTerminate(new Action() {
@@ -433,9 +433,9 @@ public class ObservableDoOnEachTest {
     public void onCompleteCrashConditional() {
         Observable.wrap(new ObservableSource<Object>() {
             @Override
-            public void subscribe(Observer<? super Object> s) {
-                s.onSubscribe(Disposables.empty());
-                s.onComplete();
+            public void subscribe(Observer<? super Object> observer) {
+                observer.onSubscribe(Disposables.empty());
+                observer.onComplete();
             }
         })
         .doOnComplete(new Action() {

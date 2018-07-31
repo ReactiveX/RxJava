@@ -40,16 +40,16 @@ public final class FlowableCollectSingle<T, U> extends Single<U> implements Fuse
     }
 
     @Override
-    protected void subscribeActual(SingleObserver<? super U> s) {
+    protected void subscribeActual(SingleObserver<? super U> observer) {
         U u;
         try {
             u = ObjectHelper.requireNonNull(initialSupplier.call(), "The initialSupplier returned a null value");
         } catch (Throwable e) {
-            EmptyDisposable.error(e, s);
+            EmptyDisposable.error(e, observer);
             return;
         }
 
-        source.subscribe(new CollectSubscriber<T, U>(s, u, collector));
+        source.subscribe(new CollectSubscriber<T, U>(observer, u, collector));
     }
 
     @Override

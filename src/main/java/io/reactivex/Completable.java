@@ -2155,20 +2155,20 @@ public abstract class Completable implements CompletableSource {
      */
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Disposable subscribe() {
-        EmptyCompletableObserver s = new EmptyCompletableObserver();
-        subscribe(s);
-        return s;
+        EmptyCompletableObserver observer = new EmptyCompletableObserver();
+        subscribe(observer);
+        return observer;
     }
 
     @SchedulerSupport(SchedulerSupport.NONE)
     @Override
-    public final void subscribe(CompletableObserver s) {
-        ObjectHelper.requireNonNull(s, "s is null");
+    public final void subscribe(CompletableObserver observer) {
+        ObjectHelper.requireNonNull(observer, "s is null");
         try {
 
-            s = RxJavaPlugins.onSubscribe(this, s);
+            observer = RxJavaPlugins.onSubscribe(this, observer);
 
-            subscribeActual(s);
+            subscribeActual(observer);
         } catch (NullPointerException ex) { // NOPMD
             throw ex;
         } catch (Throwable ex) {
@@ -2184,9 +2184,9 @@ public abstract class Completable implements CompletableSource {
      * <p>There is no need to call any of the plugin hooks on the current {@code Completable} instance or
      * the {@code CompletableObserver}; all hooks and basic safeguards have been
      * applied by {@link #subscribe(CompletableObserver)} before this method gets called.
-     * @param s the CompletableObserver instance, never null
+     * @param observer the CompletableObserver instance, never null
      */
-    protected abstract void subscribeActual(CompletableObserver s);
+    protected abstract void subscribeActual(CompletableObserver observer);
 
     /**
      * Subscribes a given CompletableObserver (subclass) to this Completable and returns the given
@@ -2240,9 +2240,9 @@ public abstract class Completable implements CompletableSource {
         ObjectHelper.requireNonNull(onError, "onError is null");
         ObjectHelper.requireNonNull(onComplete, "onComplete is null");
 
-        CallbackCompletableObserver s = new CallbackCompletableObserver(onError, onComplete);
-        subscribe(s);
-        return s;
+        CallbackCompletableObserver observer = new CallbackCompletableObserver(onError, onComplete);
+        subscribe(observer);
+        return observer;
     }
 
     /**
@@ -2266,9 +2266,9 @@ public abstract class Completable implements CompletableSource {
     public final Disposable subscribe(final Action onComplete) {
         ObjectHelper.requireNonNull(onComplete, "onComplete is null");
 
-        CallbackCompletableObserver s = new CallbackCompletableObserver(onComplete);
-        subscribe(s);
-        return s;
+        CallbackCompletableObserver observer = new CallbackCompletableObserver(onComplete);
+        subscribe(observer);
+        return observer;
     }
 
     /**

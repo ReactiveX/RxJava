@@ -36,9 +36,9 @@ public final class CompletableTimer extends Completable {
     }
 
     @Override
-    protected void subscribeActual(final CompletableObserver s) {
-        TimerDisposable parent = new TimerDisposable(s);
-        s.onSubscribe(parent);
+    protected void subscribeActual(final CompletableObserver observer) {
+        TimerDisposable parent = new TimerDisposable(observer);
+        observer.onSubscribe(parent);
         parent.setFuture(scheduler.scheduleDirect(parent, delay, unit));
     }
 

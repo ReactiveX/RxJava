@@ -38,9 +38,9 @@ public final class CompletableTakeUntilCompletable extends Completable {
     }
 
     @Override
-    protected void subscribeActual(CompletableObserver s) {
-        TakeUntilMainObserver parent = new TakeUntilMainObserver(s);
-        s.onSubscribe(parent);
+    protected void subscribeActual(CompletableObserver observer) {
+        TakeUntilMainObserver parent = new TakeUntilMainObserver(observer);
+        observer.onSubscribe(parent);
 
         other.subscribe(parent.other);
         source.subscribe(parent);

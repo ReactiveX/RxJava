@@ -435,11 +435,11 @@ public class SerializedObserverTest {
         return Observable.unsafeCreate(new ObservableSource<String>() {
 
             @Override
-            public void subscribe(Observer<? super String> s) {
+            public void subscribe(Observer<? super String> observer) {
                 Disposable bs = Disposables.empty();
-                s.onSubscribe(bs);
+                observer.onSubscribe(bs);
                 while (!bs.isDisposed()) {
-                    s.onNext("onNext");
+                    observer.onNext("onNext");
                     produced.incrementAndGet();
                 }
             }

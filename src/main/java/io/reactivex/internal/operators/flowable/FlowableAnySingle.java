@@ -33,8 +33,8 @@ public final class FlowableAnySingle<T> extends Single<Boolean> implements FuseT
     }
 
     @Override
-    protected void subscribeActual(SingleObserver<? super Boolean> s) {
-        source.subscribe(new AnySubscriber<T>(s, predicate));
+    protected void subscribeActual(SingleObserver<? super Boolean> observer) {
+        source.subscribe(new AnySubscriber<T>(observer, predicate));
     }
 
     @Override

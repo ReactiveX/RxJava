@@ -42,9 +42,9 @@ public final class FlowableSequenceEqualSingle<T> extends Single<Boolean> implem
     }
 
     @Override
-    public void subscribeActual(SingleObserver<? super Boolean> s) {
-        EqualCoordinator<T> parent = new EqualCoordinator<T>(s, prefetch, comparer);
-        s.onSubscribe(parent);
+    public void subscribeActual(SingleObserver<? super Boolean> observer) {
+        EqualCoordinator<T> parent = new EqualCoordinator<T>(observer, prefetch, comparer);
+        observer.onSubscribe(parent);
         parent.subscribe(first, second);
     }
 

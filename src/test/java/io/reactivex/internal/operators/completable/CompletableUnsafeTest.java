@@ -40,9 +40,9 @@ public class CompletableUnsafeTest {
 
         Completable.wrap(new CompletableSource() {
             @Override
-            public void subscribe(CompletableObserver s) {
-                s.onSubscribe(Disposables.empty());
-                s.onComplete();
+            public void subscribe(CompletableObserver observer) {
+                observer.onSubscribe(Disposables.empty());
+                observer.onComplete();
             }
         })
         .test()
@@ -53,7 +53,7 @@ public class CompletableUnsafeTest {
     public void unsafeCreateThrowsNPE() {
         Completable.unsafeCreate(new CompletableSource() {
             @Override
-            public void subscribe(CompletableObserver s) {
+            public void subscribe(CompletableObserver observer) {
                 throw new NullPointerException();
             }
         }).test();
@@ -65,7 +65,7 @@ public class CompletableUnsafeTest {
         try {
             Completable.unsafeCreate(new CompletableSource() {
                 @Override
-                public void subscribe(CompletableObserver s) {
+                public void subscribe(CompletableObserver observer) {
                     throw new IllegalArgumentException();
                 }
             }).test();

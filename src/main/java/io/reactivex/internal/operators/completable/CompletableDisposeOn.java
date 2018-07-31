@@ -30,12 +30,12 @@ public final class CompletableDisposeOn extends Completable {
     }
 
     @Override
-    protected void subscribeActual(final CompletableObserver s) {
-        source.subscribe(new CompletableObserverImplementation(s, scheduler));
+    protected void subscribeActual(final CompletableObserver observer) {
+        source.subscribe(new CompletableObserverImplementation(observer, scheduler));
     }
 
     static final class CompletableObserverImplementation implements CompletableObserver, Disposable, Runnable {
-        final CompletableObserver s;
+        final CompletableObserver downstream;
 
         final Scheduler scheduler;
 
@@ -43,8 +43,8 @@ public final class CompletableDisposeOn extends Completable {
 
         volatile boolean disposed;
 
-        CompletableObserverImplementation(CompletableObserver s, Scheduler scheduler) {
-            this.s = s;
+        CompletableObserverImplementation(CompletableObserver observer, Scheduler scheduler) {
+            this.downstream = observer;
             this.scheduler = scheduler;
         }
 
@@ -53,7 +53,7 @@ public final class CompletableDisposeOn extends Completable {
             if (disposed) {
                 return;
             }
-            s.onComplete();
+            downstream.onComplete();
         }
 
         @Override
@@ -62,7 +62,7 @@ public final class CompletableDisposeOn extends Completable {
                 RxJavaPlugins.onError(e);
                 return;
             }
-            s.onError(e);
+            downstream.onError(e);
         }
 
         @Override
@@ -70,7 +70,7 @@ public final class CompletableDisposeOn extends Completable {
             if (DisposableHelper.validate(this.d, d)) {
                 this.d = d;
 
-                s.onSubscribe(this);
+                downstream.onSubscribe(this);
             }
         }
 

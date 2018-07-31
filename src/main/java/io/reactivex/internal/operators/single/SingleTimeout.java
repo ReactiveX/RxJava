@@ -43,10 +43,10 @@ public final class SingleTimeout<T> extends Single<T> {
     }
 
     @Override
-    protected void subscribeActual(final SingleObserver<? super T> s) {
+    protected void subscribeActual(final SingleObserver<? super T> observer) {
 
-        TimeoutMainObserver<T> parent = new TimeoutMainObserver<T>(s, other);
-        s.onSubscribe(parent);
+        TimeoutMainObserver<T> parent = new TimeoutMainObserver<T>(observer, other);
+        observer.onSubscribe(parent);
 
         DisposableHelper.replace(parent.task, scheduler.scheduleDirect(parent, timeout, unit));
 

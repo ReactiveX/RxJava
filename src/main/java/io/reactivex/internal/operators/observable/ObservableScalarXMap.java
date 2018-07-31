@@ -136,12 +136,12 @@ public final class ObservableScalarXMap {
 
         @SuppressWarnings("unchecked")
         @Override
-        public void subscribeActual(Observer<? super R> s) {
+        public void subscribeActual(Observer<? super R> observer) {
             ObservableSource<? extends R> other;
             try {
                 other = ObjectHelper.requireNonNull(mapper.apply(value), "The mapper returned a null ObservableSource");
             } catch (Throwable e) {
-                EmptyDisposable.error(e, s);
+                EmptyDisposable.error(e, observer);
                 return;
             }
             if (other instanceof Callable) {
@@ -151,19 +151,19 @@ public final class ObservableScalarXMap {
                     u = ((Callable<R>)other).call();
                 } catch (Throwable ex) {
                     Exceptions.throwIfFatal(ex);
-                    EmptyDisposable.error(ex, s);
+                    EmptyDisposable.error(ex, observer);
                     return;
                 }
 
                 if (u == null) {
-                    EmptyDisposable.complete(s);
+                    EmptyDisposable.complete(observer);
                     return;
                 }
-                ScalarDisposable<R> sd = new ScalarDisposable<R>(s, u);
-                s.onSubscribe(sd);
+                ScalarDisposable<R> sd = new ScalarDisposable<R>(observer, u);
+                observer.onSubscribe(sd);
                 sd.run();
             } else {
-                other.subscribe(s);
+                other.subscribe(observer);
             }
         }
     }

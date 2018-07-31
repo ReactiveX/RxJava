@@ -32,8 +32,8 @@ public final class FlowableElementAtMaybe<T> extends Maybe<T> implements FuseToF
     }
 
     @Override
-    protected void subscribeActual(MaybeObserver<? super T> s) {
-        source.subscribe(new ElementAtSubscriber<T>(s, index));
+    protected void subscribeActual(MaybeObserver<? super T> observer) {
+        source.subscribe(new ElementAtSubscriber<T>(observer, index));
     }
 
     @Override

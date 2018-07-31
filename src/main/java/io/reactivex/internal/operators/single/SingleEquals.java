@@ -31,30 +31,30 @@ public final class SingleEquals<T> extends Single<Boolean> {
     }
 
     @Override
-    protected void subscribeActual(final SingleObserver<? super Boolean> s) {
+    protected void subscribeActual(final SingleObserver<? super Boolean> observer) {
 
         final AtomicInteger count = new AtomicInteger();
         final Object[] values = { null, null };
 
         final CompositeDisposable set = new CompositeDisposable();
-        s.onSubscribe(set);
+        observer.onSubscribe(set);
 
-        first.subscribe(new InnerObserver<T>(0, set, values, s, count));
-        second.subscribe(new InnerObserver<T>(1, set, values, s, count));
+        first.subscribe(new InnerObserver<T>(0, set, values, observer, count));
+        second.subscribe(new InnerObserver<T>(1, set, values, observer, count));
     }
 
     static class InnerObserver<T> implements SingleObserver<T> {
         final int index;
         final CompositeDisposable set;
         final Object[] values;
-        final SingleObserver<? super Boolean> s;
+        final SingleObserver<? super Boolean> downstream;
         final AtomicInteger count;
 
-        InnerObserver(int index, CompositeDisposable set, Object[] values, SingleObserver<? super Boolean> s, AtomicInteger count) {
+        InnerObserver(int index, CompositeDisposable set, Object[] values, SingleObserver<? super Boolean> observer, AtomicInteger count) {
             this.index = index;
             this.set = set;
             this.values = values;
-            this.s = s;
+            this.downstream = observer;
             this.count = count;
         }
         @Override
@@ -67,7 +67,7 @@ public final class SingleEquals<T> extends Single<Boolean> {
             values[index] = value;
 
             if (count.incrementAndGet() == 2) {
-                s.onSuccess(ObjectHelper.equals(values[0], values[1]));
+                downstream.onSuccess(ObjectHelper.equals(values[0], values[1]));
             }
         }
 
@@ -81,7 +81,7 @@ public final class SingleEquals<T> extends Single<Boolean> {
                 }
                 if (count.compareAndSet(state, 2)) {
                     set.dispose();
-                    s.onError(e);
+                    downstream.onError(e);
                     return;
                 }
             }

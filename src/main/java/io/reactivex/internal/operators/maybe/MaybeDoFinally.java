@@ -38,8 +38,8 @@ public final class MaybeDoFinally<T> extends AbstractMaybeWithUpstream<T, T> {
     }
 
     @Override
-    protected void subscribeActual(MaybeObserver<? super T> s) {
-        source.subscribe(new DoFinallyObserver<T>(s, onFinally));
+    protected void subscribeActual(MaybeObserver<? super T> observer) {
+        source.subscribe(new DoFinallyObserver<T>(observer, onFinally));
     }
 
     static final class DoFinallyObserver<T> extends AtomicInteger implements MaybeObserver<T>, Disposable {

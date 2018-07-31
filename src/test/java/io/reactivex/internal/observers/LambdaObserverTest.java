@@ -200,17 +200,17 @@ public class LambdaObserverTest {
         try {
             Observable<Integer> source = new Observable<Integer>() {
                 @Override
-                public void subscribeActual(Observer<? super Integer> s) {
+                public void subscribeActual(Observer<? super Integer> observer) {
                     Disposable s1 = Disposables.empty();
-                    s.onSubscribe(s1);
+                    observer.onSubscribe(s1);
                     Disposable s2 = Disposables.empty();
-                    s.onSubscribe(s2);
+                    observer.onSubscribe(s2);
 
                     assertFalse(s1.isDisposed());
                     assertTrue(s2.isDisposed());
 
-                    s.onNext(1);
-                    s.onComplete();
+                    observer.onNext(1);
+                    observer.onComplete();
                 }
             };
 
@@ -253,14 +253,14 @@ public class LambdaObserverTest {
         try {
             Observable<Integer> source = new Observable<Integer>() {
                 @Override
-                public void subscribeActual(Observer<? super Integer> s) {
-                    s.onSubscribe(Disposables.empty());
+                public void subscribeActual(Observer<? super Integer> observer) {
+                    observer.onSubscribe(Disposables.empty());
 
-                    s.onNext(1);
-                    s.onComplete();
-                    s.onNext(2);
-                    s.onError(new TestException());
-                    s.onComplete();
+                    observer.onNext(1);
+                    observer.onComplete();
+                    observer.onNext(2);
+                    observer.onError(new TestException());
+                    observer.onComplete();
                 }
             };
 

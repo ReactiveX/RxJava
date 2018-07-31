@@ -158,7 +158,7 @@ public final class QueueDrainHelper {
     }
 
     public static <T, U> boolean checkTerminated(boolean d, boolean empty,
-            Observer<?> s, boolean delayError, SimpleQueue<?> q, Disposable disposable, ObservableQueueDrain<T, U> qd) {
+            Observer<?> observer, boolean delayError, SimpleQueue<?> q, Disposable disposable, ObservableQueueDrain<T, U> qd) {
         if (qd.cancelled()) {
             q.clear();
             disposable.dispose();
@@ -173,9 +173,9 @@ public final class QueueDrainHelper {
                     }
                     Throwable err = qd.error();
                     if (err != null) {
-                        s.onError(err);
+                        observer.onError(err);
                     } else {
-                        s.onComplete();
+                        observer.onComplete();
                     }
                     return true;
                 }
@@ -186,14 +186,14 @@ public final class QueueDrainHelper {
                     if (disposable != null) {
                         disposable.dispose();
                     }
-                    s.onError(err);
+                    observer.onError(err);
                     return true;
                 } else
                 if (empty) {
                     if (disposable != null) {
                         disposable.dispose();
                     }
-                    s.onComplete();
+                    observer.onComplete();
                     return true;
                 }
             }

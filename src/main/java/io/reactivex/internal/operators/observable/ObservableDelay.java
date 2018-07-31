@@ -38,16 +38,16 @@ public final class ObservableDelay<T> extends AbstractObservableWithUpstream<T, 
     @Override
     @SuppressWarnings("unchecked")
     public void subscribeActual(Observer<? super T> t) {
-        Observer<T> s;
+        Observer<T> observer;
         if (delayError) {
-            s = (Observer<T>)t;
+            observer = (Observer<T>)t;
         } else {
-            s = new SerializedObserver<T>(t);
+            observer = new SerializedObserver<T>(t);
         }
 
         Scheduler.Worker w = scheduler.createWorker();
 
-        source.subscribe(new DelayObserver<T>(s, delay, unit, w, delayError));
+        source.subscribe(new DelayObserver<T>(observer, delay, unit, w, delayError));
     }
 
     static final class DelayObserver<T> implements Observer<T>, Disposable {

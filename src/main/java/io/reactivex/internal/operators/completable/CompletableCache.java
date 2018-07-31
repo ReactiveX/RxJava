@@ -44,9 +44,9 @@ public final class CompletableCache extends Completable implements CompletableOb
     }
 
     @Override
-    protected void subscribeActual(CompletableObserver s) {
-        InnerCompletableCache inner = new InnerCompletableCache(s);
-        s.onSubscribe(inner);
+    protected void subscribeActual(CompletableObserver observer) {
+        InnerCompletableCache inner = new InnerCompletableCache(observer);
+        observer.onSubscribe(inner);
 
         if (add(inner)) {
             if (inner.isDisposed()) {
@@ -59,9 +59,9 @@ public final class CompletableCache extends Completable implements CompletableOb
         } else {
             Throwable ex = error;
             if (ex != null) {
-                s.onError(ex);
+                observer.onError(ex);
             } else {
-                s.onComplete();
+                observer.onComplete();
             }
         }
     }

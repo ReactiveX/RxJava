@@ -59,7 +59,7 @@ public final class ObservableWithLatestFromMany<T, R> extends AbstractObservable
     }
 
     @Override
-    protected void subscribeActual(Observer<? super R> s) {
+    protected void subscribeActual(Observer<? super R> observer) {
         ObservableSource<?>[] others = otherArray;
         int n = 0;
         if (others == null) {
@@ -74,7 +74,7 @@ public final class ObservableWithLatestFromMany<T, R> extends AbstractObservable
                 }
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
-                EmptyDisposable.error(ex, s);
+                EmptyDisposable.error(ex, observer);
                 return;
             }
 
@@ -83,12 +83,12 @@ public final class ObservableWithLatestFromMany<T, R> extends AbstractObservable
         }
 
         if (n == 0) {
-            new ObservableMap<T, R>(source, new SingletonArrayFunc()).subscribeActual(s);
+            new ObservableMap<T, R>(source, new SingletonArrayFunc()).subscribeActual(observer);
             return;
         }
 
-        WithLatestFromObserver<T, R> parent = new WithLatestFromObserver<T, R>(s, combiner, n);
-        s.onSubscribe(parent);
+        WithLatestFromObserver<T, R> parent = new WithLatestFromObserver<T, R>(observer, combiner, n);
+        observer.onSubscribe(parent);
         parent.subscribe(others, n);
 
         source.subscribe(parent);
@@ -204,8 +204,8 @@ public final class ObservableWithLatestFromMany<T, R> extends AbstractObservable
         @Override
         public void dispose() {
             DisposableHelper.dispose(d);
-            for (WithLatestInnerObserver s : observers) {
-                s.dispose();
+            for (WithLatestInnerObserver observer : observers) {
+                observer.dispose();
             }
         }
 

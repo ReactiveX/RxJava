@@ -37,8 +37,8 @@ public final class FlowableElementAtSingle<T> extends Single<T> implements FuseT
     }
 
     @Override
-    protected void subscribeActual(SingleObserver<? super T> s) {
-        source.subscribe(new ElementAtSubscriber<T>(s, index, defaultValue));
+    protected void subscribeActual(SingleObserver<? super T> observer) {
+        source.subscribe(new ElementAtSubscriber<T>(observer, index, defaultValue));
     }
 
     @Override

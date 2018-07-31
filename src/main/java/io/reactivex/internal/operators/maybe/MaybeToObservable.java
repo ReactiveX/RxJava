@@ -39,8 +39,8 @@ public final class MaybeToObservable<T> extends Observable<T> implements HasUpst
     }
 
     @Override
-    protected void subscribeActual(Observer<? super T> s) {
-        source.subscribe(create(s));
+    protected void subscribeActual(Observer<? super T> observer) {
+        source.subscribe(create(observer));
     }
 
     /**

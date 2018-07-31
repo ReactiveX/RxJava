@@ -664,7 +664,7 @@ public class SingleNullTests {
     public void liftFunctionReturnsNull() {
         just1.lift(new SingleOperator<Object, Integer>() {
             @Override
-            public SingleObserver<? super Integer> apply(SingleObserver<? super Object> s) {
+            public SingleObserver<? super Integer> apply(SingleObserver<? super Object> observer) {
                 return null;
             }
         }).blockingGet();

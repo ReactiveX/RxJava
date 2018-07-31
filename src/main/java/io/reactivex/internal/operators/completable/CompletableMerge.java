@@ -36,8 +36,8 @@ public final class CompletableMerge extends Completable {
     }
 
     @Override
-    public void subscribeActual(CompletableObserver s) {
-        CompletableMergeSubscriber parent = new CompletableMergeSubscriber(s, maxConcurrency, delayErrors);
+    public void subscribeActual(CompletableObserver observer) {
+        CompletableMergeSubscriber parent = new CompletableMergeSubscriber(observer, maxConcurrency, delayErrors);
         source.subscribe(parent);
     }
 

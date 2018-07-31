@@ -38,9 +38,9 @@ public final class MaybeFlatMapCompletable<T> extends Completable {
     }
 
     @Override
-    protected void subscribeActual(CompletableObserver s) {
-        FlatMapCompletableObserver<T> parent = new FlatMapCompletableObserver<T>(s, mapper);
-        s.onSubscribe(parent);
+    protected void subscribeActual(CompletableObserver observer) {
+        FlatMapCompletableObserver<T> parent = new FlatMapCompletableObserver<T>(observer, mapper);
+        observer.onSubscribe(parent);
         source.subscribe(parent);
     }
 

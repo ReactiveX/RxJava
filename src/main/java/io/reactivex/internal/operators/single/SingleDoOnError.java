@@ -30,26 +30,26 @@ public final class SingleDoOnError<T> extends Single<T> {
     }
 
     @Override
-    protected void subscribeActual(final SingleObserver<? super T> s) {
+    protected void subscribeActual(final SingleObserver<? super T> observer) {
 
-        source.subscribe(new DoOnError(s));
+        source.subscribe(new DoOnError(observer));
     }
 
     final class DoOnError implements SingleObserver<T> {
-        private final SingleObserver<? super T> s;
+        private final SingleObserver<? super T> downstream;
 
-        DoOnError(SingleObserver<? super T> s) {
-            this.s = s;
+        DoOnError(SingleObserver<? super T> observer) {
+            this.downstream = observer;
         }
 
         @Override
         public void onSubscribe(Disposable d) {
-            s.onSubscribe(d);
+            downstream.onSubscribe(d);
         }
 
         @Override
         public void onSuccess(T value) {
-            s.onSuccess(value);
+            downstream.onSuccess(value);
         }
 
         @Override
@@ -60,7 +60,7 @@ public final class SingleDoOnError<T> extends Single<T> {
                 Exceptions.throwIfFatal(ex);
                 e = new CompositeException(e, ex);
             }
-            s.onError(e);
+            downstream.onError(e);
         }
 
     }

@@ -25,7 +25,7 @@ public final class CompletableError extends Completable {
     }
 
     @Override
-    protected void subscribeActual(CompletableObserver s) {
-        EmptyDisposable.error(error, s);
+    protected void subscribeActual(CompletableObserver observer) {
+        EmptyDisposable.error(error, observer);
     }
 }

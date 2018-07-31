@@ -44,8 +44,8 @@ public final class ObservableFlatMapSingle<T, R> extends AbstractObservableWithU
     }
 
     @Override
-    protected void subscribeActual(Observer<? super R> s) {
-        source.subscribe(new FlatMapSingleObserver<T, R>(s, mapper, delayErrors));
+    protected void subscribeActual(Observer<? super R> observer) {
+        source.subscribe(new FlatMapSingleObserver<T, R>(observer, mapper, delayErrors));
     }
 
     static final class FlatMapSingleObserver<T, R>

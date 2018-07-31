@@ -28,10 +28,10 @@ public final class ObservableSubscribeOn<T> extends AbstractObservableWithUpstre
     }
 
     @Override
-    public void subscribeActual(final Observer<? super T> s) {
-        final SubscribeOnObserver<T> parent = new SubscribeOnObserver<T>(s);
+    public void subscribeActual(final Observer<? super T> observer) {
+        final SubscribeOnObserver<T> parent = new SubscribeOnObserver<T>(observer);
 
-        s.onSubscribe(parent);
+        observer.onSubscribe(parent);
 
         parent.setDisposable(scheduler.scheduleDirect(new SubscribeTask(parent)));
     }

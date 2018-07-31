@@ -48,39 +48,39 @@ public enum EmptyDisposable implements QueueDisposable<Object> {
         return this == INSTANCE;
     }
 
-    public static void complete(Observer<?> s) {
-        s.onSubscribe(INSTANCE);
-        s.onComplete();
+    public static void complete(Observer<?> observer) {
+        observer.onSubscribe(INSTANCE);
+        observer.onComplete();
     }
 
-    public static void complete(MaybeObserver<?> s) {
-        s.onSubscribe(INSTANCE);
-        s.onComplete();
+    public static void complete(MaybeObserver<?> observer) {
+        observer.onSubscribe(INSTANCE);
+        observer.onComplete();
     }
 
-    public static void error(Throwable e, Observer<?> s) {
-        s.onSubscribe(INSTANCE);
-        s.onError(e);
+    public static void error(Throwable e, Observer<?> observer) {
+        observer.onSubscribe(INSTANCE);
+        observer.onError(e);
     }
 
-    public static void complete(CompletableObserver s) {
-        s.onSubscribe(INSTANCE);
-        s.onComplete();
+    public static void complete(CompletableObserver observer) {
+        observer.onSubscribe(INSTANCE);
+        observer.onComplete();
     }
 
-    public static void error(Throwable e, CompletableObserver s) {
-        s.onSubscribe(INSTANCE);
-        s.onError(e);
+    public static void error(Throwable e, CompletableObserver observer) {
+        observer.onSubscribe(INSTANCE);
+        observer.onError(e);
     }
 
-    public static void error(Throwable e, SingleObserver<?> s) {
-        s.onSubscribe(INSTANCE);
-        s.onError(e);
+    public static void error(Throwable e, SingleObserver<?> observer) {
+        observer.onSubscribe(INSTANCE);
+        observer.onError(e);
     }
 
-    public static void error(Throwable e, MaybeObserver<?> s) {
-        s.onSubscribe(INSTANCE);
-        s.onError(e);
+    public static void error(Throwable e, MaybeObserver<?> observer) {
+        observer.onSubscribe(INSTANCE);
+        observer.onError(e);
     }
 
 

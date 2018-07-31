@@ -72,10 +72,10 @@ public class ObservableDoOnSubscribeTest {
         Observable<Integer> o = Observable.unsafeCreate(new ObservableSource<Integer>() {
 
             @Override
-            public void subscribe(Observer<? super Integer> s) {
-                s.onSubscribe(Disposables.empty());
+            public void subscribe(Observer<? super Integer> observer) {
+                observer.onSubscribe(Disposables.empty());
                 onSubscribed.incrementAndGet();
-                sref.set(s);
+                sref.set(observer);
             }
 
         }).doOnSubscribe(new Consumer<Disposable>() {
@@ -114,10 +114,10 @@ public class ObservableDoOnSubscribeTest {
 
             new Observable<Integer>() {
                 @Override
-                protected void subscribeActual(Observer<? super Integer> s) {
-                    s.onSubscribe(bs);
-                    s.onError(new TestException("Second"));
-                    s.onComplete();
+                protected void subscribeActual(Observer<? super Integer> observer) {
+                    observer.onSubscribe(bs);
+                    observer.onError(new TestException("Second"));
+                    observer.onComplete();
                 }
             }
             .doOnSubscribe(new Consumer<Disposable>() {

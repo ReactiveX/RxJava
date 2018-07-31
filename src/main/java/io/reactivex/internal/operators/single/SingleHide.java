@@ -26,8 +26,8 @@ public final class SingleHide<T> extends Single<T> {
     }
 
     @Override
-    protected void subscribeActual(SingleObserver<? super T> subscriber) {
-        source.subscribe(new HideSingleObserver<T>(subscriber));
+    protected void subscribeActual(SingleObserver<? super T> observer) {
+        source.subscribe(new HideSingleObserver<T>(observer));
     }
 
     static final class HideSingleObserver<T> implements SingleObserver<T>, Disposable {

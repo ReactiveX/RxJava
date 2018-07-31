@@ -42,7 +42,7 @@ public final class SingleUsing<T, U> extends Single<T> {
     }
 
     @Override
-    protected void subscribeActual(final SingleObserver<? super T> s) {
+    protected void subscribeActual(final SingleObserver<? super T> observer) {
 
         final U resource; // NOPMD
 
@@ -50,7 +50,7 @@ public final class SingleUsing<T, U> extends Single<T> {
             resource = resourceSupplier.call();
         } catch (Throwable ex) {
             Exceptions.throwIfFatal(ex);
-            EmptyDisposable.error(ex, s);
+            EmptyDisposable.error(ex, observer);
             return;
         }
 
@@ -69,7 +69,7 @@ public final class SingleUsing<T, U> extends Single<T> {
                     ex = new CompositeException(ex, exc);
                 }
             }
-            EmptyDisposable.error(ex, s);
+            EmptyDisposable.error(ex, observer);
             if (!eager) {
                 try {
                     disposer.accept(resource);
@@ -81,7 +81,7 @@ public final class SingleUsing<T, U> extends Single<T> {
             return;
         }
 
-        source.subscribe(new UsingSingleObserver<T, U>(s, resource, eager, disposer));
+        source.subscribe(new UsingSingleObserver<T, U>(observer, resource, eager, disposer));
     }
 
     static final class UsingSingleObserver<T, U> extends

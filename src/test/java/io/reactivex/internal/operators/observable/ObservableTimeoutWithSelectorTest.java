@@ -562,9 +562,9 @@ public class ObservableTimeoutWithSelectorTest {
 
                     @Override
                     protected void subscribeActual(
-                            Observer<? super Integer> s) {
-                        s.onSubscribe(Disposables.empty());
-                        sub[count++] = s;
+                            Observer<? super Integer> observer) {
+                        observer.onSubscribe(Disposables.empty());
+                        sub[count++] = observer;
                     }
                 };
 
@@ -616,10 +616,10 @@ public class ObservableTimeoutWithSelectorTest {
 
                     @Override
                     protected void subscribeActual(
-                            Observer<? super Integer> s) {
-                        assertFalse(((Disposable)s).isDisposed());
-                        s.onSubscribe(Disposables.empty());
-                        sub[count++] = s;
+                            Observer<? super Integer> observer) {
+                        assertFalse(((Disposable)observer).isDisposed());
+                        observer.onSubscribe(Disposables.empty());
+                        sub[count++] = observer;
                     }
                 };
 
@@ -671,10 +671,10 @@ public class ObservableTimeoutWithSelectorTest {
 
                     @Override
                     protected void subscribeActual(
-                            Observer<? super Integer> s) {
-                        assertFalse(((Disposable)s).isDisposed());
-                        s.onSubscribe(Disposables.empty());
-                        sub[count++] = s;
+                            Observer<? super Integer> observer) {
+                        assertFalse(((Disposable)observer).isDisposed());
+                        observer.onSubscribe(Disposables.empty());
+                        sub[count++] = observer;
                     }
                 };
 
@@ -726,10 +726,10 @@ public class ObservableTimeoutWithSelectorTest {
 
                     @Override
                     protected void subscribeActual(
-                            Observer<? super Integer> s) {
-                        assertFalse(((Disposable)s).isDisposed());
-                        s.onSubscribe(Disposables.empty());
-                        sub[count++] = s;
+                            Observer<? super Integer> observer) {
+                        assertFalse(((Disposable)observer).isDisposed());
+                        observer.onSubscribe(Disposables.empty());
+                        sub[count++] = observer;
                     }
                 };
 
@@ -779,10 +779,10 @@ public class ObservableTimeoutWithSelectorTest {
 
                     @Override
                     protected void subscribeActual(
-                            Observer<? super Integer> s) {
-                        assertFalse(((Disposable)s).isDisposed());
-                        s.onSubscribe(Disposables.empty());
-                        sub[count++] = s;
+                            Observer<? super Integer> observer) {
+                        assertFalse(((Disposable)observer).isDisposed());
+                        observer.onSubscribe(Disposables.empty());
+                        sub[count++] = observer;
                     }
                 };
 
