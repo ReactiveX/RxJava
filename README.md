@@ -240,7 +240,7 @@ Note, however, that `flatMap` doesn't guarantee any order and the end result fro
   - `concatMap` that maps and runs one inner flow at a time and
   - `concatMapEager` which runs all inner flows "at once" but the output flow will be in the order those inner flows were created.
 
-Alternatively, there is a [*beta*](#beta) operator `Flowable.parallel()` and type `ParallelFlowable` that helps achieve the same parallel processing pattern:
+Alternatively, the `Flowable.parallel()` operator and the `ParallelFlowable` type help achieve the same parallel processing pattern:
 
 ```java
 Flowable.range(1, 10)
