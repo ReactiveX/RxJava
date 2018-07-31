@@ -634,8 +634,7 @@ public class ObservableRetryTest {
     @Test(timeout = 10000)
     public void testTimeoutWithRetry() {
 
-        @SuppressWarnings("unchecked")
-        DefaultObserver<Long> observer = mock(DefaultObserver.class);
+        Observer<Long> observer = TestHelper.mockObserver();
 
         // Observable that sends every 100ms (timeout fails instead)
         SlowObservable so = new SlowObservable(100, 10);

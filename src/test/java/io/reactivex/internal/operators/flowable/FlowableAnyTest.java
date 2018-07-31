@@ -302,14 +302,14 @@ public class FlowableAnyTest {
         .toFlowable()
         ;
 
-        Subscriber<Boolean> observer = TestHelper.mockSubscriber();
+        Subscriber<Boolean> subscriber = TestHelper.mockSubscriber();
 
-        observable.subscribe(observer);
+        observable.subscribe(subscriber);
 
-        verify(observer, never()).onNext(false);
-        verify(observer, times(1)).onNext(true);
-        verify(observer, never()).onError(any(Throwable.class));
-        verify(observer, times(1)).onComplete();
+        verify(subscriber, never()).onNext(false);
+        verify(subscriber, times(1)).onNext(true);
+        verify(subscriber, never()).onError(any(Throwable.class));
+        verify(subscriber, times(1)).onComplete();
     }
 
     @Test
@@ -317,14 +317,14 @@ public class FlowableAnyTest {
         Flowable<Integer> w = Flowable.just(1, 2);
         Flowable<Boolean> observable = w.isEmpty().toFlowable();
 
-        Subscriber<Boolean> observer = TestHelper.mockSubscriber();
+        Subscriber<Boolean> subscriber = TestHelper.mockSubscriber();
 
-        observable.subscribe(observer);
+        observable.subscribe(subscriber);
 
-        verify(observer, never()).onNext(true);
-        verify(observer, times(1)).onNext(false);
-        verify(observer, never()).onError(any(Throwable.class));
-        verify(observer, times(1)).onComplete();
+        verify(subscriber, never()).onNext(true);
+        verify(subscriber, times(1)).onNext(false);
+        verify(subscriber, never()).onError(any(Throwable.class));
+        verify(subscriber, times(1)).onComplete();
     }
 
     @Test
@@ -337,14 +337,14 @@ public class FlowableAnyTest {
             }
         }).toFlowable();
 
-        Subscriber<Boolean> observer = TestHelper.mockSubscriber();
+        Subscriber<Boolean> subscriber = TestHelper.mockSubscriber();
 
-        observable.subscribe(observer);
+        observable.subscribe(subscriber);
 
-        verify(observer, never()).onNext(false);
-        verify(observer, times(1)).onNext(true);
-        verify(observer, never()).onError(any(Throwable.class));
-        verify(observer, times(1)).onComplete();
+        verify(subscriber, never()).onNext(false);
+        verify(subscriber, times(1)).onNext(true);
+        verify(subscriber, never()).onError(any(Throwable.class));
+        verify(subscriber, times(1)).onComplete();
     }
 
     @Test
@@ -371,14 +371,14 @@ public class FlowableAnyTest {
             }
         }).toFlowable();
 
-        Subscriber<Boolean> observer = TestHelper.mockSubscriber();
+        Subscriber<Boolean> subscriber = TestHelper.mockSubscriber();
 
-        observable.subscribe(observer);
+        observable.subscribe(subscriber);
 
-        verify(observer, times(1)).onNext(false);
-        verify(observer, never()).onNext(true);
-        verify(observer, never()).onError(any(Throwable.class));
-        verify(observer, times(1)).onComplete();
+        verify(subscriber, times(1)).onNext(false);
+        verify(subscriber, never()).onNext(true);
+        verify(subscriber, never()).onError(any(Throwable.class));
+        verify(subscriber, times(1)).onComplete();
     }
 
     @Test
@@ -386,14 +386,14 @@ public class FlowableAnyTest {
         Flowable<Integer> w = Flowable.empty();
         Flowable<Boolean> observable = w.isEmpty().toFlowable();
 
-        Subscriber<Boolean> observer = TestHelper.mockSubscriber();
+        Subscriber<Boolean> subscriber = TestHelper.mockSubscriber();
 
-        observable.subscribe(observer);
+        observable.subscribe(subscriber);
 
-        verify(observer, times(1)).onNext(true);
-        verify(observer, never()).onNext(false);
-        verify(observer, never()).onError(any(Throwable.class));
-        verify(observer, times(1)).onComplete();
+        verify(subscriber, times(1)).onNext(true);
+        verify(subscriber, never()).onNext(false);
+        verify(subscriber, never()).onError(any(Throwable.class));
+        verify(subscriber, times(1)).onComplete();
     }
 
     @Test
@@ -406,14 +406,14 @@ public class FlowableAnyTest {
             }
         }).toFlowable();
 
-        Subscriber<Boolean> observer = TestHelper.mockSubscriber();
+        Subscriber<Boolean> subscriber = TestHelper.mockSubscriber();
 
-        observable.subscribe(observer);
+        observable.subscribe(subscriber);
 
-        verify(observer, never()).onNext(false);
-        verify(observer, times(1)).onNext(true);
-        verify(observer, never()).onError(any(Throwable.class));
-        verify(observer, times(1)).onComplete();
+        verify(subscriber, never()).onNext(false);
+        verify(subscriber, times(1)).onNext(true);
+        verify(subscriber, never()).onError(any(Throwable.class));
+        verify(subscriber, times(1)).onComplete();
     }
 
     @Test
@@ -426,14 +426,14 @@ public class FlowableAnyTest {
             }
         }).toFlowable();
 
-        Subscriber<Boolean> observer = TestHelper.mockSubscriber();
+        Subscriber<Boolean> subscriber = TestHelper.mockSubscriber();
 
-        observable.subscribe(observer);
+        observable.subscribe(subscriber);
 
-        verify(observer, never()).onNext(false);
-        verify(observer, times(1)).onNext(true);
-        verify(observer, never()).onError(any(Throwable.class));
-        verify(observer, times(1)).onComplete();
+        verify(subscriber, never()).onNext(false);
+        verify(subscriber, times(1)).onNext(true);
+        verify(subscriber, never()).onError(any(Throwable.class));
+        verify(subscriber, times(1)).onComplete();
     }
 
     @Test
@@ -446,14 +446,14 @@ public class FlowableAnyTest {
             }
         }).toFlowable();
 
-        Subscriber<Boolean> observer = TestHelper.mockSubscriber();
+        Subscriber<Boolean> subscriber = TestHelper.mockSubscriber();
 
-        observable.subscribe(observer);
+        observable.subscribe(subscriber);
 
-        verify(observer, times(1)).onNext(false);
-        verify(observer, never()).onNext(true);
-        verify(observer, never()).onError(any(Throwable.class));
-        verify(observer, times(1)).onComplete();
+        verify(subscriber, times(1)).onNext(false);
+        verify(subscriber, never()).onNext(true);
+        verify(subscriber, never()).onError(any(Throwable.class));
+        verify(subscriber, times(1)).onComplete();
     }
 
     @Test
@@ -467,14 +467,14 @@ public class FlowableAnyTest {
             }
         }).toFlowable();
 
-        Subscriber<Boolean> observer = TestHelper.mockSubscriber();
+        Subscriber<Boolean> subscriber = TestHelper.mockSubscriber();
 
-        observable.subscribe(observer);
+        observable.subscribe(subscriber);
 
-        verify(observer, times(1)).onNext(false);
-        verify(observer, never()).onNext(true);
-        verify(observer, never()).onError(any(Throwable.class));
-        verify(observer, times(1)).onComplete();
+        verify(subscriber, times(1)).onNext(false);
+        verify(subscriber, never()).onNext(true);
+        verify(subscriber, never()).onError(any(Throwable.class));
+        verify(subscriber, times(1)).onComplete();
     }
 
     @Test

@@ -34,15 +34,15 @@ import io.reactivex.schedulers.*;
 import io.reactivex.subscribers.*;
 
 public class FlowableDelayTest {
-    private Subscriber<Long> observer;
-    private Subscriber<Long> observer2;
+    private Subscriber<Long> subscriber;
+    private Subscriber<Long> subscriber2;
 
     private TestScheduler scheduler;
 
     @Before
     public void before() {
-        observer = TestHelper.mockSubscriber();
-        observer2 = TestHelper.mockSubscriber();
+        subscriber = TestHelper.mockSubscriber();
+        subscriber2 = TestHelper.mockSubscriber();
 
         scheduler = new TestScheduler();
     }
@@ -51,69 +51,69 @@ public class FlowableDelayTest {
     public void testDelay() {
         Flowable<Long> source = Flowable.interval(1L, TimeUnit.SECONDS, scheduler).take(3);
         Flowable<Long> delayed = source.delay(500L, TimeUnit.MILLISECONDS, scheduler);
-        delayed.subscribe(observer);
+        delayed.subscribe(subscriber);
 
-        InOrder inOrder = inOrder(observer);
+        InOrder inOrder = inOrder(subscriber);
         scheduler.advanceTimeTo(1499L, TimeUnit.MILLISECONDS);
-        verify(observer, never()).onNext(anyLong());
-        verify(observer, never()).onComplete();
-        verify(observer, never()).onError(any(Throwable.class));
+        verify(subscriber, never()).onNext(anyLong());
+        verify(subscriber, never()).onComplete();
+        verify(subscriber, never()).onError(any(Throwable.class));
 
         scheduler.advanceTimeTo(1500L, TimeUnit.MILLISECONDS);
-        inOrder.verify(observer, times(1)).onNext(0L);
-        inOrder.verify(observer, never()).onNext(anyLong());
-        verify(observer, never()).onComplete();
-        verify(observer, never()).onError(any(Throwable.class));
+        inOrder.verify(subscriber, times(1)).onNext(0L);
+        inOrder.verify(subscriber, never()).onNext(anyLong());
+        verify(subscriber, never()).onComplete();
+        verify(subscriber, never()).onError(any(Throwable.class));
 
         scheduler.advanceTimeTo(2400L, TimeUnit.MILLISECONDS);
-        inOrder.verify(observer, never()).onNext(anyLong());
-        verify(observer, never()).onComplete();
-        verify(observer, never()).onError(any(Throwable.class));
+        inOrder.verify(subscriber, never()).onNext(anyLong());
+        verify(subscriber, never()).onComplete();
+        verify(subscriber, never()).onError(any(Throwable.class));
 
         scheduler.advanceTimeTo(2500L, TimeUnit.MILLISECONDS);
-        inOrder.verify(observer, times(1)).onNext(1L);
-        inOrder.verify(observer, never()).onNext(anyLong());
-        verify(observer, never()).onComplete();
-        verify(observer, never()).onError(any(Throwable.class));
+        inOrder.verify(subscriber, times(1)).onNext(1L);
+        inOrder.verify(subscriber, never()).onNext(anyLong());
+        verify(subscriber, never()).onComplete();
+        verify(subscriber, never()).onError(any(Throwable.class));
 
         scheduler.advanceTimeTo(3400L, TimeUnit.MILLISECONDS);
-        inOrder.verify(observer, never()).onNext(anyLong());
-        verify(observer, never()).onComplete();
-        verify(observer, never()).onError(any(Throwable.class));
+        inOrder.verify(subscriber, never()).onNext(anyLong());
+        verify(subscriber, never()).onComplete();
+        verify(subscriber, never()).onError(any(Throwable.class));
 
         scheduler.advanceTimeTo(3500L, TimeUnit.MILLISECONDS);
-        inOrder.verify(observer, times(1)).onNext(2L);
-        verify(observer, times(1)).onComplete();
-        verify(observer, never()).onError(any(Throwable.class));
+        inOrder.verify(subscriber, times(1)).onNext(2L);
+        verify(subscriber, times(1)).onComplete();
+        verify(subscriber, never()).onError(any(Throwable.class));
     }
 
     @Test
     public void testLongDelay() {
         Flowable<Long> source = Flowable.interval(1L, TimeUnit.SECONDS, scheduler).take(3);
         Flowable<Long> delayed = source.delay(5L, TimeUnit.SECONDS, scheduler);
-        delayed.subscribe(observer);
+        delayed.subscribe(subscriber);
 
-        InOrder inOrder = inOrder(observer);
+        InOrder inOrder = inOrder(subscriber);
 
         scheduler.advanceTimeTo(5999L, TimeUnit.MILLISECONDS);
-        verify(observer, never()).onNext(anyLong());
-        verify(observer, never()).onComplete();
-        verify(observer, never()).onError(any(Throwable.class));
+        verify(subscriber, never()).onNext(anyLong());
+        verify(subscriber, never()).onComplete();
+        verify(subscriber, never()).onError(any(Throwable.class));
 
         scheduler.advanceTimeTo(6000L, TimeUnit.MILLISECONDS);
-        inOrder.verify(observer, times(1)).onNext(0L);
+        inOrder.verify(subscriber, times(1)).onNext(0L);
         scheduler.advanceTimeTo(6999L, TimeUnit.MILLISECONDS);
-        inOrder.verify(observer, never()).onNext(anyLong());
+        inOrder.verify(subscriber, never()).onNext(anyLong());
         scheduler.advanceTimeTo(7000L, TimeUnit.MILLISECONDS);
-        inOrder.verify(observer, times(1)).onNext(1L);
+        inOrder.verify(subscriber, times(1)).onNext(1L);
         scheduler.advanceTimeTo(7999L, TimeUnit.MILLISECONDS);
-        inOrder.verify(observer, never()).onNext(anyLong());
+        inOrder.verify(subscriber, never()).onNext(anyLong());
         scheduler.advanceTimeTo(8000L, TimeUnit.MILLISECONDS);
-        inOrder.verify(observer, times(1)).onNext(2L);
-        inOrder.verify(observer, times(1)).onComplete();
-        inOrder.verify(observer, never()).onNext(anyLong());
-        inOrder.verify(observer, never()).onComplete();
-        verify(observer, never()).onError(any(Throwable.class));
+        inOrder.verify(subscriber, times(1)).onNext(2L);
+        inOrder.verify(subscriber, times(1)).onComplete();
+        inOrder.verify(subscriber, never()).onNext(anyLong());
+        inOrder.verify(subscriber, never()).onComplete();
+        verify(subscriber, never()).onError(any(Throwable.class));
     }
 
     @Test
@@ -129,65 +129,65 @@ public class FlowableDelayTest {
             }
         });
         Flowable<Long> delayed = source.delay(1L, TimeUnit.SECONDS, scheduler);
-        delayed.subscribe(observer);
+        delayed.subscribe(subscriber);
 
-        InOrder inOrder = inOrder(observer);
+        InOrder inOrder = inOrder(subscriber);
 
         scheduler.advanceTimeTo(1999L, TimeUnit.MILLISECONDS);
-        verify(observer, never()).onNext(anyLong());
-        verify(observer, never()).onComplete();
-        verify(observer, never()).onError(any(Throwable.class));
+        verify(subscriber, never()).onNext(anyLong());
+        verify(subscriber, never()).onComplete();
+        verify(subscriber, never()).onError(any(Throwable.class));
 
         scheduler.advanceTimeTo(2000L, TimeUnit.MILLISECONDS);
-        inOrder.verify(observer, times(1)).onError(any(Throwable.class));
-        inOrder.verify(observer, never()).onNext(anyLong());
-        verify(observer, never()).onComplete();
+        inOrder.verify(subscriber, times(1)).onError(any(Throwable.class));
+        inOrder.verify(subscriber, never()).onNext(anyLong());
+        verify(subscriber, never()).onComplete();
 
         scheduler.advanceTimeTo(5000L, TimeUnit.MILLISECONDS);
-        inOrder.verify(observer, never()).onNext(anyLong());
-        inOrder.verify(observer, never()).onError(any(Throwable.class));
-        verify(observer, never()).onComplete();
+        inOrder.verify(subscriber, never()).onNext(anyLong());
+        inOrder.verify(subscriber, never()).onError(any(Throwable.class));
+        verify(subscriber, never()).onComplete();
     }
 
     @Test
     public void testDelayWithMultipleSubscriptions() {
         Flowable<Long> source = Flowable.interval(1L, TimeUnit.SECONDS, scheduler).take(3);
         Flowable<Long> delayed = source.delay(500L, TimeUnit.MILLISECONDS, scheduler);
-        delayed.subscribe(observer);
-        delayed.subscribe(observer2);
+        delayed.subscribe(subscriber);
+        delayed.subscribe(subscriber2);
 
-        InOrder inOrder = inOrder(observer);
-        InOrder inOrder2 = inOrder(observer2);
+        InOrder inOrder = inOrder(subscriber);
+        InOrder inOrder2 = inOrder(subscriber2);
 
         scheduler.advanceTimeTo(1499L, TimeUnit.MILLISECONDS);
-        verify(observer, never()).onNext(anyLong());
-        verify(observer2, never()).onNext(anyLong());
+        verify(subscriber, never()).onNext(anyLong());
+        verify(subscriber2, never()).onNext(anyLong());
 
         scheduler.advanceTimeTo(1500L, TimeUnit.MILLISECONDS);
-        inOrder.verify(observer, times(1)).onNext(0L);
-        inOrder2.verify(observer2, times(1)).onNext(0L);
+        inOrder.verify(subscriber, times(1)).onNext(0L);
+        inOrder2.verify(subscriber2, times(1)).onNext(0L);
 
         scheduler.advanceTimeTo(2499L, TimeUnit.MILLISECONDS);
-        inOrder.verify(observer, never()).onNext(anyLong());
-        inOrder2.verify(observer2, never()).onNext(anyLong());
+        inOrder.verify(subscriber, never()).onNext(anyLong());
+        inOrder2.verify(subscriber2, never()).onNext(anyLong());
 
         scheduler.advanceTimeTo(2500L, TimeUnit.MILLISECONDS);
-        inOrder.verify(observer, times(1)).onNext(1L);
-        inOrder2.verify(observer2, times(1)).onNext(1L);
+        inOrder.verify(subscriber, times(1)).onNext(1L);
+        inOrder2.verify(subscriber2, times(1)).onNext(1L);
 
-        verify(observer, never()).onComplete();
-        verify(observer2, never()).onComplete();
+        verify(subscriber, never()).onComplete();
+        verify(subscriber2, never()).onComplete();
 
         scheduler.advanceTimeTo(3500L, TimeUnit.MILLISECONDS);
-        inOrder.verify(observer, times(1)).onNext(2L);
-        inOrder2.verify(observer2, times(1)).onNext(2L);
-        inOrder.verify(observer, never()).onNext(anyLong());
-        inOrder2.verify(observer2, never()).onNext(anyLong());
-        inOrder.verify(observer, times(1)).onComplete();
-        inOrder2.verify(observer2, times(1)).onComplete();
+        inOrder.verify(subscriber, times(1)).onNext(2L);
+        inOrder2.verify(subscriber2, times(1)).onNext(2L);
+        inOrder.verify(subscriber, never()).onNext(anyLong());
+        inOrder2.verify(subscriber2, never()).onNext(anyLong());
+        inOrder.verify(subscriber, times(1)).onComplete();
+        inOrder2.verify(subscriber2, times(1)).onComplete();
 
-        verify(observer, never()).onError(any(Throwable.class));
-        verify(observer2, never()).onError(any(Throwable.class));
+        verify(subscriber, never()).onError(any(Throwable.class));
+        verify(subscriber2, never()).onError(any(Throwable.class));
     }
 
     @Test
@@ -535,40 +535,40 @@ public class FlowableDelayTest {
         };
 
         Flowable<Long> delayed = source.delay(delayFunc);
-        delayed.subscribe(observer);
+        delayed.subscribe(subscriber);
 
-        InOrder inOrder = inOrder(observer);
+        InOrder inOrder = inOrder(subscriber);
         scheduler.advanceTimeTo(1499L, TimeUnit.MILLISECONDS);
-        verify(observer, never()).onNext(anyLong());
-        verify(observer, never()).onComplete();
-        verify(observer, never()).onError(any(Throwable.class));
+        verify(subscriber, never()).onNext(anyLong());
+        verify(subscriber, never()).onComplete();
+        verify(subscriber, never()).onError(any(Throwable.class));
 
         scheduler.advanceTimeTo(1500L, TimeUnit.MILLISECONDS);
-        inOrder.verify(observer, times(1)).onNext(0L);
-        inOrder.verify(observer, never()).onNext(anyLong());
-        verify(observer, never()).onComplete();
-        verify(observer, never()).onError(any(Throwable.class));
+        inOrder.verify(subscriber, times(1)).onNext(0L);
+        inOrder.verify(subscriber, never()).onNext(anyLong());
+        verify(subscriber, never()).onComplete();
+        verify(subscriber, never()).onError(any(Throwable.class));
 
         scheduler.advanceTimeTo(2400L, TimeUnit.MILLISECONDS);
-        inOrder.verify(observer, never()).onNext(anyLong());
-        verify(observer, never()).onComplete();
-        verify(observer, never()).onError(any(Throwable.class));
+        inOrder.verify(subscriber, never()).onNext(anyLong());
+        verify(subscriber, never()).onComplete();
+        verify(subscriber, never()).onError(any(Throwable.class));
 
         scheduler.advanceTimeTo(2500L, TimeUnit.MILLISECONDS);
-        inOrder.verify(observer, times(1)).onNext(1L);
-        inOrder.verify(observer, never()).onNext(anyLong());
-        verify(observer, never()).onComplete();
-        verify(observer, never()).onError(any(Throwable.class));
+        inOrder.verify(subscriber, times(1)).onNext(1L);
+        inOrder.verify(subscriber, never()).onNext(anyLong());
+        verify(subscriber, never()).onComplete();
+        verify(subscriber, never()).onError(any(Throwable.class));
 
         scheduler.advanceTimeTo(3400L, TimeUnit.MILLISECONDS);
-        inOrder.verify(observer, never()).onNext(anyLong());
-        verify(observer, never()).onComplete();
-        verify(observer, never()).onError(any(Throwable.class));
+        inOrder.verify(subscriber, never()).onNext(anyLong());
+        verify(subscriber, never()).onComplete();
+        verify(subscriber, never()).onError(any(Throwable.class));
 
         scheduler.advanceTimeTo(3500L, TimeUnit.MILLISECONDS);
-        inOrder.verify(observer, times(1)).onNext(2L);
-        verify(observer, times(1)).onComplete();
-        verify(observer, never()).onError(any(Throwable.class));
+        inOrder.verify(subscriber, times(1)).onNext(2L);
+        verify(subscriber, times(1)).onComplete();
+        verify(subscriber, never()).onError(any(Throwable.class));
     }
 
     @Test

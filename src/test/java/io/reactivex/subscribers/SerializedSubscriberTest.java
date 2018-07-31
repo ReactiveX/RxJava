@@ -32,11 +32,11 @@ import io.reactivex.schedulers.Schedulers;
 
 public class SerializedSubscriberTest {
 
-    Subscriber<String> observer;
+    Subscriber<String> subscriber;
 
     @Before
     public void before() {
-        observer = TestHelper.mockSubscriber();
+        subscriber = TestHelper.mockSubscriber();
     }
 
     private Subscriber<String> serializedSubscriber(Subscriber<String> o) {
@@ -48,16 +48,16 @@ public class SerializedSubscriberTest {
         TestSingleThreadedPublisher onSubscribe = new TestSingleThreadedPublisher("one", "two", "three");
         Flowable<String> w = Flowable.unsafeCreate(onSubscribe);
 
-        Subscriber<String> aw = serializedSubscriber(observer);
+        Subscriber<String> aw = serializedSubscriber(subscriber);
 
         w.subscribe(aw);
         onSubscribe.waitToFinish();
 
-        verify(observer, times(1)).onNext("one");
-        verify(observer, times(1)).onNext("two");
-        verify(observer, times(1)).onNext("three");
-        verify(observer, never()).onError(any(Throwable.class));
-        verify(observer, times(1)).onComplete();
+        verify(subscriber, times(1)).onNext("one");
+        verify(subscriber, times(1)).onNext("two");
+        verify(subscriber, times(1)).onNext("three");
+        verify(subscriber, never()).onError(any(Throwable.class));
+        verify(subscriber, times(1)).onComplete();
         // non-deterministic because unsubscribe happens after 'waitToFinish' releases
         // so commenting out for now as this is not a critical thing to test here
         //            verify(s, times(1)).unsubscribe();
@@ -455,29 +455,29 @@ public class SerializedSubscriberTest {
     public static class OnNextThread implements Runnable {
 
         private final CountDownLatch latch;
-        private final Subscriber<String> observer;
+        private final Subscriber<String> subscriber;
         private final int numStringsToSend;
         final AtomicInteger produced;
         private final CountDownLatch running;
 
-        OnNextThread(Subscriber<String> observer, int numStringsToSend, CountDownLatch latch, CountDownLatch running) {
-            this(observer, numStringsToSend, new AtomicInteger(), latch, running);
+        OnNextThread(Subscriber<String> subscriber, int numStringsToSend, CountDownLatch latch, CountDownLatch running) {
+            this(subscriber, numStringsToSend, new AtomicInteger(), latch, running);
         }
 
-        OnNextThread(Subscriber<String> observer, int numStringsToSend, AtomicInteger produced) {
-            this(observer, numStringsToSend, produced, null, null);
+        OnNextThread(Subscriber<String> subscriber, int numStringsToSend, AtomicInteger produced) {
+            this(subscriber, numStringsToSend, produced, null, null);
         }
 
-        OnNextThread(Subscriber<String> observer, int numStringsToSend, AtomicInteger produced, CountDownLatch latch, CountDownLatch running) {
-            this.observer = observer;
+        OnNextThread(Subscriber<String> subscriber, int numStringsToSend, AtomicInteger produced, CountDownLatch latch, CountDownLatch running) {
+            this.subscriber = subscriber;
             this.numStringsToSend = numStringsToSend;
             this.produced = produced;
             this.latch = latch;
             this.running = running;
         }
 
-        OnNextThread(Subscriber<String> observer, int numStringsToSend) {
-            this(observer, numStringsToSend, new AtomicInteger());
+        OnNextThread(Subscriber<String> subscriber, int numStringsToSend) {
+            this(subscriber, numStringsToSend, new AtomicInteger());
         }
 
         @Override
@@ -486,7 +486,7 @@ public class SerializedSubscriberTest {
                 running.countDown();
             }
             for (int i = 0; i < numStringsToSend; i++) {
-                observer.onNext(Thread.currentThread().getId() + "-" + i);
+                subscriber.onNext(Thread.currentThread().getId() + "-" + i);
                 if (latch != null) {
                     latch.countDown();
                 }
@@ -500,12 +500,12 @@ public class SerializedSubscriberTest {
      */
     public static class CompletionThread implements Runnable {
 
-        private final Subscriber<String> observer;
+        private final Subscriber<String> subscriber;
         private final TestConcurrencySubscriberEvent event;
         private final Future<?>[] waitOnThese;
 
         CompletionThread(Subscriber<String> Subscriber, TestConcurrencySubscriberEvent event, Future<?>... waitOnThese) {
-            this.observer = Subscriber;
+            this.subscriber = Subscriber;
             this.event = event;
             this.waitOnThese = waitOnThese;
         }
@@ -525,9 +525,9 @@ public class SerializedSubscriberTest {
 
             /* send the event */
             if (event == TestConcurrencySubscriberEvent.onError) {
-                observer.onError(new RuntimeException("mocked exception"));
+                subscriber.onError(new RuntimeException("mocked exception"));
             } else if (event == TestConcurrencySubscriberEvent.onComplete) {
-                observer.onComplete();
+                subscriber.onComplete();
 
             } else {
                 throw new IllegalArgumentException("Expecting either onError or onComplete");
@@ -642,8 +642,8 @@ public class SerializedSubscriberTest {
         }
 
         @Override
-        public void subscribe(final Subscriber<? super String> observer) {
-            observer.onSubscribe(new BooleanSubscription());
+        public void subscribe(final Subscriber<? super String> subscriber) {
+            subscriber.onSubscribe(new BooleanSubscription());
             System.out.println("TestSingleThreadedObservable subscribed to ...");
             t = new Thread(new Runnable() {
 
@@ -653,9 +653,9 @@ public class SerializedSubscriberTest {
                         System.out.println("running TestSingleThreadedObservable thread");
                         for (String s : values) {
                             System.out.println("TestSingleThreadedObservable onNext: " + s);
-                            observer.onNext(s);
+                            subscriber.onNext(s);
                         }
-                        observer.onComplete();
+                        subscriber.onComplete();
                     } catch (Throwable e) {
                         throw new RuntimeException(e);
                     }
@@ -694,8 +694,8 @@ public class SerializedSubscriberTest {
         }
 
         @Override
-        public void subscribe(final Subscriber<? super String> observer) {
-            observer.onSubscribe(new BooleanSubscription());
+        public void subscribe(final Subscriber<? super String> subscriber) {
+            subscriber.onSubscribe(new BooleanSubscription());
             final NullPointerException npe = new NullPointerException();
             System.out.println("TestMultiThreadedObservable subscribed to ...");
             t = new Thread(new Runnable() {
@@ -725,7 +725,7 @@ public class SerializedSubscriberTest {
                                                 Thread.sleep(sleep);
                                             }
                                         }
-                                        observer.onNext(s);
+                                        subscriber.onNext(s);
                                         // capture 'maxThreads'
                                         int concurrentThreads = threadsRunning.get();
                                         int maxThreads = maxConcurrentThreads.get();
@@ -733,7 +733,7 @@ public class SerializedSubscriberTest {
                                             maxConcurrentThreads.compareAndSet(maxThreads, concurrentThreads);
                                         }
                                     } catch (Throwable e) {
-                                        observer.onError(e);
+                                        subscriber.onError(e);
                                     } finally {
                                         threadsRunning.decrementAndGet();
                                     }
@@ -755,7 +755,7 @@ public class SerializedSubscriberTest {
                     } catch (InterruptedException e) {
                         throw new RuntimeException(e);
                     }
-                    observer.onComplete();
+                    subscriber.onComplete();
                 }
             });
             System.out.println("starting TestMultiThreadedObservable thread");

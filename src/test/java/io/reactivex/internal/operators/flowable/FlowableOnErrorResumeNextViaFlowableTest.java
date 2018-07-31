@@ -38,8 +38,8 @@ public class FlowableOnErrorResumeNextViaFlowableTest {
         Flowable<String> resume = Flowable.just("twoResume", "threeResume");
         Flowable<String> observable = w.onErrorResumeNext(resume);
 
-        Subscriber<String> observer = TestHelper.mockSubscriber();
-        observable.subscribe(observer);
+        Subscriber<String> subscriber = TestHelper.mockSubscriber();
+        observable.subscribe(subscriber);
 
         try {
             f.t.join();
@@ -47,13 +47,13 @@ public class FlowableOnErrorResumeNextViaFlowableTest {
             fail(e.getMessage());
         }
 
-        verify(observer, Mockito.never()).onError(any(Throwable.class));
-        verify(observer, times(1)).onComplete();
-        verify(observer, times(1)).onNext("one");
-        verify(observer, Mockito.never()).onNext("two");
-        verify(observer, Mockito.never()).onNext("three");
-        verify(observer, times(1)).onNext("twoResume");
-        verify(observer, times(1)).onNext("threeResume");
+        verify(subscriber, Mockito.never()).onError(any(Throwable.class));
+        verify(subscriber, times(1)).onComplete();
+        verify(subscriber, times(1)).onNext("one");
+        verify(subscriber, Mockito.never()).onNext("two");
+        verify(subscriber, Mockito.never()).onNext("three");
+        verify(subscriber, times(1)).onNext("twoResume");
+        verify(subscriber, times(1)).onNext("threeResume");
     }
 
     @Test
@@ -80,9 +80,9 @@ public class FlowableOnErrorResumeNextViaFlowableTest {
 
         Flowable<String> observable = w.onErrorResumeNext(resume);
 
-        Subscriber<String> observer = TestHelper.mockSubscriber();
+        Subscriber<String> subscriber = TestHelper.mockSubscriber();
 
-        observable.subscribe(observer);
+        observable.subscribe(subscriber);
 
         try {
             f.t.join();
@@ -90,13 +90,13 @@ public class FlowableOnErrorResumeNextViaFlowableTest {
             fail(e.getMessage());
         }
 
-        verify(observer, Mockito.never()).onError(any(Throwable.class));
-        verify(observer, times(1)).onComplete();
-        verify(observer, times(1)).onNext("one");
-        verify(observer, Mockito.never()).onNext("two");
-        verify(observer, Mockito.never()).onNext("three");
-        verify(observer, times(1)).onNext("twoResume");
-        verify(observer, times(1)).onNext("threeResume");
+        verify(subscriber, Mockito.never()).onError(any(Throwable.class));
+        verify(subscriber, times(1)).onComplete();
+        verify(subscriber, times(1)).onNext("one");
+        verify(subscriber, Mockito.never()).onNext("two");
+        verify(subscriber, Mockito.never()).onNext("three");
+        verify(subscriber, times(1)).onNext("twoResume");
+        verify(subscriber, times(1)).onNext("threeResume");
     }
 
     @Test
@@ -113,12 +113,12 @@ public class FlowableOnErrorResumeNextViaFlowableTest {
         Flowable<String> resume = Flowable.just("resume");
         Flowable<String> observable = testObservable.onErrorResumeNext(resume);
 
-        Subscriber<String> observer = TestHelper.mockSubscriber();
-        observable.subscribe(observer);
+        Subscriber<String> subscriber = TestHelper.mockSubscriber();
+        observable.subscribe(subscriber);
 
-        verify(observer, Mockito.never()).onError(any(Throwable.class));
-        verify(observer, times(1)).onComplete();
-        verify(observer, times(1)).onNext("resume");
+        verify(subscriber, Mockito.never()).onError(any(Throwable.class));
+        verify(subscriber, times(1)).onComplete();
+        verify(subscriber, times(1)).onNext("resume");
     }
 
     @Test
@@ -135,16 +135,15 @@ public class FlowableOnErrorResumeNextViaFlowableTest {
         Flowable<String> resume = Flowable.just("resume");
         Flowable<String> observable = testObservable.subscribeOn(Schedulers.io()).onErrorResumeNext(resume);
 
-        @SuppressWarnings("unchecked")
-        DefaultSubscriber<String> observer = mock(DefaultSubscriber.class);
-        TestSubscriber<String> ts = new TestSubscriber<String>(observer, Long.MAX_VALUE);
+        Subscriber<String> subscriber = TestHelper.mockSubscriber();
+        TestSubscriber<String> ts = new TestSubscriber<String>(subscriber, Long.MAX_VALUE);
         observable.subscribe(ts);
 
         ts.awaitTerminalEvent();
 
-        verify(observer, Mockito.never()).onError(any(Throwable.class));
-        verify(observer, times(1)).onComplete();
-        verify(observer, times(1)).onNext("resume");
+        verify(subscriber, Mockito.never()).onError(any(Throwable.class));
+        verify(subscriber, times(1)).onComplete();
+        verify(subscriber, times(1)).onNext("resume");
     }
 
     static final class TestObservable implements Publisher<String> {

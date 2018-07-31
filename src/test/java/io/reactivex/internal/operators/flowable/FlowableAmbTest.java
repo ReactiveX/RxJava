@@ -105,18 +105,17 @@ public class FlowableAmbTest {
         Flowable<String> o = Flowable.ambArray(flowable1,
                 flowable2, flowable3);
 
-        @SuppressWarnings("unchecked")
-        DefaultSubscriber<String> observer = mock(DefaultSubscriber.class);
-        o.subscribe(observer);
+        Subscriber<String> subscriber = TestHelper.mockSubscriber();
+        o.subscribe(subscriber);
 
         scheduler.advanceTimeBy(100000, TimeUnit.MILLISECONDS);
 
-        InOrder inOrder = inOrder(observer);
-        inOrder.verify(observer, times(1)).onNext("2");
-        inOrder.verify(observer, times(1)).onNext("22");
-        inOrder.verify(observer, times(1)).onNext("222");
-        inOrder.verify(observer, times(1)).onNext("2222");
-        inOrder.verify(observer, times(1)).onComplete();
+        InOrder inOrder = inOrder(subscriber);
+        inOrder.verify(subscriber, times(1)).onNext("2");
+        inOrder.verify(subscriber, times(1)).onNext("22");
+        inOrder.verify(subscriber, times(1)).onNext("222");
+        inOrder.verify(subscriber, times(1)).onNext("2222");
+        inOrder.verify(subscriber, times(1)).onComplete();
         inOrder.verifyNoMoreInteractions();
     }
 
@@ -135,18 +134,17 @@ public class FlowableAmbTest {
         Flowable<String> o = Flowable.ambArray(flowable1,
                 flowable2, flowable3);
 
-        @SuppressWarnings("unchecked")
-        DefaultSubscriber<String> observer = mock(DefaultSubscriber.class);
-        o.subscribe(observer);
+        Subscriber<String> subscriber = TestHelper.mockSubscriber();
+        o.subscribe(subscriber);
 
         scheduler.advanceTimeBy(100000, TimeUnit.MILLISECONDS);
 
-        InOrder inOrder = inOrder(observer);
-        inOrder.verify(observer, times(1)).onNext("2");
-        inOrder.verify(observer, times(1)).onNext("22");
-        inOrder.verify(observer, times(1)).onNext("222");
-        inOrder.verify(observer, times(1)).onNext("2222");
-        inOrder.verify(observer, times(1)).onError(expectedException);
+        InOrder inOrder = inOrder(subscriber);
+        inOrder.verify(subscriber, times(1)).onNext("2");
+        inOrder.verify(subscriber, times(1)).onNext("22");
+        inOrder.verify(subscriber, times(1)).onNext("222");
+        inOrder.verify(subscriber, times(1)).onNext("2222");
+        inOrder.verify(subscriber, times(1)).onError(expectedException);
         inOrder.verifyNoMoreInteractions();
     }
 
@@ -163,13 +161,12 @@ public class FlowableAmbTest {
         Flowable<String> o = Flowable.ambArray(flowable1,
                 flowable2, flowable3);
 
-        @SuppressWarnings("unchecked")
-        DefaultSubscriber<String> observer = mock(DefaultSubscriber.class);
-        o.subscribe(observer);
+        Subscriber<String> subscriber = TestHelper.mockSubscriber();
+        o.subscribe(subscriber);
 
         scheduler.advanceTimeBy(100000, TimeUnit.MILLISECONDS);
-        InOrder inOrder = inOrder(observer);
-        inOrder.verify(observer, times(1)).onComplete();
+        InOrder inOrder = inOrder(subscriber);
+        inOrder.verify(subscriber, times(1)).onComplete();
         inOrder.verifyNoMoreInteractions();
     }
 

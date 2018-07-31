@@ -46,13 +46,13 @@ public class FlowableObserveOnTest {
      */
     @Test
     public void testObserveOn() {
-        Subscriber<Integer> observer = TestHelper.mockSubscriber();
-        Flowable.just(1, 2, 3).observeOn(ImmediateThinScheduler.INSTANCE).subscribe(observer);
+        Subscriber<Integer> subscriber = TestHelper.mockSubscriber();
+        Flowable.just(1, 2, 3).observeOn(ImmediateThinScheduler.INSTANCE).subscribe(subscriber);
 
-        verify(observer, times(1)).onNext(1);
-        verify(observer, times(1)).onNext(2);
-        verify(observer, times(1)).onNext(3);
-        verify(observer, times(1)).onComplete();
+        verify(subscriber, times(1)).onNext(1);
+        verify(subscriber, times(1)).onNext(2);
+        verify(subscriber, times(1)).onNext(3);
+        verify(subscriber, times(1)).onComplete();
     }
 
     @Test
@@ -61,10 +61,10 @@ public class FlowableObserveOnTest {
         // FIXME null values not allowed
         Flowable<String> obs = Flowable.just("one", "null", "two", "three", "four");
 
-        Subscriber<String> observer = TestHelper.mockSubscriber();
+        Subscriber<String> subscriber = TestHelper.mockSubscriber();
 
-        InOrder inOrder = inOrder(observer);
-        TestSubscriber<String> ts = new TestSubscriber<String>(observer);
+        InOrder inOrder = inOrder(subscriber);
+        TestSubscriber<String> ts = new TestSubscriber<String>(subscriber);
 
         obs.observeOn(Schedulers.computation()).subscribe(ts);
 
@@ -76,12 +76,12 @@ public class FlowableObserveOnTest {
             fail("failed with exception");
         }
 
-        inOrder.verify(observer, times(1)).onNext("one");
-        inOrder.verify(observer, times(1)).onNext("null");
-        inOrder.verify(observer, times(1)).onNext("two");
-        inOrder.verify(observer, times(1)).onNext("three");
-        inOrder.verify(observer, times(1)).onNext("four");
-        inOrder.verify(observer, times(1)).onComplete();
+        inOrder.verify(subscriber, times(1)).onNext("one");
+        inOrder.verify(subscriber, times(1)).onNext("null");
+        inOrder.verify(subscriber, times(1)).onNext("two");
+        inOrder.verify(subscriber, times(1)).onNext("three");
+        inOrder.verify(subscriber, times(1)).onNext("four");
+        inOrder.verify(subscriber, times(1)).onComplete();
         inOrder.verifyNoMoreInteractions();
     }
 
@@ -92,7 +92,7 @@ public class FlowableObserveOnTest {
 //        Flowable<String> obs = Flowable.just("one", null, "two", "three", "four");
         Flowable<String> obs = Flowable.just("one", "null", "two", "three", "four");
 
-        Subscriber<String> observer = TestHelper.mockSubscriber();
+        Subscriber<String> subscriber = TestHelper.mockSubscriber();
         final String parentThreadName = Thread.currentThread().getName();
 
         final CountDownLatch completedLatch = new CountDownLatch(1);
@@ -127,15 +127,15 @@ public class FlowableObserveOnTest {
                 completedLatch.countDown();
 
             }
-        }).subscribe(observer);
+        }).subscribe(subscriber);
 
         if (!completedLatch.await(1000, TimeUnit.MILLISECONDS)) {
             fail("timed out waiting");
         }
 
-        verify(observer, never()).onError(any(Throwable.class));
-        verify(observer, times(5)).onNext(any(String.class));
-        verify(observer, times(1)).onComplete();
+        verify(subscriber, never()).onError(any(Throwable.class));
+        verify(subscriber, times(5)).onNext(any(String.class));
+        verify(subscriber, times(1)).onComplete();
     }
 
     @Test
@@ -366,8 +366,7 @@ public class FlowableObserveOnTest {
 
         Flowable<Integer> source = Flowable.concat(Flowable.<Integer> error(new TestException()), Flowable.just(1));
 
-        @SuppressWarnings("unchecked")
-        DefaultSubscriber<Integer> o = mock(DefaultSubscriber.class);
+        Subscriber<Integer> o = TestHelper.mockSubscriber();
         InOrder inOrder = inOrder(o);
 
         source.observeOn(testScheduler).subscribe(o);
@@ -385,8 +384,8 @@ public class FlowableObserveOnTest {
     public void testAfterUnsubscribeCalledThenObserverOnNextNeverCalled() {
         final TestScheduler testScheduler = new TestScheduler();
 
-        final Subscriber<Integer> observer = TestHelper.mockSubscriber();
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>(observer);
+        final Subscriber<Integer> subscriber = TestHelper.mockSubscriber();
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>(subscriber);
 
         Flowable.just(1, 2, 3)
                 .observeOn(testScheduler)
@@ -395,11 +394,11 @@ public class FlowableObserveOnTest {
         ts.dispose();
         testScheduler.advanceTimeBy(1, TimeUnit.SECONDS);
 
-        final InOrder inOrder = inOrder(observer);
+        final InOrder inOrder = inOrder(subscriber);
 
-        inOrder.verify(observer, never()).onNext(anyInt());
-        inOrder.verify(observer, never()).onError(any(Exception.class));
-        inOrder.verify(observer, never()).onComplete();
+        inOrder.verify(subscriber, never()).onNext(anyInt());
+        inOrder.verify(subscriber, never()).onError(any(Exception.class));
+        inOrder.verify(subscriber, never()).onComplete();
     }
 
     @Test

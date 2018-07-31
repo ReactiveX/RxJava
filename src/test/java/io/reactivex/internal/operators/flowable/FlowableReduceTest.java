@@ -34,13 +34,13 @@ import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.TestSubscriber;
 
 public class FlowableReduceTest {
-    Subscriber<Object> observer;
+    Subscriber<Object> subscriber;
 
     SingleObserver<Object> singleObserver;
 
     @Before
     public void before() {
-        observer = TestHelper.mockSubscriber();
+        subscriber = TestHelper.mockSubscriber();
         singleObserver = TestHelper.mockSingleObserver();
     }
 
@@ -62,11 +62,11 @@ public class FlowableReduceTest {
                     }
                 });
 
-        result.subscribe(observer);
+        result.subscribe(subscriber);
 
-        verify(observer).onNext(1 + 2 + 3 + 4 + 5);
-        verify(observer).onComplete();
-        verify(observer, never()).onError(any(Throwable.class));
+        verify(subscriber).onNext(1 + 2 + 3 + 4 + 5);
+        verify(subscriber).onComplete();
+        verify(subscriber, never()).onError(any(Throwable.class));
     }
 
     @Test
@@ -80,11 +80,11 @@ public class FlowableReduceTest {
                     }
                 });
 
-        result.subscribe(observer);
+        result.subscribe(subscriber);
 
-        verify(observer, never()).onNext(any());
-        verify(observer, never()).onComplete();
-        verify(observer, times(1)).onError(any(TestException.class));
+        verify(subscriber, never()).onNext(any());
+        verify(subscriber, never()).onComplete();
+        verify(subscriber, times(1)).onError(any(TestException.class));
     }
 
     @Test
@@ -104,11 +104,11 @@ public class FlowableReduceTest {
                     }
                 });
 
-        result.subscribe(observer);
+        result.subscribe(subscriber);
 
-        verify(observer, never()).onNext(any());
-        verify(observer, never()).onComplete();
-        verify(observer, times(1)).onError(any(TestException.class));
+        verify(subscriber, never()).onNext(any());
+        verify(subscriber, never()).onComplete();
+        verify(subscriber, times(1)).onError(any(TestException.class));
     }
 
     @Test
@@ -125,11 +125,11 @@ public class FlowableReduceTest {
         Flowable<Integer> result = Flowable.just(1, 2, 3, 4, 5)
                 .reduce(0, sum).toFlowable().map(error);
 
-        result.subscribe(observer);
+        result.subscribe(subscriber);
 
-        verify(observer, never()).onNext(any());
-        verify(observer, never()).onComplete();
-        verify(observer, times(1)).onError(any(TestException.class));
+        verify(subscriber, never()).onNext(any());
+        verify(subscriber, never()).onComplete();
+        verify(subscriber, times(1)).onError(any(TestException.class));
     }
 
     @Test

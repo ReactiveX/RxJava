@@ -44,33 +44,33 @@ public class AsyncProcessorTest extends FlowableProcessorTest<Object> {
     public void testNeverCompleted() {
         AsyncProcessor<String> processor = AsyncProcessor.create();
 
-        Subscriber<String> observer = TestHelper.mockSubscriber();
-        processor.subscribe(observer);
+        Subscriber<String> subscriber = TestHelper.mockSubscriber();
+        processor.subscribe(subscriber);
 
         processor.onNext("one");
         processor.onNext("two");
         processor.onNext("three");
 
-        verify(observer, Mockito.never()).onNext(anyString());
-        verify(observer, Mockito.never()).onError(testException);
-        verify(observer, Mockito.never()).onComplete();
+        verify(subscriber, Mockito.never()).onNext(anyString());
+        verify(subscriber, Mockito.never()).onError(testException);
+        verify(subscriber, Mockito.never()).onComplete();
     }
 
     @Test
     public void testCompleted() {
         AsyncProcessor<String> processor = AsyncProcessor.create();
 
-        Subscriber<String> observer = TestHelper.mockSubscriber();
-        processor.subscribe(observer);
+        Subscriber<String> subscriber = TestHelper.mockSubscriber();
+        processor.subscribe(subscriber);
 
         processor.onNext("one");
         processor.onNext("two");
         processor.onNext("three");
         processor.onComplete();
 
-        verify(observer, times(1)).onNext("three");
-        verify(observer, Mockito.never()).onError(any(Throwable.class));
-        verify(observer, times(1)).onComplete();
+        verify(subscriber, times(1)).onNext("three");
+        verify(subscriber, Mockito.never()).onError(any(Throwable.class));
+        verify(subscriber, times(1)).onComplete();
     }
 
     @Test
@@ -78,40 +78,40 @@ public class AsyncProcessorTest extends FlowableProcessorTest<Object> {
     public void testNull() {
         AsyncProcessor<String> processor = AsyncProcessor.create();
 
-        Subscriber<String> observer = TestHelper.mockSubscriber();
-        processor.subscribe(observer);
+        Subscriber<String> subscriber = TestHelper.mockSubscriber();
+        processor.subscribe(subscriber);
 
         processor.onNext(null);
         processor.onComplete();
 
-        verify(observer, times(1)).onNext(null);
-        verify(observer, Mockito.never()).onError(any(Throwable.class));
-        verify(observer, times(1)).onComplete();
+        verify(subscriber, times(1)).onNext(null);
+        verify(subscriber, Mockito.never()).onError(any(Throwable.class));
+        verify(subscriber, times(1)).onComplete();
     }
 
     @Test
     public void testSubscribeAfterCompleted() {
         AsyncProcessor<String> processor = AsyncProcessor.create();
 
-        Subscriber<String> observer = TestHelper.mockSubscriber();
+        Subscriber<String> subscriber = TestHelper.mockSubscriber();
 
         processor.onNext("one");
         processor.onNext("two");
         processor.onNext("three");
         processor.onComplete();
 
-        processor.subscribe(observer);
+        processor.subscribe(subscriber);
 
-        verify(observer, times(1)).onNext("three");
-        verify(observer, Mockito.never()).onError(any(Throwable.class));
-        verify(observer, times(1)).onComplete();
+        verify(subscriber, times(1)).onNext("three");
+        verify(subscriber, Mockito.never()).onError(any(Throwable.class));
+        verify(subscriber, times(1)).onComplete();
     }
 
     @Test
     public void testSubscribeAfterError() {
         AsyncProcessor<String> processor = AsyncProcessor.create();
 
-        Subscriber<String> observer = TestHelper.mockSubscriber();
+        Subscriber<String> subscriber = TestHelper.mockSubscriber();
 
         processor.onNext("one");
         processor.onNext("two");
@@ -120,19 +120,19 @@ public class AsyncProcessorTest extends FlowableProcessorTest<Object> {
         RuntimeException re = new RuntimeException("failed");
         processor.onError(re);
 
-        processor.subscribe(observer);
+        processor.subscribe(subscriber);
 
-        verify(observer, times(1)).onError(re);
-        verify(observer, Mockito.never()).onNext(any(String.class));
-        verify(observer, Mockito.never()).onComplete();
+        verify(subscriber, times(1)).onError(re);
+        verify(subscriber, Mockito.never()).onNext(any(String.class));
+        verify(subscriber, Mockito.never()).onComplete();
     }
 
     @Test
     public void testError() {
         AsyncProcessor<String> processor = AsyncProcessor.create();
 
-        Subscriber<String> observer = TestHelper.mockSubscriber();
-        processor.subscribe(observer);
+        Subscriber<String> subscriber = TestHelper.mockSubscriber();
+        processor.subscribe(subscriber);
 
         processor.onNext("one");
         processor.onNext("two");
@@ -142,17 +142,17 @@ public class AsyncProcessorTest extends FlowableProcessorTest<Object> {
         processor.onError(new Throwable());
         processor.onComplete();
 
-        verify(observer, Mockito.never()).onNext(anyString());
-        verify(observer, times(1)).onError(testException);
-        verify(observer, Mockito.never()).onComplete();
+        verify(subscriber, Mockito.never()).onNext(anyString());
+        verify(subscriber, times(1)).onError(testException);
+        verify(subscriber, Mockito.never()).onComplete();
     }
 
     @Test
     public void testUnsubscribeBeforeCompleted() {
         AsyncProcessor<String> processor = AsyncProcessor.create();
 
-        Subscriber<String> observer = TestHelper.mockSubscriber();
-        TestSubscriber<String> ts = new TestSubscriber<String>(observer);
+        Subscriber<String> subscriber = TestHelper.mockSubscriber();
+        TestSubscriber<String> ts = new TestSubscriber<String>(subscriber);
         processor.subscribe(ts);
 
         processor.onNext("one");
@@ -160,31 +160,31 @@ public class AsyncProcessorTest extends FlowableProcessorTest<Object> {
 
         ts.dispose();
 
-        verify(observer, Mockito.never()).onNext(anyString());
-        verify(observer, Mockito.never()).onError(any(Throwable.class));
-        verify(observer, Mockito.never()).onComplete();
+        verify(subscriber, Mockito.never()).onNext(anyString());
+        verify(subscriber, Mockito.never()).onError(any(Throwable.class));
+        verify(subscriber, Mockito.never()).onComplete();
 
         processor.onNext("three");
         processor.onComplete();
 
-        verify(observer, Mockito.never()).onNext(anyString());
-        verify(observer, Mockito.never()).onError(any(Throwable.class));
-        verify(observer, Mockito.never()).onComplete();
+        verify(subscriber, Mockito.never()).onNext(anyString());
+        verify(subscriber, Mockito.never()).onError(any(Throwable.class));
+        verify(subscriber, Mockito.never()).onComplete();
     }
 
     @Test
     public void testEmptySubjectCompleted() {
         AsyncProcessor<String> processor = AsyncProcessor.create();
 
-        Subscriber<String> observer = TestHelper.mockSubscriber();
-        processor.subscribe(observer);
+        Subscriber<String> subscriber = TestHelper.mockSubscriber();
+        processor.subscribe(subscriber);
 
         processor.onComplete();
 
-        InOrder inOrder = inOrder(observer);
-        inOrder.verify(observer, never()).onNext(null);
-        inOrder.verify(observer, never()).onNext(any(String.class));
-        inOrder.verify(observer, times(1)).onComplete();
+        InOrder inOrder = inOrder(subscriber);
+        inOrder.verify(subscriber, never()).onNext(null);
+        inOrder.verify(subscriber, never()).onNext(any(String.class));
+        inOrder.verify(subscriber, times(1)).onComplete();
         inOrder.verifyNoMoreInteractions();
     }
 

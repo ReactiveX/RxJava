@@ -102,7 +102,7 @@ public class FlowableGroupByTest {
     @Test
     public void testError() {
         Flowable<String> sourceStrings = Flowable.just("one", "two", "three", "four", "five", "six");
-        Flowable<String> errorSource = Flowable.error(new RuntimeException("forced failure"));
+        Flowable<String> errorSource = Flowable.error(new TestException("forced failure"));
         Flowable<String> source = Flowable.concat(sourceStrings, errorSource);
 
         Flowable<GroupedFlowable<Integer, String>> grouped = source.groupBy(length);
@@ -133,8 +133,7 @@ public class FlowableGroupByTest {
 
             @Override
             public void onError(Throwable e) {
-                e.printStackTrace();
-                error.set(e);
+//                e.printStackTrace();                error.set(e);
             }
 
             @Override
@@ -148,6 +147,8 @@ public class FlowableGroupByTest {
         assertEquals(3, groupCounter.get());
         assertEquals(6, eventCounter.get());
         assertNotNull(error.get());
+        assertTrue("" + error.get(), error.get() instanceof TestException);
+        assertEquals(error.get().getMessage(), "forced failure");
     }
 
     private static <K, V> Map<K, Collection<V>> toMap(Flowable<GroupedFlowable<K, V>> observable) {
@@ -998,10 +999,8 @@ public class FlowableGroupByTest {
         Flowable<GroupedFlowable<Boolean, Long>> stream = source.groupBy(IS_EVEN);
 
         // create two observers
-        @SuppressWarnings("unchecked")
-        DefaultSubscriber<GroupedFlowable<Boolean, Long>> o1 = mock(DefaultSubscriber.class);
-        @SuppressWarnings("unchecked")
-        DefaultSubscriber<GroupedFlowable<Boolean, Long>> o2 = mock(DefaultSubscriber.class);
+        Subscriber<GroupedFlowable<Boolean, Long>> o1 = TestHelper.mockSubscriber();
+        Subscriber<GroupedFlowable<Boolean, Long>> o2 = TestHelper.mockSubscriber();
 
         // subscribe with the observers
         stream.subscribe(o1);
@@ -1227,8 +1226,7 @@ public class FlowableGroupByTest {
 
         inner.get().subscribe();
 
-        @SuppressWarnings("unchecked")
-        DefaultSubscriber<Integer> o2 = mock(DefaultSubscriber.class);
+        Subscriber<Integer> o2 = TestHelper.mockSubscriber();
 
         inner.get().subscribe(o2);
 

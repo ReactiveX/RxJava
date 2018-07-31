@@ -832,47 +832,61 @@ public class FlowablePublishTest {
 
     @Test
     public void dryRunCrash() {
-        final TestSubscriber<Object> ts = new TestSubscriber<Object>(1L) {
-            @Override
-            public void onNext(Object t) {
-                super.onNext(t);
-                onComplete();
-                cancel();
-            }
-        };
-
-        Flowable.range(1, 10)
-        .map(new Function<Integer, Object>() {
-            @Override
-            public Object apply(Integer v) throws Exception {
-                if (v == 2) {
-                    throw new TestException();
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            final TestSubscriber<Object> ts = new TestSubscriber<Object>(1L) {
+                @Override
+                public void onNext(Object t) {
+                    super.onNext(t);
+                    onComplete();
+                    cancel();
                 }
-                return v;
-            }
-        })
-        .publish()
-        .autoConnect()
-        .subscribe(ts);
+            };
 
-        ts
-        .assertResult(1);
+            Flowable.range(1, 10)
+            .map(new Function<Integer, Object>() {
+                @Override
+                public Object apply(Integer v) throws Exception {
+                    if (v == 2) {
+                        throw new TestException();
+                    }
+                    return v;
+                }
+            })
+            .publish()
+            .autoConnect()
+            .subscribe(ts);
+
+            ts
+            .assertResult(1);
+
+            TestHelper.assertUndeliverable(errors, 0, TestException.class);
+        } finally {
+            RxJavaPlugins.reset();
+        }
     }
 
     @Test
     public void overflowQueue() {
-        Flowable.create(new FlowableOnSubscribe<Object>() {
-            @Override
-            public void subscribe(FlowableEmitter<Object> s) throws Exception {
-                for (int i = 0; i < 10; i++) {
-                    s.onNext(i);
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            Flowable.create(new FlowableOnSubscribe<Object>() {
+                @Override
+                public void subscribe(FlowableEmitter<Object> s) throws Exception {
+                    for (int i = 0; i < 10; i++) {
+                        s.onNext(i);
+                    }
                 }
-            }
-        }, BackpressureStrategy.MISSING)
-        .publish(8)
-        .autoConnect()
-        .test(0L)
-        .assertFailure(MissingBackpressureException.class);
+            }, BackpressureStrategy.MISSING)
+            .publish(8)
+            .autoConnect()
+            .test(0L)
+           .assertFailure(MissingBackpressureException.class);
+
+            TestHelper.assertError(errors, 0, MissingBackpressureException.class);
+        } finally {
+            RxJavaPlugins.reset();
+        }
     }
 
     @Test

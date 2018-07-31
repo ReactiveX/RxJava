@@ -94,12 +94,12 @@ public class FlowableFirstTest {
     public void testFirstFlowable() {
         Flowable<Integer> observable = Flowable.just(1, 2, 3).firstElement().toFlowable();
 
-        Subscriber<Integer> observer = TestHelper.mockSubscriber();
-        observable.subscribe(observer);
+        Subscriber<Integer> subscriber = TestHelper.mockSubscriber();
+        observable.subscribe(subscriber);
 
-        InOrder inOrder = inOrder(observer);
-        inOrder.verify(observer, times(1)).onNext(1);
-        inOrder.verify(observer, times(1)).onComplete();
+        InOrder inOrder = inOrder(subscriber);
+        inOrder.verify(subscriber, times(1)).onNext(1);
+        inOrder.verify(subscriber, times(1)).onComplete();
         inOrder.verifyNoMoreInteractions();
     }
 
@@ -107,12 +107,12 @@ public class FlowableFirstTest {
     public void testFirstWithOneElementFlowable() {
         Flowable<Integer> observable = Flowable.just(1).firstElement().toFlowable();
 
-        Subscriber<Integer> observer = TestHelper.mockSubscriber();
-        observable.subscribe(observer);
+        Subscriber<Integer> subscriber = TestHelper.mockSubscriber();
+        observable.subscribe(subscriber);
 
-        InOrder inOrder = inOrder(observer);
-        inOrder.verify(observer, times(1)).onNext(1);
-        inOrder.verify(observer, times(1)).onComplete();
+        InOrder inOrder = inOrder(subscriber);
+        inOrder.verify(subscriber, times(1)).onNext(1);
+        inOrder.verify(subscriber, times(1)).onComplete();
         inOrder.verifyNoMoreInteractions();
     }
 
@@ -120,12 +120,12 @@ public class FlowableFirstTest {
     public void testFirstWithEmptyFlowable() {
         Flowable<Integer> observable = Flowable.<Integer> empty().firstElement().toFlowable();
 
-        Subscriber<Integer> observer = TestHelper.mockSubscriber();
-        observable.subscribe(observer);
+        Subscriber<Integer> subscriber = TestHelper.mockSubscriber();
+        observable.subscribe(subscriber);
 
-        InOrder inOrder = inOrder(observer);
-        inOrder.verify(observer).onComplete();
-        inOrder.verify(observer, never()).onError(any(Throwable.class));
+        InOrder inOrder = inOrder(subscriber);
+        inOrder.verify(subscriber).onComplete();
+        inOrder.verify(subscriber, never()).onError(any(Throwable.class));
         inOrder.verifyNoMoreInteractions();
     }
 
@@ -140,12 +140,12 @@ public class FlowableFirstTest {
                 })
                 .firstElement().toFlowable();
 
-        Subscriber<Integer> observer = TestHelper.mockSubscriber();
-        observable.subscribe(observer);
+        Subscriber<Integer> subscriber = TestHelper.mockSubscriber();
+        observable.subscribe(subscriber);
 
-        InOrder inOrder = inOrder(observer);
-        inOrder.verify(observer, times(1)).onNext(2);
-        inOrder.verify(observer, times(1)).onComplete();
+        InOrder inOrder = inOrder(subscriber);
+        inOrder.verify(subscriber, times(1)).onNext(2);
+        inOrder.verify(subscriber, times(1)).onComplete();
         inOrder.verifyNoMoreInteractions();
     }
 
@@ -160,12 +160,12 @@ public class FlowableFirstTest {
                 })
                 .firstElement().toFlowable();
 
-        Subscriber<Integer> observer = TestHelper.mockSubscriber();
-        observable.subscribe(observer);
+        Subscriber<Integer> subscriber = TestHelper.mockSubscriber();
+        observable.subscribe(subscriber);
 
-        InOrder inOrder = inOrder(observer);
-        inOrder.verify(observer, times(1)).onNext(2);
-        inOrder.verify(observer, times(1)).onComplete();
+        InOrder inOrder = inOrder(subscriber);
+        inOrder.verify(subscriber, times(1)).onNext(2);
+        inOrder.verify(subscriber, times(1)).onComplete();
         inOrder.verifyNoMoreInteractions();
     }
 
@@ -180,12 +180,12 @@ public class FlowableFirstTest {
                 })
                 .firstElement().toFlowable();
 
-        Subscriber<Integer> observer = TestHelper.mockSubscriber();
-        observable.subscribe(observer);
+        Subscriber<Integer> subscriber = TestHelper.mockSubscriber();
+        observable.subscribe(subscriber);
 
-        InOrder inOrder = inOrder(observer);
-        inOrder.verify(observer).onComplete();
-        inOrder.verify(observer, never()).onError(any(Throwable.class));
+        InOrder inOrder = inOrder(subscriber);
+        inOrder.verify(subscriber).onComplete();
+        inOrder.verify(subscriber, never()).onError(any(Throwable.class));
         inOrder.verifyNoMoreInteractions();
     }
 
@@ -194,12 +194,12 @@ public class FlowableFirstTest {
         Flowable<Integer> observable = Flowable.just(1, 2, 3)
                 .first(4).toFlowable();
 
-        Subscriber<Integer> observer = TestHelper.mockSubscriber();
-        observable.subscribe(observer);
+        Subscriber<Integer> subscriber = TestHelper.mockSubscriber();
+        observable.subscribe(subscriber);
 
-        InOrder inOrder = inOrder(observer);
-        inOrder.verify(observer, times(1)).onNext(1);
-        inOrder.verify(observer, times(1)).onComplete();
+        InOrder inOrder = inOrder(subscriber);
+        inOrder.verify(subscriber, times(1)).onNext(1);
+        inOrder.verify(subscriber, times(1)).onComplete();
         inOrder.verifyNoMoreInteractions();
     }
 
@@ -207,12 +207,12 @@ public class FlowableFirstTest {
     public void testFirstOrDefaultWithOneElementFlowable() {
         Flowable<Integer> observable = Flowable.just(1).first(2).toFlowable();
 
-        Subscriber<Integer> observer = TestHelper.mockSubscriber();
-        observable.subscribe(observer);
+        Subscriber<Integer> subscriber = TestHelper.mockSubscriber();
+        observable.subscribe(subscriber);
 
-        InOrder inOrder = inOrder(observer);
-        inOrder.verify(observer, times(1)).onNext(1);
-        inOrder.verify(observer, times(1)).onComplete();
+        InOrder inOrder = inOrder(subscriber);
+        inOrder.verify(subscriber, times(1)).onNext(1);
+        inOrder.verify(subscriber, times(1)).onComplete();
         inOrder.verifyNoMoreInteractions();
     }
 
@@ -221,12 +221,12 @@ public class FlowableFirstTest {
         Flowable<Integer> observable = Flowable.<Integer> empty()
                 .first(1).toFlowable();
 
-        Subscriber<Integer> observer = TestHelper.mockSubscriber();
-        observable.subscribe(observer);
+        Subscriber<Integer> subscriber = TestHelper.mockSubscriber();
+        observable.subscribe(subscriber);
 
-        InOrder inOrder = inOrder(observer);
-        inOrder.verify(observer, times(1)).onNext(1);
-        inOrder.verify(observer, times(1)).onComplete();
+        InOrder inOrder = inOrder(subscriber);
+        inOrder.verify(subscriber, times(1)).onNext(1);
+        inOrder.verify(subscriber, times(1)).onComplete();
         inOrder.verifyNoMoreInteractions();
     }
 
@@ -241,12 +241,12 @@ public class FlowableFirstTest {
                 })
                 .first(8).toFlowable();
 
-        Subscriber<Integer> observer = TestHelper.mockSubscriber();
-        observable.subscribe(observer);
+        Subscriber<Integer> subscriber = TestHelper.mockSubscriber();
+        observable.subscribe(subscriber);
 
-        InOrder inOrder = inOrder(observer);
-        inOrder.verify(observer, times(1)).onNext(2);
-        inOrder.verify(observer, times(1)).onComplete();
+        InOrder inOrder = inOrder(subscriber);
+        inOrder.verify(subscriber, times(1)).onNext(2);
+        inOrder.verify(subscriber, times(1)).onComplete();
         inOrder.verifyNoMoreInteractions();
     }
 
@@ -261,12 +261,12 @@ public class FlowableFirstTest {
                 })
                 .first(4).toFlowable();
 
-        Subscriber<Integer> observer = TestHelper.mockSubscriber();
-        observable.subscribe(observer);
+        Subscriber<Integer> subscriber = TestHelper.mockSubscriber();
+        observable.subscribe(subscriber);
 
-        InOrder inOrder = inOrder(observer);
-        inOrder.verify(observer, times(1)).onNext(2);
-        inOrder.verify(observer, times(1)).onComplete();
+        InOrder inOrder = inOrder(subscriber);
+        inOrder.verify(subscriber, times(1)).onNext(2);
+        inOrder.verify(subscriber, times(1)).onComplete();
         inOrder.verifyNoMoreInteractions();
     }
 
@@ -281,12 +281,12 @@ public class FlowableFirstTest {
                 })
                 .first(2).toFlowable();
 
-        Subscriber<Integer> observer = TestHelper.mockSubscriber();
-        observable.subscribe(observer);
+        Subscriber<Integer> subscriber = TestHelper.mockSubscriber();
+        observable.subscribe(subscriber);
 
-        InOrder inOrder = inOrder(observer);
-        inOrder.verify(observer, times(1)).onNext(2);
-        inOrder.verify(observer, times(1)).onComplete();
+        InOrder inOrder = inOrder(subscriber);
+        inOrder.verify(subscriber, times(1)).onNext(2);
+        inOrder.verify(subscriber, times(1)).onComplete();
         inOrder.verifyNoMoreInteractions();
     }
 

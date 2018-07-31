@@ -155,12 +155,14 @@ public class FlowableMapTest {
 
     @Test
     public void testMapWithError() {
+        final List<Throwable> errors = new ArrayList<Throwable>();
+
         Flowable<String> w = Flowable.just("one", "fail", "two", "three", "fail");
         Flowable<String> m = w.map(new Function<String, String>() {
             @Override
             public String apply(String s) {
                 if ("fail".equals(s)) {
-                    throw new RuntimeException("Forced Failure");
+                    throw new TestException("Forced Failure");
                 }
                 return s;
             }
@@ -168,7 +170,7 @@ public class FlowableMapTest {
 
             @Override
             public void accept(Throwable t1) {
-                t1.printStackTrace();
+                errors.add(t1);
             }
 
         });
@@ -178,7 +180,9 @@ public class FlowableMapTest {
         verify(stringSubscriber, never()).onNext("two");
         verify(stringSubscriber, never()).onNext("three");
         verify(stringSubscriber, never()).onComplete();
-        verify(stringSubscriber, times(1)).onError(any(Throwable.class));
+        verify(stringSubscriber, times(1)).onError(any(TestException.class));
+
+        TestHelper.assertError(errors, 0, TestException.class, "Forced Failure");
     }
 
     @Test(expected = IllegalArgumentException.class)

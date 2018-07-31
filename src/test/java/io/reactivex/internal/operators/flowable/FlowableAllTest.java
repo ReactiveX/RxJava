@@ -203,7 +203,7 @@ public class FlowableAllTest {
     public void testAllFlowable() {
         Flowable<String> obs = Flowable.just("one", "two", "six");
 
-        Subscriber<Boolean> observer = TestHelper.mockSubscriber();
+        Subscriber<Boolean> subscriber = TestHelper.mockSubscriber();
 
         obs.all(new Predicate<String>() {
             @Override
@@ -212,19 +212,19 @@ public class FlowableAllTest {
             }
         })
         .toFlowable()
-        .subscribe(observer);
+        .subscribe(subscriber);
 
-        verify(observer).onSubscribe((Subscription)any());
-        verify(observer).onNext(true);
-        verify(observer).onComplete();
-        verifyNoMoreInteractions(observer);
+        verify(subscriber).onSubscribe((Subscription)any());
+        verify(subscriber).onNext(true);
+        verify(subscriber).onComplete();
+        verifyNoMoreInteractions(subscriber);
     }
 
     @Test
     public void testNotAllFlowable() {
         Flowable<String> obs = Flowable.just("one", "two", "three", "six");
 
-        Subscriber <Boolean> observer = TestHelper.mockSubscriber();
+        Subscriber <Boolean> subscriber = TestHelper.mockSubscriber();
 
         obs.all(new Predicate<String>() {
             @Override
@@ -233,19 +233,19 @@ public class FlowableAllTest {
             }
         })
         .toFlowable()
-        .subscribe(observer);
+        .subscribe(subscriber);
 
-        verify(observer).onSubscribe((Subscription)any());
-        verify(observer).onNext(false);
-        verify(observer).onComplete();
-        verifyNoMoreInteractions(observer);
+        verify(subscriber).onSubscribe((Subscription)any());
+        verify(subscriber).onNext(false);
+        verify(subscriber).onComplete();
+        verifyNoMoreInteractions(subscriber);
     }
 
     @Test
     public void testEmptyFlowable() {
         Flowable<String> obs = Flowable.empty();
 
-        Subscriber <Boolean> observer = TestHelper.mockSubscriber();
+        Subscriber <Boolean> subscriber = TestHelper.mockSubscriber();
 
         obs.all(new Predicate<String>() {
             @Override
@@ -254,12 +254,12 @@ public class FlowableAllTest {
             }
         })
         .toFlowable()
-        .subscribe(observer);
+        .subscribe(subscriber);
 
-        verify(observer).onSubscribe((Subscription)any());
-        verify(observer).onNext(true);
-        verify(observer).onComplete();
-        verifyNoMoreInteractions(observer);
+        verify(subscriber).onSubscribe((Subscription)any());
+        verify(subscriber).onNext(true);
+        verify(subscriber).onComplete();
+        verifyNoMoreInteractions(subscriber);
     }
 
     @Test
@@ -267,7 +267,7 @@ public class FlowableAllTest {
         Throwable error = new Throwable();
         Flowable<String> obs = Flowable.error(error);
 
-        Subscriber <Boolean> observer = TestHelper.mockSubscriber();
+        Subscriber <Boolean> subscriber = TestHelper.mockSubscriber();
 
         obs.all(new Predicate<String>() {
             @Override
@@ -276,11 +276,11 @@ public class FlowableAllTest {
             }
         })
         .toFlowable()
-        .subscribe(observer);
+        .subscribe(subscriber);
 
-        verify(observer).onSubscribe((Subscription)any());
-        verify(observer).onError(error);
-        verifyNoMoreInteractions(observer);
+        verify(subscriber).onSubscribe((Subscription)any());
+        verify(subscriber).onError(error);
+        verifyNoMoreInteractions(subscriber);
     }
 
     @Test

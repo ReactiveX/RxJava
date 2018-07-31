@@ -126,8 +126,7 @@ public class ObservableOnErrorResumeNextViaFunctionTest {
         };
         Observable<String> o = Observable.unsafeCreate(w).onErrorResumeNext(resume);
 
-        @SuppressWarnings("unchecked")
-        DefaultObserver<String> observer = mock(DefaultObserver.class);
+        Observer<String> observer = TestHelper.mockObserver();
         o.subscribe(observer);
 
         try {
@@ -259,8 +258,7 @@ public class ObservableOnErrorResumeNextViaFunctionTest {
 
         });
 
-        @SuppressWarnings("unchecked")
-        DefaultObserver<String> observer = mock(DefaultObserver.class);
+        Observer<String> observer = TestHelper.mockObserver();
 
         TestObserver<String> to = new TestObserver<String>(observer);
         o.subscribe(to);

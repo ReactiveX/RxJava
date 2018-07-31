@@ -178,16 +178,16 @@ public class FlowableCombineLatestTest {
         BiFunction<String, Integer, String> combineLatestFunction = getConcatStringIntegerCombineLatestFunction();
 
         /* define an Observer to receive aggregated events */
-        Subscriber<String> observer = TestHelper.mockSubscriber();
+        Subscriber<String> subscriber = TestHelper.mockSubscriber();
 
         Flowable<String> w = Flowable.combineLatest(Flowable.just("one", "two"), Flowable.just(2, 3, 4), combineLatestFunction);
-        w.subscribe(observer);
+        w.subscribe(subscriber);
 
-        verify(observer, never()).onError(any(Throwable.class));
-        verify(observer, times(1)).onComplete();
-        verify(observer, times(1)).onNext("two2");
-        verify(observer, times(1)).onNext("two3");
-        verify(observer, times(1)).onNext("two4");
+        verify(subscriber, never()).onError(any(Throwable.class));
+        verify(subscriber, times(1)).onComplete();
+        verify(subscriber, times(1)).onNext("two2");
+        verify(subscriber, times(1)).onNext("two3");
+        verify(subscriber, times(1)).onNext("two4");
     }
 
     @Test
@@ -195,14 +195,14 @@ public class FlowableCombineLatestTest {
         Function3<String, Integer, int[], String> combineLatestFunction = getConcatStringIntegerIntArrayCombineLatestFunction();
 
         /* define an Observer to receive aggregated events */
-        Subscriber<String> observer = TestHelper.mockSubscriber();
+        Subscriber<String> subscriber = TestHelper.mockSubscriber();
 
         Flowable<String> w = Flowable.combineLatest(Flowable.just("one", "two"), Flowable.just(2), Flowable.just(new int[] { 4, 5, 6 }), combineLatestFunction);
-        w.subscribe(observer);
+        w.subscribe(subscriber);
 
-        verify(observer, never()).onError(any(Throwable.class));
-        verify(observer, times(1)).onComplete();
-        verify(observer, times(1)).onNext("two2[4, 5, 6]");
+        verify(subscriber, never()).onError(any(Throwable.class));
+        verify(subscriber, times(1)).onComplete();
+        verify(subscriber, times(1)).onNext("two2[4, 5, 6]");
     }
 
     @Test
@@ -210,15 +210,15 @@ public class FlowableCombineLatestTest {
         Function3<String, Integer, int[], String> combineLatestFunction = getConcatStringIntegerIntArrayCombineLatestFunction();
 
         /* define an Observer to receive aggregated events */
-        Subscriber<String> observer = TestHelper.mockSubscriber();
+        Subscriber<String> subscriber = TestHelper.mockSubscriber();
 
         Flowable<String> w = Flowable.combineLatest(Flowable.just("one"), Flowable.just(2), Flowable.just(new int[] { 4, 5, 6 }, new int[] { 7, 8 }), combineLatestFunction);
-        w.subscribe(observer);
+        w.subscribe(subscriber);
 
-        verify(observer, never()).onError(any(Throwable.class));
-        verify(observer, times(1)).onComplete();
-        verify(observer, times(1)).onNext("one2[4, 5, 6]");
-        verify(observer, times(1)).onNext("one2[7, 8]");
+        verify(subscriber, never()).onError(any(Throwable.class));
+        verify(subscriber, times(1)).onComplete();
+        verify(subscriber, times(1)).onNext("one2[4, 5, 6]");
+        verify(subscriber, times(1)).onNext("one2[7, 8]");
     }
 
     private Function3<String, String, String, String> getConcat3StringsCombineLatestFunction() {
@@ -285,33 +285,33 @@ public class FlowableCombineLatestTest {
 
         Flowable<Integer> source = Flowable.combineLatest(a, b, or);
 
-        Subscriber<Object> observer = TestHelper.mockSubscriber();
-        InOrder inOrder = inOrder(observer);
+        Subscriber<Object> subscriber = TestHelper.mockSubscriber();
+        InOrder inOrder = inOrder(subscriber);
 
-        source.subscribe(observer);
+        source.subscribe(subscriber);
 
         a.onNext(1);
 
-        inOrder.verify(observer, never()).onNext(any());
+        inOrder.verify(subscriber, never()).onNext(any());
 
         a.onNext(2);
 
-        inOrder.verify(observer, never()).onNext(any());
+        inOrder.verify(subscriber, never()).onNext(any());
 
         b.onNext(0x10);
 
-        inOrder.verify(observer, times(1)).onNext(0x12);
+        inOrder.verify(subscriber, times(1)).onNext(0x12);
 
         b.onNext(0x20);
-        inOrder.verify(observer, times(1)).onNext(0x22);
+        inOrder.verify(subscriber, times(1)).onNext(0x22);
 
         b.onComplete();
 
-        inOrder.verify(observer, never()).onComplete();
+        inOrder.verify(subscriber, never()).onComplete();
 
         a.onComplete();
 
-        inOrder.verify(observer, times(1)).onComplete();
+        inOrder.verify(subscriber, times(1)).onComplete();
 
         a.onNext(3);
         b.onNext(0x30);
@@ -319,7 +319,7 @@ public class FlowableCombineLatestTest {
         b.onComplete();
 
         inOrder.verifyNoMoreInteractions();
-        verify(observer, never()).onError(any(Throwable.class));
+        verify(subscriber, never()).onError(any(Throwable.class));
     }
 
     @Test
@@ -329,44 +329,44 @@ public class FlowableCombineLatestTest {
 
         Flowable<Integer> source = Flowable.combineLatest(a, b, or);
 
-        Subscriber<Object> observer1 = TestHelper.mockSubscriber();
+        Subscriber<Object> subscriber1 = TestHelper.mockSubscriber();
 
-        Subscriber<Object> observer2 = TestHelper.mockSubscriber();
+        Subscriber<Object> subscriber2 = TestHelper.mockSubscriber();
 
-        InOrder inOrder1 = inOrder(observer1);
-        InOrder inOrder2 = inOrder(observer2);
+        InOrder inOrder1 = inOrder(subscriber1);
+        InOrder inOrder2 = inOrder(subscriber2);
 
-        source.subscribe(observer1);
-        source.subscribe(observer2);
+        source.subscribe(subscriber1);
+        source.subscribe(subscriber2);
 
         a.onNext(1);
 
-        inOrder1.verify(observer1, never()).onNext(any());
-        inOrder2.verify(observer2, never()).onNext(any());
+        inOrder1.verify(subscriber1, never()).onNext(any());
+        inOrder2.verify(subscriber2, never()).onNext(any());
 
         a.onNext(2);
 
-        inOrder1.verify(observer1, never()).onNext(any());
-        inOrder2.verify(observer2, never()).onNext(any());
+        inOrder1.verify(subscriber1, never()).onNext(any());
+        inOrder2.verify(subscriber2, never()).onNext(any());
 
         b.onNext(0x10);
 
-        inOrder1.verify(observer1, times(1)).onNext(0x12);
-        inOrder2.verify(observer2, times(1)).onNext(0x12);
+        inOrder1.verify(subscriber1, times(1)).onNext(0x12);
+        inOrder2.verify(subscriber2, times(1)).onNext(0x12);
 
         b.onNext(0x20);
-        inOrder1.verify(observer1, times(1)).onNext(0x22);
-        inOrder2.verify(observer2, times(1)).onNext(0x22);
+        inOrder1.verify(subscriber1, times(1)).onNext(0x22);
+        inOrder2.verify(subscriber2, times(1)).onNext(0x22);
 
         b.onComplete();
 
-        inOrder1.verify(observer1, never()).onComplete();
-        inOrder2.verify(observer2, never()).onComplete();
+        inOrder1.verify(subscriber1, never()).onComplete();
+        inOrder2.verify(subscriber2, never()).onComplete();
 
         a.onComplete();
 
-        inOrder1.verify(observer1, times(1)).onComplete();
-        inOrder2.verify(observer2, times(1)).onComplete();
+        inOrder1.verify(subscriber1, times(1)).onComplete();
+        inOrder2.verify(subscriber2, times(1)).onComplete();
 
         a.onNext(3);
         b.onNext(0x30);
@@ -375,8 +375,8 @@ public class FlowableCombineLatestTest {
 
         inOrder1.verifyNoMoreInteractions();
         inOrder2.verifyNoMoreInteractions();
-        verify(observer1, never()).onError(any(Throwable.class));
-        verify(observer2, never()).onError(any(Throwable.class));
+        verify(subscriber1, never()).onError(any(Throwable.class));
+        verify(subscriber2, never()).onError(any(Throwable.class));
     }
 
     @Test
@@ -386,19 +386,19 @@ public class FlowableCombineLatestTest {
 
         Flowable<Integer> source = Flowable.combineLatest(a, b, or);
 
-        Subscriber<Object> observer = TestHelper.mockSubscriber();
-        InOrder inOrder = inOrder(observer);
+        Subscriber<Object> subscriber = TestHelper.mockSubscriber();
+        InOrder inOrder = inOrder(subscriber);
 
-        source.subscribe(observer);
+        source.subscribe(subscriber);
 
         b.onNext(0x10);
         b.onNext(0x20);
 
         a.onComplete();
 
-        inOrder.verify(observer, times(1)).onComplete();
-        verify(observer, never()).onNext(any());
-        verify(observer, never()).onError(any(Throwable.class));
+        inOrder.verify(subscriber, times(1)).onComplete();
+        verify(subscriber, never()).onNext(any());
+        verify(subscriber, never()).onError(any(Throwable.class));
     }
 
     @Test
@@ -408,10 +408,10 @@ public class FlowableCombineLatestTest {
 
         Flowable<Integer> source = Flowable.combineLatest(a, b, or);
 
-        Subscriber<Object> observer = TestHelper.mockSubscriber();
-        InOrder inOrder = inOrder(observer);
+        Subscriber<Object> subscriber = TestHelper.mockSubscriber();
+        InOrder inOrder = inOrder(subscriber);
 
-        source.subscribe(observer);
+        source.subscribe(subscriber);
 
         a.onNext(0x1);
         a.onNext(0x2);
@@ -419,9 +419,9 @@ public class FlowableCombineLatestTest {
         b.onComplete();
         a.onComplete();
 
-        inOrder.verify(observer, times(1)).onComplete();
-        verify(observer, never()).onNext(any());
-        verify(observer, never()).onError(any(Throwable.class));
+        inOrder.verify(subscriber, times(1)).onComplete();
+        verify(subscriber, never()).onNext(any());
+        verify(subscriber, never()).onError(any(Throwable.class));
     }
 
     public void test0Sources() {

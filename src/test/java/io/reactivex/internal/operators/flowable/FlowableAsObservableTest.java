@@ -14,15 +14,16 @@
 package io.reactivex.internal.operators.flowable;
 
 import static org.junit.Assert.assertFalse;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import org.junit.Test;
+import org.mockito.Mockito;
 import org.reactivestreams.Subscriber;
 
 import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.processors.PublishProcessor;
-import io.reactivex.subscribers.DefaultSubscriber;
 
 public class FlowableAsObservableTest {
     @Test
@@ -52,14 +53,13 @@ public class FlowableAsObservableTest {
 
         assertFalse(dst instanceof PublishProcessor);
 
-        @SuppressWarnings("unchecked")
-        DefaultSubscriber<Object> o = mock(DefaultSubscriber.class);
+        Subscriber<Integer> o = TestHelper.mockSubscriber();
 
         dst.subscribe(o);
 
         src.onError(new TestException());
 
-        verify(o, never()).onNext(any());
+        verify(o, never()).onNext(Mockito.<Integer>any());
         verify(o, never()).onComplete();
         verify(o).onError(any(TestException.class));
     }

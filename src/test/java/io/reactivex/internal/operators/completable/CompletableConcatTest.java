@@ -35,21 +35,28 @@ public class CompletableConcatTest {
 
     @Test
     public void overflowReported() {
-        Completable.concat(
-            Flowable.fromPublisher(new Publisher<Completable>() {
-                @Override
-                public void subscribe(Subscriber<? super Completable> s) {
-                    s.onSubscribe(new BooleanSubscription());
-                    s.onNext(Completable.never());
-                    s.onNext(Completable.never());
-                    s.onNext(Completable.never());
-                    s.onNext(Completable.never());
-                    s.onComplete();
-                }
-            }), 1
-        )
-        .test()
-        .assertFailure(MissingBackpressureException.class);
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            Completable.concat(
+                Flowable.fromPublisher(new Publisher<Completable>() {
+                    @Override
+                    public void subscribe(Subscriber<? super Completable> s) {
+                        s.onSubscribe(new BooleanSubscription());
+                        s.onNext(Completable.never());
+                        s.onNext(Completable.never());
+                        s.onNext(Completable.never());
+                        s.onNext(Completable.never());
+                        s.onComplete();
+                    }
+                }), 1
+            )
+            .test()
+            .assertFailure(MissingBackpressureException.class);
+
+            TestHelper.assertError(errors, 0, MissingBackpressureException.class);
+        } finally {
+            RxJavaPlugins.reset();
+        }
     }
 
     @Test

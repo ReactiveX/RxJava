@@ -36,11 +36,12 @@ public class FlowableToSortedListTest {
         Flowable<Integer> w = Flowable.just(1, 3, 2, 5, 4);
         Flowable<List<Integer>> observable = w.toSortedList().toFlowable();
 
-        Subscriber<List<Integer>> observer = TestHelper.mockSubscriber();
-        observable.subscribe(observer);
-        verify(observer, times(1)).onNext(Arrays.asList(1, 2, 3, 4, 5));
-        verify(observer, Mockito.never()).onError(any(Throwable.class));
-        verify(observer, times(1)).onComplete();
+        Subscriber<List<Integer>> subscriber = TestHelper.mockSubscriber();
+        observable.subscribe(subscriber);
+
+        verify(subscriber, times(1)).onNext(Arrays.asList(1, 2, 3, 4, 5));
+        verify(subscriber, Mockito.never()).onError(any(Throwable.class));
+        verify(subscriber, times(1)).onComplete();
     }
 
     @Test
@@ -55,11 +56,12 @@ public class FlowableToSortedListTest {
 
         }).toFlowable();
 
-        Subscriber<List<Integer>> observer = TestHelper.mockSubscriber();
-        observable.subscribe(observer);
-        verify(observer, times(1)).onNext(Arrays.asList(5, 4, 3, 2, 1));
-        verify(observer, Mockito.never()).onError(any(Throwable.class));
-        verify(observer, times(1)).onComplete();
+        Subscriber<List<Integer>> subscriber = TestHelper.mockSubscriber();
+        observable.subscribe(subscriber);
+
+        verify(subscriber, times(1)).onNext(Arrays.asList(5, 4, 3, 2, 1));
+        verify(subscriber, Mockito.never()).onError(any(Throwable.class));
+        verify(subscriber, times(1)).onComplete();
     }
 
     @Test

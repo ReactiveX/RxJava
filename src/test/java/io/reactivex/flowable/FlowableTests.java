@@ -27,10 +27,11 @@ import org.reactivestreams.*;
 
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.exceptions.TestException;
+import io.reactivex.exceptions.*;
 import io.reactivex.flowables.ConnectableFlowable;
 import io.reactivex.functions.*;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
+import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.processors.*;
 import io.reactivex.schedulers.*;
 import io.reactivex.subscribers.*;
@@ -99,15 +100,15 @@ public class FlowableTests {
 
         Flowable<String> observable = Flowable.just("one", "two", "three");
 
-        Subscriber<String> observer = TestHelper.mockSubscriber();
+        Subscriber<String> subscriber = TestHelper.mockSubscriber();
 
-        observable.subscribe(observer);
+        observable.subscribe(subscriber);
 
-        verify(observer, times(1)).onNext("one");
-        verify(observer, times(1)).onNext("two");
-        verify(observer, times(1)).onNext("three");
-        verify(observer, never()).onError(any(Throwable.class));
-        verify(observer, times(1)).onComplete();
+        verify(subscriber, times(1)).onNext("one");
+        verify(subscriber, times(1)).onNext("two");
+        verify(subscriber, times(1)).onNext("three");
+        verify(subscriber, never()).onError(any(Throwable.class));
+        verify(subscriber, times(1)).onComplete();
     }
 
     @Test
@@ -323,7 +324,7 @@ public class FlowableTests {
     @Ignore("Throwing is not allowed from the unsafeCreate?!")
     @Test // FIXME throwing is not allowed from the create?!
     public void testOnSubscribeFails() {
-        Subscriber<String> observer = TestHelper.mockSubscriber();
+        Subscriber<String> subscriber = TestHelper.mockSubscriber();
 
         final RuntimeException re = new RuntimeException("bad impl");
         Flowable<String> o = Flowable.unsafeCreate(new Publisher<String>() {
@@ -331,10 +332,11 @@ public class FlowableTests {
             public void subscribe(Subscriber<? super String> s) { throw re; }
         });
 
-        o.subscribe(observer);
-        verify(observer, times(0)).onNext(anyString());
-        verify(observer, times(0)).onComplete();
-        verify(observer, times(1)).onError(re);
+        o.subscribe(subscriber);
+
+        verify(subscriber, times(0)).onNext(anyString());
+        verify(subscriber, times(0)).onComplete();
+        verify(subscriber, times(1)).onError(re);
     }
 
     @Test
@@ -342,13 +344,13 @@ public class FlowableTests {
         Flowable<Integer> obs = Flowable.just(1);
         Flowable<Integer> chained = obs.materialize().dematerialize();
 
-        Subscriber<Integer> observer = TestHelper.mockSubscriber();
+        Subscriber<Integer> subscriber = TestHelper.mockSubscriber();
 
-        chained.subscribe(observer);
+        chained.subscribe(subscriber);
 
-        verify(observer, times(1)).onNext(1);
-        verify(observer, times(1)).onComplete();
-        verify(observer, times(0)).onError(any(Throwable.class));
+        verify(subscriber, times(1)).onNext(1);
+        verify(subscriber, times(1)).onComplete();
+        verify(subscriber, times(0)).onError(any(Throwable.class));
     }
 
     /**
@@ -770,17 +772,16 @@ public class FlowableTests {
     public void testOfType() {
         Flowable<String> observable = Flowable.just(1, "abc", false, 2L).ofType(String.class);
 
-        Subscriber<Object> observer = TestHelper.mockSubscriber();
+        Subscriber<Object> subscriber = TestHelper.mockSubscriber();
 
-        observable.subscribe(observer);
+        observable.subscribe(subscriber);
 
-        verify(observer, never()).onNext(1);
-        verify(observer, times(1)).onNext("abc");
-        verify(observer, never()).onNext(false);
-        verify(observer, never()).onNext(2L);
-        verify(observer, never()).onError(
-                any(Throwable.class));
-        verify(observer, times(1)).onComplete();
+        verify(subscriber, never()).onNext(1);
+        verify(subscriber, times(1)).onNext("abc");
+        verify(subscriber, never()).onNext(false);
+        verify(subscriber, never()).onNext(2L);
+        verify(subscriber, never()).onError(any(Throwable.class));
+        verify(subscriber, times(1)).onComplete();
     }
 
     @Test
@@ -793,46 +794,43 @@ public class FlowableTests {
         @SuppressWarnings("rawtypes")
         Flowable<List> observable = Flowable.<Object> just(l1, l2, "123").ofType(List.class);
 
-        Subscriber<Object> observer = TestHelper.mockSubscriber();
+        Subscriber<Object> subscriber = TestHelper.mockSubscriber();
 
-        observable.subscribe(observer);
+        observable.subscribe(subscriber);
 
-        verify(observer, times(1)).onNext(l1);
-        verify(observer, times(1)).onNext(l2);
-        verify(observer, never()).onNext("123");
-        verify(observer, never()).onError(
-                any(Throwable.class));
-        verify(observer, times(1)).onComplete();
+        verify(subscriber, times(1)).onNext(l1);
+        verify(subscriber, times(1)).onNext(l2);
+        verify(subscriber, never()).onNext("123");
+        verify(subscriber, never()).onError(any(Throwable.class));
+        verify(subscriber, times(1)).onComplete();
     }
 
     @Test
     public void testContainsFlowable() {
         Flowable<Boolean> observable = Flowable.just("a", "b", "c").contains("b").toFlowable();
 
-        FlowableSubscriber<Boolean> observer = TestHelper.mockSubscriber();
+        FlowableSubscriber<Boolean> subscriber = TestHelper.mockSubscriber();
 
-        observable.subscribe(observer);
+        observable.subscribe(subscriber);
 
-        verify(observer, times(1)).onNext(true);
-        verify(observer, never()).onNext(false);
-        verify(observer, never()).onError(
-                any(Throwable.class));
-        verify(observer, times(1)).onComplete();
+        verify(subscriber, times(1)).onNext(true);
+        verify(subscriber, never()).onNext(false);
+        verify(subscriber, never()).onError(any(Throwable.class));
+        verify(subscriber, times(1)).onComplete();
     }
 
     @Test
     public void testContainsWithInexistenceFlowable() {
         Flowable<Boolean> observable = Flowable.just("a", "b").contains("c").toFlowable();
 
-        Subscriber<Object> observer = TestHelper.mockSubscriber();
+        Subscriber<Object> subscriber = TestHelper.mockSubscriber();
 
-        observable.subscribe(observer);
+        observable.subscribe(subscriber);
 
-        verify(observer, times(1)).onNext(false);
-        verify(observer, never()).onNext(true);
-        verify(observer, never()).onError(
-                any(Throwable.class));
-        verify(observer, times(1)).onComplete();
+        verify(subscriber, times(1)).onNext(false);
+        verify(subscriber, never()).onNext(true);
+        verify(subscriber, never()).onError(any(Throwable.class));
+        verify(subscriber, times(1)).onComplete();
     }
 
     @Test
@@ -840,30 +838,28 @@ public class FlowableTests {
     public void testContainsWithNullFlowable() {
         Flowable<Boolean> observable = Flowable.just("a", "b", null).contains(null).toFlowable();
 
-        Subscriber<Object> observer = TestHelper.mockSubscriber();
+        Subscriber<Object> subscriber = TestHelper.mockSubscriber();
 
-        observable.subscribe(observer);
+        observable.subscribe(subscriber);
 
-        verify(observer, times(1)).onNext(true);
-        verify(observer, never()).onNext(false);
-        verify(observer, never()).onError(
-                any(Throwable.class));
-        verify(observer, times(1)).onComplete();
+        verify(subscriber, times(1)).onNext(true);
+        verify(subscriber, never()).onNext(false);
+        verify(subscriber, never()).onError(any(Throwable.class));
+        verify(subscriber, times(1)).onComplete();
     }
 
     @Test
     public void testContainsWithEmptyObservableFlowable() {
         Flowable<Boolean> observable = Flowable.<String> empty().contains("a").toFlowable();
 
-        FlowableSubscriber<Object> observer = TestHelper.mockSubscriber();
+        FlowableSubscriber<Object> subscriber = TestHelper.mockSubscriber();
 
-        observable.subscribe(observer);
+        observable.subscribe(subscriber);
 
-        verify(observer, times(1)).onNext(false);
-        verify(observer, never()).onNext(true);
-        verify(observer, never()).onError(
-                any(Throwable.class));
-        verify(observer, times(1)).onComplete();
+        verify(subscriber, times(1)).onNext(false);
+        verify(subscriber, never()).onNext(true);
+        verify(subscriber, never()).onError(any(Throwable.class));
+        verify(subscriber, times(1)).onComplete();
     }
 
 
@@ -928,13 +924,13 @@ public class FlowableTests {
     public void testIgnoreElementsFlowable() {
         Flowable<Integer> observable = Flowable.just(1, 2, 3).ignoreElements().toFlowable();
 
-        Subscriber<Object> observer = TestHelper.mockSubscriber();
+        Subscriber<Object> subscriber = TestHelper.mockSubscriber();
 
-        observable.subscribe(observer);
+        observable.subscribe(subscriber);
 
-        verify(observer, never()).onNext(any(Integer.class));
-        verify(observer, never()).onError(any(Throwable.class));
-        verify(observer, times(1)).onComplete();
+        verify(subscriber, never()).onNext(any(Integer.class));
+        verify(subscriber, never()).onError(any(Throwable.class));
+        verify(subscriber, times(1)).onComplete();
     }
 
     @Test
@@ -954,16 +950,16 @@ public class FlowableTests {
         TestScheduler scheduler = new TestScheduler();
         Flowable<Integer> observable = Flowable.fromArray(1, 2).subscribeOn(scheduler);
 
-        Subscriber<Integer> observer = TestHelper.mockSubscriber();
+        Subscriber<Integer> subscriber = TestHelper.mockSubscriber();
 
-        observable.subscribe(observer);
+        observable.subscribe(subscriber);
 
         scheduler.advanceTimeBy(1, TimeUnit.MILLISECONDS);
 
-        InOrder inOrder = inOrder(observer);
-        inOrder.verify(observer, times(1)).onNext(1);
-        inOrder.verify(observer, times(1)).onNext(2);
-        inOrder.verify(observer, times(1)).onComplete();
+        InOrder inOrder = inOrder(subscriber);
+        inOrder.verify(subscriber, times(1)).onNext(1);
+        inOrder.verify(subscriber, times(1)).onNext(2);
+        inOrder.verify(subscriber, times(1)).onComplete();
         inOrder.verifyNoMoreInteractions();
     }
 
@@ -972,18 +968,18 @@ public class FlowableTests {
         TestScheduler scheduler = new TestScheduler();
         Flowable<Integer> observable = Flowable.just(3, 4).startWith(Arrays.asList(1, 2)).subscribeOn(scheduler);
 
-        Subscriber<Integer> observer = TestHelper.mockSubscriber();
+        Subscriber<Integer> subscriber = TestHelper.mockSubscriber();
 
-        observable.subscribe(observer);
+        observable.subscribe(subscriber);
 
         scheduler.advanceTimeBy(1, TimeUnit.MILLISECONDS);
 
-        InOrder inOrder = inOrder(observer);
-        inOrder.verify(observer, times(1)).onNext(1);
-        inOrder.verify(observer, times(1)).onNext(2);
-        inOrder.verify(observer, times(1)).onNext(3);
-        inOrder.verify(observer, times(1)).onNext(4);
-        inOrder.verify(observer, times(1)).onComplete();
+        InOrder inOrder = inOrder(subscriber);
+        inOrder.verify(subscriber, times(1)).onNext(1);
+        inOrder.verify(subscriber, times(1)).onNext(2);
+        inOrder.verify(subscriber, times(1)).onNext(3);
+        inOrder.verify(subscriber, times(1)).onNext(4);
+        inOrder.verify(subscriber, times(1)).onComplete();
         inOrder.verifyNoMoreInteractions();
     }
 
@@ -992,18 +988,18 @@ public class FlowableTests {
         TestScheduler scheduler = new TestScheduler();
         Flowable<Integer> observable = Flowable.range(3, 4).subscribeOn(scheduler);
 
-        Subscriber<Integer> observer = TestHelper.mockSubscriber();
+        Subscriber<Integer> subscriber = TestHelper.mockSubscriber();
 
-        observable.subscribe(observer);
+        observable.subscribe(subscriber);
 
         scheduler.advanceTimeBy(1, TimeUnit.MILLISECONDS);
 
-        InOrder inOrder = inOrder(observer);
-        inOrder.verify(observer, times(1)).onNext(3);
-        inOrder.verify(observer, times(1)).onNext(4);
-        inOrder.verify(observer, times(1)).onNext(5);
-        inOrder.verify(observer, times(1)).onNext(6);
-        inOrder.verify(observer, times(1)).onComplete();
+        InOrder inOrder = inOrder(subscriber);
+        inOrder.verify(subscriber, times(1)).onNext(3);
+        inOrder.verify(subscriber, times(1)).onNext(4);
+        inOrder.verify(subscriber, times(1)).onNext(5);
+        inOrder.verify(subscriber, times(1)).onNext(6);
+        inOrder.verify(subscriber, times(1)).onComplete();
         inOrder.verifyNoMoreInteractions();
     }
 
@@ -1075,18 +1071,25 @@ public class FlowableTests {
 
     @Test
     public void testErrorThrownIssue1685() {
-        FlowableProcessor<Object> subject = ReplayProcessor.create();
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            FlowableProcessor<Object> subject = ReplayProcessor.create();
 
-        Flowable.error(new RuntimeException("oops"))
-            .materialize()
-            .delay(1, TimeUnit.SECONDS)
-            .dematerialize()
-            .subscribe(subject);
+            Flowable.error(new RuntimeException("oops"))
+                .materialize()
+                .delay(1, TimeUnit.SECONDS)
+                .dematerialize()
+                .subscribe(subject);
 
-        subject.subscribe();
-        subject.materialize().blockingFirst();
+            subject.subscribe();
+            subject.materialize().blockingFirst();
 
-        System.out.println("Done");
+            System.out.println("Done");
+
+            TestHelper.assertError(errors, 0, OnErrorNotImplementedException.class);
+        } finally {
+            RxJavaPlugins.reset();
+        }
     }
 
     @Test

@@ -35,70 +35,91 @@ public class CompletableCreateTest {
 
     @Test
     public void basic() {
-        final Disposable d = Disposables.empty();
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            final Disposable d = Disposables.empty();
 
-        Completable.create(new CompletableOnSubscribe() {
-            @Override
-            public void subscribe(CompletableEmitter e) throws Exception {
-                e.setDisposable(d);
+            Completable.create(new CompletableOnSubscribe() {
+                @Override
+                public void subscribe(CompletableEmitter e) throws Exception {
+                    e.setDisposable(d);
 
-                e.onComplete();
-                e.onError(new TestException());
-                e.onComplete();
-            }
-        })
-        .test()
-        .assertResult();
+                    e.onComplete();
+                    e.onError(new TestException());
+                    e.onComplete();
+                }
+            })
+            .test()
+            .assertResult();
 
-        assertTrue(d.isDisposed());
+            assertTrue(d.isDisposed());
+
+            TestHelper.assertUndeliverable(errors, 0, TestException.class);
+        } finally {
+            RxJavaPlugins.reset();
+        }
     }
 
     @Test
     public void basicWithCancellable() {
-        final Disposable d1 = Disposables.empty();
-        final Disposable d2 = Disposables.empty();
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            final Disposable d1 = Disposables.empty();
+            final Disposable d2 = Disposables.empty();
 
-        Completable.create(new CompletableOnSubscribe() {
-            @Override
-            public void subscribe(CompletableEmitter e) throws Exception {
-                e.setDisposable(d1);
-                e.setCancellable(new Cancellable() {
-                    @Override
-                    public void cancel() throws Exception {
-                        d2.dispose();
-                    }
-                });
+            Completable.create(new CompletableOnSubscribe() {
+                @Override
+                public void subscribe(CompletableEmitter e) throws Exception {
+                    e.setDisposable(d1);
+                    e.setCancellable(new Cancellable() {
+                        @Override
+                        public void cancel() throws Exception {
+                            d2.dispose();
+                        }
+                    });
 
-                e.onComplete();
-                e.onError(new TestException());
-                e.onComplete();
-            }
-        })
-        .test()
-        .assertResult();
+                    e.onComplete();
+                    e.onError(new TestException());
+                    e.onComplete();
+                }
+            })
+            .test()
+            .assertResult();
 
-        assertTrue(d1.isDisposed());
-        assertTrue(d2.isDisposed());
+            assertTrue(d1.isDisposed());
+            assertTrue(d2.isDisposed());
+
+            TestHelper.assertUndeliverable(errors, 0, TestException.class);
+        } finally {
+            RxJavaPlugins.reset();
+        }
     }
 
     @Test
     public void basicWithError() {
-        final Disposable d = Disposables.empty();
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            final Disposable d = Disposables.empty();
 
-        Completable.create(new CompletableOnSubscribe() {
-            @Override
-            public void subscribe(CompletableEmitter e) throws Exception {
-                e.setDisposable(d);
+            Completable.create(new CompletableOnSubscribe() {
+                @Override
+                public void subscribe(CompletableEmitter e) throws Exception {
+                    e.setDisposable(d);
 
-                e.onError(new TestException());
-                e.onComplete();
-                e.onError(new TestException());
-            }
-        })
-        .test()
-        .assertFailure(TestException.class);
+                    e.onError(new TestException());
+                    e.onComplete();
+                    e.onError(new TestException("second"));
+                }
+            })
+            .test()
+            .assertFailure(TestException.class);
 
-        assertTrue(d.isDisposed());
+            assertTrue(d.isDisposed());
+
+            TestHelper.assertUndeliverable(errors, 0, TestException.class, "second");
+        } finally {
+            RxJavaPlugins.reset();
+        }
     }
 
     @Test

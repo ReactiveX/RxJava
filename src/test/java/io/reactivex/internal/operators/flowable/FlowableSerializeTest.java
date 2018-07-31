@@ -28,11 +28,11 @@ import io.reactivex.subscribers.DefaultSubscriber;
 
 public class FlowableSerializeTest {
 
-    Subscriber<String> observer;
+    Subscriber<String> subscriber;
 
     @Before
     public void before() {
-        observer = TestHelper.mockSubscriber();
+        subscriber = TestHelper.mockSubscriber();
     }
 
     @Test
@@ -40,14 +40,14 @@ public class FlowableSerializeTest {
         TestSingleThreadedObservable onSubscribe = new TestSingleThreadedObservable("one", "two", "three");
         Flowable<String> w = Flowable.unsafeCreate(onSubscribe);
 
-        w.serialize().subscribe(observer);
+        w.serialize().subscribe(subscriber);
         onSubscribe.waitToFinish();
 
-        verify(observer, times(1)).onNext("one");
-        verify(observer, times(1)).onNext("two");
-        verify(observer, times(1)).onNext("three");
-        verify(observer, never()).onError(any(Throwable.class));
-        verify(observer, times(1)).onComplete();
+        verify(subscriber, times(1)).onNext("one");
+        verify(subscriber, times(1)).onNext("two");
+        verify(subscriber, times(1)).onNext("three");
+        verify(subscriber, never()).onError(any(Throwable.class));
+        verify(subscriber, times(1)).onComplete();
         // non-deterministic because unsubscribe happens after 'waitToFinish' releases
         // so commenting out for now as this is not a critical thing to test here
         //            verify(s, times(1)).unsubscribe();

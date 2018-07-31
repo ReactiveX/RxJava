@@ -164,27 +164,27 @@ public class TestSubscriberTest {
     @Test
     public void testWrappingMock() {
         Flowable<Integer> oi = Flowable.fromIterable(Arrays.asList(1, 2));
-        Subscriber<Integer> mockObserver = TestHelper.mockSubscriber();
+        Subscriber<Integer> mockSubscriber = TestHelper.mockSubscriber();
 
-        oi.subscribe(new TestSubscriber<Integer>(mockObserver));
+        oi.subscribe(new TestSubscriber<Integer>(mockSubscriber));
 
-        InOrder inOrder = inOrder(mockObserver);
-        inOrder.verify(mockObserver, times(1)).onNext(1);
-        inOrder.verify(mockObserver, times(1)).onNext(2);
-        inOrder.verify(mockObserver, times(1)).onComplete();
+        InOrder inOrder = inOrder(mockSubscriber);
+        inOrder.verify(mockSubscriber, times(1)).onNext(1);
+        inOrder.verify(mockSubscriber, times(1)).onNext(2);
+        inOrder.verify(mockSubscriber, times(1)).onComplete();
         inOrder.verifyNoMoreInteractions();
     }
 
     @Test
     public void testWrappingMockWhenUnsubscribeInvolved() {
         Flowable<Integer> oi = Flowable.fromIterable(Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9)).take(2);
-        Subscriber<Integer> mockObserver = TestHelper.mockSubscriber();
-        oi.subscribe(new TestSubscriber<Integer>(mockObserver));
+        Subscriber<Integer> mockSubscriber = TestHelper.mockSubscriber();
+        oi.subscribe(new TestSubscriber<Integer>(mockSubscriber));
 
-        InOrder inOrder = inOrder(mockObserver);
-        inOrder.verify(mockObserver, times(1)).onNext(1);
-        inOrder.verify(mockObserver, times(1)).onNext(2);
-        inOrder.verify(mockObserver, times(1)).onComplete();
+        InOrder inOrder = inOrder(mockSubscriber);
+        inOrder.verify(mockSubscriber, times(1)).onNext(1);
+        inOrder.verify(mockSubscriber, times(1)).onNext(2);
+        inOrder.verify(mockSubscriber, times(1)).onComplete();
         inOrder.verifyNoMoreInteractions();
     }
 

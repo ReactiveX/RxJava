@@ -40,13 +40,13 @@ public class FlowableSwitchTest {
 
     private TestScheduler scheduler;
     private Scheduler.Worker innerScheduler;
-    private Subscriber<String> observer;
+    private Subscriber<String> subscriber;
 
     @Before
     public void before() {
         scheduler = new TestScheduler();
         innerScheduler = scheduler.createWorker();
-        observer = TestHelper.mockSubscriber();
+        subscriber = TestHelper.mockSubscriber();
     }
 
     @Test
@@ -69,13 +69,13 @@ public class FlowableSwitchTest {
         });
 
         Flowable<String> sampled = Flowable.switchOnNext(source);
-        sampled.subscribe(observer);
+        sampled.subscribe(subscriber);
 
-        InOrder inOrder = inOrder(observer);
+        InOrder inOrder = inOrder(subscriber);
 
         scheduler.advanceTimeTo(350, TimeUnit.MILLISECONDS);
-        inOrder.verify(observer, times(2)).onNext(anyString());
-        inOrder.verify(observer, times(1)).onComplete();
+        inOrder.verify(subscriber, times(2)).onNext(anyString());
+        inOrder.verify(subscriber, times(1)).onComplete();
     }
 
     @Test
@@ -108,20 +108,20 @@ public class FlowableSwitchTest {
         });
 
         Flowable<String> sampled = Flowable.switchOnNext(source);
-        sampled.subscribe(observer);
+        sampled.subscribe(subscriber);
 
-        InOrder inOrder = inOrder(observer);
+        InOrder inOrder = inOrder(subscriber);
 
         scheduler.advanceTimeTo(150, TimeUnit.MILLISECONDS);
-        inOrder.verify(observer, never()).onComplete();
-        inOrder.verify(observer, times(1)).onNext("one");
-        inOrder.verify(observer, times(1)).onNext("two");
-        inOrder.verify(observer, times(1)).onNext("three");
-        inOrder.verify(observer, times(1)).onNext("four");
+        inOrder.verify(subscriber, never()).onComplete();
+        inOrder.verify(subscriber, times(1)).onNext("one");
+        inOrder.verify(subscriber, times(1)).onNext("two");
+        inOrder.verify(subscriber, times(1)).onNext("three");
+        inOrder.verify(subscriber, times(1)).onNext("four");
 
         scheduler.advanceTimeTo(250, TimeUnit.MILLISECONDS);
-        inOrder.verify(observer, never()).onNext(anyString());
-        inOrder.verify(observer, times(1)).onComplete();
+        inOrder.verify(subscriber, never()).onNext(anyString());
+        inOrder.verify(subscriber, times(1)).onComplete();
     }
 
     @Test
@@ -153,34 +153,34 @@ public class FlowableSwitchTest {
         });
 
         Flowable<String> sampled = Flowable.switchOnNext(source);
-        sampled.subscribe(observer);
+        sampled.subscribe(subscriber);
 
-        InOrder inOrder = inOrder(observer);
+        InOrder inOrder = inOrder(subscriber);
 
         scheduler.advanceTimeTo(90, TimeUnit.MILLISECONDS);
-        inOrder.verify(observer, never()).onNext(anyString());
-        verify(observer, never()).onComplete();
-        verify(observer, never()).onError(any(Throwable.class));
+        inOrder.verify(subscriber, never()).onNext(anyString());
+        verify(subscriber, never()).onComplete();
+        verify(subscriber, never()).onError(any(Throwable.class));
 
         scheduler.advanceTimeTo(125, TimeUnit.MILLISECONDS);
-        inOrder.verify(observer, times(1)).onNext("one");
-        verify(observer, never()).onComplete();
-        verify(observer, never()).onError(any(Throwable.class));
+        inOrder.verify(subscriber, times(1)).onNext("one");
+        verify(subscriber, never()).onComplete();
+        verify(subscriber, never()).onError(any(Throwable.class));
 
         scheduler.advanceTimeTo(175, TimeUnit.MILLISECONDS);
-        inOrder.verify(observer, times(1)).onNext("two");
-        verify(observer, never()).onComplete();
-        verify(observer, never()).onError(any(Throwable.class));
+        inOrder.verify(subscriber, times(1)).onNext("two");
+        verify(subscriber, never()).onComplete();
+        verify(subscriber, never()).onError(any(Throwable.class));
 
         scheduler.advanceTimeTo(225, TimeUnit.MILLISECONDS);
-        inOrder.verify(observer, times(1)).onNext("three");
-        verify(observer, never()).onComplete();
-        verify(observer, never()).onError(any(Throwable.class));
+        inOrder.verify(subscriber, times(1)).onNext("three");
+        verify(subscriber, never()).onComplete();
+        verify(subscriber, never()).onError(any(Throwable.class));
 
         scheduler.advanceTimeTo(350, TimeUnit.MILLISECONDS);
-        inOrder.verify(observer, times(1)).onNext("four");
-        verify(observer, never()).onComplete();
-        verify(observer, never()).onError(any(Throwable.class));
+        inOrder.verify(subscriber, times(1)).onNext("four");
+        verify(subscriber, never()).onComplete();
+        verify(subscriber, never()).onError(any(Throwable.class));
     }
 
     @Test
@@ -212,34 +212,34 @@ public class FlowableSwitchTest {
         });
 
         Flowable<String> sampled = Flowable.switchOnNext(source);
-        sampled.subscribe(observer);
+        sampled.subscribe(subscriber);
 
-        InOrder inOrder = inOrder(observer);
+        InOrder inOrder = inOrder(subscriber);
 
         scheduler.advanceTimeTo(90, TimeUnit.MILLISECONDS);
-        inOrder.verify(observer, never()).onNext(anyString());
-        verify(observer, never()).onComplete();
-        verify(observer, never()).onError(any(Throwable.class));
+        inOrder.verify(subscriber, never()).onNext(anyString());
+        verify(subscriber, never()).onComplete();
+        verify(subscriber, never()).onError(any(Throwable.class));
 
         scheduler.advanceTimeTo(125, TimeUnit.MILLISECONDS);
-        inOrder.verify(observer, times(1)).onNext("one");
-        verify(observer, never()).onComplete();
-        verify(observer, never()).onError(any(Throwable.class));
+        inOrder.verify(subscriber, times(1)).onNext("one");
+        verify(subscriber, never()).onComplete();
+        verify(subscriber, never()).onError(any(Throwable.class));
 
         scheduler.advanceTimeTo(175, TimeUnit.MILLISECONDS);
-        inOrder.verify(observer, times(1)).onNext("two");
-        verify(observer, never()).onComplete();
-        verify(observer, never()).onError(any(Throwable.class));
+        inOrder.verify(subscriber, times(1)).onNext("two");
+        verify(subscriber, never()).onComplete();
+        verify(subscriber, never()).onError(any(Throwable.class));
 
         scheduler.advanceTimeTo(225, TimeUnit.MILLISECONDS);
-        inOrder.verify(observer, times(1)).onNext("three");
-        verify(observer, never()).onComplete();
-        verify(observer, never()).onError(any(Throwable.class));
+        inOrder.verify(subscriber, times(1)).onNext("three");
+        verify(subscriber, never()).onComplete();
+        verify(subscriber, never()).onError(any(Throwable.class));
 
         scheduler.advanceTimeTo(350, TimeUnit.MILLISECONDS);
-        inOrder.verify(observer, never()).onNext(anyString());
-        verify(observer, never()).onComplete();
-        verify(observer, times(1)).onError(any(TestException.class));
+        inOrder.verify(subscriber, never()).onNext(anyString());
+        verify(subscriber, never()).onComplete();
+        verify(subscriber, times(1)).onError(any(TestException.class));
     }
 
     @Test
@@ -276,24 +276,24 @@ public class FlowableSwitchTest {
         });
 
         Flowable<String> sampled = Flowable.switchOnNext(source);
-        sampled.subscribe(observer);
+        sampled.subscribe(subscriber);
 
-        InOrder inOrder = inOrder(observer);
+        InOrder inOrder = inOrder(subscriber);
 
         scheduler.advanceTimeTo(90, TimeUnit.MILLISECONDS);
-        inOrder.verify(observer, never()).onNext(anyString());
-        verify(observer, never()).onComplete();
-        verify(observer, never()).onError(any(Throwable.class));
+        inOrder.verify(subscriber, never()).onNext(anyString());
+        verify(subscriber, never()).onComplete();
+        verify(subscriber, never()).onError(any(Throwable.class));
 
         scheduler.advanceTimeTo(125, TimeUnit.MILLISECONDS);
-        inOrder.verify(observer, times(1)).onNext("one");
-        verify(observer, never()).onComplete();
-        verify(observer, never()).onError(any(Throwable.class));
+        inOrder.verify(subscriber, times(1)).onNext("one");
+        verify(subscriber, never()).onComplete();
+        verify(subscriber, never()).onError(any(Throwable.class));
 
         scheduler.advanceTimeTo(250, TimeUnit.MILLISECONDS);
-        inOrder.verify(observer, times(1)).onNext("three");
-        verify(observer, never()).onComplete();
-        verify(observer, never()).onError(any(Throwable.class));
+        inOrder.verify(subscriber, times(1)).onNext("three");
+        verify(subscriber, never()).onComplete();
+        verify(subscriber, never()).onError(any(Throwable.class));
     }
 
     @Test
@@ -331,24 +331,24 @@ public class FlowableSwitchTest {
         });
 
         Flowable<String> sampled = Flowable.switchOnNext(source);
-        sampled.subscribe(observer);
+        sampled.subscribe(subscriber);
 
-        InOrder inOrder = inOrder(observer);
+        InOrder inOrder = inOrder(subscriber);
 
         scheduler.advanceTimeTo(90, TimeUnit.MILLISECONDS);
-        inOrder.verify(observer, never()).onNext(anyString());
-        verify(observer, never()).onComplete();
-        verify(observer, never()).onError(any(Throwable.class));
+        inOrder.verify(subscriber, never()).onNext(anyString());
+        verify(subscriber, never()).onComplete();
+        verify(subscriber, never()).onError(any(Throwable.class));
 
         scheduler.advanceTimeTo(125, TimeUnit.MILLISECONDS);
-        inOrder.verify(observer, times(1)).onNext("one");
-        verify(observer, never()).onComplete();
-        verify(observer, never()).onError(any(Throwable.class));
+        inOrder.verify(subscriber, times(1)).onNext("one");
+        verify(subscriber, never()).onComplete();
+        verify(subscriber, never()).onError(any(Throwable.class));
 
         scheduler.advanceTimeTo(250, TimeUnit.MILLISECONDS);
-        inOrder.verify(observer, never()).onNext("three");
-        verify(observer, never()).onComplete();
-        verify(observer, times(1)).onError(any(TestException.class));
+        inOrder.verify(subscriber, never()).onNext("three");
+        verify(subscriber, never()).onComplete();
+        verify(subscriber, times(1)).onError(any(TestException.class));
     }
 
     private <T> void publishCompleted(final Subscriber<T> observer, long delay) {
@@ -411,17 +411,17 @@ public class FlowableSwitchTest {
         });
 
         Flowable<String> sampled = Flowable.switchOnNext(source);
-        sampled.subscribe(observer);
+        sampled.subscribe(subscriber);
 
         scheduler.advanceTimeTo(1000, TimeUnit.MILLISECONDS);
 
-        InOrder inOrder = inOrder(observer);
-        inOrder.verify(observer, times(1)).onNext("1-one");
-        inOrder.verify(observer, times(1)).onNext("1-two");
-        inOrder.verify(observer, times(1)).onNext("2-one");
-        inOrder.verify(observer, times(1)).onNext("2-two");
-        inOrder.verify(observer, times(1)).onNext("2-three");
-        inOrder.verify(observer, times(1)).onComplete();
+        InOrder inOrder = inOrder(subscriber);
+        inOrder.verify(subscriber, times(1)).onNext("1-one");
+        inOrder.verify(subscriber, times(1)).onNext("1-two");
+        inOrder.verify(subscriber, times(1)).onNext("2-one");
+        inOrder.verify(subscriber, times(1)).onNext("2-two");
+        inOrder.verify(subscriber, times(1)).onNext("2-three");
+        inOrder.verify(subscriber, times(1)).onComplete();
         inOrder.verifyNoMoreInteractions();
     }
 

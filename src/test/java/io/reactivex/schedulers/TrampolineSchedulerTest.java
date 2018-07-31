@@ -110,8 +110,8 @@ public class TrampolineSchedulerTest extends AbstractSchedulerTests {
     @Test
     public void testTrampolineWorkerHandlesConcurrentScheduling() {
         final Worker trampolineWorker = Schedulers.trampoline().createWorker();
-        final Subscriber<Object> observer = TestHelper.mockSubscriber();
-        final TestSubscriber<Disposable> ts = new TestSubscriber<Disposable>(observer);
+        final Subscriber<Object> subscriber = TestHelper.mockSubscriber();
+        final TestSubscriber<Disposable> ts = new TestSubscriber<Disposable>(subscriber);
 
         // Spam the trampoline with actions.
         Flowable.range(0, 50)

@@ -35,29 +35,29 @@ import io.reactivex.subscribers.*;
 
 public class FlowableTimerTest {
     @Mock
-    Subscriber<Object> observer;
+    Subscriber<Object> subscriber;
     @Mock
-    Subscriber<Long> observer2;
+    Subscriber<Long> subscriber2;
 
     TestScheduler scheduler;
 
     @Before
     public void before() {
-        observer = TestHelper.mockSubscriber();
+        subscriber = TestHelper.mockSubscriber();
 
-        observer2 = TestHelper.mockSubscriber();
+        subscriber2 = TestHelper.mockSubscriber();
 
         scheduler = new TestScheduler();
     }
 
     @Test
     public void testTimerOnce() {
-        Flowable.timer(100, TimeUnit.MILLISECONDS, scheduler).subscribe(observer);
+        Flowable.timer(100, TimeUnit.MILLISECONDS, scheduler).subscribe(subscriber);
         scheduler.advanceTimeBy(100, TimeUnit.MILLISECONDS);
 
-        verify(observer, times(1)).onNext(0L);
-        verify(observer, times(1)).onComplete();
-        verify(observer, never()).onError(any(Throwable.class));
+        verify(subscriber, times(1)).onNext(0L);
+        verify(subscriber, times(1)).onComplete();
+        verify(subscriber, never()).onError(any(Throwable.class));
     }
 
     @Test
@@ -239,26 +239,26 @@ public class FlowableTimerTest {
 
             @Override
             public void onError(Throwable e) {
-                observer.onError(e);
+                subscriber.onError(e);
             }
 
             @Override
             public void onComplete() {
-                observer.onComplete();
+                subscriber.onComplete();
             }
         });
 
         scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
 
-        verify(observer).onError(any(TestException.class));
-        verify(observer, never()).onNext(anyLong());
-        verify(observer, never()).onComplete();
+        verify(subscriber).onError(any(TestException.class));
+        verify(subscriber, never()).onNext(anyLong());
+        verify(subscriber, never()).onComplete();
     }
     @Test
     public void testPeriodicObserverThrows() {
         Flowable<Long> source = Flowable.interval(100, 100, TimeUnit.MILLISECONDS, scheduler);
 
-        InOrder inOrder = inOrder(observer);
+        InOrder inOrder = inOrder(subscriber);
 
         source.safeSubscribe(new DefaultSubscriber<Long>() {
 
@@ -267,26 +267,26 @@ public class FlowableTimerTest {
                 if (t > 0) {
                     throw new TestException();
                 }
-                observer.onNext(t);
+                subscriber.onNext(t);
             }
 
             @Override
             public void onError(Throwable e) {
-                observer.onError(e);
+                subscriber.onError(e);
             }
 
             @Override
             public void onComplete() {
-                observer.onComplete();
+                subscriber.onComplete();
             }
         });
 
         scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
 
-        inOrder.verify(observer).onNext(0L);
-        inOrder.verify(observer).onError(any(TestException.class));
+        inOrder.verify(subscriber).onNext(0L);
+        inOrder.verify(subscriber).onError(any(TestException.class));
         inOrder.verifyNoMoreInteractions();
-        verify(observer, never()).onComplete();
+        verify(subscriber, never()).onComplete();
     }
 
     @Test

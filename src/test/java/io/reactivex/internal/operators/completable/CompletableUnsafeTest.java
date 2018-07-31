@@ -14,10 +14,14 @@
 package io.reactivex.internal.operators.completable;
 
 import static org.junit.Assert.*;
+
+import java.util.List;
+
 import org.junit.Test;
 
 import io.reactivex.*;
 import io.reactivex.disposables.Disposables;
+import io.reactivex.plugins.RxJavaPlugins;
 
 public class CompletableUnsafeTest {
 
@@ -57,6 +61,7 @@ public class CompletableUnsafeTest {
 
     @Test
     public void unsafeCreateThrowsIAE() {
+        List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
             Completable.unsafeCreate(new CompletableSource() {
                 @Override
@@ -69,6 +74,10 @@ public class CompletableUnsafeTest {
             if (!(ex.getCause() instanceof IllegalArgumentException)) {
                 fail(ex.toString() + ": should have thrown NPA(IAE)");
             }
+
+            TestHelper.assertError(errors, 0, IllegalArgumentException.class);
+        } finally {
+            RxJavaPlugins.reset();
         }
     }
 }

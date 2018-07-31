@@ -238,18 +238,25 @@ public class FlowableFlatMapTest {
 
     @Test
     public void testFlatMapTransformsOnNextFuncThrows() {
-        Flowable<Integer> onComplete = Flowable.fromIterable(Arrays.asList(4));
-        Flowable<Integer> onError = Flowable.fromIterable(Arrays.asList(5));
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            Flowable<Integer> onComplete = Flowable.fromIterable(Arrays.asList(4));
+            Flowable<Integer> onError = Flowable.fromIterable(Arrays.asList(5));
 
-        Flowable<Integer> source = Flowable.fromIterable(Arrays.asList(10, 20, 30));
+            Flowable<Integer> source = Flowable.fromIterable(Arrays.asList(10, 20, 30));
 
-        Subscriber<Object> o = TestHelper.mockSubscriber();
+            Subscriber<Object> o = TestHelper.mockSubscriber();
 
-        source.flatMap(funcThrow(1, onError), just(onError), just0(onComplete)).subscribe(o);
+            source.flatMap(funcThrow(1, onError), just(onError), just0(onComplete)).subscribe(o);
 
-        verify(o).onError(any(TestException.class));
-        verify(o, never()).onNext(any());
-        verify(o, never()).onComplete();
+            verify(o).onError(any(TestException.class));
+            verify(o, never()).onNext(any());
+            verify(o, never()).onComplete();
+
+            TestHelper.assertUndeliverable(errors, 0, TestException.class);
+        } finally {
+            RxJavaPlugins.reset();
+        }
     }
 
     @Test

@@ -40,13 +40,13 @@ import io.reactivex.subscribers.*;
 
 public class FlowableMergeTest {
 
-    Subscriber<String> stringObserver;
+    Subscriber<String> stringSubscriber;
 
     int count;
 
     @Before
     public void before() {
-        stringObserver = TestHelper.mockSubscriber();
+        stringSubscriber = TestHelper.mockSubscriber();
 
         for (Thread t : Thread.getAllStackTraces().keySet()) {
             if (t.getName().startsWith("RxNewThread")) {
@@ -91,11 +91,11 @@ public class FlowableMergeTest {
 
         });
         Flowable<String> m = Flowable.merge(flowableOfFlowables);
-        m.subscribe(stringObserver);
+        m.subscribe(stringSubscriber);
 
-        verify(stringObserver, never()).onError(any(Throwable.class));
-        verify(stringObserver, times(1)).onComplete();
-        verify(stringObserver, times(2)).onNext("hello");
+        verify(stringSubscriber, never()).onError(any(Throwable.class));
+        verify(stringSubscriber, times(1)).onComplete();
+        verify(stringSubscriber, times(2)).onNext("hello");
     }
 
     @Test
@@ -104,11 +104,11 @@ public class FlowableMergeTest {
         final Flowable<String> o2 = Flowable.unsafeCreate(new TestSynchronousFlowable());
 
         Flowable<String> m = Flowable.merge(o1, o2);
-        m.subscribe(stringObserver);
+        m.subscribe(stringSubscriber);
 
-        verify(stringObserver, never()).onError(any(Throwable.class));
-        verify(stringObserver, times(2)).onNext("hello");
-        verify(stringObserver, times(1)).onComplete();
+        verify(stringSubscriber, never()).onError(any(Throwable.class));
+        verify(stringSubscriber, times(2)).onNext("hello");
+        verify(stringSubscriber, times(1)).onComplete();
     }
 
     @Test
@@ -120,11 +120,11 @@ public class FlowableMergeTest {
         listOfFlowables.add(o2);
 
         Flowable<String> m = Flowable.merge(listOfFlowables);
-        m.subscribe(stringObserver);
+        m.subscribe(stringSubscriber);
 
-        verify(stringObserver, never()).onError(any(Throwable.class));
-        verify(stringObserver, times(1)).onComplete();
-        verify(stringObserver, times(2)).onNext("hello");
+        verify(stringSubscriber, never()).onError(any(Throwable.class));
+        verify(stringSubscriber, times(1)).onComplete();
+        verify(stringSubscriber, times(2)).onNext("hello");
     }
 
     @Test(timeout = 1000)
@@ -201,15 +201,15 @@ public class FlowableMergeTest {
         final TestASynchronousFlowable o2 = new TestASynchronousFlowable();
 
         Flowable<String> m = Flowable.merge(Flowable.unsafeCreate(o1), Flowable.unsafeCreate(o2));
-        TestSubscriber<String> ts = new TestSubscriber<String>(stringObserver);
+        TestSubscriber<String> ts = new TestSubscriber<String>(stringSubscriber);
         m.subscribe(ts);
 
         ts.awaitTerminalEvent();
         ts.assertNoErrors();
 
-        verify(stringObserver, never()).onError(any(Throwable.class));
-        verify(stringObserver, times(2)).onNext("hello");
-        verify(stringObserver, times(1)).onComplete();
+        verify(stringSubscriber, never()).onError(any(Throwable.class));
+        verify(stringSubscriber, times(2)).onNext("hello");
+        verify(stringSubscriber, times(1)).onComplete();
     }
 
     @Test
@@ -315,16 +315,16 @@ public class FlowableMergeTest {
         final Flowable<String> o2 = Flowable.unsafeCreate(new TestErrorFlowable("one", "two", "three")); // we expect to lose all of these since o1 is done first and fails
 
         Flowable<String> m = Flowable.merge(o1, o2);
-        m.subscribe(stringObserver);
+        m.subscribe(stringSubscriber);
 
-        verify(stringObserver, times(1)).onError(any(NullPointerException.class));
-        verify(stringObserver, never()).onComplete();
-        verify(stringObserver, times(0)).onNext("one");
-        verify(stringObserver, times(0)).onNext("two");
-        verify(stringObserver, times(0)).onNext("three");
-        verify(stringObserver, times(1)).onNext("four");
-        verify(stringObserver, times(0)).onNext("five");
-        verify(stringObserver, times(0)).onNext("six");
+        verify(stringSubscriber, times(1)).onError(any(NullPointerException.class));
+        verify(stringSubscriber, never()).onComplete();
+        verify(stringSubscriber, times(0)).onNext("one");
+        verify(stringSubscriber, times(0)).onNext("two");
+        verify(stringSubscriber, times(0)).onNext("three");
+        verify(stringSubscriber, times(1)).onNext("four");
+        verify(stringSubscriber, times(0)).onNext("five");
+        verify(stringSubscriber, times(0)).onNext("six");
     }
 
     /**
@@ -339,19 +339,19 @@ public class FlowableMergeTest {
         final Flowable<String> o4 = Flowable.unsafeCreate(new TestErrorFlowable("nine"));// we expect to lose all of these since o2 is done first and fails
 
         Flowable<String> m = Flowable.merge(o1, o2, o3, o4);
-        m.subscribe(stringObserver);
+        m.subscribe(stringSubscriber);
 
-        verify(stringObserver, times(1)).onError(any(NullPointerException.class));
-        verify(stringObserver, never()).onComplete();
-        verify(stringObserver, times(1)).onNext("one");
-        verify(stringObserver, times(1)).onNext("two");
-        verify(stringObserver, times(1)).onNext("three");
-        verify(stringObserver, times(1)).onNext("four");
-        verify(stringObserver, times(0)).onNext("five");
-        verify(stringObserver, times(0)).onNext("six");
-        verify(stringObserver, times(0)).onNext("seven");
-        verify(stringObserver, times(0)).onNext("eight");
-        verify(stringObserver, times(0)).onNext("nine");
+        verify(stringSubscriber, times(1)).onError(any(NullPointerException.class));
+        verify(stringSubscriber, never()).onComplete();
+        verify(stringSubscriber, times(1)).onNext("one");
+        verify(stringSubscriber, times(1)).onNext("two");
+        verify(stringSubscriber, times(1)).onNext("three");
+        verify(stringSubscriber, times(1)).onNext("four");
+        verify(stringSubscriber, times(0)).onNext("five");
+        verify(stringSubscriber, times(0)).onNext("six");
+        verify(stringSubscriber, times(0)).onNext("seven");
+        verify(stringSubscriber, times(0)).onNext("eight");
+        verify(stringSubscriber, times(0)).onNext("nine");
     }
 
     @Test

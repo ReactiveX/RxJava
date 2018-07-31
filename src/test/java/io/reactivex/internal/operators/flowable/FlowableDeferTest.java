@@ -22,7 +22,6 @@ import org.reactivestreams.Subscriber;
 
 import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
-import io.reactivex.subscribers.DefaultSubscriber;
 
 @SuppressWarnings("unchecked")
 public class FlowableDeferTest {
@@ -40,25 +39,25 @@ public class FlowableDeferTest {
 
         verifyZeroInteractions(factory);
 
-        Subscriber<String> firstObserver = TestHelper.mockSubscriber();
-        deferred.subscribe(firstObserver);
+        Subscriber<String> firstSubscriber = TestHelper.mockSubscriber();
+        deferred.subscribe(firstSubscriber);
 
         verify(factory, times(1)).call();
-        verify(firstObserver, times(1)).onNext("one");
-        verify(firstObserver, times(1)).onNext("two");
-        verify(firstObserver, times(0)).onNext("three");
-        verify(firstObserver, times(0)).onNext("four");
-        verify(firstObserver, times(1)).onComplete();
+        verify(firstSubscriber, times(1)).onNext("one");
+        verify(firstSubscriber, times(1)).onNext("two");
+        verify(firstSubscriber, times(0)).onNext("three");
+        verify(firstSubscriber, times(0)).onNext("four");
+        verify(firstSubscriber, times(1)).onComplete();
 
-        Subscriber<String> secondObserver = TestHelper.mockSubscriber();
-        deferred.subscribe(secondObserver);
+        Subscriber<String> secondSubscriber = TestHelper.mockSubscriber();
+        deferred.subscribe(secondSubscriber);
 
         verify(factory, times(2)).call();
-        verify(secondObserver, times(0)).onNext("one");
-        verify(secondObserver, times(0)).onNext("two");
-        verify(secondObserver, times(1)).onNext("three");
-        verify(secondObserver, times(1)).onNext("four");
-        verify(secondObserver, times(1)).onComplete();
+        verify(secondSubscriber, times(0)).onNext("one");
+        verify(secondSubscriber, times(0)).onNext("two");
+        verify(secondSubscriber, times(1)).onNext("three");
+        verify(secondSubscriber, times(1)).onNext("four");
+        verify(secondSubscriber, times(1)).onComplete();
 
     }
 
@@ -70,7 +69,7 @@ public class FlowableDeferTest {
 
         Flowable<String> result = Flowable.defer(factory);
 
-        DefaultSubscriber<String> o = mock(DefaultSubscriber.class);
+        Subscriber<String> o = TestHelper.mockSubscriber();
 
         result.subscribe(o);
 

@@ -89,8 +89,7 @@ public class ObservableRetryWithPredicateTest {
             }
         });
 
-        @SuppressWarnings("unchecked")
-        DefaultObserver<Integer> o = mock(DefaultObserver.class);
+        Observer<Integer> o = TestHelper.mockObserver();
         InOrder inOrder = inOrder(o);
 
         source.retry(retryTwice).subscribe(o);
@@ -117,8 +116,7 @@ public class ObservableRetryWithPredicateTest {
             }
         });
 
-        @SuppressWarnings("unchecked")
-        DefaultObserver<Integer> o = mock(DefaultObserver.class);
+        Observer<Integer> o = TestHelper.mockObserver();
         InOrder inOrder = inOrder(o);
 
         source.retry(retryTwice).subscribe(o);
@@ -153,8 +151,7 @@ public class ObservableRetryWithPredicateTest {
             }
         });
 
-        @SuppressWarnings("unchecked")
-        DefaultObserver<Integer> o = mock(DefaultObserver.class);
+        Observer<Integer> o = TestHelper.mockObserver();
         InOrder inOrder = inOrder(o);
 
         source.retry(retryOnTestException).subscribe(o);
@@ -190,8 +187,7 @@ public class ObservableRetryWithPredicateTest {
             }
         });
 
-        @SuppressWarnings("unchecked")
-        DefaultObserver<Integer> o = mock(DefaultObserver.class);
+        Observer<Integer> o = TestHelper.mockObserver();
         InOrder inOrder = inOrder(o);
 
         source.retry(retryOnTestException).subscribe(o);

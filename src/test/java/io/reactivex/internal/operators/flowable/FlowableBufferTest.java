@@ -42,13 +42,13 @@ import io.reactivex.subscribers.*;
 
 public class FlowableBufferTest {
 
-    private Subscriber<List<String>> observer;
+    private Subscriber<List<String>> subscriber;
     private TestScheduler scheduler;
     private Scheduler.Worker innerScheduler;
 
     @Before
     public void before() {
-        observer = TestHelper.mockSubscriber();
+        subscriber = TestHelper.mockSubscriber();
         scheduler = new TestScheduler();
         innerScheduler = scheduler.createWorker();
     }
@@ -58,11 +58,11 @@ public class FlowableBufferTest {
         Flowable<String> source = Flowable.empty();
 
         Flowable<List<String>> buffered = source.buffer(3, 3);
-        buffered.subscribe(observer);
+        buffered.subscribe(subscriber);
 
-        Mockito.verify(observer, Mockito.never()).onNext(Mockito.<String>anyList());
-        Mockito.verify(observer, Mockito.never()).onError(Mockito.any(Throwable.class));
-        Mockito.verify(observer, Mockito.times(1)).onComplete();
+        Mockito.verify(subscriber, Mockito.never()).onNext(Mockito.<String>anyList());
+        Mockito.verify(subscriber, Mockito.never()).onError(Mockito.any(Throwable.class));
+        Mockito.verify(subscriber, Mockito.times(1)).onComplete();
     }
 
     @Test
@@ -80,15 +80,15 @@ public class FlowableBufferTest {
         });
 
         Flowable<List<String>> buffered = source.buffer(3, 1);
-        buffered.subscribe(observer);
+        buffered.subscribe(subscriber);
 
-        InOrder inOrder = Mockito.inOrder(observer);
-        inOrder.verify(observer, Mockito.times(1)).onNext(list("one", "two", "three"));
-        inOrder.verify(observer, Mockito.times(1)).onNext(list("two", "three", "four"));
-        inOrder.verify(observer, Mockito.times(1)).onNext(list("three", "four", "five"));
-        inOrder.verify(observer, Mockito.never()).onNext(Mockito.<String>anyList());
-        inOrder.verify(observer, Mockito.never()).onError(Mockito.any(Throwable.class));
-        inOrder.verify(observer, Mockito.never()).onComplete();
+        InOrder inOrder = Mockito.inOrder(subscriber);
+        inOrder.verify(subscriber, Mockito.times(1)).onNext(list("one", "two", "three"));
+        inOrder.verify(subscriber, Mockito.times(1)).onNext(list("two", "three", "four"));
+        inOrder.verify(subscriber, Mockito.times(1)).onNext(list("three", "four", "five"));
+        inOrder.verify(subscriber, Mockito.never()).onNext(Mockito.<String>anyList());
+        inOrder.verify(subscriber, Mockito.never()).onError(Mockito.any(Throwable.class));
+        inOrder.verify(subscriber, Mockito.never()).onComplete();
     }
 
     @Test
@@ -96,14 +96,14 @@ public class FlowableBufferTest {
         Flowable<String> source = Flowable.just("one", "two", "three", "four", "five");
 
         Flowable<List<String>> buffered = source.buffer(3, 3);
-        buffered.subscribe(observer);
+        buffered.subscribe(subscriber);
 
-        InOrder inOrder = Mockito.inOrder(observer);
-        inOrder.verify(observer, Mockito.times(1)).onNext(list("one", "two", "three"));
-        inOrder.verify(observer, Mockito.times(1)).onNext(list("four", "five"));
-        inOrder.verify(observer, Mockito.never()).onNext(Mockito.<String>anyList());
-        inOrder.verify(observer, Mockito.never()).onError(Mockito.any(Throwable.class));
-        inOrder.verify(observer, Mockito.times(1)).onComplete();
+        InOrder inOrder = Mockito.inOrder(subscriber);
+        inOrder.verify(subscriber, Mockito.times(1)).onNext(list("one", "two", "three"));
+        inOrder.verify(subscriber, Mockito.times(1)).onNext(list("four", "five"));
+        inOrder.verify(subscriber, Mockito.never()).onNext(Mockito.<String>anyList());
+        inOrder.verify(subscriber, Mockito.never()).onError(Mockito.any(Throwable.class));
+        inOrder.verify(subscriber, Mockito.times(1)).onComplete();
     }
 
     @Test
@@ -111,14 +111,14 @@ public class FlowableBufferTest {
         Flowable<String> source = Flowable.just("one", "two", "three", "four", "five");
 
         Flowable<List<String>> buffered = source.buffer(2, 3);
-        buffered.subscribe(observer);
+        buffered.subscribe(subscriber);
 
-        InOrder inOrder = Mockito.inOrder(observer);
-        inOrder.verify(observer, Mockito.times(1)).onNext(list("one", "two"));
-        inOrder.verify(observer, Mockito.times(1)).onNext(list("four", "five"));
-        inOrder.verify(observer, Mockito.never()).onNext(Mockito.<String>anyList());
-        inOrder.verify(observer, Mockito.never()).onError(Mockito.any(Throwable.class));
-        inOrder.verify(observer, Mockito.times(1)).onComplete();
+        InOrder inOrder = Mockito.inOrder(subscriber);
+        inOrder.verify(subscriber, Mockito.times(1)).onNext(list("one", "two"));
+        inOrder.verify(subscriber, Mockito.times(1)).onNext(list("four", "five"));
+        inOrder.verify(subscriber, Mockito.never()).onNext(Mockito.<String>anyList());
+        inOrder.verify(subscriber, Mockito.never()).onError(Mockito.any(Throwable.class));
+        inOrder.verify(subscriber, Mockito.times(1)).onComplete();
     }
 
     @Test
@@ -137,20 +137,20 @@ public class FlowableBufferTest {
         });
 
         Flowable<List<String>> buffered = source.buffer(100, TimeUnit.MILLISECONDS, scheduler, 2);
-        buffered.subscribe(observer);
+        buffered.subscribe(subscriber);
 
-        InOrder inOrder = Mockito.inOrder(observer);
+        InOrder inOrder = Mockito.inOrder(subscriber);
         scheduler.advanceTimeTo(100, TimeUnit.MILLISECONDS);
-        inOrder.verify(observer, Mockito.times(1)).onNext(list("one", "two"));
+        inOrder.verify(subscriber, Mockito.times(1)).onNext(list("one", "two"));
 
         scheduler.advanceTimeTo(200, TimeUnit.MILLISECONDS);
-        inOrder.verify(observer, Mockito.times(1)).onNext(list("three", "four"));
+        inOrder.verify(subscriber, Mockito.times(1)).onNext(list("three", "four"));
 
         scheduler.advanceTimeTo(300, TimeUnit.MILLISECONDS);
-        inOrder.verify(observer, Mockito.times(1)).onNext(list("five"));
-        inOrder.verify(observer, Mockito.never()).onNext(Mockito.<String>anyList());
-        inOrder.verify(observer, Mockito.never()).onError(Mockito.any(Throwable.class));
-        inOrder.verify(observer, Mockito.times(1)).onComplete();
+        inOrder.verify(subscriber, Mockito.times(1)).onNext(list("five"));
+        inOrder.verify(subscriber, Mockito.never()).onNext(Mockito.<String>anyList());
+        inOrder.verify(subscriber, Mockito.never()).onError(Mockito.any(Throwable.class));
+        inOrder.verify(subscriber, Mockito.times(1)).onComplete();
     }
 
     @Test
@@ -174,17 +174,17 @@ public class FlowableBufferTest {
         });
 
         Flowable<List<String>> buffered = source.buffer(100, TimeUnit.MILLISECONDS, scheduler);
-        buffered.subscribe(observer);
+        buffered.subscribe(subscriber);
 
-        InOrder inOrder = Mockito.inOrder(observer);
+        InOrder inOrder = Mockito.inOrder(subscriber);
         scheduler.advanceTimeTo(101, TimeUnit.MILLISECONDS);
-        inOrder.verify(observer, Mockito.times(1)).onNext(list("one", "two", "three"));
+        inOrder.verify(subscriber, Mockito.times(1)).onNext(list("one", "two", "three"));
 
         scheduler.advanceTimeTo(201, TimeUnit.MILLISECONDS);
-        inOrder.verify(observer, Mockito.times(1)).onNext(list("four", "five"));
-        inOrder.verify(observer, Mockito.never()).onNext(Mockito.<String>anyList());
-        inOrder.verify(observer, Mockito.never()).onError(Mockito.any(Throwable.class));
-        inOrder.verify(observer, Mockito.times(1)).onComplete();
+        inOrder.verify(subscriber, Mockito.times(1)).onNext(list("four", "five"));
+        inOrder.verify(subscriber, Mockito.never()).onNext(Mockito.<String>anyList());
+        inOrder.verify(subscriber, Mockito.never()).onError(Mockito.any(Throwable.class));
+        inOrder.verify(subscriber, Mockito.times(1)).onComplete();
     }
 
     @Test
@@ -227,29 +227,29 @@ public class FlowableBufferTest {
         };
 
         Flowable<List<String>> buffered = source.buffer(openings, closer);
-        buffered.subscribe(observer);
+        buffered.subscribe(subscriber);
 
-        InOrder inOrder = Mockito.inOrder(observer);
+        InOrder inOrder = Mockito.inOrder(subscriber);
         scheduler.advanceTimeTo(500, TimeUnit.MILLISECONDS);
-        inOrder.verify(observer, Mockito.times(1)).onNext(list("two", "three"));
-        inOrder.verify(observer, Mockito.times(1)).onNext(list("five"));
-        inOrder.verify(observer, Mockito.never()).onNext(Mockito.<String>anyList());
-        inOrder.verify(observer, Mockito.never()).onError(Mockito.any(Throwable.class));
-        inOrder.verify(observer, Mockito.times(1)).onComplete();
+        inOrder.verify(subscriber, Mockito.times(1)).onNext(list("two", "three"));
+        inOrder.verify(subscriber, Mockito.times(1)).onNext(list("five"));
+        inOrder.verify(subscriber, Mockito.never()).onNext(Mockito.<String>anyList());
+        inOrder.verify(subscriber, Mockito.never()).onError(Mockito.any(Throwable.class));
+        inOrder.verify(subscriber, Mockito.times(1)).onComplete();
     }
 
     @Test
     public void testFlowableBasedCloser() {
         Flowable<String> source = Flowable.unsafeCreate(new Publisher<String>() {
             @Override
-            public void subscribe(Subscriber<? super String> observer) {
-                observer.onSubscribe(new BooleanSubscription());
-                push(observer, "one", 10);
-                push(observer, "two", 60);
-                push(observer, "three", 110);
-                push(observer, "four", 160);
-                push(observer, "five", 210);
-                complete(observer, 250);
+            public void subscribe(Subscriber<? super String> subscriber) {
+                subscriber.onSubscribe(new BooleanSubscription());
+                push(subscriber, "one", 10);
+                push(subscriber, "two", 60);
+                push(subscriber, "three", 110);
+                push(subscriber, "four", 160);
+                push(subscriber, "five", 210);
+                complete(subscriber, 250);
             }
         });
 
@@ -258,28 +258,28 @@ public class FlowableBufferTest {
             public Flowable<Object> call() {
                 return Flowable.unsafeCreate(new Publisher<Object>() {
                     @Override
-                    public void subscribe(Subscriber<? super Object> observer) {
-                        observer.onSubscribe(new BooleanSubscription());
-                        push(observer, new Object(), 100);
-                        push(observer, new Object(), 200);
-                        push(observer, new Object(), 300);
-                        complete(observer, 301);
+                    public void subscribe(Subscriber<? super Object> subscriber) {
+                        subscriber.onSubscribe(new BooleanSubscription());
+                        push(subscriber, new Object(), 100);
+                        push(subscriber, new Object(), 200);
+                        push(subscriber, new Object(), 300);
+                        complete(subscriber, 301);
                     }
                 });
             }
         };
 
         Flowable<List<String>> buffered = source.buffer(closer);
-        buffered.subscribe(observer);
+        buffered.subscribe(subscriber);
 
-        InOrder inOrder = Mockito.inOrder(observer);
+        InOrder inOrder = Mockito.inOrder(subscriber);
         scheduler.advanceTimeTo(500, TimeUnit.MILLISECONDS);
-        inOrder.verify(observer, Mockito.times(1)).onNext(list("one", "two"));
-        inOrder.verify(observer, Mockito.times(1)).onNext(list("three", "four"));
-        inOrder.verify(observer, Mockito.times(1)).onNext(list("five"));
-        inOrder.verify(observer, Mockito.never()).onNext(Mockito.<String>anyList());
-        inOrder.verify(observer, Mockito.never()).onError(Mockito.any(Throwable.class));
-        inOrder.verify(observer, Mockito.times(1)).onComplete();
+        inOrder.verify(subscriber, Mockito.times(1)).onNext(list("one", "two"));
+        inOrder.verify(subscriber, Mockito.times(1)).onNext(list("three", "four"));
+        inOrder.verify(subscriber, Mockito.times(1)).onNext(list("five"));
+        inOrder.verify(subscriber, Mockito.never()).onNext(Mockito.<String>anyList());
+        inOrder.verify(subscriber, Mockito.never()).onError(Mockito.any(Throwable.class));
+        inOrder.verify(subscriber, Mockito.times(1)).onComplete();
     }
 
     @Test

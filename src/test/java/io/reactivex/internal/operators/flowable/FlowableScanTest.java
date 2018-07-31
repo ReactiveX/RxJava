@@ -37,7 +37,7 @@ public class FlowableScanTest {
 
     @Test
     public void testScanIntegersWithInitialValue() {
-        Subscriber<String> observer = TestHelper.mockSubscriber();
+        Subscriber<String> subscriber = TestHelper.mockSubscriber();
 
         Flowable<Integer> observable = Flowable.just(1, 2, 3);
 
@@ -49,21 +49,21 @@ public class FlowableScanTest {
             }
 
         });
-        m.subscribe(observer);
+        m.subscribe(subscriber);
 
-        verify(observer, never()).onError(any(Throwable.class));
-        verify(observer, times(1)).onNext("");
-        verify(observer, times(1)).onNext("1");
-        verify(observer, times(1)).onNext("12");
-        verify(observer, times(1)).onNext("123");
-        verify(observer, times(4)).onNext(anyString());
-        verify(observer, times(1)).onComplete();
-        verify(observer, never()).onError(any(Throwable.class));
+        verify(subscriber, never()).onError(any(Throwable.class));
+        verify(subscriber, times(1)).onNext("");
+        verify(subscriber, times(1)).onNext("1");
+        verify(subscriber, times(1)).onNext("12");
+        verify(subscriber, times(1)).onNext("123");
+        verify(subscriber, times(4)).onNext(anyString());
+        verify(subscriber, times(1)).onComplete();
+        verify(subscriber, never()).onError(any(Throwable.class));
     }
 
     @Test
     public void testScanIntegersWithoutInitialValue() {
-        Subscriber<Integer> observer = TestHelper.mockSubscriber();
+        Subscriber<Integer> subscriber = TestHelper.mockSubscriber();
 
         Flowable<Integer> observable = Flowable.just(1, 2, 3);
 
@@ -75,21 +75,21 @@ public class FlowableScanTest {
             }
 
         });
-        m.subscribe(observer);
+        m.subscribe(subscriber);
 
-        verify(observer, never()).onError(any(Throwable.class));
-        verify(observer, never()).onNext(0);
-        verify(observer, times(1)).onNext(1);
-        verify(observer, times(1)).onNext(3);
-        verify(observer, times(1)).onNext(6);
-        verify(observer, times(3)).onNext(anyInt());
-        verify(observer, times(1)).onComplete();
-        verify(observer, never()).onError(any(Throwable.class));
+        verify(subscriber, never()).onError(any(Throwable.class));
+        verify(subscriber, never()).onNext(0);
+        verify(subscriber, times(1)).onNext(1);
+        verify(subscriber, times(1)).onNext(3);
+        verify(subscriber, times(1)).onNext(6);
+        verify(subscriber, times(3)).onNext(anyInt());
+        verify(subscriber, times(1)).onComplete();
+        verify(subscriber, never()).onError(any(Throwable.class));
     }
 
     @Test
     public void testScanIntegersWithoutInitialValueAndOnlyOneValue() {
-        Subscriber<Integer> observer = TestHelper.mockSubscriber();
+        Subscriber<Integer> subscriber = TestHelper.mockSubscriber();
 
         Flowable<Integer> observable = Flowable.just(1);
 
@@ -101,14 +101,14 @@ public class FlowableScanTest {
             }
 
         });
-        m.subscribe(observer);
+        m.subscribe(subscriber);
 
-        verify(observer, never()).onError(any(Throwable.class));
-        verify(observer, never()).onNext(0);
-        verify(observer, times(1)).onNext(1);
-        verify(observer, times(1)).onNext(anyInt());
-        verify(observer, times(1)).onComplete();
-        verify(observer, never()).onError(any(Throwable.class));
+        verify(subscriber, never()).onError(any(Throwable.class));
+        verify(subscriber, never()).onNext(0);
+        verify(subscriber, times(1)).onNext(1);
+        verify(subscriber, times(1)).onNext(anyInt());
+        verify(subscriber, times(1)).onComplete();
+        verify(subscriber, never()).onError(any(Throwable.class));
     }
 
     @Test

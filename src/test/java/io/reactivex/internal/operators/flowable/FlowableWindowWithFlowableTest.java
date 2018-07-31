@@ -698,19 +698,33 @@ public class FlowableWindowWithFlowableTest {
     @SuppressWarnings("unchecked")
     @Test
     public void boundaryDirectMissingBackpressure() {
-        BehaviorProcessor.create()
-        .window(Flowable.error(new TestException()))
-        .test(0)
-        .assertFailure(MissingBackpressureException.class);
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            BehaviorProcessor.create()
+            .window(Flowable.error(new TestException()))
+            .test(0)
+            .assertFailure(MissingBackpressureException.class);
+
+            TestHelper.assertUndeliverable(errors, 0, TestException.class);
+        } finally {
+            RxJavaPlugins.reset();
+        }
     }
 
     @SuppressWarnings("unchecked")
     @Test
     public void boundaryDirectMissingBackpressureNoNullPointerException() {
-        BehaviorProcessor.createDefault(1)
-        .window(Flowable.error(new TestException()))
-        .test(0)
-        .assertFailure(MissingBackpressureException.class);
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            BehaviorProcessor.createDefault(1)
+            .window(Flowable.error(new TestException()))
+            .test(0)
+            .assertFailure(MissingBackpressureException.class);
+
+            TestHelper.assertUndeliverable(errors, 0, TestException.class);
+        } finally {
+            RxJavaPlugins.reset();
+        }
     }
 
     @Test

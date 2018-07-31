@@ -29,16 +29,16 @@ public class FlowableDefaultIfEmptyTest {
         Flowable<Integer> source = Flowable.just(1, 2, 3);
         Flowable<Integer> observable = source.defaultIfEmpty(10);
 
-        Subscriber<Integer> observer = TestHelper.mockSubscriber();
+        Subscriber<Integer> subscriber = TestHelper.mockSubscriber();
 
-        observable.subscribe(observer);
+        observable.subscribe(subscriber);
 
-        verify(observer, never()).onNext(10);
-        verify(observer).onNext(1);
-        verify(observer).onNext(2);
-        verify(observer).onNext(3);
-        verify(observer).onComplete();
-        verify(observer, never()).onError(any(Throwable.class));
+        verify(subscriber, never()).onNext(10);
+        verify(subscriber).onNext(1);
+        verify(subscriber).onNext(2);
+        verify(subscriber).onNext(3);
+        verify(subscriber).onComplete();
+        verify(subscriber, never()).onError(any(Throwable.class));
     }
 
     @Test
@@ -46,13 +46,13 @@ public class FlowableDefaultIfEmptyTest {
         Flowable<Integer> source = Flowable.empty();
         Flowable<Integer> observable = source.defaultIfEmpty(10);
 
-        Subscriber<Integer> observer = TestHelper.mockSubscriber();
+        Subscriber<Integer> subscriber = TestHelper.mockSubscriber();
 
-        observable.subscribe(observer);
+        observable.subscribe(subscriber);
 
-        verify(observer).onNext(10);
-        verify(observer).onComplete();
-        verify(observer, never()).onError(any(Throwable.class));
+        verify(subscriber).onNext(10);
+        verify(subscriber).onComplete();
+        verify(subscriber, never()).onError(any(Throwable.class));
     }
 
     @Test

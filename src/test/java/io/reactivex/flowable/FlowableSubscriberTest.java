@@ -602,33 +602,40 @@ public class FlowableSubscriberTest {
 
     @Test
     public void suppressAfterCompleteEvents() {
-        final TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
-        ts.onSubscribe(new BooleanSubscription());
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            final TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+            ts.onSubscribe(new BooleanSubscription());
 
-        ForEachWhileSubscriber<Integer> s = new ForEachWhileSubscriber<Integer>(new Predicate<Integer>() {
-            @Override
-            public boolean test(Integer v) throws Exception {
-                ts.onNext(v);
-                return true;
-            }
-        }, new Consumer<Throwable>() {
-            @Override
-            public void accept(Throwable e) throws Exception {
-                ts.onError(e);
-            }
-        }, new Action() {
-            @Override
-            public void run() throws Exception {
-                ts.onComplete();
-            }
-        });
+            ForEachWhileSubscriber<Integer> s = new ForEachWhileSubscriber<Integer>(new Predicate<Integer>() {
+                @Override
+                public boolean test(Integer v) throws Exception {
+                    ts.onNext(v);
+                    return true;
+                }
+            }, new Consumer<Throwable>() {
+                @Override
+                public void accept(Throwable e) throws Exception {
+                    ts.onError(e);
+                }
+            }, new Action() {
+                @Override
+                public void run() throws Exception {
+                    ts.onComplete();
+                }
+            });
 
-        s.onComplete();
-        s.onNext(1);
-        s.onError(new TestException());
-        s.onComplete();
+            s.onComplete();
+            s.onNext(1);
+            s.onError(new TestException());
+            s.onComplete();
 
-        ts.assertResult();
+            ts.assertResult();
+
+            TestHelper.assertUndeliverable(errors, 0, TestException.class);
+        } finally {
+            RxJavaPlugins.reset();
+        }
     }
 
     @Test

@@ -42,8 +42,8 @@ public class PublishProcessorTest extends FlowableProcessorTest<Object> {
     public void testCompleted() {
         PublishProcessor<String> processor = PublishProcessor.create();
 
-        Subscriber<String> observer = TestHelper.mockSubscriber();
-        processor.subscribe(observer);
+        Subscriber<String> subscriber = TestHelper.mockSubscriber();
+        processor.subscribe(subscriber);
 
         processor.onNext("one");
         processor.onNext("two");
@@ -57,7 +57,7 @@ public class PublishProcessorTest extends FlowableProcessorTest<Object> {
         processor.onComplete();
         processor.onError(new Throwable());
 
-        assertCompletedSubscriber(observer);
+        assertCompletedSubscriber(subscriber);
         // todo bug?            assertNeverSubscriber(anotherSubscriber);
     }
 
@@ -115,8 +115,8 @@ public class PublishProcessorTest extends FlowableProcessorTest<Object> {
     public void testError() {
         PublishProcessor<String> processor = PublishProcessor.create();
 
-        Subscriber<String> observer = TestHelper.mockSubscriber();
-        processor.subscribe(observer);
+        Subscriber<String> subscriber = TestHelper.mockSubscriber();
+        processor.subscribe(subscriber);
 
         processor.onNext("one");
         processor.onNext("two");
@@ -130,7 +130,7 @@ public class PublishProcessorTest extends FlowableProcessorTest<Object> {
         processor.onError(new Throwable());
         processor.onComplete();
 
-        assertErrorSubscriber(observer);
+        assertErrorSubscriber(subscriber);
         // todo bug?            assertNeverSubscriber(anotherSubscriber);
     }
 
@@ -146,13 +146,13 @@ public class PublishProcessorTest extends FlowableProcessorTest<Object> {
     public void testSubscribeMidSequence() {
         PublishProcessor<String> processor = PublishProcessor.create();
 
-        Subscriber<String> observer = TestHelper.mockSubscriber();
-        processor.subscribe(observer);
+        Subscriber<String> subscriber = TestHelper.mockSubscriber();
+        processor.subscribe(subscriber);
 
         processor.onNext("one");
         processor.onNext("two");
 
-        assertObservedUntilTwo(observer);
+        assertObservedUntilTwo(subscriber);
 
         Subscriber<String> anotherSubscriber = TestHelper.mockSubscriber();
         processor.subscribe(anotherSubscriber);
@@ -160,7 +160,7 @@ public class PublishProcessorTest extends FlowableProcessorTest<Object> {
         processor.onNext("three");
         processor.onComplete();
 
-        assertCompletedSubscriber(observer);
+        assertCompletedSubscriber(subscriber);
         assertCompletedStartingWithThreeSubscriber(anotherSubscriber);
     }
 
@@ -176,15 +176,15 @@ public class PublishProcessorTest extends FlowableProcessorTest<Object> {
     public void testUnsubscribeFirstSubscriber() {
         PublishProcessor<String> processor = PublishProcessor.create();
 
-        Subscriber<String> observer = TestHelper.mockSubscriber();
-        TestSubscriber<String> ts = new TestSubscriber<String>(observer);
+        Subscriber<String> subscriber = TestHelper.mockSubscriber();
+        TestSubscriber<String> ts = new TestSubscriber<String>(subscriber);
         processor.subscribe(ts);
 
         processor.onNext("one");
         processor.onNext("two");
 
         ts.dispose();
-        assertObservedUntilTwo(observer);
+        assertObservedUntilTwo(subscriber);
 
         Subscriber<String> anotherSubscriber = TestHelper.mockSubscriber();
         processor.subscribe(anotherSubscriber);
@@ -192,7 +192,7 @@ public class PublishProcessorTest extends FlowableProcessorTest<Object> {
         processor.onNext("three");
         processor.onComplete();
 
-        assertObservedUntilTwo(observer);
+        assertObservedUntilTwo(subscriber);
         assertCompletedStartingWithThreeSubscriber(anotherSubscriber);
     }
 

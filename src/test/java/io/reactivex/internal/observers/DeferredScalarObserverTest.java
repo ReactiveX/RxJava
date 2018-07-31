@@ -15,13 +15,16 @@ package io.reactivex.internal.observers;
 
 import static org.junit.Assert.*;
 
+import java.util.List;
+
 import org.junit.Test;
 
 import io.reactivex.*;
 import io.reactivex.disposables.*;
-import io.reactivex.exceptions.TestException;
+import io.reactivex.exceptions.*;
 import io.reactivex.internal.fuseable.*;
 import io.reactivex.observers.*;
+import io.reactivex.plugins.RxJavaPlugins;
 
 public class DeferredScalarObserverTest {
 
@@ -44,20 +47,27 @@ public class DeferredScalarObserverTest {
 
     @Test
     public void normal() {
-        TestObserver<Integer> to = new TestObserver<Integer>();
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            TestObserver<Integer> to = new TestObserver<Integer>();
 
-        TakeFirst source = new TakeFirst(to);
+            TakeFirst source = new TakeFirst(to);
 
-        source.onSubscribe(Disposables.empty());
+            source.onSubscribe(Disposables.empty());
 
-        Disposable d = Disposables.empty();
-        source.onSubscribe(d);
+            Disposable d = Disposables.empty();
+            source.onSubscribe(d);
 
-        assertTrue(d.isDisposed());
+            assertTrue(d.isDisposed());
 
-        source.onNext(1);
+            source.onNext(1);
 
-        to.assertResult(1);
+            to.assertResult(1);
+
+            TestHelper.assertError(errors, 0, ProtocolViolationException.class);
+        } finally {
+            RxJavaPlugins.reset();
+        }
     }
 
     @Test
@@ -105,48 +115,62 @@ public class DeferredScalarObserverTest {
 
     @Test
     public void fused() {
-        TestObserver<Integer> to = ObserverFusion.newTest(QueueFuseable.ANY);
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            TestObserver<Integer> to = ObserverFusion.newTest(QueueFuseable.ANY);
 
-        TakeFirst source = new TakeFirst(to);
+            TakeFirst source = new TakeFirst(to);
 
-        Disposable d = Disposables.empty();
+            Disposable d = Disposables.empty();
 
-        source.onSubscribe(d);
+            source.onSubscribe(d);
 
-        to.assertOf(ObserverFusion.<Integer>assertFuseable());
-        to.assertOf(ObserverFusion.<Integer>assertFusionMode(QueueFuseable.ASYNC));
+            to.assertOf(ObserverFusion.<Integer>assertFuseable());
+            to.assertOf(ObserverFusion.<Integer>assertFusionMode(QueueFuseable.ASYNC));
 
-        source.onNext(1);
-        source.onNext(1);
-        source.onError(new TestException());
-        source.onComplete();
+            source.onNext(1);
+            source.onNext(1);
+            source.onError(new TestException());
+            source.onComplete();
 
-        assertTrue(d.isDisposed());
+            assertTrue(d.isDisposed());
 
-        to.assertResult(1);
+            to.assertResult(1);
+
+            TestHelper.assertUndeliverable(errors, 0, TestException.class);
+        } finally {
+            RxJavaPlugins.reset();
+        }
     }
 
     @Test
     public void fusedReject() {
-        TestObserver<Integer> to = ObserverFusion.newTest(QueueFuseable.SYNC);
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            TestObserver<Integer> to = ObserverFusion.newTest(QueueFuseable.SYNC);
 
-        TakeFirst source = new TakeFirst(to);
+            TakeFirst source = new TakeFirst(to);
 
-        Disposable d = Disposables.empty();
+            Disposable d = Disposables.empty();
 
-        source.onSubscribe(d);
+            source.onSubscribe(d);
 
-        to.assertOf(ObserverFusion.<Integer>assertFuseable());
-        to.assertOf(ObserverFusion.<Integer>assertFusionMode(QueueFuseable.NONE));
+            to.assertOf(ObserverFusion.<Integer>assertFuseable());
+            to.assertOf(ObserverFusion.<Integer>assertFusionMode(QueueFuseable.NONE));
 
-        source.onNext(1);
-        source.onNext(1);
-        source.onError(new TestException());
-        source.onComplete();
+            source.onNext(1);
+            source.onNext(1);
+            source.onError(new TestException());
+            source.onComplete();
 
-        assertTrue(d.isDisposed());
+            assertTrue(d.isDisposed());
 
-        to.assertResult(1);
+            to.assertResult(1);
+
+            TestHelper.assertUndeliverable(errors, 0, TestException.class);
+        } finally {
+            RxJavaPlugins.reset();
+        }
     }
 
     static final class TakeLast extends DeferredScalarObserver<Integer, Integer> {
@@ -167,74 +191,102 @@ public class DeferredScalarObserverTest {
 
     @Test
     public void nonfusedTerminateMore() {
-        TestObserver<Integer> to = ObserverFusion.newTest(QueueFuseable.NONE);
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            TestObserver<Integer> to = ObserverFusion.newTest(QueueFuseable.NONE);
 
-        TakeLast source = new TakeLast(to);
+            TakeLast source = new TakeLast(to);
 
-        Disposable d = Disposables.empty();
+            Disposable d = Disposables.empty();
 
-        source.onSubscribe(d);
+            source.onSubscribe(d);
 
-        source.onNext(1);
-        source.onComplete();
-        source.onComplete();
-        source.onError(new TestException());
+            source.onNext(1);
+            source.onComplete();
+            source.onComplete();
+            source.onError(new TestException());
 
-        to.assertResult(1);
+            to.assertResult(1);
+
+            TestHelper.assertUndeliverable(errors, 0, TestException.class);
+        } finally {
+            RxJavaPlugins.reset();
+        }
     }
 
     @Test
     public void nonfusedError() {
-        TestObserver<Integer> to = ObserverFusion.newTest(QueueFuseable.NONE);
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            TestObserver<Integer> to = ObserverFusion.newTest(QueueFuseable.NONE);
 
-        TakeLast source = new TakeLast(to);
+            TakeLast source = new TakeLast(to);
 
-        Disposable d = Disposables.empty();
+            Disposable d = Disposables.empty();
 
-        source.onSubscribe(d);
+            source.onSubscribe(d);
 
-        source.onNext(1);
-        source.onError(new TestException());
-        source.onError(new TestException());
-        source.onComplete();
+            source.onNext(1);
+            source.onError(new TestException());
+            source.onError(new TestException("second"));
+            source.onComplete();
 
-        to.assertFailure(TestException.class);
+            to.assertFailure(TestException.class);
+
+            TestHelper.assertUndeliverable(errors, 0, TestException.class, "second");
+        } finally {
+            RxJavaPlugins.reset();
+        }
     }
 
     @Test
     public void fusedTerminateMore() {
-        TestObserver<Integer> to = ObserverFusion.newTest(QueueFuseable.ANY);
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            TestObserver<Integer> to = ObserverFusion.newTest(QueueFuseable.ANY);
 
-        TakeLast source = new TakeLast(to);
+            TakeLast source = new TakeLast(to);
 
-        Disposable d = Disposables.empty();
+            Disposable d = Disposables.empty();
 
-        source.onSubscribe(d);
+            source.onSubscribe(d);
 
-        source.onNext(1);
-        source.onComplete();
-        source.onComplete();
-        source.onError(new TestException());
+            source.onNext(1);
+            source.onComplete();
+            source.onComplete();
+            source.onError(new TestException());
 
-        to.assertResult(1);
+            to.assertResult(1);
+
+            TestHelper.assertUndeliverable(errors, 0, TestException.class);
+        } finally {
+            RxJavaPlugins.reset();
+        }
     }
 
     @Test
     public void fusedError() {
-        TestObserver<Integer> to = ObserverFusion.newTest(QueueFuseable.ANY);
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            TestObserver<Integer> to = ObserverFusion.newTest(QueueFuseable.ANY);
 
-        TakeLast source = new TakeLast(to);
+            TakeLast source = new TakeLast(to);
 
-        Disposable d = Disposables.empty();
+            Disposable d = Disposables.empty();
 
-        source.onSubscribe(d);
+            source.onSubscribe(d);
 
-        source.onNext(1);
-        source.onError(new TestException());
-        source.onError(new TestException());
-        source.onComplete();
+            source.onNext(1);
+            source.onError(new TestException());
+            source.onError(new TestException("second"));
+            source.onComplete();
 
-        to.assertFailure(TestException.class);
+            to.assertFailure(TestException.class);
+
+            TestHelper.assertUndeliverable(errors, 0, TestException.class, "second");
+        } finally {
+            RxJavaPlugins.reset();
+        }
     }
 
     @Test

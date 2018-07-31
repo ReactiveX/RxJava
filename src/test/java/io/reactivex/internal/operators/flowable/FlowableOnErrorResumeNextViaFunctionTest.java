@@ -14,6 +14,7 @@
 package io.reactivex.internal.operators.flowable;
 
 import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import java.io.IOException;
@@ -60,17 +61,17 @@ public class FlowableOnErrorResumeNextViaFunctionTest {
         };
         Flowable<String> observable = w.onErrorResumeNext(resume);
 
-        Subscriber<String> observer = TestHelper.mockSubscriber();
+        Subscriber<String> subscriber = TestHelper.mockSubscriber();
 
-        observable.subscribe(observer);
+        observable.subscribe(subscriber);
 
-        verify(observer, Mockito.never()).onError(any(Throwable.class));
-        verify(observer, times(1)).onComplete();
-        verify(observer, times(1)).onNext("one");
-        verify(observer, Mockito.never()).onNext("two");
-        verify(observer, Mockito.never()).onNext("three");
-        verify(observer, times(1)).onNext("twoResume");
-        verify(observer, times(1)).onNext("threeResume");
+        verify(subscriber, Mockito.never()).onError(any(Throwable.class));
+        verify(subscriber, times(1)).onComplete();
+        verify(subscriber, times(1)).onNext("one");
+        verify(subscriber, Mockito.never()).onNext("two");
+        verify(subscriber, Mockito.never()).onNext("three");
+        verify(subscriber, times(1)).onNext("twoResume");
+        verify(subscriber, times(1)).onNext("threeResume");
         assertNotNull(receivedException.get());
     }
 
@@ -90,9 +91,9 @@ public class FlowableOnErrorResumeNextViaFunctionTest {
         };
         Flowable<String> observable = Flowable.unsafeCreate(w).onErrorResumeNext(resume);
 
-        Subscriber<String> observer = TestHelper.mockSubscriber();
+        Subscriber<String> subscriber = TestHelper.mockSubscriber();
 
-        observable.subscribe(observer);
+        observable.subscribe(subscriber);
 
         try {
             w.t.join();
@@ -100,13 +101,13 @@ public class FlowableOnErrorResumeNextViaFunctionTest {
             fail(e.getMessage());
         }
 
-        verify(observer, Mockito.never()).onError(any(Throwable.class));
-        verify(observer, times(1)).onComplete();
-        verify(observer, times(1)).onNext("one");
-        verify(observer, Mockito.never()).onNext("two");
-        verify(observer, Mockito.never()).onNext("three");
-        verify(observer, times(1)).onNext("twoResume");
-        verify(observer, times(1)).onNext("threeResume");
+        verify(subscriber, Mockito.never()).onError(any(Throwable.class));
+        verify(subscriber, times(1)).onComplete();
+        verify(subscriber, times(1)).onNext("one");
+        verify(subscriber, Mockito.never()).onNext("two");
+        verify(subscriber, Mockito.never()).onNext("three");
+        verify(subscriber, times(1)).onNext("twoResume");
+        verify(subscriber, times(1)).onNext("threeResume");
         assertNotNull(receivedException.get());
     }
 
@@ -127,9 +128,8 @@ public class FlowableOnErrorResumeNextViaFunctionTest {
         };
         Flowable<String> observable = Flowable.unsafeCreate(w).onErrorResumeNext(resume);
 
-        @SuppressWarnings("unchecked")
-        DefaultSubscriber<String> observer = mock(DefaultSubscriber.class);
-        observable.subscribe(observer);
+        Subscriber<String> subscriber = TestHelper.mockSubscriber();
+        observable.subscribe(subscriber);
 
         try {
             w.t.join();
@@ -138,11 +138,11 @@ public class FlowableOnErrorResumeNextViaFunctionTest {
         }
 
         // we should get the "one" value before the error
-        verify(observer, times(1)).onNext("one");
+        verify(subscriber, times(1)).onNext("one");
 
         // we should have received an onError call on the Observer since the resume function threw an exception
-        verify(observer, times(1)).onError(any(Throwable.class));
-        verify(observer, times(0)).onComplete();
+        verify(subscriber, times(1)).onError(any(Throwable.class));
+        verify(subscriber, times(0)).onComplete();
     }
 
     /**
@@ -260,20 +260,19 @@ public class FlowableOnErrorResumeNextViaFunctionTest {
 
         });
 
-        @SuppressWarnings("unchecked")
-        DefaultSubscriber<String> observer = mock(DefaultSubscriber.class);
+        Subscriber<String> subscriber = TestHelper.mockSubscriber();
 
-        TestSubscriber<String> ts = new TestSubscriber<String>(observer, Long.MAX_VALUE);
+        TestSubscriber<String> ts = new TestSubscriber<String>(subscriber, Long.MAX_VALUE);
         observable.subscribe(ts);
         ts.awaitTerminalEvent();
 
-        verify(observer, Mockito.never()).onError(any(Throwable.class));
-        verify(observer, times(1)).onComplete();
-        verify(observer, times(1)).onNext("one");
-        verify(observer, Mockito.never()).onNext("two");
-        verify(observer, Mockito.never()).onNext("three");
-        verify(observer, times(1)).onNext("twoResume");
-        verify(observer, times(1)).onNext("threeResume");
+        verify(subscriber, Mockito.never()).onError(any(Throwable.class));
+        verify(subscriber, times(1)).onComplete();
+        verify(subscriber, times(1)).onNext("one");
+        verify(subscriber, Mockito.never()).onNext("two");
+        verify(subscriber, Mockito.never()).onNext("three");
+        verify(subscriber, times(1)).onNext("twoResume");
+        verify(subscriber, times(1)).onNext("threeResume");
     }
 
     private static class TestFlowable implements Publisher<String> {

@@ -34,13 +34,13 @@ public class FlowableThrottleFirstTest {
 
     private TestScheduler scheduler;
     private Scheduler.Worker innerScheduler;
-    private Subscriber<String> observer;
+    private Subscriber<String> subscriber;
 
     @Before
     public void before() {
         scheduler = new TestScheduler();
         innerScheduler = scheduler.createWorker();
-        observer = TestHelper.mockSubscriber();
+        subscriber = TestHelper.mockSubscriber();
     }
 
     @Test
@@ -58,16 +58,16 @@ public class FlowableThrottleFirstTest {
         });
 
         Flowable<String> sampled = source.throttleFirst(400, TimeUnit.MILLISECONDS, scheduler);
-        sampled.subscribe(observer);
+        sampled.subscribe(subscriber);
 
-        InOrder inOrder = inOrder(observer);
+        InOrder inOrder = inOrder(subscriber);
 
         scheduler.advanceTimeTo(1000, TimeUnit.MILLISECONDS);
-        inOrder.verify(observer, times(1)).onNext("one");
-        inOrder.verify(observer, times(0)).onNext("two");
-        inOrder.verify(observer, times(1)).onNext("three");
-        inOrder.verify(observer, times(0)).onNext("four");
-        inOrder.verify(observer, times(1)).onComplete();
+        inOrder.verify(subscriber, times(1)).onNext("one");
+        inOrder.verify(subscriber, times(0)).onNext("two");
+        inOrder.verify(subscriber, times(1)).onNext("three");
+        inOrder.verify(subscriber, times(0)).onNext("four");
+        inOrder.verify(subscriber, times(1)).onComplete();
         inOrder.verifyNoMoreInteractions();
     }
 
@@ -85,13 +85,13 @@ public class FlowableThrottleFirstTest {
         });
 
         Flowable<String> sampled = source.throttleFirst(400, TimeUnit.MILLISECONDS, scheduler);
-        sampled.subscribe(observer);
+        sampled.subscribe(subscriber);
 
-        InOrder inOrder = inOrder(observer);
+        InOrder inOrder = inOrder(subscriber);
 
         scheduler.advanceTimeTo(400, TimeUnit.MILLISECONDS);
-        inOrder.verify(observer).onNext("one");
-        inOrder.verify(observer).onError(any(TestException.class));
+        inOrder.verify(subscriber).onNext("one");
+        inOrder.verify(subscriber).onError(any(TestException.class));
         inOrder.verifyNoMoreInteractions();
     }
 
@@ -124,10 +124,10 @@ public class FlowableThrottleFirstTest {
 
     @Test
     public void testThrottle() {
-        Subscriber<Integer> observer = TestHelper.mockSubscriber();
+        Subscriber<Integer> subscriber = TestHelper.mockSubscriber();
         TestScheduler s = new TestScheduler();
         PublishProcessor<Integer> o = PublishProcessor.create();
-        o.throttleFirst(500, TimeUnit.MILLISECONDS, s).subscribe(observer);
+        o.throttleFirst(500, TimeUnit.MILLISECONDS, s).subscribe(subscriber);
 
         // send events with simulated time increments
         s.advanceTimeTo(0, TimeUnit.MILLISECONDS);
@@ -145,11 +145,11 @@ public class FlowableThrottleFirstTest {
         s.advanceTimeTo(1501, TimeUnit.MILLISECONDS);
         o.onComplete();
 
-        InOrder inOrder = inOrder(observer);
-        inOrder.verify(observer).onNext(1);
-        inOrder.verify(observer).onNext(3);
-        inOrder.verify(observer).onNext(7);
-        inOrder.verify(observer).onComplete();
+        InOrder inOrder = inOrder(subscriber);
+        inOrder.verify(subscriber).onNext(1);
+        inOrder.verify(subscriber).onNext(3);
+        inOrder.verify(subscriber).onNext(7);
+        inOrder.verify(subscriber).onComplete();
         inOrder.verifyNoMoreInteractions();
     }
 

@@ -35,14 +35,14 @@ public class FlowableDematerializeTest {
         Flowable<Notification<Integer>> notifications = Flowable.just(1, 2).materialize();
         Flowable<Integer> dematerialize = notifications.dematerialize();
 
-        Subscriber<Integer> observer = TestHelper.mockSubscriber();
+        Subscriber<Integer> subscriber = TestHelper.mockSubscriber();
 
-        dematerialize.subscribe(observer);
+        dematerialize.subscribe(subscriber);
 
-        verify(observer, times(1)).onNext(1);
-        verify(observer, times(1)).onNext(2);
-        verify(observer, times(1)).onComplete();
-        verify(observer, never()).onError(any(Throwable.class));
+        verify(subscriber, times(1)).onNext(1);
+        verify(subscriber, times(1)).onNext(2);
+        verify(subscriber, times(1)).onComplete();
+        verify(subscriber, never()).onError(any(Throwable.class));
     }
 
     @Test
@@ -51,13 +51,13 @@ public class FlowableDematerializeTest {
         Flowable<Integer> observable = Flowable.error(exception);
         Flowable<Integer> dematerialize = observable.materialize().dematerialize();
 
-        Subscriber<Integer> observer = TestHelper.mockSubscriber();
+        Subscriber<Integer> subscriber = TestHelper.mockSubscriber();
 
-        dematerialize.subscribe(observer);
+        dematerialize.subscribe(subscriber);
 
-        verify(observer, times(1)).onError(exception);
-        verify(observer, times(0)).onComplete();
-        verify(observer, times(0)).onNext(any(Integer.class));
+        verify(subscriber, times(1)).onError(exception);
+        verify(subscriber, times(0)).onComplete();
+        verify(subscriber, times(0)).onNext(any(Integer.class));
     }
 
     @Test
@@ -66,13 +66,13 @@ public class FlowableDematerializeTest {
         Flowable<Integer> observable = Flowable.error(exception);
         Flowable<Integer> dematerialize = observable.materialize().dematerialize();
 
-        Subscriber<Integer> observer = TestHelper.mockSubscriber();
+        Subscriber<Integer> subscriber = TestHelper.mockSubscriber();
 
-        dematerialize.subscribe(observer);
+        dematerialize.subscribe(subscriber);
 
-        verify(observer, times(1)).onError(exception);
-        verify(observer, times(0)).onComplete();
-        verify(observer, times(0)).onNext(any(Integer.class));
+        verify(subscriber, times(1)).onError(exception);
+        verify(subscriber, times(0)).onComplete();
+        verify(subscriber, times(0)).onNext(any(Integer.class));
     }
 
     @Test
@@ -81,13 +81,13 @@ public class FlowableDematerializeTest {
         Flowable<Integer> observable = Flowable.error(exception);
         Flowable<Integer> dematerialize = observable.dematerialize();
 
-        Subscriber<Integer> observer = TestHelper.mockSubscriber();
+        Subscriber<Integer> subscriber = TestHelper.mockSubscriber();
 
-        dematerialize.subscribe(observer);
+        dematerialize.subscribe(subscriber);
 
-        verify(observer, times(1)).onError(exception);
-        verify(observer, times(0)).onComplete();
-        verify(observer, times(0)).onNext(any(Integer.class));
+        verify(subscriber, times(1)).onError(exception);
+        verify(subscriber, times(0)).onComplete();
+        verify(subscriber, times(0)).onNext(any(Integer.class));
     }
 
     @Test
@@ -95,16 +95,16 @@ public class FlowableDematerializeTest {
         Flowable<Integer> observable = Flowable.empty();
         Flowable<Integer> dematerialize = observable.dematerialize();
 
-        Subscriber<Integer> observer = TestHelper.mockSubscriber();
+        Subscriber<Integer> subscriber = TestHelper.mockSubscriber();
 
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>(observer);
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>(subscriber);
         dematerialize.subscribe(ts);
 
         System.out.println(ts.errors());
 
-        verify(observer, never()).onError(any(Throwable.class));
-        verify(observer, times(1)).onComplete();
-        verify(observer, times(0)).onNext(any(Integer.class));
+        verify(subscriber, never()).onError(any(Throwable.class));
+        verify(subscriber, times(1)).onComplete();
+        verify(subscriber, times(0)).onNext(any(Integer.class));
     }
 
     @Test

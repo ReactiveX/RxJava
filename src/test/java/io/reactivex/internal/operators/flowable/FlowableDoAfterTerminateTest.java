@@ -18,6 +18,8 @@ package io.reactivex.internal.operators.flowable;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
+import java.util.List;
+
 import org.junit.*;
 import org.mockito.Mockito;
 import org.reactivestreams.Subscriber;
@@ -25,21 +27,22 @@ import org.reactivestreams.Subscriber;
 import io.reactivex.*;
 import io.reactivex.functions.Action;
 import io.reactivex.internal.util.ExceptionHelper;
+import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.subscribers.TestSubscriber;
 
 public class FlowableDoAfterTerminateTest {
 
     private Action aAction0;
-    private Subscriber<String> observer;
+    private Subscriber<String> subscriber;
 
     @Before
     public void before() {
         aAction0 = Mockito.mock(Action.class);
-        observer = TestHelper.mockSubscriber();
+        subscriber = TestHelper.mockSubscriber();
     }
 
     private void checkActionCalled(Flowable<String> input) {
-        input.doAfterTerminate(aAction0).subscribe(observer);
+        input.doAfterTerminate(aAction0).subscribe(subscriber);
         try {
             verify(aAction0, times(1)).run();
         } catch (Throwable ex) {
@@ -82,21 +85,28 @@ public class FlowableDoAfterTerminateTest {
 
     @Test
     public void ifFinallyActionThrowsExceptionShouldNotBeSwallowedAndActionShouldBeCalledOnce() throws Exception {
-        Action finallyAction = Mockito.mock(Action.class);
-        doThrow(new IllegalStateException()).when(finallyAction).run();
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            Action finallyAction = Mockito.mock(Action.class);
+            doThrow(new IllegalStateException()).when(finallyAction).run();
 
-        TestSubscriber<String> testSubscriber = new TestSubscriber<String>();
+            TestSubscriber<String> testSubscriber = new TestSubscriber<String>();
 
-        Flowable
-                .just("value")
-                .doAfterTerminate(finallyAction)
-                .subscribe(testSubscriber);
+            Flowable
+                    .just("value")
+                    .doAfterTerminate(finallyAction)
+                    .subscribe(testSubscriber);
 
-        testSubscriber.assertValue("value");
+            testSubscriber.assertValue("value");
 
-        verify(finallyAction).run();
-        // Actual result:
-        // Not only IllegalStateException was swallowed
-        // But finallyAction was called twice!
+            verify(finallyAction).run();
+
+            TestHelper.assertError(errors, 0, IllegalStateException.class);
+            // Actual result:
+            // Not only IllegalStateException was swallowed
+            // But finallyAction was called twice!
+        } finally {
+            RxJavaPlugins.reset();
+        }
     }
 }

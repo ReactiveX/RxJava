@@ -38,7 +38,7 @@ public class FlowableZipIterableTest {
     PublishProcessor<String> s2;
     Flowable<String> zipped;
 
-    Subscriber<String> observer;
+    Subscriber<String> subscriber;
     InOrder inOrder;
 
     @Before
@@ -54,10 +54,10 @@ public class FlowableZipIterableTest {
         s2 = PublishProcessor.create();
         zipped = Flowable.zip(s1, s2, concat2Strings);
 
-        observer = TestHelper.mockSubscriber();
-        inOrder = inOrder(observer);
+        subscriber = TestHelper.mockSubscriber();
+        inOrder = inOrder(subscriber);
 
-        zipped.subscribe(observer);
+        zipped.subscribe(subscriber);
     }
 
     BiFunction<Object, Object, String> zipr2 = new BiFunction<Object, Object, String>() {

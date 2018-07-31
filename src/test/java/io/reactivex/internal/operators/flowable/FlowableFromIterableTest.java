@@ -46,15 +46,15 @@ public class FlowableFromIterableTest {
     public void testListIterable() {
         Flowable<String> flowable = Flowable.fromIterable(Arrays.<String> asList("one", "two", "three"));
 
-        Subscriber<String> observer = TestHelper.mockSubscriber();
+        Subscriber<String> subscriber = TestHelper.mockSubscriber();
 
-        flowable.subscribe(observer);
+        flowable.subscribe(subscriber);
 
-        verify(observer, times(1)).onNext("one");
-        verify(observer, times(1)).onNext("two");
-        verify(observer, times(1)).onNext("three");
-        verify(observer, Mockito.never()).onError(any(Throwable.class));
-        verify(observer, times(1)).onComplete();
+        verify(subscriber, times(1)).onNext("one");
+        verify(subscriber, times(1)).onNext("two");
+        verify(subscriber, times(1)).onNext("three");
+        verify(subscriber, Mockito.never()).onError(any(Throwable.class));
+        verify(subscriber, times(1)).onComplete();
     }
 
     /**
@@ -90,30 +90,30 @@ public class FlowableFromIterableTest {
         };
         Flowable<String> flowable = Flowable.fromIterable(it);
 
-        Subscriber<String> observer = TestHelper.mockSubscriber();
+        Subscriber<String> subscriber = TestHelper.mockSubscriber();
 
-        flowable.subscribe(observer);
+        flowable.subscribe(subscriber);
 
-        verify(observer, times(1)).onNext("1");
-        verify(observer, times(1)).onNext("2");
-        verify(observer, times(1)).onNext("3");
-        verify(observer, Mockito.never()).onError(any(Throwable.class));
-        verify(observer, times(1)).onComplete();
+        verify(subscriber, times(1)).onNext("1");
+        verify(subscriber, times(1)).onNext("2");
+        verify(subscriber, times(1)).onNext("3");
+        verify(subscriber, Mockito.never()).onError(any(Throwable.class));
+        verify(subscriber, times(1)).onComplete();
     }
 
     @Test
     public void testObservableFromIterable() {
         Flowable<String> flowable = Flowable.fromIterable(Arrays.<String> asList("one", "two", "three"));
 
-        Subscriber<String> observer = TestHelper.mockSubscriber();
+        Subscriber<String> subscriber = TestHelper.mockSubscriber();
 
-        flowable.subscribe(observer);
+        flowable.subscribe(subscriber);
 
-        verify(observer, times(1)).onNext("one");
-        verify(observer, times(1)).onNext("two");
-        verify(observer, times(1)).onNext("three");
-        verify(observer, Mockito.never()).onError(any(Throwable.class));
-        verify(observer, times(1)).onComplete();
+        verify(subscriber, times(1)).onNext("one");
+        verify(subscriber, times(1)).onNext("two");
+        verify(subscriber, times(1)).onNext("three");
+        verify(subscriber, Mockito.never()).onError(any(Throwable.class));
+        verify(subscriber, times(1)).onComplete();
     }
 
     @Test

@@ -244,13 +244,13 @@ public class FlowableSequenceEqualTest {
     }
 
     private void verifyResult(Flowable<Boolean> observable, boolean result) {
-        Subscriber<Boolean> observer = TestHelper.mockSubscriber();
+        Subscriber<Boolean> subscriber = TestHelper.mockSubscriber();
 
-        observable.subscribe(observer);
+        observable.subscribe(subscriber);
 
-        InOrder inOrder = inOrder(observer);
-        inOrder.verify(observer, times(1)).onNext(result);
-        inOrder.verify(observer).onComplete();
+        InOrder inOrder = inOrder(subscriber);
+        inOrder.verify(subscriber, times(1)).onNext(result);
+        inOrder.verify(subscriber).onComplete();
         inOrder.verifyNoMoreInteractions();
     }
 
@@ -265,11 +265,11 @@ public class FlowableSequenceEqualTest {
     }
 
     private void verifyError(Flowable<Boolean> observable) {
-        Subscriber<Boolean> observer = TestHelper.mockSubscriber();
-        observable.subscribe(observer);
+        Subscriber<Boolean> subscriber = TestHelper.mockSubscriber();
+        observable.subscribe(subscriber);
 
-        InOrder inOrder = inOrder(observer);
-        inOrder.verify(observer, times(1)).onError(isA(TestException.class));
+        InOrder inOrder = inOrder(subscriber);
+        inOrder.verify(subscriber, times(1)).onError(isA(TestException.class));
         inOrder.verifyNoMoreInteractions();
     }
 

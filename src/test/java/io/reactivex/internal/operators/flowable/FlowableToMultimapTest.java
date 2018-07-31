@@ -25,13 +25,13 @@ import io.reactivex.*;
 import io.reactivex.functions.Function;
 
 public class FlowableToMultimapTest {
-    Subscriber<Object> objectObserver;
+    Subscriber<Object> objectSubscriber;
 
     SingleObserver<Object> singleObserver;
 
     @Before
     public void before() {
-        objectObserver = TestHelper.mockSubscriber();
+        objectSubscriber = TestHelper.mockSubscriber();
         singleObserver = TestHelper.mockSingleObserver();
     }
 
@@ -58,11 +58,11 @@ public class FlowableToMultimapTest {
         expected.put(1, Arrays.asList("a", "b"));
         expected.put(2, Arrays.asList("cc", "dd"));
 
-        mapped.subscribe(objectObserver);
+        mapped.subscribe(objectSubscriber);
 
-        verify(objectObserver, never()).onError(any(Throwable.class));
-        verify(objectObserver, times(1)).onNext(expected);
-        verify(objectObserver, times(1)).onComplete();
+        verify(objectSubscriber, never()).onError(any(Throwable.class));
+        verify(objectSubscriber, times(1)).onNext(expected);
+        verify(objectSubscriber, times(1)).onComplete();
     }
 
     @Test
@@ -75,11 +75,11 @@ public class FlowableToMultimapTest {
         expected.put(1, Arrays.asList("aa", "bb"));
         expected.put(2, Arrays.asList("cccc", "dddd"));
 
-        mapped.subscribe(objectObserver);
+        mapped.subscribe(objectSubscriber);
 
-        verify(objectObserver, never()).onError(any(Throwable.class));
-        verify(objectObserver, times(1)).onNext(expected);
-        verify(objectObserver, times(1)).onComplete();
+        verify(objectSubscriber, never()).onError(any(Throwable.class));
+        verify(objectSubscriber, times(1)).onNext(expected);
+        verify(objectSubscriber, times(1)).onComplete();
     }
 
     @Test
@@ -121,11 +121,11 @@ public class FlowableToMultimapTest {
         expected.put(2, Arrays.asList("cc", "dd"));
         expected.put(3, Arrays.asList("eee", "fff"));
 
-        mapped.subscribe(objectObserver);
+        mapped.subscribe(objectSubscriber);
 
-        verify(objectObserver, never()).onError(any(Throwable.class));
-        verify(objectObserver, times(1)).onNext(expected);
-        verify(objectObserver, times(1)).onComplete();
+        verify(objectSubscriber, never()).onError(any(Throwable.class));
+        verify(objectSubscriber, times(1)).onNext(expected);
+        verify(objectSubscriber, times(1)).onComplete();
     }
 
     @Test
@@ -163,11 +163,11 @@ public class FlowableToMultimapTest {
         expected.put(2, Arrays.asList("cc", "dd"));
         expected.put(3, new HashSet<String>(Arrays.asList("eee")));
 
-        mapped.subscribe(objectObserver);
+        mapped.subscribe(objectSubscriber);
 
-        verify(objectObserver, never()).onError(any(Throwable.class));
-        verify(objectObserver, times(1)).onNext(expected);
-        verify(objectObserver, times(1)).onComplete();
+        verify(objectSubscriber, never()).onError(any(Throwable.class));
+        verify(objectSubscriber, times(1)).onNext(expected);
+        verify(objectSubscriber, times(1)).onComplete();
     }
 
     @Test
@@ -190,11 +190,11 @@ public class FlowableToMultimapTest {
         expected.put(1, Arrays.asList("a", "b"));
         expected.put(2, Arrays.asList("cc", "dd"));
 
-        mapped.subscribe(objectObserver);
+        mapped.subscribe(objectSubscriber);
 
-        verify(objectObserver, times(1)).onError(any(Throwable.class));
-        verify(objectObserver, never()).onNext(expected);
-        verify(objectObserver, never()).onComplete();
+        verify(objectSubscriber, times(1)).onError(any(Throwable.class));
+        verify(objectSubscriber, never()).onNext(expected);
+        verify(objectSubscriber, never()).onComplete();
     }
 
     @Test
@@ -217,11 +217,11 @@ public class FlowableToMultimapTest {
         expected.put(1, Arrays.asList("aa", "bb"));
         expected.put(2, Arrays.asList("cccc", "dddd"));
 
-        mapped.subscribe(objectObserver);
+        mapped.subscribe(objectSubscriber);
 
-        verify(objectObserver, times(1)).onError(any(Throwable.class));
-        verify(objectObserver, never()).onNext(expected);
-        verify(objectObserver, never()).onComplete();
+        verify(objectSubscriber, times(1)).onError(any(Throwable.class));
+        verify(objectSubscriber, never()).onNext(expected);
+        verify(objectSubscriber, never()).onComplete();
     }
 
     @Test
@@ -247,11 +247,11 @@ public class FlowableToMultimapTest {
         expected.put(2, Arrays.asList("cc", "dd"));
         expected.put(3, Arrays.asList("eee", "fff"));
 
-        mapped.subscribe(objectObserver);
+        mapped.subscribe(objectSubscriber);
 
-        verify(objectObserver, times(1)).onError(any(Throwable.class));
-        verify(objectObserver, never()).onNext(expected);
-        verify(objectObserver, never()).onComplete();
+        verify(objectSubscriber, times(1)).onError(any(Throwable.class));
+        verify(objectSubscriber, never()).onNext(expected);
+        verify(objectSubscriber, never()).onComplete();
     }
 
     @Test
@@ -289,11 +289,11 @@ public class FlowableToMultimapTest {
         expected.put(2, Arrays.asList("cc", "dd"));
         expected.put(3, Collections.singleton("eee"));
 
-        mapped.subscribe(objectObserver);
+        mapped.subscribe(objectSubscriber);
 
-        verify(objectObserver, times(1)).onError(any(Throwable.class));
-        verify(objectObserver, never()).onNext(expected);
-        verify(objectObserver, never()).onComplete();
+        verify(objectSubscriber, times(1)).onError(any(Throwable.class));
+        verify(objectSubscriber, never()).onNext(expected);
+        verify(objectSubscriber, never()).onComplete();
     }
 
 

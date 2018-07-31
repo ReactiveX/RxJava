@@ -33,16 +33,16 @@ import io.reactivex.subscribers.TestSubscriber;
 public class FlowableSampleTest {
     private TestScheduler scheduler;
     private Scheduler.Worker innerScheduler;
-    private Subscriber<Long> observer;
-    private Subscriber<Object> observer2;
+    private Subscriber<Long> subscriber;
+    private Subscriber<Object> subscriber2;
 
     @Before
     // due to mocking
     public void before() {
         scheduler = new TestScheduler();
         innerScheduler = scheduler.createWorker();
-        observer = TestHelper.mockSubscriber();
-        observer2 = TestHelper.mockSubscriber();
+        subscriber = TestHelper.mockSubscriber();
+        subscriber2 = TestHelper.mockSubscriber();
     }
 
     @Test
@@ -73,38 +73,38 @@ public class FlowableSampleTest {
         });
 
         Flowable<Long> sampled = source.sample(400L, TimeUnit.MILLISECONDS, scheduler);
-        sampled.subscribe(observer);
+        sampled.subscribe(subscriber);
 
-        InOrder inOrder = inOrder(observer);
+        InOrder inOrder = inOrder(subscriber);
 
         scheduler.advanceTimeTo(800L, TimeUnit.MILLISECONDS);
-        verify(observer, never()).onNext(any(Long.class));
-        verify(observer, never()).onComplete();
-        verify(observer, never()).onError(any(Throwable.class));
+        verify(subscriber, never()).onNext(any(Long.class));
+        verify(subscriber, never()).onComplete();
+        verify(subscriber, never()).onError(any(Throwable.class));
 
         scheduler.advanceTimeTo(1200L, TimeUnit.MILLISECONDS);
-        inOrder.verify(observer, times(1)).onNext(1L);
-        verify(observer, never()).onNext(2L);
-        verify(observer, never()).onComplete();
-        verify(observer, never()).onError(any(Throwable.class));
+        inOrder.verify(subscriber, times(1)).onNext(1L);
+        verify(subscriber, never()).onNext(2L);
+        verify(subscriber, never()).onComplete();
+        verify(subscriber, never()).onError(any(Throwable.class));
 
         scheduler.advanceTimeTo(1600L, TimeUnit.MILLISECONDS);
-        inOrder.verify(observer, never()).onNext(1L);
-        verify(observer, never()).onNext(2L);
-        verify(observer, never()).onComplete();
-        verify(observer, never()).onError(any(Throwable.class));
+        inOrder.verify(subscriber, never()).onNext(1L);
+        verify(subscriber, never()).onNext(2L);
+        verify(subscriber, never()).onComplete();
+        verify(subscriber, never()).onError(any(Throwable.class));
 
         scheduler.advanceTimeTo(2000L, TimeUnit.MILLISECONDS);
-        inOrder.verify(observer, never()).onNext(1L);
-        inOrder.verify(observer, times(1)).onNext(2L);
-        verify(observer, never()).onComplete();
-        verify(observer, never()).onError(any(Throwable.class));
+        inOrder.verify(subscriber, never()).onNext(1L);
+        inOrder.verify(subscriber, times(1)).onNext(2L);
+        verify(subscriber, never()).onComplete();
+        verify(subscriber, never()).onError(any(Throwable.class));
 
         scheduler.advanceTimeTo(3000L, TimeUnit.MILLISECONDS);
-        inOrder.verify(observer, never()).onNext(1L);
-        inOrder.verify(observer, never()).onNext(2L);
-        verify(observer, times(1)).onComplete();
-        verify(observer, never()).onError(any(Throwable.class));
+        inOrder.verify(subscriber, never()).onNext(1L);
+        inOrder.verify(subscriber, never()).onNext(2L);
+        verify(subscriber, times(1)).onComplete();
+        verify(subscriber, never()).onError(any(Throwable.class));
     }
 
     @Test
@@ -113,7 +113,7 @@ public class FlowableSampleTest {
         PublishProcessor<Integer> sampler = PublishProcessor.create();
 
         Flowable<Integer> m = source.sample(sampler);
-        m.subscribe(observer2);
+        m.subscribe(subscriber2);
 
         source.onNext(1);
         source.onNext(2);
@@ -124,13 +124,13 @@ public class FlowableSampleTest {
         source.onComplete();
         sampler.onNext(3);
 
-        InOrder inOrder = inOrder(observer2);
-        inOrder.verify(observer2, never()).onNext(1);
-        inOrder.verify(observer2, times(1)).onNext(2);
-        inOrder.verify(observer2, never()).onNext(3);
-        inOrder.verify(observer2, times(1)).onNext(4);
-        inOrder.verify(observer2, times(1)).onComplete();
-        verify(observer, never()).onError(any(Throwable.class));
+        InOrder inOrder = inOrder(subscriber2);
+        inOrder.verify(subscriber2, never()).onNext(1);
+        inOrder.verify(subscriber2, times(1)).onNext(2);
+        inOrder.verify(subscriber2, never()).onNext(3);
+        inOrder.verify(subscriber2, times(1)).onNext(4);
+        inOrder.verify(subscriber2, times(1)).onComplete();
+        verify(subscriber, never()).onError(any(Throwable.class));
     }
 
     @Test
@@ -139,7 +139,7 @@ public class FlowableSampleTest {
         PublishProcessor<Integer> sampler = PublishProcessor.create();
 
         Flowable<Integer> m = source.sample(sampler);
-        m.subscribe(observer2);
+        m.subscribe(subscriber2);
 
         source.onNext(1);
         source.onNext(2);
@@ -154,13 +154,13 @@ public class FlowableSampleTest {
         source.onComplete();
         sampler.onNext(3);
 
-        InOrder inOrder = inOrder(observer2);
-        inOrder.verify(observer2, never()).onNext(1);
-        inOrder.verify(observer2, times(1)).onNext(2);
-        inOrder.verify(observer2, never()).onNext(3);
-        inOrder.verify(observer2, times(1)).onNext(4);
-        inOrder.verify(observer2, times(1)).onComplete();
-        verify(observer, never()).onError(any(Throwable.class));
+        InOrder inOrder = inOrder(subscriber2);
+        inOrder.verify(subscriber2, never()).onNext(1);
+        inOrder.verify(subscriber2, times(1)).onNext(2);
+        inOrder.verify(subscriber2, never()).onNext(3);
+        inOrder.verify(subscriber2, times(1)).onNext(4);
+        inOrder.verify(subscriber2, times(1)).onComplete();
+        verify(subscriber, never()).onError(any(Throwable.class));
     }
 
     @Test
@@ -169,7 +169,7 @@ public class FlowableSampleTest {
         PublishProcessor<Integer> sampler = PublishProcessor.create();
 
         Flowable<Integer> m = source.sample(sampler);
-        m.subscribe(observer2);
+        m.subscribe(subscriber2);
 
         source.onNext(1);
         source.onNext(2);
@@ -179,12 +179,12 @@ public class FlowableSampleTest {
         source.onNext(3);
         source.onNext(4);
 
-        InOrder inOrder = inOrder(observer2);
-        inOrder.verify(observer2, never()).onNext(1);
-        inOrder.verify(observer2, times(1)).onNext(2);
-        inOrder.verify(observer2, times(1)).onComplete();
-        inOrder.verify(observer2, never()).onNext(any());
-        verify(observer, never()).onError(any(Throwable.class));
+        InOrder inOrder = inOrder(subscriber2);
+        inOrder.verify(subscriber2, never()).onNext(1);
+        inOrder.verify(subscriber2, times(1)).onNext(2);
+        inOrder.verify(subscriber2, times(1)).onComplete();
+        inOrder.verify(subscriber2, never()).onNext(any());
+        verify(subscriber, never()).onError(any(Throwable.class));
     }
 
     @Test
@@ -193,7 +193,7 @@ public class FlowableSampleTest {
         PublishProcessor<Integer> sampler = PublishProcessor.create();
 
         Flowable<Integer> m = source.sample(sampler);
-        m.subscribe(observer2);
+        m.subscribe(subscriber2);
 
         source.onNext(1);
         source.onNext(2);
@@ -203,13 +203,13 @@ public class FlowableSampleTest {
         sampler.onNext(2);
         sampler.onComplete();
 
-        InOrder inOrder = inOrder(observer2);
-        inOrder.verify(observer2, never()).onNext(1);
-        inOrder.verify(observer2, times(1)).onNext(2);
-        inOrder.verify(observer2, never()).onNext(3);
-        inOrder.verify(observer2, times(1)).onComplete();
-        inOrder.verify(observer2, never()).onNext(any());
-        verify(observer, never()).onError(any(Throwable.class));
+        InOrder inOrder = inOrder(subscriber2);
+        inOrder.verify(subscriber2, never()).onNext(1);
+        inOrder.verify(subscriber2, times(1)).onNext(2);
+        inOrder.verify(subscriber2, never()).onNext(3);
+        inOrder.verify(subscriber2, times(1)).onComplete();
+        inOrder.verify(subscriber2, never()).onNext(any());
+        verify(subscriber, never()).onError(any(Throwable.class));
     }
 
     @Test
@@ -218,15 +218,15 @@ public class FlowableSampleTest {
         PublishProcessor<Integer> sampler = PublishProcessor.create();
 
         Flowable<Integer> m = source.sample(sampler);
-        m.subscribe(observer2);
+        m.subscribe(subscriber2);
 
         source.onComplete();
         sampler.onNext(1);
 
-        InOrder inOrder = inOrder(observer2);
-        inOrder.verify(observer2, times(1)).onComplete();
-        verify(observer2, never()).onNext(any());
-        verify(observer, never()).onError(any(Throwable.class));
+        InOrder inOrder = inOrder(subscriber2);
+        inOrder.verify(subscriber2, times(1)).onComplete();
+        verify(subscriber2, never()).onNext(any());
+        verify(subscriber, never()).onError(any(Throwable.class));
     }
 
     @Test
@@ -235,16 +235,16 @@ public class FlowableSampleTest {
         PublishProcessor<Integer> sampler = PublishProcessor.create();
 
         Flowable<Integer> m = source.sample(sampler);
-        m.subscribe(observer2);
+        m.subscribe(subscriber2);
 
         source.onNext(1);
         source.onError(new RuntimeException("Forced failure!"));
         sampler.onNext(1);
 
-        InOrder inOrder = inOrder(observer2);
-        inOrder.verify(observer2, times(1)).onError(any(Throwable.class));
-        verify(observer2, never()).onNext(any());
-        verify(observer, never()).onComplete();
+        InOrder inOrder = inOrder(subscriber2);
+        inOrder.verify(subscriber2, times(1)).onError(any(Throwable.class));
+        verify(subscriber2, never()).onNext(any());
+        verify(subscriber, never()).onComplete();
     }
 
     @Test
@@ -253,16 +253,16 @@ public class FlowableSampleTest {
         PublishProcessor<Integer> sampler = PublishProcessor.create();
 
         Flowable<Integer> m = source.sample(sampler);
-        m.subscribe(observer2);
+        m.subscribe(subscriber2);
 
         source.onNext(1);
         sampler.onNext(1);
         sampler.onError(new RuntimeException("Forced failure!"));
 
-        InOrder inOrder = inOrder(observer2);
-        inOrder.verify(observer2, times(1)).onNext(1);
-        inOrder.verify(observer2, times(1)).onError(any(RuntimeException.class));
-        verify(observer, never()).onComplete();
+        InOrder inOrder = inOrder(subscriber2);
+        inOrder.verify(subscriber2, times(1)).onNext(1);
+        inOrder.verify(subscriber2, times(1)).onError(any(RuntimeException.class));
+        verify(subscriber, never()).onComplete();
     }
 
     @Test

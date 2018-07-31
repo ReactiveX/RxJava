@@ -38,11 +38,12 @@ public class FlowableToListTest {
         Flowable<String> w = Flowable.fromIterable(Arrays.asList("one", "two", "three"));
         Flowable<List<String>> observable = w.toList().toFlowable();
 
-        Subscriber<List<String>> observer = TestHelper.mockSubscriber();
-        observable.subscribe(observer);
-        verify(observer, times(1)).onNext(Arrays.asList("one", "two", "three"));
-        verify(observer, Mockito.never()).onError(any(Throwable.class));
-        verify(observer, times(1)).onComplete();
+        Subscriber<List<String>> subscriber = TestHelper.mockSubscriber();
+        observable.subscribe(subscriber);
+
+        verify(subscriber, times(1)).onNext(Arrays.asList("one", "two", "three"));
+        verify(subscriber, Mockito.never()).onError(any(Throwable.class));
+        verify(subscriber, times(1)).onComplete();
     }
 
     @Test
@@ -50,11 +51,12 @@ public class FlowableToListTest {
         Flowable<String> w = Flowable.fromIterable(Arrays.asList("one", "two", "three"));
         Flowable<List<String>> observable = w.toList().toFlowable();
 
-        Subscriber<List<String>> observer = TestHelper.mockSubscriber();
-        observable.subscribe(observer);
-        verify(observer, times(1)).onNext(Arrays.asList("one", "two", "three"));
-        verify(observer, Mockito.never()).onError(any(Throwable.class));
-        verify(observer, times(1)).onComplete();
+        Subscriber<List<String>> subscriber = TestHelper.mockSubscriber();
+        observable.subscribe(subscriber);
+
+        verify(subscriber, times(1)).onNext(Arrays.asList("one", "two", "three"));
+        verify(subscriber, Mockito.never()).onError(any(Throwable.class));
+        verify(subscriber, times(1)).onComplete();
     }
 
     @Test
@@ -85,11 +87,12 @@ public class FlowableToListTest {
         Flowable<String> w = Flowable.fromIterable(Arrays.asList("one", null, "three"));
         Flowable<List<String>> observable = w.toList().toFlowable();
 
-        Subscriber<List<String>> observer = TestHelper.mockSubscriber();
-        observable.subscribe(observer);
-        verify(observer, times(1)).onNext(Arrays.asList("one", null, "three"));
-        verify(observer, Mockito.never()).onError(any(Throwable.class));
-        verify(observer, times(1)).onComplete();
+        Subscriber<List<String>> subscriber = TestHelper.mockSubscriber();
+        observable.subscribe(subscriber);
+
+        verify(subscriber, times(1)).onNext(Arrays.asList("one", null, "three"));
+        verify(subscriber, Mockito.never()).onError(any(Throwable.class));
+        verify(subscriber, times(1)).onComplete();
     }
 
     @Test

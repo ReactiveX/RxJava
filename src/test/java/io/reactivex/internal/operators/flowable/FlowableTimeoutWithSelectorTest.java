@@ -493,22 +493,30 @@ public class FlowableTimeoutWithSelectorTest {
 
     @Test
     public void badSourceTimeout() {
-        new Flowable<Integer>() {
-            @Override
-            protected void subscribeActual(Subscriber<? super Integer> observer) {
-                observer.onSubscribe(new BooleanSubscription());
-                observer.onNext(1);
-                observer.onNext(2);
-                observer.onError(new TestException("First"));
-                observer.onNext(3);
-                observer.onComplete();
-                observer.onError(new TestException("Second"));
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            new Flowable<Integer>() {
+                @Override
+                protected void subscribeActual(Subscriber<? super Integer> observer) {
+                    observer.onSubscribe(new BooleanSubscription());
+                    observer.onNext(1);
+                    observer.onNext(2);
+                    observer.onError(new TestException("First"));
+                    observer.onNext(3);
+                    observer.onComplete();
+                    observer.onError(new TestException("Second"));
+                }
             }
+            .timeout(Functions.justFunction(Flowable.never()), Flowable.<Integer>never())
+            .take(1)
+            .test()
+            .assertResult(1);
+
+            TestHelper.assertUndeliverable(errors, 0, TestException.class, "First");
+            TestHelper.assertUndeliverable(errors, 1, TestException.class, "Second");
+        } finally {
+            RxJavaPlugins.reset();
         }
-        .timeout(Functions.justFunction(Flowable.never()), Flowable.<Integer>never())
-        .take(1)
-        .test()
-        .assertResult(1);
     }
 
     @Test

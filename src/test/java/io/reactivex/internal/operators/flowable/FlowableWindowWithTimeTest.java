@@ -27,6 +27,7 @@ import io.reactivex.exceptions.*;
 import io.reactivex.functions.*;
 import io.reactivex.internal.functions.Functions;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
+import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.processors.*;
 import io.reactivex.schedulers.*;
 import io.reactivex.subscribers.*;
@@ -366,47 +367,68 @@ public class FlowableWindowWithTimeTest {
 
     @Test
     public void exactOnError() {
-        TestScheduler scheduler = new TestScheduler();
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            TestScheduler scheduler = new TestScheduler();
 
-        PublishProcessor<Integer> pp = PublishProcessor.create();
+            PublishProcessor<Integer> pp = PublishProcessor.create();
 
-        TestSubscriber<Integer> ts = pp.window(1, 1, TimeUnit.SECONDS, scheduler)
-        .flatMap(Functions.<Flowable<Integer>>identity())
-        .test();
+            TestSubscriber<Integer> ts = pp.window(1, 1, TimeUnit.SECONDS, scheduler)
+            .flatMap(Functions.<Flowable<Integer>>identity())
+            .test();
 
-        pp.onError(new TestException());
+            pp.onError(new TestException());
 
-        ts.assertFailure(TestException.class);
+            ts.assertFailure(TestException.class);
+
+            TestHelper.assertUndeliverable(errors, 0, TestException.class);
+        } finally {
+            RxJavaPlugins.reset();
+        }
     }
 
     @Test
     public void overlappingOnError() {
-        TestScheduler scheduler = new TestScheduler();
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            TestScheduler scheduler = new TestScheduler();
 
-        PublishProcessor<Integer> pp = PublishProcessor.create();
+            PublishProcessor<Integer> pp = PublishProcessor.create();
 
-        TestSubscriber<Integer> ts = pp.window(2, 1, TimeUnit.SECONDS, scheduler)
-        .flatMap(Functions.<Flowable<Integer>>identity())
-        .test();
+            TestSubscriber<Integer> ts = pp.window(2, 1, TimeUnit.SECONDS, scheduler)
+            .flatMap(Functions.<Flowable<Integer>>identity())
+            .test();
 
-        pp.onError(new TestException());
+            pp.onError(new TestException());
 
-        ts.assertFailure(TestException.class);
+            ts.assertFailure(TestException.class);
+
+            TestHelper.assertUndeliverable(errors, 0, TestException.class);
+        } finally {
+            RxJavaPlugins.reset();
+        }
     }
 
     @Test
     public void skipOnError() {
-        TestScheduler scheduler = new TestScheduler();
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            TestScheduler scheduler = new TestScheduler();
 
-        PublishProcessor<Integer> pp = PublishProcessor.create();
+            PublishProcessor<Integer> pp = PublishProcessor.create();
 
-        TestSubscriber<Integer> ts = pp.window(1, 2, TimeUnit.SECONDS, scheduler)
-        .flatMap(Functions.<Flowable<Integer>>identity())
-        .test();
+            TestSubscriber<Integer> ts = pp.window(1, 2, TimeUnit.SECONDS, scheduler)
+            .flatMap(Functions.<Flowable<Integer>>identity())
+            .test();
 
-        pp.onError(new TestException());
+            pp.onError(new TestException());
 
-        ts.assertFailure(TestException.class);
+            ts.assertFailure(TestException.class);
+
+            TestHelper.assertUndeliverable(errors, 0, TestException.class);
+        } finally {
+            RxJavaPlugins.reset();
+        }
     }
 
     @Test
@@ -484,16 +506,23 @@ public class FlowableWindowWithTimeTest {
 
     @Test
     public void overlapBackpressure2() {
-        TestScheduler scheduler = new TestScheduler();
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            TestScheduler scheduler = new TestScheduler();
 
-        PublishProcessor<Integer> pp = PublishProcessor.create();
+            PublishProcessor<Integer> pp = PublishProcessor.create();
 
-        TestSubscriber<Flowable<Integer>> ts = pp.window(2, 1, TimeUnit.SECONDS, scheduler)
-        .test(1L);
+            TestSubscriber<Flowable<Integer>> ts = pp.window(2, 1, TimeUnit.SECONDS, scheduler)
+            .test(1L);
 
-        scheduler.advanceTimeBy(2, TimeUnit.SECONDS);
+            scheduler.advanceTimeBy(2, TimeUnit.SECONDS);
 
-        ts.assertError(MissingBackpressureException.class);
+            ts.assertError(MissingBackpressureException.class);
+
+            TestHelper.assertError(errors, 0, MissingBackpressureException.class);
+        } finally {
+            RxJavaPlugins.reset();
+        }
     }
 
     @Test

@@ -533,70 +533,77 @@ public class FlowableRefCountTest {
 
     @Test(timeout = 10000)
     public void testUpstreamErrorAllowsRetry() throws InterruptedException {
-        final AtomicInteger intervalSubscribed = new AtomicInteger();
-        Flowable<String> interval =
-                Flowable.interval(200,TimeUnit.MILLISECONDS)
-                        .doOnSubscribe(new Consumer<Subscription>() {
-                            @Override
-                            public void accept(Subscription s) {
-                                            System.out.println("Subscribing to interval " + intervalSubscribed.incrementAndGet());
-                                    }
-                        }
-                         )
-                        .flatMap(new Function<Long, Publisher<String>>() {
-                            @Override
-                            public Publisher<String> apply(Long t1) {
-                                    return Flowable.defer(new Callable<Publisher<String>>() {
-                                        @Override
-                                        public Publisher<String> call() {
-                                                return Flowable.<String>error(new Exception("Some exception"));
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            final AtomicInteger intervalSubscribed = new AtomicInteger();
+            Flowable<String> interval =
+                    Flowable.interval(200,TimeUnit.MILLISECONDS)
+                            .doOnSubscribe(new Consumer<Subscription>() {
+                                @Override
+                                public void accept(Subscription s) {
+                                                System.out.println("Subscribing to interval " + intervalSubscribed.incrementAndGet());
                                         }
-                                    });
                             }
-                        })
-                        .onErrorResumeNext(new Function<Throwable, Publisher<String>>() {
-                            @Override
-                            public Publisher<String> apply(Throwable t1) {
-                                    return Flowable.error(t1);
-                            }
-                        })
-                        .publish()
-                        .refCount();
+                             )
+                            .flatMap(new Function<Long, Publisher<String>>() {
+                                @Override
+                                public Publisher<String> apply(Long t1) {
+                                        return Flowable.defer(new Callable<Publisher<String>>() {
+                                            @Override
+                                            public Publisher<String> call() {
+                                                    return Flowable.<String>error(new TestException("Some exception"));
+                                            }
+                                        });
+                                }
+                            })
+                            .onErrorResumeNext(new Function<Throwable, Publisher<String>>() {
+                                @Override
+                                public Publisher<String> apply(Throwable t1) {
+                                        return Flowable.error(t1);
+                                }
+                            })
+                            .publish()
+                            .refCount();
 
-        interval
-                .doOnError(new Consumer<Throwable>() {
-                    @Override
-                    public void accept(Throwable t1) {
-                            System.out.println("Subscriber 1 onError: " + t1);
-                    }
-                })
-                .retry(5)
-                .subscribe(new Consumer<String>() {
-                    @Override
-                    public void accept(String t1) {
-                            System.out.println("Subscriber 1: " + t1);
-                    }
-                });
-        Thread.sleep(100);
-        interval
-        .doOnError(new Consumer<Throwable>() {
-            @Override
-            public void accept(Throwable t1) {
-                    System.out.println("Subscriber 2 onError: " + t1);
-            }
-        })
-        .retry(5)
-                .subscribe(new Consumer<String>() {
-                    @Override
-                    public void accept(String t1) {
-                            System.out.println("Subscriber 2: " + t1);
-                    }
-                });
+            interval
+                    .doOnError(new Consumer<Throwable>() {
+                        @Override
+                        public void accept(Throwable t1) {
+                                System.out.println("Subscriber 1 onError: " + t1);
+                        }
+                    })
+                    .retry(5)
+                    .subscribe(new Consumer<String>() {
+                        @Override
+                        public void accept(String t1) {
+                                System.out.println("Subscriber 1: " + t1);
+                        }
+                    });
+            Thread.sleep(100);
+            interval
+            .doOnError(new Consumer<Throwable>() {
+                @Override
+                public void accept(Throwable t1) {
+                        System.out.println("Subscriber 2 onError: " + t1);
+                }
+            })
+            .retry(5)
+                    .subscribe(new Consumer<String>() {
+                        @Override
+                        public void accept(String t1) {
+                                System.out.println("Subscriber 2: " + t1);
+                        }
+                    });
 
-        Thread.sleep(1300);
+            Thread.sleep(1300);
 
-        System.out.println(intervalSubscribed.get());
-        assertEquals(6, intervalSubscribed.get());
+            System.out.println(intervalSubscribed.get());
+            assertEquals(6, intervalSubscribed.get());
+
+            TestHelper.assertError(errors, 0, OnErrorNotImplementedException.class);
+        } finally {
+            RxJavaPlugins.reset();
+        }
     }
 
     private enum CancelledSubscriber implements FlowableSubscriber<Integer> {
@@ -851,14 +858,21 @@ public class FlowableRefCountTest {
 
     @Test
     public void badSourceSubscribe() {
-        BadFlowableSubscribe bo = new BadFlowableSubscribe();
-
+        List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
-            bo.refCount()
-            .test();
-            fail("Should have thrown");
-        } catch (NullPointerException ex) {
-            assertTrue(ex.getCause() instanceof TestException);
+            BadFlowableSubscribe bo = new BadFlowableSubscribe();
+
+            try {
+                bo.refCount()
+                .test();
+                fail("Should have thrown");
+            } catch (NullPointerException ex) {
+                assertTrue(ex.getCause() instanceof TestException);
+            }
+
+            TestHelper.assertUndeliverable(errors, 0, TestException.class);
+        } finally {
+            RxJavaPlugins.reset();
         }
     }
 
@@ -877,14 +891,21 @@ public class FlowableRefCountTest {
 
     @Test
     public void badSourceConnect() {
-        BadFlowableConnect bf = new BadFlowableConnect();
-
+        List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
-            bf.refCount()
-            .test();
-            fail("Should have thrown");
-        } catch (NullPointerException ex) {
-            assertTrue(ex.getCause() instanceof TestException);
+            BadFlowableConnect bf = new BadFlowableConnect();
+
+            try {
+                bf.refCount()
+                .test();
+                fail("Should have thrown");
+            } catch (NullPointerException ex) {
+                assertTrue(ex.getCause() instanceof TestException);
+            }
+
+            TestHelper.assertUndeliverable(errors, 0, TestException.class);
+        } finally {
+            RxJavaPlugins.reset();
         }
     }
 
@@ -913,15 +934,22 @@ public class FlowableRefCountTest {
 
     @Test
     public void badSourceSubscribe2() {
-        BadFlowableSubscribe2 bf = new BadFlowableSubscribe2();
-
-        Flowable<Object> o = bf.refCount();
-        o.test();
+        List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
+            BadFlowableSubscribe2 bf = new BadFlowableSubscribe2();
+
+            Flowable<Object> o = bf.refCount();
             o.test();
-            fail("Should have thrown");
-        } catch (NullPointerException ex) {
-            assertTrue(ex.getCause() instanceof TestException);
+            try {
+                o.test();
+                fail("Should have thrown");
+            } catch (NullPointerException ex) {
+                assertTrue(ex.getCause() instanceof TestException);
+            }
+
+            TestHelper.assertUndeliverable(errors, 0, TestException.class);
+        } finally {
+            RxJavaPlugins.reset();
         }
     }
 
@@ -956,14 +984,21 @@ public class FlowableRefCountTest {
 
     @Test
     public void badSourceCompleteDisconnect() {
-        BadFlowableConnect2 bf = new BadFlowableConnect2();
-
+        List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
-            bf.refCount()
-            .test();
-            fail("Should have thrown");
-        } catch (NullPointerException ex) {
-            assertTrue(ex.getCause() instanceof TestException);
+            BadFlowableConnect2 bf = new BadFlowableConnect2();
+
+            try {
+                bf.refCount()
+                .test();
+                fail("Should have thrown");
+            } catch (NullPointerException ex) {
+                assertTrue(ex.getCause() instanceof TestException);
+            }
+
+            TestHelper.assertUndeliverable(errors, 0, TestException.class);
+        } finally {
+            RxJavaPlugins.reset();
         }
     }
 
