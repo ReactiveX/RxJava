@@ -33,7 +33,7 @@ The [1.x version](https://github.com/ReactiveX/RxJava/tree/1.x) is end-of-life a
 The first step is to include RxJava 2 into your project, for example, as a Gradle compile dependency:
 
 ```groovy
-compile "io.reactivex.rxjava2:rxjava:2.x.y"
+implementation "io.reactivex.rxjava2:rxjava:2.x.y"
 ```
 
 (Please replace `x` and `y` with the latest version numbers: [![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.reactivex.rxjava2/rxjava/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.reactivex.rxjava2/rxjava)
