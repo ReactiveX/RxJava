@@ -28,7 +28,7 @@ public final class ObservableToFlowabeTestSync {
     static List<String> readAllLines(File f) {
         List<String> result = new ArrayList<String>();
         try {
-            BufferedReader in = new BufferedReader(new FileReader(f));
+            BufferedReader in = new BufferedReader(new InputStreamReader(f));
             try {
                 String line;
 
