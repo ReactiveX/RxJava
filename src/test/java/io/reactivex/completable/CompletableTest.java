@@ -2170,8 +2170,11 @@ public class CompletableTest {
         try {
             c.blockingAwait();
             Assert.fail("Did not throw an exception");
-        } catch (NullPointerException ex) {
-            Assert.assertTrue(ex.getCause() instanceof TestException);
+        } catch (CompositeException ex) {
+            List<Throwable> errors = ex.getExceptions();
+            TestHelper.assertError(errors, 0, TestException.class);
+            TestHelper.assertError(errors, 1, NullPointerException.class);
+            assertEquals(2, errors.size());
         }
     }
 
