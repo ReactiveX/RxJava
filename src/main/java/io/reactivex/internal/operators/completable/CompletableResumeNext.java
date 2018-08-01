@@ -13,7 +13,6 @@
 
 package io.reactivex.internal.operators.completable;
 
-import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 
 import io.reactivex.*;
@@ -21,6 +20,7 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.*;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.disposables.DisposableHelper;
+import io.reactivex.internal.functions.ObjectHelper;
 
 public final class CompletableResumeNext extends Completable {
 
@@ -82,7 +82,7 @@ public final class CompletableResumeNext extends Completable {
             CompletableSource c;
 
             try {
-                c = Objects.requireNonNull(errorMapper.apply(e), "The errorMapper returned a null CompletableSource");
+                c = ObjectHelper.requireNonNull(errorMapper.apply(e), "The errorMapper returned a null CompletableSource");
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
                 downstream.onError(new CompositeException(e, ex));
