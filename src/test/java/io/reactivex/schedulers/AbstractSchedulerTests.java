@@ -329,11 +329,11 @@ public abstract class AbstractSchedulerTests {
     public final void testRecursiveSchedulerInObservable() {
         Flowable<Integer> obs = Flowable.unsafeCreate(new Publisher<Integer>() {
             @Override
-            public void subscribe(final Subscriber<? super Integer> observer) {
+            public void subscribe(final Subscriber<? super Integer> subscriber) {
                 final Scheduler.Worker inner = getScheduler().createWorker();
 
                 AsyncSubscription as = new AsyncSubscription();
-                observer.onSubscribe(as);
+                subscriber.onSubscribe(as);
                 as.setResource(inner);
 
                 inner.schedule(new Runnable() {
@@ -343,14 +343,14 @@ public abstract class AbstractSchedulerTests {
                     public void run() {
                         if (i > 42) {
                             try {
-                                observer.onComplete();
+                                subscriber.onComplete();
                             } finally {
                                 inner.dispose();
                             }
                             return;
                         }
 
-                        observer.onNext(i++);
+                        subscriber.onNext(i++);
 
                         inner.schedule(this);
                     }
@@ -375,18 +375,18 @@ public abstract class AbstractSchedulerTests {
     public final void testConcurrentOnNextFailsValidation() throws InterruptedException {
         final int count = 10;
         final CountDownLatch latch = new CountDownLatch(count);
-        Flowable<String> o = Flowable.unsafeCreate(new Publisher<String>() {
+        Flowable<String> f = Flowable.unsafeCreate(new Publisher<String>() {
 
             @Override
-            public void subscribe(final Subscriber<? super String> observer) {
-                observer.onSubscribe(new BooleanSubscription());
+            public void subscribe(final Subscriber<? super String> subscriber) {
+                subscriber.onSubscribe(new BooleanSubscription());
                 for (int i = 0; i < count; i++) {
                     final int v = i;
                     new Thread(new Runnable() {
 
                         @Override
                         public void run() {
-                            observer.onNext("v: " + v);
+                            subscriber.onNext("v: " + v);
 
                             latch.countDown();
                         }
@@ -397,7 +397,7 @@ public abstract class AbstractSchedulerTests {
 
         ConcurrentObserverValidator<String> observer = new ConcurrentObserverValidator<String>();
         // this should call onNext concurrently
-        o.subscribe(observer);
+        f.subscribe(observer);
 
         if (!observer.completed.await(3000, TimeUnit.MILLISECONDS)) {
             fail("timed out");
@@ -412,11 +412,11 @@ public abstract class AbstractSchedulerTests {
     public final void testObserveOn() throws InterruptedException {
         final Scheduler scheduler = getScheduler();
 
-        Flowable<String> o = Flowable.fromArray("one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten");
+        Flowable<String> f = Flowable.fromArray("one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten");
 
         ConcurrentObserverValidator<String> observer = new ConcurrentObserverValidator<String>();
 
-        o.observeOn(scheduler).subscribe(observer);
+        f.observeOn(scheduler).subscribe(observer);
 
         if (!observer.completed.await(3000, TimeUnit.MILLISECONDS)) {
             fail("timed out");
@@ -432,7 +432,7 @@ public abstract class AbstractSchedulerTests {
     public final void testSubscribeOnNestedConcurrency() throws InterruptedException {
         final Scheduler scheduler = getScheduler();
 
-        Flowable<String> o = Flowable.fromArray("one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten")
+        Flowable<String> f = Flowable.fromArray("one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten")
                 .flatMap(new Function<String, Flowable<String>>() {
 
                     @Override
@@ -440,10 +440,10 @@ public abstract class AbstractSchedulerTests {
                         return Flowable.unsafeCreate(new Publisher<String>() {
 
                             @Override
-                            public void subscribe(Subscriber<? super String> observer) {
-                                observer.onSubscribe(new BooleanSubscription());
-                                observer.onNext("value_after_map-" + v);
-                                observer.onComplete();
+                            public void subscribe(Subscriber<? super String> subscriber) {
+                                subscriber.onSubscribe(new BooleanSubscription());
+                                subscriber.onNext("value_after_map-" + v);
+                                subscriber.onComplete();
                             }
                         }).subscribeOn(scheduler);
                     }
@@ -451,7 +451,7 @@ public abstract class AbstractSchedulerTests {
 
         ConcurrentObserverValidator<String> observer = new ConcurrentObserverValidator<String>();
 
-        o.subscribe(observer);
+        f.subscribe(observer);
 
         if (!observer.completed.await(3000, TimeUnit.MILLISECONDS)) {
             fail("timed out");

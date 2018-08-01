@@ -410,14 +410,14 @@ public class MaybeUsingTest {
                 public MaybeSource<Integer> apply(Object v) throws Exception {
                     return Maybe.wrap(new MaybeSource<Integer>() {
                         @Override
-                        public void subscribe(MaybeObserver<? super Integer> s) {
+                        public void subscribe(MaybeObserver<? super Integer> observer) {
                             Disposable d1 = Disposables.empty();
 
-                            s.onSubscribe(d1);
+                            observer.onSubscribe(d1);
 
                             Disposable d2 = Disposables.empty();
 
-                            s.onSubscribe(d2);
+                            observer.onSubscribe(d2);
 
                             assertFalse(d1.isDisposed());
 

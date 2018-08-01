@@ -34,19 +34,20 @@ public class FlowableToSortedListTest {
     @Test
     public void testSortedListFlowable() {
         Flowable<Integer> w = Flowable.just(1, 3, 2, 5, 4);
-        Flowable<List<Integer>> observable = w.toSortedList().toFlowable();
+        Flowable<List<Integer>> flowable = w.toSortedList().toFlowable();
 
-        Subscriber<List<Integer>> observer = TestHelper.mockSubscriber();
-        observable.subscribe(observer);
-        verify(observer, times(1)).onNext(Arrays.asList(1, 2, 3, 4, 5));
-        verify(observer, Mockito.never()).onError(any(Throwable.class));
-        verify(observer, times(1)).onComplete();
+        Subscriber<List<Integer>> subscriber = TestHelper.mockSubscriber();
+        flowable.subscribe(subscriber);
+
+        verify(subscriber, times(1)).onNext(Arrays.asList(1, 2, 3, 4, 5));
+        verify(subscriber, Mockito.never()).onError(any(Throwable.class));
+        verify(subscriber, times(1)).onComplete();
     }
 
     @Test
     public void testSortedListWithCustomFunctionFlowable() {
         Flowable<Integer> w = Flowable.just(1, 3, 2, 5, 4);
-        Flowable<List<Integer>> observable = w.toSortedList(new Comparator<Integer>() {
+        Flowable<List<Integer>> flowable = w.toSortedList(new Comparator<Integer>() {
 
             @Override
             public int compare(Integer t1, Integer t2) {
@@ -55,17 +56,18 @@ public class FlowableToSortedListTest {
 
         }).toFlowable();
 
-        Subscriber<List<Integer>> observer = TestHelper.mockSubscriber();
-        observable.subscribe(observer);
-        verify(observer, times(1)).onNext(Arrays.asList(5, 4, 3, 2, 1));
-        verify(observer, Mockito.never()).onError(any(Throwable.class));
-        verify(observer, times(1)).onComplete();
+        Subscriber<List<Integer>> subscriber = TestHelper.mockSubscriber();
+        flowable.subscribe(subscriber);
+
+        verify(subscriber, times(1)).onNext(Arrays.asList(5, 4, 3, 2, 1));
+        verify(subscriber, Mockito.never()).onError(any(Throwable.class));
+        verify(subscriber, times(1)).onComplete();
     }
 
     @Test
     public void testWithFollowingFirstFlowable() {
-        Flowable<Integer> o = Flowable.just(1, 3, 2, 5, 4);
-        assertEquals(Arrays.asList(1, 2, 3, 4, 5), o.toSortedList().toFlowable().blockingFirst());
+        Flowable<Integer> f = Flowable.just(1, 3, 2, 5, 4);
+        assertEquals(Arrays.asList(1, 2, 3, 4, 5), f.toSortedList().toFlowable().blockingFirst());
     }
     @Test
     public void testBackpressureHonoredFlowable() {
@@ -169,10 +171,10 @@ public class FlowableToSortedListTest {
     @Test
     public void testSortedList() {
         Flowable<Integer> w = Flowable.just(1, 3, 2, 5, 4);
-        Single<List<Integer>> observable = w.toSortedList();
+        Single<List<Integer>> single = w.toSortedList();
 
         SingleObserver<List<Integer>> observer = TestHelper.mockSingleObserver();
-        observable.subscribe(observer);
+        single.subscribe(observer);
         verify(observer, times(1)).onSuccess(Arrays.asList(1, 2, 3, 4, 5));
         verify(observer, Mockito.never()).onError(any(Throwable.class));
     }
@@ -180,7 +182,7 @@ public class FlowableToSortedListTest {
     @Test
     public void testSortedListWithCustomFunction() {
         Flowable<Integer> w = Flowable.just(1, 3, 2, 5, 4);
-        Single<List<Integer>> observable = w.toSortedList(new Comparator<Integer>() {
+        Single<List<Integer>> single = w.toSortedList(new Comparator<Integer>() {
 
             @Override
             public int compare(Integer t1, Integer t2) {
@@ -190,15 +192,15 @@ public class FlowableToSortedListTest {
         });
 
         SingleObserver<List<Integer>> observer = TestHelper.mockSingleObserver();
-        observable.subscribe(observer);
+        single.subscribe(observer);
         verify(observer, times(1)).onSuccess(Arrays.asList(5, 4, 3, 2, 1));
         verify(observer, Mockito.never()).onError(any(Throwable.class));
     }
 
     @Test
     public void testWithFollowingFirst() {
-        Flowable<Integer> o = Flowable.just(1, 3, 2, 5, 4);
-        assertEquals(Arrays.asList(1, 2, 3, 4, 5), o.toSortedList().blockingGet());
+        Flowable<Integer> f = Flowable.just(1, 3, 2, 5, 4);
+        assertEquals(Arrays.asList(1, 2, 3, 4, 5), f.toSortedList().blockingGet());
     }
     @Test
     @Ignore("Single doesn't do backpressure")

@@ -1140,7 +1140,7 @@ public class ParamValidationCheckerTest {
     static final class NeverObservable extends Observable<Object> {
 
         @Override
-        public void subscribeActual(Observer<? super Object> s) {
+        public void subscribeActual(Observer<? super Object> observer) {
             // not invoked, the class is a placeholder default value
         }
 
@@ -1153,7 +1153,7 @@ public class ParamValidationCheckerTest {
     static final class NeverSingle extends Single<Object> {
 
         @Override
-        public void subscribeActual(SingleObserver<? super Object> s) {
+        public void subscribeActual(SingleObserver<? super Object> observer) {
             // not invoked, the class is a placeholder default value
         }
 
@@ -1166,7 +1166,7 @@ public class ParamValidationCheckerTest {
     static final class NeverMaybe extends Maybe<Object> {
 
         @Override
-        public void subscribeActual(MaybeObserver<? super Object> s) {
+        public void subscribeActual(MaybeObserver<? super Object> observer) {
             // not invoked, the class is a placeholder default value
         }
 
@@ -1178,7 +1178,7 @@ public class ParamValidationCheckerTest {
     static final class NeverCompletable extends Completable {
 
         @Override
-        public void subscribeActual(CompletableObserver s) {
+        public void subscribeActual(CompletableObserver observer) {
             // not invoked, the class is a placeholder default value
         }
 

@@ -30,8 +30,8 @@ public final class FlowableSingleMaybe<T> extends Maybe<T> implements FuseToFlow
     }
 
     @Override
-    protected void subscribeActual(MaybeObserver<? super T> s) {
-        source.subscribe(new SingleElementSubscriber<T>(s));
+    protected void subscribeActual(MaybeObserver<? super T> observer) {
+        source.subscribe(new SingleElementSubscriber<T>(observer));
     }
 
     @Override

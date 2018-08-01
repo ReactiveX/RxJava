@@ -41,14 +41,14 @@ public final class ObservableUsing<T, D> extends Observable<T> {
     }
 
     @Override
-    public void subscribeActual(Observer<? super T> s) {
+    public void subscribeActual(Observer<? super T> observer) {
         D resource;
 
         try {
             resource = resourceSupplier.call();
         } catch (Throwable e) {
             Exceptions.throwIfFatal(e);
-            EmptyDisposable.error(e, s);
+            EmptyDisposable.error(e, observer);
             return;
         }
 
@@ -61,14 +61,14 @@ public final class ObservableUsing<T, D> extends Observable<T> {
                 disposer.accept(resource);
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
-                EmptyDisposable.error(new CompositeException(e, ex), s);
+                EmptyDisposable.error(new CompositeException(e, ex), observer);
                 return;
             }
-            EmptyDisposable.error(e, s);
+            EmptyDisposable.error(e, observer);
             return;
         }
 
-        UsingObserver<T, D> us = new UsingObserver<T, D>(s, resource, disposer, eager);
+        UsingObserver<T, D> us = new UsingObserver<T, D>(observer, resource, disposer, eager);
 
         source.subscribe(us);
     }

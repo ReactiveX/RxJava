@@ -37,9 +37,9 @@ public final class MaybeCreate<T> extends Maybe<T> {
     }
 
     @Override
-    protected void subscribeActual(MaybeObserver<? super T> s) {
-        Emitter<T> parent = new Emitter<T>(s);
-        s.onSubscribe(parent);
+    protected void subscribeActual(MaybeObserver<? super T> observer) {
+        Emitter<T> parent = new Emitter<T>(observer);
+        observer.onSubscribe(parent);
 
         try {
             source.subscribe(parent);

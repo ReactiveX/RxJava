@@ -663,11 +663,11 @@ public class ObservableConcatTest {
         Observable<String> o = Observable.unsafeCreate(new ObservableSource<String>() {
 
             @Override
-            public void subscribe(Observer<? super String> s) {
-                s.onSubscribe(Disposables.empty());
-                s.onNext("hello");
-                s.onComplete();
-                s.onComplete();
+            public void subscribe(Observer<? super String> observer) {
+                observer.onSubscribe(Disposables.empty());
+                observer.onNext("hello");
+                observer.onComplete();
+                observer.onComplete();
             }
 
         });

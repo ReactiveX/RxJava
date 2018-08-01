@@ -36,66 +36,69 @@ public class FlowableToListTest {
     @Test
     public void testListFlowable() {
         Flowable<String> w = Flowable.fromIterable(Arrays.asList("one", "two", "three"));
-        Flowable<List<String>> observable = w.toList().toFlowable();
+        Flowable<List<String>> flowable = w.toList().toFlowable();
 
-        Subscriber<List<String>> observer = TestHelper.mockSubscriber();
-        observable.subscribe(observer);
-        verify(observer, times(1)).onNext(Arrays.asList("one", "two", "three"));
-        verify(observer, Mockito.never()).onError(any(Throwable.class));
-        verify(observer, times(1)).onComplete();
+        Subscriber<List<String>> subscriber = TestHelper.mockSubscriber();
+        flowable.subscribe(subscriber);
+
+        verify(subscriber, times(1)).onNext(Arrays.asList("one", "two", "three"));
+        verify(subscriber, Mockito.never()).onError(any(Throwable.class));
+        verify(subscriber, times(1)).onComplete();
     }
 
     @Test
     public void testListViaFlowableFlowable() {
         Flowable<String> w = Flowable.fromIterable(Arrays.asList("one", "two", "three"));
-        Flowable<List<String>> observable = w.toList().toFlowable();
+        Flowable<List<String>> flowable = w.toList().toFlowable();
 
-        Subscriber<List<String>> observer = TestHelper.mockSubscriber();
-        observable.subscribe(observer);
-        verify(observer, times(1)).onNext(Arrays.asList("one", "two", "three"));
-        verify(observer, Mockito.never()).onError(any(Throwable.class));
-        verify(observer, times(1)).onComplete();
+        Subscriber<List<String>> subscriber = TestHelper.mockSubscriber();
+        flowable.subscribe(subscriber);
+
+        verify(subscriber, times(1)).onNext(Arrays.asList("one", "two", "three"));
+        verify(subscriber, Mockito.never()).onError(any(Throwable.class));
+        verify(subscriber, times(1)).onComplete();
     }
 
     @Test
     public void testListMultipleSubscribersFlowable() {
         Flowable<String> w = Flowable.fromIterable(Arrays.asList("one", "two", "three"));
-        Flowable<List<String>> observable = w.toList().toFlowable();
+        Flowable<List<String>> flowable = w.toList().toFlowable();
 
-        Subscriber<List<String>> o1 = TestHelper.mockSubscriber();
-        observable.subscribe(o1);
+        Subscriber<List<String>> subscriber1 = TestHelper.mockSubscriber();
+        flowable.subscribe(subscriber1);
 
-        Subscriber<List<String>> o2 = TestHelper.mockSubscriber();
-        observable.subscribe(o2);
+        Subscriber<List<String>> subscriber2 = TestHelper.mockSubscriber();
+        flowable.subscribe(subscriber2);
 
         List<String> expected = Arrays.asList("one", "two", "three");
 
-        verify(o1, times(1)).onNext(expected);
-        verify(o1, Mockito.never()).onError(any(Throwable.class));
-        verify(o1, times(1)).onComplete();
+        verify(subscriber1, times(1)).onNext(expected);
+        verify(subscriber1, Mockito.never()).onError(any(Throwable.class));
+        verify(subscriber1, times(1)).onComplete();
 
-        verify(o2, times(1)).onNext(expected);
-        verify(o2, Mockito.never()).onError(any(Throwable.class));
-        verify(o2, times(1)).onComplete();
+        verify(subscriber2, times(1)).onNext(expected);
+        verify(subscriber2, Mockito.never()).onError(any(Throwable.class));
+        verify(subscriber2, times(1)).onComplete();
     }
 
     @Test
     @Ignore("Null values are not allowed")
     public void testListWithNullValueFlowable() {
         Flowable<String> w = Flowable.fromIterable(Arrays.asList("one", null, "three"));
-        Flowable<List<String>> observable = w.toList().toFlowable();
+        Flowable<List<String>> flowable = w.toList().toFlowable();
 
-        Subscriber<List<String>> observer = TestHelper.mockSubscriber();
-        observable.subscribe(observer);
-        verify(observer, times(1)).onNext(Arrays.asList("one", null, "three"));
-        verify(observer, Mockito.never()).onError(any(Throwable.class));
-        verify(observer, times(1)).onComplete();
+        Subscriber<List<String>> subscriber = TestHelper.mockSubscriber();
+        flowable.subscribe(subscriber);
+
+        verify(subscriber, times(1)).onNext(Arrays.asList("one", null, "three"));
+        verify(subscriber, Mockito.never()).onError(any(Throwable.class));
+        verify(subscriber, times(1)).onComplete();
     }
 
     @Test
     public void testListWithBlockingFirstFlowable() {
-        Flowable<String> o = Flowable.fromIterable(Arrays.asList("one", "two", "three"));
-        List<String> actual = o.toList().toFlowable().blockingFirst();
+        Flowable<String> f = Flowable.fromIterable(Arrays.asList("one", "two", "three"));
+        List<String> actual = f.toList().toFlowable().blockingFirst();
         Assert.assertEquals(Arrays.asList("one", "two", "three"), actual);
     }
     @Test
@@ -170,10 +173,10 @@ public class FlowableToListTest {
     @Test
     public void testList() {
         Flowable<String> w = Flowable.fromIterable(Arrays.asList("one", "two", "three"));
-        Single<List<String>> observable = w.toList();
+        Single<List<String>> single = w.toList();
 
         SingleObserver<List<String>> observer = TestHelper.mockSingleObserver();
-        observable.subscribe(observer);
+        single.subscribe(observer);
         verify(observer, times(1)).onSuccess(Arrays.asList("one", "two", "three"));
         verify(observer, Mockito.never()).onError(any(Throwable.class));
     }
@@ -181,10 +184,10 @@ public class FlowableToListTest {
     @Test
     public void testListViaFlowable() {
         Flowable<String> w = Flowable.fromIterable(Arrays.asList("one", "two", "three"));
-        Single<List<String>> observable = w.toList();
+        Single<List<String>> single = w.toList();
 
         SingleObserver<List<String>> observer = TestHelper.mockSingleObserver();
-        observable.subscribe(observer);
+        single.subscribe(observer);
         verify(observer, times(1)).onSuccess(Arrays.asList("one", "two", "three"));
         verify(observer, Mockito.never()).onError(any(Throwable.class));
     }
@@ -192,13 +195,13 @@ public class FlowableToListTest {
     @Test
     public void testListMultipleSubscribers() {
         Flowable<String> w = Flowable.fromIterable(Arrays.asList("one", "two", "three"));
-        Single<List<String>> observable = w.toList();
+        Single<List<String>> single = w.toList();
 
         SingleObserver<List<String>> o1 = TestHelper.mockSingleObserver();
-        observable.subscribe(o1);
+        single.subscribe(o1);
 
         SingleObserver<List<String>> o2 = TestHelper.mockSingleObserver();
-        observable.subscribe(o2);
+        single.subscribe(o2);
 
         List<String> expected = Arrays.asList("one", "two", "three");
 
@@ -213,18 +216,18 @@ public class FlowableToListTest {
     @Ignore("Null values are not allowed")
     public void testListWithNullValue() {
         Flowable<String> w = Flowable.fromIterable(Arrays.asList("one", null, "three"));
-        Single<List<String>> observable = w.toList();
+        Single<List<String>> single = w.toList();
 
         SingleObserver<List<String>> observer = TestHelper.mockSingleObserver();
-        observable.subscribe(observer);
+        single.subscribe(observer);
         verify(observer, times(1)).onSuccess(Arrays.asList("one", null, "three"));
         verify(observer, Mockito.never()).onError(any(Throwable.class));
     }
 
     @Test
     public void testListWithBlockingFirst() {
-        Flowable<String> o = Flowable.fromIterable(Arrays.asList("one", "two", "three"));
-        List<String> actual = o.toList().blockingGet();
+        Flowable<String> f = Flowable.fromIterable(Arrays.asList("one", "two", "three"));
+        List<String> actual = f.toList().blockingGet();
         Assert.assertEquals(Arrays.asList("one", "two", "three"), actual);
     }
     @Test

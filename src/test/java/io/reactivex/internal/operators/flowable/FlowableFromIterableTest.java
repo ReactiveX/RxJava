@@ -46,15 +46,15 @@ public class FlowableFromIterableTest {
     public void testListIterable() {
         Flowable<String> flowable = Flowable.fromIterable(Arrays.<String> asList("one", "two", "three"));
 
-        Subscriber<String> observer = TestHelper.mockSubscriber();
+        Subscriber<String> subscriber = TestHelper.mockSubscriber();
 
-        flowable.subscribe(observer);
+        flowable.subscribe(subscriber);
 
-        verify(observer, times(1)).onNext("one");
-        verify(observer, times(1)).onNext("two");
-        verify(observer, times(1)).onNext("three");
-        verify(observer, Mockito.never()).onError(any(Throwable.class));
-        verify(observer, times(1)).onComplete();
+        verify(subscriber, times(1)).onNext("one");
+        verify(subscriber, times(1)).onNext("two");
+        verify(subscriber, times(1)).onNext("three");
+        verify(subscriber, Mockito.never()).onError(any(Throwable.class));
+        verify(subscriber, times(1)).onComplete();
     }
 
     /**
@@ -90,30 +90,30 @@ public class FlowableFromIterableTest {
         };
         Flowable<String> flowable = Flowable.fromIterable(it);
 
-        Subscriber<String> observer = TestHelper.mockSubscriber();
+        Subscriber<String> subscriber = TestHelper.mockSubscriber();
 
-        flowable.subscribe(observer);
+        flowable.subscribe(subscriber);
 
-        verify(observer, times(1)).onNext("1");
-        verify(observer, times(1)).onNext("2");
-        verify(observer, times(1)).onNext("3");
-        verify(observer, Mockito.never()).onError(any(Throwable.class));
-        verify(observer, times(1)).onComplete();
+        verify(subscriber, times(1)).onNext("1");
+        verify(subscriber, times(1)).onNext("2");
+        verify(subscriber, times(1)).onNext("3");
+        verify(subscriber, Mockito.never()).onError(any(Throwable.class));
+        verify(subscriber, times(1)).onComplete();
     }
 
     @Test
     public void testObservableFromIterable() {
         Flowable<String> flowable = Flowable.fromIterable(Arrays.<String> asList("one", "two", "three"));
 
-        Subscriber<String> observer = TestHelper.mockSubscriber();
+        Subscriber<String> subscriber = TestHelper.mockSubscriber();
 
-        flowable.subscribe(observer);
+        flowable.subscribe(subscriber);
 
-        verify(observer, times(1)).onNext("one");
-        verify(observer, times(1)).onNext("two");
-        verify(observer, times(1)).onNext("three");
-        verify(observer, Mockito.never()).onError(any(Throwable.class));
-        verify(observer, times(1)).onComplete();
+        verify(subscriber, times(1)).onNext("one");
+        verify(subscriber, times(1)).onNext("two");
+        verify(subscriber, times(1)).onNext("three");
+        verify(subscriber, Mockito.never()).onError(any(Throwable.class));
+        verify(subscriber, times(1)).onComplete();
     }
 
     @Test
@@ -122,14 +122,14 @@ public class FlowableFromIterableTest {
         for (int i = 1; i <= Flowable.bufferSize() + 1; i++) {
             list.add(i);
         }
-        Flowable<Integer> o = Flowable.fromIterable(list);
+        Flowable<Integer> f = Flowable.fromIterable(list);
 
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>(0L);
 
         ts.assertNoValues();
         ts.request(1);
 
-        o.subscribe(ts);
+        f.subscribe(ts);
 
         ts.assertValue(1);
         ts.request(2);
@@ -142,14 +142,14 @@ public class FlowableFromIterableTest {
 
     @Test
     public void testNoBackpressure() {
-        Flowable<Integer> o = Flowable.fromIterable(Arrays.asList(1, 2, 3, 4, 5));
+        Flowable<Integer> f = Flowable.fromIterable(Arrays.asList(1, 2, 3, 4, 5));
 
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>(0L);
 
         ts.assertNoValues();
         ts.request(Long.MAX_VALUE); // infinite
 
-        o.subscribe(ts);
+        f.subscribe(ts);
 
         ts.assertValues(1, 2, 3, 4, 5);
         ts.assertTerminated();
@@ -157,12 +157,12 @@ public class FlowableFromIterableTest {
 
     @Test
     public void testSubscribeMultipleTimes() {
-        Flowable<Integer> o = Flowable.fromIterable(Arrays.asList(1, 2, 3));
+        Flowable<Integer> f = Flowable.fromIterable(Arrays.asList(1, 2, 3));
 
         for (int i = 0; i < 10; i++) {
             TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
 
-            o.subscribe(ts);
+            f.subscribe(ts);
 
             ts.assertValues(1, 2, 3);
             ts.assertNoErrors();
@@ -172,12 +172,12 @@ public class FlowableFromIterableTest {
 
     @Test
     public void testFromIterableRequestOverflow() throws InterruptedException {
-        Flowable<Integer> o = Flowable.fromIterable(Arrays.asList(1,2,3,4));
+        Flowable<Integer> f = Flowable.fromIterable(Arrays.asList(1,2,3,4));
 
         final int expectedCount = 4;
         final CountDownLatch latch = new CountDownLatch(expectedCount);
 
-        o.subscribeOn(Schedulers.computation())
+        f.subscribeOn(Schedulers.computation())
         .subscribe(new DefaultSubscriber<Integer>() {
 
             @Override

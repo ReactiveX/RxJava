@@ -84,19 +84,19 @@ public class FlowableCacheTest {
     @Test
     public void testCache() throws InterruptedException {
         final AtomicInteger counter = new AtomicInteger();
-        Flowable<String> o = Flowable.unsafeCreate(new Publisher<String>() {
+        Flowable<String> f = Flowable.unsafeCreate(new Publisher<String>() {
 
             @Override
-            public void subscribe(final Subscriber<? super String> observer) {
-                observer.onSubscribe(new BooleanSubscription());
+            public void subscribe(final Subscriber<? super String> subscriber) {
+                subscriber.onSubscribe(new BooleanSubscription());
                 new Thread(new Runnable() {
 
                     @Override
                     public void run() {
                         counter.incrementAndGet();
                         System.out.println("published observable being executed");
-                        observer.onNext("one");
-                        observer.onComplete();
+                        subscriber.onNext("one");
+                        subscriber.onComplete();
                     }
                 }).start();
             }
@@ -106,7 +106,7 @@ public class FlowableCacheTest {
         final CountDownLatch latch = new CountDownLatch(2);
 
         // subscribe once
-        o.subscribe(new Consumer<String>() {
+        f.subscribe(new Consumer<String>() {
             @Override
             public void accept(String v) {
                     assertEquals("one", v);
@@ -116,7 +116,7 @@ public class FlowableCacheTest {
         });
 
         // subscribe again
-        o.subscribe(new Consumer<String>() {
+        f.subscribe(new Consumer<String>() {
             @Override
             public void accept(String v) {
                     assertEquals("one", v);
@@ -134,10 +134,10 @@ public class FlowableCacheTest {
     @Test
     public void testUnsubscribeSource() throws Exception {
         Action unsubscribe = mock(Action.class);
-        Flowable<Integer> o = Flowable.just(1).doOnCancel(unsubscribe).cache();
-        o.subscribe();
-        o.subscribe();
-        o.subscribe();
+        Flowable<Integer> f = Flowable.just(1).doOnCancel(unsubscribe).cache();
+        f.subscribe();
+        f.subscribe();
+        f.subscribe();
         verify(unsubscribe, times(1)).run();
     }
 
@@ -305,11 +305,11 @@ public class FlowableCacheTest {
 
     @Test
     public void disposeOnArrival2() {
-        Flowable<Integer> o = PublishProcessor.<Integer>create().cache();
+        Flowable<Integer> f = PublishProcessor.<Integer>create().cache();
 
-        o.test();
+        f.test();
 
-        o.test(0L, true)
+        f.test(0L, true)
         .assertEmpty();
     }
 

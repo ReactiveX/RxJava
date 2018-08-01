@@ -336,10 +336,10 @@ public class SingleDoOnTest {
 
             new Single<Integer>() {
                 @Override
-                protected void subscribeActual(SingleObserver<? super Integer> s) {
-                    s.onSubscribe(bs);
-                    s.onError(new TestException("Second"));
-                    s.onSuccess(1);
+                protected void subscribeActual(SingleObserver<? super Integer> observer) {
+                    observer.onSubscribe(bs);
+                    observer.onError(new TestException("Second"));
+                    observer.onSuccess(1);
                 }
             }
             .doOnSubscribe(new Consumer<Disposable>() {

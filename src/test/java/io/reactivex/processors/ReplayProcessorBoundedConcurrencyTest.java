@@ -39,13 +39,13 @@ public class ReplayProcessorBoundedConcurrencyTest {
                 Flowable.unsafeCreate(new Publisher<Long>() {
 
                     @Override
-                    public void subscribe(Subscriber<? super Long> o) {
+                    public void subscribe(Subscriber<? super Long> subscriber) {
                         System.out.println("********* Start Source Data ***********");
                         for (long l = 1; l <= 10000; l++) {
-                            o.onNext(l);
+                            subscriber.onNext(l);
                         }
                         System.out.println("********* Finished Source Data ***********");
-                        o.onComplete();
+                        subscriber.onComplete();
                     }
                 }).subscribe(replay);
             }
@@ -148,13 +148,13 @@ public class ReplayProcessorBoundedConcurrencyTest {
                 Flowable.unsafeCreate(new Publisher<Long>() {
 
                     @Override
-                    public void subscribe(Subscriber<? super Long> o) {
+                    public void subscribe(Subscriber<? super Long> subscriber) {
                         System.out.println("********* Start Source Data ***********");
                         for (long l = 1; l <= 10000; l++) {
-                            o.onNext(l);
+                            subscriber.onNext(l);
                         }
                         System.out.println("********* Finished Source Data ***********");
-                        o.onComplete();
+                        subscriber.onComplete();
                     }
                 }).subscribe(replay);
             }

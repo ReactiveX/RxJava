@@ -46,7 +46,7 @@ public final class ObservableZip<T, R> extends Observable<R> {
 
     @Override
     @SuppressWarnings("unchecked")
-    public void subscribeActual(Observer<? super R> s) {
+    public void subscribeActual(Observer<? super R> observer) {
         ObservableSource<? extends T>[] sources = this.sources;
         int count = 0;
         if (sources == null) {
@@ -64,11 +64,11 @@ public final class ObservableZip<T, R> extends Observable<R> {
         }
 
         if (count == 0) {
-            EmptyDisposable.complete(s);
+            EmptyDisposable.complete(observer);
             return;
         }
 
-        ZipCoordinator<T, R> zc = new ZipCoordinator<T, R>(s, zipper, count, delayError);
+        ZipCoordinator<T, R> zc = new ZipCoordinator<T, R>(observer, zipper, count, delayError);
         zc.subscribe(sources, bufferSize);
     }
 

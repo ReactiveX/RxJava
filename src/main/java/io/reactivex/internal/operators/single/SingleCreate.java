@@ -31,9 +31,9 @@ public final class SingleCreate<T> extends Single<T> {
     }
 
     @Override
-    protected void subscribeActual(SingleObserver<? super T> s) {
-        Emitter<T> parent = new Emitter<T>(s);
-        s.onSubscribe(parent);
+    protected void subscribeActual(SingleObserver<? super T> observer) {
+        Emitter<T> parent = new Emitter<T>(observer);
+        observer.onSubscribe(parent);
 
         try {
             source.subscribe(parent);

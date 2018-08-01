@@ -35,7 +35,7 @@ public class FlowableZipCompletionTest {
     PublishProcessor<String> s2;
     Flowable<String> zipped;
 
-    Subscriber<String> observer;
+    Subscriber<String> subscriber;
     InOrder inOrder;
 
     @Before
@@ -51,10 +51,10 @@ public class FlowableZipCompletionTest {
         s2 = PublishProcessor.create();
         zipped = Flowable.zip(s1, s2, concat2Strings);
 
-        observer = TestHelper.mockSubscriber();
-        inOrder = inOrder(observer);
+        subscriber = TestHelper.mockSubscriber();
+        inOrder = inOrder(subscriber);
 
-        zipped.subscribe(observer);
+        zipped.subscribe(subscriber);
     }
 
     @Test
@@ -63,10 +63,10 @@ public class FlowableZipCompletionTest {
         s1.onNext("b");
         s1.onComplete();
         s2.onNext("1");
-        inOrder.verify(observer, times(1)).onNext("a-1");
+        inOrder.verify(subscriber, times(1)).onNext("a-1");
         s2.onNext("2");
-        inOrder.verify(observer, times(1)).onNext("b-2");
-        inOrder.verify(observer, times(1)).onComplete();
+        inOrder.verify(subscriber, times(1)).onNext("b-2");
+        inOrder.verify(subscriber, times(1)).onComplete();
         inOrder.verifyNoMoreInteractions();
     }
 
@@ -75,11 +75,11 @@ public class FlowableZipCompletionTest {
         s2.onNext("1");
         s2.onNext("2");
         s1.onNext("a");
-        inOrder.verify(observer, times(1)).onNext("a-1");
+        inOrder.verify(subscriber, times(1)).onNext("a-1");
         s1.onNext("b");
-        inOrder.verify(observer, times(1)).onNext("b-2");
+        inOrder.verify(subscriber, times(1)).onNext("b-2");
         s1.onComplete();
-        inOrder.verify(observer, times(1)).onComplete();
+        inOrder.verify(subscriber, times(1)).onComplete();
         inOrder.verifyNoMoreInteractions();
     }
 
@@ -89,10 +89,10 @@ public class FlowableZipCompletionTest {
         s2.onNext("2");
         s2.onComplete();
         s1.onNext("a");
-        inOrder.verify(observer, times(1)).onNext("a-1");
+        inOrder.verify(subscriber, times(1)).onNext("a-1");
         s1.onNext("b");
-        inOrder.verify(observer, times(1)).onNext("b-2");
-        inOrder.verify(observer, times(1)).onComplete();
+        inOrder.verify(subscriber, times(1)).onNext("b-2");
+        inOrder.verify(subscriber, times(1)).onComplete();
         inOrder.verifyNoMoreInteractions();
     }
 
@@ -101,11 +101,11 @@ public class FlowableZipCompletionTest {
         s1.onNext("a");
         s1.onNext("b");
         s2.onNext("1");
-        inOrder.verify(observer, times(1)).onNext("a-1");
+        inOrder.verify(subscriber, times(1)).onNext("a-1");
         s2.onNext("2");
-        inOrder.verify(observer, times(1)).onNext("b-2");
+        inOrder.verify(subscriber, times(1)).onNext("b-2");
         s2.onComplete();
-        inOrder.verify(observer, times(1)).onComplete();
+        inOrder.verify(subscriber, times(1)).onComplete();
         inOrder.verifyNoMoreInteractions();
     }
 

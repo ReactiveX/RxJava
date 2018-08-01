@@ -43,8 +43,8 @@ public final class MaybeFlatMapIterableObservable<T, R> extends Observable<R> {
     }
 
     @Override
-    protected void subscribeActual(Observer<? super R> s) {
-        source.subscribe(new FlatMapIterableObserver<T, R>(s, mapper));
+    protected void subscribeActual(Observer<? super R> observer) {
+        source.subscribe(new FlatMapIterableObserver<T, R>(observer, mapper));
     }
 
     static final class FlatMapIterableObserver<T, R>

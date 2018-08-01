@@ -42,7 +42,7 @@ public class OperatorFlatMapPerf {
 
     @Benchmark
     public void flatMapIntPassthruSync(Input input) throws InterruptedException {
-        input.observable.flatMap(new Function<Integer, Publisher<Integer>>() {
+        input.flowable.flatMap(new Function<Integer, Publisher<Integer>>() {
             @Override
             public Publisher<Integer> apply(Integer v) {
                 return Flowable.just(v);
@@ -53,7 +53,7 @@ public class OperatorFlatMapPerf {
     @Benchmark
     public void flatMapIntPassthruAsync(Input input) throws InterruptedException {
         PerfSubscriber latchedObserver = input.newLatchedObserver();
-        input.observable.flatMap(new Function<Integer, Publisher<Integer>>() {
+        input.flowable.flatMap(new Function<Integer, Publisher<Integer>>() {
             @Override
             public Publisher<Integer> apply(Integer i) {
                     return Flowable.just(i).subscribeOn(Schedulers.computation());
@@ -71,7 +71,7 @@ public class OperatorFlatMapPerf {
         Flowable.range(1, 2).flatMap(new Function<Integer, Publisher<Integer>>() {
             @Override
             public Publisher<Integer> apply(Integer i) {
-                    return input.observable;
+                    return input.flowable;
             }
         }).subscribe(input.newSubscriber());
     }

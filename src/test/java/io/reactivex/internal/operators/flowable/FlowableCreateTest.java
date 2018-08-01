@@ -48,151 +48,189 @@ public class FlowableCreateTest {
 
     @Test
     public void basic() {
-        final Disposable d = Disposables.empty();
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            final Disposable d = Disposables.empty();
 
-        Flowable.<Integer>create(new FlowableOnSubscribe<Integer>() {
-            @Override
-            public void subscribe(FlowableEmitter<Integer> e) throws Exception {
-                e.setDisposable(d);
+            Flowable.<Integer>create(new FlowableOnSubscribe<Integer>() {
+                @Override
+                public void subscribe(FlowableEmitter<Integer> e) throws Exception {
+                    e.setDisposable(d);
 
-                e.onNext(1);
-                e.onNext(2);
-                e.onNext(3);
-                e.onComplete();
-                e.onError(new TestException());
-                e.onNext(4);
-                e.onError(new TestException());
-                e.onComplete();
-            }
-        }, BackpressureStrategy.BUFFER)
-        .test()
-        .assertResult(1, 2, 3);
+                    e.onNext(1);
+                    e.onNext(2);
+                    e.onNext(3);
+                    e.onComplete();
+                    e.onError(new TestException("first"));
+                    e.onNext(4);
+                    e.onError(new TestException("second"));
+                    e.onComplete();
+                }
+            }, BackpressureStrategy.BUFFER)
+            .test()
+            .assertResult(1, 2, 3);
 
-        assertTrue(d.isDisposed());
+            assertTrue(d.isDisposed());
+
+            TestHelper.assertUndeliverable(errors, 0, TestException.class, "first");
+            TestHelper.assertUndeliverable(errors, 1, TestException.class, "second");
+        } finally {
+            RxJavaPlugins.reset();
+        }
     }
 
     @Test
     public void basicWithCancellable() {
-        final Disposable d1 = Disposables.empty();
-        final Disposable d2 = Disposables.empty();
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            final Disposable d1 = Disposables.empty();
+            final Disposable d2 = Disposables.empty();
 
-        Flowable.<Integer>create(new FlowableOnSubscribe<Integer>() {
-            @Override
-            public void subscribe(FlowableEmitter<Integer> e) throws Exception {
-                e.setDisposable(d1);
-                e.setCancellable(new Cancellable() {
-                    @Override
-                    public void cancel() throws Exception {
-                        d2.dispose();
-                    }
-                });
+            Flowable.<Integer>create(new FlowableOnSubscribe<Integer>() {
+                @Override
+                public void subscribe(FlowableEmitter<Integer> e) throws Exception {
+                    e.setDisposable(d1);
+                    e.setCancellable(new Cancellable() {
+                        @Override
+                        public void cancel() throws Exception {
+                            d2.dispose();
+                        }
+                    });
 
-                e.onNext(1);
-                e.onNext(2);
-                e.onNext(3);
-                e.onComplete();
-                e.onError(new TestException());
-                e.onNext(4);
-                e.onError(new TestException());
-                e.onComplete();
-            }
-        }, BackpressureStrategy.BUFFER)
-        .test()
-        .assertResult(1, 2, 3);
+                    e.onNext(1);
+                    e.onNext(2);
+                    e.onNext(3);
+                    e.onComplete();
+                    e.onError(new TestException("first"));
+                    e.onNext(4);
+                    e.onError(new TestException("second"));
+                    e.onComplete();
+                }
+            }, BackpressureStrategy.BUFFER)
+            .test()
+            .assertResult(1, 2, 3);
 
-        assertTrue(d1.isDisposed());
-        assertTrue(d2.isDisposed());
+            assertTrue(d1.isDisposed());
+            assertTrue(d2.isDisposed());
+
+            TestHelper.assertUndeliverable(errors, 0, TestException.class, "first");
+            TestHelper.assertUndeliverable(errors, 1, TestException.class, "second");
+        } finally {
+            RxJavaPlugins.reset();
+        }
     }
 
     @Test
     public void basicWithError() {
-        final Disposable d = Disposables.empty();
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            final Disposable d = Disposables.empty();
 
-        Flowable.<Integer>create(new FlowableOnSubscribe<Integer>() {
-            @Override
-            public void subscribe(FlowableEmitter<Integer> e) throws Exception {
-                e.setDisposable(d);
+            Flowable.<Integer>create(new FlowableOnSubscribe<Integer>() {
+                @Override
+                public void subscribe(FlowableEmitter<Integer> e) throws Exception {
+                    e.setDisposable(d);
 
-                e.onNext(1);
-                e.onNext(2);
-                e.onNext(3);
-                e.onError(new TestException());
-                e.onComplete();
-                e.onNext(4);
-                e.onError(new TestException());
-            }
-        }, BackpressureStrategy.BUFFER)
-        .test()
-        .assertFailure(TestException.class, 1, 2, 3);
+                    e.onNext(1);
+                    e.onNext(2);
+                    e.onNext(3);
+                    e.onError(new TestException());
+                    e.onComplete();
+                    e.onNext(4);
+                    e.onError(new TestException("second"));
+                }
+            }, BackpressureStrategy.BUFFER)
+            .test()
+            .assertFailure(TestException.class, 1, 2, 3);
 
-        assertTrue(d.isDisposed());
+            assertTrue(d.isDisposed());
+
+            TestHelper.assertUndeliverable(errors, 0, TestException.class, "second");
+        } finally {
+            RxJavaPlugins.reset();
+        }
     }
 
     @Test
     public void basicSerialized() {
-        final Disposable d = Disposables.empty();
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            final Disposable d = Disposables.empty();
 
-        Flowable.<Integer>create(new FlowableOnSubscribe<Integer>() {
-            @Override
-            public void subscribe(FlowableEmitter<Integer> e) throws Exception {
-                e = e.serialize();
+            Flowable.<Integer>create(new FlowableOnSubscribe<Integer>() {
+                @Override
+                public void subscribe(FlowableEmitter<Integer> e) throws Exception {
+                    e = e.serialize();
 
-                e.setDisposable(d);
+                    e.setDisposable(d);
 
-                e.onNext(1);
-                e.onNext(2);
-                e.onNext(3);
-                e.onComplete();
-                e.onError(new TestException());
-                e.onNext(4);
-                e.onError(new TestException());
-                e.onComplete();
-            }
-        }, BackpressureStrategy.BUFFER)
-        .test()
-        .assertResult(1, 2, 3);
+                    e.onNext(1);
+                    e.onNext(2);
+                    e.onNext(3);
+                    e.onComplete();
+                    e.onError(new TestException("first"));
+                    e.onNext(4);
+                    e.onError(new TestException("second"));
+                    e.onComplete();
+                }
+            }, BackpressureStrategy.BUFFER)
+            .test()
+            .assertResult(1, 2, 3);
 
-        assertTrue(d.isDisposed());
+            assertTrue(d.isDisposed());
+
+            TestHelper.assertUndeliverable(errors, 0, TestException.class, "first");
+            TestHelper.assertUndeliverable(errors, 1, TestException.class, "second");
+        } finally {
+            RxJavaPlugins.reset();
+        }
     }
 
     @Test
     public void basicWithErrorSerialized() {
-        final Disposable d = Disposables.empty();
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            final Disposable d = Disposables.empty();
 
-        Flowable.<Integer>create(new FlowableOnSubscribe<Integer>() {
-            @Override
-            public void subscribe(FlowableEmitter<Integer> e) throws Exception {
-                e = e.serialize();
+            Flowable.<Integer>create(new FlowableOnSubscribe<Integer>() {
+                @Override
+                public void subscribe(FlowableEmitter<Integer> e) throws Exception {
+                    e = e.serialize();
 
-                e.setDisposable(d);
+                    e.setDisposable(d);
 
-                e.onNext(1);
-                e.onNext(2);
-                e.onNext(3);
-                e.onError(new TestException());
-                e.onComplete();
-                e.onNext(4);
-                e.onError(new TestException());
-            }
-        }, BackpressureStrategy.BUFFER)
-        .test()
-        .assertFailure(TestException.class, 1, 2, 3);
+                    e.onNext(1);
+                    e.onNext(2);
+                    e.onNext(3);
+                    e.onError(new TestException());
+                    e.onComplete();
+                    e.onNext(4);
+                    e.onError(new TestException("second"));
+                }
+            }, BackpressureStrategy.BUFFER)
+            .test()
+            .assertFailure(TestException.class, 1, 2, 3);
 
-        assertTrue(d.isDisposed());
+            assertTrue(d.isDisposed());
+
+            TestHelper.assertUndeliverable(errors, 0, TestException.class, "second");
+        } finally {
+            RxJavaPlugins.reset();
+        }
     }
 
     @Test
     public void wrap() {
         Flowable.fromPublisher(new Publisher<Integer>() {
             @Override
-            public void subscribe(Subscriber<? super Integer> observer) {
-                observer.onSubscribe(new BooleanSubscription());
-                observer.onNext(1);
-                observer.onNext(2);
-                observer.onNext(3);
-                observer.onNext(4);
-                observer.onNext(5);
-                observer.onComplete();
+            public void subscribe(Subscriber<? super Integer> subscriber) {
+                subscriber.onSubscribe(new BooleanSubscription());
+                subscriber.onNext(1);
+                subscriber.onNext(2);
+                subscriber.onNext(3);
+                subscriber.onNext(4);
+                subscriber.onNext(5);
+                subscriber.onComplete();
             }
         })
         .test()
@@ -203,14 +241,14 @@ public class FlowableCreateTest {
     public void unsafe() {
         Flowable.unsafeCreate(new Publisher<Integer>() {
             @Override
-            public void subscribe(Subscriber<? super Integer> observer) {
-                observer.onSubscribe(new BooleanSubscription());
-                observer.onNext(1);
-                observer.onNext(2);
-                observer.onNext(3);
-                observer.onNext(4);
-                observer.onNext(5);
-                observer.onComplete();
+            public void subscribe(Subscriber<? super Integer> subscriber) {
+                subscriber.onSubscribe(new BooleanSubscription());
+                subscriber.onNext(1);
+                subscriber.onNext(2);
+                subscriber.onNext(3);
+                subscriber.onNext(4);
+                subscriber.onNext(5);
+                subscriber.onComplete();
             }
         })
         .test()
@@ -224,237 +262,308 @@ public class FlowableCreateTest {
 
     @Test
     public void createNullValueBuffer() {
-        final Throwable[] error = { null };
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
 
-        Flowable.create(new FlowableOnSubscribe<Integer>() {
-            @Override
-            public void subscribe(FlowableEmitter<Integer> e) throws Exception {
-                try {
-                    e.onNext(null);
-                    e.onNext(1);
-                    e.onError(new TestException());
-                    e.onComplete();
-                } catch (Throwable ex) {
-                    error[0] = ex;
+            final Throwable[] error = { null };
+
+            Flowable.create(new FlowableOnSubscribe<Integer>() {
+                @Override
+                public void subscribe(FlowableEmitter<Integer> e) throws Exception {
+                    try {
+                        e.onNext(null);
+                        e.onNext(1);
+                        e.onError(new TestException());
+                        e.onComplete();
+                    } catch (Throwable ex) {
+                        error[0] = ex;
+                    }
                 }
-            }
-        }, BackpressureStrategy.BUFFER)
-        .test()
-        .assertFailure(NullPointerException.class);
+            }, BackpressureStrategy.BUFFER)
+            .test()
+            .assertFailure(NullPointerException.class);
 
-        assertNull(error[0]);
+            assertNull(error[0]);
+
+            TestHelper.assertUndeliverable(errors, 0, TestException.class);
+        } finally {
+            RxJavaPlugins.reset();
+        }
     }
 
     @Test
     public void createNullValueLatest() {
-        final Throwable[] error = { null };
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            final Throwable[] error = { null };
 
-        Flowable.create(new FlowableOnSubscribe<Integer>() {
-            @Override
-            public void subscribe(FlowableEmitter<Integer> e) throws Exception {
-                try {
-                    e.onNext(null);
-                    e.onNext(1);
-                    e.onError(new TestException());
-                    e.onComplete();
-                } catch (Throwable ex) {
-                    error[0] = ex;
+            Flowable.create(new FlowableOnSubscribe<Integer>() {
+                @Override
+                public void subscribe(FlowableEmitter<Integer> e) throws Exception {
+                    try {
+                        e.onNext(null);
+                        e.onNext(1);
+                        e.onError(new TestException());
+                        e.onComplete();
+                    } catch (Throwable ex) {
+                        error[0] = ex;
+                    }
                 }
-            }
-        }, BackpressureStrategy.LATEST)
-        .test()
-        .assertFailure(NullPointerException.class);
+            }, BackpressureStrategy.LATEST)
+            .test()
+            .assertFailure(NullPointerException.class);
 
-        assertNull(error[0]);
+            assertNull(error[0]);
+
+            TestHelper.assertUndeliverable(errors, 0, TestException.class);
+        } finally {
+            RxJavaPlugins.reset();
+        }
     }
 
     @Test
     public void createNullValueError() {
-        final Throwable[] error = { null };
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            final Throwable[] error = { null };
 
-        Flowable.create(new FlowableOnSubscribe<Integer>() {
-            @Override
-            public void subscribe(FlowableEmitter<Integer> e) throws Exception {
-                try {
-                    e.onNext(null);
-                    e.onNext(1);
-                    e.onError(new TestException());
-                    e.onComplete();
-                } catch (Throwable ex) {
-                    error[0] = ex;
+            Flowable.create(new FlowableOnSubscribe<Integer>() {
+                @Override
+                public void subscribe(FlowableEmitter<Integer> e) throws Exception {
+                    try {
+                        e.onNext(null);
+                        e.onNext(1);
+                        e.onError(new TestException());
+                        e.onComplete();
+                    } catch (Throwable ex) {
+                        error[0] = ex;
+                    }
                 }
-            }
-        }, BackpressureStrategy.ERROR)
-        .test()
-        .assertFailure(NullPointerException.class);
+            }, BackpressureStrategy.ERROR)
+            .test()
+            .assertFailure(NullPointerException.class);
 
-        assertNull(error[0]);
+            assertNull(error[0]);
+
+            TestHelper.assertUndeliverable(errors, 0, TestException.class);
+        } finally {
+            RxJavaPlugins.reset();
+        }
     }
 
     @Test
     public void createNullValueDrop() {
-        final Throwable[] error = { null };
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            final Throwable[] error = { null };
 
-        Flowable.create(new FlowableOnSubscribe<Integer>() {
-            @Override
-            public void subscribe(FlowableEmitter<Integer> e) throws Exception {
-                try {
-                    e.onNext(null);
-                    e.onNext(1);
-                    e.onError(new TestException());
-                    e.onComplete();
-                } catch (Throwable ex) {
-                    error[0] = ex;
+            Flowable.create(new FlowableOnSubscribe<Integer>() {
+                @Override
+                public void subscribe(FlowableEmitter<Integer> e) throws Exception {
+                    try {
+                        e.onNext(null);
+                        e.onNext(1);
+                        e.onError(new TestException());
+                        e.onComplete();
+                    } catch (Throwable ex) {
+                        error[0] = ex;
+                    }
                 }
-            }
-        }, BackpressureStrategy.DROP)
-        .test()
-        .assertFailure(NullPointerException.class);
+            }, BackpressureStrategy.DROP)
+            .test()
+            .assertFailure(NullPointerException.class);
 
-        assertNull(error[0]);
+            assertNull(error[0]);
+
+            TestHelper.assertUndeliverable(errors, 0, TestException.class);
+        } finally {
+            RxJavaPlugins.reset();
+        }
     }
 
     @Test
     public void createNullValueMissing() {
-        final Throwable[] error = { null };
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            final Throwable[] error = { null };
 
-        Flowable.create(new FlowableOnSubscribe<Integer>() {
-            @Override
-            public void subscribe(FlowableEmitter<Integer> e) throws Exception {
-                try {
-                    e.onNext(null);
-                    e.onNext(1);
-                    e.onError(new TestException());
-                    e.onComplete();
-                } catch (Throwable ex) {
-                    error[0] = ex;
+            Flowable.create(new FlowableOnSubscribe<Integer>() {
+                @Override
+                public void subscribe(FlowableEmitter<Integer> e) throws Exception {
+                    try {
+                        e.onNext(null);
+                        e.onNext(1);
+                        e.onError(new TestException());
+                        e.onComplete();
+                    } catch (Throwable ex) {
+                        error[0] = ex;
+                    }
                 }
-            }
-        }, BackpressureStrategy.MISSING)
-        .test()
-        .assertFailure(NullPointerException.class);
+            }, BackpressureStrategy.MISSING)
+            .test()
+            .assertFailure(NullPointerException.class);
 
-        assertNull(error[0]);
+            assertNull(error[0]);
+
+            TestHelper.assertUndeliverable(errors, 0, TestException.class);
+        } finally {
+            RxJavaPlugins.reset();
+        }
     }
 
     @Test
     public void createNullValueBufferSerialized() {
-        final Throwable[] error = { null };
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            final Throwable[] error = { null };
 
-        Flowable.create(new FlowableOnSubscribe<Integer>() {
-            @Override
-            public void subscribe(FlowableEmitter<Integer> e) throws Exception {
-                e = e.serialize();
-                try {
-                    e.onNext(null);
-                    e.onNext(1);
-                    e.onError(new TestException());
-                    e.onComplete();
-                } catch (Throwable ex) {
-                    error[0] = ex;
+            Flowable.create(new FlowableOnSubscribe<Integer>() {
+                @Override
+                public void subscribe(FlowableEmitter<Integer> e) throws Exception {
+                    e = e.serialize();
+                    try {
+                        e.onNext(null);
+                        e.onNext(1);
+                        e.onError(new TestException());
+                        e.onComplete();
+                    } catch (Throwable ex) {
+                        error[0] = ex;
+                    }
                 }
-            }
-        }, BackpressureStrategy.BUFFER)
-        .test()
-        .assertFailure(NullPointerException.class);
+            }, BackpressureStrategy.BUFFER)
+            .test()
+            .assertFailure(NullPointerException.class);
 
-        assertNull(error[0]);
+            assertNull(error[0]);
+
+            TestHelper.assertUndeliverable(errors, 0, TestException.class);
+        } finally {
+            RxJavaPlugins.reset();
+        }
     }
 
     @Test
     public void createNullValueLatestSerialized() {
-        final Throwable[] error = { null };
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            final Throwable[] error = { null };
 
-        Flowable.create(new FlowableOnSubscribe<Integer>() {
-            @Override
-            public void subscribe(FlowableEmitter<Integer> e) throws Exception {
-                e = e.serialize();
-                try {
-                    e.onNext(null);
-                    e.onNext(1);
-                    e.onError(new TestException());
-                    e.onComplete();
-                } catch (Throwable ex) {
-                    error[0] = ex;
+            Flowable.create(new FlowableOnSubscribe<Integer>() {
+                @Override
+                public void subscribe(FlowableEmitter<Integer> e) throws Exception {
+                    e = e.serialize();
+                    try {
+                        e.onNext(null);
+                        e.onNext(1);
+                        e.onError(new TestException());
+                        e.onComplete();
+                    } catch (Throwable ex) {
+                        error[0] = ex;
+                    }
                 }
-            }
-        }, BackpressureStrategy.LATEST)
-        .test()
-        .assertFailure(NullPointerException.class);
+            }, BackpressureStrategy.LATEST)
+            .test()
+            .assertFailure(NullPointerException.class);
 
-        assertNull(error[0]);
+            assertNull(error[0]);
+
+            TestHelper.assertUndeliverable(errors, 0, TestException.class);
+        } finally {
+            RxJavaPlugins.reset();
+        }
     }
 
     @Test
     public void createNullValueErrorSerialized() {
-        final Throwable[] error = { null };
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            final Throwable[] error = { null };
 
-        Flowable.create(new FlowableOnSubscribe<Integer>() {
-            @Override
-            public void subscribe(FlowableEmitter<Integer> e) throws Exception {
-                e = e.serialize();
-                try {
-                    e.onNext(null);
-                    e.onNext(1);
-                    e.onError(new TestException());
-                    e.onComplete();
-                } catch (Throwable ex) {
-                    error[0] = ex;
+            Flowable.create(new FlowableOnSubscribe<Integer>() {
+                @Override
+                public void subscribe(FlowableEmitter<Integer> e) throws Exception {
+                    e = e.serialize();
+                    try {
+                        e.onNext(null);
+                        e.onNext(1);
+                        e.onError(new TestException());
+                        e.onComplete();
+                    } catch (Throwable ex) {
+                        error[0] = ex;
+                    }
                 }
-            }
-        }, BackpressureStrategy.ERROR)
-        .test()
-        .assertFailure(NullPointerException.class);
+            }, BackpressureStrategy.ERROR)
+            .test()
+            .assertFailure(NullPointerException.class);
 
-        assertNull(error[0]);
+            assertNull(error[0]);
+
+            TestHelper.assertUndeliverable(errors, 0, TestException.class);
+        } finally {
+            RxJavaPlugins.reset();
+        }
     }
 
     @Test
     public void createNullValueDropSerialized() {
-        final Throwable[] error = { null };
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            final Throwable[] error = { null };
 
-        Flowable.create(new FlowableOnSubscribe<Integer>() {
-            @Override
-            public void subscribe(FlowableEmitter<Integer> e) throws Exception {
-                e = e.serialize();
-                try {
-                    e.onNext(null);
-                    e.onNext(1);
-                    e.onError(new TestException());
-                    e.onComplete();
-                } catch (Throwable ex) {
-                    error[0] = ex;
+            Flowable.create(new FlowableOnSubscribe<Integer>() {
+                @Override
+                public void subscribe(FlowableEmitter<Integer> e) throws Exception {
+                    e = e.serialize();
+                    try {
+                        e.onNext(null);
+                        e.onNext(1);
+                        e.onError(new TestException());
+                        e.onComplete();
+                    } catch (Throwable ex) {
+                        error[0] = ex;
+                    }
                 }
-            }
-        }, BackpressureStrategy.DROP)
-        .test()
-        .assertFailure(NullPointerException.class);
+            }, BackpressureStrategy.DROP)
+            .test()
+            .assertFailure(NullPointerException.class);
 
-        assertNull(error[0]);
+            assertNull(error[0]);
+
+            TestHelper.assertUndeliverable(errors, 0, TestException.class);
+        } finally {
+            RxJavaPlugins.reset();
+        }
     }
 
     @Test
     public void createNullValueMissingSerialized() {
-        final Throwable[] error = { null };
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            final Throwable[] error = { null };
 
-        Flowable.create(new FlowableOnSubscribe<Integer>() {
-            @Override
-            public void subscribe(FlowableEmitter<Integer> e) throws Exception {
-                e = e.serialize();
-                try {
-                    e.onNext(null);
-                    e.onNext(1);
-                    e.onError(new TestException());
-                    e.onComplete();
-                } catch (Throwable ex) {
-                    error[0] = ex;
+            Flowable.create(new FlowableOnSubscribe<Integer>() {
+                @Override
+                public void subscribe(FlowableEmitter<Integer> e) throws Exception {
+                    e = e.serialize();
+                    try {
+                        e.onNext(null);
+                        e.onNext(1);
+                        e.onError(new TestException());
+                        e.onComplete();
+                    } catch (Throwable ex) {
+                        error[0] = ex;
+                    }
                 }
-            }
-        }, BackpressureStrategy.MISSING)
-        .test()
-        .assertFailure(NullPointerException.class);
+            }, BackpressureStrategy.MISSING)
+            .test()
+            .assertFailure(NullPointerException.class);
 
-        assertNull(error[0]);
+            assertNull(error[0]);
+
+            TestHelper.assertUndeliverable(errors, 0, TestException.class);
+        } finally {
+            RxJavaPlugins.reset();
+        }
     }
 
     @Test
@@ -630,25 +739,32 @@ public class FlowableCreateTest {
     @Test
     public void createNullValue() {
         for (BackpressureStrategy m : BackpressureStrategy.values()) {
-            final Throwable[] error = { null };
+            List<Throwable> errors = TestHelper.trackPluginErrors();
+            try {
+                final Throwable[] error = { null };
 
-            Flowable.create(new FlowableOnSubscribe<Integer>() {
-                @Override
-                public void subscribe(FlowableEmitter<Integer> e) throws Exception {
-                    try {
-                        e.onNext(null);
-                        e.onNext(1);
-                        e.onError(new TestException());
-                        e.onComplete();
-                    } catch (Throwable ex) {
-                        error[0] = ex;
+                Flowable.create(new FlowableOnSubscribe<Integer>() {
+                    @Override
+                    public void subscribe(FlowableEmitter<Integer> e) throws Exception {
+                        try {
+                            e.onNext(null);
+                            e.onNext(1);
+                            e.onError(new TestException());
+                            e.onComplete();
+                        } catch (Throwable ex) {
+                            error[0] = ex;
+                        }
                     }
-                }
-            }, m)
-            .test()
-            .assertFailure(NullPointerException.class);
+                }, m)
+                .test()
+                .assertFailure(NullPointerException.class);
 
-            assertNull(error[0]);
+                assertNull(error[0]);
+
+                TestHelper.assertUndeliverable(errors, 0, TestException.class);
+            } finally {
+                RxJavaPlugins.reset();
+            }
         }
     }
 
@@ -736,26 +852,33 @@ public class FlowableCreateTest {
     @Test
     public void createNullValueSerialized() {
         for (BackpressureStrategy m : BackpressureStrategy.values()) {
-            final Throwable[] error = { null };
+            List<Throwable> errors = TestHelper.trackPluginErrors();
+            try {
+                final Throwable[] error = { null };
 
-            Flowable.create(new FlowableOnSubscribe<Integer>() {
-                @Override
-                public void subscribe(FlowableEmitter<Integer> e) throws Exception {
-                    e = e.serialize();
-                    try {
-                        e.onNext(null);
-                        e.onNext(1);
-                        e.onError(new TestException());
-                        e.onComplete();
-                    } catch (Throwable ex) {
-                        error[0] = ex;
+                Flowable.create(new FlowableOnSubscribe<Integer>() {
+                    @Override
+                    public void subscribe(FlowableEmitter<Integer> e) throws Exception {
+                        e = e.serialize();
+                        try {
+                            e.onNext(null);
+                            e.onNext(1);
+                            e.onError(new TestException());
+                            e.onComplete();
+                        } catch (Throwable ex) {
+                            error[0] = ex;
+                        }
                     }
-                }
-            }, m)
-            .test()
-            .assertFailure(NullPointerException.class);
+                }, m)
+                .test()
+                .assertFailure(NullPointerException.class);
 
-            assertNull(error[0]);
+                assertNull(error[0]);
+
+                TestHelper.assertUndeliverable(errors, 0, TestException.class);
+            } finally {
+                RxJavaPlugins.reset();
+            }
         }
     }
 

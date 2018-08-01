@@ -43,7 +43,7 @@ public class FlowableZipTest {
     PublishProcessor<String> s2;
     Flowable<String> zipped;
 
-    Subscriber<String> observer;
+    Subscriber<String> subscriber;
     InOrder inOrder;
 
     @Before
@@ -59,10 +59,10 @@ public class FlowableZipTest {
         s2 = PublishProcessor.create();
         zipped = Flowable.zip(s1, s2, concat2Strings);
 
-        observer = TestHelper.mockSubscriber();
-        inOrder = inOrder(observer);
+        subscriber = TestHelper.mockSubscriber();
+        inOrder = inOrder(subscriber);
 
-        zipped.subscribe(observer);
+        zipped.subscribe(subscriber);
     }
 
     @SuppressWarnings("unchecked")
@@ -72,16 +72,16 @@ public class FlowableZipTest {
         //Function3<String, Integer, int[], String>
 
         /* define a Subscriber to receive aggregated events */
-        Subscriber<String> observer = TestHelper.mockSubscriber();
+        Subscriber<String> subscriber = TestHelper.mockSubscriber();
 
         @SuppressWarnings("rawtypes")
         Collection ws = java.util.Collections.singleton(Flowable.just("one", "two"));
         Flowable<String> w = Flowable.zip(ws, zipr);
-        w.subscribe(observer);
+        w.subscribe(subscriber);
 
-        verify(observer, times(1)).onError(any(Throwable.class));
-        verify(observer, never()).onComplete();
-        verify(observer, never()).onNext(any(String.class));
+        verify(subscriber, times(1)).onError(any(Throwable.class));
+        verify(subscriber, never()).onComplete();
+        verify(subscriber, never()).onNext(any(String.class));
     }
 
     @Test
@@ -99,18 +99,18 @@ public class FlowableZipTest {
 
         /* simulate sending data */
         // once for w1
-        w1.observer.onNext("1a");
-        w1.observer.onComplete();
+        w1.subscriber.onNext("1a");
+        w1.subscriber.onComplete();
         // twice for w2
-        w2.observer.onNext("2a");
-        w2.observer.onNext("2b");
-        w2.observer.onComplete();
+        w2.subscriber.onNext("2a");
+        w2.subscriber.onNext("2b");
+        w2.subscriber.onComplete();
         // 4 times for w3
-        w3.observer.onNext("3a");
-        w3.observer.onNext("3b");
-        w3.observer.onNext("3c");
-        w3.observer.onNext("3d");
-        w3.observer.onComplete();
+        w3.subscriber.onNext("3a");
+        w3.subscriber.onNext("3b");
+        w3.subscriber.onNext("3c");
+        w3.subscriber.onNext("3d");
+        w3.subscriber.onComplete();
 
         /* we should have been called 1 time on the Subscriber */
         InOrder io = inOrder(w);
@@ -132,18 +132,18 @@ public class FlowableZipTest {
 
         /* simulate sending data */
         // 4 times for w1
-        w1.observer.onNext("1a");
-        w1.observer.onNext("1b");
-        w1.observer.onNext("1c");
-        w1.observer.onNext("1d");
-        w1.observer.onComplete();
+        w1.subscriber.onNext("1a");
+        w1.subscriber.onNext("1b");
+        w1.subscriber.onNext("1c");
+        w1.subscriber.onNext("1d");
+        w1.subscriber.onComplete();
         // twice for w2
-        w2.observer.onNext("2a");
-        w2.observer.onNext("2b");
-        w2.observer.onComplete();
+        w2.subscriber.onNext("2a");
+        w2.subscriber.onNext("2b");
+        w2.subscriber.onComplete();
         // 1 times for w3
-        w3.observer.onNext("3a");
-        w3.observer.onComplete();
+        w3.subscriber.onNext("3a");
+        w3.subscriber.onComplete();
 
         /* we should have been called 1 time on the Subscriber */
         InOrder io = inOrder(w);
@@ -178,32 +178,32 @@ public class FlowableZipTest {
         PublishProcessor<String> r1 = PublishProcessor.create();
         PublishProcessor<String> r2 = PublishProcessor.create();
         /* define a Subscriber to receive aggregated events */
-        Subscriber<String> observer = TestHelper.mockSubscriber();
+        Subscriber<String> subscriber = TestHelper.mockSubscriber();
 
-        Flowable.zip(r1, r2, zipr2).subscribe(observer);
+        Flowable.zip(r1, r2, zipr2).subscribe(subscriber);
 
         /* simulate the Flowables pushing data into the aggregator */
         r1.onNext("hello");
         r2.onNext("world");
 
-        InOrder inOrder = inOrder(observer);
+        InOrder inOrder = inOrder(subscriber);
 
-        verify(observer, never()).onError(any(Throwable.class));
-        verify(observer, never()).onComplete();
-        inOrder.verify(observer, times(1)).onNext("helloworld");
+        verify(subscriber, never()).onError(any(Throwable.class));
+        verify(subscriber, never()).onComplete();
+        inOrder.verify(subscriber, times(1)).onNext("helloworld");
 
         r1.onNext("hello ");
         r2.onNext("again");
 
-        verify(observer, never()).onError(any(Throwable.class));
-        verify(observer, never()).onComplete();
-        inOrder.verify(observer, times(1)).onNext("hello again");
+        verify(subscriber, never()).onError(any(Throwable.class));
+        verify(subscriber, never()).onComplete();
+        inOrder.verify(subscriber, times(1)).onNext("hello again");
 
         r1.onComplete();
         r2.onComplete();
 
-        inOrder.verify(observer, never()).onNext(anyString());
-        verify(observer, times(1)).onComplete();
+        inOrder.verify(subscriber, never()).onNext(anyString());
+        verify(subscriber, times(1)).onComplete();
     }
 
     @Test
@@ -213,26 +213,26 @@ public class FlowableZipTest {
         PublishProcessor<String> r1 = PublishProcessor.create();
         PublishProcessor<String> r2 = PublishProcessor.create();
         /* define a Subscriber to receive aggregated events */
-        Subscriber<String> observer = TestHelper.mockSubscriber();
-        Flowable.zip(r1, r2, zipr2).subscribe(observer);
+        Subscriber<String> subscriber = TestHelper.mockSubscriber();
+        Flowable.zip(r1, r2, zipr2).subscribe(subscriber);
 
         /* simulate the Flowables pushing data into the aggregator */
         r1.onNext("hello");
         r2.onNext("world");
         r2.onComplete();
 
-        InOrder inOrder = inOrder(observer);
+        InOrder inOrder = inOrder(subscriber);
 
-        inOrder.verify(observer, never()).onError(any(Throwable.class));
-        inOrder.verify(observer, times(1)).onNext("helloworld");
-        inOrder.verify(observer, times(1)).onComplete();
+        inOrder.verify(subscriber, never()).onError(any(Throwable.class));
+        inOrder.verify(subscriber, times(1)).onNext("helloworld");
+        inOrder.verify(subscriber, times(1)).onComplete();
 
         r1.onNext("hi");
         r1.onComplete();
 
-        inOrder.verify(observer, never()).onError(any(Throwable.class));
-        inOrder.verify(observer, never()).onComplete();
-        inOrder.verify(observer, never()).onNext(anyString());
+        inOrder.verify(subscriber, never()).onError(any(Throwable.class));
+        inOrder.verify(subscriber, never()).onComplete();
+        inOrder.verify(subscriber, never()).onNext(anyString());
     }
 
     @Test
@@ -240,27 +240,27 @@ public class FlowableZipTest {
         PublishProcessor<String> r1 = PublishProcessor.create();
         PublishProcessor<Integer> r2 = PublishProcessor.create();
         /* define a Subscriber to receive aggregated events */
-        Subscriber<String> observer = TestHelper.mockSubscriber();
+        Subscriber<String> subscriber = TestHelper.mockSubscriber();
 
-        Flowable.zip(r1, r2, zipr2).subscribe(observer);
+        Flowable.zip(r1, r2, zipr2).subscribe(subscriber);
 
         /* simulate the Flowables pushing data into the aggregator */
         r1.onNext("hello");
         r2.onNext(1);
         r2.onComplete();
 
-        InOrder inOrder = inOrder(observer);
+        InOrder inOrder = inOrder(subscriber);
 
-        inOrder.verify(observer, never()).onError(any(Throwable.class));
-        inOrder.verify(observer, times(1)).onNext("hello1");
-        inOrder.verify(observer, times(1)).onComplete();
+        inOrder.verify(subscriber, never()).onError(any(Throwable.class));
+        inOrder.verify(subscriber, times(1)).onNext("hello1");
+        inOrder.verify(subscriber, times(1)).onComplete();
 
         r1.onNext("hi");
         r1.onComplete();
 
-        inOrder.verify(observer, never()).onError(any(Throwable.class));
-        inOrder.verify(observer, never()).onComplete();
-        inOrder.verify(observer, never()).onNext(anyString());
+        inOrder.verify(subscriber, never()).onError(any(Throwable.class));
+        inOrder.verify(subscriber, never()).onComplete();
+        inOrder.verify(subscriber, never()).onNext(anyString());
     }
 
     @Test
@@ -269,18 +269,18 @@ public class FlowableZipTest {
         PublishProcessor<Integer> r2 = PublishProcessor.create();
         PublishProcessor<List<Integer>> r3 = PublishProcessor.create();
         /* define a Subscriber to receive aggregated events */
-        Subscriber<String> observer = TestHelper.mockSubscriber();
+        Subscriber<String> subscriber = TestHelper.mockSubscriber();
 
-        Flowable.zip(r1, r2, r3, zipr3).subscribe(observer);
+        Flowable.zip(r1, r2, r3, zipr3).subscribe(subscriber);
 
         /* simulate the Flowables pushing data into the aggregator */
         r1.onNext("hello");
         r2.onNext(2);
         r3.onNext(Arrays.asList(5, 6, 7));
 
-        verify(observer, never()).onError(any(Throwable.class));
-        verify(observer, never()).onComplete();
-        verify(observer, times(1)).onNext("hello2[5, 6, 7]");
+        verify(subscriber, never()).onError(any(Throwable.class));
+        verify(subscriber, never()).onComplete();
+        verify(subscriber, times(1)).onNext("hello2[5, 6, 7]");
     }
 
     @Test
@@ -288,9 +288,9 @@ public class FlowableZipTest {
         PublishProcessor<String> r1 = PublishProcessor.create();
         PublishProcessor<String> r2 = PublishProcessor.create();
         /* define a Subscriber to receive aggregated events */
-        Subscriber<String> observer = TestHelper.mockSubscriber();
+        Subscriber<String> subscriber = TestHelper.mockSubscriber();
 
-        Flowable.zip(r1, r2, zipr2).subscribe(observer);
+        Flowable.zip(r1, r2, zipr2).subscribe(subscriber);
 
         /* simulate the Flowables pushing data into the aggregator */
         r1.onNext("one");
@@ -298,24 +298,24 @@ public class FlowableZipTest {
         r1.onNext("three");
         r2.onNext("A");
 
-        verify(observer, never()).onError(any(Throwable.class));
-        verify(observer, never()).onComplete();
-        verify(observer, times(1)).onNext("oneA");
+        verify(subscriber, never()).onError(any(Throwable.class));
+        verify(subscriber, never()).onComplete();
+        verify(subscriber, times(1)).onNext("oneA");
 
         r1.onNext("four");
         r1.onComplete();
         r2.onNext("B");
-        verify(observer, times(1)).onNext("twoB");
+        verify(subscriber, times(1)).onNext("twoB");
         r2.onNext("C");
-        verify(observer, times(1)).onNext("threeC");
+        verify(subscriber, times(1)).onNext("threeC");
         r2.onNext("D");
-        verify(observer, times(1)).onNext("fourD");
+        verify(subscriber, times(1)).onNext("fourD");
         r2.onNext("E");
-        verify(observer, never()).onNext("E");
+        verify(subscriber, never()).onNext("E");
         r2.onComplete();
 
-        verify(observer, never()).onError(any(Throwable.class));
-        verify(observer, times(1)).onComplete();
+        verify(subscriber, never()).onError(any(Throwable.class));
+        verify(subscriber, times(1)).onComplete();
     }
 
     @Test
@@ -323,26 +323,26 @@ public class FlowableZipTest {
         PublishProcessor<String> r1 = PublishProcessor.create();
         PublishProcessor<String> r2 = PublishProcessor.create();
         /* define a Subscriber to receive aggregated events */
-        Subscriber<String> observer = TestHelper.mockSubscriber();
+        Subscriber<String> subscriber = TestHelper.mockSubscriber();
 
-        Flowable.zip(r1, r2, zipr2).subscribe(observer);
+        Flowable.zip(r1, r2, zipr2).subscribe(subscriber);
 
         /* simulate the Flowables pushing data into the aggregator */
         r1.onNext("hello");
         r2.onNext("world");
 
-        verify(observer, never()).onError(any(Throwable.class));
-        verify(observer, never()).onComplete();
-        verify(observer, times(1)).onNext("helloworld");
+        verify(subscriber, never()).onError(any(Throwable.class));
+        verify(subscriber, never()).onComplete();
+        verify(subscriber, times(1)).onNext("helloworld");
 
         r1.onError(new RuntimeException(""));
         r1.onNext("hello");
         r2.onNext("again");
 
-        verify(observer, times(1)).onError(any(Throwable.class));
-        verify(observer, never()).onComplete();
+        verify(subscriber, times(1)).onError(any(Throwable.class));
+        verify(subscriber, never()).onComplete();
         // we don't want to be called again after an error
-        verify(observer, times(0)).onNext("helloagain");
+        verify(subscriber, times(0)).onNext("helloagain");
     }
 
     @Test
@@ -350,8 +350,8 @@ public class FlowableZipTest {
         PublishProcessor<String> r1 = PublishProcessor.create();
         PublishProcessor<String> r2 = PublishProcessor.create();
         /* define a Subscriber to receive aggregated events */
-        Subscriber<String> observer = TestHelper.mockSubscriber();
-        TestSubscriber<String> ts = new TestSubscriber<String>(observer);
+        Subscriber<String> subscriber = TestHelper.mockSubscriber();
+        TestSubscriber<String> ts = new TestSubscriber<String>(subscriber);
 
         Flowable.zip(r1, r2, zipr2).subscribe(ts);
 
@@ -359,18 +359,18 @@ public class FlowableZipTest {
         r1.onNext("hello");
         r2.onNext("world");
 
-        verify(observer, never()).onError(any(Throwable.class));
-        verify(observer, never()).onComplete();
-        verify(observer, times(1)).onNext("helloworld");
+        verify(subscriber, never()).onError(any(Throwable.class));
+        verify(subscriber, never()).onComplete();
+        verify(subscriber, times(1)).onNext("helloworld");
 
         ts.dispose();
         r1.onNext("hello");
         r2.onNext("again");
 
-        verify(observer, times(0)).onError(any(Throwable.class));
-        verify(observer, never()).onComplete();
+        verify(subscriber, times(0)).onError(any(Throwable.class));
+        verify(subscriber, never()).onComplete();
         // we don't want to be called again after an error
-        verify(observer, times(0)).onNext("helloagain");
+        verify(subscriber, times(0)).onNext("helloagain");
     }
 
     @Test
@@ -378,9 +378,9 @@ public class FlowableZipTest {
         PublishProcessor<String> r1 = PublishProcessor.create();
         PublishProcessor<String> r2 = PublishProcessor.create();
         /* define a Subscriber to receive aggregated events */
-        Subscriber<String> observer = TestHelper.mockSubscriber();
+        Subscriber<String> subscriber = TestHelper.mockSubscriber();
 
-        Flowable.zip(r1, r2, zipr2).subscribe(observer);
+        Flowable.zip(r1, r2, zipr2).subscribe(subscriber);
 
         /* simulate the Flowables pushing data into the aggregator */
         r1.onNext("one");
@@ -388,17 +388,17 @@ public class FlowableZipTest {
         r1.onComplete();
         r2.onNext("A");
 
-        InOrder inOrder = inOrder(observer);
+        InOrder inOrder = inOrder(subscriber);
 
-        inOrder.verify(observer, never()).onError(any(Throwable.class));
-        inOrder.verify(observer, never()).onComplete();
-        inOrder.verify(observer, times(1)).onNext("oneA");
+        inOrder.verify(subscriber, never()).onError(any(Throwable.class));
+        inOrder.verify(subscriber, never()).onComplete();
+        inOrder.verify(subscriber, times(1)).onNext("oneA");
 
         r2.onComplete();
 
-        inOrder.verify(observer, never()).onError(any(Throwable.class));
-        inOrder.verify(observer, times(1)).onComplete();
-        inOrder.verify(observer, never()).onNext(anyString());
+        inOrder.verify(subscriber, never()).onError(any(Throwable.class));
+        inOrder.verify(subscriber, times(1)).onComplete();
+        inOrder.verify(subscriber, never()).onNext(anyString());
     }
 
     @Test
@@ -406,16 +406,16 @@ public class FlowableZipTest {
         BiFunction<String, Integer, String> zipr = getConcatStringIntegerZipr();
 
         /* define a Subscriber to receive aggregated events */
-        Subscriber<String> observer = TestHelper.mockSubscriber();
+        Subscriber<String> subscriber = TestHelper.mockSubscriber();
 
         Flowable<String> w = Flowable.zip(Flowable.just("one", "two"), Flowable.just(2, 3, 4), zipr);
-        w.subscribe(observer);
+        w.subscribe(subscriber);
 
-        verify(observer, never()).onError(any(Throwable.class));
-        verify(observer, times(1)).onComplete();
-        verify(observer, times(1)).onNext("one2");
-        verify(observer, times(1)).onNext("two3");
-        verify(observer, never()).onNext("4");
+        verify(subscriber, never()).onError(any(Throwable.class));
+        verify(subscriber, times(1)).onComplete();
+        verify(subscriber, times(1)).onNext("one2");
+        verify(subscriber, times(1)).onNext("two3");
+        verify(subscriber, never()).onNext("4");
     }
 
     @Test
@@ -423,27 +423,27 @@ public class FlowableZipTest {
         Function3<String, Integer, int[], String> zipr = getConcatStringIntegerIntArrayZipr();
 
         /* define a Subscriber to receive aggregated events */
-        Subscriber<String> observer = TestHelper.mockSubscriber();
+        Subscriber<String> subscriber = TestHelper.mockSubscriber();
 
         Flowable<String> w = Flowable.zip(Flowable.just("one", "two"), Flowable.just(2), Flowable.just(new int[] { 4, 5, 6 }), zipr);
-        w.subscribe(observer);
+        w.subscribe(subscriber);
 
-        verify(observer, never()).onError(any(Throwable.class));
-        verify(observer, times(1)).onComplete();
-        verify(observer, times(1)).onNext("one2[4, 5, 6]");
-        verify(observer, never()).onNext("two");
+        verify(subscriber, never()).onError(any(Throwable.class));
+        verify(subscriber, times(1)).onComplete();
+        verify(subscriber, times(1)).onNext("one2[4, 5, 6]");
+        verify(subscriber, never()).onNext("two");
     }
 
     @Test
     public void testOnNextExceptionInvokesOnError() {
         BiFunction<Integer, Integer, Integer> zipr = getDivideZipr();
 
-        Subscriber<Integer> observer = TestHelper.mockSubscriber();
+        Subscriber<Integer> subscriber = TestHelper.mockSubscriber();
 
         Flowable<Integer> w = Flowable.zip(Flowable.just(10, 20, 30), Flowable.just(0, 1, 2), zipr);
-        w.subscribe(observer);
+        w.subscribe(subscriber);
 
-        verify(observer, times(1)).onError(any(Throwable.class));
+        verify(subscriber, times(1)).onError(any(Throwable.class));
     }
 
     @Test
@@ -453,8 +453,8 @@ public class FlowableZipTest {
 
         Subscriber<String> obs = TestHelper.mockSubscriber();
 
-        Flowable<String> o = Flowable.zip(oA, oB, getConcat2Strings());
-        o.subscribe(obs);
+        Flowable<String> f = Flowable.zip(oA, oB, getConcat2Strings());
+        f.subscribe(obs);
 
         InOrder io = inOrder(obs);
 
@@ -503,8 +503,8 @@ public class FlowableZipTest {
 
         Subscriber<String> obs = TestHelper.mockSubscriber();
 
-        Flowable<String> o = Flowable.zip(oA, oB, getConcat2Strings());
-        o.subscribe(obs);
+        Flowable<String> f = Flowable.zip(oA, oB, getConcat2Strings());
+        f.subscribe(obs);
 
         InOrder io = inOrder(obs);
 
@@ -619,13 +619,13 @@ public class FlowableZipTest {
 
     private static class TestFlowable implements Publisher<String> {
 
-        Subscriber<? super String> observer;
+        Subscriber<? super String> subscriber;
 
         @Override
-        public void subscribe(Subscriber<? super String> observer) {
+        public void subscribe(Subscriber<? super String> subscriber) {
             // just store the variable where it can be accessed so we can manually trigger it
-            this.observer = observer;
-            observer.onSubscribe(new BooleanSubscription());
+            this.subscriber = subscriber;
+            subscriber.onSubscribe(new BooleanSubscription());
         }
 
     }
@@ -636,10 +636,10 @@ public class FlowableZipTest {
         s1.onNext("b");
         s1.onComplete();
         s2.onNext("1");
-        inOrder.verify(observer, times(1)).onNext("a-1");
+        inOrder.verify(subscriber, times(1)).onNext("a-1");
         s2.onNext("2");
-        inOrder.verify(observer, times(1)).onNext("b-2");
-        inOrder.verify(observer, times(1)).onComplete();
+        inOrder.verify(subscriber, times(1)).onNext("b-2");
+        inOrder.verify(subscriber, times(1)).onComplete();
         inOrder.verifyNoMoreInteractions();
     }
 
@@ -648,11 +648,11 @@ public class FlowableZipTest {
         s2.onNext("1");
         s2.onNext("2");
         s1.onNext("a");
-        inOrder.verify(observer, times(1)).onNext("a-1");
+        inOrder.verify(subscriber, times(1)).onNext("a-1");
         s1.onNext("b");
-        inOrder.verify(observer, times(1)).onNext("b-2");
+        inOrder.verify(subscriber, times(1)).onNext("b-2");
         s1.onComplete();
-        inOrder.verify(observer, times(1)).onComplete();
+        inOrder.verify(subscriber, times(1)).onComplete();
         inOrder.verifyNoMoreInteractions();
     }
 
@@ -662,10 +662,10 @@ public class FlowableZipTest {
         s2.onNext("2");
         s2.onComplete();
         s1.onNext("a");
-        inOrder.verify(observer, times(1)).onNext("a-1");
+        inOrder.verify(subscriber, times(1)).onNext("a-1");
         s1.onNext("b");
-        inOrder.verify(observer, times(1)).onNext("b-2");
-        inOrder.verify(observer, times(1)).onComplete();
+        inOrder.verify(subscriber, times(1)).onNext("b-2");
+        inOrder.verify(subscriber, times(1)).onComplete();
         inOrder.verifyNoMoreInteractions();
     }
 
@@ -674,11 +674,11 @@ public class FlowableZipTest {
         s1.onNext("a");
         s1.onNext("b");
         s2.onNext("1");
-        inOrder.verify(observer, times(1)).onNext("a-1");
+        inOrder.verify(subscriber, times(1)).onNext("a-1");
         s2.onNext("2");
-        inOrder.verify(observer, times(1)).onNext("b-2");
+        inOrder.verify(subscriber, times(1)).onNext("b-2");
         s2.onComplete();
-        inOrder.verify(observer, times(1)).onComplete();
+        inOrder.verify(subscriber, times(1)).onComplete();
         inOrder.verifyNoMoreInteractions();
     }
 
@@ -687,14 +687,14 @@ public class FlowableZipTest {
         s2.onNext("a");
         s1.onError(new RuntimeException("Forced failure"));
 
-        inOrder.verify(observer, times(1)).onError(any(RuntimeException.class));
+        inOrder.verify(subscriber, times(1)).onError(any(RuntimeException.class));
 
         s2.onNext("b");
         s1.onNext("1");
         s1.onNext("2");
 
-        inOrder.verify(observer, never()).onComplete();
-        inOrder.verify(observer, never()).onNext(any(String.class));
+        inOrder.verify(subscriber, never()).onComplete();
+        inOrder.verify(subscriber, never()).onNext(any(String.class));
         inOrder.verifyNoMoreInteractions();
     }
 
@@ -704,13 +704,13 @@ public class FlowableZipTest {
         s1.onNext("b");
         s2.onError(new RuntimeException("Forced failure"));
 
-        inOrder.verify(observer, times(1)).onError(any(RuntimeException.class));
+        inOrder.verify(subscriber, times(1)).onError(any(RuntimeException.class));
 
         s2.onNext("1");
         s2.onNext("2");
 
-        inOrder.verify(observer, never()).onComplete();
-        inOrder.verify(observer, never()).onNext(any(String.class));
+        inOrder.verify(subscriber, never()).onComplete();
+        inOrder.verify(subscriber, never()).onNext(any(String.class));
         inOrder.verifyNoMoreInteractions();
     }
 
@@ -718,14 +718,14 @@ public class FlowableZipTest {
     public void testStartWithOnCompletedTwice() {
         // issue: https://groups.google.com/forum/#!topic/rxjava/79cWTv3TFp0
         // The problem is the original "zip" implementation does not wrap
-        // an internal observer with a SafeSubscriber. However, in the "zip",
+        // an internal subscriber with a SafeSubscriber. However, in the "zip",
         // it may calls "onComplete" twice. That breaks the Rx contract.
 
         // This test tries to emulate this case.
         // As "TestHelper.mockSubscriber()" will create an instance in the package "rx",
-        // we need to wrap "TestHelper.mockSubscriber()" with an observer instance
+        // we need to wrap "TestHelper.mockSubscriber()" with an subscriber instance
         // which is in the package "rx.operators".
-        final Subscriber<Integer> observer = TestHelper.mockSubscriber();
+        final Subscriber<Integer> subscriber = TestHelper.mockSubscriber();
 
         Flowable.zip(Flowable.just(1),
                 Flowable.just(1), new BiFunction<Integer, Integer, Integer>() {
@@ -737,24 +737,24 @@ public class FlowableZipTest {
 
             @Override
             public void onComplete() {
-                observer.onComplete();
+                subscriber.onComplete();
             }
 
             @Override
             public void onError(Throwable e) {
-                observer.onError(e);
+                subscriber.onError(e);
             }
 
             @Override
             public void onNext(Integer args) {
-                observer.onNext(args);
+                subscriber.onNext(args);
             }
 
         });
 
-        InOrder inOrder = inOrder(observer);
-        inOrder.verify(observer, times(1)).onNext(2);
-        inOrder.verify(observer, times(1)).onComplete();
+        InOrder inOrder = inOrder(subscriber);
+        inOrder.verify(subscriber, times(1)).onNext(2);
+        inOrder.verify(subscriber, times(1)).onComplete();
         inOrder.verifyNoMoreInteractions();
     }
 
@@ -858,7 +858,7 @@ public class FlowableZipTest {
     public void testEmitNull() {
         Flowable<Integer> oi = Flowable.just(1, null, 3);
         Flowable<String> os = Flowable.just("a", "b", null);
-        Flowable<String> o = Flowable.zip(oi, os, new BiFunction<Integer, String, String>() {
+        Flowable<String> f = Flowable.zip(oi, os, new BiFunction<Integer, String, String>() {
 
             @Override
             public String apply(Integer t1, String t2) {
@@ -868,7 +868,7 @@ public class FlowableZipTest {
         });
 
         final ArrayList<String> list = new ArrayList<String>();
-        o.subscribe(new Consumer<String>() {
+        f.subscribe(new Consumer<String>() {
 
             @Override
             public void accept(String s) {
@@ -906,7 +906,7 @@ public class FlowableZipTest {
     public void testEmitMaterializedNotifications() {
         Flowable<Notification<Integer>> oi = Flowable.just(1, 2, 3).materialize();
         Flowable<Notification<String>> os = Flowable.just("a", "b", "c").materialize();
-        Flowable<String> o = Flowable.zip(oi, os, new BiFunction<Notification<Integer>, Notification<String>, String>() {
+        Flowable<String> f = Flowable.zip(oi, os, new BiFunction<Notification<Integer>, Notification<String>, String>() {
 
             @Override
             public String apply(Notification<Integer> t1, Notification<String> t2) {
@@ -916,7 +916,7 @@ public class FlowableZipTest {
         });
 
         final ArrayList<String> list = new ArrayList<String>();
-        o.subscribe(new Consumer<String>() {
+        f.subscribe(new Consumer<String>() {
 
             @Override
             public void accept(String s) {
@@ -935,7 +935,7 @@ public class FlowableZipTest {
     @Test
     public void testStartEmptyFlowables() {
 
-        Flowable<String> o = Flowable.zip(Flowable.<Integer> empty(), Flowable.<String> empty(), new BiFunction<Integer, String, String>() {
+        Flowable<String> f = Flowable.zip(Flowable.<Integer> empty(), Flowable.<String> empty(), new BiFunction<Integer, String, String>() {
 
             @Override
             public String apply(Integer t1, String t2) {
@@ -945,7 +945,7 @@ public class FlowableZipTest {
         });
 
         final ArrayList<String> list = new ArrayList<String>();
-        o.subscribe(new Consumer<String>() {
+        f.subscribe(new Consumer<String>() {
 
             @Override
             public void accept(String s) {
@@ -963,7 +963,7 @@ public class FlowableZipTest {
         final Object invoked = new Object();
         Collection<Flowable<Object>> observables = Collections.emptyList();
 
-        Flowable<Object> o = Flowable.zip(observables, new Function<Object[], Object>() {
+        Flowable<Object> f = Flowable.zip(observables, new Function<Object[], Object>() {
             @Override
             public Object apply(final Object[] args) {
                 assertEquals("No argument should have been passed", 0, args.length);
@@ -972,7 +972,7 @@ public class FlowableZipTest {
         });
 
         TestSubscriber<Object> ts = new TestSubscriber<Object>();
-        o.subscribe(ts);
+        f.subscribe(ts);
         ts.awaitTerminalEvent(200, TimeUnit.MILLISECONDS);
         ts.assertNoValues();
     }
@@ -987,7 +987,7 @@ public class FlowableZipTest {
         final Object invoked = new Object();
         Collection<Flowable<Object>> observables = Collections.emptyList();
 
-        Flowable<Object> o = Flowable.zip(observables, new Function<Object[], Object>() {
+        Flowable<Object> f = Flowable.zip(observables, new Function<Object[], Object>() {
             @Override
             public Object apply(final Object[] args) {
                 assertEquals("No argument should have been passed", 0, args.length);
@@ -995,18 +995,18 @@ public class FlowableZipTest {
             }
         });
 
-        o.blockingLast();
+        f.blockingLast();
     }
 
     @Test
     public void testBackpressureSync() {
         AtomicInteger generatedA = new AtomicInteger();
         AtomicInteger generatedB = new AtomicInteger();
-        Flowable<Integer> o1 = createInfiniteFlowable(generatedA);
-        Flowable<Integer> o2 = createInfiniteFlowable(generatedB);
+        Flowable<Integer> f1 = createInfiniteFlowable(generatedA);
+        Flowable<Integer> f2 = createInfiniteFlowable(generatedB);
 
         TestSubscriber<String> ts = new TestSubscriber<String>();
-        Flowable.zip(o1, o2, new BiFunction<Integer, Integer, String>() {
+        Flowable.zip(f1, f2, new BiFunction<Integer, Integer, String>() {
 
             @Override
             public String apply(Integer t1, Integer t2) {
@@ -1026,11 +1026,11 @@ public class FlowableZipTest {
     public void testBackpressureAsync() {
         AtomicInteger generatedA = new AtomicInteger();
         AtomicInteger generatedB = new AtomicInteger();
-        Flowable<Integer> o1 = createInfiniteFlowable(generatedA).subscribeOn(Schedulers.computation());
-        Flowable<Integer> o2 = createInfiniteFlowable(generatedB).subscribeOn(Schedulers.computation());
+        Flowable<Integer> f1 = createInfiniteFlowable(generatedA).subscribeOn(Schedulers.computation());
+        Flowable<Integer> f2 = createInfiniteFlowable(generatedB).subscribeOn(Schedulers.computation());
 
         TestSubscriber<String> ts = new TestSubscriber<String>();
-        Flowable.zip(o1, o2, new BiFunction<Integer, Integer, String>() {
+        Flowable.zip(f1, f2, new BiFunction<Integer, Integer, String>() {
 
             @Override
             public String apply(Integer t1, Integer t2) {
@@ -1050,11 +1050,11 @@ public class FlowableZipTest {
     public void testDownstreamBackpressureRequestsWithFiniteSyncFlowables() {
         AtomicInteger generatedA = new AtomicInteger();
         AtomicInteger generatedB = new AtomicInteger();
-        Flowable<Integer> o1 = createInfiniteFlowable(generatedA).take(Flowable.bufferSize() * 2);
-        Flowable<Integer> o2 = createInfiniteFlowable(generatedB).take(Flowable.bufferSize() * 2);
+        Flowable<Integer> f1 = createInfiniteFlowable(generatedA).take(Flowable.bufferSize() * 2);
+        Flowable<Integer> f2 = createInfiniteFlowable(generatedB).take(Flowable.bufferSize() * 2);
 
         TestSubscriber<String> ts = new TestSubscriber<String>();
-        Flowable.zip(o1, o2, new BiFunction<Integer, Integer, String>() {
+        Flowable.zip(f1, f2, new BiFunction<Integer, Integer, String>() {
 
             @Override
             public String apply(Integer t1, Integer t2) {
@@ -1075,11 +1075,11 @@ public class FlowableZipTest {
     public void testDownstreamBackpressureRequestsWithInfiniteAsyncFlowables() {
         AtomicInteger generatedA = new AtomicInteger();
         AtomicInteger generatedB = new AtomicInteger();
-        Flowable<Integer> o1 = createInfiniteFlowable(generatedA).subscribeOn(Schedulers.computation());
-        Flowable<Integer> o2 = createInfiniteFlowable(generatedB).subscribeOn(Schedulers.computation());
+        Flowable<Integer> f1 = createInfiniteFlowable(generatedA).subscribeOn(Schedulers.computation());
+        Flowable<Integer> f2 = createInfiniteFlowable(generatedB).subscribeOn(Schedulers.computation());
 
         TestSubscriber<String> ts = new TestSubscriber<String>();
-        Flowable.zip(o1, o2, new BiFunction<Integer, Integer, String>() {
+        Flowable.zip(f1, f2, new BiFunction<Integer, Integer, String>() {
 
             @Override
             public String apply(Integer t1, Integer t2) {
@@ -1100,11 +1100,11 @@ public class FlowableZipTest {
     public void testDownstreamBackpressureRequestsWithInfiniteSyncFlowables() {
         AtomicInteger generatedA = new AtomicInteger();
         AtomicInteger generatedB = new AtomicInteger();
-        Flowable<Integer> o1 = createInfiniteFlowable(generatedA);
-        Flowable<Integer> o2 = createInfiniteFlowable(generatedB);
+        Flowable<Integer> f1 = createInfiniteFlowable(generatedA);
+        Flowable<Integer> f2 = createInfiniteFlowable(generatedB);
 
         TestSubscriber<String> ts = new TestSubscriber<String>();
-        Flowable.zip(o1, o2, new BiFunction<Integer, Integer, String>() {
+        Flowable.zip(f1, f2, new BiFunction<Integer, Integer, String>() {
 
             @Override
             public String apply(Integer t1, Integer t2) {
@@ -1122,7 +1122,7 @@ public class FlowableZipTest {
     }
 
     private Flowable<Integer> createInfiniteFlowable(final AtomicInteger generated) {
-        Flowable<Integer> observable = Flowable.fromIterable(new Iterable<Integer>() {
+        Flowable<Integer> flowable = Flowable.fromIterable(new Iterable<Integer>() {
             @Override
             public Iterator<Integer> iterator() {
                 return new Iterator<Integer>() {
@@ -1143,7 +1143,7 @@ public class FlowableZipTest {
                 };
             }
         });
-        return observable;
+        return flowable;
     }
 
     Flowable<Integer> OBSERVABLE_OF_5_INTEGERS = OBSERVABLE_OF_5_INTEGERS(new AtomicInteger());
@@ -1152,18 +1152,18 @@ public class FlowableZipTest {
         return Flowable.unsafeCreate(new Publisher<Integer>() {
 
             @Override
-            public void subscribe(final Subscriber<? super Integer> o) {
+            public void subscribe(final Subscriber<? super Integer> subscriber) {
                 BooleanSubscription bs = new BooleanSubscription();
-                o.onSubscribe(bs);
+                subscriber.onSubscribe(bs);
                 for (int i = 1; i <= 5; i++) {
                     if (bs.isCancelled()) {
                         break;
                     }
                     numEmitted.incrementAndGet();
-                    o.onNext(i);
+                    subscriber.onNext(i);
                     Thread.yield();
                 }
-                o.onComplete();
+                subscriber.onComplete();
             }
 
         });
@@ -1173,9 +1173,9 @@ public class FlowableZipTest {
         return Flowable.unsafeCreate(new Publisher<Integer>() {
 
             @Override
-            public void subscribe(final Subscriber<? super Integer> o) {
+            public void subscribe(final Subscriber<? super Integer> subscriber) {
                 final BooleanSubscription bs = new BooleanSubscription();
-                o.onSubscribe(bs);
+                subscriber.onSubscribe(bs);
                 Thread t = new Thread(new Runnable() {
 
                     @Override
@@ -1184,10 +1184,10 @@ public class FlowableZipTest {
                         System.out.println("Starting thread: " + Thread.currentThread());
                         int i = 1;
                         while (!bs.isCancelled()) {
-                            o.onNext(i++);
+                            subscriber.onNext(i++);
                             Thread.yield();
                         }
-                        o.onComplete();
+                        subscriber.onComplete();
                         latch.countDown();
                         System.out.println("Ending thread: " + Thread.currentThread());
                     }

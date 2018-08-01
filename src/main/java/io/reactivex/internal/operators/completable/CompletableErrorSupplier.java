@@ -29,7 +29,7 @@ public final class CompletableErrorSupplier extends Completable {
     }
 
     @Override
-    protected void subscribeActual(CompletableObserver s) {
+    protected void subscribeActual(CompletableObserver observer) {
         Throwable error;
 
         try {
@@ -39,7 +39,7 @@ public final class CompletableErrorSupplier extends Completable {
             error = e;
         }
 
-        EmptyDisposable.error(error, s);
+        EmptyDisposable.error(error, observer);
     }
 
 }

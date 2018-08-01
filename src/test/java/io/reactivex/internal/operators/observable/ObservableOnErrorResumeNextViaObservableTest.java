@@ -133,8 +133,7 @@ public class ObservableOnErrorResumeNextViaObservableTest {
         Observable<String> resume = Observable.just("resume");
         Observable<String> observable = testObservable.subscribeOn(Schedulers.io()).onErrorResumeNext(resume);
 
-        @SuppressWarnings("unchecked")
-        DefaultObserver<String> observer = mock(DefaultObserver.class);
+        Observer<String> observer = TestHelper.mockObserver();
         TestObserver<String> to = new TestObserver<String>(observer);
         observable.subscribe(to);
 

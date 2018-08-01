@@ -30,10 +30,10 @@ public final class CompletableSubscribeOn extends Completable {
     }
 
     @Override
-    protected void subscribeActual(final CompletableObserver s) {
+    protected void subscribeActual(final CompletableObserver observer) {
 
-        final SubscribeOnObserver parent = new SubscribeOnObserver(s, source);
-        s.onSubscribe(parent);
+        final SubscribeOnObserver parent = new SubscribeOnObserver(observer, source);
+        observer.onSubscribe(parent);
 
         Disposable f = scheduler.scheduleDirect(parent);
 

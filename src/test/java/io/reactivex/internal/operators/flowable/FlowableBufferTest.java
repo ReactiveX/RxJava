@@ -42,13 +42,13 @@ import io.reactivex.subscribers.*;
 
 public class FlowableBufferTest {
 
-    private Subscriber<List<String>> observer;
+    private Subscriber<List<String>> subscriber;
     private TestScheduler scheduler;
     private Scheduler.Worker innerScheduler;
 
     @Before
     public void before() {
-        observer = TestHelper.mockSubscriber();
+        subscriber = TestHelper.mockSubscriber();
         scheduler = new TestScheduler();
         innerScheduler = scheduler.createWorker();
     }
@@ -58,37 +58,37 @@ public class FlowableBufferTest {
         Flowable<String> source = Flowable.empty();
 
         Flowable<List<String>> buffered = source.buffer(3, 3);
-        buffered.subscribe(observer);
+        buffered.subscribe(subscriber);
 
-        Mockito.verify(observer, Mockito.never()).onNext(Mockito.<String>anyList());
-        Mockito.verify(observer, Mockito.never()).onError(Mockito.any(Throwable.class));
-        Mockito.verify(observer, Mockito.times(1)).onComplete();
+        Mockito.verify(subscriber, Mockito.never()).onNext(Mockito.<String>anyList());
+        Mockito.verify(subscriber, Mockito.never()).onError(Mockito.any(Throwable.class));
+        Mockito.verify(subscriber, Mockito.times(1)).onComplete();
     }
 
     @Test
     public void testSkipAndCountOverlappingBuffers() {
         Flowable<String> source = Flowable.unsafeCreate(new Publisher<String>() {
             @Override
-            public void subscribe(Subscriber<? super String> observer) {
-                observer.onSubscribe(new BooleanSubscription());
-                observer.onNext("one");
-                observer.onNext("two");
-                observer.onNext("three");
-                observer.onNext("four");
-                observer.onNext("five");
+            public void subscribe(Subscriber<? super String> subscriber) {
+                subscriber.onSubscribe(new BooleanSubscription());
+                subscriber.onNext("one");
+                subscriber.onNext("two");
+                subscriber.onNext("three");
+                subscriber.onNext("four");
+                subscriber.onNext("five");
             }
         });
 
         Flowable<List<String>> buffered = source.buffer(3, 1);
-        buffered.subscribe(observer);
+        buffered.subscribe(subscriber);
 
-        InOrder inOrder = Mockito.inOrder(observer);
-        inOrder.verify(observer, Mockito.times(1)).onNext(list("one", "two", "three"));
-        inOrder.verify(observer, Mockito.times(1)).onNext(list("two", "three", "four"));
-        inOrder.verify(observer, Mockito.times(1)).onNext(list("three", "four", "five"));
-        inOrder.verify(observer, Mockito.never()).onNext(Mockito.<String>anyList());
-        inOrder.verify(observer, Mockito.never()).onError(Mockito.any(Throwable.class));
-        inOrder.verify(observer, Mockito.never()).onComplete();
+        InOrder inOrder = Mockito.inOrder(subscriber);
+        inOrder.verify(subscriber, Mockito.times(1)).onNext(list("one", "two", "three"));
+        inOrder.verify(subscriber, Mockito.times(1)).onNext(list("two", "three", "four"));
+        inOrder.verify(subscriber, Mockito.times(1)).onNext(list("three", "four", "five"));
+        inOrder.verify(subscriber, Mockito.never()).onNext(Mockito.<String>anyList());
+        inOrder.verify(subscriber, Mockito.never()).onError(Mockito.any(Throwable.class));
+        inOrder.verify(subscriber, Mockito.never()).onComplete();
     }
 
     @Test
@@ -96,14 +96,14 @@ public class FlowableBufferTest {
         Flowable<String> source = Flowable.just("one", "two", "three", "four", "five");
 
         Flowable<List<String>> buffered = source.buffer(3, 3);
-        buffered.subscribe(observer);
+        buffered.subscribe(subscriber);
 
-        InOrder inOrder = Mockito.inOrder(observer);
-        inOrder.verify(observer, Mockito.times(1)).onNext(list("one", "two", "three"));
-        inOrder.verify(observer, Mockito.times(1)).onNext(list("four", "five"));
-        inOrder.verify(observer, Mockito.never()).onNext(Mockito.<String>anyList());
-        inOrder.verify(observer, Mockito.never()).onError(Mockito.any(Throwable.class));
-        inOrder.verify(observer, Mockito.times(1)).onComplete();
+        InOrder inOrder = Mockito.inOrder(subscriber);
+        inOrder.verify(subscriber, Mockito.times(1)).onNext(list("one", "two", "three"));
+        inOrder.verify(subscriber, Mockito.times(1)).onNext(list("four", "five"));
+        inOrder.verify(subscriber, Mockito.never()).onNext(Mockito.<String>anyList());
+        inOrder.verify(subscriber, Mockito.never()).onError(Mockito.any(Throwable.class));
+        inOrder.verify(subscriber, Mockito.times(1)).onComplete();
     }
 
     @Test
@@ -111,104 +111,104 @@ public class FlowableBufferTest {
         Flowable<String> source = Flowable.just("one", "two", "three", "four", "five");
 
         Flowable<List<String>> buffered = source.buffer(2, 3);
-        buffered.subscribe(observer);
+        buffered.subscribe(subscriber);
 
-        InOrder inOrder = Mockito.inOrder(observer);
-        inOrder.verify(observer, Mockito.times(1)).onNext(list("one", "two"));
-        inOrder.verify(observer, Mockito.times(1)).onNext(list("four", "five"));
-        inOrder.verify(observer, Mockito.never()).onNext(Mockito.<String>anyList());
-        inOrder.verify(observer, Mockito.never()).onError(Mockito.any(Throwable.class));
-        inOrder.verify(observer, Mockito.times(1)).onComplete();
+        InOrder inOrder = Mockito.inOrder(subscriber);
+        inOrder.verify(subscriber, Mockito.times(1)).onNext(list("one", "two"));
+        inOrder.verify(subscriber, Mockito.times(1)).onNext(list("four", "five"));
+        inOrder.verify(subscriber, Mockito.never()).onNext(Mockito.<String>anyList());
+        inOrder.verify(subscriber, Mockito.never()).onError(Mockito.any(Throwable.class));
+        inOrder.verify(subscriber, Mockito.times(1)).onComplete();
     }
 
     @Test
     public void testTimedAndCount() {
         Flowable<String> source = Flowable.unsafeCreate(new Publisher<String>() {
             @Override
-            public void subscribe(Subscriber<? super String> observer) {
-                observer.onSubscribe(new BooleanSubscription());
-                push(observer, "one", 10);
-                push(observer, "two", 90);
-                push(observer, "three", 110);
-                push(observer, "four", 190);
-                push(observer, "five", 210);
-                complete(observer, 250);
+            public void subscribe(Subscriber<? super String> subscriber) {
+                subscriber.onSubscribe(new BooleanSubscription());
+                push(subscriber, "one", 10);
+                push(subscriber, "two", 90);
+                push(subscriber, "three", 110);
+                push(subscriber, "four", 190);
+                push(subscriber, "five", 210);
+                complete(subscriber, 250);
             }
         });
 
         Flowable<List<String>> buffered = source.buffer(100, TimeUnit.MILLISECONDS, scheduler, 2);
-        buffered.subscribe(observer);
+        buffered.subscribe(subscriber);
 
-        InOrder inOrder = Mockito.inOrder(observer);
+        InOrder inOrder = Mockito.inOrder(subscriber);
         scheduler.advanceTimeTo(100, TimeUnit.MILLISECONDS);
-        inOrder.verify(observer, Mockito.times(1)).onNext(list("one", "two"));
+        inOrder.verify(subscriber, Mockito.times(1)).onNext(list("one", "two"));
 
         scheduler.advanceTimeTo(200, TimeUnit.MILLISECONDS);
-        inOrder.verify(observer, Mockito.times(1)).onNext(list("three", "four"));
+        inOrder.verify(subscriber, Mockito.times(1)).onNext(list("three", "four"));
 
         scheduler.advanceTimeTo(300, TimeUnit.MILLISECONDS);
-        inOrder.verify(observer, Mockito.times(1)).onNext(list("five"));
-        inOrder.verify(observer, Mockito.never()).onNext(Mockito.<String>anyList());
-        inOrder.verify(observer, Mockito.never()).onError(Mockito.any(Throwable.class));
-        inOrder.verify(observer, Mockito.times(1)).onComplete();
+        inOrder.verify(subscriber, Mockito.times(1)).onNext(list("five"));
+        inOrder.verify(subscriber, Mockito.never()).onNext(Mockito.<String>anyList());
+        inOrder.verify(subscriber, Mockito.never()).onError(Mockito.any(Throwable.class));
+        inOrder.verify(subscriber, Mockito.times(1)).onComplete();
     }
 
     @Test
     public void testTimed() {
         Flowable<String> source = Flowable.unsafeCreate(new Publisher<String>() {
             @Override
-            public void subscribe(Subscriber<? super String> observer) {
-                observer.onSubscribe(new BooleanSubscription());
-                push(observer, "one", 97);
-                push(observer, "two", 98);
+            public void subscribe(Subscriber<? super String> subscriber) {
+                subscriber.onSubscribe(new BooleanSubscription());
+                push(subscriber, "one", 97);
+                push(subscriber, "two", 98);
                 /**
                  * Changed from 100. Because scheduling the cut to 100ms happens before this
                  * Flowable even runs due how lift works, pushing at 100ms would execute after the
                  * buffer cut.
                  */
-                push(observer, "three", 99);
-                push(observer, "four", 101);
-                push(observer, "five", 102);
-                complete(observer, 150);
+                push(subscriber, "three", 99);
+                push(subscriber, "four", 101);
+                push(subscriber, "five", 102);
+                complete(subscriber, 150);
             }
         });
 
         Flowable<List<String>> buffered = source.buffer(100, TimeUnit.MILLISECONDS, scheduler);
-        buffered.subscribe(observer);
+        buffered.subscribe(subscriber);
 
-        InOrder inOrder = Mockito.inOrder(observer);
+        InOrder inOrder = Mockito.inOrder(subscriber);
         scheduler.advanceTimeTo(101, TimeUnit.MILLISECONDS);
-        inOrder.verify(observer, Mockito.times(1)).onNext(list("one", "two", "three"));
+        inOrder.verify(subscriber, Mockito.times(1)).onNext(list("one", "two", "three"));
 
         scheduler.advanceTimeTo(201, TimeUnit.MILLISECONDS);
-        inOrder.verify(observer, Mockito.times(1)).onNext(list("four", "five"));
-        inOrder.verify(observer, Mockito.never()).onNext(Mockito.<String>anyList());
-        inOrder.verify(observer, Mockito.never()).onError(Mockito.any(Throwable.class));
-        inOrder.verify(observer, Mockito.times(1)).onComplete();
+        inOrder.verify(subscriber, Mockito.times(1)).onNext(list("four", "five"));
+        inOrder.verify(subscriber, Mockito.never()).onNext(Mockito.<String>anyList());
+        inOrder.verify(subscriber, Mockito.never()).onError(Mockito.any(Throwable.class));
+        inOrder.verify(subscriber, Mockito.times(1)).onComplete();
     }
 
     @Test
     public void testFlowableBasedOpenerAndCloser() {
         Flowable<String> source = Flowable.unsafeCreate(new Publisher<String>() {
             @Override
-            public void subscribe(Subscriber<? super String> observer) {
-                observer.onSubscribe(new BooleanSubscription());
-                push(observer, "one", 10);
-                push(observer, "two", 60);
-                push(observer, "three", 110);
-                push(observer, "four", 160);
-                push(observer, "five", 210);
-                complete(observer, 500);
+            public void subscribe(Subscriber<? super String> subscriber) {
+                subscriber.onSubscribe(new BooleanSubscription());
+                push(subscriber, "one", 10);
+                push(subscriber, "two", 60);
+                push(subscriber, "three", 110);
+                push(subscriber, "four", 160);
+                push(subscriber, "five", 210);
+                complete(subscriber, 500);
             }
         });
 
         Flowable<Object> openings = Flowable.unsafeCreate(new Publisher<Object>() {
             @Override
-            public void subscribe(Subscriber<Object> observer) {
-                observer.onSubscribe(new BooleanSubscription());
-                push(observer, new Object(), 50);
-                push(observer, new Object(), 200);
-                complete(observer, 250);
+            public void subscribe(Subscriber<Object> subscriber) {
+                subscriber.onSubscribe(new BooleanSubscription());
+                push(subscriber, new Object(), 50);
+                push(subscriber, new Object(), 200);
+                complete(subscriber, 250);
             }
         });
 
@@ -217,39 +217,39 @@ public class FlowableBufferTest {
             public Flowable<Object> apply(Object opening) {
                 return Flowable.unsafeCreate(new Publisher<Object>() {
                     @Override
-                    public void subscribe(Subscriber<? super Object> observer) {
-                        observer.onSubscribe(new BooleanSubscription());
-                        push(observer, new Object(), 100);
-                        complete(observer, 101);
+                    public void subscribe(Subscriber<? super Object> subscriber) {
+                        subscriber.onSubscribe(new BooleanSubscription());
+                        push(subscriber, new Object(), 100);
+                        complete(subscriber, 101);
                     }
                 });
             }
         };
 
         Flowable<List<String>> buffered = source.buffer(openings, closer);
-        buffered.subscribe(observer);
+        buffered.subscribe(subscriber);
 
-        InOrder inOrder = Mockito.inOrder(observer);
+        InOrder inOrder = Mockito.inOrder(subscriber);
         scheduler.advanceTimeTo(500, TimeUnit.MILLISECONDS);
-        inOrder.verify(observer, Mockito.times(1)).onNext(list("two", "three"));
-        inOrder.verify(observer, Mockito.times(1)).onNext(list("five"));
-        inOrder.verify(observer, Mockito.never()).onNext(Mockito.<String>anyList());
-        inOrder.verify(observer, Mockito.never()).onError(Mockito.any(Throwable.class));
-        inOrder.verify(observer, Mockito.times(1)).onComplete();
+        inOrder.verify(subscriber, Mockito.times(1)).onNext(list("two", "three"));
+        inOrder.verify(subscriber, Mockito.times(1)).onNext(list("five"));
+        inOrder.verify(subscriber, Mockito.never()).onNext(Mockito.<String>anyList());
+        inOrder.verify(subscriber, Mockito.never()).onError(Mockito.any(Throwable.class));
+        inOrder.verify(subscriber, Mockito.times(1)).onComplete();
     }
 
     @Test
     public void testFlowableBasedCloser() {
         Flowable<String> source = Flowable.unsafeCreate(new Publisher<String>() {
             @Override
-            public void subscribe(Subscriber<? super String> observer) {
-                observer.onSubscribe(new BooleanSubscription());
-                push(observer, "one", 10);
-                push(observer, "two", 60);
-                push(observer, "three", 110);
-                push(observer, "four", 160);
-                push(observer, "five", 210);
-                complete(observer, 250);
+            public void subscribe(Subscriber<? super String> subscriber) {
+                subscriber.onSubscribe(new BooleanSubscription());
+                push(subscriber, "one", 10);
+                push(subscriber, "two", 60);
+                push(subscriber, "three", 110);
+                push(subscriber, "four", 160);
+                push(subscriber, "five", 210);
+                complete(subscriber, 250);
             }
         });
 
@@ -258,28 +258,28 @@ public class FlowableBufferTest {
             public Flowable<Object> call() {
                 return Flowable.unsafeCreate(new Publisher<Object>() {
                     @Override
-                    public void subscribe(Subscriber<? super Object> observer) {
-                        observer.onSubscribe(new BooleanSubscription());
-                        push(observer, new Object(), 100);
-                        push(observer, new Object(), 200);
-                        push(observer, new Object(), 300);
-                        complete(observer, 301);
+                    public void subscribe(Subscriber<? super Object> subscriber) {
+                        subscriber.onSubscribe(new BooleanSubscription());
+                        push(subscriber, new Object(), 100);
+                        push(subscriber, new Object(), 200);
+                        push(subscriber, new Object(), 300);
+                        complete(subscriber, 301);
                     }
                 });
             }
         };
 
         Flowable<List<String>> buffered = source.buffer(closer);
-        buffered.subscribe(observer);
+        buffered.subscribe(subscriber);
 
-        InOrder inOrder = Mockito.inOrder(observer);
+        InOrder inOrder = Mockito.inOrder(subscriber);
         scheduler.advanceTimeTo(500, TimeUnit.MILLISECONDS);
-        inOrder.verify(observer, Mockito.times(1)).onNext(list("one", "two"));
-        inOrder.verify(observer, Mockito.times(1)).onNext(list("three", "four"));
-        inOrder.verify(observer, Mockito.times(1)).onNext(list("five"));
-        inOrder.verify(observer, Mockito.never()).onNext(Mockito.<String>anyList());
-        inOrder.verify(observer, Mockito.never()).onError(Mockito.any(Throwable.class));
-        inOrder.verify(observer, Mockito.times(1)).onComplete();
+        inOrder.verify(subscriber, Mockito.times(1)).onNext(list("one", "two"));
+        inOrder.verify(subscriber, Mockito.times(1)).onNext(list("three", "four"));
+        inOrder.verify(subscriber, Mockito.times(1)).onNext(list("five"));
+        inOrder.verify(subscriber, Mockito.never()).onNext(Mockito.<String>anyList());
+        inOrder.verify(subscriber, Mockito.never()).onError(Mockito.any(Throwable.class));
+        inOrder.verify(subscriber, Mockito.times(1)).onComplete();
     }
 
     @Test
@@ -324,20 +324,20 @@ public class FlowableBufferTest {
         return list;
     }
 
-    private <T> void push(final Subscriber<T> observer, final T value, int delay) {
+    private <T> void push(final Subscriber<T> subscriber, final T value, int delay) {
         innerScheduler.schedule(new Runnable() {
             @Override
             public void run() {
-                observer.onNext(value);
+                subscriber.onNext(value);
             }
         }, delay, TimeUnit.MILLISECONDS);
     }
 
-    private void complete(final Subscriber<?> observer, int delay) {
+    private void complete(final Subscriber<?> subscriber, int delay) {
         innerScheduler.schedule(new Runnable() {
             @Override
             public void run() {
-                observer.onComplete();
+                subscriber.onComplete();
             }
         }, delay, TimeUnit.MILLISECONDS);
     }
@@ -346,8 +346,8 @@ public class FlowableBufferTest {
     public void testBufferStopsWhenUnsubscribed1() {
         Flowable<Integer> source = Flowable.never();
 
-        Subscriber<List<Integer>> o = TestHelper.mockSubscriber();
-        TestSubscriber<List<Integer>> ts = new TestSubscriber<List<Integer>>(o, 0L);
+        Subscriber<List<Integer>> subscriber = TestHelper.mockSubscriber();
+        TestSubscriber<List<Integer>> ts = new TestSubscriber<List<Integer>>(subscriber, 0L);
 
         source.buffer(100, 200, TimeUnit.MILLISECONDS, scheduler)
         .doOnNext(new Consumer<List<Integer>>() {
@@ -358,11 +358,11 @@ public class FlowableBufferTest {
         })
         .subscribe(ts);
 
-        InOrder inOrder = Mockito.inOrder(o);
+        InOrder inOrder = Mockito.inOrder(subscriber);
 
         scheduler.advanceTimeBy(1001, TimeUnit.MILLISECONDS);
 
-        inOrder.verify(o, times(5)).onNext(Arrays.<Integer> asList());
+        inOrder.verify(subscriber, times(5)).onNext(Arrays.<Integer> asList());
 
         ts.dispose();
 
@@ -376,10 +376,10 @@ public class FlowableBufferTest {
         PublishProcessor<Integer> source = PublishProcessor.create();
         PublishProcessor<Integer> boundary = PublishProcessor.create();
 
-        Subscriber<Object> o = TestHelper.mockSubscriber();
-        InOrder inOrder = Mockito.inOrder(o);
+        Subscriber<Object> subscriber = TestHelper.mockSubscriber();
+        InOrder inOrder = Mockito.inOrder(subscriber);
 
-        source.buffer(boundary).subscribe(o);
+        source.buffer(boundary).subscribe(subscriber);
 
         source.onNext(1);
         source.onNext(2);
@@ -387,23 +387,23 @@ public class FlowableBufferTest {
 
         boundary.onNext(1);
 
-        inOrder.verify(o, times(1)).onNext(Arrays.asList(1, 2, 3));
+        inOrder.verify(subscriber, times(1)).onNext(Arrays.asList(1, 2, 3));
 
         source.onNext(4);
         source.onNext(5);
 
         boundary.onNext(2);
 
-        inOrder.verify(o, times(1)).onNext(Arrays.asList(4, 5));
+        inOrder.verify(subscriber, times(1)).onNext(Arrays.asList(4, 5));
 
         source.onNext(6);
         boundary.onComplete();
 
-        inOrder.verify(o, times(1)).onNext(Arrays.asList(6));
+        inOrder.verify(subscriber, times(1)).onNext(Arrays.asList(6));
 
-        inOrder.verify(o).onComplete();
+        inOrder.verify(subscriber).onComplete();
 
-        verify(o, never()).onError(any(Throwable.class));
+        verify(subscriber, never()).onError(any(Throwable.class));
     }
 
     @Test
@@ -411,18 +411,18 @@ public class FlowableBufferTest {
         PublishProcessor<Integer> source = PublishProcessor.create();
         PublishProcessor<Integer> boundary = PublishProcessor.create();
 
-        Subscriber<Object> o = TestHelper.mockSubscriber();
-        InOrder inOrder = Mockito.inOrder(o);
+        Subscriber<Object> subscriber = TestHelper.mockSubscriber();
+        InOrder inOrder = Mockito.inOrder(subscriber);
 
-        source.buffer(boundary).subscribe(o);
+        source.buffer(boundary).subscribe(subscriber);
 
         boundary.onComplete();
 
-        inOrder.verify(o, times(1)).onNext(Arrays.asList());
+        inOrder.verify(subscriber, times(1)).onNext(Arrays.asList());
 
-        inOrder.verify(o).onComplete();
+        inOrder.verify(subscriber).onComplete();
 
-        verify(o, never()).onError(any(Throwable.class));
+        verify(subscriber, never()).onError(any(Throwable.class));
     }
 
     @Test
@@ -430,18 +430,18 @@ public class FlowableBufferTest {
         PublishProcessor<Integer> source = PublishProcessor.create();
         PublishProcessor<Integer> boundary = PublishProcessor.create();
 
-        Subscriber<Object> o = TestHelper.mockSubscriber();
-        InOrder inOrder = Mockito.inOrder(o);
+        Subscriber<Object> subscriber = TestHelper.mockSubscriber();
+        InOrder inOrder = Mockito.inOrder(subscriber);
 
-        source.buffer(boundary).subscribe(o);
+        source.buffer(boundary).subscribe(subscriber);
 
         source.onComplete();
 
-        inOrder.verify(o, times(1)).onNext(Arrays.asList());
+        inOrder.verify(subscriber, times(1)).onNext(Arrays.asList());
 
-        inOrder.verify(o).onComplete();
+        inOrder.verify(subscriber).onComplete();
 
-        verify(o, never()).onError(any(Throwable.class));
+        verify(subscriber, never()).onError(any(Throwable.class));
     }
 
     @Test
@@ -449,19 +449,19 @@ public class FlowableBufferTest {
         PublishProcessor<Integer> source = PublishProcessor.create();
         PublishProcessor<Integer> boundary = PublishProcessor.create();
 
-        Subscriber<Object> o = TestHelper.mockSubscriber();
-        InOrder inOrder = Mockito.inOrder(o);
+        Subscriber<Object> subscriber = TestHelper.mockSubscriber();
+        InOrder inOrder = Mockito.inOrder(subscriber);
 
-        source.buffer(boundary).subscribe(o);
+        source.buffer(boundary).subscribe(subscriber);
 
         source.onComplete();
         boundary.onComplete();
 
-        inOrder.verify(o, times(1)).onNext(Arrays.asList());
+        inOrder.verify(subscriber, times(1)).onNext(Arrays.asList());
 
-        inOrder.verify(o).onComplete();
+        inOrder.verify(subscriber).onComplete();
 
-        verify(o, never()).onError(any(Throwable.class));
+        verify(subscriber, never()).onError(any(Throwable.class));
     }
 
     @Test
@@ -469,15 +469,15 @@ public class FlowableBufferTest {
         PublishProcessor<Integer> source = PublishProcessor.create();
         PublishProcessor<Integer> boundary = PublishProcessor.create();
 
-        Subscriber<Object> o = TestHelper.mockSubscriber();
+        Subscriber<Object> subscriber = TestHelper.mockSubscriber();
 
-        source.buffer(boundary).subscribe(o);
+        source.buffer(boundary).subscribe(subscriber);
         source.onNext(1);
         source.onError(new TestException());
 
-        verify(o).onError(any(TestException.class));
-        verify(o, never()).onComplete();
-        verify(o, never()).onNext(any());
+        verify(subscriber).onError(any(TestException.class));
+        verify(subscriber, never()).onComplete();
+        verify(subscriber, never()).onNext(any());
     }
 
     @Test
@@ -485,16 +485,16 @@ public class FlowableBufferTest {
         PublishProcessor<Integer> source = PublishProcessor.create();
         PublishProcessor<Integer> boundary = PublishProcessor.create();
 
-        Subscriber<Object> o = TestHelper.mockSubscriber();
+        Subscriber<Object> subscriber = TestHelper.mockSubscriber();
 
-        source.buffer(boundary).subscribe(o);
+        source.buffer(boundary).subscribe(subscriber);
 
         source.onNext(1);
         boundary.onError(new TestException());
 
-        verify(o).onError(any(TestException.class));
-        verify(o, never()).onComplete();
-        verify(o, never()).onNext(any());
+        verify(subscriber).onError(any(TestException.class));
+        verify(subscriber, never()).onComplete();
+        verify(subscriber, never()).onNext(any());
     }
     @Test(timeout = 2000)
     public void bufferWithSizeTake1() {
@@ -502,13 +502,13 @@ public class FlowableBufferTest {
 
         Flowable<List<Integer>> result = source.buffer(2).take(1);
 
-        Subscriber<Object> o = TestHelper.mockSubscriber();
+        Subscriber<Object> subscriber = TestHelper.mockSubscriber();
 
-        result.subscribe(o);
+        result.subscribe(subscriber);
 
-        verify(o).onNext(Arrays.asList(1, 1));
-        verify(o).onComplete();
-        verify(o, never()).onError(any(Throwable.class));
+        verify(subscriber).onNext(Arrays.asList(1, 1));
+        verify(subscriber).onComplete();
+        verify(subscriber, never()).onError(any(Throwable.class));
     }
 
     @Test(timeout = 2000)
@@ -517,13 +517,13 @@ public class FlowableBufferTest {
 
         Flowable<List<Integer>> result = source.buffer(2, 3).take(1);
 
-        Subscriber<Object> o = TestHelper.mockSubscriber();
+        Subscriber<Object> subscriber = TestHelper.mockSubscriber();
 
-        result.subscribe(o);
+        result.subscribe(subscriber);
 
-        verify(o).onNext(Arrays.asList(1, 1));
-        verify(o).onComplete();
-        verify(o, never()).onError(any(Throwable.class));
+        verify(subscriber).onNext(Arrays.asList(1, 1));
+        verify(subscriber).onComplete();
+        verify(subscriber, never()).onError(any(Throwable.class));
     }
     @Test(timeout = 2000)
     public void bufferWithTimeTake1() {
@@ -531,15 +531,15 @@ public class FlowableBufferTest {
 
         Flowable<List<Long>> result = source.buffer(100, TimeUnit.MILLISECONDS, scheduler).take(1);
 
-        Subscriber<Object> o = TestHelper.mockSubscriber();
+        Subscriber<Object> subscriber = TestHelper.mockSubscriber();
 
-        result.subscribe(o);
+        result.subscribe(subscriber);
 
         scheduler.advanceTimeBy(5, TimeUnit.SECONDS);
 
-        verify(o).onNext(Arrays.asList(0L, 1L));
-        verify(o).onComplete();
-        verify(o, never()).onError(any(Throwable.class));
+        verify(subscriber).onNext(Arrays.asList(0L, 1L));
+        verify(subscriber).onComplete();
+        verify(subscriber, never()).onError(any(Throwable.class));
     }
     @Test(timeout = 2000)
     public void bufferWithTimeSkipTake2() {
@@ -547,18 +547,19 @@ public class FlowableBufferTest {
 
         Flowable<List<Long>> result = source.buffer(100, 60, TimeUnit.MILLISECONDS, scheduler).take(2);
 
-        Subscriber<Object> o = TestHelper.mockSubscriber();
-        InOrder inOrder = inOrder(o);
+        Subscriber<Object> subscriber = TestHelper.mockSubscriber();
+        InOrder inOrder = inOrder(subscriber);
 
-        result.subscribe(o);
+        result.subscribe(subscriber);
 
         scheduler.advanceTimeBy(5, TimeUnit.SECONDS);
 
-        inOrder.verify(o).onNext(Arrays.asList(0L, 1L));
-        inOrder.verify(o).onNext(Arrays.asList(1L, 2L));
-        inOrder.verify(o).onComplete();
-        verify(o, never()).onError(any(Throwable.class));
+        inOrder.verify(subscriber).onNext(Arrays.asList(0L, 1L));
+        inOrder.verify(subscriber).onNext(Arrays.asList(1L, 2L));
+        inOrder.verify(subscriber).onComplete();
+        verify(subscriber, never()).onError(any(Throwable.class));
     }
+
     @Test(timeout = 2000)
     public void bufferWithBoundaryTake2() {
         Flowable<Long> boundary = Flowable.interval(60, 60, TimeUnit.MILLISECONDS, scheduler);
@@ -566,17 +567,17 @@ public class FlowableBufferTest {
 
         Flowable<List<Long>> result = source.buffer(boundary).take(2);
 
-        Subscriber<Object> o = TestHelper.mockSubscriber();
-        InOrder inOrder = inOrder(o);
+        Subscriber<Object> subscriber = TestHelper.mockSubscriber();
+        InOrder inOrder = inOrder(subscriber);
 
-        result.subscribe(o);
+        result.subscribe(subscriber);
 
         scheduler.advanceTimeBy(5, TimeUnit.SECONDS);
 
-        inOrder.verify(o).onNext(Arrays.asList(0L));
-        inOrder.verify(o).onNext(Arrays.asList(1L));
-        inOrder.verify(o).onComplete();
-        verify(o, never()).onError(any(Throwable.class));
+        inOrder.verify(subscriber).onNext(Arrays.asList(0L));
+        inOrder.verify(subscriber).onNext(Arrays.asList(1L));
+        inOrder.verify(subscriber).onComplete();
+        verify(subscriber, never()).onError(any(Throwable.class));
 
     }
 
@@ -594,8 +595,8 @@ public class FlowableBufferTest {
 
         Flowable<List<Long>> result = source.buffer(start, end).take(2);
 
-        Subscriber<Object> o = TestHelper.mockSubscriber();
-        InOrder inOrder = inOrder(o);
+        Subscriber<Object> subscriber = TestHelper.mockSubscriber();
+        InOrder inOrder = inOrder(subscriber);
 
         result
         .doOnNext(new Consumer<List<Long>>() {
@@ -604,14 +605,14 @@ public class FlowableBufferTest {
                 System.out.println(pv);
             }
         })
-        .subscribe(o);
+        .subscribe(subscriber);
 
         scheduler.advanceTimeBy(5, TimeUnit.SECONDS);
 
-        inOrder.verify(o).onNext(Arrays.asList(1L, 2L, 3L));
-        inOrder.verify(o).onNext(Arrays.asList(3L, 4L));
-        inOrder.verify(o).onComplete();
-        verify(o, never()).onError(any(Throwable.class));
+        inOrder.verify(subscriber).onNext(Arrays.asList(1L, 2L, 3L));
+        inOrder.verify(subscriber).onNext(Arrays.asList(3L, 4L));
+        inOrder.verify(subscriber).onComplete();
+        verify(subscriber, never()).onError(any(Throwable.class));
     }
     @Test
     public void bufferWithSizeThrows() {
@@ -619,22 +620,22 @@ public class FlowableBufferTest {
 
         Flowable<List<Integer>> result = source.buffer(2);
 
-        Subscriber<Object> o = TestHelper.mockSubscriber();
+        Subscriber<Object> subscriber = TestHelper.mockSubscriber();
 
-        InOrder inOrder = inOrder(o);
+        InOrder inOrder = inOrder(subscriber);
 
-        result.subscribe(o);
+        result.subscribe(subscriber);
 
         source.onNext(1);
         source.onNext(2);
         source.onNext(3);
         source.onError(new TestException());
 
-        inOrder.verify(o).onNext(Arrays.asList(1, 2));
-        inOrder.verify(o).onError(any(TestException.class));
+        inOrder.verify(subscriber).onNext(Arrays.asList(1, 2));
+        inOrder.verify(subscriber).onError(any(TestException.class));
         inOrder.verifyNoMoreInteractions();
-        verify(o, never()).onNext(Arrays.asList(3));
-        verify(o, never()).onComplete();
+        verify(subscriber, never()).onNext(Arrays.asList(3));
+        verify(subscriber, never()).onComplete();
 
     }
 
@@ -644,10 +645,10 @@ public class FlowableBufferTest {
 
         Flowable<List<Integer>> result = source.buffer(100, TimeUnit.MILLISECONDS, scheduler);
 
-        Subscriber<Object> o = TestHelper.mockSubscriber();
-        InOrder inOrder = inOrder(o);
+        Subscriber<Object> subscriber = TestHelper.mockSubscriber();
+        InOrder inOrder = inOrder(subscriber);
 
-        result.subscribe(o);
+        result.subscribe(subscriber);
 
         source.onNext(1);
         source.onNext(2);
@@ -656,11 +657,11 @@ public class FlowableBufferTest {
         source.onError(new TestException());
         scheduler.advanceTimeBy(100, TimeUnit.MILLISECONDS);
 
-        inOrder.verify(o).onNext(Arrays.asList(1, 2));
-        inOrder.verify(o).onError(any(TestException.class));
+        inOrder.verify(subscriber).onNext(Arrays.asList(1, 2));
+        inOrder.verify(subscriber).onError(any(TestException.class));
         inOrder.verifyNoMoreInteractions();
-        verify(o, never()).onNext(Arrays.asList(3));
-        verify(o, never()).onComplete();
+        verify(subscriber, never()).onNext(Arrays.asList(3));
+        verify(subscriber, never()).onComplete();
 
     }
 
@@ -670,17 +671,17 @@ public class FlowableBufferTest {
 
         Flowable<List<Long>> result = source.buffer(100, TimeUnit.MILLISECONDS, scheduler, 2).take(3);
 
-        Subscriber<Object> o = TestHelper.mockSubscriber();
-        InOrder inOrder = inOrder(o);
+        Subscriber<Object> subscriber = TestHelper.mockSubscriber();
+        InOrder inOrder = inOrder(subscriber);
 
-        result.subscribe(o);
+        result.subscribe(subscriber);
 
         scheduler.advanceTimeBy(5, TimeUnit.SECONDS);
 
-        inOrder.verify(o).onNext(Arrays.asList(0L, 1L));
-        inOrder.verify(o).onNext(Arrays.asList(2L));
-        inOrder.verify(o).onComplete();
-        verify(o, never()).onError(any(Throwable.class));
+        inOrder.verify(subscriber).onNext(Arrays.asList(0L, 1L));
+        inOrder.verify(subscriber).onNext(Arrays.asList(2L));
+        inOrder.verify(subscriber).onComplete();
+        verify(subscriber, never()).onError(any(Throwable.class));
     }
     @Test
     public void bufferWithStartEndStartThrows() {
@@ -697,18 +698,18 @@ public class FlowableBufferTest {
 
         Flowable<List<Integer>> result = source.buffer(start, end);
 
-        Subscriber<Object> o = TestHelper.mockSubscriber();
+        Subscriber<Object> subscriber = TestHelper.mockSubscriber();
 
-        result.subscribe(o);
+        result.subscribe(subscriber);
 
         start.onNext(1);
         source.onNext(1);
         source.onNext(2);
         start.onError(new TestException());
 
-        verify(o, never()).onNext(any());
-        verify(o, never()).onComplete();
-        verify(o).onError(any(TestException.class));
+        verify(subscriber, never()).onNext(any());
+        verify(subscriber, never()).onComplete();
+        verify(subscriber).onError(any(TestException.class));
     }
     @Test
     public void bufferWithStartEndEndFunctionThrows() {
@@ -725,17 +726,17 @@ public class FlowableBufferTest {
 
         Flowable<List<Integer>> result = source.buffer(start, end);
 
-        Subscriber<Object> o = TestHelper.mockSubscriber();
+        Subscriber<Object> subscriber = TestHelper.mockSubscriber();
 
-        result.subscribe(o);
+        result.subscribe(subscriber);
 
         start.onNext(1);
         source.onNext(1);
         source.onNext(2);
 
-        verify(o, never()).onNext(any());
-        verify(o, never()).onComplete();
-        verify(o).onError(any(TestException.class));
+        verify(subscriber, never()).onNext(any());
+        verify(subscriber, never()).onComplete();
+        verify(subscriber).onError(any(TestException.class));
     }
     @Test
     public void bufferWithStartEndEndThrows() {
@@ -752,17 +753,17 @@ public class FlowableBufferTest {
 
         Flowable<List<Integer>> result = source.buffer(start, end);
 
-        Subscriber<Object> o = TestHelper.mockSubscriber();
+        Subscriber<Object> subscriber = TestHelper.mockSubscriber();
 
-        result.subscribe(o);
+        result.subscribe(subscriber);
 
         start.onNext(1);
         source.onNext(1);
         source.onNext(2);
 
-        verify(o, never()).onNext(any());
-        verify(o, never()).onComplete();
-        verify(o).onError(any(TestException.class));
+        verify(subscriber, never()).onNext(any());
+        verify(subscriber, never()).onComplete();
+        verify(subscriber).onError(any(TestException.class));
     }
 
     @Test
@@ -992,22 +993,22 @@ public class FlowableBufferTest {
     }
     @Test(timeout = 3000)
     public void testBufferWithTimeDoesntUnsubscribeDownstream() throws InterruptedException {
-        final Subscriber<Object> o = TestHelper.mockSubscriber();
+        final Subscriber<Object> subscriber = TestHelper.mockSubscriber();
 
         final CountDownLatch cdl = new CountDownLatch(1);
         ResourceSubscriber<Object> s = new ResourceSubscriber<Object>() {
             @Override
             public void onNext(Object t) {
-                o.onNext(t);
+                subscriber.onNext(t);
             }
             @Override
             public void onError(Throwable e) {
-                o.onError(e);
+                subscriber.onError(e);
                 cdl.countDown();
             }
             @Override
             public void onComplete() {
-                o.onComplete();
+                subscriber.onComplete();
                 cdl.countDown();
             }
         };
@@ -1016,9 +1017,9 @@ public class FlowableBufferTest {
 
         cdl.await();
 
-        verify(o).onNext(Arrays.asList(1));
-        verify(o).onComplete();
-        verify(o, never()).onError(any(Throwable.class));
+        verify(subscriber).onNext(Arrays.asList(1));
+        verify(subscriber).onComplete();
+        verify(subscriber, never()).onError(any(Throwable.class));
 
         assertFalse(s.isDisposed());
     }
@@ -2480,20 +2481,20 @@ public class FlowableBufferTest {
     public void bufferExactBoundaryBadSource() {
         Flowable<Integer> pp = new Flowable<Integer>() {
             @Override
-            protected void subscribeActual(Subscriber<? super Integer> observer) {
-                observer.onSubscribe(new BooleanSubscription());
-                observer.onComplete();
-                observer.onNext(1);
-                observer.onComplete();
+            protected void subscribeActual(Subscriber<? super Integer> subscriber) {
+                subscriber.onSubscribe(new BooleanSubscription());
+                subscriber.onComplete();
+                subscriber.onNext(1);
+                subscriber.onComplete();
             }
         };
 
         final AtomicReference<Subscriber<? super Integer>> ref = new AtomicReference<Subscriber<? super Integer>>();
         Flowable<Integer> b = new Flowable<Integer>() {
             @Override
-            protected void subscribeActual(Subscriber<? super Integer> observer) {
-                observer.onSubscribe(new BooleanSubscription());
-                ref.set(observer);
+            protected void subscribeActual(Subscriber<? super Integer> subscriber) {
+                subscriber.onSubscribe(new BooleanSubscription());
+                ref.set(subscriber);
             }
         };
 

@@ -3322,9 +3322,9 @@ public abstract class Single<T> implements SingleSource<T> {
     public final Disposable subscribe(final BiConsumer<? super T, ? super Throwable> onCallback) {
         ObjectHelper.requireNonNull(onCallback, "onCallback is null");
 
-        BiConsumerSingleObserver<T> s = new BiConsumerSingleObserver<T>(onCallback);
-        subscribe(s);
-        return s;
+        BiConsumerSingleObserver<T> observer = new BiConsumerSingleObserver<T>(onCallback);
+        subscribe(observer);
+        return observer;
     }
 
     /**
@@ -3376,22 +3376,22 @@ public abstract class Single<T> implements SingleSource<T> {
         ObjectHelper.requireNonNull(onSuccess, "onSuccess is null");
         ObjectHelper.requireNonNull(onError, "onError is null");
 
-        ConsumerSingleObserver<T> s = new ConsumerSingleObserver<T>(onSuccess, onError);
-        subscribe(s);
-        return s;
+        ConsumerSingleObserver<T> observer = new ConsumerSingleObserver<T>(onSuccess, onError);
+        subscribe(observer);
+        return observer;
     }
 
     @SchedulerSupport(SchedulerSupport.NONE)
     @Override
-    public final void subscribe(SingleObserver<? super T> subscriber) {
-        ObjectHelper.requireNonNull(subscriber, "subscriber is null");
+    public final void subscribe(SingleObserver<? super T> observer) {
+        ObjectHelper.requireNonNull(observer, "subscriber is null");
 
-        subscriber = RxJavaPlugins.onSubscribe(this, subscriber);
+        observer = RxJavaPlugins.onSubscribe(this, observer);
 
-        ObjectHelper.requireNonNull(subscriber, "subscriber returned by the RxJavaPlugins hook is null");
+        ObjectHelper.requireNonNull(observer, "subscriber returned by the RxJavaPlugins hook is null");
 
         try {
-            subscribeActual(subscriber);
+            subscribeActual(observer);
         } catch (NullPointerException ex) {
             throw ex;
         } catch (Throwable ex) {

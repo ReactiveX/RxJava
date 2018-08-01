@@ -30,7 +30,7 @@ public final class CompletableConcatIterable extends Completable {
     }
 
     @Override
-    public void subscribeActual(CompletableObserver s) {
+    public void subscribeActual(CompletableObserver observer) {
 
         Iterator<? extends CompletableSource> it;
 
@@ -38,12 +38,12 @@ public final class CompletableConcatIterable extends Completable {
             it = ObjectHelper.requireNonNull(sources.iterator(), "The iterator returned is null");
         } catch (Throwable e) {
             Exceptions.throwIfFatal(e);
-            EmptyDisposable.error(e, s);
+            EmptyDisposable.error(e, observer);
             return;
         }
 
-        ConcatInnerObserver inner = new ConcatInnerObserver(s, it);
-        s.onSubscribe(inner.sd);
+        ConcatInnerObserver inner = new ConcatInnerObserver(observer, it);
+        observer.onSubscribe(inner.sd);
         inner.next();
     }
 

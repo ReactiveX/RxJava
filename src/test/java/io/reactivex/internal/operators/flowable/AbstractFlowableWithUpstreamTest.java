@@ -26,8 +26,8 @@ public class AbstractFlowableWithUpstreamTest {
     @SuppressWarnings("unchecked")
     @Test
     public void source() {
-        Flowable<Integer> o = Flowable.just(1);
+        Flowable<Integer> f = Flowable.just(1);
 
-        assertSame(o, ((HasUpstreamPublisher<Integer>)o.map(Functions.<Integer>identity())).source());
+        assertSame(f, ((HasUpstreamPublisher<Integer>)f.map(Functions.<Integer>identity())).source());
     }
 }

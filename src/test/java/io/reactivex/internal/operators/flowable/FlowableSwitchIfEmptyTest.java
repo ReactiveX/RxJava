@@ -35,7 +35,7 @@ public class FlowableSwitchIfEmptyTest {
     @Test
     public void testSwitchWhenNotEmpty() throws Exception {
         final AtomicBoolean subscribed = new AtomicBoolean(false);
-        final Flowable<Integer> observable = Flowable.just(4)
+        final Flowable<Integer> flowable = Flowable.just(4)
                 .switchIfEmpty(Flowable.just(2)
                 .doOnSubscribe(new Consumer<Subscription>() {
                     @Override
@@ -44,16 +44,16 @@ public class FlowableSwitchIfEmptyTest {
                     }
                 }));
 
-        assertEquals(4, observable.blockingSingle().intValue());
+        assertEquals(4, flowable.blockingSingle().intValue());
         assertFalse(subscribed.get());
     }
 
     @Test
     public void testSwitchWhenEmpty() throws Exception {
-        final Flowable<Integer> observable = Flowable.<Integer>empty()
+        final Flowable<Integer> flowable = Flowable.<Integer>empty()
                 .switchIfEmpty(Flowable.fromIterable(Arrays.asList(42)));
 
-        assertEquals(42, observable.blockingSingle().intValue());
+        assertEquals(42, flowable.blockingSingle().intValue());
     }
 
     @Test
@@ -80,8 +80,8 @@ public class FlowableSwitchIfEmptyTest {
             }
         });
 
-        final Flowable<Long> observable = Flowable.<Long>empty().switchIfEmpty(withProducer);
-        assertEquals(42, observable.blockingSingle().intValue());
+        final Flowable<Long> flowable = Flowable.<Long>empty().switchIfEmpty(withProducer);
+        assertEquals(42, flowable.blockingSingle().intValue());
     }
 
     @Test

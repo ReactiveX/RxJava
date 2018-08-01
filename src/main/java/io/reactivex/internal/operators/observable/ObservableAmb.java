@@ -32,7 +32,7 @@ public final class ObservableAmb<T> extends Observable<T> {
 
     @Override
     @SuppressWarnings("unchecked")
-    public void subscribeActual(Observer<? super T> s) {
+    public void subscribeActual(Observer<? super T> observer) {
         ObservableSource<? extends T>[] sources = this.sources;
         int count = 0;
         if (sources == null) {
@@ -40,7 +40,7 @@ public final class ObservableAmb<T> extends Observable<T> {
             try {
                 for (ObservableSource<? extends T> p : sourcesIterable) {
                     if (p == null) {
-                        EmptyDisposable.error(new NullPointerException("One of the sources is null"), s);
+                        EmptyDisposable.error(new NullPointerException("One of the sources is null"), observer);
                         return;
                     }
                     if (count == sources.length) {
@@ -52,7 +52,7 @@ public final class ObservableAmb<T> extends Observable<T> {
                 }
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
-                EmptyDisposable.error(e, s);
+                EmptyDisposable.error(e, observer);
                 return;
             }
         } else {
@@ -60,15 +60,15 @@ public final class ObservableAmb<T> extends Observable<T> {
         }
 
         if (count == 0) {
-            EmptyDisposable.complete(s);
+            EmptyDisposable.complete(observer);
             return;
         } else
         if (count == 1) {
-            sources[0].subscribe(s);
+            sources[0].subscribe(observer);
             return;
         }
 
-        AmbCoordinator<T> ac = new AmbCoordinator<T>(s, count);
+        AmbCoordinator<T> ac = new AmbCoordinator<T>(observer, count);
         ac.subscribe(sources);
     }
 

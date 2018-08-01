@@ -46,7 +46,7 @@ public final class ObservableCombineLatest<T, R> extends Observable<R> {
 
     @Override
     @SuppressWarnings("unchecked")
-    public void subscribeActual(Observer<? super R> s) {
+    public void subscribeActual(Observer<? super R> observer) {
         ObservableSource<? extends T>[] sources = this.sources;
         int count = 0;
         if (sources == null) {
@@ -64,11 +64,11 @@ public final class ObservableCombineLatest<T, R> extends Observable<R> {
         }
 
         if (count == 0) {
-            EmptyDisposable.complete(s);
+            EmptyDisposable.complete(observer);
             return;
         }
 
-        LatestCoordinator<T, R> lc = new LatestCoordinator<T, R>(s, combiner, count, bufferSize, delayError);
+        LatestCoordinator<T, R> lc = new LatestCoordinator<T, R>(observer, combiner, count, bufferSize, delayError);
         lc.subscribe(sources);
     }
 
@@ -136,8 +136,8 @@ public final class ObservableCombineLatest<T, R> extends Observable<R> {
         }
 
         void cancelSources() {
-            for (CombinerObserver<T, R> s : observers) {
-                s.dispose();
+            for (CombinerObserver<T, R> observer : observers) {
+                observer.dispose();
             }
         }
 

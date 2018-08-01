@@ -46,9 +46,9 @@ public class CompletableMergeTest {
 
         Completable.mergeArray(new Completable() {
             @Override
-            protected void subscribeActual(CompletableObserver s) {
-                s.onSubscribe(Disposables.empty());
-                s.onComplete();
+            protected void subscribeActual(CompletableObserver observer) {
+                observer.onSubscribe(Disposables.empty());
+                observer.onComplete();
                 to.cancel();
             }
         }, Completable.complete())
@@ -63,9 +63,9 @@ public class CompletableMergeTest {
 
         Completable.mergeArrayDelayError(new Completable() {
             @Override
-            protected void subscribeActual(CompletableObserver s) {
-                s.onSubscribe(Disposables.empty());
-                s.onComplete();
+            protected void subscribeActual(CompletableObserver observer) {
+                observer.onSubscribe(Disposables.empty());
+                observer.onComplete();
                 to.cancel();
             }
         }, Completable.complete())
@@ -82,10 +82,10 @@ public class CompletableMergeTest {
 
             Completable.mergeArrayDelayError(Completable.complete(), new Completable() {
                 @Override
-                protected void subscribeActual(CompletableObserver s) {
-                    s.onSubscribe(Disposables.empty());
-                    s.onComplete();
-                    co[0] = s;
+                protected void subscribeActual(CompletableObserver observer) {
+                    observer.onSubscribe(Disposables.empty());
+                    observer.onComplete();
+                    co[0] = observer;
                 }
             })
             .test()
@@ -408,10 +408,10 @@ public class CompletableMergeTest {
             final CompletableObserver[] o = { null };
             Completable.mergeDelayError(Flowable.just(new Completable() {
                 @Override
-                protected void subscribeActual(CompletableObserver s) {
-                    s.onSubscribe(Disposables.empty());
-                    s.onError(new TestException("First"));
-                    o[0] = s;
+                protected void subscribeActual(CompletableObserver observer) {
+                    observer.onSubscribe(Disposables.empty());
+                    observer.onError(new TestException("First"));
+                    o[0] = observer;
                 }
             }))
             .test()
@@ -431,13 +431,13 @@ public class CompletableMergeTest {
 
         Completable.mergeDelayError(Flowable.just(new Completable() {
             @Override
-            protected void subscribeActual(CompletableObserver s) {
-                s.onSubscribe(Disposables.empty());
-                assertFalse(((Disposable)s).isDisposed());
+            protected void subscribeActual(CompletableObserver observer) {
+                observer.onSubscribe(Disposables.empty());
+                assertFalse(((Disposable)observer).isDisposed());
 
                 to.dispose();
 
-                assertTrue(((Disposable)s).isDisposed());
+                assertTrue(((Disposable)observer).isDisposed());
             }
         }))
         .subscribe(to);

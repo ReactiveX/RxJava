@@ -241,20 +241,20 @@ public class BlockingFlowableNextTest {
                 final Flowable<Integer> obs = Flowable.unsafeCreate(new Publisher<Integer>() {
 
                     @Override
-                    public void subscribe(final Subscriber<? super Integer> o) {
-                        o.onSubscribe(new BooleanSubscription());
+                    public void subscribe(final Subscriber<? super Integer> subscriber) {
+                        subscriber.onSubscribe(new BooleanSubscription());
                         task.replace(Schedulers.single().scheduleDirect(new Runnable() {
 
                             @Override
                             public void run() {
                                 try {
                                     while (running.get() && !task.isDisposed()) {
-                                        o.onNext(count.incrementAndGet());
+                                        subscriber.onNext(count.incrementAndGet());
                                         timeHasPassed.countDown();
                                     }
-                                    o.onComplete();
+                                    subscriber.onComplete();
                                 } catch (Throwable e) {
-                                    o.onError(e);
+                                    subscriber.onError(e);
                                 } finally {
                                     finished.countDown();
                                 }
@@ -308,9 +308,9 @@ public class BlockingFlowableNextTest {
 
     @Test /* (timeout = 8000) */
     public void testSingleSourceManyIterators() throws InterruptedException {
-        Flowable<Long> o = Flowable.interval(250, TimeUnit.MILLISECONDS);
+        Flowable<Long> f = Flowable.interval(250, TimeUnit.MILLISECONDS);
         PublishProcessor<Integer> terminal = PublishProcessor.create();
-        Flowable<Long> source = o.takeUntil(terminal);
+        Flowable<Long> source = f.takeUntil(terminal);
 
         Iterable<Long> iter = source.blockingNext();
 

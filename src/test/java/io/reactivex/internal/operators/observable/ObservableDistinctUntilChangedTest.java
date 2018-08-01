@@ -225,13 +225,13 @@ public class ObservableDistinctUntilChangedTest {
         try {
             Observable.wrap(new ObservableSource<Integer>() {
                 @Override
-                public void subscribe(Observer<? super Integer> s) {
-                    s.onSubscribe(Disposables.empty());
-                    s.onNext(1);
-                    s.onNext(2);
-                    s.onNext(3);
-                    s.onError(new IOException());
-                    s.onComplete();
+                public void subscribe(Observer<? super Integer> observer) {
+                    observer.onSubscribe(Disposables.empty());
+                    observer.onNext(1);
+                    observer.onNext(2);
+                    observer.onNext(3);
+                    observer.onError(new IOException());
+                    observer.onComplete();
                 }
             })
             .distinctUntilChanged(new BiPredicate<Integer, Integer>() {

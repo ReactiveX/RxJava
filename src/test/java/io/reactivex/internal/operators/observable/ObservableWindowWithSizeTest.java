@@ -208,13 +208,13 @@ public class ObservableWindowWithSizeTest {
     public static Observable<Integer> hotStream() {
         return Observable.unsafeCreate(new ObservableSource<Integer>() {
             @Override
-            public void subscribe(Observer<? super Integer> s) {
+            public void subscribe(Observer<? super Integer> observer) {
                 Disposable d = Disposables.empty();
-                s.onSubscribe(d);
+                observer.onSubscribe(d);
                 while (!d.isDisposed()) {
                     // burst some number of items
                     for (int i = 0; i < Math.random() * 20; i++) {
-                        s.onNext(i);
+                        observer.onNext(i);
                     }
                     try {
                         // sleep for a random amount of time

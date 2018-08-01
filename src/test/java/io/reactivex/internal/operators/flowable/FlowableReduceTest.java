@@ -34,13 +34,13 @@ import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.TestSubscriber;
 
 public class FlowableReduceTest {
-    Subscriber<Object> observer;
+    Subscriber<Object> subscriber;
 
     SingleObserver<Object> singleObserver;
 
     @Before
     public void before() {
-        observer = TestHelper.mockSubscriber();
+        subscriber = TestHelper.mockSubscriber();
         singleObserver = TestHelper.mockSingleObserver();
     }
 
@@ -62,11 +62,11 @@ public class FlowableReduceTest {
                     }
                 });
 
-        result.subscribe(observer);
+        result.subscribe(subscriber);
 
-        verify(observer).onNext(1 + 2 + 3 + 4 + 5);
-        verify(observer).onComplete();
-        verify(observer, never()).onError(any(Throwable.class));
+        verify(subscriber).onNext(1 + 2 + 3 + 4 + 5);
+        verify(subscriber).onComplete();
+        verify(subscriber, never()).onError(any(Throwable.class));
     }
 
     @Test
@@ -80,11 +80,11 @@ public class FlowableReduceTest {
                     }
                 });
 
-        result.subscribe(observer);
+        result.subscribe(subscriber);
 
-        verify(observer, never()).onNext(any());
-        verify(observer, never()).onComplete();
-        verify(observer, times(1)).onError(any(TestException.class));
+        verify(subscriber, never()).onNext(any());
+        verify(subscriber, never()).onComplete();
+        verify(subscriber, times(1)).onError(any(TestException.class));
     }
 
     @Test
@@ -104,11 +104,11 @@ public class FlowableReduceTest {
                     }
                 });
 
-        result.subscribe(observer);
+        result.subscribe(subscriber);
 
-        verify(observer, never()).onNext(any());
-        verify(observer, never()).onComplete();
-        verify(observer, times(1)).onError(any(TestException.class));
+        verify(subscriber, never()).onNext(any());
+        verify(subscriber, never()).onComplete();
+        verify(subscriber, times(1)).onError(any(TestException.class));
     }
 
     @Test
@@ -125,11 +125,11 @@ public class FlowableReduceTest {
         Flowable<Integer> result = Flowable.just(1, 2, 3, 4, 5)
                 .reduce(0, sum).toFlowable().map(error);
 
-        result.subscribe(observer);
+        result.subscribe(subscriber);
 
-        verify(observer, never()).onNext(any());
-        verify(observer, never()).onComplete();
-        verify(observer, times(1)).onError(any(TestException.class));
+        verify(subscriber, never()).onNext(any());
+        verify(subscriber, never()).onComplete();
+        verify(subscriber, times(1)).onError(any(TestException.class));
     }
 
     @Test
@@ -476,9 +476,9 @@ public class FlowableReduceTest {
     public void seedDoubleOnSubscribe() {
         TestHelper.checkDoubleOnSubscribeFlowableToSingle(new Function<Flowable<Integer>, SingleSource<Integer>>() {
             @Override
-            public SingleSource<Integer> apply(Flowable<Integer> o)
+            public SingleSource<Integer> apply(Flowable<Integer> f)
                     throws Exception {
-                return o.reduce(0, new BiFunction<Integer, Integer, Integer>() {
+                return f.reduce(0, new BiFunction<Integer, Integer, Integer>() {
                     @Override
                     public Integer apply(Integer a, Integer b) throws Exception {
                         return a;
@@ -504,12 +504,12 @@ public class FlowableReduceTest {
         try {
             new Flowable<Integer>() {
                 @Override
-                protected void subscribeActual(Subscriber<? super Integer> observer) {
-                    observer.onSubscribe(new BooleanSubscription());
-                    observer.onComplete();
-                    observer.onNext(1);
-                    observer.onError(new TestException());
-                    observer.onComplete();
+                protected void subscribeActual(Subscriber<? super Integer> subscriber) {
+                    subscriber.onSubscribe(new BooleanSubscription());
+                    subscriber.onComplete();
+                    subscriber.onNext(1);
+                    subscriber.onError(new TestException());
+                    subscriber.onComplete();
                 }
             }
             .reduce(0, new BiFunction<Integer, Integer, Integer>() {

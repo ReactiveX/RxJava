@@ -30,13 +30,6 @@ import io.reactivex.subscribers.TestSubscriber;
 
 public class FlowableMergeMaxConcurrentTest {
 
-    Subscriber<String> stringObserver;
-
-    @Before
-    public void before() {
-        stringObserver = TestHelper.mockSubscriber();
-    }
-
     @Test
     public void testWhenMaxConcurrentIsOne() {
         for (int i = 0; i < 100; i++) {

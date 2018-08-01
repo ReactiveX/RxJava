@@ -31,8 +31,8 @@ public final class ObservableDistinctUntilChanged<T, K> extends AbstractObservab
     }
 
     @Override
-    protected void subscribeActual(Observer<? super T> s) {
-        source.subscribe(new DistinctUntilChangedObserver<T, K>(s, keySelector, comparer));
+    protected void subscribeActual(Observer<? super T> observer) {
+        source.subscribe(new DistinctUntilChangedObserver<T, K>(observer, keySelector, comparer));
     }
 
     static final class DistinctUntilChangedObserver<T, K> extends BasicFuseableObserver<T, T> {

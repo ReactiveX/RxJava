@@ -230,20 +230,20 @@ public enum NotificationLite {
      * <p>Does not check for a subscription notification.
      * @param <T> the expected value type when unwrapped
      * @param o the notification object
-     * @param s the Observer to call methods on
+     * @param observer the Observer to call methods on
      * @return true if the notification was a terminal event (i.e., complete or error)
      */
     @SuppressWarnings("unchecked")
-    public static <T> boolean accept(Object o, Observer<? super T> s) {
+    public static <T> boolean accept(Object o, Observer<? super T> observer) {
         if (o == COMPLETE) {
-            s.onComplete();
+            observer.onComplete();
             return true;
         } else
         if (o instanceof ErrorNotification) {
-            s.onError(((ErrorNotification)o).e);
+            observer.onError(((ErrorNotification)o).e);
             return true;
         }
-        s.onNext((T)o);
+        observer.onNext((T)o);
         return false;
     }
 
@@ -277,25 +277,25 @@ public enum NotificationLite {
      * Calls the appropriate Observer method based on the type of the notification.
      * @param <T> the expected value type when unwrapped
      * @param o the notification object
-     * @param s the subscriber to call methods on
+     * @param observer the subscriber to call methods on
      * @return true if the notification was a terminal event (i.e., complete or error)
      * @see #accept(Object, Observer)
      */
     @SuppressWarnings("unchecked")
-    public static <T> boolean acceptFull(Object o, Observer<? super T> s) {
+    public static <T> boolean acceptFull(Object o, Observer<? super T> observer) {
         if (o == COMPLETE) {
-            s.onComplete();
+            observer.onComplete();
             return true;
         } else
         if (o instanceof ErrorNotification) {
-            s.onError(((ErrorNotification)o).e);
+            observer.onError(((ErrorNotification)o).e);
             return true;
         } else
         if (o instanceof DisposableNotification) {
-            s.onSubscribe(((DisposableNotification)o).d);
+            observer.onSubscribe(((DisposableNotification)o).d);
             return false;
         }
-        s.onNext((T)o);
+        observer.onNext((T)o);
         return false;
     }
 

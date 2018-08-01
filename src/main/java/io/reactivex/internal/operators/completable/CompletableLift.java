@@ -29,11 +29,11 @@ public final class CompletableLift extends Completable {
     }
 
     @Override
-    protected void subscribeActual(CompletableObserver s) {
+    protected void subscribeActual(CompletableObserver observer) {
         try {
             // TODO plugin wrapping
 
-            CompletableObserver sw = onLift.apply(s);
+            CompletableObserver sw = onLift.apply(observer);
 
             source.subscribe(sw);
         } catch (NullPointerException ex) { // NOPMD

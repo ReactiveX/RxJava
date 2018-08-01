@@ -27,9 +27,9 @@ public final class CompletableConcatArray extends Completable {
     }
 
     @Override
-    public void subscribeActual(CompletableObserver s) {
-        ConcatInnerObserver inner = new ConcatInnerObserver(s, sources);
-        s.onSubscribe(inner.sd);
+    public void subscribeActual(CompletableObserver observer) {
+        ConcatInnerObserver inner = new ConcatInnerObserver(observer, sources);
+        observer.onSubscribe(inner.sd);
         inner.next();
     }
 

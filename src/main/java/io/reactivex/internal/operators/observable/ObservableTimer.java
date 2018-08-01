@@ -31,9 +31,9 @@ public final class ObservableTimer extends Observable<Long> {
     }
 
     @Override
-    public void subscribeActual(Observer<? super Long> s) {
-        TimerObserver ios = new TimerObserver(s);
-        s.onSubscribe(ios);
+    public void subscribeActual(Observer<? super Long> observer) {
+        TimerObserver ios = new TimerObserver(observer);
+        observer.onSubscribe(ios);
 
         Disposable d = scheduler.scheduleDirect(ios, delay, unit);
 

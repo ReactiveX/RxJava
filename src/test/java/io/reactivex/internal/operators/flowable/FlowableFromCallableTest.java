@@ -58,13 +58,13 @@ public class FlowableFromCallableTest {
 
         Flowable<String> fromCallableFlowable = Flowable.fromCallable(func);
 
-        Subscriber<String> observer = TestHelper.mockSubscriber();
+        Subscriber<String> subscriber = TestHelper.mockSubscriber();
 
-        fromCallableFlowable.subscribe(observer);
+        fromCallableFlowable.subscribe(subscriber);
 
-        verify(observer).onNext("test_value");
-        verify(observer).onComplete();
-        verify(observer, never()).onError(any(Throwable.class));
+        verify(subscriber).onNext("test_value");
+        verify(subscriber).onComplete();
+        verify(subscriber, never()).onError(any(Throwable.class));
     }
 
     @SuppressWarnings("unchecked")
@@ -77,13 +77,13 @@ public class FlowableFromCallableTest {
 
         Flowable<Object> fromCallableFlowable = Flowable.fromCallable(func);
 
-        Subscriber<Object> observer = TestHelper.mockSubscriber();
+        Subscriber<Object> subscriber = TestHelper.mockSubscriber();
 
-        fromCallableFlowable.subscribe(observer);
+        fromCallableFlowable.subscribe(subscriber);
 
-        verify(observer, never()).onNext(any());
-        verify(observer, never()).onComplete();
-        verify(observer).onError(throwable);
+        verify(subscriber, never()).onNext(any());
+        verify(subscriber, never()).onComplete();
+        verify(subscriber).onError(throwable);
     }
 
     @SuppressWarnings("unchecked")
@@ -114,9 +114,9 @@ public class FlowableFromCallableTest {
 
         Flowable<String> fromCallableFlowable = Flowable.fromCallable(func);
 
-        Subscriber<String> observer = TestHelper.mockSubscriber();
+        Subscriber<String> subscriber = TestHelper.mockSubscriber();
 
-        TestSubscriber<String> outer = new TestSubscriber<String>(observer);
+        TestSubscriber<String> outer = new TestSubscriber<String>(subscriber);
 
         fromCallableFlowable
                 .subscribeOn(Schedulers.computation())
@@ -135,8 +135,8 @@ public class FlowableFromCallableTest {
         verify(func).call();
 
         // Observer must not be notified at all
-        verify(observer).onSubscribe(any(Subscription.class));
-        verifyNoMoreInteractions(observer);
+        verify(subscriber).onSubscribe(any(Subscription.class));
+        verifyNoMoreInteractions(subscriber);
     }
 
     @Test
@@ -150,13 +150,13 @@ public class FlowableFromCallableTest {
             }
         });
 
-        Subscriber<Object> observer = TestHelper.mockSubscriber();
+        Subscriber<Object> subscriber = TestHelper.mockSubscriber();
 
-        fromCallableFlowable.subscribe(observer);
+        fromCallableFlowable.subscribe(subscriber);
 
-        verify(observer).onSubscribe(any(Subscription.class));
-        verify(observer).onError(checkedException);
-        verifyNoMoreInteractions(observer);
+        verify(subscriber).onSubscribe(any(Subscription.class));
+        verify(subscriber).onError(checkedException);
+        verifyNoMoreInteractions(subscriber);
     }
 
     @Test

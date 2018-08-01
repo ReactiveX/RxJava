@@ -55,9 +55,9 @@ public class SingleMiscTest {
 
         Single.wrap(new SingleSource<Object>() {
             @Override
-            public void subscribe(SingleObserver<? super Object> s) {
-                s.onSubscribe(Disposables.empty());
-                s.onSuccess(1);
+            public void subscribe(SingleObserver<? super Object> observer) {
+                observer.onSubscribe(Disposables.empty());
+                observer.onSuccess(1);
             }
         })
         .test()

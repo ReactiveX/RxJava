@@ -233,8 +233,8 @@ public class FlowableMaterializeTest {
         volatile Thread t;
 
         @Override
-        public void subscribe(final Subscriber<? super String> observer) {
-            observer.onSubscribe(new BooleanSubscription());
+        public void subscribe(final Subscriber<? super String> subscriber) {
+            subscriber.onSubscribe(new BooleanSubscription());
             t = new Thread(new Runnable() {
 
                 @Override
@@ -247,14 +247,14 @@ public class FlowableMaterializeTest {
                             } catch (Throwable e) {
 
                             }
-                            observer.onError(new NullPointerException());
+                            subscriber.onError(new NullPointerException());
                             return;
                         } else {
-                            observer.onNext(s);
+                            subscriber.onNext(s);
                         }
                     }
                     System.out.println("subscription complete");
-                    observer.onComplete();
+                    subscriber.onComplete();
                 }
 
             });
@@ -290,8 +290,8 @@ public class FlowableMaterializeTest {
     public void doubleOnSubscribe() {
         TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Flowable<Notification<Object>>>() {
             @Override
-            public Flowable<Notification<Object>> apply(Flowable<Object> o) throws Exception {
-                return o.materialize();
+            public Flowable<Notification<Object>> apply(Flowable<Object> f) throws Exception {
+                return f.materialize();
             }
         });
     }

@@ -153,9 +153,9 @@ public class FlowableMapNotificationTest {
         TestHelper.checkDisposed(new Flowable<Integer>() {
             @SuppressWarnings({ "rawtypes", "unchecked" })
             @Override
-            protected void subscribeActual(Subscriber<? super Integer> observer) {
+            protected void subscribeActual(Subscriber<? super Integer> subscriber) {
                 MapNotificationSubscriber mn = new MapNotificationSubscriber(
-                        observer,
+                        subscriber,
                         Functions.justFunction(Flowable.just(1)),
                         Functions.justFunction(Flowable.just(2)),
                         Functions.justCallable(Flowable.just(3))
@@ -169,8 +169,8 @@ public class FlowableMapNotificationTest {
     public void doubleOnSubscribe() {
         TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Flowable<Integer>>() {
             @Override
-            public Flowable<Integer> apply(Flowable<Object> o) throws Exception {
-                return o.flatMap(
+            public Flowable<Integer> apply(Flowable<Object> f) throws Exception {
+                return f.flatMap(
                         Functions.justFunction(Flowable.just(1)),
                         Functions.justFunction(Flowable.just(2)),
                         Functions.justCallable(Flowable.just(3))

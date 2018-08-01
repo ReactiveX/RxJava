@@ -34,26 +34,26 @@ public final class CompletableResumeNext extends Completable {
 
 
     @Override
-    protected void subscribeActual(final CompletableObserver s) {
+    protected void subscribeActual(final CompletableObserver observer) {
 
         final SequentialDisposable sd = new SequentialDisposable();
-        s.onSubscribe(sd);
-        source.subscribe(new ResumeNext(s, sd));
+        observer.onSubscribe(sd);
+        source.subscribe(new ResumeNext(observer, sd));
     }
 
     final class ResumeNext implements CompletableObserver {
 
-        final CompletableObserver s;
+        final CompletableObserver downstream;
         final SequentialDisposable sd;
 
-        ResumeNext(CompletableObserver s, SequentialDisposable sd) {
-            this.s = s;
+        ResumeNext(CompletableObserver observer, SequentialDisposable sd) {
+            this.downstream = observer;
             this.sd = sd;
         }
 
         @Override
         public void onComplete() {
-            s.onComplete();
+            downstream.onComplete();
         }
 
         @Override
@@ -64,14 +64,14 @@ public final class CompletableResumeNext extends Completable {
                 c = errorMapper.apply(e);
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
-                s.onError(new CompositeException(ex, e));
+                downstream.onError(new CompositeException(ex, e));
                 return;
             }
 
             if (c == null) {
                 NullPointerException npe = new NullPointerException("The CompletableConsumable returned is null");
                 npe.initCause(e);
-                s.onError(npe);
+                downstream.onError(npe);
                 return;
             }
 
@@ -87,12 +87,12 @@ public final class CompletableResumeNext extends Completable {
 
             @Override
             public void onComplete() {
-                s.onComplete();
+                downstream.onComplete();
             }
 
             @Override
             public void onError(Throwable e) {
-                s.onError(e);
+                downstream.onError(e);
             }
 
             @Override

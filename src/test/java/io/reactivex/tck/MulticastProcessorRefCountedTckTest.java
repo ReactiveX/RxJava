@@ -26,7 +26,7 @@ import io.reactivex.processors.*;
 public class MulticastProcessorRefCountedTckTest extends IdentityProcessorVerification<Integer> {
 
     public MulticastProcessorRefCountedTckTest() {
-        super(new TestEnvironment(50));
+        super(new TestEnvironment(200));
     }
 
     @Override

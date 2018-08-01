@@ -40,9 +40,9 @@ public final class FlowableMergeWithCompletable<T> extends AbstractFlowableWithU
     }
 
     @Override
-    protected void subscribeActual(Subscriber<? super T> observer) {
-        MergeWithSubscriber<T> parent = new MergeWithSubscriber<T>(observer);
-        observer.onSubscribe(parent);
+    protected void subscribeActual(Subscriber<? super T> subscriber) {
+        MergeWithSubscriber<T> parent = new MergeWithSubscriber<T>(subscriber);
+        subscriber.onSubscribe(parent);
         source.subscribe(parent);
         other.subscribe(parent.otherObserver);
     }

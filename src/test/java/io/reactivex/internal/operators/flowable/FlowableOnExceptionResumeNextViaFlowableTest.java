@@ -36,10 +36,10 @@ public class FlowableOnExceptionResumeNextViaFlowableTest {
         TestObservable f = new TestObservable("one", "EXCEPTION", "two", "three");
         Flowable<String> w = Flowable.unsafeCreate(f);
         Flowable<String> resume = Flowable.just("twoResume", "threeResume");
-        Flowable<String> observable = w.onExceptionResumeNext(resume);
+        Flowable<String> flowable = w.onExceptionResumeNext(resume);
 
-        Subscriber<String> observer = TestHelper.mockSubscriber();
-        observable.subscribe(observer);
+        Subscriber<String> subscriber = TestHelper.mockSubscriber();
+        flowable.subscribe(subscriber);
 
         try {
             f.t.join();
@@ -47,15 +47,15 @@ public class FlowableOnExceptionResumeNextViaFlowableTest {
             fail(e.getMessage());
         }
 
-        verify(observer).onSubscribe((Subscription)any());
-        verify(observer, times(1)).onNext("one");
-        verify(observer, Mockito.never()).onNext("two");
-        verify(observer, Mockito.never()).onNext("three");
-        verify(observer, times(1)).onNext("twoResume");
-        verify(observer, times(1)).onNext("threeResume");
-        verify(observer, Mockito.never()).onError(any(Throwable.class));
-        verify(observer, times(1)).onComplete();
-        verifyNoMoreInteractions(observer);
+        verify(subscriber).onSubscribe((Subscription)any());
+        verify(subscriber, times(1)).onNext("one");
+        verify(subscriber, Mockito.never()).onNext("two");
+        verify(subscriber, Mockito.never()).onNext("three");
+        verify(subscriber, times(1)).onNext("twoResume");
+        verify(subscriber, times(1)).onNext("threeResume");
+        verify(subscriber, Mockito.never()).onError(any(Throwable.class));
+        verify(subscriber, times(1)).onComplete();
+        verifyNoMoreInteractions(subscriber);
     }
 
     @Test
@@ -64,10 +64,10 @@ public class FlowableOnExceptionResumeNextViaFlowableTest {
         TestObservable f = new TestObservable("one", "RUNTIMEEXCEPTION", "two", "three");
         Flowable<String> w = Flowable.unsafeCreate(f);
         Flowable<String> resume = Flowable.just("twoResume", "threeResume");
-        Flowable<String> observable = w.onExceptionResumeNext(resume);
+        Flowable<String> flowable = w.onExceptionResumeNext(resume);
 
-        Subscriber<String> observer = TestHelper.mockSubscriber();
-        observable.subscribe(observer);
+        Subscriber<String> subscriber = TestHelper.mockSubscriber();
+        flowable.subscribe(subscriber);
 
         try {
             f.t.join();
@@ -75,15 +75,15 @@ public class FlowableOnExceptionResumeNextViaFlowableTest {
             fail(e.getMessage());
         }
 
-        verify(observer).onSubscribe((Subscription)any());
-        verify(observer, times(1)).onNext("one");
-        verify(observer, Mockito.never()).onNext("two");
-        verify(observer, Mockito.never()).onNext("three");
-        verify(observer, times(1)).onNext("twoResume");
-        verify(observer, times(1)).onNext("threeResume");
-        verify(observer, Mockito.never()).onError(any(Throwable.class));
-        verify(observer, times(1)).onComplete();
-        verifyNoMoreInteractions(observer);
+        verify(subscriber).onSubscribe((Subscription)any());
+        verify(subscriber, times(1)).onNext("one");
+        verify(subscriber, Mockito.never()).onNext("two");
+        verify(subscriber, Mockito.never()).onNext("three");
+        verify(subscriber, times(1)).onNext("twoResume");
+        verify(subscriber, times(1)).onNext("threeResume");
+        verify(subscriber, Mockito.never()).onError(any(Throwable.class));
+        verify(subscriber, times(1)).onComplete();
+        verifyNoMoreInteractions(subscriber);
     }
 
     @Test
@@ -92,10 +92,10 @@ public class FlowableOnExceptionResumeNextViaFlowableTest {
         TestObservable f = new TestObservable("one", "THROWABLE", "two", "three");
         Flowable<String> w = Flowable.unsafeCreate(f);
         Flowable<String> resume = Flowable.just("twoResume", "threeResume");
-        Flowable<String> observable = w.onExceptionResumeNext(resume);
+        Flowable<String> flowable = w.onExceptionResumeNext(resume);
 
-        Subscriber<String> observer = TestHelper.mockSubscriber();
-        observable.subscribe(observer);
+        Subscriber<String> subscriber = TestHelper.mockSubscriber();
+        flowable.subscribe(subscriber);
 
         try {
             f.t.join();
@@ -103,15 +103,15 @@ public class FlowableOnExceptionResumeNextViaFlowableTest {
             fail(e.getMessage());
         }
 
-        verify(observer).onSubscribe((Subscription)any());
-        verify(observer, times(1)).onNext("one");
-        verify(observer, never()).onNext("two");
-        verify(observer, never()).onNext("three");
-        verify(observer, never()).onNext("twoResume");
-        verify(observer, never()).onNext("threeResume");
-        verify(observer, times(1)).onError(any(Throwable.class));
-        verify(observer, never()).onComplete();
-        verifyNoMoreInteractions(observer);
+        verify(subscriber).onSubscribe((Subscription)any());
+        verify(subscriber, times(1)).onNext("one");
+        verify(subscriber, never()).onNext("two");
+        verify(subscriber, never()).onNext("three");
+        verify(subscriber, never()).onNext("twoResume");
+        verify(subscriber, never()).onNext("threeResume");
+        verify(subscriber, times(1)).onError(any(Throwable.class));
+        verify(subscriber, never()).onComplete();
+        verifyNoMoreInteractions(subscriber);
     }
 
     @Test
@@ -120,10 +120,10 @@ public class FlowableOnExceptionResumeNextViaFlowableTest {
         TestObservable f = new TestObservable("one", "ERROR", "two", "three");
         Flowable<String> w = Flowable.unsafeCreate(f);
         Flowable<String> resume = Flowable.just("twoResume", "threeResume");
-        Flowable<String> observable = w.onExceptionResumeNext(resume);
+        Flowable<String> flowable = w.onExceptionResumeNext(resume);
 
-        Subscriber<String> observer = TestHelper.mockSubscriber();
-        observable.subscribe(observer);
+        Subscriber<String> subscriber = TestHelper.mockSubscriber();
+        flowable.subscribe(subscriber);
 
         try {
             f.t.join();
@@ -131,15 +131,15 @@ public class FlowableOnExceptionResumeNextViaFlowableTest {
             fail(e.getMessage());
         }
 
-        verify(observer).onSubscribe((Subscription)any());
-        verify(observer, times(1)).onNext("one");
-        verify(observer, never()).onNext("two");
-        verify(observer, never()).onNext("three");
-        verify(observer, never()).onNext("twoResume");
-        verify(observer, never()).onNext("threeResume");
-        verify(observer, times(1)).onError(any(Throwable.class));
-        verify(observer, never()).onComplete();
-        verifyNoMoreInteractions(observer);
+        verify(subscriber).onSubscribe((Subscription)any());
+        verify(subscriber, times(1)).onNext("one");
+        verify(subscriber, never()).onNext("two");
+        verify(subscriber, never()).onNext("three");
+        verify(subscriber, never()).onNext("twoResume");
+        verify(subscriber, never()).onNext("threeResume");
+        verify(subscriber, times(1)).onError(any(Throwable.class));
+        verify(subscriber, never()).onComplete();
+        verifyNoMoreInteractions(subscriber);
     }
 
     @Test
@@ -163,10 +163,10 @@ public class FlowableOnExceptionResumeNextViaFlowableTest {
             }
         });
 
-        Flowable<String> observable = w.onExceptionResumeNext(resume);
+        Flowable<String> flowable = w.onExceptionResumeNext(resume);
 
-        Subscriber<String> observer = TestHelper.mockSubscriber();
-        observable.subscribe(observer);
+        Subscriber<String> subscriber = TestHelper.mockSubscriber();
+        flowable.subscribe(subscriber);
 
         try {
             // if the thread gets started (which it shouldn't if it's working correctly)
@@ -177,13 +177,13 @@ public class FlowableOnExceptionResumeNextViaFlowableTest {
             fail(e.getMessage());
         }
 
-        verify(observer, times(1)).onNext("one");
-        verify(observer, never()).onNext("two");
-        verify(observer, never()).onNext("three");
-        verify(observer, times(1)).onNext("twoResume");
-        verify(observer, times(1)).onNext("threeResume");
-        verify(observer, Mockito.never()).onError(any(Throwable.class));
-        verify(observer, times(1)).onComplete();
+        verify(subscriber, times(1)).onNext("one");
+        verify(subscriber, never()).onNext("two");
+        verify(subscriber, never()).onNext("three");
+        verify(subscriber, times(1)).onNext("twoResume");
+        verify(subscriber, times(1)).onNext("threeResume");
+        verify(subscriber, Mockito.never()).onError(any(Throwable.class));
+        verify(subscriber, times(1)).onComplete();
     }
 
 
@@ -226,8 +226,8 @@ public class FlowableOnExceptionResumeNextViaFlowableTest {
         }
 
         @Override
-        public void subscribe(final Subscriber<? super String> observer) {
-            observer.onSubscribe(new BooleanSubscription());
+        public void subscribe(final Subscriber<? super String> subscriber) {
+            subscriber.onSubscribe(new BooleanSubscription());
             System.out.println("TestObservable subscribed to ...");
             t = new Thread(new Runnable() {
 
@@ -246,13 +246,13 @@ public class FlowableOnExceptionResumeNextViaFlowableTest {
                                 throw new Throwable("Forced Throwable");
                             }
                             System.out.println("TestObservable onNext: " + s);
-                            observer.onNext(s);
+                            subscriber.onNext(s);
                         }
                         System.out.println("TestObservable onComplete");
-                        observer.onComplete();
+                        subscriber.onComplete();
                     } catch (Throwable e) {
                         System.out.println("TestObservable onError: " + e);
-                        observer.onError(e);
+                        subscriber.onError(e);
                     }
                 }
 

@@ -42,9 +42,9 @@ public class FlowableRepeatTest {
         int value = Flowable.unsafeCreate(new Publisher<Integer>() {
 
             @Override
-            public void subscribe(final Subscriber<? super Integer> o) {
-                o.onNext(count.incrementAndGet());
-                o.onComplete();
+            public void subscribe(final Subscriber<? super Integer> subscriber) {
+                subscriber.onNext(count.incrementAndGet());
+                subscriber.onComplete();
             }
         }).repeat().subscribeOn(Schedulers.computation())
         .take(num).blockingLast();
@@ -100,58 +100,58 @@ public class FlowableRepeatTest {
 
     @Test(timeout = 2000)
     public void testRepeatAndTake() {
-        Subscriber<Object> o = TestHelper.mockSubscriber();
+        Subscriber<Object> subscriber = TestHelper.mockSubscriber();
 
-        Flowable.just(1).repeat().take(10).subscribe(o);
+        Flowable.just(1).repeat().take(10).subscribe(subscriber);
 
-        verify(o, times(10)).onNext(1);
-        verify(o).onComplete();
-        verify(o, never()).onError(any(Throwable.class));
+        verify(subscriber, times(10)).onNext(1);
+        verify(subscriber).onComplete();
+        verify(subscriber, never()).onError(any(Throwable.class));
     }
 
     @Test(timeout = 2000)
     public void testRepeatLimited() {
-        Subscriber<Object> o = TestHelper.mockSubscriber();
+        Subscriber<Object> subscriber = TestHelper.mockSubscriber();
 
-        Flowable.just(1).repeat(10).subscribe(o);
+        Flowable.just(1).repeat(10).subscribe(subscriber);
 
-        verify(o, times(10)).onNext(1);
-        verify(o).onComplete();
-        verify(o, never()).onError(any(Throwable.class));
+        verify(subscriber, times(10)).onNext(1);
+        verify(subscriber).onComplete();
+        verify(subscriber, never()).onError(any(Throwable.class));
     }
 
     @Test(timeout = 2000)
     public void testRepeatError() {
-        Subscriber<Object> o = TestHelper.mockSubscriber();
+        Subscriber<Object> subscriber = TestHelper.mockSubscriber();
 
-        Flowable.error(new TestException()).repeat(10).subscribe(o);
+        Flowable.error(new TestException()).repeat(10).subscribe(subscriber);
 
-        verify(o).onError(any(TestException.class));
-        verify(o, never()).onNext(any());
-        verify(o, never()).onComplete();
+        verify(subscriber).onError(any(TestException.class));
+        verify(subscriber, never()).onNext(any());
+        verify(subscriber, never()).onComplete();
 
     }
 
     @Test(timeout = 2000)
     public void testRepeatZero() {
-        Subscriber<Object> o = TestHelper.mockSubscriber();
+        Subscriber<Object> subscriber = TestHelper.mockSubscriber();
 
-        Flowable.just(1).repeat(0).subscribe(o);
+        Flowable.just(1).repeat(0).subscribe(subscriber);
 
-        verify(o).onComplete();
-        verify(o, never()).onNext(any());
-        verify(o, never()).onError(any(Throwable.class));
+        verify(subscriber).onComplete();
+        verify(subscriber, never()).onNext(any());
+        verify(subscriber, never()).onError(any(Throwable.class));
     }
 
     @Test(timeout = 2000)
     public void testRepeatOne() {
-        Subscriber<Object> o = TestHelper.mockSubscriber();
+        Subscriber<Object> subscriber = TestHelper.mockSubscriber();
 
-        Flowable.just(1).repeat(1).subscribe(o);
+        Flowable.just(1).repeat(1).subscribe(subscriber);
 
-        verify(o).onComplete();
-        verify(o, times(1)).onNext(any());
-        verify(o, never()).onError(any(Throwable.class));
+        verify(subscriber).onComplete();
+        verify(subscriber, times(1)).onNext(any());
+        verify(subscriber, never()).onError(any(Throwable.class));
     }
 
     /** Issue #2587. */
@@ -216,8 +216,8 @@ public class FlowableRepeatTest {
 
         Flowable.just(1).repeatWhen((Function)new Function<Flowable, Flowable>() {
             @Override
-            public Flowable apply(Flowable o) {
-                return o.take(2);
+            public Flowable apply(Flowable f) {
+                return f.take(2);
             }
         }).subscribe(ts);
 
@@ -235,8 +235,8 @@ public class FlowableRepeatTest {
         Flowable.just(1).subscribeOn(Schedulers.trampoline())
         .repeatWhen((Function)new Function<Flowable, Flowable>() {
             @Override
-            public Flowable apply(Flowable o) {
-                return o.take(2);
+            public Flowable apply(Flowable f) {
+                return f.take(2);
             }
         }).subscribe(ts);
 
@@ -323,7 +323,7 @@ public class FlowableRepeatTest {
 
     @Test
     public void shouldDisposeInnerObservable() {
-      final PublishProcessor<Object> subject = PublishProcessor.create();
+      final PublishProcessor<Object> processor = PublishProcessor.create();
       final Disposable disposable = Flowable.just("Leak")
           .repeatWhen(new Function<Flowable<Object>, Flowable<Object>>() {
             @Override
@@ -331,16 +331,16 @@ public class FlowableRepeatTest {
                 return completions.switchMap(new Function<Object, Flowable<Object>>() {
                     @Override
                     public Flowable<Object> apply(Object ignore) throws Exception {
-                        return subject;
+                        return processor;
                     }
                 });
             }
         })
           .subscribe();
 
-      assertTrue(subject.hasSubscribers());
+      assertTrue(processor.hasSubscribers());
       disposable.dispose();
-      assertFalse(subject.hasSubscribers());
+      assertFalse(processor.hasSubscribers());
     }
 
     @Test

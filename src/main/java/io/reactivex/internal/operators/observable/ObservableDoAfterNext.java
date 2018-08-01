@@ -34,8 +34,8 @@ public final class ObservableDoAfterNext<T> extends AbstractObservableWithUpstre
     }
 
     @Override
-    protected void subscribeActual(Observer<? super T> s) {
-        source.subscribe(new DoAfterObserver<T>(s, onAfterNext));
+    protected void subscribeActual(Observer<? super T> observer) {
+        source.subscribe(new DoAfterObserver<T>(observer, onAfterNext));
     }
 
     static final class DoAfterObserver<T> extends BasicFuseableObserver<T, T> {

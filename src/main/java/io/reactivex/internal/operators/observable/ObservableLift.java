@@ -37,10 +37,10 @@ public final class ObservableLift<R, T> extends AbstractObservableWithUpstream<T
     }
 
     @Override
-    public void subscribeActual(Observer<? super R> s) {
-        Observer<? super T> observer;
+    public void subscribeActual(Observer<? super R> observer) {
+        Observer<? super T> liftedObserver;
         try {
-            observer = ObjectHelper.requireNonNull(operator.apply(s), "Operator " + operator + " returned a null Observer");
+            liftedObserver = ObjectHelper.requireNonNull(operator.apply(observer), "Operator " + operator + " returned a null Observer");
         } catch (NullPointerException e) { // NOPMD
             throw e;
         } catch (Throwable e) {
@@ -54,6 +54,6 @@ public final class ObservableLift<R, T> extends AbstractObservableWithUpstream<T
             throw npe;
         }
 
-        source.subscribe(observer);
+        source.subscribe(liftedObserver);
     }
 }

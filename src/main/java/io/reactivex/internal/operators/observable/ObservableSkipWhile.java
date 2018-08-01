@@ -27,8 +27,8 @@ public final class ObservableSkipWhile<T> extends AbstractObservableWithUpstream
     }
 
     @Override
-    public void subscribeActual(Observer<? super T> s) {
-        source.subscribe(new SkipWhileObserver<T>(s, predicate));
+    public void subscribeActual(Observer<? super T> observer) {
+        source.subscribe(new SkipWhileObserver<T>(observer, predicate));
     }
 
     static final class SkipWhileObserver<T> implements Observer<T>, Disposable {

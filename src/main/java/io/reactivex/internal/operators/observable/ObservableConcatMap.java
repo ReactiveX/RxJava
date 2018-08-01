@@ -41,17 +41,17 @@ public final class ObservableConcatMap<T, U> extends AbstractObservableWithUpstr
         this.bufferSize = Math.max(8, bufferSize);
     }
     @Override
-    public void subscribeActual(Observer<? super U> s) {
+    public void subscribeActual(Observer<? super U> observer) {
 
-        if (ObservableScalarXMap.tryScalarXMapSubscribe(source, s, mapper)) {
+        if (ObservableScalarXMap.tryScalarXMapSubscribe(source, observer, mapper)) {
             return;
         }
 
         if (delayErrors == ErrorMode.IMMEDIATE) {
-            SerializedObserver<U> serial = new SerializedObserver<U>(s);
+            SerializedObserver<U> serial = new SerializedObserver<U>(observer);
             source.subscribe(new SourceObserver<T, U>(serial, mapper, bufferSize));
         } else {
-            source.subscribe(new ConcatMapDelayErrorObserver<T, U>(s, mapper, bufferSize, delayErrors == ErrorMode.END));
+            source.subscribe(new ConcatMapDelayErrorObserver<T, U>(observer, mapper, bufferSize, delayErrors == ErrorMode.END));
         }
     }
 

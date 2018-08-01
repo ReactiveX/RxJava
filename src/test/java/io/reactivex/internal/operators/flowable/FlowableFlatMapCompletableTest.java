@@ -399,8 +399,8 @@ public class FlowableFlatMapCompletableTest {
     public void badSource() {
         TestHelper.checkBadSourceFlowable(new Function<Flowable<Integer>, Object>() {
             @Override
-            public Object apply(Flowable<Integer> o) throws Exception {
-                return o.flatMapCompletable(new Function<Integer, CompletableSource>() {
+            public Object apply(Flowable<Integer> f) throws Exception {
+                return f.flatMapCompletable(new Function<Integer, CompletableSource>() {
                     @Override
                     public CompletableSource apply(Integer v) throws Exception {
                         return Completable.complete();
@@ -455,14 +455,14 @@ public class FlowableFlatMapCompletableTest {
             public CompletableSource apply(Integer v) throws Exception {
                 return new Completable() {
                     @Override
-                    protected void subscribeActual(CompletableObserver s) {
-                        s.onSubscribe(Disposables.empty());
+                    protected void subscribeActual(CompletableObserver observer) {
+                        observer.onSubscribe(Disposables.empty());
 
-                        assertFalse(((Disposable)s).isDisposed());
+                        assertFalse(((Disposable)observer).isDisposed());
 
-                        ((Disposable)s).dispose();
+                        ((Disposable)observer).dispose();
 
-                        assertTrue(((Disposable)s).isDisposed());
+                        assertTrue(((Disposable)observer).isDisposed());
                     }
                 };
             }
@@ -475,8 +475,8 @@ public class FlowableFlatMapCompletableTest {
     public void badSourceFlowable() {
         TestHelper.checkBadSourceFlowable(new Function<Flowable<Integer>, Object>() {
             @Override
-            public Object apply(Flowable<Integer> o) throws Exception {
-                return o.flatMapCompletable(new Function<Integer, CompletableSource>() {
+            public Object apply(Flowable<Integer> f) throws Exception {
+                return f.flatMapCompletable(new Function<Integer, CompletableSource>() {
                     @Override
                     public CompletableSource apply(Integer v) throws Exception {
                         return Completable.complete();
@@ -494,14 +494,14 @@ public class FlowableFlatMapCompletableTest {
             public CompletableSource apply(Integer v) throws Exception {
                 return new Completable() {
                     @Override
-                    protected void subscribeActual(CompletableObserver s) {
-                        s.onSubscribe(Disposables.empty());
+                    protected void subscribeActual(CompletableObserver observer) {
+                        observer.onSubscribe(Disposables.empty());
 
-                        assertFalse(((Disposable)s).isDisposed());
+                        assertFalse(((Disposable)observer).isDisposed());
 
-                        ((Disposable)s).dispose();
+                        ((Disposable)observer).dispose();
 
-                        assertTrue(((Disposable)s).isDisposed());
+                        assertTrue(((Disposable)observer).isDisposed());
                     }
                 };
             }

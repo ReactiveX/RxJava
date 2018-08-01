@@ -588,11 +588,11 @@ public class FlowableConcatMapEagerTest {
 
     @Test
     public void testReentrantWork() {
-        final PublishProcessor<Integer> subject = PublishProcessor.create();
+        final PublishProcessor<Integer> processor = PublishProcessor.create();
 
         final AtomicBoolean once = new AtomicBoolean();
 
-        subject.concatMapEager(new Function<Integer, Flowable<Integer>>() {
+        processor.concatMapEager(new Function<Integer, Flowable<Integer>>() {
             @Override
             public Flowable<Integer> apply(Integer t) {
                 return Flowable.just(t);
@@ -602,13 +602,13 @@ public class FlowableConcatMapEagerTest {
             @Override
             public void accept(Integer t) {
                 if (once.compareAndSet(false, true)) {
-                    subject.onNext(2);
+                    processor.onNext(2);
                 }
             }
         })
         .subscribe(ts);
 
-        subject.onNext(1);
+        processor.onNext(1);
 
         ts.assertNoErrors();
         ts.assertNotComplete();
@@ -1051,8 +1051,8 @@ public class FlowableConcatMapEagerTest {
     public void doubleOnSubscribe() {
         TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Flowable<Object>>() {
             @Override
-            public Flowable<Object> apply(Flowable<Object> o) throws Exception {
-                return o.concatMapEager(new Function<Object, Flowable<Object>>() {
+            public Flowable<Object> apply(Flowable<Object> f) throws Exception {
+                return f.concatMapEager(new Function<Object, Flowable<Object>>() {
                     @Override
                     public Flowable<Object> apply(Object v) throws Exception {
                         return Flowable.just(v);

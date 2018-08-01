@@ -232,14 +232,14 @@ public class FlowableDistinctTest {
         try {
             new Flowable<Integer>() {
                 @Override
-                protected void subscribeActual(Subscriber<? super Integer> observer) {
-                    observer.onSubscribe(new BooleanSubscription());
+                protected void subscribeActual(Subscriber<? super Integer> subscriber) {
+                    subscriber.onSubscribe(new BooleanSubscription());
 
-                    observer.onNext(1);
-                    observer.onComplete();
-                    observer.onNext(2);
-                    observer.onError(new TestException());
-                    observer.onComplete();
+                    subscriber.onNext(1);
+                    subscriber.onComplete();
+                    subscriber.onNext(2);
+                    subscriber.onError(new TestException());
+                    subscriber.onComplete();
                 }
             }
             .distinct()

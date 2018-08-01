@@ -24,6 +24,7 @@ import io.reactivex.*;
 import io.reactivex.disposables.*;
 import io.reactivex.exceptions.*;
 import io.reactivex.functions.*;
+import io.reactivex.internal.functions.Functions;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.subjects.PublishSubject;
@@ -410,14 +411,14 @@ public class CompletableUsingTest {
                 public CompletableSource apply(Object v) throws Exception {
                     return Completable.wrap(new CompletableSource() {
                         @Override
-                        public void subscribe(CompletableObserver s) {
+                        public void subscribe(CompletableObserver observer) {
                             Disposable d1 = Disposables.empty();
 
-                            s.onSubscribe(d1);
+                            observer.onSubscribe(d1);
 
                             Disposable d2 = Disposables.empty();
 
-                            s.onSubscribe(d2);
+                            observer.onSubscribe(d2);
 
                             assertFalse(d1.isDisposed());
 
@@ -482,44 +483,49 @@ public class CompletableUsingTest {
 
     @Test
     public void errorDisposeRace() {
-        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
+        RxJavaPlugins.setErrorHandler(Functions.emptyConsumer());
+        try {
+            for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
 
-            final PublishSubject<Integer> ps = PublishSubject.create();
+                final PublishSubject<Integer> ps = PublishSubject.create();
 
-            final TestObserver<Void> to = Completable.using(new Callable<Object>() {
-                @Override
-                public Object call() throws Exception {
-                    return 1;
-                }
-            }, new Function<Object, CompletableSource>() {
-                @Override
-                public CompletableSource apply(Object v) throws Exception {
-                    return ps.ignoreElements();
-                }
-            }, new Consumer<Object>() {
-                @Override
-                public void accept(Object d) throws Exception {
-                }
-            }, true)
-            .test();
+                final TestObserver<Void> to = Completable.using(new Callable<Object>() {
+                    @Override
+                    public Object call() throws Exception {
+                        return 1;
+                    }
+                }, new Function<Object, CompletableSource>() {
+                    @Override
+                    public CompletableSource apply(Object v) throws Exception {
+                        return ps.ignoreElements();
+                    }
+                }, new Consumer<Object>() {
+                    @Override
+                    public void accept(Object d) throws Exception {
+                    }
+                }, true)
+                .test();
 
-            final TestException ex = new TestException();
+                final TestException ex = new TestException();
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    to.cancel();
-                }
-            };
+                Runnable r1 = new Runnable() {
+                    @Override
+                    public void run() {
+                        to.cancel();
+                    }
+                };
 
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    ps.onError(ex);
-                }
-            };
+                Runnable r2 = new Runnable() {
+                    @Override
+                    public void run() {
+                        ps.onError(ex);
+                    }
+                };
 
-            TestHelper.race(r1, r2);
+                TestHelper.race(r1, r2);
+            }
+        } finally {
+            RxJavaPlugins.reset();
         }
     }
 

@@ -40,290 +40,290 @@ public class FlowableSwitchTest {
 
     private TestScheduler scheduler;
     private Scheduler.Worker innerScheduler;
-    private Subscriber<String> observer;
+    private Subscriber<String> subscriber;
 
     @Before
     public void before() {
         scheduler = new TestScheduler();
         innerScheduler = scheduler.createWorker();
-        observer = TestHelper.mockSubscriber();
+        subscriber = TestHelper.mockSubscriber();
     }
 
     @Test
     public void testSwitchWhenOuterCompleteBeforeInner() {
         Flowable<Flowable<String>> source = Flowable.unsafeCreate(new Publisher<Flowable<String>>() {
             @Override
-            public void subscribe(Subscriber<? super Flowable<String>> observer) {
-                observer.onSubscribe(new BooleanSubscription());
-                publishNext(observer, 50, Flowable.unsafeCreate(new Publisher<String>() {
+            public void subscribe(Subscriber<? super Flowable<String>> subscriber) {
+                subscriber.onSubscribe(new BooleanSubscription());
+                publishNext(subscriber, 50, Flowable.unsafeCreate(new Publisher<String>() {
                     @Override
-                    public void subscribe(Subscriber<? super String> observer) {
-                        observer.onSubscribe(new BooleanSubscription());
-                        publishNext(observer, 70, "one");
-                        publishNext(observer, 100, "two");
-                        publishCompleted(observer, 200);
+                    public void subscribe(Subscriber<? super String> subscriber) {
+                        subscriber.onSubscribe(new BooleanSubscription());
+                        publishNext(subscriber, 70, "one");
+                        publishNext(subscriber, 100, "two");
+                        publishCompleted(subscriber, 200);
                     }
                 }));
-                publishCompleted(observer, 60);
+                publishCompleted(subscriber, 60);
             }
         });
 
         Flowable<String> sampled = Flowable.switchOnNext(source);
-        sampled.subscribe(observer);
+        sampled.subscribe(subscriber);
 
-        InOrder inOrder = inOrder(observer);
+        InOrder inOrder = inOrder(subscriber);
 
         scheduler.advanceTimeTo(350, TimeUnit.MILLISECONDS);
-        inOrder.verify(observer, times(2)).onNext(anyString());
-        inOrder.verify(observer, times(1)).onComplete();
+        inOrder.verify(subscriber, times(2)).onNext(anyString());
+        inOrder.verify(subscriber, times(1)).onComplete();
     }
 
     @Test
     public void testSwitchWhenInnerCompleteBeforeOuter() {
         Flowable<Flowable<String>> source = Flowable.unsafeCreate(new Publisher<Flowable<String>>() {
             @Override
-            public void subscribe(Subscriber<? super Flowable<String>> observer) {
-                observer.onSubscribe(new BooleanSubscription());
-                publishNext(observer, 10, Flowable.unsafeCreate(new Publisher<String>() {
+            public void subscribe(Subscriber<? super Flowable<String>> subscriber) {
+                subscriber.onSubscribe(new BooleanSubscription());
+                publishNext(subscriber, 10, Flowable.unsafeCreate(new Publisher<String>() {
                     @Override
-                    public void subscribe(Subscriber<? super String> observer) {
-                        observer.onSubscribe(new BooleanSubscription());
-                        publishNext(observer, 0, "one");
-                        publishNext(observer, 10, "two");
-                        publishCompleted(observer, 20);
+                    public void subscribe(Subscriber<? super String> subscriber) {
+                        subscriber.onSubscribe(new BooleanSubscription());
+                        publishNext(subscriber, 0, "one");
+                        publishNext(subscriber, 10, "two");
+                        publishCompleted(subscriber, 20);
                     }
                 }));
 
-                publishNext(observer, 100, Flowable.unsafeCreate(new Publisher<String>() {
+                publishNext(subscriber, 100, Flowable.unsafeCreate(new Publisher<String>() {
                     @Override
-                    public void subscribe(Subscriber<? super String> observer) {
-                        observer.onSubscribe(new BooleanSubscription());
-                        publishNext(observer, 0, "three");
-                        publishNext(observer, 10, "four");
-                        publishCompleted(observer, 20);
+                    public void subscribe(Subscriber<? super String> subscriber) {
+                        subscriber.onSubscribe(new BooleanSubscription());
+                        publishNext(subscriber, 0, "three");
+                        publishNext(subscriber, 10, "four");
+                        publishCompleted(subscriber, 20);
                     }
                 }));
-                publishCompleted(observer, 200);
+                publishCompleted(subscriber, 200);
             }
         });
 
         Flowable<String> sampled = Flowable.switchOnNext(source);
-        sampled.subscribe(observer);
+        sampled.subscribe(subscriber);
 
-        InOrder inOrder = inOrder(observer);
+        InOrder inOrder = inOrder(subscriber);
 
         scheduler.advanceTimeTo(150, TimeUnit.MILLISECONDS);
-        inOrder.verify(observer, never()).onComplete();
-        inOrder.verify(observer, times(1)).onNext("one");
-        inOrder.verify(observer, times(1)).onNext("two");
-        inOrder.verify(observer, times(1)).onNext("three");
-        inOrder.verify(observer, times(1)).onNext("four");
+        inOrder.verify(subscriber, never()).onComplete();
+        inOrder.verify(subscriber, times(1)).onNext("one");
+        inOrder.verify(subscriber, times(1)).onNext("two");
+        inOrder.verify(subscriber, times(1)).onNext("three");
+        inOrder.verify(subscriber, times(1)).onNext("four");
 
         scheduler.advanceTimeTo(250, TimeUnit.MILLISECONDS);
-        inOrder.verify(observer, never()).onNext(anyString());
-        inOrder.verify(observer, times(1)).onComplete();
+        inOrder.verify(subscriber, never()).onNext(anyString());
+        inOrder.verify(subscriber, times(1)).onComplete();
     }
 
     @Test
     public void testSwitchWithComplete() {
         Flowable<Flowable<String>> source = Flowable.unsafeCreate(new Publisher<Flowable<String>>() {
             @Override
-            public void subscribe(Subscriber<? super Flowable<String>> observer) {
-                observer.onSubscribe(new BooleanSubscription());
-                publishNext(observer, 50, Flowable.unsafeCreate(new Publisher<String>() {
+            public void subscribe(Subscriber<? super Flowable<String>> subscriber) {
+                subscriber.onSubscribe(new BooleanSubscription());
+                publishNext(subscriber, 50, Flowable.unsafeCreate(new Publisher<String>() {
                     @Override
-                    public void subscribe(final Subscriber<? super String> observer) {
-                        observer.onSubscribe(new BooleanSubscription());
-                        publishNext(observer, 60, "one");
-                        publishNext(observer, 100, "two");
+                    public void subscribe(final Subscriber<? super String> subscriber) {
+                        subscriber.onSubscribe(new BooleanSubscription());
+                        publishNext(subscriber, 60, "one");
+                        publishNext(subscriber, 100, "two");
                     }
                 }));
 
-                publishNext(observer, 200, Flowable.unsafeCreate(new Publisher<String>() {
+                publishNext(subscriber, 200, Flowable.unsafeCreate(new Publisher<String>() {
                     @Override
-                    public void subscribe(final Subscriber<? super String> observer) {
-                        observer.onSubscribe(new BooleanSubscription());
-                        publishNext(observer, 0, "three");
-                        publishNext(observer, 100, "four");
+                    public void subscribe(final Subscriber<? super String> subscriber) {
+                        subscriber.onSubscribe(new BooleanSubscription());
+                        publishNext(subscriber, 0, "three");
+                        publishNext(subscriber, 100, "four");
                     }
                 }));
 
-                publishCompleted(observer, 250);
+                publishCompleted(subscriber, 250);
             }
         });
 
         Flowable<String> sampled = Flowable.switchOnNext(source);
-        sampled.subscribe(observer);
+        sampled.subscribe(subscriber);
 
-        InOrder inOrder = inOrder(observer);
+        InOrder inOrder = inOrder(subscriber);
 
         scheduler.advanceTimeTo(90, TimeUnit.MILLISECONDS);
-        inOrder.verify(observer, never()).onNext(anyString());
-        verify(observer, never()).onComplete();
-        verify(observer, never()).onError(any(Throwable.class));
+        inOrder.verify(subscriber, never()).onNext(anyString());
+        verify(subscriber, never()).onComplete();
+        verify(subscriber, never()).onError(any(Throwable.class));
 
         scheduler.advanceTimeTo(125, TimeUnit.MILLISECONDS);
-        inOrder.verify(observer, times(1)).onNext("one");
-        verify(observer, never()).onComplete();
-        verify(observer, never()).onError(any(Throwable.class));
+        inOrder.verify(subscriber, times(1)).onNext("one");
+        verify(subscriber, never()).onComplete();
+        verify(subscriber, never()).onError(any(Throwable.class));
 
         scheduler.advanceTimeTo(175, TimeUnit.MILLISECONDS);
-        inOrder.verify(observer, times(1)).onNext("two");
-        verify(observer, never()).onComplete();
-        verify(observer, never()).onError(any(Throwable.class));
+        inOrder.verify(subscriber, times(1)).onNext("two");
+        verify(subscriber, never()).onComplete();
+        verify(subscriber, never()).onError(any(Throwable.class));
 
         scheduler.advanceTimeTo(225, TimeUnit.MILLISECONDS);
-        inOrder.verify(observer, times(1)).onNext("three");
-        verify(observer, never()).onComplete();
-        verify(observer, never()).onError(any(Throwable.class));
+        inOrder.verify(subscriber, times(1)).onNext("three");
+        verify(subscriber, never()).onComplete();
+        verify(subscriber, never()).onError(any(Throwable.class));
 
         scheduler.advanceTimeTo(350, TimeUnit.MILLISECONDS);
-        inOrder.verify(observer, times(1)).onNext("four");
-        verify(observer, never()).onComplete();
-        verify(observer, never()).onError(any(Throwable.class));
+        inOrder.verify(subscriber, times(1)).onNext("four");
+        verify(subscriber, never()).onComplete();
+        verify(subscriber, never()).onError(any(Throwable.class));
     }
 
     @Test
     public void testSwitchWithError() {
         Flowable<Flowable<String>> source = Flowable.unsafeCreate(new Publisher<Flowable<String>>() {
             @Override
-            public void subscribe(Subscriber<? super Flowable<String>> observer) {
-                observer.onSubscribe(new BooleanSubscription());
-                publishNext(observer, 50, Flowable.unsafeCreate(new Publisher<String>() {
+            public void subscribe(Subscriber<? super Flowable<String>> subscriber) {
+                subscriber.onSubscribe(new BooleanSubscription());
+                publishNext(subscriber, 50, Flowable.unsafeCreate(new Publisher<String>() {
                     @Override
-                    public void subscribe(final Subscriber<? super String> observer) {
-                        observer.onSubscribe(new BooleanSubscription());
-                        publishNext(observer, 50, "one");
-                        publishNext(observer, 100, "two");
+                    public void subscribe(final Subscriber<? super String> subscriber) {
+                        subscriber.onSubscribe(new BooleanSubscription());
+                        publishNext(subscriber, 50, "one");
+                        publishNext(subscriber, 100, "two");
                     }
                 }));
 
-                publishNext(observer, 200, Flowable.unsafeCreate(new Publisher<String>() {
+                publishNext(subscriber, 200, Flowable.unsafeCreate(new Publisher<String>() {
                     @Override
-                    public void subscribe(Subscriber<? super String> observer) {
-                        observer.onSubscribe(new BooleanSubscription());
-                        publishNext(observer, 0, "three");
-                        publishNext(observer, 100, "four");
+                    public void subscribe(Subscriber<? super String> subscriber) {
+                        subscriber.onSubscribe(new BooleanSubscription());
+                        publishNext(subscriber, 0, "three");
+                        publishNext(subscriber, 100, "four");
                     }
                 }));
 
-                publishError(observer, 250, new TestException());
+                publishError(subscriber, 250, new TestException());
             }
         });
 
         Flowable<String> sampled = Flowable.switchOnNext(source);
-        sampled.subscribe(observer);
+        sampled.subscribe(subscriber);
 
-        InOrder inOrder = inOrder(observer);
+        InOrder inOrder = inOrder(subscriber);
 
         scheduler.advanceTimeTo(90, TimeUnit.MILLISECONDS);
-        inOrder.verify(observer, never()).onNext(anyString());
-        verify(observer, never()).onComplete();
-        verify(observer, never()).onError(any(Throwable.class));
+        inOrder.verify(subscriber, never()).onNext(anyString());
+        verify(subscriber, never()).onComplete();
+        verify(subscriber, never()).onError(any(Throwable.class));
 
         scheduler.advanceTimeTo(125, TimeUnit.MILLISECONDS);
-        inOrder.verify(observer, times(1)).onNext("one");
-        verify(observer, never()).onComplete();
-        verify(observer, never()).onError(any(Throwable.class));
+        inOrder.verify(subscriber, times(1)).onNext("one");
+        verify(subscriber, never()).onComplete();
+        verify(subscriber, never()).onError(any(Throwable.class));
 
         scheduler.advanceTimeTo(175, TimeUnit.MILLISECONDS);
-        inOrder.verify(observer, times(1)).onNext("two");
-        verify(observer, never()).onComplete();
-        verify(observer, never()).onError(any(Throwable.class));
+        inOrder.verify(subscriber, times(1)).onNext("two");
+        verify(subscriber, never()).onComplete();
+        verify(subscriber, never()).onError(any(Throwable.class));
 
         scheduler.advanceTimeTo(225, TimeUnit.MILLISECONDS);
-        inOrder.verify(observer, times(1)).onNext("three");
-        verify(observer, never()).onComplete();
-        verify(observer, never()).onError(any(Throwable.class));
+        inOrder.verify(subscriber, times(1)).onNext("three");
+        verify(subscriber, never()).onComplete();
+        verify(subscriber, never()).onError(any(Throwable.class));
 
         scheduler.advanceTimeTo(350, TimeUnit.MILLISECONDS);
-        inOrder.verify(observer, never()).onNext(anyString());
-        verify(observer, never()).onComplete();
-        verify(observer, times(1)).onError(any(TestException.class));
+        inOrder.verify(subscriber, never()).onNext(anyString());
+        verify(subscriber, never()).onComplete();
+        verify(subscriber, times(1)).onError(any(TestException.class));
     }
 
     @Test
     public void testSwitchWithSubsequenceComplete() {
         Flowable<Flowable<String>> source = Flowable.unsafeCreate(new Publisher<Flowable<String>>() {
             @Override
-            public void subscribe(Subscriber<? super Flowable<String>> observer) {
-                observer.onSubscribe(new BooleanSubscription());
-                publishNext(observer, 50, Flowable.unsafeCreate(new Publisher<String>() {
+            public void subscribe(Subscriber<? super Flowable<String>> subscriber) {
+                subscriber.onSubscribe(new BooleanSubscription());
+                publishNext(subscriber, 50, Flowable.unsafeCreate(new Publisher<String>() {
                     @Override
-                    public void subscribe(Subscriber<? super String> observer) {
-                        observer.onSubscribe(new BooleanSubscription());
-                        publishNext(observer, 50, "one");
-                        publishNext(observer, 100, "two");
+                    public void subscribe(Subscriber<? super String> subscriber) {
+                        subscriber.onSubscribe(new BooleanSubscription());
+                        publishNext(subscriber, 50, "one");
+                        publishNext(subscriber, 100, "two");
                     }
                 }));
 
-                publishNext(observer, 130, Flowable.unsafeCreate(new Publisher<String>() {
+                publishNext(subscriber, 130, Flowable.unsafeCreate(new Publisher<String>() {
                     @Override
-                    public void subscribe(Subscriber<? super String> observer) {
-                        observer.onSubscribe(new BooleanSubscription());
-                        publishCompleted(observer, 0);
+                    public void subscribe(Subscriber<? super String> subscriber) {
+                        subscriber.onSubscribe(new BooleanSubscription());
+                        publishCompleted(subscriber, 0);
                     }
                 }));
 
-                publishNext(observer, 150, Flowable.unsafeCreate(new Publisher<String>() {
+                publishNext(subscriber, 150, Flowable.unsafeCreate(new Publisher<String>() {
                     @Override
-                    public void subscribe(Subscriber<? super String> observer) {
-                        observer.onSubscribe(new BooleanSubscription());
-                        publishNext(observer, 50, "three");
+                    public void subscribe(Subscriber<? super String> subscriber) {
+                        subscriber.onSubscribe(new BooleanSubscription());
+                        publishNext(subscriber, 50, "three");
                     }
                 }));
             }
         });
 
         Flowable<String> sampled = Flowable.switchOnNext(source);
-        sampled.subscribe(observer);
+        sampled.subscribe(subscriber);
 
-        InOrder inOrder = inOrder(observer);
+        InOrder inOrder = inOrder(subscriber);
 
         scheduler.advanceTimeTo(90, TimeUnit.MILLISECONDS);
-        inOrder.verify(observer, never()).onNext(anyString());
-        verify(observer, never()).onComplete();
-        verify(observer, never()).onError(any(Throwable.class));
+        inOrder.verify(subscriber, never()).onNext(anyString());
+        verify(subscriber, never()).onComplete();
+        verify(subscriber, never()).onError(any(Throwable.class));
 
         scheduler.advanceTimeTo(125, TimeUnit.MILLISECONDS);
-        inOrder.verify(observer, times(1)).onNext("one");
-        verify(observer, never()).onComplete();
-        verify(observer, never()).onError(any(Throwable.class));
+        inOrder.verify(subscriber, times(1)).onNext("one");
+        verify(subscriber, never()).onComplete();
+        verify(subscriber, never()).onError(any(Throwable.class));
 
         scheduler.advanceTimeTo(250, TimeUnit.MILLISECONDS);
-        inOrder.verify(observer, times(1)).onNext("three");
-        verify(observer, never()).onComplete();
-        verify(observer, never()).onError(any(Throwable.class));
+        inOrder.verify(subscriber, times(1)).onNext("three");
+        verify(subscriber, never()).onComplete();
+        verify(subscriber, never()).onError(any(Throwable.class));
     }
 
     @Test
     public void testSwitchWithSubsequenceError() {
         Flowable<Flowable<String>> source = Flowable.unsafeCreate(new Publisher<Flowable<String>>() {
             @Override
-            public void subscribe(Subscriber<? super Flowable<String>> observer) {
-                observer.onSubscribe(new BooleanSubscription());
-                publishNext(observer, 50, Flowable.unsafeCreate(new Publisher<String>() {
+            public void subscribe(Subscriber<? super Flowable<String>> subscriber) {
+                subscriber.onSubscribe(new BooleanSubscription());
+                publishNext(subscriber, 50, Flowable.unsafeCreate(new Publisher<String>() {
                     @Override
-                    public void subscribe(Subscriber<? super String> observer) {
-                        observer.onSubscribe(new BooleanSubscription());
-                        publishNext(observer, 50, "one");
-                        publishNext(observer, 100, "two");
+                    public void subscribe(Subscriber<? super String> subscriber) {
+                        subscriber.onSubscribe(new BooleanSubscription());
+                        publishNext(subscriber, 50, "one");
+                        publishNext(subscriber, 100, "two");
                     }
                 }));
 
-                publishNext(observer, 130, Flowable.unsafeCreate(new Publisher<String>() {
+                publishNext(subscriber, 130, Flowable.unsafeCreate(new Publisher<String>() {
                     @Override
-                    public void subscribe(Subscriber<? super String> observer) {
-                        observer.onSubscribe(new BooleanSubscription());
-                        publishError(observer, 0, new TestException());
+                    public void subscribe(Subscriber<? super String> subscriber) {
+                        subscriber.onSubscribe(new BooleanSubscription());
+                        publishError(subscriber, 0, new TestException());
                     }
                 }));
 
-                publishNext(observer, 150, Flowable.unsafeCreate(new Publisher<String>() {
+                publishNext(subscriber, 150, Flowable.unsafeCreate(new Publisher<String>() {
                     @Override
-                    public void subscribe(Subscriber<? super String> observer) {
-                        observer.onSubscribe(new BooleanSubscription());
-                        publishNext(observer, 50, "three");
+                    public void subscribe(Subscriber<? super String> subscriber) {
+                        subscriber.onSubscribe(new BooleanSubscription());
+                        publishNext(subscriber, 50, "three");
                     }
                 }));
 
@@ -331,49 +331,49 @@ public class FlowableSwitchTest {
         });
 
         Flowable<String> sampled = Flowable.switchOnNext(source);
-        sampled.subscribe(observer);
+        sampled.subscribe(subscriber);
 
-        InOrder inOrder = inOrder(observer);
+        InOrder inOrder = inOrder(subscriber);
 
         scheduler.advanceTimeTo(90, TimeUnit.MILLISECONDS);
-        inOrder.verify(observer, never()).onNext(anyString());
-        verify(observer, never()).onComplete();
-        verify(observer, never()).onError(any(Throwable.class));
+        inOrder.verify(subscriber, never()).onNext(anyString());
+        verify(subscriber, never()).onComplete();
+        verify(subscriber, never()).onError(any(Throwable.class));
 
         scheduler.advanceTimeTo(125, TimeUnit.MILLISECONDS);
-        inOrder.verify(observer, times(1)).onNext("one");
-        verify(observer, never()).onComplete();
-        verify(observer, never()).onError(any(Throwable.class));
+        inOrder.verify(subscriber, times(1)).onNext("one");
+        verify(subscriber, never()).onComplete();
+        verify(subscriber, never()).onError(any(Throwable.class));
 
         scheduler.advanceTimeTo(250, TimeUnit.MILLISECONDS);
-        inOrder.verify(observer, never()).onNext("three");
-        verify(observer, never()).onComplete();
-        verify(observer, times(1)).onError(any(TestException.class));
+        inOrder.verify(subscriber, never()).onNext("three");
+        verify(subscriber, never()).onComplete();
+        verify(subscriber, times(1)).onError(any(TestException.class));
     }
 
-    private <T> void publishCompleted(final Subscriber<T> observer, long delay) {
+    private <T> void publishCompleted(final Subscriber<T> subscriber, long delay) {
         innerScheduler.schedule(new Runnable() {
             @Override
             public void run() {
-                observer.onComplete();
+                subscriber.onComplete();
             }
         }, delay, TimeUnit.MILLISECONDS);
     }
 
-    private <T> void publishError(final Subscriber<T> observer, long delay, final Throwable error) {
+    private <T> void publishError(final Subscriber<T> subscriber, long delay, final Throwable error) {
         innerScheduler.schedule(new Runnable() {
             @Override
             public void run() {
-                observer.onError(error);
+                subscriber.onError(error);
             }
         }, delay, TimeUnit.MILLISECONDS);
     }
 
-    private <T> void publishNext(final Subscriber<T> observer, long delay, final T value) {
+    private <T> void publishNext(final Subscriber<T> subscriber, long delay, final T value) {
         innerScheduler.schedule(new Runnable() {
             @Override
             public void run() {
-                observer.onNext(value);
+                subscriber.onNext(value);
             }
         }, delay, TimeUnit.MILLISECONDS);
     }
@@ -383,45 +383,45 @@ public class FlowableSwitchTest {
         // https://github.com/ReactiveX/RxJava/issues/737
         Flowable<Flowable<String>> source = Flowable.unsafeCreate(new Publisher<Flowable<String>>() {
             @Override
-            public void subscribe(Subscriber<? super Flowable<String>> observer) {
-                observer.onSubscribe(new BooleanSubscription());
-                publishNext(observer, 0, Flowable.unsafeCreate(new Publisher<String>() {
+            public void subscribe(Subscriber<? super Flowable<String>> subscriber) {
+                subscriber.onSubscribe(new BooleanSubscription());
+                publishNext(subscriber, 0, Flowable.unsafeCreate(new Publisher<String>() {
                     @Override
-                    public void subscribe(Subscriber<? super String> observer) {
-                        observer.onSubscribe(new BooleanSubscription());
-                        publishNext(observer, 10, "1-one");
-                        publishNext(observer, 20, "1-two");
+                    public void subscribe(Subscriber<? super String> subscriber) {
+                        subscriber.onSubscribe(new BooleanSubscription());
+                        publishNext(subscriber, 10, "1-one");
+                        publishNext(subscriber, 20, "1-two");
                         // The following events will be ignored
-                        publishNext(observer, 30, "1-three");
-                        publishCompleted(observer, 40);
+                        publishNext(subscriber, 30, "1-three");
+                        publishCompleted(subscriber, 40);
                     }
                 }));
-                publishNext(observer, 25, Flowable.unsafeCreate(new Publisher<String>() {
+                publishNext(subscriber, 25, Flowable.unsafeCreate(new Publisher<String>() {
                     @Override
-                    public void subscribe(Subscriber<? super String> observer) {
-                        observer.onSubscribe(new BooleanSubscription());
-                        publishNext(observer, 10, "2-one");
-                        publishNext(observer, 20, "2-two");
-                        publishNext(observer, 30, "2-three");
-                        publishCompleted(observer, 40);
+                    public void subscribe(Subscriber<? super String> subscriber) {
+                        subscriber.onSubscribe(new BooleanSubscription());
+                        publishNext(subscriber, 10, "2-one");
+                        publishNext(subscriber, 20, "2-two");
+                        publishNext(subscriber, 30, "2-three");
+                        publishCompleted(subscriber, 40);
                     }
                 }));
-                publishCompleted(observer, 30);
+                publishCompleted(subscriber, 30);
             }
         });
 
         Flowable<String> sampled = Flowable.switchOnNext(source);
-        sampled.subscribe(observer);
+        sampled.subscribe(subscriber);
 
         scheduler.advanceTimeTo(1000, TimeUnit.MILLISECONDS);
 
-        InOrder inOrder = inOrder(observer);
-        inOrder.verify(observer, times(1)).onNext("1-one");
-        inOrder.verify(observer, times(1)).onNext("1-two");
-        inOrder.verify(observer, times(1)).onNext("2-one");
-        inOrder.verify(observer, times(1)).onNext("2-two");
-        inOrder.verify(observer, times(1)).onNext("2-three");
-        inOrder.verify(observer, times(1)).onComplete();
+        InOrder inOrder = inOrder(subscriber);
+        inOrder.verify(subscriber, times(1)).onNext("1-one");
+        inOrder.verify(subscriber, times(1)).onNext("1-two");
+        inOrder.verify(subscriber, times(1)).onNext("2-one");
+        inOrder.verify(subscriber, times(1)).onNext("2-two");
+        inOrder.verify(subscriber, times(1)).onNext("2-three");
+        inOrder.verify(subscriber, times(1)).onComplete();
         inOrder.verifyNoMoreInteractions();
     }
 
@@ -965,11 +965,11 @@ public class FlowableSwitchTest {
         try {
             new Flowable<Integer>() {
                 @Override
-                protected void subscribeActual(Subscriber<? super Integer> observer) {
-                    observer.onSubscribe(new BooleanSubscription());
-                    observer.onComplete();
-                    observer.onError(new TestException());
-                    observer.onComplete();
+                protected void subscribeActual(Subscriber<? super Integer> subscriber) {
+                    subscriber.onSubscribe(new BooleanSubscription());
+                    subscriber.onComplete();
+                    subscriber.onError(new TestException());
+                    subscriber.onComplete();
                 }
             }
             .switchMap(Functions.justFunction(Flowable.never()))
@@ -1005,12 +1005,12 @@ public class FlowableSwitchTest {
             Flowable.just(1).hide()
             .switchMap(Functions.justFunction(new Flowable<Integer>() {
                 @Override
-                protected void subscribeActual(Subscriber<? super Integer> observer) {
-                    observer.onSubscribe(new BooleanSubscription());
-                    observer.onError(new TestException());
-                    observer.onComplete();
-                    observer.onError(new TestException());
-                    observer.onComplete();
+                protected void subscribeActual(Subscriber<? super Integer> subscriber) {
+                    subscriber.onSubscribe(new BooleanSubscription());
+                    subscriber.onError(new TestException());
+                    subscriber.onComplete();
+                    subscriber.onError(new TestException());
+                    subscriber.onComplete();
                 }
             }))
             .test()

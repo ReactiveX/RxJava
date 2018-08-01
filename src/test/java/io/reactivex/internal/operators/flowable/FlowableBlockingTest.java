@@ -489,9 +489,9 @@ public class FlowableBlockingTest {
 
         new Flowable<Integer>() {
             @Override
-            protected void subscribeActual(Subscriber<? super Integer> observer) {
-                observer.onSubscribe(new BooleanSubscription());
-                s[0] = observer;
+            protected void subscribeActual(Subscriber<? super Integer> subscriber) {
+                subscriber.onSubscribe(new BooleanSubscription());
+                s[0] = subscriber;
             }
         }.blockingSubscribe(ts);
 

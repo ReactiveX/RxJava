@@ -106,9 +106,9 @@ public class CompletableTest {
 
         public final Completable completable = Completable.unsafeCreate(new CompletableSource() {
             @Override
-            public void subscribe(CompletableObserver s) {
+            public void subscribe(CompletableObserver observer) {
                 getAndIncrement();
-                EmptyDisposable.complete(s);
+                EmptyDisposable.complete(observer);
             }
         });
 
@@ -131,9 +131,9 @@ public class CompletableTest {
 
         public final Completable completable = Completable.unsafeCreate(new CompletableSource() {
             @Override
-            public void subscribe(CompletableObserver s) {
+            public void subscribe(CompletableObserver observer) {
                 getAndIncrement();
-                EmptyDisposable.error(new TestException(), s);
+                EmptyDisposable.error(new TestException(), observer);
             }
         });
 
@@ -379,7 +379,7 @@ public class CompletableTest {
     public void createOnSubscribeThrowsNPE() {
         Completable c = Completable.unsafeCreate(new CompletableSource() {
             @Override
-            public void subscribe(CompletableObserver s) { throw new NullPointerException(); }
+            public void subscribe(CompletableObserver observer) { throw new NullPointerException(); }
         });
 
         c.blockingAwait();
@@ -387,10 +387,11 @@ public class CompletableTest {
 
     @Test(timeout = 5000)
     public void createOnSubscribeThrowsRuntimeException() {
+        List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
             Completable c = Completable.unsafeCreate(new CompletableSource() {
                 @Override
-                public void subscribe(CompletableObserver s) {
+                public void subscribe(CompletableObserver observer) {
                     throw new TestException();
                 }
             });
@@ -403,6 +404,10 @@ public class CompletableTest {
                 ex.printStackTrace();
                 Assert.fail("Did not wrap the TestException but it returned: " + ex);
             }
+
+            TestHelper.assertUndeliverable(errors, 0, TestException.class);
+        } finally {
+            RxJavaPlugins.reset();
         }
     }
 
@@ -1799,27 +1804,34 @@ public class CompletableTest {
 
     @Test(timeout = 5000)
     public void doOnDisposeThrows() {
-        Completable c = normal.completable.doOnDispose(new Action() {
-            @Override
-            public void run() { throw new TestException(); }
-        });
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            Completable c = normal.completable.doOnDispose(new Action() {
+                @Override
+                public void run() { throw new TestException(); }
+            });
 
-        c.subscribe(new CompletableObserver() {
-            @Override
-            public void onSubscribe(Disposable d) {
-                d.dispose();
-            }
+            c.subscribe(new CompletableObserver() {
+                @Override
+                public void onSubscribe(Disposable d) {
+                    d.dispose();
+                }
 
-            @Override
-            public void onError(Throwable e) {
-                // ignored
-            }
+                @Override
+                public void onError(Throwable e) {
+                    // ignored
+                }
 
-            @Override
-            public void onComplete() {
-                // ignored
-            }
-        });
+                @Override
+                public void onComplete() {
+                    // ignored
+                }
+            });
+
+            TestHelper.assertUndeliverable(errors, 0, TestException.class);
+        } finally {
+            RxJavaPlugins.reset();
+        }
     }
 
     @Test(timeout = 5000)
@@ -2453,8 +2465,8 @@ public class CompletableTest {
         }).retryWhen(new Function<Flowable<? extends Throwable>, Publisher<Object>>() {
             @SuppressWarnings({ "rawtypes", "unchecked" })
             @Override
-            public Publisher<Object> apply(Flowable<? extends Throwable> o) {
-                return (Publisher)o;
+            public Publisher<Object> apply(Flowable<? extends Throwable> f) {
+                return (Publisher)f;
             }
         });
 
@@ -2589,13 +2601,20 @@ public class CompletableTest {
 
     @Test(timeout = 5000)
     public void subscribeTwoCallbacksOnErrorThrows() {
-        error.completable.subscribe(new Action() {
-            @Override
-            public void run() { }
-        }, new Consumer<Throwable>() {
-            @Override
-            public void accept(Throwable e) { throw new TestException(); }
-        });
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            error.completable.subscribe(new Action() {
+                @Override
+                public void run() { }
+            }, new Consumer<Throwable>() {
+                @Override
+                public void accept(Throwable e) { throw new TestException(); }
+            });
+
+            TestHelper.assertUndeliverable(errors, 0, TestException.class);
+        } finally {
+            RxJavaPlugins.reset();
+        }
     }
 
     @Test(timeout = 5000)
@@ -2636,16 +2655,23 @@ public class CompletableTest {
 
     @Test(timeout = 5000)
     public void subscribeActionError() {
-        final AtomicBoolean run = new AtomicBoolean();
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            final AtomicBoolean run = new AtomicBoolean();
 
-        error.completable.subscribe(new Action() {
-            @Override
-            public void run() {
-                run.set(true);
-            }
-        });
+            error.completable.subscribe(new Action() {
+                @Override
+                public void run() {
+                    run.set(true);
+                }
+            });
 
-        Assert.assertFalse("Completed", run.get());
+            Assert.assertFalse("Completed", run.get());
+
+            TestHelper.assertError(errors, 0, OnErrorNotImplementedException.class);
+        } finally {
+            RxJavaPlugins.reset();
+        }
     }
 
     @Test(expected = NullPointerException.class)
@@ -2701,9 +2727,9 @@ public class CompletableTest {
 
         Completable c = Completable.unsafeCreate(new CompletableSource() {
             @Override
-            public void subscribe(CompletableObserver s) {
+            public void subscribe(CompletableObserver observer) {
                 name.set(Thread.currentThread().getName());
-                EmptyDisposable.complete(s);
+                EmptyDisposable.complete(observer);
             }
         }).subscribeOn(Schedulers.computation());
 
@@ -2718,9 +2744,9 @@ public class CompletableTest {
 
         Completable c = Completable.unsafeCreate(new CompletableSource() {
             @Override
-            public void subscribe(CompletableObserver s) {
+            public void subscribe(CompletableObserver observer) {
                 name.set(Thread.currentThread().getName());
-                EmptyDisposable.error(new TestException(), s);
+                EmptyDisposable.error(new TestException(), observer);
             }
         }).subscribeOn(Schedulers.computation());
 
@@ -3468,6 +3494,12 @@ public class CompletableTest {
         Thread.UncaughtExceptionHandler originalHandler = Thread.getDefaultUncaughtExceptionHandler();
         CapturingUncaughtExceptionHandler handler = new CapturingUncaughtExceptionHandler();
         Thread.setDefaultUncaughtExceptionHandler(handler);
+        RxJavaPlugins.setErrorHandler(new Consumer<Throwable>() {
+            @Override
+            public void accept(Throwable error) throws Exception {
+                Thread.currentThread().getUncaughtExceptionHandler().uncaughtException(Thread.currentThread(), error);
+            }
+        });
         try {
             action.run();
             assertEquals("Should have received exactly 1 exception", 1, handler.count);
@@ -3483,6 +3515,7 @@ public class CompletableTest {
             throw ExceptionHelper.wrapOrThrow(ex);
         } finally {
             Thread.setDefaultUncaughtExceptionHandler(originalHandler);
+            RxJavaPlugins.setErrorHandler(null);
         }
     }
 
@@ -3576,14 +3609,21 @@ public class CompletableTest {
 
     @Test
     public void subscribeReportsUnsubscribedOnError() {
-        PublishSubject<String> stringSubject = PublishSubject.create();
-        Completable completable = stringSubject.ignoreElements();
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            PublishSubject<String> stringSubject = PublishSubject.create();
+            Completable completable = stringSubject.ignoreElements();
 
-        Disposable completableSubscription = completable.subscribe();
+            Disposable completableSubscription = completable.subscribe();
 
-        stringSubject.onError(new TestException());
+            stringSubject.onError(new TestException());
 
-        assertTrue("Not unsubscribed?", completableSubscription.isDisposed());
+            assertTrue("Not unsubscribed?", completableSubscription.isDisposed());
+
+            TestHelper.assertError(errors, 0, OnErrorNotImplementedException.class);
+        } finally {
+            RxJavaPlugins.reset();
+        }
     }
 
     @Test
@@ -3627,18 +3667,25 @@ public class CompletableTest {
 
     @Test
     public void subscribeActionReportsUnsubscribedOnError() {
-        PublishSubject<String> stringSubject = PublishSubject.create();
-        Completable completable = stringSubject.ignoreElements();
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            PublishSubject<String> stringSubject = PublishSubject.create();
+            Completable completable = stringSubject.ignoreElements();
 
-        Disposable completableSubscription = completable.subscribe(new Action() {
-            @Override
-            public void run() {
-            }
-        });
+            Disposable completableSubscription = completable.subscribe(new Action() {
+                @Override
+                public void run() {
+                }
+            });
 
-        stringSubject.onError(new TestException());
+            stringSubject.onError(new TestException());
 
-        assertTrue("Not unsubscribed?", completableSubscription.isDisposed());
+            assertTrue("Not unsubscribed?", completableSubscription.isDisposed());
+
+            TestHelper.assertError(errors, 0, OnErrorNotImplementedException.class);
+        } finally {
+            RxJavaPlugins.reset();
+        }
     }
 
     @Test
@@ -3715,9 +3762,9 @@ public class CompletableTest {
         Completable.error(e)
             .andThen(new Single<String>() {
                 @Override
-                public void subscribeActual(SingleObserver<? super String> s) {
+                public void subscribeActual(SingleObserver<? super String> observer) {
                     hasRun.set(true);
-                    s.onSuccess("foo");
+                    observer.onSuccess("foo");
                 }
             })
             .toFlowable().subscribe(ts);
@@ -4192,8 +4239,8 @@ public class CompletableTest {
         TestSubscriber<String> ts = new TestSubscriber<String>();
 
         Completable completable = Completable.unsafeCreate(new CompletableSource() {
-            @Override public void subscribe(CompletableObserver s) {
-                s.onComplete();
+            @Override public void subscribe(CompletableObserver observer) {
+                observer.onComplete();
             }
         });
         completable.<String>toFlowable().subscribe(ts);
@@ -4589,18 +4636,25 @@ public class CompletableTest {
 
     @Test
     public void doOnEventError() {
-        final AtomicInteger atomicInteger = new AtomicInteger(0);
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            final AtomicInteger atomicInteger = new AtomicInteger(0);
 
-        Completable.error(new RuntimeException()).doOnEvent(new Consumer<Throwable>() {
-            @Override
-            public void accept(final Throwable throwable) throws Exception {
-                if (throwable != null) {
-                    atomicInteger.incrementAndGet();
+            Completable.error(new RuntimeException()).doOnEvent(new Consumer<Throwable>() {
+                @Override
+                public void accept(final Throwable throwable) throws Exception {
+                    if (throwable != null) {
+                        atomicInteger.incrementAndGet();
+                    }
                 }
-            }
-        }).subscribe();
+            }).subscribe();
 
-        assertEquals(1, atomicInteger.get());
+            assertEquals(1, atomicInteger.get());
+
+            TestHelper.assertError(errors, 0, OnErrorNotImplementedException.class);
+        } finally {
+            RxJavaPlugins.reset();
+        }
     }
 
 

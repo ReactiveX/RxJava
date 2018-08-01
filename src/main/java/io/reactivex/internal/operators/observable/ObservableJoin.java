@@ -54,13 +54,13 @@ public final class ObservableJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> extends
     }
 
     @Override
-    protected void subscribeActual(Observer<? super R> s) {
+    protected void subscribeActual(Observer<? super R> observer) {
 
         JoinDisposable<TLeft, TRight, TLeftEnd, TRightEnd, R> parent =
                 new JoinDisposable<TLeft, TRight, TLeftEnd, TRightEnd, R>(
-                        s, leftEnd, rightEnd, resultSelector);
+                        observer, leftEnd, rightEnd, resultSelector);
 
-        s.onSubscribe(parent);
+        observer.onSubscribe(parent);
 
         LeftRightObserver left = new LeftRightObserver(parent, true);
         parent.disposables.add(left);

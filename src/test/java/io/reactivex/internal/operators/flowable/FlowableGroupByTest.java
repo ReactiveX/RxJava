@@ -102,7 +102,7 @@ public class FlowableGroupByTest {
     @Test
     public void testError() {
         Flowable<String> sourceStrings = Flowable.just("one", "two", "three", "four", "five", "six");
-        Flowable<String> errorSource = Flowable.error(new RuntimeException("forced failure"));
+        Flowable<String> errorSource = Flowable.error(new TestException("forced failure"));
         Flowable<String> source = Flowable.concat(sourceStrings, errorSource);
 
         Flowable<GroupedFlowable<Integer, String>> grouped = source.groupBy(length);
@@ -114,13 +114,13 @@ public class FlowableGroupByTest {
         grouped.flatMap(new Function<GroupedFlowable<Integer, String>, Flowable<String>>() {
 
             @Override
-            public Flowable<String> apply(final GroupedFlowable<Integer, String> o) {
+            public Flowable<String> apply(final GroupedFlowable<Integer, String> f) {
                 groupCounter.incrementAndGet();
-                return o.map(new Function<String, String>() {
+                return f.map(new Function<String, String>() {
 
                     @Override
                     public String apply(String v) {
-                        return "Event => key: " + o.getKey() + " value: " + v;
+                        return "Event => key: " + f.getKey() + " value: " + v;
                     }
                 });
             }
@@ -133,7 +133,7 @@ public class FlowableGroupByTest {
 
             @Override
             public void onError(Throwable e) {
-                e.printStackTrace();
+//                e.printStackTrace();
                 error.set(e);
             }
 
@@ -148,22 +148,24 @@ public class FlowableGroupByTest {
         assertEquals(3, groupCounter.get());
         assertEquals(6, eventCounter.get());
         assertNotNull(error.get());
+        assertTrue("" + error.get(), error.get() instanceof TestException);
+        assertEquals(error.get().getMessage(), "forced failure");
     }
 
-    private static <K, V> Map<K, Collection<V>> toMap(Flowable<GroupedFlowable<K, V>> observable) {
+    private static <K, V> Map<K, Collection<V>> toMap(Flowable<GroupedFlowable<K, V>> flowable) {
 
         final ConcurrentHashMap<K, Collection<V>> result = new ConcurrentHashMap<K, Collection<V>>();
 
-        observable.blockingForEach(new Consumer<GroupedFlowable<K, V>>() {
+        flowable.blockingForEach(new Consumer<GroupedFlowable<K, V>>() {
 
             @Override
-            public void accept(final GroupedFlowable<K, V> o) {
-                result.put(o.getKey(), new ConcurrentLinkedQueue<V>());
-                o.subscribe(new Consumer<V>() {
+            public void accept(final GroupedFlowable<K, V> f) {
+                result.put(f.getKey(), new ConcurrentLinkedQueue<V>());
+                f.subscribe(new Consumer<V>() {
 
                     @Override
                     public void accept(V v) {
-                        result.get(o.getKey()).add(v);
+                        result.get(f.getKey()).add(v);
                     }
 
                 });
@@ -191,8 +193,8 @@ public class FlowableGroupByTest {
         Flowable<Event> es = Flowable.unsafeCreate(new Publisher<Event>() {
 
             @Override
-            public void subscribe(final Subscriber<? super Event> observer) {
-                observer.onSubscribe(new BooleanSubscription());
+            public void subscribe(final Subscriber<? super Event> subscriber) {
+                subscriber.onSubscribe(new BooleanSubscription());
                 System.out.println("*** Subscribing to EventStream ***");
                 subscribeCounter.incrementAndGet();
                 new Thread(new Runnable() {
@@ -203,9 +205,9 @@ public class FlowableGroupByTest {
                             Event e = new Event();
                             e.source = i % groupCount;
                             e.message = "Event-" + i;
-                            observer.onNext(e);
+                            subscriber.onNext(e);
                         }
-                        observer.onComplete();
+                        subscriber.onComplete();
                     }
 
                 }).start();
@@ -998,18 +1000,16 @@ public class FlowableGroupByTest {
         Flowable<GroupedFlowable<Boolean, Long>> stream = source.groupBy(IS_EVEN);
 
         // create two observers
-        @SuppressWarnings("unchecked")
-        DefaultSubscriber<GroupedFlowable<Boolean, Long>> o1 = mock(DefaultSubscriber.class);
-        @SuppressWarnings("unchecked")
-        DefaultSubscriber<GroupedFlowable<Boolean, Long>> o2 = mock(DefaultSubscriber.class);
+        Subscriber<GroupedFlowable<Boolean, Long>> f1 = TestHelper.mockSubscriber();
+        Subscriber<GroupedFlowable<Boolean, Long>> f2 = TestHelper.mockSubscriber();
 
         // subscribe with the observers
-        stream.subscribe(o1);
-        stream.subscribe(o2);
+        stream.subscribe(f1);
+        stream.subscribe(f2);
 
         // check that subscriptions were successful
-        verify(o1, never()).onError(Mockito.<Throwable> any());
-        verify(o2, never()).onError(Mockito.<Throwable> any());
+        verify(f1, never()).onError(Mockito.<Throwable> any());
+        verify(f2, never()).onError(Mockito.<Throwable> any());
     }
 
     private static Function<Long, Boolean> IS_EVEN = new Function<Long, Boolean>() {
@@ -1227,14 +1227,13 @@ public class FlowableGroupByTest {
 
         inner.get().subscribe();
 
-        @SuppressWarnings("unchecked")
-        DefaultSubscriber<Integer> o2 = mock(DefaultSubscriber.class);
+        Subscriber<Integer> subscriber2 = TestHelper.mockSubscriber();
 
-        inner.get().subscribe(o2);
+        inner.get().subscribe(subscriber2);
 
-        verify(o2, never()).onComplete();
-        verify(o2, never()).onNext(anyInt());
-        verify(o2).onError(any(IllegalStateException.class));
+        verify(subscriber2, never()).onComplete();
+        verify(subscriber2, never()).onNext(anyInt());
+        verify(subscriber2).onError(any(IllegalStateException.class));
     }
 
     @Test
@@ -1386,7 +1385,7 @@ public class FlowableGroupByTest {
     @Test
     public void testGroupByUnsubscribe() {
         final Subscription s = mock(Subscription.class);
-        Flowable<Integer> o = Flowable.unsafeCreate(
+        Flowable<Integer> f = Flowable.unsafeCreate(
                 new Publisher<Integer>() {
                     @Override
                     public void subscribe(Subscriber<? super Integer> subscriber) {
@@ -1396,7 +1395,7 @@ public class FlowableGroupByTest {
         );
         TestSubscriber<Object> ts = new TestSubscriber<Object>();
 
-        o.groupBy(new Function<Integer, Integer>() {
+        f.groupBy(new Function<Integer, Integer>() {
 
             @Override
             public Integer apply(Integer integer) {
@@ -1427,11 +1426,11 @@ public class FlowableGroupByTest {
             }
 
             @Override
-            public void onNext(GroupedFlowable<Integer, Integer> o) {
-                if (o.getKey() == 0) {
-                    o.subscribe(inner1);
+            public void onNext(GroupedFlowable<Integer, Integer> f) {
+                if (f.getKey() == 0) {
+                    f.subscribe(inner1);
                 } else {
-                    o.subscribe(inner2);
+                    f.subscribe(inner2);
                 }
             }
         });

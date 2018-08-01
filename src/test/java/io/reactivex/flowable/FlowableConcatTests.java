@@ -26,10 +26,10 @@ public class FlowableConcatTests {
 
     @Test
     public void testConcatSimple() {
-        Flowable<String> o1 = Flowable.just("one", "two");
-        Flowable<String> o2 = Flowable.just("three", "four");
+        Flowable<String> f1 = Flowable.just("one", "two");
+        Flowable<String> f2 = Flowable.just("three", "four");
 
-        List<String> values = Flowable.concat(o1, o2).toList().blockingGet();
+        List<String> values = Flowable.concat(f1, f2).toList().blockingGet();
 
         assertEquals("one", values.get(0));
         assertEquals("two", values.get(1));
@@ -39,11 +39,11 @@ public class FlowableConcatTests {
 
     @Test
     public void testConcatWithFlowableOfFlowable() {
-        Flowable<String> o1 = Flowable.just("one", "two");
-        Flowable<String> o2 = Flowable.just("three", "four");
-        Flowable<String> o3 = Flowable.just("five", "six");
+        Flowable<String> f1 = Flowable.just("one", "two");
+        Flowable<String> f2 = Flowable.just("three", "four");
+        Flowable<String> f3 = Flowable.just("five", "six");
 
-        Flowable<Flowable<String>> os = Flowable.just(o1, o2, o3);
+        Flowable<Flowable<String>> os = Flowable.just(f1, f2, f3);
 
         List<String> values = Flowable.concat(os).toList().blockingGet();
 
@@ -57,12 +57,12 @@ public class FlowableConcatTests {
 
     @Test
     public void testConcatWithIterableOfFlowable() {
-        Flowable<String> o1 = Flowable.just("one", "two");
-        Flowable<String> o2 = Flowable.just("three", "four");
-        Flowable<String> o3 = Flowable.just("five", "six");
+        Flowable<String> f1 = Flowable.just("one", "two");
+        Flowable<String> f2 = Flowable.just("three", "four");
+        Flowable<String> f3 = Flowable.just("five", "six");
 
         @SuppressWarnings("unchecked")
-        Iterable<Flowable<String>> is = Arrays.asList(o1, o2, o3);
+        Iterable<Flowable<String>> is = Arrays.asList(f1, f2, f3);
 
         List<String> values = Flowable.concat(Flowable.fromIterable(is)).toList().blockingGet();
 
@@ -81,10 +81,10 @@ public class FlowableConcatTests {
         Media media = new Media();
         HorrorMovie horrorMovie2 = new HorrorMovie();
 
-        Flowable<Media> o1 = Flowable.<Media> just(horrorMovie1, movie);
-        Flowable<Media> o2 = Flowable.just(media, horrorMovie2);
+        Flowable<Media> f1 = Flowable.<Media> just(horrorMovie1, movie);
+        Flowable<Media> f2 = Flowable.just(media, horrorMovie2);
 
-        Flowable<Flowable<Media>> os = Flowable.just(o1, o2);
+        Flowable<Flowable<Media>> os = Flowable.just(f1, f2);
 
         List<Media> values = Flowable.concat(os).toList().blockingGet();
 
@@ -103,10 +103,10 @@ public class FlowableConcatTests {
         Media media2 = new Media();
         HorrorMovie horrorMovie2 = new HorrorMovie();
 
-        Flowable<Media> o1 = Flowable.just(horrorMovie1, movie, media1);
-        Flowable<Media> o2 = Flowable.just(media2, horrorMovie2);
+        Flowable<Media> f1 = Flowable.just(horrorMovie1, movie, media1);
+        Flowable<Media> f2 = Flowable.just(media2, horrorMovie2);
 
-        Flowable<Flowable<Media>> os = Flowable.just(o1, o2);
+        Flowable<Flowable<Media>> os = Flowable.just(f1, f2);
 
         List<Media> values = Flowable.concat(os).toList().blockingGet();
 
@@ -125,10 +125,10 @@ public class FlowableConcatTests {
         Media media = new Media();
         HorrorMovie horrorMovie2 = new HorrorMovie();
 
-        Flowable<Movie> o1 = Flowable.just(horrorMovie1, movie);
-        Flowable<Media> o2 = Flowable.just(media, horrorMovie2);
+        Flowable<Movie> f1 = Flowable.just(horrorMovie1, movie);
+        Flowable<Media> f2 = Flowable.just(media, horrorMovie2);
 
-        List<Media> values = Flowable.concat(o1, o2).toList().blockingGet();
+        List<Media> values = Flowable.concat(f1, f2).toList().blockingGet();
 
         assertEquals(horrorMovie1, values.get(0));
         assertEquals(movie, values.get(1));
@@ -144,19 +144,19 @@ public class FlowableConcatTests {
         Media media = new Media();
         HorrorMovie horrorMovie2 = new HorrorMovie();
 
-        Flowable<Movie> o1 = Flowable.unsafeCreate(new Publisher<Movie>() {
+        Flowable<Movie> f1 = Flowable.unsafeCreate(new Publisher<Movie>() {
             @Override
-            public void subscribe(Subscriber<? super Movie> o) {
-                    o.onNext(horrorMovie1);
-                    o.onNext(movie);
+            public void subscribe(Subscriber<? super Movie> subscriber) {
+                    subscriber.onNext(horrorMovie1);
+                    subscriber.onNext(movie);
                     //                o.onNext(new Media()); // correctly doesn't compile
-                    o.onComplete();
+                    subscriber.onComplete();
             }
         });
 
-        Flowable<Media> o2 = Flowable.just(media, horrorMovie2);
+        Flowable<Media> f2 = Flowable.just(media, horrorMovie2);
 
-        List<Media> values = Flowable.concat(o1, o2).toList().blockingGet();
+        List<Media> values = Flowable.concat(f1, f2).toList().blockingGet();
 
         assertEquals(horrorMovie1, values.get(0));
         assertEquals(movie, values.get(1));

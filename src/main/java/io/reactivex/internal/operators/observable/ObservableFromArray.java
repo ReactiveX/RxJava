@@ -24,10 +24,10 @@ public final class ObservableFromArray<T> extends Observable<T> {
         this.array = array;
     }
     @Override
-    public void subscribeActual(Observer<? super T> s) {
-        FromArrayDisposable<T> d = new FromArrayDisposable<T>(s, array);
+    public void subscribeActual(Observer<? super T> observer) {
+        FromArrayDisposable<T> d = new FromArrayDisposable<T>(observer, array);
 
-        s.onSubscribe(d);
+        observer.onSubscribe(d);
 
         if (d.fusionMode) {
             return;

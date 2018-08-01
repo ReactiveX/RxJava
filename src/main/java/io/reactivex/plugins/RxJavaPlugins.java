@@ -979,17 +979,17 @@ public final class RxJavaPlugins {
      * Calls the associated hook function.
      * @param <T> the value type
      * @param source the hook's input value
-     * @param subscriber the subscriber
+     * @param observer the subscriber
      * @return the value returned by the hook
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @NonNull
-    public static <T> MaybeObserver<? super T> onSubscribe(@NonNull Maybe<T> source, @NonNull MaybeObserver<? super T> subscriber) {
+    public static <T> MaybeObserver<? super T> onSubscribe(@NonNull Maybe<T> source, @NonNull MaybeObserver<? super T> observer) {
         BiFunction<? super Maybe, ? super MaybeObserver, ? extends MaybeObserver> f = onMaybeSubscribe;
         if (f != null) {
-            return apply(f, source, subscriber);
+            return apply(f, source, observer);
         }
-        return subscriber;
+        return observer;
     }
 
     /**

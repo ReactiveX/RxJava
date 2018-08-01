@@ -43,9 +43,9 @@ public final class SingleCache<T> extends Single<T> implements SingleObserver<T>
     }
 
     @Override
-    protected void subscribeActual(final SingleObserver<? super T> s) {
-        CacheDisposable<T> d = new CacheDisposable<T>(s, this);
-        s.onSubscribe(d);
+    protected void subscribeActual(final SingleObserver<? super T> observer) {
+        CacheDisposable<T> d = new CacheDisposable<T>(observer, this);
+        observer.onSubscribe(d);
 
         if (add(d)) {
             if (d.isDisposed()) {
@@ -54,9 +54,9 @@ public final class SingleCache<T> extends Single<T> implements SingleObserver<T>
         } else {
             Throwable ex = error;
             if (ex != null) {
-                s.onError(ex);
+                observer.onError(ex);
             } else {
-                s.onSuccess(value);
+                observer.onSuccess(value);
             }
             return;
         }

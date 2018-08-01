@@ -426,9 +426,9 @@ public class ObservableRetryTest {
         final AtomicInteger subsCount = new AtomicInteger(0);
         ObservableSource<String> onSubscribe = new ObservableSource<String>() {
             @Override
-            public void subscribe(Observer<? super String> s) {
+            public void subscribe(Observer<? super String> observer) {
                 subsCount.incrementAndGet();
-                s.onSubscribe(Disposables.fromRunnable(new Runnable() {
+                observer.onSubscribe(Disposables.fromRunnable(new Runnable() {
                     @Override
                     public void run() {
                             subsCount.decrementAndGet();
@@ -455,13 +455,13 @@ public class ObservableRetryTest {
 
         ObservableSource<String> onSubscribe = new ObservableSource<String>() {
             @Override
-            public void subscribe(Observer<? super String> s) {
+            public void subscribe(Observer<? super String> observer) {
                 BooleanSubscription bs = new BooleanSubscription();
                 // if isUnsubscribed is true that means we have a bug such as
                 // https://github.com/ReactiveX/RxJava/issues/1024
                 if (!bs.isCancelled()) {
                     subsCount.incrementAndGet();
-                    s.onError(new RuntimeException("failed"));
+                    observer.onError(new RuntimeException("failed"));
                     // it unsubscribes the child directly
                     // this simulates various error/completion scenarios that could occur
                     // or just a source that proactively triggers cleanup
@@ -469,7 +469,7 @@ public class ObservableRetryTest {
 //                    s.unsubscribe();
                     bs.cancel();
                 } else {
-                    s.onError(new RuntimeException());
+                    observer.onError(new RuntimeException());
                 }
             }
         };
@@ -486,10 +486,10 @@ public class ObservableRetryTest {
 
         ObservableSource<String> onSubscribe = new ObservableSource<String>() {
             @Override
-            public void subscribe(Observer<? super String> s) {
-                s.onSubscribe(Disposables.empty());
+            public void subscribe(Observer<? super String> observer) {
+                observer.onSubscribe(Disposables.empty());
                 subsCount.incrementAndGet();
-                s.onError(new RuntimeException("failed"));
+                observer.onError(new RuntimeException("failed"));
             }
         };
 
@@ -505,10 +505,10 @@ public class ObservableRetryTest {
 
         ObservableSource<String> onSubscribe = new ObservableSource<String>() {
             @Override
-            public void subscribe(Observer<? super String> s) {
-                s.onSubscribe(Disposables.empty());
+            public void subscribe(Observer<? super String> observer) {
+                observer.onSubscribe(Disposables.empty());
                 subsCount.incrementAndGet();
-                s.onError(new RuntimeException("failed"));
+                observer.onError(new RuntimeException("failed"));
             }
         };
 
@@ -634,8 +634,7 @@ public class ObservableRetryTest {
     @Test(timeout = 10000)
     public void testTimeoutWithRetry() {
 
-        @SuppressWarnings("unchecked")
-        DefaultObserver<Long> observer = mock(DefaultObserver.class);
+        Observer<Long> observer = TestHelper.mockObserver();
 
         // Observable that sends every 100ms (timeout fails instead)
         SlowObservable so = new SlowObservable(100, 10);

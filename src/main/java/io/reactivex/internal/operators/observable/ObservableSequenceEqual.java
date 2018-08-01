@@ -37,9 +37,9 @@ public final class ObservableSequenceEqual<T> extends Observable<Boolean> {
     }
 
     @Override
-    public void subscribeActual(Observer<? super Boolean> s) {
-        EqualCoordinator<T> ec = new EqualCoordinator<T>(s, bufferSize, first, second, comparer);
-        s.onSubscribe(ec);
+    public void subscribeActual(Observer<? super Boolean> observer) {
+        EqualCoordinator<T> ec = new EqualCoordinator<T>(observer, bufferSize, first, second, comparer);
+        observer.onSubscribe(ec);
         ec.subscribe();
     }
 
@@ -117,10 +117,10 @@ public final class ObservableSequenceEqual<T> extends Observable<Boolean> {
             int missed = 1;
             EqualObserver<T>[] as = observers;
 
-            final EqualObserver<T> s1 = as[0];
-            final SpscLinkedArrayQueue<T> q1 = s1.queue;
-            final EqualObserver<T> s2 = as[1];
-            final SpscLinkedArrayQueue<T> q2 = s2.queue;
+            final EqualObserver<T> observer1 = as[0];
+            final SpscLinkedArrayQueue<T> q1 = observer1.queue;
+            final EqualObserver<T> observer2 = as[1];
+            final SpscLinkedArrayQueue<T> q2 = observer2.queue;
 
             for (;;) {
 
@@ -131,10 +131,10 @@ public final class ObservableSequenceEqual<T> extends Observable<Boolean> {
                         return;
                     }
 
-                    boolean d1 = s1.done;
+                    boolean d1 = observer1.done;
 
                     if (d1) {
-                        Throwable e = s1.error;
+                        Throwable e = observer1.error;
                         if (e != null) {
                             cancel(q1, q2);
 
@@ -143,9 +143,9 @@ public final class ObservableSequenceEqual<T> extends Observable<Boolean> {
                         }
                     }
 
-                    boolean d2 = s2.done;
+                    boolean d2 = observer2.done;
                     if (d2) {
-                        Throwable e = s2.error;
+                        Throwable e = observer2.error;
                         if (e != null) {
                             cancel(q1, q2);
 

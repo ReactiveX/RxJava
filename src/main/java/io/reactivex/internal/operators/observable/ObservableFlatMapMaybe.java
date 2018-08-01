@@ -44,8 +44,8 @@ public final class ObservableFlatMapMaybe<T, R> extends AbstractObservableWithUp
     }
 
     @Override
-    protected void subscribeActual(Observer<? super R> s) {
-        source.subscribe(new FlatMapMaybeObserver<T, R>(s, mapper, delayErrors));
+    protected void subscribeActual(Observer<? super R> observer) {
+        source.subscribe(new FlatMapMaybeObserver<T, R>(observer, mapper, delayErrors));
     }
 
     static final class FlatMapMaybeObserver<T, R>

@@ -706,8 +706,8 @@ public class ObservablePublishTest {
 
         new Observable<Integer>() {
             @Override
-            protected void subscribeActual(Observer<? super Integer> s) {
-                sub[0] = s;
+            protected void subscribeActual(Observer<? super Integer> observer) {
+                sub[0] = observer;
             }
         }
         .publish()

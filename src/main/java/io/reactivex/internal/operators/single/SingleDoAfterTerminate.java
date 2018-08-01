@@ -40,8 +40,8 @@ public final class SingleDoAfterTerminate<T> extends Single<T> {
     }
 
     @Override
-    protected void subscribeActual(SingleObserver<? super T> s) {
-        source.subscribe(new DoAfterTerminateObserver<T>(s, onAfterTerminate));
+    protected void subscribeActual(SingleObserver<? super T> observer) {
+        source.subscribe(new DoAfterTerminateObserver<T>(observer, onAfterTerminate));
     }
 
     static final class DoAfterTerminateObserver<T> implements SingleObserver<T>, Disposable {

@@ -43,9 +43,9 @@ public final class SingleFlatMapObservable<T, R> extends Observable<R> {
     }
 
     @Override
-    protected void subscribeActual(Observer<? super R> s) {
-        FlatMapObserver<T, R> parent = new FlatMapObserver<T, R>(s, mapper);
-        s.onSubscribe(parent);
+    protected void subscribeActual(Observer<? super R> observer) {
+        FlatMapObserver<T, R> parent = new FlatMapObserver<T, R>(observer, mapper);
+        observer.onSubscribe(parent);
         source.subscribe(parent);
     }
 

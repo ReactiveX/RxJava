@@ -28,20 +28,20 @@ public final class CompletableFromRunnable extends Completable {
     }
 
     @Override
-    protected void subscribeActual(CompletableObserver s) {
+    protected void subscribeActual(CompletableObserver observer) {
         Disposable d = Disposables.empty();
-        s.onSubscribe(d);
+        observer.onSubscribe(d);
         try {
             runnable.run();
         } catch (Throwable e) {
             Exceptions.throwIfFatal(e);
             if (!d.isDisposed()) {
-                s.onError(e);
+                observer.onError(e);
             }
             return;
         }
         if (!d.isDisposed()) {
-            s.onComplete();
+            observer.onComplete();
         }
     }
 }

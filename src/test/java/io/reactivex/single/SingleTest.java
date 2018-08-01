@@ -131,9 +131,9 @@ public class SingleTest {
 
         Single.unsafeCreate(new SingleSource<Object>() {
             @Override
-            public void subscribe(SingleObserver<? super Object> s) {
-                s.onSubscribe(Disposables.empty());
-                s.onSuccess("Hello");
+            public void subscribe(SingleObserver<? super Object> observer) {
+                observer.onSubscribe(Disposables.empty());
+                observer.onSuccess("Hello");
             }
         }).toFlowable().subscribe(ts);
 
@@ -145,9 +145,9 @@ public class SingleTest {
         TestSubscriber<Object> ts = new TestSubscriber<Object>();
         Single.unsafeCreate(new SingleSource<Object>() {
             @Override
-            public void subscribe(SingleObserver<? super Object> s) {
-                s.onSubscribe(Disposables.empty());
-                s.onError(new RuntimeException("fail"));
+            public void subscribe(SingleObserver<? super Object> observer) {
+                observer.onSubscribe(Disposables.empty());
+                observer.onError(new RuntimeException("fail"));
             }
         }).toFlowable().subscribe(ts);
 
@@ -202,14 +202,14 @@ public class SingleTest {
         TestSubscriber<String> ts = new TestSubscriber<String>();
         Single<String> s1 = Single.<String>unsafeCreate(new SingleSource<String>() {
             @Override
-            public void subscribe(SingleObserver<? super String> s) {
-                s.onSubscribe(Disposables.empty());
+            public void subscribe(SingleObserver<? super String> observer) {
+                observer.onSubscribe(Disposables.empty());
                 try {
                     Thread.sleep(5000);
                 } catch (InterruptedException e) {
                     // ignore as we expect this for the test
                 }
-                s.onSuccess("success");
+                observer.onSuccess("success");
             }
         }).subscribeOn(Schedulers.io());
 
@@ -224,14 +224,14 @@ public class SingleTest {
         TestSubscriber<String> ts = new TestSubscriber<String>();
         Single<String> s1 = Single.<String>unsafeCreate(new SingleSource<String>() {
             @Override
-            public void subscribe(SingleObserver<? super String> s) {
-                s.onSubscribe(Disposables.empty());
+            public void subscribe(SingleObserver<? super String> observer) {
+                observer.onSubscribe(Disposables.empty());
                     try {
                         Thread.sleep(5000);
                     } catch (InterruptedException e) {
                         // ignore as we expect this for the test
                     }
-                    s.onSuccess("success");
+                    observer.onSuccess("success");
             }
         }).subscribeOn(Schedulers.io());
 
@@ -251,16 +251,16 @@ public class SingleTest {
 
         Single<String> s1 = Single.<String>unsafeCreate(new SingleSource<String>() {
             @Override
-            public void subscribe(final SingleObserver<? super String> s) {
+            public void subscribe(final SingleObserver<? super String> observer) {
                 SerialDisposable sd = new SerialDisposable();
-                s.onSubscribe(sd);
+                observer.onSubscribe(sd);
                 final Thread t = new Thread(new Runnable() {
 
                     @Override
                     public void run() {
                         try {
                             Thread.sleep(5000);
-                            s.onSuccess("success");
+                            observer.onSuccess("success");
                         } catch (InterruptedException e) {
                             interrupted.set(true);
                             latch.countDown();
@@ -325,16 +325,16 @@ public class SingleTest {
 
         Single<String> s1 = Single.unsafeCreate(new SingleSource<String>() {
             @Override
-            public void subscribe(final SingleObserver<? super String> s) {
+            public void subscribe(final SingleObserver<? super String> observer) {
                 SerialDisposable sd = new SerialDisposable();
-                s.onSubscribe(sd);
+                observer.onSubscribe(sd);
                 final Thread t = new Thread(new Runnable() {
 
                     @Override
                     public void run() {
                         try {
                             Thread.sleep(5000);
-                            s.onSuccess("success");
+                            observer.onSuccess("success");
                         } catch (InterruptedException e) {
                             interrupted.set(true);
                             latch.countDown();
@@ -381,16 +381,16 @@ public class SingleTest {
 
         Single<String> s1 = Single.unsafeCreate(new SingleSource<String>() {
             @Override
-            public void subscribe(final SingleObserver<? super String> s) {
+            public void subscribe(final SingleObserver<? super String> observer) {
                 SerialDisposable sd = new SerialDisposable();
-                s.onSubscribe(sd);
+                observer.onSubscribe(sd);
                 final Thread t = new Thread(new Runnable() {
 
                     @Override
                     public void run() {
                         try {
                             Thread.sleep(5000);
-                            s.onSuccess("success");
+                            observer.onSuccess("success");
                         } catch (InterruptedException e) {
                             interrupted.set(true);
                             latch.countDown();

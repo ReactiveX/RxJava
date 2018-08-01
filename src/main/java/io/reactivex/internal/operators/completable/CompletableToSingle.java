@@ -34,8 +34,8 @@ public final class CompletableToSingle<T> extends Single<T> {
     }
 
     @Override
-    protected void subscribeActual(final SingleObserver<? super T> s) {
-        source.subscribe(new ToSingle(s));
+    protected void subscribeActual(final SingleObserver<? super T> observer) {
+        source.subscribe(new ToSingle(observer));
     }
 
     final class ToSingle implements CompletableObserver {

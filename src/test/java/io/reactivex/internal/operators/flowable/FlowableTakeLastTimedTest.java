@@ -44,11 +44,11 @@ public class FlowableTakeLastTimedTest {
         // FIXME time unit now matters!
         Flowable<Object> result = source.takeLast(1000, TimeUnit.MILLISECONDS, scheduler);
 
-        Subscriber<Object> o = TestHelper.mockSubscriber();
+        Subscriber<Object> subscriber = TestHelper.mockSubscriber();
 
-        InOrder inOrder = inOrder(o);
+        InOrder inOrder = inOrder(subscriber);
 
-        result.subscribe(o);
+        result.subscribe(subscriber);
 
         source.onNext(1); // T: 0ms
         scheduler.advanceTimeBy(250, TimeUnit.MILLISECONDS);
@@ -62,13 +62,13 @@ public class FlowableTakeLastTimedTest {
         scheduler.advanceTimeBy(250, TimeUnit.MILLISECONDS);
         source.onComplete(); // T: 1250ms
 
-        inOrder.verify(o, times(1)).onNext(2);
-        inOrder.verify(o, times(1)).onNext(3);
-        inOrder.verify(o, times(1)).onNext(4);
-        inOrder.verify(o, times(1)).onNext(5);
-        inOrder.verify(o, times(1)).onComplete();
+        inOrder.verify(subscriber, times(1)).onNext(2);
+        inOrder.verify(subscriber, times(1)).onNext(3);
+        inOrder.verify(subscriber, times(1)).onNext(4);
+        inOrder.verify(subscriber, times(1)).onNext(5);
+        inOrder.verify(subscriber, times(1)).onComplete();
 
-        verify(o, never()).onError(any(Throwable.class));
+        verify(subscriber, never()).onError(any(Throwable.class));
     }
 
     @Test
@@ -80,11 +80,11 @@ public class FlowableTakeLastTimedTest {
         // FIXME time unit now matters
         Flowable<Object> result = source.takeLast(1000, TimeUnit.MILLISECONDS, scheduler);
 
-        Subscriber<Object> o = TestHelper.mockSubscriber();
+        Subscriber<Object> subscriber = TestHelper.mockSubscriber();
 
-        InOrder inOrder = inOrder(o);
+        InOrder inOrder = inOrder(subscriber);
 
-        result.subscribe(o);
+        result.subscribe(subscriber);
 
         source.onNext(1); // T: 0ms
         scheduler.advanceTimeBy(250, TimeUnit.MILLISECONDS);
@@ -98,10 +98,10 @@ public class FlowableTakeLastTimedTest {
         scheduler.advanceTimeBy(1250, TimeUnit.MILLISECONDS);
         source.onComplete(); // T: 2250ms
 
-        inOrder.verify(o, times(1)).onComplete();
+        inOrder.verify(subscriber, times(1)).onComplete();
 
-        verify(o, never()).onNext(any());
-        verify(o, never()).onError(any(Throwable.class));
+        verify(subscriber, never()).onNext(any());
+        verify(subscriber, never()).onError(any(Throwable.class));
     }
 
     @Test
@@ -113,11 +113,11 @@ public class FlowableTakeLastTimedTest {
         // FIXME time unit now matters!
         Flowable<Object> result = source.takeLast(2, 1000, TimeUnit.MILLISECONDS, scheduler);
 
-        Subscriber<Object> o = TestHelper.mockSubscriber();
+        Subscriber<Object> subscriber = TestHelper.mockSubscriber();
 
-        InOrder inOrder = inOrder(o);
+        InOrder inOrder = inOrder(subscriber);
 
-        result.subscribe(o);
+        result.subscribe(subscriber);
 
         source.onNext(1); // T: 0ms
         scheduler.advanceTimeBy(250, TimeUnit.MILLISECONDS);
@@ -131,11 +131,11 @@ public class FlowableTakeLastTimedTest {
         scheduler.advanceTimeBy(250, TimeUnit.MILLISECONDS);
         source.onComplete(); // T: 1250ms
 
-        inOrder.verify(o, times(1)).onNext(4);
-        inOrder.verify(o, times(1)).onNext(5);
-        inOrder.verify(o, times(1)).onComplete();
+        inOrder.verify(subscriber, times(1)).onNext(4);
+        inOrder.verify(subscriber, times(1)).onNext(5);
+        inOrder.verify(subscriber, times(1)).onComplete();
 
-        verify(o, never()).onError(any(Throwable.class));
+        verify(subscriber, never()).onError(any(Throwable.class));
     }
 
     @Test
@@ -146,11 +146,11 @@ public class FlowableTakeLastTimedTest {
 
         Flowable<Object> result = source.takeLast(1, TimeUnit.SECONDS, scheduler);
 
-        Subscriber<Object> o = TestHelper.mockSubscriber();
+        Subscriber<Object> subscriber = TestHelper.mockSubscriber();
 
-        InOrder inOrder = inOrder(o);
+        InOrder inOrder = inOrder(subscriber);
 
-        result.subscribe(o);
+        result.subscribe(subscriber);
 
         source.onNext(1); // T: 0ms
         scheduler.advanceTimeBy(250, TimeUnit.MILLISECONDS);
@@ -164,10 +164,10 @@ public class FlowableTakeLastTimedTest {
         scheduler.advanceTimeBy(250, TimeUnit.MILLISECONDS);
         source.onError(new TestException()); // T: 1250ms
 
-        inOrder.verify(o, times(1)).onError(any(TestException.class));
+        inOrder.verify(subscriber, times(1)).onError(any(TestException.class));
 
-        verify(o, never()).onNext(any());
-        verify(o, never()).onComplete();
+        verify(subscriber, never()).onNext(any());
+        verify(subscriber, never()).onComplete();
     }
 
     @Test
@@ -178,11 +178,11 @@ public class FlowableTakeLastTimedTest {
 
         Flowable<Object> result = source.takeLast(0, 1, TimeUnit.SECONDS, scheduler);
 
-        Subscriber<Object> o = TestHelper.mockSubscriber();
+        Subscriber<Object> subscriber = TestHelper.mockSubscriber();
 
-        InOrder inOrder = inOrder(o);
+        InOrder inOrder = inOrder(subscriber);
 
-        result.subscribe(o);
+        result.subscribe(subscriber);
 
         source.onNext(1); // T: 0ms
         scheduler.advanceTimeBy(250, TimeUnit.MILLISECONDS);
@@ -196,10 +196,10 @@ public class FlowableTakeLastTimedTest {
         scheduler.advanceTimeBy(250, TimeUnit.MILLISECONDS);
         source.onComplete(); // T: 1250ms
 
-        inOrder.verify(o, times(1)).onComplete();
+        inOrder.verify(subscriber, times(1)).onComplete();
 
-        verify(o, never()).onNext(any());
-        verify(o, never()).onError(any(Throwable.class));
+        verify(subscriber, never()).onNext(any());
+        verify(subscriber, never()).onError(any(Throwable.class));
     }
 
     @Test

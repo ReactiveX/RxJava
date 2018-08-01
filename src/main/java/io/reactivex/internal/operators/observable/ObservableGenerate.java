@@ -35,19 +35,19 @@ public final class ObservableGenerate<T, S> extends Observable<T> {
     }
 
     @Override
-    public void subscribeActual(Observer<? super T> s) {
+    public void subscribeActual(Observer<? super T> observer) {
         S state;
 
         try {
             state = stateSupplier.call();
         } catch (Throwable e) {
             Exceptions.throwIfFatal(e);
-            EmptyDisposable.error(e, s);
+            EmptyDisposable.error(e, observer);
             return;
         }
 
-        GeneratorDisposable<T, S> gd = new GeneratorDisposable<T, S>(s, generator, disposeState, state);
-        s.onSubscribe(gd);
+        GeneratorDisposable<T, S> gd = new GeneratorDisposable<T, S>(observer, generator, disposeState, state);
+        observer.onSubscribe(gd);
         gd.run();
     }
 

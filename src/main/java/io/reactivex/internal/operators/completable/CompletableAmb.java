@@ -31,7 +31,7 @@ public final class CompletableAmb extends Completable {
     }
 
     @Override
-    public void subscribeActual(final CompletableObserver s) {
+    public void subscribeActual(final CompletableObserver observer) {
         CompletableSource[] sources = this.sources;
         int count = 0;
         if (sources == null) {
@@ -39,7 +39,7 @@ public final class CompletableAmb extends Completable {
             try {
                 for (CompletableSource element : sourcesIterable) {
                     if (element == null) {
-                        EmptyDisposable.error(new NullPointerException("One of the sources is null"), s);
+                        EmptyDisposable.error(new NullPointerException("One of the sources is null"), observer);
                         return;
                     }
                     if (count == sources.length) {
@@ -51,7 +51,7 @@ public final class CompletableAmb extends Completable {
                 }
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
-                EmptyDisposable.error(e, s);
+                EmptyDisposable.error(e, observer);
                 return;
             }
         } else {
@@ -59,11 +59,11 @@ public final class CompletableAmb extends Completable {
         }
 
         final CompositeDisposable set = new CompositeDisposable();
-        s.onSubscribe(set);
+        observer.onSubscribe(set);
 
         final AtomicBoolean once = new AtomicBoolean();
 
-        CompletableObserver inner = new Amb(once, set, s);
+        CompletableObserver inner = new Amb(once, set, observer);
 
         for (int i = 0; i < count; i++) {
             CompletableSource c = sources[i];
@@ -74,7 +74,7 @@ public final class CompletableAmb extends Completable {
                 NullPointerException npe = new NullPointerException("One of the sources is null");
                 if (once.compareAndSet(false, true)) {
                     set.dispose();
-                    s.onError(npe);
+                    observer.onError(npe);
                 } else {
                     RxJavaPlugins.onError(npe);
                 }
@@ -86,26 +86,26 @@ public final class CompletableAmb extends Completable {
         }
 
         if (count == 0) {
-            s.onComplete();
+            observer.onComplete();
         }
     }
 
     static final class Amb implements CompletableObserver {
         private final AtomicBoolean once;
         private final CompositeDisposable set;
-        private final CompletableObserver s;
+        private final CompletableObserver downstream;
 
-        Amb(AtomicBoolean once, CompositeDisposable set, CompletableObserver s) {
+        Amb(AtomicBoolean once, CompositeDisposable set, CompletableObserver observer) {
             this.once = once;
             this.set = set;
-            this.s = s;
+            this.downstream = observer;
         }
 
         @Override
         public void onComplete() {
             if (once.compareAndSet(false, true)) {
                 set.dispose();
-                s.onComplete();
+                downstream.onComplete();
             }
         }
 
@@ -113,7 +113,7 @@ public final class CompletableAmb extends Completable {
         public void onError(Throwable e) {
             if (once.compareAndSet(false, true)) {
                 set.dispose();
-                s.onError(e);
+                downstream.onError(e);
             } else {
                 RxJavaPlugins.onError(e);
             }

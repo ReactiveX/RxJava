@@ -47,19 +47,19 @@ public class BehaviorProcessorTest extends FlowableProcessorTest<Object> {
     public void testThatSubscriberReceivesDefaultValueAndSubsequentEvents() {
         BehaviorProcessor<String> processor = BehaviorProcessor.createDefault("default");
 
-        Subscriber<String> observer = TestHelper.mockSubscriber();
-        processor.subscribe(observer);
+        Subscriber<String> subscriber = TestHelper.mockSubscriber();
+        processor.subscribe(subscriber);
 
         processor.onNext("one");
         processor.onNext("two");
         processor.onNext("three");
 
-        verify(observer, times(1)).onNext("default");
-        verify(observer, times(1)).onNext("one");
-        verify(observer, times(1)).onNext("two");
-        verify(observer, times(1)).onNext("three");
-        verify(observer, Mockito.never()).onError(testException);
-        verify(observer, Mockito.never()).onComplete();
+        verify(subscriber, times(1)).onNext("default");
+        verify(subscriber, times(1)).onNext("one");
+        verify(subscriber, times(1)).onNext("two");
+        verify(subscriber, times(1)).onNext("three");
+        verify(subscriber, Mockito.never()).onError(testException);
+        verify(subscriber, Mockito.never()).onComplete();
     }
 
     @Test
@@ -68,34 +68,34 @@ public class BehaviorProcessorTest extends FlowableProcessorTest<Object> {
 
         processor.onNext("one");
 
-        Subscriber<String> observer = TestHelper.mockSubscriber();
-        processor.subscribe(observer);
+        Subscriber<String> subscriber = TestHelper.mockSubscriber();
+        processor.subscribe(subscriber);
 
         processor.onNext("two");
         processor.onNext("three");
 
-        verify(observer, Mockito.never()).onNext("default");
-        verify(observer, times(1)).onNext("one");
-        verify(observer, times(1)).onNext("two");
-        verify(observer, times(1)).onNext("three");
-        verify(observer, Mockito.never()).onError(testException);
-        verify(observer, Mockito.never()).onComplete();
+        verify(subscriber, Mockito.never()).onNext("default");
+        verify(subscriber, times(1)).onNext("one");
+        verify(subscriber, times(1)).onNext("two");
+        verify(subscriber, times(1)).onNext("three");
+        verify(subscriber, Mockito.never()).onError(testException);
+        verify(subscriber, Mockito.never()).onComplete();
     }
 
     @Test
     public void testSubscribeThenOnComplete() {
         BehaviorProcessor<String> processor = BehaviorProcessor.createDefault("default");
 
-        Subscriber<String> observer = TestHelper.mockSubscriber();
-        processor.subscribe(observer);
+        Subscriber<String> subscriber = TestHelper.mockSubscriber();
+        processor.subscribe(subscriber);
 
         processor.onNext("one");
         processor.onComplete();
 
-        verify(observer, times(1)).onNext("default");
-        verify(observer, times(1)).onNext("one");
-        verify(observer, Mockito.never()).onError(any(Throwable.class));
-        verify(observer, times(1)).onComplete();
+        verify(subscriber, times(1)).onNext("default");
+        verify(subscriber, times(1)).onNext("one");
+        verify(subscriber, Mockito.never()).onError(any(Throwable.class));
+        verify(subscriber, times(1)).onComplete();
     }
 
     @Test
@@ -104,13 +104,13 @@ public class BehaviorProcessorTest extends FlowableProcessorTest<Object> {
         processor.onNext("one");
         processor.onComplete();
 
-        Subscriber<String> observer = TestHelper.mockSubscriber();
-        processor.subscribe(observer);
+        Subscriber<String> subscriber = TestHelper.mockSubscriber();
+        processor.subscribe(subscriber);
 
-        verify(observer, never()).onNext("default");
-        verify(observer, never()).onNext("one");
-        verify(observer, Mockito.never()).onError(any(Throwable.class));
-        verify(observer, times(1)).onComplete();
+        verify(subscriber, never()).onNext("default");
+        verify(subscriber, never()).onNext("one");
+        verify(subscriber, Mockito.never()).onError(any(Throwable.class));
+        verify(subscriber, times(1)).onComplete();
     }
 
     @Test
@@ -120,13 +120,13 @@ public class BehaviorProcessorTest extends FlowableProcessorTest<Object> {
         RuntimeException re = new RuntimeException("test error");
         processor.onError(re);
 
-        Subscriber<String> observer = TestHelper.mockSubscriber();
-        processor.subscribe(observer);
+        Subscriber<String> subscriber = TestHelper.mockSubscriber();
+        processor.subscribe(subscriber);
 
-        verify(observer, never()).onNext("default");
-        verify(observer, never()).onNext("one");
-        verify(observer, times(1)).onError(re);
-        verify(observer, never()).onComplete();
+        verify(subscriber, never()).onNext("default");
+        verify(subscriber, never()).onNext("one");
+        verify(subscriber, times(1)).onError(re);
+        verify(subscriber, never()).onComplete();
     }
 
     @Test
@@ -178,69 +178,69 @@ public class BehaviorProcessorTest extends FlowableProcessorTest<Object> {
     public void testCompletedAfterErrorIsNotSent() {
         BehaviorProcessor<String> processor = BehaviorProcessor.createDefault("default");
 
-        Subscriber<String> observer = TestHelper.mockSubscriber();
-        processor.subscribe(observer);
+        Subscriber<String> subscriber = TestHelper.mockSubscriber();
+        processor.subscribe(subscriber);
 
         processor.onNext("one");
         processor.onError(testException);
         processor.onNext("two");
         processor.onComplete();
 
-        verify(observer, times(1)).onNext("default");
-        verify(observer, times(1)).onNext("one");
-        verify(observer, times(1)).onError(testException);
-        verify(observer, never()).onNext("two");
-        verify(observer, never()).onComplete();
+        verify(subscriber, times(1)).onNext("default");
+        verify(subscriber, times(1)).onNext("one");
+        verify(subscriber, times(1)).onError(testException);
+        verify(subscriber, never()).onNext("two");
+        verify(subscriber, never()).onComplete();
     }
 
     @Test
     public void testCompletedAfterErrorIsNotSent2() {
         BehaviorProcessor<String> processor = BehaviorProcessor.createDefault("default");
 
-        Subscriber<String> observer = TestHelper.mockSubscriber();
-        processor.subscribe(observer);
+        Subscriber<String> subscriber = TestHelper.mockSubscriber();
+        processor.subscribe(subscriber);
 
         processor.onNext("one");
         processor.onError(testException);
         processor.onNext("two");
         processor.onComplete();
 
-        verify(observer, times(1)).onNext("default");
-        verify(observer, times(1)).onNext("one");
-        verify(observer, times(1)).onError(testException);
-        verify(observer, never()).onNext("two");
-        verify(observer, never()).onComplete();
+        verify(subscriber, times(1)).onNext("default");
+        verify(subscriber, times(1)).onNext("one");
+        verify(subscriber, times(1)).onError(testException);
+        verify(subscriber, never()).onNext("two");
+        verify(subscriber, never()).onComplete();
 
-        Subscriber<Object> o2 = TestHelper.mockSubscriber();
-        processor.subscribe(o2);
-        verify(o2, times(1)).onError(testException);
-        verify(o2, never()).onNext(any());
-        verify(o2, never()).onComplete();
+        Subscriber<Object> subscriber2 = TestHelper.mockSubscriber();
+        processor.subscribe(subscriber2);
+        verify(subscriber2, times(1)).onError(testException);
+        verify(subscriber2, never()).onNext(any());
+        verify(subscriber2, never()).onComplete();
     }
 
     @Test
     public void testCompletedAfterErrorIsNotSent3() {
         BehaviorProcessor<String> processor = BehaviorProcessor.createDefault("default");
 
-        Subscriber<String> observer = TestHelper.mockSubscriber();
-        processor.subscribe(observer);
+        Subscriber<String> subscriber = TestHelper.mockSubscriber();
+        processor.subscribe(subscriber);
 
         processor.onNext("one");
         processor.onComplete();
         processor.onNext("two");
         processor.onComplete();
 
-        verify(observer, times(1)).onNext("default");
-        verify(observer, times(1)).onNext("one");
-        verify(observer, times(1)).onComplete();
-        verify(observer, never()).onError(any(Throwable.class));
-        verify(observer, never()).onNext("two");
+        verify(subscriber, times(1)).onNext("default");
+        verify(subscriber, times(1)).onNext("one");
+        verify(subscriber, times(1)).onComplete();
+        verify(subscriber, never()).onError(any(Throwable.class));
+        verify(subscriber, never()).onNext("two");
 
-        Subscriber<Object> o2 = TestHelper.mockSubscriber();
-        processor.subscribe(o2);
-        verify(o2, times(1)).onComplete();
-        verify(o2, never()).onNext(any());
-        verify(observer, never()).onError(any(Throwable.class));
+        Subscriber<Object> subscriber2 = TestHelper.mockSubscriber();
+        processor.subscribe(subscriber2);
+        verify(subscriber2, times(1)).onComplete();
+        verify(subscriber2, never()).onNext(any());
+        verify(subscriber, never()).onError(any(Throwable.class));
     }
 
     @Test(timeout = 1000)
@@ -248,8 +248,8 @@ public class BehaviorProcessorTest extends FlowableProcessorTest<Object> {
         BehaviorProcessor<String> src = BehaviorProcessor.createDefault("null"); // FIXME was plain null which is not allowed
 
         for (int i = 0; i < 10; i++) {
-            final Subscriber<Object> o = TestHelper.mockSubscriber();
-            InOrder inOrder = inOrder(o);
+            final Subscriber<Object> subscriber = TestHelper.mockSubscriber();
+            InOrder inOrder = inOrder(subscriber);
             String v = "" + i;
             src.onNext(v);
             System.out.printf("Turn: %d%n", i);
@@ -264,34 +264,34 @@ public class BehaviorProcessorTest extends FlowableProcessorTest<Object> {
                 .subscribe(new DefaultSubscriber<String>() {
                     @Override
                     public void onNext(String t) {
-                        o.onNext(t);
+                        subscriber.onNext(t);
                     }
 
                     @Override
                     public void onError(Throwable e) {
-                        o.onError(e);
+                        subscriber.onError(e);
                     }
 
                     @Override
                     public void onComplete() {
-                        o.onComplete();
+                        subscriber.onComplete();
                     }
                 });
-            inOrder.verify(o).onNext(v + ", " + v);
-            inOrder.verify(o).onComplete();
-            verify(o, never()).onError(any(Throwable.class));
+            inOrder.verify(subscriber).onNext(v + ", " + v);
+            inOrder.verify(subscriber).onComplete();
+            verify(subscriber, never()).onError(any(Throwable.class));
         }
     }
     @Test
     public void testStartEmpty() {
         BehaviorProcessor<Integer> source = BehaviorProcessor.create();
-        final Subscriber<Object> o = TestHelper.mockSubscriber();
-        InOrder inOrder = inOrder(o);
+        final Subscriber<Object> subscriber = TestHelper.mockSubscriber();
+        InOrder inOrder = inOrder(subscriber);
 
-        source.subscribe(o);
+        source.subscribe(subscriber);
 
-        inOrder.verify(o, never()).onNext(any());
-        inOrder.verify(o, never()).onComplete();
+        inOrder.verify(subscriber, never()).onNext(any());
+        inOrder.verify(subscriber, never()).onComplete();
 
         source.onNext(1);
 
@@ -299,10 +299,10 @@ public class BehaviorProcessorTest extends FlowableProcessorTest<Object> {
 
         source.onNext(2);
 
-        verify(o, never()).onError(any(Throwable.class));
+        verify(subscriber, never()).onError(any(Throwable.class));
 
-        inOrder.verify(o).onNext(1);
-        inOrder.verify(o).onComplete();
+        inOrder.verify(subscriber).onNext(1);
+        inOrder.verify(subscriber).onComplete();
         inOrder.verifyNoMoreInteractions();
 
 
@@ -310,52 +310,52 @@ public class BehaviorProcessorTest extends FlowableProcessorTest<Object> {
     @Test
     public void testStartEmptyThenAddOne() {
         BehaviorProcessor<Integer> source = BehaviorProcessor.create();
-        final Subscriber<Object> o = TestHelper.mockSubscriber();
-        InOrder inOrder = inOrder(o);
+        final Subscriber<Object> subscriber = TestHelper.mockSubscriber();
+        InOrder inOrder = inOrder(subscriber);
 
         source.onNext(1);
 
-        source.subscribe(o);
+        source.subscribe(subscriber);
 
-        inOrder.verify(o).onNext(1);
+        inOrder.verify(subscriber).onNext(1);
 
         source.onComplete();
 
         source.onNext(2);
 
-        inOrder.verify(o).onComplete();
+        inOrder.verify(subscriber).onComplete();
         inOrder.verifyNoMoreInteractions();
 
-        verify(o, never()).onError(any(Throwable.class));
+        verify(subscriber, never()).onError(any(Throwable.class));
 
     }
     @Test
     public void testStartEmptyCompleteWithOne() {
         BehaviorProcessor<Integer> source = BehaviorProcessor.create();
-        final Subscriber<Object> o = TestHelper.mockSubscriber();
+        final Subscriber<Object> subscriber = TestHelper.mockSubscriber();
 
         source.onNext(1);
         source.onComplete();
 
         source.onNext(2);
 
-        source.subscribe(o);
+        source.subscribe(subscriber);
 
-        verify(o).onComplete();
-        verify(o, never()).onError(any(Throwable.class));
-        verify(o, never()).onNext(any());
+        verify(subscriber).onComplete();
+        verify(subscriber, never()).onError(any(Throwable.class));
+        verify(subscriber, never()).onNext(any());
     }
 
     @Test
     public void testTakeOneSubscriber() {
         BehaviorProcessor<Integer> source = BehaviorProcessor.createDefault(1);
-        final Subscriber<Object> o = TestHelper.mockSubscriber();
+        final Subscriber<Object> subscriber = TestHelper.mockSubscriber();
 
-        source.take(1).subscribe(o);
+        source.take(1).subscribe(subscriber);
 
-        verify(o).onNext(1);
-        verify(o).onComplete();
-        verify(o, never()).onError(any(Throwable.class));
+        verify(subscriber).onNext(1);
+        verify(subscriber).onComplete();
+        verify(subscriber, never()).onError(any(Throwable.class));
 
         assertEquals(0, source.subscriberCount());
         assertFalse(source.hasSubscribers());

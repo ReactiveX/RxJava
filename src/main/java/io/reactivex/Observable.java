@@ -4982,9 +4982,9 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final T blockingFirst() {
-        BlockingFirstObserver<T> s = new BlockingFirstObserver<T>();
-        subscribe(s);
-        T v = s.blockingGet();
+        BlockingFirstObserver<T> observer = new BlockingFirstObserver<T>();
+        subscribe(observer);
+        T v = observer.blockingGet();
         if (v != null) {
             return v;
         }
@@ -5010,9 +5010,9 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final T blockingFirst(T defaultItem) {
-        BlockingFirstObserver<T> s = new BlockingFirstObserver<T>();
-        subscribe(s);
-        T v = s.blockingGet();
+        BlockingFirstObserver<T> observer = new BlockingFirstObserver<T>();
+        subscribe(observer);
+        T v = observer.blockingGet();
         return v != null ? v : defaultItem;
     }
 
@@ -5119,9 +5119,9 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final T blockingLast() {
-        BlockingLastObserver<T> s = new BlockingLastObserver<T>();
-        subscribe(s);
-        T v = s.blockingGet();
+        BlockingLastObserver<T> observer = new BlockingLastObserver<T>();
+        subscribe(observer);
+        T v = observer.blockingGet();
         if (v != null) {
             return v;
         }
@@ -5151,9 +5151,9 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final T blockingLast(T defaultItem) {
-        BlockingLastObserver<T> s = new BlockingLastObserver<T>();
-        subscribe(s);
-        T v = s.blockingGet();
+        BlockingLastObserver<T> observer = new BlockingLastObserver<T>();
+        subscribe(observer);
+        T v = observer.blockingGet();
         return v != null ? v : defaultItem;
     }
 
@@ -10998,16 +10998,16 @@ public abstract class Observable<T> implements ObservableSource<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code safeSubscribe} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * @param s the incoming Observer instance
+     * @param observer the incoming Observer instance
      * @throws NullPointerException if s is null
      */
     @SchedulerSupport(SchedulerSupport.NONE)
-    public final void safeSubscribe(Observer<? super T> s) {
-        ObjectHelper.requireNonNull(s, "s is null");
-        if (s instanceof SafeObserver) {
-            subscribe(s);
+    public final void safeSubscribe(Observer<? super T> observer) {
+        ObjectHelper.requireNonNull(observer, "s is null");
+        if (observer instanceof SafeObserver) {
+            subscribe(observer);
         } else {
-            subscribe(new SafeObserver<T>(s));
+            subscribe(new SafeObserver<T>(observer));
         }
     }
 
@@ -14072,19 +14072,19 @@ public abstract class Observable<T> implements ObservableSource<T> {
     @CheckReturnValue
     @SchedulerSupport(SchedulerSupport.NONE)
     public final Flowable<T> toFlowable(BackpressureStrategy strategy) {
-        Flowable<T> o = new FlowableFromObservable<T>(this);
+        Flowable<T> f = new FlowableFromObservable<T>(this);
 
         switch (strategy) {
             case DROP:
-                return o.onBackpressureDrop();
+                return f.onBackpressureDrop();
             case LATEST:
-                return o.onBackpressureLatest();
+                return f.onBackpressureLatest();
             case MISSING:
-                return o;
+                return f;
             case ERROR:
-                return RxJavaPlugins.onAssembly(new FlowableOnBackpressureError<T>(o));
+                return RxJavaPlugins.onAssembly(new FlowableOnBackpressureError<T>(f));
             default:
-                return o.onBackpressureBuffer();
+                return f.onBackpressureBuffer();
         }
     }
 

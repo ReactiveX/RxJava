@@ -346,7 +346,7 @@ public class ObservableTest {
         final RuntimeException re = new RuntimeException("bad impl");
         Observable<String> o = Observable.unsafeCreate(new ObservableSource<String>() {
             @Override
-            public void subscribe(Observer<? super String> s) { throw re; }
+            public void subscribe(Observer<? super String> observer) { throw re; }
         });
 
         o.subscribe(observer);
@@ -1151,16 +1151,16 @@ public class ObservableTest {
 
     @Test
     public void testExtend() {
-        final TestObserver<Object> subscriber = new TestObserver<Object>();
+        final TestObserver<Object> to = new TestObserver<Object>();
         final Object value = new Object();
         Object returned = Observable.just(value).to(new Function<Observable<Object>, Object>() {
             @Override
             public Object apply(Observable<Object> onSubscribe) {
-                    onSubscribe.subscribe(subscriber);
-                    subscriber.assertNoErrors();
-                    subscriber.assertComplete();
-                    subscriber.assertValue(value);
-                    return subscriber.values().get(0);
+                    onSubscribe.subscribe(to);
+                    to.assertNoErrors();
+                    to.assertComplete();
+                    to.assertValue(value);
+                    return to.values().get(0);
                 }
         });
         assertSame(returned, value);
@@ -1168,16 +1168,16 @@ public class ObservableTest {
 
     @Test
     public void testAsExtend() {
-        final TestObserver<Object> subscriber = new TestObserver<Object>();
+        final TestObserver<Object> to = new TestObserver<Object>();
         final Object value = new Object();
         Object returned = Observable.just(value).as(new ObservableConverter<Object, Object>() {
             @Override
             public Object apply(Observable<Object> onSubscribe) {
-                onSubscribe.subscribe(subscriber);
-                subscriber.assertNoErrors();
-                subscriber.assertComplete();
-                subscriber.assertValue(value);
-                return subscriber.values().get(0);
+                onSubscribe.subscribe(to);
+                to.assertNoErrors();
+                to.assertComplete();
+                to.assertValue(value);
+                return to.values().get(0);
             }
         });
         assertSame(returned, value);

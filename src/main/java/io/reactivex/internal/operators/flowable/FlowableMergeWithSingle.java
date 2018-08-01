@@ -43,9 +43,9 @@ public final class FlowableMergeWithSingle<T> extends AbstractFlowableWithUpstre
     }
 
     @Override
-    protected void subscribeActual(Subscriber<? super T> observer) {
-        MergeWithObserver<T> parent = new MergeWithObserver<T>(observer);
-        observer.onSubscribe(parent);
+    protected void subscribeActual(Subscriber<? super T> subscriber) {
+        MergeWithObserver<T> parent = new MergeWithObserver<T>(subscriber);
+        subscriber.onSubscribe(parent);
         source.subscribe(parent);
         other.subscribe(parent.otherObserver);
     }

@@ -14,15 +14,16 @@
 package io.reactivex.internal.operators.flowable;
 
 import static org.junit.Assert.assertFalse;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import org.junit.Test;
+import org.mockito.Mockito;
 import org.reactivestreams.Subscriber;
 
 import io.reactivex.*;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.processors.PublishProcessor;
-import io.reactivex.subscribers.DefaultSubscriber;
 
 public class FlowableAsObservableTest {
     @Test
@@ -33,16 +34,16 @@ public class FlowableAsObservableTest {
 
         assertFalse(dst instanceof PublishProcessor);
 
-        Subscriber<Object> o = TestHelper.mockSubscriber();
+        Subscriber<Object> subscriber = TestHelper.mockSubscriber();
 
-        dst.subscribe(o);
+        dst.subscribe(subscriber);
 
         src.onNext(1);
         src.onComplete();
 
-        verify(o).onNext(1);
-        verify(o).onComplete();
-        verify(o, never()).onError(any(Throwable.class));
+        verify(subscriber).onNext(1);
+        verify(subscriber).onComplete();
+        verify(subscriber, never()).onError(any(Throwable.class));
     }
     @Test
     public void testHidingError() {
@@ -52,15 +53,14 @@ public class FlowableAsObservableTest {
 
         assertFalse(dst instanceof PublishProcessor);
 
-        @SuppressWarnings("unchecked")
-        DefaultSubscriber<Object> o = mock(DefaultSubscriber.class);
+        Subscriber<Integer> subscriber = TestHelper.mockSubscriber();
 
-        dst.subscribe(o);
+        dst.subscribe(subscriber);
 
         src.onError(new TestException());
 
-        verify(o, never()).onNext(any());
-        verify(o, never()).onComplete();
-        verify(o).onError(any(TestException.class));
+        verify(subscriber, never()).onNext(Mockito.<Integer>any());
+        verify(subscriber, never()).onComplete();
+        verify(subscriber).onError(any(TestException.class));
     }
 }

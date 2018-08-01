@@ -29,7 +29,7 @@ public final class SingleError<T> extends Single<T> {
     }
 
     @Override
-    protected void subscribeActual(SingleObserver<? super T> s) {
+    protected void subscribeActual(SingleObserver<? super T> observer) {
         Throwable error;
 
         try {
@@ -39,7 +39,7 @@ public final class SingleError<T> extends Single<T> {
             error = e;
         }
 
-        EmptyDisposable.error(error, s);
+        EmptyDisposable.error(error, observer);
     }
 
 }

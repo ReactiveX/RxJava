@@ -330,17 +330,17 @@ public class FlowableIgnoreElementsTest {
     public void doubleOnSubscribe() {
         TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Flowable<Object>>() {
             @Override
-            public Flowable<Object> apply(Flowable<Object> o)
+            public Flowable<Object> apply(Flowable<Object> f)
                     throws Exception {
-                return o.ignoreElements().toFlowable();
+                return f.ignoreElements().toFlowable();
             }
         });
 
         TestHelper.checkDoubleOnSubscribeFlowableToCompletable(new Function<Flowable<Object>, Completable>() {
             @Override
-            public Completable apply(Flowable<Object> o)
+            public Completable apply(Flowable<Object> f)
                     throws Exception {
-                return o.ignoreElements();
+                return f.ignoreElements();
             }
         });
     }

@@ -38,7 +38,7 @@ public class FlowableOnErrorReturnTest {
         Flowable<String> w = Flowable.unsafeCreate(f);
         final AtomicReference<Throwable> capturedException = new AtomicReference<Throwable>();
 
-        Flowable<String> observable = w.onErrorReturn(new Function<Throwable, String>() {
+        Flowable<String> flowable = w.onErrorReturn(new Function<Throwable, String>() {
 
             @Override
             public String apply(Throwable e) {
@@ -48,8 +48,8 @@ public class FlowableOnErrorReturnTest {
 
         });
 
-        Subscriber<String> observer = TestHelper.mockSubscriber();
-        observable.subscribe(observer);
+        Subscriber<String> subscriber = TestHelper.mockSubscriber();
+        flowable.subscribe(subscriber);
 
         try {
             f.t.join();
@@ -57,10 +57,10 @@ public class FlowableOnErrorReturnTest {
             fail(e.getMessage());
         }
 
-        verify(observer, Mockito.never()).onError(any(Throwable.class));
-        verify(observer, times(1)).onNext("one");
-        verify(observer, times(1)).onNext("failure");
-        verify(observer, times(1)).onComplete();
+        verify(subscriber, Mockito.never()).onError(any(Throwable.class));
+        verify(subscriber, times(1)).onNext("one");
+        verify(subscriber, times(1)).onNext("failure");
+        verify(subscriber, times(1)).onComplete();
         assertNotNull(capturedException.get());
     }
 
@@ -73,7 +73,7 @@ public class FlowableOnErrorReturnTest {
         Flowable<String> w = Flowable.unsafeCreate(f);
         final AtomicReference<Throwable> capturedException = new AtomicReference<Throwable>();
 
-        Flowable<String> observable = w.onErrorReturn(new Function<Throwable, String>() {
+        Flowable<String> flowable = w.onErrorReturn(new Function<Throwable, String>() {
 
             @Override
             public String apply(Throwable e) {
@@ -83,9 +83,8 @@ public class FlowableOnErrorReturnTest {
 
         });
 
-        @SuppressWarnings("unchecked")
-        DefaultSubscriber<String> observer = mock(DefaultSubscriber.class);
-        observable.subscribe(observer);
+        Subscriber<String> subscriber = TestHelper.mockSubscriber();
+        flowable.subscribe(subscriber);
 
         try {
             f.t.join();
@@ -94,11 +93,11 @@ public class FlowableOnErrorReturnTest {
         }
 
         // we should get the "one" value before the error
-        verify(observer, times(1)).onNext("one");
+        verify(subscriber, times(1)).onNext("one");
 
         // we should have received an onError call on the Observer since the resume function threw an exception
-        verify(observer, times(1)).onError(any(Throwable.class));
-        verify(observer, times(0)).onComplete();
+        verify(subscriber, times(1)).onError(any(Throwable.class));
+        verify(subscriber, times(0)).onComplete();
         assertNotNull(capturedException.get());
     }
 
@@ -120,7 +119,7 @@ public class FlowableOnErrorReturnTest {
             }
         });
 
-        Flowable<String> observable = w.onErrorReturn(new Function<Throwable, String>() {
+        Flowable<String> flowable = w.onErrorReturn(new Function<Throwable, String>() {
 
             @Override
             public String apply(Throwable t1) {
@@ -129,18 +128,17 @@ public class FlowableOnErrorReturnTest {
 
         });
 
-        @SuppressWarnings("unchecked")
-        DefaultSubscriber<String> observer = mock(DefaultSubscriber.class);
-        TestSubscriber<String> ts = new TestSubscriber<String>(observer, Long.MAX_VALUE);
-        observable.subscribe(ts);
+        Subscriber<String> subscriber = TestHelper.mockSubscriber();
+        TestSubscriber<String> ts = new TestSubscriber<String>(subscriber, Long.MAX_VALUE);
+        flowable.subscribe(ts);
         ts.awaitTerminalEvent();
 
-        verify(observer, Mockito.never()).onError(any(Throwable.class));
-        verify(observer, times(1)).onComplete();
-        verify(observer, times(1)).onNext("one");
-        verify(observer, Mockito.never()).onNext("two");
-        verify(observer, Mockito.never()).onNext("three");
-        verify(observer, times(1)).onNext("resume");
+        verify(subscriber, Mockito.never()).onError(any(Throwable.class));
+        verify(subscriber, times(1)).onComplete();
+        verify(subscriber, times(1)).onNext("one");
+        verify(subscriber, Mockito.never()).onNext("two");
+        verify(subscriber, Mockito.never()).onNext("three");
+        verify(subscriber, times(1)).onNext("resume");
     }
 
     @Test

@@ -35,8 +35,8 @@ public class ObservableScalarXMapTest {
 
     static final class CallablePublisher implements ObservableSource<Integer>, Callable<Integer> {
         @Override
-        public void subscribe(Observer<? super Integer> s) {
-            EmptyDisposable.error(new TestException(), s);
+        public void subscribe(Observer<? super Integer> observer) {
+            EmptyDisposable.error(new TestException(), observer);
         }
 
         @Override
@@ -47,8 +47,8 @@ public class ObservableScalarXMapTest {
 
     static final class EmptyCallablePublisher implements ObservableSource<Integer>, Callable<Integer> {
         @Override
-        public void subscribe(Observer<? super Integer> s) {
-            EmptyDisposable.complete(s);
+        public void subscribe(Observer<? super Integer> observer) {
+            EmptyDisposable.complete(observer);
         }
 
         @Override
@@ -59,9 +59,9 @@ public class ObservableScalarXMapTest {
 
     static final class OneCallablePublisher implements ObservableSource<Integer>, Callable<Integer> {
         @Override
-        public void subscribe(Observer<? super Integer> s) {
-            ScalarDisposable<Integer> sd = new ScalarDisposable<Integer>(s, 1);
-            s.onSubscribe(sd);
+        public void subscribe(Observer<? super Integer> observer) {
+            ScalarDisposable<Integer> sd = new ScalarDisposable<Integer>(observer, 1);
+            observer.onSubscribe(sd);
             sd.run();
         }
 

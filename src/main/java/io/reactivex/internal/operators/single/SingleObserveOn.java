@@ -31,8 +31,8 @@ public final class SingleObserveOn<T> extends Single<T> {
     }
 
     @Override
-    protected void subscribeActual(final SingleObserver<? super T> s) {
-        source.subscribe(new ObserveOnSingleObserver<T>(s, scheduler));
+    protected void subscribeActual(final SingleObserver<? super T> observer) {
+        source.subscribe(new ObserveOnSingleObserver<T>(observer, scheduler));
     }
 
     static final class ObserveOnSingleObserver<T> extends AtomicReference<Disposable>

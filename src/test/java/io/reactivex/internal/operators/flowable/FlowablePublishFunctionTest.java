@@ -41,8 +41,8 @@ public class FlowablePublishFunctionTest {
 
         Flowable.range(1, 3).publish(new Function<Flowable<Integer>, Flowable<Integer>>() {
             @Override
-            public Flowable<Integer> apply(Flowable<Integer> o) {
-                return Flowable.concat(o.take(5), o.takeLast(5));
+            public Flowable<Integer> apply(Flowable<Integer> f) {
+                return Flowable.concat(f.take(5), f.takeLast(5));
             }
         }).subscribe(ts);
 
@@ -57,8 +57,8 @@ public class FlowablePublishFunctionTest {
 
         Flowable.range(1, 6).publish(new Function<Flowable<Integer>, Flowable<Integer>>() {
             @Override
-            public Flowable<Integer> apply(Flowable<Integer> o) {
-                return Flowable.concat(o.take(5), o.takeLast(5));
+            public Flowable<Integer> apply(Flowable<Integer> f) {
+                return Flowable.concat(f.take(5), f.takeLast(5));
             }
         }).subscribe(ts);
 
@@ -88,8 +88,8 @@ public class FlowablePublishFunctionTest {
 
         pp.publish(new Function<Flowable<Integer>, Flowable<Integer>>() {
             @Override
-            public Flowable<Integer> apply(Flowable<Integer> o) {
-                return Flowable.concat(o.take(5), o.takeLast(5));
+            public Flowable<Integer> apply(Flowable<Integer> f) {
+                return Flowable.concat(f.take(5), f.takeLast(5));
             }
         }).subscribe(ts);
 
@@ -124,8 +124,8 @@ public class FlowablePublishFunctionTest {
 
         pp.publish(new Function<Flowable<Integer>, Flowable<Integer>>() {
             @Override
-            public Flowable<Integer> apply(Flowable<Integer> o) {
-                return o.take(1);
+            public Flowable<Integer> apply(Flowable<Integer> f) {
+                return f.take(1);
             }
         }).subscribe(ts);
 
@@ -155,8 +155,8 @@ public class FlowablePublishFunctionTest {
 
         pp.publish(new Function<Flowable<Integer>, Flowable<Integer>>() {
             @Override
-            public Flowable<Integer> apply(Flowable<Integer> o) {
-                return o.take(1);
+            public Flowable<Integer> apply(Flowable<Integer> f) {
+                return f.take(1);
             }
         }).subscribe(ts);
 
@@ -171,8 +171,8 @@ public class FlowablePublishFunctionTest {
 
         pp.publish(new Function<Flowable<Integer>, Flowable<Integer>>() {
             @Override
-            public Flowable<Integer> apply(Flowable<Integer> o) {
-                return o.take(1);
+            public Flowable<Integer> apply(Flowable<Integer> f) {
+                return f.take(1);
             }
         }).subscribe(ts);
 
@@ -193,8 +193,8 @@ public class FlowablePublishFunctionTest {
 
         pp.publish(new Function<Flowable<Integer>, Flowable<Integer>>() {
             @Override
-            public Flowable<Integer> apply(Flowable<Integer> o) {
-                return o;
+            public Flowable<Integer> apply(Flowable<Integer> f) {
+                return f;
             }
         }).subscribe(ts);
 
@@ -216,8 +216,8 @@ public class FlowablePublishFunctionTest {
 
         pp.publish(new Function<Flowable<Integer>, Flowable<Integer>>() {
             @Override
-            public Flowable<Integer> apply(Flowable<Integer> o) {
-                return o;
+            public Flowable<Integer> apply(Flowable<Integer> f) {
+                return f;
             }
         }).subscribe(ts);
 
@@ -242,8 +242,8 @@ public class FlowablePublishFunctionTest {
 
         new FlowablePublishMulticast<Integer, Integer>(pp, new Function<Flowable<Integer>, Flowable<Integer>>() {
             @Override
-            public Flowable<Integer> apply(Flowable<Integer> o) {
-                return o;
+            public Flowable<Integer> apply(Flowable<Integer> f) {
+                return f;
             }
         }, Flowable.bufferSize(), true).subscribe(ts);
 

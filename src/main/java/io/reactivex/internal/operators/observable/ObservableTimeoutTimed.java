@@ -37,15 +37,15 @@ public final class ObservableTimeoutTimed<T> extends AbstractObservableWithUpstr
     }
 
     @Override
-    protected void subscribeActual(Observer<? super T> s) {
+    protected void subscribeActual(Observer<? super T> observer) {
         if (other == null) {
-            TimeoutObserver<T> parent = new TimeoutObserver<T>(s, timeout, unit, scheduler.createWorker());
-            s.onSubscribe(parent);
+            TimeoutObserver<T> parent = new TimeoutObserver<T>(observer, timeout, unit, scheduler.createWorker());
+            observer.onSubscribe(parent);
             parent.startTimeout(0L);
             source.subscribe(parent);
         } else {
-            TimeoutFallbackObserver<T> parent = new TimeoutFallbackObserver<T>(s, timeout, unit, scheduler.createWorker(), other);
-            s.onSubscribe(parent);
+            TimeoutFallbackObserver<T> parent = new TimeoutFallbackObserver<T>(observer, timeout, unit, scheduler.createWorker(), other);
+            observer.onSubscribe(parent);
             parent.startTimeout(0L);
             source.subscribe(parent);
         }

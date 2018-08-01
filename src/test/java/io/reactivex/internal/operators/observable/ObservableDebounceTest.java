@@ -471,11 +471,11 @@ public class ObservableDebounceTest {
         new Observable<Integer>() {
             @Override
             protected void subscribeActual(
-                    Observer<? super Integer> s) {
-                s.onSubscribe(Disposables.empty());
+                    Observer<? super Integer> observer) {
+                observer.onSubscribe(Disposables.empty());
                 to.cancel();
-                s.onNext(1);
-                s.onComplete();
+                observer.onNext(1);
+                observer.onComplete();
             }
         }
         .debounce(1, TimeUnit.SECONDS)

@@ -31,11 +31,11 @@ public final class ObservableRetryBiPredicate<T> extends AbstractObservableWithU
     }
 
     @Override
-    public void subscribeActual(Observer<? super T> s) {
+    public void subscribeActual(Observer<? super T> observer) {
         SequentialDisposable sa = new SequentialDisposable();
-        s.onSubscribe(sa);
+        observer.onSubscribe(sa);
 
-        RetryBiObserver<T> rs = new RetryBiObserver<T>(s, predicate, sa, source);
+        RetryBiObserver<T> rs = new RetryBiObserver<T>(observer, predicate, sa, source);
         rs.subscribeNext();
     }
 

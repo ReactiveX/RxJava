@@ -34,40 +34,40 @@ public class FlowableThrottleFirstTest {
 
     private TestScheduler scheduler;
     private Scheduler.Worker innerScheduler;
-    private Subscriber<String> observer;
+    private Subscriber<String> subscriber;
 
     @Before
     public void before() {
         scheduler = new TestScheduler();
         innerScheduler = scheduler.createWorker();
-        observer = TestHelper.mockSubscriber();
+        subscriber = TestHelper.mockSubscriber();
     }
 
     @Test
     public void testThrottlingWithCompleted() {
         Flowable<String> source = Flowable.unsafeCreate(new Publisher<String>() {
             @Override
-            public void subscribe(Subscriber<? super String> observer) {
-                observer.onSubscribe(new BooleanSubscription());
-                publishNext(observer, 100, "one");    // publish as it's first
-                publishNext(observer, 300, "two");    // skip as it's last within the first 400
-                publishNext(observer, 900, "three");   // publish
-                publishNext(observer, 905, "four");   // skip
-                publishCompleted(observer, 1000);     // Should be published as soon as the timeout expires.
+            public void subscribe(Subscriber<? super String> subscriber) {
+                subscriber.onSubscribe(new BooleanSubscription());
+                publishNext(subscriber, 100, "one");    // publish as it's first
+                publishNext(subscriber, 300, "two");    // skip as it's last within the first 400
+                publishNext(subscriber, 900, "three");   // publish
+                publishNext(subscriber, 905, "four");   // skip
+                publishCompleted(subscriber, 1000);     // Should be published as soon as the timeout expires.
             }
         });
 
         Flowable<String> sampled = source.throttleFirst(400, TimeUnit.MILLISECONDS, scheduler);
-        sampled.subscribe(observer);
+        sampled.subscribe(subscriber);
 
-        InOrder inOrder = inOrder(observer);
+        InOrder inOrder = inOrder(subscriber);
 
         scheduler.advanceTimeTo(1000, TimeUnit.MILLISECONDS);
-        inOrder.verify(observer, times(1)).onNext("one");
-        inOrder.verify(observer, times(0)).onNext("two");
-        inOrder.verify(observer, times(1)).onNext("three");
-        inOrder.verify(observer, times(0)).onNext("four");
-        inOrder.verify(observer, times(1)).onComplete();
+        inOrder.verify(subscriber, times(1)).onNext("one");
+        inOrder.verify(subscriber, times(0)).onNext("two");
+        inOrder.verify(subscriber, times(1)).onNext("three");
+        inOrder.verify(subscriber, times(0)).onNext("four");
+        inOrder.verify(subscriber, times(1)).onComplete();
         inOrder.verifyNoMoreInteractions();
     }
 
@@ -75,59 +75,59 @@ public class FlowableThrottleFirstTest {
     public void testThrottlingWithError() {
         Flowable<String> source = Flowable.unsafeCreate(new Publisher<String>() {
             @Override
-            public void subscribe(Subscriber<? super String> observer) {
-                observer.onSubscribe(new BooleanSubscription());
+            public void subscribe(Subscriber<? super String> subscriber) {
+                subscriber.onSubscribe(new BooleanSubscription());
                 Exception error = new TestException();
-                publishNext(observer, 100, "one");    // Should be published since it is first
-                publishNext(observer, 200, "two");    // Should be skipped since onError will arrive before the timeout expires
-                publishError(observer, 300, error);   // Should be published as soon as the timeout expires.
+                publishNext(subscriber, 100, "one");    // Should be published since it is first
+                publishNext(subscriber, 200, "two");    // Should be skipped since onError will arrive before the timeout expires
+                publishError(subscriber, 300, error);   // Should be published as soon as the timeout expires.
             }
         });
 
         Flowable<String> sampled = source.throttleFirst(400, TimeUnit.MILLISECONDS, scheduler);
-        sampled.subscribe(observer);
+        sampled.subscribe(subscriber);
 
-        InOrder inOrder = inOrder(observer);
+        InOrder inOrder = inOrder(subscriber);
 
         scheduler.advanceTimeTo(400, TimeUnit.MILLISECONDS);
-        inOrder.verify(observer).onNext("one");
-        inOrder.verify(observer).onError(any(TestException.class));
+        inOrder.verify(subscriber).onNext("one");
+        inOrder.verify(subscriber).onError(any(TestException.class));
         inOrder.verifyNoMoreInteractions();
     }
 
-    private <T> void publishCompleted(final Subscriber<T> observer, long delay) {
+    private <T> void publishCompleted(final Subscriber<T> subscriber, long delay) {
         innerScheduler.schedule(new Runnable() {
             @Override
             public void run() {
-                observer.onComplete();
+                subscriber.onComplete();
             }
         }, delay, TimeUnit.MILLISECONDS);
     }
 
-    private <T> void publishError(final Subscriber<T> observer, long delay, final Exception error) {
+    private <T> void publishError(final Subscriber<T> subscriber, long delay, final Exception error) {
         innerScheduler.schedule(new Runnable() {
             @Override
             public void run() {
-                observer.onError(error);
+                subscriber.onError(error);
             }
         }, delay, TimeUnit.MILLISECONDS);
     }
 
-    private <T> void publishNext(final Subscriber<T> observer, long delay, final T value) {
+    private <T> void publishNext(final Subscriber<T> subscriber, long delay, final T value) {
         innerScheduler.schedule(new Runnable() {
             @Override
             public void run() {
-                observer.onNext(value);
+                subscriber.onNext(value);
             }
         }, delay, TimeUnit.MILLISECONDS);
     }
 
     @Test
     public void testThrottle() {
-        Subscriber<Integer> observer = TestHelper.mockSubscriber();
+        Subscriber<Integer> subscriber = TestHelper.mockSubscriber();
         TestScheduler s = new TestScheduler();
         PublishProcessor<Integer> o = PublishProcessor.create();
-        o.throttleFirst(500, TimeUnit.MILLISECONDS, s).subscribe(observer);
+        o.throttleFirst(500, TimeUnit.MILLISECONDS, s).subscribe(subscriber);
 
         // send events with simulated time increments
         s.advanceTimeTo(0, TimeUnit.MILLISECONDS);
@@ -145,11 +145,11 @@ public class FlowableThrottleFirstTest {
         s.advanceTimeTo(1501, TimeUnit.MILLISECONDS);
         o.onComplete();
 
-        InOrder inOrder = inOrder(observer);
-        inOrder.verify(observer).onNext(1);
-        inOrder.verify(observer).onNext(3);
-        inOrder.verify(observer).onNext(7);
-        inOrder.verify(observer).onComplete();
+        InOrder inOrder = inOrder(subscriber);
+        inOrder.verify(subscriber).onNext(1);
+        inOrder.verify(subscriber).onNext(3);
+        inOrder.verify(subscriber).onNext(7);
+        inOrder.verify(subscriber).onComplete();
         inOrder.verifyNoMoreInteractions();
     }
 
@@ -173,14 +173,14 @@ public class FlowableThrottleFirstTest {
         try {
             new Flowable<Integer>() {
                 @Override
-                protected void subscribeActual(Subscriber<? super Integer> observer) {
-                    observer.onSubscribe(new BooleanSubscription());
-                    observer.onNext(1);
-                    observer.onNext(2);
-                    observer.onComplete();
-                    observer.onNext(3);
-                    observer.onError(new TestException());
-                    observer.onComplete();
+                protected void subscribeActual(Subscriber<? super Integer> subscriber) {
+                    subscriber.onSubscribe(new BooleanSubscription());
+                    subscriber.onNext(1);
+                    subscriber.onNext(2);
+                    subscriber.onComplete();
+                    subscriber.onNext(3);
+                    subscriber.onError(new TestException());
+                    subscriber.onComplete();
                 }
             }
             .throttleFirst(1, TimeUnit.DAYS)

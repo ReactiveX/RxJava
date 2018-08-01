@@ -42,7 +42,7 @@ public class BoundedSubscriberTest {
     public void onSubscribeThrows() {
         final List<Object> received = new ArrayList<Object>();
 
-        BoundedSubscriber<Object> o = new BoundedSubscriber<Object>(new Consumer<Object>() {
+        BoundedSubscriber<Object> subscriber = new BoundedSubscriber<Object>(new Consumer<Object>() {
             @Override
             public void accept(Object o) throws Exception {
                 received.add(o);
@@ -64,21 +64,21 @@ public class BoundedSubscriberTest {
             }
         }, 128);
 
-        assertFalse(o.isDisposed());
+        assertFalse(subscriber.isDisposed());
 
-        Flowable.just(1).subscribe(o);
+        Flowable.just(1).subscribe(subscriber);
 
         assertTrue(received.toString(), received.get(0) instanceof TestException);
         assertEquals(received.toString(), 1, received.size());
 
-        assertTrue(o.isDisposed());
+        assertTrue(subscriber.isDisposed());
     }
 
     @Test
     public void onNextThrows() {
         final List<Object> received = new ArrayList<Object>();
 
-        BoundedSubscriber<Object> o = new BoundedSubscriber<Object>(new Consumer<Object>() {
+        BoundedSubscriber<Object> subscriber = new BoundedSubscriber<Object>(new Consumer<Object>() {
             @Override
             public void accept(Object o) throws Exception {
                 throw new TestException();
@@ -100,14 +100,14 @@ public class BoundedSubscriberTest {
             }
         }, 128);
 
-        assertFalse(o.isDisposed());
+        assertFalse(subscriber.isDisposed());
 
-        Flowable.just(1).subscribe(o);
+        Flowable.just(1).subscribe(subscriber);
 
         assertTrue(received.toString(), received.get(0) instanceof TestException);
         assertEquals(received.toString(), 1, received.size());
 
-        assertTrue(o.isDisposed());
+        assertTrue(subscriber.isDisposed());
     }
 
     @Test
@@ -117,7 +117,7 @@ public class BoundedSubscriberTest {
         try {
             final List<Object> received = new ArrayList<Object>();
 
-            BoundedSubscriber<Object> o = new BoundedSubscriber<Object>(new Consumer<Object>() {
+            BoundedSubscriber<Object> subscriber = new BoundedSubscriber<Object>(new Consumer<Object>() {
                 @Override
                 public void accept(Object o) throws Exception {
                     received.add(o);
@@ -139,13 +139,13 @@ public class BoundedSubscriberTest {
                 }
             }, 128);
 
-            assertFalse(o.isDisposed());
+            assertFalse(subscriber.isDisposed());
 
-            Flowable.<Integer>error(new TestException("Outer")).subscribe(o);
+            Flowable.<Integer>error(new TestException("Outer")).subscribe(subscriber);
 
             assertTrue(received.toString(), received.isEmpty());
 
-            assertTrue(o.isDisposed());
+            assertTrue(subscriber.isDisposed());
 
             TestHelper.assertError(errors, 0, CompositeException.class);
             List<Throwable> ce = TestHelper.compositeList(errors.get(0));
@@ -163,7 +163,7 @@ public class BoundedSubscriberTest {
         try {
             final List<Object> received = new ArrayList<Object>();
 
-            BoundedSubscriber<Object> o = new BoundedSubscriber<Object>(new Consumer<Object>() {
+            BoundedSubscriber<Object> subscriber = new BoundedSubscriber<Object>(new Consumer<Object>() {
                 @Override
                 public void accept(Object o) throws Exception {
                     received.add(o);
@@ -185,13 +185,13 @@ public class BoundedSubscriberTest {
                 }
             }, 128);
 
-            assertFalse(o.isDisposed());
+            assertFalse(subscriber.isDisposed());
 
-            Flowable.<Integer>empty().subscribe(o);
+            Flowable.<Integer>empty().subscribe(subscriber);
 
             assertTrue(received.toString(), received.isEmpty());
 
-            assertTrue(o.isDisposed());
+            assertTrue(subscriber.isDisposed());
 
             TestHelper.assertUndeliverable(errors, 0, TestException.class);
         } finally {
@@ -294,7 +294,7 @@ public class BoundedSubscriberTest {
 
         final List<Object> received = new ArrayList<Object>();
 
-        BoundedSubscriber<Object> o = new BoundedSubscriber<Object>(new Consumer<Object>() {
+        BoundedSubscriber<Object> subscriber = new BoundedSubscriber<Object>(new Consumer<Object>() {
             @Override
             public void accept(Object v) throws Exception {
                 received.add(v);
@@ -316,7 +316,7 @@ public class BoundedSubscriberTest {
             }
         }, 128);
 
-        source.subscribe(o);
+        source.subscribe(subscriber);
 
         assertEquals(Arrays.asList(1, 100), received);
     }
@@ -339,7 +339,7 @@ public class BoundedSubscriberTest {
 
         final List<Object> received = new ArrayList<Object>();
 
-        BoundedSubscriber<Object> o = new BoundedSubscriber<Object>(new Consumer<Object>() {
+        BoundedSubscriber<Object> subscriber = new BoundedSubscriber<Object>(new Consumer<Object>() {
             @Override
             public void accept(Object v) throws Exception {
                 received.add(v);
@@ -361,28 +361,28 @@ public class BoundedSubscriberTest {
             }
         }, 128);
 
-        source.subscribe(o);
+        source.subscribe(subscriber);
 
         assertEquals(Arrays.asList(1, 100), received);
     }
 
     @Test
     public void onErrorMissingShouldReportNoCustomOnError() {
-        BoundedSubscriber<Integer> o = new BoundedSubscriber<Integer>(Functions.<Integer>emptyConsumer(),
+        BoundedSubscriber<Integer> subscriber = new BoundedSubscriber<Integer>(Functions.<Integer>emptyConsumer(),
                 Functions.ON_ERROR_MISSING,
                 Functions.EMPTY_ACTION,
                 Functions.<Subscription>boundedConsumer(128), 128);
 
-        assertFalse(o.hasCustomOnError());
+        assertFalse(subscriber.hasCustomOnError());
     }
 
     @Test
     public void customOnErrorShouldReportCustomOnError() {
-        BoundedSubscriber<Integer> o = new BoundedSubscriber<Integer>(Functions.<Integer>emptyConsumer(),
+        BoundedSubscriber<Integer> subscriber = new BoundedSubscriber<Integer>(Functions.<Integer>emptyConsumer(),
                 Functions.<Throwable>emptyConsumer(),
                 Functions.EMPTY_ACTION,
                 Functions.<Subscription>boundedConsumer(128), 128);
 
-        assertTrue(o.hasCustomOnError());
+        assertTrue(subscriber.hasCustomOnError());
     }
 }

@@ -316,8 +316,8 @@ public class FlowableDelaySubscriptionOtherTest {
     public void badSourceOther() {
         TestHelper.checkBadSourceFlowable(new Function<Flowable<Integer>, Object>() {
             @Override
-            public Object apply(Flowable<Integer> o) throws Exception {
-                return Flowable.just(1).delaySubscription(o);
+            public Object apply(Flowable<Integer> f) throws Exception {
+                return Flowable.just(1).delaySubscription(f);
             }
         }, false, 1, 1, 1);
     }
@@ -327,8 +327,8 @@ public class FlowableDelaySubscriptionOtherTest {
         ScheduledExecutorService exec = Executors.newSingleThreadScheduledExecutor();
         try {
             for (Scheduler s : new Scheduler[] { Schedulers.single(), Schedulers.computation(), Schedulers.newThread(), Schedulers.io(), Schedulers.from(exec) }) {
-                final TestSubscriber<Boolean> observer = TestSubscriber.create();
-                observer.withTag(s.getClass().getSimpleName());
+                final TestSubscriber<Boolean> ts = TestSubscriber.create();
+                ts.withTag(s.getClass().getSimpleName());
 
                 Flowable.<Boolean>create(new FlowableOnSubscribe<Boolean>() {
                     @Override
@@ -338,10 +338,10 @@ public class FlowableDelaySubscriptionOtherTest {
                     }
                 }, BackpressureStrategy.MISSING)
                 .delaySubscription(100, TimeUnit.MILLISECONDS, s)
-                .subscribe(observer);
+                .subscribe(ts);
 
-                observer.awaitTerminalEvent();
-                observer.assertValue(false);
+                ts.awaitTerminalEvent();
+                ts.assertValue(false);
             }
         } finally {
             exec.shutdown();

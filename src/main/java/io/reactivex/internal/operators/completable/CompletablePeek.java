@@ -46,9 +46,9 @@ public final class CompletablePeek extends Completable {
     }
 
     @Override
-    protected void subscribeActual(final CompletableObserver s) {
+    protected void subscribeActual(final CompletableObserver observer) {
 
-        source.subscribe(new CompletableObserverImplementation(s));
+        source.subscribe(new CompletableObserverImplementation(observer));
     }
 
     final class CompletableObserverImplementation implements CompletableObserver, Disposable {

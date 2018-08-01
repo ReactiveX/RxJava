@@ -145,10 +145,8 @@ public class ObservableObserveOnTest {
         Observable<Integer> o = Observable.just(1, 2, 3);
         Observable<Integer> o2 = o.observeOn(scheduler);
 
-        @SuppressWarnings("unchecked")
-        DefaultObserver<Object> observer1 = mock(DefaultObserver.class);
-        @SuppressWarnings("unchecked")
-        DefaultObserver<Object> observer2 = mock(DefaultObserver.class);
+        Observer<Object> observer1 = TestHelper.mockObserver();
+        Observer<Object> observer2 = TestHelper.mockObserver();
 
         InOrder inOrder1 = inOrder(observer1);
         InOrder inOrder2 = inOrder(observer2);
@@ -368,8 +366,7 @@ public class ObservableObserveOnTest {
 
         Observable<Integer> source = Observable.concat(Observable.<Integer> error(new TestException()), Observable.just(1));
 
-        @SuppressWarnings("unchecked")
-        DefaultObserver<Integer> o = mock(DefaultObserver.class);
+        Observer<Integer> o = TestHelper.mockObserver();
         InOrder inOrder = inOrder(o);
 
         source.observeOn(testScheduler).subscribe(o);

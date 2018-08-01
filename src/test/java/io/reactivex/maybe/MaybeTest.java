@@ -1002,7 +1002,7 @@ public class MaybeTest {
         try {
             Maybe.unsafeCreate(new MaybeSource<Object>() {
                 @Override
-                public void subscribe(MaybeObserver<? super Object> s) {
+                public void subscribe(MaybeObserver<? super Object> observer) {
                     throw new NullPointerException("Forced failure");
                 }
             }).test();
@@ -1019,7 +1019,7 @@ public class MaybeTest {
         try {
             Maybe.unsafeCreate(new MaybeSource<Object>() {
                 @Override
-                public void subscribe(MaybeObserver<? super Object> s) {
+                public void subscribe(MaybeObserver<? super Object> observer) {
                     throw new IllegalArgumentException("Forced failure");
                 }
             }).test();

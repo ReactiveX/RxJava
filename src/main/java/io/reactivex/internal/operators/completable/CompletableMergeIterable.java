@@ -30,10 +30,10 @@ public final class CompletableMergeIterable extends Completable {
     }
 
     @Override
-    public void subscribeActual(final CompletableObserver s) {
+    public void subscribeActual(final CompletableObserver observer) {
         final CompositeDisposable set = new CompositeDisposable();
 
-        s.onSubscribe(set);
+        observer.onSubscribe(set);
 
         Iterator<? extends CompletableSource> iterator;
 
@@ -41,13 +41,13 @@ public final class CompletableMergeIterable extends Completable {
             iterator = ObjectHelper.requireNonNull(sources.iterator(), "The source iterator returned is null");
         } catch (Throwable e) {
             Exceptions.throwIfFatal(e);
-            s.onError(e);
+            observer.onError(e);
             return;
         }
 
         final AtomicInteger wip = new AtomicInteger(1);
 
-        MergeCompletableObserver shared = new MergeCompletableObserver(s, set, wip);
+        MergeCompletableObserver shared = new MergeCompletableObserver(observer, set, wip);
         for (;;) {
             if (set.isDisposed()) {
                 return;

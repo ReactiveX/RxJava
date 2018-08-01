@@ -45,16 +45,16 @@ public final class FlowableToListSingle<T, U extends Collection<? super T>> exte
     }
 
     @Override
-    protected void subscribeActual(SingleObserver<? super U> s) {
+    protected void subscribeActual(SingleObserver<? super U> observer) {
         U coll;
         try {
             coll = ObjectHelper.requireNonNull(collectionSupplier.call(), "The collectionSupplier returned a null collection. Null values are generally not allowed in 2.x operators and sources.");
         } catch (Throwable e) {
             Exceptions.throwIfFatal(e);
-            EmptyDisposable.error(e, s);
+            EmptyDisposable.error(e, observer);
             return;
         }
-        source.subscribe(new ToListSubscriber<T, U>(s, coll));
+        source.subscribe(new ToListSubscriber<T, U>(observer, coll));
     }
 
     @Override

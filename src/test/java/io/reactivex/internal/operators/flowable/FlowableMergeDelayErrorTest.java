@@ -34,164 +34,164 @@ import io.reactivex.subscribers.*;
 
 public class FlowableMergeDelayErrorTest {
 
-    Subscriber<String> stringObserver;
+    Subscriber<String> stringSubscriber;
 
     @Before
     public void before() {
-        stringObserver = TestHelper.mockSubscriber();
+        stringSubscriber = TestHelper.mockSubscriber();
     }
 
     @Test
     public void testErrorDelayed1() {
-        final Flowable<String> o1 = Flowable.unsafeCreate(new TestErrorFlowable("four", null, "six")); // we expect to lose "six" from the source (and it should never be sent by the source since onError was called
-        final Flowable<String> o2 = Flowable.unsafeCreate(new TestErrorFlowable("one", "two", "three"));
+        final Flowable<String> f1 = Flowable.unsafeCreate(new TestErrorFlowable("four", null, "six")); // we expect to lose "six" from the source (and it should never be sent by the source since onError was called
+        final Flowable<String> f2 = Flowable.unsafeCreate(new TestErrorFlowable("one", "two", "three"));
 
-        Flowable<String> m = Flowable.mergeDelayError(o1, o2);
-        m.subscribe(stringObserver);
+        Flowable<String> m = Flowable.mergeDelayError(f1, f2);
+        m.subscribe(stringSubscriber);
 
-        verify(stringObserver, times(1)).onError(any(NullPointerException.class));
-        verify(stringObserver, never()).onComplete();
-        verify(stringObserver, times(1)).onNext("one");
-        verify(stringObserver, times(1)).onNext("two");
-        verify(stringObserver, times(1)).onNext("three");
-        verify(stringObserver, times(1)).onNext("four");
-        verify(stringObserver, times(0)).onNext("five");
+        verify(stringSubscriber, times(1)).onError(any(NullPointerException.class));
+        verify(stringSubscriber, never()).onComplete();
+        verify(stringSubscriber, times(1)).onNext("one");
+        verify(stringSubscriber, times(1)).onNext("two");
+        verify(stringSubscriber, times(1)).onNext("three");
+        verify(stringSubscriber, times(1)).onNext("four");
+        verify(stringSubscriber, times(0)).onNext("five");
         // despite not expecting it ... we don't do anything to prevent it if the source Flowable keeps sending after onError
         // inner Flowable errors are considered terminal for that source
-//        verify(stringObserver, times(1)).onNext("six");
+//        verify(stringSubscriber, times(1)).onNext("six");
         // inner Flowable errors are considered terminal for that source
     }
 
     @Test
     public void testErrorDelayed2() {
-        final Flowable<String> o1 = Flowable.unsafeCreate(new TestErrorFlowable("one", "two", "three"));
-        final Flowable<String> o2 = Flowable.unsafeCreate(new TestErrorFlowable("four", null, "six")); // we expect to lose "six" from the source (and it should never be sent by the source since onError was called
-        final Flowable<String> o3 = Flowable.unsafeCreate(new TestErrorFlowable("seven", "eight", null));
-        final Flowable<String> o4 = Flowable.unsafeCreate(new TestErrorFlowable("nine"));
+        final Flowable<String> f1 = Flowable.unsafeCreate(new TestErrorFlowable("one", "two", "three"));
+        final Flowable<String> f2 = Flowable.unsafeCreate(new TestErrorFlowable("four", null, "six")); // we expect to lose "six" from the source (and it should never be sent by the source since onError was called
+        final Flowable<String> f3 = Flowable.unsafeCreate(new TestErrorFlowable("seven", "eight", null));
+        final Flowable<String> f4 = Flowable.unsafeCreate(new TestErrorFlowable("nine"));
 
-        Flowable<String> m = Flowable.mergeDelayError(o1, o2, o3, o4);
-        m.subscribe(stringObserver);
+        Flowable<String> m = Flowable.mergeDelayError(f1, f2, f3, f4);
+        m.subscribe(stringSubscriber);
 
-        verify(stringObserver, times(1)).onError(any(CompositeException.class));
-        verify(stringObserver, never()).onComplete();
-        verify(stringObserver, times(1)).onNext("one");
-        verify(stringObserver, times(1)).onNext("two");
-        verify(stringObserver, times(1)).onNext("three");
-        verify(stringObserver, times(1)).onNext("four");
-        verify(stringObserver, times(0)).onNext("five");
+        verify(stringSubscriber, times(1)).onError(any(CompositeException.class));
+        verify(stringSubscriber, never()).onComplete();
+        verify(stringSubscriber, times(1)).onNext("one");
+        verify(stringSubscriber, times(1)).onNext("two");
+        verify(stringSubscriber, times(1)).onNext("three");
+        verify(stringSubscriber, times(1)).onNext("four");
+        verify(stringSubscriber, times(0)).onNext("five");
         // despite not expecting it ... we don't do anything to prevent it if the source Flowable keeps sending after onError
         // inner Flowable errors are considered terminal for that source
-//        verify(stringObserver, times(1)).onNext("six");
-        verify(stringObserver, times(1)).onNext("seven");
-        verify(stringObserver, times(1)).onNext("eight");
-        verify(stringObserver, times(1)).onNext("nine");
+//        verify(stringSubscriber, times(1)).onNext("six");
+        verify(stringSubscriber, times(1)).onNext("seven");
+        verify(stringSubscriber, times(1)).onNext("eight");
+        verify(stringSubscriber, times(1)).onNext("nine");
     }
 
     @Test
     public void testErrorDelayed3() {
-        final Flowable<String> o1 = Flowable.unsafeCreate(new TestErrorFlowable("one", "two", "three"));
-        final Flowable<String> o2 = Flowable.unsafeCreate(new TestErrorFlowable("four", "five", "six"));
-        final Flowable<String> o3 = Flowable.unsafeCreate(new TestErrorFlowable("seven", "eight", null));
-        final Flowable<String> o4 = Flowable.unsafeCreate(new TestErrorFlowable("nine"));
+        final Flowable<String> f1 = Flowable.unsafeCreate(new TestErrorFlowable("one", "two", "three"));
+        final Flowable<String> f2 = Flowable.unsafeCreate(new TestErrorFlowable("four", "five", "six"));
+        final Flowable<String> f3 = Flowable.unsafeCreate(new TestErrorFlowable("seven", "eight", null));
+        final Flowable<String> f4 = Flowable.unsafeCreate(new TestErrorFlowable("nine"));
 
-        Flowable<String> m = Flowable.mergeDelayError(o1, o2, o3, o4);
-        m.subscribe(stringObserver);
+        Flowable<String> m = Flowable.mergeDelayError(f1, f2, f3, f4);
+        m.subscribe(stringSubscriber);
 
-        verify(stringObserver, times(1)).onError(any(NullPointerException.class));
-        verify(stringObserver, never()).onComplete();
-        verify(stringObserver, times(1)).onNext("one");
-        verify(stringObserver, times(1)).onNext("two");
-        verify(stringObserver, times(1)).onNext("three");
-        verify(stringObserver, times(1)).onNext("four");
-        verify(stringObserver, times(1)).onNext("five");
-        verify(stringObserver, times(1)).onNext("six");
-        verify(stringObserver, times(1)).onNext("seven");
-        verify(stringObserver, times(1)).onNext("eight");
-        verify(stringObserver, times(1)).onNext("nine");
+        verify(stringSubscriber, times(1)).onError(any(NullPointerException.class));
+        verify(stringSubscriber, never()).onComplete();
+        verify(stringSubscriber, times(1)).onNext("one");
+        verify(stringSubscriber, times(1)).onNext("two");
+        verify(stringSubscriber, times(1)).onNext("three");
+        verify(stringSubscriber, times(1)).onNext("four");
+        verify(stringSubscriber, times(1)).onNext("five");
+        verify(stringSubscriber, times(1)).onNext("six");
+        verify(stringSubscriber, times(1)).onNext("seven");
+        verify(stringSubscriber, times(1)).onNext("eight");
+        verify(stringSubscriber, times(1)).onNext("nine");
     }
 
     @Test
     public void testErrorDelayed4() {
-        final Flowable<String> o1 = Flowable.unsafeCreate(new TestErrorFlowable("one", "two", "three"));
-        final Flowable<String> o2 = Flowable.unsafeCreate(new TestErrorFlowable("four", "five", "six"));
-        final Flowable<String> o3 = Flowable.unsafeCreate(new TestErrorFlowable("seven", "eight"));
-        final Flowable<String> o4 = Flowable.unsafeCreate(new TestErrorFlowable("nine", null));
+        final Flowable<String> f1 = Flowable.unsafeCreate(new TestErrorFlowable("one", "two", "three"));
+        final Flowable<String> f2 = Flowable.unsafeCreate(new TestErrorFlowable("four", "five", "six"));
+        final Flowable<String> f3 = Flowable.unsafeCreate(new TestErrorFlowable("seven", "eight"));
+        final Flowable<String> f4 = Flowable.unsafeCreate(new TestErrorFlowable("nine", null));
 
-        Flowable<String> m = Flowable.mergeDelayError(o1, o2, o3, o4);
-        m.subscribe(stringObserver);
+        Flowable<String> m = Flowable.mergeDelayError(f1, f2, f3, f4);
+        m.subscribe(stringSubscriber);
 
-        verify(stringObserver, times(1)).onError(any(NullPointerException.class));
-        verify(stringObserver, never()).onComplete();
-        verify(stringObserver, times(1)).onNext("one");
-        verify(stringObserver, times(1)).onNext("two");
-        verify(stringObserver, times(1)).onNext("three");
-        verify(stringObserver, times(1)).onNext("four");
-        verify(stringObserver, times(1)).onNext("five");
-        verify(stringObserver, times(1)).onNext("six");
-        verify(stringObserver, times(1)).onNext("seven");
-        verify(stringObserver, times(1)).onNext("eight");
-        verify(stringObserver, times(1)).onNext("nine");
+        verify(stringSubscriber, times(1)).onError(any(NullPointerException.class));
+        verify(stringSubscriber, never()).onComplete();
+        verify(stringSubscriber, times(1)).onNext("one");
+        verify(stringSubscriber, times(1)).onNext("two");
+        verify(stringSubscriber, times(1)).onNext("three");
+        verify(stringSubscriber, times(1)).onNext("four");
+        verify(stringSubscriber, times(1)).onNext("five");
+        verify(stringSubscriber, times(1)).onNext("six");
+        verify(stringSubscriber, times(1)).onNext("seven");
+        verify(stringSubscriber, times(1)).onNext("eight");
+        verify(stringSubscriber, times(1)).onNext("nine");
     }
 
     @Test
     public void testErrorDelayed4WithThreading() {
-        final TestAsyncErrorFlowable o1 = new TestAsyncErrorFlowable("one", "two", "three");
-        final TestAsyncErrorFlowable o2 = new TestAsyncErrorFlowable("four", "five", "six");
-        final TestAsyncErrorFlowable o3 = new TestAsyncErrorFlowable("seven", "eight");
+        final TestAsyncErrorFlowable f1 = new TestAsyncErrorFlowable("one", "two", "three");
+        final TestAsyncErrorFlowable f2 = new TestAsyncErrorFlowable("four", "five", "six");
+        final TestAsyncErrorFlowable f3 = new TestAsyncErrorFlowable("seven", "eight");
         // throw the error at the very end so no onComplete will be called after it
-        final TestAsyncErrorFlowable o4 = new TestAsyncErrorFlowable("nine", null);
+        final TestAsyncErrorFlowable f4 = new TestAsyncErrorFlowable("nine", null);
 
-        Flowable<String> m = Flowable.mergeDelayError(Flowable.unsafeCreate(o1), Flowable.unsafeCreate(o2), Flowable.unsafeCreate(o3), Flowable.unsafeCreate(o4));
-        m.subscribe(stringObserver);
+        Flowable<String> m = Flowable.mergeDelayError(Flowable.unsafeCreate(f1), Flowable.unsafeCreate(f2), Flowable.unsafeCreate(f3), Flowable.unsafeCreate(f4));
+        m.subscribe(stringSubscriber);
 
         try {
-            o1.t.join();
-            o2.t.join();
-            o3.t.join();
-            o4.t.join();
+            f1.t.join();
+            f2.t.join();
+            f3.t.join();
+            f4.t.join();
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
 
-        verify(stringObserver, times(1)).onNext("one");
-        verify(stringObserver, times(1)).onNext("two");
-        verify(stringObserver, times(1)).onNext("three");
-        verify(stringObserver, times(1)).onNext("four");
-        verify(stringObserver, times(1)).onNext("five");
-        verify(stringObserver, times(1)).onNext("six");
-        verify(stringObserver, times(1)).onNext("seven");
-        verify(stringObserver, times(1)).onNext("eight");
-        verify(stringObserver, times(1)).onNext("nine");
-        verify(stringObserver, times(1)).onError(any(NullPointerException.class));
-        verify(stringObserver, never()).onComplete();
+        verify(stringSubscriber, times(1)).onNext("one");
+        verify(stringSubscriber, times(1)).onNext("two");
+        verify(stringSubscriber, times(1)).onNext("three");
+        verify(stringSubscriber, times(1)).onNext("four");
+        verify(stringSubscriber, times(1)).onNext("five");
+        verify(stringSubscriber, times(1)).onNext("six");
+        verify(stringSubscriber, times(1)).onNext("seven");
+        verify(stringSubscriber, times(1)).onNext("eight");
+        verify(stringSubscriber, times(1)).onNext("nine");
+        verify(stringSubscriber, times(1)).onError(any(NullPointerException.class));
+        verify(stringSubscriber, never()).onComplete();
     }
 
     @Test
     public void testCompositeErrorDelayed1() {
-        final Flowable<String> o1 = Flowable.unsafeCreate(new TestErrorFlowable("four", null, "six")); // we expect to lose "six" from the source (and it should never be sent by the source since onError was called
-        final Flowable<String> o2 = Flowable.unsafeCreate(new TestErrorFlowable("one", "two", null));
+        final Flowable<String> f1 = Flowable.unsafeCreate(new TestErrorFlowable("four", null, "six")); // we expect to lose "six" from the source (and it should never be sent by the source since onError was called
+        final Flowable<String> f2 = Flowable.unsafeCreate(new TestErrorFlowable("one", "two", null));
 
-        Flowable<String> m = Flowable.mergeDelayError(o1, o2);
-        m.subscribe(stringObserver);
+        Flowable<String> m = Flowable.mergeDelayError(f1, f2);
+        m.subscribe(stringSubscriber);
 
-        verify(stringObserver, times(1)).onError(any(Throwable.class));
-        verify(stringObserver, never()).onComplete();
-        verify(stringObserver, times(1)).onNext("one");
-        verify(stringObserver, times(1)).onNext("two");
-        verify(stringObserver, times(0)).onNext("three");
-        verify(stringObserver, times(1)).onNext("four");
-        verify(stringObserver, times(0)).onNext("five");
+        verify(stringSubscriber, times(1)).onError(any(Throwable.class));
+        verify(stringSubscriber, never()).onComplete();
+        verify(stringSubscriber, times(1)).onNext("one");
+        verify(stringSubscriber, times(1)).onNext("two");
+        verify(stringSubscriber, times(0)).onNext("three");
+        verify(stringSubscriber, times(1)).onNext("four");
+        verify(stringSubscriber, times(0)).onNext("five");
         // despite not expecting it ... we don't do anything to prevent it if the source Flowable keeps sending after onError
         // inner Flowable errors are considered terminal for that source
-//        verify(stringObserver, times(1)).onNext("six");
+//        verify(stringSubscriber, times(1)).onNext("six");
     }
 
     @Test
     public void testCompositeErrorDelayed2() {
-        final Flowable<String> o1 = Flowable.unsafeCreate(new TestErrorFlowable("four", null, "six")); // we expect to lose "six" from the source (and it should never be sent by the source since onError was called
-        final Flowable<String> o2 = Flowable.unsafeCreate(new TestErrorFlowable("one", "two", null));
+        final Flowable<String> f1 = Flowable.unsafeCreate(new TestErrorFlowable("four", null, "six")); // we expect to lose "six" from the source (and it should never be sent by the source since onError was called
+        final Flowable<String> f2 = Flowable.unsafeCreate(new TestErrorFlowable("one", "two", null));
 
-        Flowable<String> m = Flowable.mergeDelayError(o1, o2);
+        Flowable<String> m = Flowable.mergeDelayError(f1, f2);
         CaptureObserver w = new CaptureObserver();
         m.subscribe(w);
 
@@ -218,84 +218,84 @@ public class FlowableMergeDelayErrorTest {
 
     @Test
     public void testMergeFlowableOfFlowables() {
-        final Flowable<String> o1 = Flowable.unsafeCreate(new TestSynchronousFlowable());
-        final Flowable<String> o2 = Flowable.unsafeCreate(new TestSynchronousFlowable());
+        final Flowable<String> f1 = Flowable.unsafeCreate(new TestSynchronousFlowable());
+        final Flowable<String> f2 = Flowable.unsafeCreate(new TestSynchronousFlowable());
 
         Flowable<Flowable<String>> flowableOfFlowables = Flowable.unsafeCreate(new Publisher<Flowable<String>>() {
 
             @Override
-            public void subscribe(Subscriber<? super Flowable<String>> observer) {
-                observer.onSubscribe(new BooleanSubscription());
+            public void subscribe(Subscriber<? super Flowable<String>> subscriber) {
+                subscriber.onSubscribe(new BooleanSubscription());
                 // simulate what would happen in a Flowable
-                observer.onNext(o1);
-                observer.onNext(o2);
-                observer.onComplete();
+                subscriber.onNext(f1);
+                subscriber.onNext(f2);
+                subscriber.onComplete();
             }
 
         });
         Flowable<String> m = Flowable.mergeDelayError(flowableOfFlowables);
-        m.subscribe(stringObserver);
+        m.subscribe(stringSubscriber);
 
-        verify(stringObserver, never()).onError(any(Throwable.class));
-        verify(stringObserver, times(1)).onComplete();
-        verify(stringObserver, times(2)).onNext("hello");
+        verify(stringSubscriber, never()).onError(any(Throwable.class));
+        verify(stringSubscriber, times(1)).onComplete();
+        verify(stringSubscriber, times(2)).onNext("hello");
     }
 
     @Test
     public void testMergeArray() {
-        final Flowable<String> o1 = Flowable.unsafeCreate(new TestSynchronousFlowable());
-        final Flowable<String> o2 = Flowable.unsafeCreate(new TestSynchronousFlowable());
+        final Flowable<String> f1 = Flowable.unsafeCreate(new TestSynchronousFlowable());
+        final Flowable<String> f2 = Flowable.unsafeCreate(new TestSynchronousFlowable());
 
-        Flowable<String> m = Flowable.mergeDelayError(o1, o2);
-        m.subscribe(stringObserver);
+        Flowable<String> m = Flowable.mergeDelayError(f1, f2);
+        m.subscribe(stringSubscriber);
 
-        verify(stringObserver, never()).onError(any(Throwable.class));
-        verify(stringObserver, times(2)).onNext("hello");
-        verify(stringObserver, times(1)).onComplete();
+        verify(stringSubscriber, never()).onError(any(Throwable.class));
+        verify(stringSubscriber, times(2)).onNext("hello");
+        verify(stringSubscriber, times(1)).onComplete();
     }
 
     @Test
     public void testMergeList() {
-        final Flowable<String> o1 = Flowable.unsafeCreate(new TestSynchronousFlowable());
-        final Flowable<String> o2 = Flowable.unsafeCreate(new TestSynchronousFlowable());
+        final Flowable<String> f1 = Flowable.unsafeCreate(new TestSynchronousFlowable());
+        final Flowable<String> f2 = Flowable.unsafeCreate(new TestSynchronousFlowable());
         List<Flowable<String>> listOfFlowables = new ArrayList<Flowable<String>>();
-        listOfFlowables.add(o1);
-        listOfFlowables.add(o2);
+        listOfFlowables.add(f1);
+        listOfFlowables.add(f2);
 
         Flowable<String> m = Flowable.mergeDelayError(Flowable.fromIterable(listOfFlowables));
-        m.subscribe(stringObserver);
+        m.subscribe(stringSubscriber);
 
-        verify(stringObserver, never()).onError(any(Throwable.class));
-        verify(stringObserver, times(1)).onComplete();
-        verify(stringObserver, times(2)).onNext("hello");
+        verify(stringSubscriber, never()).onError(any(Throwable.class));
+        verify(stringSubscriber, times(1)).onComplete();
+        verify(stringSubscriber, times(2)).onNext("hello");
     }
 
     @Test
     public void testMergeArrayWithThreading() {
-        final TestASynchronousFlowable o1 = new TestASynchronousFlowable();
-        final TestASynchronousFlowable o2 = new TestASynchronousFlowable();
+        final TestASynchronousFlowable f1 = new TestASynchronousFlowable();
+        final TestASynchronousFlowable f2 = new TestASynchronousFlowable();
 
-        Flowable<String> m = Flowable.mergeDelayError(Flowable.unsafeCreate(o1), Flowable.unsafeCreate(o2));
-        m.subscribe(stringObserver);
+        Flowable<String> m = Flowable.mergeDelayError(Flowable.unsafeCreate(f1), Flowable.unsafeCreate(f2));
+        m.subscribe(stringSubscriber);
 
         try {
-            o1.t.join();
-            o2.t.join();
+            f1.t.join();
+            f2.t.join();
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
 
-        verify(stringObserver, never()).onError(any(Throwable.class));
-        verify(stringObserver, times(2)).onNext("hello");
-        verify(stringObserver, times(1)).onComplete();
+        verify(stringSubscriber, never()).onError(any(Throwable.class));
+        verify(stringSubscriber, times(2)).onNext("hello");
+        verify(stringSubscriber, times(1)).onComplete();
     }
 
     @Test(timeout = 1000L)
     public void testSynchronousError() {
-        final Flowable<Flowable<String>> o1 = Flowable.error(new RuntimeException("unit test"));
+        final Flowable<Flowable<String>> f1 = Flowable.error(new RuntimeException("unit test"));
 
         final CountDownLatch latch = new CountDownLatch(1);
-        Flowable.mergeDelayError(o1).subscribe(new DefaultSubscriber<String>() {
+        Flowable.mergeDelayError(f1).subscribe(new DefaultSubscriber<String>() {
             @Override
             public void onComplete() {
                 fail("Expected onError path");
@@ -322,10 +322,10 @@ public class FlowableMergeDelayErrorTest {
     private static class TestSynchronousFlowable implements Publisher<String> {
 
         @Override
-        public void subscribe(Subscriber<? super String> observer) {
-            observer.onSubscribe(new BooleanSubscription());
-            observer.onNext("hello");
-            observer.onComplete();
+        public void subscribe(Subscriber<? super String> subscriber) {
+            subscriber.onSubscribe(new BooleanSubscription());
+            subscriber.onNext("hello");
+            subscriber.onComplete();
         }
     }
 
@@ -333,14 +333,14 @@ public class FlowableMergeDelayErrorTest {
         Thread t;
 
         @Override
-        public void subscribe(final Subscriber<? super String> observer) {
-            observer.onSubscribe(new BooleanSubscription());
+        public void subscribe(final Subscriber<? super String> subscriber) {
+            subscriber.onSubscribe(new BooleanSubscription());
             t = new Thread(new Runnable() {
 
                 @Override
                 public void run() {
-                    observer.onNext("hello");
-                    observer.onComplete();
+                    subscriber.onNext("hello");
+                    subscriber.onComplete();
                 }
 
             });
@@ -357,22 +357,22 @@ public class FlowableMergeDelayErrorTest {
         }
 
         @Override
-        public void subscribe(Subscriber<? super String> observer) {
-            observer.onSubscribe(new BooleanSubscription());
+        public void subscribe(Subscriber<? super String> subscriber) {
+            subscriber.onSubscribe(new BooleanSubscription());
             boolean errorThrown = false;
             for (String s : valuesToReturn) {
                 if (s == null) {
                     System.out.println("throwing exception");
-                    observer.onError(new NullPointerException());
+                    subscriber.onError(new NullPointerException());
                     errorThrown = true;
                     // purposefully not returning here so it will continue calling onNext
                     // so that we also test that we handle bad sequences like this
                 } else {
-                    observer.onNext(s);
+                    subscriber.onNext(s);
                 }
             }
             if (!errorThrown) {
-                observer.onComplete();
+                subscriber.onComplete();
             }
         }
     }
@@ -388,8 +388,8 @@ public class FlowableMergeDelayErrorTest {
         Thread t;
 
         @Override
-        public void subscribe(final Subscriber<? super String> observer) {
-            observer.onSubscribe(new BooleanSubscription());
+        public void subscribe(final Subscriber<? super String> subscriber) {
+            subscriber.onSubscribe(new BooleanSubscription());
             t = new Thread(new Runnable() {
 
                 @Override
@@ -402,14 +402,14 @@ public class FlowableMergeDelayErrorTest {
                             } catch (Throwable e) {
 
                             }
-                            observer.onError(new NullPointerException());
+                            subscriber.onError(new NullPointerException());
                             return;
                         } else {
-                            observer.onNext(s);
+                            subscriber.onNext(s);
                         }
                     }
                     System.out.println("subscription complete");
-                    observer.onComplete();
+                    subscriber.onComplete();
                 }
 
             });
@@ -455,8 +455,8 @@ public class FlowableMergeDelayErrorTest {
 
         Flowable<Integer> result = Flowable.mergeDelayError(source, Flowable.just(2));
 
-        final Subscriber<Integer> o = TestHelper.mockSubscriber();
-        InOrder inOrder = inOrder(o);
+        final Subscriber<Integer> subscriber = TestHelper.mockSubscriber();
+        InOrder inOrder = inOrder(subscriber);
 
         result.subscribe(new DefaultSubscriber<Integer>() {
             int calls;
@@ -465,17 +465,17 @@ public class FlowableMergeDelayErrorTest {
                 if (calls++ == 0) {
                     throw new TestException();
                 }
-                o.onNext(t);
+                subscriber.onNext(t);
             }
 
             @Override
             public void onError(Throwable e) {
-                o.onError(e);
+                subscriber.onError(e);
             }
 
             @Override
             public void onComplete() {
-                o.onComplete();
+                subscriber.onComplete();
             }
 
         });
@@ -484,12 +484,12 @@ public class FlowableMergeDelayErrorTest {
          * If the child onNext throws, why would we keep accepting values from
          * other sources?
          */
-        inOrder.verify(o).onNext(2);
-        inOrder.verify(o, never()).onNext(0);
-        inOrder.verify(o, never()).onNext(1);
-        inOrder.verify(o, never()).onNext(anyInt());
-        inOrder.verify(o).onError(any(TestException.class));
-        verify(o, never()).onComplete();
+        inOrder.verify(subscriber).onNext(2);
+        inOrder.verify(subscriber, never()).onNext(0);
+        inOrder.verify(subscriber, never()).onNext(1);
+        inOrder.verify(subscriber, never()).onNext(anyInt());
+        inOrder.verify(subscriber).onError(any(TestException.class));
+        verify(subscriber, never()).onComplete();
     }
 
     @Test
@@ -509,30 +509,30 @@ public class FlowableMergeDelayErrorTest {
     @Test
     public void testErrorInParentFlowableDelayed() throws Exception {
         for (int i = 0; i < 50; i++) {
-            final TestASynchronous1sDelayedFlowable o1 = new TestASynchronous1sDelayedFlowable();
-            final TestASynchronous1sDelayedFlowable o2 = new TestASynchronous1sDelayedFlowable();
+            final TestASynchronous1sDelayedFlowable f1 = new TestASynchronous1sDelayedFlowable();
+            final TestASynchronous1sDelayedFlowable f2 = new TestASynchronous1sDelayedFlowable();
             Flowable<Flowable<String>> parentFlowable = Flowable.unsafeCreate(new Publisher<Flowable<String>>() {
                 @Override
                 public void subscribe(Subscriber<? super Flowable<String>> op) {
                     op.onSubscribe(new BooleanSubscription());
-                    op.onNext(Flowable.unsafeCreate(o1));
-                    op.onNext(Flowable.unsafeCreate(o2));
+                    op.onNext(Flowable.unsafeCreate(f1));
+                    op.onNext(Flowable.unsafeCreate(f2));
                     op.onError(new NullPointerException("throwing exception in parent"));
                 }
             });
 
-            Subscriber<String> stringObserver = TestHelper.mockSubscriber();
+            stringSubscriber = TestHelper.mockSubscriber();
 
-            TestSubscriber<String> ts = new TestSubscriber<String>(stringObserver);
+            TestSubscriber<String> ts = new TestSubscriber<String>(stringSubscriber);
             Flowable<String> m = Flowable.mergeDelayError(parentFlowable);
             m.subscribe(ts);
             System.out.println("testErrorInParentFlowableDelayed | " + i);
             ts.awaitTerminalEvent(2000, TimeUnit.MILLISECONDS);
             ts.assertTerminated();
 
-            verify(stringObserver, times(2)).onNext("hello");
-            verify(stringObserver, times(1)).onError(any(NullPointerException.class));
-            verify(stringObserver, never()).onComplete();
+            verify(stringSubscriber, times(2)).onNext("hello");
+            verify(stringSubscriber, times(1)).onError(any(NullPointerException.class));
+            verify(stringSubscriber, never()).onComplete();
         }
     }
 
@@ -540,8 +540,8 @@ public class FlowableMergeDelayErrorTest {
         Thread t;
 
         @Override
-        public void subscribe(final Subscriber<? super String> observer) {
-            observer.onSubscribe(new BooleanSubscription());
+        public void subscribe(final Subscriber<? super String> subscriber) {
+            subscriber.onSubscribe(new BooleanSubscription());
             t = new Thread(new Runnable() {
 
                 @Override
@@ -549,10 +549,10 @@ public class FlowableMergeDelayErrorTest {
                     try {
                         Thread.sleep(100);
                     } catch (InterruptedException e) {
-                        observer.onError(e);
+                        subscriber.onError(e);
                     }
-                    observer.onNext("hello");
-                    observer.onComplete();
+                    subscriber.onNext("hello");
+                    subscriber.onComplete();
                 }
 
             });
@@ -585,18 +585,18 @@ public class FlowableMergeDelayErrorTest {
     // This is pretty much a clone of testMergeList but with the overloaded MergeDelayError for Iterables
     @Test
     public void mergeIterable() {
-        final Flowable<String> o1 = Flowable.unsafeCreate(new TestSynchronousFlowable());
-        final Flowable<String> o2 = Flowable.unsafeCreate(new TestSynchronousFlowable());
+        final Flowable<String> f1 = Flowable.unsafeCreate(new TestSynchronousFlowable());
+        final Flowable<String> f2 = Flowable.unsafeCreate(new TestSynchronousFlowable());
         List<Flowable<String>> listOfFlowables = new ArrayList<Flowable<String>>();
-        listOfFlowables.add(o1);
-        listOfFlowables.add(o2);
+        listOfFlowables.add(f1);
+        listOfFlowables.add(f2);
 
         Flowable<String> m = Flowable.mergeDelayError(listOfFlowables);
-        m.subscribe(stringObserver);
+        m.subscribe(stringSubscriber);
 
-        verify(stringObserver, never()).onError(any(Throwable.class));
-        verify(stringObserver, times(1)).onComplete();
-        verify(stringObserver, times(2)).onNext("hello");
+        verify(stringSubscriber, never()).onError(any(Throwable.class));
+        verify(stringSubscriber, times(1)).onComplete();
+        verify(stringSubscriber, times(2)).onNext("hello");
     }
 
     @SuppressWarnings("unchecked")

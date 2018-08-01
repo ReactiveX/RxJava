@@ -25,22 +25,22 @@ public class SingleLiftTest {
 
         Single.just(1).lift(new SingleOperator<Integer, Integer>() {
             @Override
-            public SingleObserver<Integer> apply(final SingleObserver<? super Integer> s) throws Exception {
+            public SingleObserver<Integer> apply(final SingleObserver<? super Integer> observer) throws Exception {
                 return new SingleObserver<Integer>() {
 
                     @Override
                     public void onSubscribe(Disposable d) {
-                        s.onSubscribe(d);
+                        observer.onSubscribe(d);
                     }
 
                     @Override
                     public void onSuccess(Integer value) {
-                        s.onSuccess(value + 1);
+                        observer.onSuccess(value + 1);
                     }
 
                     @Override
                     public void onError(Throwable e) {
-                        s.onError(e);
+                        observer.onError(e);
                     }
                 };
             }

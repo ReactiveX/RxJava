@@ -42,18 +42,18 @@ public class FlowablePublishTest {
     @Test
     public void testPublish() throws InterruptedException {
         final AtomicInteger counter = new AtomicInteger();
-        ConnectableFlowable<String> o = Flowable.unsafeCreate(new Publisher<String>() {
+        ConnectableFlowable<String> f = Flowable.unsafeCreate(new Publisher<String>() {
 
             @Override
-            public void subscribe(final Subscriber<? super String> observer) {
-                observer.onSubscribe(new BooleanSubscription());
+            public void subscribe(final Subscriber<? super String> subscriber) {
+                subscriber.onSubscribe(new BooleanSubscription());
                 new Thread(new Runnable() {
 
                     @Override
                     public void run() {
                         counter.incrementAndGet();
-                        observer.onNext("one");
-                        observer.onComplete();
+                        subscriber.onNext("one");
+                        subscriber.onComplete();
                     }
                 }).start();
             }
@@ -62,7 +62,7 @@ public class FlowablePublishTest {
         final CountDownLatch latch = new CountDownLatch(2);
 
         // subscribe once
-        o.subscribe(new Consumer<String>() {
+        f.subscribe(new Consumer<String>() {
 
             @Override
             public void accept(String v) {
@@ -72,7 +72,7 @@ public class FlowablePublishTest {
         });
 
         // subscribe again
-        o.subscribe(new Consumer<String>() {
+        f.subscribe(new Consumer<String>() {
 
             @Override
             public void accept(String v) {
@@ -81,7 +81,7 @@ public class FlowablePublishTest {
             }
         });
 
-        Disposable s = o.connect();
+        Disposable s = f.connect();
         try {
             if (!latch.await(1000, TimeUnit.MILLISECONDS)) {
                 fail("subscriptions did not receive values");
@@ -508,9 +508,9 @@ public class FlowablePublishTest {
 
     @Test
     public void source() {
-        Flowable<Integer> o = Flowable.never();
+        Flowable<Integer> f = Flowable.never();
 
-        assertSame(o, (((HasUpstreamPublisher<?>)o.publish()).source()));
+        assertSame(f, (((HasUpstreamPublisher<?>)f.publish()).source()));
     }
 
     @Test
@@ -651,13 +651,13 @@ public class FlowablePublishTest {
         try {
             new Flowable<Integer>() {
                 @Override
-                protected void subscribeActual(Subscriber<? super Integer> observer) {
-                    observer.onSubscribe(new BooleanSubscription());
-                    observer.onNext(1);
-                    observer.onComplete();
-                    observer.onNext(2);
-                    observer.onError(new TestException());
-                    observer.onComplete();
+                protected void subscribeActual(Subscriber<? super Integer> subscriber) {
+                    subscriber.onSubscribe(new BooleanSubscription());
+                    subscriber.onNext(1);
+                    subscriber.onComplete();
+                    subscriber.onNext(2);
+                    subscriber.onError(new TestException());
+                    subscriber.onComplete();
                 }
             }
             .publish()
@@ -832,47 +832,61 @@ public class FlowablePublishTest {
 
     @Test
     public void dryRunCrash() {
-        final TestSubscriber<Object> ts = new TestSubscriber<Object>(1L) {
-            @Override
-            public void onNext(Object t) {
-                super.onNext(t);
-                onComplete();
-                cancel();
-            }
-        };
-
-        Flowable.range(1, 10)
-        .map(new Function<Integer, Object>() {
-            @Override
-            public Object apply(Integer v) throws Exception {
-                if (v == 2) {
-                    throw new TestException();
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            final TestSubscriber<Object> ts = new TestSubscriber<Object>(1L) {
+                @Override
+                public void onNext(Object t) {
+                    super.onNext(t);
+                    onComplete();
+                    cancel();
                 }
-                return v;
-            }
-        })
-        .publish()
-        .autoConnect()
-        .subscribe(ts);
+            };
 
-        ts
-        .assertResult(1);
+            Flowable.range(1, 10)
+            .map(new Function<Integer, Object>() {
+                @Override
+                public Object apply(Integer v) throws Exception {
+                    if (v == 2) {
+                        throw new TestException();
+                    }
+                    return v;
+                }
+            })
+            .publish()
+            .autoConnect()
+            .subscribe(ts);
+
+            ts
+            .assertResult(1);
+
+            TestHelper.assertUndeliverable(errors, 0, TestException.class);
+        } finally {
+            RxJavaPlugins.reset();
+        }
     }
 
     @Test
     public void overflowQueue() {
-        Flowable.create(new FlowableOnSubscribe<Object>() {
-            @Override
-            public void subscribe(FlowableEmitter<Object> s) throws Exception {
-                for (int i = 0; i < 10; i++) {
-                    s.onNext(i);
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            Flowable.create(new FlowableOnSubscribe<Object>() {
+                @Override
+                public void subscribe(FlowableEmitter<Object> s) throws Exception {
+                    for (int i = 0; i < 10; i++) {
+                        s.onNext(i);
+                    }
                 }
-            }
-        }, BackpressureStrategy.MISSING)
-        .publish(8)
-        .autoConnect()
-        .test(0L)
-        .assertFailure(MissingBackpressureException.class);
+            }, BackpressureStrategy.MISSING)
+            .publish(8)
+            .autoConnect()
+            .test(0L)
+           .assertFailure(MissingBackpressureException.class);
+
+            TestHelper.assertError(errors, 0, MissingBackpressureException.class);
+        } finally {
+            RxJavaPlugins.reset();
+        }
     }
 
     @Test

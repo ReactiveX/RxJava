@@ -32,72 +32,77 @@ public class FlowableSkipLastTest {
 
     @Test
     public void testSkipLastEmpty() {
-        Flowable<String> observable = Flowable.<String> empty().skipLast(2);
+        Flowable<String> flowable = Flowable.<String> empty().skipLast(2);
 
-        Subscriber<String> observer = TestHelper.mockSubscriber();
-        observable.subscribe(observer);
-        verify(observer, never()).onNext(any(String.class));
-        verify(observer, never()).onError(any(Throwable.class));
-        verify(observer, times(1)).onComplete();
+        Subscriber<String> subscriber = TestHelper.mockSubscriber();
+        flowable.subscribe(subscriber);
+
+        verify(subscriber, never()).onNext(any(String.class));
+        verify(subscriber, never()).onError(any(Throwable.class));
+        verify(subscriber, times(1)).onComplete();
     }
 
     @Test
     public void testSkipLast1() {
-        Flowable<String> observable = Flowable.fromIterable(Arrays.asList("one", "two", "three")).skipLast(2);
+        Flowable<String> flowable = Flowable.fromIterable(Arrays.asList("one", "two", "three")).skipLast(2);
 
-        Subscriber<String> observer = TestHelper.mockSubscriber();
-        InOrder inOrder = inOrder(observer);
-        observable.subscribe(observer);
-        inOrder.verify(observer, never()).onNext("two");
-        inOrder.verify(observer, never()).onNext("three");
-        verify(observer, times(1)).onNext("one");
-        verify(observer, never()).onError(any(Throwable.class));
-        verify(observer, times(1)).onComplete();
+        Subscriber<String> subscriber = TestHelper.mockSubscriber();
+        InOrder inOrder = inOrder(subscriber);
+        flowable.subscribe(subscriber);
+
+        inOrder.verify(subscriber, never()).onNext("two");
+        inOrder.verify(subscriber, never()).onNext("three");
+        verify(subscriber, times(1)).onNext("one");
+        verify(subscriber, never()).onError(any(Throwable.class));
+        verify(subscriber, times(1)).onComplete();
     }
 
     @Test
     public void testSkipLast2() {
-        Flowable<String> observable = Flowable.fromIterable(Arrays.asList("one", "two")).skipLast(2);
+        Flowable<String> flowable = Flowable.fromIterable(Arrays.asList("one", "two")).skipLast(2);
 
-        Subscriber<String> observer = TestHelper.mockSubscriber();
-        observable.subscribe(observer);
-        verify(observer, never()).onNext(any(String.class));
-        verify(observer, never()).onError(any(Throwable.class));
-        verify(observer, times(1)).onComplete();
+        Subscriber<String> subscriber = TestHelper.mockSubscriber();
+        flowable.subscribe(subscriber);
+
+        verify(subscriber, never()).onNext(any(String.class));
+        verify(subscriber, never()).onError(any(Throwable.class));
+        verify(subscriber, times(1)).onComplete();
     }
 
     @Test
     public void testSkipLastWithZeroCount() {
         Flowable<String> w = Flowable.just("one", "two");
-        Flowable<String> observable = w.skipLast(0);
+        Flowable<String> flowable = w.skipLast(0);
 
-        Subscriber<String> observer = TestHelper.mockSubscriber();
-        observable.subscribe(observer);
-        verify(observer, times(1)).onNext("one");
-        verify(observer, times(1)).onNext("two");
-        verify(observer, never()).onError(any(Throwable.class));
-        verify(observer, times(1)).onComplete();
+        Subscriber<String> subscriber = TestHelper.mockSubscriber();
+        flowable.subscribe(subscriber);
+
+        verify(subscriber, times(1)).onNext("one");
+        verify(subscriber, times(1)).onNext("two");
+        verify(subscriber, never()).onError(any(Throwable.class));
+        verify(subscriber, times(1)).onComplete();
     }
 
     @Test
     @Ignore("Null values not allowed")
     public void testSkipLastWithNull() {
-        Flowable<String> observable = Flowable.fromIterable(Arrays.asList("one", null, "two")).skipLast(1);
+        Flowable<String> flowable = Flowable.fromIterable(Arrays.asList("one", null, "two")).skipLast(1);
 
-        Subscriber<String> observer = TestHelper.mockSubscriber();
-        observable.subscribe(observer);
-        verify(observer, times(1)).onNext("one");
-        verify(observer, times(1)).onNext(null);
-        verify(observer, never()).onNext("two");
-        verify(observer, never()).onError(any(Throwable.class));
-        verify(observer, times(1)).onComplete();
+        Subscriber<String> subscriber = TestHelper.mockSubscriber();
+        flowable.subscribe(subscriber);
+
+        verify(subscriber, times(1)).onNext("one");
+        verify(subscriber, times(1)).onNext(null);
+        verify(subscriber, never()).onNext("two");
+        verify(subscriber, never()).onError(any(Throwable.class));
+        verify(subscriber, times(1)).onComplete();
     }
 
     @Test
     public void testSkipLastWithBackpressure() {
-        Flowable<Integer> o = Flowable.range(0, Flowable.bufferSize() * 2).skipLast(Flowable.bufferSize() + 10);
+        Flowable<Integer> f = Flowable.range(0, Flowable.bufferSize() * 2).skipLast(Flowable.bufferSize() + 10);
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
-        o.observeOn(Schedulers.computation()).subscribe(ts);
+        f.observeOn(Schedulers.computation()).subscribe(ts);
         ts.awaitTerminalEvent();
         ts.assertNoErrors();
         assertEquals((Flowable.bufferSize()) - 10, ts.valueCount());
@@ -126,9 +131,9 @@ public class FlowableSkipLastTest {
     public void doubleOnSubscribe() {
         TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Flowable<Object>>() {
             @Override
-            public Flowable<Object> apply(Flowable<Object> o)
+            public Flowable<Object> apply(Flowable<Object> f)
                     throws Exception {
-                return o.skipLast(1);
+                return f.skipLast(1);
             }
         });
     }
