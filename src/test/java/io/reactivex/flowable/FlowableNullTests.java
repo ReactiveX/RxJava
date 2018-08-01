@@ -1648,14 +1648,22 @@ public class FlowableNullTests {
         just1.onErrorResumeNext((Function<Throwable, Publisher<Integer>>)null);
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void onErrorResumeNextFunctionReturnsNull() {
-        Flowable.error(new TestException()).onErrorResumeNext(new Function<Throwable, Publisher<Object>>() {
-            @Override
-            public Publisher<Object> apply(Throwable e) {
-                return null;
-            }
-        }).blockingSubscribe();
+        try {
+            Flowable.error(new TestException()).onErrorResumeNext(new Function<Throwable, Publisher<Object>>() {
+                @Override
+                public Publisher<Object> apply(Throwable e) {
+                    return null;
+                }
+            }).blockingSubscribe();
+            fail("Should have thrown");
+        } catch (CompositeException ex) {
+            List<Throwable> errors = ex.getExceptions();
+            TestHelper.assertError(errors, 0, TestException.class);
+            TestHelper.assertError(errors, 1, NullPointerException.class);
+            assertEquals(2, errors.size());
+        }
     }
 
     @Test(expected = NullPointerException.class)
