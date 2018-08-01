@@ -51,7 +51,7 @@ public class JavadocForAnnotations {
     public static StringBuilder readFile(File f) throws Exception {
         StringBuilder b = new StringBuilder();
 
-        BufferedReader in = new BufferedReader(new FileReader(f));
+        BufferedReader in = new BufferedReader(new InputStreamReader(f));
         try {
             for (;;) {
                 String line = in.readLine();
