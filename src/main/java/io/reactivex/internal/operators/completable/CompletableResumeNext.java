@@ -13,11 +13,14 @@
 
 package io.reactivex.internal.operators.completable;
 
+import java.util.Objects;
+import java.util.concurrent.atomic.AtomicReference;
+
 import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.*;
 import io.reactivex.functions.Function;
-import io.reactivex.internal.disposables.SequentialDisposable;
+import io.reactivex.internal.disposables.DisposableHelper;
 
 public final class CompletableResumeNext extends Completable {
 
@@ -35,20 +38,32 @@ public final class CompletableResumeNext extends Completable {
 
     @Override
     protected void subscribeActual(final CompletableObserver observer) {
-
-        final SequentialDisposable sd = new SequentialDisposable();
-        observer.onSubscribe(sd);
-        source.subscribe(new ResumeNext(observer, sd));
+        ResumeNextObserver parent = new ResumeNextObserver(observer, errorMapper);
+        observer.onSubscribe(parent);
+        source.subscribe(parent);
     }
 
-    final class ResumeNext implements CompletableObserver {
+    static final class ResumeNextObserver
+    extends AtomicReference<Disposable>
+    implements CompletableObserver, Disposable {
+
+        private static final long serialVersionUID = 5018523762564524046L;
 
         final CompletableObserver downstream;
-        final SequentialDisposable sd;
 
-        ResumeNext(CompletableObserver observer, SequentialDisposable sd) {
+        final Function<? super Throwable, ? extends CompletableSource> errorMapper;
+
+        boolean once;
+
+        ResumeNextObserver(CompletableObserver observer, Function<? super Throwable, ? extends CompletableSource> errorMapper) {
             this.downstream = observer;
-            this.sd = sd;
+            this.errorMapper = errorMapper;
+        }
+
+
+        @Override
+        public void onSubscribe(Disposable d) {
+            DisposableHelper.replace(this, d);
         }
 
         @Override
@@ -58,48 +73,33 @@ public final class CompletableResumeNext extends Completable {
 
         @Override
         public void onError(Throwable e) {
+            if (once) {
+                downstream.onError(e);
+                return;
+            }
+            once = true;
+
             CompletableSource c;
 
             try {
-                c = errorMapper.apply(e);
+                c = Objects.requireNonNull(errorMapper.apply(e), "The errorMapper returned a null CompletableSource");
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
-                downstream.onError(new CompositeException(ex, e));
+                downstream.onError(new CompositeException(e, ex));
                 return;
             }
 
-            if (c == null) {
-                NullPointerException npe = new NullPointerException("The CompletableConsumable returned is null");
-                npe.initCause(e);
-                downstream.onError(npe);
-                return;
-            }
-
-            c.subscribe(new OnErrorObserver());
+            c.subscribe(this);
         }
 
         @Override
-        public void onSubscribe(Disposable d) {
-            sd.update(d);
+        public boolean isDisposed() {
+            return DisposableHelper.isDisposed(get());
         }
 
-        final class OnErrorObserver implements CompletableObserver {
-
-            @Override
-            public void onComplete() {
-                downstream.onComplete();
-            }
-
-            @Override
-            public void onError(Throwable e) {
-                downstream.onError(e);
-            }
-
-            @Override
-            public void onSubscribe(Disposable d) {
-                sd.update(d);
-            }
-
+        @Override
+        public void dispose() {
+            DisposableHelper.dispose(this);
         }
     }
 }
