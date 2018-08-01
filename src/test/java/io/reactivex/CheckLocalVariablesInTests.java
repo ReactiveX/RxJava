@@ -229,7 +229,7 @@ public class CheckLocalVariablesInTests {
         findPattern("Observer\\s+s[0-9]?\\b");
     }
 
-@Test
+    @Test
     public void flowableAsObservable() throws Exception {
         findPattern("Flowable<.*>\\s+observable[0-9]?\\b");
     }
