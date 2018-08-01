@@ -1,4 +1,4 @@
-(A more complete and up-to-date list of resources can be found at the reactivex.io site: [[http://reactivex.io/tutorials.html]])
+﻿(A more complete and up-to-date list of resources can be found at the reactivex.io site: [[http://reactivex.io/tutorials.html]])
 
 # Introducing Reactive Programming
 * [Introduction to Rx](http://www.introtorx.com/): a free, on-line book by Lee Campbell
@@ -38,11 +38,11 @@
 * [MSDN Rx forum](http://social.msdn.microsoft.com/Forums/en-US/home?forum=rx)
 
 # RxJS
-* [the RxJS github site](http://reactive-extensions.github.io/RxJS/)
+* [the RxJS github site](https://github.com/reactivex/rxjs)
 * An interactive tutorial: [Functional Programming in Javascript](http://jhusain.github.io/learnrx/) and [an accompanying lecture (video)](http://www.youtube.com/watch?v=LB4lhFJBBq0) by Jafar Husain
 * [Netflix JavaScript Talks - Async JavaScript with Reactive Extensions](https://www.youtube.com/watch?v=XRYN2xt11Ek) video of a talk by Jafar Husain about the Rx way of programming
 * [RxJS](https://xgrommx.github.io/rx-book/), an on-line book by @xgrommx
-* [Journey from procedural to reactive Javascript with stops](http://bahmutov.calepin.co/journey-from-procedural-to-reactive-javascript-with-stops.html) by Gleb Bahmutov
+* [Journey from procedural to reactive Javascript with stops](https://glebbahmutov.com/blog/journey-from-procedural-to-reactive-javascript-with-stops/) by Gleb Bahmutov
 
 # Miscellany
 * [RxJava Observables and Akka Actors](http://onoffswitch.net/rxjava-observables-akka-actors/) by Anton Kropp
