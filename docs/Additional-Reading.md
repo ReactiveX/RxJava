@@ -38,7 +38,7 @@
 * [MSDN Rx forum](http://social.msdn.microsoft.com/Forums/en-US/home?forum=rx)
 
 # RxJS
-* [the RxJS github site](https://github.com/Reactive-Extensions/RxJS)
+* [the RxJS github site](https://github.com/reactivex/rxjs)
 * An interactive tutorial: [Functional Programming in Javascript](http://jhusain.github.io/learnrx/) and [an accompanying lecture (video)](http://www.youtube.com/watch?v=LB4lhFJBBq0) by Jafar Husain
 * [Netflix JavaScript Talks - Async JavaScript with Reactive Extensions](https://www.youtube.com/watch?v=XRYN2xt11Ek) video of a talk by Jafar Husain about the Rx way of programming
 * [RxJS](https://xgrommx.github.io/rx-book/), an on-line book by @xgrommx
