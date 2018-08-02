@@ -51,17 +51,17 @@ public final class ObservableDelay<T> extends AbstractObservableWithUpstream<T, 
     }
 
     static final class DelayObserver<T> implements Observer<T>, Disposable {
-        final Observer<? super T> actual;
+        final Observer<? super T> downstream;
         final long delay;
         final TimeUnit unit;
         final Scheduler.Worker w;
         final boolean delayError;
 
-        Disposable s;
+        Disposable upstream;
 
         DelayObserver(Observer<? super T> actual, long delay, TimeUnit unit, Worker w, boolean delayError) {
             super();
-            this.actual = actual;
+            this.downstream = actual;
             this.delay = delay;
             this.unit = unit;
             this.w = w;
@@ -69,10 +69,10 @@ public final class ObservableDelay<T> extends AbstractObservableWithUpstream<T, 
         }
 
         @Override
-        public void onSubscribe(Disposable s) {
-            if (DisposableHelper.validate(this.s, s)) {
-                this.s = s;
-                actual.onSubscribe(this);
+        public void onSubscribe(Disposable d) {
+            if (DisposableHelper.validate(this.upstream, d)) {
+                this.upstream = d;
+                downstream.onSubscribe(this);
             }
         }
 
@@ -93,7 +93,7 @@ public final class ObservableDelay<T> extends AbstractObservableWithUpstream<T, 
 
         @Override
         public void dispose() {
-            s.dispose();
+            upstream.dispose();
             w.dispose();
         }
 
@@ -111,7 +111,7 @@ public final class ObservableDelay<T> extends AbstractObservableWithUpstream<T, 
 
             @Override
             public void run() {
-                actual.onNext(t);
+                downstream.onNext(t);
             }
         }
 
@@ -125,7 +125,7 @@ public final class ObservableDelay<T> extends AbstractObservableWithUpstream<T, 
             @Override
             public void run() {
                 try {
-                    actual.onError(throwable);
+                    downstream.onError(throwable);
                 } finally {
                     w.dispose();
                 }
@@ -136,7 +136,7 @@ public final class ObservableDelay<T> extends AbstractObservableWithUpstream<T, 
             @Override
             public void run() {
                 try {
-                    actual.onComplete();
+                    downstream.onComplete();
                 } finally {
                     w.dispose();
                 }

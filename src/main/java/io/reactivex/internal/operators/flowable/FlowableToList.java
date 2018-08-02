@@ -51,7 +51,7 @@ public final class FlowableToList<T, U extends Collection<? super T>> extends Ab
 
 
         private static final long serialVersionUID = -8134157938864266736L;
-        Subscription s;
+        Subscription upstream;
 
         ToListSubscriber(Subscriber<? super U> actual, U collection) {
             super(actual);
@@ -60,9 +60,9 @@ public final class FlowableToList<T, U extends Collection<? super T>> extends Ab
 
         @Override
         public void onSubscribe(Subscription s) {
-            if (SubscriptionHelper.validate(this.s, s)) {
-                this.s = s;
-                actual.onSubscribe(this);
+            if (SubscriptionHelper.validate(this.upstream, s)) {
+                this.upstream = s;
+                downstream.onSubscribe(this);
                 s.request(Long.MAX_VALUE);
             }
         }
@@ -78,7 +78,7 @@ public final class FlowableToList<T, U extends Collection<? super T>> extends Ab
         @Override
         public void onError(Throwable t) {
             value = null;
-            actual.onError(t);
+            downstream.onError(t);
         }
 
         @Override
@@ -89,7 +89,7 @@ public final class FlowableToList<T, U extends Collection<? super T>> extends Ab
         @Override
         public void cancel() {
             super.cancel();
-            s.cancel();
+            upstream.cancel();
         }
     }
 }

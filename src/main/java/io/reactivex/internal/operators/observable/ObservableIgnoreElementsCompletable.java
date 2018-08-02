@@ -37,18 +37,18 @@ public final class ObservableIgnoreElementsCompletable<T> extends Completable im
     }
 
     static final class IgnoreObservable<T> implements Observer<T>, Disposable {
-        final CompletableObserver actual;
+        final CompletableObserver downstream;
 
-        Disposable d;
+        Disposable upstream;
 
         IgnoreObservable(CompletableObserver t) {
-            this.actual = t;
+            this.downstream = t;
         }
 
         @Override
-        public void onSubscribe(Disposable s) {
-            this.d = s;
-            actual.onSubscribe(this);
+        public void onSubscribe(Disposable d) {
+            this.upstream = d;
+            downstream.onSubscribe(this);
         }
 
         @Override
@@ -58,22 +58,22 @@ public final class ObservableIgnoreElementsCompletable<T> extends Completable im
 
         @Override
         public void onError(Throwable e) {
-            actual.onError(e);
+            downstream.onError(e);
         }
 
         @Override
         public void onComplete() {
-            actual.onComplete();
+            downstream.onComplete();
         }
 
         @Override
         public void dispose() {
-            d.dispose();
+            upstream.dispose();
         }
 
         @Override
         public boolean isDisposed() {
-            return d.isDisposed();
+            return upstream.isDisposed();
         }
     }
 

@@ -53,7 +53,7 @@ public final class MaybeEqualSingle<T> extends Single<Boolean> {
     static final class EqualCoordinator<T>
     extends AtomicInteger
     implements Disposable {
-        final SingleObserver<? super Boolean> actual;
+        final SingleObserver<? super Boolean> downstream;
 
         final EqualObserver<T> observer1;
 
@@ -63,7 +63,7 @@ public final class MaybeEqualSingle<T> extends Single<Boolean> {
 
         EqualCoordinator(SingleObserver<? super Boolean> actual, BiPredicate<? super T, ? super T> isEqual) {
             super(2);
-            this.actual = actual;
+            this.downstream = actual;
             this.isEqual = isEqual;
             this.observer1 = new EqualObserver<T>(this);
             this.observer2 = new EqualObserver<T>(this);
@@ -98,13 +98,13 @@ public final class MaybeEqualSingle<T> extends Single<Boolean> {
                         b = isEqual.test((T)o1, (T)o2);
                     } catch (Throwable ex) {
                         Exceptions.throwIfFatal(ex);
-                        actual.onError(ex);
+                        downstream.onError(ex);
                         return;
                     }
 
-                    actual.onSuccess(b);
+                    downstream.onSuccess(b);
                 } else {
-                    actual.onSuccess(o1 == null && o2 == null);
+                    downstream.onSuccess(o1 == null && o2 == null);
                 }
             }
         }
@@ -116,7 +116,7 @@ public final class MaybeEqualSingle<T> extends Single<Boolean> {
                 } else {
                     observer1.dispose();
                 }
-                actual.onError(ex);
+                downstream.onError(ex);
             } else {
                 RxJavaPlugins.onError(ex);
             }

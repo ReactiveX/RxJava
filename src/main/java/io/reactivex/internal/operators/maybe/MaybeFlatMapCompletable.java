@@ -50,13 +50,13 @@ public final class MaybeFlatMapCompletable<T> extends Completable {
 
         private static final long serialVersionUID = -2177128922851101253L;
 
-        final CompletableObserver actual;
+        final CompletableObserver downstream;
 
         final Function<? super T, ? extends CompletableSource> mapper;
 
         FlatMapCompletableObserver(CompletableObserver actual,
                 Function<? super T, ? extends CompletableSource> mapper) {
-            this.actual = actual;
+            this.downstream = actual;
             this.mapper = mapper;
         }
 
@@ -94,12 +94,12 @@ public final class MaybeFlatMapCompletable<T> extends Completable {
 
         @Override
         public void onError(Throwable e) {
-            actual.onError(e);
+            downstream.onError(e);
         }
 
         @Override
         public void onComplete() {
-            actual.onComplete();
+            downstream.onComplete();
         }
     }
 }

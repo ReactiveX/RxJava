@@ -47,60 +47,60 @@ public final class ObservableDoFinally<T> extends AbstractObservableWithUpstream
 
         private static final long serialVersionUID = 4109457741734051389L;
 
-        final Observer<? super T> actual;
+        final Observer<? super T> downstream;
 
         final Action onFinally;
 
-        Disposable d;
+        Disposable upstream;
 
         QueueDisposable<T> qd;
 
         boolean syncFused;
 
         DoFinallyObserver(Observer<? super T> actual, Action onFinally) {
-            this.actual = actual;
+            this.downstream = actual;
             this.onFinally = onFinally;
         }
 
         @SuppressWarnings("unchecked")
         @Override
         public void onSubscribe(Disposable d) {
-            if (DisposableHelper.validate(this.d, d)) {
-                this.d = d;
+            if (DisposableHelper.validate(this.upstream, d)) {
+                this.upstream = d;
                 if (d instanceof QueueDisposable) {
                     this.qd = (QueueDisposable<T>)d;
                 }
 
-                actual.onSubscribe(this);
+                downstream.onSubscribe(this);
             }
         }
 
         @Override
         public void onNext(T t) {
-            actual.onNext(t);
+            downstream.onNext(t);
         }
 
         @Override
         public void onError(Throwable t) {
-            actual.onError(t);
+            downstream.onError(t);
             runFinally();
         }
 
         @Override
         public void onComplete() {
-            actual.onComplete();
+            downstream.onComplete();
             runFinally();
         }
 
         @Override
         public void dispose() {
-            d.dispose();
+            upstream.dispose();
             runFinally();
         }
 
         @Override
         public boolean isDisposed() {
-            return d.isDisposed();
+            return upstream.isDisposed();
         }
 
         @Override

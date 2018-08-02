@@ -11,7 +11,7 @@
  * the License for the specific language governing permissions and limitations under the License.
  */
 
-package io.reactivex;
+package io.reactivex.validators;
 
 import java.lang.reflect.*;
 import java.util.*;
@@ -20,6 +20,9 @@ import java.util.concurrent.*;
 import org.junit.Test;
 import org.reactivestreams.*;
 
+import io.reactivex.*;
+import io.reactivex.Observable;
+import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.*;

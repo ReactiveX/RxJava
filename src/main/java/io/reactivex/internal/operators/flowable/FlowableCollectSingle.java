@@ -59,27 +59,27 @@ public final class FlowableCollectSingle<T, U> extends Single<U> implements Fuse
 
     static final class CollectSubscriber<T, U> implements FlowableSubscriber<T>, Disposable {
 
-        final SingleObserver<? super U> actual;
+        final SingleObserver<? super U> downstream;
 
         final BiConsumer<? super U, ? super T> collector;
 
         final U u;
 
-        Subscription s;
+        Subscription upstream;
 
         boolean done;
 
         CollectSubscriber(SingleObserver<? super U> actual, U u, BiConsumer<? super U, ? super T> collector) {
-            this.actual = actual;
+            this.downstream = actual;
             this.collector = collector;
             this.u = u;
         }
 
         @Override
         public void onSubscribe(Subscription s) {
-            if (SubscriptionHelper.validate(this.s, s)) {
-                this.s = s;
-                actual.onSubscribe(this);
+            if (SubscriptionHelper.validate(this.upstream, s)) {
+                this.upstream = s;
+                downstream.onSubscribe(this);
                 s.request(Long.MAX_VALUE);
             }
         }
@@ -93,7 +93,7 @@ public final class FlowableCollectSingle<T, U> extends Single<U> implements Fuse
                 collector.accept(u, t);
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
-                s.cancel();
+                upstream.cancel();
                 onError(e);
             }
         }
@@ -105,8 +105,8 @@ public final class FlowableCollectSingle<T, U> extends Single<U> implements Fuse
                 return;
             }
             done = true;
-            s = SubscriptionHelper.CANCELLED;
-            actual.onError(t);
+            upstream = SubscriptionHelper.CANCELLED;
+            downstream.onError(t);
         }
 
         @Override
@@ -115,19 +115,19 @@ public final class FlowableCollectSingle<T, U> extends Single<U> implements Fuse
                 return;
             }
             done = true;
-            s = SubscriptionHelper.CANCELLED;
-            actual.onSuccess(u);
+            upstream = SubscriptionHelper.CANCELLED;
+            downstream.onSuccess(u);
         }
 
         @Override
         public void dispose() {
-            s.cancel();
-            s = SubscriptionHelper.CANCELLED;
+            upstream.cancel();
+            upstream = SubscriptionHelper.CANCELLED;
         }
 
         @Override
         public boolean isDisposed() {
-            return s == SubscriptionHelper.CANCELLED;
+            return upstream == SubscriptionHelper.CANCELLED;
         }
     }
 }

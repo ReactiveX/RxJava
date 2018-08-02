@@ -174,7 +174,7 @@ public final class FlowableRefCount<T> extends Flowable<T> {
 
         private static final long serialVersionUID = -7419642935409022375L;
 
-        final Subscriber<? super T> actual;
+        final Subscriber<? super T> downstream;
 
         final FlowableRefCount<T> parent;
 
@@ -183,21 +183,21 @@ public final class FlowableRefCount<T> extends Flowable<T> {
         Subscription upstream;
 
         RefCountSubscriber(Subscriber<? super T> actual, FlowableRefCount<T> parent, RefConnection connection) {
-            this.actual = actual;
+            this.downstream = actual;
             this.parent = parent;
             this.connection = connection;
         }
 
         @Override
         public void onNext(T t) {
-            actual.onNext(t);
+            downstream.onNext(t);
         }
 
         @Override
         public void onError(Throwable t) {
             if (compareAndSet(false, true)) {
                 parent.terminated(connection);
-                actual.onError(t);
+                downstream.onError(t);
             } else {
                 RxJavaPlugins.onError(t);
             }
@@ -207,7 +207,7 @@ public final class FlowableRefCount<T> extends Flowable<T> {
         public void onComplete() {
             if (compareAndSet(false, true)) {
                 parent.terminated(connection);
-                actual.onComplete();
+                downstream.onComplete();
             }
         }
 
@@ -229,7 +229,7 @@ public final class FlowableRefCount<T> extends Flowable<T> {
             if (SubscriptionHelper.validate(upstream, s)) {
                 this.upstream = s;
 
-                actual.onSubscribe(this);
+                downstream.onSubscribe(this);
             }
         }
     }

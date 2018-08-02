@@ -30,51 +30,51 @@ public final class ObservableMaterialize<T> extends AbstractObservableWithUpstre
     }
 
     static final class MaterializeObserver<T> implements Observer<T>, Disposable {
-        final Observer<? super Notification<T>> actual;
+        final Observer<? super Notification<T>> downstream;
 
-        Disposable s;
+        Disposable upstream;
 
-        MaterializeObserver(Observer<? super Notification<T>> actual) {
-            this.actual = actual;
+        MaterializeObserver(Observer<? super Notification<T>> downstream) {
+            this.downstream = downstream;
         }
 
         @Override
-        public void onSubscribe(Disposable s) {
-            if (DisposableHelper.validate(this.s, s)) {
-                this.s = s;
-                actual.onSubscribe(this);
+        public void onSubscribe(Disposable d) {
+            if (DisposableHelper.validate(this.upstream, d)) {
+                this.upstream = d;
+                downstream.onSubscribe(this);
             }
         }
 
 
         @Override
         public void dispose() {
-            s.dispose();
+            upstream.dispose();
         }
 
         @Override
         public boolean isDisposed() {
-            return s.isDisposed();
+            return upstream.isDisposed();
         }
 
         @Override
         public void onNext(T t) {
-            actual.onNext(Notification.createOnNext(t));
+            downstream.onNext(Notification.createOnNext(t));
         }
 
         @Override
         public void onError(Throwable t) {
             Notification<T> v = Notification.createOnError(t);
-            actual.onNext(v);
-            actual.onComplete();
+            downstream.onNext(v);
+            downstream.onComplete();
         }
 
         @Override
         public void onComplete() {
             Notification<T> v = Notification.createOnComplete();
 
-            actual.onNext(v);
-            actual.onComplete();
+            downstream.onNext(v);
+            downstream.onComplete();
         }
     }
 }

@@ -37,7 +37,7 @@ public final class CompletableConcatArray extends Completable {
 
         private static final long serialVersionUID = -7965400327305809232L;
 
-        final CompletableObserver actual;
+        final CompletableObserver downstream;
         final CompletableSource[] sources;
 
         int index;
@@ -45,7 +45,7 @@ public final class CompletableConcatArray extends Completable {
         final SequentialDisposable sd;
 
         ConcatInnerObserver(CompletableObserver actual, CompletableSource[] sources) {
-            this.actual = actual;
+            this.downstream = actual;
             this.sources = sources;
             this.sd = new SequentialDisposable();
         }
@@ -57,7 +57,7 @@ public final class CompletableConcatArray extends Completable {
 
         @Override
         public void onError(Throwable e) {
-            actual.onError(e);
+            downstream.onError(e);
         }
 
         @Override
@@ -82,7 +82,7 @@ public final class CompletableConcatArray extends Completable {
 
                 int idx = index++;
                 if (idx == a.length) {
-                    actual.onComplete();
+                    downstream.onComplete();
                     return;
                 }
 

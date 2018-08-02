@@ -73,23 +73,23 @@ public class SchedulerLifecycleTest {
             }
         };
 
-        CompositeDisposable csub = new CompositeDisposable();
+        CompositeDisposable cd = new CompositeDisposable();
 
         try {
             Worker w1 = Schedulers.computation().createWorker();
-            csub.add(w1);
+            cd.add(w1);
             w1.schedule(countAction);
 
             Worker w2 = Schedulers.io().createWorker();
-            csub.add(w2);
+            cd.add(w2);
             w2.schedule(countAction);
 
             Worker w3 = Schedulers.newThread().createWorker();
-            csub.add(w3);
+            cd.add(w3);
             w3.schedule(countAction);
 
             Worker w4 = Schedulers.single().createWorker();
-            csub.add(w4);
+            cd.add(w4);
             w4.schedule(countAction);
 
 
@@ -97,7 +97,7 @@ public class SchedulerLifecycleTest {
                 fail("countAction was not run by every worker");
             }
         } finally {
-            csub.dispose();
+            cd.dispose();
         }
     }
 

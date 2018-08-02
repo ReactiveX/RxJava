@@ -202,7 +202,7 @@ public class ObservableGroupJoinTest {
                     }
 
                     @Override
-                    public void onSubscribe(Disposable s) {
+                    public void onSubscribe(Disposable d) {
                     }
 
                 }

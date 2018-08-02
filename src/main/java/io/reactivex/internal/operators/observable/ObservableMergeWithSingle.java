@@ -52,7 +52,7 @@ public final class ObservableMergeWithSingle<T> extends AbstractObservableWithUp
 
         private static final long serialVersionUID = -4592979584110982903L;
 
-        final Observer<? super T> actual;
+        final Observer<? super T> downstream;
 
         final AtomicReference<Disposable> mainDisposable;
 
@@ -74,8 +74,8 @@ public final class ObservableMergeWithSingle<T> extends AbstractObservableWithUp
 
         static final int OTHER_STATE_CONSUMED_OR_EMPTY = 2;
 
-        MergeWithObserver(Observer<? super T> actual) {
-            this.actual = actual;
+        MergeWithObserver(Observer<? super T> downstream) {
+            this.downstream = downstream;
             this.mainDisposable = new AtomicReference<Disposable>();
             this.otherObserver = new OtherObserver<T>(this);
             this.error = new AtomicThrowable();
@@ -89,7 +89,7 @@ public final class ObservableMergeWithSingle<T> extends AbstractObservableWithUp
         @Override
         public void onNext(T t) {
             if (compareAndSet(0, 1)) {
-                actual.onNext(t);
+                downstream.onNext(t);
                 if (decrementAndGet() == 0) {
                     return;
                 }
@@ -137,7 +137,7 @@ public final class ObservableMergeWithSingle<T> extends AbstractObservableWithUp
 
         void otherSuccess(T value) {
             if (compareAndSet(0, 1)) {
-                actual.onNext(value);
+                downstream.onNext(value);
                 otherState = OTHER_STATE_CONSUMED_OR_EMPTY;
             } else {
                 singleItem = value;
@@ -174,7 +174,7 @@ public final class ObservableMergeWithSingle<T> extends AbstractObservableWithUp
         }
 
         void drainLoop() {
-            Observer<? super T> actual = this.actual;
+            Observer<? super T> actual = this.downstream;
             int missed = 1;
             for (;;) {
 

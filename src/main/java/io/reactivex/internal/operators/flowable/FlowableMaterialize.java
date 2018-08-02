@@ -34,14 +34,14 @@ public final class FlowableMaterialize<T> extends AbstractFlowableWithUpstream<T
 
         private static final long serialVersionUID = -3740826063558713822L;
 
-        MaterializeSubscriber(Subscriber<? super Notification<T>> actual) {
-            super(actual);
+        MaterializeSubscriber(Subscriber<? super Notification<T>> downstream) {
+            super(downstream);
         }
 
         @Override
         public void onNext(T t) {
             produced++;
-            actual.onNext(Notification.createOnNext(t));
+            downstream.onNext(Notification.createOnNext(t));
         }
 
         @Override

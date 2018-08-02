@@ -75,46 +75,46 @@ public final class ParallelMapTry<T, R> extends ParallelFlowable<R> {
 
     static final class ParallelMapTrySubscriber<T, R> implements ConditionalSubscriber<T>, Subscription {
 
-        final Subscriber<? super R> actual;
+        final Subscriber<? super R> downstream;
 
         final Function<? super T, ? extends R> mapper;
 
         final BiFunction<? super Long, ? super Throwable, ParallelFailureHandling> errorHandler;
 
-        Subscription s;
+        Subscription upstream;
 
         boolean done;
 
         ParallelMapTrySubscriber(Subscriber<? super R> actual, Function<? super T, ? extends R> mapper,
                 BiFunction<? super Long, ? super Throwable, ParallelFailureHandling> errorHandler) {
-            this.actual = actual;
+            this.downstream = actual;
             this.mapper = mapper;
             this.errorHandler = errorHandler;
         }
 
         @Override
         public void request(long n) {
-            s.request(n);
+            upstream.request(n);
         }
 
         @Override
         public void cancel() {
-            s.cancel();
+            upstream.cancel();
         }
 
         @Override
         public void onSubscribe(Subscription s) {
-            if (SubscriptionHelper.validate(this.s, s)) {
-                this.s = s;
+            if (SubscriptionHelper.validate(this.upstream, s)) {
+                this.upstream = s;
 
-                actual.onSubscribe(this);
+                downstream.onSubscribe(this);
             }
         }
 
         @Override
         public void onNext(T t) {
             if (!tryOnNext(t) && !done) {
-                s.request(1);
+                upstream.request(1);
             }
         }
 
@@ -160,7 +160,7 @@ public final class ParallelMapTry<T, R> extends ParallelFlowable<R> {
                     }
                 }
 
-                actual.onNext(v);
+                downstream.onNext(v);
                 return true;
             }
         }
@@ -172,7 +172,7 @@ public final class ParallelMapTry<T, R> extends ParallelFlowable<R> {
                 return;
             }
             done = true;
-            actual.onError(t);
+            downstream.onError(t);
         }
 
         @Override
@@ -181,52 +181,53 @@ public final class ParallelMapTry<T, R> extends ParallelFlowable<R> {
                 return;
             }
             done = true;
-            actual.onComplete();
+            downstream.onComplete();
         }
 
     }
     static final class ParallelMapTryConditionalSubscriber<T, R> implements ConditionalSubscriber<T>, Subscription {
 
-        final ConditionalSubscriber<? super R> actual;
+        final ConditionalSubscriber<? super R> downstream;
 
         final Function<? super T, ? extends R> mapper;
 
         final BiFunction<? super Long, ? super Throwable, ParallelFailureHandling> errorHandler;
-        Subscription s;
+
+        Subscription upstream;
 
         boolean done;
 
         ParallelMapTryConditionalSubscriber(ConditionalSubscriber<? super R> actual,
                 Function<? super T, ? extends R> mapper,
                 BiFunction<? super Long, ? super Throwable, ParallelFailureHandling> errorHandler) {
-            this.actual = actual;
+            this.downstream = actual;
             this.mapper = mapper;
             this.errorHandler = errorHandler;
         }
 
         @Override
         public void request(long n) {
-            s.request(n);
+            upstream.request(n);
         }
 
         @Override
         public void cancel() {
-            s.cancel();
+            upstream.cancel();
         }
 
         @Override
         public void onSubscribe(Subscription s) {
-            if (SubscriptionHelper.validate(this.s, s)) {
-                this.s = s;
+            if (SubscriptionHelper.validate(this.upstream, s)) {
+                this.upstream = s;
 
-                actual.onSubscribe(this);
+                downstream.onSubscribe(this);
             }
         }
 
         @Override
         public void onNext(T t) {
             if (!tryOnNext(t) && !done) {
-                s.request(1);
+                upstream.request(1);
             }
         }
 
@@ -272,7 +273,7 @@ public final class ParallelMapTry<T, R> extends ParallelFlowable<R> {
                     }
                 }
 
-                return actual.tryOnNext(v);
+                return downstream.tryOnNext(v);
             }
         }
 
@@ -283,7 +284,7 @@ public final class ParallelMapTry<T, R> extends ParallelFlowable<R> {
                 return;
             }
             done = true;
-            actual.onError(t);
+            downstream.onError(t);
         }
 
         @Override
@@ -292,7 +293,7 @@ public final class ParallelMapTry<T, R> extends ParallelFlowable<R> {
                 return;
             }
             done = true;
-            actual.onComplete();
+            downstream.onComplete();
         }
 
     }

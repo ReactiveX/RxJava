@@ -46,38 +46,38 @@ public final class ObservableConcatWithCompletable<T> extends AbstractObservable
 
         private static final long serialVersionUID = -1953724749712440952L;
 
-        final Observer<? super T> actual;
+        final Observer<? super T> downstream;
 
         CompletableSource other;
 
         boolean inCompletable;
 
         ConcatWithObserver(Observer<? super T> actual, CompletableSource other) {
-            this.actual = actual;
+            this.downstream = actual;
             this.other = other;
         }
 
         @Override
         public void onSubscribe(Disposable d) {
             if (DisposableHelper.setOnce(this, d) && !inCompletable) {
-                actual.onSubscribe(this);
+                downstream.onSubscribe(this);
             }
         }
 
         @Override
         public void onNext(T t) {
-            actual.onNext(t);
+            downstream.onNext(t);
         }
 
         @Override
         public void onError(Throwable e) {
-            actual.onError(e);
+            downstream.onError(e);
         }
 
         @Override
         public void onComplete() {
             if (inCompletable) {
-                actual.onComplete();
+                downstream.onComplete();
             } else {
                 inCompletable = true;
                 DisposableHelper.replace(this, null);

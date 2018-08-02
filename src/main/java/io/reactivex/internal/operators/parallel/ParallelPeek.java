@@ -87,16 +87,16 @@ public final class ParallelPeek<T> extends ParallelFlowable<T> {
 
     static final class ParallelPeekSubscriber<T> implements FlowableSubscriber<T>, Subscription {
 
-        final Subscriber<? super T> actual;
+        final Subscriber<? super T> downstream;
 
         final ParallelPeek<T> parent;
 
-        Subscription s;
+        Subscription upstream;
 
         boolean done;
 
         ParallelPeekSubscriber(Subscriber<? super T> actual, ParallelPeek<T> parent) {
-            this.actual = actual;
+            this.downstream = actual;
             this.parent = parent;
         }
 
@@ -108,7 +108,7 @@ public final class ParallelPeek<T> extends ParallelFlowable<T> {
                 Exceptions.throwIfFatal(ex);
                 RxJavaPlugins.onError(ex);
             }
-            s.request(n);
+            upstream.request(n);
         }
 
         @Override
@@ -119,25 +119,25 @@ public final class ParallelPeek<T> extends ParallelFlowable<T> {
                 Exceptions.throwIfFatal(ex);
                 RxJavaPlugins.onError(ex);
             }
-            s.cancel();
+            upstream.cancel();
         }
 
         @Override
         public void onSubscribe(Subscription s) {
-            if (SubscriptionHelper.validate(this.s, s)) {
-                this.s = s;
+            if (SubscriptionHelper.validate(this.upstream, s)) {
+                this.upstream = s;
 
                 try {
                     parent.onSubscribe.accept(s);
                 } catch (Throwable ex) {
                     Exceptions.throwIfFatal(ex);
                     s.cancel();
-                    actual.onSubscribe(EmptySubscription.INSTANCE);
+                    downstream.onSubscribe(EmptySubscription.INSTANCE);
                     onError(ex);
                     return;
                 }
 
-                actual.onSubscribe(this);
+                downstream.onSubscribe(this);
             }
         }
 
@@ -152,7 +152,7 @@ public final class ParallelPeek<T> extends ParallelFlowable<T> {
                     return;
                 }
 
-                actual.onNext(t);
+                downstream.onNext(t);
 
                 try {
                     parent.onAfterNext.accept(t);
@@ -177,7 +177,7 @@ public final class ParallelPeek<T> extends ParallelFlowable<T> {
                 Exceptions.throwIfFatal(ex);
                 t = new CompositeException(t, ex);
             }
-            actual.onError(t);
+            downstream.onError(t);
 
             try {
                 parent.onAfterTerminated.run();
@@ -195,10 +195,10 @@ public final class ParallelPeek<T> extends ParallelFlowable<T> {
                     parent.onComplete.run();
                 } catch (Throwable ex) {
                     Exceptions.throwIfFatal(ex);
-                    actual.onError(ex);
+                    downstream.onError(ex);
                     return;
                 }
-                actual.onComplete();
+                downstream.onComplete();
 
                 try {
                     parent.onAfterTerminated.run();

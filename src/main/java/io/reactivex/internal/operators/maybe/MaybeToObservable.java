@@ -60,18 +60,18 @@ public final class MaybeToObservable<T> extends Observable<T> implements HasUpst
 
         private static final long serialVersionUID = 7603343402964826922L;
 
-        Disposable d;
+        Disposable upstream;
 
-        MaybeToObservableObserver(Observer<? super T> actual) {
-            super(actual);
+        MaybeToObservableObserver(Observer<? super T> downstream) {
+            super(downstream);
         }
 
         @Override
         public void onSubscribe(Disposable d) {
-            if (DisposableHelper.validate(this.d, d)) {
-                this.d = d;
+            if (DisposableHelper.validate(this.upstream, d)) {
+                this.upstream = d;
 
-                actual.onSubscribe(this);
+                downstream.onSubscribe(this);
             }
         }
 
@@ -93,7 +93,7 @@ public final class MaybeToObservable<T> extends Observable<T> implements HasUpst
         @Override
         public void dispose() {
             super.dispose();
-            d.dispose();
+            upstream.dispose();
         }
     }
 }

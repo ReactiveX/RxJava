@@ -49,22 +49,22 @@ public final class MaybeFlatten<T, R> extends AbstractMaybeWithUpstream<T, R> {
 
         private static final long serialVersionUID = 4375739915521278546L;
 
-        final MaybeObserver<? super R> actual;
+        final MaybeObserver<? super R> downstream;
 
         final Function<? super T, ? extends MaybeSource<? extends R>> mapper;
 
-        Disposable d;
+        Disposable upstream;
 
         FlatMapMaybeObserver(MaybeObserver<? super R> actual,
                 Function<? super T, ? extends MaybeSource<? extends R>> mapper) {
-            this.actual = actual;
+            this.downstream = actual;
             this.mapper = mapper;
         }
 
         @Override
         public void dispose() {
             DisposableHelper.dispose(this);
-            d.dispose();
+            upstream.dispose();
         }
 
         @Override
@@ -74,10 +74,10 @@ public final class MaybeFlatten<T, R> extends AbstractMaybeWithUpstream<T, R> {
 
         @Override
         public void onSubscribe(Disposable d) {
-            if (DisposableHelper.validate(this.d, d)) {
-                this.d = d;
+            if (DisposableHelper.validate(this.upstream, d)) {
+                this.upstream = d;
 
-                actual.onSubscribe(this);
+                downstream.onSubscribe(this);
             }
         }
 
@@ -89,7 +89,7 @@ public final class MaybeFlatten<T, R> extends AbstractMaybeWithUpstream<T, R> {
                 source = ObjectHelper.requireNonNull(mapper.apply(value), "The mapper returned a null MaybeSource");
             } catch (Exception ex) {
                 Exceptions.throwIfFatal(ex);
-                actual.onError(ex);
+                downstream.onError(ex);
                 return;
             }
 
@@ -100,12 +100,12 @@ public final class MaybeFlatten<T, R> extends AbstractMaybeWithUpstream<T, R> {
 
         @Override
         public void onError(Throwable e) {
-            actual.onError(e);
+            downstream.onError(e);
         }
 
         @Override
         public void onComplete() {
-            actual.onComplete();
+            downstream.onComplete();
         }
 
         final class InnerObserver implements MaybeObserver<R> {
@@ -117,17 +117,17 @@ public final class MaybeFlatten<T, R> extends AbstractMaybeWithUpstream<T, R> {
 
             @Override
             public void onSuccess(R value) {
-                actual.onSuccess(value);
+                downstream.onSuccess(value);
             }
 
             @Override
             public void onError(Throwable e) {
-                actual.onError(e);
+                downstream.onError(e);
             }
 
             @Override
             public void onComplete() {
-                actual.onComplete();
+                downstream.onComplete();
             }
         }
     }

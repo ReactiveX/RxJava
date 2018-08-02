@@ -32,38 +32,38 @@ public final class ObservableOnErrorReturn<T> extends AbstractObservableWithUpst
     }
 
     static final class OnErrorReturnObserver<T> implements Observer<T>, Disposable {
-        final Observer<? super T> actual;
+        final Observer<? super T> downstream;
         final Function<? super Throwable, ? extends T> valueSupplier;
 
-        Disposable s;
+        Disposable upstream;
 
         OnErrorReturnObserver(Observer<? super T> actual, Function<? super Throwable, ? extends T> valueSupplier) {
-            this.actual = actual;
+            this.downstream = actual;
             this.valueSupplier = valueSupplier;
         }
 
         @Override
-        public void onSubscribe(Disposable s) {
-            if (DisposableHelper.validate(this.s, s)) {
-                this.s = s;
-                actual.onSubscribe(this);
+        public void onSubscribe(Disposable d) {
+            if (DisposableHelper.validate(this.upstream, d)) {
+                this.upstream = d;
+                downstream.onSubscribe(this);
             }
         }
 
 
         @Override
         public void dispose() {
-            s.dispose();
+            upstream.dispose();
         }
 
         @Override
         public boolean isDisposed() {
-            return s.isDisposed();
+            return upstream.isDisposed();
         }
 
         @Override
         public void onNext(T t) {
-            actual.onNext(t);
+            downstream.onNext(t);
         }
 
         @Override
@@ -73,24 +73,24 @@ public final class ObservableOnErrorReturn<T> extends AbstractObservableWithUpst
                 v = valueSupplier.apply(t);
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
-                actual.onError(new CompositeException(t, e));
+                downstream.onError(new CompositeException(t, e));
                 return;
             }
 
             if (v == null) {
                 NullPointerException e = new NullPointerException("The supplied value is null");
                 e.initCause(t);
-                actual.onError(e);
+                downstream.onError(e);
                 return;
             }
 
-            actual.onNext(v);
-            actual.onComplete();
+            downstream.onNext(v);
+            downstream.onComplete();
         }
 
         @Override
         public void onComplete() {
-            actual.onComplete();
+            downstream.onComplete();
         }
     }
 }

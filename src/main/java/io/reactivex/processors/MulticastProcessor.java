@@ -580,14 +580,14 @@ public final class MulticastProcessor<T> extends FlowableProcessor<T> {
 
         private static final long serialVersionUID = -363282618957264509L;
 
-        final Subscriber<? super T> actual;
+        final Subscriber<? super T> downstream;
 
         final MulticastProcessor<T> parent;
 
         long emitted;
 
         MulticastSubscription(Subscriber<? super T> actual, MulticastProcessor<T> parent) {
-            this.actual = actual;
+            this.downstream = actual;
             this.parent = parent;
         }
 
@@ -621,19 +621,19 @@ public final class MulticastProcessor<T> extends FlowableProcessor<T> {
         void onNext(T t) {
             if (get() != Long.MIN_VALUE) {
                 emitted++;
-                actual.onNext(t);
+                downstream.onNext(t);
             }
         }
 
         void onError(Throwable t) {
             if (get() != Long.MIN_VALUE) {
-                actual.onError(t);
+                downstream.onError(t);
             }
         }
 
         void onComplete() {
             if (get() != Long.MIN_VALUE) {
-                actual.onComplete();
+                downstream.onComplete();
             }
         }
     }

@@ -792,7 +792,7 @@ public class FlowableCreateTest {
             }, m)
             .subscribe(new FlowableSubscriber<Object>() {
                 @Override
-                public void onSubscribe(Subscription d) {
+                public void onSubscribe(Subscription s) {
                 }
 
                 @Override
@@ -830,7 +830,7 @@ public class FlowableCreateTest {
             }, m)
             .subscribe(new FlowableSubscriber<Object>() {
                 @Override
-                public void onSubscribe(Subscription d) {
+                public void onSubscribe(Subscription s) {
                 }
 
                 @Override

@@ -45,15 +45,15 @@ public final class SingleTimer extends Single<Long> {
     static final class TimerDisposable extends AtomicReference<Disposable> implements Disposable, Runnable {
 
         private static final long serialVersionUID = 8465401857522493082L;
-        final SingleObserver<? super Long> actual;
+        final SingleObserver<? super Long> downstream;
 
-        TimerDisposable(final SingleObserver<? super Long> actual) {
-            this.actual = actual;
+        TimerDisposable(final SingleObserver<? super Long> downstream) {
+            this.downstream = downstream;
         }
 
         @Override
         public void run() {
-            actual.onSuccess(0L);
+            downstream.onSuccess(0L);
         }
 
         @Override

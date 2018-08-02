@@ -39,38 +39,38 @@ public final class ObservableSubscribeOn<T> extends AbstractObservableWithUpstre
     static final class SubscribeOnObserver<T> extends AtomicReference<Disposable> implements Observer<T>, Disposable {
 
         private static final long serialVersionUID = 8094547886072529208L;
-        final Observer<? super T> actual;
+        final Observer<? super T> downstream;
 
-        final AtomicReference<Disposable> s;
+        final AtomicReference<Disposable> upstream;
 
-        SubscribeOnObserver(Observer<? super T> actual) {
-            this.actual = actual;
-            this.s = new AtomicReference<Disposable>();
+        SubscribeOnObserver(Observer<? super T> downstream) {
+            this.downstream = downstream;
+            this.upstream = new AtomicReference<Disposable>();
         }
 
         @Override
-        public void onSubscribe(Disposable s) {
-            DisposableHelper.setOnce(this.s, s);
+        public void onSubscribe(Disposable d) {
+            DisposableHelper.setOnce(this.upstream, d);
         }
 
         @Override
         public void onNext(T t) {
-            actual.onNext(t);
+            downstream.onNext(t);
         }
 
         @Override
         public void onError(Throwable t) {
-            actual.onError(t);
+            downstream.onError(t);
         }
 
         @Override
         public void onComplete() {
-            actual.onComplete();
+            downstream.onComplete();
         }
 
         @Override
         public void dispose() {
-            DisposableHelper.dispose(s);
+            DisposableHelper.dispose(upstream);
             DisposableHelper.dispose(this);
         }
 

@@ -151,7 +151,7 @@ extends Flowable<R> {
 
         private static final long serialVersionUID = -5082275438355852221L;
 
-        final Subscriber<? super R> actual;
+        final Subscriber<? super R> downstream;
 
         final Function<? super Object[], ? extends R> combiner;
 
@@ -180,7 +180,7 @@ extends Flowable<R> {
         CombineLatestCoordinator(Subscriber<? super R> actual,
                 Function<? super Object[], ? extends R> combiner, int n,
                 int bufferSize, boolean delayErrors) {
-            this.actual = actual;
+            this.downstream = actual;
             this.combiner = combiner;
             @SuppressWarnings("unchecked")
             CombineLatestInnerSubscriber<T>[] a = new CombineLatestInnerSubscriber[n];
@@ -289,7 +289,7 @@ extends Flowable<R> {
         }
 
         void drainOutput() {
-            final Subscriber<? super R> a = actual;
+            final Subscriber<? super R> a = downstream;
             final SpscLinkedArrayQueue<Object> q = queue;
 
             int missed = 1;
@@ -331,7 +331,7 @@ extends Flowable<R> {
 
         @SuppressWarnings("unchecked")
         void drainAsync() {
-            final Subscriber<? super R> a = actual;
+            final Subscriber<? super R> a = downstream;
             final SpscLinkedArrayQueue<Object> q = queue;
 
             int missed = 1;

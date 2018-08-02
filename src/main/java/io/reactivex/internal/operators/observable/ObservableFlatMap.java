@@ -59,7 +59,7 @@ public final class ObservableFlatMap<T, U> extends AbstractObservableWithUpstrea
 
         private static final long serialVersionUID = -2117620485640801370L;
 
-        final Observer<? super U> actual;
+        final Observer<? super U> downstream;
         final Function<? super T, ? extends ObservableSource<? extends U>> mapper;
         final boolean delayErrors;
         final int maxConcurrency;
@@ -79,7 +79,7 @@ public final class ObservableFlatMap<T, U> extends AbstractObservableWithUpstrea
 
         static final InnerObserver<?, ?>[] CANCELLED = new InnerObserver<?, ?>[0];
 
-        Disposable s;
+        Disposable upstream;
 
         long uniqueId;
         long lastId;
@@ -91,7 +91,7 @@ public final class ObservableFlatMap<T, U> extends AbstractObservableWithUpstrea
 
         MergeObserver(Observer<? super U> actual, Function<? super T, ? extends ObservableSource<? extends U>> mapper,
                 boolean delayErrors, int maxConcurrency, int bufferSize) {
-            this.actual = actual;
+            this.downstream = actual;
             this.mapper = mapper;
             this.delayErrors = delayErrors;
             this.maxConcurrency = maxConcurrency;
@@ -103,10 +103,10 @@ public final class ObservableFlatMap<T, U> extends AbstractObservableWithUpstrea
         }
 
         @Override
-        public void onSubscribe(Disposable s) {
-            if (DisposableHelper.validate(this.s, s)) {
-                this.s = s;
-                actual.onSubscribe(this);
+        public void onSubscribe(Disposable d) {
+            if (DisposableHelper.validate(this.upstream, d)) {
+                this.upstream = d;
+                downstream.onSubscribe(this);
             }
         }
 
@@ -121,7 +121,7 @@ public final class ObservableFlatMap<T, U> extends AbstractObservableWithUpstrea
                 p = ObjectHelper.requireNonNull(mapper.apply(t), "The mapper returned a null ObservableSource");
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
-                s.dispose();
+                upstream.dispose();
                 onError(e);
                 return;
             }
@@ -234,7 +234,7 @@ public final class ObservableFlatMap<T, U> extends AbstractObservableWithUpstrea
 
 
             if (get() == 0 && compareAndSet(0, 1)) {
-                actual.onNext(u);
+                downstream.onNext(u);
                 if (decrementAndGet() == 0) {
                     return true;
                 }
@@ -263,7 +263,7 @@ public final class ObservableFlatMap<T, U> extends AbstractObservableWithUpstrea
 
         void tryEmit(U value, InnerObserver<T, U> inner) {
             if (get() == 0 && compareAndSet(0, 1)) {
-                actual.onNext(value);
+                downstream.onNext(value);
                 if (decrementAndGet() == 0) {
                     return;
                 }
@@ -329,7 +329,7 @@ public final class ObservableFlatMap<T, U> extends AbstractObservableWithUpstrea
         }
 
         void drainLoop() {
-            final Observer<? super U> child = this.actual;
+            final Observer<? super U> child = this.downstream;
             int missed = 1;
             for (;;) {
                 if (checkTerminate()) {
@@ -503,7 +503,7 @@ public final class ObservableFlatMap<T, U> extends AbstractObservableWithUpstrea
                 disposeAll();
                 e = errors.terminate();
                 if (e != ExceptionHelper.TERMINATED) {
-                    actual.onError(e);
+                    downstream.onError(e);
                 }
                 return true;
             }
@@ -511,7 +511,7 @@ public final class ObservableFlatMap<T, U> extends AbstractObservableWithUpstrea
         }
 
         boolean disposeAll() {
-            s.dispose();
+            upstream.dispose();
             InnerObserver<?, ?>[] a = observers.get();
             if (a != CANCELLED) {
                 a = observers.getAndSet(CANCELLED);
@@ -543,11 +543,11 @@ public final class ObservableFlatMap<T, U> extends AbstractObservableWithUpstrea
             this.parent = parent;
         }
         @Override
-        public void onSubscribe(Disposable s) {
-            if (DisposableHelper.setOnce(this, s)) {
-                if (s instanceof QueueDisposable) {
+        public void onSubscribe(Disposable d) {
+            if (DisposableHelper.setOnce(this, d)) {
+                if (d instanceof QueueDisposable) {
                     @SuppressWarnings("unchecked")
-                    QueueDisposable<U> qd = (QueueDisposable<U>) s;
+                    QueueDisposable<U> qd = (QueueDisposable<U>) d;
 
                     int m = qd.requestFusion(QueueDisposable.ANY | QueueDisposable.BOUNDARY);
                     if (m == QueueDisposable.SYNC) {

@@ -156,10 +156,10 @@ public class FlowableTakeUntilTest {
     private static class TestObservable implements Publisher<String> {
 
         Subscriber<? super String> subscriber;
-        Subscription s;
+        Subscription upstream;
 
         TestObservable(Subscription s) {
-            this.s = s;
+            this.upstream = s;
         }
 
         /* used to simulate subscription */
@@ -180,7 +180,7 @@ public class FlowableTakeUntilTest {
         @Override
         public void subscribe(Subscriber<? super String> subscriber) {
             this.subscriber = subscriber;
-            subscriber.onSubscribe(s);
+            subscriber.onSubscribe(upstream);
         }
     }
 

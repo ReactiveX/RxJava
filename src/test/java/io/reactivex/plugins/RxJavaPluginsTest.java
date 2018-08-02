@@ -712,8 +712,8 @@ public class RxJavaPluginsTest {
                     return new Subscriber() {
 
                         @Override
-                        public void onSubscribe(Subscription d) {
-                            t.onSubscribe(d);
+                        public void onSubscribe(Subscription s) {
+                            t.onSubscribe(s);
                         }
 
                         @SuppressWarnings("unchecked")

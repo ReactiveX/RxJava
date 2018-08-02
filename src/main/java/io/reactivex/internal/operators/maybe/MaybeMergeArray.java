@@ -72,7 +72,7 @@ public final class MaybeMergeArray<T> extends Flowable<T> {
 
         private static final long serialVersionUID = -660395290758764731L;
 
-        final Subscriber<? super T> actual;
+        final Subscriber<? super T> downstream;
 
         final CompositeDisposable set;
 
@@ -91,7 +91,7 @@ public final class MaybeMergeArray<T> extends Flowable<T> {
         long consumed;
 
         MergeMaybeObserver(Subscriber<? super T> actual, int sourceCount, SimpleQueueWithConsumerIndex<Object> queue) {
-            this.actual = actual;
+            this.downstream = actual;
             this.sourceCount = sourceCount;
             this.set = new CompositeDisposable();
             this.requested = new AtomicLong();
@@ -184,7 +184,7 @@ public final class MaybeMergeArray<T> extends Flowable<T> {
         @SuppressWarnings("unchecked")
         void drainNormal() {
             int missed = 1;
-            Subscriber<? super T> a = actual;
+            Subscriber<? super T> a = downstream;
             SimpleQueueWithConsumerIndex<Object> q = queue;
             long e = consumed;
 
@@ -252,7 +252,7 @@ public final class MaybeMergeArray<T> extends Flowable<T> {
 
         void drainFused() {
             int missed = 1;
-            Subscriber<? super T> a = actual;
+            Subscriber<? super T> a = downstream;
             SimpleQueueWithConsumerIndex<Object> q = queue;
 
             for (;;) {

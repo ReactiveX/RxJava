@@ -41,40 +41,40 @@ public final class MaybeOnErrorReturn<T> extends AbstractMaybeWithUpstream<T, T>
 
     static final class OnErrorReturnMaybeObserver<T> implements MaybeObserver<T>, Disposable {
 
-        final MaybeObserver<? super T> actual;
+        final MaybeObserver<? super T> downstream;
 
         final Function<? super Throwable, ? extends T> valueSupplier;
 
-        Disposable d;
+        Disposable upstream;
 
         OnErrorReturnMaybeObserver(MaybeObserver<? super T> actual,
                 Function<? super Throwable, ? extends T> valueSupplier) {
-            this.actual = actual;
+            this.downstream = actual;
             this.valueSupplier = valueSupplier;
         }
 
         @Override
         public void dispose() {
-            d.dispose();
+            upstream.dispose();
         }
 
         @Override
         public boolean isDisposed() {
-            return d.isDisposed();
+            return upstream.isDisposed();
         }
 
         @Override
         public void onSubscribe(Disposable d) {
-            if (DisposableHelper.validate(this.d, d)) {
-                this.d = d;
+            if (DisposableHelper.validate(this.upstream, d)) {
+                this.upstream = d;
 
-                actual.onSubscribe(this);
+                downstream.onSubscribe(this);
             }
         }
 
         @Override
         public void onSuccess(T value) {
-            actual.onSuccess(value);
+            downstream.onSuccess(value);
         }
 
         @Override
@@ -85,16 +85,16 @@ public final class MaybeOnErrorReturn<T> extends AbstractMaybeWithUpstream<T, T>
                 v = ObjectHelper.requireNonNull(valueSupplier.apply(e), "The valueSupplier returned a null value");
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
-                actual.onError(new CompositeException(e, ex));
+                downstream.onError(new CompositeException(e, ex));
                 return;
             }
 
-            actual.onSuccess(v);
+            downstream.onSuccess(v);
         }
 
         @Override
         public void onComplete() {
-            actual.onComplete();
+            downstream.onComplete();
         }
     }
 }

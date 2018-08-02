@@ -45,7 +45,7 @@ public final class CompletableConcat extends Completable {
     implements FlowableSubscriber<CompletableSource>, Disposable {
         private static final long serialVersionUID = 9032184911934499404L;
 
-        final CompletableObserver actual;
+        final CompletableObserver downstream;
 
         final int prefetch;
 
@@ -61,14 +61,14 @@ public final class CompletableConcat extends Completable {
 
         SimpleQueue<CompletableSource> queue;
 
-        Subscription s;
+        Subscription upstream;
 
         volatile boolean done;
 
         volatile boolean active;
 
         CompletableConcatSubscriber(CompletableObserver actual, int prefetch) {
-            this.actual = actual;
+            this.downstream = actual;
             this.prefetch = prefetch;
             this.inner = new ConcatInnerObserver(this);
             this.once = new AtomicBoolean();
@@ -77,8 +77,8 @@ public final class CompletableConcat extends Completable {
 
         @Override
         public void onSubscribe(Subscription s) {
-            if (SubscriptionHelper.validate(this.s, s)) {
-                this.s = s;
+            if (SubscriptionHelper.validate(this.upstream, s)) {
+                this.upstream = s;
 
                 long r = prefetch == Integer.MAX_VALUE ? Long.MAX_VALUE : prefetch;
 
@@ -92,14 +92,14 @@ public final class CompletableConcat extends Completable {
                         sourceFused = m;
                         queue = qs;
                         done = true;
-                        actual.onSubscribe(this);
+                        downstream.onSubscribe(this);
                         drain();
                         return;
                     }
                     if (m == QueueSubscription.ASYNC) {
                         sourceFused = m;
                         queue = qs;
-                        actual.onSubscribe(this);
+                        downstream.onSubscribe(this);
                         s.request(r);
                         return;
                     }
@@ -111,7 +111,7 @@ public final class CompletableConcat extends Completable {
                     queue = new SpscArrayQueue<CompletableSource>(prefetch);
                 }
 
-                actual.onSubscribe(this);
+                downstream.onSubscribe(this);
 
                 s.request(r);
             }
@@ -132,7 +132,7 @@ public final class CompletableConcat extends Completable {
         public void onError(Throwable t) {
             if (once.compareAndSet(false, true)) {
                 DisposableHelper.dispose(inner);
-                actual.onError(t);
+                downstream.onError(t);
             } else {
                 RxJavaPlugins.onError(t);
             }
@@ -146,7 +146,7 @@ public final class CompletableConcat extends Completable {
 
         @Override
         public void dispose() {
-            s.cancel();
+            upstream.cancel();
             DisposableHelper.dispose(inner);
         }
 
@@ -183,7 +183,7 @@ public final class CompletableConcat extends Completable {
 
                     if (d && empty) {
                         if (once.compareAndSet(false, true)) {
-                            actual.onComplete();
+                            downstream.onComplete();
                         }
                         return;
                     }
@@ -206,7 +206,7 @@ public final class CompletableConcat extends Completable {
                 int p = consumed + 1;
                 if (p == limit) {
                     consumed = 0;
-                    s.request(p);
+                    upstream.request(p);
                 } else {
                     consumed = p;
                 }
@@ -215,8 +215,8 @@ public final class CompletableConcat extends Completable {
 
         void innerError(Throwable e) {
             if (once.compareAndSet(false, true)) {
-                s.cancel();
-                actual.onError(e);
+                upstream.cancel();
+                downstream.onError(e);
             } else {
                 RxJavaPlugins.onError(e);
             }

@@ -191,8 +191,8 @@ public class ObservableOnErrorResumeNextViaFunctionTest {
                 return new Observer<Integer>() {
 
                     @Override
-                    public void onSubscribe(Disposable s) {
-                        t1.onSubscribe(s);
+                    public void onSubscribe(Disposable d) {
+                        t1.onSubscribe(d);
                     }
 
                     @Override

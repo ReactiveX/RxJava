@@ -36,13 +36,13 @@ public class FlowableBackpressureTests {
     static final class FirehoseNoBackpressure extends AtomicBoolean implements Subscription {
 
         private static final long serialVersionUID = -669931580197884015L;
-        final Subscriber<? super Integer> s;
-        private final AtomicInteger counter;
+        final Subscriber<? super Integer> downstream;
+        final AtomicInteger counter;
         volatile boolean cancelled;
 
         private FirehoseNoBackpressure(AtomicInteger counter, Subscriber<? super Integer> s) {
             this.counter = counter;
-            this.s = s;
+            this.downstream = s;
         }
 
         @Override
@@ -52,7 +52,7 @@ public class FlowableBackpressureTests {
             }
             if (compareAndSet(false, true)) {
                 int i = 0;
-                final Subscriber<? super Integer> a = s;
+                final Subscriber<? super Integer> a = downstream;
                 final AtomicInteger c = counter;
 
                 while (!cancelled) {

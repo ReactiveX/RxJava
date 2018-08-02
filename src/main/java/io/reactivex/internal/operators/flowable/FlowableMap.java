@@ -54,7 +54,7 @@ public final class FlowableMap<T, U> extends AbstractFlowableWithUpstream<T, U> 
             }
 
             if (sourceMode != NONE) {
-                actual.onNext(null);
+                downstream.onNext(null);
                 return;
             }
 
@@ -66,7 +66,7 @@ public final class FlowableMap<T, U> extends AbstractFlowableWithUpstream<T, U> 
                 fail(ex);
                 return;
             }
-            actual.onNext(v);
+            downstream.onNext(v);
         }
 
         @Override
@@ -97,7 +97,7 @@ public final class FlowableMap<T, U> extends AbstractFlowableWithUpstream<T, U> 
             }
 
             if (sourceMode != NONE) {
-                actual.onNext(null);
+                downstream.onNext(null);
                 return;
             }
 
@@ -109,7 +109,7 @@ public final class FlowableMap<T, U> extends AbstractFlowableWithUpstream<T, U> 
                 fail(ex);
                 return;
             }
-            actual.onNext(v);
+            downstream.onNext(v);
         }
 
         @Override
@@ -126,7 +126,7 @@ public final class FlowableMap<T, U> extends AbstractFlowableWithUpstream<T, U> 
                 fail(ex);
                 return true;
             }
-            return actual.tryOnNext(v);
+            return downstream.tryOnNext(v);
         }
 
         @Override

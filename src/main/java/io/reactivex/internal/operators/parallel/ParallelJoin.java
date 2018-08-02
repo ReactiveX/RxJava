@@ -63,7 +63,7 @@ public final class ParallelJoin<T> extends Flowable<T> {
 
         private static final long serialVersionUID = 3100232009247827843L;
 
-        final Subscriber<? super T> actual;
+        final Subscriber<? super T> downstream;
 
         final JoinInnerSubscriber<T>[] subscribers;
 
@@ -76,7 +76,7 @@ public final class ParallelJoin<T> extends Flowable<T> {
         final AtomicInteger done = new AtomicInteger();
 
         JoinSubscriptionBase(Subscriber<? super T> actual, int n, int prefetch) {
-            this.actual = actual;
+            this.downstream = actual;
             @SuppressWarnings("unchecked")
             JoinInnerSubscriber<T>[] a = new JoinInnerSubscriber[n];
 
@@ -144,7 +144,7 @@ public final class ParallelJoin<T> extends Flowable<T> {
         public void onNext(JoinInnerSubscriber<T> inner, T value) {
             if (get() == 0 && compareAndSet(0, 1)) {
                 if (requested.get() != 0) {
-                    actual.onNext(value);
+                    downstream.onNext(value);
                     if (requested.get() != Long.MAX_VALUE) {
                         requested.decrementAndGet();
                     }
@@ -156,7 +156,7 @@ public final class ParallelJoin<T> extends Flowable<T> {
                         cancelAll();
                         Throwable mbe = new MissingBackpressureException("Queue full?!");
                         if (errors.compareAndSet(null, mbe)) {
-                            actual.onError(mbe);
+                            downstream.onError(mbe);
                         } else {
                             RxJavaPlugins.onError(mbe);
                         }
@@ -215,7 +215,7 @@ public final class ParallelJoin<T> extends Flowable<T> {
 
             JoinInnerSubscriber<T>[] s = this.subscribers;
             int n = s.length;
-            Subscriber<? super T> a = this.actual;
+            Subscriber<? super T> a = this.downstream;
 
             for (;;) {
 
@@ -329,7 +329,7 @@ public final class ParallelJoin<T> extends Flowable<T> {
         void onNext(JoinInnerSubscriber<T> inner, T value) {
             if (get() == 0 && compareAndSet(0, 1)) {
                 if (requested.get() != 0) {
-                    actual.onNext(value);
+                    downstream.onNext(value);
                     if (requested.get() != Long.MAX_VALUE) {
                         requested.decrementAndGet();
                     }
@@ -393,7 +393,7 @@ public final class ParallelJoin<T> extends Flowable<T> {
 
             JoinInnerSubscriber<T>[] s = this.subscribers;
             int n = s.length;
-            Subscriber<? super T> a = this.actual;
+            Subscriber<? super T> a = this.downstream;
 
             for (;;) {
 

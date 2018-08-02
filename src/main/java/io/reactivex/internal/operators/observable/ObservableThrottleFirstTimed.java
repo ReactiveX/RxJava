@@ -48,29 +48,29 @@ public final class ObservableThrottleFirstTimed<T> extends AbstractObservableWit
     implements Observer<T>, Disposable, Runnable {
         private static final long serialVersionUID = 786994795061867455L;
 
-        final Observer<? super T> actual;
+        final Observer<? super T> downstream;
         final long timeout;
         final TimeUnit unit;
         final Scheduler.Worker worker;
 
-        Disposable s;
+        Disposable upstream;
 
         volatile boolean gate;
 
         boolean done;
 
         DebounceTimedObserver(Observer<? super T> actual, long timeout, TimeUnit unit, Worker worker) {
-            this.actual = actual;
+            this.downstream = actual;
             this.timeout = timeout;
             this.unit = unit;
             this.worker = worker;
         }
 
         @Override
-        public void onSubscribe(Disposable s) {
-            if (DisposableHelper.validate(this.s, s)) {
-                this.s = s;
-                actual.onSubscribe(this);
+        public void onSubscribe(Disposable d) {
+            if (DisposableHelper.validate(this.upstream, d)) {
+                this.upstream = d;
+                downstream.onSubscribe(this);
             }
         }
 
@@ -79,7 +79,7 @@ public final class ObservableThrottleFirstTimed<T> extends AbstractObservableWit
             if (!gate && !done) {
                 gate = true;
 
-                actual.onNext(t);
+                downstream.onNext(t);
 
                 Disposable d = get();
                 if (d != null) {
@@ -102,7 +102,7 @@ public final class ObservableThrottleFirstTimed<T> extends AbstractObservableWit
                 RxJavaPlugins.onError(t);
             } else {
                 done = true;
-                actual.onError(t);
+                downstream.onError(t);
                 worker.dispose();
             }
         }
@@ -111,14 +111,14 @@ public final class ObservableThrottleFirstTimed<T> extends AbstractObservableWit
         public void onComplete() {
             if (!done) {
                 done = true;
-                actual.onComplete();
+                downstream.onComplete();
                 worker.dispose();
             }
         }
 
         @Override
         public void dispose() {
-            s.dispose();
+            upstream.dispose();
             worker.dispose();
         }
 

@@ -135,16 +135,16 @@ public class FutureObserverTest {
 
         try {
 
-            Disposable s = Disposables.empty();
+            Disposable d1 = Disposables.empty();
 
-            fo.onSubscribe(s);
+            fo.onSubscribe(d1);
 
-            Disposable s2 = Disposables.empty();
+            Disposable d2 = Disposables.empty();
 
-            fo.onSubscribe(s2);
+            fo.onSubscribe(d2);
 
-            assertFalse(s.isDisposed());
-            assertTrue(s2.isDisposed());
+            assertFalse(d1.isDisposed());
+            assertTrue(d2.isDisposed());
 
             TestHelper.assertError(errors, 0, IllegalStateException.class, "Disposable already set!");
         } finally {

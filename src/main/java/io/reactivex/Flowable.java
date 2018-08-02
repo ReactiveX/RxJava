@@ -10787,7 +10787,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *
      *     // In the subscription phase, the upstream sends a Subscription to this class
      *     // and subsequently this class has to send a Subscription to the downstream.
-     *     // Note that relaying the upstream's Subscription directly is not allowed in RxJava
+     *     // Note that relaying the upstream's Subscription instance directly is not allowed in RxJava
      *     &#64;Override
      *     public void onSubscribe(Subscription s) {
      *         if (upstream != null) {

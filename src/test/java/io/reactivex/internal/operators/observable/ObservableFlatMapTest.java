@@ -308,7 +308,7 @@ public class ObservableFlatMapTest {
     private static <T> Observable<T> composer(Observable<T> source, final AtomicInteger subscriptionCount, final int m) {
         return source.doOnSubscribe(new Consumer<Disposable>() {
             @Override
-            public void accept(Disposable s) {
+            public void accept(Disposable d) {
                     int n = subscriptionCount.getAndIncrement();
                     if (n >= m) {
                         Assert.fail("Too many subscriptions! " + (n + 1));

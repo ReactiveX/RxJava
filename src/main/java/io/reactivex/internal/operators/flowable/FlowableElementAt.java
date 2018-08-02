@@ -46,7 +46,7 @@ public final class FlowableElementAt<T> extends AbstractFlowableWithUpstream<T, 
         final T defaultValue;
         final boolean errorOnFewer;
 
-        Subscription s;
+        Subscription upstream;
 
         long count;
 
@@ -61,9 +61,9 @@ public final class FlowableElementAt<T> extends AbstractFlowableWithUpstream<T, 
 
         @Override
         public void onSubscribe(Subscription s) {
-            if (SubscriptionHelper.validate(this.s, s)) {
-                this.s = s;
-                actual.onSubscribe(this);
+            if (SubscriptionHelper.validate(this.upstream, s)) {
+                this.upstream = s;
+                downstream.onSubscribe(this);
                 s.request(Long.MAX_VALUE);
             }
         }
@@ -76,7 +76,7 @@ public final class FlowableElementAt<T> extends AbstractFlowableWithUpstream<T, 
             long c = count;
             if (c == index) {
                 done = true;
-                s.cancel();
+                upstream.cancel();
                 complete(t);
                 return;
             }
@@ -90,7 +90,7 @@ public final class FlowableElementAt<T> extends AbstractFlowableWithUpstream<T, 
                 return;
             }
             done = true;
-            actual.onError(t);
+            downstream.onError(t);
         }
 
         @Override
@@ -100,9 +100,9 @@ public final class FlowableElementAt<T> extends AbstractFlowableWithUpstream<T, 
                 T v = defaultValue;
                 if (v == null) {
                     if (errorOnFewer) {
-                        actual.onError(new NoSuchElementException());
+                        downstream.onError(new NoSuchElementException());
                     } else {
-                        actual.onComplete();
+                        downstream.onComplete();
                     }
                 } else {
                     complete(v);
@@ -113,7 +113,7 @@ public final class FlowableElementAt<T> extends AbstractFlowableWithUpstream<T, 
         @Override
         public void cancel() {
             super.cancel();
-            s.cancel();
+            upstream.cancel();
         }
     }
 }

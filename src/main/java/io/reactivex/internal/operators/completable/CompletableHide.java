@@ -37,42 +37,42 @@ public final class CompletableHide extends Completable {
 
     static final class HideCompletableObserver implements CompletableObserver, Disposable {
 
-        final CompletableObserver actual;
+        final CompletableObserver downstream;
 
-        Disposable d;
+        Disposable upstream;
 
-        HideCompletableObserver(CompletableObserver actual) {
-            this.actual = actual;
+        HideCompletableObserver(CompletableObserver downstream) {
+            this.downstream = downstream;
         }
 
         @Override
         public void dispose() {
-            d.dispose();
-            d = DisposableHelper.DISPOSED;
+            upstream.dispose();
+            upstream = DisposableHelper.DISPOSED;
         }
 
         @Override
         public boolean isDisposed() {
-            return d.isDisposed();
+            return upstream.isDisposed();
         }
 
         @Override
         public void onSubscribe(Disposable d) {
-            if (DisposableHelper.validate(this.d, d)) {
-                this.d = d;
+            if (DisposableHelper.validate(this.upstream, d)) {
+                this.upstream = d;
 
-                actual.onSubscribe(this);
+                downstream.onSubscribe(this);
             }
         }
 
         @Override
         public void onError(Throwable e) {
-            actual.onError(e);
+            downstream.onError(e);
         }
 
         @Override
         public void onComplete() {
-            actual.onComplete();
+            downstream.onComplete();
         }
     }
 }

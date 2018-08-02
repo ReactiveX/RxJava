@@ -80,13 +80,13 @@ public class ParallelFromPublisherTest {
 
         static final class StripBoundarySubscriber<T> extends BasicFuseableSubscriber<T, T> {
 
-            StripBoundarySubscriber(Subscriber<? super T> actual) {
-                super(actual);
+            StripBoundarySubscriber(Subscriber<? super T> downstream) {
+                super(downstream);
             }
 
             @Override
             public void onNext(T t) {
-                actual.onNext(t);
+                downstream.onNext(t);
             }
 
             @Override

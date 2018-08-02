@@ -58,7 +58,7 @@ public final class SingleTimeout<T> extends Single<T> {
 
         private static final long serialVersionUID = 37497744973048446L;
 
-        final SingleObserver<? super T> actual;
+        final SingleObserver<? super T> downstream;
 
         final AtomicReference<Disposable> task;
 
@@ -70,10 +70,10 @@ public final class SingleTimeout<T> extends Single<T> {
         implements SingleObserver<T> {
 
             private static final long serialVersionUID = 2071387740092105509L;
-            final SingleObserver<? super T> actual;
+            final SingleObserver<? super T> downstream;
 
-            TimeoutFallbackObserver(SingleObserver<? super T> actual) {
-                this.actual = actual;
+            TimeoutFallbackObserver(SingleObserver<? super T> downstream) {
+                this.downstream = downstream;
             }
 
             @Override
@@ -83,17 +83,17 @@ public final class SingleTimeout<T> extends Single<T> {
 
             @Override
             public void onSuccess(T t) {
-                actual.onSuccess(t);
+                downstream.onSuccess(t);
             }
 
             @Override
             public void onError(Throwable e) {
-                actual.onError(e);
+                downstream.onError(e);
             }
         }
 
         TimeoutMainObserver(SingleObserver<? super T> actual, SingleSource<? extends T> other) {
-            this.actual = actual;
+            this.downstream = actual;
             this.other = other;
             this.task = new AtomicReference<Disposable>();
             if (other != null) {
@@ -112,7 +112,7 @@ public final class SingleTimeout<T> extends Single<T> {
                 }
                 SingleSource<? extends T> other = this.other;
                 if (other == null) {
-                    actual.onError(new TimeoutException());
+                    downstream.onError(new TimeoutException());
                 } else {
                     this.other = null;
                     other.subscribe(fallback);
@@ -130,7 +130,7 @@ public final class SingleTimeout<T> extends Single<T> {
             Disposable d = get();
             if (d != DisposableHelper.DISPOSED && compareAndSet(d, DisposableHelper.DISPOSED)) {
                 DisposableHelper.dispose(task);
-                actual.onSuccess(t);
+                downstream.onSuccess(t);
             }
         }
 
@@ -139,7 +139,7 @@ public final class SingleTimeout<T> extends Single<T> {
             Disposable d = get();
             if (d != DisposableHelper.DISPOSED && compareAndSet(d, DisposableHelper.DISPOSED)) {
                 DisposableHelper.dispose(task);
-                actual.onError(e);
+                downstream.onError(e);
             } else {
                 RxJavaPlugins.onError(e);
             }

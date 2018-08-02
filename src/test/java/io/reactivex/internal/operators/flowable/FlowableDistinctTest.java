@@ -175,14 +175,14 @@ public class FlowableDistinctTest {
         .distinct()
         .subscribe(new FlowableSubscriber<Integer>() {
             @Override
-            public void onSubscribe(Subscription d) {
-                QueueSubscription<?> qd = (QueueSubscription<?>)d;
+            public void onSubscribe(Subscription s) {
+                QueueSubscription<?> qs = (QueueSubscription<?>)s;
 
-                assertFalse(qd.isEmpty());
+                assertFalse(qs.isEmpty());
 
-                qd.clear();
+                qs.clear();
 
-                assertTrue(qd.isEmpty());
+                assertTrue(qs.isEmpty());
             }
 
             @Override

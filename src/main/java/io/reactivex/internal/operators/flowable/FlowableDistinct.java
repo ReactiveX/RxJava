@@ -85,12 +85,12 @@ public final class FlowableDistinct<T, K> extends AbstractFlowableWithUpstream<T
                 }
 
                 if (b) {
-                    actual.onNext(value);
+                    downstream.onNext(value);
                 } else {
-                    s.request(1);
+                    upstream.request(1);
                 }
             } else {
-                actual.onNext(null);
+                downstream.onNext(null);
             }
         }
 
@@ -101,7 +101,7 @@ public final class FlowableDistinct<T, K> extends AbstractFlowableWithUpstream<T
             } else {
                 done = true;
                 collection.clear();
-                actual.onError(e);
+                downstream.onError(e);
             }
         }
 
@@ -110,7 +110,7 @@ public final class FlowableDistinct<T, K> extends AbstractFlowableWithUpstream<T
             if (!done) {
                 done = true;
                 collection.clear();
-                actual.onComplete();
+                downstream.onComplete();
             }
         }
 
@@ -129,7 +129,7 @@ public final class FlowableDistinct<T, K> extends AbstractFlowableWithUpstream<T
                     return v;
                 } else {
                     if (sourceMode == QueueFuseable.ASYNC) {
-                        s.request(1);
+                        upstream.request(1);
                     }
                 }
             }

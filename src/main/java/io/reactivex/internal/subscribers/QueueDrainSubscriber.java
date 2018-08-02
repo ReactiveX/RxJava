@@ -33,7 +33,9 @@ import io.reactivex.internal.util.*;
  * @param <V> the value type the child subscriber accepts
  */
 public abstract class QueueDrainSubscriber<T, U, V> extends QueueDrainSubscriberPad4 implements FlowableSubscriber<T>, QueueDrain<U, V> {
-    protected final Subscriber<? super V> actual;
+
+    protected final Subscriber<? super V> downstream;
+
     protected final SimplePlainQueue<U> queue;
 
     protected volatile boolean cancelled;
@@ -42,7 +44,7 @@ public abstract class QueueDrainSubscriber<T, U, V> extends QueueDrainSubscriber
     protected Throwable error;
 
     public QueueDrainSubscriber(Subscriber<? super V> actual, SimplePlainQueue<U> queue) {
-        this.actual = actual;
+        this.downstream = actual;
         this.queue = queue;
     }
 
@@ -66,7 +68,7 @@ public abstract class QueueDrainSubscriber<T, U, V> extends QueueDrainSubscriber
     }
 
     protected final void fastPathEmitMax(U value, boolean delayError, Disposable dispose) {
-        final Subscriber<? super V> s = actual;
+        final Subscriber<? super V> s = downstream;
         final SimplePlainQueue<U> q = queue;
 
         if (fastEnter()) {
@@ -95,7 +97,7 @@ public abstract class QueueDrainSubscriber<T, U, V> extends QueueDrainSubscriber
     }
 
     protected final void fastPathOrderedEmitMax(U value, boolean delayError, Disposable dispose) {
-        final Subscriber<? super V> s = actual;
+        final Subscriber<? super V> s = downstream;
         final SimplePlainQueue<U> q = queue;
 
         if (fastEnter()) {

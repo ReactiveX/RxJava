@@ -338,7 +338,7 @@ public final class PublishProcessor<T> extends FlowableProcessor<T> {
 
         private static final long serialVersionUID = 3562861878281475070L;
         /** The actual subscriber. */
-        final Subscriber<? super T> actual;
+        final Subscriber<? super T> downstream;
         /** The parent processor servicing this subscriber. */
         final PublishProcessor<T> parent;
 
@@ -348,7 +348,7 @@ public final class PublishProcessor<T> extends FlowableProcessor<T> {
          * @param parent the parent PublishProcessor
          */
         PublishSubscription(Subscriber<? super T> actual, PublishProcessor<T> parent) {
-            this.actual = actual;
+            this.downstream = actual;
             this.parent = parent;
         }
 
@@ -358,17 +358,17 @@ public final class PublishProcessor<T> extends FlowableProcessor<T> {
                 return;
             }
             if (r != 0L) {
-                actual.onNext(t);
+                downstream.onNext(t);
                 BackpressureHelper.producedCancel(this, 1);
             } else {
                 cancel();
-                actual.onError(new MissingBackpressureException("Could not emit value due to lack of requests"));
+                downstream.onError(new MissingBackpressureException("Could not emit value due to lack of requests"));
             }
         }
 
         public void onError(Throwable t) {
             if (get() != Long.MIN_VALUE) {
-                actual.onError(t);
+                downstream.onError(t);
             } else {
                 RxJavaPlugins.onError(t);
             }
@@ -376,7 +376,7 @@ public final class PublishProcessor<T> extends FlowableProcessor<T> {
 
         public void onComplete() {
             if (get() != Long.MIN_VALUE) {
-                actual.onComplete();
+                downstream.onComplete();
             }
         }
 

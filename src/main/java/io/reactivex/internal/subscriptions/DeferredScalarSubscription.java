@@ -38,7 +38,7 @@ public class DeferredScalarSubscription<T> extends BasicIntQueueSubscription<T> 
     private static final long serialVersionUID = -2151279923272604993L;
 
     /** The Subscriber to emit the value to. */
-    protected final Subscriber<? super T> actual;
+    protected final Subscriber<? super T> downstream;
 
     /** The value is stored here if there is no request yet or in fusion mode. */
     protected T value;
@@ -64,10 +64,10 @@ public class DeferredScalarSubscription<T> extends BasicIntQueueSubscription<T> 
 
     /**
      * Creates a DeferredScalarSubscription by wrapping the given Subscriber.
-     * @param actual the Subscriber to wrap, not null (not verified)
+     * @param downstream the Subscriber to wrap, not null (not verified)
      */
-    public DeferredScalarSubscription(Subscriber<? super T> actual) {
-        this.actual = actual;
+    public DeferredScalarSubscription(Subscriber<? super T> downstream) {
+        this.downstream = downstream;
     }
 
     @Override
@@ -85,7 +85,7 @@ public class DeferredScalarSubscription<T> extends BasicIntQueueSubscription<T> 
                         T v = value;
                         if (v != null) {
                             value = null;
-                            Subscriber<? super T> a = actual;
+                            Subscriber<? super T> a = downstream;
                             a.onNext(v);
                             if (get() != CANCELLED) {
                                 a.onComplete();
@@ -114,7 +114,7 @@ public class DeferredScalarSubscription<T> extends BasicIntQueueSubscription<T> 
                 value = v;
                 lazySet(FUSED_READY);
 
-                Subscriber<? super T> a = actual;
+                Subscriber<? super T> a = downstream;
                 a.onNext(v);
                 if (get() != CANCELLED) {
                     a.onComplete();
@@ -129,7 +129,7 @@ public class DeferredScalarSubscription<T> extends BasicIntQueueSubscription<T> 
 
             if (state == HAS_REQUEST_NO_VALUE) {
                 lazySet(HAS_REQUEST_HAS_VALUE);
-                Subscriber<? super T> a = actual;
+                Subscriber<? super T> a = downstream;
                 a.onNext(v);
                 if (get() != CANCELLED) {
                     a.onComplete();

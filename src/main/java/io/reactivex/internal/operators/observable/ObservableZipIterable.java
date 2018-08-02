@@ -67,38 +67,38 @@ public final class ObservableZipIterable<T, U, V> extends Observable<V> {
     }
 
     static final class ZipIterableObserver<T, U, V> implements Observer<T>, Disposable {
-        final Observer<? super V> actual;
+        final Observer<? super V> downstream;
         final Iterator<U> iterator;
         final BiFunction<? super T, ? super U, ? extends V> zipper;
 
-        Disposable s;
+        Disposable upstream;
 
         boolean done;
 
         ZipIterableObserver(Observer<? super V> actual, Iterator<U> iterator,
                 BiFunction<? super T, ? super U, ? extends V> zipper) {
-            this.actual = actual;
+            this.downstream = actual;
             this.iterator = iterator;
             this.zipper = zipper;
         }
 
         @Override
-        public void onSubscribe(Disposable s) {
-            if (DisposableHelper.validate(this.s, s)) {
-                this.s = s;
-                actual.onSubscribe(this);
+        public void onSubscribe(Disposable d) {
+            if (DisposableHelper.validate(this.upstream, d)) {
+                this.upstream = d;
+                downstream.onSubscribe(this);
             }
         }
 
 
         @Override
         public void dispose() {
-            s.dispose();
+            upstream.dispose();
         }
 
         @Override
         public boolean isDisposed() {
-            return s.isDisposed();
+            return upstream.isDisposed();
         }
 
 
@@ -127,7 +127,7 @@ public final class ObservableZipIterable<T, U, V> extends Observable<V> {
                 return;
             }
 
-            actual.onNext(v);
+            downstream.onNext(v);
 
             boolean b;
 
@@ -141,15 +141,15 @@ public final class ObservableZipIterable<T, U, V> extends Observable<V> {
 
             if (!b) {
                 done = true;
-                s.dispose();
-                actual.onComplete();
+                upstream.dispose();
+                downstream.onComplete();
             }
         }
 
         void error(Throwable e) {
             done = true;
-            s.dispose();
-            actual.onError(e);
+            upstream.dispose();
+            downstream.onError(e);
         }
 
         @Override
@@ -159,7 +159,7 @@ public final class ObservableZipIterable<T, U, V> extends Observable<V> {
                 return;
             }
             done = true;
-            actual.onError(t);
+            downstream.onError(t);
         }
 
         @Override
@@ -168,7 +168,7 @@ public final class ObservableZipIterable<T, U, V> extends Observable<V> {
                 return;
             }
             done = true;
-            actual.onComplete();
+            downstream.onComplete();
         }
 
     }

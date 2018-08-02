@@ -49,10 +49,10 @@ public final class CompletableCreate extends Completable {
 
         private static final long serialVersionUID = -2467358622224974244L;
 
-        final CompletableObserver actual;
+        final CompletableObserver downstream;
 
-        Emitter(CompletableObserver actual) {
-            this.actual = actual;
+        Emitter(CompletableObserver downstream) {
+            this.downstream = downstream;
         }
 
         @Override
@@ -61,7 +61,7 @@ public final class CompletableCreate extends Completable {
                 Disposable d = getAndSet(DisposableHelper.DISPOSED);
                 if (d != DisposableHelper.DISPOSED) {
                     try {
-                        actual.onComplete();
+                        downstream.onComplete();
                     } finally {
                         if (d != null) {
                             d.dispose();
@@ -87,7 +87,7 @@ public final class CompletableCreate extends Completable {
                 Disposable d = getAndSet(DisposableHelper.DISPOSED);
                 if (d != DisposableHelper.DISPOSED) {
                     try {
-                        actual.onError(t);
+                        downstream.onError(t);
                     } finally {
                         if (d != null) {
                             d.dispose();

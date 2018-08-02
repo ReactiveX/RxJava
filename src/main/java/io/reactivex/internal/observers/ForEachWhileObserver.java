@@ -45,8 +45,8 @@ implements Observer<T>, Disposable {
     }
 
     @Override
-    public void onSubscribe(Disposable s) {
-        DisposableHelper.setOnce(this, s);
+    public void onSubscribe(Disposable d) {
+        DisposableHelper.setOnce(this, d);
     }
 
     @Override

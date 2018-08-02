@@ -1370,12 +1370,12 @@ public class ObservableGroupByTest {
 
     @Test
     public void testGroupByUnsubscribe() {
-        final Disposable s = mock(Disposable.class);
+        final Disposable upstream = mock(Disposable.class);
         Observable<Integer> o = Observable.unsafeCreate(
                 new ObservableSource<Integer>() {
                     @Override
                     public void subscribe(Observer<? super Integer> observer) {
-                        observer.onSubscribe(s);
+                        observer.onSubscribe(upstream);
                     }
                 }
         );
@@ -1391,7 +1391,7 @@ public class ObservableGroupByTest {
 
         to.dispose();
 
-        verify(s).dispose();
+        verify(upstream).dispose();
     }
 
     @Test

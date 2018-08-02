@@ -125,7 +125,7 @@ public final class CompletableSubject extends Completable implements Completable
         if (once.compareAndSet(false, true)) {
             this.error = e;
             for (CompletableDisposable md : observers.getAndSet(TERMINATED)) {
-                md.actual.onError(e);
+                md.downstream.onError(e);
             }
         } else {
             RxJavaPlugins.onError(e);
@@ -136,7 +136,7 @@ public final class CompletableSubject extends Completable implements Completable
     public void onComplete() {
         if (once.compareAndSet(false, true)) {
             for (CompletableDisposable md : observers.getAndSet(TERMINATED)) {
-                md.actual.onComplete();
+                md.downstream.onComplete();
             }
         }
     }
@@ -260,10 +260,10 @@ public final class CompletableSubject extends Completable implements Completable
     extends AtomicReference<CompletableSubject> implements Disposable {
         private static final long serialVersionUID = -7650903191002190468L;
 
-        final CompletableObserver actual;
+        final CompletableObserver downstream;
 
         CompletableDisposable(CompletableObserver actual, CompletableSubject parent) {
-            this.actual = actual;
+            this.downstream = actual;
             lazySet(parent);
         }
 

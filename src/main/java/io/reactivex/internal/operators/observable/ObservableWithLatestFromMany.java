@@ -100,7 +100,7 @@ public final class ObservableWithLatestFromMany<T, R> extends AbstractObservable
 
         private static final long serialVersionUID = 1577321883966341961L;
 
-        final Observer<? super R> actual;
+        final Observer<? super R> downstream;
 
         final Function<? super Object[], R> combiner;
 
@@ -108,14 +108,14 @@ public final class ObservableWithLatestFromMany<T, R> extends AbstractObservable
 
         final AtomicReferenceArray<Object> values;
 
-        final AtomicReference<Disposable> d;
+        final AtomicReference<Disposable> upstream;
 
         final AtomicThrowable error;
 
         volatile boolean done;
 
         WithLatestFromObserver(Observer<? super R> actual, Function<? super Object[], R> combiner, int n) {
-            this.actual = actual;
+            this.downstream = actual;
             this.combiner = combiner;
             WithLatestInnerObserver[] s = new WithLatestInnerObserver[n];
             for (int i = 0; i < n; i++) {
@@ -123,15 +123,15 @@ public final class ObservableWithLatestFromMany<T, R> extends AbstractObservable
             }
             this.observers = s;
             this.values = new AtomicReferenceArray<Object>(n);
-            this.d = new AtomicReference<Disposable>();
+            this.upstream = new AtomicReference<Disposable>();
             this.error = new AtomicThrowable();
         }
 
         void subscribe(ObservableSource<?>[] others, int n) {
             WithLatestInnerObserver[] observers = this.observers;
-            AtomicReference<Disposable> s = this.d;
+            AtomicReference<Disposable> upstream = this.upstream;
             for (int i = 0; i < n; i++) {
-                if (DisposableHelper.isDisposed(s.get()) || done) {
+                if (DisposableHelper.isDisposed(upstream.get()) || done) {
                     return;
                 }
                 others[i].subscribe(observers[i]);
@@ -140,7 +140,7 @@ public final class ObservableWithLatestFromMany<T, R> extends AbstractObservable
 
         @Override
         public void onSubscribe(Disposable d) {
-            DisposableHelper.setOnce(this.d, d);
+            DisposableHelper.setOnce(this.upstream, d);
         }
 
         @Override
@@ -173,7 +173,7 @@ public final class ObservableWithLatestFromMany<T, R> extends AbstractObservable
                 return;
             }
 
-            HalfSerializer.onNext(actual, v, this, error);
+            HalfSerializer.onNext(downstream, v, this, error);
         }
 
         @Override
@@ -184,7 +184,7 @@ public final class ObservableWithLatestFromMany<T, R> extends AbstractObservable
             }
             done = true;
             cancelAllBut(-1);
-            HalfSerializer.onError(actual, t, this, error);
+            HalfSerializer.onError(downstream, t, this, error);
         }
 
         @Override
@@ -192,18 +192,18 @@ public final class ObservableWithLatestFromMany<T, R> extends AbstractObservable
             if (!done) {
                 done = true;
                 cancelAllBut(-1);
-                HalfSerializer.onComplete(actual, this, error);
+                HalfSerializer.onComplete(downstream, this, error);
             }
         }
 
         @Override
         public boolean isDisposed() {
-            return DisposableHelper.isDisposed(d.get());
+            return DisposableHelper.isDisposed(upstream.get());
         }
 
         @Override
         public void dispose() {
-            DisposableHelper.dispose(d);
+            DisposableHelper.dispose(upstream);
             for (WithLatestInnerObserver observer : observers) {
                 observer.dispose();
             }
@@ -215,16 +215,16 @@ public final class ObservableWithLatestFromMany<T, R> extends AbstractObservable
 
         void innerError(int index, Throwable t) {
             done = true;
-            DisposableHelper.dispose(d);
+            DisposableHelper.dispose(upstream);
             cancelAllBut(index);
-            HalfSerializer.onError(actual, t, this, error);
+            HalfSerializer.onError(downstream, t, this, error);
         }
 
         void innerComplete(int index, boolean nonEmpty) {
             if (!nonEmpty) {
                 done = true;
                 cancelAllBut(index);
-                HalfSerializer.onComplete(actual, this, error);
+                HalfSerializer.onComplete(downstream, this, error);
             }
         }
 

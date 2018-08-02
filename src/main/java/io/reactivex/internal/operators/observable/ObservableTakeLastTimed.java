@@ -49,7 +49,7 @@ public final class ObservableTakeLastTimed<T> extends AbstractObservableWithUpst
     extends AtomicBoolean implements Observer<T>, Disposable {
 
         private static final long serialVersionUID = -5677354903406201275L;
-        final Observer<? super T> actual;
+        final Observer<? super T> downstream;
         final long count;
         final long time;
         final TimeUnit unit;
@@ -57,14 +57,14 @@ public final class ObservableTakeLastTimed<T> extends AbstractObservableWithUpst
         final SpscLinkedArrayQueue<Object> queue;
         final boolean delayError;
 
-        Disposable d;
+        Disposable upstream;
 
         volatile boolean cancelled;
 
         Throwable error;
 
         TakeLastTimedObserver(Observer<? super T> actual, long count, long time, TimeUnit unit, Scheduler scheduler, int bufferSize, boolean delayError) {
-            this.actual = actual;
+            this.downstream = actual;
             this.count = count;
             this.time = time;
             this.unit = unit;
@@ -75,9 +75,9 @@ public final class ObservableTakeLastTimed<T> extends AbstractObservableWithUpst
 
         @Override
         public void onSubscribe(Disposable d) {
-            if (DisposableHelper.validate(this.d, d)) {
-                this.d = d;
-                actual.onSubscribe(this);
+            if (DisposableHelper.validate(this.upstream, d)) {
+                this.upstream = d;
+                downstream.onSubscribe(this);
             }
         }
 
@@ -118,7 +118,7 @@ public final class ObservableTakeLastTimed<T> extends AbstractObservableWithUpst
         public void dispose() {
             if (!cancelled) {
                 cancelled = true;
-                d.dispose();
+                upstream.dispose();
 
                 if (compareAndSet(false, true)) {
                     queue.clear();
@@ -136,7 +136,7 @@ public final class ObservableTakeLastTimed<T> extends AbstractObservableWithUpst
                 return;
             }
 
-            final Observer<? super T> a = actual;
+            final Observer<? super T> a = downstream;
             final SpscLinkedArrayQueue<Object> q = queue;
             final boolean delayError = this.delayError;
 

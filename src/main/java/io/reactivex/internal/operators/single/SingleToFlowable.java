@@ -43,18 +43,18 @@ public final class SingleToFlowable<T> extends Flowable<T> {
 
         private static final long serialVersionUID = 187782011903685568L;
 
-        Disposable d;
+        Disposable upstream;
 
-        SingleToFlowableObserver(Subscriber<? super T> actual) {
-            super(actual);
+        SingleToFlowableObserver(Subscriber<? super T> downstream) {
+            super(downstream);
         }
 
         @Override
         public void onSubscribe(Disposable d) {
-            if (DisposableHelper.validate(this.d, d)) {
-                this.d = d;
+            if (DisposableHelper.validate(this.upstream, d)) {
+                this.upstream = d;
 
-                actual.onSubscribe(this);
+                downstream.onSubscribe(this);
             }
         }
 
@@ -65,13 +65,13 @@ public final class SingleToFlowable<T> extends Flowable<T> {
 
         @Override
         public void onError(Throwable e) {
-            actual.onError(e);
+            downstream.onError(e);
         }
 
         @Override
         public void cancel() {
             super.cancel();
-            d.dispose();
+            upstream.dispose();
         }
     }
 }

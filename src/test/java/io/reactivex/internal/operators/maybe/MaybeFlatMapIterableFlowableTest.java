@@ -299,24 +299,24 @@ public class MaybeFlatMapIterableFlowableTest {
                         return Arrays.asList(1, 2, 3);
                     }
         }).subscribe(new FlowableSubscriber<Integer>() {
-            QueueSubscription<Integer> qd;
+            QueueSubscription<Integer> qs;
             @SuppressWarnings("unchecked")
             @Override
-            public void onSubscribe(Subscription d) {
-                qd = (QueueSubscription<Integer>)d;
+            public void onSubscribe(Subscription s) {
+                qs = (QueueSubscription<Integer>)s;
 
-                assertEquals(QueueFuseable.ASYNC, qd.requestFusion(QueueFuseable.ANY));
+                assertEquals(QueueFuseable.ASYNC, qs.requestFusion(QueueFuseable.ANY));
             }
 
             @Override
             public void onNext(Integer value) {
-                assertFalse(qd.isEmpty());
+                assertFalse(qs.isEmpty());
 
-                qd.clear();
+                qs.clear();
 
-                assertTrue(qd.isEmpty());
+                assertTrue(qs.isEmpty());
 
-                qd.cancel();
+                qs.cancel();
             }
 
             @Override

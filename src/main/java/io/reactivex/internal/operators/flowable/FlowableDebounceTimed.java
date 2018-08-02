@@ -51,12 +51,12 @@ public final class FlowableDebounceTimed<T> extends AbstractFlowableWithUpstream
     implements FlowableSubscriber<T>, Subscription {
 
         private static final long serialVersionUID = -9102637559663639004L;
-        final Subscriber<? super T> actual;
+        final Subscriber<? super T> downstream;
         final long timeout;
         final TimeUnit unit;
         final Scheduler.Worker worker;
 
-        Subscription s;
+        Subscription upstream;
 
         Disposable timer;
 
@@ -65,7 +65,7 @@ public final class FlowableDebounceTimed<T> extends AbstractFlowableWithUpstream
         boolean done;
 
         DebounceTimedSubscriber(Subscriber<? super T> actual, long timeout, TimeUnit unit, Worker worker) {
-            this.actual = actual;
+            this.downstream = actual;
             this.timeout = timeout;
             this.unit = unit;
             this.worker = worker;
@@ -73,9 +73,9 @@ public final class FlowableDebounceTimed<T> extends AbstractFlowableWithUpstream
 
         @Override
         public void onSubscribe(Subscription s) {
-            if (SubscriptionHelper.validate(this.s, s)) {
-                this.s = s;
-                actual.onSubscribe(this);
+            if (SubscriptionHelper.validate(this.upstream, s)) {
+                this.upstream = s;
+                downstream.onSubscribe(this);
                 s.request(Long.MAX_VALUE);
             }
         }
@@ -110,7 +110,7 @@ public final class FlowableDebounceTimed<T> extends AbstractFlowableWithUpstream
             if (d != null) {
                 d.dispose();
             }
-            actual.onError(t);
+            downstream.onError(t);
             worker.dispose();
         }
 
@@ -131,7 +131,7 @@ public final class FlowableDebounceTimed<T> extends AbstractFlowableWithUpstream
                 de.emit();
             }
 
-            actual.onComplete();
+            downstream.onComplete();
             worker.dispose();
         }
 
@@ -144,7 +144,7 @@ public final class FlowableDebounceTimed<T> extends AbstractFlowableWithUpstream
 
         @Override
         public void cancel() {
-            s.cancel();
+            upstream.cancel();
             worker.dispose();
         }
 
@@ -152,13 +152,13 @@ public final class FlowableDebounceTimed<T> extends AbstractFlowableWithUpstream
             if (idx == index) {
                 long r = get();
                 if (r != 0L) {
-                    actual.onNext(t);
+                    downstream.onNext(t);
                     BackpressureHelper.produced(this, 1);
 
                     emitter.dispose();
                 } else {
                     cancel();
-                    actual.onError(new MissingBackpressureException("Could not deliver value due to lack of requests"));
+                    downstream.onError(new MissingBackpressureException("Could not deliver value due to lack of requests"));
                 }
             }
         }

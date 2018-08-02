@@ -1382,7 +1382,7 @@ public class FlowableCombineLatestTest {
                     Flowable.error(new TestException())
                     .doOnSubscribe(new Consumer<Subscription>() {
                         @Override
-                        public void accept(Subscription d) throws Exception {
+                        public void accept(Subscription s) throws Exception {
                             count[0]++;
                         }
                     }),
@@ -1415,7 +1415,7 @@ public class FlowableCombineLatestTest {
                         Flowable.error(new TestException())
                         .doOnSubscribe(new Consumer<Subscription>() {
                             @Override
-                            public void accept(Subscription d) throws Exception {
+                            public void accept(Subscription s) throws Exception {
                                 count[0]++;
                             }
                         })

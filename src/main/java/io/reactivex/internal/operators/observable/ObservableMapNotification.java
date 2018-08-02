@@ -46,40 +46,40 @@ public final class ObservableMapNotification<T, R> extends AbstractObservableWit
 
     static final class MapNotificationObserver<T, R>
     implements Observer<T>, Disposable {
-        final Observer<? super ObservableSource<? extends R>> actual;
+        final Observer<? super ObservableSource<? extends R>> downstream;
         final Function<? super T, ? extends ObservableSource<? extends R>> onNextMapper;
         final Function<? super Throwable, ? extends ObservableSource<? extends R>> onErrorMapper;
         final Callable<? extends ObservableSource<? extends R>> onCompleteSupplier;
 
-        Disposable s;
+        Disposable upstream;
 
         MapNotificationObserver(Observer<? super ObservableSource<? extends R>> actual,
                 Function<? super T, ? extends ObservableSource<? extends R>> onNextMapper,
                 Function<? super Throwable, ? extends ObservableSource<? extends R>> onErrorMapper,
                         Callable<? extends ObservableSource<? extends R>> onCompleteSupplier) {
-            this.actual = actual;
+            this.downstream = actual;
             this.onNextMapper = onNextMapper;
             this.onErrorMapper = onErrorMapper;
             this.onCompleteSupplier = onCompleteSupplier;
         }
 
         @Override
-        public void onSubscribe(Disposable s) {
-            if (DisposableHelper.validate(this.s, s)) {
-                this.s = s;
-                actual.onSubscribe(this);
+        public void onSubscribe(Disposable d) {
+            if (DisposableHelper.validate(this.upstream, d)) {
+                this.upstream = d;
+                downstream.onSubscribe(this);
             }
         }
 
 
         @Override
         public void dispose() {
-            s.dispose();
+            upstream.dispose();
         }
 
         @Override
         public boolean isDisposed() {
-            return s.isDisposed();
+            return upstream.isDisposed();
         }
 
 
@@ -91,11 +91,11 @@ public final class ObservableMapNotification<T, R> extends AbstractObservableWit
                 p = ObjectHelper.requireNonNull(onNextMapper.apply(t), "The onNext ObservableSource returned is null");
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
-                actual.onError(e);
+                downstream.onError(e);
                 return;
             }
 
-            actual.onNext(p);
+            downstream.onNext(p);
         }
 
         @Override
@@ -106,12 +106,12 @@ public final class ObservableMapNotification<T, R> extends AbstractObservableWit
                 p = ObjectHelper.requireNonNull(onErrorMapper.apply(t), "The onError ObservableSource returned is null");
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
-                actual.onError(new CompositeException(t, e));
+                downstream.onError(new CompositeException(t, e));
                 return;
             }
 
-            actual.onNext(p);
-            actual.onComplete();
+            downstream.onNext(p);
+            downstream.onComplete();
         }
 
         @Override
@@ -122,12 +122,12 @@ public final class ObservableMapNotification<T, R> extends AbstractObservableWit
                 p = ObjectHelper.requireNonNull(onCompleteSupplier.call(), "The onComplete ObservableSource returned is null");
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
-                actual.onError(e);
+                downstream.onError(e);
                 return;
             }
 
-            actual.onNext(p);
-            actual.onComplete();
+            downstream.onNext(p);
+            downstream.onComplete();
         }
     }
 }

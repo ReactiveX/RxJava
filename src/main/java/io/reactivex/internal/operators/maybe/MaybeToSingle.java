@@ -47,55 +47,55 @@ public final class MaybeToSingle<T> extends Single<T> implements HasUpstreamMayb
     }
 
     static final class ToSingleMaybeSubscriber<T> implements MaybeObserver<T>, Disposable {
-        final SingleObserver<? super T> actual;
+        final SingleObserver<? super T> downstream;
         final T defaultValue;
 
-        Disposable d;
+        Disposable upstream;
 
         ToSingleMaybeSubscriber(SingleObserver<? super T> actual, T defaultValue) {
-            this.actual = actual;
+            this.downstream = actual;
             this.defaultValue = defaultValue;
         }
 
         @Override
         public void dispose() {
-            d.dispose();
-            d = DisposableHelper.DISPOSED;
+            upstream.dispose();
+            upstream = DisposableHelper.DISPOSED;
         }
 
         @Override
         public boolean isDisposed() {
-            return d.isDisposed();
+            return upstream.isDisposed();
         }
 
         @Override
         public void onSubscribe(Disposable d) {
-            if (DisposableHelper.validate(this.d, d)) {
-                this.d = d;
+            if (DisposableHelper.validate(this.upstream, d)) {
+                this.upstream = d;
 
-                actual.onSubscribe(this);
+                downstream.onSubscribe(this);
             }
         }
 
         @Override
         public void onSuccess(T value) {
-            d = DisposableHelper.DISPOSED;
-            actual.onSuccess(value);
+            upstream = DisposableHelper.DISPOSED;
+            downstream.onSuccess(value);
         }
 
         @Override
         public void onError(Throwable e) {
-            d = DisposableHelper.DISPOSED;
-            actual.onError(e);
+            upstream = DisposableHelper.DISPOSED;
+            downstream.onError(e);
         }
 
         @Override
         public void onComplete() {
-            d = DisposableHelper.DISPOSED;
+            upstream = DisposableHelper.DISPOSED;
             if (defaultValue != null) {
-                actual.onSuccess(defaultValue);
+                downstream.onSuccess(defaultValue);
             } else {
-                actual.onError(new NoSuchElementException("The MaybeSource is empty"));
+                downstream.onError(new NoSuchElementException("The MaybeSource is empty"));
             }
         }
     }

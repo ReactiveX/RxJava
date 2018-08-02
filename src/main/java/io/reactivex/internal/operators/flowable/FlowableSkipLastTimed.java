@@ -47,14 +47,14 @@ public final class FlowableSkipLastTimed<T> extends AbstractFlowableWithUpstream
     static final class SkipLastTimedSubscriber<T> extends AtomicInteger implements FlowableSubscriber<T>, Subscription {
 
         private static final long serialVersionUID = -5677354903406201275L;
-        final Subscriber<? super T> actual;
+        final Subscriber<? super T> downstream;
         final long time;
         final TimeUnit unit;
         final Scheduler scheduler;
         final SpscLinkedArrayQueue<Object> queue;
         final boolean delayError;
 
-        Subscription s;
+        Subscription upstream;
 
         final AtomicLong requested = new AtomicLong();
 
@@ -64,7 +64,7 @@ public final class FlowableSkipLastTimed<T> extends AbstractFlowableWithUpstream
         Throwable error;
 
         SkipLastTimedSubscriber(Subscriber<? super T> actual, long time, TimeUnit unit, Scheduler scheduler, int bufferSize, boolean delayError) {
-            this.actual = actual;
+            this.downstream = actual;
             this.time = time;
             this.unit = unit;
             this.scheduler = scheduler;
@@ -74,9 +74,9 @@ public final class FlowableSkipLastTimed<T> extends AbstractFlowableWithUpstream
 
         @Override
         public void onSubscribe(Subscription s) {
-            if (SubscriptionHelper.validate(this.s, s)) {
-                this.s = s;
-                actual.onSubscribe(this);
+            if (SubscriptionHelper.validate(this.upstream, s)) {
+                this.upstream = s;
+                downstream.onSubscribe(this);
                 s.request(Long.MAX_VALUE);
             }
         }
@@ -115,7 +115,7 @@ public final class FlowableSkipLastTimed<T> extends AbstractFlowableWithUpstream
         public void cancel() {
             if (!cancelled) {
                 cancelled = true;
-                s.cancel();
+                upstream.cancel();
 
                 if (getAndIncrement() == 0) {
                     queue.clear();
@@ -130,7 +130,7 @@ public final class FlowableSkipLastTimed<T> extends AbstractFlowableWithUpstream
 
             int missed = 1;
 
-            final Subscriber<? super T> a = actual;
+            final Subscriber<? super T> a = downstream;
             final SpscLinkedArrayQueue<Object> q = queue;
             final boolean delayError = this.delayError;
             final TimeUnit unit = this.unit;

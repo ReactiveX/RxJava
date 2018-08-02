@@ -60,7 +60,7 @@ public final class ObservableConcatMapEager<T, R> extends AbstractObservableWith
 
         private static final long serialVersionUID = 8080567949447303262L;
 
-        final Observer<? super R> actual;
+        final Observer<? super R> downstream;
 
         final Function<? super T, ? extends ObservableSource<? extends R>> mapper;
 
@@ -76,7 +76,7 @@ public final class ObservableConcatMapEager<T, R> extends AbstractObservableWith
 
         SimpleQueue<T> queue;
 
-        Disposable d;
+        Disposable upstream;
 
         volatile boolean done;
 
@@ -91,7 +91,7 @@ public final class ObservableConcatMapEager<T, R> extends AbstractObservableWith
         ConcatMapEagerMainObserver(Observer<? super R> actual,
                 Function<? super T, ? extends ObservableSource<? extends R>> mapper,
                 int maxConcurrency, int prefetch, ErrorMode errorMode) {
-            this.actual = actual;
+            this.downstream = actual;
             this.mapper = mapper;
             this.maxConcurrency = maxConcurrency;
             this.prefetch = prefetch;
@@ -103,8 +103,8 @@ public final class ObservableConcatMapEager<T, R> extends AbstractObservableWith
         @SuppressWarnings("unchecked")
         @Override
         public void onSubscribe(Disposable d) {
-            if (DisposableHelper.validate(this.d, d)) {
-                this.d = d;
+            if (DisposableHelper.validate(this.upstream, d)) {
+                this.upstream = d;
 
                 if (d instanceof QueueDisposable) {
                     QueueDisposable<T> qd = (QueueDisposable<T>) d;
@@ -115,7 +115,7 @@ public final class ObservableConcatMapEager<T, R> extends AbstractObservableWith
                         queue = qd;
                         done = true;
 
-                        actual.onSubscribe(this);
+                        downstream.onSubscribe(this);
 
                         drain();
                         return;
@@ -124,7 +124,7 @@ public final class ObservableConcatMapEager<T, R> extends AbstractObservableWith
                         sourceMode = m;
                         queue = qd;
 
-                        actual.onSubscribe(this);
+                        downstream.onSubscribe(this);
 
                         return;
                     }
@@ -132,7 +132,7 @@ public final class ObservableConcatMapEager<T, R> extends AbstractObservableWith
 
                 queue = new SpscLinkedArrayQueue<T>(prefetch);
 
-                actual.onSubscribe(this);
+                downstream.onSubscribe(this);
             }
         }
 
@@ -203,7 +203,7 @@ public final class ObservableConcatMapEager<T, R> extends AbstractObservableWith
         public void innerError(InnerQueuedObserver<R> inner, Throwable e) {
             if (error.addThrowable(e)) {
                 if (errorMode == ErrorMode.IMMEDIATE) {
-                    d.dispose();
+                    upstream.dispose();
                 }
                 inner.setDone();
                 drain();
@@ -228,7 +228,7 @@ public final class ObservableConcatMapEager<T, R> extends AbstractObservableWith
 
             SimpleQueue<T> q = queue;
             ArrayDeque<InnerQueuedObserver<R>> observers = this.observers;
-            Observer<? super R> a = this.actual;
+            Observer<? super R> a = this.downstream;
             ErrorMode errorMode = this.errorMode;
 
             outer:
@@ -267,7 +267,7 @@ public final class ObservableConcatMapEager<T, R> extends AbstractObservableWith
                         source = ObjectHelper.requireNonNull(mapper.apply(v), "The mapper returned a null ObservableSource");
                     } catch (Throwable ex) {
                         Exceptions.throwIfFatal(ex);
-                        d.dispose();
+                        upstream.dispose();
                         q.clear();
                         disposeAll();
                         error.addThrowable(ex);

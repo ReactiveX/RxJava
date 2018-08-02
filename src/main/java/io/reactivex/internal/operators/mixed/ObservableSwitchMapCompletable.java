@@ -82,9 +82,9 @@ public final class ObservableSwitchMapCompletable<T> extends Completable {
         }
 
         @Override
-        public void onSubscribe(Disposable s) {
-            if (DisposableHelper.validate(upstream, s)) {
-                this.upstream = s;
+        public void onSubscribe(Disposable d) {
+            if (DisposableHelper.validate(upstream, d)) {
+                this.upstream = d;
                 downstream.onSubscribe(this);
             }
         }

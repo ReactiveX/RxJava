@@ -471,7 +471,7 @@ public class ObservableConcatTest {
 
     static class TestObservable<T> implements ObservableSource<T> {
 
-        private final Disposable s = new Disposable() {
+        private final Disposable upstream = new Disposable() {
             @Override
             public void dispose() {
                     subscribed = false;
@@ -514,7 +514,7 @@ public class ObservableConcatTest {
 
         @Override
         public void subscribe(final Observer<? super T> observer) {
-            observer.onSubscribe(s);
+            observer.onSubscribe(upstream);
             t = new Thread(new Runnable() {
 
                 @Override

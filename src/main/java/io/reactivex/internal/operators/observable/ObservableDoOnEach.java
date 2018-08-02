@@ -43,13 +43,13 @@ public final class ObservableDoOnEach<T> extends AbstractObservableWithUpstream<
     }
 
     static final class DoOnEachObserver<T> implements Observer<T>, Disposable {
-        final Observer<? super T> actual;
+        final Observer<? super T> downstream;
         final Consumer<? super T> onNext;
         final Consumer<? super Throwable> onError;
         final Action onComplete;
         final Action onAfterTerminate;
 
-        Disposable s;
+        Disposable upstream;
 
         boolean done;
 
@@ -59,7 +59,7 @@ public final class ObservableDoOnEach<T> extends AbstractObservableWithUpstream<
                 Consumer<? super Throwable> onError,
                 Action onComplete,
                 Action onAfterTerminate) {
-            this.actual = actual;
+            this.downstream = actual;
             this.onNext = onNext;
             this.onError = onError;
             this.onComplete = onComplete;
@@ -67,22 +67,22 @@ public final class ObservableDoOnEach<T> extends AbstractObservableWithUpstream<
         }
 
         @Override
-        public void onSubscribe(Disposable s) {
-            if (DisposableHelper.validate(this.s, s)) {
-                this.s = s;
-                actual.onSubscribe(this);
+        public void onSubscribe(Disposable d) {
+            if (DisposableHelper.validate(this.upstream, d)) {
+                this.upstream = d;
+                downstream.onSubscribe(this);
             }
         }
 
 
         @Override
         public void dispose() {
-            s.dispose();
+            upstream.dispose();
         }
 
         @Override
         public boolean isDisposed() {
-            return s.isDisposed();
+            return upstream.isDisposed();
         }
 
 
@@ -95,12 +95,12 @@ public final class ObservableDoOnEach<T> extends AbstractObservableWithUpstream<
                 onNext.accept(t);
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
-                s.dispose();
+                upstream.dispose();
                 onError(e);
                 return;
             }
 
-            actual.onNext(t);
+            downstream.onNext(t);
         }
 
         @Override
@@ -116,7 +116,7 @@ public final class ObservableDoOnEach<T> extends AbstractObservableWithUpstream<
                 Exceptions.throwIfFatal(e);
                 t = new CompositeException(t, e);
             }
-            actual.onError(t);
+            downstream.onError(t);
 
             try {
                 onAfterTerminate.run();
@@ -140,7 +140,7 @@ public final class ObservableDoOnEach<T> extends AbstractObservableWithUpstream<
             }
 
             done = true;
-            actual.onComplete();
+            downstream.onComplete();
 
             try {
                 onAfterTerminate.run();

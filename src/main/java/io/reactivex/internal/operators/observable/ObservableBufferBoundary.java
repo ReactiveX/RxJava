@@ -57,7 +57,7 @@ extends AbstractObservableWithUpstream<T, U> {
 
         private static final long serialVersionUID = -8466418554264089604L;
 
-        final Observer<? super C> actual;
+        final Observer<? super C> downstream;
 
         final Callable<C> bufferSupplier;
 
@@ -86,7 +86,7 @@ extends AbstractObservableWithUpstream<T, U> {
                 Function<? super Open, ? extends ObservableSource<? extends Close>> bufferClose,
                 Callable<C> bufferSupplier
         ) {
-            this.actual = actual;
+            this.downstream = actual;
             this.bufferSupplier = bufferSupplier;
             this.bufferOpen = bufferOpen;
             this.bufferClose = bufferClose;
@@ -98,8 +98,8 @@ extends AbstractObservableWithUpstream<T, U> {
         }
 
         @Override
-        public void onSubscribe(Disposable s) {
-            if (DisposableHelper.setOnce(this.upstream, s)) {
+        public void onSubscribe(Disposable d) {
+            if (DisposableHelper.setOnce(this.upstream, d)) {
 
                 BufferOpenObserver<Open> open = new BufferOpenObserver<Open>(this);
                 observers.add(open);
@@ -240,7 +240,7 @@ extends AbstractObservableWithUpstream<T, U> {
             }
 
             int missed = 1;
-            Observer<? super C> a = actual;
+            Observer<? super C> a = downstream;
             SpscLinkedArrayQueue<C> q = queue;
 
             for (;;) {
@@ -293,8 +293,8 @@ extends AbstractObservableWithUpstream<T, U> {
             }
 
             @Override
-            public void onSubscribe(Disposable s) {
-                DisposableHelper.setOnce(this, s);
+            public void onSubscribe(Disposable d) {
+                DisposableHelper.setOnce(this, d);
             }
 
             @Override
@@ -342,16 +342,16 @@ extends AbstractObservableWithUpstream<T, U> {
         }
 
         @Override
-        public void onSubscribe(Disposable s) {
-            DisposableHelper.setOnce(this, s);
+        public void onSubscribe(Disposable d) {
+            DisposableHelper.setOnce(this, d);
         }
 
         @Override
         public void onNext(Object t) {
-            Disposable s = get();
-            if (s != DisposableHelper.DISPOSED) {
+            Disposable upstream = get();
+            if (upstream != DisposableHelper.DISPOSED) {
                 lazySet(DisposableHelper.DISPOSED);
-                s.dispose();
+                upstream.dispose();
                 parent.close(this, index);
             }
         }

@@ -38,10 +38,10 @@ public final class FlowableTakeLast<T> extends AbstractFlowableWithUpstream<T, T
     static final class TakeLastSubscriber<T> extends ArrayDeque<T> implements FlowableSubscriber<T>, Subscription {
 
         private static final long serialVersionUID = 7240042530241604978L;
-        final Subscriber<? super T> actual;
+        final Subscriber<? super T> downstream;
         final int count;
 
-        Subscription s;
+        Subscription upstream;
         volatile boolean done;
         volatile boolean cancelled;
 
@@ -50,15 +50,15 @@ public final class FlowableTakeLast<T> extends AbstractFlowableWithUpstream<T, T
         final AtomicInteger wip = new AtomicInteger();
 
         TakeLastSubscriber(Subscriber<? super T> actual, int count) {
-            this.actual = actual;
+            this.downstream = actual;
             this.count = count;
         }
 
         @Override
         public void onSubscribe(Subscription s) {
-            if (SubscriptionHelper.validate(this.s, s)) {
-                this.s = s;
-                actual.onSubscribe(this);
+            if (SubscriptionHelper.validate(this.upstream, s)) {
+                this.upstream = s;
+                downstream.onSubscribe(this);
                 s.request(Long.MAX_VALUE);
             }
         }
@@ -73,7 +73,7 @@ public final class FlowableTakeLast<T> extends AbstractFlowableWithUpstream<T, T
 
         @Override
         public void onError(Throwable t) {
-            actual.onError(t);
+            downstream.onError(t);
         }
 
         @Override
@@ -93,12 +93,12 @@ public final class FlowableTakeLast<T> extends AbstractFlowableWithUpstream<T, T
         @Override
         public void cancel() {
             cancelled = true;
-            s.cancel();
+            upstream.cancel();
         }
 
         void drain() {
             if (wip.getAndIncrement() == 0) {
-                Subscriber<? super T> a = actual;
+                Subscriber<? super T> a = downstream;
                 long r = requested.get();
                 do {
                     if (cancelled) {

@@ -43,12 +43,12 @@ public final class MaybeDelayWithCompletable<T> extends Maybe<T> {
     implements CompletableObserver, Disposable {
         private static final long serialVersionUID = 703409937383992161L;
 
-        final MaybeObserver<? super T> actual;
+        final MaybeObserver<? super T> downstream;
 
         final MaybeSource<T> source;
 
         OtherObserver(MaybeObserver<? super T> actual, MaybeSource<T> source) {
-            this.actual = actual;
+            this.downstream = actual;
             this.source = source;
         }
 
@@ -56,18 +56,18 @@ public final class MaybeDelayWithCompletable<T> extends Maybe<T> {
         public void onSubscribe(Disposable d) {
             if (DisposableHelper.setOnce(this, d)) {
 
-                actual.onSubscribe(this);
+                downstream.onSubscribe(this);
             }
         }
 
         @Override
         public void onError(Throwable e) {
-            actual.onError(e);
+            downstream.onError(e);
         }
 
         @Override
         public void onComplete() {
-            source.subscribe(new DelayWithMainObserver<T>(this, actual));
+            source.subscribe(new DelayWithMainObserver<T>(this, downstream));
         }
 
         @Override
@@ -85,11 +85,11 @@ public final class MaybeDelayWithCompletable<T> extends Maybe<T> {
 
         final AtomicReference<Disposable> parent;
 
-        final MaybeObserver<? super T> actual;
+        final MaybeObserver<? super T> downstream;
 
-        DelayWithMainObserver(AtomicReference<Disposable> parent, MaybeObserver<? super T> actual) {
+        DelayWithMainObserver(AtomicReference<Disposable> parent, MaybeObserver<? super T> downstream) {
             this.parent = parent;
-            this.actual = actual;
+            this.downstream = downstream;
         }
 
         @Override
@@ -99,17 +99,17 @@ public final class MaybeDelayWithCompletable<T> extends Maybe<T> {
 
         @Override
         public void onSuccess(T value) {
-            actual.onSuccess(value);
+            downstream.onSuccess(value);
         }
 
         @Override
         public void onError(Throwable e) {
-            actual.onError(e);
+            downstream.onError(e);
         }
 
         @Override
         public void onComplete() {
-            actual.onComplete();
+            downstream.onComplete();
         }
     }
 }

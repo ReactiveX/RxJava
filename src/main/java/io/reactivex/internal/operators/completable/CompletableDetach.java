@@ -37,51 +37,51 @@ public final class CompletableDetach extends Completable {
 
     static final class DetachCompletableObserver implements CompletableObserver, Disposable {
 
-        CompletableObserver actual;
+        CompletableObserver downstream;
 
-        Disposable d;
+        Disposable upstream;
 
-        DetachCompletableObserver(CompletableObserver actual) {
-            this.actual = actual;
+        DetachCompletableObserver(CompletableObserver downstream) {
+            this.downstream = downstream;
         }
 
         @Override
         public void dispose() {
-            actual = null;
-            d.dispose();
-            d = DisposableHelper.DISPOSED;
+            downstream = null;
+            upstream.dispose();
+            upstream = DisposableHelper.DISPOSED;
         }
 
         @Override
         public boolean isDisposed() {
-            return d.isDisposed();
+            return upstream.isDisposed();
         }
 
         @Override
         public void onSubscribe(Disposable d) {
-            if (DisposableHelper.validate(this.d, d)) {
-                this.d = d;
+            if (DisposableHelper.validate(this.upstream, d)) {
+                this.upstream = d;
 
-                actual.onSubscribe(this);
+                downstream.onSubscribe(this);
             }
         }
 
         @Override
         public void onError(Throwable e) {
-            d = DisposableHelper.DISPOSED;
-            CompletableObserver a = actual;
+            upstream = DisposableHelper.DISPOSED;
+            CompletableObserver a = downstream;
             if (a != null) {
-                actual = null;
+                downstream = null;
                 a.onError(e);
             }
         }
 
         @Override
         public void onComplete() {
-            d = DisposableHelper.DISPOSED;
-            CompletableObserver a = actual;
+            upstream = DisposableHelper.DISPOSED;
+            CompletableObserver a = downstream;
             if (a != null) {
-                actual = null;
+                downstream = null;
                 a.onComplete();
             }
         }

@@ -57,12 +57,12 @@ public final class SingleTakeUntil<T, U> extends Single<T> {
 
         private static final long serialVersionUID = -622603812305745221L;
 
-        final SingleObserver<? super T> actual;
+        final SingleObserver<? super T> downstream;
 
         final TakeUntilOtherSubscriber other;
 
-        TakeUntilMainObserver(SingleObserver<? super T> actual) {
-            this.actual = actual;
+        TakeUntilMainObserver(SingleObserver<? super T> downstream) {
+            this.downstream = downstream;
             this.other = new TakeUntilOtherSubscriber(this);
         }
 
@@ -88,7 +88,7 @@ public final class SingleTakeUntil<T, U> extends Single<T> {
 
             Disposable a = getAndSet(DisposableHelper.DISPOSED);
             if (a != DisposableHelper.DISPOSED) {
-                actual.onSuccess(value);
+                downstream.onSuccess(value);
             }
         }
 
@@ -100,7 +100,7 @@ public final class SingleTakeUntil<T, U> extends Single<T> {
             if (a != DisposableHelper.DISPOSED) {
                 a = getAndSet(DisposableHelper.DISPOSED);
                 if (a != DisposableHelper.DISPOSED) {
-                    actual.onError(e);
+                    downstream.onError(e);
                     return;
                 }
             }
@@ -115,7 +115,7 @@ public final class SingleTakeUntil<T, U> extends Single<T> {
                     if (a != null) {
                         a.dispose();
                     }
-                    actual.onError(e);
+                    downstream.onError(e);
                     return;
                 }
             }

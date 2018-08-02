@@ -145,9 +145,9 @@ public final class AsyncSubject<T> extends Subject<T> {
     }
 
     @Override
-    public void onSubscribe(Disposable s) {
+    public void onSubscribe(Disposable d) {
         if (subscribers.get() == TERMINATED) {
-            s.dispose();
+            d.dispose();
         }
     }
 
@@ -380,7 +380,7 @@ public final class AsyncSubject<T> extends Subject<T> {
 
         void onComplete() {
             if (!isDisposed()) {
-                actual.onComplete();
+                downstream.onComplete();
             }
         }
 
@@ -388,7 +388,7 @@ public final class AsyncSubject<T> extends Subject<T> {
             if (isDisposed()) {
                 RxJavaPlugins.onError(t);
             } else {
-                actual.onError(t);
+                downstream.onError(t);
             }
         }
     }

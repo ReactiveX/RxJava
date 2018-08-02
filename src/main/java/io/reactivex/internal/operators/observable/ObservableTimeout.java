@@ -65,7 +65,7 @@ public final class ObservableTimeout<T, U, V> extends AbstractObservableWithUpst
 
         private static final long serialVersionUID = 3764492702657003550L;
 
-        final Observer<? super T> actual;
+        final Observer<? super T> downstream;
 
         final Function<? super T, ? extends ObservableSource<?>> itemTimeoutIndicator;
 
@@ -74,15 +74,15 @@ public final class ObservableTimeout<T, U, V> extends AbstractObservableWithUpst
         final AtomicReference<Disposable> upstream;
 
         TimeoutObserver(Observer<? super T> actual, Function<? super T, ? extends ObservableSource<?>> itemTimeoutIndicator) {
-            this.actual = actual;
+            this.downstream = actual;
             this.itemTimeoutIndicator = itemTimeoutIndicator;
             this.task = new SequentialDisposable();
             this.upstream = new AtomicReference<Disposable>();
         }
 
         @Override
-        public void onSubscribe(Disposable s) {
-            DisposableHelper.setOnce(upstream, s);
+        public void onSubscribe(Disposable d) {
+            DisposableHelper.setOnce(upstream, d);
         }
 
         @Override
@@ -97,7 +97,7 @@ public final class ObservableTimeout<T, U, V> extends AbstractObservableWithUpst
                 d.dispose();
             }
 
-            actual.onNext(t);
+            downstream.onNext(t);
 
             ObservableSource<?> itemTimeoutObservableSource;
 
@@ -109,7 +109,7 @@ public final class ObservableTimeout<T, U, V> extends AbstractObservableWithUpst
                 Exceptions.throwIfFatal(ex);
                 upstream.get().dispose();
                 getAndSet(Long.MAX_VALUE);
-                actual.onError(ex);
+                downstream.onError(ex);
                 return;
             }
 
@@ -133,7 +133,7 @@ public final class ObservableTimeout<T, U, V> extends AbstractObservableWithUpst
             if (getAndSet(Long.MAX_VALUE) != Long.MAX_VALUE) {
                 task.dispose();
 
-                actual.onError(t);
+                downstream.onError(t);
             } else {
                 RxJavaPlugins.onError(t);
             }
@@ -144,7 +144,7 @@ public final class ObservableTimeout<T, U, V> extends AbstractObservableWithUpst
             if (getAndSet(Long.MAX_VALUE) != Long.MAX_VALUE) {
                 task.dispose();
 
-                actual.onComplete();
+                downstream.onComplete();
             }
         }
 
@@ -153,7 +153,7 @@ public final class ObservableTimeout<T, U, V> extends AbstractObservableWithUpst
             if (compareAndSet(idx, Long.MAX_VALUE)) {
                 DisposableHelper.dispose(upstream);
 
-                actual.onError(new TimeoutException());
+                downstream.onError(new TimeoutException());
             }
         }
 
@@ -162,7 +162,7 @@ public final class ObservableTimeout<T, U, V> extends AbstractObservableWithUpst
             if (compareAndSet(idx, Long.MAX_VALUE)) {
                 DisposableHelper.dispose(upstream);
 
-                actual.onError(ex);
+                downstream.onError(ex);
             } else {
                 RxJavaPlugins.onError(ex);
             }
@@ -186,7 +186,7 @@ public final class ObservableTimeout<T, U, V> extends AbstractObservableWithUpst
 
         private static final long serialVersionUID = -7508389464265974549L;
 
-        final Observer<? super T> actual;
+        final Observer<? super T> downstream;
 
         final Function<? super T, ? extends ObservableSource<?>> itemTimeoutIndicator;
 
@@ -201,7 +201,7 @@ public final class ObservableTimeout<T, U, V> extends AbstractObservableWithUpst
         TimeoutFallbackObserver(Observer<? super T> actual,
                 Function<? super T, ? extends ObservableSource<?>> itemTimeoutIndicator,
                         ObservableSource<? extends T> fallback) {
-            this.actual = actual;
+            this.downstream = actual;
             this.itemTimeoutIndicator = itemTimeoutIndicator;
             this.task = new SequentialDisposable();
             this.fallback = fallback;
@@ -210,8 +210,8 @@ public final class ObservableTimeout<T, U, V> extends AbstractObservableWithUpst
         }
 
         @Override
-        public void onSubscribe(Disposable s) {
-            DisposableHelper.setOnce(upstream, s);
+        public void onSubscribe(Disposable d) {
+            DisposableHelper.setOnce(upstream, d);
         }
 
         @Override
@@ -226,7 +226,7 @@ public final class ObservableTimeout<T, U, V> extends AbstractObservableWithUpst
                 d.dispose();
             }
 
-            actual.onNext(t);
+            downstream.onNext(t);
 
             ObservableSource<?> itemTimeoutObservableSource;
 
@@ -238,7 +238,7 @@ public final class ObservableTimeout<T, U, V> extends AbstractObservableWithUpst
                 Exceptions.throwIfFatal(ex);
                 upstream.get().dispose();
                 index.getAndSet(Long.MAX_VALUE);
-                actual.onError(ex);
+                downstream.onError(ex);
                 return;
             }
 
@@ -262,7 +262,7 @@ public final class ObservableTimeout<T, U, V> extends AbstractObservableWithUpst
             if (index.getAndSet(Long.MAX_VALUE) != Long.MAX_VALUE) {
                 task.dispose();
 
-                actual.onError(t);
+                downstream.onError(t);
 
                 task.dispose();
             } else {
@@ -275,7 +275,7 @@ public final class ObservableTimeout<T, U, V> extends AbstractObservableWithUpst
             if (index.getAndSet(Long.MAX_VALUE) != Long.MAX_VALUE) {
                 task.dispose();
 
-                actual.onComplete();
+                downstream.onComplete();
 
                 task.dispose();
             }
@@ -289,7 +289,7 @@ public final class ObservableTimeout<T, U, V> extends AbstractObservableWithUpst
                 ObservableSource<? extends T> f = fallback;
                 fallback = null;
 
-                f.subscribe(new ObservableTimeoutTimed.FallbackObserver<T>(actual, this));
+                f.subscribe(new ObservableTimeoutTimed.FallbackObserver<T>(downstream, this));
             }
         }
 
@@ -298,7 +298,7 @@ public final class ObservableTimeout<T, U, V> extends AbstractObservableWithUpst
             if (index.compareAndSet(idx, Long.MAX_VALUE)) {
                 DisposableHelper.dispose(this);
 
-                actual.onError(ex);
+                downstream.onError(ex);
             } else {
                 RxJavaPlugins.onError(ex);
             }
@@ -332,8 +332,8 @@ public final class ObservableTimeout<T, U, V> extends AbstractObservableWithUpst
         }
 
         @Override
-        public void onSubscribe(Disposable s) {
-            DisposableHelper.setOnce(this, s);
+        public void onSubscribe(Disposable d) {
+            DisposableHelper.setOnce(this, d);
         }
 
         @Override

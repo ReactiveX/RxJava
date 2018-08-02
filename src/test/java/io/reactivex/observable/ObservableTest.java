@@ -566,7 +566,7 @@ public class ObservableTest {
         }).replay();
 
         // we connect immediately and it will emit the value
-        Disposable s = o.connect();
+        Disposable connection = o.connect();
         try {
 
             // we then expect the following 2 subscriptions to get that same value
@@ -595,7 +595,7 @@ public class ObservableTest {
             }
             assertEquals(1, counter.get());
         } finally {
-            s.dispose();
+            connection.dispose();
         }
     }
 

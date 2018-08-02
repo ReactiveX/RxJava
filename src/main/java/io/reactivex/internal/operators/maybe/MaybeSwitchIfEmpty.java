@@ -44,12 +44,12 @@ public final class MaybeSwitchIfEmpty<T> extends AbstractMaybeWithUpstream<T, T>
 
         private static final long serialVersionUID = -2223459372976438024L;
 
-        final MaybeObserver<? super T> actual;
+        final MaybeObserver<? super T> downstream;
 
         final MaybeSource<? extends T> other;
 
         SwitchIfEmptyMaybeObserver(MaybeObserver<? super T> actual, MaybeSource<? extends T> other) {
-            this.actual = actual;
+            this.downstream = actual;
             this.other = other;
         }
 
@@ -66,18 +66,18 @@ public final class MaybeSwitchIfEmpty<T> extends AbstractMaybeWithUpstream<T, T>
         @Override
         public void onSubscribe(Disposable d) {
             if (DisposableHelper.setOnce(this, d)) {
-                actual.onSubscribe(this);
+                downstream.onSubscribe(this);
             }
         }
 
         @Override
         public void onSuccess(T value) {
-            actual.onSuccess(value);
+            downstream.onSuccess(value);
         }
 
         @Override
         public void onError(Throwable e) {
-            actual.onError(e);
+            downstream.onError(e);
         }
 
         @Override
@@ -85,18 +85,18 @@ public final class MaybeSwitchIfEmpty<T> extends AbstractMaybeWithUpstream<T, T>
             Disposable d = get();
             if (d != DisposableHelper.DISPOSED) {
                 if (compareAndSet(d, null)) {
-                    other.subscribe(new OtherMaybeObserver<T>(actual, this));
+                    other.subscribe(new OtherMaybeObserver<T>(downstream, this));
                 }
             }
         }
 
         static final class OtherMaybeObserver<T> implements MaybeObserver<T> {
 
-            final MaybeObserver<? super T> actual;
+            final MaybeObserver<? super T> downstream;
 
             final AtomicReference<Disposable> parent;
             OtherMaybeObserver(MaybeObserver<? super T> actual, AtomicReference<Disposable> parent) {
-                this.actual = actual;
+                this.downstream = actual;
                 this.parent = parent;
             }
             @Override
@@ -105,15 +105,15 @@ public final class MaybeSwitchIfEmpty<T> extends AbstractMaybeWithUpstream<T, T>
             }
             @Override
             public void onSuccess(T value) {
-                actual.onSuccess(value);
+                downstream.onSuccess(value);
             }
             @Override
             public void onError(Throwable e) {
-                actual.onError(e);
+                downstream.onError(e);
             }
             @Override
             public void onComplete() {
-                actual.onComplete();
+                downstream.onComplete();
             }
         }
 

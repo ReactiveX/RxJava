@@ -43,12 +43,12 @@ public final class SingleDoOnDispose<T> extends Single<T> {
     implements SingleObserver<T>, Disposable {
         private static final long serialVersionUID = -8583764624474935784L;
 
-        final SingleObserver<? super T> actual;
+        final SingleObserver<? super T> downstream;
 
-        Disposable d;
+        Disposable upstream;
 
         DoOnDisposeObserver(SingleObserver<? super T> actual, Action onDispose) {
-            this.actual = actual;
+            this.downstream = actual;
             this.lazySet(onDispose);
         }
 
@@ -62,31 +62,31 @@ public final class SingleDoOnDispose<T> extends Single<T> {
                     Exceptions.throwIfFatal(ex);
                     RxJavaPlugins.onError(ex);
                 }
-                d.dispose();
+                upstream.dispose();
             }
         }
 
         @Override
         public boolean isDisposed() {
-            return d.isDisposed();
+            return upstream.isDisposed();
         }
 
         @Override
         public void onSubscribe(Disposable d) {
-            if (DisposableHelper.validate(this.d, d)) {
-                this.d = d;
-                actual.onSubscribe(this);
+            if (DisposableHelper.validate(this.upstream, d)) {
+                this.upstream = d;
+                downstream.onSubscribe(this);
             }
         }
 
         @Override
         public void onSuccess(T value) {
-            actual.onSuccess(value);
+            downstream.onSuccess(value);
         }
 
         @Override
         public void onError(Throwable e) {
-            actual.onError(e);
+            downstream.onError(e);
         }
     }
 

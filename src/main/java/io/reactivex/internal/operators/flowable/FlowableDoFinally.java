@@ -51,60 +51,60 @@ public final class FlowableDoFinally<T> extends AbstractFlowableWithUpstream<T, 
 
         private static final long serialVersionUID = 4109457741734051389L;
 
-        final Subscriber<? super T> actual;
+        final Subscriber<? super T> downstream;
 
         final Action onFinally;
 
-        Subscription s;
+        Subscription upstream;
 
         QueueSubscription<T> qs;
 
         boolean syncFused;
 
         DoFinallySubscriber(Subscriber<? super T> actual, Action onFinally) {
-            this.actual = actual;
+            this.downstream = actual;
             this.onFinally = onFinally;
         }
 
         @SuppressWarnings("unchecked")
         @Override
         public void onSubscribe(Subscription s) {
-            if (SubscriptionHelper.validate(this.s, s)) {
-                this.s = s;
+            if (SubscriptionHelper.validate(this.upstream, s)) {
+                this.upstream = s;
                 if (s instanceof QueueSubscription) {
                     this.qs = (QueueSubscription<T>)s;
                 }
 
-                actual.onSubscribe(this);
+                downstream.onSubscribe(this);
             }
         }
 
         @Override
         public void onNext(T t) {
-            actual.onNext(t);
+            downstream.onNext(t);
         }
 
         @Override
         public void onError(Throwable t) {
-            actual.onError(t);
+            downstream.onError(t);
             runFinally();
         }
 
         @Override
         public void onComplete() {
-            actual.onComplete();
+            downstream.onComplete();
             runFinally();
         }
 
         @Override
         public void cancel() {
-            s.cancel();
+            upstream.cancel();
             runFinally();
         }
 
         @Override
         public void request(long n) {
-            s.request(n);
+            upstream.request(n);
         }
 
         @Override
@@ -156,65 +156,65 @@ public final class FlowableDoFinally<T> extends AbstractFlowableWithUpstream<T, 
 
         private static final long serialVersionUID = 4109457741734051389L;
 
-        final ConditionalSubscriber<? super T> actual;
+        final ConditionalSubscriber<? super T> downstream;
 
         final Action onFinally;
 
-        Subscription s;
+        Subscription upstream;
 
         QueueSubscription<T> qs;
 
         boolean syncFused;
 
         DoFinallyConditionalSubscriber(ConditionalSubscriber<? super T> actual, Action onFinally) {
-            this.actual = actual;
+            this.downstream = actual;
             this.onFinally = onFinally;
         }
 
         @SuppressWarnings("unchecked")
         @Override
         public void onSubscribe(Subscription s) {
-            if (SubscriptionHelper.validate(this.s, s)) {
-                this.s = s;
+            if (SubscriptionHelper.validate(this.upstream, s)) {
+                this.upstream = s;
                 if (s instanceof QueueSubscription) {
                     this.qs = (QueueSubscription<T>)s;
                 }
 
-                actual.onSubscribe(this);
+                downstream.onSubscribe(this);
             }
         }
 
         @Override
         public void onNext(T t) {
-            actual.onNext(t);
+            downstream.onNext(t);
         }
 
         @Override
         public boolean tryOnNext(T t) {
-            return actual.tryOnNext(t);
+            return downstream.tryOnNext(t);
         }
 
         @Override
         public void onError(Throwable t) {
-            actual.onError(t);
+            downstream.onError(t);
             runFinally();
         }
 
         @Override
         public void onComplete() {
-            actual.onComplete();
+            downstream.onComplete();
             runFinally();
         }
 
         @Override
         public void cancel() {
-            s.cancel();
+            upstream.cancel();
             runFinally();
         }
 
         @Override
         public void request(long n) {
-            s.request(n);
+            upstream.request(n);
         }
 
         @Override

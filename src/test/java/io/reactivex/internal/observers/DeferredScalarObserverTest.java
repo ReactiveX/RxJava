@@ -32,13 +32,13 @@ public class DeferredScalarObserverTest {
 
         private static final long serialVersionUID = -2793723002312330530L;
 
-        TakeFirst(Observer<? super Integer> actual) {
-            super(actual);
+        TakeFirst(Observer<? super Integer> downstream) {
+            super(downstream);
         }
 
         @Override
         public void onNext(Integer value) {
-            s.dispose();
+            upstream.dispose();
             complete(value);
             complete(value);
         }
@@ -177,8 +177,8 @@ public class DeferredScalarObserverTest {
 
         private static final long serialVersionUID = -2793723002312330530L;
 
-        TakeLast(Observer<? super Integer> actual) {
-            super(actual);
+        TakeLast(Observer<? super Integer> downstream) {
+            super(downstream);
         }
 
 
@@ -312,18 +312,18 @@ public class DeferredScalarObserverTest {
         final TestObserver<Integer> to = new TestObserver<Integer>();
 
         TakeLast source = new TakeLast(new Observer<Integer>() {
-            Disposable d;
+            Disposable upstream;
 
             @Override
             public void onSubscribe(Disposable d) {
-                this.d = d;
+                this.upstream = d;
                 to.onSubscribe(d);
             }
 
             @Override
             public void onNext(Integer value) {
                 to.onNext(value);
-                d.dispose();
+                upstream.dispose();
             }
 
             @Override

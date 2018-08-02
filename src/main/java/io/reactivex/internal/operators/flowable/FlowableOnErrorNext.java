@@ -45,7 +45,7 @@ public final class FlowableOnErrorNext<T> extends AbstractFlowableWithUpstream<T
     implements FlowableSubscriber<T> {
         private static final long serialVersionUID = 4063763155303814625L;
 
-        final Subscriber<? super T> actual;
+        final Subscriber<? super T> downstream;
 
         final Function<? super Throwable, ? extends Publisher<? extends T>> nextSupplier;
 
@@ -58,7 +58,7 @@ public final class FlowableOnErrorNext<T> extends AbstractFlowableWithUpstream<T
         long produced;
 
         OnErrorNextSubscriber(Subscriber<? super T> actual, Function<? super Throwable, ? extends Publisher<? extends T>> nextSupplier, boolean allowFatal) {
-            this.actual = actual;
+            this.downstream = actual;
             this.nextSupplier = nextSupplier;
             this.allowFatal = allowFatal;
         }
@@ -76,7 +76,7 @@ public final class FlowableOnErrorNext<T> extends AbstractFlowableWithUpstream<T
             if (!once) {
                 produced++;
             }
-            actual.onNext(t);
+            downstream.onNext(t);
         }
 
         @Override
@@ -86,13 +86,13 @@ public final class FlowableOnErrorNext<T> extends AbstractFlowableWithUpstream<T
                     RxJavaPlugins.onError(t);
                     return;
                 }
-                actual.onError(t);
+                downstream.onError(t);
                 return;
             }
             once = true;
 
             if (allowFatal && !(t instanceof Exception)) {
-                actual.onError(t);
+                downstream.onError(t);
                 return;
             }
 
@@ -102,7 +102,7 @@ public final class FlowableOnErrorNext<T> extends AbstractFlowableWithUpstream<T
                 p = ObjectHelper.requireNonNull(nextSupplier.apply(t), "The nextSupplier returned a null Publisher");
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
-                actual.onError(new CompositeException(t, e));
+                downstream.onError(new CompositeException(t, e));
                 return;
             }
 
@@ -121,7 +121,7 @@ public final class FlowableOnErrorNext<T> extends AbstractFlowableWithUpstream<T
             }
             done = true;
             once = true;
-            actual.onComplete();
+            downstream.onComplete();
         }
     }
 }

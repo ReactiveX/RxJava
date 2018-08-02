@@ -59,7 +59,7 @@ public final class MaybeFlatMapNotification<T, R> extends AbstractMaybeWithUpstr
 
         private static final long serialVersionUID = 4375739915521278546L;
 
-        final MaybeObserver<? super R> actual;
+        final MaybeObserver<? super R> downstream;
 
         final Function<? super T, ? extends MaybeSource<? extends R>> onSuccessMapper;
 
@@ -67,13 +67,13 @@ public final class MaybeFlatMapNotification<T, R> extends AbstractMaybeWithUpstr
 
         final Callable<? extends MaybeSource<? extends R>> onCompleteSupplier;
 
-        Disposable d;
+        Disposable upstream;
 
         FlatMapMaybeObserver(MaybeObserver<? super R> actual,
                 Function<? super T, ? extends MaybeSource<? extends R>> onSuccessMapper,
                 Function<? super Throwable, ? extends MaybeSource<? extends R>> onErrorMapper,
                 Callable<? extends MaybeSource<? extends R>> onCompleteSupplier) {
-            this.actual = actual;
+            this.downstream = actual;
             this.onSuccessMapper = onSuccessMapper;
             this.onErrorMapper = onErrorMapper;
             this.onCompleteSupplier = onCompleteSupplier;
@@ -82,7 +82,7 @@ public final class MaybeFlatMapNotification<T, R> extends AbstractMaybeWithUpstr
         @Override
         public void dispose() {
             DisposableHelper.dispose(this);
-            d.dispose();
+            upstream.dispose();
         }
 
         @Override
@@ -92,10 +92,10 @@ public final class MaybeFlatMapNotification<T, R> extends AbstractMaybeWithUpstr
 
         @Override
         public void onSubscribe(Disposable d) {
-            if (DisposableHelper.validate(this.d, d)) {
-                this.d = d;
+            if (DisposableHelper.validate(this.upstream, d)) {
+                this.upstream = d;
 
-                actual.onSubscribe(this);
+                downstream.onSubscribe(this);
             }
         }
 
@@ -107,7 +107,7 @@ public final class MaybeFlatMapNotification<T, R> extends AbstractMaybeWithUpstr
                 source = ObjectHelper.requireNonNull(onSuccessMapper.apply(value), "The onSuccessMapper returned a null MaybeSource");
             } catch (Exception ex) {
                 Exceptions.throwIfFatal(ex);
-                actual.onError(ex);
+                downstream.onError(ex);
                 return;
             }
 
@@ -122,7 +122,7 @@ public final class MaybeFlatMapNotification<T, R> extends AbstractMaybeWithUpstr
                 source = ObjectHelper.requireNonNull(onErrorMapper.apply(e), "The onErrorMapper returned a null MaybeSource");
             } catch (Exception ex) {
                 Exceptions.throwIfFatal(ex);
-                actual.onError(new CompositeException(e, ex));
+                downstream.onError(new CompositeException(e, ex));
                 return;
             }
 
@@ -137,7 +137,7 @@ public final class MaybeFlatMapNotification<T, R> extends AbstractMaybeWithUpstr
                 source = ObjectHelper.requireNonNull(onCompleteSupplier.call(), "The onCompleteSupplier returned a null MaybeSource");
             } catch (Exception ex) {
                 Exceptions.throwIfFatal(ex);
-                actual.onError(ex);
+                downstream.onError(ex);
                 return;
             }
 
@@ -153,17 +153,17 @@ public final class MaybeFlatMapNotification<T, R> extends AbstractMaybeWithUpstr
 
             @Override
             public void onSuccess(R value) {
-                actual.onSuccess(value);
+                downstream.onSuccess(value);
             }
 
             @Override
             public void onError(Throwable e) {
-                actual.onError(e);
+                downstream.onError(e);
             }
 
             @Override
             public void onComplete() {
-                actual.onComplete();
+                downstream.onComplete();
             }
         }
     }

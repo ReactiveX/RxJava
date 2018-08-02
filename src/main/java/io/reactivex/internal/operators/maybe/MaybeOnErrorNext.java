@@ -53,7 +53,7 @@ public final class MaybeOnErrorNext<T> extends AbstractMaybeWithUpstream<T, T> {
 
         private static final long serialVersionUID = 2026620218879969836L;
 
-        final MaybeObserver<? super T> actual;
+        final MaybeObserver<? super T> downstream;
 
         final Function<? super Throwable, ? extends MaybeSource<? extends T>> resumeFunction;
 
@@ -62,7 +62,7 @@ public final class MaybeOnErrorNext<T> extends AbstractMaybeWithUpstream<T, T> {
         OnErrorNextMaybeObserver(MaybeObserver<? super T> actual,
                 Function<? super Throwable, ? extends MaybeSource<? extends T>> resumeFunction,
                         boolean allowFatal) {
-            this.actual = actual;
+            this.downstream = actual;
             this.resumeFunction = resumeFunction;
             this.allowFatal = allowFatal;
         }
@@ -80,19 +80,19 @@ public final class MaybeOnErrorNext<T> extends AbstractMaybeWithUpstream<T, T> {
         @Override
         public void onSubscribe(Disposable d) {
             if (DisposableHelper.setOnce(this, d)) {
-                actual.onSubscribe(this);
+                downstream.onSubscribe(this);
             }
         }
 
         @Override
         public void onSuccess(T value) {
-            actual.onSuccess(value);
+            downstream.onSuccess(value);
         }
 
         @Override
         public void onError(Throwable e) {
             if (!allowFatal && !(e instanceof Exception)) {
-                actual.onError(e);
+                downstream.onError(e);
                 return;
             }
             MaybeSource<? extends T> m;
@@ -101,48 +101,48 @@ public final class MaybeOnErrorNext<T> extends AbstractMaybeWithUpstream<T, T> {
                 m = ObjectHelper.requireNonNull(resumeFunction.apply(e), "The resumeFunction returned a null MaybeSource");
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
-                actual.onError(new CompositeException(e, ex));
+                downstream.onError(new CompositeException(e, ex));
                 return;
             }
 
             DisposableHelper.replace(this, null);
 
-            m.subscribe(new NextMaybeObserver<T>(actual, this));
+            m.subscribe(new NextMaybeObserver<T>(downstream, this));
         }
 
         @Override
         public void onComplete() {
-            actual.onComplete();
+            downstream.onComplete();
         }
 
         static final class NextMaybeObserver<T> implements MaybeObserver<T> {
-            final MaybeObserver<? super T> actual;
+            final MaybeObserver<? super T> downstream;
 
-            final AtomicReference<Disposable> d;
+            final AtomicReference<Disposable> upstream;
 
             NextMaybeObserver(MaybeObserver<? super T> actual, AtomicReference<Disposable> d) {
-                this.actual = actual;
-                this.d = d;
+                this.downstream = actual;
+                this.upstream = d;
             }
 
             @Override
             public void onSubscribe(Disposable d) {
-                DisposableHelper.setOnce(this.d, d);
+                DisposableHelper.setOnce(this.upstream, d);
             }
 
             @Override
             public void onSuccess(T value) {
-                actual.onSuccess(value);
+                downstream.onSuccess(value);
             }
 
             @Override
             public void onError(Throwable e) {
-                actual.onError(e);
+                downstream.onError(e);
             }
 
             @Override
             public void onComplete() {
-                actual.onComplete();
+                downstream.onComplete();
             }
         }
     }

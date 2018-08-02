@@ -49,7 +49,7 @@ public final class ObservableMap<T, U> extends AbstractObservableWithUpstream<T,
             }
 
             if (sourceMode != NONE) {
-                actual.onNext(null);
+                downstream.onNext(null);
                 return;
             }
 
@@ -61,7 +61,7 @@ public final class ObservableMap<T, U> extends AbstractObservableWithUpstream<T,
                 fail(ex);
                 return;
             }
-            actual.onNext(v);
+            downstream.onNext(v);
         }
 
         @Override
@@ -72,7 +72,7 @@ public final class ObservableMap<T, U> extends AbstractObservableWithUpstream<T,
         @Nullable
         @Override
         public U poll() throws Exception {
-            T t = qs.poll();
+            T t = qd.poll();
             return t != null ? ObjectHelper.<U>requireNonNull(mapper.apply(t), "The mapper function returned a null value.") : null;
         }
     }

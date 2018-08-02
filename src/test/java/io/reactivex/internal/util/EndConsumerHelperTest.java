@@ -482,11 +482,11 @@ public class EndConsumerHelperTest {
 
     @Test
     public void validateSubscription() {
-        BooleanSubscription d1 = new BooleanSubscription();
+        BooleanSubscription bs1 = new BooleanSubscription();
 
-        assertFalse(EndConsumerHelper.validate(SubscriptionHelper.CANCELLED, d1, getClass()));
+        assertFalse(EndConsumerHelper.validate(SubscriptionHelper.CANCELLED, bs1, getClass()));
 
-        assertTrue(d1.isCancelled());
+        assertTrue(bs1.isCancelled());
 
         assertTrue(errors.toString(), errors.isEmpty());
     }

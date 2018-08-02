@@ -26,7 +26,7 @@ public final class BlockingFirstSubscriber<T> extends BlockingBaseSubscriber<T> 
     public void onNext(T t) {
         if (value == null) {
             value = t;
-            s.cancel();
+            upstream.cancel();
             countDown();
         }
     }

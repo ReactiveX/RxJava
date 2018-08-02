@@ -51,7 +51,8 @@ public final class FlowableWithLatestFrom<T, U, R> extends AbstractFlowableWithU
 
         private static final long serialVersionUID = -312246233408980075L;
 
-        final Subscriber<? super R> actual;
+        final Subscriber<? super R> downstream;
+
         final BiFunction<? super T, ? super U, ? extends R> combiner;
 
         final AtomicReference<Subscription> s = new AtomicReference<Subscription>();
@@ -61,7 +62,7 @@ public final class FlowableWithLatestFrom<T, U, R> extends AbstractFlowableWithU
         final AtomicReference<Subscription> other = new AtomicReference<Subscription>();
 
         WithLatestFromSubscriber(Subscriber<? super R> actual, BiFunction<? super T, ? super U, ? extends R> combiner) {
-            this.actual = actual;
+            this.downstream = actual;
             this.combiner = combiner;
         }
         @Override
@@ -86,10 +87,10 @@ public final class FlowableWithLatestFrom<T, U, R> extends AbstractFlowableWithU
                 } catch (Throwable e) {
                     Exceptions.throwIfFatal(e);
                     cancel();
-                    actual.onError(e);
+                    downstream.onError(e);
                     return false;
                 }
-                actual.onNext(r);
+                downstream.onNext(r);
                 return true;
             } else {
                 return false;
@@ -99,13 +100,13 @@ public final class FlowableWithLatestFrom<T, U, R> extends AbstractFlowableWithU
         @Override
         public void onError(Throwable t) {
             SubscriptionHelper.cancel(other);
-            actual.onError(t);
+            downstream.onError(t);
         }
 
         @Override
         public void onComplete() {
             SubscriptionHelper.cancel(other);
-            actual.onComplete();
+            downstream.onComplete();
         }
 
         @Override
@@ -125,7 +126,7 @@ public final class FlowableWithLatestFrom<T, U, R> extends AbstractFlowableWithU
 
         public void otherError(Throwable e) {
             SubscriptionHelper.cancel(s);
-            actual.onError(e);
+            downstream.onError(e);
         }
     }
 

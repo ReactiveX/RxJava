@@ -289,8 +289,8 @@ public class FlowableBlockingTest {
         .blockingSubscribe(new FlowableSubscriber<Object>() {
 
             @Override
-            public void onSubscribe(Subscription d) {
-                d.request(Long.MAX_VALUE);
+            public void onSubscribe(Subscription s) {
+                s.request(Long.MAX_VALUE);
             }
 
             @Override
@@ -324,8 +324,8 @@ public class FlowableBlockingTest {
         .blockingSubscribe(new FlowableSubscriber<Object>() {
 
             @Override
-            public void onSubscribe(Subscription d) {
-                d.request(Long.MAX_VALUE);
+            public void onSubscribe(Subscription s) {
+                s.request(Long.MAX_VALUE);
             }
 
             @Override

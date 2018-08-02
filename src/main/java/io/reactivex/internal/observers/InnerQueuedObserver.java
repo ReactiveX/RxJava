@@ -50,23 +50,23 @@ implements Observer<T>, Disposable {
     }
 
     @Override
-    public void onSubscribe(Disposable s) {
-        if (DisposableHelper.setOnce(this, s)) {
-            if (s instanceof QueueDisposable) {
+    public void onSubscribe(Disposable d) {
+        if (DisposableHelper.setOnce(this, d)) {
+            if (d instanceof QueueDisposable) {
                 @SuppressWarnings("unchecked")
-                QueueDisposable<T> qs = (QueueDisposable<T>) s;
+                QueueDisposable<T> qd = (QueueDisposable<T>) d;
 
-                int m = qs.requestFusion(QueueDisposable.ANY);
+                int m = qd.requestFusion(QueueDisposable.ANY);
                 if (m == QueueSubscription.SYNC) {
                     fusionMode = m;
-                    queue = qs;
+                    queue = qd;
                     done = true;
                     parent.innerComplete(this);
                     return;
                 }
                 if (m == QueueDisposable.ASYNC) {
                     fusionMode = m;
-                    queue = qs;
+                    queue = qd;
                     return;
                 }
             }

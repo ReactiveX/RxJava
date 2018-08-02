@@ -30,7 +30,7 @@ implements SingleObserver<T>, CompletableObserver, MaybeObserver<T> {
     T value;
     Throwable error;
 
-    Disposable d;
+    Disposable upstream;
 
     volatile boolean cancelled;
 
@@ -40,7 +40,7 @@ implements SingleObserver<T>, CompletableObserver, MaybeObserver<T> {
 
     void dispose() {
         cancelled = true;
-        Disposable d = this.d;
+        Disposable d = this.upstream;
         if (d != null) {
             d.dispose();
         }
@@ -48,7 +48,7 @@ implements SingleObserver<T>, CompletableObserver, MaybeObserver<T> {
 
     @Override
     public void onSubscribe(Disposable d) {
-        this.d = d;
+        this.upstream = d;
         if (cancelled) {
             d.dispose();
         }

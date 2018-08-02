@@ -59,15 +59,15 @@ public interface CompletableEmitter {
     void onError(@NonNull Throwable t);
 
     /**
-     * Sets a Disposable on this emitter; any previous Disposable
-     * or Cancellation will be disposed/cancelled.
+     * Sets a Disposable on this emitter; any previous {@link Disposable}
+     * or {@link Cancellable} will be disposed/cancelled.
      * @param d the disposable, null is allowed
      */
     void setDisposable(@Nullable Disposable d);
 
     /**
-     * Sets a Cancellable on this emitter; any previous Disposable
-     * or Cancellation will be disposed/cancelled.
+     * Sets a Cancellable on this emitter; any previous {@link Disposable}
+     * or {@link Cancellable} will be disposed/cancelled.
      * @param c the cancellable resource, null is allowed
      */
     void setCancellable(@Nullable Cancellable c);

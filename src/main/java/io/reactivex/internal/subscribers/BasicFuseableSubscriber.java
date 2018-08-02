@@ -29,10 +29,10 @@ import io.reactivex.plugins.RxJavaPlugins;
 public abstract class BasicFuseableSubscriber<T, R> implements FlowableSubscriber<T>, QueueSubscription<R> {
 
     /** The downstream subscriber. */
-    protected final Subscriber<? super R> actual;
+    protected final Subscriber<? super R> downstream;
 
     /** The upstream subscription. */
-    protected Subscription s;
+    protected Subscription upstream;
 
     /** The upstream's QueueSubscription if not null. */
     protected QueueSubscription<T> qs;
@@ -45,26 +45,26 @@ public abstract class BasicFuseableSubscriber<T, R> implements FlowableSubscribe
 
     /**
      * Construct a BasicFuseableSubscriber by wrapping the given subscriber.
-     * @param actual the subscriber, not null (not verified)
+     * @param downstream the subscriber, not null (not verified)
      */
-    public BasicFuseableSubscriber(Subscriber<? super R> actual) {
-        this.actual = actual;
+    public BasicFuseableSubscriber(Subscriber<? super R> downstream) {
+        this.downstream = downstream;
     }
 
     // final: fixed protocol steps to support fuseable and non-fuseable upstream
     @SuppressWarnings("unchecked")
     @Override
     public final void onSubscribe(Subscription s) {
-        if (SubscriptionHelper.validate(this.s, s)) {
+        if (SubscriptionHelper.validate(this.upstream, s)) {
 
-            this.s = s;
+            this.upstream = s;
             if (s instanceof QueueSubscription) {
                 this.qs = (QueueSubscription<T>)s;
             }
 
             if (beforeDownstream()) {
 
-                actual.onSubscribe(this);
+                downstream.onSubscribe(this);
 
                 afterDownstream();
             }
@@ -98,7 +98,7 @@ public abstract class BasicFuseableSubscriber<T, R> implements FlowableSubscribe
             return;
         }
         done = true;
-        actual.onError(t);
+        downstream.onError(t);
     }
 
     /**
@@ -107,7 +107,7 @@ public abstract class BasicFuseableSubscriber<T, R> implements FlowableSubscribe
      */
     protected final void fail(Throwable t) {
         Exceptions.throwIfFatal(t);
-        s.cancel();
+        upstream.cancel();
         onError(t);
     }
 
@@ -117,7 +117,7 @@ public abstract class BasicFuseableSubscriber<T, R> implements FlowableSubscribe
             return;
         }
         done = true;
-        actual.onComplete();
+        downstream.onComplete();
     }
 
     /**
@@ -150,12 +150,12 @@ public abstract class BasicFuseableSubscriber<T, R> implements FlowableSubscribe
 
     @Override
     public void request(long n) {
-        s.request(n);
+        upstream.request(n);
     }
 
     @Override
     public void cancel() {
-        s.cancel();
+        upstream.cancel();
     }
 
     @Override

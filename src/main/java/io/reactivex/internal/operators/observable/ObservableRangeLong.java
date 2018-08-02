@@ -37,7 +37,7 @@ public final class ObservableRangeLong extends Observable<Long> {
 
         private static final long serialVersionUID = 396518478098735504L;
 
-        final Observer<? super Long> actual;
+        final Observer<? super Long> downstream;
 
         final long end;
 
@@ -46,7 +46,7 @@ public final class ObservableRangeLong extends Observable<Long> {
         boolean fused;
 
         RangeDisposable(Observer<? super Long> actual, long start, long end) {
-            this.actual = actual;
+            this.downstream = actual;
             this.index = start;
             this.end = end;
         }
@@ -55,7 +55,7 @@ public final class ObservableRangeLong extends Observable<Long> {
             if (fused) {
                 return;
             }
-            Observer<? super Long> actual = this.actual;
+            Observer<? super Long> actual = this.downstream;
             long e = end;
             for (long i = index; i != e && get() == 0; i++) {
                 actual.onNext(i);

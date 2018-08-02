@@ -41,23 +41,23 @@ implements FlowableSubscriber<T>, Subscription {
 
     private static final long serialVersionUID = -4945028590049415624L;
 
-    final Subscriber<? super T> actual;
+    final Subscriber<? super T> downstream;
 
     final AtomicThrowable error;
 
     final AtomicLong requested;
 
-    final AtomicReference<Subscription> s;
+    final AtomicReference<Subscription> upstream;
 
     final AtomicBoolean once;
 
     volatile boolean done;
 
-    public StrictSubscriber(Subscriber<? super T> actual) {
-        this.actual = actual;
+    public StrictSubscriber(Subscriber<? super T> downstream) {
+        this.downstream = downstream;
         this.error = new AtomicThrowable();
         this.requested = new AtomicLong();
-        this.s = new AtomicReference<Subscription>();
+        this.upstream = new AtomicReference<Subscription>();
         this.once = new AtomicBoolean();
     }
 
@@ -67,14 +67,14 @@ implements FlowableSubscriber<T>, Subscription {
             cancel();
             onError(new IllegalArgumentException("§3.9 violated: positive request amount required but it was " + n));
         } else {
-            SubscriptionHelper.deferredRequest(s, requested, n);
+            SubscriptionHelper.deferredRequest(upstream, requested, n);
         }
     }
 
     @Override
     public void cancel() {
         if (!done) {
-            SubscriptionHelper.cancel(s);
+            SubscriptionHelper.cancel(upstream);
         }
     }
 
@@ -82,9 +82,9 @@ implements FlowableSubscriber<T>, Subscription {
     public void onSubscribe(Subscription s) {
         if (once.compareAndSet(false, true)) {
 
-            actual.onSubscribe(this);
+            downstream.onSubscribe(this);
 
-            SubscriptionHelper.deferredSetOnce(this.s, requested, s);
+            SubscriptionHelper.deferredSetOnce(this.upstream, requested, s);
         } else {
             s.cancel();
             cancel();
@@ -94,18 +94,18 @@ implements FlowableSubscriber<T>, Subscription {
 
     @Override
     public void onNext(T t) {
-        HalfSerializer.onNext(actual, t, this, error);
+        HalfSerializer.onNext(downstream, t, this, error);
     }
 
     @Override
     public void onError(Throwable t) {
         done = true;
-        HalfSerializer.onError(actual, t, this, error);
+        HalfSerializer.onError(downstream, t, this, error);
     }
 
     @Override
     public void onComplete() {
         done = true;
-        HalfSerializer.onComplete(actual, this, error);
+        HalfSerializer.onComplete(downstream, this, error);
     }
 }

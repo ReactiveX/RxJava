@@ -64,34 +64,34 @@ extends Single<U> implements FuseToObservable<U> {
     }
 
     static final class ToListObserver<T, U extends Collection<? super T>> implements Observer<T>, Disposable {
-        final SingleObserver<? super U> actual;
+        final SingleObserver<? super U> downstream;
 
         U collection;
 
-        Disposable s;
+        Disposable upstream;
 
         ToListObserver(SingleObserver<? super U> actual, U collection) {
-            this.actual = actual;
+            this.downstream = actual;
             this.collection = collection;
         }
 
         @Override
-        public void onSubscribe(Disposable s) {
-            if (DisposableHelper.validate(this.s, s)) {
-                this.s = s;
-                actual.onSubscribe(this);
+        public void onSubscribe(Disposable d) {
+            if (DisposableHelper.validate(this.upstream, d)) {
+                this.upstream = d;
+                downstream.onSubscribe(this);
             }
         }
 
 
         @Override
         public void dispose() {
-            s.dispose();
+            upstream.dispose();
         }
 
         @Override
         public boolean isDisposed() {
-            return s.isDisposed();
+            return upstream.isDisposed();
         }
 
 
@@ -103,14 +103,14 @@ extends Single<U> implements FuseToObservable<U> {
         @Override
         public void onError(Throwable t) {
             collection = null;
-            actual.onError(t);
+            downstream.onError(t);
         }
 
         @Override
         public void onComplete() {
             U c = collection;
             collection = null;
-            actual.onSuccess(c);
+            downstream.onSuccess(c);
         }
     }
 }

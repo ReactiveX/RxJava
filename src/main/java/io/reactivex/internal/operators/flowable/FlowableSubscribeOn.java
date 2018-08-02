@@ -53,11 +53,11 @@ public final class FlowableSubscribeOn<T> extends AbstractFlowableWithUpstream<T
 
         private static final long serialVersionUID = 8094547886072529208L;
 
-        final Subscriber<? super T> actual;
+        final Subscriber<? super T> downstream;
 
         final Scheduler.Worker worker;
 
-        final AtomicReference<Subscription> s;
+        final AtomicReference<Subscription> upstream;
 
         final AtomicLong requested;
 
@@ -66,10 +66,10 @@ public final class FlowableSubscribeOn<T> extends AbstractFlowableWithUpstream<T
         Publisher<T> source;
 
         SubscribeOnSubscriber(Subscriber<? super T> actual, Scheduler.Worker worker, Publisher<T> source, boolean requestOn) {
-            this.actual = actual;
+            this.downstream = actual;
             this.worker = worker;
             this.source = source;
-            this.s = new AtomicReference<Subscription>();
+            this.upstream = new AtomicReference<Subscription>();
             this.requested = new AtomicLong();
             this.nonScheduledRequests = !requestOn;
         }
@@ -84,7 +84,7 @@ public final class FlowableSubscribeOn<T> extends AbstractFlowableWithUpstream<T
 
         @Override
         public void onSubscribe(Subscription s) {
-            if (SubscriptionHelper.setOnce(this.s, s)) {
+            if (SubscriptionHelper.setOnce(this.upstream, s)) {
                 long r = requested.getAndSet(0L);
                 if (r != 0L) {
                     requestUpstream(r, s);
@@ -94,30 +94,30 @@ public final class FlowableSubscribeOn<T> extends AbstractFlowableWithUpstream<T
 
         @Override
         public void onNext(T t) {
-            actual.onNext(t);
+            downstream.onNext(t);
         }
 
         @Override
         public void onError(Throwable t) {
-            actual.onError(t);
+            downstream.onError(t);
             worker.dispose();
         }
 
         @Override
         public void onComplete() {
-            actual.onComplete();
+            downstream.onComplete();
             worker.dispose();
         }
 
         @Override
         public void request(final long n) {
             if (SubscriptionHelper.validate(n)) {
-                Subscription s = this.s.get();
+                Subscription s = this.upstream.get();
                 if (s != null) {
                     requestUpstream(n, s);
                 } else {
                     BackpressureHelper.add(requested, n);
-                    s = this.s.get();
+                    s = this.upstream.get();
                     if (s != null) {
                         long r = requested.getAndSet(0L);
                         if (r != 0L) {
@@ -138,22 +138,22 @@ public final class FlowableSubscribeOn<T> extends AbstractFlowableWithUpstream<T
 
         @Override
         public void cancel() {
-            SubscriptionHelper.cancel(s);
+            SubscriptionHelper.cancel(upstream);
             worker.dispose();
         }
 
         static final class Request implements Runnable {
-            private final Subscription s;
-            private final long n;
+            final Subscription upstream;
+            final long n;
 
             Request(Subscription s, long n) {
-                this.s = s;
+                this.upstream = s;
                 this.n = n;
             }
 
             @Override
             public void run() {
-                s.request(n);
+                upstream.request(n);
             }
         }
     }

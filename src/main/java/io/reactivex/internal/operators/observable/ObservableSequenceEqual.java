@@ -46,7 +46,7 @@ public final class ObservableSequenceEqual<T> extends Observable<Boolean> {
     static final class EqualCoordinator<T> extends AtomicInteger implements Disposable {
 
         private static final long serialVersionUID = -6178010334400373240L;
-        final Observer<? super Boolean> actual;
+        final Observer<? super Boolean> downstream;
         final BiPredicate<? super T, ? super T> comparer;
         final ArrayCompositeDisposable resources;
         final ObservableSource<? extends T> first;
@@ -62,7 +62,7 @@ public final class ObservableSequenceEqual<T> extends Observable<Boolean> {
         EqualCoordinator(Observer<? super Boolean> actual, int bufferSize,
                                 ObservableSource<? extends T> first, ObservableSource<? extends T> second,
                                 BiPredicate<? super T, ? super T> comparer) {
-            this.actual = actual;
+            this.downstream = actual;
             this.first = first;
             this.second = second;
             this.comparer = comparer;
@@ -74,8 +74,8 @@ public final class ObservableSequenceEqual<T> extends Observable<Boolean> {
             this.resources = new ArrayCompositeDisposable(2);
         }
 
-        boolean setDisposable(Disposable s, int index) {
-            return resources.setResource(index, s);
+        boolean setDisposable(Disposable d, int index) {
+            return resources.setResource(index, d);
         }
 
         void subscribe() {
@@ -138,7 +138,7 @@ public final class ObservableSequenceEqual<T> extends Observable<Boolean> {
                         if (e != null) {
                             cancel(q1, q2);
 
-                            actual.onError(e);
+                            downstream.onError(e);
                             return;
                         }
                     }
@@ -149,7 +149,7 @@ public final class ObservableSequenceEqual<T> extends Observable<Boolean> {
                         if (e != null) {
                             cancel(q1, q2);
 
-                            actual.onError(e);
+                            downstream.onError(e);
                             return;
                         }
                     }
@@ -165,15 +165,15 @@ public final class ObservableSequenceEqual<T> extends Observable<Boolean> {
                     boolean e2 = v2 == null;
 
                     if (d1 && d2 && e1 && e2) {
-                        actual.onNext(true);
-                        actual.onComplete();
+                        downstream.onNext(true);
+                        downstream.onComplete();
                         return;
                     }
                     if ((d1 && d2) && (e1 != e2)) {
                         cancel(q1, q2);
 
-                        actual.onNext(false);
-                        actual.onComplete();
+                        downstream.onNext(false);
+                        downstream.onComplete();
                         return;
                     }
 
@@ -186,15 +186,15 @@ public final class ObservableSequenceEqual<T> extends Observable<Boolean> {
                             Exceptions.throwIfFatal(ex);
                             cancel(q1, q2);
 
-                            actual.onError(ex);
+                            downstream.onError(ex);
                             return;
                         }
 
                         if (!c) {
                             cancel(q1, q2);
 
-                            actual.onNext(false);
-                            actual.onComplete();
+                            downstream.onNext(false);
+                            downstream.onComplete();
                             return;
                         }
 
@@ -230,8 +230,8 @@ public final class ObservableSequenceEqual<T> extends Observable<Boolean> {
         }
 
         @Override
-        public void onSubscribe(Disposable s) {
-            parent.setDisposable(s, index);
+        public void onSubscribe(Disposable d) {
+            parent.setDisposable(d, index);
         }
 
         @Override

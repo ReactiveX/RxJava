@@ -81,7 +81,7 @@ public final class ObservableWindowTimed<T> extends AbstractObservableWithUpstre
         final Scheduler scheduler;
         final int bufferSize;
 
-        Disposable s;
+        Disposable upstream;
 
         UnicastSubject<T> window;
 
@@ -101,20 +101,20 @@ public final class ObservableWindowTimed<T> extends AbstractObservableWithUpstre
         }
 
         @Override
-        public void onSubscribe(Disposable s) {
-            if (DisposableHelper.validate(this.s, s)) {
-                this.s = s;
+        public void onSubscribe(Disposable d) {
+            if (DisposableHelper.validate(this.upstream, d)) {
+                this.upstream = d;
 
                 window = UnicastSubject.<T>create(bufferSize);
 
-                Observer<? super Observable<T>> a = actual;
+                Observer<? super Observable<T>> a = downstream;
                 a.onSubscribe(this);
 
                 a.onNext(window);
 
                 if (!cancelled) {
-                    Disposable d = scheduler.schedulePeriodicallyDirect(this, timespan, timespan, unit);
-                    DisposableHelper.replace(timer, d);
+                    Disposable task = scheduler.schedulePeriodicallyDirect(this, timespan, timespan, unit);
+                    DisposableHelper.replace(timer, task);
                 }
             }
         }
@@ -147,7 +147,7 @@ public final class ObservableWindowTimed<T> extends AbstractObservableWithUpstre
             }
 
             disposeTimer();
-            actual.onError(t);
+            downstream.onError(t);
         }
 
         @Override
@@ -158,7 +158,7 @@ public final class ObservableWindowTimed<T> extends AbstractObservableWithUpstre
             }
 
             disposeTimer();
-            actual.onComplete();
+            downstream.onComplete();
         }
 
         @Override
@@ -190,7 +190,7 @@ public final class ObservableWindowTimed<T> extends AbstractObservableWithUpstre
         void drainLoop() {
 
             final MpscLinkedQueue<Object> q = (MpscLinkedQueue<Object>)queue;
-            final Observer<? super Observable<T>> a = actual;
+            final Observer<? super Observable<T>> a = downstream;
             UnicastSubject<T> w = window;
 
             int missed = 1;
@@ -228,7 +228,7 @@ public final class ObservableWindowTimed<T> extends AbstractObservableWithUpstre
 
                             a.onNext(w);
                         } else {
-                            s.dispose();
+                            upstream.dispose();
                         }
                         continue;
                     }
@@ -260,7 +260,7 @@ public final class ObservableWindowTimed<T> extends AbstractObservableWithUpstre
 
         long producerIndex;
 
-        Disposable s;
+        Disposable upstream;
 
         UnicastSubject<T> window;
 
@@ -288,11 +288,11 @@ public final class ObservableWindowTimed<T> extends AbstractObservableWithUpstre
         }
 
         @Override
-        public void onSubscribe(Disposable s) {
-            if (DisposableHelper.validate(this.s, s)) {
-                this.s = s;
+        public void onSubscribe(Disposable d) {
+            if (DisposableHelper.validate(this.upstream, d)) {
+                this.upstream = d;
 
-                Observer<? super Observable<T>> a = actual;
+                Observer<? super Observable<T>> a = downstream;
 
                 a.onSubscribe(this);
 
@@ -305,15 +305,15 @@ public final class ObservableWindowTimed<T> extends AbstractObservableWithUpstre
 
                 a.onNext(w);
 
-                Disposable d;
+                Disposable task;
                 ConsumerIndexHolder consumerIndexHolder = new ConsumerIndexHolder(producerIndex, this);
                 if (restartTimerOnMaxSize) {
-                    d = worker.schedulePeriodically(consumerIndexHolder, timespan, timespan, unit);
+                    task = worker.schedulePeriodically(consumerIndexHolder, timespan, timespan, unit);
                 } else {
-                    d = scheduler.schedulePeriodicallyDirect(consumerIndexHolder, timespan, timespan, unit);
+                    task = scheduler.schedulePeriodicallyDirect(consumerIndexHolder, timespan, timespan, unit);
                 }
 
-                DisposableHelper.replace(timer, d);
+                DisposableHelper.replace(timer, task);
             }
         }
 
@@ -337,7 +337,7 @@ public final class ObservableWindowTimed<T> extends AbstractObservableWithUpstre
 
                     w = UnicastSubject.create(bufferSize);
                     window = w;
-                    actual.onNext(w);
+                    downstream.onNext(w);
                     if (restartTimerOnMaxSize) {
                         Disposable tm = timer.get();
                         tm.dispose();
@@ -370,7 +370,7 @@ public final class ObservableWindowTimed<T> extends AbstractObservableWithUpstre
                 drainLoop();
             }
 
-            actual.onError(t);
+            downstream.onError(t);
             disposeTimer();
         }
 
@@ -381,7 +381,7 @@ public final class ObservableWindowTimed<T> extends AbstractObservableWithUpstre
                 drainLoop();
             }
 
-            actual.onComplete();
+            downstream.onComplete();
             disposeTimer();
         }
 
@@ -405,7 +405,7 @@ public final class ObservableWindowTimed<T> extends AbstractObservableWithUpstre
 
         void drainLoop() {
             final MpscLinkedQueue<Object> q = (MpscLinkedQueue<Object>)queue;
-            final Observer<? super Observable<T>> a = actual;
+            final Observer<? super Observable<T>> a = downstream;
             UnicastSubject<T> w = window;
 
             int missed = 1;
@@ -413,7 +413,7 @@ public final class ObservableWindowTimed<T> extends AbstractObservableWithUpstre
 
                 for (;;) {
                     if (terminated) {
-                        s.dispose();
+                        upstream.dispose();
                         q.clear();
                         disposeTimer();
                         return;
@@ -467,7 +467,7 @@ public final class ObservableWindowTimed<T> extends AbstractObservableWithUpstre
 
                         w = UnicastSubject.create(bufferSize);
                         window = w;
-                        actual.onNext(w);
+                        downstream.onNext(w);
 
                         if (restartTimerOnMaxSize) {
                             Disposable tm = timer.get();
@@ -528,7 +528,7 @@ public final class ObservableWindowTimed<T> extends AbstractObservableWithUpstre
 
         final List<UnicastSubject<T>> windows;
 
-        Disposable s;
+        Disposable upstream;
 
         volatile boolean terminated;
 
@@ -545,11 +545,11 @@ public final class ObservableWindowTimed<T> extends AbstractObservableWithUpstre
         }
 
         @Override
-        public void onSubscribe(Disposable s) {
-            if (DisposableHelper.validate(this.s, s)) {
-                this.s = s;
+        public void onSubscribe(Disposable d) {
+            if (DisposableHelper.validate(this.upstream, d)) {
+                this.upstream = d;
 
-                actual.onSubscribe(this);
+                downstream.onSubscribe(this);
 
                 if (cancelled) {
                     return;
@@ -558,7 +558,7 @@ public final class ObservableWindowTimed<T> extends AbstractObservableWithUpstre
                 final UnicastSubject<T> w = UnicastSubject.create(bufferSize);
                 windows.add(w);
 
-                actual.onNext(w);
+                downstream.onNext(w);
                 worker.schedule(new CompletionTask(w), timespan, unit);
 
                 worker.schedulePeriodically(this, timeskip, timeskip, unit);
@@ -592,7 +592,7 @@ public final class ObservableWindowTimed<T> extends AbstractObservableWithUpstre
                 drainLoop();
             }
 
-            actual.onError(t);
+            downstream.onError(t);
             disposeWorker();
         }
 
@@ -603,7 +603,7 @@ public final class ObservableWindowTimed<T> extends AbstractObservableWithUpstre
                 drainLoop();
             }
 
-            actual.onComplete();
+            downstream.onComplete();
             disposeWorker();
         }
 
@@ -631,7 +631,7 @@ public final class ObservableWindowTimed<T> extends AbstractObservableWithUpstre
         @SuppressWarnings("unchecked")
         void drainLoop() {
             final MpscLinkedQueue<Object> q = (MpscLinkedQueue<Object>)queue;
-            final Observer<? super Observable<T>> a = actual;
+            final Observer<? super Observable<T>> a = downstream;
             final List<UnicastSubject<T>> ws = windows;
 
             int missed = 1;
@@ -640,7 +640,7 @@ public final class ObservableWindowTimed<T> extends AbstractObservableWithUpstre
 
                 for (;;) {
                     if (terminated) {
-                        s.dispose();
+                        upstream.dispose();
                         disposeWorker();
                         q.clear();
                         ws.clear();

@@ -401,8 +401,8 @@ public class DeferredScalarSubscriberTest {
 
         private static final long serialVersionUID = 6285096158319517837L;
 
-        TestingDeferredScalarSubscriber(Subscriber<? super Integer> actual) {
-            super(actual);
+        TestingDeferredScalarSubscriber(Subscriber<? super Integer> downstream) {
+            super(downstream);
         }
 
         @Override

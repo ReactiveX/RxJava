@@ -112,17 +112,17 @@ public final class FlowableRangeLong extends Flowable<Long> {
 
         private static final long serialVersionUID = 2587302975077663557L;
 
-        final Subscriber<? super Long> actual;
+        final Subscriber<? super Long> downstream;
 
         RangeSubscription(Subscriber<? super Long> actual, long index, long end) {
             super(index, end);
-            this.actual = actual;
+            this.downstream = actual;
         }
 
         @Override
         void fastPath() {
             long f = end;
-            Subscriber<? super Long> a = actual;
+            Subscriber<? super Long> a = downstream;
 
             for (long i = index; i != f; i++) {
                 if (cancelled) {
@@ -141,7 +141,7 @@ public final class FlowableRangeLong extends Flowable<Long> {
             long e = 0;
             long f = end;
             long i = index;
-            Subscriber<? super Long> a = actual;
+            Subscriber<? super Long> a = downstream;
 
             for (;;) {
 
@@ -181,17 +181,17 @@ public final class FlowableRangeLong extends Flowable<Long> {
 
         private static final long serialVersionUID = 2587302975077663557L;
 
-        final ConditionalSubscriber<? super Long> actual;
+        final ConditionalSubscriber<? super Long> downstream;
 
         RangeConditionalSubscription(ConditionalSubscriber<? super Long> actual, long index, long end) {
             super(index, end);
-            this.actual = actual;
+            this.downstream = actual;
         }
 
         @Override
         void fastPath() {
             long f = end;
-            ConditionalSubscriber<? super Long> a = actual;
+            ConditionalSubscriber<? super Long> a = downstream;
 
             for (long i = index; i != f; i++) {
                 if (cancelled) {
@@ -210,7 +210,7 @@ public final class FlowableRangeLong extends Flowable<Long> {
             long e = 0;
             long f = end;
             long i = index;
-            ConditionalSubscriber<? super Long> a = actual;
+            ConditionalSubscriber<? super Long> a = downstream;
 
             for (;;) {
 

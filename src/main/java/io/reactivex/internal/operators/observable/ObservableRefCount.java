@@ -170,7 +170,7 @@ public final class ObservableRefCount<T> extends Observable<T> {
 
         private static final long serialVersionUID = -7419642935409022375L;
 
-        final Observer<? super T> actual;
+        final Observer<? super T> downstream;
 
         final ObservableRefCount<T> parent;
 
@@ -178,22 +178,22 @@ public final class ObservableRefCount<T> extends Observable<T> {
 
         Disposable upstream;
 
-        RefCountObserver(Observer<? super T> actual, ObservableRefCount<T> parent, RefConnection connection) {
-            this.actual = actual;
+        RefCountObserver(Observer<? super T> downstream, ObservableRefCount<T> parent, RefConnection connection) {
+            this.downstream = downstream;
             this.parent = parent;
             this.connection = connection;
         }
 
         @Override
         public void onNext(T t) {
-            actual.onNext(t);
+            downstream.onNext(t);
         }
 
         @Override
         public void onError(Throwable t) {
             if (compareAndSet(false, true)) {
                 parent.terminated(connection);
-                actual.onError(t);
+                downstream.onError(t);
             } else {
                 RxJavaPlugins.onError(t);
             }
@@ -203,7 +203,7 @@ public final class ObservableRefCount<T> extends Observable<T> {
         public void onComplete() {
             if (compareAndSet(false, true)) {
                 parent.terminated(connection);
-                actual.onComplete();
+                downstream.onComplete();
             }
         }
 
@@ -225,7 +225,7 @@ public final class ObservableRefCount<T> extends Observable<T> {
             if (DisposableHelper.validate(upstream, d)) {
                 this.upstream = d;
 
-                actual.onSubscribe(this);
+                downstream.onSubscribe(this);
             }
         }
     }

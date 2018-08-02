@@ -133,14 +133,14 @@ public class ObservableMergeTest {
             @Override
             public void subscribe(final Observer<? super Observable<Long>> observer) {
                 // verbose on purpose so I can track the inside of it
-                final Disposable s = Disposables.fromRunnable(new Runnable() {
+                final Disposable upstream = Disposables.fromRunnable(new Runnable() {
                     @Override
                     public void run() {
                         System.out.println("*** unsubscribed");
                         unsubscribed.set(true);
                     }
                 });
-                observer.onSubscribe(s);
+                observer.onSubscribe(upstream);
 
                 new Thread(new Runnable() {
 
@@ -502,12 +502,12 @@ public class ObservableMergeTest {
                 .take(5)
                 .subscribe(new Observer<Long>() {
                     @Override
-                    public void onSubscribe(final Disposable s) {
+                    public void onSubscribe(final Disposable d) {
                         child.onSubscribe(Disposables.fromRunnable(new Runnable() {
                             @Override
                             public void run() {
                                 unsubscribed.set(true);
-                                s.dispose();
+                                d.dispose();
                             }
                         }));
                     }

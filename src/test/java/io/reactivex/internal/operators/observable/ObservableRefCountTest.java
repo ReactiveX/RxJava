@@ -50,7 +50,7 @@ public class ObservableRefCountTest {
         Observable<Long> r = Observable.interval(0, 25, TimeUnit.MILLISECONDS)
                 .doOnSubscribe(new Consumer<Disposable>() {
                     @Override
-                    public void accept(Disposable s) {
+                    public void accept(Disposable d) {
                         subscribeCount.incrementAndGet();
                     }
                 })
@@ -63,14 +63,14 @@ public class ObservableRefCountTest {
                 .publish().refCount();
 
         final AtomicInteger receivedCount = new AtomicInteger();
-        Disposable s1 = r.subscribe(new Consumer<Long>() {
+        Disposable d1 = r.subscribe(new Consumer<Long>() {
             @Override
             public void accept(Long l) {
                 receivedCount.incrementAndGet();
             }
         });
 
-        Disposable s2 = r.subscribe();
+        Disposable d2 = r.subscribe();
 
         // give time to emit
         try {
@@ -79,8 +79,8 @@ public class ObservableRefCountTest {
         }
 
         // now unsubscribe
-        s2.dispose(); // unsubscribe s2 first as we're counting in 1 and there can be a race between unsubscribe and one Observer getting a value but not the other
-        s1.dispose();
+        d2.dispose(); // unsubscribe s2 first as we're counting in 1 and there can be a race between unsubscribe and one Observer getting a value but not the other
+        d1.dispose();
 
         System.out.println("onNext: " + nextCount.get());
 
@@ -97,7 +97,7 @@ public class ObservableRefCountTest {
         Observable<Integer> r = Observable.just(1, 2, 3, 4, 5, 6, 7, 8, 9)
                 .doOnSubscribe(new Consumer<Disposable>() {
                     @Override
-                    public void accept(Disposable s) {
+                    public void accept(Disposable d) {
                         subscribeCount.incrementAndGet();
                     }
                 })
@@ -110,14 +110,14 @@ public class ObservableRefCountTest {
                 .publish().refCount();
 
         final AtomicInteger receivedCount = new AtomicInteger();
-        Disposable s1 = r.subscribe(new Consumer<Integer>() {
+        Disposable d1 = r.subscribe(new Consumer<Integer>() {
             @Override
             public void accept(Integer l) {
                 receivedCount.incrementAndGet();
             }
         });
 
-        Disposable s2 = r.subscribe();
+        Disposable d2 = r.subscribe();
 
         // give time to emit
         try {
@@ -126,8 +126,8 @@ public class ObservableRefCountTest {
         }
 
         // now unsubscribe
-        s2.dispose(); // unsubscribe s2 first as we're counting in 1 and there can be a race between unsubscribe and one Observer getting a value but not the other
-        s1.dispose();
+        d2.dispose(); // unsubscribe s2 first as we're counting in 1 and there can be a race between unsubscribe and one Observer getting a value but not the other
+        d1.dispose();
 
         System.out.println("onNext Count: " + nextCount.get());
 
@@ -172,7 +172,7 @@ public class ObservableRefCountTest {
         Observable<Long> r = Observable.interval(0, 1, TimeUnit.MILLISECONDS)
                 .doOnSubscribe(new Consumer<Disposable>() {
                     @Override
-                    public void accept(Disposable s) {
+                    public void accept(Disposable d) {
                             System.out.println("******************************* Subscribe received");
                             // when we are subscribed
                             subscribeCount.incrementAndGet();
@@ -217,7 +217,7 @@ public class ObservableRefCountTest {
         Observable<Long> o = synchronousInterval()
                 .doOnSubscribe(new Consumer<Disposable>() {
                     @Override
-                    public void accept(Disposable s) {
+                    public void accept(Disposable d) {
                             System.out.println("******************************* Subscribe received");
                             // when we are subscribed
                             subscribeLatch.countDown();
@@ -271,7 +271,7 @@ public class ObservableRefCountTest {
                 })
                 .doOnSubscribe(new Consumer<Disposable>() {
                     @Override
-                    public void accept(Disposable s) {
+                    public void accept(Disposable d) {
                             System.out.println("******************************* SUBSCRIBE received");
                             subUnsubCount.incrementAndGet();
                     }
@@ -367,7 +367,7 @@ public class ObservableRefCountTest {
 
         // subscribe list1
         final List<Long> list1 = new ArrayList<Long>();
-        Disposable s1 = interval.subscribe(new Consumer<Long>() {
+        Disposable d1 = interval.subscribe(new Consumer<Long>() {
             @Override
             public void accept(Long t1) {
                 list1.add(t1);
@@ -382,7 +382,7 @@ public class ObservableRefCountTest {
 
         // subscribe list2
         final List<Long> list2 = new ArrayList<Long>();
-        Disposable s2 = interval.subscribe(new Consumer<Long>() {
+        Disposable d2 = interval.subscribe(new Consumer<Long>() {
             @Override
             public void accept(Long t1) {
                 list2.add(t1);
@@ -404,7 +404,7 @@ public class ObservableRefCountTest {
         assertEquals(4L, list2.get(2).longValue());
 
         // unsubscribe list1
-        s1.dispose();
+        d1.dispose();
 
         // advance further
         s.advanceTimeBy(300, TimeUnit.MILLISECONDS);
@@ -419,7 +419,7 @@ public class ObservableRefCountTest {
         assertEquals(7L, list2.get(5).longValue());
 
         // unsubscribe list2
-        s2.dispose();
+        d2.dispose();
 
         // advance further
         s.advanceTimeBy(1000, TimeUnit.MILLISECONDS);
@@ -519,7 +519,7 @@ public class ObservableRefCountTest {
                 Observable.interval(200,TimeUnit.MILLISECONDS)
                         .doOnSubscribe(new Consumer<Disposable>() {
                             @Override
-                            public void accept(Disposable s) {
+                            public void accept(Disposable d) {
                                             System.out.println("Subscribing to interval " + intervalSubscribed.incrementAndGet());
                                     }
                         }
@@ -671,14 +671,14 @@ public class ObservableRefCountTest {
         .replay(1)
         .refCount();
 
-        Disposable s1 = source.subscribe();
-        Disposable s2 = source.subscribe();
+        Disposable d1 = source.subscribe();
+        Disposable d2 = source.subscribe();
 
-        s1.dispose();
-        s2.dispose();
+        d1.dispose();
+        d2.dispose();
 
-        s1 = null;
-        s2 = null;
+        d1 = null;
+        d2 = null;
 
         System.gc();
         Thread.sleep(100);
@@ -742,14 +742,14 @@ public class ObservableRefCountTest {
         .publish()
         .refCount();
 
-        Disposable s1 = source.test();
-        Disposable s2 = source.test();
+        Disposable d1 = source.test();
+        Disposable d2 = source.test();
 
-        s1.dispose();
-        s2.dispose();
+        d1.dispose();
+        d2.dispose();
 
-        s1 = null;
-        s2 = null;
+        d1 = null;
+        d2 = null;
 
         System.gc();
         Thread.sleep(100);
@@ -767,11 +767,11 @@ public class ObservableRefCountTest {
 
         assertTrue(((Disposable)co).isDisposed());
 
-        Disposable s = co.connect();
+        Disposable connection = co.connect();
 
         assertFalse(((Disposable)co).isDisposed());
 
-        s.dispose();
+        connection.dispose();
 
         assertTrue(((Disposable)co).isDisposed());
     }
@@ -992,7 +992,7 @@ public class ObservableRefCountTest {
         Observable<Integer> source = Observable.range(1, 5)
         .doOnSubscribe(new Consumer<Disposable>() {
             @Override
-            public void accept(Disposable s) throws Exception {
+            public void accept(Disposable d) throws Exception {
                 subscriptions[0]++;
             }
         })
@@ -1022,7 +1022,7 @@ public class ObservableRefCountTest {
         Observable<Integer> source = ps
         .doOnSubscribe(new Consumer<Disposable>() {
             @Override
-            public void accept(Disposable s) throws Exception {
+            public void accept(Disposable d) throws Exception {
                 subscriptions[0]++;
             }
         })
@@ -1065,7 +1065,7 @@ public class ObservableRefCountTest {
         Observable<Integer> source = ps
         .doOnSubscribe(new Consumer<Disposable>() {
             @Override
-            public void accept(Disposable s) throws Exception {
+            public void accept(Disposable d) throws Exception {
                 subscriptions[0]++;
             }
         })

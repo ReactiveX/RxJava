@@ -94,7 +94,7 @@ public class SingleDoOnTest {
 
         Single.just(1).doOnSubscribe(new Consumer<Disposable>() {
             @Override
-            public void accept(Disposable s) throws Exception {
+            public void accept(Disposable d) throws Exception {
                 count[0]++;
             }
         })
@@ -110,7 +110,7 @@ public class SingleDoOnTest {
 
         Single.error(new TestException()).doOnSubscribe(new Consumer<Disposable>() {
             @Override
-            public void accept(Disposable s) throws Exception {
+            public void accept(Disposable d) throws Exception {
                 count[0]++;
             }
         })
@@ -125,7 +125,7 @@ public class SingleDoOnTest {
 
         Single.just(1).doOnSubscribe(new Consumer<Disposable>() {
             @Override
-            public void accept(Disposable s) throws Exception {
+            public void accept(Disposable d) throws Exception {
                 throw new TestException();
             }
         })
@@ -140,7 +140,7 @@ public class SingleDoOnTest {
         try {
             Single.error(new TestException("Outer")).doOnSubscribe(new Consumer<Disposable>() {
                 @Override
-                public void accept(Disposable s) throws Exception {
+                public void accept(Disposable d) throws Exception {
                     throw new TestException("Inner");
                 }
             })
@@ -344,7 +344,7 @@ public class SingleDoOnTest {
             }
             .doOnSubscribe(new Consumer<Disposable>() {
                 @Override
-                public void accept(Disposable s) throws Exception {
+                public void accept(Disposable d) throws Exception {
                     throw new TestException("First");
                 }
             })

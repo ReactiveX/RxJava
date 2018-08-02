@@ -160,7 +160,7 @@ public final class UnicastProcessor<T> extends FlowableProcessor<T> {
 
     Throwable error;
 
-    final AtomicReference<Subscriber<? super T>> actual;
+    final AtomicReference<Subscriber<? super T>> downstream;
 
     volatile boolean cancelled;
 
@@ -282,7 +282,7 @@ public final class UnicastProcessor<T> extends FlowableProcessor<T> {
         this.queue = new SpscLinkedArrayQueue<T>(ObjectHelper.verifyPositive(capacityHint, "capacityHint"));
         this.onTerminate = new AtomicReference<Runnable>(onTerminate);
         this.delayError = delayError;
-        this.actual = new AtomicReference<Subscriber<? super T>>();
+        this.downstream = new AtomicReference<Subscriber<? super T>>();
         this.once = new AtomicBoolean();
         this.wip = new UnicastQueueSubscription();
         this.requested = new AtomicLong();
@@ -348,7 +348,7 @@ public final class UnicastProcessor<T> extends FlowableProcessor<T> {
 
             if (cancelled) {
                 q.clear();
-                actual.lazySet(null);
+                downstream.lazySet(null);
                 return;
             }
 
@@ -356,14 +356,14 @@ public final class UnicastProcessor<T> extends FlowableProcessor<T> {
 
             if (failFast && d && error != null) {
                 q.clear();
-                actual.lazySet(null);
+                downstream.lazySet(null);
                 a.onError(error);
                 return;
             }
             a.onNext(null);
 
             if (d) {
-                actual.lazySet(null);
+                downstream.lazySet(null);
 
                 Throwable ex = error;
                 if (ex != null) {
@@ -388,7 +388,7 @@ public final class UnicastProcessor<T> extends FlowableProcessor<T> {
 
         int missed = 1;
 
-        Subscriber<? super T> a = actual.get();
+        Subscriber<? super T> a = downstream.get();
         for (;;) {
             if (a != null) {
 
@@ -404,27 +404,27 @@ public final class UnicastProcessor<T> extends FlowableProcessor<T> {
             if (missed == 0) {
                 break;
             }
-            a = actual.get();
+            a = downstream.get();
         }
     }
 
     boolean checkTerminated(boolean failFast, boolean d, boolean empty, Subscriber<? super T> a, SpscLinkedArrayQueue<T> q) {
         if (cancelled) {
             q.clear();
-            actual.lazySet(null);
+            downstream.lazySet(null);
             return true;
         }
 
         if (d) {
             if (failFast && error != null) {
                 q.clear();
-                actual.lazySet(null);
+                downstream.lazySet(null);
                 a.onError(error);
                 return true;
             }
             if (empty) {
                 Throwable e = error;
-                actual.lazySet(null);
+                downstream.lazySet(null);
                 if (e != null) {
                     a.onError(e);
                 } else {
@@ -493,9 +493,9 @@ public final class UnicastProcessor<T> extends FlowableProcessor<T> {
         if (!once.get() && once.compareAndSet(false, true)) {
 
             s.onSubscribe(wip);
-            actual.set(s);
+            downstream.set(s);
             if (cancelled) {
-                actual.lazySet(null);
+                downstream.lazySet(null);
             } else {
                 drain();
             }
@@ -554,7 +554,7 @@ public final class UnicastProcessor<T> extends FlowableProcessor<T> {
             if (!enableOperatorFusion) {
                 if (wip.getAndIncrement() == 0) {
                     queue.clear();
-                    actual.lazySet(null);
+                    downstream.lazySet(null);
                 }
             }
         }
@@ -562,7 +562,7 @@ public final class UnicastProcessor<T> extends FlowableProcessor<T> {
 
     @Override
     public boolean hasSubscribers() {
-        return actual.get() != null;
+        return downstream.get() != null;
     }
 
     @Override

@@ -75,7 +75,7 @@ public final class ParallelFromPublisher<T> extends ParallelFlowable<T> {
 
         final int limit;
 
-        Subscription s;
+        Subscription upstream;
 
         SimpleQueue<T> queue;
 
@@ -109,8 +109,8 @@ public final class ParallelFromPublisher<T> extends ParallelFlowable<T> {
 
         @Override
         public void onSubscribe(Subscription s) {
-            if (SubscriptionHelper.validate(this.s, s)) {
-                this.s = s;
+            if (SubscriptionHelper.validate(this.upstream, s)) {
+                this.upstream = s;
 
                 if (s instanceof QueueSubscription) {
                     @SuppressWarnings("unchecked")
@@ -204,7 +204,7 @@ public final class ParallelFromPublisher<T> extends ParallelFlowable<T> {
         public void onNext(T t) {
             if (sourceMode == QueueSubscription.NONE) {
                 if (!queue.offer(t)) {
-                    s.cancel();
+                    upstream.cancel();
                     onError(new MissingBackpressureException("Queue is full?"));
                     return;
                 }
@@ -228,7 +228,7 @@ public final class ParallelFromPublisher<T> extends ParallelFlowable<T> {
         void cancel(int m) {
             if (requests.decrementAndGet(m) == 0L) {
                 cancelled = true;
-                this.s.cancel();
+                this.upstream.cancel();
 
                 if (getAndIncrement() == 0) {
                     queue.clear();
@@ -292,7 +292,7 @@ public final class ParallelFromPublisher<T> extends ParallelFlowable<T> {
                             v = q.poll();
                         } catch (Throwable ex) {
                             Exceptions.throwIfFatal(ex);
-                            s.cancel();
+                            upstream.cancel();
                             for (Subscriber<? super T> s : a) {
                                 s.onError(ex);
                             }
@@ -310,7 +310,7 @@ public final class ParallelFromPublisher<T> extends ParallelFlowable<T> {
                         int c = ++consumed;
                         if (c == limit) {
                             consumed = 0;
-                            s.request(c);
+                            upstream.request(c);
                         }
                         notReady = 0;
                     } else {
@@ -380,7 +380,7 @@ public final class ParallelFromPublisher<T> extends ParallelFlowable<T> {
                             v = q.poll();
                         } catch (Throwable ex) {
                             Exceptions.throwIfFatal(ex);
-                            s.cancel();
+                            upstream.cancel();
                             for (Subscriber<? super T> s : a) {
                                 s.onError(ex);
                             }

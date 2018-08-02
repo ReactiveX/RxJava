@@ -46,48 +46,48 @@ public final class SingleDoAfterTerminate<T> extends Single<T> {
 
     static final class DoAfterTerminateObserver<T> implements SingleObserver<T>, Disposable {
 
-        final SingleObserver<? super T> actual;
+        final SingleObserver<? super T> downstream;
 
         final Action onAfterTerminate;
 
-        Disposable d;
+        Disposable upstream;
 
         DoAfterTerminateObserver(SingleObserver<? super T> actual, Action onAfterTerminate) {
-            this.actual = actual;
+            this.downstream = actual;
             this.onAfterTerminate = onAfterTerminate;
         }
 
         @Override
         public void onSubscribe(Disposable d) {
-            if (DisposableHelper.validate(this.d, d)) {
-                this.d = d;
+            if (DisposableHelper.validate(this.upstream, d)) {
+                this.upstream = d;
 
-                actual.onSubscribe(this);
+                downstream.onSubscribe(this);
             }
         }
 
         @Override
         public void onSuccess(T t) {
-            actual.onSuccess(t);
+            downstream.onSuccess(t);
 
             onAfterTerminate();
         }
 
         @Override
         public void onError(Throwable e) {
-            actual.onError(e);
+            downstream.onError(e);
 
             onAfterTerminate();
         }
 
         @Override
         public void dispose() {
-            d.dispose();
+            upstream.dispose();
         }
 
         @Override
         public boolean isDisposed() {
-            return d.isDisposed();
+            return upstream.isDisposed();
         }
 
         private void onAfterTerminate() {

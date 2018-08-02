@@ -635,11 +635,11 @@ public class ObservableObserveOnTest {
 
         us.observeOn(Schedulers.single())
         .subscribe(new Observer<Integer>() {
-            Disposable d;
+            Disposable upstream;
             int count;
             @Override
             public void onSubscribe(Disposable d) {
-                this.d = d;
+                this.upstream = d;
                 ((QueueDisposable<?>)d).requestFusion(QueueFuseable.ANY);
             }
 
@@ -647,7 +647,7 @@ public class ObservableObserveOnTest {
             public void onNext(Integer value) {
                 if (++count == 1) {
                     us.onNext(2);
-                    d.dispose();
+                    upstream.dispose();
                     cdl.countDown();
                 }
             }

@@ -52,50 +52,50 @@ implements HasUpstreamMaybeSource<T>, FuseToMaybe<Boolean> {
     static final class IsEmptyMaybeObserver<T>
     implements MaybeObserver<T>, Disposable {
 
-        final SingleObserver<? super Boolean> actual;
+        final SingleObserver<? super Boolean> downstream;
 
-        Disposable d;
+        Disposable upstream;
 
-        IsEmptyMaybeObserver(SingleObserver<? super Boolean> actual) {
-            this.actual = actual;
+        IsEmptyMaybeObserver(SingleObserver<? super Boolean> downstream) {
+            this.downstream = downstream;
         }
 
         @Override
         public void dispose() {
-            d.dispose();
-            d = DisposableHelper.DISPOSED;
+            upstream.dispose();
+            upstream = DisposableHelper.DISPOSED;
         }
 
         @Override
         public boolean isDisposed() {
-            return d.isDisposed();
+            return upstream.isDisposed();
         }
 
         @Override
         public void onSubscribe(Disposable d) {
-            if (DisposableHelper.validate(this.d, d)) {
-                this.d = d;
+            if (DisposableHelper.validate(this.upstream, d)) {
+                this.upstream = d;
 
-                actual.onSubscribe(this);
+                downstream.onSubscribe(this);
             }
         }
 
         @Override
         public void onSuccess(T value) {
-            d = DisposableHelper.DISPOSED;
-            actual.onSuccess(false);
+            upstream = DisposableHelper.DISPOSED;
+            downstream.onSuccess(false);
         }
 
         @Override
         public void onError(Throwable e) {
-            d = DisposableHelper.DISPOSED;
-            actual.onError(e);
+            upstream = DisposableHelper.DISPOSED;
+            downstream.onError(e);
         }
 
         @Override
         public void onComplete() {
-            d = DisposableHelper.DISPOSED;
-            actual.onSuccess(true);
+            upstream = DisposableHelper.DISPOSED;
+            downstream.onSuccess(true);
         }
     }
 }

@@ -28,21 +28,21 @@ public final class ObservableTakeLastOne<T> extends AbstractObservableWithUpstre
     }
 
     static final class TakeLastOneObserver<T> implements Observer<T>, Disposable {
-        final Observer<? super T> actual;
+        final Observer<? super T> downstream;
 
-        Disposable s;
+        Disposable upstream;
 
         T value;
 
-        TakeLastOneObserver(Observer<? super T> actual) {
-            this.actual = actual;
+        TakeLastOneObserver(Observer<? super T> downstream) {
+            this.downstream = downstream;
         }
 
         @Override
-        public void onSubscribe(Disposable s) {
-            if (DisposableHelper.validate(this.s, s)) {
-                this.s = s;
-                actual.onSubscribe(this);
+        public void onSubscribe(Disposable d) {
+            if (DisposableHelper.validate(this.upstream, d)) {
+                this.upstream = d;
+                downstream.onSubscribe(this);
             }
         }
 
@@ -54,7 +54,7 @@ public final class ObservableTakeLastOne<T> extends AbstractObservableWithUpstre
         @Override
         public void onError(Throwable t) {
             value = null;
-            actual.onError(t);
+            downstream.onError(t);
         }
 
         @Override
@@ -66,20 +66,20 @@ public final class ObservableTakeLastOne<T> extends AbstractObservableWithUpstre
             T v = value;
             if (v != null) {
                 value = null;
-                actual.onNext(v);
+                downstream.onNext(v);
             }
-            actual.onComplete();
+            downstream.onComplete();
         }
 
         @Override
         public void dispose() {
             value = null;
-            s.dispose();
+            upstream.dispose();
         }
 
         @Override
         public boolean isDisposed() {
-            return s.isDisposed();
+            return upstream.isDisposed();
         }
     }
 }

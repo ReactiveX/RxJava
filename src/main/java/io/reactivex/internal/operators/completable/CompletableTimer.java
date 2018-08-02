@@ -45,15 +45,15 @@ public final class CompletableTimer extends Completable {
     static final class TimerDisposable extends AtomicReference<Disposable> implements Disposable, Runnable {
 
         private static final long serialVersionUID = 3167244060586201109L;
-        final CompletableObserver actual;
+        final CompletableObserver downstream;
 
-        TimerDisposable(final CompletableObserver actual) {
-            this.actual = actual;
+        TimerDisposable(final CompletableObserver downstream) {
+            this.downstream = downstream;
         }
 
         @Override
         public void run() {
-            actual.onComplete();
+            downstream.onComplete();
         }
 
         @Override

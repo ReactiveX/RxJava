@@ -43,14 +43,14 @@ public final class SingleDoOnSubscribe<T> extends Single<T> {
 
     static final class DoOnSubscribeSingleObserver<T> implements SingleObserver<T> {
 
-        final SingleObserver<? super T> actual;
+        final SingleObserver<? super T> downstream;
 
         final Consumer<? super Disposable> onSubscribe;
 
         boolean done;
 
         DoOnSubscribeSingleObserver(SingleObserver<? super T> actual, Consumer<? super Disposable> onSubscribe) {
-            this.actual = actual;
+            this.downstream = actual;
             this.onSubscribe = onSubscribe;
         }
 
@@ -62,11 +62,11 @@ public final class SingleDoOnSubscribe<T> extends Single<T> {
                 Exceptions.throwIfFatal(ex);
                 done = true;
                 d.dispose();
-                EmptyDisposable.error(ex, actual);
+                EmptyDisposable.error(ex, downstream);
                 return;
             }
 
-            actual.onSubscribe(d);
+            downstream.onSubscribe(d);
         }
 
         @Override
@@ -74,7 +74,7 @@ public final class SingleDoOnSubscribe<T> extends Single<T> {
             if (done) {
                 return;
             }
-            actual.onSuccess(value);
+            downstream.onSuccess(value);
         }
 
         @Override
@@ -83,7 +83,7 @@ public final class SingleDoOnSubscribe<T> extends Single<T> {
                 RxJavaPlugins.onError(e);
                 return;
             }
-            actual.onError(e);
+            downstream.onError(e);
         }
     }
 

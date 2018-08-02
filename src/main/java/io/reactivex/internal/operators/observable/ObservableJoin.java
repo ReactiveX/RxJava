@@ -77,7 +77,7 @@ public final class ObservableJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> extends
 
         private static final long serialVersionUID = -6071216598687999801L;
 
-        final Observer<? super R> actual;
+        final Observer<? super R> downstream;
 
         final SpscLinkedArrayQueue<Object> queue;
 
@@ -115,7 +115,7 @@ public final class ObservableJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> extends
                 Function<? super TLeft, ? extends ObservableSource<TLeftEnd>> leftEnd,
                 Function<? super TRight, ? extends ObservableSource<TRightEnd>> rightEnd,
                         BiFunction<? super TLeft, ? super TRight, ? extends R> resultSelector) {
-            this.actual = actual;
+            this.downstream = actual;
             this.disposables = new CompositeDisposable();
             this.queue = new SpscLinkedArrayQueue<Object>(bufferSize());
             this.lefts = new LinkedHashMap<Integer, TLeft>();
@@ -171,7 +171,7 @@ public final class ObservableJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> extends
 
             int missed = 1;
             SpscLinkedArrayQueue<Object> q = queue;
-            Observer<? super R> a = actual;
+            Observer<? super R> a = downstream;
 
             for (;;) {
                 for (;;) {

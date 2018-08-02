@@ -422,15 +422,15 @@ public class FlowableFlatMapCompletableTest {
         .toFlowable()
         .subscribe(new FlowableSubscriber<Object>() {
             @Override
-            public void onSubscribe(Subscription d) {
-                QueueSubscription<?> qd = (QueueSubscription<?>)d;
+            public void onSubscribe(Subscription s) {
+                QueueSubscription<?> qs = (QueueSubscription<?>)s;
                 try {
-                    assertNull(qd.poll());
+                    assertNull(qs.poll());
                 } catch (Throwable ex) {
                     throw new RuntimeException(ex);
                 }
-                assertTrue(qd.isEmpty());
-                qd.clear();
+                assertTrue(qs.isEmpty());
+                qs.clear();
             }
 
             @Override

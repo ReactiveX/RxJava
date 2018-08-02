@@ -100,12 +100,12 @@ public final class CompletableMergeIterable extends Completable {
 
         final CompositeDisposable set;
 
-        final CompletableObserver actual;
+        final CompletableObserver downstream;
 
         final AtomicInteger wip;
 
         MergeCompletableObserver(CompletableObserver actual, CompositeDisposable set, AtomicInteger wip) {
-            this.actual = actual;
+            this.downstream = actual;
             this.set = set;
             this.wip = wip;
         }
@@ -119,7 +119,7 @@ public final class CompletableMergeIterable extends Completable {
         public void onError(Throwable e) {
             set.dispose();
             if (compareAndSet(false, true)) {
-                actual.onError(e);
+                downstream.onError(e);
             } else {
                 RxJavaPlugins.onError(e);
             }
@@ -129,7 +129,7 @@ public final class CompletableMergeIterable extends Completable {
         public void onComplete() {
             if (wip.decrementAndGet() == 0) {
                 if (compareAndSet(false, true)) {
-                    actual.onComplete();
+                    downstream.onComplete();
                 }
             }
         }

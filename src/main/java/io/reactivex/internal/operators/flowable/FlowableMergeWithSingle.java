@@ -55,7 +55,7 @@ public final class FlowableMergeWithSingle<T> extends AbstractFlowableWithUpstre
 
         private static final long serialVersionUID = -4592979584110982903L;
 
-        final Subscriber<? super T> actual;
+        final Subscriber<? super T> downstream;
 
         final AtomicReference<Subscription> mainSubscription;
 
@@ -87,8 +87,8 @@ public final class FlowableMergeWithSingle<T> extends AbstractFlowableWithUpstre
 
         static final int OTHER_STATE_CONSUMED_OR_EMPTY = 2;
 
-        MergeWithObserver(Subscriber<? super T> actual) {
-            this.actual = actual;
+        MergeWithObserver(Subscriber<? super T> downstream) {
+            this.downstream = downstream;
             this.mainSubscription = new AtomicReference<Subscription>();
             this.otherObserver = new OtherObserver<T>(this);
             this.error = new AtomicThrowable();
@@ -111,7 +111,7 @@ public final class FlowableMergeWithSingle<T> extends AbstractFlowableWithUpstre
                     if (q == null || q.isEmpty()) {
 
                         emitted = e + 1;
-                        actual.onNext(t);
+                        downstream.onNext(t);
 
                         int c = consumed + 1;
                         if (c == limit) {
@@ -179,7 +179,7 @@ public final class FlowableMergeWithSingle<T> extends AbstractFlowableWithUpstre
                 if (requested.get() != e) {
 
                     emitted = e + 1;
-                    actual.onNext(value);
+                    downstream.onNext(value);
                     otherState = OTHER_STATE_CONSUMED_OR_EMPTY;
                 } else {
                     singleItem = value;
@@ -223,7 +223,7 @@ public final class FlowableMergeWithSingle<T> extends AbstractFlowableWithUpstre
         }
 
         void drainLoop() {
-            Subscriber<? super T> actual = this.actual;
+            Subscriber<? super T> actual = this.downstream;
             int missed = 1;
             long e = emitted;
             int c = consumed;

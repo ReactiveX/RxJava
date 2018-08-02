@@ -68,7 +68,7 @@ public final class FlowableTimeout<T, U, V> extends AbstractFlowableWithUpstream
 
         private static final long serialVersionUID = 3764492702657003550L;
 
-        final Subscriber<? super T> actual;
+        final Subscriber<? super T> downstream;
 
         final Function<? super T, ? extends Publisher<?>> itemTimeoutIndicator;
 
@@ -79,7 +79,7 @@ public final class FlowableTimeout<T, U, V> extends AbstractFlowableWithUpstream
         final AtomicLong requested;
 
         TimeoutSubscriber(Subscriber<? super T> actual, Function<? super T, ? extends Publisher<?>> itemTimeoutIndicator) {
-            this.actual = actual;
+            this.downstream = actual;
             this.itemTimeoutIndicator = itemTimeoutIndicator;
             this.task = new SequentialDisposable();
             this.upstream = new AtomicReference<Subscription>();
@@ -103,7 +103,7 @@ public final class FlowableTimeout<T, U, V> extends AbstractFlowableWithUpstream
                 d.dispose();
             }
 
-            actual.onNext(t);
+            downstream.onNext(t);
 
             Publisher<?> itemTimeoutPublisher;
 
@@ -115,7 +115,7 @@ public final class FlowableTimeout<T, U, V> extends AbstractFlowableWithUpstream
                 Exceptions.throwIfFatal(ex);
                 upstream.get().cancel();
                 getAndSet(Long.MAX_VALUE);
-                actual.onError(ex);
+                downstream.onError(ex);
                 return;
             }
 
@@ -139,7 +139,7 @@ public final class FlowableTimeout<T, U, V> extends AbstractFlowableWithUpstream
             if (getAndSet(Long.MAX_VALUE) != Long.MAX_VALUE) {
                 task.dispose();
 
-                actual.onError(t);
+                downstream.onError(t);
             } else {
                 RxJavaPlugins.onError(t);
             }
@@ -150,7 +150,7 @@ public final class FlowableTimeout<T, U, V> extends AbstractFlowableWithUpstream
             if (getAndSet(Long.MAX_VALUE) != Long.MAX_VALUE) {
                 task.dispose();
 
-                actual.onComplete();
+                downstream.onComplete();
             }
         }
 
@@ -159,7 +159,7 @@ public final class FlowableTimeout<T, U, V> extends AbstractFlowableWithUpstream
             if (compareAndSet(idx, Long.MAX_VALUE)) {
                 SubscriptionHelper.cancel(upstream);
 
-                actual.onError(new TimeoutException());
+                downstream.onError(new TimeoutException());
             }
         }
 
@@ -168,7 +168,7 @@ public final class FlowableTimeout<T, U, V> extends AbstractFlowableWithUpstream
             if (compareAndSet(idx, Long.MAX_VALUE)) {
                 SubscriptionHelper.cancel(upstream);
 
-                actual.onError(ex);
+                downstream.onError(ex);
             } else {
                 RxJavaPlugins.onError(ex);
             }
@@ -191,7 +191,7 @@ public final class FlowableTimeout<T, U, V> extends AbstractFlowableWithUpstream
 
         private static final long serialVersionUID = 3764492702657003550L;
 
-        final Subscriber<? super T> actual;
+        final Subscriber<? super T> downstream;
 
         final Function<? super T, ? extends Publisher<?>> itemTimeoutIndicator;
 
@@ -208,7 +208,7 @@ public final class FlowableTimeout<T, U, V> extends AbstractFlowableWithUpstream
         TimeoutFallbackSubscriber(Subscriber<? super T> actual,
                 Function<? super T, ? extends Publisher<?>> itemTimeoutIndicator,
                         Publisher<? extends T> fallback) {
-            this.actual = actual;
+            this.downstream = actual;
             this.itemTimeoutIndicator = itemTimeoutIndicator;
             this.task = new SequentialDisposable();
             this.upstream = new AtomicReference<Subscription>();
@@ -237,7 +237,7 @@ public final class FlowableTimeout<T, U, V> extends AbstractFlowableWithUpstream
 
             consumed++;
 
-            actual.onNext(t);
+            downstream.onNext(t);
 
             Publisher<?> itemTimeoutPublisher;
 
@@ -249,7 +249,7 @@ public final class FlowableTimeout<T, U, V> extends AbstractFlowableWithUpstream
                 Exceptions.throwIfFatal(ex);
                 upstream.get().cancel();
                 index.getAndSet(Long.MAX_VALUE);
-                actual.onError(ex);
+                downstream.onError(ex);
                 return;
             }
 
@@ -273,7 +273,7 @@ public final class FlowableTimeout<T, U, V> extends AbstractFlowableWithUpstream
             if (index.getAndSet(Long.MAX_VALUE) != Long.MAX_VALUE) {
                 task.dispose();
 
-                actual.onError(t);
+                downstream.onError(t);
 
                 task.dispose();
             } else {
@@ -286,7 +286,7 @@ public final class FlowableTimeout<T, U, V> extends AbstractFlowableWithUpstream
             if (index.getAndSet(Long.MAX_VALUE) != Long.MAX_VALUE) {
                 task.dispose();
 
-                actual.onComplete();
+                downstream.onComplete();
 
                 task.dispose();
             }
@@ -305,7 +305,7 @@ public final class FlowableTimeout<T, U, V> extends AbstractFlowableWithUpstream
                     produced(c);
                 }
 
-                f.subscribe(new FlowableTimeoutTimed.FallbackSubscriber<T>(actual, this));
+                f.subscribe(new FlowableTimeoutTimed.FallbackSubscriber<T>(downstream, this));
             }
         }
 
@@ -314,7 +314,7 @@ public final class FlowableTimeout<T, U, V> extends AbstractFlowableWithUpstream
             if (index.compareAndSet(idx, Long.MAX_VALUE)) {
                 SubscriptionHelper.cancel(upstream);
 
-                actual.onError(ex);
+                downstream.onError(ex);
             } else {
                 RxJavaPlugins.onError(ex);
             }

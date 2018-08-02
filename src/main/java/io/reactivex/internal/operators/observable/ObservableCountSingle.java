@@ -36,34 +36,34 @@ public final class ObservableCountSingle<T> extends Single<Long> implements Fuse
     }
 
     static final class CountObserver implements Observer<Object>, Disposable {
-        final SingleObserver<? super Long> actual;
+        final SingleObserver<? super Long> downstream;
 
-        Disposable d;
+        Disposable upstream;
 
         long count;
 
-        CountObserver(SingleObserver<? super Long> actual) {
-            this.actual = actual;
+        CountObserver(SingleObserver<? super Long> downstream) {
+            this.downstream = downstream;
         }
 
         @Override
         public void onSubscribe(Disposable d) {
-            if (DisposableHelper.validate(this.d, d)) {
-                this.d = d;
-                actual.onSubscribe(this);
+            if (DisposableHelper.validate(this.upstream, d)) {
+                this.upstream = d;
+                downstream.onSubscribe(this);
             }
         }
 
 
         @Override
         public void dispose() {
-            d.dispose();
-            d = DisposableHelper.DISPOSED;
+            upstream.dispose();
+            upstream = DisposableHelper.DISPOSED;
         }
 
         @Override
         public boolean isDisposed() {
-            return d.isDisposed();
+            return upstream.isDisposed();
         }
 
         @Override
@@ -73,14 +73,14 @@ public final class ObservableCountSingle<T> extends Single<Long> implements Fuse
 
         @Override
         public void onError(Throwable t) {
-            d = DisposableHelper.DISPOSED;
-            actual.onError(t);
+            upstream = DisposableHelper.DISPOSED;
+            downstream.onError(t);
         }
 
         @Override
         public void onComplete() {
-            d = DisposableHelper.DISPOSED;
-            actual.onSuccess(count);
+            upstream = DisposableHelper.DISPOSED;
+            downstream.onSuccess(count);
         }
     }
 }

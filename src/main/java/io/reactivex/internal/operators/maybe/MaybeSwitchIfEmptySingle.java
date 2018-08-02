@@ -51,12 +51,12 @@ public final class MaybeSwitchIfEmptySingle<T> extends Single<T> implements HasU
 
         private static final long serialVersionUID = 4603919676453758899L;
 
-        final SingleObserver<? super T> actual;
+        final SingleObserver<? super T> downstream;
 
         final SingleSource<? extends T> other;
 
         SwitchIfEmptyMaybeObserver(SingleObserver<? super T> actual, SingleSource<? extends T> other) {
-            this.actual = actual;
+            this.downstream = actual;
             this.other = other;
         }
 
@@ -73,18 +73,18 @@ public final class MaybeSwitchIfEmptySingle<T> extends Single<T> implements HasU
         @Override
         public void onSubscribe(Disposable d) {
             if (DisposableHelper.setOnce(this, d)) {
-                actual.onSubscribe(this);
+                downstream.onSubscribe(this);
             }
         }
 
         @Override
         public void onSuccess(T value) {
-            actual.onSuccess(value);
+            downstream.onSuccess(value);
         }
 
         @Override
         public void onError(Throwable e) {
-            actual.onError(e);
+            downstream.onError(e);
         }
 
         @Override
@@ -92,18 +92,18 @@ public final class MaybeSwitchIfEmptySingle<T> extends Single<T> implements HasU
             Disposable d = get();
             if (d != DisposableHelper.DISPOSED) {
                 if (compareAndSet(d, null)) {
-                    other.subscribe(new OtherSingleObserver<T>(actual, this));
+                    other.subscribe(new OtherSingleObserver<T>(downstream, this));
                 }
             }
         }
 
         static final class OtherSingleObserver<T> implements SingleObserver<T> {
 
-            final SingleObserver<? super T> actual;
+            final SingleObserver<? super T> downstream;
 
             final AtomicReference<Disposable> parent;
             OtherSingleObserver(SingleObserver<? super T> actual, AtomicReference<Disposable> parent) {
-                this.actual = actual;
+                this.downstream = actual;
                 this.parent = parent;
             }
             @Override
@@ -112,11 +112,11 @@ public final class MaybeSwitchIfEmptySingle<T> extends Single<T> implements HasU
             }
             @Override
             public void onSuccess(T value) {
-                actual.onSuccess(value);
+                downstream.onSuccess(value);
             }
             @Override
             public void onError(Throwable e) {
-                actual.onError(e);
+                downstream.onError(e);
             }
         }
 

@@ -47,14 +47,13 @@ public final class SingleCreate<T> extends Single<T> {
     extends AtomicReference<Disposable>
     implements SingleEmitter<T>, Disposable {
 
-        final SingleObserver<? super T> actual;
-
-        Emitter(SingleObserver<? super T> actual) {
-            this.actual = actual;
-        }
-
-
         private static final long serialVersionUID = -2467358622224974244L;
+
+        final SingleObserver<? super T> downstream;
+
+        Emitter(SingleObserver<? super T> downstream) {
+            this.downstream = downstream;
+        }
 
         @Override
         public void onSuccess(T value) {
@@ -63,9 +62,9 @@ public final class SingleCreate<T> extends Single<T> {
                 if (d != DisposableHelper.DISPOSED) {
                     try {
                         if (value == null) {
-                            actual.onError(new NullPointerException("onSuccess called with null. Null values are generally not allowed in 2.x operators and sources."));
+                            downstream.onError(new NullPointerException("onSuccess called with null. Null values are generally not allowed in 2.x operators and sources."));
                         } else {
-                            actual.onSuccess(value);
+                            downstream.onSuccess(value);
                         }
                     } finally {
                         if (d != null) {
@@ -92,7 +91,7 @@ public final class SingleCreate<T> extends Single<T> {
                 Disposable d = getAndSet(DisposableHelper.DISPOSED);
                 if (d != DisposableHelper.DISPOSED) {
                     try {
-                        actual.onError(t);
+                        downstream.onError(t);
                     } finally {
                         if (d != null) {
                             d.dispose();

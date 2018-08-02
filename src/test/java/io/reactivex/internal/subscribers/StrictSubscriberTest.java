@@ -230,10 +230,10 @@ public class StrictSubscriberTest {
         final List<Object> list = new ArrayList<Object>();
         Subscriber<Object> sub = new Subscriber<Object>() {
 
-            Subscription s;
+            Subscription upstream;
             @Override
             public void onSubscribe(Subscription s) {
-                this.s = s;
+                this.upstream = s;
             }
 
             @Override
@@ -243,13 +243,13 @@ public class StrictSubscriberTest {
 
             @Override
             public void onError(Throwable t) {
-                s.cancel();
+                upstream.cancel();
                 list.add(t);
             }
 
             @Override
             public void onComplete() {
-                s.cancel();
+                upstream.cancel();
                 list.add("Done");
             }
         };
@@ -272,10 +272,10 @@ public class StrictSubscriberTest {
         final List<Object> list = new ArrayList<Object>();
         Subscriber<Object> sub = new Subscriber<Object>() {
 
-            Subscription s;
+            Subscription upstream;
             @Override
             public void onSubscribe(Subscription s) {
-                this.s = s;
+                this.upstream = s;
             }
 
             @Override
@@ -285,13 +285,13 @@ public class StrictSubscriberTest {
 
             @Override
             public void onError(Throwable t) {
-                s.cancel();
+                upstream.cancel();
                 list.add(t.getMessage());
             }
 
             @Override
             public void onComplete() {
-                s.cancel();
+                upstream.cancel();
                 list.add("Done");
             }
         };

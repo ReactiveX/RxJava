@@ -61,7 +61,7 @@ public final class ObservableFromIterable<T> extends Observable<T> {
 
     static final class FromIterableDisposable<T> extends BasicQueueDisposable<T> {
 
-        final Observer<? super T> actual;
+        final Observer<? super T> downstream;
 
         final Iterator<? extends T> it;
 
@@ -74,7 +74,7 @@ public final class ObservableFromIterable<T> extends Observable<T> {
         boolean checkNext;
 
         FromIterableDisposable(Observer<? super T> actual, Iterator<? extends T> it) {
-            this.actual = actual;
+            this.downstream = actual;
             this.it = it;
         }
 
@@ -91,11 +91,11 @@ public final class ObservableFromIterable<T> extends Observable<T> {
                     v = ObjectHelper.requireNonNull(it.next(), "The iterator returned a null value");
                 } catch (Throwable e) {
                     Exceptions.throwIfFatal(e);
-                    actual.onError(e);
+                    downstream.onError(e);
                     return;
                 }
 
-                actual.onNext(v);
+                downstream.onNext(v);
 
                 if (isDisposed()) {
                     return;
@@ -104,13 +104,13 @@ public final class ObservableFromIterable<T> extends Observable<T> {
                     hasNext = it.hasNext();
                 } catch (Throwable e) {
                     Exceptions.throwIfFatal(e);
-                    actual.onError(e);
+                    downstream.onError(e);
                     return;
                 }
             } while (hasNext);
 
             if (!isDisposed()) {
-                actual.onComplete();
+                downstream.onComplete();
             }
         }
 

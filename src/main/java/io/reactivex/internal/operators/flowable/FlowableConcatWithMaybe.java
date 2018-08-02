@@ -70,12 +70,12 @@ public final class FlowableConcatWithMaybe<T> extends AbstractFlowableWithUpstre
         @Override
         public void onNext(T t) {
             produced++;
-            actual.onNext(t);
+            downstream.onNext(t);
         }
 
         @Override
         public void onError(Throwable t) {
-            actual.onError(t);
+            downstream.onError(t);
         }
 
         @Override
@@ -86,10 +86,10 @@ public final class FlowableConcatWithMaybe<T> extends AbstractFlowableWithUpstre
         @Override
         public void onComplete() {
             if (inMaybe) {
-                actual.onComplete();
+                downstream.onComplete();
             } else {
                 inMaybe = true;
-                s = SubscriptionHelper.CANCELLED;
+                upstream = SubscriptionHelper.CANCELLED;
                 MaybeSource<? extends T> ms = other;
                 other = null;
                 ms.subscribe(this);

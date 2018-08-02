@@ -165,7 +165,7 @@ public class ObservableAmbTest {
         final AtomicLong count = new AtomicLong();
         Consumer<Disposable> incrementer = new Consumer<Disposable>() {
             @Override
-            public void accept(Disposable s) {
+            public void accept(Disposable d) {
                 count.incrementAndGet();
             }
         };

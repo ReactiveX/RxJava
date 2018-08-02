@@ -1899,7 +1899,7 @@ public class CompletableTest {
 
         Completable c = normal.completable.doOnSubscribe(new Consumer<Disposable>() {
             @Override
-            public void accept(Disposable s) {
+            public void accept(Disposable d) {
                 calls.getAndIncrement();
             }
         });
@@ -3651,21 +3651,21 @@ public class CompletableTest {
         PublishSubject<String> stringSubject = PublishSubject.create();
         Completable completable = stringSubject.ignoreElements();
 
-        final AtomicReference<Disposable> subscriptionRef = new AtomicReference<Disposable>();
+        final AtomicReference<Disposable> disposableRef = new AtomicReference<Disposable>();
         Disposable completableSubscription = completable.subscribe(new Action() {
             @Override
             public void run() {
-                if (subscriptionRef.get().isDisposed()) {
-                    subscriptionRef.set(null);
+                if (disposableRef.get().isDisposed()) {
+                    disposableRef.set(null);
                 }
             }
         });
-        subscriptionRef.set(completableSubscription);
+        disposableRef.set(completableSubscription);
 
         stringSubject.onComplete();
 
         assertTrue("Not unsubscribed?", completableSubscription.isDisposed());
-        assertNotNull("Unsubscribed before the call to onComplete", subscriptionRef.get());
+        assertNotNull("Unsubscribed before the call to onComplete", disposableRef.get());
     }
 
     @Test
@@ -4180,7 +4180,7 @@ public class CompletableTest {
                 }
 
                 @Override
-                public void onSubscribe(Subscription d) {
+                public void onSubscribe(Subscription s) {
 
                 }
 
@@ -4212,7 +4212,7 @@ public class CompletableTest {
                 }
 
                 @Override
-                public void onSubscribe(Subscription d) {
+                public void onSubscribe(Subscription s) {
 
                 }
 
@@ -4333,21 +4333,21 @@ public class CompletableTest {
         PublishSubject<String> stringSubject = PublishSubject.create();
         Completable completable = stringSubject.ignoreElements();
 
-        final AtomicReference<Disposable> subscriptionRef = new AtomicReference<Disposable>();
+        final AtomicReference<Disposable> disposableRef = new AtomicReference<Disposable>();
         Disposable completableSubscription = completable.subscribe(new Action() {
             @Override
             public void run() {
-                if (subscriptionRef.get().isDisposed()) {
-                    subscriptionRef.set(null);
+                if (disposableRef.get().isDisposed()) {
+                    disposableRef.set(null);
                 }
             }
         }, Functions.emptyConsumer());
-        subscriptionRef.set(completableSubscription);
+        disposableRef.set(completableSubscription);
 
         stringSubject.onComplete();
 
         assertTrue("Not unsubscribed?", completableSubscription.isDisposed());
-        assertNotNull("Unsubscribed before the call to onComplete", subscriptionRef.get());
+        assertNotNull("Unsubscribed before the call to onComplete", disposableRef.get());
     }
 
     @Test
@@ -4355,22 +4355,22 @@ public class CompletableTest {
         PublishSubject<String> stringSubject = PublishSubject.create();
         Completable completable = stringSubject.ignoreElements();
 
-        final AtomicReference<Disposable> subscriptionRef = new AtomicReference<Disposable>();
+        final AtomicReference<Disposable> disposableRef = new AtomicReference<Disposable>();
         Disposable completableSubscription = completable.subscribe(Functions.EMPTY_ACTION,
         new Consumer<Throwable>() {
             @Override
             public void accept(Throwable e) {
-                if (subscriptionRef.get().isDisposed()) {
-                    subscriptionRef.set(null);
+                if (disposableRef.get().isDisposed()) {
+                    disposableRef.set(null);
                 }
             }
         });
-        subscriptionRef.set(completableSubscription);
+        disposableRef.set(completableSubscription);
 
         stringSubject.onError(new TestException());
 
         assertTrue("Not unsubscribed?", completableSubscription.isDisposed());
-        assertNotNull("Unsubscribed before the call to onError", subscriptionRef.get());
+        assertNotNull("Unsubscribed before the call to onError", disposableRef.get());
     }
 
     @Ignore("onXXX methods are not allowed to throw")
@@ -4478,9 +4478,9 @@ public class CompletableTest {
         final Exception e = new Exception();
         Completable.unsafeCreate(new CompletableSource() {
                 @Override
-                public void subscribe(CompletableObserver cs) {
-                    cs.onSubscribe(Disposables.empty());
-                    cs.onError(e);
+                public void subscribe(CompletableObserver co) {
+                    co.onSubscribe(Disposables.empty());
+                    co.onError(e);
                 }
             })
             .andThen(Flowable.<String>unsafeCreate(new Publisher<String>() {

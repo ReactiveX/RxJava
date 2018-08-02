@@ -46,14 +46,14 @@ public final class ObservableSkipLastTimed<T> extends AbstractObservableWithUpst
     static final class SkipLastTimedObserver<T> extends AtomicInteger implements Observer<T>, Disposable {
 
         private static final long serialVersionUID = -5677354903406201275L;
-        final Observer<? super T> actual;
+        final Observer<? super T> downstream;
         final long time;
         final TimeUnit unit;
         final Scheduler scheduler;
         final SpscLinkedArrayQueue<Object> queue;
         final boolean delayError;
 
-        Disposable s;
+        Disposable upstream;
 
         volatile boolean cancelled;
 
@@ -61,7 +61,7 @@ public final class ObservableSkipLastTimed<T> extends AbstractObservableWithUpst
         Throwable error;
 
         SkipLastTimedObserver(Observer<? super T> actual, long time, TimeUnit unit, Scheduler scheduler, int bufferSize, boolean delayError) {
-            this.actual = actual;
+            this.downstream = actual;
             this.time = time;
             this.unit = unit;
             this.scheduler = scheduler;
@@ -70,10 +70,10 @@ public final class ObservableSkipLastTimed<T> extends AbstractObservableWithUpst
         }
 
         @Override
-        public void onSubscribe(Disposable s) {
-            if (DisposableHelper.validate(this.s, s)) {
-                this.s = s;
-                actual.onSubscribe(this);
+        public void onSubscribe(Disposable d) {
+            if (DisposableHelper.validate(this.upstream, d)) {
+                this.upstream = d;
+                downstream.onSubscribe(this);
             }
         }
 
@@ -105,7 +105,7 @@ public final class ObservableSkipLastTimed<T> extends AbstractObservableWithUpst
         public void dispose() {
             if (!cancelled) {
                 cancelled = true;
-                s.dispose();
+                upstream.dispose();
 
                 if (getAndIncrement() == 0) {
                     queue.clear();
@@ -125,7 +125,7 @@ public final class ObservableSkipLastTimed<T> extends AbstractObservableWithUpst
 
             int missed = 1;
 
-            final Observer<? super T> a = actual;
+            final Observer<? super T> a = downstream;
             final SpscLinkedArrayQueue<Object> q = queue;
             final boolean delayError = this.delayError;
             final TimeUnit unit = this.unit;

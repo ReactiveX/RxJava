@@ -53,8 +53,8 @@ public class FlowableUsingTest {
     private final Consumer<Disposable> disposeSubscription = new Consumer<Disposable>() {
 
         @Override
-        public void accept(Disposable s) {
-            s.dispose();
+        public void accept(Disposable d) {
+            d.dispose();
         }
 
     };
@@ -186,7 +186,7 @@ public class FlowableUsingTest {
 
         Function<Disposable, Flowable<Integer>> observableFactory = new Function<Disposable, Flowable<Integer>>() {
             @Override
-            public Flowable<Integer> apply(Disposable s) {
+            public Flowable<Integer> apply(Disposable d) {
                 return Flowable.empty();
             }
         };

@@ -49,7 +49,7 @@ public final class ObservableDoAfterNext<T> extends AbstractObservableWithUpstre
 
         @Override
         public void onNext(T t) {
-            actual.onNext(t);
+            downstream.onNext(t);
 
             if (sourceMode == NONE) {
                 try {
@@ -68,7 +68,7 @@ public final class ObservableDoAfterNext<T> extends AbstractObservableWithUpstre
         @Nullable
         @Override
         public T poll() throws Exception {
-            T v = qs.poll();
+            T v = qd.poll();
             if (v != null) {
                 onAfterNext.accept(v);
             }

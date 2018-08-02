@@ -86,7 +86,7 @@ public final class FlowableZip<T, R> extends Flowable<R> {
 
         private static final long serialVersionUID = -2434867452883857743L;
 
-        final Subscriber<? super R> actual;
+        final Subscriber<? super R> downstream;
 
         final ZipSubscriber<T, R>[] subscribers;
 
@@ -104,7 +104,7 @@ public final class FlowableZip<T, R> extends Flowable<R> {
 
         ZipCoordinator(Subscriber<? super R> actual,
                 Function<? super Object[], ? extends R> zipper, int n, int prefetch, boolean delayErrors) {
-            this.actual = actual;
+            this.downstream = actual;
             this.zipper = zipper;
             this.delayErrors = delayErrors;
             @SuppressWarnings("unchecked")
@@ -166,7 +166,7 @@ public final class FlowableZip<T, R> extends Flowable<R> {
                 return;
             }
 
-            final Subscriber<? super R> a = actual;
+            final Subscriber<? super R> a = downstream;
             final ZipSubscriber<T, R>[] qs = subscribers;
             final int n = qs.length;
             Object[] values = current;

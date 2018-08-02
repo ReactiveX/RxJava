@@ -36,26 +36,32 @@ public final class FlowableTake<T> extends AbstractFlowableWithUpstream<T, T> {
     static final class TakeSubscriber<T> extends AtomicBoolean implements FlowableSubscriber<T>, Subscription {
 
         private static final long serialVersionUID = -5636543848937116287L;
-        boolean done;
-        Subscription subscription;
-        final Subscriber<? super T> actual;
+
+        final Subscriber<? super T> downstream;
+
         final long limit;
+
+        boolean done;
+
+        Subscription upstream;
+
         long remaining;
+
         TakeSubscriber(Subscriber<? super T> actual, long limit) {
-            this.actual = actual;
+            this.downstream = actual;
             this.limit = limit;
             this.remaining = limit;
         }
         @Override
         public void onSubscribe(Subscription s) {
-            if (SubscriptionHelper.validate(this.subscription, s)) {
-                subscription = s;
+            if (SubscriptionHelper.validate(this.upstream, s)) {
+                upstream = s;
                 if (limit == 0L) {
                     s.cancel();
                     done = true;
-                    EmptySubscription.complete(actual);
+                    EmptySubscription.complete(downstream);
                 } else {
-                    actual.onSubscribe(this);
+                    downstream.onSubscribe(this);
                 }
             }
         }
@@ -63,9 +69,9 @@ public final class FlowableTake<T> extends AbstractFlowableWithUpstream<T, T> {
         public void onNext(T t) {
             if (!done && remaining-- > 0) {
                 boolean stop = remaining == 0;
-                actual.onNext(t);
+                downstream.onNext(t);
                 if (stop) {
-                    subscription.cancel();
+                    upstream.cancel();
                     onComplete();
                 }
             }
@@ -74,8 +80,8 @@ public final class FlowableTake<T> extends AbstractFlowableWithUpstream<T, T> {
         public void onError(Throwable t) {
             if (!done) {
                 done = true;
-                subscription.cancel();
-                actual.onError(t);
+                upstream.cancel();
+                downstream.onError(t);
             } else {
                 RxJavaPlugins.onError(t);
             }
@@ -84,7 +90,7 @@ public final class FlowableTake<T> extends AbstractFlowableWithUpstream<T, T> {
         public void onComplete() {
             if (!done) {
                 done = true;
-                actual.onComplete();
+                downstream.onComplete();
             }
         }
         @Override
@@ -94,15 +100,15 @@ public final class FlowableTake<T> extends AbstractFlowableWithUpstream<T, T> {
             }
             if (!get() && compareAndSet(false, true)) {
                 if (n >= limit) {
-                    subscription.request(Long.MAX_VALUE);
+                    upstream.request(Long.MAX_VALUE);
                     return;
                 }
             }
-            subscription.request(n);
+            upstream.request(n);
         }
         @Override
         public void cancel() {
-            subscription.cancel();
+            upstream.cancel();
         }
     }
 }

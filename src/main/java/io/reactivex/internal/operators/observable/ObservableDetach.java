@@ -37,54 +37,54 @@ public final class ObservableDetach<T> extends AbstractObservableWithUpstream<T,
 
     static final class DetachObserver<T> implements Observer<T>, Disposable {
 
-        Observer<? super T> actual;
+        Observer<? super T> downstream;
 
-        Disposable s;
+        Disposable upstream;
 
-        DetachObserver(Observer<? super T> actual) {
-            this.actual = actual;
+        DetachObserver(Observer<? super T> downstream) {
+            this.downstream = downstream;
         }
 
         @Override
         public void dispose() {
-            Disposable s = this.s;
-            this.s = EmptyComponent.INSTANCE;
-            this.actual = EmptyComponent.asObserver();
-            s.dispose();
+            Disposable d = this.upstream;
+            this.upstream = EmptyComponent.INSTANCE;
+            this.downstream = EmptyComponent.asObserver();
+            d.dispose();
         }
 
         @Override
         public boolean isDisposed() {
-            return s.isDisposed();
+            return upstream.isDisposed();
         }
 
         @Override
-        public void onSubscribe(Disposable s) {
-            if (DisposableHelper.validate(this.s, s)) {
-                this.s = s;
+        public void onSubscribe(Disposable d) {
+            if (DisposableHelper.validate(this.upstream, d)) {
+                this.upstream = d;
 
-                actual.onSubscribe(this);
+                downstream.onSubscribe(this);
             }
         }
 
         @Override
         public void onNext(T t) {
-            actual.onNext(t);
+            downstream.onNext(t);
         }
 
         @Override
         public void onError(Throwable t) {
-            Observer<? super T> a = actual;
-            this.s = EmptyComponent.INSTANCE;
-            this.actual = EmptyComponent.asObserver();
+            Observer<? super T> a = downstream;
+            this.upstream = EmptyComponent.INSTANCE;
+            this.downstream = EmptyComponent.asObserver();
             a.onError(t);
         }
 
         @Override
         public void onComplete() {
-            Observer<? super T> a = actual;
-            this.s = EmptyComponent.INSTANCE;
-            this.actual = EmptyComponent.asObserver();
+            Observer<? super T> a = downstream;
+            this.upstream = EmptyComponent.INSTANCE;
+            this.downstream = EmptyComponent.asObserver();
             a.onComplete();
         }
     }
