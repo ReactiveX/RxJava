@@ -493,6 +493,8 @@ public abstract class Single<T> implements SingleSource<T> {
     /**
      * Calls a {@link Callable} for each individual {@link SingleObserver} to return the actual {@link SingleSource} to
      * be subscribed to.
+     * <p>
+     * <img width="640" height="515" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.defer.png" alt="">
      * <dl>
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code defer} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -1243,6 +1245,8 @@ public abstract class Single<T> implements SingleSource<T> {
 
     /**
      * Signals success with 0L value after the given delay for each SingleObserver.
+     * <p>
+     * <img width="640" height="292" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.timer.png" alt="">
      * <dl>
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code timer} operates by default on the {@code computation} {@link Scheduler}.</dd>
@@ -1260,6 +1264,8 @@ public abstract class Single<T> implements SingleSource<T> {
 
     /**
      * Signals success with 0L value after the given delay for each SingleObserver.
+     * <p>
+     * <img width="640" height="292" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.timer.s.png" alt="">
      * <dl>
      * <dt><b>Scheduler:</b></dt>
      * <dd>you specify the {@link Scheduler} to signal on.</dd>
@@ -3705,7 +3711,7 @@ public abstract class Single<T> implements SingleSource<T> {
     /**
      * Converts this Single into a {@link Flowable}.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.toObservable.png" alt="">
+     * <img width="640" height="462" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.toFlowable.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The returned {@code Flowable} honors the backpressure of the downstream consumer.</dd>
@@ -3729,7 +3735,7 @@ public abstract class Single<T> implements SingleSource<T> {
     /**
      * Returns a {@link Future} representing the single value emitted by this {@code Single}.
      * <p>
-     * <img width="640" height="395" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/B.toFuture.png" alt="">
+     * <img width="640" height="467" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/Single.toFuture.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code toFuture} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -3747,7 +3753,7 @@ public abstract class Single<T> implements SingleSource<T> {
     /**
      * Converts this Single into a {@link Maybe}.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.toObservable.png" alt="">
+     * <img width="640" height="463" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.toMaybe.png" alt="">
      * <dl>
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code toMaybe} does not operate by default on a particular {@link Scheduler}.</dd>
