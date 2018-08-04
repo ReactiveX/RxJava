@@ -166,6 +166,8 @@ public abstract class Single<T> implements SingleSource<T> {
     /**
      * Concatenate the single values, in a non-overlapping fashion, of the SingleSources provided by
      * an Iterable sequence.
+     * <p>
+     * <img width="640" height="319" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.concat.i.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The returned {@code Flowable} honors the backpressure of the downstream consumer.</dd>
@@ -187,6 +189,8 @@ public abstract class Single<T> implements SingleSource<T> {
     /**
      * Concatenate the single values, in a non-overlapping fashion, of the SingleSources provided by
      * an Observable sequence.
+     * <p>
+     * <img width="640" height="319" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.concat.o.png" alt="">
      * <dl>
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code concat} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -207,6 +211,8 @@ public abstract class Single<T> implements SingleSource<T> {
     /**
      * Concatenate the single values, in a non-overlapping fashion, of the SingleSources provided by
      * a Publisher sequence.
+     * <p>
+     * <img width="640" height="319" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.concat.p.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The returned {@code Flowable} honors the backpressure of the downstream consumer
@@ -229,6 +235,8 @@ public abstract class Single<T> implements SingleSource<T> {
     /**
      * Concatenate the single values, in a non-overlapping fashion, of the SingleSources provided by
      * a Publisher sequence and prefetched by the specified amount.
+     * <p>
+     * <img width="640" height="319" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.concat.pn.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The returned {@code Flowable} honors the backpressure of the downstream consumer
@@ -255,7 +263,7 @@ public abstract class Single<T> implements SingleSource<T> {
     /**
      * Returns a Flowable that emits the items emitted by two Singles, one after the other.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.concat.png" alt="">
+     * <img width="640" height="366" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.concat.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The returned {@code Flowable} honors the backpressure of the downstream consumer.</dd>
@@ -286,7 +294,7 @@ public abstract class Single<T> implements SingleSource<T> {
     /**
      * Returns a Flowable that emits the items emitted by three Singles, one after the other.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.concat.png" alt="">
+     * <img width="640" height="366" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.concat.n.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The returned {@code Flowable} honors the backpressure of the downstream consumer.</dd>
@@ -321,7 +329,7 @@ public abstract class Single<T> implements SingleSource<T> {
     /**
      * Returns a Flowable that emits the items emitted by four Singles, one after the other.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.concat.png" alt="">
+     * <img width="640" height="366" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.concat.m.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The returned {@code Flowable} honors the backpressure of the downstream consumer.</dd>
@@ -359,6 +367,8 @@ public abstract class Single<T> implements SingleSource<T> {
     /**
      * Concatenate the single values, in a non-overlapping fashion, of the SingleSources provided in
      * an array.
+     * <p>
+     * <img width="640" height="319" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.concatArray.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The returned {@code Flowable} honors the backpressure of the downstream consumer.</dd>
