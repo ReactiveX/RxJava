@@ -124,18 +124,3 @@ On a clean build you will see the unit tests run. They will look something like 
 ```
 > Building > :rxjava:test > 91 tests completed
 ```
-
-#### Troubleshooting
-
-One developer reported getting the following error:
-
-> Could not resolve all dependencies for configuration ':language-adaptors:rxjava-scala:provided'
-
-He was able to resolve the problem by removing old versions of `scala-library` from `.gradle/caches` and `.m2/repository/org/scala-lang/` and then doing a clean build. <a href="https://gist.github.com/jaceklaskowski/9496058">(See this page for details.)</a>
-
-You may get the following error during building RxJava:
-
-> Failed to apply plugin [id 'java']
-> Could not generate a proxy class for class nebula.core.NamedContainerProperOrder.
-
-It's a JVM issue, see [GROOVY-6951](https://jira.codehaus.org/browse/GROOVY-6951) for details. If so, you can run `export GRADLE_OPTS=-noverify` before building RxJava, or update your JDK.
