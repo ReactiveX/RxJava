@@ -67,8 +67,8 @@ public interface MaybeEmitter<T> {
     void onComplete();
 
     /**
-     * Sets a Disposable on this emitter; any previous Disposable
-     * or Cancellable will be disposed/cancelled.
+     * Sets a Disposable on this emitter; any previous {@link Disposable}
+     * or {@link Cancellable} will be disposed/cancelled.
      * @param d the disposable, null is allowed
      */
     void setDisposable(@Nullable Disposable d);
