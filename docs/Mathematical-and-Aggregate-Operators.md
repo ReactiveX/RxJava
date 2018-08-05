@@ -33,6 +33,15 @@ at [http://search.maven.org](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22c
 
 Calculates the average of Numbers emitted by an Observable and emits this average as a Double.
 
+#### averageDouble example
+
+```java
+Observable<Integer> numbers = Observable.just(1, 2, 3);
+MathObservable.averageDouble(numbers).subscribe((Double avg) -> System.out.println(avg));
+
+// prints 2.0
+```
+
 ### averageFloat
 
 **Available in:** ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png) `Flowable`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png) `Observable`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) `Maybe`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) `Single`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) `Completable`
@@ -41,13 +50,42 @@ Calculates the average of Numbers emitted by an Observable and emits this averag
 
 Calculates the average of Numbers emitted by an Observable and emits this average as a Float.
 
+#### averageFloat example
+
+```java
+Observable<Integer> numbers = Observable.just(1, 2, 3);
+MathObservable.averageFloat(numbers).subscribe((Float avg) -> System.out.println(avg));
+
+// prints 2.0
+```
+
 ### max
 
 **Available in:** ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png) `Flowable`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png) `Observable`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) `Maybe`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) `Single`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) `Completable`
 
 **ReactiveX doumentation:** [http://reactivex.io/documentation/operators/max.html](http://reactivex.io/documentation/operators/max.html)
 
-Emits the maximum value emitted by a source Observable.
+Emits the maximum value emitted by a source Observable. A Comparator can be specified
+that will be used to compare the elements emitted by the Observable.
+
+#### max example
+
+```java
+Observable<Integer> numbers = Observable.just(4, 9, 5);
+MathObservable.max(numbers).subscribe(System.out::println);
+
+// prints 9
+```
+
+The following example specifies a Comparator to find the longest String in the source Observable:
+
+```java
+final Observable<String> names = Observable.just("Kirk", "Spock", "Chekov", "Sulu");
+MathObservable.max(names, Comparator.comparingInt(String::length))
+        .subscribe(System.out::println);
+
+// prints Chekov
+```
 
 ### min
 
@@ -55,7 +93,17 @@ Emits the maximum value emitted by a source Observable.
 
 **ReactiveX doumentation:** [http://reactivex.io/documentation/operators/min.html](http://reactivex.io/documentation/operators/min.html)
 
-Emits the minimum value emitted by a source Observable.
+Emits the minimum value emitted by a source Observable. A Comparator can be specified
+that will be used to compare the elements emitted by the Observable.
+
+#### min example
+
+```java
+Observable<Integer> numbers = Observable.just(4, 9, 5);
+MathObservable.min(numbers).subscribe(System.out::println);
+
+// prints 4
+```
 
 ### sumDouble
 
@@ -65,6 +113,15 @@ Emits the minimum value emitted by a source Observable.
 
 Adds the Doubles emitted by an Observable and emits this sum.
 
+#### sumDouble example
+
+```java
+Observable<Double> numbers = Observable.just(1.0, 2.0, 3.0);
+MathObservable.sumDouble(numbers).subscribe((Double sum) -> System.out.println(sum));
+
+// prints 6.0
+```
+
 ### sumFloat
 
 **Available in:** ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png) `Flowable`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png) `Observable`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) `Maybe`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) `Single`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) `Completable`
@@ -72,6 +129,15 @@ Adds the Doubles emitted by an Observable and emits this sum.
 **ReactiveX doumentation:** [http://reactivex.io/documentation/operators/sum.html](http://reactivex.io/documentation/operators/sum.html)
 
 Adds the Floats emitted by an Observable and emits this sum.
+
+#### sumFloat example
+
+```java
+Observable<Float> numbers = Observable.just(1.0F, 2.0F, 3.0F);
+MathObservable.sumFloat(numbers).subscribe((Float sum) -> System.out.println(sum));
+
+// prints 6.0
+```
 
 ### sumInt
 
@@ -81,6 +147,15 @@ Adds the Floats emitted by an Observable and emits this sum.
 
 Adds the Integers emitted by an Observable and emits this sum.
 
+#### sumInt example
+
+```java
+Observable<Integer> numbers = Observable.range(1, 100);
+MathObservable.sumInt(numbers).subscribe((Integer sum) -> System.out.println(sum));
+
+// prints 5050
+```
+
 ### sumLong
 
 **Available in:** ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png) `Flowable`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png) `Observable`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) `Maybe`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) `Single`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) `Completable`
@@ -88,6 +163,15 @@ Adds the Integers emitted by an Observable and emits this sum.
 **ReactiveX doumentation:** [http://reactivex.io/documentation/operators/sum.html](http://reactivex.io/documentation/operators/sum.html)
 
 Adds the Integers emitted by an Observable and emits this sum.
+
+#### sumLong example
+
+```java
+Observable<Long> numbers = Observable.rangeLong(1L, 100L);
+MathObservable.sumLong(numbers).subscribe((Long sum) -> System.out.println(sum));
+
+// prints 5050
+```
 
 ## Other Aggregate Operators
 
@@ -97,8 +181,15 @@ Adds the Integers emitted by an Observable and emits this sum.
 
 **ReactiveX doumentation:** [http://reactivex.io/documentation/operators/count.html](http://reactivex.io/documentation/operators/count.html)
 
-
 Counts the number of items emitted by an Observable and emits this count.
+
+#### count example
+
+```java
+Observable.just(1, 2, 3).count().subscribe(System.out::println);
+
+// prints 3
+```
 
 ### reduce and reduceWith
 
@@ -108,6 +199,29 @@ Counts the number of items emitted by an Observable and emits this count.
 
 Apply a function to each emitted item, sequentially, and emit only the final accumulated value.
 
+#### reduce example
+
+```java
+Observable.range(1, 5)
+    .reduce((product, x) -> product * x)
+    .subscribe(System.out::println);
+
+// prints 120
+```
+
+#### reduceWith example
+
+```java
+Observable.just(1, 2, 2, 3, 4, 4, 4, 5)
+        .reduceWith(TreeSet::new, (set, x) -> {
+            set.add(x);
+            return set;
+        })
+        .subscribe(System.out::println);
+
+// prints [1, 2, 3, 4, 5]
+```
+
 ### collect and collectInto
 
 **Available in:** ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png) `Flowable`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png) `Observable`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) `Maybe`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) `Single`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) `Completable`
@@ -115,6 +229,31 @@ Apply a function to each emitted item, sequentially, and emit only the final acc
 **ReactiveX doumentation:** [http://reactivex.io/documentation/operators/reduce.html](http://reactivex.io/documentation/operators/reduce.html)
 
 Collect items emitted by the source Observable into a single mutable data structure and return an Observable that emits this structure.
+
+#### collect example
+
+```java
+Observable.just("Kirk", "Spock", "Chekov", "Sulu")
+        .collect(() -> new StringJoiner(" \uD83D\uDD96 "), StringJoiner::add)
+        .map(StringJoiner::toString)
+        .subscribe(System.out::println);
+
+// prints Kirk 🖖 Spock 🖖 Chekov 🖖 Sulu
+```
+
+#### collectInto example
+
+*Note*: the mutable value that will collect the items will be shared between
+multiple subscribers.
+
+```java
+Observable.just('R', 'x', 'J', 'a', 'v', 'a')
+        .collectInto(new StringBuilder(), StringBuilder::append)
+        .map(StringBuilder::toString)
+        .subscribe(System.out::println);
+
+// prints RxJava
+```
 
 ### toList and toSortedList
 
@@ -124,6 +263,26 @@ Collect items emitted by the source Observable into a single mutable data struct
 
 Collect all items from an Observable and emit them as a single List.
 
+#### toList example
+
+```java
+Observable.just(2, 1, 3)
+        .toList()
+        .subscribe(System.out::println);
+
+// prints [2, 1, 3]
+```
+
+#### toSortedList example
+
+```java
+Observable.just(2, 1, 3)
+        .toSortedList(Comparator.reverseOrder())
+        .subscribe(System.out::println);
+
+// prints [3, 2, 1]
+```
+
 ### toMap
 
 **Available in:** ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png) `Flowable`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png) `Observable`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) `Maybe`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) `Single`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) `Completable`
@@ -132,6 +291,22 @@ Collect all items from an Observable and emit them as a single List.
 
 Convert the sequence of items emitted by an Observable into a map keyed by a specified key function.
 
+#### toMap example
+
+```java
+Observable.just(1, 2, 3, 4)
+        .toMap((x) -> {
+            // defines the key in the Map
+            return x;
+        }, (x) -> {
+            // defines the value that is mapped to the key
+            return (x % 2 == 0) ? "even" : "odd";
+        })
+        .subscribe(System.out::println);
+
+// prints {1=odd, 2=even, 3=odd, 4=even}
+```
+
 ### toMultimap
 
 **Available in:** ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png) `Flowable`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png) `Observable`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) `Maybe`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) `Single`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) `Completable`
@@ -139,3 +314,19 @@ Convert the sequence of items emitted by an Observable into a map keyed by a spe
 **ReactiveX doumentation:** [http://reactivex.io/documentation/operators/to.html](http://reactivex.io/documentation/operators/to.html)
 
 Convert the sequence of items emitted by an Observable into an ArrayList that is also a map keyed by a specified key function.
+
+#### toMultimap example
+
+```java
+Observable.just(1, 2, 3, 4)
+        .toMultimap((x) -> {
+            // defines the key in the Map
+            return (x % 2 == 0) ? "even" : "odd";
+        }, (x) -> {
+            // defines the value that is mapped to the key
+            return x;
+        })
+        .subscribe(System.out::println);
+
+// prints {even=[2, 4], odd=[1, 3]}
+```
