@@ -43,26 +43,26 @@ public final class FlowableElementAtMaybe<T> extends Maybe<T> implements FuseToF
 
     static final class ElementAtSubscriber<T> implements FlowableSubscriber<T>, Disposable {
 
-        final MaybeObserver<? super T> actual;
+        final MaybeObserver<? super T> downstream;
 
         final long index;
 
-        Subscription s;
+        Subscription upstream;
 
         long count;
 
         boolean done;
 
         ElementAtSubscriber(MaybeObserver<? super T> actual, long index) {
-            this.actual = actual;
+            this.downstream = actual;
             this.index = index;
         }
 
         @Override
         public void onSubscribe(Subscription s) {
-            if (SubscriptionHelper.validate(this.s, s)) {
-                this.s = s;
-                actual.onSubscribe(this);
+            if (SubscriptionHelper.validate(this.upstream, s)) {
+                this.upstream = s;
+                downstream.onSubscribe(this);
                 s.request(Long.MAX_VALUE);
             }
         }
@@ -75,9 +75,9 @@ public final class FlowableElementAtMaybe<T> extends Maybe<T> implements FuseToF
             long c = count;
             if (c == index) {
                 done = true;
-                s.cancel();
-                s = SubscriptionHelper.CANCELLED;
-                actual.onSuccess(t);
+                upstream.cancel();
+                upstream = SubscriptionHelper.CANCELLED;
+                downstream.onSuccess(t);
                 return;
             }
             count = c + 1;
@@ -90,28 +90,28 @@ public final class FlowableElementAtMaybe<T> extends Maybe<T> implements FuseToF
                 return;
             }
             done = true;
-            s = SubscriptionHelper.CANCELLED;
-            actual.onError(t);
+            upstream = SubscriptionHelper.CANCELLED;
+            downstream.onError(t);
         }
 
         @Override
         public void onComplete() {
-            s = SubscriptionHelper.CANCELLED;
+            upstream = SubscriptionHelper.CANCELLED;
             if (!done) {
                 done = true;
-                actual.onComplete();
+                downstream.onComplete();
             }
         }
 
         @Override
         public void dispose() {
-            s.cancel();
-            s = SubscriptionHelper.CANCELLED;
+            upstream.cancel();
+            upstream = SubscriptionHelper.CANCELLED;
         }
 
         @Override
         public boolean isDisposed() {
-            return s == SubscriptionHelper.CANCELLED;
+            return upstream == SubscriptionHelper.CANCELLED;
         }
 
     }

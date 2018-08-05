@@ -204,8 +204,8 @@ public final class ObservableCache<T> extends AbstractObservableWithUpstream<T, 
         }
 
         @Override
-        public void onSubscribe(Disposable s) {
-            connection.update(s);
+        public void onSubscribe(Disposable d) {
+            connection.update(d);
         }
 
         /**

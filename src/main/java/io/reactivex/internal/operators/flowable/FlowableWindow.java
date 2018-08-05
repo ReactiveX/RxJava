@@ -58,7 +58,7 @@ public final class FlowableWindow<T> extends AbstractFlowableWithUpstream<T, Flo
 
         private static final long serialVersionUID = -2365647875069161133L;
 
-        final Subscriber<? super Flowable<T>> actual;
+        final Subscriber<? super Flowable<T>> downstream;
 
         final long size;
 
@@ -68,13 +68,13 @@ public final class FlowableWindow<T> extends AbstractFlowableWithUpstream<T, Flo
 
         long index;
 
-        Subscription s;
+        Subscription upstream;
 
         UnicastProcessor<T> window;
 
         WindowExactSubscriber(Subscriber<? super Flowable<T>> actual, long size, int bufferSize) {
             super(1);
-            this.actual = actual;
+            this.downstream = actual;
             this.size = size;
             this.once = new AtomicBoolean();
             this.bufferSize = bufferSize;
@@ -82,9 +82,9 @@ public final class FlowableWindow<T> extends AbstractFlowableWithUpstream<T, Flo
 
         @Override
         public void onSubscribe(Subscription s) {
-            if (SubscriptionHelper.validate(this.s, s)) {
-                this.s = s;
-                actual.onSubscribe(this);
+            if (SubscriptionHelper.validate(this.upstream, s)) {
+                this.upstream = s;
+                downstream.onSubscribe(this);
             }
         }
 
@@ -99,7 +99,7 @@ public final class FlowableWindow<T> extends AbstractFlowableWithUpstream<T, Flo
                 w = UnicastProcessor.<T>create(bufferSize, this);
                 window = w;
 
-                actual.onNext(w);
+                downstream.onNext(w);
             }
 
             i++;
@@ -123,7 +123,7 @@ public final class FlowableWindow<T> extends AbstractFlowableWithUpstream<T, Flo
                 w.onError(t);
             }
 
-            actual.onError(t);
+            downstream.onError(t);
         }
 
         @Override
@@ -134,14 +134,14 @@ public final class FlowableWindow<T> extends AbstractFlowableWithUpstream<T, Flo
                 w.onComplete();
             }
 
-            actual.onComplete();
+            downstream.onComplete();
         }
 
         @Override
         public void request(long n) {
             if (SubscriptionHelper.validate(n)) {
                 long u = BackpressureHelper.multiplyCap(size, n);
-                s.request(u);
+                upstream.request(u);
             }
         }
 
@@ -155,7 +155,7 @@ public final class FlowableWindow<T> extends AbstractFlowableWithUpstream<T, Flo
         @Override
         public void run() {
             if (decrementAndGet() == 0) {
-                s.cancel();
+                upstream.cancel();
             }
         }
     }
@@ -167,7 +167,7 @@ public final class FlowableWindow<T> extends AbstractFlowableWithUpstream<T, Flo
 
         private static final long serialVersionUID = -8792836352386833856L;
 
-        final Subscriber<? super Flowable<T>> actual;
+        final Subscriber<? super Flowable<T>> downstream;
 
         final long size;
 
@@ -181,13 +181,13 @@ public final class FlowableWindow<T> extends AbstractFlowableWithUpstream<T, Flo
 
         long index;
 
-        Subscription s;
+        Subscription upstream;
 
         UnicastProcessor<T> window;
 
         WindowSkipSubscriber(Subscriber<? super Flowable<T>> actual, long size, long skip, int bufferSize) {
             super(1);
-            this.actual = actual;
+            this.downstream = actual;
             this.size = size;
             this.skip = skip;
             this.once = new AtomicBoolean();
@@ -197,9 +197,9 @@ public final class FlowableWindow<T> extends AbstractFlowableWithUpstream<T, Flo
 
         @Override
         public void onSubscribe(Subscription s) {
-            if (SubscriptionHelper.validate(this.s, s)) {
-                this.s = s;
-                actual.onSubscribe(this);
+            if (SubscriptionHelper.validate(this.upstream, s)) {
+                this.upstream = s;
+                downstream.onSubscribe(this);
             }
         }
 
@@ -215,7 +215,7 @@ public final class FlowableWindow<T> extends AbstractFlowableWithUpstream<T, Flo
                 w = UnicastProcessor.<T>create(bufferSize, this);
                 window = w;
 
-                actual.onNext(w);
+                downstream.onNext(w);
             }
 
             i++;
@@ -244,7 +244,7 @@ public final class FlowableWindow<T> extends AbstractFlowableWithUpstream<T, Flo
                 w.onError(t);
             }
 
-            actual.onError(t);
+            downstream.onError(t);
         }
 
         @Override
@@ -255,7 +255,7 @@ public final class FlowableWindow<T> extends AbstractFlowableWithUpstream<T, Flo
                 w.onComplete();
             }
 
-            actual.onComplete();
+            downstream.onComplete();
         }
 
         @Override
@@ -265,10 +265,10 @@ public final class FlowableWindow<T> extends AbstractFlowableWithUpstream<T, Flo
                     long u = BackpressureHelper.multiplyCap(size, n);
                     long v = BackpressureHelper.multiplyCap(skip - size, n - 1);
                     long w = BackpressureHelper.addCap(u, v);
-                    s.request(w);
+                    upstream.request(w);
                 } else {
                     long u = BackpressureHelper.multiplyCap(skip, n);
-                    s.request(u);
+                    upstream.request(u);
                 }
             }
         }
@@ -283,7 +283,7 @@ public final class FlowableWindow<T> extends AbstractFlowableWithUpstream<T, Flo
         @Override
         public void run() {
             if (decrementAndGet() == 0) {
-                s.cancel();
+                upstream.cancel();
             }
         }
     }
@@ -295,7 +295,7 @@ public final class FlowableWindow<T> extends AbstractFlowableWithUpstream<T, Flo
 
         private static final long serialVersionUID = 2428527070996323976L;
 
-        final Subscriber<? super Flowable<T>> actual;
+        final Subscriber<? super Flowable<T>> downstream;
 
         final SpscLinkedArrayQueue<UnicastProcessor<T>> queue;
 
@@ -319,7 +319,7 @@ public final class FlowableWindow<T> extends AbstractFlowableWithUpstream<T, Flo
 
         long produced;
 
-        Subscription s;
+        Subscription upstream;
 
         volatile boolean done;
         Throwable error;
@@ -328,7 +328,7 @@ public final class FlowableWindow<T> extends AbstractFlowableWithUpstream<T, Flo
 
         WindowOverlapSubscriber(Subscriber<? super Flowable<T>> actual, long size, long skip, int bufferSize) {
             super(1);
-            this.actual = actual;
+            this.downstream = actual;
             this.size = size;
             this.skip = skip;
             this.queue = new SpscLinkedArrayQueue<UnicastProcessor<T>>(bufferSize);
@@ -342,9 +342,9 @@ public final class FlowableWindow<T> extends AbstractFlowableWithUpstream<T, Flo
 
         @Override
         public void onSubscribe(Subscription s) {
-            if (SubscriptionHelper.validate(this.s, s)) {
-                this.s = s;
-                actual.onSubscribe(this);
+            if (SubscriptionHelper.validate(this.upstream, s)) {
+                this.upstream = s;
+                downstream.onSubscribe(this);
             }
         }
 
@@ -431,7 +431,7 @@ public final class FlowableWindow<T> extends AbstractFlowableWithUpstream<T, Flo
                 return;
             }
 
-            final Subscriber<? super Flowable<T>> a = actual;
+            final Subscriber<? super Flowable<T>> a = downstream;
             final SpscLinkedArrayQueue<UnicastProcessor<T>> q = queue;
             int missed = 1;
 
@@ -508,10 +508,10 @@ public final class FlowableWindow<T> extends AbstractFlowableWithUpstream<T, Flo
                 if (!firstRequest.get() && firstRequest.compareAndSet(false, true)) {
                     long u = BackpressureHelper.multiplyCap(skip, n - 1);
                     long v = BackpressureHelper.addCap(size, u);
-                    s.request(v);
+                    upstream.request(v);
                 } else {
                     long u = BackpressureHelper.multiplyCap(skip, n);
-                    s.request(u);
+                    upstream.request(u);
                 }
 
                 drain();
@@ -529,7 +529,7 @@ public final class FlowableWindow<T> extends AbstractFlowableWithUpstream<T, Flo
         @Override
         public void run() {
             if (decrementAndGet() == 0) {
-                s.cancel();
+                upstream.cancel();
             }
         }
     }

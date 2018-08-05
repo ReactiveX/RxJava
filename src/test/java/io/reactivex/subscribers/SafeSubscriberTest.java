@@ -612,7 +612,7 @@ public class SafeSubscriberTest {
         };
         SafeSubscriber<Integer> s = new SafeSubscriber<Integer>(actual);
 
-        assertSame(actual, s.actual);
+        assertSame(actual, s.downstream);
     }
 
     @Test
@@ -621,13 +621,13 @@ public class SafeSubscriberTest {
 
         SafeSubscriber<Integer> so = new SafeSubscriber<Integer>(ts);
 
-        BooleanSubscription d = new BooleanSubscription();
+        BooleanSubscription bs = new BooleanSubscription();
 
-        so.onSubscribe(d);
+        so.onSubscribe(bs);
 
         ts.dispose();
 
-        assertTrue(d.isCancelled());
+        assertTrue(bs.isCancelled());
 
 //        assertTrue(so.isDisposed());
     }
@@ -638,9 +638,9 @@ public class SafeSubscriberTest {
 
         SafeSubscriber<Integer> so = new SafeSubscriber<Integer>(ts);
 
-        BooleanSubscription d = new BooleanSubscription();
+        BooleanSubscription bs = new BooleanSubscription();
 
-        so.onSubscribe(d);
+        so.onSubscribe(bs);
 
         so.onComplete();
 
@@ -659,9 +659,9 @@ public class SafeSubscriberTest {
 
         SafeSubscriber<Integer> so = new SafeSubscriber<Integer>(ts);
 
-        BooleanSubscription d = new BooleanSubscription();
+        BooleanSubscription bs = new BooleanSubscription();
 
-        so.onSubscribe(d);
+        so.onSubscribe(bs);
 
         so.onNext(null);
 
@@ -710,9 +710,9 @@ public class SafeSubscriberTest {
 
         SafeSubscriber<Integer> so = new SafeSubscriber<Integer>(ts);
 
-        BooleanSubscription d = new BooleanSubscription();
+        BooleanSubscription bs = new BooleanSubscription();
 
-        so.onSubscribe(d);
+        so.onSubscribe(bs);
 
         so.onNext(1);
         so.onComplete();

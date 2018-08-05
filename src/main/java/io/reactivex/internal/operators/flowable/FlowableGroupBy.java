@@ -84,7 +84,7 @@ public final class FlowableGroupBy<T, K, V> extends AbstractFlowableWithUpstream
 
         private static final long serialVersionUID = -3688291656102519502L;
 
-        final Subscriber<? super GroupedFlowable<K, V>> actual;
+        final Subscriber<? super GroupedFlowable<K, V>> downstream;
         final Function<? super T, ? extends K> keySelector;
         final Function<? super T, ? extends V> valueSelector;
         final int bufferSize;
@@ -95,7 +95,7 @@ public final class FlowableGroupBy<T, K, V> extends AbstractFlowableWithUpstream
 
         static final Object NULL_KEY = new Object();
 
-        Subscription s;
+        Subscription upstream;
 
         final AtomicBoolean cancelled = new AtomicBoolean();
 
@@ -112,7 +112,7 @@ public final class FlowableGroupBy<T, K, V> extends AbstractFlowableWithUpstream
         public GroupBySubscriber(Subscriber<? super GroupedFlowable<K, V>> actual, Function<? super T, ? extends K> keySelector,
                 Function<? super T, ? extends V> valueSelector, int bufferSize, boolean delayError,
                 Map<Object, GroupedUnicast<K, V>> groups, Queue<GroupedUnicast<K, V>> evictedGroups) {
-            this.actual = actual;
+            this.downstream = actual;
             this.keySelector = keySelector;
             this.valueSelector = valueSelector;
             this.bufferSize = bufferSize;
@@ -124,9 +124,9 @@ public final class FlowableGroupBy<T, K, V> extends AbstractFlowableWithUpstream
 
         @Override
         public void onSubscribe(Subscription s) {
-            if (SubscriptionHelper.validate(this.s, s)) {
-                this.s = s;
-                actual.onSubscribe(this);
+            if (SubscriptionHelper.validate(this.upstream, s)) {
+                this.upstream = s;
+                downstream.onSubscribe(this);
                 s.request(bufferSize);
             }
         }
@@ -144,7 +144,7 @@ public final class FlowableGroupBy<T, K, V> extends AbstractFlowableWithUpstream
                 key = keySelector.apply(t);
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
-                s.cancel();
+                upstream.cancel();
                 onError(ex);
                 return;
             }
@@ -172,7 +172,7 @@ public final class FlowableGroupBy<T, K, V> extends AbstractFlowableWithUpstream
                 v = ObjectHelper.requireNonNull(valueSelector.apply(t), "The valueSelector returned null");
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
-                s.cancel();
+                upstream.cancel();
                 onError(ex);
                 return;
             }
@@ -237,7 +237,7 @@ public final class FlowableGroupBy<T, K, V> extends AbstractFlowableWithUpstream
             if (cancelled.compareAndSet(false, true)) {
                 completeEvictions();
                 if (groupCount.decrementAndGet() == 0) {
-                    s.cancel();
+                    upstream.cancel();
                 }
             }
         }
@@ -260,7 +260,7 @@ public final class FlowableGroupBy<T, K, V> extends AbstractFlowableWithUpstream
             Object mapKey = key != null ? key : NULL_KEY;
             groups.remove(mapKey);
             if (groupCount.decrementAndGet() == 0) {
-                s.cancel();
+                upstream.cancel();
 
                 if (getAndIncrement() == 0) {
                     queue.clear();
@@ -284,7 +284,7 @@ public final class FlowableGroupBy<T, K, V> extends AbstractFlowableWithUpstream
             int missed = 1;
 
             final SpscLinkedArrayQueue<GroupedFlowable<K, V>> q = this.queue;
-            final Subscriber<? super GroupedFlowable<K, V>> a = this.actual;
+            final Subscriber<? super GroupedFlowable<K, V>> a = this.downstream;
 
             for (;;) {
                 if (cancelled.get()) {
@@ -326,7 +326,7 @@ public final class FlowableGroupBy<T, K, V> extends AbstractFlowableWithUpstream
             int missed = 1;
 
             final SpscLinkedArrayQueue<GroupedFlowable<K, V>> q = this.queue;
-            final Subscriber<? super GroupedFlowable<K, V>> a = this.actual;
+            final Subscriber<? super GroupedFlowable<K, V>> a = this.downstream;
 
             for (;;) {
 
@@ -361,7 +361,7 @@ public final class FlowableGroupBy<T, K, V> extends AbstractFlowableWithUpstream
                     if (r != Long.MAX_VALUE) {
                         requested.addAndGet(-e);
                     }
-                    s.request(e);
+                    upstream.request(e);
                 }
 
                 missed = addAndGet(-missed);
@@ -645,7 +645,7 @@ public final class FlowableGroupBy<T, K, V> extends AbstractFlowableWithUpstream
                         if (r != Long.MAX_VALUE) {
                             requested.addAndGet(-e);
                         }
-                        parent.s.request(e);
+                        parent.upstream.request(e);
                     }
                 }
 
@@ -713,7 +713,7 @@ public final class FlowableGroupBy<T, K, V> extends AbstractFlowableWithUpstream
             int p = produced;
             if (p != 0) {
                 produced = 0;
-                parent.s.request(p);
+                parent.upstream.request(p);
             }
             return null;
         }

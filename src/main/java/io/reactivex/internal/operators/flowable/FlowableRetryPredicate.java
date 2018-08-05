@@ -46,7 +46,7 @@ public final class FlowableRetryPredicate<T> extends AbstractFlowableWithUpstrea
 
         private static final long serialVersionUID = -7098360935104053232L;
 
-        final Subscriber<? super T> actual;
+        final Subscriber<? super T> downstream;
         final SubscriptionArbiter sa;
         final Publisher<? extends T> source;
         final Predicate<? super Throwable> predicate;
@@ -56,7 +56,7 @@ public final class FlowableRetryPredicate<T> extends AbstractFlowableWithUpstrea
 
         RetrySubscriber(Subscriber<? super T> actual, long count,
                 Predicate<? super Throwable> predicate, SubscriptionArbiter sa, Publisher<? extends T> source) {
-            this.actual = actual;
+            this.downstream = actual;
             this.sa = sa;
             this.source = source;
             this.predicate = predicate;
@@ -71,7 +71,7 @@ public final class FlowableRetryPredicate<T> extends AbstractFlowableWithUpstrea
         @Override
         public void onNext(T t) {
             produced++;
-            actual.onNext(t);
+            downstream.onNext(t);
         }
         @Override
         public void onError(Throwable t) {
@@ -80,18 +80,18 @@ public final class FlowableRetryPredicate<T> extends AbstractFlowableWithUpstrea
                 remaining = r - 1;
             }
             if (r == 0) {
-                actual.onError(t);
+                downstream.onError(t);
             } else {
                 boolean b;
                 try {
                     b = predicate.test(t);
                 } catch (Throwable e) {
                     Exceptions.throwIfFatal(e);
-                    actual.onError(new CompositeException(t, e));
+                    downstream.onError(new CompositeException(t, e));
                     return;
                 }
                 if (!b) {
-                    actual.onError(t);
+                    downstream.onError(t);
                     return;
                 }
                 subscribeNext();
@@ -100,7 +100,7 @@ public final class FlowableRetryPredicate<T> extends AbstractFlowableWithUpstrea
 
         @Override
         public void onComplete() {
-            actual.onComplete();
+            downstream.onComplete();
         }
 
         /**

@@ -43,39 +43,39 @@ public final class ObservableElementAtSingle<T> extends Single<T> implements Fus
     }
 
     static final class ElementAtObserver<T> implements Observer<T>, Disposable {
-        final SingleObserver<? super T> actual;
+        final SingleObserver<? super T> downstream;
         final long index;
         final T defaultValue;
 
-        Disposable s;
+        Disposable upstream;
 
         long count;
 
         boolean done;
 
         ElementAtObserver(SingleObserver<? super T> actual, long index, T defaultValue) {
-            this.actual = actual;
+            this.downstream = actual;
             this.index = index;
             this.defaultValue = defaultValue;
         }
 
         @Override
-        public void onSubscribe(Disposable s) {
-            if (DisposableHelper.validate(this.s, s)) {
-                this.s = s;
-                actual.onSubscribe(this);
+        public void onSubscribe(Disposable d) {
+            if (DisposableHelper.validate(this.upstream, d)) {
+                this.upstream = d;
+                downstream.onSubscribe(this);
             }
         }
 
 
         @Override
         public void dispose() {
-            s.dispose();
+            upstream.dispose();
         }
 
         @Override
         public boolean isDisposed() {
-            return s.isDisposed();
+            return upstream.isDisposed();
         }
 
 
@@ -87,8 +87,8 @@ public final class ObservableElementAtSingle<T> extends Single<T> implements Fus
             long c = count;
             if (c == index) {
                 done = true;
-                s.dispose();
-                actual.onSuccess(t);
+                upstream.dispose();
+                downstream.onSuccess(t);
                 return;
             }
             count = c + 1;
@@ -101,7 +101,7 @@ public final class ObservableElementAtSingle<T> extends Single<T> implements Fus
                 return;
             }
             done = true;
-            actual.onError(t);
+            downstream.onError(t);
         }
 
         @Override
@@ -112,9 +112,9 @@ public final class ObservableElementAtSingle<T> extends Single<T> implements Fus
                 T v = defaultValue;
 
                 if (v != null) {
-                    actual.onSuccess(v);
+                    downstream.onSuccess(v);
                 } else {
-                    actual.onError(new NoSuchElementException());
+                    downstream.onError(new NoSuchElementException());
                 }
             }
         }

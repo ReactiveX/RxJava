@@ -32,19 +32,19 @@ public final class FlowableIgnoreElements<T> extends AbstractFlowableWithUpstrea
     }
 
     static final class IgnoreElementsSubscriber<T> implements FlowableSubscriber<T>, QueueSubscription<T> {
-        final Subscriber<? super T> actual;
+        final Subscriber<? super T> downstream;
 
-        Subscription s;
+        Subscription upstream;
 
-        IgnoreElementsSubscriber(Subscriber<? super T> actual) {
-            this.actual = actual;
+        IgnoreElementsSubscriber(Subscriber<? super T> downstream) {
+            this.downstream = downstream;
         }
 
         @Override
         public void onSubscribe(Subscription s) {
-            if (SubscriptionHelper.validate(this.s, s)) {
-                this.s = s;
-                actual.onSubscribe(this);
+            if (SubscriptionHelper.validate(this.upstream, s)) {
+                this.upstream = s;
+                downstream.onSubscribe(this);
                 s.request(Long.MAX_VALUE);
             }
         }
@@ -56,12 +56,12 @@ public final class FlowableIgnoreElements<T> extends AbstractFlowableWithUpstrea
 
         @Override
         public void onError(Throwable t) {
-            actual.onError(t);
+            downstream.onError(t);
         }
 
         @Override
         public void onComplete() {
-            actual.onComplete();
+            downstream.onComplete();
         }
 
         @Override
@@ -97,7 +97,7 @@ public final class FlowableIgnoreElements<T> extends AbstractFlowableWithUpstrea
 
         @Override
         public void cancel() {
-            s.cancel();
+            upstream.cancel();
         }
 
         @Override

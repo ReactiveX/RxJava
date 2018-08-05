@@ -52,7 +52,7 @@ public final class FlowableMergeWithCompletable<T> extends AbstractFlowableWithU
 
         private static final long serialVersionUID = -4592979584110982903L;
 
-        final Subscriber<? super T> actual;
+        final Subscriber<? super T> downstream;
 
         final AtomicReference<Subscription> mainSubscription;
 
@@ -66,8 +66,8 @@ public final class FlowableMergeWithCompletable<T> extends AbstractFlowableWithU
 
         volatile boolean otherDone;
 
-        MergeWithSubscriber(Subscriber<? super T> actual) {
-            this.actual = actual;
+        MergeWithSubscriber(Subscriber<? super T> downstream) {
+            this.downstream = downstream;
             this.mainSubscription = new AtomicReference<Subscription>();
             this.otherObserver = new OtherObserver(this);
             this.error = new AtomicThrowable();
@@ -75,26 +75,26 @@ public final class FlowableMergeWithCompletable<T> extends AbstractFlowableWithU
         }
 
         @Override
-        public void onSubscribe(Subscription d) {
-            SubscriptionHelper.deferredSetOnce(mainSubscription, requested, d);
+        public void onSubscribe(Subscription s) {
+            SubscriptionHelper.deferredSetOnce(mainSubscription, requested, s);
         }
 
         @Override
         public void onNext(T t) {
-            HalfSerializer.onNext(actual, t, this, error);
+            HalfSerializer.onNext(downstream, t, this, error);
         }
 
         @Override
         public void onError(Throwable ex) {
             SubscriptionHelper.cancel(mainSubscription);
-            HalfSerializer.onError(actual, ex, this, error);
+            HalfSerializer.onError(downstream, ex, this, error);
         }
 
         @Override
         public void onComplete() {
             mainDone = true;
             if (otherDone) {
-                HalfSerializer.onComplete(actual, this, error);
+                HalfSerializer.onComplete(downstream, this, error);
             }
         }
 
@@ -111,13 +111,13 @@ public final class FlowableMergeWithCompletable<T> extends AbstractFlowableWithU
 
         void otherError(Throwable ex) {
             SubscriptionHelper.cancel(mainSubscription);
-            HalfSerializer.onError(actual, ex, this, error);
+            HalfSerializer.onError(downstream, ex, this, error);
         }
 
         void otherComplete() {
             otherDone = true;
             if (mainDone) {
-                HalfSerializer.onComplete(actual, this, error);
+                HalfSerializer.onComplete(downstream, this, error);
             }
         }
 

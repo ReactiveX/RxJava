@@ -1005,13 +1005,13 @@ public class SerializedSubscriberTest {
 
         SerializedSubscriber<Integer> so = new SerializedSubscriber<Integer>(ts);
 
-        BooleanSubscription d = new BooleanSubscription();
+        BooleanSubscription bs = new BooleanSubscription();
 
-        so.onSubscribe(d);
+        so.onSubscribe(bs);
 
         ts.cancel();
 
-        assertTrue(d.isCancelled());
+        assertTrue(bs.isCancelled());
     }
 
     @Test
@@ -1021,9 +1021,9 @@ public class SerializedSubscriberTest {
 
             final SerializedSubscriber<Integer> so = new SerializedSubscriber<Integer>(ts);
 
-            BooleanSubscription d = new BooleanSubscription();
+            BooleanSubscription bs = new BooleanSubscription();
 
-            so.onSubscribe(d);
+            so.onSubscribe(bs);
 
             Runnable r = new Runnable() {
                 @Override
@@ -1047,9 +1047,9 @@ public class SerializedSubscriberTest {
 
             final SerializedSubscriber<Integer> so = new SerializedSubscriber<Integer>(ts);
 
-            BooleanSubscription d = new BooleanSubscription();
+            BooleanSubscription bs = new BooleanSubscription();
 
-            so.onSubscribe(d);
+            so.onSubscribe(bs);
 
             Runnable r1 = new Runnable() {
                 @Override
@@ -1083,9 +1083,9 @@ public class SerializedSubscriberTest {
 
             final SerializedSubscriber<Integer> so = new SerializedSubscriber<Integer>(ts);
 
-            BooleanSubscription d = new BooleanSubscription();
+            BooleanSubscription bs = new BooleanSubscription();
 
-            so.onSubscribe(d);
+            so.onSubscribe(bs);
 
             final Throwable ex = new TestException();
 
@@ -1121,9 +1121,9 @@ public class SerializedSubscriberTest {
 
             final SerializedSubscriber<Integer> so = new SerializedSubscriber<Integer>(ts, true);
 
-            BooleanSubscription d = new BooleanSubscription();
+            BooleanSubscription bs = new BooleanSubscription();
 
-            so.onSubscribe(d);
+            so.onSubscribe(bs);
 
             final Throwable ex = new TestException();
 
@@ -1164,11 +1164,11 @@ public class SerializedSubscriberTest {
 
             so.onSubscribe(new BooleanSubscription());
 
-            BooleanSubscription d = new BooleanSubscription();
+            BooleanSubscription bs = new BooleanSubscription();
 
-            so.onSubscribe(d);
+            so.onSubscribe(bs);
 
-            assertTrue(d.isCancelled());
+            assertTrue(bs.isCancelled());
 
             TestHelper.assertError(error, 0, IllegalStateException.class, "Subscription already set!");
         } finally {
@@ -1183,9 +1183,9 @@ public class SerializedSubscriberTest {
 
             final SerializedSubscriber<Integer> so = new SerializedSubscriber<Integer>(ts);
 
-            BooleanSubscription d = new BooleanSubscription();
+            BooleanSubscription bs = new BooleanSubscription();
 
-            so.onSubscribe(d);
+            so.onSubscribe(bs);
 
             final Throwable ex = new TestException();
 

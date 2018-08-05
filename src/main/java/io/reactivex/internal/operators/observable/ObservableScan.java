@@ -34,37 +34,37 @@ public final class ObservableScan<T> extends AbstractObservableWithUpstream<T, T
     }
 
     static final class ScanObserver<T> implements Observer<T>, Disposable {
-        final Observer<? super T> actual;
+        final Observer<? super T> downstream;
         final BiFunction<T, T, T> accumulator;
 
-        Disposable s;
+        Disposable upstream;
 
         T value;
 
         boolean done;
 
         ScanObserver(Observer<? super T> actual, BiFunction<T, T, T> accumulator) {
-            this.actual = actual;
+            this.downstream = actual;
             this.accumulator = accumulator;
         }
 
         @Override
-        public void onSubscribe(Disposable s) {
-            if (DisposableHelper.validate(this.s, s)) {
-                this.s = s;
-                actual.onSubscribe(this);
+        public void onSubscribe(Disposable d) {
+            if (DisposableHelper.validate(this.upstream, d)) {
+                this.upstream = d;
+                downstream.onSubscribe(this);
             }
         }
 
 
         @Override
         public void dispose() {
-            s.dispose();
+            upstream.dispose();
         }
 
         @Override
         public boolean isDisposed() {
-            return s.isDisposed();
+            return upstream.isDisposed();
         }
 
 
@@ -73,7 +73,7 @@ public final class ObservableScan<T> extends AbstractObservableWithUpstream<T, T
             if (done) {
                 return;
             }
-            final Observer<? super T> a = actual;
+            final Observer<? super T> a = downstream;
             T v = value;
             if (v == null) {
                 value = t;
@@ -85,7 +85,7 @@ public final class ObservableScan<T> extends AbstractObservableWithUpstream<T, T
                     u = ObjectHelper.requireNonNull(accumulator.apply(v, t), "The value returned by the accumulator is null");
                 } catch (Throwable e) {
                     Exceptions.throwIfFatal(e);
-                    s.dispose();
+                    upstream.dispose();
                     onError(e);
                     return;
                 }
@@ -102,7 +102,7 @@ public final class ObservableScan<T> extends AbstractObservableWithUpstream<T, T
                 return;
             }
             done = true;
-            actual.onError(t);
+            downstream.onError(t);
         }
 
         @Override
@@ -111,7 +111,7 @@ public final class ObservableScan<T> extends AbstractObservableWithUpstream<T, T
                 return;
             }
             done = true;
-            actual.onComplete();
+            downstream.onComplete();
         }
     }
 }

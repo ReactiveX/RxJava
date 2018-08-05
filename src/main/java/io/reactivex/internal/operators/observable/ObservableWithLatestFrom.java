@@ -40,7 +40,7 @@ public final class ObservableWithLatestFrom<T, U, R> extends AbstractObservableW
 
         serial.onSubscribe(wlf);
 
-        other.subscribe(new WithLastFrom(wlf));
+        other.subscribe(new WithLatestFromOtherObserver(wlf));
 
         source.subscribe(wlf);
     }
@@ -49,21 +49,21 @@ public final class ObservableWithLatestFrom<T, U, R> extends AbstractObservableW
 
         private static final long serialVersionUID = -312246233408980075L;
 
-        final Observer<? super R> actual;
+        final Observer<? super R> downstream;
 
         final BiFunction<? super T, ? super U, ? extends R> combiner;
 
-        final AtomicReference<Disposable> s = new AtomicReference<Disposable>();
+        final AtomicReference<Disposable> upstream = new AtomicReference<Disposable>();
 
         final AtomicReference<Disposable> other = new AtomicReference<Disposable>();
 
         WithLatestFromObserver(Observer<? super R> actual, BiFunction<? super T, ? super U, ? extends R> combiner) {
-            this.actual = actual;
+            this.downstream = actual;
             this.combiner = combiner;
         }
         @Override
-        public void onSubscribe(Disposable s) {
-            DisposableHelper.setOnce(this.s, s);
+        public void onSubscribe(Disposable d) {
+            DisposableHelper.setOnce(this.upstream, d);
         }
 
         @Override
@@ -76,34 +76,34 @@ public final class ObservableWithLatestFrom<T, U, R> extends AbstractObservableW
                 } catch (Throwable e) {
                     Exceptions.throwIfFatal(e);
                     dispose();
-                    actual.onError(e);
+                    downstream.onError(e);
                     return;
                 }
-                actual.onNext(r);
+                downstream.onNext(r);
             }
         }
 
         @Override
         public void onError(Throwable t) {
             DisposableHelper.dispose(other);
-            actual.onError(t);
+            downstream.onError(t);
         }
 
         @Override
         public void onComplete() {
             DisposableHelper.dispose(other);
-            actual.onComplete();
+            downstream.onComplete();
         }
 
         @Override
         public void dispose() {
-            DisposableHelper.dispose(s);
+            DisposableHelper.dispose(upstream);
             DisposableHelper.dispose(other);
         }
 
         @Override
         public boolean isDisposed() {
-            return DisposableHelper.isDisposed(s.get());
+            return DisposableHelper.isDisposed(upstream.get());
         }
 
         public boolean setOther(Disposable o) {
@@ -111,31 +111,31 @@ public final class ObservableWithLatestFrom<T, U, R> extends AbstractObservableW
         }
 
         public void otherError(Throwable e) {
-            DisposableHelper.dispose(s);
-            actual.onError(e);
+            DisposableHelper.dispose(upstream);
+            downstream.onError(e);
         }
     }
 
-    final class WithLastFrom implements Observer<U> {
-        private final WithLatestFromObserver<T, U, R> wlf;
+    final class WithLatestFromOtherObserver implements Observer<U> {
+        private final WithLatestFromObserver<T, U, R> parent;
 
-        WithLastFrom(WithLatestFromObserver<T, U, R> wlf) {
-            this.wlf = wlf;
+        WithLatestFromOtherObserver(WithLatestFromObserver<T, U, R> parent) {
+            this.parent = parent;
         }
 
         @Override
-        public void onSubscribe(Disposable s) {
-            wlf.setOther(s);
+        public void onSubscribe(Disposable d) {
+            parent.setOther(d);
         }
 
         @Override
         public void onNext(U t) {
-            wlf.lazySet(t);
+            parent.lazySet(t);
         }
 
         @Override
         public void onError(Throwable t) {
-            wlf.otherError(t);
+            parent.otherError(t);
         }
 
         @Override

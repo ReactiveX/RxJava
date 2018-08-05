@@ -1425,16 +1425,16 @@ public enum TestHelper {
                 @Override
                 protected void subscribeActual(Subscriber<? super T> subscriber) {
                     try {
-                        BooleanSubscription d1 = new BooleanSubscription();
+                        BooleanSubscription bs1 = new BooleanSubscription();
 
-                        subscriber.onSubscribe(d1);
+                        subscriber.onSubscribe(bs1);
 
-                        BooleanSubscription d2 = new BooleanSubscription();
+                        BooleanSubscription bs2 = new BooleanSubscription();
 
-                        subscriber.onSubscribe(d2);
+                        subscriber.onSubscribe(bs2);
 
-                        b[0] = d1.isCancelled();
-                        b[1] = d2.isCancelled();
+                        b[0] = bs1.isCancelled();
+                        b[1] = bs2.isCancelled();
                     } finally {
                         cdl.countDown();
                     }
@@ -1694,16 +1694,16 @@ public enum TestHelper {
                 @Override
                 protected void subscribeActual(Subscriber<? super T> subscriber) {
                     try {
-                        BooleanSubscription d1 = new BooleanSubscription();
+                        BooleanSubscription bs1 = new BooleanSubscription();
 
-                        subscriber.onSubscribe(d1);
+                        subscriber.onSubscribe(bs1);
 
-                        BooleanSubscription d2 = new BooleanSubscription();
+                        BooleanSubscription bs2 = new BooleanSubscription();
 
-                        subscriber.onSubscribe(d2);
+                        subscriber.onSubscribe(bs2);
 
-                        b[0] = d1.isCancelled();
-                        b[1] = d2.isCancelled();
+                        b[0] = bs1.isCancelled();
+                        b[1] = bs2.isCancelled();
                     } finally {
                         cdl.countDown();
                     }
@@ -1748,16 +1748,16 @@ public enum TestHelper {
                 @Override
                 protected void subscribeActual(Subscriber<? super T> subscriber) {
                     try {
-                        BooleanSubscription d1 = new BooleanSubscription();
+                        BooleanSubscription bs1 = new BooleanSubscription();
 
-                        subscriber.onSubscribe(d1);
+                        subscriber.onSubscribe(bs1);
 
-                        BooleanSubscription d2 = new BooleanSubscription();
+                        BooleanSubscription bs2 = new BooleanSubscription();
 
-                        subscriber.onSubscribe(d2);
+                        subscriber.onSubscribe(bs2);
 
-                        b[0] = d1.isCancelled();
-                        b[1] = d2.isCancelled();
+                        b[0] = bs1.isCancelled();
+                        b[1] = bs2.isCancelled();
                     } finally {
                         cdl.countDown();
                     }
@@ -1802,16 +1802,16 @@ public enum TestHelper {
                 @Override
                 protected void subscribeActual(Subscriber<? super T> subscriber) {
                     try {
-                        BooleanSubscription d1 = new BooleanSubscription();
+                        BooleanSubscription bs1 = new BooleanSubscription();
 
-                        subscriber.onSubscribe(d1);
+                        subscriber.onSubscribe(bs1);
 
-                        BooleanSubscription d2 = new BooleanSubscription();
+                        BooleanSubscription bs2 = new BooleanSubscription();
 
-                        subscriber.onSubscribe(d2);
+                        subscriber.onSubscribe(bs2);
 
-                        b[0] = d1.isCancelled();
-                        b[1] = d2.isCancelled();
+                        b[0] = bs1.isCancelled();
+                        b[1] = bs2.isCancelled();
                     } finally {
                         cdl.countDown();
                     }
@@ -1855,16 +1855,16 @@ public enum TestHelper {
                 @Override
                 protected void subscribeActual(Subscriber<? super T> subscriber) {
                     try {
-                        BooleanSubscription d1 = new BooleanSubscription();
+                        BooleanSubscription bs1 = new BooleanSubscription();
 
-                        subscriber.onSubscribe(d1);
+                        subscriber.onSubscribe(bs1);
 
-                        BooleanSubscription d2 = new BooleanSubscription();
+                        BooleanSubscription bs2 = new BooleanSubscription();
 
-                        subscriber.onSubscribe(d2);
+                        subscriber.onSubscribe(bs2);
 
-                        b[0] = d1.isCancelled();
-                        b[1] = d2.isCancelled();
+                        b[0] = bs1.isCancelled();
+                        b[1] = bs2.isCancelled();
                     } finally {
                         cdl.countDown();
                     }
@@ -2416,28 +2416,28 @@ public enum TestHelper {
 
         source.subscribe(new FlowableSubscriber<T>() {
             @Override
-            public void onSubscribe(Subscription d) {
+            public void onSubscribe(Subscription s) {
                 try {
-                    if (d instanceof QueueSubscription) {
+                    if (s instanceof QueueSubscription) {
                         @SuppressWarnings("unchecked")
-                        QueueSubscription<Object> qd = (QueueSubscription<Object>) d;
+                        QueueSubscription<Object> qs = (QueueSubscription<Object>) s;
                         state[0] = true;
 
-                        int m = qd.requestFusion(QueueFuseable.ANY);
+                        int m = qs.requestFusion(QueueFuseable.ANY);
 
                         if (m != QueueFuseable.NONE) {
                             state[1] = true;
 
-                            state[2] = qd.isEmpty();
+                            state[2] = qs.isEmpty();
 
-                            qd.clear();
+                            qs.clear();
 
-                            state[3] = qd.isEmpty();
+                            state[3] = qs.isEmpty();
                         }
                     }
                     cdl.countDown();
                 } finally {
-                    d.cancel();
+                    s.cancel();
                 }
             }
 
@@ -2943,14 +2943,14 @@ public enum TestHelper {
 
         static final class StripBoundarySubscriber<T> implements FlowableSubscriber<T>, QueueSubscription<T> {
 
-            final Subscriber<? super T> actual;
+            final Subscriber<? super T> downstream;
 
             Subscription upstream;
 
             QueueSubscription<T> qs;
 
-            StripBoundarySubscriber(Subscriber<? super T> actual) {
-                this.actual = actual;
+            StripBoundarySubscriber(Subscriber<? super T> downstream) {
+                this.downstream = downstream;
             }
 
             @SuppressWarnings("unchecked")
@@ -2960,22 +2960,22 @@ public enum TestHelper {
                 if (subscription instanceof QueueSubscription) {
                     qs = (QueueSubscription<T>)subscription;
                 }
-                actual.onSubscribe(this);
+                downstream.onSubscribe(this);
             }
 
             @Override
             public void onNext(T t) {
-                actual.onNext(t);
+                downstream.onNext(t);
             }
 
             @Override
             public void onError(Throwable throwable) {
-                actual.onError(throwable);
+                downstream.onError(throwable);
             }
 
             @Override
             public void onComplete() {
-                actual.onComplete();
+                downstream.onComplete();
             }
 
             @Override
@@ -3048,14 +3048,14 @@ public enum TestHelper {
 
         static final class StripBoundaryObserver<T> implements Observer<T>, QueueDisposable<T> {
 
-            final Observer<? super T> actual;
+            final Observer<? super T> downstream;
 
             Disposable upstream;
 
             QueueDisposable<T> qd;
 
-            StripBoundaryObserver(Observer<? super T> actual) {
-                this.actual = actual;
+            StripBoundaryObserver(Observer<? super T> downstream) {
+                this.downstream = downstream;
             }
 
             @SuppressWarnings("unchecked")
@@ -3065,22 +3065,22 @@ public enum TestHelper {
                 if (d instanceof QueueDisposable) {
                     qd = (QueueDisposable<T>)d;
                 }
-                actual.onSubscribe(this);
+                downstream.onSubscribe(this);
             }
 
             @Override
             public void onNext(T t) {
-                actual.onNext(t);
+                downstream.onNext(t);
             }
 
             @Override
             public void onError(Throwable throwable) {
-                actual.onError(throwable);
+                downstream.onError(throwable);
             }
 
             @Override
             public void onComplete() {
-                actual.onComplete();
+                downstream.onComplete();
             }
 
             @Override

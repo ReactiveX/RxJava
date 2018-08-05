@@ -58,24 +58,24 @@ implements HasUpstreamPublisher<T>, FuseToFlowable<T> {
     }
 
     static final class ReduceSubscriber<T> implements FlowableSubscriber<T>, Disposable {
-        final MaybeObserver<? super T> actual;
+        final MaybeObserver<? super T> downstream;
 
         final BiFunction<T, T, T> reducer;
 
         T value;
 
-        Subscription s;
+        Subscription upstream;
 
         boolean done;
 
         ReduceSubscriber(MaybeObserver<? super T> actual, BiFunction<T, T, T> reducer) {
-            this.actual = actual;
+            this.downstream = actual;
             this.reducer = reducer;
         }
 
         @Override
         public void dispose() {
-            s.cancel();
+            upstream.cancel();
             done = true;
         }
 
@@ -86,10 +86,10 @@ implements HasUpstreamPublisher<T>, FuseToFlowable<T> {
 
         @Override
         public void onSubscribe(Subscription s) {
-            if (SubscriptionHelper.validate(this.s, s)) {
-                this.s = s;
+            if (SubscriptionHelper.validate(this.upstream, s)) {
+                this.upstream = s;
 
-                actual.onSubscribe(this);
+                downstream.onSubscribe(this);
 
                 s.request(Long.MAX_VALUE);
             }
@@ -108,7 +108,7 @@ implements HasUpstreamPublisher<T>, FuseToFlowable<T> {
                     value = ObjectHelper.requireNonNull(reducer.apply(v, t), "The reducer returned a null value");
                 } catch (Throwable ex) {
                     Exceptions.throwIfFatal(ex);
-                    s.cancel();
+                    upstream.cancel();
                     onError(ex);
                 }
             }
@@ -121,7 +121,7 @@ implements HasUpstreamPublisher<T>, FuseToFlowable<T> {
                 return;
             }
             done = true;
-            actual.onError(t);
+            downstream.onError(t);
          }
 
         @Override
@@ -133,9 +133,9 @@ implements HasUpstreamPublisher<T>, FuseToFlowable<T> {
             T v = value;
             if (v != null) {
 //                value = null;
-                actual.onSuccess(v);
+                downstream.onSuccess(v);
             } else {
-                actual.onComplete();
+                downstream.onComplete();
             }
         }
 

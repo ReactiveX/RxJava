@@ -53,23 +53,23 @@ public final class FlowableOnBackpressureDrop<T> extends AbstractFlowableWithUps
 
         private static final long serialVersionUID = -6246093802440953054L;
 
-        final Subscriber<? super T> actual;
+        final Subscriber<? super T> downstream;
         final Consumer<? super T> onDrop;
 
-        Subscription s;
+        Subscription upstream;
 
         boolean done;
 
         BackpressureDropSubscriber(Subscriber<? super T> actual, Consumer<? super T> onDrop) {
-            this.actual = actual;
+            this.downstream = actual;
             this.onDrop = onDrop;
         }
 
         @Override
         public void onSubscribe(Subscription s) {
-            if (SubscriptionHelper.validate(this.s, s)) {
-                this.s = s;
-                actual.onSubscribe(this);
+            if (SubscriptionHelper.validate(this.upstream, s)) {
+                this.upstream = s;
+                downstream.onSubscribe(this);
                 s.request(Long.MAX_VALUE);
             }
         }
@@ -81,7 +81,7 @@ public final class FlowableOnBackpressureDrop<T> extends AbstractFlowableWithUps
             }
             long r = get();
             if (r != 0L) {
-                actual.onNext(t);
+                downstream.onNext(t);
                 BackpressureHelper.produced(this, 1);
             } else {
                 try {
@@ -101,7 +101,7 @@ public final class FlowableOnBackpressureDrop<T> extends AbstractFlowableWithUps
                 return;
             }
             done = true;
-            actual.onError(t);
+            downstream.onError(t);
         }
 
         @Override
@@ -110,7 +110,7 @@ public final class FlowableOnBackpressureDrop<T> extends AbstractFlowableWithUps
                 return;
             }
             done = true;
-            actual.onComplete();
+            downstream.onComplete();
         }
 
         @Override
@@ -122,7 +122,7 @@ public final class FlowableOnBackpressureDrop<T> extends AbstractFlowableWithUps
 
         @Override
         public void cancel() {
-            s.cancel();
+            upstream.cancel();
         }
     }
 }

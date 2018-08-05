@@ -49,10 +49,10 @@ public final class ObservableFilter<T> extends AbstractObservableWithUpstream<T,
                     return;
                 }
                 if (b) {
-                    actual.onNext(t);
+                    downstream.onNext(t);
                 }
             } else {
-                actual.onNext(null);
+                downstream.onNext(null);
             }
         }
 
@@ -65,7 +65,7 @@ public final class ObservableFilter<T> extends AbstractObservableWithUpstream<T,
         @Override
         public T poll() throws Exception {
             for (;;) {
-                T v = qs.poll();
+                T v = qd.poll();
                 if (v == null || filter.test(v)) {
                     return v;
                 }

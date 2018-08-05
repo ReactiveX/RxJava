@@ -57,13 +57,13 @@ public final class SingleFlatMapIterableFlowable<T, R> extends Flowable<R> {
 
         private static final long serialVersionUID = -8938804753851907758L;
 
-        final Subscriber<? super R> actual;
+        final Subscriber<? super R> downstream;
 
         final Function<? super T, ? extends Iterable<? extends R>> mapper;
 
         final AtomicLong requested;
 
-        Disposable d;
+        Disposable upstream;
 
         volatile Iterator<? extends R> it;
 
@@ -73,17 +73,17 @@ public final class SingleFlatMapIterableFlowable<T, R> extends Flowable<R> {
 
         FlatMapIterableObserver(Subscriber<? super R> actual,
                 Function<? super T, ? extends Iterable<? extends R>> mapper) {
-            this.actual = actual;
+            this.downstream = actual;
             this.mapper = mapper;
             this.requested = new AtomicLong();
         }
 
         @Override
         public void onSubscribe(Disposable d) {
-            if (DisposableHelper.validate(this.d, d)) {
-                this.d = d;
+            if (DisposableHelper.validate(this.upstream, d)) {
+                this.upstream = d;
 
-                actual.onSubscribe(this);
+                downstream.onSubscribe(this);
             }
         }
 
@@ -97,12 +97,12 @@ public final class SingleFlatMapIterableFlowable<T, R> extends Flowable<R> {
                 has = iterator.hasNext();
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
-                actual.onError(ex);
+                downstream.onError(ex);
                 return;
             }
 
             if (!has) {
-                actual.onComplete();
+                downstream.onComplete();
                 return;
             }
 
@@ -112,8 +112,8 @@ public final class SingleFlatMapIterableFlowable<T, R> extends Flowable<R> {
 
         @Override
         public void onError(Throwable e) {
-            d = DisposableHelper.DISPOSED;
-            actual.onError(e);
+            upstream = DisposableHelper.DISPOSED;
+            downstream.onError(e);
         }
 
         @Override
@@ -127,8 +127,8 @@ public final class SingleFlatMapIterableFlowable<T, R> extends Flowable<R> {
         @Override
         public void cancel() {
             cancelled = true;
-            d.dispose();
-            d = DisposableHelper.DISPOSED;
+            upstream.dispose();
+            upstream = DisposableHelper.DISPOSED;
         }
 
         void drain() {
@@ -136,7 +136,7 @@ public final class SingleFlatMapIterableFlowable<T, R> extends Flowable<R> {
                 return;
             }
 
-            Subscriber<? super R> a = actual;
+            Subscriber<? super R> a = downstream;
             Iterator<? extends R> iterator = this.it;
 
             if (outputFused && iterator != null) {

@@ -36,38 +36,38 @@ public final class ObservableSingleSingle<T> extends Single<T> {
     }
 
     static final class SingleElementObserver<T> implements Observer<T>, Disposable {
-        final SingleObserver<? super T> actual;
+        final SingleObserver<? super T> downstream;
 
         final T defaultValue;
 
-        Disposable s;
+        Disposable upstream;
 
         T value;
 
         boolean done;
 
         SingleElementObserver(SingleObserver<? super T> actual, T defaultValue) {
-            this.actual = actual;
+            this.downstream = actual;
             this.defaultValue = defaultValue;
         }
 
         @Override
-        public void onSubscribe(Disposable s) {
-            if (DisposableHelper.validate(this.s, s)) {
-                this.s = s;
-                actual.onSubscribe(this);
+        public void onSubscribe(Disposable d) {
+            if (DisposableHelper.validate(this.upstream, d)) {
+                this.upstream = d;
+                downstream.onSubscribe(this);
             }
         }
 
 
         @Override
         public void dispose() {
-            s.dispose();
+            upstream.dispose();
         }
 
         @Override
         public boolean isDisposed() {
-            return s.isDisposed();
+            return upstream.isDisposed();
         }
 
 
@@ -78,8 +78,8 @@ public final class ObservableSingleSingle<T> extends Single<T> {
             }
             if (value != null) {
                 done = true;
-                s.dispose();
-                actual.onError(new IllegalArgumentException("Sequence contains more than one element!"));
+                upstream.dispose();
+                downstream.onError(new IllegalArgumentException("Sequence contains more than one element!"));
                 return;
             }
             value = t;
@@ -92,7 +92,7 @@ public final class ObservableSingleSingle<T> extends Single<T> {
                 return;
             }
             done = true;
-            actual.onError(t);
+            downstream.onError(t);
         }
 
         @Override
@@ -108,9 +108,9 @@ public final class ObservableSingleSingle<T> extends Single<T> {
             }
 
             if (v != null) {
-                actual.onSuccess(v);
+                downstream.onSuccess(v);
             } else {
-                actual.onError(new NoSuchElementException());
+                downstream.onError(new NoSuchElementException());
             }
         }
     }

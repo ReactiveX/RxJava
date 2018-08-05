@@ -42,29 +42,29 @@ public final class MaybeDoAfterSuccess<T> extends AbstractMaybeWithUpstream<T, T
 
     static final class DoAfterObserver<T> implements MaybeObserver<T>, Disposable {
 
-        final MaybeObserver<? super T> actual;
+        final MaybeObserver<? super T> downstream;
 
         final Consumer<? super T> onAfterSuccess;
 
-        Disposable d;
+        Disposable upstream;
 
         DoAfterObserver(MaybeObserver<? super T> actual, Consumer<? super T> onAfterSuccess) {
-            this.actual = actual;
+            this.downstream = actual;
             this.onAfterSuccess = onAfterSuccess;
         }
 
         @Override
         public void onSubscribe(Disposable d) {
-            if (DisposableHelper.validate(this.d, d)) {
-                this.d = d;
+            if (DisposableHelper.validate(this.upstream, d)) {
+                this.upstream = d;
 
-                actual.onSubscribe(this);
+                downstream.onSubscribe(this);
             }
         }
 
         @Override
         public void onSuccess(T t) {
-            actual.onSuccess(t);
+            downstream.onSuccess(t);
 
             try {
                 onAfterSuccess.accept(t);
@@ -77,22 +77,22 @@ public final class MaybeDoAfterSuccess<T> extends AbstractMaybeWithUpstream<T, T
 
         @Override
         public void onError(Throwable e) {
-            actual.onError(e);
+            downstream.onError(e);
         }
 
         @Override
         public void onComplete() {
-            actual.onComplete();
+            downstream.onComplete();
         }
 
         @Override
         public void dispose() {
-            d.dispose();
+            upstream.dispose();
         }
 
         @Override
         public boolean isDisposed() {
-            return d.isDisposed();
+            return upstream.isDisposed();
         }
     }
 }

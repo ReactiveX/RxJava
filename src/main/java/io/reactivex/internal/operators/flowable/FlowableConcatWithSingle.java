@@ -68,12 +68,12 @@ public final class FlowableConcatWithSingle<T> extends AbstractFlowableWithUpstr
         @Override
         public void onNext(T t) {
             produced++;
-            actual.onNext(t);
+            downstream.onNext(t);
         }
 
         @Override
         public void onError(Throwable t) {
-            actual.onError(t);
+            downstream.onError(t);
         }
 
         @Override
@@ -83,7 +83,7 @@ public final class FlowableConcatWithSingle<T> extends AbstractFlowableWithUpstr
 
         @Override
         public void onComplete() {
-            s = SubscriptionHelper.CANCELLED;
+            upstream = SubscriptionHelper.CANCELLED;
             SingleSource<? extends T> ss = other;
             other = null;
             ss.subscribe(this);

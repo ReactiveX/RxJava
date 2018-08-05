@@ -46,44 +46,44 @@ public final class ObservableConcatWithMaybe<T> extends AbstractObservableWithUp
 
         private static final long serialVersionUID = -1953724749712440952L;
 
-        final Observer<? super T> actual;
+        final Observer<? super T> downstream;
 
         MaybeSource<? extends T> other;
 
         boolean inMaybe;
 
         ConcatWithObserver(Observer<? super T> actual, MaybeSource<? extends T> other) {
-            this.actual = actual;
+            this.downstream = actual;
             this.other = other;
         }
 
         @Override
         public void onSubscribe(Disposable d) {
             if (DisposableHelper.setOnce(this, d) && !inMaybe) {
-                actual.onSubscribe(this);
+                downstream.onSubscribe(this);
             }
         }
 
         @Override
         public void onNext(T t) {
-            actual.onNext(t);
+            downstream.onNext(t);
         }
 
         @Override
         public void onSuccess(T t) {
-            actual.onNext(t);
-            actual.onComplete();
+            downstream.onNext(t);
+            downstream.onComplete();
         }
 
         @Override
         public void onError(Throwable e) {
-            actual.onError(e);
+            downstream.onError(e);
         }
 
         @Override
         public void onComplete() {
             if (inMaybe) {
-                actual.onComplete();
+                downstream.onComplete();
             } else {
                 inMaybe = true;
                 DisposableHelper.replace(this, null);

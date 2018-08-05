@@ -49,7 +49,7 @@ public final class FlowableConcatWithCompletable<T> extends AbstractFlowableWith
 
         private static final long serialVersionUID = -7346385463600070225L;
 
-        final Subscriber<? super T> actual;
+        final Subscriber<? super T> downstream;
 
         Subscription upstream;
 
@@ -58,7 +58,7 @@ public final class FlowableConcatWithCompletable<T> extends AbstractFlowableWith
         boolean inCompletable;
 
         ConcatWithSubscriber(Subscriber<? super T> actual, CompletableSource other) {
-            this.actual = actual;
+            this.downstream = actual;
             this.other = other;
         }
 
@@ -66,7 +66,7 @@ public final class FlowableConcatWithCompletable<T> extends AbstractFlowableWith
         public void onSubscribe(Subscription s) {
             if (SubscriptionHelper.validate(upstream, s)) {
                 this.upstream = s;
-                actual.onSubscribe(this);
+                downstream.onSubscribe(this);
             }
         }
 
@@ -77,18 +77,18 @@ public final class FlowableConcatWithCompletable<T> extends AbstractFlowableWith
 
         @Override
         public void onNext(T t) {
-            actual.onNext(t);
+            downstream.onNext(t);
         }
 
         @Override
         public void onError(Throwable t) {
-            actual.onError(t);
+            downstream.onError(t);
         }
 
         @Override
         public void onComplete() {
             if (inCompletable) {
-                actual.onComplete();
+                downstream.onComplete();
             } else {
                 inCompletable = true;
                 upstream = SubscriptionHelper.CANCELLED;

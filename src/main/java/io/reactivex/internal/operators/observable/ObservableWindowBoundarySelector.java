@@ -61,7 +61,7 @@ public final class ObservableWindowBoundarySelector<T, B, V> extends AbstractObs
         final int bufferSize;
         final CompositeDisposable resources;
 
-        Disposable s;
+        Disposable upstream;
 
         final AtomicReference<Disposable> boundary = new AtomicReference<Disposable>();
 
@@ -81,11 +81,11 @@ public final class ObservableWindowBoundarySelector<T, B, V> extends AbstractObs
         }
 
         @Override
-        public void onSubscribe(Disposable s) {
-            if (DisposableHelper.validate(this.s, s)) {
-                this.s = s;
+        public void onSubscribe(Disposable d) {
+            if (DisposableHelper.validate(this.upstream, d)) {
+                this.upstream = d;
 
-                actual.onSubscribe(this);
+                downstream.onSubscribe(this);
 
                 if (cancelled) {
                     return;
@@ -135,7 +135,7 @@ public final class ObservableWindowBoundarySelector<T, B, V> extends AbstractObs
                 resources.dispose();
             }
 
-            actual.onError(t);
+            downstream.onError(t);
         }
 
         @Override
@@ -153,11 +153,11 @@ public final class ObservableWindowBoundarySelector<T, B, V> extends AbstractObs
                 resources.dispose();
             }
 
-            actual.onComplete();
+            downstream.onComplete();
         }
 
         void error(Throwable t) {
-            s.dispose();
+            upstream.dispose();
             resources.dispose();
             onError(t);
         }
@@ -179,7 +179,7 @@ public final class ObservableWindowBoundarySelector<T, B, V> extends AbstractObs
 
         void drainLoop() {
             final MpscLinkedQueue<Object> q = (MpscLinkedQueue<Object>)queue;
-            final Observer<? super Observable<T>> a = actual;
+            final Observer<? super Observable<T>> a = downstream;
             final List<UnicastSubject<T>> ws = this.ws;
             int missed = 1;
 

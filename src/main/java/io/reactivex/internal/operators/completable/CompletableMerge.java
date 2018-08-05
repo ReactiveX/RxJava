@@ -47,7 +47,7 @@ public final class CompletableMerge extends Completable {
 
         private static final long serialVersionUID = -2108443387387077490L;
 
-        final CompletableObserver actual;
+        final CompletableObserver downstream;
         final int maxConcurrency;
         final boolean delayErrors;
 
@@ -55,10 +55,10 @@ public final class CompletableMerge extends Completable {
 
         final CompositeDisposable set;
 
-        Subscription s;
+        Subscription upstream;
 
         CompletableMergeSubscriber(CompletableObserver actual, int maxConcurrency, boolean delayErrors) {
-            this.actual = actual;
+            this.downstream = actual;
             this.maxConcurrency = maxConcurrency;
             this.delayErrors = delayErrors;
             this.set = new CompositeDisposable();
@@ -68,7 +68,7 @@ public final class CompletableMerge extends Completable {
 
         @Override
         public void dispose() {
-            s.cancel();
+            upstream.cancel();
             set.dispose();
         }
 
@@ -79,9 +79,9 @@ public final class CompletableMerge extends Completable {
 
         @Override
         public void onSubscribe(Subscription s) {
-            if (SubscriptionHelper.validate(this.s, s)) {
-                this.s = s;
-                actual.onSubscribe(this);
+            if (SubscriptionHelper.validate(this.upstream, s)) {
+                this.upstream = s;
+                downstream.onSubscribe(this);
                 if (maxConcurrency == Integer.MAX_VALUE) {
                     s.request(Long.MAX_VALUE);
                 } else {
@@ -106,7 +106,7 @@ public final class CompletableMerge extends Completable {
 
                 if (error.addThrowable(t)) {
                     if (getAndSet(0) > 0) {
-                        actual.onError(error.terminate());
+                        downstream.onError(error.terminate());
                     }
                 } else {
                     RxJavaPlugins.onError(t);
@@ -114,7 +114,7 @@ public final class CompletableMerge extends Completable {
             } else {
                 if (error.addThrowable(t)) {
                     if (decrementAndGet() == 0) {
-                        actual.onError(error.terminate());
+                        downstream.onError(error.terminate());
                     }
                 } else {
                     RxJavaPlugins.onError(t);
@@ -127,9 +127,9 @@ public final class CompletableMerge extends Completable {
             if (decrementAndGet() == 0) {
                 Throwable ex = error.get();
                 if (ex != null) {
-                    actual.onError(error.terminate());
+                    downstream.onError(error.terminate());
                 } else {
-                    actual.onComplete();
+                    downstream.onComplete();
                 }
             }
         }
@@ -137,12 +137,12 @@ public final class CompletableMerge extends Completable {
         void innerError(MergeInnerObserver inner, Throwable t) {
             set.delete(inner);
             if (!delayErrors) {
-                s.cancel();
+                upstream.cancel();
                 set.dispose();
 
                 if (error.addThrowable(t)) {
                     if (getAndSet(0) > 0) {
-                        actual.onError(error.terminate());
+                        downstream.onError(error.terminate());
                     }
                 } else {
                     RxJavaPlugins.onError(t);
@@ -150,10 +150,10 @@ public final class CompletableMerge extends Completable {
             } else {
                 if (error.addThrowable(t)) {
                     if (decrementAndGet() == 0) {
-                        actual.onError(error.terminate());
+                        downstream.onError(error.terminate());
                     } else {
                         if (maxConcurrency != Integer.MAX_VALUE) {
-                            s.request(1);
+                            upstream.request(1);
                         }
                     }
                 } else {
@@ -167,13 +167,13 @@ public final class CompletableMerge extends Completable {
             if (decrementAndGet() == 0) {
                 Throwable ex = error.get();
                 if (ex != null) {
-                    actual.onError(ex);
+                    downstream.onError(ex);
                 } else {
-                    actual.onComplete();
+                    downstream.onComplete();
                 }
             } else {
                 if (maxConcurrency != Integer.MAX_VALUE) {
-                    s.request(1);
+                    upstream.request(1);
                 }
             }
         }

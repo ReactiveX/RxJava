@@ -22,15 +22,16 @@ import io.reactivex.disposables.Disposable;
  * the other methods are not implemented.
  */
 final class DisposeOnCancel implements Future<Object> {
-    final Disposable d;
+
+    final Disposable upstream;
 
     DisposeOnCancel(Disposable d) {
-        this.d = d;
+        this.upstream = d;
     }
 
     @Override
     public boolean cancel(boolean mayInterruptIfRunning) {
-        d.dispose();
+        upstream.dispose();
         return false;
     }
 

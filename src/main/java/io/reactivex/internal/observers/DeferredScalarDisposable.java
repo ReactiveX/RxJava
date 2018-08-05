@@ -27,7 +27,7 @@ public class DeferredScalarDisposable<T> extends BasicIntQueueDisposable<T> {
     private static final long serialVersionUID = -5502432239815349361L;
 
     /** The target of the events. */
-    protected final Observer<? super T> actual;
+    protected final Observer<? super T> downstream;
 
     /** The value stored temporarily when in fusion mode. */
     protected T value;
@@ -47,10 +47,10 @@ public class DeferredScalarDisposable<T> extends BasicIntQueueDisposable<T> {
 
     /**
      * Constructs a DeferredScalarDisposable by wrapping the Observer.
-     * @param actual the Observer to wrap, not null (not verified)
+     * @param downstream the Observer to wrap, not null (not verified)
      */
-    public DeferredScalarDisposable(Observer<? super T> actual) {
-        this.actual = actual;
+    public DeferredScalarDisposable(Observer<? super T> downstream) {
+        this.downstream = downstream;
     }
 
     @Override
@@ -72,7 +72,7 @@ public class DeferredScalarDisposable<T> extends BasicIntQueueDisposable<T> {
         if ((state & (FUSED_READY | FUSED_CONSUMED | TERMINATED | DISPOSED)) != 0) {
             return;
         }
-        Observer<? super T> a = actual;
+        Observer<? super T> a = downstream;
         if (state == FUSED_EMPTY) {
             this.value = value;
             lazySet(FUSED_READY);
@@ -97,7 +97,7 @@ public class DeferredScalarDisposable<T> extends BasicIntQueueDisposable<T> {
             return;
         }
         lazySet(TERMINATED);
-        actual.onError(t);
+        downstream.onError(t);
     }
 
      /**
@@ -109,7 +109,7 @@ public class DeferredScalarDisposable<T> extends BasicIntQueueDisposable<T> {
             return;
         }
         lazySet(TERMINATED);
-        actual.onComplete();
+        downstream.onComplete();
     }
 
     @Nullable

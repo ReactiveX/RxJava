@@ -28,18 +28,18 @@ public final class ObservableIgnoreElements<T> extends AbstractObservableWithUps
     }
 
     static final class IgnoreObservable<T> implements Observer<T>, Disposable {
-        final Observer<? super T> actual;
+        final Observer<? super T> downstream;
 
-        Disposable d;
+        Disposable upstream;
 
         IgnoreObservable(Observer<? super T> t) {
-            this.actual = t;
+            this.downstream = t;
         }
 
         @Override
-        public void onSubscribe(Disposable s) {
-            this.d = s;
-            actual.onSubscribe(this);
+        public void onSubscribe(Disposable d) {
+            this.upstream = d;
+            downstream.onSubscribe(this);
         }
 
         @Override
@@ -49,22 +49,22 @@ public final class ObservableIgnoreElements<T> extends AbstractObservableWithUps
 
         @Override
         public void onError(Throwable e) {
-            actual.onError(e);
+            downstream.onError(e);
         }
 
         @Override
         public void onComplete() {
-            actual.onComplete();
+            downstream.onComplete();
         }
 
         @Override
         public void dispose() {
-            d.dispose();
+            upstream.dispose();
         }
 
         @Override
         public boolean isDisposed() {
-            return d.isDisposed();
+            return upstream.isDisposed();
         }
     }
 

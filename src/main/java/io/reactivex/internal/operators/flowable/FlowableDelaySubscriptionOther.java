@@ -85,10 +85,11 @@ public final class FlowableDelaySubscriptionOther<T, U> extends Flowable<T> {
         }
 
         final class DelaySubscription implements Subscription {
-            private final Subscription s;
+
+            final Subscription upstream;
 
             DelaySubscription(Subscription s) {
-                this.s = s;
+                this.upstream = s;
             }
 
             @Override
@@ -98,7 +99,7 @@ public final class FlowableDelaySubscriptionOther<T, U> extends Flowable<T> {
 
             @Override
             public void cancel() {
-                s.cancel();
+                upstream.cancel();
             }
         }
 

@@ -31,35 +31,35 @@ public final class ObservableSingleMaybe<T> extends Maybe<T> {
     }
 
     static final class SingleElementObserver<T> implements Observer<T>, Disposable {
-        final MaybeObserver<? super T> actual;
+        final MaybeObserver<? super T> downstream;
 
-        Disposable s;
+        Disposable upstream;
 
         T value;
 
         boolean done;
 
-        SingleElementObserver(MaybeObserver<? super T> actual) {
-            this.actual = actual;
+        SingleElementObserver(MaybeObserver<? super T> downstream) {
+            this.downstream = downstream;
         }
 
         @Override
-        public void onSubscribe(Disposable s) {
-            if (DisposableHelper.validate(this.s, s)) {
-                this.s = s;
-                actual.onSubscribe(this);
+        public void onSubscribe(Disposable d) {
+            if (DisposableHelper.validate(this.upstream, d)) {
+                this.upstream = d;
+                downstream.onSubscribe(this);
             }
         }
 
 
         @Override
         public void dispose() {
-            s.dispose();
+            upstream.dispose();
         }
 
         @Override
         public boolean isDisposed() {
-            return s.isDisposed();
+            return upstream.isDisposed();
         }
 
 
@@ -70,8 +70,8 @@ public final class ObservableSingleMaybe<T> extends Maybe<T> {
             }
             if (value != null) {
                 done = true;
-                s.dispose();
-                actual.onError(new IllegalArgumentException("Sequence contains more than one element!"));
+                upstream.dispose();
+                downstream.onError(new IllegalArgumentException("Sequence contains more than one element!"));
                 return;
             }
             value = t;
@@ -84,7 +84,7 @@ public final class ObservableSingleMaybe<T> extends Maybe<T> {
                 return;
             }
             done = true;
-            actual.onError(t);
+            downstream.onError(t);
         }
 
         @Override
@@ -96,9 +96,9 @@ public final class ObservableSingleMaybe<T> extends Maybe<T> {
             T v = value;
             value = null;
             if (v == null) {
-                actual.onComplete();
+                downstream.onComplete();
             } else {
-                actual.onSuccess(v);
+                downstream.onSuccess(v);
             }
         }
     }

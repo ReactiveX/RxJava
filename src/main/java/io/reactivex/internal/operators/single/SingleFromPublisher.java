@@ -36,9 +36,9 @@ public final class SingleFromPublisher<T> extends Single<T> {
     }
 
     static final class ToSingleObserver<T> implements FlowableSubscriber<T>, Disposable {
-        final SingleObserver<? super T> actual;
+        final SingleObserver<? super T> downstream;
 
-        Subscription s;
+        Subscription upstream;
 
         T value;
 
@@ -46,16 +46,16 @@ public final class SingleFromPublisher<T> extends Single<T> {
 
         volatile boolean disposed;
 
-        ToSingleObserver(SingleObserver<? super T> actual) {
-            this.actual = actual;
+        ToSingleObserver(SingleObserver<? super T> downstream) {
+            this.downstream = downstream;
         }
 
         @Override
         public void onSubscribe(Subscription s) {
-            if (SubscriptionHelper.validate(this.s, s)) {
-                this.s = s;
+            if (SubscriptionHelper.validate(this.upstream, s)) {
+                this.upstream = s;
 
-                actual.onSubscribe(this);
+                downstream.onSubscribe(this);
 
                 s.request(Long.MAX_VALUE);
             }
@@ -67,10 +67,10 @@ public final class SingleFromPublisher<T> extends Single<T> {
                 return;
             }
             if (value != null) {
-                s.cancel();
+                upstream.cancel();
                 done = true;
                 this.value = null;
-                actual.onError(new IndexOutOfBoundsException("Too many elements in the Publisher"));
+                downstream.onError(new IndexOutOfBoundsException("Too many elements in the Publisher"));
             } else {
                 value = t;
             }
@@ -84,7 +84,7 @@ public final class SingleFromPublisher<T> extends Single<T> {
             }
             done = true;
             this.value = null;
-            actual.onError(t);
+            downstream.onError(t);
         }
 
         @Override
@@ -96,9 +96,9 @@ public final class SingleFromPublisher<T> extends Single<T> {
             T v = this.value;
             this.value = null;
             if (v == null) {
-                actual.onError(new NoSuchElementException("The source Publisher is empty"));
+                downstream.onError(new NoSuchElementException("The source Publisher is empty"));
             } else {
-                actual.onSuccess(v);
+                downstream.onSuccess(v);
             }
         }
 
@@ -110,7 +110,7 @@ public final class SingleFromPublisher<T> extends Single<T> {
         @Override
         public void dispose() {
             disposed = true;
-            s.cancel();
+            upstream.cancel();
         }
     }
 }

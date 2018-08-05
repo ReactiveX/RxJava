@@ -42,44 +42,44 @@ public final class MaybeFromCompletable<T> extends Maybe<T> implements HasUpstre
     }
 
     static final class FromCompletableObserver<T> implements CompletableObserver, Disposable {
-        final MaybeObserver<? super T> actual;
+        final MaybeObserver<? super T> downstream;
 
-        Disposable d;
+        Disposable upstream;
 
-        FromCompletableObserver(MaybeObserver<? super T> actual) {
-            this.actual = actual;
+        FromCompletableObserver(MaybeObserver<? super T> downstream) {
+            this.downstream = downstream;
         }
 
         @Override
         public void dispose() {
-            d.dispose();
-            d = DisposableHelper.DISPOSED;
+            upstream.dispose();
+            upstream = DisposableHelper.DISPOSED;
         }
 
         @Override
         public boolean isDisposed() {
-            return d.isDisposed();
+            return upstream.isDisposed();
         }
 
         @Override
         public void onSubscribe(Disposable d) {
-            if (DisposableHelper.validate(this.d, d)) {
-                this.d = d;
+            if (DisposableHelper.validate(this.upstream, d)) {
+                this.upstream = d;
 
-                actual.onSubscribe(this);
+                downstream.onSubscribe(this);
             }
         }
 
         @Override
         public void onComplete() {
-            d = DisposableHelper.DISPOSED;
-            actual.onComplete();
+            upstream = DisposableHelper.DISPOSED;
+            downstream.onComplete();
         }
 
         @Override
         public void onError(Throwable e) {
-            d = DisposableHelper.DISPOSED;
-            actual.onError(e);
+            upstream = DisposableHelper.DISPOSED;
+            downstream.onError(e);
         }
     }
 }

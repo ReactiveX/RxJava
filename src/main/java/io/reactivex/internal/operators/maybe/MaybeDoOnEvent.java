@@ -40,55 +40,55 @@ public final class MaybeDoOnEvent<T> extends AbstractMaybeWithUpstream<T, T> {
     }
 
     static final class DoOnEventMaybeObserver<T> implements MaybeObserver<T>, Disposable {
-        final MaybeObserver<? super T> actual;
+        final MaybeObserver<? super T> downstream;
 
         final BiConsumer<? super T, ? super Throwable> onEvent;
 
-        Disposable d;
+        Disposable upstream;
 
         DoOnEventMaybeObserver(MaybeObserver<? super T> actual, BiConsumer<? super T, ? super Throwable> onEvent) {
-            this.actual = actual;
+            this.downstream = actual;
             this.onEvent = onEvent;
         }
 
         @Override
         public void dispose() {
-            d.dispose();
-            d = DisposableHelper.DISPOSED;
+            upstream.dispose();
+            upstream = DisposableHelper.DISPOSED;
         }
 
         @Override
         public boolean isDisposed() {
-            return d.isDisposed();
+            return upstream.isDisposed();
         }
 
         @Override
         public void onSubscribe(Disposable d) {
-            if (DisposableHelper.validate(this.d, d)) {
-                this.d = d;
+            if (DisposableHelper.validate(this.upstream, d)) {
+                this.upstream = d;
 
-                actual.onSubscribe(this);
+                downstream.onSubscribe(this);
             }
         }
 
         @Override
         public void onSuccess(T value) {
-            d = DisposableHelper.DISPOSED;
+            upstream = DisposableHelper.DISPOSED;
 
             try {
                 onEvent.accept(value, null);
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
-                actual.onError(ex);
+                downstream.onError(ex);
                 return;
             }
 
-            actual.onSuccess(value);
+            downstream.onSuccess(value);
         }
 
         @Override
         public void onError(Throwable e) {
-            d = DisposableHelper.DISPOSED;
+            upstream = DisposableHelper.DISPOSED;
 
             try {
                 onEvent.accept(null, e);
@@ -97,22 +97,22 @@ public final class MaybeDoOnEvent<T> extends AbstractMaybeWithUpstream<T, T> {
                 e = new CompositeException(e, ex);
             }
 
-            actual.onError(e);
+            downstream.onError(e);
         }
 
         @Override
         public void onComplete() {
-            d = DisposableHelper.DISPOSED;
+            upstream = DisposableHelper.DISPOSED;
 
             try {
                 onEvent.accept(null, null);
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
-                actual.onError(ex);
+                downstream.onError(ex);
                 return;
             }
 
-            actual.onComplete();
+            downstream.onComplete();
         }
     }
 }

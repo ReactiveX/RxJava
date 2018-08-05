@@ -52,18 +52,18 @@ public final class SingleToObservable<T> extends Observable<T> {
     implements SingleObserver<T> {
 
         private static final long serialVersionUID = 3786543492451018833L;
-        Disposable d;
+        Disposable upstream;
 
-        SingleToObservableObserver(Observer<? super T> actual) {
-            super(actual);
+        SingleToObservableObserver(Observer<? super T> downstream) {
+            super(downstream);
         }
 
         @Override
         public void onSubscribe(Disposable d) {
-            if (DisposableHelper.validate(this.d, d)) {
-                this.d = d;
+            if (DisposableHelper.validate(this.upstream, d)) {
+                this.upstream = d;
 
-                actual.onSubscribe(this);
+                downstream.onSubscribe(this);
             }
         }
 
@@ -80,7 +80,7 @@ public final class SingleToObservable<T> extends Observable<T> {
         @Override
         public void dispose() {
             super.dispose();
-            d.dispose();
+            upstream.dispose();
         }
 
     }

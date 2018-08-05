@@ -54,7 +54,7 @@ public final class ObservableFlatMapMaybe<T, R> extends AbstractObservableWithUp
 
         private static final long serialVersionUID = 8600231336733376951L;
 
-        final Observer<? super R> actual;
+        final Observer<? super R> downstream;
 
         final boolean delayErrors;
 
@@ -68,13 +68,13 @@ public final class ObservableFlatMapMaybe<T, R> extends AbstractObservableWithUp
 
         final AtomicReference<SpscLinkedArrayQueue<R>> queue;
 
-        Disposable d;
+        Disposable upstream;
 
         volatile boolean cancelled;
 
         FlatMapMaybeObserver(Observer<? super R> actual,
                 Function<? super T, ? extends MaybeSource<? extends R>> mapper, boolean delayErrors) {
-            this.actual = actual;
+            this.downstream = actual;
             this.mapper = mapper;
             this.delayErrors = delayErrors;
             this.set = new CompositeDisposable();
@@ -85,10 +85,10 @@ public final class ObservableFlatMapMaybe<T, R> extends AbstractObservableWithUp
 
         @Override
         public void onSubscribe(Disposable d) {
-            if (DisposableHelper.validate(this.d, d)) {
-                this.d = d;
+            if (DisposableHelper.validate(this.upstream, d)) {
+                this.upstream = d;
 
-                actual.onSubscribe(this);
+                downstream.onSubscribe(this);
             }
         }
 
@@ -100,7 +100,7 @@ public final class ObservableFlatMapMaybe<T, R> extends AbstractObservableWithUp
                 ms = ObjectHelper.requireNonNull(mapper.apply(t), "The mapper returned a null MaybeSource");
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
-                d.dispose();
+                upstream.dispose();
                 onError(ex);
                 return;
             }
@@ -136,7 +136,7 @@ public final class ObservableFlatMapMaybe<T, R> extends AbstractObservableWithUp
         @Override
         public void dispose() {
             cancelled = true;
-            d.dispose();
+            upstream.dispose();
             set.dispose();
         }
 
@@ -148,7 +148,7 @@ public final class ObservableFlatMapMaybe<T, R> extends AbstractObservableWithUp
         void innerSuccess(InnerObserver inner, R value) {
             set.delete(inner);
             if (get() == 0 && compareAndSet(0, 1)) {
-                actual.onNext(value);
+                downstream.onNext(value);
 
                 boolean d = active.decrementAndGet() == 0;
                 SpscLinkedArrayQueue<R> q = queue.get();
@@ -156,9 +156,9 @@ public final class ObservableFlatMapMaybe<T, R> extends AbstractObservableWithUp
                 if (d && (q == null || q.isEmpty())) {
                     Throwable ex = errors.terminate();
                     if (ex != null) {
-                        actual.onError(ex);
+                        downstream.onError(ex);
                     } else {
-                        actual.onComplete();
+                        downstream.onComplete();
                     }
                     return;
                 }
@@ -195,7 +195,7 @@ public final class ObservableFlatMapMaybe<T, R> extends AbstractObservableWithUp
             set.delete(inner);
             if (errors.addThrowable(e)) {
                 if (!delayErrors) {
-                    d.dispose();
+                    upstream.dispose();
                     set.dispose();
                 }
                 active.decrementAndGet();
@@ -215,9 +215,9 @@ public final class ObservableFlatMapMaybe<T, R> extends AbstractObservableWithUp
                 if (d && (q == null || q.isEmpty())) {
                     Throwable ex = errors.terminate();
                     if (ex != null) {
-                        actual.onError(ex);
+                        downstream.onError(ex);
                     } else {
-                        actual.onComplete();
+                        downstream.onComplete();
                     }
                     return;
                 }
@@ -246,7 +246,7 @@ public final class ObservableFlatMapMaybe<T, R> extends AbstractObservableWithUp
 
         void drainLoop() {
             int missed = 1;
-            Observer<? super R> a = actual;
+            Observer<? super R> a = downstream;
             AtomicInteger n = active;
             AtomicReference<SpscLinkedArrayQueue<R>> qr = queue;
 

@@ -29,7 +29,7 @@ import io.reactivex.internal.util.*;
  * @param <V> the value type the child subscriber accepts
  */
 public abstract class QueueDrainObserver<T, U, V> extends QueueDrainSubscriberPad2 implements Observer<T>, ObservableQueueDrain<U, V> {
-    protected final Observer<? super V> actual;
+    protected final Observer<? super V> downstream;
     protected final SimplePlainQueue<U> queue;
 
     protected volatile boolean cancelled;
@@ -38,7 +38,7 @@ public abstract class QueueDrainObserver<T, U, V> extends QueueDrainSubscriberPa
     protected Throwable error;
 
     public QueueDrainObserver(Observer<? super V> actual, SimplePlainQueue<U> queue) {
-        this.actual = actual;
+        this.downstream = actual;
         this.queue = queue;
     }
 
@@ -62,7 +62,7 @@ public abstract class QueueDrainObserver<T, U, V> extends QueueDrainSubscriberPa
     }
 
     protected final void fastPathEmit(U value, boolean delayError, Disposable dispose) {
-        final Observer<? super V> observer = actual;
+        final Observer<? super V> observer = downstream;
         final SimplePlainQueue<U> q = queue;
 
         if (wip.get() == 0 && wip.compareAndSet(0, 1)) {
@@ -86,7 +86,7 @@ public abstract class QueueDrainObserver<T, U, V> extends QueueDrainSubscriberPa
      * @param disposable the resource to dispose if the drain terminates
      */
     protected final void fastPathOrderedEmit(U value, boolean delayError, Disposable disposable) {
-        final Observer<? super V> observer = actual;
+        final Observer<? super V> observer = downstream;
         final SimplePlainQueue<U> q = queue;
 
         if (wip.get() == 0 && wip.compareAndSet(0, 1)) {

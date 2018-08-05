@@ -47,7 +47,7 @@ public final class FlowableSingle<T> extends AbstractFlowableWithUpstream<T, T> 
 
         final boolean failOnEmpty;
 
-        Subscription s;
+        Subscription upstream;
 
         boolean done;
 
@@ -59,9 +59,9 @@ public final class FlowableSingle<T> extends AbstractFlowableWithUpstream<T, T> 
 
         @Override
         public void onSubscribe(Subscription s) {
-            if (SubscriptionHelper.validate(this.s, s)) {
-                this.s = s;
-                actual.onSubscribe(this);
+            if (SubscriptionHelper.validate(this.upstream, s)) {
+                this.upstream = s;
+                downstream.onSubscribe(this);
                 s.request(Long.MAX_VALUE);
             }
         }
@@ -73,8 +73,8 @@ public final class FlowableSingle<T> extends AbstractFlowableWithUpstream<T, T> 
             }
             if (value != null) {
                 done = true;
-                s.cancel();
-                actual.onError(new IllegalArgumentException("Sequence contains more than one element!"));
+                upstream.cancel();
+                downstream.onError(new IllegalArgumentException("Sequence contains more than one element!"));
                 return;
             }
             value = t;
@@ -87,7 +87,7 @@ public final class FlowableSingle<T> extends AbstractFlowableWithUpstream<T, T> 
                 return;
             }
             done = true;
-            actual.onError(t);
+            downstream.onError(t);
         }
 
         @Override
@@ -103,9 +103,9 @@ public final class FlowableSingle<T> extends AbstractFlowableWithUpstream<T, T> 
             }
             if (v == null) {
                 if (failOnEmpty) {
-                    actual.onError(new NoSuchElementException());
+                    downstream.onError(new NoSuchElementException());
                 } else {
-                    actual.onComplete();
+                    downstream.onComplete();
                 }
             } else {
                 complete(v);
@@ -115,7 +115,7 @@ public final class FlowableSingle<T> extends AbstractFlowableWithUpstream<T, T> 
         @Override
         public void cancel() {
             super.cancel();
-            s.cancel();
+            upstream.cancel();
         }
     }
 }

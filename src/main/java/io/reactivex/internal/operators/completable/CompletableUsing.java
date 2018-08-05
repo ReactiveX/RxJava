@@ -92,25 +92,25 @@ public final class CompletableUsing<R> extends Completable {
 
         private static final long serialVersionUID = -674404550052917487L;
 
-        final CompletableObserver actual;
+        final CompletableObserver downstream;
 
         final Consumer<? super R> disposer;
 
         final boolean eager;
 
-        Disposable d;
+        Disposable upstream;
 
         UsingObserver(CompletableObserver actual, R resource, Consumer<? super R> disposer, boolean eager) {
             super(resource);
-            this.actual = actual;
+            this.downstream = actual;
             this.disposer = disposer;
             this.eager = eager;
         }
 
         @Override
         public void dispose() {
-            d.dispose();
-            d = DisposableHelper.DISPOSED;
+            upstream.dispose();
+            upstream = DisposableHelper.DISPOSED;
             disposeResourceAfter();
         }
 
@@ -129,22 +129,22 @@ public final class CompletableUsing<R> extends Completable {
 
         @Override
         public boolean isDisposed() {
-            return d.isDisposed();
+            return upstream.isDisposed();
         }
 
         @Override
         public void onSubscribe(Disposable d) {
-            if (DisposableHelper.validate(this.d, d)) {
-                this.d = d;
+            if (DisposableHelper.validate(this.upstream, d)) {
+                this.upstream = d;
 
-                actual.onSubscribe(this);
+                downstream.onSubscribe(this);
             }
         }
 
         @SuppressWarnings("unchecked")
         @Override
         public void onError(Throwable e) {
-            d = DisposableHelper.DISPOSED;
+            upstream = DisposableHelper.DISPOSED;
             if (eager) {
                 Object resource = getAndSet(this);
                 if (resource != this) {
@@ -159,7 +159,7 @@ public final class CompletableUsing<R> extends Completable {
                 }
             }
 
-            actual.onError(e);
+            downstream.onError(e);
 
             if (!eager) {
                 disposeResourceAfter();
@@ -169,7 +169,7 @@ public final class CompletableUsing<R> extends Completable {
         @SuppressWarnings("unchecked")
         @Override
         public void onComplete() {
-            d = DisposableHelper.DISPOSED;
+            upstream = DisposableHelper.DISPOSED;
             if (eager) {
                 Object resource = getAndSet(this);
                 if (resource != this) {
@@ -177,7 +177,7 @@ public final class CompletableUsing<R> extends Completable {
                         disposer.accept((R)resource);
                     } catch (Throwable ex) {
                         Exceptions.throwIfFatal(ex);
-                        actual.onError(ex);
+                        downstream.onError(ex);
                         return;
                     }
                 } else {
@@ -185,7 +185,7 @@ public final class CompletableUsing<R> extends Completable {
                 }
             }
 
-            actual.onComplete();
+            downstream.onComplete();
 
             if (!eager) {
                 disposeResourceAfter();

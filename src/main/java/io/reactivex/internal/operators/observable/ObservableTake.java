@@ -31,27 +31,27 @@ public final class ObservableTake<T> extends AbstractObservableWithUpstream<T, T
     }
 
     static final class TakeObserver<T> implements Observer<T>, Disposable {
-        final Observer<? super T> actual;
+        final Observer<? super T> downstream;
 
         boolean done;
 
-        Disposable subscription;
+        Disposable upstream;
 
         long remaining;
         TakeObserver(Observer<? super T> actual, long limit) {
-            this.actual = actual;
+            this.downstream = actual;
             this.remaining = limit;
         }
         @Override
-        public void onSubscribe(Disposable s) {
-            if (DisposableHelper.validate(this.subscription, s)) {
-                subscription = s;
+        public void onSubscribe(Disposable d) {
+            if (DisposableHelper.validate(this.upstream, d)) {
+                upstream = d;
                 if (remaining == 0) {
                     done = true;
-                    s.dispose();
-                    EmptyDisposable.complete(actual);
+                    d.dispose();
+                    EmptyDisposable.complete(downstream);
                 } else {
-                    actual.onSubscribe(this);
+                    downstream.onSubscribe(this);
                 }
             }
         }
@@ -59,7 +59,7 @@ public final class ObservableTake<T> extends AbstractObservableWithUpstream<T, T
         public void onNext(T t) {
             if (!done && remaining-- > 0) {
                 boolean stop = remaining == 0;
-                actual.onNext(t);
+                downstream.onNext(t);
                 if (stop) {
                     onComplete();
                 }
@@ -73,26 +73,26 @@ public final class ObservableTake<T> extends AbstractObservableWithUpstream<T, T
             }
 
             done = true;
-            subscription.dispose();
-            actual.onError(t);
+            upstream.dispose();
+            downstream.onError(t);
         }
         @Override
         public void onComplete() {
             if (!done) {
                 done = true;
-                subscription.dispose();
-                actual.onComplete();
+                upstream.dispose();
+                downstream.onComplete();
             }
         }
 
         @Override
         public void dispose() {
-            subscription.dispose();
+            upstream.dispose();
         }
 
         @Override
         public boolean isDisposed() {
-            return subscription.isDisposed();
+            return upstream.isDisposed();
         }
     }
 }

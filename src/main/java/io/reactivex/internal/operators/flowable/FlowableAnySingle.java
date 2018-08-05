@@ -44,23 +44,23 @@ public final class FlowableAnySingle<T> extends Single<Boolean> implements FuseT
 
     static final class AnySubscriber<T> implements FlowableSubscriber<T>, Disposable {
 
-        final SingleObserver<? super Boolean> actual;
+        final SingleObserver<? super Boolean> downstream;
 
         final Predicate<? super T> predicate;
 
-        Subscription s;
+        Subscription upstream;
 
         boolean done;
 
         AnySubscriber(SingleObserver<? super Boolean> actual, Predicate<? super T> predicate) {
-            this.actual = actual;
+            this.downstream = actual;
             this.predicate = predicate;
         }
         @Override
         public void onSubscribe(Subscription s) {
-            if (SubscriptionHelper.validate(this.s, s)) {
-                this.s = s;
-                actual.onSubscribe(this);
+            if (SubscriptionHelper.validate(this.upstream, s)) {
+                this.upstream = s;
+                downstream.onSubscribe(this);
                 s.request(Long.MAX_VALUE);
             }
         }
@@ -75,16 +75,16 @@ public final class FlowableAnySingle<T> extends Single<Boolean> implements FuseT
                 b = predicate.test(t);
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
-                s.cancel();
-                s = SubscriptionHelper.CANCELLED;
+                upstream.cancel();
+                upstream = SubscriptionHelper.CANCELLED;
                 onError(e);
                 return;
             }
             if (b) {
                 done = true;
-                s.cancel();
-                s = SubscriptionHelper.CANCELLED;
-                actual.onSuccess(true);
+                upstream.cancel();
+                upstream = SubscriptionHelper.CANCELLED;
+                downstream.onSuccess(true);
             }
         }
 
@@ -96,28 +96,28 @@ public final class FlowableAnySingle<T> extends Single<Boolean> implements FuseT
             }
 
             done = true;
-            s = SubscriptionHelper.CANCELLED;
-            actual.onError(t);
+            upstream = SubscriptionHelper.CANCELLED;
+            downstream.onError(t);
         }
 
         @Override
         public void onComplete() {
             if (!done) {
                 done = true;
-                s = SubscriptionHelper.CANCELLED;
-                actual.onSuccess(false);
+                upstream = SubscriptionHelper.CANCELLED;
+                downstream.onSuccess(false);
             }
         }
 
         @Override
         public void dispose() {
-            s.cancel();
-            s = SubscriptionHelper.CANCELLED;
+            upstream.cancel();
+            upstream = SubscriptionHelper.CANCELLED;
         }
 
         @Override
         public boolean isDisposed() {
-            return s == SubscriptionHelper.CANCELLED;
+            return upstream == SubscriptionHelper.CANCELLED;
         }
     }
 }

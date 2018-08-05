@@ -55,14 +55,14 @@ public final class CompletableMergeArray extends Completable {
     static final class InnerCompletableObserver extends AtomicInteger implements CompletableObserver {
         private static final long serialVersionUID = -8360547806504310570L;
 
-        final CompletableObserver actual;
+        final CompletableObserver downstream;
 
         final AtomicBoolean once;
 
         final CompositeDisposable set;
 
         InnerCompletableObserver(CompletableObserver actual, AtomicBoolean once, CompositeDisposable set, int n) {
-            this.actual = actual;
+            this.downstream = actual;
             this.once = once;
             this.set = set;
             this.lazySet(n);
@@ -77,7 +77,7 @@ public final class CompletableMergeArray extends Completable {
         public void onError(Throwable e) {
             set.dispose();
             if (once.compareAndSet(false, true)) {
-                actual.onError(e);
+                downstream.onError(e);
             } else {
                 RxJavaPlugins.onError(e);
             }
@@ -87,7 +87,7 @@ public final class CompletableMergeArray extends Completable {
         public void onComplete() {
             if (decrementAndGet() == 0) {
                 if (once.compareAndSet(false, true)) {
-                    actual.onComplete();
+                    downstream.onComplete();
                 }
             }
         }

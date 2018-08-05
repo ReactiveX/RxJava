@@ -33,7 +33,7 @@ public class ObservableDoOnSubscribeTest {
         final AtomicInteger count = new AtomicInteger();
         Observable<Integer> o = Observable.just(1).doOnSubscribe(new Consumer<Disposable>() {
             @Override
-            public void accept(Disposable s) {
+            public void accept(Disposable d) {
                     count.incrementAndGet();
             }
         });
@@ -49,12 +49,12 @@ public class ObservableDoOnSubscribeTest {
         final AtomicInteger count = new AtomicInteger();
         Observable<Integer> o = Observable.just(1).doOnSubscribe(new Consumer<Disposable>() {
             @Override
-            public void accept(Disposable s) {
+            public void accept(Disposable d) {
                     count.incrementAndGet();
             }
         }).take(1).doOnSubscribe(new Consumer<Disposable>() {
             @Override
-            public void accept(Disposable s) {
+            public void accept(Disposable d) {
                     count.incrementAndGet();
             }
         });
@@ -80,13 +80,13 @@ public class ObservableDoOnSubscribeTest {
 
         }).doOnSubscribe(new Consumer<Disposable>() {
             @Override
-            public void accept(Disposable s) {
+            public void accept(Disposable d) {
                     countBefore.incrementAndGet();
             }
         }).publish().refCount()
         .doOnSubscribe(new Consumer<Disposable>() {
             @Override
-            public void accept(Disposable s) {
+            public void accept(Disposable d) {
                     countAfter.incrementAndGet();
             }
         });
@@ -122,7 +122,7 @@ public class ObservableDoOnSubscribeTest {
             }
             .doOnSubscribe(new Consumer<Disposable>() {
                 @Override
-                public void accept(Disposable s) throws Exception {
+                public void accept(Disposable d) throws Exception {
                     throw new TestException("First");
                 }
             })

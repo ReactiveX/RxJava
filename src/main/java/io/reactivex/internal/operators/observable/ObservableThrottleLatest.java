@@ -97,9 +97,9 @@ public final class ObservableThrottleLatest<T> extends AbstractObservableWithUps
         }
 
         @Override
-        public void onSubscribe(Disposable s) {
-            if (DisposableHelper.validate(upstream, s)) {
-                upstream = s;
+        public void onSubscribe(Disposable d) {
+            if (DisposableHelper.validate(upstream, d)) {
+                upstream = d;
                 downstream.onSubscribe(this);
             }
         }

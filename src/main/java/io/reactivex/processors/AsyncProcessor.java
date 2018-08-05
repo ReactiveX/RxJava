@@ -390,7 +390,7 @@ public final class AsyncProcessor<T> extends FlowableProcessor<T> {
 
         void onComplete() {
             if (!isCancelled()) {
-                actual.onComplete();
+                downstream.onComplete();
             }
         }
 
@@ -398,7 +398,7 @@ public final class AsyncProcessor<T> extends FlowableProcessor<T> {
             if (isCancelled()) {
                 RxJavaPlugins.onError(t);
             } else {
-                actual.onError(t);
+                downstream.onError(t);
             }
         }
     }

@@ -26,55 +26,55 @@ public final class SubscriberResourceWrapper<T> extends AtomicReference<Disposab
 
     private static final long serialVersionUID = -8612022020200669122L;
 
-    final Subscriber<? super T> actual;
+    final Subscriber<? super T> downstream;
 
-    final AtomicReference<Subscription> subscription = new AtomicReference<Subscription>();
+    final AtomicReference<Subscription> upstream = new AtomicReference<Subscription>();
 
-    public SubscriberResourceWrapper(Subscriber<? super T> actual) {
-        this.actual = actual;
+    public SubscriberResourceWrapper(Subscriber<? super T> downstream) {
+        this.downstream = downstream;
     }
 
     @Override
     public void onSubscribe(Subscription s) {
-        if (SubscriptionHelper.setOnce(subscription, s)) {
-            actual.onSubscribe(this);
+        if (SubscriptionHelper.setOnce(upstream, s)) {
+            downstream.onSubscribe(this);
         }
     }
 
     @Override
     public void onNext(T t) {
-        actual.onNext(t);
+        downstream.onNext(t);
     }
 
     @Override
     public void onError(Throwable t) {
         DisposableHelper.dispose(this);
-        actual.onError(t);
+        downstream.onError(t);
     }
 
     @Override
     public void onComplete() {
         DisposableHelper.dispose(this);
-        actual.onComplete();
+        downstream.onComplete();
     }
 
     @Override
     public void request(long n) {
         if (SubscriptionHelper.validate(n)) {
-            subscription.get().request(n);
+            upstream.get().request(n);
         }
     }
 
     @Override
     public void dispose() {
-        SubscriptionHelper.cancel(subscription);
+        SubscriptionHelper.cancel(upstream);
 
         DisposableHelper.dispose(this);
     }
 
     @Override
     public boolean isDisposed() {
-        return subscription.get() == SubscriptionHelper.CANCELLED;
+        return upstream.get() == SubscriptionHelper.CANCELLED;
     }
 
     @Override

@@ -117,7 +117,7 @@ public final class ParallelReduceFull<T> extends Flowable<T> {
         void innerError(Throwable ex) {
             if (error.compareAndSet(null, ex)) {
                 cancel();
-                actual.onError(ex);
+                downstream.onError(ex);
             } else {
                 if (ex != error.get()) {
                     RxJavaPlugins.onError(ex);
@@ -153,7 +153,7 @@ public final class ParallelReduceFull<T> extends Flowable<T> {
                 if (sp != null) {
                     complete(sp.first);
                 } else {
-                    actual.onComplete();
+                    downstream.onComplete();
                 }
             }
         }

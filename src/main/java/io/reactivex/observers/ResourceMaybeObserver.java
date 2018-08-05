@@ -84,7 +84,7 @@ import io.reactivex.internal.util.EndConsumerHelper;
  */
 public abstract class ResourceMaybeObserver<T> implements MaybeObserver<T>, Disposable {
     /** The active subscription. */
-    private final AtomicReference<Disposable> s = new AtomicReference<Disposable>();
+    private final AtomicReference<Disposable> upstream = new AtomicReference<Disposable>();
 
     /** The resource composite, can never be null. */
     private final ListCompositeDisposable resources = new ListCompositeDisposable();
@@ -102,8 +102,8 @@ public abstract class ResourceMaybeObserver<T> implements MaybeObserver<T>, Disp
     }
 
     @Override
-    public final void onSubscribe(@NonNull Disposable s) {
-        if (EndConsumerHelper.setOnce(this.s, s, getClass())) {
+    public final void onSubscribe(@NonNull Disposable d) {
+        if (EndConsumerHelper.setOnce(this.upstream, d, getClass())) {
             onStart();
         }
     }
@@ -126,7 +126,7 @@ public abstract class ResourceMaybeObserver<T> implements MaybeObserver<T>, Disp
      */
     @Override
     public final void dispose() {
-        if (DisposableHelper.dispose(s)) {
+        if (DisposableHelper.dispose(upstream)) {
             resources.dispose();
         }
     }
@@ -137,6 +137,6 @@ public abstract class ResourceMaybeObserver<T> implements MaybeObserver<T>, Disp
      */
     @Override
     public final boolean isDisposed() {
-        return DisposableHelper.isDisposed(s.get());
+        return DisposableHelper.isDisposed(upstream.get());
     }
 }

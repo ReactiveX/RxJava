@@ -47,30 +47,30 @@ public final class ObservableWindow<T> extends AbstractObservableWithUpstream<T,
     implements Observer<T>, Disposable, Runnable {
 
         private static final long serialVersionUID = -7481782523886138128L;
-        final Observer<? super Observable<T>> actual;
+        final Observer<? super Observable<T>> downstream;
         final long count;
         final int capacityHint;
 
         long size;
 
-        Disposable s;
+        Disposable upstream;
 
         UnicastSubject<T> window;
 
         volatile boolean cancelled;
 
         WindowExactObserver(Observer<? super Observable<T>> actual, long count, int capacityHint) {
-            this.actual = actual;
+            this.downstream = actual;
             this.count = count;
             this.capacityHint = capacityHint;
         }
 
         @Override
-        public void onSubscribe(Disposable s) {
-            if (DisposableHelper.validate(this.s, s)) {
-                this.s = s;
+        public void onSubscribe(Disposable d) {
+            if (DisposableHelper.validate(this.upstream, d)) {
+                this.upstream = d;
 
-                actual.onSubscribe(this);
+                downstream.onSubscribe(this);
             }
         }
 
@@ -80,7 +80,7 @@ public final class ObservableWindow<T> extends AbstractObservableWithUpstream<T,
             if (w == null && !cancelled) {
                 w = UnicastSubject.create(capacityHint, this);
                 window = w;
-                actual.onNext(w);
+                downstream.onNext(w);
             }
 
             if (w != null) {
@@ -90,7 +90,7 @@ public final class ObservableWindow<T> extends AbstractObservableWithUpstream<T,
                     window = null;
                     w.onComplete();
                     if (cancelled) {
-                        s.dispose();
+                        upstream.dispose();
                     }
                 }
             }
@@ -103,7 +103,7 @@ public final class ObservableWindow<T> extends AbstractObservableWithUpstream<T,
                 window = null;
                 w.onError(t);
             }
-            actual.onError(t);
+            downstream.onError(t);
         }
 
         @Override
@@ -113,7 +113,7 @@ public final class ObservableWindow<T> extends AbstractObservableWithUpstream<T,
                 window = null;
                 w.onComplete();
             }
-            actual.onComplete();
+            downstream.onComplete();
         }
 
         @Override
@@ -129,7 +129,7 @@ public final class ObservableWindow<T> extends AbstractObservableWithUpstream<T,
         @Override
         public void run() {
             if (cancelled) {
-                s.dispose();
+                upstream.dispose();
             }
         }
     }
@@ -138,7 +138,7 @@ public final class ObservableWindow<T> extends AbstractObservableWithUpstream<T,
     implements Observer<T>, Disposable, Runnable {
 
         private static final long serialVersionUID = 3366976432059579510L;
-        final Observer<? super Observable<T>> actual;
+        final Observer<? super Observable<T>> downstream;
         final long count;
         final long skip;
         final int capacityHint;
@@ -151,12 +151,12 @@ public final class ObservableWindow<T> extends AbstractObservableWithUpstream<T,
         /** Counts how many elements were emitted to the very first window in windows. */
         long firstEmission;
 
-        Disposable s;
+        Disposable upstream;
 
         final AtomicInteger wip = new AtomicInteger();
 
         WindowSkipObserver(Observer<? super Observable<T>> actual, long count, long skip, int capacityHint) {
-            this.actual = actual;
+            this.downstream = actual;
             this.count = count;
             this.skip = skip;
             this.capacityHint = capacityHint;
@@ -164,11 +164,11 @@ public final class ObservableWindow<T> extends AbstractObservableWithUpstream<T,
         }
 
         @Override
-        public void onSubscribe(Disposable s) {
-            if (DisposableHelper.validate(this.s, s)) {
-                this.s = s;
+        public void onSubscribe(Disposable d) {
+            if (DisposableHelper.validate(this.upstream, d)) {
+                this.upstream = d;
 
-                actual.onSubscribe(this);
+                downstream.onSubscribe(this);
             }
         }
 
@@ -184,7 +184,7 @@ public final class ObservableWindow<T> extends AbstractObservableWithUpstream<T,
                 wip.getAndIncrement();
                 UnicastSubject<T> w = UnicastSubject.create(capacityHint, this);
                 ws.offer(w);
-                actual.onNext(w);
+                downstream.onNext(w);
             }
 
             long c = firstEmission + 1;
@@ -196,7 +196,7 @@ public final class ObservableWindow<T> extends AbstractObservableWithUpstream<T,
             if (c >= count) {
                 ws.poll().onComplete();
                 if (ws.isEmpty() && cancelled) {
-                    this.s.dispose();
+                    this.upstream.dispose();
                     return;
                 }
                 firstEmission = c - s;
@@ -213,7 +213,7 @@ public final class ObservableWindow<T> extends AbstractObservableWithUpstream<T,
             while (!ws.isEmpty()) {
                 ws.poll().onError(t);
             }
-            actual.onError(t);
+            downstream.onError(t);
         }
 
         @Override
@@ -222,7 +222,7 @@ public final class ObservableWindow<T> extends AbstractObservableWithUpstream<T,
             while (!ws.isEmpty()) {
                 ws.poll().onComplete();
             }
-            actual.onComplete();
+            downstream.onComplete();
         }
 
         @Override
@@ -239,7 +239,7 @@ public final class ObservableWindow<T> extends AbstractObservableWithUpstream<T,
         public void run() {
             if (wip.decrementAndGet() == 0) {
                 if (cancelled) {
-                    s.dispose();
+                    upstream.dispose();
                 }
             }
         }

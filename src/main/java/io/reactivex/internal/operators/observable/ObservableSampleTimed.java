@@ -51,30 +51,30 @@ public final class ObservableSampleTimed<T> extends AbstractObservableWithUpstre
 
         private static final long serialVersionUID = -3517602651313910099L;
 
-        final Observer<? super T> actual;
+        final Observer<? super T> downstream;
         final long period;
         final TimeUnit unit;
         final Scheduler scheduler;
 
         final AtomicReference<Disposable> timer = new AtomicReference<Disposable>();
 
-        Disposable s;
+        Disposable upstream;
 
         SampleTimedObserver(Observer<? super T> actual, long period, TimeUnit unit, Scheduler scheduler) {
-            this.actual = actual;
+            this.downstream = actual;
             this.period = period;
             this.unit = unit;
             this.scheduler = scheduler;
         }
 
         @Override
-        public void onSubscribe(Disposable s) {
-            if (DisposableHelper.validate(this.s, s)) {
-                this.s = s;
-                actual.onSubscribe(this);
+        public void onSubscribe(Disposable d) {
+            if (DisposableHelper.validate(this.upstream, d)) {
+                this.upstream = d;
+                downstream.onSubscribe(this);
 
-                Disposable d = scheduler.schedulePeriodicallyDirect(this, period, period, unit);
-                DisposableHelper.replace(timer, d);
+                Disposable task = scheduler.schedulePeriodicallyDirect(this, period, period, unit);
+                DisposableHelper.replace(timer, task);
             }
         }
 
@@ -86,7 +86,7 @@ public final class ObservableSampleTimed<T> extends AbstractObservableWithUpstre
         @Override
         public void onError(Throwable t) {
             cancelTimer();
-            actual.onError(t);
+            downstream.onError(t);
         }
 
         @Override
@@ -102,18 +102,18 @@ public final class ObservableSampleTimed<T> extends AbstractObservableWithUpstre
         @Override
         public void dispose() {
             cancelTimer();
-            s.dispose();
+            upstream.dispose();
         }
 
         @Override
         public boolean isDisposed() {
-            return s.isDisposed();
+            return upstream.isDisposed();
         }
 
         void emit() {
             T value = getAndSet(null);
             if (value != null) {
-                actual.onNext(value);
+                downstream.onNext(value);
             }
         }
 
@@ -130,7 +130,7 @@ public final class ObservableSampleTimed<T> extends AbstractObservableWithUpstre
 
         @Override
         void complete() {
-            actual.onComplete();
+            downstream.onComplete();
         }
 
         @Override
@@ -154,7 +154,7 @@ public final class ObservableSampleTimed<T> extends AbstractObservableWithUpstre
         void complete() {
             emit();
             if (wip.decrementAndGet() == 0) {
-                actual.onComplete();
+                downstream.onComplete();
             }
         }
 
@@ -163,7 +163,7 @@ public final class ObservableSampleTimed<T> extends AbstractObservableWithUpstre
             if (wip.incrementAndGet() == 2) {
                 emit();
                 if (wip.decrementAndGet() == 0) {
-                    actual.onComplete();
+                    downstream.onComplete();
                 }
             }
         }

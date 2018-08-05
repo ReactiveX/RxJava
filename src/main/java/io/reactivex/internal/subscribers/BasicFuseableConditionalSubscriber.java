@@ -28,10 +28,10 @@ import io.reactivex.plugins.RxJavaPlugins;
 public abstract class BasicFuseableConditionalSubscriber<T, R> implements ConditionalSubscriber<T>, QueueSubscription<R> {
 
     /** The downstream subscriber. */
-    protected final ConditionalSubscriber<? super R> actual;
+    protected final ConditionalSubscriber<? super R> downstream;
 
     /** The upstream subscription. */
-    protected Subscription s;
+    protected Subscription upstream;
 
     /** The upstream's QueueSubscription if not null. */
     protected QueueSubscription<T> qs;
@@ -44,26 +44,26 @@ public abstract class BasicFuseableConditionalSubscriber<T, R> implements Condit
 
     /**
      * Construct a BasicFuseableSubscriber by wrapping the given subscriber.
-     * @param actual the subscriber, not null (not verified)
+     * @param downstream the subscriber, not null (not verified)
      */
-    public BasicFuseableConditionalSubscriber(ConditionalSubscriber<? super R> actual) {
-        this.actual = actual;
+    public BasicFuseableConditionalSubscriber(ConditionalSubscriber<? super R> downstream) {
+        this.downstream = downstream;
     }
 
     // final: fixed protocol steps to support fuseable and non-fuseable upstream
     @SuppressWarnings("unchecked")
     @Override
     public final void onSubscribe(Subscription s) {
-        if (SubscriptionHelper.validate(this.s, s)) {
+        if (SubscriptionHelper.validate(this.upstream, s)) {
 
-            this.s = s;
+            this.upstream = s;
             if (s instanceof QueueSubscription) {
                 this.qs = (QueueSubscription<T>)s;
             }
 
             if (beforeDownstream()) {
 
-                actual.onSubscribe(this);
+                downstream.onSubscribe(this);
 
                 afterDownstream();
             }
@@ -97,7 +97,7 @@ public abstract class BasicFuseableConditionalSubscriber<T, R> implements Condit
             return;
         }
         done = true;
-        actual.onError(t);
+        downstream.onError(t);
     }
 
     /**
@@ -106,7 +106,7 @@ public abstract class BasicFuseableConditionalSubscriber<T, R> implements Condit
      */
     protected final void fail(Throwable t) {
         Exceptions.throwIfFatal(t);
-        s.cancel();
+        upstream.cancel();
         onError(t);
     }
 
@@ -116,7 +116,7 @@ public abstract class BasicFuseableConditionalSubscriber<T, R> implements Condit
             return;
         }
         done = true;
-        actual.onComplete();
+        downstream.onComplete();
     }
 
     /**
@@ -149,12 +149,12 @@ public abstract class BasicFuseableConditionalSubscriber<T, R> implements Condit
 
     @Override
     public void request(long n) {
-        s.request(n);
+        upstream.request(n);
     }
 
     @Override
     public void cancel() {
-        s.cancel();
+        upstream.cancel();
     }
 
     @Override

@@ -352,11 +352,11 @@ public class ReplaySubjectTest extends SubjectTest<Integer> {
     public void testSubscriptionLeak() {
         ReplaySubject<Object> subject = ReplaySubject.create();
 
-        Disposable s = subject.subscribe();
+        Disposable d = subject.subscribe();
 
         assertEquals(1, subject.observerCount());
 
-        s.dispose();
+        d.dispose();
 
         assertEquals(0, subject.observerCount());
     }

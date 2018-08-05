@@ -79,14 +79,14 @@ public class ObservablePublishTest {
             }
         });
 
-        Disposable s = o.connect();
+        Disposable connection = o.connect();
         try {
             if (!latch.await(1000, TimeUnit.MILLISECONDS)) {
                 fail("subscriptions did not receive values");
             }
             assertEquals(1, counter.get());
         } finally {
-            s.dispose();
+            connection.dispose();
         }
     }
 
@@ -273,7 +273,7 @@ public class ObservablePublishTest {
 
         source.subscribe(to1);
 
-        Disposable s = source.connect();
+        Disposable connection = source.connect();
 
         to1.assertValue(1);
         to1.assertNoErrors();
@@ -283,14 +283,14 @@ public class ObservablePublishTest {
 
         source.subscribe(to2);
 
-        Disposable s2 = source.connect();
+        Disposable connection2 = source.connect();
 
         to2.assertValue(1);
         to2.assertNoErrors();
         to2.assertTerminated();
 
-        System.out.println(s);
-        System.out.println(s2);
+        System.out.println(connection);
+        System.out.println(connection2);
     }
 
     @Test
@@ -326,18 +326,18 @@ public class ObservablePublishTest {
     public void testNoDisconnectSomeoneElse() {
         ConnectableObservable<Object> source = Observable.never().publish();
 
-        Disposable s1 = source.connect();
-        Disposable s2 = source.connect();
+        Disposable connection1 = source.connect();
+        Disposable connection2 = source.connect();
 
-        s1.dispose();
+        connection1.dispose();
 
-        Disposable s3 = source.connect();
+        Disposable connection3 = source.connect();
 
-        s2.dispose();
+        connection2.dispose();
 
-        assertTrue(checkPublishDisposed(s1));
-        assertTrue(checkPublishDisposed(s2));
-        assertFalse(checkPublishDisposed(s3));
+        assertTrue(checkPublishDisposed(connection1));
+        assertTrue(checkPublishDisposed(connection2));
+        assertFalse(checkPublishDisposed(connection3));
     }
 
     @SuppressWarnings("unchecked")
@@ -385,7 +385,7 @@ public class ObservablePublishTest {
                     obs.subscribe(to);
                 }
 
-                Disposable s = co.connect();
+                Disposable connection = co.connect();
 
                 for (TestObserver<Integer> to : tos) {
                     to.awaitTerminalEvent(2, TimeUnit.SECONDS);
@@ -393,7 +393,7 @@ public class ObservablePublishTest {
                     to.assertNoErrors();
                     assertEquals(1000, to.valueCount());
                 }
-                s.dispose();
+                connection.dispose();
             }
         }
     }
@@ -459,7 +459,7 @@ public class ObservablePublishTest {
         try {
             co.connect(new Consumer<Disposable>() {
                 @Override
-                public void accept(Disposable s) throws Exception {
+                public void accept(Disposable d) throws Exception {
                     throw new TestException();
                 }
             });

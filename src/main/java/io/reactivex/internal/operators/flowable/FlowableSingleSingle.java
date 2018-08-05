@@ -47,26 +47,26 @@ public final class FlowableSingleSingle<T> extends Single<T> implements FuseToFl
     static final class SingleElementSubscriber<T>
     implements FlowableSubscriber<T>, Disposable {
 
-        final SingleObserver<? super T> actual;
+        final SingleObserver<? super T> downstream;
 
         final T defaultValue;
 
-        Subscription s;
+        Subscription upstream;
 
         boolean done;
 
         T value;
 
         SingleElementSubscriber(SingleObserver<? super T> actual, T defaultValue) {
-            this.actual = actual;
+            this.downstream = actual;
             this.defaultValue = defaultValue;
         }
 
         @Override
         public void onSubscribe(Subscription s) {
-            if (SubscriptionHelper.validate(this.s, s)) {
-                this.s = s;
-                actual.onSubscribe(this);
+            if (SubscriptionHelper.validate(this.upstream, s)) {
+                this.upstream = s;
+                downstream.onSubscribe(this);
                 s.request(Long.MAX_VALUE);
             }
         }
@@ -78,9 +78,9 @@ public final class FlowableSingleSingle<T> extends Single<T> implements FuseToFl
             }
             if (value != null) {
                 done = true;
-                s.cancel();
-                s = SubscriptionHelper.CANCELLED;
-                actual.onError(new IllegalArgumentException("Sequence contains more than one element!"));
+                upstream.cancel();
+                upstream = SubscriptionHelper.CANCELLED;
+                downstream.onError(new IllegalArgumentException("Sequence contains more than one element!"));
                 return;
             }
             value = t;
@@ -93,8 +93,8 @@ public final class FlowableSingleSingle<T> extends Single<T> implements FuseToFl
                 return;
             }
             done = true;
-            s = SubscriptionHelper.CANCELLED;
-            actual.onError(t);
+            upstream = SubscriptionHelper.CANCELLED;
+            downstream.onError(t);
         }
 
         @Override
@@ -103,7 +103,7 @@ public final class FlowableSingleSingle<T> extends Single<T> implements FuseToFl
                 return;
             }
             done = true;
-            s = SubscriptionHelper.CANCELLED;
+            upstream = SubscriptionHelper.CANCELLED;
             T v = value;
             value = null;
             if (v == null) {
@@ -111,21 +111,21 @@ public final class FlowableSingleSingle<T> extends Single<T> implements FuseToFl
             }
 
             if (v != null) {
-                actual.onSuccess(v);
+                downstream.onSuccess(v);
             } else {
-                actual.onError(new NoSuchElementException());
+                downstream.onError(new NoSuchElementException());
             }
         }
 
         @Override
         public void dispose() {
-            s.cancel();
-            s = SubscriptionHelper.CANCELLED;
+            upstream.cancel();
+            upstream = SubscriptionHelper.CANCELLED;
         }
 
         @Override
         public boolean isDisposed() {
-            return s == SubscriptionHelper.CANCELLED;
+            return upstream == SubscriptionHelper.CANCELLED;
         }
     }
 }

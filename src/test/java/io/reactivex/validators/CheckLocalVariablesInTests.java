@@ -11,7 +11,7 @@
  * the License for the specific language governing permissions and limitations under the License.
  */
 
-package io.reactivex;
+package io.reactivex.validators;
 
 import java.io.*;
 import java.util.*;
@@ -26,11 +26,21 @@ import org.junit.Test;
  * <li>{@code TestObserver} named as {@code ts*}</li>
  * <li>{@code PublishProcessor} named as {@code ps*}</li>
  * <li>{@code PublishSubject} named as {@code pp*}</li>
+ * <li>{@code Subscription} with single letter name such as "s" or "d"</li>
+ * <li>{@code Disposable} with single letter name such as "s" or "d"</li>
+ * <li>{@code Flowable} named as {@code o|observable} + number</li>
+ * <li>{@code Observable} named as {@code f|flowable} + number</li>
+ * <li>{@code Subscriber} named as "o" or "observer"</li>
+ * <li>{@code Observer} named as "s" or "subscriber"</li>
  * </ul>
  */
 public class CheckLocalVariablesInTests {
 
     static void findPattern(String pattern) throws Exception {
+        findPattern(pattern, false);
+    }
+
+    static void findPattern(String pattern, boolean checkMain) throws Exception {
         File f = MaybeNo2Dot0Since.findSource("Flowable");
         if (f == null) {
             System.out.println("Unable to find sources of RxJava");
@@ -44,6 +54,9 @@ public class CheckLocalVariablesInTests {
 
         File parent = f.getParentFile();
 
+        if (checkMain) {
+            dirs.offer(new File(parent.getAbsolutePath().replace('\\', '/')));
+        }
         dirs.offer(new File(parent.getAbsolutePath().replace('\\', '/').replace("src/main/java", "src/test/java")));
 
         Pattern p = Pattern.compile(pattern);
@@ -112,6 +125,16 @@ public class CheckLocalVariablesInTests {
     @Test
     public void testObserverAsTs() throws Exception {
         findPattern("TestObserver<.*>\\s+ts");
+    }
+
+    @Test
+    public void testSubscriberNoArgAsTo() throws Exception {
+        findPattern("TestSubscriber\\s+to");
+    }
+
+    @Test
+    public void testObserverNoArgAsTs() throws Exception {
+        findPattern("TestObserver\\s+ts");
     }
 
     @Test
@@ -273,4 +296,126 @@ public class CheckLocalVariablesInTests {
     public void completableAsFlowable() throws Exception {
         findPattern("Completable\\s+flowable\\b");
     }
+
+    @Test
+    public void subscriptionAsFieldS() throws Exception {
+        findPattern("Subscription\\s+s[0-9]?;", true);
+    }
+
+    @Test
+    public void subscriptionAsD() throws Exception {
+        findPattern("Subscription\\s+d[0-9]?", true);
+    }
+
+    @Test
+    public void subscriptionAsSubscription() throws Exception {
+        findPattern("Subscription\\s+subscription[0-9]?;", true);
+    }
+
+    @Test
+    public void subscriptionAsDParenthesis() throws Exception {
+        findPattern("Subscription\\s+d[0-9]?\\)", true);
+    }
+
+    @Test
+    public void queueSubscriptionAsD() throws Exception {
+        findPattern("Subscription<.*>\\s+q?d[0-9]?\\b", true);
+    }
+
+    @Test
+    public void booleanSubscriptionAsbd() throws Exception {
+        findPattern("BooleanSubscription\\s+bd[0-9]?;", true);
+    }
+
+    @Test
+    public void atomicSubscriptionAsS() throws Exception {
+        findPattern("AtomicReference<Subscription>\\s+s[0-9]?;", true);
+    }
+
+    @Test
+    public void atomicSubscriptionAsSubscription() throws Exception {
+        findPattern("AtomicReference<Subscription>\\s+subscription[0-9]?", true);
+    }
+
+    @Test
+    public void atomicSubscriptionAsD() throws Exception {
+        findPattern("AtomicReference<Subscription>\\s+d[0-9]?", true);
+    }
+
+    @Test
+    public void disposableAsS() throws Exception {
+        // the space before makes sure it doesn't match onSubscribe(Subscription) unnecessarily
+        findPattern("Disposable\\s+s[0-9]?\\b", true);
+    }
+
+    @Test
+    public void disposableAsFieldD() throws Exception {
+        findPattern("Disposable\\s+d[0-9]?;", true);
+    }
+
+    @Test
+    public void atomicDisposableAsS() throws Exception {
+        findPattern("AtomicReference<Disposable>\\s+s[0-9]?", true);
+    }
+
+    @Test
+    public void atomicDisposableAsD() throws Exception {
+        findPattern("AtomicReference<Disposable>\\s+d[0-9]?;", true);
+    }
+
+    @Test
+    public void subscriberAsFieldActual() throws Exception {
+        findPattern("Subscriber<.*>\\s+actual[;\\)]", true);
+    }
+
+    @Test
+    public void subscriberNoArgAsFieldActual() throws Exception {
+        findPattern("Subscriber\\s+actual[;\\)]", true);
+    }
+
+    @Test
+    public void subscriberAsFieldS() throws Exception {
+        findPattern("Subscriber<.*>\\s+s[0-9]?;", true);
+    }
+
+    @Test
+    public void observerAsFieldActual() throws Exception {
+        findPattern("Observer<.*>\\s+actual[;\\)]", true);
+    }
+
+    @Test
+    public void observerAsFieldSO() throws Exception {
+        findPattern("Observer<.*>\\s+[so][0-9]?;", true);
+    }
+
+    @Test
+    public void observerNoArgAsFieldActual() throws Exception {
+        findPattern("Observer\\s+actual[;\\)]", true);
+    }
+
+    @Test
+    public void observerNoArgAsFieldCs() throws Exception {
+        findPattern("Observer\\s+cs[;\\)]", true);
+    }
+
+    @Test
+    public void observerNoArgAsFieldSO() throws Exception {
+        findPattern("Observer\\s+[so][0-9]?;", true);
+    }
+
+    @Test
+    public void queueDisposableAsD() throws Exception {
+        findPattern("Disposable<.*>\\s+q?s[0-9]?\\b", true);
+    }
+
+    @Test
+    public void disposableAsDParenthesis() throws Exception {
+        findPattern("Disposable\\s+s[0-9]?\\)", true);
+    }
+
+    @Test
+    public void compositeDisposableAsCs() throws Exception {
+        findPattern("CompositeDisposable\\s+cs[0-9]?", true);
+    }
+
 }

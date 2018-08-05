@@ -36,37 +36,37 @@ public final class ObservableTimeInterval<T> extends AbstractObservableWithUpstr
     }
 
     static final class TimeIntervalObserver<T> implements Observer<T>, Disposable {
-        final Observer<? super Timed<T>> actual;
+        final Observer<? super Timed<T>> downstream;
         final TimeUnit unit;
         final Scheduler scheduler;
 
         long lastTime;
 
-        Disposable s;
+        Disposable upstream;
 
         TimeIntervalObserver(Observer<? super Timed<T>> actual, TimeUnit unit, Scheduler scheduler) {
-            this.actual = actual;
+            this.downstream = actual;
             this.scheduler = scheduler;
             this.unit = unit;
         }
 
         @Override
-        public void onSubscribe(Disposable s) {
-            if (DisposableHelper.validate(this.s, s)) {
-                this.s = s;
+        public void onSubscribe(Disposable d) {
+            if (DisposableHelper.validate(this.upstream, d)) {
+                this.upstream = d;
                 lastTime = scheduler.now(unit);
-                actual.onSubscribe(this);
+                downstream.onSubscribe(this);
             }
         }
 
         @Override
         public void dispose() {
-            s.dispose();
+            upstream.dispose();
         }
 
         @Override
         public boolean isDisposed() {
-            return s.isDisposed();
+            return upstream.isDisposed();
         }
 
 
@@ -76,17 +76,17 @@ public final class ObservableTimeInterval<T> extends AbstractObservableWithUpstr
             long last = lastTime;
             lastTime = now;
             long delta = now - last;
-            actual.onNext(new Timed<T>(t, delta, unit));
+            downstream.onNext(new Timed<T>(t, delta, unit));
         }
 
         @Override
         public void onError(Throwable t) {
-            actual.onError(t);
+            downstream.onError(t);
         }
 
         @Override
         public void onComplete() {
-            actual.onComplete();
+            downstream.onComplete();
         }
     }
 }

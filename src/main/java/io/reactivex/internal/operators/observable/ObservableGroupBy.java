@@ -52,7 +52,7 @@ public final class ObservableGroupBy<T, K, V> extends AbstractObservableWithUpst
 
         private static final long serialVersionUID = -3688291656102519502L;
 
-        final Observer<? super GroupedObservable<K, V>> actual;
+        final Observer<? super GroupedObservable<K, V>> downstream;
         final Function<? super T, ? extends K> keySelector;
         final Function<? super T, ? extends V> valueSelector;
         final int bufferSize;
@@ -61,12 +61,12 @@ public final class ObservableGroupBy<T, K, V> extends AbstractObservableWithUpst
 
         static final Object NULL_KEY = new Object();
 
-        Disposable s;
+        Disposable upstream;
 
         final AtomicBoolean cancelled = new AtomicBoolean();
 
         public GroupByObserver(Observer<? super GroupedObservable<K, V>> actual, Function<? super T, ? extends K> keySelector, Function<? super T, ? extends V> valueSelector, int bufferSize, boolean delayError) {
-            this.actual = actual;
+            this.downstream = actual;
             this.keySelector = keySelector;
             this.valueSelector = valueSelector;
             this.bufferSize = bufferSize;
@@ -76,10 +76,10 @@ public final class ObservableGroupBy<T, K, V> extends AbstractObservableWithUpst
         }
 
         @Override
-        public void onSubscribe(Disposable s) {
-            if (DisposableHelper.validate(this.s, s)) {
-                this.s = s;
-                actual.onSubscribe(this);
+        public void onSubscribe(Disposable d) {
+            if (DisposableHelper.validate(this.upstream, d)) {
+                this.upstream = d;
+                downstream.onSubscribe(this);
             }
         }
 
@@ -90,7 +90,7 @@ public final class ObservableGroupBy<T, K, V> extends AbstractObservableWithUpst
                 key = keySelector.apply(t);
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
-                s.dispose();
+                upstream.dispose();
                 onError(e);
                 return;
             }
@@ -109,7 +109,7 @@ public final class ObservableGroupBy<T, K, V> extends AbstractObservableWithUpst
 
                 getAndIncrement();
 
-                actual.onNext(group);
+                downstream.onNext(group);
             }
 
             V v;
@@ -117,7 +117,7 @@ public final class ObservableGroupBy<T, K, V> extends AbstractObservableWithUpst
                 v = ObjectHelper.requireNonNull(valueSelector.apply(t), "The value supplied is null");
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
-                s.dispose();
+                upstream.dispose();
                 onError(e);
                 return;
             }
@@ -134,7 +134,7 @@ public final class ObservableGroupBy<T, K, V> extends AbstractObservableWithUpst
                 e.onError(t);
             }
 
-            actual.onError(t);
+            downstream.onError(t);
         }
 
         @Override
@@ -146,7 +146,7 @@ public final class ObservableGroupBy<T, K, V> extends AbstractObservableWithUpst
                 e.onComplete();
             }
 
-            actual.onComplete();
+            downstream.onComplete();
         }
 
         @Override
@@ -155,7 +155,7 @@ public final class ObservableGroupBy<T, K, V> extends AbstractObservableWithUpst
             // but running groups still require new values
             if (cancelled.compareAndSet(false, true)) {
                 if (decrementAndGet() == 0) {
-                    s.dispose();
+                    upstream.dispose();
                 }
             }
         }
@@ -169,7 +169,7 @@ public final class ObservableGroupBy<T, K, V> extends AbstractObservableWithUpst
             Object mapKey = key != null ? key : NULL_KEY;
             groups.remove(mapKey);
             if (decrementAndGet() == 0) {
-                s.dispose();
+                upstream.dispose();
             }
         }
     }

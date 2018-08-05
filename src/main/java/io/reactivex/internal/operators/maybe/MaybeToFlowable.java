@@ -50,18 +50,18 @@ public final class MaybeToFlowable<T> extends Flowable<T> implements HasUpstream
 
         private static final long serialVersionUID = 7603343402964826922L;
 
-        Disposable d;
+        Disposable upstream;
 
-        MaybeToFlowableSubscriber(Subscriber<? super T> actual) {
-            super(actual);
+        MaybeToFlowableSubscriber(Subscriber<? super T> downstream) {
+            super(downstream);
         }
 
         @Override
         public void onSubscribe(Disposable d) {
-            if (DisposableHelper.validate(this.d, d)) {
-                this.d = d;
+            if (DisposableHelper.validate(this.upstream, d)) {
+                this.upstream = d;
 
-                actual.onSubscribe(this);
+                downstream.onSubscribe(this);
             }
         }
 
@@ -72,18 +72,18 @@ public final class MaybeToFlowable<T> extends Flowable<T> implements HasUpstream
 
         @Override
         public void onError(Throwable e) {
-            actual.onError(e);
+            downstream.onError(e);
         }
 
         @Override
         public void onComplete() {
-            actual.onComplete();
+            downstream.onComplete();
         }
 
         @Override
         public void cancel() {
             super.cancel();
-            d.dispose();
+            upstream.dispose();
         }
     }
 }

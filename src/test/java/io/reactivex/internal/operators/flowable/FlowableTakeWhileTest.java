@@ -191,19 +191,19 @@ public class FlowableTakeWhileTest {
 
     private static class TestFlowable implements Publisher<String> {
 
-        final Subscription s;
+        final Subscription upstream;
         final String[] values;
         Thread t;
 
         TestFlowable(Subscription s, String... values) {
-            this.s = s;
+            this.upstream = s;
             this.values = values;
         }
 
         @Override
         public void subscribe(final Subscriber<? super String> subscriber) {
             System.out.println("TestFlowable subscribed to ...");
-            subscriber.onSubscribe(s);
+            subscriber.onSubscribe(upstream);
             t = new Thread(new Runnable() {
 
                 @Override

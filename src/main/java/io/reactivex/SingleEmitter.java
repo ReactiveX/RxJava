@@ -63,14 +63,14 @@ public interface SingleEmitter<T> {
 
     /**
      * Sets a Disposable on this emitter; any previous Disposable
-     * or Cancellation will be unsubscribed/cancelled.
-     * @param s the disposable, null is allowed
+     * or Cancellable will be disposed/cancelled.
+     * @param d the disposable, null is allowed
      */
-    void setDisposable(@Nullable Disposable s);
+    void setDisposable(@Nullable Disposable d);
 
     /**
-     * Sets a Cancellable on this emitter; any previous Disposable
-     * or Cancellation will be unsubscribed/cancelled.
+     * Sets a Cancellable on this emitter; any previous {@link Disposable}
+     * or {@link Cancellable} will be disposed/cancelled.
      * @param c the cancellable resource, null is allowed
      */
     void setCancellable(@Nullable Cancellable c);

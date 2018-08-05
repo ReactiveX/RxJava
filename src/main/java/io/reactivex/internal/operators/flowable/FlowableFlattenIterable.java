@@ -88,7 +88,7 @@ public final class FlowableFlattenIterable<T, R> extends AbstractFlowableWithUps
 
         private static final long serialVersionUID = -3096000382929934955L;
 
-        final Subscriber<? super R> actual;
+        final Subscriber<? super R> downstream;
 
         final Function<? super T, ? extends Iterable<? extends R>> mapper;
 
@@ -98,7 +98,7 @@ public final class FlowableFlattenIterable<T, R> extends AbstractFlowableWithUps
 
         final AtomicLong requested;
 
-        Subscription s;
+        Subscription upstream;
 
         SimpleQueue<T> queue;
 
@@ -116,7 +116,7 @@ public final class FlowableFlattenIterable<T, R> extends AbstractFlowableWithUps
 
         FlattenIterableSubscriber(Subscriber<? super R> actual,
                 Function<? super T, ? extends Iterable<? extends R>> mapper, int prefetch) {
-            this.actual = actual;
+            this.downstream = actual;
             this.mapper = mapper;
             this.prefetch = prefetch;
             this.limit = prefetch - (prefetch >> 2);
@@ -126,8 +126,8 @@ public final class FlowableFlattenIterable<T, R> extends AbstractFlowableWithUps
 
         @Override
         public void onSubscribe(Subscription s) {
-            if (SubscriptionHelper.validate(this.s, s)) {
-                this.s = s;
+            if (SubscriptionHelper.validate(this.upstream, s)) {
+                this.upstream = s;
 
                 if (s instanceof QueueSubscription) {
                     @SuppressWarnings("unchecked")
@@ -140,7 +140,7 @@ public final class FlowableFlattenIterable<T, R> extends AbstractFlowableWithUps
                         this.queue = qs;
                         done = true;
 
-                        actual.onSubscribe(this);
+                        downstream.onSubscribe(this);
 
                         return;
                     }
@@ -148,7 +148,7 @@ public final class FlowableFlattenIterable<T, R> extends AbstractFlowableWithUps
                         fusionMode = m;
                         this.queue = qs;
 
-                        actual.onSubscribe(this);
+                        downstream.onSubscribe(this);
 
                         s.request(prefetch);
                         return;
@@ -157,7 +157,7 @@ public final class FlowableFlattenIterable<T, R> extends AbstractFlowableWithUps
 
                 queue = new SpscArrayQueue<T>(prefetch);
 
-                actual.onSubscribe(this);
+                downstream.onSubscribe(this);
 
                 s.request(prefetch);
             }
@@ -207,7 +207,7 @@ public final class FlowableFlattenIterable<T, R> extends AbstractFlowableWithUps
             if (!cancelled) {
                 cancelled = true;
 
-                s.cancel();
+                upstream.cancel();
 
                 if (getAndIncrement() == 0) {
                     queue.clear();
@@ -220,7 +220,7 @@ public final class FlowableFlattenIterable<T, R> extends AbstractFlowableWithUps
                 return;
             }
 
-            final Subscriber<? super R> a = actual;
+            final Subscriber<? super R> a = downstream;
             final SimpleQueue<T> q = queue;
             final boolean replenish = fusionMode != SYNC;
 
@@ -240,7 +240,7 @@ public final class FlowableFlattenIterable<T, R> extends AbstractFlowableWithUps
                         t = q.poll();
                     } catch (Throwable ex) {
                         Exceptions.throwIfFatal(ex);
-                        s.cancel();
+                        upstream.cancel();
                         ExceptionHelper.addThrowable(error, ex);
                         ex = ExceptionHelper.terminate(error);
 
@@ -270,7 +270,7 @@ public final class FlowableFlattenIterable<T, R> extends AbstractFlowableWithUps
                             b = it.hasNext();
                         } catch (Throwable ex) {
                             Exceptions.throwIfFatal(ex);
-                            s.cancel();
+                            upstream.cancel();
                             ExceptionHelper.addThrowable(error, ex);
                             ex = ExceptionHelper.terminate(error);
                             a.onError(ex);
@@ -303,7 +303,7 @@ public final class FlowableFlattenIterable<T, R> extends AbstractFlowableWithUps
                         } catch (Throwable ex) {
                             Exceptions.throwIfFatal(ex);
                             current = null;
-                            s.cancel();
+                            upstream.cancel();
                             ExceptionHelper.addThrowable(error, ex);
                             ex = ExceptionHelper.terminate(error);
                             a.onError(ex);
@@ -325,7 +325,7 @@ public final class FlowableFlattenIterable<T, R> extends AbstractFlowableWithUps
                         } catch (Throwable ex) {
                             Exceptions.throwIfFatal(ex);
                             current = null;
-                            s.cancel();
+                            upstream.cancel();
                             ExceptionHelper.addThrowable(error, ex);
                             ex = ExceptionHelper.terminate(error);
                             a.onError(ex);
@@ -372,7 +372,7 @@ public final class FlowableFlattenIterable<T, R> extends AbstractFlowableWithUps
                 int c = consumed + 1;
                 if (c == limit) {
                     consumed = 0;
-                    s.request(c);
+                    upstream.request(c);
                 } else {
                     consumed = c;
                 }

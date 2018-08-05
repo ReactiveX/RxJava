@@ -36,9 +36,9 @@ public final class FlowableOnBackpressureLatest<T> extends AbstractFlowableWithU
 
         private static final long serialVersionUID = 163080509307634843L;
 
-        final Subscriber<? super T> actual;
+        final Subscriber<? super T> downstream;
 
-        Subscription s;
+        Subscription upstream;
 
         volatile boolean done;
         Throwable error;
@@ -49,15 +49,15 @@ public final class FlowableOnBackpressureLatest<T> extends AbstractFlowableWithU
 
         final AtomicReference<T> current = new AtomicReference<T>();
 
-        BackpressureLatestSubscriber(Subscriber<? super T> actual) {
-            this.actual = actual;
+        BackpressureLatestSubscriber(Subscriber<? super T> downstream) {
+            this.downstream = downstream;
         }
 
         @Override
         public void onSubscribe(Subscription s) {
-            if (SubscriptionHelper.validate(this.s, s)) {
-                this.s = s;
-                actual.onSubscribe(this);
+            if (SubscriptionHelper.validate(this.upstream, s)) {
+                this.upstream = s;
+                downstream.onSubscribe(this);
                 s.request(Long.MAX_VALUE);
             }
         }
@@ -93,7 +93,7 @@ public final class FlowableOnBackpressureLatest<T> extends AbstractFlowableWithU
         public void cancel() {
             if (!cancelled) {
                 cancelled = true;
-                s.cancel();
+                upstream.cancel();
 
                 if (getAndIncrement() == 0) {
                     current.lazySet(null);
@@ -105,7 +105,7 @@ public final class FlowableOnBackpressureLatest<T> extends AbstractFlowableWithU
             if (getAndIncrement() != 0) {
                 return;
             }
-            final Subscriber<? super T> a = actual;
+            final Subscriber<? super T> a = downstream;
             int missed = 1;
             final AtomicLong r = requested;
             final AtomicReference<T> q = current;

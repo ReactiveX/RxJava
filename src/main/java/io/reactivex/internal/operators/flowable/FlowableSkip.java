@@ -31,22 +31,22 @@ public final class FlowableSkip<T> extends AbstractFlowableWithUpstream<T, T> {
     }
 
     static final class SkipSubscriber<T> implements FlowableSubscriber<T>, Subscription {
-        final Subscriber<? super T> actual;
+        final Subscriber<? super T> downstream;
         long remaining;
 
-        Subscription s;
+        Subscription upstream;
 
         SkipSubscriber(Subscriber<? super T> actual, long n) {
-            this.actual = actual;
+            this.downstream = actual;
             this.remaining = n;
         }
 
         @Override
         public void onSubscribe(Subscription s) {
-            if (SubscriptionHelper.validate(this.s, s)) {
+            if (SubscriptionHelper.validate(this.upstream, s)) {
                 long n = remaining;
-                this.s = s;
-                actual.onSubscribe(this);
+                this.upstream = s;
+                downstream.onSubscribe(this);
                 s.request(n);
             }
         }
@@ -56,28 +56,28 @@ public final class FlowableSkip<T> extends AbstractFlowableWithUpstream<T, T> {
             if (remaining != 0L) {
                 remaining--;
             } else {
-                actual.onNext(t);
+                downstream.onNext(t);
             }
         }
 
         @Override
         public void onError(Throwable t) {
-            actual.onError(t);
+            downstream.onError(t);
         }
 
         @Override
         public void onComplete() {
-            actual.onComplete();
+            downstream.onComplete();
         }
 
         @Override
         public void request(long n) {
-            s.request(n);
+            upstream.request(n);
         }
 
         @Override
         public void cancel() {
-            s.cancel();
+            upstream.cancel();
         }
     }
 }

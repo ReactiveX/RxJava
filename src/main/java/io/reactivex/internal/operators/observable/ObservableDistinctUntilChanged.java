@@ -59,7 +59,7 @@ public final class ObservableDistinctUntilChanged<T, K> extends AbstractObservab
                 return;
             }
             if (sourceMode != NONE) {
-                actual.onNext(t);
+                downstream.onNext(t);
                 return;
             }
 
@@ -82,7 +82,7 @@ public final class ObservableDistinctUntilChanged<T, K> extends AbstractObservab
                return;
             }
 
-            actual.onNext(t);
+            downstream.onNext(t);
         }
 
         @Override
@@ -94,7 +94,7 @@ public final class ObservableDistinctUntilChanged<T, K> extends AbstractObservab
         @Override
         public T poll() throws Exception {
             for (;;) {
-                T v = qs.poll();
+                T v = qd.poll();
                 if (v == null) {
                     return null;
                 }

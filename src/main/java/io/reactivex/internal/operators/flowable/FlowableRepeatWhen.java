@@ -68,12 +68,11 @@ public final class FlowableRepeatWhen<T> extends AbstractFlowableWithUpstream<T,
     extends AtomicInteger
     implements FlowableSubscriber<Object>, Subscription {
 
-
         private static final long serialVersionUID = 2827772011130406689L;
 
         final Publisher<T> source;
 
-        final AtomicReference<Subscription> subscription;
+        final AtomicReference<Subscription> upstream;
 
         final AtomicLong requested;
 
@@ -81,20 +80,20 @@ public final class FlowableRepeatWhen<T> extends AbstractFlowableWithUpstream<T,
 
         WhenReceiver(Publisher<T> source) {
             this.source = source;
-            this.subscription = new AtomicReference<Subscription>();
+            this.upstream = new AtomicReference<Subscription>();
             this.requested = new AtomicLong();
         }
 
         @Override
         public void onSubscribe(Subscription s) {
-            SubscriptionHelper.deferredSetOnce(subscription, requested, s);
+            SubscriptionHelper.deferredSetOnce(upstream, requested, s);
         }
 
         @Override
         public void onNext(Object t) {
             if (getAndIncrement() == 0) {
                 for (;;) {
-                    if (SubscriptionHelper.isCancelled(subscription.get())) {
+                    if (SubscriptionHelper.isCancelled(upstream.get())) {
                         return;
                     }
 
@@ -110,23 +109,23 @@ public final class FlowableRepeatWhen<T> extends AbstractFlowableWithUpstream<T,
         @Override
         public void onError(Throwable t) {
             subscriber.cancel();
-            subscriber.actual.onError(t);
+            subscriber.downstream.onError(t);
         }
 
         @Override
         public void onComplete() {
             subscriber.cancel();
-            subscriber.actual.onComplete();
+            subscriber.downstream.onComplete();
         }
 
         @Override
         public void request(long n) {
-            SubscriptionHelper.deferredRequest(subscription, requested, n);
+            SubscriptionHelper.deferredRequest(upstream, requested, n);
         }
 
         @Override
         public void cancel() {
-            SubscriptionHelper.cancel(subscription);
+            SubscriptionHelper.cancel(upstream);
         }
     }
 
@@ -134,7 +133,7 @@ public final class FlowableRepeatWhen<T> extends AbstractFlowableWithUpstream<T,
 
         private static final long serialVersionUID = -5604623027276966720L;
 
-        protected final Subscriber<? super T> actual;
+        protected final Subscriber<? super T> downstream;
 
         protected final FlowableProcessor<U> processor;
 
@@ -144,7 +143,7 @@ public final class FlowableRepeatWhen<T> extends AbstractFlowableWithUpstream<T,
 
         WhenSourceSubscriber(Subscriber<? super T> actual, FlowableProcessor<U> processor,
                 Subscription receiver) {
-            this.actual = actual;
+            this.downstream = actual;
             this.processor = processor;
             this.receiver = receiver;
         }
@@ -157,7 +156,7 @@ public final class FlowableRepeatWhen<T> extends AbstractFlowableWithUpstream<T,
         @Override
         public final void onNext(T t) {
             produced++;
-            actual.onNext(t);
+            downstream.onNext(t);
         }
 
         protected final void again(U signal) {
@@ -190,7 +189,7 @@ public final class FlowableRepeatWhen<T> extends AbstractFlowableWithUpstream<T,
         @Override
         public void onError(Throwable t) {
             receiver.cancel();
-            actual.onError(t);
+            downstream.onError(t);
         }
 
         @Override

@@ -48,41 +48,41 @@ public final class ObservableScanSeed<T, R> extends AbstractObservableWithUpstre
     }
 
     static final class ScanSeedObserver<T, R> implements Observer<T>, Disposable {
-        final Observer<? super R> actual;
+        final Observer<? super R> downstream;
         final BiFunction<R, ? super T, R> accumulator;
 
         R value;
 
-        Disposable s;
+        Disposable upstream;
 
         boolean done;
 
         ScanSeedObserver(Observer<? super R> actual, BiFunction<R, ? super T, R> accumulator, R value) {
-            this.actual = actual;
+            this.downstream = actual;
             this.accumulator = accumulator;
             this.value = value;
         }
 
         @Override
-        public void onSubscribe(Disposable s) {
-            if (DisposableHelper.validate(this.s, s)) {
-                this.s = s;
+        public void onSubscribe(Disposable d) {
+            if (DisposableHelper.validate(this.upstream, d)) {
+                this.upstream = d;
 
-                actual.onSubscribe(this);
+                downstream.onSubscribe(this);
 
-                actual.onNext(value);
+                downstream.onNext(value);
             }
         }
 
 
         @Override
         public void dispose() {
-            s.dispose();
+            upstream.dispose();
         }
 
         @Override
         public boolean isDisposed() {
-            return s.isDisposed();
+            return upstream.isDisposed();
         }
 
         @Override
@@ -99,14 +99,14 @@ public final class ObservableScanSeed<T, R> extends AbstractObservableWithUpstre
                 u = ObjectHelper.requireNonNull(accumulator.apply(v, t), "The accumulator returned a null value");
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
-                s.dispose();
+                upstream.dispose();
                 onError(e);
                 return;
             }
 
             value = u;
 
-            actual.onNext(u);
+            downstream.onNext(u);
         }
 
         @Override
@@ -116,7 +116,7 @@ public final class ObservableScanSeed<T, R> extends AbstractObservableWithUpstre
                 return;
             }
             done = true;
-            actual.onError(t);
+            downstream.onError(t);
         }
 
         @Override
@@ -125,7 +125,7 @@ public final class ObservableScanSeed<T, R> extends AbstractObservableWithUpstre
                 return;
             }
             done = true;
-            actual.onComplete();
+            downstream.onComplete();
         }
     }
 }

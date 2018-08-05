@@ -58,7 +58,7 @@ public final class ParallelSortedJoin<T> extends Flowable<T> {
 
         private static final long serialVersionUID = 3481980673745556697L;
 
-        final Subscriber<? super T> actual;
+        final Subscriber<? super T> downstream;
 
         final SortedJoinInnerSubscriber<T>[] subscribers;
 
@@ -78,7 +78,7 @@ public final class ParallelSortedJoin<T> extends Flowable<T> {
 
         @SuppressWarnings("unchecked")
         SortedJoinSubscription(Subscriber<? super T> actual, int n, Comparator<? super T> comparator) {
-            this.actual = actual;
+            this.downstream = actual;
             this.comparator = comparator;
 
             SortedJoinInnerSubscriber<T>[] s = new SortedJoinInnerSubscriber[n];
@@ -142,7 +142,7 @@ public final class ParallelSortedJoin<T> extends Flowable<T> {
             }
 
             int missed = 1;
-            Subscriber<? super T> a = actual;
+            Subscriber<? super T> a = downstream;
             List<T>[] lists = this.lists;
             int[] indexes = this.indexes;
             int n = indexes.length;

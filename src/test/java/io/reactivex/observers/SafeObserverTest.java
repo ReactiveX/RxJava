@@ -485,7 +485,7 @@ public class SafeObserverTest {
         };
         SafeObserver<Integer> observer = new SafeObserver<Integer>(actual);
 
-        assertSame(actual, observer.actual);
+        assertSame(actual, observer.downstream);
     }
 
     @Test

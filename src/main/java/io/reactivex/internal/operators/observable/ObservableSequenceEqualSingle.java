@@ -53,7 +53,7 @@ public final class ObservableSequenceEqualSingle<T> extends Single<Boolean> impl
     static final class EqualCoordinator<T> extends AtomicInteger implements Disposable {
 
         private static final long serialVersionUID = -6178010334400373240L;
-        final SingleObserver<? super Boolean> actual;
+        final SingleObserver<? super Boolean> downstream;
         final BiPredicate<? super T, ? super T> comparer;
         final ArrayCompositeDisposable resources;
         final ObservableSource<? extends T> first;
@@ -69,7 +69,7 @@ public final class ObservableSequenceEqualSingle<T> extends Single<Boolean> impl
         EqualCoordinator(SingleObserver<? super Boolean> actual, int bufferSize,
                                 ObservableSource<? extends T> first, ObservableSource<? extends T> second,
                                 BiPredicate<? super T, ? super T> comparer) {
-            this.actual = actual;
+            this.downstream = actual;
             this.first = first;
             this.second = second;
             this.comparer = comparer;
@@ -81,8 +81,8 @@ public final class ObservableSequenceEqualSingle<T> extends Single<Boolean> impl
             this.resources = new ArrayCompositeDisposable(2);
         }
 
-        boolean setDisposable(Disposable s, int index) {
-            return resources.setResource(index, s);
+        boolean setDisposable(Disposable d, int index) {
+            return resources.setResource(index, d);
         }
 
         void subscribe() {
@@ -145,7 +145,7 @@ public final class ObservableSequenceEqualSingle<T> extends Single<Boolean> impl
                         if (e != null) {
                             cancel(q1, q2);
 
-                            actual.onError(e);
+                            downstream.onError(e);
                             return;
                         }
                     }
@@ -156,7 +156,7 @@ public final class ObservableSequenceEqualSingle<T> extends Single<Boolean> impl
                         if (e != null) {
                             cancel(q1, q2);
 
-                            actual.onError(e);
+                            downstream.onError(e);
                             return;
                         }
                     }
@@ -172,13 +172,13 @@ public final class ObservableSequenceEqualSingle<T> extends Single<Boolean> impl
                     boolean e2 = v2 == null;
 
                     if (d1 && d2 && e1 && e2) {
-                        actual.onSuccess(true);
+                        downstream.onSuccess(true);
                         return;
                     }
                     if ((d1 && d2) && (e1 != e2)) {
                         cancel(q1, q2);
 
-                        actual.onSuccess(false);
+                        downstream.onSuccess(false);
                         return;
                     }
 
@@ -191,14 +191,14 @@ public final class ObservableSequenceEqualSingle<T> extends Single<Boolean> impl
                             Exceptions.throwIfFatal(ex);
                             cancel(q1, q2);
 
-                            actual.onError(ex);
+                            downstream.onError(ex);
                             return;
                         }
 
                         if (!c) {
                             cancel(q1, q2);
 
-                            actual.onSuccess(false);
+                            downstream.onSuccess(false);
                             return;
                         }
 
@@ -234,8 +234,8 @@ public final class ObservableSequenceEqualSingle<T> extends Single<Boolean> impl
         }
 
         @Override
-        public void onSubscribe(Disposable s) {
-            parent.setDisposable(s, index);
+        public void onSubscribe(Disposable d) {
+            parent.setDisposable(d, index);
         }
 
         @Override

@@ -75,7 +75,7 @@ public final class ObservableCombineLatest<T, R> extends Observable<R> {
     static final class LatestCoordinator<T, R> extends AtomicInteger implements Disposable {
 
         private static final long serialVersionUID = 8567835998786448817L;
-        final Observer<? super R> actual;
+        final Observer<? super R> downstream;
         final Function<? super Object[], ? extends R> combiner;
         final CombinerObserver<T, R>[] observers;
         Object[] latest;
@@ -95,7 +95,7 @@ public final class ObservableCombineLatest<T, R> extends Observable<R> {
         LatestCoordinator(Observer<? super R> actual,
                 Function<? super Object[], ? extends R> combiner,
                 int count, int bufferSize, boolean delayError) {
-            this.actual = actual;
+            this.downstream = actual;
             this.combiner = combiner;
             this.delayError = delayError;
             this.latest = new Object[count];
@@ -110,7 +110,7 @@ public final class ObservableCombineLatest<T, R> extends Observable<R> {
         public void subscribe(ObservableSource<? extends T>[] sources) {
             Observer<T>[] as = observers;
             int len = as.length;
-            actual.onSubscribe(this);
+            downstream.onSubscribe(this);
             for (int i = 0; i < len; i++) {
                 if (done || cancelled) {
                     return;
@@ -154,7 +154,7 @@ public final class ObservableCombineLatest<T, R> extends Observable<R> {
             }
 
             final SpscLinkedArrayQueue<Object[]> q = queue;
-            final Observer<? super R> a = actual;
+            final Observer<? super R> a = downstream;
             final boolean delayError = this.delayError;
 
             int missed = 1;
@@ -298,8 +298,8 @@ public final class ObservableCombineLatest<T, R> extends Observable<R> {
         }
 
         @Override
-        public void onSubscribe(Disposable s) {
-            DisposableHelper.setOnce(this, s);
+        public void onSubscribe(Disposable d) {
+            DisposableHelper.setOnce(this, d);
         }
 
         @Override

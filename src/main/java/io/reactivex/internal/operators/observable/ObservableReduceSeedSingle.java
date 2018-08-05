@@ -49,26 +49,26 @@ public final class ObservableReduceSeedSingle<T, R> extends Single<R> {
 
     static final class ReduceSeedObserver<T, R> implements Observer<T>, Disposable {
 
-        final SingleObserver<? super R> actual;
+        final SingleObserver<? super R> downstream;
 
         final BiFunction<R, ? super T, R> reducer;
 
         R value;
 
-        Disposable d;
+        Disposable upstream;
 
         ReduceSeedObserver(SingleObserver<? super R> actual, BiFunction<R, ? super T, R> reducer, R value) {
-            this.actual = actual;
+            this.downstream = actual;
             this.value = value;
             this.reducer = reducer;
         }
 
         @Override
         public void onSubscribe(Disposable d) {
-            if (DisposableHelper.validate(this.d, d)) {
-                this.d = d;
+            if (DisposableHelper.validate(this.upstream, d)) {
+                this.upstream = d;
 
-                actual.onSubscribe(this);
+                downstream.onSubscribe(this);
             }
         }
 
@@ -80,7 +80,7 @@ public final class ObservableReduceSeedSingle<T, R> extends Single<R> {
                     this.value = ObjectHelper.requireNonNull(reducer.apply(v, value), "The reducer returned a null value");
                 } catch (Throwable ex) {
                     Exceptions.throwIfFatal(ex);
-                    d.dispose();
+                    upstream.dispose();
                     onError(ex);
                 }
             }
@@ -91,7 +91,7 @@ public final class ObservableReduceSeedSingle<T, R> extends Single<R> {
             R v = value;
             if (v != null) {
                 value = null;
-                actual.onError(e);
+                downstream.onError(e);
             } else {
                 RxJavaPlugins.onError(e);
             }
@@ -102,18 +102,18 @@ public final class ObservableReduceSeedSingle<T, R> extends Single<R> {
             R v = value;
             if (v != null) {
                 value = null;
-                actual.onSuccess(v);
+                downstream.onSuccess(v);
             }
         }
 
         @Override
         public void dispose() {
-            d.dispose();
+            upstream.dispose();
         }
 
         @Override
         public boolean isDisposed() {
-            return d.isDisposed();
+            return upstream.isDisposed();
         }
     }
 }

@@ -59,7 +59,7 @@ public final class FlowableSequenceEqualSingle<T> extends Single<Boolean> implem
 
         private static final long serialVersionUID = -6178010334400373240L;
 
-        final SingleObserver<? super Boolean> actual;
+        final SingleObserver<? super Boolean> downstream;
 
         final BiPredicate<? super T, ? super T> comparer;
 
@@ -74,7 +74,7 @@ public final class FlowableSequenceEqualSingle<T> extends Single<Boolean> implem
         T v2;
 
         EqualCoordinator(SingleObserver<? super Boolean> actual, int prefetch, BiPredicate<? super T, ? super T> comparer) {
-            this.actual = actual;
+            this.downstream = actual;
             this.comparer = comparer;
             this.first = new EqualSubscriber<T>(this, prefetch);
             this.second = new EqualSubscriber<T>(this, prefetch);
@@ -132,7 +132,7 @@ public final class FlowableSequenceEqualSingle<T> extends Single<Boolean> implem
                         if (ex != null) {
                             cancelAndClear();
 
-                            actual.onError(error.terminate());
+                            downstream.onError(error.terminate());
                             return;
                         }
 
@@ -146,7 +146,7 @@ public final class FlowableSequenceEqualSingle<T> extends Single<Boolean> implem
                                 Exceptions.throwIfFatal(exc);
                                 cancelAndClear();
                                 error.addThrowable(exc);
-                                actual.onError(error.terminate());
+                                downstream.onError(error.terminate());
                                 return;
                             }
                             v1 = a;
@@ -162,7 +162,7 @@ public final class FlowableSequenceEqualSingle<T> extends Single<Boolean> implem
                                 Exceptions.throwIfFatal(exc);
                                 cancelAndClear();
                                 error.addThrowable(exc);
-                                actual.onError(error.terminate());
+                                downstream.onError(error.terminate());
                                 return;
                             }
                             v2 = b;
@@ -171,12 +171,12 @@ public final class FlowableSequenceEqualSingle<T> extends Single<Boolean> implem
                         boolean e2 = b == null;
 
                         if (d1 && d2 && e1 && e2) {
-                            actual.onSuccess(true);
+                            downstream.onSuccess(true);
                             return;
                         }
                         if ((d1 && d2) && (e1 != e2)) {
                             cancelAndClear();
-                            actual.onSuccess(false);
+                            downstream.onSuccess(false);
                             return;
                         }
 
@@ -192,13 +192,13 @@ public final class FlowableSequenceEqualSingle<T> extends Single<Boolean> implem
                             Exceptions.throwIfFatal(exc);
                             cancelAndClear();
                             error.addThrowable(exc);
-                            actual.onError(error.terminate());
+                            downstream.onError(error.terminate());
                             return;
                         }
 
                         if (!c) {
                             cancelAndClear();
-                            actual.onSuccess(false);
+                            downstream.onSuccess(false);
                             return;
                         }
 
@@ -220,7 +220,7 @@ public final class FlowableSequenceEqualSingle<T> extends Single<Boolean> implem
                     if (ex != null) {
                         cancelAndClear();
 
-                        actual.onError(error.terminate());
+                        downstream.onError(error.terminate());
                         return;
                     }
                 }

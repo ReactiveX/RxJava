@@ -34,46 +34,46 @@ public final class ObservableFromPublisher<T> extends Observable<T> {
     static final class PublisherSubscriber<T>
     implements FlowableSubscriber<T>, Disposable {
 
-        final Observer<? super T> actual;
-        Subscription s;
+        final Observer<? super T> downstream;
+        Subscription upstream;
 
         PublisherSubscriber(Observer<? super T> o) {
-            this.actual = o;
+            this.downstream = o;
         }
 
         @Override
         public void onComplete() {
-            actual.onComplete();
+            downstream.onComplete();
         }
 
         @Override
         public void onError(Throwable t) {
-            actual.onError(t);
+            downstream.onError(t);
         }
 
         @Override
         public void onNext(T t) {
-            actual.onNext(t);
+            downstream.onNext(t);
         }
 
         @Override
         public void onSubscribe(Subscription s) {
-            if (SubscriptionHelper.validate(this.s, s)) {
-                this.s = s;
-                actual.onSubscribe(this);
+            if (SubscriptionHelper.validate(this.upstream, s)) {
+                this.upstream = s;
+                downstream.onSubscribe(this);
                 s.request(Long.MAX_VALUE);
             }
         }
 
         @Override
         public void dispose() {
-            s.cancel();
-            s = SubscriptionHelper.CANCELLED;
+            upstream.cancel();
+            upstream = SubscriptionHelper.CANCELLED;
         }
 
         @Override
         public boolean isDisposed() {
-            return s == SubscriptionHelper.CANCELLED;
+            return upstream == SubscriptionHelper.CANCELLED;
         }
     }
 }

@@ -48,7 +48,7 @@ public final class MaybeDelaySubscriptionOtherPublisher<T, U> extends AbstractMa
 
         MaybeSource<T> source;
 
-        Subscription s;
+        Subscription upstream;
 
         OtherSubscriber(MaybeObserver<? super T> actual, MaybeSource<T> source) {
             this.main = new DelayMaybeObserver<T>(actual);
@@ -57,10 +57,10 @@ public final class MaybeDelaySubscriptionOtherPublisher<T, U> extends AbstractMa
 
         @Override
         public void onSubscribe(Subscription s) {
-            if (SubscriptionHelper.validate(this.s, s)) {
-                this.s = s;
+            if (SubscriptionHelper.validate(this.upstream, s)) {
+                this.upstream = s;
 
-                main.actual.onSubscribe(this);
+                main.downstream.onSubscribe(this);
 
                 s.request(Long.MAX_VALUE);
             }
@@ -68,9 +68,9 @@ public final class MaybeDelaySubscriptionOtherPublisher<T, U> extends AbstractMa
 
         @Override
         public void onNext(Object t) {
-            if (s != SubscriptionHelper.CANCELLED) {
-                s.cancel();
-                s = SubscriptionHelper.CANCELLED;
+            if (upstream != SubscriptionHelper.CANCELLED) {
+                upstream.cancel();
+                upstream = SubscriptionHelper.CANCELLED;
 
                 subscribeNext();
             }
@@ -78,10 +78,10 @@ public final class MaybeDelaySubscriptionOtherPublisher<T, U> extends AbstractMa
 
         @Override
         public void onError(Throwable t) {
-            if (s != SubscriptionHelper.CANCELLED) {
-                s = SubscriptionHelper.CANCELLED;
+            if (upstream != SubscriptionHelper.CANCELLED) {
+                upstream = SubscriptionHelper.CANCELLED;
 
-                main.actual.onError(t);
+                main.downstream.onError(t);
             } else {
                 RxJavaPlugins.onError(t);
             }
@@ -89,8 +89,8 @@ public final class MaybeDelaySubscriptionOtherPublisher<T, U> extends AbstractMa
 
         @Override
         public void onComplete() {
-            if (s != SubscriptionHelper.CANCELLED) {
-                s = SubscriptionHelper.CANCELLED;
+            if (upstream != SubscriptionHelper.CANCELLED) {
+                upstream = SubscriptionHelper.CANCELLED;
 
                 subscribeNext();
             }
@@ -110,8 +110,8 @@ public final class MaybeDelaySubscriptionOtherPublisher<T, U> extends AbstractMa
 
         @Override
         public void dispose() {
-            s.cancel();
-            s = SubscriptionHelper.CANCELLED;
+            upstream.cancel();
+            upstream = SubscriptionHelper.CANCELLED;
             DisposableHelper.dispose(main);
         }
     }
@@ -121,10 +121,10 @@ public final class MaybeDelaySubscriptionOtherPublisher<T, U> extends AbstractMa
 
         private static final long serialVersionUID = 706635022205076709L;
 
-        final MaybeObserver<? super T> actual;
+        final MaybeObserver<? super T> downstream;
 
-        DelayMaybeObserver(MaybeObserver<? super T> actual) {
-            this.actual = actual;
+        DelayMaybeObserver(MaybeObserver<? super T> downstream) {
+            this.downstream = downstream;
         }
 
         @Override
@@ -134,17 +134,17 @@ public final class MaybeDelaySubscriptionOtherPublisher<T, U> extends AbstractMa
 
         @Override
         public void onSuccess(T value) {
-            actual.onSuccess(value);
+            downstream.onSuccess(value);
         }
 
         @Override
         public void onError(Throwable e) {
-            actual.onError(e);
+            downstream.onError(e);
         }
 
         @Override
         public void onComplete() {
-            actual.onComplete();
+            downstream.onComplete();
         }
     }
 }

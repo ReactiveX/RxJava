@@ -62,8 +62,8 @@ public final class SingleFlatMapPublisher<T, R> extends Flowable<R> {
     }
 
     @Override
-    protected void subscribeActual(Subscriber<? super R> actual) {
-        source.subscribe(new SingleFlatMapPublisherObserver<T, R>(actual, mapper));
+    protected void subscribeActual(Subscriber<? super R> downstream) {
+        source.subscribe(new SingleFlatMapPublisherObserver<T, R>(downstream, mapper));
     }
 
     static final class SingleFlatMapPublisherObserver<S, T> extends AtomicLong
@@ -71,14 +71,14 @@ public final class SingleFlatMapPublisher<T, R> extends Flowable<R> {
 
         private static final long serialVersionUID = 7759721921468635667L;
 
-        final Subscriber<? super T> actual;
+        final Subscriber<? super T> downstream;
         final Function<? super S, ? extends Publisher<? extends T>> mapper;
         final AtomicReference<Subscription> parent;
         Disposable disposable;
 
         SingleFlatMapPublisherObserver(Subscriber<? super T> actual,
                 Function<? super S, ? extends Publisher<? extends T>> mapper) {
-            this.actual = actual;
+            this.downstream = actual;
             this.mapper = mapper;
             this.parent = new AtomicReference<Subscription>();
         }
@@ -86,7 +86,7 @@ public final class SingleFlatMapPublisher<T, R> extends Flowable<R> {
         @Override
         public void onSubscribe(Disposable d) {
             this.disposable = d;
-            actual.onSubscribe(this);
+            downstream.onSubscribe(this);
         }
 
         @Override
@@ -96,7 +96,7 @@ public final class SingleFlatMapPublisher<T, R> extends Flowable<R> {
                 f = ObjectHelper.requireNonNull(mapper.apply(value), "the mapper returned a null Publisher");
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
-                actual.onError(e);
+                downstream.onError(e);
                 return;
             }
             f.subscribe(this);
@@ -109,17 +109,17 @@ public final class SingleFlatMapPublisher<T, R> extends Flowable<R> {
 
         @Override
         public void onNext(T t) {
-            actual.onNext(t);
+            downstream.onNext(t);
         }
 
         @Override
         public void onComplete() {
-            actual.onComplete();
+            downstream.onComplete();
         }
 
         @Override
         public void onError(Throwable e) {
-            actual.onError(e);
+            downstream.onError(e);
         }
 
         @Override

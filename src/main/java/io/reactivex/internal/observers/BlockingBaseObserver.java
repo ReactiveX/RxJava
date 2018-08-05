@@ -24,7 +24,7 @@ implements Observer<T>, Disposable {
     T value;
     Throwable error;
 
-    Disposable d;
+    Disposable upstream;
 
     volatile boolean cancelled;
 
@@ -34,7 +34,7 @@ implements Observer<T>, Disposable {
 
     @Override
     public final void onSubscribe(Disposable d) {
-        this.d = d;
+        this.upstream = d;
         if (cancelled) {
             d.dispose();
         }
@@ -48,7 +48,7 @@ implements Observer<T>, Disposable {
     @Override
     public final void dispose() {
         cancelled = true;
-        Disposable d = this.d;
+        Disposable d = this.upstream;
         if (d != null) {
             d.dispose();
         }

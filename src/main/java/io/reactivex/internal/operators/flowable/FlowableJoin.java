@@ -76,7 +76,7 @@ public final class FlowableJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> extends A
 
         private static final long serialVersionUID = -6071216598687999801L;
 
-        final Subscriber<? super R> actual;
+        final Subscriber<? super R> downstream;
 
         final AtomicLong requested;
 
@@ -115,7 +115,7 @@ public final class FlowableJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> extends A
         JoinSubscription(Subscriber<? super R> actual, Function<? super TLeft, ? extends Publisher<TLeftEnd>> leftEnd,
                 Function<? super TRight, ? extends Publisher<TRightEnd>> rightEnd,
                         BiFunction<? super TLeft, ? super TRight, ? extends R> resultSelector) {
-            this.actual = actual;
+            this.downstream = actual;
             this.requested = new AtomicLong();
             this.disposables = new CompositeDisposable();
             this.queue = new SpscLinkedArrayQueue<Object>(bufferSize());
@@ -175,7 +175,7 @@ public final class FlowableJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> extends A
 
             int missed = 1;
             SpscLinkedArrayQueue<Object> q = queue;
-            Subscriber<? super R> a = actual;
+            Subscriber<? super R> a = downstream;
 
             for (;;) {
                 for (;;) {

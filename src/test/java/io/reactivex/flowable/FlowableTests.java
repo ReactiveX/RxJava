@@ -549,7 +549,7 @@ public class FlowableTests {
         }).replay();
 
         // we connect immediately and it will emit the value
-        Disposable s = f.connect();
+        Disposable connection = f.connect();
         try {
 
             // we then expect the following 2 subscriptions to get that same value
@@ -578,7 +578,7 @@ public class FlowableTests {
             }
             assertEquals(1, counter.get());
         } finally {
-            s.dispose();
+            connection.dispose();
         }
     }
 

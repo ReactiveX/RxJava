@@ -1369,22 +1369,22 @@ public class TestSubscriberTest {
 
         ts.onSubscribe(new BooleanSubscription());
 
-        BooleanSubscription d1 = new BooleanSubscription();
+        BooleanSubscription bs1 = new BooleanSubscription();
 
-        ts.onSubscribe(d1);
+        ts.onSubscribe(bs1);
 
-        assertTrue(d1.isCancelled());
+        assertTrue(bs1.isCancelled());
 
         ts.assertError(IllegalStateException.class);
 
         ts = TestSubscriber.create();
         ts.dispose();
 
-        d1 = new BooleanSubscription();
+        bs1 = new BooleanSubscription();
 
-        ts.onSubscribe(d1);
+        ts.onSubscribe(bs1);
 
-        assertTrue(d1.isCancelled());
+        assertTrue(bs1.isCancelled());
 
     }
 
@@ -1544,7 +1544,7 @@ public class TestSubscriberTest {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>(new FlowableSubscriber<Integer>() {
 
             @Override
-            public void onSubscribe(Subscription d) {
+            public void onSubscribe(Subscription s) {
 
             }
 
@@ -1580,7 +1580,7 @@ public class TestSubscriberTest {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>(new FlowableSubscriber<Integer>() {
 
             @Override
-            public void onSubscribe(Subscription d) {
+            public void onSubscribe(Subscription s) {
 
             }
 

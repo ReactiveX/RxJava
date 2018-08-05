@@ -54,12 +54,12 @@ public final class MaybeTakeUntilPublisher<T, U> extends AbstractMaybeWithUpstre
 
         private static final long serialVersionUID = -2187421758664251153L;
 
-        final MaybeObserver<? super T> actual;
+        final MaybeObserver<? super T> downstream;
 
         final TakeUntilOtherMaybeObserver<U> other;
 
-        TakeUntilMainMaybeObserver(MaybeObserver<? super T> actual) {
-            this.actual = actual;
+        TakeUntilMainMaybeObserver(MaybeObserver<? super T> downstream) {
+            this.downstream = downstream;
             this.other = new TakeUntilOtherMaybeObserver<U>(this);
         }
 
@@ -83,7 +83,7 @@ public final class MaybeTakeUntilPublisher<T, U> extends AbstractMaybeWithUpstre
         public void onSuccess(T value) {
             SubscriptionHelper.cancel(other);
             if (getAndSet(DisposableHelper.DISPOSED) != DisposableHelper.DISPOSED) {
-                actual.onSuccess(value);
+                downstream.onSuccess(value);
             }
         }
 
@@ -91,7 +91,7 @@ public final class MaybeTakeUntilPublisher<T, U> extends AbstractMaybeWithUpstre
         public void onError(Throwable e) {
             SubscriptionHelper.cancel(other);
             if (getAndSet(DisposableHelper.DISPOSED) != DisposableHelper.DISPOSED) {
-                actual.onError(e);
+                downstream.onError(e);
             } else {
                 RxJavaPlugins.onError(e);
             }
@@ -101,13 +101,13 @@ public final class MaybeTakeUntilPublisher<T, U> extends AbstractMaybeWithUpstre
         public void onComplete() {
             SubscriptionHelper.cancel(other);
             if (getAndSet(DisposableHelper.DISPOSED) != DisposableHelper.DISPOSED) {
-                actual.onComplete();
+                downstream.onComplete();
             }
         }
 
         void otherError(Throwable e) {
             if (DisposableHelper.dispose(this)) {
-                actual.onError(e);
+                downstream.onError(e);
             } else {
                 RxJavaPlugins.onError(e);
             }
@@ -115,7 +115,7 @@ public final class MaybeTakeUntilPublisher<T, U> extends AbstractMaybeWithUpstre
 
         void otherComplete() {
             if (DisposableHelper.dispose(this)) {
-                actual.onComplete();
+                downstream.onComplete();
             }
         }
 

@@ -74,46 +74,46 @@ public final class ParallelDoOnNextTry<T> extends ParallelFlowable<T> {
 
     static final class ParallelDoOnNextSubscriber<T> implements ConditionalSubscriber<T>, Subscription {
 
-        final Subscriber<? super T> actual;
+        final Subscriber<? super T> downstream;
 
         final Consumer<? super T> onNext;
 
         final BiFunction<? super Long, ? super Throwable, ParallelFailureHandling> errorHandler;
 
-        Subscription s;
+        Subscription upstream;
 
         boolean done;
 
         ParallelDoOnNextSubscriber(Subscriber<? super T> actual, Consumer<? super T> onNext,
                 BiFunction<? super Long, ? super Throwable, ParallelFailureHandling> errorHandler) {
-            this.actual = actual;
+            this.downstream = actual;
             this.onNext = onNext;
             this.errorHandler = errorHandler;
         }
 
         @Override
         public void request(long n) {
-            s.request(n);
+            upstream.request(n);
         }
 
         @Override
         public void cancel() {
-            s.cancel();
+            upstream.cancel();
         }
 
         @Override
         public void onSubscribe(Subscription s) {
-            if (SubscriptionHelper.validate(this.s, s)) {
-                this.s = s;
+            if (SubscriptionHelper.validate(this.upstream, s)) {
+                this.upstream = s;
 
-                actual.onSubscribe(this);
+                downstream.onSubscribe(this);
             }
         }
 
         @Override
         public void onNext(T t) {
             if (!tryOnNext(t)) {
-                s.request(1);
+                upstream.request(1);
             }
         }
 
@@ -157,7 +157,7 @@ public final class ParallelDoOnNextTry<T> extends ParallelFlowable<T> {
                     }
                 }
 
-                actual.onNext(t);
+                downstream.onNext(t);
                 return true;
             }
         }
@@ -169,7 +169,7 @@ public final class ParallelDoOnNextTry<T> extends ParallelFlowable<T> {
                 return;
             }
             done = true;
-            actual.onError(t);
+            downstream.onError(t);
         }
 
         @Override
@@ -178,52 +178,53 @@ public final class ParallelDoOnNextTry<T> extends ParallelFlowable<T> {
                 return;
             }
             done = true;
-            actual.onComplete();
+            downstream.onComplete();
         }
 
     }
     static final class ParallelDoOnNextConditionalSubscriber<T> implements ConditionalSubscriber<T>, Subscription {
 
-        final ConditionalSubscriber<? super T> actual;
+        final ConditionalSubscriber<? super T> downstream;
 
         final Consumer<? super T> onNext;
 
         final BiFunction<? super Long, ? super Throwable, ParallelFailureHandling> errorHandler;
-        Subscription s;
+
+        Subscription upstream;
 
         boolean done;
 
         ParallelDoOnNextConditionalSubscriber(ConditionalSubscriber<? super T> actual,
                 Consumer<? super T> onNext,
                 BiFunction<? super Long, ? super Throwable, ParallelFailureHandling> errorHandler) {
-            this.actual = actual;
+            this.downstream = actual;
             this.onNext = onNext;
             this.errorHandler = errorHandler;
         }
 
         @Override
         public void request(long n) {
-            s.request(n);
+            upstream.request(n);
         }
 
         @Override
         public void cancel() {
-            s.cancel();
+            upstream.cancel();
         }
 
         @Override
         public void onSubscribe(Subscription s) {
-            if (SubscriptionHelper.validate(this.s, s)) {
-                this.s = s;
+            if (SubscriptionHelper.validate(this.upstream, s)) {
+                this.upstream = s;
 
-                actual.onSubscribe(this);
+                downstream.onSubscribe(this);
             }
         }
 
         @Override
         public void onNext(T t) {
             if (!tryOnNext(t) && !done) {
-                s.request(1);
+                upstream.request(1);
             }
         }
 
@@ -267,7 +268,7 @@ public final class ParallelDoOnNextTry<T> extends ParallelFlowable<T> {
                     }
                 }
 
-                return actual.tryOnNext(t);
+                return downstream.tryOnNext(t);
             }
         }
 
@@ -278,7 +279,7 @@ public final class ParallelDoOnNextTry<T> extends ParallelFlowable<T> {
                 return;
             }
             done = true;
-            actual.onError(t);
+            downstream.onError(t);
         }
 
         @Override
@@ -287,7 +288,7 @@ public final class ParallelDoOnNextTry<T> extends ParallelFlowable<T> {
                 return;
             }
             done = true;
-            actual.onComplete();
+            downstream.onComplete();
         }
 
     }

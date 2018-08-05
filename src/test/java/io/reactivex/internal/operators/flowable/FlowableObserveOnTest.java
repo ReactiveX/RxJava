@@ -1306,19 +1306,19 @@ public class FlowableObserveOnTest {
 
         us.observeOn(Schedulers.single())
         .subscribe(new FlowableSubscriber<Integer>() {
-            Subscription d;
+            Subscription upstream;
             int count;
             @Override
-            public void onSubscribe(Subscription d) {
-                this.d = d;
-                ((QueueSubscription<?>)d).requestFusion(QueueFuseable.ANY);
+            public void onSubscribe(Subscription s) {
+                this.upstream = s;
+                ((QueueSubscription<?>)s).requestFusion(QueueFuseable.ANY);
             }
 
             @Override
             public void onNext(Integer value) {
                 if (++count == 1) {
                     us.onNext(2);
-                    d.cancel();
+                    upstream.cancel();
                     cdl.countDown();
                 }
             }

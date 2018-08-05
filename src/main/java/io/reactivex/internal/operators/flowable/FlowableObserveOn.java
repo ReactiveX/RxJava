@@ -72,7 +72,7 @@ final Scheduler scheduler;
 
         final AtomicLong requested;
 
-        Subscription s;
+        Subscription upstream;
 
         SimpleQueue<T> queue;
 
@@ -109,7 +109,7 @@ final Scheduler scheduler;
                 return;
             }
             if (!queue.offer(t)) {
-                s.cancel();
+                upstream.cancel();
 
                 error = new MissingBackpressureException("Queue is full?!");
                 done = true;
@@ -151,7 +151,7 @@ final Scheduler scheduler;
             }
 
             cancelled = true;
-            s.cancel();
+            upstream.cancel();
             worker.dispose();
 
             if (getAndIncrement() == 0) {
@@ -244,7 +244,7 @@ final Scheduler scheduler;
 
         private static final long serialVersionUID = -4547113800637756442L;
 
-        final Subscriber<? super T> actual;
+        final Subscriber<? super T> downstream;
 
         ObserveOnSubscriber(
                 Subscriber<? super T> actual,
@@ -252,13 +252,13 @@ final Scheduler scheduler;
                 boolean delayError,
                 int prefetch) {
             super(worker, delayError, prefetch);
-            this.actual = actual;
+            this.downstream = actual;
         }
 
         @Override
         public void onSubscribe(Subscription s) {
-            if (SubscriptionHelper.validate(this.s, s)) {
-                this.s = s;
+            if (SubscriptionHelper.validate(this.upstream, s)) {
+                this.upstream = s;
 
                 if (s instanceof QueueSubscription) {
                     @SuppressWarnings("unchecked")
@@ -271,14 +271,14 @@ final Scheduler scheduler;
                         queue = f;
                         done = true;
 
-                        actual.onSubscribe(this);
+                        downstream.onSubscribe(this);
                         return;
                     } else
                     if (m == ASYNC) {
                         sourceMode = ASYNC;
                         queue = f;
 
-                        actual.onSubscribe(this);
+                        downstream.onSubscribe(this);
 
                         s.request(prefetch);
 
@@ -288,7 +288,7 @@ final Scheduler scheduler;
 
                 queue = new SpscArrayQueue<T>(prefetch);
 
-                actual.onSubscribe(this);
+                downstream.onSubscribe(this);
 
                 s.request(prefetch);
             }
@@ -298,7 +298,7 @@ final Scheduler scheduler;
         void runSync() {
             int missed = 1;
 
-            final Subscriber<? super T> a = actual;
+            final Subscriber<? super T> a = downstream;
             final SimpleQueue<T> q = queue;
 
             long e = produced;
@@ -314,7 +314,7 @@ final Scheduler scheduler;
                         v = q.poll();
                     } catch (Throwable ex) {
                         Exceptions.throwIfFatal(ex);
-                        s.cancel();
+                        upstream.cancel();
                         a.onError(ex);
                         worker.dispose();
                         return;
@@ -361,7 +361,7 @@ final Scheduler scheduler;
         void runAsync() {
             int missed = 1;
 
-            final Subscriber<? super T> a = actual;
+            final Subscriber<? super T> a = downstream;
             final SimpleQueue<T> q = queue;
 
             long e = produced;
@@ -379,7 +379,7 @@ final Scheduler scheduler;
                     } catch (Throwable ex) {
                         Exceptions.throwIfFatal(ex);
 
-                        s.cancel();
+                        upstream.cancel();
                         q.clear();
 
                         a.onError(ex);
@@ -404,7 +404,7 @@ final Scheduler scheduler;
                         if (r != Long.MAX_VALUE) {
                             r = requested.addAndGet(-e);
                         }
-                        s.request(e);
+                        upstream.request(e);
                         e = 0L;
                     }
                 }
@@ -438,14 +438,14 @@ final Scheduler scheduler;
 
                 boolean d = done;
 
-                actual.onNext(null);
+                downstream.onNext(null);
 
                 if (d) {
                     Throwable e = error;
                     if (e != null) {
-                        actual.onError(e);
+                        downstream.onError(e);
                     } else {
-                        actual.onComplete();
+                        downstream.onComplete();
                     }
                     worker.dispose();
                     return;
@@ -466,7 +466,7 @@ final Scheduler scheduler;
                 long p = produced + 1;
                 if (p == limit) {
                     produced = 0;
-                    s.request(p);
+                    upstream.request(p);
                 } else {
                     produced = p;
                 }
@@ -481,7 +481,7 @@ final Scheduler scheduler;
 
         private static final long serialVersionUID = 644624475404284533L;
 
-        final ConditionalSubscriber<? super T> actual;
+        final ConditionalSubscriber<? super T> downstream;
 
         long consumed;
 
@@ -491,13 +491,13 @@ final Scheduler scheduler;
                 boolean delayError,
                 int prefetch) {
             super(worker, delayError, prefetch);
-            this.actual = actual;
+            this.downstream = actual;
         }
 
         @Override
         public void onSubscribe(Subscription s) {
-            if (SubscriptionHelper.validate(this.s, s)) {
-                this.s = s;
+            if (SubscriptionHelper.validate(this.upstream, s)) {
+                this.upstream = s;
 
                 if (s instanceof QueueSubscription) {
                     @SuppressWarnings("unchecked")
@@ -510,14 +510,14 @@ final Scheduler scheduler;
                         queue = f;
                         done = true;
 
-                        actual.onSubscribe(this);
+                        downstream.onSubscribe(this);
                         return;
                     } else
                     if (m == ASYNC) {
                         sourceMode = ASYNC;
                         queue = f;
 
-                        actual.onSubscribe(this);
+                        downstream.onSubscribe(this);
 
                         s.request(prefetch);
 
@@ -527,7 +527,7 @@ final Scheduler scheduler;
 
                 queue = new SpscArrayQueue<T>(prefetch);
 
-                actual.onSubscribe(this);
+                downstream.onSubscribe(this);
 
                 s.request(prefetch);
             }
@@ -537,7 +537,7 @@ final Scheduler scheduler;
         void runSync() {
             int missed = 1;
 
-            final ConditionalSubscriber<? super T> a = actual;
+            final ConditionalSubscriber<? super T> a = downstream;
             final SimpleQueue<T> q = queue;
 
             long e = produced;
@@ -552,7 +552,7 @@ final Scheduler scheduler;
                         v = q.poll();
                     } catch (Throwable ex) {
                         Exceptions.throwIfFatal(ex);
-                        s.cancel();
+                        upstream.cancel();
                         a.onError(ex);
                         worker.dispose();
                         return;
@@ -599,7 +599,7 @@ final Scheduler scheduler;
         void runAsync() {
             int missed = 1;
 
-            final ConditionalSubscriber<? super T> a = actual;
+            final ConditionalSubscriber<? super T> a = downstream;
             final SimpleQueue<T> q = queue;
 
             long emitted = produced;
@@ -617,7 +617,7 @@ final Scheduler scheduler;
                     } catch (Throwable ex) {
                         Exceptions.throwIfFatal(ex);
 
-                        s.cancel();
+                        upstream.cancel();
                         q.clear();
 
                         a.onError(ex);
@@ -641,7 +641,7 @@ final Scheduler scheduler;
                     polled++;
 
                     if (polled == limit) {
-                        s.request(polled);
+                        upstream.request(polled);
                         polled = 0L;
                     }
                 }
@@ -677,14 +677,14 @@ final Scheduler scheduler;
 
                 boolean d = done;
 
-                actual.onNext(null);
+                downstream.onNext(null);
 
                 if (d) {
                     Throwable e = error;
                     if (e != null) {
-                        actual.onError(e);
+                        downstream.onError(e);
                     } else {
-                        actual.onComplete();
+                        downstream.onComplete();
                     }
                     worker.dispose();
                     return;
@@ -705,7 +705,7 @@ final Scheduler scheduler;
                 long p = consumed + 1;
                 if (p == limit) {
                     consumed = 0;
-                    s.request(p);
+                    upstream.request(p);
                 } else {
                     consumed = p;
                 }

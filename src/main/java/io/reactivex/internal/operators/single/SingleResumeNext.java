@@ -43,26 +43,26 @@ public final class SingleResumeNext<T> extends Single<T> {
     implements SingleObserver<T>, Disposable {
         private static final long serialVersionUID = -5314538511045349925L;
 
-        final SingleObserver<? super T> actual;
+        final SingleObserver<? super T> downstream;
 
         final Function<? super Throwable, ? extends SingleSource<? extends T>> nextFunction;
 
         ResumeMainSingleObserver(SingleObserver<? super T> actual,
                 Function<? super Throwable, ? extends SingleSource<? extends T>> nextFunction) {
-            this.actual = actual;
+            this.downstream = actual;
             this.nextFunction = nextFunction;
         }
 
         @Override
         public void onSubscribe(Disposable d) {
             if (DisposableHelper.setOnce(this, d)) {
-                actual.onSubscribe(this);
+                downstream.onSubscribe(this);
             }
         }
 
         @Override
         public void onSuccess(T value) {
-            actual.onSuccess(value);
+            downstream.onSuccess(value);
         }
 
         @Override
@@ -73,11 +73,11 @@ public final class SingleResumeNext<T> extends Single<T> {
                 source = ObjectHelper.requireNonNull(nextFunction.apply(e), "The nextFunction returned a null SingleSource.");
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
-                actual.onError(new CompositeException(e, ex));
+                downstream.onError(new CompositeException(e, ex));
                 return;
             }
 
-            source.subscribe(new ResumeSingleObserver<T>(this, actual));
+            source.subscribe(new ResumeSingleObserver<T>(this, downstream));
         }
 
         @Override

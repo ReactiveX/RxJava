@@ -33,22 +33,22 @@ public final class ObservableAny<T> extends AbstractObservableWithUpstream<T, Bo
 
     static final class AnyObserver<T> implements Observer<T>, Disposable {
 
-        final Observer<? super Boolean> actual;
+        final Observer<? super Boolean> downstream;
         final Predicate<? super T> predicate;
 
-        Disposable s;
+        Disposable upstream;
 
         boolean done;
 
         AnyObserver(Observer<? super Boolean> actual, Predicate<? super T> predicate) {
-            this.actual = actual;
+            this.downstream = actual;
             this.predicate = predicate;
         }
         @Override
-        public void onSubscribe(Disposable s) {
-            if (DisposableHelper.validate(this.s, s)) {
-                this.s = s;
-                actual.onSubscribe(this);
+        public void onSubscribe(Disposable d) {
+            if (DisposableHelper.validate(this.upstream, d)) {
+                this.upstream = d;
+                downstream.onSubscribe(this);
             }
         }
 
@@ -62,15 +62,15 @@ public final class ObservableAny<T> extends AbstractObservableWithUpstream<T, Bo
                 b = predicate.test(t);
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
-                s.dispose();
+                upstream.dispose();
                 onError(e);
                 return;
             }
             if (b) {
                 done = true;
-                s.dispose();
-                actual.onNext(true);
-                actual.onComplete();
+                upstream.dispose();
+                downstream.onNext(true);
+                downstream.onComplete();
             }
         }
 
@@ -82,26 +82,26 @@ public final class ObservableAny<T> extends AbstractObservableWithUpstream<T, Bo
             }
 
             done = true;
-            actual.onError(t);
+            downstream.onError(t);
         }
 
         @Override
         public void onComplete() {
             if (!done) {
                 done = true;
-                actual.onNext(false);
-                actual.onComplete();
+                downstream.onNext(false);
+                downstream.onComplete();
             }
         }
 
         @Override
         public void dispose() {
-            s.dispose();
+            upstream.dispose();
         }
 
         @Override
         public boolean isDisposed() {
-            return s.isDisposed();
+            return upstream.isDisposed();
         }
     }
 }

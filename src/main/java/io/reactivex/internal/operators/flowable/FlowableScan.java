@@ -35,25 +35,25 @@ public final class FlowableScan<T> extends AbstractFlowableWithUpstream<T, T> {
     }
 
     static final class ScanSubscriber<T> implements FlowableSubscriber<T>, Subscription {
-        final Subscriber<? super T> actual;
+        final Subscriber<? super T> downstream;
         final BiFunction<T, T, T> accumulator;
 
-        Subscription s;
+        Subscription upstream;
 
         T value;
 
         boolean done;
 
         ScanSubscriber(Subscriber<? super T> actual, BiFunction<T, T, T> accumulator) {
-            this.actual = actual;
+            this.downstream = actual;
             this.accumulator = accumulator;
         }
 
         @Override
         public void onSubscribe(Subscription s) {
-            if (SubscriptionHelper.validate(this.s, s)) {
-                this.s = s;
-                actual.onSubscribe(this);
+            if (SubscriptionHelper.validate(this.upstream, s)) {
+                this.upstream = s;
+                downstream.onSubscribe(this);
             }
         }
 
@@ -62,7 +62,7 @@ public final class FlowableScan<T> extends AbstractFlowableWithUpstream<T, T> {
             if (done) {
                 return;
             }
-            final Subscriber<? super T> a = actual;
+            final Subscriber<? super T> a = downstream;
             T v = value;
             if (v == null) {
                 value = t;
@@ -74,7 +74,7 @@ public final class FlowableScan<T> extends AbstractFlowableWithUpstream<T, T> {
                     u = ObjectHelper.requireNonNull(accumulator.apply(v, t), "The value returned by the accumulator is null");
                 } catch (Throwable e) {
                     Exceptions.throwIfFatal(e);
-                    s.cancel();
+                    upstream.cancel();
                     onError(e);
                     return;
                 }
@@ -91,7 +91,7 @@ public final class FlowableScan<T> extends AbstractFlowableWithUpstream<T, T> {
                 return;
             }
             done = true;
-            actual.onError(t);
+            downstream.onError(t);
         }
 
         @Override
@@ -100,17 +100,17 @@ public final class FlowableScan<T> extends AbstractFlowableWithUpstream<T, T> {
                 return;
             }
             done = true;
-            actual.onComplete();
+            downstream.onComplete();
         }
 
         @Override
         public void request(long n) {
-            s.request(n);
+            upstream.request(n);
         }
 
         @Override
         public void cancel() {
-            s.cancel();
+            upstream.cancel();
         }
     }
 }

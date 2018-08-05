@@ -59,12 +59,12 @@ public final class ObservableInterval extends Observable<Long> {
 
         private static final long serialVersionUID = 346773832286157679L;
 
-        final Observer<? super Long> actual;
+        final Observer<? super Long> downstream;
 
         long count;
 
-        IntervalObserver(Observer<? super Long> actual) {
-            this.actual = actual;
+        IntervalObserver(Observer<? super Long> downstream) {
+            this.downstream = downstream;
         }
 
         @Override
@@ -80,7 +80,7 @@ public final class ObservableInterval extends Observable<Long> {
         @Override
         public void run() {
             if (get() != DisposableHelper.DISPOSED) {
-                actual.onNext(count++);
+                downstream.onNext(count++);
             }
         }
 

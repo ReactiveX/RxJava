@@ -35,52 +35,52 @@ public final class ObservableSkipLast<T> extends AbstractObservableWithUpstream<
     static final class SkipLastObserver<T> extends ArrayDeque<T> implements Observer<T>, Disposable {
 
         private static final long serialVersionUID = -3807491841935125653L;
-        final Observer<? super T> actual;
+        final Observer<? super T> downstream;
         final int skip;
 
-        Disposable s;
+        Disposable upstream;
 
         SkipLastObserver(Observer<? super T> actual, int skip) {
             super(skip);
-            this.actual = actual;
+            this.downstream = actual;
             this.skip = skip;
         }
 
         @Override
-        public void onSubscribe(Disposable s) {
-            if (DisposableHelper.validate(this.s, s)) {
-                this.s = s;
-                actual.onSubscribe(this);
+        public void onSubscribe(Disposable d) {
+            if (DisposableHelper.validate(this.upstream, d)) {
+                this.upstream = d;
+                downstream.onSubscribe(this);
             }
         }
 
 
         @Override
         public void dispose() {
-            s.dispose();
+            upstream.dispose();
         }
 
         @Override
         public boolean isDisposed() {
-            return s.isDisposed();
+            return upstream.isDisposed();
         }
 
         @Override
         public void onNext(T t) {
             if (skip == size()) {
-                actual.onNext(poll());
+                downstream.onNext(poll());
             }
             offer(t);
         }
 
         @Override
         public void onError(Throwable t) {
-            actual.onError(t);
+            downstream.onError(t);
         }
 
         @Override
         public void onComplete() {
-            actual.onComplete();
+            downstream.onComplete();
         }
     }
 }

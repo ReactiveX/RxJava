@@ -53,10 +53,10 @@ public final class MaybeCreate<T> extends Maybe<T> {
     extends AtomicReference<Disposable>
     implements MaybeEmitter<T>, Disposable {
 
-        final MaybeObserver<? super T> actual;
+        final MaybeObserver<? super T> downstream;
 
-        Emitter(MaybeObserver<? super T> actual) {
-            this.actual = actual;
+        Emitter(MaybeObserver<? super T> downstream) {
+            this.downstream = downstream;
         }
 
 
@@ -69,9 +69,9 @@ public final class MaybeCreate<T> extends Maybe<T> {
                 if (d != DisposableHelper.DISPOSED) {
                     try {
                         if (value == null) {
-                            actual.onError(new NullPointerException("onSuccess called with null. Null values are generally not allowed in 2.x operators and sources."));
+                            downstream.onError(new NullPointerException("onSuccess called with null. Null values are generally not allowed in 2.x operators and sources."));
                         } else {
-                            actual.onSuccess(value);
+                            downstream.onSuccess(value);
                         }
                     } finally {
                         if (d != null) {
@@ -98,7 +98,7 @@ public final class MaybeCreate<T> extends Maybe<T> {
                 Disposable d = getAndSet(DisposableHelper.DISPOSED);
                 if (d != DisposableHelper.DISPOSED) {
                     try {
-                        actual.onError(t);
+                        downstream.onError(t);
                     } finally {
                         if (d != null) {
                             d.dispose();
@@ -116,7 +116,7 @@ public final class MaybeCreate<T> extends Maybe<T> {
                 Disposable d = getAndSet(DisposableHelper.DISPOSED);
                 if (d != DisposableHelper.DISPOSED) {
                     try {
-                        actual.onComplete();
+                        downstream.onComplete();
                     } finally {
                         if (d != null) {
                             d.dispose();

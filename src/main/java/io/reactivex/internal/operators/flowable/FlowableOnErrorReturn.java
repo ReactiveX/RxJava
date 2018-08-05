@@ -47,7 +47,7 @@ public final class FlowableOnErrorReturn<T> extends AbstractFlowableWithUpstream
         @Override
         public void onNext(T t) {
             produced++;
-            actual.onNext(t);
+            downstream.onNext(t);
         }
 
         @Override
@@ -57,7 +57,7 @@ public final class FlowableOnErrorReturn<T> extends AbstractFlowableWithUpstream
                 v = ObjectHelper.requireNonNull(valueSupplier.apply(t), "The valueSupplier returned a null value");
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
-                actual.onError(new CompositeException(t, ex));
+                downstream.onError(new CompositeException(t, ex));
                 return;
             }
             complete(v);
@@ -65,7 +65,7 @@ public final class FlowableOnErrorReturn<T> extends AbstractFlowableWithUpstream
 
         @Override
         public void onComplete() {
-            actual.onComplete();
+            downstream.onComplete();
         }
     }
 }

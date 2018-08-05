@@ -11,7 +11,7 @@
  * the License for the specific language governing permissions and limitations under the License.
  */
 
-package io.reactivex;
+package io.reactivex.validators;
 
 import java.util.List;
 import java.util.regex.Pattern;
@@ -19,7 +19,7 @@ import java.util.regex.Pattern;
 import static org.junit.Assert.*;
 import org.junit.Test;
 
-import io.reactivex.BaseTypeParser.RxMethod;
+import io.reactivex.validators.BaseTypeParser.RxMethod;
 
 /**
  * Check if the method wording is consistent with the target base type.

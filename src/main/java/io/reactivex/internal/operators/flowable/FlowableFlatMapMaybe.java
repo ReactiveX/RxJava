@@ -60,7 +60,7 @@ public final class FlowableFlatMapMaybe<T, R> extends AbstractFlowableWithUpstre
 
         private static final long serialVersionUID = 8600231336733376951L;
 
-        final Subscriber<? super R> actual;
+        final Subscriber<? super R> downstream;
 
         final boolean delayErrors;
 
@@ -78,13 +78,13 @@ public final class FlowableFlatMapMaybe<T, R> extends AbstractFlowableWithUpstre
 
         final AtomicReference<SpscLinkedArrayQueue<R>> queue;
 
-        Subscription s;
+        Subscription upstream;
 
         volatile boolean cancelled;
 
         FlatMapMaybeSubscriber(Subscriber<? super R> actual,
                 Function<? super T, ? extends MaybeSource<? extends R>> mapper, boolean delayErrors, int maxConcurrency) {
-            this.actual = actual;
+            this.downstream = actual;
             this.mapper = mapper;
             this.delayErrors = delayErrors;
             this.maxConcurrency = maxConcurrency;
@@ -97,10 +97,10 @@ public final class FlowableFlatMapMaybe<T, R> extends AbstractFlowableWithUpstre
 
         @Override
         public void onSubscribe(Subscription s) {
-            if (SubscriptionHelper.validate(this.s, s)) {
-                this.s = s;
+            if (SubscriptionHelper.validate(this.upstream, s)) {
+                this.upstream = s;
 
-                actual.onSubscribe(this);
+                downstream.onSubscribe(this);
 
                 int m = maxConcurrency;
                 if (m == Integer.MAX_VALUE) {
@@ -119,7 +119,7 @@ public final class FlowableFlatMapMaybe<T, R> extends AbstractFlowableWithUpstre
                 ms = ObjectHelper.requireNonNull(mapper.apply(t), "The mapper returned a null MaybeSource");
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
-                s.cancel();
+                upstream.cancel();
                 onError(ex);
                 return;
             }
@@ -155,7 +155,7 @@ public final class FlowableFlatMapMaybe<T, R> extends AbstractFlowableWithUpstre
         @Override
         public void cancel() {
             cancelled = true;
-            s.cancel();
+            upstream.cancel();
             set.dispose();
         }
 
@@ -172,22 +172,22 @@ public final class FlowableFlatMapMaybe<T, R> extends AbstractFlowableWithUpstre
             if (get() == 0 && compareAndSet(0, 1)) {
                 boolean d = active.decrementAndGet() == 0;
                 if (requested.get() != 0) {
-                    actual.onNext(value);
+                    downstream.onNext(value);
 
                     SpscLinkedArrayQueue<R> q = queue.get();
 
                     if (d && (q == null || q.isEmpty())) {
                         Throwable ex = errors.terminate();
                         if (ex != null) {
-                            actual.onError(ex);
+                            downstream.onError(ex);
                         } else {
-                            actual.onComplete();
+                            downstream.onComplete();
                         }
                         return;
                     }
                     BackpressureHelper.produced(requested, 1);
                     if (maxConcurrency != Integer.MAX_VALUE) {
-                        s.request(1);
+                        upstream.request(1);
                     }
                 } else {
                     SpscLinkedArrayQueue<R> q = getOrCreateQueue();
@@ -228,11 +228,11 @@ public final class FlowableFlatMapMaybe<T, R> extends AbstractFlowableWithUpstre
             set.delete(inner);
             if (errors.addThrowable(e)) {
                 if (!delayErrors) {
-                    s.cancel();
+                    upstream.cancel();
                     set.dispose();
                 } else {
                     if (maxConcurrency != Integer.MAX_VALUE) {
-                        s.request(1);
+                        upstream.request(1);
                     }
                 }
                 active.decrementAndGet();
@@ -252,15 +252,15 @@ public final class FlowableFlatMapMaybe<T, R> extends AbstractFlowableWithUpstre
                 if (d && (q == null || q.isEmpty())) {
                     Throwable ex = errors.terminate();
                     if (ex != null) {
-                        actual.onError(ex);
+                        downstream.onError(ex);
                     } else {
-                        actual.onComplete();
+                        downstream.onComplete();
                     }
                     return;
                 }
 
                 if (maxConcurrency != Integer.MAX_VALUE) {
-                    s.request(1);
+                    upstream.request(1);
                 }
                 if (decrementAndGet() == 0) {
                     return;
@@ -269,7 +269,7 @@ public final class FlowableFlatMapMaybe<T, R> extends AbstractFlowableWithUpstre
             } else {
                 active.decrementAndGet();
                 if (maxConcurrency != Integer.MAX_VALUE) {
-                    s.request(1);
+                    upstream.request(1);
                 }
                 drain();
             }
@@ -290,7 +290,7 @@ public final class FlowableFlatMapMaybe<T, R> extends AbstractFlowableWithUpstre
 
         void drainLoop() {
             int missed = 1;
-            Subscriber<? super R> a = actual;
+            Subscriber<? super R> a = downstream;
             AtomicInteger n = active;
             AtomicReference<SpscLinkedArrayQueue<R>> qr = queue;
 
@@ -372,7 +372,7 @@ public final class FlowableFlatMapMaybe<T, R> extends AbstractFlowableWithUpstre
                 if (e != 0L) {
                     BackpressureHelper.produced(requested, e);
                     if (maxConcurrency != Integer.MAX_VALUE) {
-                        s.request(e);
+                        upstream.request(e);
                     }
                 }
 

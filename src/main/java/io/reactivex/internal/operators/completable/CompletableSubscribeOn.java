@@ -47,14 +47,14 @@ public final class CompletableSubscribeOn extends Completable {
 
         private static final long serialVersionUID = 7000911171163930287L;
 
-        final CompletableObserver actual;
+        final CompletableObserver downstream;
 
         final SequentialDisposable task;
 
         final CompletableSource source;
 
         SubscribeOnObserver(CompletableObserver actual, CompletableSource source) {
-            this.actual = actual;
+            this.downstream = actual;
             this.source = source;
             this.task = new SequentialDisposable();
         }
@@ -71,12 +71,12 @@ public final class CompletableSubscribeOn extends Completable {
 
         @Override
         public void onError(Throwable e) {
-            actual.onError(e);
+            downstream.onError(e);
         }
 
         @Override
         public void onComplete() {
-            actual.onComplete();
+            downstream.onComplete();
         }
 
         @Override

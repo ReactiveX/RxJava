@@ -99,7 +99,7 @@ public final class FlowableWithLatestFromMany<T, R> extends AbstractFlowableWith
 
         private static final long serialVersionUID = 1577321883966341961L;
 
-        final Subscriber<? super R> actual;
+        final Subscriber<? super R> downstream;
 
         final Function<? super Object[], R> combiner;
 
@@ -107,7 +107,7 @@ public final class FlowableWithLatestFromMany<T, R> extends AbstractFlowableWith
 
         final AtomicReferenceArray<Object> values;
 
-        final AtomicReference<Subscription> s;
+        final AtomicReference<Subscription> upstream;
 
         final AtomicLong requested;
 
@@ -116,7 +116,7 @@ public final class FlowableWithLatestFromMany<T, R> extends AbstractFlowableWith
         volatile boolean done;
 
         WithLatestFromSubscriber(Subscriber<? super R> actual, Function<? super Object[], R> combiner, int n) {
-            this.actual = actual;
+            this.downstream = actual;
             this.combiner = combiner;
             WithLatestInnerSubscriber[] s = new WithLatestInnerSubscriber[n];
             for (int i = 0; i < n; i++) {
@@ -124,14 +124,14 @@ public final class FlowableWithLatestFromMany<T, R> extends AbstractFlowableWith
             }
             this.subscribers = s;
             this.values = new AtomicReferenceArray<Object>(n);
-            this.s = new AtomicReference<Subscription>();
+            this.upstream = new AtomicReference<Subscription>();
             this.requested = new AtomicLong();
             this.error = new AtomicThrowable();
         }
 
         void subscribe(Publisher<?>[] others, int n) {
             WithLatestInnerSubscriber[] subscribers = this.subscribers;
-            AtomicReference<Subscription> s = this.s;
+            AtomicReference<Subscription> s = this.upstream;
             for (int i = 0; i < n; i++) {
                 if (SubscriptionHelper.isCancelled(s.get())) {
                     return;
@@ -142,13 +142,13 @@ public final class FlowableWithLatestFromMany<T, R> extends AbstractFlowableWith
 
         @Override
         public void onSubscribe(Subscription s) {
-            SubscriptionHelper.deferredSetOnce(this.s, requested, s);
+            SubscriptionHelper.deferredSetOnce(this.upstream, requested, s);
         }
 
         @Override
         public void onNext(T t) {
             if (!tryOnNext(t) && !done) {
-                s.get().request(1);
+                upstream.get().request(1);
             }
         }
 
@@ -182,7 +182,7 @@ public final class FlowableWithLatestFromMany<T, R> extends AbstractFlowableWith
                 return false;
             }
 
-            HalfSerializer.onNext(actual, v, this, error);
+            HalfSerializer.onNext(downstream, v, this, error);
             return true;
         }
 
@@ -194,7 +194,7 @@ public final class FlowableWithLatestFromMany<T, R> extends AbstractFlowableWith
             }
             done = true;
             cancelAllBut(-1);
-            HalfSerializer.onError(actual, t, this, error);
+            HalfSerializer.onError(downstream, t, this, error);
         }
 
         @Override
@@ -202,18 +202,18 @@ public final class FlowableWithLatestFromMany<T, R> extends AbstractFlowableWith
             if (!done) {
                 done = true;
                 cancelAllBut(-1);
-                HalfSerializer.onComplete(actual, this, error);
+                HalfSerializer.onComplete(downstream, this, error);
             }
         }
 
         @Override
         public void request(long n) {
-            SubscriptionHelper.deferredRequest(s, requested, n);
+            SubscriptionHelper.deferredRequest(upstream, requested, n);
         }
 
         @Override
         public void cancel() {
-            SubscriptionHelper.cancel(s);
+            SubscriptionHelper.cancel(upstream);
             for (WithLatestInnerSubscriber s : subscribers) {
                 s.dispose();
             }
@@ -225,17 +225,17 @@ public final class FlowableWithLatestFromMany<T, R> extends AbstractFlowableWith
 
         void innerError(int index, Throwable t) {
             done = true;
-            SubscriptionHelper.cancel(s);
+            SubscriptionHelper.cancel(upstream);
             cancelAllBut(index);
-            HalfSerializer.onError(actual, t, this, error);
+            HalfSerializer.onError(downstream, t, this, error);
         }
 
         void innerComplete(int index, boolean nonEmpty) {
             if (!nonEmpty) {
                 done = true;
-                SubscriptionHelper.cancel(s);
+                SubscriptionHelper.cancel(upstream);
                 cancelAllBut(index);
-                HalfSerializer.onComplete(actual, this, error);
+                HalfSerializer.onComplete(downstream, this, error);
             }
         }
 

@@ -59,7 +59,7 @@ public final class FlowableDoAfterNext<T> extends AbstractFlowableWithUpstream<T
             if (done) {
                 return;
             }
-            actual.onNext(t);
+            downstream.onNext(t);
 
             if (sourceMode == NONE) {
                 try {
@@ -97,7 +97,7 @@ public final class FlowableDoAfterNext<T> extends AbstractFlowableWithUpstream<T
 
         @Override
         public void onNext(T t) {
-            actual.onNext(t);
+            downstream.onNext(t);
 
             if (sourceMode == NONE) {
                 try {
@@ -110,7 +110,7 @@ public final class FlowableDoAfterNext<T> extends AbstractFlowableWithUpstream<T
 
         @Override
         public boolean tryOnNext(T t) {
-            boolean b = actual.tryOnNext(t);
+            boolean b = downstream.tryOnNext(t);
             try {
                 onAfterNext.accept(t);
             } catch (Throwable ex) {

@@ -824,7 +824,7 @@ public class ObservableTimeoutWithSelectorTest {
 
         Observable<Object> timeoutAndFallback = Observable.never().doOnSubscribe(new Consumer<Disposable>() {
             @Override
-            public void accept(Disposable s) throws Exception {
+            public void accept(Disposable d) throws Exception {
                 counter.incrementAndGet();
             }
         });
@@ -844,7 +844,7 @@ public class ObservableTimeoutWithSelectorTest {
 
         Observable<Object> timeoutAndFallback = Observable.never().doOnSubscribe(new Consumer<Disposable>() {
             @Override
-            public void accept(Disposable s) throws Exception {
+            public void accept(Disposable d) throws Exception {
                 counter.incrementAndGet();
             }
         });

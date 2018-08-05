@@ -80,7 +80,7 @@ public final class FlowableRetryWhen<T> extends AbstractFlowableWithUpstream<T, 
         @Override
         public void onComplete() {
             receiver.cancel();
-            actual.onComplete();
+            downstream.onComplete();
         }
     }
 

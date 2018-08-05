@@ -64,7 +64,7 @@ public final class ObservableRepeatWhen<T> extends AbstractObservableWithUpstrea
 
         private static final long serialVersionUID = 802743776666017014L;
 
-        final Observer<? super T> actual;
+        final Observer<? super T> downstream;
 
         final AtomicInteger wip;
 
@@ -74,36 +74,36 @@ public final class ObservableRepeatWhen<T> extends AbstractObservableWithUpstrea
 
         final InnerRepeatObserver inner;
 
-        final AtomicReference<Disposable> d;
+        final AtomicReference<Disposable> upstream;
 
         final ObservableSource<T> source;
 
         volatile boolean active;
 
         RepeatWhenObserver(Observer<? super T> actual, Subject<Object> signaller, ObservableSource<T> source) {
-            this.actual = actual;
+            this.downstream = actual;
             this.signaller = signaller;
             this.source = source;
             this.wip = new AtomicInteger();
             this.error = new AtomicThrowable();
             this.inner = new InnerRepeatObserver();
-            this.d = new AtomicReference<Disposable>();
+            this.upstream = new AtomicReference<Disposable>();
         }
 
         @Override
         public void onSubscribe(Disposable d) {
-            DisposableHelper.replace(this.d, d);
+            DisposableHelper.replace(this.upstream, d);
         }
 
         @Override
         public void onNext(T t) {
-            HalfSerializer.onNext(actual, t, this, error);
+            HalfSerializer.onNext(downstream, t, this, error);
         }
 
         @Override
         public void onError(Throwable e) {
             DisposableHelper.dispose(inner);
-            HalfSerializer.onError(actual, e, this, error);
+            HalfSerializer.onError(downstream, e, this, error);
         }
 
         @Override
@@ -114,12 +114,12 @@ public final class ObservableRepeatWhen<T> extends AbstractObservableWithUpstrea
 
         @Override
         public boolean isDisposed() {
-            return DisposableHelper.isDisposed(d.get());
+            return DisposableHelper.isDisposed(upstream.get());
         }
 
         @Override
         public void dispose() {
-            DisposableHelper.dispose(d);
+            DisposableHelper.dispose(upstream);
             DisposableHelper.dispose(inner);
         }
 
@@ -128,13 +128,13 @@ public final class ObservableRepeatWhen<T> extends AbstractObservableWithUpstrea
         }
 
         void innerError(Throwable ex) {
-            DisposableHelper.dispose(d);
-            HalfSerializer.onError(actual, ex, this, error);
+            DisposableHelper.dispose(upstream);
+            HalfSerializer.onError(downstream, ex, this, error);
         }
 
         void innerComplete() {
-            DisposableHelper.dispose(d);
-            HalfSerializer.onComplete(actual, this, error);
+            DisposableHelper.dispose(upstream);
+            HalfSerializer.onComplete(downstream, this, error);
         }
 
         void subscribeNext() {

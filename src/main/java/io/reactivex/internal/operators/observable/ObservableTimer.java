@@ -45,10 +45,10 @@ public final class ObservableTimer extends Observable<Long> {
 
         private static final long serialVersionUID = -2809475196591179431L;
 
-        final Observer<? super Long> actual;
+        final Observer<? super Long> downstream;
 
-        TimerObserver(Observer<? super Long> actual) {
-            this.actual = actual;
+        TimerObserver(Observer<? super Long> downstream) {
+            this.downstream = downstream;
         }
 
         @Override
@@ -64,9 +64,9 @@ public final class ObservableTimer extends Observable<Long> {
         @Override
         public void run() {
             if (!isDisposed()) {
-                actual.onNext(0L);
+                downstream.onNext(0L);
                 lazySet(EmptyDisposable.INSTANCE);
-                actual.onComplete();
+                downstream.onComplete();
             }
         }
 

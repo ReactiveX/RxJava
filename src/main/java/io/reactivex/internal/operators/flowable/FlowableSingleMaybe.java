@@ -42,23 +42,23 @@ public final class FlowableSingleMaybe<T> extends Maybe<T> implements FuseToFlow
     static final class SingleElementSubscriber<T>
     implements FlowableSubscriber<T>, Disposable {
 
-        final MaybeObserver<? super T> actual;
+        final MaybeObserver<? super T> downstream;
 
-        Subscription s;
+        Subscription upstream;
 
         boolean done;
 
         T value;
 
-        SingleElementSubscriber(MaybeObserver<? super T> actual) {
-            this.actual = actual;
+        SingleElementSubscriber(MaybeObserver<? super T> downstream) {
+            this.downstream = downstream;
         }
 
         @Override
         public void onSubscribe(Subscription s) {
-            if (SubscriptionHelper.validate(this.s, s)) {
-                this.s = s;
-                actual.onSubscribe(this);
+            if (SubscriptionHelper.validate(this.upstream, s)) {
+                this.upstream = s;
+                downstream.onSubscribe(this);
                 s.request(Long.MAX_VALUE);
             }
         }
@@ -70,9 +70,9 @@ public final class FlowableSingleMaybe<T> extends Maybe<T> implements FuseToFlow
             }
             if (value != null) {
                 done = true;
-                s.cancel();
-                s = SubscriptionHelper.CANCELLED;
-                actual.onError(new IllegalArgumentException("Sequence contains more than one element!"));
+                upstream.cancel();
+                upstream = SubscriptionHelper.CANCELLED;
+                downstream.onError(new IllegalArgumentException("Sequence contains more than one element!"));
                 return;
             }
             value = t;
@@ -85,8 +85,8 @@ public final class FlowableSingleMaybe<T> extends Maybe<T> implements FuseToFlow
                 return;
             }
             done = true;
-            s = SubscriptionHelper.CANCELLED;
-            actual.onError(t);
+            upstream = SubscriptionHelper.CANCELLED;
+            downstream.onError(t);
         }
 
         @Override
@@ -95,25 +95,25 @@ public final class FlowableSingleMaybe<T> extends Maybe<T> implements FuseToFlow
                 return;
             }
             done = true;
-            s = SubscriptionHelper.CANCELLED;
+            upstream = SubscriptionHelper.CANCELLED;
             T v = value;
             value = null;
             if (v == null) {
-                actual.onComplete();
+                downstream.onComplete();
             } else {
-                actual.onSuccess(v);
+                downstream.onSuccess(v);
             }
         }
 
         @Override
         public void dispose() {
-            s.cancel();
-            s = SubscriptionHelper.CANCELLED;
+            upstream.cancel();
+            upstream = SubscriptionHelper.CANCELLED;
         }
 
         @Override
         public boolean isDisposed() {
-            return s == SubscriptionHelper.CANCELLED;
+            return upstream == SubscriptionHelper.CANCELLED;
         }
     }
 }

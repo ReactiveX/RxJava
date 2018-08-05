@@ -93,7 +93,7 @@ public class CompletableDoOnTest {
             }
             .doOnSubscribe(new Consumer<Disposable>() {
                 @Override
-                public void accept(Disposable s) throws Exception {
+                public void accept(Disposable d) throws Exception {
                     throw new TestException("First");
                 }
             })

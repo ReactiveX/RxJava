@@ -45,7 +45,7 @@ public final class ObservableReduceMaybe<T> extends Maybe<T> {
 
     static final class ReduceObserver<T> implements Observer<T>, Disposable {
 
-        final MaybeObserver<? super T> actual;
+        final MaybeObserver<? super T> downstream;
 
         final BiFunction<T, T, T> reducer;
 
@@ -53,19 +53,19 @@ public final class ObservableReduceMaybe<T> extends Maybe<T> {
 
         T value;
 
-        Disposable d;
+        Disposable upstream;
 
         ReduceObserver(MaybeObserver<? super T> observer, BiFunction<T, T, T> reducer) {
-            this.actual = observer;
+            this.downstream = observer;
             this.reducer = reducer;
         }
 
         @Override
         public void onSubscribe(Disposable d) {
-            if (DisposableHelper.validate(this.d, d)) {
-                this.d = d;
+            if (DisposableHelper.validate(this.upstream, d)) {
+                this.upstream = d;
 
-                actual.onSubscribe(this);
+                downstream.onSubscribe(this);
             }
         }
 
@@ -81,7 +81,7 @@ public final class ObservableReduceMaybe<T> extends Maybe<T> {
                         this.value = ObjectHelper.requireNonNull(reducer.apply(v, value), "The reducer returned a null value");
                     } catch (Throwable ex) {
                         Exceptions.throwIfFatal(ex);
-                        d.dispose();
+                        upstream.dispose();
                         onError(ex);
                     }
                 }
@@ -96,7 +96,7 @@ public final class ObservableReduceMaybe<T> extends Maybe<T> {
             }
             done = true;
             value = null;
-            actual.onError(e);
+            downstream.onError(e);
         }
 
         @Override
@@ -108,20 +108,20 @@ public final class ObservableReduceMaybe<T> extends Maybe<T> {
             T v = value;
             value = null;
             if (v != null) {
-                actual.onSuccess(v);
+                downstream.onSuccess(v);
             } else {
-                actual.onComplete();
+                downstream.onComplete();
             }
         }
 
         @Override
         public void dispose() {
-            d.dispose();
+            upstream.dispose();
         }
 
         @Override
         public boolean isDisposed() {
-            return d.isDisposed();
+            return upstream.isDisposed();
         }
     }
 }

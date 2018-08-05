@@ -30,21 +30,21 @@ public final class ObservableSkip<T> extends AbstractObservableWithUpstream<T, T
     }
 
     static final class SkipObserver<T> implements Observer<T>, Disposable {
-        final Observer<? super T> actual;
+        final Observer<? super T> downstream;
         long remaining;
 
-        Disposable d;
+        Disposable upstream;
 
         SkipObserver(Observer<? super T> actual, long n) {
-            this.actual = actual;
+            this.downstream = actual;
             this.remaining = n;
         }
 
         @Override
         public void onSubscribe(Disposable d) {
-            if (DisposableHelper.validate(this.d, d)) {
-                this.d = d;
-                actual.onSubscribe(this);
+            if (DisposableHelper.validate(this.upstream, d)) {
+                this.upstream = d;
+                downstream.onSubscribe(this);
             }
         }
 
@@ -53,28 +53,28 @@ public final class ObservableSkip<T> extends AbstractObservableWithUpstream<T, T
             if (remaining != 0L) {
                 remaining--;
             } else {
-                actual.onNext(t);
+                downstream.onNext(t);
             }
         }
 
         @Override
         public void onError(Throwable t) {
-            actual.onError(t);
+            downstream.onError(t);
         }
 
         @Override
         public void onComplete() {
-            actual.onComplete();
+            downstream.onComplete();
         }
 
         @Override
         public void dispose() {
-            d.dispose();
+            upstream.dispose();
         }
 
         @Override
         public boolean isDisposed() {
-            return d.isDisposed();
+            return upstream.isDisposed();
         }
     }
 }

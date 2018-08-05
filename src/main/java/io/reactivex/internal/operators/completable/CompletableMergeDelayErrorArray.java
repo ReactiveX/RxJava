@@ -64,14 +64,14 @@ public final class CompletableMergeDelayErrorArray extends Completable {
 
     static final class MergeInnerCompletableObserver
     implements CompletableObserver {
-        final CompletableObserver actual;
+        final CompletableObserver downstream;
         final CompositeDisposable set;
         final AtomicThrowable error;
         final AtomicInteger wip;
 
         MergeInnerCompletableObserver(CompletableObserver observer, CompositeDisposable set, AtomicThrowable error,
                 AtomicInteger wip) {
-            this.actual = observer;
+            this.downstream = observer;
             this.set = set;
             this.error = error;
             this.wip = wip;
@@ -100,9 +100,9 @@ public final class CompletableMergeDelayErrorArray extends Completable {
             if (wip.decrementAndGet() == 0) {
                 Throwable ex = error.terminate();
                 if (ex == null) {
-                    actual.onComplete();
+                    downstream.onComplete();
                 } else {
-                    actual.onError(ex);
+                    downstream.onError(ex);
                 }
             }
         }

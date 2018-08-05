@@ -36,28 +36,28 @@ public final class ObservableUnsubscribeOn<T> extends AbstractObservableWithUpst
 
         private static final long serialVersionUID = 1015244841293359600L;
 
-        final Observer<? super T> actual;
+        final Observer<? super T> downstream;
         final Scheduler scheduler;
 
-        Disposable s;
+        Disposable upstream;
 
         UnsubscribeObserver(Observer<? super T> actual, Scheduler scheduler) {
-            this.actual = actual;
+            this.downstream = actual;
             this.scheduler = scheduler;
         }
 
         @Override
-        public void onSubscribe(Disposable s) {
-            if (DisposableHelper.validate(this.s, s)) {
-                this.s = s;
-                actual.onSubscribe(this);
+        public void onSubscribe(Disposable d) {
+            if (DisposableHelper.validate(this.upstream, d)) {
+                this.upstream = d;
+                downstream.onSubscribe(this);
             }
         }
 
         @Override
         public void onNext(T t) {
             if (!get()) {
-                actual.onNext(t);
+                downstream.onNext(t);
             }
         }
 
@@ -67,13 +67,13 @@ public final class ObservableUnsubscribeOn<T> extends AbstractObservableWithUpst
                 RxJavaPlugins.onError(t);
                 return;
             }
-            actual.onError(t);
+            downstream.onError(t);
         }
 
         @Override
         public void onComplete() {
             if (!get()) {
-                actual.onComplete();
+                downstream.onComplete();
             }
         }
 
@@ -92,7 +92,7 @@ public final class ObservableUnsubscribeOn<T> extends AbstractObservableWithUpst
         final class DisposeTask implements Runnable {
             @Override
             public void run() {
-                s.dispose();
+                upstream.dispose();
             }
         }
     }

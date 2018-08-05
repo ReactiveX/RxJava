@@ -148,19 +148,19 @@ public class FlowableOnErrorResumeNextViaFlowableTest {
 
     static final class TestObservable implements Publisher<String> {
 
-        final Subscription s;
+        final Subscription upstream;
         final String[] values;
         Thread t;
 
         TestObservable(Subscription s, String... values) {
-            this.s = s;
+            this.upstream = s;
             this.values = values;
         }
 
         @Override
         public void subscribe(final Subscriber<? super String> subscriber) {
             System.out.println("TestObservable subscribed to ...");
-            subscriber.onSubscribe(s);
+            subscriber.onSubscribe(upstream);
             t = new Thread(new Runnable() {
 
                 @Override

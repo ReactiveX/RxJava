@@ -81,14 +81,14 @@ public class FlowablePublishTest {
             }
         });
 
-        Disposable s = f.connect();
+        Disposable connection = f.connect();
         try {
             if (!latch.await(1000, TimeUnit.MILLISECONDS)) {
                 fail("subscriptions did not receive values");
             }
             assertEquals(1, counter.get());
         } finally {
-            s.dispose();
+            connection.dispose();
         }
     }
 
@@ -275,7 +275,7 @@ public class FlowablePublishTest {
 
         source.subscribe(ts1);
 
-        Disposable s = source.connect();
+        Disposable connection = source.connect();
 
         ts1.assertValue(1);
         ts1.assertNoErrors();
@@ -285,14 +285,14 @@ public class FlowablePublishTest {
 
         source.subscribe(ts2);
 
-        Disposable s2 = source.connect();
+        Disposable connection2 = source.connect();
 
         ts2.assertValue(1);
         ts2.assertNoErrors();
         ts2.assertTerminated();
 
-        System.out.println(s);
-        System.out.println(s2);
+        System.out.println(connection);
+        System.out.println(connection2);
     }
 
     @Test
@@ -328,18 +328,18 @@ public class FlowablePublishTest {
     public void testNoDisconnectSomeoneElse() {
         ConnectableFlowable<Object> source = Flowable.never().publish();
 
-        Disposable s1 = source.connect();
-        Disposable s2 = source.connect();
+        Disposable connection1 = source.connect();
+        Disposable connection2 = source.connect();
 
-        s1.dispose();
+        connection1.dispose();
 
-        Disposable s3 = source.connect();
+        Disposable connection3 = source.connect();
 
-        s2.dispose();
+        connection2.dispose();
 
-        assertTrue(checkPublishDisposed(s1));
-        assertTrue(checkPublishDisposed(s2));
-        assertFalse(checkPublishDisposed(s3));
+        assertTrue(checkPublishDisposed(connection1));
+        assertTrue(checkPublishDisposed(connection2));
+        assertFalse(checkPublishDisposed(connection3));
     }
 
     @SuppressWarnings("unchecked")
@@ -412,7 +412,7 @@ public class FlowablePublishTest {
                     obs.subscribe(ts);
                 }
 
-                Disposable s = cf.connect();
+                Disposable connection = cf.connect();
 
                 for (TestSubscriber<Integer> ts : tss) {
                     ts.awaitDone(5, TimeUnit.SECONDS)
@@ -421,7 +421,7 @@ public class FlowablePublishTest {
                     .assertNoErrors()
                     .assertComplete();
                 }
-                s.dispose();
+                connection.dispose();
             }
         }
     }
@@ -439,7 +439,7 @@ public class FlowablePublishTest {
                     obs.subscribe(ts);
                 }
 
-                Disposable s = cf.connect();
+                Disposable connection = cf.connect();
 
                 for (TestSubscriber<Integer> ts : tss) {
                     ts.awaitDone(5, TimeUnit.SECONDS)
@@ -448,7 +448,7 @@ public class FlowablePublishTest {
                     .assertNoErrors()
                     .assertComplete();
                 }
-                s.dispose();
+                connection.dispose();
             }
         }
     }
@@ -465,7 +465,7 @@ public class FlowablePublishTest {
                     cf.subscribe(ts);
                 }
 
-                Disposable s = cf.connect();
+                Disposable connection = cf.connect();
 
                 for (TestSubscriber<Integer> ts : tss) {
                     ts.awaitDone(5, TimeUnit.SECONDS)
@@ -474,7 +474,7 @@ public class FlowablePublishTest {
                     .assertNoErrors()
                     .assertComplete();
                 }
-                s.dispose();
+                connection.dispose();
             }
         }
     }
@@ -492,7 +492,7 @@ public class FlowablePublishTest {
                     obs.subscribe(ts);
                 }
 
-                Disposable s = cf.connect();
+                Disposable connection = cf.connect();
 
                 for (TestSubscriber<Integer> ts : tss) {
                     ts.awaitDone(5, TimeUnit.SECONDS)
@@ -501,7 +501,7 @@ public class FlowablePublishTest {
                     .assertNoErrors()
                     .assertComplete();
                 }
-                s.dispose();
+                connection.dispose();
             }
         }
     }
@@ -519,7 +519,7 @@ public class FlowablePublishTest {
         try {
             cf.connect(new Consumer<Disposable>() {
                 @Override
-                public void accept(Disposable s) throws Exception {
+                public void accept(Disposable d) throws Exception {
                     throw new TestException();
                 }
             });

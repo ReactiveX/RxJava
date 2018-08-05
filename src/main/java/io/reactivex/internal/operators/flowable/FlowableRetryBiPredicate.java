@@ -44,7 +44,7 @@ public final class FlowableRetryBiPredicate<T> extends AbstractFlowableWithUpstr
 
         private static final long serialVersionUID = -7098360935104053232L;
 
-        final Subscriber<? super T> actual;
+        final Subscriber<? super T> downstream;
         final SubscriptionArbiter sa;
         final Publisher<? extends T> source;
         final BiPredicate<? super Integer, ? super Throwable> predicate;
@@ -54,7 +54,7 @@ public final class FlowableRetryBiPredicate<T> extends AbstractFlowableWithUpstr
 
         RetryBiSubscriber(Subscriber<? super T> actual,
                 BiPredicate<? super Integer, ? super Throwable> predicate, SubscriptionArbiter sa, Publisher<? extends T> source) {
-            this.actual = actual;
+            this.downstream = actual;
             this.sa = sa;
             this.source = source;
             this.predicate = predicate;
@@ -68,7 +68,7 @@ public final class FlowableRetryBiPredicate<T> extends AbstractFlowableWithUpstr
         @Override
         public void onNext(T t) {
             produced++;
-            actual.onNext(t);
+            downstream.onNext(t);
         }
         @Override
         public void onError(Throwable t) {
@@ -77,11 +77,11 @@ public final class FlowableRetryBiPredicate<T> extends AbstractFlowableWithUpstr
                 b = predicate.test(++retries, t);
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
-                actual.onError(new CompositeException(t, e));
+                downstream.onError(new CompositeException(t, e));
                 return;
             }
             if (!b) {
-                actual.onError(t);
+                downstream.onError(t);
                 return;
             }
             subscribeNext();
@@ -89,7 +89,7 @@ public final class FlowableRetryBiPredicate<T> extends AbstractFlowableWithUpstr
 
         @Override
         public void onComplete() {
-            actual.onComplete();
+            downstream.onComplete();
         }
 
         /**

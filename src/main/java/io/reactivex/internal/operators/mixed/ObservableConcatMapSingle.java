@@ -108,9 +108,9 @@ public final class ObservableConcatMapSingle<T, R> extends Observable<R> {
         }
 
         @Override
-        public void onSubscribe(Disposable s) {
-            if (DisposableHelper.validate(upstream, s)) {
-                upstream = s;
+        public void onSubscribe(Disposable d) {
+            if (DisposableHelper.validate(upstream, d)) {
+                upstream = d;
                 downstream.onSubscribe(this);
             }
         }

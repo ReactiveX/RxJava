@@ -533,9 +533,9 @@ public class PublishSubjectTest extends SubjectTest<Integer> {
         ps.subscribe(new Observer<Integer>() {
 
             @Override
-            public void onSubscribe(Disposable s) {
-                s.dispose();
-                s.dispose();
+            public void onSubscribe(Disposable d) {
+                d.dispose();
+                d.dispose();
             }
 
             @Override

@@ -50,12 +50,12 @@ public final class FlowableOnBackpressureBuffer<T> extends AbstractFlowableWithU
 
         private static final long serialVersionUID = -2514538129242366402L;
 
-        final Subscriber<? super T> actual;
+        final Subscriber<? super T> downstream;
         final SimplePlainQueue<T> queue;
         final boolean delayError;
         final Action onOverflow;
 
-        Subscription s;
+        Subscription upstream;
 
         volatile boolean cancelled;
 
@@ -68,7 +68,7 @@ public final class FlowableOnBackpressureBuffer<T> extends AbstractFlowableWithU
 
         BackpressureBufferSubscriber(Subscriber<? super T> actual, int bufferSize,
                 boolean unbounded, boolean delayError, Action onOverflow) {
-            this.actual = actual;
+            this.downstream = actual;
             this.onOverflow = onOverflow;
             this.delayError = delayError;
 
@@ -85,9 +85,9 @@ public final class FlowableOnBackpressureBuffer<T> extends AbstractFlowableWithU
 
         @Override
         public void onSubscribe(Subscription s) {
-            if (SubscriptionHelper.validate(this.s, s)) {
-                this.s = s;
-                actual.onSubscribe(this);
+            if (SubscriptionHelper.validate(this.upstream, s)) {
+                this.upstream = s;
+                downstream.onSubscribe(this);
                 s.request(Long.MAX_VALUE);
             }
         }
@@ -95,7 +95,7 @@ public final class FlowableOnBackpressureBuffer<T> extends AbstractFlowableWithU
         @Override
         public void onNext(T t) {
             if (!queue.offer(t)) {
-                s.cancel();
+                upstream.cancel();
                 MissingBackpressureException ex = new MissingBackpressureException("Buffer is full");
                 try {
                     onOverflow.run();
@@ -107,7 +107,7 @@ public final class FlowableOnBackpressureBuffer<T> extends AbstractFlowableWithU
                 return;
             }
             if (outputFused) {
-                actual.onNext(null);
+                downstream.onNext(null);
             } else {
                 drain();
             }
@@ -118,7 +118,7 @@ public final class FlowableOnBackpressureBuffer<T> extends AbstractFlowableWithU
             error = t;
             done = true;
             if (outputFused) {
-                actual.onError(t);
+                downstream.onError(t);
             } else {
                 drain();
             }
@@ -128,7 +128,7 @@ public final class FlowableOnBackpressureBuffer<T> extends AbstractFlowableWithU
         public void onComplete() {
             done = true;
             if (outputFused) {
-                actual.onComplete();
+                downstream.onComplete();
             } else {
                 drain();
             }
@@ -148,7 +148,7 @@ public final class FlowableOnBackpressureBuffer<T> extends AbstractFlowableWithU
         public void cancel() {
             if (!cancelled) {
                 cancelled = true;
-                s.cancel();
+                upstream.cancel();
 
                 if (getAndIncrement() == 0) {
                     queue.clear();
@@ -160,7 +160,7 @@ public final class FlowableOnBackpressureBuffer<T> extends AbstractFlowableWithU
             if (getAndIncrement() == 0) {
                 int missed = 1;
                 final SimplePlainQueue<T> q = queue;
-                final Subscriber<? super T> a = actual;
+                final Subscriber<? super T> a = downstream;
                 for (;;) {
 
                     if (checkTerminated(done, q.isEmpty(), a)) {

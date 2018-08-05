@@ -86,11 +86,11 @@ public class DisposableSubscriberTest {
 
             tc.onSubscribe(new BooleanSubscription());
 
-            BooleanSubscription d = new BooleanSubscription();
+            BooleanSubscription bs = new BooleanSubscription();
 
-            tc.onSubscribe(d);
+            tc.onSubscribe(bs);
 
-            assertTrue(d.isCancelled());
+            assertTrue(bs.isCancelled());
 
             assertEquals(1, tc.start);
 
@@ -110,11 +110,11 @@ public class DisposableSubscriberTest {
 
         assertTrue(tc.isDisposed());
 
-        BooleanSubscription d = new BooleanSubscription();
+        BooleanSubscription bs = new BooleanSubscription();
 
-        tc.onSubscribe(d);
+        tc.onSubscribe(bs);
 
-        assertTrue(d.isCancelled());
+        assertTrue(bs.isCancelled());
 
         assertEquals(0, tc.start);
     }

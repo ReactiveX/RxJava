@@ -35,7 +35,7 @@ public class ObservableSwitchIfEmptyTest {
                 .switchIfEmpty(Observable.just(2)
                 .doOnSubscribe(new Consumer<Disposable>() {
                     @Override
-                    public void accept(Disposable s) {
+                    public void accept(Disposable d) {
                         subscribed.set(true);
                     }
                 }));

@@ -45,28 +45,28 @@ public final class ObservableRetryPredicate<T> extends AbstractObservableWithUps
 
         private static final long serialVersionUID = -7098360935104053232L;
 
-        final Observer<? super T> actual;
-        final SequentialDisposable sa;
+        final Observer<? super T> downstream;
+        final SequentialDisposable upstream;
         final ObservableSource<? extends T> source;
         final Predicate<? super Throwable> predicate;
         long remaining;
         RepeatObserver(Observer<? super T> actual, long count,
                 Predicate<? super Throwable> predicate, SequentialDisposable sa, ObservableSource<? extends T> source) {
-            this.actual = actual;
-            this.sa = sa;
+            this.downstream = actual;
+            this.upstream = sa;
             this.source = source;
             this.predicate = predicate;
             this.remaining = count;
         }
 
         @Override
-        public void onSubscribe(Disposable s) {
-            sa.update(s);
+        public void onSubscribe(Disposable d) {
+            upstream.update(d);
         }
 
         @Override
         public void onNext(T t) {
-            actual.onNext(t);
+            downstream.onNext(t);
         }
         @Override
         public void onError(Throwable t) {
@@ -75,18 +75,18 @@ public final class ObservableRetryPredicate<T> extends AbstractObservableWithUps
                 remaining = r - 1;
             }
             if (r == 0) {
-                actual.onError(t);
+                downstream.onError(t);
             } else {
                 boolean b;
                 try {
                     b = predicate.test(t);
                 } catch (Throwable e) {
                     Exceptions.throwIfFatal(e);
-                    actual.onError(new CompositeException(t, e));
+                    downstream.onError(new CompositeException(t, e));
                     return;
                 }
                 if (!b) {
-                    actual.onError(t);
+                    downstream.onError(t);
                     return;
                 }
                 subscribeNext();
@@ -95,7 +95,7 @@ public final class ObservableRetryPredicate<T> extends AbstractObservableWithUps
 
         @Override
         public void onComplete() {
-            actual.onComplete();
+            downstream.onComplete();
         }
 
         /**
@@ -105,7 +105,7 @@ public final class ObservableRetryPredicate<T> extends AbstractObservableWithUps
             if (getAndIncrement() == 0) {
                 int missed = 1;
                 for (;;) {
-                    if (sa.isDisposed()) {
+                    if (upstream.isDisposed()) {
                         return;
                     }
                     source.subscribe(this);

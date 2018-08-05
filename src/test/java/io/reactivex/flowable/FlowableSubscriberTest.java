@@ -589,10 +589,10 @@ public class FlowableSubscriberTest {
         try {
             s.onSubscribe(new BooleanSubscription());
 
-            BooleanSubscription d = new BooleanSubscription();
-            s.onSubscribe(d);
+            BooleanSubscription bs = new BooleanSubscription();
+            s.onSubscribe(bs);
 
-            assertTrue(d.isCancelled());
+            assertTrue(bs.isCancelled());
 
             TestHelper.assertError(list, 0, IllegalStateException.class, "Subscription already set!");
         } finally {

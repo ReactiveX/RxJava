@@ -43,12 +43,12 @@ public final class SingleDelayWithSingle<T, U> extends Single<T> {
 
         private static final long serialVersionUID = -8565274649390031272L;
 
-        final SingleObserver<? super T> actual;
+        final SingleObserver<? super T> downstream;
 
         final SingleSource<T> source;
 
         OtherObserver(SingleObserver<? super T> actual, SingleSource<T> source) {
-            this.actual = actual;
+            this.downstream = actual;
             this.source = source;
         }
 
@@ -56,18 +56,18 @@ public final class SingleDelayWithSingle<T, U> extends Single<T> {
         public void onSubscribe(Disposable d) {
             if (DisposableHelper.setOnce(this, d)) {
 
-                actual.onSubscribe(this);
+                downstream.onSubscribe(this);
             }
         }
 
         @Override
         public void onSuccess(U value) {
-            source.subscribe(new ResumeSingleObserver<T>(this, actual));
+            source.subscribe(new ResumeSingleObserver<T>(this, downstream));
         }
 
         @Override
         public void onError(Throwable e) {
-            actual.onError(e);
+            downstream.onError(e);
         }
 
         @Override

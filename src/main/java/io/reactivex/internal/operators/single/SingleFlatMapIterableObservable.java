@@ -53,11 +53,11 @@ public final class SingleFlatMapIterableObservable<T, R> extends Observable<R> {
 
         private static final long serialVersionUID = -8938804753851907758L;
 
-        final Observer<? super R> actual;
+        final Observer<? super R> downstream;
 
         final Function<? super T, ? extends Iterable<? extends R>> mapper;
 
-        Disposable d;
+        Disposable upstream;
 
         volatile Iterator<? extends R> it;
 
@@ -67,22 +67,22 @@ public final class SingleFlatMapIterableObservable<T, R> extends Observable<R> {
 
         FlatMapIterableObserver(Observer<? super R> actual,
                 Function<? super T, ? extends Iterable<? extends R>> mapper) {
-            this.actual = actual;
+            this.downstream = actual;
             this.mapper = mapper;
         }
 
         @Override
         public void onSubscribe(Disposable d) {
-            if (DisposableHelper.validate(this.d, d)) {
-                this.d = d;
+            if (DisposableHelper.validate(this.upstream, d)) {
+                this.upstream = d;
 
-                actual.onSubscribe(this);
+                downstream.onSubscribe(this);
             }
         }
 
         @Override
         public void onSuccess(T value) {
-            Observer<? super R> a = actual;
+            Observer<? super R> a = downstream;
             Iterator<? extends R> iterator;
             boolean has;
             try {
@@ -91,7 +91,7 @@ public final class SingleFlatMapIterableObservable<T, R> extends Observable<R> {
                 has = iterator.hasNext();
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
-                actual.onError(ex);
+                downstream.onError(ex);
                 return;
             }
 
@@ -147,15 +147,15 @@ public final class SingleFlatMapIterableObservable<T, R> extends Observable<R> {
 
         @Override
         public void onError(Throwable e) {
-            d = DisposableHelper.DISPOSED;
-            actual.onError(e);
+            upstream = DisposableHelper.DISPOSED;
+            downstream.onError(e);
         }
 
         @Override
         public void dispose() {
             cancelled = true;
-            d.dispose();
-            d = DisposableHelper.DISPOSED;
+            upstream.dispose();
+            upstream = DisposableHelper.DISPOSED;
         }
 
         @Override

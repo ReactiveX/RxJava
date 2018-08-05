@@ -40,7 +40,7 @@ public final class FlowableRepeat<T> extends AbstractFlowableWithUpstream<T, T> 
 
         private static final long serialVersionUID = -7098360935104053232L;
 
-        final Subscriber<? super T> actual;
+        final Subscriber<? super T> downstream;
         final SubscriptionArbiter sa;
         final Publisher<? extends T> source;
         long remaining;
@@ -48,7 +48,7 @@ public final class FlowableRepeat<T> extends AbstractFlowableWithUpstream<T, T> 
         long produced;
 
         RepeatSubscriber(Subscriber<? super T> actual, long count, SubscriptionArbiter sa, Publisher<? extends T> source) {
-            this.actual = actual;
+            this.downstream = actual;
             this.sa = sa;
             this.source = source;
             this.remaining = count;
@@ -62,11 +62,11 @@ public final class FlowableRepeat<T> extends AbstractFlowableWithUpstream<T, T> 
         @Override
         public void onNext(T t) {
             produced++;
-            actual.onNext(t);
+            downstream.onNext(t);
         }
         @Override
         public void onError(Throwable t) {
-            actual.onError(t);
+            downstream.onError(t);
         }
 
         @Override
@@ -78,7 +78,7 @@ public final class FlowableRepeat<T> extends AbstractFlowableWithUpstream<T, T> 
             if (r != 0L) {
                 subscribeNext();
             } else {
-                actual.onComplete();
+                downstream.onComplete();
             }
         }
 

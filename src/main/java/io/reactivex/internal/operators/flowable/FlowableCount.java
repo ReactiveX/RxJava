@@ -35,19 +35,19 @@ public final class FlowableCount<T> extends AbstractFlowableWithUpstream<T, Long
 
         private static final long serialVersionUID = 4973004223787171406L;
 
-        Subscription s;
+        Subscription upstream;
 
         long count;
 
-        CountSubscriber(Subscriber<? super Long> actual) {
-            super(actual);
+        CountSubscriber(Subscriber<? super Long> downstream) {
+            super(downstream);
         }
 
         @Override
         public void onSubscribe(Subscription s) {
-            if (SubscriptionHelper.validate(this.s, s)) {
-                this.s = s;
-                actual.onSubscribe(this);
+            if (SubscriptionHelper.validate(this.upstream, s)) {
+                this.upstream = s;
+                downstream.onSubscribe(this);
                 s.request(Long.MAX_VALUE);
             }
         }
@@ -59,7 +59,7 @@ public final class FlowableCount<T> extends AbstractFlowableWithUpstream<T, Long
 
         @Override
         public void onError(Throwable t) {
-            actual.onError(t);
+            downstream.onError(t);
         }
 
         @Override
@@ -70,7 +70,7 @@ public final class FlowableCount<T> extends AbstractFlowableWithUpstream<T, Long
         @Override
         public void cancel() {
             super.cancel();
-            s.cancel();
+            upstream.cancel();
         }
     }
 }

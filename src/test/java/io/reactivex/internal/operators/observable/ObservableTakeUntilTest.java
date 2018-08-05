@@ -156,10 +156,10 @@ public class ObservableTakeUntilTest {
     private static class TestObservable implements ObservableSource<String> {
 
         Observer<? super String> observer;
-        Disposable s;
+        Disposable upstream;
 
-        TestObservable(Disposable s) {
-            this.s = s;
+        TestObservable(Disposable d) {
+            this.upstream = d;
         }
 
         /* used to simulate subscription */
@@ -180,7 +180,7 @@ public class ObservableTakeUntilTest {
         @Override
         public void subscribe(Observer<? super String> observer) {
             this.observer = observer;
-            observer.onSubscribe(s);
+            observer.onSubscribe(upstream);
         }
     }
 

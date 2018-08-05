@@ -52,12 +52,12 @@ public final class FlowableThrottleFirstTimed<T> extends AbstractFlowableWithUps
     implements FlowableSubscriber<T>, Subscription, Runnable {
 
         private static final long serialVersionUID = -9102637559663639004L;
-        final Subscriber<? super T> actual;
+        final Subscriber<? super T> downstream;
         final long timeout;
         final TimeUnit unit;
         final Scheduler.Worker worker;
 
-        Subscription s;
+        Subscription upstream;
 
         final SequentialDisposable timer = new SequentialDisposable();
 
@@ -66,7 +66,7 @@ public final class FlowableThrottleFirstTimed<T> extends AbstractFlowableWithUps
         boolean done;
 
         DebounceTimedSubscriber(Subscriber<? super T> actual, long timeout, TimeUnit unit, Worker worker) {
-            this.actual = actual;
+            this.downstream = actual;
             this.timeout = timeout;
             this.unit = unit;
             this.worker = worker;
@@ -74,9 +74,9 @@ public final class FlowableThrottleFirstTimed<T> extends AbstractFlowableWithUps
 
         @Override
         public void onSubscribe(Subscription s) {
-            if (SubscriptionHelper.validate(this.s, s)) {
-                this.s = s;
-                actual.onSubscribe(this);
+            if (SubscriptionHelper.validate(this.upstream, s)) {
+                this.upstream = s;
+                downstream.onSubscribe(this);
                 s.request(Long.MAX_VALUE);
             }
         }
@@ -91,12 +91,12 @@ public final class FlowableThrottleFirstTimed<T> extends AbstractFlowableWithUps
                 gate = true;
                 long r = get();
                 if (r != 0L) {
-                    actual.onNext(t);
+                    downstream.onNext(t);
                     BackpressureHelper.produced(this, 1);
                 } else {
                     done = true;
                     cancel();
-                    actual.onError(new MissingBackpressureException("Could not deliver value due to lack of requests"));
+                    downstream.onError(new MissingBackpressureException("Could not deliver value due to lack of requests"));
                     return;
                 }
 
@@ -123,7 +123,7 @@ public final class FlowableThrottleFirstTimed<T> extends AbstractFlowableWithUps
                 return;
             }
             done = true;
-            actual.onError(t);
+            downstream.onError(t);
             worker.dispose();
         }
 
@@ -133,7 +133,7 @@ public final class FlowableThrottleFirstTimed<T> extends AbstractFlowableWithUps
                 return;
             }
             done = true;
-            actual.onComplete();
+            downstream.onComplete();
             worker.dispose();
         }
 
@@ -146,7 +146,7 @@ public final class FlowableThrottleFirstTimed<T> extends AbstractFlowableWithUps
 
         @Override
         public void cancel() {
-            s.cancel();
+            upstream.cancel();
             worker.dispose();
         }
     }

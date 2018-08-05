@@ -46,14 +46,14 @@ public final class SingleSubscribeOn<T> extends Single<T> {
 
         private static final long serialVersionUID = 7000911171163930287L;
 
-        final SingleObserver<? super T> actual;
+        final SingleObserver<? super T> downstream;
 
         final SequentialDisposable task;
 
         final SingleSource<? extends T> source;
 
         SubscribeOnObserver(SingleObserver<? super T> actual, SingleSource<? extends T> source) {
-            this.actual = actual;
+            this.downstream = actual;
             this.source = source;
             this.task = new SequentialDisposable();
         }
@@ -65,12 +65,12 @@ public final class SingleSubscribeOn<T> extends Single<T> {
 
         @Override
         public void onSuccess(T value) {
-            actual.onSuccess(value);
+            downstream.onSuccess(value);
         }
 
         @Override
         public void onError(Throwable e) {
-            actual.onError(e);
+            downstream.onError(e);
         }
 
         @Override

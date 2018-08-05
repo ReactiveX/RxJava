@@ -63,7 +63,7 @@ public final class FlowableWindowBoundarySelector<T, B, V> extends AbstractFlowa
         final int bufferSize;
         final CompositeDisposable resources;
 
-        Subscription s;
+        Subscription upstream;
 
         final AtomicReference<Disposable> boundary = new AtomicReference<Disposable>();
 
@@ -84,10 +84,10 @@ public final class FlowableWindowBoundarySelector<T, B, V> extends AbstractFlowa
 
         @Override
         public void onSubscribe(Subscription s) {
-            if (SubscriptionHelper.validate(this.s, s)) {
-                this.s = s;
+            if (SubscriptionHelper.validate(this.upstream, s)) {
+                this.upstream = s;
 
-                actual.onSubscribe(this);
+                downstream.onSubscribe(this);
 
                 if (cancelled) {
                     return;
@@ -141,7 +141,7 @@ public final class FlowableWindowBoundarySelector<T, B, V> extends AbstractFlowa
                 resources.dispose();
             }
 
-            actual.onError(t);
+            downstream.onError(t);
         }
 
         @Override
@@ -159,15 +159,15 @@ public final class FlowableWindowBoundarySelector<T, B, V> extends AbstractFlowa
                 resources.dispose();
             }
 
-            actual.onComplete();
+            downstream.onComplete();
         }
 
         void error(Throwable t) {
-            s.cancel();
+            upstream.cancel();
             resources.dispose();
             DisposableHelper.dispose(boundary);
 
-            actual.onError(t);
+            downstream.onError(t);
         }
 
         @Override
@@ -187,7 +187,7 @@ public final class FlowableWindowBoundarySelector<T, B, V> extends AbstractFlowa
 
         void drainLoop() {
             final SimplePlainQueue<Object> q = queue;
-            final Subscriber<? super Flowable<T>> a = actual;
+            final Subscriber<? super Flowable<T>> a = downstream;
             final List<UnicastProcessor<T>> ws = this.ws;
             int missed = 1;
 

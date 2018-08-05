@@ -37,45 +37,45 @@ public final class FlowableHide<T> extends AbstractFlowableWithUpstream<T, T> {
 
     static final class HideSubscriber<T> implements FlowableSubscriber<T>, Subscription {
 
-        final Subscriber<? super T> actual;
+        final Subscriber<? super T> downstream;
 
-        Subscription s;
+        Subscription upstream;
 
-        HideSubscriber(Subscriber<? super T> actual) {
-            this.actual = actual;
+        HideSubscriber(Subscriber<? super T> downstream) {
+            this.downstream = downstream;
         }
 
         @Override
         public void request(long n) {
-            s.request(n);
+            upstream.request(n);
         }
 
         @Override
         public void cancel() {
-            s.cancel();
+            upstream.cancel();
         }
 
         @Override
         public void onSubscribe(Subscription s) {
-            if (SubscriptionHelper.validate(this.s, s)) {
-                this.s = s;
-                actual.onSubscribe(this);
+            if (SubscriptionHelper.validate(this.upstream, s)) {
+                this.upstream = s;
+                downstream.onSubscribe(this);
             }
         }
 
         @Override
         public void onNext(T t) {
-            actual.onNext(t);
+            downstream.onNext(t);
         }
 
         @Override
         public void onError(Throwable t) {
-            actual.onError(t);
+            downstream.onError(t);
         }
 
         @Override
         public void onComplete() {
-            actual.onComplete();
+            downstream.onComplete();
         }
     }
 }

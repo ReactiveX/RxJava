@@ -63,14 +63,14 @@ public class FlowableRefCountTest {
                 .publish().refCount();
 
         final AtomicInteger receivedCount = new AtomicInteger();
-        Disposable s1 = r.subscribe(new Consumer<Long>() {
+        Disposable d1 = r.subscribe(new Consumer<Long>() {
             @Override
             public void accept(Long l) {
                 receivedCount.incrementAndGet();
             }
         });
 
-        Disposable s2 = r.subscribe();
+        Disposable d2 = r.subscribe();
 
         try {
             Thread.sleep(10);
@@ -94,8 +94,8 @@ public class FlowableRefCountTest {
         // give time to emit
 
         // now unsubscribe
-        s2.dispose(); // unsubscribe s2 first as we're counting in 1 and there can be a race between unsubscribe and one subscriber getting a value but not the other
-        s1.dispose();
+        d2.dispose(); // unsubscribe s2 first as we're counting in 1 and there can be a race between unsubscribe and one subscriber getting a value but not the other
+        d1.dispose();
 
         System.out.println("onNext: " + nextCount.get());
 
@@ -125,14 +125,14 @@ public class FlowableRefCountTest {
                 .publish().refCount();
 
         final AtomicInteger receivedCount = new AtomicInteger();
-        Disposable s1 = r.subscribe(new Consumer<Integer>() {
+        Disposable d1 = r.subscribe(new Consumer<Integer>() {
             @Override
             public void accept(Integer l) {
                 receivedCount.incrementAndGet();
             }
         });
 
-        Disposable s2 = r.subscribe();
+        Disposable d2 = r.subscribe();
 
         // give time to emit
         try {
@@ -141,8 +141,8 @@ public class FlowableRefCountTest {
         }
 
         // now unsubscribe
-        s2.dispose(); // unsubscribe s2 first as we're counting in 1 and there can be a race between unsubscribe and one subscriber getting a value but not the other
-        s1.dispose();
+        d2.dispose(); // unsubscribe s2 first as we're counting in 1 and there can be a race between unsubscribe and one subscriber getting a value but not the other
+        d1.dispose();
 
         System.out.println("onNext Count: " + nextCount.get());
 
@@ -386,7 +386,7 @@ public class FlowableRefCountTest {
 
         // subscribe list1
         final List<Long> list1 = new ArrayList<Long>();
-        Disposable s1 = interval.subscribe(new Consumer<Long>() {
+        Disposable d1 = interval.subscribe(new Consumer<Long>() {
             @Override
             public void accept(Long t1) {
                 list1.add(t1);
@@ -401,7 +401,7 @@ public class FlowableRefCountTest {
 
         // subscribe list2
         final List<Long> list2 = new ArrayList<Long>();
-        Disposable s2 = interval.subscribe(new Consumer<Long>() {
+        Disposable d2 = interval.subscribe(new Consumer<Long>() {
             @Override
             public void accept(Long t1) {
                 list2.add(t1);
@@ -423,7 +423,7 @@ public class FlowableRefCountTest {
         assertEquals(4L, list2.get(2).longValue());
 
         // unsubscribe list1
-        s1.dispose();
+        d1.dispose();
 
         // advance further
         s.advanceTimeBy(300, TimeUnit.MILLISECONDS);
@@ -438,7 +438,7 @@ public class FlowableRefCountTest {
         assertEquals(7L, list2.get(5).longValue());
 
         // unsubscribe list2
-        s2.dispose();
+        d2.dispose();
 
         // advance further
         s.advanceTimeBy(1000, TimeUnit.MILLISECONDS);
@@ -694,14 +694,14 @@ public class FlowableRefCountTest {
         .replay(1)
         .refCount();
 
-        Disposable s1 = source.subscribe();
-        Disposable s2 = source.subscribe();
+        Disposable d1 = source.subscribe();
+        Disposable d2 = source.subscribe();
 
-        s1.dispose();
-        s2.dispose();
+        d1.dispose();
+        d2.dispose();
 
-        s1 = null;
-        s2 = null;
+        d1 = null;
+        d2 = null;
 
         System.gc();
         Thread.sleep(100);
@@ -765,14 +765,14 @@ public class FlowableRefCountTest {
         .publish()
         .refCount();
 
-        Disposable s1 = source.test();
-        Disposable s2 = source.test();
+        Disposable d1 = source.test();
+        Disposable d2 = source.test();
 
-        s1.dispose();
-        s2.dispose();
+        d1.dispose();
+        d2.dispose();
 
-        s1 = null;
-        s2 = null;
+        d1 = null;
+        d2 = null;
 
         System.gc();
         Thread.sleep(100);
@@ -790,11 +790,11 @@ public class FlowableRefCountTest {
 
         assertTrue(((Disposable)cf).isDisposed());
 
-        Disposable s = cf.connect();
+        Disposable connection = cf.connect();
 
         assertFalse(((Disposable)cf).isDisposed());
 
-        s.dispose();
+        connection.dispose();
 
         assertTrue(((Disposable)cf).isDisposed());
     }

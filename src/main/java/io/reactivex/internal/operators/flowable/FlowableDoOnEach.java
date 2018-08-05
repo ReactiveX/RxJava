@@ -78,7 +78,7 @@ public final class FlowableDoOnEach<T> extends AbstractFlowableWithUpstream<T, T
             }
 
             if (sourceMode != NONE) {
-                actual.onNext(null);
+                downstream.onNext(null);
                 return;
             }
 
@@ -89,7 +89,7 @@ public final class FlowableDoOnEach<T> extends AbstractFlowableWithUpstream<T, T
                 return;
             }
 
-            actual.onNext(t);
+            downstream.onNext(t);
         }
 
         @Override
@@ -104,11 +104,11 @@ public final class FlowableDoOnEach<T> extends AbstractFlowableWithUpstream<T, T
                 onError.accept(t);
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
-                actual.onError(new CompositeException(t, e));
+                downstream.onError(new CompositeException(t, e));
                 relay = false;
             }
             if (relay) {
-                actual.onError(t);
+                downstream.onError(t);
             }
 
             try {
@@ -132,7 +132,7 @@ public final class FlowableDoOnEach<T> extends AbstractFlowableWithUpstream<T, T
             }
 
             done = true;
-            actual.onComplete();
+            downstream.onComplete();
 
             try {
                 onAfterTerminate.run();
@@ -217,7 +217,7 @@ public final class FlowableDoOnEach<T> extends AbstractFlowableWithUpstream<T, T
             }
 
             if (sourceMode != NONE) {
-                actual.onNext(null);
+                downstream.onNext(null);
                 return;
             }
 
@@ -228,7 +228,7 @@ public final class FlowableDoOnEach<T> extends AbstractFlowableWithUpstream<T, T
                 return;
             }
 
-            actual.onNext(t);
+            downstream.onNext(t);
         }
 
         @Override
@@ -244,7 +244,7 @@ public final class FlowableDoOnEach<T> extends AbstractFlowableWithUpstream<T, T
                 return false;
             }
 
-            return actual.tryOnNext(t);
+            return downstream.tryOnNext(t);
         }
 
         @Override
@@ -259,11 +259,11 @@ public final class FlowableDoOnEach<T> extends AbstractFlowableWithUpstream<T, T
                 onError.accept(t);
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
-                actual.onError(new CompositeException(t, e));
+                downstream.onError(new CompositeException(t, e));
                 relay = false;
             }
             if (relay) {
-                actual.onError(t);
+                downstream.onError(t);
             }
 
             try {
@@ -287,7 +287,7 @@ public final class FlowableDoOnEach<T> extends AbstractFlowableWithUpstream<T, T
             }
 
             done = true;
-            actual.onComplete();
+            downstream.onComplete();
 
             try {
                 onAfterTerminate.run();

@@ -54,7 +54,7 @@ public class LambdaObserverTest {
             }
         }, new Consumer<Disposable>() {
             @Override
-            public void accept(Disposable s) throws Exception {
+            public void accept(Disposable d) throws Exception {
                 throw new TestException();
             }
         });
@@ -91,7 +91,7 @@ public class LambdaObserverTest {
             }
         }, new Consumer<Disposable>() {
             @Override
-            public void accept(Disposable s) throws Exception {
+            public void accept(Disposable d) throws Exception {
             }
         });
 
@@ -130,7 +130,7 @@ public class LambdaObserverTest {
                 }
             }, new Consumer<Disposable>() {
                 @Override
-                public void accept(Disposable s) throws Exception {
+                public void accept(Disposable d) throws Exception {
                 }
             });
 
@@ -176,7 +176,7 @@ public class LambdaObserverTest {
                 }
             }, new Consumer<Disposable>() {
                 @Override
-                public void accept(Disposable s) throws Exception {
+                public void accept(Disposable d) throws Exception {
                 }
             });
 
@@ -201,13 +201,13 @@ public class LambdaObserverTest {
             Observable<Integer> source = new Observable<Integer>() {
                 @Override
                 public void subscribeActual(Observer<? super Integer> observer) {
-                    Disposable s1 = Disposables.empty();
-                    observer.onSubscribe(s1);
-                    Disposable s2 = Disposables.empty();
-                    observer.onSubscribe(s2);
+                    Disposable d1 = Disposables.empty();
+                    observer.onSubscribe(d1);
+                    Disposable d2 = Disposables.empty();
+                    observer.onSubscribe(d2);
 
-                    assertFalse(s1.isDisposed());
-                    assertTrue(s2.isDisposed());
+                    assertFalse(d1.isDisposed());
+                    assertTrue(d2.isDisposed());
 
                     observer.onNext(1);
                     observer.onComplete();
@@ -234,7 +234,7 @@ public class LambdaObserverTest {
                 }
             }, new Consumer<Disposable>() {
                 @Override
-                public void accept(Disposable s) throws Exception {
+                public void accept(Disposable d) throws Exception {
                 }
             });
 
@@ -284,7 +284,7 @@ public class LambdaObserverTest {
                 }
             }, new Consumer<Disposable>() {
                 @Override
-                public void accept(Disposable s) throws Exception {
+                public void accept(Disposable d) throws Exception {
                 }
             });
 
@@ -348,7 +348,7 @@ public class LambdaObserverTest {
             }
         }, new Consumer<Disposable>() {
             @Override
-            public void accept(Disposable s) throws Exception {
+            public void accept(Disposable d) throws Exception {
                 throw new TestException();
             }
         });

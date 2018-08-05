@@ -882,21 +882,21 @@ public class FlowableFromIterableTest {
         Flowable.fromIterable(Arrays.asList(1, 2, 3))
         .subscribe(new FlowableSubscriber<Integer>() {
             @Override
-            public void onSubscribe(Subscription d) {
+            public void onSubscribe(Subscription s) {
                 @SuppressWarnings("unchecked")
-                QueueSubscription<Integer> qd = (QueueSubscription<Integer>)d;
+                QueueSubscription<Integer> qs = (QueueSubscription<Integer>)s;
 
-                qd.requestFusion(QueueFuseable.ANY);
+                qs.requestFusion(QueueFuseable.ANY);
 
                 try {
-                    assertEquals(1, qd.poll().intValue());
+                    assertEquals(1, qs.poll().intValue());
                 } catch (Throwable ex) {
                     fail(ex.toString());
                 }
 
-                qd.clear();
+                qs.clear();
                 try {
-                    assertNull(qd.poll());
+                    assertNull(qs.poll());
                 } catch (Throwable ex) {
                     fail(ex.toString());
                 }

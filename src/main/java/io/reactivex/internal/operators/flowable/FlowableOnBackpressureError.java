@@ -40,19 +40,19 @@ public final class FlowableOnBackpressureError<T> extends AbstractFlowableWithUp
             extends AtomicLong implements FlowableSubscriber<T>, Subscription {
         private static final long serialVersionUID = -3176480756392482682L;
 
-        final Subscriber<? super T> actual;
-        Subscription s;
+        final Subscriber<? super T> downstream;
+        Subscription upstream;
         boolean done;
 
-        BackpressureErrorSubscriber(Subscriber<? super T> actual) {
-            this.actual = actual;
+        BackpressureErrorSubscriber(Subscriber<? super T> downstream) {
+            this.downstream = downstream;
         }
 
         @Override
         public void onSubscribe(Subscription s) {
-            if (SubscriptionHelper.validate(this.s, s)) {
-                this.s = s;
-                actual.onSubscribe(this);
+            if (SubscriptionHelper.validate(this.upstream, s)) {
+                this.upstream = s;
+                downstream.onSubscribe(this);
                 s.request(Long.MAX_VALUE);
             }
         }
@@ -64,7 +64,7 @@ public final class FlowableOnBackpressureError<T> extends AbstractFlowableWithUp
             }
             long r = get();
             if (r != 0L) {
-                actual.onNext(t);
+                downstream.onNext(t);
                 BackpressureHelper.produced(this, 1);
             } else {
                 onError(new MissingBackpressureException("could not emit value due to lack of requests"));
@@ -78,7 +78,7 @@ public final class FlowableOnBackpressureError<T> extends AbstractFlowableWithUp
                 return;
             }
             done = true;
-            actual.onError(t);
+            downstream.onError(t);
         }
 
         @Override
@@ -87,7 +87,7 @@ public final class FlowableOnBackpressureError<T> extends AbstractFlowableWithUp
                 return;
             }
             done = true;
-            actual.onComplete();
+            downstream.onComplete();
         }
 
         @Override
@@ -99,7 +99,7 @@ public final class FlowableOnBackpressureError<T> extends AbstractFlowableWithUp
 
         @Override
         public void cancel() {
-            s.cancel();
+            upstream.cancel();
         }
     }
 }

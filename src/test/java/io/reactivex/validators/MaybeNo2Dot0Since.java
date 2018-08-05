@@ -11,7 +11,7 @@
  * the License for the specific language governing permissions and limitations under the License.
  */
 
-package io.reactivex;
+package io.reactivex.validators;
 
 import static org.junit.Assert.fail;
 
@@ -19,6 +19,8 @@ import java.io.*;
 import java.net.URL;
 
 import org.junit.Test;
+
+import io.reactivex.Maybe;
 
 /**
  * Checks the source code of Maybe and finds unnecessary since 2.0 annotations in the

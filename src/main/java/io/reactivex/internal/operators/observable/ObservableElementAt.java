@@ -37,41 +37,41 @@ public final class ObservableElementAt<T> extends AbstractObservableWithUpstream
     }
 
     static final class ElementAtObserver<T> implements Observer<T>, Disposable {
-        final Observer<? super T> actual;
+        final Observer<? super T> downstream;
         final long index;
         final T defaultValue;
         final boolean errorOnFewer;
 
-        Disposable s;
+        Disposable upstream;
 
         long count;
 
         boolean done;
 
         ElementAtObserver(Observer<? super T> actual, long index, T defaultValue, boolean errorOnFewer) {
-            this.actual = actual;
+            this.downstream = actual;
             this.index = index;
             this.defaultValue = defaultValue;
             this.errorOnFewer = errorOnFewer;
         }
 
         @Override
-        public void onSubscribe(Disposable s) {
-            if (DisposableHelper.validate(this.s, s)) {
-                this.s = s;
-                actual.onSubscribe(this);
+        public void onSubscribe(Disposable d) {
+            if (DisposableHelper.validate(this.upstream, d)) {
+                this.upstream = d;
+                downstream.onSubscribe(this);
             }
         }
 
 
         @Override
         public void dispose() {
-            s.dispose();
+            upstream.dispose();
         }
 
         @Override
         public boolean isDisposed() {
-            return s.isDisposed();
+            return upstream.isDisposed();
         }
 
 
@@ -83,9 +83,9 @@ public final class ObservableElementAt<T> extends AbstractObservableWithUpstream
             long c = count;
             if (c == index) {
                 done = true;
-                s.dispose();
-                actual.onNext(t);
-                actual.onComplete();
+                upstream.dispose();
+                downstream.onNext(t);
+                downstream.onComplete();
                 return;
             }
             count = c + 1;
@@ -98,7 +98,7 @@ public final class ObservableElementAt<T> extends AbstractObservableWithUpstream
                 return;
             }
             done = true;
-            actual.onError(t);
+            downstream.onError(t);
         }
 
         @Override
@@ -107,12 +107,12 @@ public final class ObservableElementAt<T> extends AbstractObservableWithUpstream
                 done = true;
                 T v = defaultValue;
                 if (v == null && errorOnFewer) {
-                    actual.onError(new NoSuchElementException());
+                    downstream.onError(new NoSuchElementException());
                 } else {
                     if (v != null) {
-                        actual.onNext(v);
+                        downstream.onNext(v);
                     }
-                    actual.onComplete();
+                    downstream.onComplete();
                 }
             }
         }

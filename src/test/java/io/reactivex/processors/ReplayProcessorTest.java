@@ -354,11 +354,11 @@ public class ReplayProcessorTest extends FlowableProcessorTest<Object> {
     public void testSubscriptionLeak() {
         ReplayProcessor<Object> replaySubject = ReplayProcessor.create();
 
-        Disposable s = replaySubject.subscribe();
+        Disposable connection = replaySubject.subscribe();
 
         assertEquals(1, replaySubject.subscriberCount());
 
-        s.dispose();
+        connection.dispose();
 
         assertEquals(0, replaySubject.subscriberCount());
     }

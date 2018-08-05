@@ -49,25 +49,25 @@ public final class FlowableSamplePublisher<T> extends Flowable<T> {
 
         private static final long serialVersionUID = -3517602651313910099L;
 
-        final Subscriber<? super T> actual;
+        final Subscriber<? super T> downstream;
         final Publisher<?> sampler;
 
         final AtomicLong requested = new AtomicLong();
 
         final AtomicReference<Subscription> other = new AtomicReference<Subscription>();
 
-        Subscription s;
+        Subscription upstream;
 
         SamplePublisherSubscriber(Subscriber<? super T> actual, Publisher<?> other) {
-            this.actual = actual;
+            this.downstream = actual;
             this.sampler = other;
         }
 
         @Override
         public void onSubscribe(Subscription s) {
-            if (SubscriptionHelper.validate(this.s, s)) {
-                this.s = s;
-                actual.onSubscribe(this);
+            if (SubscriptionHelper.validate(this.upstream, s)) {
+                this.upstream = s;
+                downstream.onSubscribe(this);
                 if (other.get() == null) {
                     sampler.subscribe(new SamplerSubscriber<T>(this));
                     s.request(Long.MAX_VALUE);
@@ -84,7 +84,7 @@ public final class FlowableSamplePublisher<T> extends Flowable<T> {
         @Override
         public void onError(Throwable t) {
             SubscriptionHelper.cancel(other);
-            actual.onError(t);
+            downstream.onError(t);
         }
 
         @Override
@@ -107,16 +107,16 @@ public final class FlowableSamplePublisher<T> extends Flowable<T> {
         @Override
         public void cancel() {
             SubscriptionHelper.cancel(other);
-            s.cancel();
+            upstream.cancel();
         }
 
         public void error(Throwable e) {
-            s.cancel();
-            actual.onError(e);
+            upstream.cancel();
+            downstream.onError(e);
         }
 
         public void complete() {
-            s.cancel();
+            upstream.cancel();
             completeOther();
         }
 
@@ -125,11 +125,11 @@ public final class FlowableSamplePublisher<T> extends Flowable<T> {
             if (value != null) {
                 long r = requested.get();
                 if (r != 0L) {
-                    actual.onNext(value);
+                    downstream.onNext(value);
                     BackpressureHelper.produced(requested, 1);
                 } else {
                     cancel();
-                    actual.onError(new MissingBackpressureException("Couldn't emit value due to lack of requests!"));
+                    downstream.onError(new MissingBackpressureException("Couldn't emit value due to lack of requests!"));
                 }
             }
         }
@@ -179,12 +179,12 @@ public final class FlowableSamplePublisher<T> extends Flowable<T> {
 
         @Override
         void completeMain() {
-            actual.onComplete();
+            downstream.onComplete();
         }
 
         @Override
         void completeOther() {
-            actual.onComplete();
+            downstream.onComplete();
         }
 
         @Override
@@ -211,7 +211,7 @@ public final class FlowableSamplePublisher<T> extends Flowable<T> {
             done = true;
             if (wip.getAndIncrement() == 0) {
                 emit();
-                actual.onComplete();
+                downstream.onComplete();
             }
         }
 
@@ -220,7 +220,7 @@ public final class FlowableSamplePublisher<T> extends Flowable<T> {
             done = true;
             if (wip.getAndIncrement() == 0) {
                 emit();
-                actual.onComplete();
+                downstream.onComplete();
             }
         }
 
@@ -231,7 +231,7 @@ public final class FlowableSamplePublisher<T> extends Flowable<T> {
                     boolean d = done;
                     emit();
                     if (d) {
-                        actual.onComplete();
+                        downstream.onComplete();
                         return;
                     }
                 } while (wip.decrementAndGet() != 0);

@@ -37,28 +37,28 @@ public final class FlowableUnsubscribeOn<T> extends AbstractFlowableWithUpstream
 
         private static final long serialVersionUID = 1015244841293359600L;
 
-        final Subscriber<? super T> actual;
+        final Subscriber<? super T> downstream;
         final Scheduler scheduler;
 
-        Subscription s;
+        Subscription upstream;
 
         UnsubscribeSubscriber(Subscriber<? super T> actual, Scheduler scheduler) {
-            this.actual = actual;
+            this.downstream = actual;
             this.scheduler = scheduler;
         }
 
         @Override
         public void onSubscribe(Subscription s) {
-            if (SubscriptionHelper.validate(this.s, s)) {
-                this.s = s;
-                actual.onSubscribe(this);
+            if (SubscriptionHelper.validate(this.upstream, s)) {
+                this.upstream = s;
+                downstream.onSubscribe(this);
             }
         }
 
         @Override
         public void onNext(T t) {
             if (!get()) {
-                actual.onNext(t);
+                downstream.onNext(t);
             }
         }
 
@@ -68,19 +68,19 @@ public final class FlowableUnsubscribeOn<T> extends AbstractFlowableWithUpstream
                 RxJavaPlugins.onError(t);
                 return;
             }
-            actual.onError(t);
+            downstream.onError(t);
         }
 
         @Override
         public void onComplete() {
             if (!get()) {
-                actual.onComplete();
+                downstream.onComplete();
             }
         }
 
         @Override
         public void request(long n) {
-            s.request(n);
+            upstream.request(n);
         }
 
         @Override
@@ -93,7 +93,7 @@ public final class FlowableUnsubscribeOn<T> extends AbstractFlowableWithUpstream
         final class Cancellation implements Runnable {
             @Override
             public void run() {
-                s.cancel();
+                upstream.cancel();
             }
         }
     }

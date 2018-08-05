@@ -210,8 +210,8 @@ public final class FlowableCreate<T> extends Flowable<T> {
         }
 
         @Override
-        public void setDisposable(Disposable s) {
-            emitter.setDisposable(s);
+        public void setDisposable(Disposable d) {
+            emitter.setDisposable(d);
         }
 
         @Override
@@ -245,12 +245,12 @@ public final class FlowableCreate<T> extends Flowable<T> {
     implements FlowableEmitter<T>, Subscription {
         private static final long serialVersionUID = 7326289992464377023L;
 
-        final Subscriber<? super T> actual;
+        final Subscriber<? super T> downstream;
 
         final SequentialDisposable serial;
 
-        BaseEmitter(Subscriber<? super T> actual) {
-            this.actual = actual;
+        BaseEmitter(Subscriber<? super T> downstream) {
+            this.downstream = downstream;
             this.serial = new SequentialDisposable();
         }
 
@@ -264,7 +264,7 @@ public final class FlowableCreate<T> extends Flowable<T> {
                 return;
             }
             try {
-                actual.onComplete();
+                downstream.onComplete();
             } finally {
                 serial.dispose();
             }
@@ -290,7 +290,7 @@ public final class FlowableCreate<T> extends Flowable<T> {
                 return false;
             }
             try {
-                actual.onError(e);
+                downstream.onError(e);
             } finally {
                 serial.dispose();
             }
@@ -325,8 +325,8 @@ public final class FlowableCreate<T> extends Flowable<T> {
         }
 
         @Override
-        public final void setDisposable(Disposable s) {
-            serial.update(s);
+        public final void setDisposable(Disposable d) {
+            serial.update(d);
         }
 
         @Override
@@ -355,8 +355,8 @@ public final class FlowableCreate<T> extends Flowable<T> {
 
         private static final long serialVersionUID = 3776720187248809713L;
 
-        MissingEmitter(Subscriber<? super T> actual) {
-            super(actual);
+        MissingEmitter(Subscriber<? super T> downstream) {
+            super(downstream);
         }
 
         @Override
@@ -366,7 +366,7 @@ public final class FlowableCreate<T> extends Flowable<T> {
             }
 
             if (t != null) {
-                actual.onNext(t);
+                downstream.onNext(t);
             } else {
                 onError(new NullPointerException("onNext called with null. Null values are generally not allowed in 2.x operators and sources."));
                 return;
@@ -386,8 +386,8 @@ public final class FlowableCreate<T> extends Flowable<T> {
 
         private static final long serialVersionUID = 4127754106204442833L;
 
-        NoOverflowBaseAsyncEmitter(Subscriber<? super T> actual) {
-            super(actual);
+        NoOverflowBaseAsyncEmitter(Subscriber<? super T> downstream) {
+            super(downstream);
         }
 
         @Override
@@ -402,7 +402,7 @@ public final class FlowableCreate<T> extends Flowable<T> {
             }
 
             if (get() != 0) {
-                actual.onNext(t);
+                downstream.onNext(t);
                 BackpressureHelper.produced(this, 1);
             } else {
                 onOverflow();
@@ -417,8 +417,8 @@ public final class FlowableCreate<T> extends Flowable<T> {
 
         private static final long serialVersionUID = 8360058422307496563L;
 
-        DropAsyncEmitter(Subscriber<? super T> actual) {
-            super(actual);
+        DropAsyncEmitter(Subscriber<? super T> downstream) {
+            super(downstream);
         }
 
         @Override
@@ -433,8 +433,8 @@ public final class FlowableCreate<T> extends Flowable<T> {
 
         private static final long serialVersionUID = 338953216916120960L;
 
-        ErrorAsyncEmitter(Subscriber<? super T> actual) {
-            super(actual);
+        ErrorAsyncEmitter(Subscriber<? super T> downstream) {
+            super(downstream);
         }
 
         @Override
@@ -516,7 +516,7 @@ public final class FlowableCreate<T> extends Flowable<T> {
             }
 
             int missed = 1;
-            final Subscriber<? super T> a = actual;
+            final Subscriber<? super T> a = downstream;
             final SpscLinkedArrayQueue<T> q = queue;
 
             for (;;) {
@@ -599,8 +599,8 @@ public final class FlowableCreate<T> extends Flowable<T> {
 
         final AtomicInteger wip;
 
-        LatestAsyncEmitter(Subscriber<? super T> actual) {
-            super(actual);
+        LatestAsyncEmitter(Subscriber<? super T> downstream) {
+            super(downstream);
             this.queue = new AtomicReference<T>();
             this.wip = new AtomicInteger();
         }
@@ -657,7 +657,7 @@ public final class FlowableCreate<T> extends Flowable<T> {
             }
 
             int missed = 1;
-            final Subscriber<? super T> a = actual;
+            final Subscriber<? super T> a = downstream;
             final AtomicReference<T> q = queue;
 
             for (;;) {

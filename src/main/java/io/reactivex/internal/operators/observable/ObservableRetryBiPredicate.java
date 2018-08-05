@@ -43,27 +43,27 @@ public final class ObservableRetryBiPredicate<T> extends AbstractObservableWithU
 
         private static final long serialVersionUID = -7098360935104053232L;
 
-        final Observer<? super T> actual;
-        final SequentialDisposable sa;
+        final Observer<? super T> downstream;
+        final SequentialDisposable upstream;
         final ObservableSource<? extends T> source;
         final BiPredicate<? super Integer, ? super Throwable> predicate;
         int retries;
         RetryBiObserver(Observer<? super T> actual,
                 BiPredicate<? super Integer, ? super Throwable> predicate, SequentialDisposable sa, ObservableSource<? extends T> source) {
-            this.actual = actual;
-            this.sa = sa;
+            this.downstream = actual;
+            this.upstream = sa;
             this.source = source;
             this.predicate = predicate;
         }
 
         @Override
-        public void onSubscribe(Disposable s) {
-            sa.update(s);
+        public void onSubscribe(Disposable d) {
+            upstream.update(d);
         }
 
         @Override
         public void onNext(T t) {
-            actual.onNext(t);
+            downstream.onNext(t);
         }
         @Override
         public void onError(Throwable t) {
@@ -72,11 +72,11 @@ public final class ObservableRetryBiPredicate<T> extends AbstractObservableWithU
                 b = predicate.test(++retries, t);
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
-                actual.onError(new CompositeException(t, e));
+                downstream.onError(new CompositeException(t, e));
                 return;
             }
             if (!b) {
-                actual.onError(t);
+                downstream.onError(t);
                 return;
             }
             subscribeNext();
@@ -84,7 +84,7 @@ public final class ObservableRetryBiPredicate<T> extends AbstractObservableWithU
 
         @Override
         public void onComplete() {
-            actual.onComplete();
+            downstream.onComplete();
         }
 
         /**
@@ -94,7 +94,7 @@ public final class ObservableRetryBiPredicate<T> extends AbstractObservableWithU
             if (getAndIncrement() == 0) {
                 int missed = 1;
                 for (;;) {
-                    if (sa.isDisposed()) {
+                    if (upstream.isDisposed()) {
                         return;
                     }
                     source.subscribe(this);

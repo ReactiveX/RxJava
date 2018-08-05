@@ -48,47 +48,47 @@ public final class SingleDoFinally<T> extends Single<T> {
 
         private static final long serialVersionUID = 4109457741734051389L;
 
-        final SingleObserver<? super T> actual;
+        final SingleObserver<? super T> downstream;
 
         final Action onFinally;
 
-        Disposable d;
+        Disposable upstream;
 
         DoFinallyObserver(SingleObserver<? super T> actual, Action onFinally) {
-            this.actual = actual;
+            this.downstream = actual;
             this.onFinally = onFinally;
         }
 
         @Override
         public void onSubscribe(Disposable d) {
-            if (DisposableHelper.validate(this.d, d)) {
-                this.d = d;
+            if (DisposableHelper.validate(this.upstream, d)) {
+                this.upstream = d;
 
-                actual.onSubscribe(this);
+                downstream.onSubscribe(this);
             }
         }
 
         @Override
         public void onSuccess(T t) {
-            actual.onSuccess(t);
+            downstream.onSuccess(t);
             runFinally();
         }
 
         @Override
         public void onError(Throwable t) {
-            actual.onError(t);
+            downstream.onError(t);
             runFinally();
         }
 
         @Override
         public void dispose() {
-            d.dispose();
+            upstream.dispose();
             runFinally();
         }
 
         @Override
         public boolean isDisposed() {
-            return d.isDisposed();
+            return upstream.isDisposed();
         }
 
         void runFinally() {

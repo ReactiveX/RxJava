@@ -189,13 +189,13 @@ public class ExecutorSchedulerTest extends AbstractSchedulerConcurrencyTests {
         Scheduler custom = Schedulers.from(exec);
         Worker w = custom.createWorker();
         try {
-            Disposable s1 = w.schedule(task);
-            Disposable s2 = w.schedule(task);
-            Disposable s3 = w.schedule(task);
+            Disposable d1 = w.schedule(task);
+            Disposable d2 = w.schedule(task);
+            Disposable d3 = w.schedule(task);
 
-            s1.dispose();
-            s2.dispose();
-            s3.dispose();
+            d1.dispose();
+            d2.dispose();
+            d3.dispose();
 
             exec.executeAll();
 
@@ -258,11 +258,11 @@ public class ExecutorSchedulerTest extends AbstractSchedulerConcurrencyTests {
 //        };
 //        ExecutorWorker w = (ExecutorWorker)Schedulers.from(e).createWorker();
 //
-//        Disposable s = w.schedule(Functions.emptyRunnable(), 1, TimeUnit.DAYS);
+//        Disposable task = w.schedule(Functions.emptyRunnable(), 1, TimeUnit.DAYS);
 //
 //        assertTrue(w.tasks.hasSubscriptions());
 //
-//        s.dispose();
+//        task.dispose();
 //
 //        assertFalse(w.tasks.hasSubscriptions());
 //    }
@@ -285,13 +285,13 @@ public class ExecutorSchedulerTest extends AbstractSchedulerConcurrencyTests {
 //            }
 //        };
 //
-//        Disposable s = w.schedulePeriodically(action, 0, 1, TimeUnit.DAYS);
+//        Disposable task = w.schedulePeriodically(action, 0, 1, TimeUnit.DAYS);
 //
 //        assertTrue(w.tasks.hasSubscriptions());
 //
 //        cdl.await();
 //
-//        s.dispose();
+//        task.dispose();
 //
 //        assertFalse(w.tasks.hasSubscriptions());
 //    }

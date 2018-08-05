@@ -33,35 +33,35 @@ public final class ObservableTakeWhile<T> extends AbstractObservableWithUpstream
     }
 
     static final class TakeWhileObserver<T> implements Observer<T>, Disposable {
-        final Observer<? super T> actual;
+        final Observer<? super T> downstream;
         final Predicate<? super T> predicate;
 
-        Disposable s;
+        Disposable upstream;
 
         boolean done;
 
         TakeWhileObserver(Observer<? super T> actual, Predicate<? super T> predicate) {
-            this.actual = actual;
+            this.downstream = actual;
             this.predicate = predicate;
         }
 
         @Override
-        public void onSubscribe(Disposable s) {
-            if (DisposableHelper.validate(this.s, s)) {
-                this.s = s;
-                actual.onSubscribe(this);
+        public void onSubscribe(Disposable d) {
+            if (DisposableHelper.validate(this.upstream, d)) {
+                this.upstream = d;
+                downstream.onSubscribe(this);
             }
         }
 
 
         @Override
         public void dispose() {
-            s.dispose();
+            upstream.dispose();
         }
 
         @Override
         public boolean isDisposed() {
-            return s.isDisposed();
+            return upstream.isDisposed();
         }
 
 
@@ -75,19 +75,19 @@ public final class ObservableTakeWhile<T> extends AbstractObservableWithUpstream
                 b = predicate.test(t);
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
-                s.dispose();
+                upstream.dispose();
                 onError(e);
                 return;
             }
 
             if (!b) {
                 done = true;
-                s.dispose();
-                actual.onComplete();
+                upstream.dispose();
+                downstream.onComplete();
                 return;
             }
 
-            actual.onNext(t);
+            downstream.onNext(t);
         }
 
         @Override
@@ -97,7 +97,7 @@ public final class ObservableTakeWhile<T> extends AbstractObservableWithUpstream
                 return;
             }
             done = true;
-            actual.onError(t);
+            downstream.onError(t);
         }
 
         @Override
@@ -106,7 +106,7 @@ public final class ObservableTakeWhile<T> extends AbstractObservableWithUpstream
                 return;
             }
             done = true;
-            actual.onComplete();
+            downstream.onComplete();
         }
     }
 }

@@ -45,14 +45,14 @@ public final class SingleUnsubscribeOn<T> extends Single<T> {
 
         private static final long serialVersionUID = 3256698449646456986L;
 
-        final SingleObserver<? super T> actual;
+        final SingleObserver<? super T> downstream;
 
         final Scheduler scheduler;
 
         Disposable ds;
 
         UnsubscribeOnSingleObserver(SingleObserver<? super T> actual, Scheduler scheduler) {
-            this.actual = actual;
+            this.downstream = actual;
             this.scheduler = scheduler;
         }
 
@@ -78,18 +78,18 @@ public final class SingleUnsubscribeOn<T> extends Single<T> {
         @Override
         public void onSubscribe(Disposable d) {
             if (DisposableHelper.setOnce(this, d)) {
-                actual.onSubscribe(this);
+                downstream.onSubscribe(this);
             }
         }
 
         @Override
         public void onSuccess(T value) {
-            actual.onSuccess(value);
+            downstream.onSuccess(value);
         }
 
         @Override
         public void onError(Throwable e) {
-            actual.onError(e);
+            downstream.onError(e);
         }
     }
 }

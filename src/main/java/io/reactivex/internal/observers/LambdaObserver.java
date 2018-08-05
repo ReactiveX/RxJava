@@ -44,13 +44,13 @@ public final class LambdaObserver<T> extends AtomicReference<Disposable>
     }
 
     @Override
-    public void onSubscribe(Disposable s) {
-        if (DisposableHelper.setOnce(this, s)) {
+    public void onSubscribe(Disposable d) {
+        if (DisposableHelper.setOnce(this, d)) {
             try {
                 onSubscribe.accept(this);
             } catch (Throwable ex) {
                 Exceptions.throwIfFatal(ex);
-                s.dispose();
+                d.dispose();
                 onError(ex);
             }
         }

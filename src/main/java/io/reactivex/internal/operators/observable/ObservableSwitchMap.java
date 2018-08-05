@@ -54,7 +54,7 @@ public final class ObservableSwitchMap<T, R> extends AbstractObservableWithUpstr
     static final class SwitchMapObserver<T, R> extends AtomicInteger implements Observer<T>, Disposable {
 
         private static final long serialVersionUID = -3491074160481096299L;
-        final Observer<? super R> actual;
+        final Observer<? super R> downstream;
         final Function<? super T, ? extends ObservableSource<? extends R>> mapper;
         final int bufferSize;
 
@@ -66,7 +66,7 @@ public final class ObservableSwitchMap<T, R> extends AbstractObservableWithUpstr
 
         volatile boolean cancelled;
 
-        Disposable s;
+        Disposable upstream;
 
         final AtomicReference<SwitchMapInnerObserver<T, R>> active = new AtomicReference<SwitchMapInnerObserver<T, R>>();
 
@@ -81,7 +81,7 @@ public final class ObservableSwitchMap<T, R> extends AbstractObservableWithUpstr
         SwitchMapObserver(Observer<? super R> actual,
                 Function<? super T, ? extends ObservableSource<? extends R>> mapper, int bufferSize,
                         boolean delayErrors) {
-            this.actual = actual;
+            this.downstream = actual;
             this.mapper = mapper;
             this.bufferSize = bufferSize;
             this.delayErrors = delayErrors;
@@ -89,10 +89,10 @@ public final class ObservableSwitchMap<T, R> extends AbstractObservableWithUpstr
         }
 
         @Override
-        public void onSubscribe(Disposable s) {
-            if (DisposableHelper.validate(this.s, s)) {
-                this.s = s;
-                actual.onSubscribe(this);
+        public void onSubscribe(Disposable d) {
+            if (DisposableHelper.validate(this.upstream, d)) {
+                this.upstream = d;
+                downstream.onSubscribe(this);
             }
         }
 
@@ -111,7 +111,7 @@ public final class ObservableSwitchMap<T, R> extends AbstractObservableWithUpstr
                 p = ObjectHelper.requireNonNull(mapper.apply(t), "The ObservableSource returned is null");
             } catch (Throwable e) {
                 Exceptions.throwIfFatal(e);
-                s.dispose();
+                upstream.dispose();
                 onError(e);
                 return;
             }
@@ -155,7 +155,7 @@ public final class ObservableSwitchMap<T, R> extends AbstractObservableWithUpstr
         public void dispose() {
             if (!cancelled) {
                 cancelled = true;
-                s.dispose();
+                upstream.dispose();
                 disposeInner();
             }
         }
@@ -181,7 +181,7 @@ public final class ObservableSwitchMap<T, R> extends AbstractObservableWithUpstr
                 return;
             }
 
-            final Observer<? super R> a = actual;
+            final Observer<? super R> a = downstream;
             final AtomicReference<SwitchMapInnerObserver<T, R>> active = this.active;
             final boolean delayErrors = this.delayErrors;
 
@@ -274,7 +274,7 @@ public final class ObservableSwitchMap<T, R> extends AbstractObservableWithUpstr
                                 active.compareAndSet(inner, null);
                                 if (!delayErrors) {
                                     disposeInner();
-                                    s.dispose();
+                                    upstream.dispose();
                                     done = true;
                                 } else {
                                     inner.cancel();
@@ -313,7 +313,7 @@ public final class ObservableSwitchMap<T, R> extends AbstractObservableWithUpstr
         void innerError(SwitchMapInnerObserver<T, R> inner, Throwable ex) {
             if (inner.index == unique && errors.addThrowable(ex)) {
                 if (!delayErrors) {
-                    s.dispose();
+                    upstream.dispose();
                 }
                 inner.done = true;
                 drain();
@@ -342,11 +342,11 @@ public final class ObservableSwitchMap<T, R> extends AbstractObservableWithUpstr
         }
 
         @Override
-        public void onSubscribe(Disposable s) {
-            if (DisposableHelper.setOnce(this, s)) {
-                if (s instanceof QueueDisposable) {
+        public void onSubscribe(Disposable d) {
+            if (DisposableHelper.setOnce(this, d)) {
+                if (d instanceof QueueDisposable) {
                     @SuppressWarnings("unchecked")
-                    QueueDisposable<R> qd = (QueueDisposable<R>) s;
+                    QueueDisposable<R> qd = (QueueDisposable<R>) d;
 
                     int m = qd.requestFusion(QueueDisposable.ANY | QueueDisposable.BOUNDARY);
                     if (m == QueueDisposable.SYNC) {

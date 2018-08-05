@@ -26,7 +26,7 @@ implements FlowableSubscriber<T> {
     T value;
     Throwable error;
 
-    Subscription s;
+    Subscription upstream;
 
     volatile boolean cancelled;
 
@@ -36,12 +36,12 @@ implements FlowableSubscriber<T> {
 
     @Override
     public final void onSubscribe(Subscription s) {
-        if (SubscriptionHelper.validate(this.s, s)) {
-            this.s = s;
+        if (SubscriptionHelper.validate(this.upstream, s)) {
+            this.upstream = s;
             if (!cancelled) {
                 s.request(Long.MAX_VALUE);
                 if (cancelled) {
-                    this.s = SubscriptionHelper.CANCELLED;
+                    this.upstream = SubscriptionHelper.CANCELLED;
                     s.cancel();
                 }
             }
@@ -64,8 +64,8 @@ implements FlowableSubscriber<T> {
                 BlockingHelper.verifyNonBlocking();
                 await();
             } catch (InterruptedException ex) {
-                Subscription s = this.s;
-                this.s = SubscriptionHelper.CANCELLED;
+                Subscription s = this.upstream;
+                this.upstream = SubscriptionHelper.CANCELLED;
                 if (s != null) {
                     s.cancel();
                 }

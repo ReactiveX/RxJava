@@ -21,47 +21,47 @@ import io.reactivex.internal.disposables.*;
 import io.reactivex.plugins.RxJavaPlugins;
 
 public final class DisposableLambdaObserver<T> implements Observer<T>, Disposable {
-    final Observer<? super T> actual;
+    final Observer<? super T> downstream;
     final Consumer<? super Disposable> onSubscribe;
     final Action onDispose;
 
-    Disposable s;
+    Disposable upstream;
 
     public DisposableLambdaObserver(Observer<? super T> actual,
             Consumer<? super Disposable> onSubscribe,
             Action onDispose) {
-        this.actual = actual;
+        this.downstream = actual;
         this.onSubscribe = onSubscribe;
         this.onDispose = onDispose;
     }
 
     @Override
-    public void onSubscribe(Disposable s) {
+    public void onSubscribe(Disposable d) {
         // this way, multiple calls to onSubscribe can show up in tests that use doOnSubscribe to validate behavior
         try {
-            onSubscribe.accept(s);
+            onSubscribe.accept(d);
         } catch (Throwable e) {
             Exceptions.throwIfFatal(e);
-            s.dispose();
-            this.s = DisposableHelper.DISPOSED;
-            EmptyDisposable.error(e, actual);
+            d.dispose();
+            this.upstream = DisposableHelper.DISPOSED;
+            EmptyDisposable.error(e, downstream);
             return;
         }
-        if (DisposableHelper.validate(this.s, s)) {
-            this.s = s;
-            actual.onSubscribe(this);
+        if (DisposableHelper.validate(this.upstream, d)) {
+            this.upstream = d;
+            downstream.onSubscribe(this);
         }
     }
 
     @Override
     public void onNext(T t) {
-        actual.onNext(t);
+        downstream.onNext(t);
     }
 
     @Override
     public void onError(Throwable t) {
-        if (s != DisposableHelper.DISPOSED) {
-            actual.onError(t);
+        if (upstream != DisposableHelper.DISPOSED) {
+            downstream.onError(t);
         } else {
             RxJavaPlugins.onError(t);
         }
@@ -69,8 +69,8 @@ public final class DisposableLambdaObserver<T> implements Observer<T>, Disposabl
 
     @Override
     public void onComplete() {
-        if (s != DisposableHelper.DISPOSED) {
-            actual.onComplete();
+        if (upstream != DisposableHelper.DISPOSED) {
+            downstream.onComplete();
         }
     }
 
@@ -83,11 +83,11 @@ public final class DisposableLambdaObserver<T> implements Observer<T>, Disposabl
             Exceptions.throwIfFatal(e);
             RxJavaPlugins.onError(e);
         }
-        s.dispose();
+        upstream.dispose();
     }
 
     @Override
     public boolean isDisposed() {
-        return s.isDisposed();
+        return upstream.isDisposed();
     }
 }

@@ -36,53 +36,53 @@ public final class FlowableSkipLast<T> extends AbstractFlowableWithUpstream<T, T
     static final class SkipLastSubscriber<T> extends ArrayDeque<T> implements FlowableSubscriber<T>, Subscription {
 
         private static final long serialVersionUID = -3807491841935125653L;
-        final Subscriber<? super T> actual;
+        final Subscriber<? super T> downstream;
         final int skip;
 
-        Subscription s;
+        Subscription upstream;
 
         SkipLastSubscriber(Subscriber<? super T> actual, int skip) {
             super(skip);
-            this.actual = actual;
+            this.downstream = actual;
             this.skip = skip;
         }
 
         @Override
         public void onSubscribe(Subscription s) {
-            if (SubscriptionHelper.validate(this.s, s)) {
-                this.s = s;
-                actual.onSubscribe(this);
+            if (SubscriptionHelper.validate(this.upstream, s)) {
+                this.upstream = s;
+                downstream.onSubscribe(this);
             }
         }
 
         @Override
         public void onNext(T t) {
             if (skip == size()) {
-                actual.onNext(poll());
+                downstream.onNext(poll());
             } else {
-                s.request(1);
+                upstream.request(1);
             }
             offer(t);
         }
 
         @Override
         public void onError(Throwable t) {
-            actual.onError(t);
+            downstream.onError(t);
         }
 
         @Override
         public void onComplete() {
-            actual.onComplete();
+            downstream.onComplete();
         }
 
         @Override
         public void request(long n) {
-            s.request(n);
+            upstream.request(n);
         }
 
         @Override
         public void cancel() {
-            s.cancel();
+            upstream.cancel();
         }
     }
 }

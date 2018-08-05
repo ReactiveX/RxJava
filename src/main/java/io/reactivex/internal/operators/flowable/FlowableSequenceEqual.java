@@ -132,7 +132,7 @@ public final class FlowableSequenceEqual<T> extends Flowable<Boolean> {
                         if (ex != null) {
                             cancelAndClear();
 
-                            actual.onError(error.terminate());
+                            downstream.onError(error.terminate());
                             return;
                         }
 
@@ -146,7 +146,7 @@ public final class FlowableSequenceEqual<T> extends Flowable<Boolean> {
                                 Exceptions.throwIfFatal(exc);
                                 cancelAndClear();
                                 error.addThrowable(exc);
-                                actual.onError(error.terminate());
+                                downstream.onError(error.terminate());
                                 return;
                             }
                             v1 = a;
@@ -162,7 +162,7 @@ public final class FlowableSequenceEqual<T> extends Flowable<Boolean> {
                                 Exceptions.throwIfFatal(exc);
                                 cancelAndClear();
                                 error.addThrowable(exc);
-                                actual.onError(error.terminate());
+                                downstream.onError(error.terminate());
                                 return;
                             }
                             v2 = b;
@@ -192,7 +192,7 @@ public final class FlowableSequenceEqual<T> extends Flowable<Boolean> {
                             Exceptions.throwIfFatal(exc);
                             cancelAndClear();
                             error.addThrowable(exc);
-                            actual.onError(error.terminate());
+                            downstream.onError(error.terminate());
                             return;
                         }
 
@@ -220,7 +220,7 @@ public final class FlowableSequenceEqual<T> extends Flowable<Boolean> {
                     if (ex != null) {
                         cancelAndClear();
 
-                        actual.onError(error.terminate());
+                        downstream.onError(error.terminate());
                         return;
                     }
                 }

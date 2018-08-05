@@ -35,11 +35,11 @@ public final class MemoryPerf {
 
     static final class MyRx2Subscriber implements FlowableSubscriber<Object> {
 
-        org.reactivestreams.Subscription s;
+        org.reactivestreams.Subscription upstream;
 
         @Override
         public void onSubscribe(Subscription s) {
-            this.s = s;
+            this.upstream = s;
         }
 
         @Override
@@ -61,11 +61,11 @@ public final class MemoryPerf {
     static final class MyRx2Observer implements io.reactivex.Observer<Object>, io.reactivex.SingleObserver<Object>,
     io.reactivex.MaybeObserver<Object>, io.reactivex.CompletableObserver {
 
-        Disposable s;
+        Disposable upstream;
 
         @Override
-        public void onSubscribe(Disposable s) {
-            this.s = s;
+        public void onSubscribe(Disposable d) {
+            this.upstream = d;
         }
 
         @Override

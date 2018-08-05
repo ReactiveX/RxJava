@@ -54,7 +54,7 @@ public final class ObservableGenerate<T, S> extends Observable<T> {
     static final class GeneratorDisposable<T, S>
     implements Emitter<T>, Disposable {
 
-        final Observer<? super T> actual;
+        final Observer<? super T> downstream;
         final BiFunction<S, ? super Emitter<T>, S> generator;
         final Consumer<? super S> disposeState;
 
@@ -69,7 +69,7 @@ public final class ObservableGenerate<T, S> extends Observable<T> {
         GeneratorDisposable(Observer<? super T> actual,
                 BiFunction<S, ? super Emitter<T>, S> generator,
                 Consumer<? super S> disposeState, S initialState) {
-            this.actual = actual;
+            this.downstream = actual;
             this.generator = generator;
             this.disposeState = disposeState;
             this.state = initialState;
@@ -147,7 +147,7 @@ public final class ObservableGenerate<T, S> extends Observable<T> {
                         onError(new NullPointerException("onNext called with null. Null values are generally not allowed in 2.x operators and sources."));
                     } else {
                         hasNext = true;
-                        actual.onNext(t);
+                        downstream.onNext(t);
                     }
                 }
             }
@@ -162,7 +162,7 @@ public final class ObservableGenerate<T, S> extends Observable<T> {
                     t = new NullPointerException("onError called with null. Null values are generally not allowed in 2.x operators and sources.");
                 }
                 terminate = true;
-                actual.onError(t);
+                downstream.onError(t);
             }
         }
 
@@ -170,7 +170,7 @@ public final class ObservableGenerate<T, S> extends Observable<T> {
         public void onComplete() {
             if (!terminate) {
                 terminate = true;
-                actual.onComplete();
+                downstream.onComplete();
             }
         }
     }

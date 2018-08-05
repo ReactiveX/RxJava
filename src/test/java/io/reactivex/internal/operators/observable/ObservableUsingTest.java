@@ -52,8 +52,8 @@ public class ObservableUsingTest {
     private final Consumer<Disposable> disposeSubscription = new Consumer<Disposable>() {
 
         @Override
-        public void accept(Disposable s) {
-            s.dispose();
+        public void accept(Disposable d) {
+            d.dispose();
         }
 
     };
@@ -185,7 +185,7 @@ public class ObservableUsingTest {
 
         Function<Disposable, Observable<Integer>> observableFactory = new Function<Disposable, Observable<Integer>>() {
             @Override
-            public Observable<Integer> apply(Disposable s) {
+            public Observable<Integer> apply(Disposable d) {
                 return Observable.empty();
             }
         };
