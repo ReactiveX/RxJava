@@ -1,20 +1,20 @@
 ## Getting Binaries
 
-You can find binaries and dependency information for Maven, Ivy, Gradle, SBT, and others at [http://search.maven.org](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22io.reactivex%22%20AND%20a%3A%22rxjava%22).
+You can find binaries and dependency information for Maven, Ivy, Gradle, SBT, and others at [http://search.maven.org](http://search.maven.org/#search%7Cga%7C1%7Cg%3A"io.reactivex.rxjava2"%20AND%20"rxjava2").
 
 Example for Maven:
 
 ```xml
 <dependency>
-    <groupId>io.reactivex</groupId>
+    <groupId>io.reactivex.rxjava2</groupId>
     <artifactId>rxjava</artifactId>
-    <version>1.3.4</version>
+    <version>2.2.0</version>
 </dependency>
 ```
 and for Ivy:
 
 ```xml
-<dependency org="io.reactivex" name="rxjava" rev="1.3.4" />
+<dependency org="io.reactivex.rxjava2" name="rxjava" rev="2.2.0" />
 ```
 
 and for SBT:
@@ -22,35 +22,35 @@ and for SBT:
 ```scala
 libraryDependencies += "io.reactivex" %% "rxscala" % "0.26.5"
 
-libraryDependencies += "io.reactivex" % "rxjava" % "1.3.4"
+libraryDependencies += "io.reactivex.rxjava2" % "rxjava" % "2.2.0"
 ```
 
 and for Gradle:
 ```groovy
-compile 'io.reactivex:rxjava:1.3.4'
+compile 'io.reactivex.rxjava2:rxjava:2.2.0'
 ```
 
 If you need to download the jars instead of using a build system, create a Maven `pom` file like this with the desired version:
 
 ```xml
 <?xml version="1.0"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" 
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<modelVersion>4.0.0</modelVersion>
-	<groupId>com.netflix.rxjava.download</groupId>
-	<artifactId>rxjava-download</artifactId>
-	<version>1.0-SNAPSHOT</version>
-	<name>Simple POM to download rxjava and dependencies</name>
-	<url>http://github.com/ReactiveX/RxJava</url>
-	<dependencies>
-		<dependency>
-			<groupId>io.reactivex</groupId>
-			<artifactId>rxjava</artifactId>
-			<version>1.3.4</version>
-			<scope/>
-		</dependency>
-	</dependencies>
+      <modelVersion>4.0.0</modelVersion>
+      <groupId>io.reactivex.rxjava2</groupId>
+      <artifactId>rxjava</artifactId>
+      <version>2.2.0</version>
+      <name>RxJava</name>
+      <description>Reactive Extensions for Java</description>
+      <url>https://github.com/ReactiveX/RxJava</url>
+      <dependencies>
+          <dependency>
+              <groupId>io.reactivex.rxjava2</groupId>
+              <artifactId>rxjava</artifactId>
+              <version>2.2.0</version>
+          </dependency>
+      </dependencies>
 </project>
 ```
 
@@ -66,7 +66,7 @@ You need Java 6 or later.
 
 ### Snapshots
 
-Snapshots are available via [JFrog](https://oss.jfrog.org/webapp/search/artifact/?5&q=rxjava):
+Snapshots are available via [JFrog](https://oss.jfrog.org/libs-snapshot/io/reactivex/rxjava2/rxjava/):
 
 ```groovy
 repositories {
@@ -74,7 +74,7 @@ repositories {
 }
 
 dependencies {
-    compile 'io.reactivex:rxjava:1.3.y-SNAPSHOT'
+    compile 'io.reactivex.rxjava2:rxjava:2.2.0-SNAPSHOT'
 }
 ```
 
@@ -124,18 +124,3 @@ On a clean build you will see the unit tests run. They will look something like 
 ```
 > Building > :rxjava:test > 91 tests completed
 ```
-
-#### Troubleshooting
-
-One developer reported getting the following error:
-
-> Could not resolve all dependencies for configuration ':language-adaptors:rxjava-scala:provided'
-
-He was able to resolve the problem by removing old versions of `scala-library` from `.gradle/caches` and `.m2/repository/org/scala-lang/` and then doing a clean build. <a href="https://gist.github.com/jaceklaskowski/9496058">(See this page for details.)</a>
-
-You may get the following error during building RxJava:
-
-> Failed to apply plugin [id 'java']
-> Could not generate a proxy class for class nebula.core.NamedContainerProperOrder.
-
-It's a JVM issue, see [GROOVY-6951](https://jira.codehaus.org/browse/GROOVY-6951) for details. If so, you can run `export GRADLE_OPTS=-noverify` before building RxJava, or update your JDK.
