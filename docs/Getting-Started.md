@@ -66,7 +66,7 @@ You need Java 6 or later.
 
 ### Snapshots
 
-Snapshots are available via [JFrog](https://oss.jfrog.org/webapp/search/artifact/?5&q=rxjava):
+Snapshots are available via [JFrog](https://oss.jfrog.org/libs-snapshot/io/reactivex/rxjava2/rxjava/):
 
 ```groovy
 repositories {
@@ -74,7 +74,7 @@ repositories {
 }
 
 dependencies {
-    compile 'io.reactivex:rxjava:1.3.y-SNAPSHOT'
+    compile 'io.reactivex.rxjava2:rxjava:2.2.0-SNAPSHOT'
 }
 ```
 
