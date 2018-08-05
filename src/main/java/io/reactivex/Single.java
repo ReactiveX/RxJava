@@ -294,7 +294,7 @@ public abstract class Single<T> implements SingleSource<T> {
     /**
      * Returns a Flowable that emits the items emitted by three Singles, one after the other.
      * <p>
-     * <img width="640" height="366" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.concat.n.png" alt="">
+     * <img width="640" height="366" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.concat.o3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The returned {@code Flowable} honors the backpressure of the downstream consumer.</dd>
@@ -329,7 +329,7 @@ public abstract class Single<T> implements SingleSource<T> {
     /**
      * Returns a Flowable that emits the items emitted by four Singles, one after the other.
      * <p>
-     * <img width="640" height="366" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.concat.m.png" alt="">
+     * <img width="640" height="366" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.concat.o4.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The returned {@code Flowable} honors the backpressure of the downstream consumer.</dd>
