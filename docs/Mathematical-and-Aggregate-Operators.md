@@ -11,7 +11,7 @@ This page shows operators that perform mathematical or other operations over an 
   - [`sumFloat`](#sumfloat)
   - [`sumInt`](#sumint)
   - [`sumLong`](#sumlong)
-- [Other Aggregate Operators](#other-aggregate-operators)
+- [Standard Aggregate Operators](#standard-aggregate-operators)
   - [`count`](#count)
   - [`reduce` and `reduceWith`](#reduce-and-reducewith)
   - [`collect` and `collectInto`](#collect-and-collectinto)
@@ -178,7 +178,9 @@ MathObservable.sumLong(numbers).subscribe((Long sum) -> System.out.println(sum))
 // prints 5050
 ```
 
-## Other Aggregate Operators
+## Standard Aggregate Operators
+
+> Note that these standard aggregate operators return a `Single` or `Maybe` because the number of output items is always know to be at most one.
 
 ### count
 
