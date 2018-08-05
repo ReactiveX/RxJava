@@ -1,4 +1,4 @@
-This page shows operators that perform mathematical or other operations over an entire sequence of items emitted by an Observable. Because these operations must wait for the source Observable to complete emitting items before they can construct their own emissions (and must usually buffer these items), these operators are dangerous to use on Observables that may have very long or infinite sequences.
+This page shows operators that perform mathematical or other operations over an entire sequence of items emitted by an `Observable`. Because these operations must wait for the source `Observable` to complete emitting items before they can construct their own emissions (and must usually buffer these items), these operators are dangerous to use on `Observable`s that may have very long or infinite sequences.
 
 # Outline
 
@@ -21,9 +21,7 @@ This page shows operators that perform mathematical or other operations over an 
 
 ## Mathematical Operators
 
-> The operators in this section are part of the [`RxJava2Extensions`](https://github.com/akarnokd/RxJava2Extensions) project. You have to add the
-`rxjava2-extensions` module as a dependency to your project. It can be found
-at [http://search.maven.org](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.github.akarnokd%22).
+> The operators in this section are part of the [`RxJava2Extensions`](https://github.com/akarnokd/RxJava2Extensions) project. You have to add the `rxjava2-extensions` module as a dependency to your project. It can be found at [http://search.maven.org](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.github.akarnokd%22).
 
 ### averageDouble
 
@@ -31,7 +29,7 @@ at [http://search.maven.org](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22c
 
 **ReactiveX doumentation:** [http://reactivex.io/documentation/operators/average.html](http://reactivex.io/documentation/operators/average.html)
 
-Calculates the average of Numbers emitted by an Observable and emits this average as a Double.
+Calculates the average of `Number`s emitted by an `Observable` and emits this average as a `Double`.
 
 #### averageDouble example
 
@@ -48,7 +46,7 @@ MathObservable.averageDouble(numbers).subscribe((Double avg) -> System.out.print
 
 **ReactiveX doumentation:** [http://reactivex.io/documentation/operators/average.html](http://reactivex.io/documentation/operators/average.html)
 
-Calculates the average of Numbers emitted by an Observable and emits this average as a Float.
+Calculates the average of `Number`s emitted by an `Observable` and emits this average as a `Float`.
 
 #### averageFloat example
 
@@ -65,8 +63,7 @@ MathObservable.averageFloat(numbers).subscribe((Float avg) -> System.out.println
 
 **ReactiveX doumentation:** [http://reactivex.io/documentation/operators/max.html](http://reactivex.io/documentation/operators/max.html)
 
-Emits the maximum value emitted by a source Observable. A Comparator can be specified
-that will be used to compare the elements emitted by the Observable.
+Emits the maximum value emitted by a source `Observable`. A `Comparator` can be specified that will be used to compare the elements emitted by the `Observable`.
 
 #### max example
 
@@ -77,7 +74,7 @@ MathObservable.max(numbers).subscribe(System.out::println);
 // prints 9
 ```
 
-The following example specifies a Comparator to find the longest String in the source Observable:
+The following example specifies a `Comparator` to find the longest `String` in the source `Observable`:
 
 ```java
 final Observable<String> names = Observable.just("Kirk", "Spock", "Chekov", "Sulu");
@@ -93,8 +90,7 @@ MathObservable.max(names, Comparator.comparingInt(String::length))
 
 **ReactiveX doumentation:** [http://reactivex.io/documentation/operators/min.html](http://reactivex.io/documentation/operators/min.html)
 
-Emits the minimum value emitted by a source Observable. A Comparator can be specified
-that will be used to compare the elements emitted by the Observable.
+Emits the minimum value emitted by a source `Observable`. A `Comparator` can be specified that will be used to compare the elements emitted by the `Observable`.
 
 #### min example
 
@@ -111,7 +107,7 @@ MathObservable.min(numbers).subscribe(System.out::println);
 
 **ReactiveX doumentation:** [http://reactivex.io/documentation/operators/sum.html](http://reactivex.io/documentation/operators/sum.html)
 
-Adds the Doubles emitted by an Observable and emits this sum.
+Adds the `Double`s emitted by an `Observable` and emits this sum.
 
 #### sumDouble example
 
@@ -128,7 +124,7 @@ MathObservable.sumDouble(numbers).subscribe((Double sum) -> System.out.println(s
 
 **ReactiveX doumentation:** [http://reactivex.io/documentation/operators/sum.html](http://reactivex.io/documentation/operators/sum.html)
 
-Adds the Floats emitted by an Observable and emits this sum.
+Adds the `Float`s emitted by an `Observable` and emits this sum.
 
 #### sumFloat example
 
@@ -145,7 +141,7 @@ MathObservable.sumFloat(numbers).subscribe((Float sum) -> System.out.println(sum
 
 **ReactiveX doumentation:** [http://reactivex.io/documentation/operators/sum.html](http://reactivex.io/documentation/operators/sum.html)
 
-Adds the Integers emitted by an Observable and emits this sum.
+Adds the `Integer`s emitted by an `Observable` and emits this sum.
 
 #### sumInt example
 
@@ -162,7 +158,7 @@ MathObservable.sumInt(numbers).subscribe((Integer sum) -> System.out.println(sum
 
 **ReactiveX doumentation:** [http://reactivex.io/documentation/operators/sum.html](http://reactivex.io/documentation/operators/sum.html)
 
-Adds the Integers emitted by an Observable and emits this sum.
+Adds the `Long`s emitted by an `Observable` and emits this sum.
 
 #### sumLong example
 
@@ -181,7 +177,7 @@ MathObservable.sumLong(numbers).subscribe((Long sum) -> System.out.println(sum))
 
 **ReactiveX doumentation:** [http://reactivex.io/documentation/operators/count.html](http://reactivex.io/documentation/operators/count.html)
 
-Counts the number of items emitted by an Observable and emits this count.
+Counts the number of items emitted by an `Observable` and emits this count as a `Long`.
 
 #### count example
 
@@ -228,7 +224,7 @@ Observable.just(1, 2, 2, 3, 4, 4, 4, 5)
 
 **ReactiveX doumentation:** [http://reactivex.io/documentation/operators/reduce.html](http://reactivex.io/documentation/operators/reduce.html)
 
-Collect items emitted by the source Observable into a single mutable data structure and return an Observable that emits this structure.
+Collect items emitted by the source `Observable` into a single mutable data structure and return an `Observable` that emits this structure.
 
 #### collect example
 
@@ -243,8 +239,7 @@ Observable.just("Kirk", "Spock", "Chekov", "Sulu")
 
 #### collectInto example
 
-*Note*: the mutable value that will collect the items will be shared between
-multiple subscribers.
+*Note: the mutable value that will collect the items (here the `StringBuilder`) will be shared between multiple subscribers.*
 
 ```java
 Observable.just('R', 'x', 'J', 'a', 'v', 'a')
@@ -261,7 +256,7 @@ Observable.just('R', 'x', 'J', 'a', 'v', 'a')
 
 **ReactiveX doumentation:** [http://reactivex.io/documentation/operators/to.html](http://reactivex.io/documentation/operators/to.html)
 
-Collect all items from an Observable and emit them as a single List.
+Collect all items from an `Observable` and emit them as a single `List`.
 
 #### toList example
 
@@ -289,7 +284,7 @@ Observable.just(2, 1, 3)
 
 **ReactiveX doumentation:** [http://reactivex.io/documentation/operators/to.html](http://reactivex.io/documentation/operators/to.html)
 
-Convert the sequence of items emitted by an Observable into a map keyed by a specified key function.
+Convert the sequence of items emitted by an `Observable` into a `Map` keyed by a specified key function.
 
 #### toMap example
 
@@ -313,7 +308,7 @@ Observable.just(1, 2, 3, 4)
 
 **ReactiveX doumentation:** [http://reactivex.io/documentation/operators/to.html](http://reactivex.io/documentation/operators/to.html)
 
-Convert the sequence of items emitted by an Observable into an ArrayList that is also a map keyed by a specified key function.
+Convert the sequence of items emitted by an `Observable` into a `Collection` that is also a `Map` keyed by a specified key function.
 
 #### toMultimap example
 
