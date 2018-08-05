@@ -404,6 +404,8 @@ public abstract class Single<T> implements SingleSource<T> {
     /**
      * Concatenates a Publisher sequence of SingleSources eagerly into a single stream of values.
      * <p>
+     * <img width="640" height="307" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.concatEager.p.png" alt="">
+     * <p>
      * Eager concatenation means that once a subscriber subscribes, this operator subscribes to all of the
      * emitted source Publishers as they are observed. The operator buffers the values emitted by these
      * Publishers and then drains them in order, each one after the previous one completes.
@@ -429,6 +431,8 @@ public abstract class Single<T> implements SingleSource<T> {
     /**
      * Concatenates a sequence of SingleSources eagerly into a single stream of values.
      * <p>
+     * <img width="640" height="319" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.concatEager.i.png" alt="">
+     * <p>
      * Eager concatenation means that once a subscriber subscribes, this operator subscribes to all of the
      * source SingleSources. The operator buffers the values emitted by these SingleSources and then drains them
      * in order, each one after the previous one completes.
@@ -451,6 +455,8 @@ public abstract class Single<T> implements SingleSource<T> {
 
     /**
      * Provides an API (via a cold Completable) that bridges the reactive world with the callback-style world.
+     * <p>
+     * <img width="640" height="454" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.create.png" alt="">
      * <p>
      * Example:
      * <pre><code>
@@ -798,6 +804,8 @@ public abstract class Single<T> implements SingleSource<T> {
     /**
      * Merges an Iterable sequence of SingleSource instances into a single Flowable sequence,
      * running all SingleSources at once.
+     * <p>
+     * <img width="640" height="319" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.merge.i.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The returned {@code Flowable} honors the backpressure of the downstream consumer.</dd>
@@ -833,6 +841,8 @@ public abstract class Single<T> implements SingleSource<T> {
     /**
      * Merges a Flowable sequence of SingleSource instances into a single Flowable sequence,
      * running all SingleSources at once.
+     * <p>
+     * <img width="640" height="307" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.merge.p.png" alt="">
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
      *  <dd>The returned {@code Flowable} honors the backpressure of the downstream consumer.</dd>
@@ -871,7 +881,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * Flattens a {@code Single} that emits a {@code Single} into a single {@code Single} that emits the item
      * emitted by the nested {@code Single}, without any transformation.
      * <p>
-     * <img width="640" height="370" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.merge.oo.png" alt="">
+     * <img width="640" height="412" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.merge.oo.png" alt="">
      * <dl>
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code merge} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -900,7 +910,7 @@ public abstract class Single<T> implements SingleSource<T> {
     /**
      * Flattens two Singles into a single Flowable, without any transformation.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.merge.png" alt="">
+     * <img width="640" height="414" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.merge.png" alt="">
      * <p>
      * You can combine items emitted by multiple Singles so that they appear as a single Flowable, by
      * using the {@code merge} method.
@@ -948,7 +958,7 @@ public abstract class Single<T> implements SingleSource<T> {
     /**
      * Flattens three Singles into a single Flowable, without any transformation.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.merge.png" alt="">
+     * <img width="640" height="366" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.merge.o3.png" alt="">
      * <p>
      * You can combine items emitted by multiple Singles so that they appear as a single Flowable, by using
      * the {@code merge} method.
@@ -1000,7 +1010,7 @@ public abstract class Single<T> implements SingleSource<T> {
     /**
      * Flattens four Singles into a single Flowable, without any transformation.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.merge.png" alt="">
+     * <img width="640" height="362" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.merge.o4.png" alt="">
      * <p>
      * You can combine items emitted by multiple Singles so that they appear as a single Flowable, by using
      * the {@code merge} method.
@@ -1289,6 +1299,8 @@ public abstract class Single<T> implements SingleSource<T> {
 
     /**
      * Compares two SingleSources and emits true if they emit the same value (compared via Object.equals).
+     * <p>
+     * <img width="640" height="465" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.equals.png" alt="">
      * <dl>
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code equals} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -1903,6 +1915,8 @@ public abstract class Single<T> implements SingleSource<T> {
 
     /**
      * Signals the event of this or the other SingleSource whichever signals first.
+     * <p>
+     * <img width="640" height="463" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.ambWith.png" alt="">
      * <dl>
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code ambWith} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -1922,6 +1936,8 @@ public abstract class Single<T> implements SingleSource<T> {
 
     /**
      * Calls the specified converter function during assembly time and returns its resulting value.
+     * <p>
+     * <img width="640" height="553" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.as.png" alt="">
      * <p>
      * This allows fluent conversion to any other type.
      * <dl>
@@ -1961,6 +1977,8 @@ public abstract class Single<T> implements SingleSource<T> {
 
     /**
      * Transform a Single by applying a particular Transformer function to it.
+     * <p>
+     * <img width="640" height="612" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.compose.png" alt="">
      * <p>
      * This method operates on the Single itself whereas {@link #lift} operates on the Single's SingleObservers.
      * <p>
@@ -2271,7 +2289,10 @@ public abstract class Single<T> implements SingleSource<T> {
 
     /**
      * Calls the specified consumer with the success item after this item has been emitted to the downstream.
-     * <p>Note that the {@code doAfterSuccess} action is shared between subscriptions and as such
+     * <p>
+     * <img width="640" height="460" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.doAfterSuccess.png" alt="">
+     * <p>
+     * Note that the {@code doAfterSuccess} action is shared between subscriptions and as such
      * should be thread-safe.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
@@ -2291,10 +2312,12 @@ public abstract class Single<T> implements SingleSource<T> {
 
     /**
      * Registers an {@link Action} to be called after this Single invokes either onSuccess or onError.
-     * * <p>Note that the {@code doAfterTerminate} action is shared between subscriptions and as such
-     * should be thread-safe.</p>
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/doAfterTerminate.png" alt="">
+     * <img width="640" height="460" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.doAfterTerminate.png" alt="">
+     * <p>
+     * Note that the {@code doAfterTerminate} action is shared between subscriptions and as such
+     * should be thread-safe.</p>
+     *
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code doAfterTerminate} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -2874,7 +2897,7 @@ public abstract class Single<T> implements SingleSource<T> {
     /**
      * Flattens this and another Single into a single Flowable, without any transformation.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.merge.png" alt="">
+     * <img width="640" height="415" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.mergeWith.png" alt="">
      * <p>
      * You can combine items emitted by multiple Singles so that they appear as a single Flowable, by using
      * the {@code mergeWith} method.
@@ -3644,6 +3667,8 @@ public abstract class Single<T> implements SingleSource<T> {
     /**
      * Calls the specified converter function with the current Single instance
      * during assembly time and returns its result.
+     * <p>
+     * <img width="640" height="553" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.to.png" alt="">
      * <dl>
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code to} does not operate by default on a particular {@link Scheduler}.</dd>
