@@ -13,9 +13,12 @@ This page shows operators that perform mathematical or other operations over an 
   - [`sumLong`](#sumlong)
 - [Standard Aggregate Operators](#standard-aggregate-operators)
   - [`count`](#count)
-  - [`reduce` and `reduceWith`](#reduce-and-reducewith)
-  - [`collect` and `collectInto`](#collect-and-collectinto)
-  - [`toList` and `toSortedList`](#tolist-and-tosortedlist)
+  - [`reduce`](#reduce)
+  - [`reduceWith`](#reducewith)
+  - [`collect`](#collect)
+  - [`collectInto`](#collectinto)
+  - [`toList`](#tolist)
+  - [`toSortedList`](#tosortedlist)
   - [`toMap`](#tomap)
   - [`toMultimap`](#tomultimap)
 
@@ -198,7 +201,7 @@ Observable.just(1, 2, 3).count().subscribe(System.out::println);
 // prints 3
 ```
 
-### reduce and reduceWith
+### reduce
 
 **Available in:** ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png) `Flowable`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png) `Observable`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) `Maybe`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) `Single`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) `Completable`
 
@@ -216,6 +219,15 @@ Observable.range(1, 5)
 // prints 120
 ```
 
+### reduceWith
+
+**Available in:** ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png) `Flowable`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png) `Observable`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) `Maybe`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) `Single`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) `Completable`
+
+**ReactiveX doumentation:** [http://reactivex.io/documentation/operators/reduce.html](http://reactivex.io/documentation/operators/reduce.html)
+
+Apply a function to each emitted item, sequentially, and emit only the final accumulated value.
+
+
 #### reduceWith example
 
 ```java
@@ -229,7 +241,7 @@ Observable.just(1, 2, 2, 3, 4, 4, 4, 5)
 // prints [1, 2, 3, 4, 5]
 ```
 
-### collect and collectInto
+### collect
 
 **Available in:** ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png) `Flowable`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png) `Observable`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) `Maybe`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) `Single`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) `Completable`
 
@@ -248,6 +260,14 @@ Observable.just("Kirk", "Spock", "Chekov", "Sulu")
 // prints Kirk 🖖 Spock 🖖 Chekov 🖖 Sulu
 ```
 
+### collectInto
+
+**Available in:** ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png) `Flowable`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png) `Observable`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) `Maybe`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) `Single`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) `Completable`
+
+**ReactiveX doumentation:** [http://reactivex.io/documentation/operators/reduce.html](http://reactivex.io/documentation/operators/reduce.html)
+
+Collect items emitted by the source `Observable` into a single mutable data structure and return an `Observable` that emits this structure.
+
 #### collectInto example
 
 *Note: the mutable value that will collect the items (here the `StringBuilder`) will be shared between multiple subscribers.*
@@ -261,7 +281,7 @@ Observable.just('R', 'x', 'J', 'a', 'v', 'a')
 // prints RxJava
 ```
 
-### toList and toSortedList
+### toList
 
 **Available in:** ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png) `Flowable`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png) `Observable`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) `Maybe`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) `Single`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) `Completable`
 
@@ -278,6 +298,14 @@ Observable.just(2, 1, 3)
 
 // prints [2, 1, 3]
 ```
+
+### toSortedList
+
+**Available in:** ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png) `Flowable`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png) `Observable`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) `Maybe`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) `Single`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) `Completable`
+
+**ReactiveX doumentation:** [http://reactivex.io/documentation/operators/to.html](http://reactivex.io/documentation/operators/to.html)
+
+Collect all items from an `Observable` and emit them as a single, sorted `List`.
 
 #### toSortedList example
 
