@@ -1,4 +1,4 @@
-This page shows operators that perform mathematical or other operations over an entire sequence of items emitted by an `Observable`. Because these operations must wait for the source `Observable` to complete emitting items before they can construct their own emissions (and must usually buffer these items), these operators are dangerous to use on `Observable`s that may have very long or infinite sequences.
+This page shows operators that perform mathematical or other operations over an entire sequence of items emitted by an `Observable` or `Flowable`. Because these operations must wait for the source `Observable`/`Flowable` to complete emitting items before they can construct their own emissions (and must usually buffer these items), these operators are dangerous to use on `Observable`s and `Flowable`s that may have very long or infinite sequences.
 
 # Outline
 
