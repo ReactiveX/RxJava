@@ -23,6 +23,15 @@ This page shows operators that perform mathematical or other operations over an 
 
 > The operators in this section are part of the [`RxJava2Extensions`](https://github.com/akarnokd/RxJava2Extensions) project. You have to add the `rxjava2-extensions` module as a dependency to your project. It can be found at [http://search.maven.org](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.github.akarnokd%22).
 
+> Note that unlike the standard RxJava aggregator operators, these mathematical operators return `Observable` and `Flowable` instead of the `Single` or `Maybe`.
+
+*The examples below assume that the `MathObservable` and `MathFlowable` classes are imported from the `rxjava2-extensions` module:*
+
+```java
+import hu.akarnokd.rxjava2.math.MathObservable;
+import hu.akarnokd.rxjava2.math.MathFlowable;
+```
+
 ### averageDouble
 
 **Available in:** ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png) `Flowable`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_on.png) `Observable`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) `Maybe`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) `Single`, ![image](https://raw.github.com/wiki/ReactiveX/RxJava/images/checkmark_off.png) `Completable`
