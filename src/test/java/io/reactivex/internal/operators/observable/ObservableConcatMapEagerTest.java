@@ -1036,4 +1036,110 @@ public class ObservableConcatMapEagerTest {
         .awaitDone(5, TimeUnit.SECONDS)
         .assertResult(list);
     }
+
+    @Test
+    public void arrayDelayErrorDefault() {
+        PublishSubject<Integer> ps1 = PublishSubject.create();
+        PublishSubject<Integer> ps2 = PublishSubject.create();
+        PublishSubject<Integer> ps3 = PublishSubject.create();
+
+        @SuppressWarnings("unchecked")
+        TestObserver<Integer> to = Observable.concatArrayEagerDelayError(ps1, ps2, ps3)
+        .test();
+
+        to.assertEmpty();
+
+        assertTrue(ps1.hasObservers());
+        assertTrue(ps2.hasObservers());
+        assertTrue(ps3.hasObservers());
+
+        ps2.onNext(2);
+        ps2.onComplete();
+
+        to.assertEmpty();
+
+        ps1.onNext(1);
+
+        to.assertValuesOnly(1);
+
+        ps1.onComplete();
+
+        to.assertValuesOnly(1, 2);
+
+        ps3.onComplete();
+
+        to.assertResult(1, 2);
+    }
+
+    @Test
+    public void arrayDelayErrorMaxConcurrency() {
+        PublishSubject<Integer> ps1 = PublishSubject.create();
+        PublishSubject<Integer> ps2 = PublishSubject.create();
+        PublishSubject<Integer> ps3 = PublishSubject.create();
+
+        @SuppressWarnings("unchecked")
+        TestObserver<Integer> to = Observable.concatArrayEagerDelayError(2, 2, ps1, ps2, ps3)
+        .test();
+
+        to.assertEmpty();
+
+        assertTrue(ps1.hasObservers());
+        assertTrue(ps2.hasObservers());
+        assertFalse(ps3.hasObservers());
+
+        ps2.onNext(2);
+        ps2.onComplete();
+
+        to.assertEmpty();
+
+        ps1.onNext(1);
+
+        to.assertValuesOnly(1);
+
+        ps1.onComplete();
+
+        assertTrue(ps3.hasObservers());
+
+        to.assertValuesOnly(1, 2);
+
+        ps3.onComplete();
+
+        to.assertResult(1, 2);
+    }
+
+    @Test
+    public void arrayDelayErrorMaxConcurrencyErrorDelayed() {
+        PublishSubject<Integer> ps1 = PublishSubject.create();
+        PublishSubject<Integer> ps2 = PublishSubject.create();
+        PublishSubject<Integer> ps3 = PublishSubject.create();
+
+        @SuppressWarnings("unchecked")
+        TestObserver<Integer> to = Observable.concatArrayEagerDelayError(2, 2, ps1, ps2, ps3)
+        .test();
+
+        to.assertEmpty();
+
+        assertTrue(ps1.hasObservers());
+        assertTrue(ps2.hasObservers());
+        assertFalse(ps3.hasObservers());
+
+        ps2.onNext(2);
+        ps2.onError(new TestException());
+
+        to.assertEmpty();
+
+        ps1.onNext(1);
+
+        to.assertValuesOnly(1);
+
+        ps1.onComplete();
+
+        assertTrue(ps3.hasObservers());
+
+        to.assertValuesOnly(1, 2);
+
+        ps3.onComplete();
+
+        to.assertFailure(TestException.class, 1, 2);
+    }
 }
