@@ -17,6 +17,7 @@ import java.util.concurrent.*;
 
 import org.reactivestreams.*;
 
+import io.reactivex.Observable;
 import io.reactivex.annotations.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.Exceptions;
@@ -1415,7 +1416,9 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     /**
-     * Concatenates a sequence of Publishers eagerly into a single stream of values.
+     * Concatenates an array of Publishers eagerly into a single stream of values.
+     * <p>
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Flowable.concatArrayEager.png" alt="">
      * <p>
      * Eager concatenation means that once a subscriber subscribes, this operator subscribes to all of the
      * source Publishers. The operator buffers the values emitted by these Publishers and then drains them
@@ -1430,7 +1433,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *  <dd>This method does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * @param <T> the value type
-     * @param sources a sequence of Publishers that need to be eagerly concatenated
+     * @param sources an array of Publishers that need to be eagerly concatenated
      * @return the new Publisher instance with the specified concatenation behavior
      * @since 2.0
      */
@@ -1442,7 +1445,9 @@ public abstract class Flowable<T> implements Publisher<T> {
     }
 
     /**
-     * Concatenates a sequence of Publishers eagerly into a single stream of values.
+     * Concatenates an array of Publishers eagerly into a single stream of values.
+     * <p>
+     * <img width="640" height="406" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Flowable.concatArrayEager.nn.png" alt="">
      * <p>
      * Eager concatenation means that once a subscriber subscribes, this operator subscribes to all of the
      * source Publishers. The operator buffers the values emitted by these Publishers and then drains them
@@ -1457,7 +1462,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      *  <dd>This method does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * @param <T> the value type
-     * @param sources a sequence of Publishers that need to be eagerly concatenated
+     * @param sources an array of Publishers that need to be eagerly concatenated
      * @param maxConcurrency the maximum number of concurrent subscriptions at a time, Integer.MAX_VALUE
      *                       is interpreted as an indication to subscribe to all sources at once
      * @param prefetch the number of elements to prefetch from each Publisher source
@@ -1473,6 +1478,70 @@ public abstract class Flowable<T> implements Publisher<T> {
         ObjectHelper.verifyPositive(maxConcurrency, "maxConcurrency");
         ObjectHelper.verifyPositive(prefetch, "prefetch");
         return RxJavaPlugins.onAssembly(new FlowableConcatMapEager(new FlowableFromArray(sources), Functions.identity(), maxConcurrency, prefetch, ErrorMode.IMMEDIATE));
+    }
+
+    /**
+     * Concatenates an array of {@link Publisher}s eagerly into a single stream of values
+     * and delaying any errors until all sources terminate.
+     * <p>
+     * <img width="640" height="358" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Flowable.concatArrayEagerDelayError.png" alt="">
+     * <p>
+     * Eager concatenation means that once a subscriber subscribes, this operator subscribes to all of the
+     * source {@code Publisher}s. The operator buffers the values emitted by these {@code Publisher}s
+     * and then drains them in order, each one after the previous one completes.
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The operator honors backpressure from downstream. The {@code Publisher}
+     *  sources are expected to honor backpressure as well.
+     *  If any of the source {@code Publisher}s violate this, the operator will signal a
+     *  {@code MissingBackpressureException}.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>This method does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param <T> the value type
+     * @param sources an array of {@code Publisher}s that need to be eagerly concatenated
+     * @return the new Flowable instance with the specified concatenation behavior
+     * @since 2.2.1 - experimental
+     */
+    @CheckReturnValue
+    @SchedulerSupport(SchedulerSupport.NONE)
+    @BackpressureSupport(BackpressureKind.FULL)
+    public static <T> Flowable<T> concatArrayEagerDelayError(Publisher<? extends T>... sources) {
+        return concatArrayEagerDelayError(bufferSize(), bufferSize(), sources);
+    }
+
+    /**
+     * Concatenates an array of {@link Publisher}s eagerly into a single stream of values
+     * and delaying any errors until all sources terminate.
+     * <p>
+     * <img width="640" height="359" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Flowable.concatArrayEagerDelayError.nn.png" alt="">
+     * <p>
+     * Eager concatenation means that once a subscriber subscribes, this operator subscribes to all of the
+     * source {@code Publisher}s. The operator buffers the values emitted by these {@code Publisher}s
+     * and then drains them in order, each one after the previous one completes.
+     * <dl>
+     *  <dt><b>Backpressure:</b></dt>
+     *  <dd>The operator honors backpressure from downstream. The {@code Publisher}
+     *  sources are expected to honor backpressure as well.
+     *  If any of the source {@code Publisher}s violate this, the operator will signal a
+     *  {@code MissingBackpressureException}.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>This method does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param <T> the value type
+     * @param sources an array of {@code Publisher}s that need to be eagerly concatenated
+     * @param maxConcurrency the maximum number of concurrent subscriptions at a time, Integer.MAX_VALUE
+     *                       is interpreted as indication to subscribe to all sources at once
+     * @param prefetch the number of elements to prefetch from each {@code Publisher} source
+     * @return the new Flowable instance with the specified concatenation behavior
+     * @since 2.2.1 - experimental
+     */
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    @CheckReturnValue
+    @SchedulerSupport(SchedulerSupport.NONE)
+    @BackpressureSupport(BackpressureKind.FULL)
+    public static <T> Flowable<T> concatArrayEagerDelayError(int maxConcurrency, int prefetch, Publisher<? extends T>... sources) {
+        return fromArray(sources).concatMapEagerDelayError((Function)Functions.identity(), maxConcurrency, prefetch, true);
     }
 
     /**
