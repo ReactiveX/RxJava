@@ -155,7 +155,7 @@ public final class FlowablePublish<T> extends ConnectableFlowable<T> implements 
          */
         final AtomicBoolean shouldConnect;
 
-        final AtomicReference<Subscription> s = new AtomicReference<Subscription>();
+        final AtomicReference<Subscription> upstream = new AtomicReference<Subscription>();
 
         /** Contains either an onComplete or an onError token from upstream. */
         volatile Object terminalEvent;
@@ -180,7 +180,7 @@ public final class FlowablePublish<T> extends ConnectableFlowable<T> implements 
                 InnerSubscriber[] ps = subscribers.getAndSet(TERMINATED);
                 if (ps != TERMINATED) {
                     current.compareAndSet(PublishSubscriber.this, null);
-                    SubscriptionHelper.cancel(s);
+                    SubscriptionHelper.cancel(upstream);
                 }
             }
         }
@@ -192,12 +192,12 @@ public final class FlowablePublish<T> extends ConnectableFlowable<T> implements 
 
         @Override
         public void onSubscribe(Subscription s) {
-            if (SubscriptionHelper.setOnce(this.s, s)) {
+            if (SubscriptionHelper.setOnce(this.upstream, s)) {
                 if (s instanceof QueueSubscription) {
                     @SuppressWarnings("unchecked")
                     QueueSubscription<T> qs = (QueueSubscription<T>) s;
 
-                    int m = qs.requestFusion(QueueSubscription.ANY);
+                    int m = qs.requestFusion(QueueSubscription.ANY | QueueSubscription.BOUNDARY);
                     if (m == QueueSubscription.SYNC) {
                         sourceMode = m;
                         queue = qs;
@@ -482,7 +482,7 @@ public final class FlowablePublish<T> extends ConnectableFlowable<T> implements 
                             v = q.poll();
                         } catch (Throwable ex) {
                             Exceptions.throwIfFatal(ex);
-                            s.get().cancel();
+                            upstream.get().cancel();
                             term = NotificationLite.error(ex);
                             terminalEvent = term;
                             v = null;
@@ -493,7 +493,7 @@ public final class FlowablePublish<T> extends ConnectableFlowable<T> implements 
                         }
                         // otherwise, just ask for a new value
                         if (sourceMode != QueueSubscription.SYNC) {
-                            s.get().request(1);
+                            upstream.get().request(1);
                         }
                         // and retry emitting to potential new child subscribers
                         continue;
@@ -510,7 +510,7 @@ public final class FlowablePublish<T> extends ConnectableFlowable<T> implements 
                             v = q.poll();
                         } catch (Throwable ex) {
                             Exceptions.throwIfFatal(ex);
-                            s.get().cancel();
+                            upstream.get().cancel();
                             term = NotificationLite.error(ex);
                             terminalEvent = term;
                             v = null;
@@ -562,7 +562,7 @@ public final class FlowablePublish<T> extends ConnectableFlowable<T> implements 
                     // if we did emit at least one element, request more to replenish the queue
                     if (d > 0) {
                         if (sourceMode != QueueSubscription.SYNC) {
-                            s.get().request(d);
+                            upstream.get().request(d);
                         }
                     }
                     // if we have requests but not an empty queue after emission
