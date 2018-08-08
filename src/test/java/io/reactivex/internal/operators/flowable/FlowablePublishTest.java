@@ -824,10 +824,34 @@ public class FlowablePublishTest {
                 throw new TestException();
             }
         })
+        .compose(TestHelper.flowableStripBoundary())
         .publish()
         .autoConnect()
         .test()
         .assertFailure(TestException.class);
+    }
+
+    @Test
+    public void pollThrowsNoSubscribers() {
+        ConnectableFlowable<Integer> cf = Flowable.just(1, 2)
+        .map(new Function<Integer, Integer>() {
+            @Override
+            public Integer apply(Integer v) throws Exception {
+                if (v == 2) {
+                    throw new TestException();
+                }
+                return v;
+            }
+        })
+        .compose(TestHelper.<Integer>flowableStripBoundary())
+        .publish();
+
+        TestSubscriber<Integer> ts = cf.take(1)
+        .test();
+
+        cf.connect();
+
+        ts.assertResult(1);
     }
 
     @Test
@@ -1315,5 +1339,32 @@ public class FlowablePublishTest {
 
         ts1.assertEmpty();
         ts2.assertValuesOnly(1);
+    }
+
+    @Test
+    public void boundaryFusion() {
+        Flowable.range(1, 10000)
+        .observeOn(Schedulers.single())
+        .map(new Function<Integer, String>() {
+            @Override
+            public String apply(Integer t) throws Exception {
+                String name = Thread.currentThread().getName();
+                if (name.contains("RxSingleScheduler")) {
+                    return "RxSingleScheduler";
+                }
+                return name;
+            }
+        })
+        .share()
+        .observeOn(Schedulers.computation())
+        .distinct()
+        .test()
+        .awaitDone(5, TimeUnit.SECONDS)
+        .assertResult("RxSingleScheduler");
+    }
+
+    @Test
+    public void badRequest() {
+        TestHelper.assertBadRequestReported(Flowable.range(1, 5).publish());
     }
 }
