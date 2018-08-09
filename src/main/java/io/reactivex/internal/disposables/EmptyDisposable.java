@@ -83,7 +83,6 @@ public enum EmptyDisposable implements QueueDisposable<Object> {
         observer.onError(e);
     }
 
-
     @Override
     public boolean offer(Object value) {
         throw new UnsupportedOperationException("Should not be called!");

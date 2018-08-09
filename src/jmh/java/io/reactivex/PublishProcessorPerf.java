@@ -71,7 +71,6 @@ public class PublishProcessorPerf {
         bounded.onNext(1);
     }
 
-
     @Benchmark
     public void bounded1k() {
         for (int i = 0; i < 1000; i++) {
@@ -86,12 +85,10 @@ public class PublishProcessorPerf {
         }
     }
 
-
     @Benchmark
     public void subject1() {
         subject.onNext(1);
     }
-
 
     @Benchmark
     public void subject1k() {

@@ -136,7 +136,6 @@ public final class ObservableGenerate<T, S> extends Observable<T> {
             return cancelled;
         }
 
-
         @Override
         public void onNext(T t) {
             if (!terminate) {

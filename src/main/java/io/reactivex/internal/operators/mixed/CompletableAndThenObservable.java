@@ -81,7 +81,6 @@ public final class CompletableAndThenObservable<R> extends Observable<R> {
             }
         }
 
-
         @Override
         public void dispose() {
             DisposableHelper.dispose(this);

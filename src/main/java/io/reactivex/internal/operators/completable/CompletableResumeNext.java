@@ -58,7 +58,6 @@ public final class CompletableResumeNext extends Completable {
             this.errorMapper = errorMapper;
         }
 
-
         @Override
         public void onSubscribe(Disposable d) {
             DisposableHelper.replace(this, d);

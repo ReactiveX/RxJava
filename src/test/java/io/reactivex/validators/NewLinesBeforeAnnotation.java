@@ -44,6 +44,11 @@ public class NewLinesBeforeAnnotation {
     }
 
     @Test
+    public void tooManyEmptyNewLines2() throws Exception  {
+        findPattern(2);
+    }
+
+    @Test
     public void tooManyEmptyNewLines3() throws Exception  {
         findPattern(3);
     }

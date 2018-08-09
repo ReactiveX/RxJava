@@ -77,7 +77,6 @@ public final class ObservableCollectSingle<T, U> extends Single<U> implements Fu
             }
         }
 
-
         @Override
         public void dispose() {
             upstream.dispose();
@@ -87,7 +86,6 @@ public final class ObservableCollectSingle<T, U> extends Single<U> implements Fu
         public boolean isDisposed() {
             return upstream.isDisposed();
         }
-
 
         @Override
         public void onNext(T t) {

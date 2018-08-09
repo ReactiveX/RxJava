@@ -54,7 +54,6 @@ public final class ObservableSkipLast<T> extends AbstractObservableWithUpstream<
             }
         }
 
-
         @Override
         public void dispose() {
             upstream.dispose();

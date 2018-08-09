@@ -1118,7 +1118,6 @@ public final class ReplayProcessor<T> extends FlowableProcessor<T> {
             }
         }
 
-
         @Override
         public void trimHead() {
             if (head.value != null) {

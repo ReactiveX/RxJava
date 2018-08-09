@@ -36,7 +36,6 @@ public final class ObservableSampleTimed<T> extends AbstractObservableWithUpstre
         this.emitLast = emitLast;
     }
 
-
     @Override
     public void subscribeActual(Observer<? super T> t) {
         SerializedObserver<T> serial = new SerializedObserver<T>(t);

@@ -54,7 +54,6 @@ public final class ObservableCountSingle<T> extends Single<Long> implements Fuse
             }
         }
 
-
         @Override
         public void dispose() {
             upstream.dispose();

@@ -69,7 +69,6 @@ public final class ObservableCollect<T, U> extends AbstractObservableWithUpstrea
             }
         }
 
-
         @Override
         public void dispose() {
             upstream.dispose();
@@ -79,7 +78,6 @@ public final class ObservableCollect<T, U> extends AbstractObservableWithUpstrea
         public boolean isDisposed() {
             return upstream.isDisposed();
         }
-
 
         @Override
         public void onNext(T t) {

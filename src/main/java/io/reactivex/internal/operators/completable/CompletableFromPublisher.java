@@ -53,7 +53,6 @@ public final class CompletableFromPublisher<T> extends Completable {
             }
         }
 
-
         @Override
         public void onNext(T t) {
             // ignored

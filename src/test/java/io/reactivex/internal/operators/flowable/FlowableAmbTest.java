@@ -236,7 +236,6 @@ public class FlowableAmbTest {
         assertEquals(Flowable.bufferSize() * 2, ts.values().size());
     }
 
-
     @SuppressWarnings("unchecked")
     @Test
     public void testSubscriptionOnlyHappensOnce() throws InterruptedException {

@@ -90,7 +90,6 @@ public final class ObservableZipIterable<T, U, V> extends Observable<V> {
             }
         }
 
-
         @Override
         public void dispose() {
             upstream.dispose();
@@ -100,7 +99,6 @@ public final class ObservableZipIterable<T, U, V> extends Observable<V> {
         public boolean isDisposed() {
             return upstream.isDisposed();
         }
-
 
         @Override
         public void onNext(T t) {

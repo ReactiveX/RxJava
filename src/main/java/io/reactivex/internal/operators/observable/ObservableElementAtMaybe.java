@@ -60,7 +60,6 @@ public final class ObservableElementAtMaybe<T> extends Maybe<T> implements FuseT
             }
         }
 
-
         @Override
         public void dispose() {
             upstream.dispose();
@@ -70,7 +69,6 @@ public final class ObservableElementAtMaybe<T> extends Maybe<T> implements FuseT
         public boolean isDisposed() {
             return upstream.isDisposed();
         }
-
 
         @Override
         public void onNext(T t) {

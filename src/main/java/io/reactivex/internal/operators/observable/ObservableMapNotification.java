@@ -71,7 +71,6 @@ public final class ObservableMapNotification<T, R> extends AbstractObservableWit
             }
         }
 
-
         @Override
         public void dispose() {
             upstream.dispose();
@@ -81,7 +80,6 @@ public final class ObservableMapNotification<T, R> extends AbstractObservableWit
         public boolean isDisposed() {
             return upstream.isDisposed();
         }
-
 
         @Override
         public void onNext(T t) {

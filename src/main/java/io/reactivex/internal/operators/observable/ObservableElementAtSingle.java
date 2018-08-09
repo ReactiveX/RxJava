@@ -67,7 +67,6 @@ public final class ObservableElementAtSingle<T> extends Single<T> implements Fus
             }
         }
 
-
         @Override
         public void dispose() {
             upstream.dispose();
@@ -77,7 +76,6 @@ public final class ObservableElementAtSingle<T> extends Single<T> implements Fus
         public boolean isDisposed() {
             return upstream.isDisposed();
         }
-
 
         @Override
         public void onNext(T t) {

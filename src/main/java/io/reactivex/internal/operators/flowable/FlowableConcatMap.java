@@ -417,7 +417,6 @@ public final class FlowableConcatMap<T, R> extends AbstractFlowableWithUpstream<
             downstream.onNext(value);
         }
 
-
         @Override
         public void innerError(Throwable e) {
             if (errors.addThrowable(e)) {

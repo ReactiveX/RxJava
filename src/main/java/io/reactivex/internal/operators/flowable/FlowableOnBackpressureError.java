@@ -30,7 +30,6 @@ public final class FlowableOnBackpressureError<T> extends AbstractFlowableWithUp
         super(source);
     }
 
-
     @Override
     protected void subscribeActual(Subscriber<? super T> s) {
         this.source.subscribe(new BackpressureErrorSubscriber<T>(s));

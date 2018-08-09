@@ -739,7 +739,6 @@ public class FlowableMergeDelayErrorTest {
         }
     }
 
-
     @SuppressWarnings("unchecked")
     @Test
     public void mergeArrayDelayError() {

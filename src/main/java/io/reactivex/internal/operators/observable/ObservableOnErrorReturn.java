@@ -50,7 +50,6 @@ public final class ObservableOnErrorReturn<T> extends AbstractObservableWithUpst
             }
         }
 
-
         @Override
         public void dispose() {
             upstream.dispose();

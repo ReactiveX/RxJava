@@ -61,7 +61,6 @@ public final class CompletablePeek extends Completable {
             this.downstream = downstream;
         }
 
-
         @Override
         public void onSubscribe(final Disposable d) {
             try {

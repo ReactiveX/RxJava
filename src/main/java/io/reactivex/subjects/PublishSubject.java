@@ -129,7 +129,6 @@ public final class PublishSubject<T> extends Subject<T> {
         subscribers = new AtomicReference<PublishDisposable<T>[]>(EMPTY);
     }
 
-
     @Override
     protected void subscribeActual(Observer<? super T> t) {
         PublishDisposable<T> ps = new PublishDisposable<T>(t, this);

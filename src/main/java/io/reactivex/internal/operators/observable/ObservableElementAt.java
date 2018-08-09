@@ -64,7 +64,6 @@ public final class ObservableElementAt<T> extends AbstractObservableWithUpstream
             }
         }
 
-
         @Override
         public void dispose() {
             upstream.dispose();
@@ -74,7 +73,6 @@ public final class ObservableElementAt<T> extends AbstractObservableWithUpstream
         public boolean isDisposed() {
             return upstream.isDisposed();
         }
-
 
         @Override
         public void onNext(T t) {

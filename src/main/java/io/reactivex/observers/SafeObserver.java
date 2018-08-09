@@ -63,7 +63,6 @@ public final class SafeObserver<T> implements Observer<T>, Disposable {
         }
     }
 
-
     @Override
     public void dispose() {
         upstream.dispose();

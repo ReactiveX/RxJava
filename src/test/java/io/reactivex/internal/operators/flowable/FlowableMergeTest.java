@@ -1465,7 +1465,6 @@ public class FlowableMergeTest {
         ts.assertComplete();
     }
 
-
     @SuppressWarnings("unchecked")
     @Test
     @Ignore("No 2-9 argument merge()")
@@ -1624,7 +1623,6 @@ public class FlowableMergeTest {
             .assertResult(expected);
         }
     }
-
 
     @SuppressWarnings("unchecked")
     @Test

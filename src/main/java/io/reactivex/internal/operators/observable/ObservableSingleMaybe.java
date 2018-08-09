@@ -52,7 +52,6 @@ public final class ObservableSingleMaybe<T> extends Maybe<T> {
             }
         }
 
-
         @Override
         public void dispose() {
             upstream.dispose();
@@ -62,7 +61,6 @@ public final class ObservableSingleMaybe<T> extends Maybe<T> {
         public boolean isDisposed() {
             return upstream.isDisposed();
         }
-
 
         @Override
         public void onNext(T t) {

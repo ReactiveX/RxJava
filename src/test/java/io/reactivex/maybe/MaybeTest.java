@@ -2872,7 +2872,6 @@ public class MaybeTest {
         .assertResult("[1]");
     }
 
-
     @SuppressWarnings("unchecked")
     @Test
     public void zipIterable() {

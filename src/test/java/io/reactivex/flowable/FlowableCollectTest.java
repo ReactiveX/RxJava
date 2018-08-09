@@ -166,7 +166,6 @@ public final class FlowableCollectTest {
         assertFalse(added.get());
     }
 
-
     @SuppressWarnings("unchecked")
     @Test
     public void collectIntoFlowable() {
@@ -315,7 +314,6 @@ public final class FlowableCollectTest {
                 .assertNotComplete();
         assertFalse(added.get());
     }
-
 
     @SuppressWarnings("unchecked")
     @Test

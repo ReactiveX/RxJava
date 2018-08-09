@@ -1954,7 +1954,6 @@ public class RxJavaPluginsTest {
         }
     }
 
-
     @SuppressWarnings("rawtypes")
     @Test
     public void maybeCreate() {
