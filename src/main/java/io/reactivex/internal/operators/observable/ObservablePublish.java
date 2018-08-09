@@ -172,6 +172,7 @@ public final class ObservablePublish<T> extends ConnectableObservable<T> impleme
                 inner.child.onNext(t);
             }
         }
+
         @SuppressWarnings("unchecked")
         @Override
         public void onError(Throwable e) {
@@ -185,6 +186,7 @@ public final class ObservablePublish<T> extends ConnectableObservable<T> impleme
                 RxJavaPlugins.onError(e);
             }
         }
+
         @SuppressWarnings("unchecked")
         @Override
         public void onComplete() {

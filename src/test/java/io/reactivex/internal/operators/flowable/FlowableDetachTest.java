@@ -87,7 +87,6 @@ public class FlowableDetachTest {
         ts.assertComplete();
     }
 
-
     @Test
     public void backpressured() throws Exception {
         o = new Object();

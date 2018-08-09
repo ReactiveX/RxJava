@@ -156,6 +156,7 @@ public class FlowableSwitchIfEmptyTest {
         ts.request(1);
         ts.assertValueCount(3);
     }
+
     @Test
     public void testBackpressureNoRequest() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>(0L);

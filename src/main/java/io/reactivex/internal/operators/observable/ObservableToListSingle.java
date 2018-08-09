@@ -83,7 +83,6 @@ extends Single<U> implements FuseToObservable<U> {
             }
         }
 
-
         @Override
         public void dispose() {
             upstream.dispose();
@@ -93,7 +92,6 @@ extends Single<U> implements FuseToObservable<U> {
         public boolean isDisposed() {
             return upstream.isDisposed();
         }
-
 
         @Override
         public void onNext(T t) {

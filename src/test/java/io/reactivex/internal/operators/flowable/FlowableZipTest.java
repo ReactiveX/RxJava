@@ -1224,6 +1224,7 @@ public class FlowableZipTest {
         }
         assertEquals(expected, zip2.toList().blockingGet());
     }
+
     @Test
     public void testUnboundedDownstreamOverrequesting() {
         Flowable<Integer> source = Flowable.range(1, 2).zipWith(Flowable.range(1, 2), new BiFunction<Integer, Integer, Integer>() {
@@ -1247,6 +1248,7 @@ public class FlowableZipTest {
         ts.assertTerminated();
         ts.assertValues(11, 22);
     }
+
     @Test(timeout = 10000)
     public void testZipRace() {
         long startTime = System.currentTimeMillis();
@@ -1570,6 +1572,7 @@ public class FlowableZipTest {
         .test()
         .assertResult("12345678");
     }
+
     @Test
     public void zip9() {
         Flowable.zip(Flowable.just(1),
@@ -1588,7 +1591,6 @@ public class FlowableZipTest {
         .test()
         .assertResult("123456789");
     }
-
 
     @Test
     public void zipArrayMany() {

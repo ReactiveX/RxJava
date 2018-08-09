@@ -771,7 +771,6 @@ public class FlowableSubscriberTest {
         ts.assertResult(1);
     }
 
-
     @Test
     public void methodTestNoCancel() {
         PublishProcessor<Integer> pp = PublishProcessor.create();

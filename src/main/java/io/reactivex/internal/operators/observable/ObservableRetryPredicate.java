@@ -68,6 +68,7 @@ public final class ObservableRetryPredicate<T> extends AbstractObservableWithUps
         public void onNext(T t) {
             downstream.onNext(t);
         }
+
         @Override
         public void onError(Throwable t) {
             long r = remaining;

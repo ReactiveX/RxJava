@@ -399,7 +399,6 @@ public class FlowableSwitchMapMaybeTest {
         }
     }
 
-
     @Test
     public void innerErrorAfterTermination() {
         List<Throwable> errors = TestHelper.trackPluginErrors();

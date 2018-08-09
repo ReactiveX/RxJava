@@ -350,7 +350,6 @@ public class MaybeTest {
         Completable.complete().toMaybe().ignoreElement().test().assertResult();
     }
 
-
     @Test
     public void unsafeCreate() {
         Maybe.unsafeCreate(new MaybeSource<Integer>() {
@@ -646,7 +645,6 @@ public class MaybeTest {
         assertNotEquals(main, name[0]);
     }
 
-
     @Test
     public void observeOnCompleteThread() {
         String main = Thread.currentThread().getName();
@@ -687,7 +685,6 @@ public class MaybeTest {
         .assertResult()
         ;
     }
-
 
     @Test
     public void fromAction() {
@@ -801,7 +798,6 @@ public class MaybeTest {
         .assertFailure(TestException.class);
     }
 
-
     @Test
     public void doOnSubscribe() {
         final Disposable[] value = { null };
@@ -829,7 +825,6 @@ public class MaybeTest {
         .test()
         .assertFailure(TestException.class);
     }
-
 
     @Test
     public void doOnCompleteThrows() {
@@ -861,7 +856,6 @@ public class MaybeTest {
 
         assertEquals(1, call[0]);
     }
-
 
     @Test
     public void doOnDisposeThrows() {
@@ -971,7 +965,6 @@ public class MaybeTest {
         assertEquals(-1, call[0]);
     }
 
-
     @Test
     public void doAfterTerminateComplete() {
         final int[] call = { 0 };
@@ -1012,7 +1005,6 @@ public class MaybeTest {
             assertEquals("Forced failure", ex.getMessage());
         }
     }
-
 
     @Test
     public void sourceThrowsIAE() {
@@ -1180,6 +1172,7 @@ public class MaybeTest {
         .test()
         .assertResult();
     }
+
     @Test
     public void ignoreElementSuccessMaybe() {
         Maybe.just(1)
@@ -2436,7 +2429,6 @@ public class MaybeTest {
         assertEquals(2, list.size());
     }
 
-
     @Test
     public void doOnEventCompleteThrows() {
         Maybe.<Integer>empty()
@@ -2880,7 +2872,6 @@ public class MaybeTest {
         .assertResult("[1]");
     }
 
-
     @SuppressWarnings("unchecked")
     @Test
     public void zipIterable() {
@@ -2982,7 +2973,6 @@ public class MaybeTest {
         .test()
         .assertResult("123456789");
     }
-
 
     @Test
     public void ambWith1SignalsSuccess() {

@@ -72,7 +72,6 @@ public final class SerializedObserver<T> implements Observer<T>, Disposable {
         }
     }
 
-
     @Override
     public void dispose() {
         upstream.dispose();
@@ -82,7 +81,6 @@ public final class SerializedObserver<T> implements Observer<T>, Disposable {
     public boolean isDisposed() {
         return upstream.isDisposed();
     }
-
 
     @Override
     public void onNext(@NonNull T t) {

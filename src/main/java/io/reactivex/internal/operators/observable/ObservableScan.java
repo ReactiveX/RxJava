@@ -56,7 +56,6 @@ public final class ObservableScan<T> extends AbstractObservableWithUpstream<T, T
             }
         }
 
-
         @Override
         public void dispose() {
             upstream.dispose();
@@ -66,7 +65,6 @@ public final class ObservableScan<T> extends AbstractObservableWithUpstream<T, T
         public boolean isDisposed() {
             return upstream.isDisposed();
         }
-
 
         @Override
         public void onNext(T t) {

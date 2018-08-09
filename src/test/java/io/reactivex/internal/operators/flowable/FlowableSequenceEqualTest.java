@@ -483,7 +483,6 @@ public class FlowableSequenceEqualTest {
         }
     }
 
-
     @Test
     public void longSequenceEquals() {
         Flowable<Integer> source = Flowable.range(1, Flowable.bufferSize() * 4).subscribeOn(Schedulers.computation());

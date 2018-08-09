@@ -74,7 +74,6 @@ public final class ObservableScanSeed<T, R> extends AbstractObservableWithUpstre
             }
         }
 
-
         @Override
         public void dispose() {
             upstream.dispose();

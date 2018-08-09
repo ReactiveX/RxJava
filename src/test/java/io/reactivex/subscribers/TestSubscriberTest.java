@@ -746,7 +746,6 @@ public class TestSubscriberTest {
         ts.awaitTerminalEvent();
     }
 
-
     @Test
     public void createDelegate() {
         TestSubscriber<Integer> ts1 = TestSubscriber.create();
@@ -1611,7 +1610,6 @@ public class TestSubscriberTest {
         }
     }
 
-
     @Test
     public void syncQueueThrows() {
         TestSubscriber<Object> ts = new TestSubscriber<Object>();
@@ -1825,7 +1823,6 @@ public class TestSubscriberTest {
             assertTrue(ex.toString(), ex.toString().contains("timeout!"));
         }
     }
-
 
     @Test
     public void timeoutIndicated3() throws InterruptedException {

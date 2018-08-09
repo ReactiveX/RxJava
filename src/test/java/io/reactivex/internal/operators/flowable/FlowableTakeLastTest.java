@@ -241,7 +241,6 @@ public class FlowableTakeLastTest {
         });
     }
 
-
     @Test
     public void testIgnoreRequest4() {
         // If `takeLast` does not ignore `request` properly, StackOverflowError will be thrown.

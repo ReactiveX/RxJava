@@ -242,7 +242,6 @@ public class FlowableOnErrorReturnTest {
         ts.assertComplete();
     }
 
-
     @Test
     public void returnItem() {
         Flowable.error(new TestException())

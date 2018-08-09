@@ -158,6 +158,7 @@ public class FlowableWindowWithTimeTest {
             }
         };
     }
+
     @Test
     public void testExactWindowSize() {
         Flowable<Flowable<Integer>> source = Flowable.range(1, 10)
@@ -221,7 +222,6 @@ public class FlowableWindowWithTimeTest {
         ts.assertComplete();
         Assert.assertTrue(ts.valueCount() != 0);
     }
-
 
     @Test
     public void timespanTimeskipCustomSchedulerBufferSize() {
@@ -811,6 +811,7 @@ public class FlowableWindowWithTimeTest {
         .assertNoErrors()
         .assertNotComplete();
     }
+
     @Test
     public void countRestartsOnTimeTick() {
         TestScheduler scheduler = new TestScheduler();

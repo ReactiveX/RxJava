@@ -46,7 +46,6 @@ public final class ObservableCount<T> extends AbstractObservableWithUpstream<T, 
             }
         }
 
-
         @Override
         public void dispose() {
             upstream.dispose();

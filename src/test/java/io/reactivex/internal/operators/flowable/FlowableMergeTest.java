@@ -1360,10 +1360,12 @@ public class FlowableMergeTest {
     public void testFastMergeFullScalar() {
         runMerge(toScalar, new TestSubscriber<Integer>());
     }
+
     @Test
     public void testFastMergeHiddenScalar() {
         runMerge(toHiddenScalar, new TestSubscriber<Integer>());
     }
+
     @Test
     public void testSlowMergeFullScalar() {
         for (final int req : new int[] { 16, 32, 64, 128, 256 }) {
@@ -1382,6 +1384,7 @@ public class FlowableMergeTest {
             runMerge(toScalar, ts);
         }
     }
+
     @Test
     public void testSlowMergeHiddenScalar() {
         for (final int req : new int[] { 16, 32, 64, 128, 256 }) {
@@ -1461,7 +1464,6 @@ public class FlowableMergeTest {
         ts.assertNoErrors();
         ts.assertComplete();
     }
-
 
     @SuppressWarnings("unchecked")
     @Test
@@ -1621,7 +1623,6 @@ public class FlowableMergeTest {
             .assertResult(expected);
         }
     }
-
 
     @SuppressWarnings("unchecked")
     @Test

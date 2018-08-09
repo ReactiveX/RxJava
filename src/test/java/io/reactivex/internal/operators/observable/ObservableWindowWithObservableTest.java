@@ -329,6 +329,7 @@ public class ObservableWindowWithObservableTest {
         to.assertNoErrors();
         to.assertValueCount(1);
     }
+
     @Test
     public void testMainUnsubscribedOnBoundaryCompletion() {
         PublishSubject<Integer> source = PublishSubject.create();

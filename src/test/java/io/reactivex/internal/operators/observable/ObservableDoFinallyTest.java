@@ -159,7 +159,6 @@ public class ObservableDoFinallyTest implements Action {
         assertEquals(1, calls);
     }
 
-
     @Test
     public void normalJustConditional() {
         Observable.just(1)
@@ -444,7 +443,6 @@ public class ObservableDoFinallyTest implements Action {
 
         assertEquals(1, calls);
     }
-
 
     @Test
     public void eventOrdering() {

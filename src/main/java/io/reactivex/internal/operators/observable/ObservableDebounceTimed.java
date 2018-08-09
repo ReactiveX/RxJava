@@ -117,6 +117,7 @@ public final class ObservableDebounceTimed<T> extends AbstractObservableWithUpst
             if (d != null) {
                 d.dispose();
             }
+
             @SuppressWarnings("unchecked")
             DebounceEmitter<T> de = (DebounceEmitter<T>)d;
             if (de != null) {

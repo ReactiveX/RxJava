@@ -28,6 +28,7 @@ public final class ObservableTakeUntil<T, U> extends AbstractObservableWithUpstr
         super(source);
         this.other = other;
     }
+
     @Override
     public void subscribeActual(Observer<? super T> child) {
         TakeUntilMainObserver<T, U> parent = new TakeUntilMainObserver<T, U>(child);

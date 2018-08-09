@@ -61,6 +61,7 @@ public final class ObservableRepeatUntil<T> extends AbstractObservableWithUpstre
         public void onNext(T t) {
             downstream.onNext(t);
         }
+
         @Override
         public void onError(Throwable t) {
             downstream.onError(t);

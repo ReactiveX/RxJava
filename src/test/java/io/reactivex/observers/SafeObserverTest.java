@@ -452,10 +452,12 @@ public class SafeObserverTest {
             public void onNext(Integer t) {
 
             }
+
             @Override
             public void onError(Throwable e) {
                 error.set(e);
             }
+
             @Override
             public void onComplete() {
                 throw new TestException();
@@ -476,9 +478,11 @@ public class SafeObserverTest {
             @Override
             public void onNext(Integer t) {
             }
+
             @Override
             public void onError(Throwable e) {
             }
+
             @Override
             public void onComplete() {
             }

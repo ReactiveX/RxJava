@@ -239,6 +239,7 @@ public class ObservableDebounceTest {
         verify(o, never()).onComplete();
         verify(o).onError(any(TestException.class));
     }
+
     @Test
     public void debounceTimedLastIsNotLost() {
         PublishSubject<Integer> source = PublishSubject.create();
@@ -256,6 +257,7 @@ public class ObservableDebounceTest {
         verify(o).onComplete();
         verify(o, never()).onError(any(Throwable.class));
     }
+
     @Test
     public void debounceSelectorLastIsNotLost() {
         PublishSubject<Integer> source = PublishSubject.create();

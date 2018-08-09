@@ -32,8 +32,6 @@ public final class SingleOnErrorReturn<T> extends Single<T> {
         this.value = value;
     }
 
-
-
     @Override
     protected void subscribeActual(final SingleObserver<? super T> observer) {
 

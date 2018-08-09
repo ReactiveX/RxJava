@@ -350,6 +350,7 @@ public class ReplayProcessorTest extends FlowableProcessorTest<Object> {
         assertEquals("three", lastValueForSubscriber2.get());
 
     }
+
     @Test
     public void testSubscriptionLeak() {
         ReplayProcessor<Object> replaySubject = ReplayProcessor.create();
@@ -403,6 +404,7 @@ public class ReplayProcessorTest extends FlowableProcessorTest<Object> {
             verify(subscriber, never()).onError(any(Throwable.class));
         }
     }
+
     @Test
     public void testTerminateOnce() {
         ReplayProcessor<Integer> source = ReplayProcessor.create();
@@ -455,6 +457,7 @@ public class ReplayProcessorTest extends FlowableProcessorTest<Object> {
             verify(subscriber, never()).onError(any(Throwable.class));
         }
     }
+
     @Test
     public void testReplay1Directly() {
         ReplayProcessor<Integer> source = ReplayProcessor.createWithSize(1);
@@ -618,6 +621,7 @@ public class ReplayProcessorTest extends FlowableProcessorTest<Object> {
         assertTrue(as.hasComplete());
         assertNull(as.getThrowable());
     }
+
     @Test
     public void testCurrentStateMethodsError() {
         ReplayProcessor<Object> as = ReplayProcessor.create();
@@ -632,6 +636,7 @@ public class ReplayProcessorTest extends FlowableProcessorTest<Object> {
         assertFalse(as.hasComplete());
         assertTrue(as.getThrowable() instanceof TestException);
     }
+
     @Test
     public void testSizeAndHasAnyValueUnbounded() {
         ReplayProcessor<Object> rs = ReplayProcessor.create();
@@ -654,6 +659,7 @@ public class ReplayProcessorTest extends FlowableProcessorTest<Object> {
         assertEquals(2, rs.size());
         assertTrue(rs.hasValue());
     }
+
     @Test
     public void testSizeAndHasAnyValueEffectivelyUnbounded() {
         ReplayProcessor<Object> rs = ReplayProcessor.createUnbounded();
@@ -699,6 +705,7 @@ public class ReplayProcessorTest extends FlowableProcessorTest<Object> {
         assertEquals(2, rs.size());
         assertTrue(rs.hasValue());
     }
+
     @Test
     public void testSizeAndHasAnyValueEffectivelyUnboundedError() {
         ReplayProcessor<Object> rs = ReplayProcessor.createUnbounded();
@@ -731,6 +738,7 @@ public class ReplayProcessorTest extends FlowableProcessorTest<Object> {
         assertEquals(0, rs.size());
         assertFalse(rs.hasValue());
     }
+
     @Test
     public void testSizeAndHasAnyValueEffectivelyUnboundedEmptyError() {
         ReplayProcessor<Object> rs = ReplayProcessor.createUnbounded();
@@ -750,6 +758,7 @@ public class ReplayProcessorTest extends FlowableProcessorTest<Object> {
         assertEquals(0, rs.size());
         assertFalse(rs.hasValue());
     }
+
     @Test
     public void testSizeAndHasAnyValueEffectivelyUnboundedEmptyCompleted() {
         ReplayProcessor<Object> rs = ReplayProcessor.createUnbounded();
@@ -802,6 +811,7 @@ public class ReplayProcessorTest extends FlowableProcessorTest<Object> {
         assertEquals(0, rs.size());
         assertFalse(rs.hasValue());
     }
+
     @Test
     public void testGetValues() {
         ReplayProcessor<Object> rs = ReplayProcessor.create();
@@ -816,6 +826,7 @@ public class ReplayProcessorTest extends FlowableProcessorTest<Object> {
         assertArrayEquals(expected, rs.getValues());
 
     }
+
     @Test
     public void testGetValuesUnbounded() {
         ReplayProcessor<Object> rs = ReplayProcessor.createUnbounded();
@@ -1533,6 +1544,7 @@ public class ReplayProcessorTest extends FlowableProcessorTest<Object> {
         source.subscribeWith(take1AndCancel())
         .assertResult(1);
     }
+
     @Test
     public void timeAndSizeBoundCancelAfterOne() {
         ReplayProcessor<Integer> source = ReplayProcessor.createWithTimeAndSize(1, TimeUnit.MINUTES, Schedulers.single(), 16);

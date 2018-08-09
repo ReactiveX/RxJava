@@ -71,7 +71,6 @@ extends AbstractObservableWithUpstream<T, U> {
             }
         }
 
-
         @Override
         public void dispose() {
             upstream.dispose();
@@ -81,7 +80,6 @@ extends AbstractObservableWithUpstream<T, U> {
         public boolean isDisposed() {
             return upstream.isDisposed();
         }
-
 
         @Override
         public void onNext(T t) {

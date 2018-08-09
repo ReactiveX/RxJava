@@ -517,7 +517,6 @@ extends AbstractObservableWithUpstream<T, U> {
             a.onNext(v);
         }
 
-
         @Override
         public void dispose() {
             if (!cancelled) {

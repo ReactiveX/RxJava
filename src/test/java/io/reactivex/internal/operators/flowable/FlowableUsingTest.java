@@ -331,8 +331,6 @@ public class FlowableUsingTest {
 
     }
 
-
-
     @Test
     public void testUsingDisposesEagerlyBeforeError() {
         final List<String> events = new ArrayList<String>();

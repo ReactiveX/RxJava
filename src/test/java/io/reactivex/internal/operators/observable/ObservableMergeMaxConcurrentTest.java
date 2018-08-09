@@ -137,6 +137,7 @@ public class ObservableMergeMaxConcurrentTest {
         }
         assertEquals(j, n);
     }
+
     @Test
     public void testMergeALotOfSourcesOneByOneSynchronouslyTakeHalf() {
         int n = 10000;
@@ -171,6 +172,7 @@ public class ObservableMergeMaxConcurrentTest {
             to.assertValueSequence(result);
         }
     }
+
     @Test
     public void testSimpleOneLess() {
         for (int i = 2; i < 100; i++) {
@@ -189,6 +191,7 @@ public class ObservableMergeMaxConcurrentTest {
             to.assertValueSequence(result);
         }
     }
+
     @Test//(timeout = 20000)
     public void testSimpleAsyncLoop() {
         IoScheduler ios = (IoScheduler)Schedulers.io();
@@ -201,6 +204,7 @@ public class ObservableMergeMaxConcurrentTest {
             }
         }
     }
+
     @Test(timeout = 30000)
     public void testSimpleAsync() {
         for (int i = 1; i < 50; i++) {
@@ -221,12 +225,14 @@ public class ObservableMergeMaxConcurrentTest {
             assertEquals(expected, actual);
         }
     }
+
     @Test(timeout = 30000)
     public void testSimpleOneLessAsyncLoop() {
         for (int i = 0; i < 200; i++) {
             testSimpleOneLessAsync();
         }
     }
+
     @Test(timeout = 30000)
     public void testSimpleOneLessAsync() {
         long t = System.currentTimeMillis();

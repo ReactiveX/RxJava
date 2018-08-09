@@ -86,6 +86,7 @@ public class FlowableTimerTest {
         ts.assertNotComplete();
         ts.assertNoErrors();
     }
+
     @Test
     public void testInterval() {
         Flowable<Long> w = Flowable.interval(1, TimeUnit.SECONDS, scheduler);
@@ -226,6 +227,7 @@ public class FlowableTimerTest {
         ts2.assertNoErrors();
         ts2.assertNotComplete();
     }
+
     @Test
     public void testOnceObserverThrows() {
         Flowable<Long> source = Flowable.timer(100, TimeUnit.MILLISECONDS, scheduler);
@@ -254,6 +256,7 @@ public class FlowableTimerTest {
         verify(subscriber, never()).onNext(anyLong());
         verify(subscriber, never()).onComplete();
     }
+
     @Test
     public void testPeriodicObserverThrows() {
         Flowable<Long> source = Flowable.interval(100, 100, TimeUnit.MILLISECONDS, scheduler);

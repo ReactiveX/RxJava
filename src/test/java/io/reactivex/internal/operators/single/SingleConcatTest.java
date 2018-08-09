@@ -163,7 +163,6 @@ public class SingleConcatTest {
         assertEquals(1, calls[0]);
     }
 
-
     @SuppressWarnings("unchecked")
     @Test
     public void noSubsequentSubscriptionIterable() {

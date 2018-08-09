@@ -413,6 +413,7 @@ public final class ObservableFlatMap<T, U> extends AbstractObservableWithUpstrea
                         if (checkTerminate()) {
                             return;
                         }
+
                         @SuppressWarnings("unchecked")
                         InnerObserver<T, U> is = (InnerObserver<T, U>)inner[j];
 
@@ -542,6 +543,7 @@ public final class ObservableFlatMap<T, U> extends AbstractObservableWithUpstrea
             this.id = id;
             this.parent = parent;
         }
+
         @Override
         public void onSubscribe(Disposable d) {
             if (DisposableHelper.setOnce(this, d)) {
@@ -564,6 +566,7 @@ public final class ObservableFlatMap<T, U> extends AbstractObservableWithUpstrea
                 }
             }
         }
+
         @Override
         public void onNext(U t) {
             if (fusionMode == QueueDisposable.NONE) {
@@ -572,6 +575,7 @@ public final class ObservableFlatMap<T, U> extends AbstractObservableWithUpstrea
                 parent.drain();
             }
         }
+
         @Override
         public void onError(Throwable t) {
             if (parent.errors.addThrowable(t)) {
@@ -584,6 +588,7 @@ public final class ObservableFlatMap<T, U> extends AbstractObservableWithUpstrea
                 RxJavaPlugins.onError(t);
             }
         }
+
         @Override
         public void onComplete() {
             done = true;

@@ -384,6 +384,7 @@ public class PublishSubjectTest extends SubjectTest<Integer> {
 //        // even though the onError above throws we should still receive it on the other subscriber
 //        assertEquals(1, to.getOnErrorEvents().size());
 //    }
+
     @Test
     public void testCurrentStateMethodsNormal() {
         PublishSubject<Object> as = PublishSubject.create();
@@ -419,6 +420,7 @@ public class PublishSubjectTest extends SubjectTest<Integer> {
         assertTrue(as.hasComplete());
         assertNull(as.getThrowable());
     }
+
     @Test
     public void testCurrentStateMethodsError() {
         PublishSubject<Object> as = PublishSubject.create();

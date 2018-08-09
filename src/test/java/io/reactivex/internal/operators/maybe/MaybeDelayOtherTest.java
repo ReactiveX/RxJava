@@ -65,7 +65,6 @@ public class MaybeDelayOtherTest {
         to.assertResult(1);
     }
 
-
     @Test
     public void justWithOnError() {
         PublishProcessor<Object> pp = PublishProcessor.create();
@@ -101,7 +100,6 @@ public class MaybeDelayOtherTest {
 
         to.assertResult();
     }
-
 
     @Test
     public void emptyWithOnComplete() {

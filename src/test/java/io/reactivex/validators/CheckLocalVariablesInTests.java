@@ -333,6 +333,11 @@ public class CheckLocalVariablesInTests {
     }
 
     @Test
+    public void atomicSubscriptionAsSInit() throws Exception {
+        findPattern("AtomicReference<Subscription>\\s+s[0-9]?\\s", true);
+    }
+
+    @Test
     public void atomicSubscriptionAsSubscription() throws Exception {
         findPattern("AtomicReference<Subscription>\\s+subscription[0-9]?", true);
     }

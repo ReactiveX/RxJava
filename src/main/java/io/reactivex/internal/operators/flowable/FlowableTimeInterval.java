@@ -31,7 +31,6 @@ public final class FlowableTimeInterval<T> extends AbstractFlowableWithUpstream<
         this.unit = unit;
     }
 
-
     @Override
     protected void subscribeActual(Subscriber<? super Timed<T>> s) {
         source.subscribe(new TimeIntervalSubscriber<T>(s, unit, scheduler));

@@ -25,6 +25,7 @@ public final class ObservableSingleMaybe<T> extends Maybe<T> {
     public ObservableSingleMaybe(ObservableSource<T> source) {
         this.source = source;
     }
+
     @Override
     public void subscribeActual(MaybeObserver<? super T> t) {
         source.subscribe(new SingleElementObserver<T>(t));
@@ -51,7 +52,6 @@ public final class ObservableSingleMaybe<T> extends Maybe<T> {
             }
         }
 
-
         @Override
         public void dispose() {
             upstream.dispose();
@@ -61,7 +61,6 @@ public final class ObservableSingleMaybe<T> extends Maybe<T> {
         public boolean isDisposed() {
             return upstream.isDisposed();
         }
-
 
         @Override
         public void onNext(T t) {

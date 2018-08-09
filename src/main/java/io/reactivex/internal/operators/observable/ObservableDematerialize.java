@@ -49,7 +49,6 @@ public final class ObservableDematerialize<T> extends AbstractObservableWithUpst
             }
         }
 
-
         @Override
         public void dispose() {
             upstream.dispose();
@@ -59,7 +58,6 @@ public final class ObservableDematerialize<T> extends AbstractObservableWithUpst
         public boolean isDisposed() {
             return upstream.isDisposed();
         }
-
 
         @Override
         public void onNext(Notification<T> t) {
@@ -91,6 +89,7 @@ public final class ObservableDematerialize<T> extends AbstractObservableWithUpst
 
             downstream.onError(t);
         }
+
         @Override
         public void onComplete() {
             if (done) {

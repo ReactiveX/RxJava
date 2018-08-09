@@ -63,7 +63,6 @@ public class CompletableAndThenObservableTest {
         assertFalse(ps.hasObservers());
     }
 
-
     @Test
     public void errorMain() {
         CompletableSubject cs = CompletableSubject.create();

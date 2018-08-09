@@ -150,6 +150,7 @@ public class MaybeZipArrayTest {
             }
         }
     }
+
     @SuppressWarnings("unchecked")
     @Test(expected = NullPointerException.class)
     public void zipArrayOneIsNull() {

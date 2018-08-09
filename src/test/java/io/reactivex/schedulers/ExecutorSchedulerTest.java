@@ -204,6 +204,7 @@ public class ExecutorSchedulerTest extends AbstractSchedulerConcurrencyTests {
             w.dispose();
         }
     }
+
     @Test
     public void testCancelledWorkerDoesntRunTasks() {
         final AtomicInteger calls = new AtomicInteger();

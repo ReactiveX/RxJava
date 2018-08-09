@@ -518,7 +518,6 @@ public final class FlowableBufferTimed<T, U extends Collection<? super T>> exten
             return true;
         }
 
-
         @Override
         public void request(long n) {
             requested(n);

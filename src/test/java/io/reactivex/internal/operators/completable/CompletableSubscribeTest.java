@@ -30,7 +30,6 @@ public class CompletableSubscribeTest {
         assertFalse(pp.hasSubscribers());
     }
 
-
     @Test
     public void methodTestNoCancel() {
         PublishSubject<Integer> ps = PublishSubject.create();

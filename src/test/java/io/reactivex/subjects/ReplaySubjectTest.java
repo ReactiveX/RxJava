@@ -348,6 +348,7 @@ public class ReplaySubjectTest extends SubjectTest<Integer> {
         assertEquals("three", lastValueForSubscriber2.get());
 
     }
+
     @Test
     public void testSubscriptionLeak() {
         ReplaySubject<Object> subject = ReplaySubject.create();
@@ -360,6 +361,7 @@ public class ReplaySubjectTest extends SubjectTest<Integer> {
 
         assertEquals(0, subject.observerCount());
     }
+
     @Test(timeout = 1000)
     public void testUnsubscriptionCase() {
         ReplaySubject<String> src = ReplaySubject.create();
@@ -401,6 +403,7 @@ public class ReplaySubjectTest extends SubjectTest<Integer> {
             verify(o, never()).onError(any(Throwable.class));
         }
     }
+
     @Test
     public void testTerminateOnce() {
         ReplaySubject<Integer> source = ReplaySubject.create();
@@ -453,6 +456,7 @@ public class ReplaySubjectTest extends SubjectTest<Integer> {
             verify(o, never()).onError(any(Throwable.class));
         }
     }
+
     @Test
     public void testReplay1Directly() {
         ReplaySubject<Integer> source = ReplaySubject.createWithSize(1);
@@ -616,6 +620,7 @@ public class ReplaySubjectTest extends SubjectTest<Integer> {
         assertTrue(as.hasComplete());
         assertNull(as.getThrowable());
     }
+
     @Test
     public void testCurrentStateMethodsError() {
         ReplaySubject<Object> as = ReplaySubject.create();
@@ -630,6 +635,7 @@ public class ReplaySubjectTest extends SubjectTest<Integer> {
         assertFalse(as.hasComplete());
         assertTrue(as.getThrowable() instanceof TestException);
     }
+
     @Test
     public void testSizeAndHasAnyValueUnbounded() {
         ReplaySubject<Object> rs = ReplaySubject.create();
@@ -652,6 +658,7 @@ public class ReplaySubjectTest extends SubjectTest<Integer> {
         assertEquals(2, rs.size());
         assertTrue(rs.hasValue());
     }
+
     @Test
     public void testSizeAndHasAnyValueEffectivelyUnbounded() {
         ReplaySubject<Object> rs = ReplaySubject.createUnbounded();
@@ -697,6 +704,7 @@ public class ReplaySubjectTest extends SubjectTest<Integer> {
         assertEquals(2, rs.size());
         assertTrue(rs.hasValue());
     }
+
     @Test
     public void testSizeAndHasAnyValueEffectivelyUnboundedError() {
         ReplaySubject<Object> rs = ReplaySubject.createUnbounded();
@@ -729,6 +737,7 @@ public class ReplaySubjectTest extends SubjectTest<Integer> {
         assertEquals(0, rs.size());
         assertFalse(rs.hasValue());
     }
+
     @Test
     public void testSizeAndHasAnyValueEffectivelyUnboundedEmptyError() {
         ReplaySubject<Object> rs = ReplaySubject.createUnbounded();
@@ -748,6 +757,7 @@ public class ReplaySubjectTest extends SubjectTest<Integer> {
         assertEquals(0, rs.size());
         assertFalse(rs.hasValue());
     }
+
     @Test
     public void testSizeAndHasAnyValueEffectivelyUnboundedEmptyCompleted() {
         ReplaySubject<Object> rs = ReplaySubject.createUnbounded();
@@ -800,6 +810,7 @@ public class ReplaySubjectTest extends SubjectTest<Integer> {
         assertEquals(0, rs.size());
         assertFalse(rs.hasValue());
     }
+
     @Test
     public void testGetValues() {
         ReplaySubject<Object> rs = ReplaySubject.create();
@@ -814,6 +825,7 @@ public class ReplaySubjectTest extends SubjectTest<Integer> {
         assertArrayEquals(expected, rs.getValues());
 
     }
+
     @Test
     public void testGetValuesUnbounded() {
         ReplaySubject<Object> rs = ReplaySubject.createUnbounded();
@@ -1204,7 +1216,6 @@ public class ReplaySubjectTest extends SubjectTest<Integer> {
 
         assertSame(o, buf.head);
     }
-
 
     @Test
     public void noHeadRetentionSize() {

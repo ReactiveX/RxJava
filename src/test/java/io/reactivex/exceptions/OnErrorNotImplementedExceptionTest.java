@@ -108,7 +108,6 @@ public class OnErrorNotImplementedExceptionTest {
         .subscribe(Functions.emptyConsumer());
     }
 
-
     @Test
     public void maybeSubscribe0() {
         Maybe.error(new TestException())

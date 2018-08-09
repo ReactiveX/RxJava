@@ -429,6 +429,7 @@ public class ObservableMergeDelayErrorTest {
         }
 
     }
+
     @Test
     @Ignore("Subscribers should not throw")
     public void testMergeSourceWhichDoesntPropagateExceptionBack() {

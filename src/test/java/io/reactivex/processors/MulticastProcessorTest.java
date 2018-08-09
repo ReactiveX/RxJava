@@ -185,7 +185,6 @@ public class MulticastProcessorTest {
         mp.test().assertValueCount(1000).assertNoErrors().assertComplete();
     }
 
-
     @Test
     public void oneByOne() {
         MulticastProcessor<Integer> mp = MulticastProcessor.create(16);
@@ -419,7 +418,6 @@ public class MulticastProcessorTest {
         mp.onNext(null);
     }
 
-
     @Test(expected = NullPointerException.class)
     public void onOfferNull() {
         MulticastProcessor<Integer> mp = MulticastProcessor.create(4, false);
@@ -622,7 +620,6 @@ public class MulticastProcessorTest {
 
         assertFalse(mp.hasSubscribers());
     }
-
 
     @Test
     public void cancelUpfrontOtherConsumersPresent() {

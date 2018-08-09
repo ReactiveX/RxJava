@@ -1206,6 +1206,7 @@ public class FlowableCombineLatestTest {
         .test()
         .assertFailure(TestException.class, "[1, 2]");
     }
+
     @SuppressWarnings("unchecked")
     @Test
     public void combineLatestEmpty() {

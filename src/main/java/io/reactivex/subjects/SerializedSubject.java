@@ -49,7 +49,6 @@ import io.reactivex.plugins.RxJavaPlugins;
         actual.subscribe(observer);
     }
 
-
     @Override
     public void onSubscribe(Disposable d) {
         boolean cancel;

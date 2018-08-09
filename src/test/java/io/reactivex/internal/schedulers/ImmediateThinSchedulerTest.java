@@ -47,6 +47,7 @@ public class ImmediateThinSchedulerTest {
     public void scheduleDirectPeriodic() {
         ImmediateThinScheduler.INSTANCE.schedulePeriodicallyDirect(Functions.EMPTY_RUNNABLE, 1, 1, TimeUnit.SECONDS);
     }
+
     @Test
     public void schedule() {
         final int[] count = { 0 };

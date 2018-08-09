@@ -87,6 +87,7 @@ public class LinkedArrayList {
     public int size() {
         return size;
     }
+
     @Override
     public String toString() {
         final int cap = capacityHint;

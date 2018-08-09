@@ -43,7 +43,6 @@ public final class ObservableCombineLatest<T, R> extends Observable<R> {
         this.delayError = delayError;
     }
 
-
     @Override
     @SuppressWarnings("unchecked")
     public void subscribeActual(Observer<? super R> observer) {

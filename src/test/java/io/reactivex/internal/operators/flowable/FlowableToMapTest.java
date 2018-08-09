@@ -224,7 +224,6 @@ public class FlowableToMapTest {
         verify(objectSubscriber, times(1)).onError(any(Throwable.class));
     }
 
-
     @Test
     public void testToMap() {
         Flowable<String> source = Flowable.just("a", "bb", "ccc", "dddd");

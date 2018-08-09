@@ -203,7 +203,6 @@ public class ObservableDelaySubscriptionOtherTest {
         }, false, 1, 1, 1);
     }
 
-
     @Test
     public void afterDelayNoInterrupt() {
         ScheduledExecutorService exec = Executors.newSingleThreadScheduledExecutor();

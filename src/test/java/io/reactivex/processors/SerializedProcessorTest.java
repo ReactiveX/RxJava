@@ -121,6 +121,7 @@ public class SerializedProcessorTest {
         assertFalse(serial.hasThrowable());
         assertNull(serial.getThrowable());
     }
+
     @Test
     public void testPublishSubjectValueError() {
         PublishProcessor<Integer> async = PublishProcessor.create();
@@ -248,6 +249,7 @@ public class SerializedProcessorTest {
         assertArrayEquals(new Integer[] { 1 }, async.getValues(new Integer[] { 0 }));
         assertArrayEquals(new Integer[] { 1, null }, async.getValues(new Integer[] { 0, 0 }));
     }
+
     @Test
     public void testReplaySubjectValueRelayIncomplete() {
         ReplayProcessor<Integer> async = ReplayProcessor.create();
@@ -265,6 +267,7 @@ public class SerializedProcessorTest {
         assertArrayEquals(new Integer[] { 1 }, async.getValues(new Integer[] { 0 }));
         assertArrayEquals(new Integer[] { 1, null }, async.getValues(new Integer[] { 0, 0 }));
     }
+
     @Test
     public void testReplaySubjectValueRelayBounded() {
         ReplayProcessor<Integer> async = ReplayProcessor.createWithSize(1);
@@ -284,6 +287,7 @@ public class SerializedProcessorTest {
         assertArrayEquals(new Integer[] { 1 }, async.getValues(new Integer[] { 0 }));
         assertArrayEquals(new Integer[] { 1, null }, async.getValues(new Integer[] { 0, 0 }));
     }
+
     @Test
     public void testReplaySubjectValueRelayBoundedIncomplete() {
         ReplayProcessor<Integer> async = ReplayProcessor.createWithSize(1);
@@ -302,6 +306,7 @@ public class SerializedProcessorTest {
         assertArrayEquals(new Integer[] { 1 }, async.getValues(new Integer[] { 0 }));
         assertArrayEquals(new Integer[] { 1, null }, async.getValues(new Integer[] { 0, 0 }));
     }
+
     @Test
     public void testReplaySubjectValueRelayBoundedEmptyIncomplete() {
         ReplayProcessor<Integer> async = ReplayProcessor.createWithSize(1);
@@ -318,6 +323,7 @@ public class SerializedProcessorTest {
         assertArrayEquals(new Integer[] { null }, async.getValues(new Integer[] { 0 }));
         assertArrayEquals(new Integer[] { null, 0 }, async.getValues(new Integer[] { 0, 0 }));
     }
+
     @Test
     public void testReplaySubjectValueRelayEmptyIncomplete() {
         ReplayProcessor<Integer> async = ReplayProcessor.create();
@@ -352,6 +358,7 @@ public class SerializedProcessorTest {
         assertArrayEquals(new Integer[] { null }, async.getValues(new Integer[] { 0 }));
         assertArrayEquals(new Integer[] { null, 0 }, async.getValues(new Integer[] { 0, 0 }));
     }
+
     @Test
     public void testReplaySubjectError() {
         ReplayProcessor<Integer> async = ReplayProcessor.create();
@@ -388,6 +395,7 @@ public class SerializedProcessorTest {
         assertArrayEquals(new Integer[] { null }, async.getValues(new Integer[] { 0 }));
         assertArrayEquals(new Integer[] { null, 0 }, async.getValues(new Integer[] { 0, 0 }));
     }
+
     @Test
     public void testReplaySubjectBoundedError() {
         ReplayProcessor<Integer> async = ReplayProcessor.createWithSize(1);

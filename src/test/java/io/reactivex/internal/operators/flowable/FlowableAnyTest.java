@@ -223,6 +223,7 @@ public class FlowableAnyTest {
 
         assertTrue(anyEven.blockingGet());
     }
+
     @Test(timeout = 5000)
     public void testIssue1935NoUnsubscribeDownstream() {
         Flowable<Integer> source = Flowable.just(1).isEmpty()
@@ -489,6 +490,7 @@ public class FlowableAnyTest {
 
         assertTrue(anyEven.blockingFirst());
     }
+
     @Test(timeout = 5000)
     public void testIssue1935NoUnsubscribeDownstreamFlowable() {
         Flowable<Integer> source = Flowable.just(1).isEmpty()

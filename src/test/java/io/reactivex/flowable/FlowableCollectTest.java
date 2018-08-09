@@ -83,7 +83,6 @@ public final class FlowableCollectTest {
         assertEquals("1-2-3", value);
     }
 
-
     @Test
     public void testFactoryFailureResultsInErrorEmissionFlowable() {
         final RuntimeException e = new RuntimeException();
@@ -167,7 +166,6 @@ public final class FlowableCollectTest {
         assertFalse(added.get());
     }
 
-
     @SuppressWarnings("unchecked")
     @Test
     public void collectIntoFlowable() {
@@ -182,7 +180,6 @@ public final class FlowableCollectTest {
         .test()
         .assertResult(new HashSet<Integer>(Arrays.asList(1, 2)));
     }
-
 
     @Test
     public void testCollectToList() {
@@ -237,7 +234,6 @@ public final class FlowableCollectTest {
 
         assertEquals("1-2-3", value);
     }
-
 
     @Test
     public void testFactoryFailureResultsInErrorEmission() {
@@ -318,7 +314,6 @@ public final class FlowableCollectTest {
                 .assertNotComplete();
         assertFalse(added.get());
     }
-
 
     @SuppressWarnings("unchecked")
     @Test

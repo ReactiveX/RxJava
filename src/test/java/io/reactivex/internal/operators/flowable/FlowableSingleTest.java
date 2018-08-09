@@ -192,7 +192,6 @@ public class FlowableSingleTest {
         assertEquals(Arrays.asList(Long.MAX_VALUE), requests);
     }
 
-
     @Test
     public void testSingleWithPredicateFlowable() {
         Flowable<Integer> flowable = Flowable.just(1, 2)

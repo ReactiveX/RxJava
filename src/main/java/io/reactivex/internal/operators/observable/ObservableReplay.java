@@ -371,6 +371,7 @@ public final class ObservableReplay<T> extends ConnectableObservable<T> implemen
                 replay();
             }
         }
+
         @Override
         public void onError(Throwable e) {
             // The observer front is accessed serially as required by spec so
@@ -383,6 +384,7 @@ public final class ObservableReplay<T> extends ConnectableObservable<T> implemen
                 RxJavaPlugins.onError(e);
             }
         }
+
         @Override
         public void onComplete() {
             // The observer front is accessed serially as required by spec so
@@ -511,6 +513,7 @@ public final class ObservableReplay<T> extends ConnectableObservable<T> implemen
         UnboundedReplayBuffer(int capacityHint) {
             super(capacityHint);
         }
+
         @Override
         public void next(T value) {
             add(NotificationLite.next(value));
@@ -862,6 +865,7 @@ public final class ObservableReplay<T> extends ConnectableObservable<T> implemen
                 setFirst(prev);
             }
         }
+
         @Override
         void truncateFinal() {
             long timeLimit = scheduler.now(unit) - maxAge;

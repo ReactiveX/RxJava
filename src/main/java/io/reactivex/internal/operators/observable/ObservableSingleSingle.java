@@ -59,7 +59,6 @@ public final class ObservableSingleSingle<T> extends Single<T> {
             }
         }
 
-
         @Override
         public void dispose() {
             upstream.dispose();
@@ -69,7 +68,6 @@ public final class ObservableSingleSingle<T> extends Single<T> {
         public boolean isDisposed() {
             return upstream.isDisposed();
         }
-
 
         @Override
         public void onNext(T t) {

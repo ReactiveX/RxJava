@@ -74,7 +74,6 @@ public final class DisposableLambdaObserver<T> implements Observer<T>, Disposabl
         }
     }
 
-
     @Override
     public void dispose() {
         try {

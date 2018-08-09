@@ -216,6 +216,7 @@ public final class ObservableCache<T> extends AbstractObservableWithUpstream<T, 
             source.subscribe(this);
             isConnected = true;
         }
+
         @Override
         public void onNext(T t) {
             if (!sourceDone) {
@@ -226,6 +227,7 @@ public final class ObservableCache<T> extends AbstractObservableWithUpstream<T, 
                 }
             }
         }
+
         @SuppressWarnings("unchecked")
         @Override
         public void onError(Throwable e) {
@@ -239,6 +241,7 @@ public final class ObservableCache<T> extends AbstractObservableWithUpstream<T, 
                 }
             }
         }
+
         @SuppressWarnings("unchecked")
         @Override
         public void onComplete() {
@@ -296,6 +299,7 @@ public final class ObservableCache<T> extends AbstractObservableWithUpstream<T, 
         public boolean isDisposed() {
             return cancelled;
         }
+
         @Override
         public void dispose() {
             if (!cancelled) {

@@ -28,6 +28,7 @@ public final class FlowableFromArray<T> extends Flowable<T> {
     public FlowableFromArray(T[] array) {
         this.array = array;
     }
+
     @Override
     public void subscribeActual(Subscriber<? super T> s) {
         if (s instanceof ConditionalSubscriber) {
@@ -91,7 +92,6 @@ public final class FlowableFromArray<T> extends Flowable<T> {
                 }
             }
         }
-
 
         @Override
         public final void cancel() {

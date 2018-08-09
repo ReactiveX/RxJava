@@ -368,6 +368,7 @@ public class AsyncProcessorTest extends FlowableProcessorTest<Object> {
         assertNull(as.getValue());
         assertNull(as.getThrowable());
     }
+
     @Test
     public void testCurrentStateMethodsError() {
         AsyncProcessor<Object> as = AsyncProcessor.create();

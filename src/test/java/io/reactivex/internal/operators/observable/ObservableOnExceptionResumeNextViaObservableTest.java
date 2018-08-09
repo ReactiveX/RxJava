@@ -183,7 +183,6 @@ public class ObservableOnExceptionResumeNextViaObservableTest {
         verify(observer, times(1)).onComplete();
     }
 
-
     @Test
     public void testBackpressure() {
         TestObserver<Integer> to = new TestObserver<Integer>();

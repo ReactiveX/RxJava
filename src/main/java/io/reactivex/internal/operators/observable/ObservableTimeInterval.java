@@ -69,7 +69,6 @@ public final class ObservableTimeInterval<T> extends AbstractObservableWithUpstr
             return upstream.isDisposed();
         }
 
-
         @Override
         public void onNext(T t) {
             long now = scheduler.now(unit);

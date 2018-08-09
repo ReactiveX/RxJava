@@ -183,7 +183,6 @@ public class FlowableFlatMapCompletableTest {
         .assertFailure(TestException.class);
     }
 
-
     @Test
     public void fusedFlowable() {
         TestSubscriber<Integer> ts = SubscriberFusion.newTest(QueueFuseable.ANY);
@@ -337,7 +336,6 @@ public class FlowableFlatMapCompletableTest {
         .test()
         .assertFailure(TestException.class);
     }
-
 
     @Test
     public void fused() {

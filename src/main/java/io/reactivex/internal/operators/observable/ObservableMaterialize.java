@@ -46,7 +46,6 @@ public final class ObservableMaterialize<T> extends AbstractObservableWithUpstre
             }
         }
 
-
         @Override
         public void dispose() {
             upstream.dispose();

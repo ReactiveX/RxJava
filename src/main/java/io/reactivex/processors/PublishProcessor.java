@@ -141,7 +141,6 @@ public final class PublishProcessor<T> extends FlowableProcessor<T> {
         subscribers = new AtomicReference<PublishSubscription<T>[]>(EMPTY);
     }
 
-
     @Override
     protected void subscribeActual(Subscriber<? super T> t) {
         PublishSubscription<T> ps = new PublishSubscription<T>(t, this);

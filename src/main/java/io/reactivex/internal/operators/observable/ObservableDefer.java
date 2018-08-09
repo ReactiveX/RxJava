@@ -25,6 +25,7 @@ public final class ObservableDefer<T> extends Observable<T> {
     public ObservableDefer(Callable<? extends ObservableSource<? extends T>> supplier) {
         this.supplier = supplier;
     }
+
     @Override
     public void subscribeActual(Observer<? super T> observer) {
         ObservableSource<? extends T> pub;

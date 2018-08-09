@@ -134,7 +134,6 @@ public class ObservableWithLatestFromTest {
         assertFalse(other.hasObservers());
     }
 
-
     @Test
     public void testUnsubscription() {
         PublishSubject<Integer> source = PublishSubject.create();
@@ -189,6 +188,7 @@ public class ObservableWithLatestFromTest {
         assertFalse(source.hasObservers());
         assertFalse(other.hasObservers());
     }
+
     @Test
     public void testOtherThrows() {
         PublishSubject<Integer> source = PublishSubject.create();

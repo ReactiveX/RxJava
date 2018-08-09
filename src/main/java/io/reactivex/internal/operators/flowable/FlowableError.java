@@ -27,6 +27,7 @@ public final class FlowableError<T> extends Flowable<T> {
     public FlowableError(Callable<? extends Throwable> errorSupplier) {
         this.errorSupplier = errorSupplier;
     }
+
     @Override
     public void subscribeActual(Subscriber<? super T> s) {
         Throwable error;

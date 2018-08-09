@@ -181,7 +181,6 @@ public class DeferredScalarObserverTest {
             super(downstream);
         }
 
-
         @Override
         public void onNext(Integer value) {
             this.value = value;

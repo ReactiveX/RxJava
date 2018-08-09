@@ -42,7 +42,6 @@ public class ObservableConcatWithMaybeTest {
         to.assertResult(1, 2, 3, 4, 5, 100);
     }
 
-
     @Test
     public void normalNonEmpty() {
         final TestObserver<Integer> to = new TestObserver<Integer>();

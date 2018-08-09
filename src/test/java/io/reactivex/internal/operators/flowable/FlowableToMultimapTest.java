@@ -296,7 +296,6 @@ public class FlowableToMultimapTest {
         verify(objectSubscriber, never()).onComplete();
     }
 
-
     @Test
     public void testToMultimap() {
         Flowable<String> source = Flowable.just("a", "b", "cc", "dd");

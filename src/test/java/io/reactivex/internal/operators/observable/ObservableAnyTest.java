@@ -231,6 +231,7 @@ public class ObservableAnyTest {
 
         assertTrue(anyEven.blockingFirst());
     }
+
     @Test(timeout = 5000)
     public void testIssue1935NoUnsubscribeDownstreamObservable() {
         Observable<Integer> source = Observable.just(1).isEmpty().toObservable()
@@ -452,6 +453,7 @@ public class ObservableAnyTest {
 
         assertTrue(anyEven.blockingGet());
     }
+
     @Test(timeout = 5000)
     public void testIssue1935NoUnsubscribeDownstream() {
         Observable<Integer> source = Observable.just(1).isEmpty()

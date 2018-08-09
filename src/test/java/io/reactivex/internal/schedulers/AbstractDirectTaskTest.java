@@ -115,6 +115,7 @@ public class AbstractDirectTaskTest {
 
         assertTrue(interrupted[0]);
     }
+
     @Test
     public void setFutureCancelSameThread() {
         AbstractDirectTask task = new AbstractDirectTask(Functions.EMPTY_RUNNABLE) {

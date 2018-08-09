@@ -239,6 +239,7 @@ public class FlowableDebounceTest {
         verify(subscriber, never()).onComplete();
         verify(subscriber).onError(any(TestException.class));
     }
+
     @Test
     public void debounceTimedLastIsNotLost() {
         PublishProcessor<Integer> source = PublishProcessor.create();
@@ -256,6 +257,7 @@ public class FlowableDebounceTest {
         verify(subscriber).onComplete();
         verify(subscriber, never()).onError(any(Throwable.class));
     }
+
     @Test
     public void debounceSelectorLastIsNotLost() {
         PublishProcessor<Integer> source = PublishProcessor.create();

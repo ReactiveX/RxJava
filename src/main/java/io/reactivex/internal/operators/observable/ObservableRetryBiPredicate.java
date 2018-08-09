@@ -65,6 +65,7 @@ public final class ObservableRetryBiPredicate<T> extends AbstractObservableWithU
         public void onNext(T t) {
             downstream.onNext(t);
         }
+
         @Override
         public void onError(Throwable t) {
             boolean b;

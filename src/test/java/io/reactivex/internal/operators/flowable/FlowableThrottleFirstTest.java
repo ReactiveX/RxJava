@@ -153,7 +153,6 @@ public class FlowableThrottleFirstTest {
         inOrder.verifyNoMoreInteractions();
     }
 
-
     @Test
     public void throttleFirstDefaultScheduler() {
         Flowable.just(1).throttleFirst(100, TimeUnit.MILLISECONDS)

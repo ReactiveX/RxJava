@@ -168,7 +168,6 @@ public final class ObservableBuffer<T, U extends Collection<? super T>> extends 
             }
         }
 
-
         @Override
         public void dispose() {
             upstream.dispose();

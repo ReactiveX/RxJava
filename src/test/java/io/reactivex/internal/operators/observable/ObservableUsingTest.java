@@ -330,8 +330,6 @@ public class ObservableUsingTest {
 
     }
 
-
-
     @Test
     public void testUsingDisposesEagerlyBeforeError() {
         final List<String> events = new ArrayList<String>();

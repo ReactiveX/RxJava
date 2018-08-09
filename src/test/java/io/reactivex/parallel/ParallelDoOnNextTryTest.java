@@ -49,6 +49,7 @@ public class ParallelDoOnNextTryTest implements Consumer<Object> {
             calls = 0;
         }
     }
+
     @Test
     public void doOnNextErrorNoError() {
         for (ParallelFailureHandling e : ParallelFailureHandling.values()) {

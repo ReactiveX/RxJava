@@ -296,8 +296,6 @@ public class ObservableToMultimapTest {
         verify(objectObserver, never()).onComplete();
     }
 
-
-
     @Test
     public void testToMultimap() {
         Observable<String> source = Observable.just("a", "b", "cc", "dd");

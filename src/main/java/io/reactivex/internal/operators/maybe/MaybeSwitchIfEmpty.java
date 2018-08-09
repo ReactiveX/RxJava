@@ -99,18 +99,22 @@ public final class MaybeSwitchIfEmpty<T> extends AbstractMaybeWithUpstream<T, T>
                 this.downstream = actual;
                 this.parent = parent;
             }
+
             @Override
             public void onSubscribe(Disposable d) {
                 DisposableHelper.setOnce(parent, d);
             }
+
             @Override
             public void onSuccess(T value) {
                 downstream.onSuccess(value);
             }
+
             @Override
             public void onError(Throwable e) {
                 downstream.onError(e);
             }
+
             @Override
             public void onComplete() {
                 downstream.onComplete();

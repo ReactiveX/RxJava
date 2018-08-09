@@ -113,6 +113,7 @@ public final class SpscLinkedArrayQueue<T> implements SimplePlainQueue<T> {
     private void soNext(AtomicReferenceArray<Object> curr, AtomicReferenceArray<Object> next) {
         soElement(curr, calcDirectOffset(curr.length() - 1), next);
     }
+
     @SuppressWarnings("unchecked")
     private AtomicReferenceArray<Object> lvNextBufferAndUnlink(AtomicReferenceArray<Object> curr, int nextIndex) {
         int nextOffset = calcDirectOffset(nextIndex);
@@ -179,6 +180,7 @@ public final class SpscLinkedArrayQueue<T> implements SimplePlainQueue<T> {
         final int offsetInNew = calcWrappedOffset(index, mask);
         return (T) lvElement(nextBuffer, offsetInNew);// LoadLoad
     }
+
     @Override
     public void clear() {
         while (poll() != null || !isEmpty()) { } // NOPMD

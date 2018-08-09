@@ -144,7 +144,6 @@ public class FlowableIgnoreElementsTest {
         assertEquals(0, count.get());
     }
 
-
     @Test
     public void testWithEmpty() {
         assertNull(Flowable.empty().ignoreElements().blockingGet());

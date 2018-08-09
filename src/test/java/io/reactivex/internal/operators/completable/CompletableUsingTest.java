@@ -347,7 +347,6 @@ public class CompletableUsingTest {
         .assertFailure(TestException.class);
     }
 
-
     @Test
     public void emptyDisposerCrashes() {
         Completable.using(new Callable<Object>() {

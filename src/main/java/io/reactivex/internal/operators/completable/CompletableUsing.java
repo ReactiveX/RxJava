@@ -40,7 +40,6 @@ public final class CompletableUsing<R> extends Completable {
         this.eager = eager;
     }
 
-
     @Override
     protected void subscribeActual(CompletableObserver observer) {
         R resource;

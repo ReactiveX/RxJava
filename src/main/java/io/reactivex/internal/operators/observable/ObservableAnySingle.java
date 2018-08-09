@@ -53,6 +53,7 @@ public final class ObservableAnySingle<T> extends Single<Boolean> implements Fus
             this.downstream = actual;
             this.predicate = predicate;
         }
+
         @Override
         public void onSubscribe(Disposable d) {
             if (DisposableHelper.validate(this.upstream, d)) {

@@ -148,7 +148,6 @@ public class FlowableTests {
         verify(w, times(1)).onError(any(RuntimeException.class));
     }
 
-
     @Test
     public void testCountAFewItems() {
         Flowable<String> flowable = Flowable.just("a", "b", "c", "d");
@@ -861,7 +860,6 @@ public class FlowableTests {
         verify(subscriber, never()).onError(any(Throwable.class));
         verify(subscriber, times(1)).onComplete();
     }
-
 
     @Test
     public void testContains() {

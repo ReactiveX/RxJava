@@ -242,6 +242,7 @@ public class LambdaSubscriberTest {
 
         assertEquals(Arrays.asList(1, 100), received);
     }
+
     @Test
     public void badSourceEmitAfterDone() {
         Flowable<Integer> source = Flowable.fromPublisher(new Publisher<Integer>() {

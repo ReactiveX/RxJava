@@ -104,7 +104,6 @@ public final class FlowableFromIterable<T> extends Flowable<T> {
             return ObjectHelper.requireNonNull(it.next(), "Iterator.next() returned a null value");
         }
 
-
         @Override
         public final boolean isEmpty() {
             return it == null || !it.hasNext();
@@ -127,7 +126,6 @@ public final class FlowableFromIterable<T> extends Flowable<T> {
                 }
             }
         }
-
 
         @Override
         public final void cancel() {

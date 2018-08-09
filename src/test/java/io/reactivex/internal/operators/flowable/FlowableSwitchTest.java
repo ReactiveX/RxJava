@@ -583,7 +583,6 @@ public class FlowableSwitchTest {
         assertTrue(ts.valueCount() > 0);
     }
 
-
     @Test(timeout = 10000)
     public void testSecondaryRequestsDontOverflow() throws InterruptedException {
         TestSubscriber<Long> ts = new TestSubscriber<Long>(0L);

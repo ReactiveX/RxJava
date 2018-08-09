@@ -167,6 +167,7 @@ public final class IoScheduler extends Scheduler {
             update.shutdown();
         }
     }
+
     @Override
     public void shutdown() {
         for (;;) {

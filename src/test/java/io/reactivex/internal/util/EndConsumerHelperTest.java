@@ -54,9 +54,11 @@ public class EndConsumerHelperTest {
             @Override
             public void onNext(Integer t) {
             }
+
             @Override
             public void onError(Throwable t) {
             }
+
             @Override
             public void onComplete() {
             }
@@ -85,9 +87,11 @@ public class EndConsumerHelperTest {
         @Override
         public void onNext(Integer t) {
         }
+
         @Override
         public void onError(Throwable t) {
         }
+
         @Override
         public void onComplete() {
         }
@@ -124,9 +128,11 @@ public class EndConsumerHelperTest {
             @Override
             public void onNext(Integer t) {
             }
+
             @Override
             public void onError(Throwable t) {
             }
+
             @Override
             public void onComplete() {
             }
@@ -157,9 +163,11 @@ public class EndConsumerHelperTest {
             @Override
             public void onNext(Integer t) {
             }
+
             @Override
             public void onError(Throwable t) {
             }
+
             @Override
             public void onComplete() {
             }
@@ -190,9 +198,11 @@ public class EndConsumerHelperTest {
             @Override
             public void onNext(Integer t) {
             }
+
             @Override
             public void onError(Throwable t) {
             }
+
             @Override
             public void onComplete() {
             }
@@ -223,9 +233,11 @@ public class EndConsumerHelperTest {
             @Override
             public void onNext(Integer t) {
             }
+
             @Override
             public void onError(Throwable t) {
             }
+
             @Override
             public void onComplete() {
             }
@@ -256,9 +268,11 @@ public class EndConsumerHelperTest {
             @Override
             public void onNext(Integer t) {
             }
+
             @Override
             public void onError(Throwable t) {
             }
+
             @Override
             public void onComplete() {
             }
@@ -289,6 +303,7 @@ public class EndConsumerHelperTest {
             @Override
             public void onSuccess(Integer t) {
             }
+
             @Override
             public void onError(Throwable t) {
             }
@@ -319,6 +334,7 @@ public class EndConsumerHelperTest {
             @Override
             public void onSuccess(Integer t) {
             }
+
             @Override
             public void onError(Throwable t) {
             }
@@ -349,9 +365,11 @@ public class EndConsumerHelperTest {
             @Override
             public void onSuccess(Integer t) {
             }
+
             @Override
             public void onError(Throwable t) {
             }
+
             @Override
             public void onComplete() {
             }
@@ -382,9 +400,11 @@ public class EndConsumerHelperTest {
             @Override
             public void onSuccess(Integer t) {
             }
+
             @Override
             public void onError(Throwable t) {
             }
+
             @Override
             public void onComplete() {
             }
@@ -415,6 +435,7 @@ public class EndConsumerHelperTest {
             @Override
             public void onError(Throwable t) {
             }
+
             @Override
             public void onComplete() {
             }
@@ -445,6 +466,7 @@ public class EndConsumerHelperTest {
             @Override
             public void onError(Throwable t) {
             }
+
             @Override
             public void onComplete() {
             }

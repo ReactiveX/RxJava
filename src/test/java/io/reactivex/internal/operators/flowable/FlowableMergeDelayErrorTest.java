@@ -436,6 +436,7 @@ public class FlowableMergeDelayErrorTest {
         }
 
     }
+
     @Test
     @Ignore("Subscribers should not throw")
     public void testMergeSourceWhichDoesntPropagateExceptionBack() {
@@ -559,6 +560,7 @@ public class FlowableMergeDelayErrorTest {
             t.start();
         }
     }
+
     @Test
     public void testDelayErrorMaxConcurrent() {
         final List<Long> requests = new ArrayList<Long>();
@@ -736,7 +738,6 @@ public class FlowableMergeDelayErrorTest {
             .assertResult(expected);
         }
     }
-
 
     @SuppressWarnings("unchecked")
     @Test

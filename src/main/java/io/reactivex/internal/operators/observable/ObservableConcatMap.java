@@ -40,6 +40,7 @@ public final class ObservableConcatMap<T, U> extends AbstractObservableWithUpstr
         this.delayErrors = delayErrors;
         this.bufferSize = Math.max(8, bufferSize);
     }
+
     @Override
     public void subscribeActual(Observer<? super U> observer) {
 
@@ -82,6 +83,7 @@ public final class ObservableConcatMap<T, U> extends AbstractObservableWithUpstr
             this.bufferSize = bufferSize;
             this.inner = new InnerObserver<U>(actual, this);
         }
+
         @Override
         public void onSubscribe(Disposable d) {
             if (DisposableHelper.validate(this.upstream, d)) {
@@ -117,6 +119,7 @@ public final class ObservableConcatMap<T, U> extends AbstractObservableWithUpstr
                 downstream.onSubscribe(this);
             }
         }
+
         @Override
         public void onNext(T t) {
             if (done) {
@@ -127,6 +130,7 @@ public final class ObservableConcatMap<T, U> extends AbstractObservableWithUpstr
             }
             drain();
         }
+
         @Override
         public void onError(Throwable t) {
             if (done) {
@@ -137,6 +141,7 @@ public final class ObservableConcatMap<T, U> extends AbstractObservableWithUpstr
             dispose();
             downstream.onError(t);
         }
+
         @Override
         public void onComplete() {
             if (done) {
@@ -246,11 +251,13 @@ public final class ObservableConcatMap<T, U> extends AbstractObservableWithUpstr
             public void onNext(U t) {
                 downstream.onNext(t);
             }
+
             @Override
             public void onError(Throwable t) {
                 parent.dispose();
                 downstream.onError(t);
             }
+
             @Override
             public void onComplete() {
                 parent.innerComplete();

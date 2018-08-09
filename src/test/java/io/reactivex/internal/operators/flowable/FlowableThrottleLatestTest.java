@@ -130,7 +130,6 @@ public class FlowableThrottleLatestTest {
         ts.assertResult(1, 3, 5, 6);
     }
 
-
     @Test
     public void normalEmitLast() {
         TestScheduler sch = new TestScheduler();

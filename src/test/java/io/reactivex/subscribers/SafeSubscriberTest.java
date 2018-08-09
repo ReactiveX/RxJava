@@ -579,10 +579,12 @@ public class SafeSubscriberTest {
             public void onNext(Integer t) {
 
             }
+
             @Override
             public void onError(Throwable e) {
                 error.set(e);
             }
+
             @Override
             public void onComplete() {
                 throw new TestException();
@@ -603,9 +605,11 @@ public class SafeSubscriberTest {
             @Override
             public void onNext(Integer t) {
             }
+
             @Override
             public void onError(Throwable e) {
             }
+
             @Override
             public void onComplete() {
             }
@@ -1084,7 +1088,6 @@ public class SafeSubscriberTest {
             RxJavaPlugins.reset();
         }
     }
-
 
     @Test
     public void requestCancelCrash() {
