@@ -31,6 +31,7 @@ public final class ObservableElementAt<T> extends AbstractObservableWithUpstream
         this.defaultValue = defaultValue;
         this.errorOnFewer = errorOnFewer;
     }
+
     @Override
     public void subscribeActual(Observer<? super T> t) {
         source.subscribe(new ElementAtObserver<T>(t, index, defaultValue, errorOnFewer));

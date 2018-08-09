@@ -809,6 +809,7 @@ public class SingleNullTests {
             public void accept(Integer v) { }
         }, null);
     }
+
     @Test(expected = NullPointerException.class)
     public void subscribeSubscriberNull() {
         just1.toFlowable().subscribe((Subscriber<Integer>)null);

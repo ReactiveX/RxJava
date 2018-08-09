@@ -115,7 +115,6 @@ public class ObservableToSortedListTest {
         .assertResult(Arrays.asList(5, 4, 3, 2, 1));
     }
 
-
     @Test
     public void testSortedList() {
         Observable<Integer> w = Observable.just(1, 3, 2, 5, 4);

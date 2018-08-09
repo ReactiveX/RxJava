@@ -85,7 +85,6 @@ public class ObservableDetachTest {
         to.assertComplete();
     }
 
-
     @Test
     @Ignore("Observable doesn't do backpressure")
     public void backpressured() throws Exception {

@@ -69,6 +69,7 @@ public class ObservableRetryWithPredicateTest {
         inOrder.verify(o).onComplete();
         verify(o, never()).onError(any(Throwable.class));
     }
+
     @Test
     public void testRetryTwice() {
         Observable<Integer> source = Observable.unsafeCreate(new ObservableSource<Integer>() {
@@ -104,6 +105,7 @@ public class ObservableRetryWithPredicateTest {
         verify(o, never()).onError(any(Throwable.class));
 
     }
+
     @Test
     public void testRetryTwiceAndGiveUp() {
         Observable<Integer> source = Observable.unsafeCreate(new ObservableSource<Integer>() {
@@ -131,6 +133,7 @@ public class ObservableRetryWithPredicateTest {
         verify(o, never()).onComplete();
 
     }
+
     @Test
     public void testRetryOnSpecificException() {
         Observable<Integer> source = Observable.unsafeCreate(new ObservableSource<Integer>() {
@@ -165,6 +168,7 @@ public class ObservableRetryWithPredicateTest {
         inOrder.verify(o).onComplete();
         verify(o, never()).onError(any(Throwable.class));
     }
+
     @Test
     public void testRetryOnSpecificExceptionAndNotOther() {
         final IOException ioe = new IOException();
@@ -288,6 +292,7 @@ public class ObservableRetryWithPredicateTest {
         assertEquals(6, c.get());
         assertEquals(Collections.singletonList(e), to.errors());
     }
+
     @Test
     public void testJustAndRetry() throws Exception {
         final AtomicBoolean throwException = new AtomicBoolean(true);

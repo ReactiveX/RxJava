@@ -106,14 +106,17 @@ public final class MaybeSwitchIfEmptySingle<T> extends Single<T> implements HasU
                 this.downstream = actual;
                 this.parent = parent;
             }
+
             @Override
             public void onSubscribe(Disposable d) {
                 DisposableHelper.setOnce(parent, d);
             }
+
             @Override
             public void onSuccess(T value) {
                 downstream.onSuccess(value);
             }
+
             @Override
             public void onError(Throwable e) {
                 downstream.onError(e);

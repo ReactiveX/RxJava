@@ -272,6 +272,7 @@ public class TestObserverTest {
         }
         fail("Failed to report multiple onError terminal events!");
     }
+
     @Test
     public void testTerminalCompletedOnce() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();

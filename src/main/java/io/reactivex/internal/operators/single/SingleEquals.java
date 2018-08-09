@@ -57,6 +57,7 @@ public final class SingleEquals<T> extends Single<Boolean> {
             this.downstream = observer;
             this.count = count;
         }
+
         @Override
         public void onSubscribe(Disposable d) {
             set.add(d);

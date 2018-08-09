@@ -344,7 +344,6 @@ public class ObservableSwitchMapSingleTest {
         }
     }
 
-
     @Test
     public void innerErrorAfterTermination() {
         List<Throwable> errors = TestHelper.trackPluginErrors();

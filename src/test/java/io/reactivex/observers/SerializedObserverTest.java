@@ -974,6 +974,7 @@ public class SerializedObserverTest {
         to.assertValue(1);
         to.assertError(TestException.class);
     }
+
     @Test
     public void testCompleteReentry() {
         final AtomicReference<Observer<Integer>> serial = new AtomicReference<Observer<Integer>>();

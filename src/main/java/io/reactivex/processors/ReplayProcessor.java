@@ -605,6 +605,7 @@ public final class ReplayProcessor<T> extends FlowableProcessor<T> {
             this.state = state;
             this.requested = new AtomicLong();
         }
+
         @Override
         public void request(long n) {
             if (SubscriptionHelper.validate(n)) {

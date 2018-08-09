@@ -451,7 +451,6 @@ public class FlowableTakeTest {
         ts.assertComplete();
     }
 
-
     @Test
     public void takeNegative() {
         try {
@@ -484,7 +483,6 @@ public class FlowableTakeTest {
             }
         });
     }
-
 
     @Test
     public void badRequest() {

@@ -186,7 +186,6 @@ public class FlowableOnExceptionResumeNextViaFlowableTest {
         verify(subscriber, times(1)).onComplete();
     }
 
-
     @Test
     public void testBackpressure() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();

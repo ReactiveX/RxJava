@@ -27,12 +27,15 @@ public class InnerQueuedSubscriberTest {
             @Override
             public void innerNext(InnerQueuedSubscriber<Integer> inner, Integer value) {
             }
+
             @Override
             public void innerError(InnerQueuedSubscriber<Integer> inner, Throwable e) {
             }
+
             @Override
             public void innerComplete(InnerQueuedSubscriber<Integer> inner) {
             }
+
             @Override
             public void drain() {
             }
@@ -47,6 +50,7 @@ public class InnerQueuedSubscriberTest {
             public void request(long n) {
                 requests.add(n);
             }
+
             @Override
             public void cancel() {
                 // ignore

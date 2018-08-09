@@ -70,6 +70,7 @@ public class FlowableRetryWithPredicateTest {
         inOrder.verify(subscriber).onComplete();
         verify(subscriber, never()).onError(any(Throwable.class));
     }
+
     @Test
     public void testRetryTwice() {
         Flowable<Integer> source = Flowable.unsafeCreate(new Publisher<Integer>() {
@@ -105,6 +106,7 @@ public class FlowableRetryWithPredicateTest {
         verify(subscriber, never()).onError(any(Throwable.class));
 
     }
+
     @Test
     public void testRetryTwiceAndGiveUp() {
         Flowable<Integer> source = Flowable.unsafeCreate(new Publisher<Integer>() {
@@ -132,6 +134,7 @@ public class FlowableRetryWithPredicateTest {
         verify(subscriber, never()).onComplete();
 
     }
+
     @Test
     public void testRetryOnSpecificException() {
         Flowable<Integer> source = Flowable.unsafeCreate(new Publisher<Integer>() {
@@ -166,6 +169,7 @@ public class FlowableRetryWithPredicateTest {
         inOrder.verify(subscriber).onComplete();
         verify(subscriber, never()).onError(any(Throwable.class));
     }
+
     @Test
     public void testRetryOnSpecificExceptionAndNotOther() {
         final IOException ioe = new IOException();
@@ -289,6 +293,7 @@ public class FlowableRetryWithPredicateTest {
         assertEquals(6, c.get());
         assertEquals(Collections.singletonList(e), ts.errors());
     }
+
     @Test
     public void testJustAndRetry() throws Exception {
         final AtomicBoolean throwException = new AtomicBoolean(true);

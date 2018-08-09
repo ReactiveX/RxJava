@@ -1261,6 +1261,7 @@ public class ObservableZipTest {
         .test()
         .assertResult("12345678");
     }
+
     @Test
     public void zip9() {
         Observable.zip(Observable.just(1),

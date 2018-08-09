@@ -83,7 +83,6 @@ public final class FlowableCollectTest {
         assertEquals("1-2-3", value);
     }
 
-
     @Test
     public void testFactoryFailureResultsInErrorEmissionFlowable() {
         final RuntimeException e = new RuntimeException();
@@ -183,7 +182,6 @@ public final class FlowableCollectTest {
         .assertResult(new HashSet<Integer>(Arrays.asList(1, 2)));
     }
 
-
     @Test
     public void testCollectToList() {
         Single<List<Integer>> o = Flowable.just(1, 2, 3)
@@ -237,7 +235,6 @@ public final class FlowableCollectTest {
 
         assertEquals("1-2-3", value);
     }
-
 
     @Test
     public void testFactoryFailureResultsInErrorEmission() {

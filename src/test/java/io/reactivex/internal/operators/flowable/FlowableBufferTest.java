@@ -496,6 +496,7 @@ public class FlowableBufferTest {
         verify(subscriber, never()).onComplete();
         verify(subscriber, never()).onNext(any());
     }
+
     @Test(timeout = 2000)
     public void bufferWithSizeTake1() {
         Flowable<Integer> source = Flowable.just(1).repeat();
@@ -525,6 +526,7 @@ public class FlowableBufferTest {
         verify(subscriber).onComplete();
         verify(subscriber, never()).onError(any(Throwable.class));
     }
+
     @Test(timeout = 2000)
     public void bufferWithTimeTake1() {
         Flowable<Long> source = Flowable.interval(40, 40, TimeUnit.MILLISECONDS, scheduler);
@@ -541,6 +543,7 @@ public class FlowableBufferTest {
         verify(subscriber).onComplete();
         verify(subscriber, never()).onError(any(Throwable.class));
     }
+
     @Test(timeout = 2000)
     public void bufferWithTimeSkipTake2() {
         Flowable<Long> source = Flowable.interval(40, 40, TimeUnit.MILLISECONDS, scheduler);
@@ -614,6 +617,7 @@ public class FlowableBufferTest {
         inOrder.verify(subscriber).onComplete();
         verify(subscriber, never()).onError(any(Throwable.class));
     }
+
     @Test
     public void bufferWithSizeThrows() {
         PublishProcessor<Integer> source = PublishProcessor.create();
@@ -683,6 +687,7 @@ public class FlowableBufferTest {
         inOrder.verify(subscriber).onComplete();
         verify(subscriber, never()).onError(any(Throwable.class));
     }
+
     @Test
     public void bufferWithStartEndStartThrows() {
         PublishProcessor<Integer> start = PublishProcessor.create();
@@ -711,6 +716,7 @@ public class FlowableBufferTest {
         verify(subscriber, never()).onComplete();
         verify(subscriber).onError(any(TestException.class));
     }
+
     @Test
     public void bufferWithStartEndEndFunctionThrows() {
         PublishProcessor<Integer> start = PublishProcessor.create();
@@ -738,6 +744,7 @@ public class FlowableBufferTest {
         verify(subscriber, never()).onComplete();
         verify(subscriber).onError(any(TestException.class));
     }
+
     @Test
     public void bufferWithStartEndEndThrows() {
         PublishProcessor<Integer> start = PublishProcessor.create();
@@ -881,7 +888,6 @@ public class FlowableBufferTest {
         assertEquals(Long.MAX_VALUE, requested.get());
     }
 
-
     @Test
     public void testProducerRequestOverflowThroughBufferWithSize1() {
         TestSubscriber<List<Integer>> ts = new TestSubscriber<List<Integer>>(Long.MAX_VALUE >> 1);
@@ -991,6 +997,7 @@ public class FlowableBufferTest {
         // FIXME I'm not sure why this is MAX_VALUE in 1.x because MAX_VALUE/2 is even and thus can't overflow when multiplied by 2
         assertEquals(Long.MAX_VALUE - 1, requested.get());
     }
+
     @Test(timeout = 3000)
     public void testBufferWithTimeDoesntUnsubscribeDownstream() throws InterruptedException {
         final Subscriber<Object> subscriber = TestHelper.mockSubscriber();
@@ -1001,11 +1008,13 @@ public class FlowableBufferTest {
             public void onNext(Object t) {
                 subscriber.onNext(t);
             }
+
             @Override
             public void onError(Throwable e) {
                 subscriber.onError(e);
                 cdl.countDown();
             }
+
             @Override
             public void onComplete() {
                 subscriber.onComplete();

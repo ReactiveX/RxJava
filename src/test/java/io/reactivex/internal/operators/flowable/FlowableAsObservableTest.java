@@ -45,6 +45,7 @@ public class FlowableAsObservableTest {
         verify(subscriber).onComplete();
         verify(subscriber, never()).onError(any(Throwable.class));
     }
+
     @Test
     public void testHidingError() {
         PublishProcessor<Integer> src = PublishProcessor.create();

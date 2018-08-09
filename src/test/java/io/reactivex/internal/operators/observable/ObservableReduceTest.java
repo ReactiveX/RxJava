@@ -145,7 +145,6 @@ public class ObservableReduceTest {
         assertEquals(21, r.intValue());
     }
 
-
     @Test
     public void testAggregateAsIntSum() {
 

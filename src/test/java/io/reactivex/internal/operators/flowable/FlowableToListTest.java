@@ -101,6 +101,7 @@ public class FlowableToListTest {
         List<String> actual = f.toList().toFlowable().blockingFirst();
         Assert.assertEquals(Arrays.asList("one", "two", "three"), actual);
     }
+
     @Test
     public void testBackpressureHonoredFlowable() {
         Flowable<List<Integer>> w = Flowable.just(1, 2, 3, 4, 5).toList().toFlowable();
@@ -124,6 +125,7 @@ public class FlowableToListTest {
         ts.assertNoErrors();
         ts.assertComplete();
     }
+
     @Test(timeout = 2000)
     @Ignore("PublishProcessor no longer emits without requests so this test fails due to the race of onComplete and request")
     public void testAsyncRequestedFlowable() {
@@ -230,6 +232,7 @@ public class FlowableToListTest {
         List<String> actual = f.toList().blockingGet();
         Assert.assertEquals(Arrays.asList("one", "two", "three"), actual);
     }
+
     @Test
     @Ignore("Single doesn't do backpressure")
     public void testBackpressureHonored() {
@@ -254,6 +257,7 @@ public class FlowableToListTest {
         to.assertNoErrors();
         to.assertComplete();
     }
+
     @Test(timeout = 2000)
     @Ignore("PublishProcessor no longer emits without requests so this test fails due to the race of onComplete and request")
     public void testAsyncRequested() {

@@ -111,7 +111,6 @@ public class ComputationSchedulerTests extends AbstractSchedulerConcurrencyTests
         });
     }
 
-
     @Test
     public final void testMergeWithExecutorScheduler() {
 

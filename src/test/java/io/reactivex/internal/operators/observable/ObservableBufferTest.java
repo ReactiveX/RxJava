@@ -497,6 +497,7 @@ public class ObservableBufferTest {
         verify(o, never()).onComplete();
         verify(o, never()).onNext(any());
     }
+
     @Test(timeout = 2000)
     public void bufferWithSizeTake1() {
         Observable<Integer> source = Observable.just(1).repeat();
@@ -526,6 +527,7 @@ public class ObservableBufferTest {
         verify(o).onComplete();
         verify(o, never()).onError(any(Throwable.class));
     }
+
     @Test(timeout = 2000)
     public void bufferWithTimeTake1() {
         Observable<Long> source = Observable.interval(40, 40, TimeUnit.MILLISECONDS, scheduler);
@@ -542,6 +544,7 @@ public class ObservableBufferTest {
         verify(o).onComplete();
         verify(o, never()).onError(any(Throwable.class));
     }
+
     @Test(timeout = 2000)
     public void bufferWithTimeSkipTake2() {
         Observable<Long> source = Observable.interval(40, 40, TimeUnit.MILLISECONDS, scheduler);
@@ -560,6 +563,7 @@ public class ObservableBufferTest {
         inOrder.verify(o).onComplete();
         verify(o, never()).onError(any(Throwable.class));
     }
+
     @Test(timeout = 2000)
     public void bufferWithBoundaryTake2() {
         Observable<Long> boundary = Observable.interval(60, 60, TimeUnit.MILLISECONDS, scheduler);
@@ -614,6 +618,7 @@ public class ObservableBufferTest {
         inOrder.verify(o).onComplete();
         verify(o, never()).onError(any(Throwable.class));
     }
+
     @Test
     public void bufferWithSizeThrows() {
         PublishSubject<Integer> source = PublishSubject.create();
@@ -683,6 +688,7 @@ public class ObservableBufferTest {
         inOrder.verify(o).onComplete();
         verify(o, never()).onError(any(Throwable.class));
     }
+
     @Test
     public void bufferWithStartEndStartThrows() {
         PublishSubject<Integer> start = PublishSubject.create();
@@ -711,6 +717,7 @@ public class ObservableBufferTest {
         verify(o, never()).onComplete();
         verify(o).onError(any(TestException.class));
     }
+
     @Test
     public void bufferWithStartEndEndFunctionThrows() {
         PublishSubject<Integer> start = PublishSubject.create();
@@ -738,6 +745,7 @@ public class ObservableBufferTest {
         verify(o, never()).onComplete();
         verify(o).onError(any(TestException.class));
     }
+
     @Test
     public void bufferWithStartEndEndThrows() {
         PublishSubject<Integer> start = PublishSubject.create();
@@ -776,11 +784,13 @@ public class ObservableBufferTest {
             public void onNext(Object t) {
                 o.onNext(t);
             }
+
             @Override
             public void onError(Throwable e) {
                 o.onError(e);
                 cdl.countDown();
             }
+
             @Override
             public void onComplete() {
                 o.onComplete();

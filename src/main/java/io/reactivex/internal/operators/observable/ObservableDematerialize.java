@@ -91,6 +91,7 @@ public final class ObservableDematerialize<T> extends AbstractObservableWithUpst
 
             downstream.onError(t);
         }
+
         @Override
         public void onComplete() {
             if (done) {

@@ -141,7 +141,6 @@ public class FlowableReduceTest {
         assertEquals(21, r.intValue());
     }
 
-
     @Test
     public void testAggregateAsIntSum() {
 

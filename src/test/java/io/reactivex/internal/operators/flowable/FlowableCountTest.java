@@ -39,7 +39,6 @@ public class FlowableCountTest {
 
     }
 
-
     @Test
     public void dispose() {
         TestHelper.checkDisposed(Flowable.just(1).count());

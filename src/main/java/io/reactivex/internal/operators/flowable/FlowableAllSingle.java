@@ -57,6 +57,7 @@ public final class FlowableAllSingle<T> extends Single<Boolean> implements FuseT
             this.downstream = actual;
             this.predicate = predicate;
         }
+
         @Override
         public void onSubscribe(Subscription s) {
             if (SubscriptionHelper.validate(this.upstream, s)) {

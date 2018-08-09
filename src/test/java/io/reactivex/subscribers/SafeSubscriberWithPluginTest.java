@@ -171,6 +171,7 @@ public class SafeSubscriberWithPluginTest {
 
         safe.onError(new TestException());
     }
+
     @Test(expected = RuntimeException.class)
     @Ignore("Subscribers can't throw")
     public void testPluginExceptionWhileOnErrorThrowsAndUnsubscribeThrows() {
@@ -195,6 +196,7 @@ public class SafeSubscriberWithPluginTest {
 
         safe.onError(new TestException());
     }
+
     @Test(expected = RuntimeException.class)
     @Ignore("Subscribers can't throw")
     public void testPluginExceptionWhenUnsubscribing2() {

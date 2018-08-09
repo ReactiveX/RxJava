@@ -2724,7 +2724,6 @@ public class FlowableNullTests {
         });
     }
 
-
     @Test(expected = NullPointerException.class)
     public void zipWithCombinerNull() {
         just1.zipWith(just1, null);

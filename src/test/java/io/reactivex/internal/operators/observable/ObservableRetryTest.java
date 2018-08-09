@@ -779,6 +779,7 @@ public class ObservableRetryTest {
 
         return sb;
     }
+
     @Test//(timeout = 3000)
     public void testIssue1900() throws InterruptedException {
         Observer<String> observer = TestHelper.mockObserver();
@@ -819,6 +820,7 @@ public class ObservableRetryTest {
         inOrder.verify(observer, times(1)).onComplete();
         inOrder.verifyNoMoreInteractions();
     }
+
     @Test//(timeout = 3000)
     public void testIssue1900SourceNotSupportingBackpressure() {
         Observer<String> observer = TestHelper.mockObserver();

@@ -454,7 +454,6 @@ public class ParallelFlowableTest {
         }
     }
 
-
     @Test
     public void collectAsync2() {
         ExecutorService exec = Executors.newFixedThreadPool(3);
@@ -550,7 +549,6 @@ public class ParallelFlowableTest {
             exec.shutdown();
         }
     }
-
 
     @Test
     public void collectAsync3Fused() {

@@ -40,7 +40,6 @@ public class CompletableResumeNextTest {
         });
     }
 
-
     @Test
     public void disposeInResume() {
         TestHelper.checkDisposedCompletable(new Function<Completable, CompletableSource>() {

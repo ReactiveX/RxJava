@@ -384,6 +384,7 @@ public class PublishProcessorTest extends FlowableProcessorTest<Object> {
 //        // even though the onError above throws we should still receive it on the other subscriber
 //        assertEquals(1, ts.getOnErrorEvents().size());
 //    }
+
     @Test
     public void testCurrentStateMethodsNormal() {
         PublishProcessor<Object> as = PublishProcessor.create();
@@ -419,6 +420,7 @@ public class PublishProcessorTest extends FlowableProcessorTest<Object> {
         assertTrue(as.hasComplete());
         assertNull(as.getThrowable());
     }
+
     @Test
     public void testCurrentStateMethodsError() {
         PublishProcessor<Object> as = PublishProcessor.create();

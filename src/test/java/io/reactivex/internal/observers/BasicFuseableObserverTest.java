@@ -30,13 +30,16 @@ public class BasicFuseableObserverTest {
             public Integer poll() throws Exception {
                 return null;
             }
+
             @Override
             public int requestFusion(int mode) {
                 return 0;
             }
+
             @Override
             public void onNext(Integer value) {
             }
+
             @Override
             protected boolean beforeDownstream() {
                 return false;
@@ -58,10 +61,12 @@ public class BasicFuseableObserverTest {
             public Integer poll() throws Exception {
                 return null;
             }
+
             @Override
             public int requestFusion(int mode) {
                 return 0;
             }
+
             @Override
             public void onNext(Integer value) {
             }

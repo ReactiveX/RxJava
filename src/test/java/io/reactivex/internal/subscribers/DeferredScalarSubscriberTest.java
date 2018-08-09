@@ -303,6 +303,7 @@ public class DeferredScalarSubscriberTest {
         ts.assertNoErrors();
         ts.assertNotComplete();
     }
+
     @Test
     public void emissionRequestRace() {
         Worker w = Schedulers.computation().createWorker();

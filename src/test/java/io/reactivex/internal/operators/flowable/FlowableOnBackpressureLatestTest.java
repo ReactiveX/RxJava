@@ -37,6 +37,7 @@ public class FlowableOnBackpressureLatestTest {
         ts.assertTerminated();
         ts.assertValues(1, 2, 3, 4, 5);
     }
+
     @Test
     public void testSimpleError() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
@@ -48,6 +49,7 @@ public class FlowableOnBackpressureLatestTest {
         ts.assertError(TestException.class);
         ts.assertValues(1, 2, 3, 4, 5);
     }
+
     @Test
     public void testSimpleBackpressure() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>(2L);
@@ -100,6 +102,7 @@ public class FlowableOnBackpressureLatestTest {
         ts.assertNoErrors();
         ts.assertTerminated();
     }
+
     @Test
     public void testAsynchronousDrop() throws InterruptedException {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>(1L) {

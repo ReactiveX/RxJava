@@ -433,6 +433,7 @@ public class FlowableRetryTest {
                         }
                     }
                 }
+
                 @Override
                 public void cancel() {
                     // TODO Auto-generated method stub
@@ -829,6 +830,7 @@ public class FlowableRetryTest {
 
         return sb;
     }
+
     @Test//(timeout = 3000)
     public void testIssue1900() throws InterruptedException {
         Subscriber<String> subscriber = TestHelper.mockSubscriber();
@@ -869,6 +871,7 @@ public class FlowableRetryTest {
         inOrder.verify(subscriber, times(1)).onComplete();
         inOrder.verifyNoMoreInteractions();
     }
+
     @Test//(timeout = 3000)
     public void testIssue1900SourceNotSupportingBackpressure() {
         Subscriber<String> subscriber = TestHelper.mockSubscriber();
@@ -996,7 +999,6 @@ public class FlowableRetryTest {
         .test()
         .assertResult(1, 1, 1, 1, 1);
     }
-
 
     @Test
     public void shouldDisposeInnerObservable() {

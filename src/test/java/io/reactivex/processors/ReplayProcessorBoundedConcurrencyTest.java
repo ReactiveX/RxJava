@@ -318,6 +318,7 @@ public class ReplayProcessorBoundedConcurrencyTest {
             }
         }
     }
+
     @Test
     public void testReplaySubjectEmissionSubscriptionRace() throws Exception {
         Scheduler s = Schedulers.io();
@@ -403,6 +404,7 @@ public class ReplayProcessorBoundedConcurrencyTest {
             worker.dispose();
         }
     }
+
     @Test(timeout = 5000)
     public void testConcurrentSizeAndHasAnyValue() throws InterruptedException {
         final ReplayProcessor<Object> rs = ReplayProcessor.createUnbounded();
@@ -457,6 +459,7 @@ public class ReplayProcessorBoundedConcurrencyTest {
 
         t.join();
     }
+
     @Test(timeout = 5000)
     public void testConcurrentSizeAndHasAnyValueBounded() throws InterruptedException {
         final ReplayProcessor<Object> rs = ReplayProcessor.createWithSize(3);
@@ -500,6 +503,7 @@ public class ReplayProcessorBoundedConcurrencyTest {
 
         t.join();
     }
+
     @Test(timeout = 10000)
     public void testConcurrentSizeAndHasAnyValueTimeBounded() throws InterruptedException {
         final ReplayProcessor<Object> rs = ReplayProcessor.createWithTime(1, TimeUnit.MILLISECONDS, Schedulers.computation());

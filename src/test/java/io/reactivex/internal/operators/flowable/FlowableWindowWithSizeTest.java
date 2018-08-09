@@ -211,6 +211,7 @@ public class FlowableWindowWithSizeTest {
             public void onStart() {
                 request(1);
             }
+
             @Override
             public void onNext(Flowable<Integer> t) {
                 t.subscribe(new DefaultSubscriber<Integer>() {
@@ -218,20 +219,24 @@ public class FlowableWindowWithSizeTest {
                     public void onNext(Integer t) {
                         list.add(t);
                     }
+
                     @Override
                     public void onError(Throwable e) {
                         subscriber.onError(e);
                     }
+
                     @Override
                     public void onComplete() {
                         subscriber.onComplete();
                     }
                 });
             }
+
             @Override
             public void onError(Throwable e) {
                 subscriber.onError(e);
             }
+
             @Override
             public void onComplete() {
                 subscriber.onComplete();

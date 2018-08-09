@@ -26,6 +26,7 @@ public final class ObservableElementAtMaybe<T> extends Maybe<T> implements FuseT
         this.source = source;
         this.index = index;
     }
+
     @Override
     public void subscribeActual(MaybeObserver<? super T> t) {
         source.subscribe(new ElementAtObserver<T>(t, index));

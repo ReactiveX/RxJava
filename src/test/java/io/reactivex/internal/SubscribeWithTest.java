@@ -30,7 +30,6 @@ public class SubscribeWithTest {
         .assertResult(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
     }
 
-
     @Test
     public void withObservable() {
         Observable.range(1, 10)

@@ -461,6 +461,7 @@ public final class FlowableFlatMap<T, U> extends AbstractFlowableWithUpstream<T,
                         if (checkTerminate()) {
                             return;
                         }
+
                         @SuppressWarnings("unchecked")
                         InnerSubscriber<T, U> is = (InnerSubscriber<T, U>)inner[j];
 
@@ -629,6 +630,7 @@ public final class FlowableFlatMap<T, U> extends AbstractFlowableWithUpstream<T,
             this.bufferSize = parent.bufferSize;
             this.limit = bufferSize >> 2;
         }
+
         @Override
         public void onSubscribe(Subscription s) {
             if (SubscriptionHelper.setOnce(this, s)) {
@@ -654,6 +656,7 @@ public final class FlowableFlatMap<T, U> extends AbstractFlowableWithUpstream<T,
                 s.request(bufferSize);
             }
         }
+
         @Override
         public void onNext(U t) {
             if (fusionMode != QueueSubscription.ASYNC) {
@@ -662,11 +665,13 @@ public final class FlowableFlatMap<T, U> extends AbstractFlowableWithUpstream<T,
                 parent.drain();
             }
         }
+
         @Override
         public void onError(Throwable t) {
             lazySet(SubscriptionHelper.CANCELLED);
             parent.innerError(this, t);
         }
+
         @Override
         public void onComplete() {
             done = true;

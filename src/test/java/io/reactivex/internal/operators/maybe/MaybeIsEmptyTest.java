@@ -54,7 +54,6 @@ public class MaybeIsEmptyTest {
         .toMaybe() instanceof MaybeIsEmpty);
     }
 
-
     @Test
     public void normalToMaybe() {
         Maybe.just(1)

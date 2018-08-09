@@ -34,8 +34,6 @@ public final class CompletableResumeNext extends Completable {
         this.errorMapper = errorMapper;
     }
 
-
-
     @Override
     protected void subscribeActual(final CompletableObserver observer) {
         ResumeNextObserver parent = new ResumeNextObserver(observer, errorMapper);

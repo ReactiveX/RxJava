@@ -976,6 +976,7 @@ public class SerializedSubscriberTest {
         ts.assertValue(1);
         ts.assertError(TestException.class);
     }
+
     @Test
     public void testCompleteReentry() {
         final AtomicReference<Subscriber<Integer>> serial = new AtomicReference<Subscriber<Integer>>();

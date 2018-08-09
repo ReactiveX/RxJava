@@ -26,19 +26,23 @@ public final class PerfObserver implements Observer<Object> {
         this.bh = bh;
         this.cdl = new CountDownLatch(1);
     }
+
     @Override
     public void onSubscribe(Disposable d) {
 
     }
+
     @Override
     public void onNext(Object value) {
         bh.consume(value);
     }
+
     @Override
     public void onError(Throwable e) {
         e.printStackTrace();
         cdl.countDown();
     }
+
     @Override
     public void onComplete() {
         cdl.countDown();

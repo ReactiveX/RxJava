@@ -55,7 +55,7 @@ public final class FlowableWithLatestFrom<T, U, R> extends AbstractFlowableWithU
 
         final BiFunction<? super T, ? super U, ? extends R> combiner;
 
-        final AtomicReference<Subscription> s = new AtomicReference<Subscription>();
+        final AtomicReference<Subscription> upstream = new AtomicReference<Subscription>();
 
         final AtomicLong requested = new AtomicLong();
 
@@ -65,15 +65,16 @@ public final class FlowableWithLatestFrom<T, U, R> extends AbstractFlowableWithU
             this.downstream = actual;
             this.combiner = combiner;
         }
+
         @Override
         public void onSubscribe(Subscription s) {
-            SubscriptionHelper.deferredSetOnce(this.s, requested, s);
+            SubscriptionHelper.deferredSetOnce(this.upstream, requested, s);
         }
 
         @Override
         public void onNext(T t) {
             if (!tryOnNext(t)) {
-                s.get().request(1);
+                upstream.get().request(1);
             }
         }
 
@@ -111,12 +112,12 @@ public final class FlowableWithLatestFrom<T, U, R> extends AbstractFlowableWithU
 
         @Override
         public void request(long n) {
-            SubscriptionHelper.deferredRequest(s, requested, n);
+            SubscriptionHelper.deferredRequest(upstream, requested, n);
         }
 
         @Override
         public void cancel() {
-            SubscriptionHelper.cancel(s);
+            SubscriptionHelper.cancel(upstream);
             SubscriptionHelper.cancel(other);
         }
 
@@ -125,7 +126,7 @@ public final class FlowableWithLatestFrom<T, U, R> extends AbstractFlowableWithU
         }
 
         public void otherError(Throwable e) {
-            SubscriptionHelper.cancel(s);
+            SubscriptionHelper.cancel(upstream);
             downstream.onError(e);
         }
     }

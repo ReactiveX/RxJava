@@ -282,6 +282,7 @@ public class BehaviorProcessorTest extends FlowableProcessorTest<Object> {
             verify(subscriber, never()).onError(any(Throwable.class));
         }
     }
+
     @Test
     public void testStartEmpty() {
         BehaviorProcessor<Integer> source = BehaviorProcessor.create();
@@ -307,6 +308,7 @@ public class BehaviorProcessorTest extends FlowableProcessorTest<Object> {
 
 
     }
+
     @Test
     public void testStartEmptyThenAddOne() {
         BehaviorProcessor<Integer> source = BehaviorProcessor.create();
@@ -329,6 +331,7 @@ public class BehaviorProcessorTest extends FlowableProcessorTest<Object> {
         verify(subscriber, never()).onError(any(Throwable.class));
 
     }
+
     @Test
     public void testStartEmptyCompleteWithOne() {
         BehaviorProcessor<Integer> source = BehaviorProcessor.create();
@@ -406,6 +409,7 @@ public class BehaviorProcessorTest extends FlowableProcessorTest<Object> {
 //        // even though the onError above throws we should still receive it on the other subscriber
 //        assertEquals(1, ts.getOnErrorEvents().size());
 //    }
+
     @Test
     public void testEmissionSubscriptionRace() throws Exception {
         Scheduler s = Schedulers.io();
@@ -550,6 +554,7 @@ public class BehaviorProcessorTest extends FlowableProcessorTest<Object> {
         assertNull(as.getValue());
         assertNull(as.getThrowable());
     }
+
     @Test
     public void testCurrentStateMethodsError() {
         BehaviorProcessor<Object> as = BehaviorProcessor.create();

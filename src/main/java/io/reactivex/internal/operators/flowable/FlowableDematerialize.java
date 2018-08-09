@@ -79,6 +79,7 @@ public final class FlowableDematerialize<T> extends AbstractFlowableWithUpstream
 
             downstream.onError(t);
         }
+
         @Override
         public void onComplete() {
             if (done) {

@@ -42,6 +42,7 @@ public final class ObservableTake<T> extends AbstractObservableWithUpstream<T, T
             this.downstream = actual;
             this.remaining = limit;
         }
+
         @Override
         public void onSubscribe(Disposable d) {
             if (DisposableHelper.validate(this.upstream, d)) {
@@ -55,6 +56,7 @@ public final class ObservableTake<T> extends AbstractObservableWithUpstream<T, T
                 }
             }
         }
+
         @Override
         public void onNext(T t) {
             if (!done && remaining-- > 0) {
@@ -65,6 +67,7 @@ public final class ObservableTake<T> extends AbstractObservableWithUpstream<T, T
                 }
             }
         }
+
         @Override
         public void onError(Throwable t) {
             if (done) {
@@ -76,6 +79,7 @@ public final class ObservableTake<T> extends AbstractObservableWithUpstream<T, T
             upstream.dispose();
             downstream.onError(t);
         }
+
         @Override
         public void onComplete() {
             if (!done) {

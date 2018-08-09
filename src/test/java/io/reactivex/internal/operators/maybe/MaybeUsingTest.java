@@ -346,7 +346,6 @@ public class MaybeUsingTest {
         .assertFailure(TestException.class);
     }
 
-
     @Test
     public void emptyDisposerCrashes() {
         Maybe.using(new Callable<Object>() {

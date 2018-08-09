@@ -200,6 +200,7 @@ public final class FlowableCache<T> extends AbstractFlowableWithUpstream<T, T> {
             source.subscribe(this);
             isConnected = true;
         }
+
         @Override
         public void onNext(T t) {
             if (!sourceDone) {
@@ -210,6 +211,7 @@ public final class FlowableCache<T> extends AbstractFlowableWithUpstream<T, T> {
                 }
             }
         }
+
         @SuppressWarnings("unchecked")
         @Override
         public void onError(Throwable e) {
@@ -225,6 +227,7 @@ public final class FlowableCache<T> extends AbstractFlowableWithUpstream<T, T> {
                 RxJavaPlugins.onError(e);
             }
         }
+
         @SuppressWarnings("unchecked")
         @Override
         public void onComplete() {
@@ -284,6 +287,7 @@ public final class FlowableCache<T> extends AbstractFlowableWithUpstream<T, T> {
             this.state = state;
             this.requested = new AtomicLong();
         }
+
         @Override
         public void request(long n) {
             if (SubscriptionHelper.validate(n)) {

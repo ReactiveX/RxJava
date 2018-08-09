@@ -110,6 +110,7 @@ public final class SingleInternalHelper {
             return new SingleToObservable(v);
         }
     }
+
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public static <T> Function<SingleSource<? extends T>, Observable<? extends T>> toObservable() {
         return (Function)ToObservable.INSTANCE;

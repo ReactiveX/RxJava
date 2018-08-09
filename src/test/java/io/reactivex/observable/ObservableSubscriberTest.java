@@ -180,7 +180,6 @@ public class ObservableSubscriberTest {
         to.assertResult(1);
     }
 
-
     @Test
     public void methodTestNoCancel() {
         PublishSubject<Integer> ps = PublishSubject.create();

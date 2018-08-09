@@ -77,7 +77,6 @@ public class FlowableReduceTests {
         assertNotNull(reduceResult2);
     }
 
-
     @Test
     public void reduceInts() {
         Flowable<Integer> f = Flowable.just(1, 2, 3);

@@ -27,6 +27,7 @@ public final class FlowableFromCallable<T> extends Flowable<T> implements Callab
     public FlowableFromCallable(Callable<? extends T> callable) {
         this.callable = callable;
     }
+
     @Override
     public void subscribeActual(Subscriber<? super T> s) {
         DeferredScalarSubscription<T> deferred = new DeferredScalarSubscription<T>(s);

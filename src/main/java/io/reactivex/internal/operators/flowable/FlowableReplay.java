@@ -409,6 +409,7 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
                 RxJavaPlugins.onError(e);
             }
         }
+
         @SuppressWarnings("unchecked")
         @Override
         public void onComplete() {
@@ -624,6 +625,7 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
         UnboundedReplayBuffer(int capacityHint) {
             super(capacityHint);
         }
+
         @Override
         public void next(T value) {
             add(NotificationLite.next(value));
@@ -1037,6 +1039,7 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
                 setFirst(prev);
             }
         }
+
         @Override
         void truncateFinal() {
             long timeLimit = scheduler.now(unit) - maxAge;

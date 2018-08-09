@@ -164,18 +164,21 @@ public class FlowableRangeTest {
         ts.assertValueSequence(list);
         ts.assertTerminated();
     }
+
     @Test
     public void testWithBackpressure1() {
         for (int i = 0; i < 100; i++) {
             testWithBackpressureOneByOne(i);
         }
     }
+
     @Test
     public void testWithBackpressureAllAtOnce() {
         for (int i = 0; i < 100; i++) {
             testWithBackpressureAllAtOnce(i);
         }
     }
+
     @Test
     public void testWithBackpressureRequestWayMore() {
         Flowable<Integer> source = Flowable.range(50, 100);
@@ -260,6 +263,7 @@ public class FlowableRangeTest {
         ts.assertNoErrors();
         ts.assertValues(Integer.MAX_VALUE - 1, Integer.MAX_VALUE);
     }
+
     @Test(timeout = 1000)
     public void testNearMaxValueWithBackpressure() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>(3L);
@@ -269,7 +273,6 @@ public class FlowableRangeTest {
         ts.assertNoErrors();
         ts.assertValues(Integer.MAX_VALUE - 1, Integer.MAX_VALUE);
     }
-
 
     @Test
     public void negativeCount() {

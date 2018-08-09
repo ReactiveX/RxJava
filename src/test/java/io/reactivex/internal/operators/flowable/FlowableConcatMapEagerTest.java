@@ -655,7 +655,6 @@ public class FlowableConcatMapEagerTest {
         ts.assertValue(null);
     }
 
-
     @Test
     public void testMaxConcurrent5() {
         final List<Long> requests = new ArrayList<Long>();

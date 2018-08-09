@@ -152,7 +152,6 @@ public class FlowablePublishMulticastTest {
         mp.errorAll(null);
     }
 
-
     @Test
     public void completeAllCancelled() {
         MulticastProcessor<Integer> mp = new MulticastProcessor<Integer>(128, true);

@@ -326,6 +326,7 @@ public class FlowableWindowWithFlowableTest {
         ts.assertNoErrors();
         ts.assertValueCount(1);
     }
+
     @Test
     public void testMainUnsubscribedOnBoundaryCompletion() {
         PublishProcessor<Integer> source = PublishProcessor.create();
@@ -386,6 +387,7 @@ public class FlowableWindowWithFlowableTest {
         ts.assertNoErrors();
         ts.assertValueCount(1);
     }
+
     @Test
     public void testInnerBackpressure() {
         Flowable<Integer> source = Flowable.range(1, 10);
@@ -770,7 +772,6 @@ public class FlowableWindowWithFlowableTest {
 
         ts.assertResult(1);
     }
-
 
     @Test
     public void mainAndBoundaryBothError() {

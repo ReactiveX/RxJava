@@ -47,6 +47,7 @@ public class FlowableTakeUntilPredicateTest {
         verify(subscriber, never()).onError(any(Throwable.class));
         verify(subscriber).onComplete();
     }
+
     @Test
     public void takeAll() {
         Subscriber<Object> subscriber = TestHelper.mockSubscriber();
@@ -63,6 +64,7 @@ public class FlowableTakeUntilPredicateTest {
         verify(subscriber, never()).onError(any(Throwable.class));
         verify(subscriber).onComplete();
     }
+
     @Test
     public void takeFirst() {
         Subscriber<Object> subscriber = TestHelper.mockSubscriber();
@@ -79,6 +81,7 @@ public class FlowableTakeUntilPredicateTest {
         verify(subscriber, never()).onError(any(Throwable.class));
         verify(subscriber).onComplete();
     }
+
     @Test
     public void takeSome() {
         Subscriber<Object> subscriber = TestHelper.mockSubscriber();
@@ -97,6 +100,7 @@ public class FlowableTakeUntilPredicateTest {
         verify(subscriber, never()).onError(any(Throwable.class));
         verify(subscriber).onComplete();
     }
+
     @Test
     public void functionThrows() {
         Subscriber<Object> subscriber = TestHelper.mockSubscriber();
@@ -115,6 +119,7 @@ public class FlowableTakeUntilPredicateTest {
         verify(subscriber).onError(any(TestException.class));
         verify(subscriber, never()).onComplete();
     }
+
     @Test
     public void sourceThrows() {
         Subscriber<Object> subscriber = TestHelper.mockSubscriber();
@@ -134,6 +139,7 @@ public class FlowableTakeUntilPredicateTest {
         verify(subscriber).onError(any(TestException.class));
         verify(subscriber, never()).onComplete();
     }
+
     @Test
     public void backpressure() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>(5L);

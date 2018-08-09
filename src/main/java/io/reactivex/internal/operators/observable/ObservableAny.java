@@ -44,6 +44,7 @@ public final class ObservableAny<T> extends AbstractObservableWithUpstream<T, Bo
             this.downstream = actual;
             this.predicate = predicate;
         }
+
         @Override
         public void onSubscribe(Disposable d) {
             if (DisposableHelper.validate(this.upstream, d)) {

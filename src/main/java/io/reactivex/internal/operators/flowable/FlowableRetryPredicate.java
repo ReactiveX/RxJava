@@ -73,6 +73,7 @@ public final class FlowableRetryPredicate<T> extends AbstractFlowableWithUpstrea
             produced++;
             downstream.onNext(t);
         }
+
         @Override
         public void onError(Throwable t) {
             long r = remaining;

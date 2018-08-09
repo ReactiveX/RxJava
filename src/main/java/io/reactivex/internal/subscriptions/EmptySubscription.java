@@ -29,6 +29,7 @@ public enum EmptySubscription implements QueueSubscription<Object> {
     public void request(long n) {
         SubscriptionHelper.validate(n);
     }
+
     @Override
     public void cancel() {
         // no-op
@@ -67,27 +68,33 @@ public enum EmptySubscription implements QueueSubscription<Object> {
         s.onSubscribe(INSTANCE);
         s.onComplete();
     }
+
     @Nullable
     @Override
     public Object poll() {
         return null; // always empty
     }
+
     @Override
     public boolean isEmpty() {
         return true;
     }
+
     @Override
     public void clear() {
         // nothing to do
     }
+
     @Override
     public int requestFusion(int mode) {
         return mode & ASYNC; // accept async mode: an onComplete or onError will be signalled after anyway
     }
+
     @Override
     public boolean offer(Object value) {
         throw new UnsupportedOperationException("Should not be called!");
     }
+
     @Override
     public boolean offer(Object v1, Object v2) {
         throw new UnsupportedOperationException("Should not be called!");

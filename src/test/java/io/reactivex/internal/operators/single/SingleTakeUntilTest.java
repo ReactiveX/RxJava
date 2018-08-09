@@ -59,7 +59,6 @@ public class SingleTakeUntilTest {
         to.assertResult(1);
     }
 
-
     @Test
     public void mainSuccessCompletable() {
         PublishProcessor<Integer> pp = PublishProcessor.create();

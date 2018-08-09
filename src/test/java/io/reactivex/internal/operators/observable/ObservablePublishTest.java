@@ -372,6 +372,7 @@ public class ObservablePublishTest {
 
         assertEquals(2, calls.get());
     }
+
     @Test
     public void testObserveOn() {
         ConnectableObservable<Integer> co = Observable.range(0, 1000).publish();

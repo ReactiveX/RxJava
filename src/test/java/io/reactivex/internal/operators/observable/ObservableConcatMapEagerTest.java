@@ -623,7 +623,6 @@ public class ObservableConcatMapEagerTest {
         to.assertValue(null);
     }
 
-
     @Test
     @Ignore("Observable doesn't do backpressure")
     public void testMaxConcurrent5() {

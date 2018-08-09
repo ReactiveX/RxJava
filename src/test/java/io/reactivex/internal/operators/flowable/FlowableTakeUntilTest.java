@@ -209,6 +209,7 @@ public class FlowableTakeUntilTest {
         assertFalse("Until still has observers", until.hasSubscribers());
         assertFalse("TestSubscriber is unsubscribed", ts.isCancelled());
     }
+
     @Test
     public void testMainCompletes() {
         PublishProcessor<Integer> source = PublishProcessor.create();
@@ -232,6 +233,7 @@ public class FlowableTakeUntilTest {
         assertFalse("Until still has observers", until.hasSubscribers());
         assertFalse("TestSubscriber is unsubscribed", ts.isCancelled());
     }
+
     @Test
     public void testDownstreamUnsubscribes() {
         PublishProcessor<Integer> source = PublishProcessor.create();

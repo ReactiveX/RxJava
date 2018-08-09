@@ -125,6 +125,7 @@ public final class FlowableDebounceTimed<T> extends AbstractFlowableWithUpstream
             if (d != null) {
                 d.dispose();
             }
+
             @SuppressWarnings("unchecked")
             DebounceEmitter<T> de = (DebounceEmitter<T>)d;
             if (de != null) {

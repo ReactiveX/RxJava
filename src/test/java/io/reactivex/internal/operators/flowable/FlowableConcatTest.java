@@ -169,6 +169,7 @@ public class FlowableConcatTest {
                     public void request(long n) {
 
                     }
+
                     @Override
                     public void cancel() {
                         d.dispose();
@@ -636,6 +637,7 @@ public class FlowableConcatTest {
         inOrder.verify(o).onSuccess(list);
         verify(o, never()).onError(any(Throwable.class));
     }
+
     @Test
     public void concatVeryLongObservableOfObservablesTakeHalf() {
         final int n = 10000;

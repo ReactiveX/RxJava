@@ -265,6 +265,7 @@ public final class ObservableZip<T, R> extends Observable<R> {
             this.parent = parent;
             this.queue = new SpscLinkedArrayQueue<T>(bufferSize);
         }
+
         @Override
         public void onSubscribe(Disposable d) {
             DisposableHelper.setOnce(this.upstream, d);

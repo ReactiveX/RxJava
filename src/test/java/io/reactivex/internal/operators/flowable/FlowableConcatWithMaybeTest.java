@@ -41,7 +41,6 @@ public class FlowableConcatWithMaybeTest {
         ts.assertResult(1, 2, 3, 4, 5, 100);
     }
 
-
     @Test
     public void normalNonEmpty() {
         final TestSubscriber<Integer> ts = new TestSubscriber<Integer>();

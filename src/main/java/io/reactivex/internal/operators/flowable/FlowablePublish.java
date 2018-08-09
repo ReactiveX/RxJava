@@ -230,6 +230,7 @@ public final class FlowablePublish<T> extends ConnectableFlowable<T> implements 
             // loop to act on the current state serially
             dispatch();
         }
+
         @Override
         public void onError(Throwable e) {
             // The observer front is accessed serially as required by spec so
@@ -243,6 +244,7 @@ public final class FlowablePublish<T> extends ConnectableFlowable<T> implements 
                 RxJavaPlugins.onError(e);
             }
         }
+
         @Override
         public void onComplete() {
             // The observer front is accessed serially as required by spec so

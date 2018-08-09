@@ -375,7 +375,6 @@ public class ObservableSwitchMapMaybeTest {
         }
     }
 
-
     @Test
     public void innerErrorAfterTermination() {
         List<Throwable> errors = TestHelper.trackPluginErrors();

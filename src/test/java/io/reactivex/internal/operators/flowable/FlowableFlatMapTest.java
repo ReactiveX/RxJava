@@ -355,6 +355,7 @@ public class FlowableFlatMapTest {
         Assert.assertEquals(expected.size(), ts.valueCount());
         Assert.assertTrue(expected.containsAll(ts.values()));
     }
+
     @Test
     public void testFlatMapSelectorMaxConcurrent() {
         final int m = 4;
@@ -478,6 +479,7 @@ public class FlowableFlatMapTest {
             }
         }
     }
+
     @Test(timeout = 30000)
     public void flatMapRangeMixedAsyncLoop() {
         for (int i = 0; i < 2000; i++) {
@@ -537,6 +539,7 @@ public class FlowableFlatMapTest {
             ts.assertValueCount(1000);
         }
     }
+
     @Test
     public void flatMapTwoNestedSync() {
         for (final int n : new int[] { 1, 1000, 1000000 }) {
@@ -855,7 +858,6 @@ public class FlowableFlatMapTest {
             TestHelper.race(r1, r2);
         }
     }
-
 
     @Test
     public void fusedInnerThrows() {

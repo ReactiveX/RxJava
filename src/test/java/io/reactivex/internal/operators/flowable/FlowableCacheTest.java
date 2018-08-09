@@ -54,6 +54,7 @@ public class FlowableCacheTest {
             assertEquals((Integer)i, onNextEvents.get(i));
         }
     }
+
     @Test
     public void testColdReplayBackpressure() {
         FlowableCache<Integer> source = new FlowableCache<Integer>(Flowable.range(0, 1000), 16);
@@ -178,6 +179,7 @@ public class FlowableCacheTest {
             assertEquals(10000, ts2.values().size());
         }
     }
+
     @Test
     public void testAsyncComeAndGo() {
         Flowable<Long> source = Flowable.interval(1, 1, TimeUnit.MILLISECONDS)

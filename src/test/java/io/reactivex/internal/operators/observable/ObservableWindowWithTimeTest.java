@@ -158,6 +158,7 @@ public class ObservableWindowWithTimeTest {
             }
         };
     }
+
     @Test
     public void testExactWindowSize() {
         Observable<Observable<Integer>> source = Observable.range(1, 10)

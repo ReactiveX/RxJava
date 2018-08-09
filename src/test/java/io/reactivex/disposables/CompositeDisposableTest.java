@@ -277,6 +277,7 @@ public class CompositeDisposableTest {
         // we should have only disposed once
         assertEquals(1, counter.get());
     }
+
     @Test
     public void testTryRemoveIfNotIn() {
         CompositeDisposable cd = new CompositeDisposable();

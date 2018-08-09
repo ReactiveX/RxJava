@@ -46,6 +46,7 @@ public final class FlowableAny<T> extends AbstractFlowableWithUpstream<T, Boolea
             super(actual);
             this.predicate = predicate;
         }
+
         @Override
         public void onSubscribe(Subscription s) {
             if (SubscriptionHelper.validate(this.upstream, s)) {

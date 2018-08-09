@@ -187,7 +187,6 @@ public class CompletableAmbTest {
         }
     }
 
-
     @Test
     public void untilCompletableMainComplete() {
         CompletableSubject main = CompletableSubject.create();

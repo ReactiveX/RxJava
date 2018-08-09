@@ -61,6 +61,7 @@ public final class ObservableWithLatestFrom<T, U, R> extends AbstractObservableW
             this.downstream = actual;
             this.combiner = combiner;
         }
+
         @Override
         public void onSubscribe(Disposable d) {
             DisposableHelper.setOnce(this.upstream, d);

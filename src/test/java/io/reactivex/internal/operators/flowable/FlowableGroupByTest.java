@@ -1638,7 +1638,6 @@ public class FlowableGroupByTest {
         .assertComplete();
     }
 
-
     @Test
     public void keySelectorAndDelayError() {
         Flowable.just(1).concatWith(Flowable.<Integer>error(new TestException()))

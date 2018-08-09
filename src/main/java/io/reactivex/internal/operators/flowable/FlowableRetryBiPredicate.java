@@ -70,6 +70,7 @@ public final class FlowableRetryBiPredicate<T> extends AbstractFlowableWithUpstr
             produced++;
             downstream.onNext(t);
         }
+
         @Override
         public void onError(Throwable t) {
             boolean b;

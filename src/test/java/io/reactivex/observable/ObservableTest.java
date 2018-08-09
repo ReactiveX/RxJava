@@ -145,7 +145,6 @@ public class ObservableTest {
         verify(w, times(1)).onError(any(RuntimeException.class));
     }
 
-
     @Test
     public void testCountAFewItems() {
         Observable<String> o = Observable.just("a", "b", "c", "d");

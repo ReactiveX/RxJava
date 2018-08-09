@@ -25,6 +25,7 @@ public final class ObservableError<T> extends Observable<T> {
     public ObservableError(Callable<? extends Throwable> errorSupplier) {
         this.errorSupplier = errorSupplier;
     }
+
     @Override
     public void subscribeActual(Observer<? super T> observer) {
         Throwable error;

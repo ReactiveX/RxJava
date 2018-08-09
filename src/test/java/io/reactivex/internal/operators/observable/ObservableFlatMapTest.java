@@ -350,6 +350,7 @@ public class ObservableFlatMapTest {
         Assert.assertEquals(expected.size(), to.valueCount());
         Assert.assertTrue(expected.containsAll(to.values()));
     }
+
     @Test
     public void testFlatMapSelectorMaxConcurrent() {
         final int m = 4;
@@ -471,6 +472,7 @@ public class ObservableFlatMapTest {
             }
         }
     }
+
     @Test(timeout = 30000)
     public void flatMapRangeMixedAsyncLoop() {
         for (int i = 0; i < 2000; i++) {
@@ -530,6 +532,7 @@ public class ObservableFlatMapTest {
             to.assertValueCount(1000);
         }
     }
+
     @Test
     public void flatMapTwoNestedSync() {
         for (final int n : new int[] { 1, 1000, 1000000 }) {
@@ -894,7 +897,6 @@ public class ObservableFlatMapTest {
         .test()
         .assertFailureAndMessage(NullPointerException.class, "The mapper returned a null ObservableSource");
     }
-
 
     @Test
     public void failingFusedInnerCancelsSource() {

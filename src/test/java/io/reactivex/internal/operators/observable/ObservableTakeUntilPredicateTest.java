@@ -46,6 +46,7 @@ public class ObservableTakeUntilPredicateTest {
         verify(o, never()).onError(any(Throwable.class));
         verify(o).onComplete();
     }
+
     @Test
     public void takeAll() {
         Observer<Object> o = TestHelper.mockObserver();
@@ -62,6 +63,7 @@ public class ObservableTakeUntilPredicateTest {
         verify(o, never()).onError(any(Throwable.class));
         verify(o).onComplete();
     }
+
     @Test
     public void takeFirst() {
         Observer<Object> o = TestHelper.mockObserver();
@@ -78,6 +80,7 @@ public class ObservableTakeUntilPredicateTest {
         verify(o, never()).onError(any(Throwable.class));
         verify(o).onComplete();
     }
+
     @Test
     public void takeSome() {
         Observer<Object> o = TestHelper.mockObserver();
@@ -96,6 +99,7 @@ public class ObservableTakeUntilPredicateTest {
         verify(o, never()).onError(any(Throwable.class));
         verify(o).onComplete();
     }
+
     @Test
     public void functionThrows() {
         Observer<Object> o = TestHelper.mockObserver();
@@ -114,6 +118,7 @@ public class ObservableTakeUntilPredicateTest {
         verify(o).onError(any(TestException.class));
         verify(o, never()).onComplete();
     }
+
     @Test
     public void sourceThrows() {
         Observer<Object> o = TestHelper.mockObserver();

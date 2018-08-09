@@ -247,6 +247,7 @@ public class LambdaObserverTest {
             RxJavaPlugins.reset();
         }
     }
+
     @Test
     public void badSourceEmitAfterDone() {
         List<Throwable> errors = TestHelper.trackPluginErrors();

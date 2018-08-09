@@ -477,7 +477,6 @@ public class FlowableTimeoutTests {
         }
     }
 
-
     @Test
     public void timedTake() {
         PublishProcessor<Integer> pp = PublishProcessor.create();

@@ -1082,10 +1082,12 @@ public class ObservableMergeTest {
     public void testFastMergeFullScalar() {
         runMerge(toScalar, new TestObserver<Integer>());
     }
+
     @Test
     public void testFastMergeHiddenScalar() {
         runMerge(toHiddenScalar, new TestObserver<Integer>());
     }
+
     @Test
     public void testSlowMergeFullScalar() {
         for (final int req : new int[] { 16, 32, 64, 128, 256 }) {
@@ -1103,6 +1105,7 @@ public class ObservableMergeTest {
             runMerge(toScalar, to);
         }
     }
+
     @Test
     public void testSlowMergeHiddenScalar() {
         for (final int req : new int[] { 16, 32, 64, 128, 256 }) {

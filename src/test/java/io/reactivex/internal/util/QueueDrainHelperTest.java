@@ -814,6 +814,7 @@ public class QueueDrainHelperTest {
 
         to.assertFailure(TestException.class);
     }
+
     @Test
     public void observerCheckTerminatedNonDelayErrorErrorResource() {
         TestObserver<Integer> to = new TestObserver<Integer>();

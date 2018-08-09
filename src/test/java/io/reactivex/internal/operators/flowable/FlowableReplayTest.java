@@ -876,6 +876,7 @@ public class FlowableReplayTest {
             assertEquals((Integer)i, onNextEvents.get(i));
         }
     }
+
     @Test
     public void testColdReplayBackpressure() {
         Flowable<Integer> source = Flowable.range(0, 1000).replay().autoConnect();
@@ -995,6 +996,7 @@ public class FlowableReplayTest {
             assertEquals(10000, ts2.values().size());
         }
     }
+
     @Test
     public void testAsyncComeAndGo() {
         Flowable<Long> source = Flowable.interval(1, 1, TimeUnit.MILLISECONDS)

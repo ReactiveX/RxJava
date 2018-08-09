@@ -30,6 +30,7 @@ public final class ObservableFromCallable<T> extends Observable<T> implements Ca
     public ObservableFromCallable(Callable<? extends T> callable) {
         this.callable = callable;
     }
+
     @Override
     public void subscribeActual(Observer<? super T> observer) {
         DeferredScalarDisposable<T> d = new DeferredScalarDisposable<T>(observer);

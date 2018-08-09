@@ -69,6 +69,7 @@ public class FlowableToSortedListTest {
         Flowable<Integer> f = Flowable.just(1, 3, 2, 5, 4);
         assertEquals(Arrays.asList(1, 2, 3, 4, 5), f.toSortedList().toFlowable().blockingFirst());
     }
+
     @Test
     public void testBackpressureHonoredFlowable() {
         Flowable<List<Integer>> w = Flowable.just(1, 3, 2, 5, 4).toSortedList().toFlowable();
@@ -202,6 +203,7 @@ public class FlowableToSortedListTest {
         Flowable<Integer> f = Flowable.just(1, 3, 2, 5, 4);
         assertEquals(Arrays.asList(1, 2, 3, 4, 5), f.toSortedList().blockingGet());
     }
+
     @Test
     @Ignore("Single doesn't do backpressure")
     public void testBackpressureHonored() {

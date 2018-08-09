@@ -794,7 +794,6 @@ public class FlowableObserveOnTest {
         assertEquals(Arrays.asList(128L), requests);
     }
 
-
     @Test
     public void testErrorDelayed() {
         TestScheduler s = new TestScheduler();

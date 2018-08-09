@@ -186,7 +186,6 @@ public class FlowableElementAtTest {
             .assertFailure(NoSuchElementException.class);
     }
 
-
     @Test
     public void doubleOnSubscribe() {
         TestHelper.checkDoubleOnSubscribeFlowable(new Function<Flowable<Object>, Publisher<Object>>() {
@@ -228,7 +227,6 @@ public class FlowableElementAtTest {
             .test()
             .assertFailure(TestException.class);
     }
-
 
     @Test
     public void error() {

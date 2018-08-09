@@ -125,7 +125,6 @@ public class SingleMergeTest {
         .assertFailure(TestException.class, 1, 2);
     }
 
-
     @Test
     public void mergeDelayError4() {
         Single.mergeDelayError(

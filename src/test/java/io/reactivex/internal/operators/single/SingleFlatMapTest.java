@@ -105,7 +105,6 @@ public class SingleFlatMapTest {
         assertFalse(b[0]);
     }
 
-
     @Test
     public void flatMapObservable() {
         Single.just(1).flatMapObservable(new Function<Integer, Observable<Integer>>() {

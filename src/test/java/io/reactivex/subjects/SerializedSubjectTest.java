@@ -122,6 +122,7 @@ public class SerializedSubjectTest {
         assertFalse(serial.hasThrowable());
         assertNull(serial.getThrowable());
     }
+
     @Test
     public void testPublishSubjectValueError() {
         PublishSubject<Integer> async = PublishSubject.create();
@@ -267,6 +268,7 @@ public class SerializedSubjectTest {
         assertArrayEquals(new Integer[] { 1 }, async.getValues(new Integer[] { 0 }));
         assertArrayEquals(new Integer[] { 1, null }, async.getValues(new Integer[] { 0, 0 }));
     }
+
     @Test
     public void testReplaySubjectValueRelayBounded() {
         ReplaySubject<Integer> async = ReplaySubject.createWithSize(1);
@@ -286,6 +288,7 @@ public class SerializedSubjectTest {
         assertArrayEquals(new Integer[] { 1 }, async.getValues(new Integer[] { 0 }));
         assertArrayEquals(new Integer[] { 1, null }, async.getValues(new Integer[] { 0, 0 }));
     }
+
     @Test
     public void testReplaySubjectValueRelayBoundedIncomplete() {
         ReplaySubject<Integer> async = ReplaySubject.createWithSize(1);
@@ -304,6 +307,7 @@ public class SerializedSubjectTest {
         assertArrayEquals(new Integer[] { 1 }, async.getValues(new Integer[] { 0 }));
         assertArrayEquals(new Integer[] { 1, null }, async.getValues(new Integer[] { 0, 0 }));
     }
+
     @Test
     public void testReplaySubjectValueRelayBoundedEmptyIncomplete() {
         ReplaySubject<Integer> async = ReplaySubject.createWithSize(1);
@@ -320,6 +324,7 @@ public class SerializedSubjectTest {
         assertArrayEquals(new Integer[] { null }, async.getValues(new Integer[] { 0 }));
         assertArrayEquals(new Integer[] { null, 0 }, async.getValues(new Integer[] { 0, 0 }));
     }
+
     @Test
     public void testReplaySubjectValueRelayEmptyIncomplete() {
         ReplaySubject<Integer> async = ReplaySubject.create();
@@ -354,6 +359,7 @@ public class SerializedSubjectTest {
         assertArrayEquals(new Integer[] { null }, async.getValues(new Integer[] { 0 }));
         assertArrayEquals(new Integer[] { null, 0 }, async.getValues(new Integer[] { 0, 0 }));
     }
+
     @Test
     public void testReplaySubjectError() {
         ReplaySubject<Integer> async = ReplaySubject.create();
@@ -390,6 +396,7 @@ public class SerializedSubjectTest {
         assertArrayEquals(new Integer[] { null }, async.getValues(new Integer[] { 0 }));
         assertArrayEquals(new Integer[] { null, 0 }, async.getValues(new Integer[] { 0, 0 }));
     }
+
     @Test
     public void testReplaySubjectBoundedError() {
         ReplaySubject<Integer> async = ReplaySubject.createWithSize(1);

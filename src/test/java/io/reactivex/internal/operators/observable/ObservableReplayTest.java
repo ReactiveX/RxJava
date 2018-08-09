@@ -986,6 +986,7 @@ public class ObservableReplayTest {
             assertEquals(10000, to2.values().size());
         }
     }
+
     @Test
     public void testAsyncComeAndGo() {
         Observable<Long> source = Observable.interval(1, 1, TimeUnit.MILLISECONDS)

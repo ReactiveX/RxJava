@@ -134,7 +134,6 @@ public class FlowableWithLatestFromTest {
         assertFalse(other.hasSubscribers());
     }
 
-
     @Test
     public void testUnsubscription() {
         PublishProcessor<Integer> source = PublishProcessor.create();
@@ -189,6 +188,7 @@ public class FlowableWithLatestFromTest {
         assertFalse(source.hasSubscribers());
         assertFalse(other.hasSubscribers());
     }
+
     @Test
     public void testOtherThrows() {
         PublishProcessor<Integer> source = PublishProcessor.create();

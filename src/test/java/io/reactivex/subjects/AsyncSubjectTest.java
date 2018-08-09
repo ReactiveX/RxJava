@@ -367,6 +367,7 @@ public class AsyncSubjectTest extends SubjectTest<Integer> {
         assertNull(as.getValue());
         assertNull(as.getThrowable());
     }
+
     @Test
     public void testCurrentStateMethodsError() {
         AsyncSubject<Object> as = AsyncSubject.create();
@@ -385,7 +386,6 @@ public class AsyncSubjectTest extends SubjectTest<Integer> {
         assertNull(as.getValue());
         assertTrue(as.getThrowable() instanceof TestException);
     }
-
 
     @Test
     public void fusionLive() {

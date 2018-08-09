@@ -64,6 +64,7 @@ public final class FlowableRepeat<T> extends AbstractFlowableWithUpstream<T, T> 
             produced++;
             downstream.onNext(t);
         }
+
         @Override
         public void onError(Throwable t) {
             downstream.onError(t);

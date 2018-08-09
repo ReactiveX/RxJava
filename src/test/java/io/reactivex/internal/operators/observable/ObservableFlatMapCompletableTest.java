@@ -166,7 +166,6 @@ public class ObservableFlatMapCompletableTest {
         .assertFailure(TestException.class);
     }
 
-
     @Test
     public void fusedObservable() {
         TestObserver<Integer> to = ObserverFusion.newTest(QueueFuseable.ANY);
@@ -331,7 +330,6 @@ public class ObservableFlatMapCompletableTest {
         .test()
         .assertFailure(TestException.class);
     }
-
 
     @Test
     public void fused() {

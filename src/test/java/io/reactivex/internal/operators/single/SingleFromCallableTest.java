@@ -111,7 +111,6 @@ public class SingleFromCallableTest {
         verify(func).call();
     }
 
-
     @Test
     public void noErrorLoss() throws Exception {
         List<Throwable> errors = TestHelper.trackPluginErrors();

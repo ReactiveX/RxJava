@@ -92,7 +92,6 @@ public class MaybeCreateTest {
         assertTrue(d.isDisposed());
     }
 
-
     @Test
     public void basicWithCompletion() {
         final Disposable d = Disposables.empty();

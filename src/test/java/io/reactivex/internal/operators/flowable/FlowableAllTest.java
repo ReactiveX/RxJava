@@ -124,6 +124,7 @@ public class FlowableAllTest {
 
         assertFalse(allOdd.blockingGet());
     }
+
     @Test(timeout = 5000)
     public void testIssue1935NoUnsubscribeDownstream() {
         Flowable<Integer> source = Flowable.just(1)
@@ -297,6 +298,7 @@ public class FlowableAllTest {
 
         assertFalse(allOdd.blockingFirst());
     }
+
     @Test(timeout = 5000)
     public void testIssue1935NoUnsubscribeDownstreamFlowable() {
         Flowable<Integer> source = Flowable.just(1)

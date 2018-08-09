@@ -484,7 +484,6 @@ public class ObservableSwitchTest {
         Assert.assertEquals(250, to.valueCount());
     }
 
-
     @Test
     public void delayErrors() {
         PublishSubject<ObservableSource<Integer>> source = PublishSubject.create();
@@ -607,7 +606,6 @@ public class ObservableSwitchTest {
         .assertResult(1);
 
     }
-
 
     @Test
     public void switchMapInnerCancelled() {

@@ -2029,6 +2029,7 @@ public class CompletableTest {
             };
         }
     }
+
     @Test(timeout = 5000, expected = TestException.class)
     public void liftOnCompleteError() {
         Completable c = normal.completable.lift(new CompletableOperatorSwap());
@@ -4659,7 +4660,6 @@ public class CompletableTest {
             RxJavaPlugins.reset();
         }
     }
-
 
     @Test(timeout = 5000)
     public void subscribeTwoCallbacksDispose() {

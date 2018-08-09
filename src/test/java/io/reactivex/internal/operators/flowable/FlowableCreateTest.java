@@ -1001,7 +1001,6 @@ public class FlowableCreateTest {
         }
     }
 
-
     @Test
     public void tryOnError() {
         for (BackpressureStrategy strategy : BackpressureStrategy.values()) {

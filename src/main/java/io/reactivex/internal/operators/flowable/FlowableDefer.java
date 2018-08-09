@@ -27,6 +27,7 @@ public final class FlowableDefer<T> extends Flowable<T> {
     public FlowableDefer(Callable<? extends Publisher<? extends T>> supplier) {
         this.supplier = supplier;
     }
+
     @Override
     public void subscribeActual(Subscriber<? super T> s) {
         Publisher<? extends T> pub;

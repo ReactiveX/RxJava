@@ -59,6 +59,7 @@ public final class ObservableRepeat<T> extends AbstractObservableWithUpstream<T,
         public void onNext(T t) {
             downstream.onNext(t);
         }
+
         @Override
         public void onError(Throwable t) {
             downstream.onError(t);

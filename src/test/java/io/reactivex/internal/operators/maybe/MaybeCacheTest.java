@@ -52,7 +52,6 @@ public class MaybeCacheTest {
         .assertFailure(TestException.class);
     }
 
-
     @Test
     public void offlineComplete() {
         Maybe<Integer> source = Maybe.<Integer>empty().cache();

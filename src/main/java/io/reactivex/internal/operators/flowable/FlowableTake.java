@@ -52,6 +52,7 @@ public final class FlowableTake<T> extends AbstractFlowableWithUpstream<T, T> {
             this.limit = limit;
             this.remaining = limit;
         }
+
         @Override
         public void onSubscribe(Subscription s) {
             if (SubscriptionHelper.validate(this.upstream, s)) {
@@ -65,6 +66,7 @@ public final class FlowableTake<T> extends AbstractFlowableWithUpstream<T, T> {
                 }
             }
         }
+
         @Override
         public void onNext(T t) {
             if (!done && remaining-- > 0) {
@@ -76,6 +78,7 @@ public final class FlowableTake<T> extends AbstractFlowableWithUpstream<T, T> {
                 }
             }
         }
+
         @Override
         public void onError(Throwable t) {
             if (!done) {
@@ -86,6 +89,7 @@ public final class FlowableTake<T> extends AbstractFlowableWithUpstream<T, T> {
                 RxJavaPlugins.onError(t);
             }
         }
+
         @Override
         public void onComplete() {
             if (!done) {
@@ -93,6 +97,7 @@ public final class FlowableTake<T> extends AbstractFlowableWithUpstream<T, T> {
                 downstream.onComplete();
             }
         }
+
         @Override
         public void request(long n) {
             if (!SubscriptionHelper.validate(n)) {
@@ -106,6 +111,7 @@ public final class FlowableTake<T> extends AbstractFlowableWithUpstream<T, T> {
             }
             upstream.request(n);
         }
+
         @Override
         public void cancel() {
             upstream.cancel();

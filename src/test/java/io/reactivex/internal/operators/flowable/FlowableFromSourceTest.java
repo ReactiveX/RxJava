@@ -40,7 +40,6 @@ public class FlowableFromSourceTest {
         ts = new TestSubscriber<Integer>(0L);
     }
 
-
     @Test
     public void normalBuffered() {
         Flowable.create(source, BackpressureStrategy.BUFFER).subscribe(ts);
@@ -124,7 +123,6 @@ public class FlowableFromSourceTest {
         ts.assertNoErrors();
         ts.assertComplete();
     }
-
 
     @Test
     public void normalError() {
@@ -488,7 +486,6 @@ public class FlowableFromSourceTest {
         ts.assertNoErrors();
         ts.assertNotComplete();
     }
-
 
     @Test
     public void unsubscribeInline() {

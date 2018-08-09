@@ -371,6 +371,7 @@ public class FlowablePublishTest {
         ts.assertNoErrors();
         ts.assertTerminated();
     }
+
     @Test
     public void testConnectIsIdempotent() {
         final AtomicInteger calls = new AtomicInteger();
