@@ -2909,7 +2909,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * Maps the onSuccess, onError or onComplete signals of this Maybe into MaybeSource and emits that
      * MaybeSource's signals.
      * <p>
-     * <img width="640" height="410" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/mergeMap.nce.png" alt="">
+     * <img width="640" height="354" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.flatMap.mmm.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code flatMap} does not operate by default on a particular {@link Scheduler}.</dd>
