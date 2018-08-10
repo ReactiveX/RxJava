@@ -3097,6 +3097,41 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     }
 
     /**
+     * Maps the {@code onSuccess}, {@code onError} or {@code onComplete} signals of this {@code Maybe} into a {@link SingleSource} and emits that
+     * {@code SingleSource}'s signals.
+     * <p>
+     * <img width="640" height="354" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.flatMap.sss.png" alt="">
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code flatMapSingle} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param <R>
+     *            the result type
+     * @param onSuccessMapper
+     *            a function that returns a SingleSource to merge for the onSuccess item emitted by this Maybe
+     * @param onErrorMapper
+     *            a function that returns a SingleSource to merge for an onError notification from this Maybe
+     * @param onCompleteSupplier
+     *            a function that returns a SingleSource to merge for an onComplete notification this Maybe
+     * @return the new Single instance
+     * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
+     * 
+     * @since 2.2.1 - experimental
+     */
+    @CheckReturnValue
+    @SchedulerSupport(SchedulerSupport.NONE)
+    @Experimental
+    public final <R> Single<R> flatMapSingle(Function<? super T, ? extends SingleSource<? extends R>> onSuccessMapper,
+            Function<? super Throwable, ? extends SingleSource<? extends R>> onErrorMapper,
+            Callable<? extends SingleSource<? extends R>> onCompleteSupplier) {
+        ObjectHelper.requireNonNull(onSuccessMapper, "onSuccessMapper is null");
+        ObjectHelper.requireNonNull(onErrorMapper, "onErrorMapper is null");
+        ObjectHelper.requireNonNull(onCompleteSupplier, "onCompleteSupplier is null");
+        return RxJavaPlugins.onAssembly(new MaybeFlatMapEventSingle<T, R>(this, onSuccessMapper, onErrorMapper, onCompleteSupplier));
+    }
+
+    /**
      * Returns a {@link Maybe} based on applying a specified function to the item emitted by the
      * source {@link Maybe}, where that function returns a {@link Single}.
      * When this Maybe just completes the resulting {@code Maybe} completes as well.
