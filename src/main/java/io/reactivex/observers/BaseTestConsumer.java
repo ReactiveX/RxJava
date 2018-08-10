@@ -566,7 +566,7 @@ public abstract class BaseTestConsumer<T, U extends BaseTestConsumer<T, U>> impl
 
     /**
      * Assert that the TestObserver/TestSubscriber received only items that are in the specified
-     * collection as well irrespective of the order they were received.
+     * collection as well, irrespective of the order they were received.
      * <p>
      * This helps asserting when the order of the values is not guaranteed, i.e., when merging
      * asynchronous streams.
