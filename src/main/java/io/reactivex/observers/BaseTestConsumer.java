@@ -565,9 +565,14 @@ public abstract class BaseTestConsumer<T, U extends BaseTestConsumer<T, U>> impl
     }
 
     /**
-     * Assert that the TestObserver/TestSubscriber received only the specified values in any order.
-     * <p>This helps asserting when the order of the values is not guaranteed, i.e., when merging
+     * Assert that the TestObserver/TestSubscriber received only items that are in the specified
+     * collection as well, irrespective of the order they were received.
+     * <p>
+     * This helps asserting when the order of the values is not guaranteed, i.e., when merging
      * asynchronous streams.
+     * <p>
+     * To ensure that only the expected items have been received, no more and no less, in any order,
+     * apply {@link #assertValueCount(int)} with {@code expected.size()}.
      *
      * @param expected the collection of values expected in any order
      * @return this

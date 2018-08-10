@@ -1626,4 +1626,38 @@ public class TestObserverTest {
             // expected
         }
     }
+
+    @Test
+    public void assertValueSetWiderSet() {
+        Set<Integer> set = new HashSet<Integer>(Arrays.asList(0, 1, 2, 3, 4, 5, 6, 7));
+
+        Observable.just(4, 5, 1, 3, 2)
+        .test()
+        .assertValueSet(set);
+    }
+
+    @Test
+    public void assertValueSetExact() {
+        Set<Integer> set = new HashSet<Integer>(Arrays.asList(1, 2, 3, 4, 5));
+
+        Observable.just(4, 5, 1, 3, 2)
+        .test()
+        .assertValueSet(set)
+        .assertValueCount(set.size());
+    }
+
+    @Test
+    public void assertValueSetMissing() {
+        Set<Integer> set = new HashSet<Integer>(Arrays.asList(0, 1, 2, 4, 5, 6, 7));
+
+        try {
+            Observable.range(1, 5)
+            .test()
+            .assertValueSet(set);
+
+            throw new RuntimeException("Should have failed");
+        } catch (AssertionError ex) {
+            assertTrue(ex.getMessage(), ex.getMessage().contains("Value not in the expected collection: " + 3));
+        }
+    }
 }
