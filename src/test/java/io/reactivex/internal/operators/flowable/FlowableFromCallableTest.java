@@ -16,9 +16,11 @@
 
 package io.reactivex.internal.operators.flowable;
 
+import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
-import static org.junit.Assert.*;
 
+import java.util.List;
 import java.util.concurrent.*;
 
 import org.junit.Test;
@@ -27,7 +29,9 @@ import org.mockito.stubbing.Answer;
 import org.reactivestreams.*;
 
 import io.reactivex.*;
+import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.Function;
+import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.TestSubscriber;
 
@@ -237,5 +241,28 @@ public class FlowableFromCallableTest {
         })
         .test()
         .assertFailure(NullPointerException.class);
+    }
+
+    @Test(timeout = 5000)
+    public void undeliverableUponCancellation() throws Exception {
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            final TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+
+            Flowable.fromCallable(new Callable<Integer>() {
+                @Override
+                public Integer call() throws Exception {
+                    ts.cancel();
+                    throw new TestException();
+                }
+            })
+            .subscribe(ts);
+
+            ts.assertEmpty();
+
+            TestHelper.assertUndeliverable(errors, 0, TestException.class);
+        } finally {
+            RxJavaPlugins.reset();
+        }
     }
 }
