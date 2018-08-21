@@ -18,6 +18,7 @@ import java.util.concurrent.Callable;
 import io.reactivex.*;
 import io.reactivex.disposables.*;
 import io.reactivex.exceptions.Exceptions;
+import io.reactivex.plugins.RxJavaPlugins;
 
 public final class CompletableFromCallable extends Completable {
 
@@ -37,6 +38,8 @@ public final class CompletableFromCallable extends Completable {
             Exceptions.throwIfFatal(e);
             if (!d.isDisposed()) {
                 observer.onError(e);
+            } else {
+                RxJavaPlugins.onError(e);
             }
             return;
         }
