@@ -37,10 +37,8 @@ import io.reactivex.internal.operators.observable.ObservableObserveOn.ObserveOnO
 import io.reactivex.internal.schedulers.ImmediateThinScheduler;
 import io.reactivex.observers.*;
 import io.reactivex.plugins.RxJavaPlugins;
-import io.reactivex.processors.UnicastProcessor;
 import io.reactivex.schedulers.*;
 import io.reactivex.subjects.*;
-import io.reactivex.subscribers.TestSubscriber;
 
 public class ObservableObserveOnTest {
 
