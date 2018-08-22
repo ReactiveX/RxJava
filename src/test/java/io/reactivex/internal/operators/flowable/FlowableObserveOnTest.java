@@ -21,12 +21,13 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 
-import io.reactivex.annotations.Nullable;
 import org.junit.Test;
 import org.mockito.InOrder;
 import org.reactivestreams.*;
 
 import io.reactivex.*;
+import io.reactivex.annotations.Nullable;
+import io.reactivex.disposables.*;
 import io.reactivex.exceptions.*;
 import io.reactivex.functions.*;
 import io.reactivex.internal.functions.Functions;
@@ -1780,5 +1781,164 @@ public class FlowableObserveOnTest {
         .rebatchRequests(1)
         .test()
         .assertResult(1, 2, 3, 4, 5);
+    }
+
+    public static final class DisposeTrackingScheduler extends Scheduler {
+
+        public final AtomicInteger disposedCount = new AtomicInteger();
+
+        @Override
+        public Worker createWorker() {
+            return new TrackingWorker();
+        }
+
+        final class TrackingWorker extends Scheduler.Worker {
+
+            @Override
+            public void dispose() {
+                disposedCount.getAndIncrement();
+            }
+
+            @Override
+            public boolean isDisposed() {
+                return false;
+            }
+
+            @Override
+            public Disposable schedule(Runnable run, long delay,
+                    TimeUnit unit) {
+                run.run();
+                return Disposables.empty();
+            }
+        }
+    }
+
+    @Test
+    public void workerNotDisposedPrematurelyNormalInNormalOut() {
+        DisposeTrackingScheduler s = new DisposeTrackingScheduler();
+
+        Flowable.concat(
+                Flowable.just(1).hide().observeOn(s),
+                Flowable.just(2)
+        )
+        .test()
+        .assertResult(1, 2);
+
+        assertEquals(1, s.disposedCount.get());
+    }
+
+    @Test
+    public void workerNotDisposedPrematurelySyncInNormalOut() {
+        DisposeTrackingScheduler s = new DisposeTrackingScheduler();
+
+        Flowable.concat(
+                Flowable.just(1).observeOn(s),
+                Flowable.just(2)
+        )
+        .test()
+        .assertResult(1, 2);
+
+        assertEquals(1, s.disposedCount.get());
+    }
+
+    @Test
+    public void workerNotDisposedPrematurelyAsyncInNormalOut() {
+        DisposeTrackingScheduler s = new DisposeTrackingScheduler();
+
+        UnicastProcessor<Integer> up = UnicastProcessor.create();
+        up.onNext(1);
+        up.onComplete();
+
+        Flowable.concat(
+                up.observeOn(s),
+                Flowable.just(2)
+        )
+        .test()
+        .assertResult(1, 2);
+
+        assertEquals(1, s.disposedCount.get());
+    }
+
+    static final class TestSubscriberFusedCanceling
+            extends TestSubscriber<Integer> {
+
+        public TestSubscriberFusedCanceling() {
+            super();
+            initialFusionMode = QueueFuseable.ANY;
+        }
+
+        @Override
+        public void onComplete() {
+            cancel();
+            super.onComplete();
+        }
+    }
+
+    @Test
+    public void workerNotDisposedPrematurelyNormalInAsyncOut() {
+        DisposeTrackingScheduler s = new DisposeTrackingScheduler();
+
+        TestSubscriber<Integer> ts = new TestSubscriberFusedCanceling();
+
+        Flowable.just(1).hide().observeOn(s).subscribe(ts);
+
+        assertEquals(1, s.disposedCount.get());
+    }
+
+    @Test
+    public void workerNotDisposedPrematurelyNormalInNormalOutConditional() {
+        DisposeTrackingScheduler s = new DisposeTrackingScheduler();
+
+        Flowable.concat(
+                Flowable.just(1).hide().observeOn(s).filter(Functions.alwaysTrue()),
+                Flowable.just(2)
+        )
+        .test()
+        .assertResult(1, 2);
+
+        assertEquals(1, s.disposedCount.get());
+    }
+
+    @Test
+    public void workerNotDisposedPrematurelySyncInNormalOutConditional() {
+        DisposeTrackingScheduler s = new DisposeTrackingScheduler();
+
+        Flowable.concat(
+                Flowable.just(1).observeOn(s).filter(Functions.alwaysTrue()),
+                Flowable.just(2)
+        )
+        .test()
+        .assertResult(1, 2);
+
+        assertEquals(1, s.disposedCount.get());
+    }
+
+    @Test
+    public void workerNotDisposedPrematurelyAsyncInNormalOutConditional() {
+        DisposeTrackingScheduler s = new DisposeTrackingScheduler();
+
+        UnicastProcessor<Integer> up = UnicastProcessor.create();
+        up.onNext(1);
+        up.onComplete();
+
+        Flowable.concat(
+                up.observeOn(s).filter(Functions.alwaysTrue()),
+                Flowable.just(2)
+        )
+        .test()
+        .assertResult(1, 2);
+
+        assertEquals(1, s.disposedCount.get());
+    }
+
+    @Test
+    public void workerNotDisposedPrematurelyNormalInAsyncOutConditional() {
+        DisposeTrackingScheduler s = new DisposeTrackingScheduler();
+
+        TestSubscriber<Integer> ts = new TestSubscriberFusedCanceling();
+
+        Flowable.just(1).hide().observeOn(s).filter(Functions.alwaysTrue()).subscribe(ts);
+
+        assertEquals(1, s.disposedCount.get());
     }
 }

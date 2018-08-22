@@ -191,6 +191,7 @@ final Scheduler scheduler;
             if (d) {
                 if (delayError) {
                     if (empty) {
+                        cancelled = true;
                         Throwable e = error;
                         if (e != null) {
                             a.onError(e);
@@ -203,12 +204,14 @@ final Scheduler scheduler;
                 } else {
                     Throwable e = error;
                     if (e != null) {
+                        cancelled = true;
                         clear();
                         a.onError(e);
                         worker.dispose();
                         return true;
                     } else
                     if (empty) {
+                        cancelled = true;
                         a.onComplete();
                         worker.dispose();
                         return true;
@@ -314,6 +317,7 @@ final Scheduler scheduler;
                         v = q.poll();
                     } catch (Throwable ex) {
                         Exceptions.throwIfFatal(ex);
+                        cancelled = true;
                         upstream.cancel();
                         a.onError(ex);
                         worker.dispose();
@@ -324,6 +328,7 @@ final Scheduler scheduler;
                         return;
                     }
                     if (v == null) {
+                        cancelled = true;
                         a.onComplete();
                         worker.dispose();
                         return;
@@ -339,6 +344,7 @@ final Scheduler scheduler;
                 }
 
                 if (q.isEmpty()) {
+                    cancelled = true;
                     a.onComplete();
                     worker.dispose();
                     return;
@@ -379,6 +385,7 @@ final Scheduler scheduler;
                     } catch (Throwable ex) {
                         Exceptions.throwIfFatal(ex);
 
+                        cancelled = true;
                         upstream.cancel();
                         q.clear();
 
@@ -441,6 +448,7 @@ final Scheduler scheduler;
                 downstream.onNext(null);
 
                 if (d) {
+                    cancelled = true;
                     Throwable e = error;
                     if (e != null) {
                         downstream.onError(e);
@@ -552,6 +560,7 @@ final Scheduler scheduler;
                         v = q.poll();
                     } catch (Throwable ex) {
                         Exceptions.throwIfFatal(ex);
+                        cancelled = true;
                         upstream.cancel();
                         a.onError(ex);
                         worker.dispose();
@@ -562,6 +571,7 @@ final Scheduler scheduler;
                         return;
                     }
                     if (v == null) {
+                        cancelled = true;
                         a.onComplete();
                         worker.dispose();
                         return;
@@ -577,6 +587,7 @@ final Scheduler scheduler;
                 }
 
                 if (q.isEmpty()) {
+                    cancelled = true;
                     a.onComplete();
                     worker.dispose();
                     return;
@@ -617,6 +628,7 @@ final Scheduler scheduler;
                     } catch (Throwable ex) {
                         Exceptions.throwIfFatal(ex);
 
+                        cancelled = true;
                         upstream.cancel();
                         q.clear();
 
@@ -680,6 +692,7 @@ final Scheduler scheduler;
                 downstream.onNext(null);
 
                 if (d) {
+                    cancelled = true;
                     Throwable e = error;
                     if (e != null) {
                         downstream.onError(e);

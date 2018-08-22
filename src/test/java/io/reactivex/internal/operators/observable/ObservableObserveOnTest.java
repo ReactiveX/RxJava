@@ -32,12 +32,15 @@ import io.reactivex.disposables.*;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.*;
 import io.reactivex.internal.fuseable.*;
+import io.reactivex.internal.operators.flowable.FlowableObserveOnTest.DisposeTrackingScheduler;
 import io.reactivex.internal.operators.observable.ObservableObserveOn.ObserveOnObserver;
 import io.reactivex.internal.schedulers.ImmediateThinScheduler;
 import io.reactivex.observers.*;
 import io.reactivex.plugins.RxJavaPlugins;
+import io.reactivex.processors.UnicastProcessor;
 import io.reactivex.schedulers.*;
 import io.reactivex.subjects.*;
+import io.reactivex.subscribers.TestSubscriber;
 
 public class ObservableObserveOnTest {
 
@@ -740,4 +743,77 @@ public class ObservableObserveOnTest {
         })
         .assertValuesOnly(2, 3);
     }
+
+    @Test
+    public void workerNotDisposedPrematurelyNormalInNormalOut() {
+        DisposeTrackingScheduler s = new DisposeTrackingScheduler();
+
+        Observable.concat(
+                Observable.just(1).hide().observeOn(s),
+                Observable.just(2)
+        )
+        .test()
+        .assertResult(1, 2);
+
+        assertEquals(1, s.disposedCount.get());
+    }
+
+    @Test
+    public void workerNotDisposedPrematurelySyncInNormalOut() {
+        DisposeTrackingScheduler s = new DisposeTrackingScheduler();
+
+        Observable.concat(
+                Observable.just(1).observeOn(s),
+                Observable.just(2)
+        )
+        .test()
+        .assertResult(1, 2);
+
+        assertEquals(1, s.disposedCount.get());
+    }
+
+    @Test
+    public void workerNotDisposedPrematurelyAsyncInNormalOut() {
+        DisposeTrackingScheduler s = new DisposeTrackingScheduler();
+
+        UnicastSubject<Integer> up = UnicastSubject.create();
+        up.onNext(1);
+        up.onComplete();
+
+        Observable.concat(
+                up.observeOn(s),
+                Observable.just(2)
+        )
+        .test()
+        .assertResult(1, 2);
+
+        assertEquals(1, s.disposedCount.get());
+    }
+
+    static final class TestObserverFusedCanceling
+            extends TestObserver<Integer> {
+
+        public TestObserverFusedCanceling() {
+            super();
+            initialFusionMode = QueueFuseable.ANY;
+        }
+
+        @Override
+        public void onComplete() {
+            cancel();
+            super.onComplete();
+        }
+    }
+
+    @Test
+    public void workerNotDisposedPrematurelyNormalInAsyncOut() {
+        DisposeTrackingScheduler s = new DisposeTrackingScheduler();
+
+        TestObserver<Integer> to = new TestObserverFusedCanceling();
+
+        Observable.just(1).hide().observeOn(s).subscribe(to);
+
+        assertEquals(1, s.disposedCount.get());
+    }
+
 }

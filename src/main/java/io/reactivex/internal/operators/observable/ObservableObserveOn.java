@@ -62,7 +62,7 @@ public final class ObservableObserveOn<T> extends AbstractObservableWithUpstream
         Throwable error;
         volatile boolean done;
 
-        volatile boolean cancelled;
+        volatile boolean disposed;
 
         int sourceMode;
 
@@ -141,8 +141,8 @@ public final class ObservableObserveOn<T> extends AbstractObservableWithUpstream
 
         @Override
         public void dispose() {
-            if (!cancelled) {
-                cancelled = true;
+            if (!disposed) {
+                disposed = true;
                 upstream.dispose();
                 worker.dispose();
                 if (getAndIncrement() == 0) {
@@ -153,7 +153,7 @@ public final class ObservableObserveOn<T> extends AbstractObservableWithUpstream
 
         @Override
         public boolean isDisposed() {
-            return cancelled;
+            return disposed;
         }
 
         void schedule() {
@@ -181,6 +181,7 @@ public final class ObservableObserveOn<T> extends AbstractObservableWithUpstream
                         v = q.poll();
                     } catch (Throwable ex) {
                         Exceptions.throwIfFatal(ex);
+                        disposed = true;
                         upstream.dispose();
                         q.clear();
                         a.onError(ex);
@@ -211,7 +212,7 @@ public final class ObservableObserveOn<T> extends AbstractObservableWithUpstream
             int missed = 1;
 
             for (;;) {
-                if (cancelled) {
+                if (disposed) {
                     return;
                 }
 
@@ -219,6 +220,7 @@ public final class ObservableObserveOn<T> extends AbstractObservableWithUpstream
                 Throwable ex = error;
 
                 if (!delayError && d && ex != null) {
+                    disposed = true;
                     downstream.onError(error);
                     worker.dispose();
                     return;
@@ -227,6 +229,7 @@ public final class ObservableObserveOn<T> extends AbstractObservableWithUpstream
                 downstream.onNext(null);
 
                 if (d) {
+                    disposed = true;
                     ex = error;
                     if (ex != null) {
                         downstream.onError(ex);
@@ -254,7 +257,7 @@ public final class ObservableObserveOn<T> extends AbstractObservableWithUpstream
         }
 
         boolean checkTerminated(boolean d, boolean empty, Observer<? super T> a) {
-            if (cancelled) {
+            if (disposed) {
                 queue.clear();
                 return true;
             }
@@ -262,6 +265,7 @@ public final class ObservableObserveOn<T> extends AbstractObservableWithUpstream
                 Throwable e = error;
                 if (delayError) {
                     if (empty) {
+                        disposed = true;
                         if (e != null) {
                             a.onError(e);
                         } else {
@@ -272,12 +276,14 @@ public final class ObservableObserveOn<T> extends AbstractObservableWithUpstream
                     }
                 } else {
                     if (e != null) {
+                        disposed = true;
                         queue.clear();
                         a.onError(e);
                         worker.dispose();
                         return true;
                     } else
                     if (empty) {
+                        disposed = true;
                         a.onComplete();
                         worker.dispose();
                         return true;
