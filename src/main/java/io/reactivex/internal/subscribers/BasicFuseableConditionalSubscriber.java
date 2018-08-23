@@ -62,9 +62,7 @@ public abstract class BasicFuseableConditionalSubscriber<T, R> implements Condit
             }
 
             if (beforeDownstream()) {
-
                 downstream.onSubscribe(this);
-
                 afterDownstream();
             }
 
