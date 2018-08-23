@@ -2,6 +2,43 @@
 
 The changelog of version 1.x can be found at https://github.com/ReactiveX/RxJava/blob/1.x/CHANGES.md
 
+### Version 2.2.1 - August 23, 2018 ([Maven](http://search.maven.org/#artifactdetails%7Cio.reactivex.rxjava2%7Crxjava%7C2.2.1%7C))
+
+#### API changes
+
+  - [Pull 6143](https://github.com/ReactiveX/RxJava/pull/6143): Add `concatArrayEagerDelayError` operator (expose feature).
+
+#### Bugfixes
+
+  - [Pull 6145](https://github.com/ReactiveX/RxJava/pull/6145): Fix boundary fusion of `concatMap` and `publish` operator.
+  - [Pull 6158](https://github.com/ReactiveX/RxJava/pull/6158): Make `Flowable.fromCallable` consistent with the other `fromCallable`s.
+  - [Pull 6165](https://github.com/ReactiveX/RxJava/pull/6165): Handle undeliverable error in `Completable.fromCallable` via `RxJavaPlugins`.
+  - [Pull 6167](https://github.com/ReactiveX/RxJava/pull/6167): Make `observeOn` not let `worker.dispose()` get called prematurely.
+
+#### Performance improvements
+
+  - [Pull 6123](https://github.com/ReactiveX/RxJava/pull/6123): Improve `Completable.onErrorResumeNext` internals.
+  - [Pull 6121](https://github.com/ReactiveX/RxJava/pull/6121): `Flowable.onErrorResumeNext` improvements.
+
+#### Documentation changes
+
+##### JavaDocs
+
+  - [Pull 6095](https://github.com/ReactiveX/RxJava/pull/6095): Add marbles for `Single.timer`, `Single.defer` and `Single.toXXX` operators.
+  - [Pull 6137](https://github.com/ReactiveX/RxJava/pull/6137): Add marbles for `Single.concat` operator.
+  - [Pull 6141](https://github.com/ReactiveX/RxJava/pull/6141): Add marble diagrams for various `Single` operators.
+  - [Pull 6152](https://github.com/ReactiveX/RxJava/pull/6152): Clarify `TestObserver.assertValueSet` in docs and via tests.
+  - [Pull 6155](https://github.com/ReactiveX/RxJava/pull/6155): Fix marble of `Maybe.flatMap` events to `MaybeSource`.
+
+##### Wiki changes
+
+  - [Pull 6128](https://github.com/ReactiveX/RxJava/pull/6128): Remove `fromEmitter()` in wiki.
+  - [Pull 6133](https://github.com/ReactiveX/RxJava/pull/6133): Update `_Sidebar.md` with new order of topics.
+  - [Pull 6135](https://github.com/ReactiveX/RxJava/pull/6135): Initial clean up for Combining Observables docs.
+  - [Pull 6131](https://github.com/ReactiveX/RxJava/pull/6131): Expand `Creating-Observables.md` wiki.
+  - [Pull 6134](https://github.com/ReactiveX/RxJava/pull/6134): Update RxJava Android Module documentation. 
+  - [Pull 6140](https://github.com/ReactiveX/RxJava/pull/6140): Update Mathematical and Aggregate Operators docs.
+  
 ### Version 2.2.0 - July 31, 2018 ([Maven](http://search.maven.org/#artifactdetails%7Cio.reactivex.rxjava2%7Crxjava%7C2.2.0%7C))
 
 #### Summary
