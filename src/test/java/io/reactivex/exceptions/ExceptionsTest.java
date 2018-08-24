@@ -53,7 +53,8 @@ public class ExceptionsTest {
 
         });
 
-        TestHelper.assertError(errors, 0, RuntimeException.class, "hello");
+        TestHelper.assertError(errors, 0, RuntimeException.class);
+        assertTrue(errors.get(0).toString(), errors.get(0).getMessage().contains("hello"));
         RxJavaPlugins.reset();
     }
 
