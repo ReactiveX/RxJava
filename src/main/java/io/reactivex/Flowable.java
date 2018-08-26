@@ -14473,7 +14473,7 @@ public abstract class Flowable<T> implements Publisher<T> {
         try {
             Subscriber<? super T> z = RxJavaPlugins.onSubscribe(this, s);
 
-            ObjectHelper.requireNonNull(z, "Plugin returned null Subscriber");
+            ObjectHelper.requireNonNull(z, "The RxJavaPlugins.onSubscribe hook returned a null FlowableSubscriber. Please check the handler provided to RxJavaPlugins.setOnFlowableSubscribe for invalid null returns. Further reading: https://github.com/ReactiveX/RxJava/wiki/Plugins");
 
             subscribeActual(z);
         } catch (NullPointerException e) { // NOPMD
