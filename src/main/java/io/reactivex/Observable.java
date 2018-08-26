@@ -12079,7 +12079,7 @@ public abstract class Observable<T> implements ObservableSource<T> {
         try {
             observer = RxJavaPlugins.onSubscribe(this, observer);
 
-            ObjectHelper.requireNonNull(observer, "Plugin returned null Observer");
+            ObjectHelper.requireNonNull(observer, "The RxJavaPlugins.onSubscribe hook returned a null Observer. Please change the handler provided to RxJavaPlugins.setOnObservableSubscribe for invalid null returns. Further reading: https://github.com/ReactiveX/RxJava/wiki/Plugins");
 
             subscribeActual(observer);
         } catch (NullPointerException e) { // NOPMD

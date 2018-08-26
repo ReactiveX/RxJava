@@ -4150,7 +4150,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
 
         observer = RxJavaPlugins.onSubscribe(this, observer);
 
-        ObjectHelper.requireNonNull(observer, "observer returned by the RxJavaPlugins hook is null");
+        ObjectHelper.requireNonNull(observer, "The RxJavaPlugins.onSubscribe hook returned a null MaybeObserver. Please check the handler provided to RxJavaPlugins.setOnMaybeSubscribe for invalid null returns. Further reading: https://github.com/ReactiveX/RxJava/wiki/Plugins");
 
         try {
             subscribeActual(observer);
