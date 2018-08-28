@@ -138,7 +138,5 @@ implements HasUpstreamPublisher<T>, FuseToFlowable<T> {
                 downstream.onComplete();
             }
         }
-
-
     }
 }

@@ -438,7 +438,6 @@ public class UnicastSubjectTest extends SubjectTest<Integer> {
     public void drainFusedFailFast() {
         UnicastSubject<Integer> us = UnicastSubject.create(false);
 
-
         TestObserver<Integer> to = us.to(ObserverFusion.<Integer>test(QueueFuseable.ANY, false));
 
         us.done = true;
@@ -450,7 +449,6 @@ public class UnicastSubjectTest extends SubjectTest<Integer> {
     @Test
     public void drainFusedFailFastEmpty() {
         UnicastSubject<Integer> us = UnicastSubject.create(false);
-
 
         TestObserver<Integer> to = us.to(ObserverFusion.<Integer>test(QueueFuseable.ANY, false));
 

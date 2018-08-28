@@ -305,8 +305,6 @@ public class BehaviorSubjectTest extends SubjectTest<Integer> {
         inOrder.verify(o).onNext(1);
         inOrder.verify(o).onComplete();
         inOrder.verifyNoMoreInteractions();
-
-
     }
 
     @Test

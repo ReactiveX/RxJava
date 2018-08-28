@@ -26,7 +26,6 @@ public abstract class BasicIntQueueDisposable<T>
 extends AtomicInteger
 implements QueueDisposable<T> {
 
-
     private static final long serialVersionUID = -1001730202384742097L;
 
     @Override

@@ -19,7 +19,6 @@ import io.reactivex.internal.disposables.DisposableHelper;
 
 public final class ObservableMaterialize<T> extends AbstractObservableWithUpstream<T, Notification<T>> {
 
-
     public ObservableMaterialize(ObservableSource<T> source) {
         super(source);
     }

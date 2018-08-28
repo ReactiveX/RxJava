@@ -152,7 +152,6 @@ public final class FlowableTimeoutTimed<T> extends AbstractFlowableWithUpstream<
         }
     }
 
-
     static final class TimeoutTask implements Runnable {
 
         final TimeoutSupport parent;

@@ -211,7 +211,6 @@ public class ObservableOnExceptionResumeNextViaObservableTest {
         to.assertNoErrors();
     }
 
-
     private static class TestObservable implements ObservableSource<String> {
 
         final String[] values;

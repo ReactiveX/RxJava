@@ -39,7 +39,6 @@ public final class MaybeZipArray<T, R> extends Maybe<R> {
         MaybeSource<? extends T>[] sources = this.sources;
         int n = sources.length;
 
-
         if (n == 1) {
             sources[0].subscribe(new MaybeMap.MapMaybeObserver<T, R>(observer, new SingletonArrayFunc()));
             return;
@@ -65,7 +64,6 @@ public final class MaybeZipArray<T, R> extends Maybe<R> {
     }
 
     static final class ZipCoordinator<T, R> extends AtomicInteger implements Disposable {
-
 
         private static final long serialVersionUID = -5556924161382950569L;
 

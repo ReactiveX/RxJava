@@ -338,7 +338,6 @@ public class PublishProcessorTest extends FlowableProcessorTest<Object> {
         }
     }
 
-
     // FIXME RS subscribers are not allowed to throw
 //    @Test
 //    public void testOnErrorThrowsDoesntPreventDelivery() {

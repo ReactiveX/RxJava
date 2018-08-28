@@ -104,7 +104,6 @@ public class JavadocForAnnotations {
         }
     }
 
-
     static final void scanForBadMethod(StringBuilder sourceCode, String annotation, String inDoc,
             StringBuilder e, String baseClassName) {
         int index = 0;

@@ -114,5 +114,4 @@ public enum EmptyDisposable implements QueueDisposable<Object> {
         return mode & ASYNC;
     }
 
-
 }

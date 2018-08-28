@@ -221,7 +221,6 @@ public class ObservableCacheTest {
                 .concatWith(Observable.<Integer>error(new TestException()))
                 .cache();
 
-
         TestObserver<Integer> to = new TestObserver<Integer>();
         source.subscribe(to);
 

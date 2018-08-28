@@ -204,7 +204,6 @@ public class ObservableWindowWithSizeTest {
         return list;
     }
 
-
     public static Observable<Integer> hotStream() {
         return Observable.unsafeCreate(new ObservableSource<Integer>() {
             @Override

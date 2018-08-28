@@ -233,7 +233,6 @@ public final class ObservableWindowBoundarySelector<T, B, V> extends AbstractObs
                             continue;
                         }
 
-
                         w = UnicastSubject.create(bufferSize);
 
                         ws.add(w);

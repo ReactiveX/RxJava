@@ -29,7 +29,6 @@ import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.*;
 
-
 public class FlowableSwitchIfEmptyTest {
 
     @Test
@@ -121,7 +120,6 @@ public class FlowableSwitchIfEmptyTest {
                 };
             }
         }).subscribe();
-
 
         assertTrue(bs.isCancelled());
         // FIXME no longer assertable

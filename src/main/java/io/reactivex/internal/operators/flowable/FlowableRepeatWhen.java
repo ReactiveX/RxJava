@@ -178,7 +178,6 @@ public final class FlowableRepeatWhen<T> extends AbstractFlowableWithUpstream<T,
 
     static final class RepeatWhenSubscriber<T> extends WhenSourceSubscriber<T, Object> {
 
-
         private static final long serialVersionUID = -2680129890138081029L;
 
         RepeatWhenSubscriber(Subscriber<? super T> actual, FlowableProcessor<Object> processor,

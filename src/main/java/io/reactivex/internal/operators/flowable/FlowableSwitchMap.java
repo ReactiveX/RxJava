@@ -57,7 +57,6 @@ public final class FlowableSwitchMap<T, R> extends AbstractFlowableWithUpstream<
         final int bufferSize;
         final boolean delayErrors;
 
-
         volatile boolean done;
         final AtomicThrowable error;
 

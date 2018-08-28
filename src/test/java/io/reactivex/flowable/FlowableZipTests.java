@@ -129,7 +129,6 @@ public class FlowableZipTests {
         }
     };
 
-
     @Test
     public void zipWithDelayError() {
         Flowable.just(1)

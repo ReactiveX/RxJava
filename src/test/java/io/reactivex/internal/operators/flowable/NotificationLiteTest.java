@@ -23,7 +23,6 @@ import io.reactivex.exceptions.TestException;
 import io.reactivex.internal.subscriptions.BooleanSubscription;
 import io.reactivex.internal.util.NotificationLite;
 
-
 public class NotificationLiteTest {
 
     @Test

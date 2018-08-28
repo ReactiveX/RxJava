@@ -506,7 +506,6 @@ public final class UnicastProcessor<T> extends FlowableProcessor<T> {
 
     final class UnicastQueueSubscription extends BasicIntQueueSubscription<T> {
 
-
         private static final long serialVersionUID = -4896760517184205454L;
 
         @Nullable

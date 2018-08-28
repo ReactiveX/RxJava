@@ -228,7 +228,6 @@ public abstract class ParallelFlowable<T> {
         return RxJavaPlugins.onAssembly(new ParallelFilterTry<T>(this, predicate, errorHandler));
     }
 
-
     /**
      * Filters the source values on each 'rail' and
      * handles errors based on the returned value by the handler function.
@@ -535,7 +534,6 @@ public abstract class ParallelFlowable<T> {
                 Functions.EMPTY_ACTION
                 ));
     }
-
 
     /**
      * Call the specified consumer with the current element passing through any 'rail' and

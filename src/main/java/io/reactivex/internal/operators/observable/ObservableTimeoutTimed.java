@@ -147,7 +147,6 @@ public final class ObservableTimeoutTimed<T> extends AbstractObservableWithUpstr
         }
     }
 
-
     static final class TimeoutTask implements Runnable {
 
         final TimeoutSupport parent;

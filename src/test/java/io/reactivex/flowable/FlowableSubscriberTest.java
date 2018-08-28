@@ -231,9 +231,8 @@ public class FlowableSubscriberTest {
                     public void onNext(String t) {
 
                     }
-
-
                 };
+
                 return as;
             }
         };

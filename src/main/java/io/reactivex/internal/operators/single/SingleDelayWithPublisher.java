@@ -44,7 +44,6 @@ public final class SingleDelayWithPublisher<T, U> extends Single<T> {
     extends AtomicReference<Disposable>
     implements FlowableSubscriber<U>, Disposable {
 
-
         private static final long serialVersionUID = -8565274649390031272L;
 
         final SingleObserver<? super T> downstream;

@@ -298,7 +298,6 @@ public final class BehaviorSubject<T> extends Subject<T> {
         return subscribers.get().length != 0;
     }
 
-
     /* test support*/ int subscriberCount() {
         return subscribers.get().length;
     }

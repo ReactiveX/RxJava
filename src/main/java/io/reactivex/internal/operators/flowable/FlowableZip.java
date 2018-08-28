@@ -83,7 +83,6 @@ public final class FlowableZip<T, R> extends Flowable<R> {
     extends AtomicInteger
     implements Subscription {
 
-
         private static final long serialVersionUID = -2434867452883857743L;
 
         final Subscriber<? super R> downstream;
@@ -319,7 +318,6 @@ public final class FlowableZip<T, R> extends Flowable<R> {
             }
         }
     }
-
 
     static final class ZipSubscriber<T, R> extends AtomicReference<Subscription> implements FlowableSubscriber<T>, Subscription {
 

@@ -485,8 +485,6 @@ public class TestObserverTest {
         to.assertValueCount(0);
 
         to.assertNoValues();
-
-
     }
 
     @Test
@@ -897,7 +895,6 @@ public class TestObserverTest {
         } catch (AssertionError ex) {
             // expected
         }
-
 
         to = TestObserver.create();
 

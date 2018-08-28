@@ -101,8 +101,5 @@ public final class MaybeFilter<T> extends AbstractMaybeWithUpstream<T, T> {
         public void onComplete() {
             downstream.onComplete();
         }
-
-
     }
-
 }

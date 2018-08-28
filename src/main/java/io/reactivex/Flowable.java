@@ -3474,7 +3474,6 @@ public abstract class Flowable<T> implements Publisher<T> {
         return fromIterable(sources).flatMap((Function)Functions.identity(), true);
     }
 
-
     /**
      * Flattens an Iterable of Publishers into one Publisher, in a way that allows a Subscriber to receive all
      * successfully emitted items from each of the source Publishers without being interrupted by an error
@@ -3786,7 +3785,6 @@ public abstract class Flowable<T> implements Publisher<T> {
         ObjectHelper.requireNonNull(source3, "source3 is null");
         return fromArray(source1, source2, source3).flatMap((Function)Functions.identity(), true, 3);
     }
-
 
     /**
      * Flattens four Publishers into one Publisher, in a way that allows a Subscriber to receive all
@@ -4628,7 +4626,6 @@ public abstract class Flowable<T> implements Publisher<T> {
         ObjectHelper.requireNonNull(source2, "source2 is null");
         return zipArray(Functions.toFunction(zipper), delayError, bufferSize(), source1, source2);
     }
-
 
     /**
      * Returns a Flowable that emits the results of a specified combiner function applied to combinations of
@@ -7356,7 +7353,6 @@ public abstract class Flowable<T> implements Publisher<T> {
         }
         return RxJavaPlugins.onAssembly(new FlowableConcatMap<T, R>(this, mapper, prefetch, tillTheEnd ? ErrorMode.END : ErrorMode.BOUNDARY));
     }
-
 
     /**
      * Maps a sequence of values into Publishers and concatenates these Publishers eagerly into a single
@@ -10748,7 +10744,6 @@ public abstract class Flowable<T> implements Publisher<T> {
         return RxJavaPlugins.onAssembly(new FlowableJoin<T, TRight, TLeftEnd, TRightEnd, R>(
                 this, other, leftEnd, rightEnd, resultSelector));
     }
-
 
     /**
      * Returns a Maybe that emits the last item emitted by this Flowable or completes if
@@ -14702,7 +14697,6 @@ public abstract class Flowable<T> implements Publisher<T> {
     public final <R> Flowable<R> switchMap(Function<? super T, ? extends Publisher<? extends R>> mapper, int bufferSize) {
         return switchMap0(mapper, bufferSize, false);
     }
-
 
     /**
      * Maps the upstream values into {@link CompletableSource}s, subscribes to the newer one while

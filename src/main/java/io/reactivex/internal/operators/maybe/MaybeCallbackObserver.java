@@ -33,7 +33,6 @@ public final class MaybeCallbackObserver<T>
 extends AtomicReference<Disposable>
 implements MaybeObserver<T>, Disposable, LambdaConsumerIntrospection {
 
-
     private static final long serialVersionUID = -6076952298809384986L;
 
     final Consumer<? super T> onSuccess;

@@ -99,7 +99,6 @@ public final class MaybeUsing<T, D> extends Maybe<T> {
     extends AtomicReference<Object>
     implements MaybeObserver<T>, Disposable {
 
-
         private static final long serialVersionUID = -674404550052917487L;
 
         final MaybeObserver<? super T> downstream;

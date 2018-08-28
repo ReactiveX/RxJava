@@ -707,7 +707,6 @@ public abstract class AbstractSchedulerTests {
             return;
         }
 
-
         final CountDownLatch cdl = new CountDownLatch(1);
         Runnable countDownRunnable = new Runnable() {
             @Override

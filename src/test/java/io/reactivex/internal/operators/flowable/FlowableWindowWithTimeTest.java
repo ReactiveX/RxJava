@@ -32,7 +32,6 @@ import io.reactivex.processors.*;
 import io.reactivex.schedulers.*;
 import io.reactivex.subscribers.*;
 
-
 public class FlowableWindowWithTimeTest {
 
     private TestScheduler scheduler;

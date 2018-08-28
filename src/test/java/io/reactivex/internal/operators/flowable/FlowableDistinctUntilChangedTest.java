@@ -469,7 +469,6 @@ public class FlowableDistinctUntilChangedTest {
         })
         .subscribe(ts);
 
-
         TestHelper.emit(up, 1, 2, 1, 3, 3, 4, 3, 5, 5);
 
         SubscriberFusion.assertFusion(ts, QueueFuseable.ASYNC)

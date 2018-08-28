@@ -305,8 +305,6 @@ public class BehaviorProcessorTest extends FlowableProcessorTest<Object> {
         inOrder.verify(subscriber).onNext(1);
         inOrder.verify(subscriber).onComplete();
         inOrder.verifyNoMoreInteractions();
-
-
     }
 
     @Test

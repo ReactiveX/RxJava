@@ -167,7 +167,6 @@ implements FlowableSubscriber<T>, Subscription, Disposable {
             }
         }
 
-
         downstream.onSubscribe(s);
 
         long mr = missedRequested.getAndSet(0L);

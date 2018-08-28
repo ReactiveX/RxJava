@@ -74,7 +74,6 @@ public final class ObservableJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> extends
     static final class JoinDisposable<TLeft, TRight, TLeftEnd, TRightEnd, R>
     extends AtomicInteger implements Disposable, JoinSupport {
 
-
         private static final long serialVersionUID = -6071216598687999801L;
 
         final Observer<? super R> downstream;

@@ -326,7 +326,6 @@ public class ParamValidationCheckerTest {
         addOverride(new ParamOverride(Single.class, 0, ParamMode.ANY, "delay", Long.TYPE, TimeUnit.class, Scheduler.class));
         addOverride(new ParamOverride(Single.class, 0, ParamMode.ANY, "delay", Long.TYPE, TimeUnit.class, Scheduler.class, Boolean.TYPE));
 
-
         // zero repeat is allowed
         addOverride(new ParamOverride(Single.class, 0, ParamMode.NON_NEGATIVE, "repeat", Long.TYPE));
 

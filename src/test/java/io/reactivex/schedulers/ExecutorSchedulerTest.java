@@ -59,7 +59,6 @@ public class ExecutorSchedulerTest extends AbstractSchedulerConcurrencyTests {
 
         Thread.sleep(1000);
 
-
         MemoryMXBean memoryMXBean = ManagementFactory.getMemoryMXBean();
         MemoryUsage memHeap = memoryMXBean.getHeapMemoryUsage();
         long initial = memHeap.getUsed();

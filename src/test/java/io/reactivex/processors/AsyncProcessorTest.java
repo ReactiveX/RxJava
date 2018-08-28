@@ -296,7 +296,6 @@ public class AsyncProcessorTest extends FlowableProcessorTest<Object> {
 //        assertEquals(1, ts.getOnErrorEvents().size());
 //    }
 
-
     // FIXME subscriber methods are not allowed to throw
 //    /**
 //     * This one has multiple failures so should get a CompositeException

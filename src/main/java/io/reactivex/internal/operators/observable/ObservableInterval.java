@@ -56,7 +56,6 @@ public final class ObservableInterval extends Observable<Long> {
     extends AtomicReference<Disposable>
     implements Disposable, Runnable {
 
-
         private static final long serialVersionUID = 346773832286157679L;
 
         final Observer<? super Long> downstream;

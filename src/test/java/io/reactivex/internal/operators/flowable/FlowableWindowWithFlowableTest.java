@@ -75,7 +75,6 @@ public class FlowableWindowWithFlowableTest {
         }
         source.onComplete();
 
-
         verify(subscriber, never()).onError(any(Throwable.class));
 
         assertEquals(n / 3, values.size());
@@ -346,7 +345,6 @@ public class FlowableWindowWithFlowableTest {
 
         boundary.onComplete();
 
-
         assertFalse(source.hasSubscribers());
         assertFalse(boundary.hasSubscribers());
 
@@ -373,7 +371,6 @@ public class FlowableWindowWithFlowableTest {
         assertTrue(boundary.hasSubscribers());
 
         ts.dispose();
-
 
         assertTrue(source.hasSubscribers());
 

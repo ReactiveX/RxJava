@@ -28,7 +28,6 @@ import io.reactivex.plugins.RxJavaPlugins;
 public final class CancellableDisposable extends AtomicReference<Cancellable>
 implements Disposable {
 
-
     private static final long serialVersionUID = 5718521705281392066L;
 
     public CancellableDisposable(Cancellable cancellable) {

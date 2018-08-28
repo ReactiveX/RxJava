@@ -346,7 +346,6 @@ public final class BehaviorProcessor<T> extends FlowableProcessor<T> {
         return subscribers.get().length != 0;
     }
 
-
     /* test support*/ int subscriberCount() {
         return subscribers.get().length;
     }
@@ -446,7 +445,6 @@ public final class BehaviorProcessor<T> extends FlowableProcessor<T> {
         Object o = value.get();
         return o != null && !NotificationLite.isComplete(o) && !NotificationLite.isError(o);
     }
-
 
     boolean add(BehaviorSubscription<T> rs) {
         for (;;) {

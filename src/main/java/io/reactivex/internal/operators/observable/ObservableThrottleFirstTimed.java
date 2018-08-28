@@ -87,8 +87,6 @@ public final class ObservableThrottleFirstTimed<T> extends AbstractObservableWit
                 }
                 DisposableHelper.replace(this, worker.schedule(this, timeout, unit));
             }
-
-
         }
 
         @Override

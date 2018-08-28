@@ -86,7 +86,6 @@ public final class ParallelReduce<T, R> extends ParallelFlowable<R> {
 
     static final class ParallelReduceSubscriber<T, R> extends DeferredScalarSubscriber<T, R> {
 
-
         private static final long serialVersionUID = 8200530050639449080L;
 
         final BiFunction<R, ? super T, R> reducer;

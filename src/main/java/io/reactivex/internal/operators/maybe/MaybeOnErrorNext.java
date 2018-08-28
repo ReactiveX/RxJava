@@ -50,7 +50,6 @@ public final class MaybeOnErrorNext<T> extends AbstractMaybeWithUpstream<T, T> {
     extends AtomicReference<Disposable>
     implements MaybeObserver<T>, Disposable {
 
-
         private static final long serialVersionUID = 2026620218879969836L;
 
         final MaybeObserver<? super T> downstream;

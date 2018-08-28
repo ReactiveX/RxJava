@@ -107,8 +107,6 @@ public final class FlowableThrottleFirstTimed<T> extends AbstractFlowableWithUps
 
                 timer.replace(worker.schedule(this, timeout, unit));
             }
-
-
         }
 
         @Override

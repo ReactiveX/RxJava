@@ -32,7 +32,6 @@ public final class InnerQueuedSubscriber<T>
 extends AtomicReference<Subscription>
 implements FlowableSubscriber<T>, Subscription {
 
-
     private static final long serialVersionUID = 22876611072430776L;
 
     final InnerQueuedSubscriberSupport<T> parent;

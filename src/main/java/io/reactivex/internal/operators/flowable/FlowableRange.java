@@ -100,14 +100,12 @@ public final class FlowableRange extends Flowable<Integer> {
             cancelled = true;
         }
 
-
         abstract void fastPath();
 
         abstract void slowPath(long r);
     }
 
     static final class RangeSubscription extends BaseRangeSubscription {
-
 
         private static final long serialVersionUID = 2587302975077663557L;
 
@@ -176,7 +174,6 @@ public final class FlowableRange extends Flowable<Integer> {
     }
 
     static final class RangeConditionalSubscription extends BaseRangeSubscription {
-
 
         private static final long serialVersionUID = 2587302975077663557L;
 

@@ -55,7 +55,6 @@ public final class FlowableWindow<T> extends AbstractFlowableWithUpstream<T, Flo
     extends AtomicInteger
     implements FlowableSubscriber<T>, Subscription, Runnable {
 
-
         private static final long serialVersionUID = -2365647875069161133L;
 
         final Subscriber<? super Flowable<T>> downstream;
@@ -164,7 +163,6 @@ public final class FlowableWindow<T> extends AbstractFlowableWithUpstream<T, Flo
     extends AtomicInteger
     implements FlowableSubscriber<T>, Subscription, Runnable {
 
-
         private static final long serialVersionUID = -8792836352386833856L;
 
         final Subscriber<? super Flowable<T>> downstream;
@@ -210,7 +208,6 @@ public final class FlowableWindow<T> extends AbstractFlowableWithUpstream<T, Flo
             UnicastProcessor<T> w = window;
             if (i == 0) {
                 getAndIncrement();
-
 
                 w = UnicastProcessor.<T>create(bufferSize, this);
                 window = w;
@@ -291,7 +288,6 @@ public final class FlowableWindow<T> extends AbstractFlowableWithUpstream<T, Flo
     static final class WindowOverlapSubscriber<T>
     extends AtomicInteger
     implements FlowableSubscriber<T>, Subscription, Runnable {
-
 
         private static final long serialVersionUID = 2428527070996323976L;
 

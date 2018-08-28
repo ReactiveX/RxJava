@@ -44,11 +44,9 @@ public final class FlowableToList<T, U extends Collection<? super T>> extends Ab
         source.subscribe(new ToListSubscriber<T, U>(s, coll));
     }
 
-
     static final class ToListSubscriber<T, U extends Collection<? super T>>
     extends DeferredScalarSubscription<U>
     implements FlowableSubscriber<T>, Subscription {
-
 
         private static final long serialVersionUID = -8134157938864266736L;
         Subscription upstream;

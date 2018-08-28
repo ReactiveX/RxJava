@@ -38,7 +38,6 @@ public final class CompletableObserveOn extends Completable {
     extends AtomicReference<Disposable>
     implements CompletableObserver, Disposable, Runnable {
 
-
         private static final long serialVersionUID = 8571289934935992137L;
 
         final CompletableObserver downstream;

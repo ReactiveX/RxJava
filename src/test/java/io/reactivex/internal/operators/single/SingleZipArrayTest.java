@@ -36,7 +36,6 @@ public class SingleZipArrayTest {
         }
     };
 
-
     final Function3<Object, Object, Object, Object> addString3 = new Function3<Object, Object, Object, Object>() {
         @Override
         public Object apply(Object a, Object b, Object c) throws Exception {

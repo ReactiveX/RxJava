@@ -89,7 +89,6 @@ public final class FlowableGroupJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> exte
     static final class GroupJoinSubscription<TLeft, TRight, TLeftEnd, TRightEnd, R>
     extends AtomicInteger implements Subscription, JoinSupport {
 
-
         private static final long serialVersionUID = -6071216598687999801L;
 
         final Subscriber<? super R> downstream;

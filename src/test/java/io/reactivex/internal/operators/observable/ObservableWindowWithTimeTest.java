@@ -32,7 +32,6 @@ import io.reactivex.observers.*;
 import io.reactivex.schedulers.*;
 import io.reactivex.subjects.*;
 
-
 public class ObservableWindowWithTimeTest {
 
     private TestScheduler scheduler;

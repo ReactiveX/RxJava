@@ -57,7 +57,6 @@ public final class MaybeTimeoutPublisher<T, U> extends AbstractMaybeWithUpstream
     extends AtomicReference<Disposable>
     implements MaybeObserver<T>, Disposable {
 
-
         private static final long serialVersionUID = -5955289211445418871L;
 
         final MaybeObserver<? super T> downstream;
@@ -144,7 +143,6 @@ public final class MaybeTimeoutPublisher<T, U> extends AbstractMaybeWithUpstream
     extends AtomicReference<Subscription>
     implements FlowableSubscriber<Object> {
 
-
         private static final long serialVersionUID = 8663801314800248617L;
 
         final TimeoutMainMaybeObserver<T, U> parent;
@@ -179,7 +177,6 @@ public final class MaybeTimeoutPublisher<T, U> extends AbstractMaybeWithUpstream
     extends AtomicReference<Disposable>
     implements MaybeObserver<T> {
 
-
         private static final long serialVersionUID = 8663801314800248617L;
 
         final MaybeObserver<? super T> downstream;
@@ -208,6 +205,4 @@ public final class MaybeTimeoutPublisher<T, U> extends AbstractMaybeWithUpstream
             downstream.onComplete();
         }
     }
-
-
 }

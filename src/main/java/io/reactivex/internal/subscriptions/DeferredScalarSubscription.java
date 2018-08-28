@@ -34,7 +34,6 @@ import org.reactivestreams.Subscriber;
  */
 public class DeferredScalarSubscription<T> extends BasicIntQueueSubscription<T> {
 
-
     private static final long serialVersionUID = -2151279923272604993L;
 
     /** The Subscriber to emit the value to. */

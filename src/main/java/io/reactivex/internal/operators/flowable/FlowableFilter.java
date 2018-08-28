@@ -102,8 +102,6 @@ public final class FlowableFilter<T> extends AbstractFlowableWithUpstream<T, T> 
                 }
             }
         }
-
-
     }
 
     static final class FilterConditionalSubscriber<T> extends BasicFuseableConditionalSubscriber<T, T> {

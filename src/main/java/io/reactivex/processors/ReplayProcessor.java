@@ -1049,7 +1049,6 @@ public final class ReplayProcessor<T> extends FlowableProcessor<T> {
         Throwable error;
         volatile boolean done;
 
-
         SizeAndTimeBoundReplayBuffer(int maxSize, long maxAge, TimeUnit unit, Scheduler scheduler) {
             this.maxSize = ObjectHelper.verifyPositive(maxSize, "maxSize");
             this.maxAge = ObjectHelper.verifyPositive(maxAge, "maxAge");

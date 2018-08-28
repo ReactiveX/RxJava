@@ -175,7 +175,6 @@ public final class FlowableDebounceTimed<T> extends AbstractFlowableWithUpstream
 
         final AtomicBoolean once = new AtomicBoolean();
 
-
         DebounceEmitter(T value, long idx, DebounceTimedSubscriber<T> parent) {
             this.value = value;
             this.idx = idx;

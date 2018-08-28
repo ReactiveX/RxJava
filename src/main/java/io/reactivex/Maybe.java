@@ -839,7 +839,6 @@ public abstract class Maybe<T> implements MaybeSource<T> {
         return RxJavaPlugins.onAssembly(new MaybeFromRunnable<T>(run));
     }
 
-
     /**
      * Returns a {@code Maybe} that emits a specified item.
      * <p>
@@ -1238,7 +1237,6 @@ public abstract class Maybe<T> implements MaybeSource<T> {
         return Flowable.fromArray(sources).flatMap((Function)MaybeToPublisher.instance(), true, sources.length);
     }
 
-
     /**
      * Flattens an Iterable of MaybeSources into one Flowable, in a way that allows a Subscriber to receive all
      * successfully emitted items from each of the source MaybeSources without being interrupted by an error
@@ -1274,7 +1272,6 @@ public abstract class Maybe<T> implements MaybeSource<T> {
         return Flowable.fromIterable(sources).flatMap((Function)MaybeToPublisher.instance(), true);
     }
 
-
     /**
      * Flattens a Publisher that emits MaybeSources into one Publisher, in a way that allows a Subscriber to
      * receive all successfully emitted items from all of the source MaybeSources without being interrupted by
@@ -1309,7 +1306,6 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     public static <T> Flowable<T> mergeDelayError(Publisher<? extends MaybeSource<? extends T>> sources) {
         return mergeDelayError(sources, Integer.MAX_VALUE);
     }
-
 
     /**
      * Flattens a Publisher that emits MaybeSources into one Publisher, in a way that allows a Subscriber to
@@ -1432,7 +1428,6 @@ public abstract class Maybe<T> implements MaybeSource<T> {
         return mergeArrayDelayError(source1, source2, source3);
     }
 
-
     /**
      * Flattens four MaybeSources into one Flowable, in a way that allows a Subscriber to receive all
      * successfully emitted items from all of the source MaybeSources without being interrupted by an error
@@ -1502,7 +1497,6 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     public static <T> Maybe<T> never() {
         return RxJavaPlugins.onAssembly((Maybe<T>)MaybeNever.INSTANCE);
     }
-
 
     /**
      * Returns a Single that emits a Boolean value that indicates whether two MaybeSource sequences are the
@@ -2388,7 +2382,6 @@ public abstract class Maybe<T> implements MaybeSource<T> {
         return RxJavaPlugins.onAssembly(new MaybeFlatten<T, R>(this, mapper));
     }
 
-
     /**
      * Returns a Flowable that emits the items emitted from the current MaybeSource, then the next, one after
      * the other, without interleaving them.
@@ -2485,7 +2478,6 @@ public abstract class Maybe<T> implements MaybeSource<T> {
         ObjectHelper.requireNonNull(defaultItem, "item is null");
         return switchIfEmpty(just(defaultItem));
     }
-
 
     /**
      * Returns a Maybe that signals the events emitted by the source Maybe shifted forward in time by a
@@ -3837,7 +3829,6 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     public final Flowable<T> repeatWhen(final Function<? super Flowable<Object>, ? extends Publisher<?>> handler) {
         return toFlowable().repeatWhen(handler);
     }
-
 
     /**
      * Returns a Maybe that mirrors the source Maybe, resubscribing to it if it calls {@code onError}

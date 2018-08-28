@@ -176,7 +176,6 @@ public final class SafeSubscriber<T> implements FlowableSubscriber<T>, Subscript
             return;
         }
 
-
         try {
             downstream.onComplete();
         } catch (Throwable e) {

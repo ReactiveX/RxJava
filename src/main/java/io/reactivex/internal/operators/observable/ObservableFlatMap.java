@@ -232,7 +232,6 @@ public final class ObservableFlatMap<T, U> extends AbstractObservableWithUpstrea
                 return true;
             }
 
-
             if (get() == 0 && compareAndSet(0, 1)) {
                 downstream.onNext(u);
                 if (decrementAndGet() == 0) {

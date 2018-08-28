@@ -94,7 +94,6 @@ public class XMapYPerf {
 
     Observable<Integer> obsFlatMapIterableAsObs0;
 
-
     @Setup
     public void setup() {
         Integer[] values = new Integer[times];
@@ -157,7 +156,6 @@ public class XMapYPerf {
                 return Collections.<Integer>emptyList();
             }
         });
-
 
         flowFlatMapSingle1 = fsource.flatMapSingle(new Function<Integer, SingleSource<Integer>>() {
             @Override
@@ -231,7 +229,6 @@ public class XMapYPerf {
             }
         });
 
-
         // -------------------------------------------------------------------
 
         Observable<Integer> osource = Observable.fromArray(values);
@@ -270,7 +267,6 @@ public class XMapYPerf {
                 return Maybe.empty();
             }
         });
-
 
         obsFlatMapCompletable0 = osource.flatMapCompletable(new Function<Integer, CompletableSource>() {
             @Override

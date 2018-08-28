@@ -26,7 +26,6 @@ import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.Function;
 import io.reactivex.subscribers.TestSubscriber;
 
-
 public class FlowableDetachTest {
 
     Object o;

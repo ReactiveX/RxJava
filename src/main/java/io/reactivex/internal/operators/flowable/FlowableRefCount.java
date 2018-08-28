@@ -114,7 +114,6 @@ public final class FlowableRefCount<T> extends Flowable<T> {
         sd.replace(scheduler.scheduleDirect(rc, timeout, unit));
     }
 
-
     void terminated(RefConnection rc) {
         synchronized (this) {
             if (connection != null) {

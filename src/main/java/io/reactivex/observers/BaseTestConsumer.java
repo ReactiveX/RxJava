@@ -148,7 +148,6 @@ public abstract class BaseTestConsumer<T, U extends BaseTestConsumer<T, U>> impl
         return errors.size();
     }
 
-
     /**
      * Fail with the given message and add the sequence of errors as suppressed ones.
      * <p>Note this is deliberately the only fail method. Most of the times an assertion
@@ -869,7 +868,6 @@ public abstract class BaseTestConsumer<T, U extends BaseTestConsumer<T, U>> impl
         return (U)this;
     }
 
-
     /**
      * Assert that the TestObserver/TestSubscriber has received a Disposable but no other events.
      * @return this
@@ -957,7 +955,6 @@ public abstract class BaseTestConsumer<T, U extends BaseTestConsumer<T, U>> impl
             }
         }
     }
-
 
     /**
      * Await until the TestObserver/TestSubscriber receives the given
@@ -1064,7 +1061,6 @@ public abstract class BaseTestConsumer<T, U extends BaseTestConsumer<T, U>> impl
         }
         return (U)this;
     }
-
 
     /**
      * Asserts that some awaitX method has not timed out.

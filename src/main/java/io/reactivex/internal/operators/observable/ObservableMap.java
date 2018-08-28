@@ -11,7 +11,6 @@
  * the License for the specific language governing permissions and limitations under the License.
  */
 
-
 package io.reactivex.internal.operators.observable;
 
 import io.reactivex.*;
@@ -32,7 +31,6 @@ public final class ObservableMap<T, U> extends AbstractObservableWithUpstream<T,
     public void subscribeActual(Observer<? super U> t) {
         source.subscribe(new MapObserver<T, U>(t, function));
     }
-
 
     static final class MapObserver<T, U> extends BasicFuseableObserver<T, U> {
         final Function<? super T, ? extends U> mapper;

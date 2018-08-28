@@ -214,7 +214,6 @@ public class FlowableOnExceptionResumeNextViaFlowableTest {
         ts.assertNoErrors();
     }
 
-
     private static class TestObservable implements Publisher<String> {
 
         final String[] values;

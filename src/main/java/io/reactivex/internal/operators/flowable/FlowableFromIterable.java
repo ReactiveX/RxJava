@@ -139,7 +139,6 @@ public final class FlowableFromIterable<T> extends Flowable<T> {
 
     static final class IteratorSubscription<T> extends BaseRangeSubscription<T> {
 
-
         private static final long serialVersionUID = -6022804456014692607L;
 
         final Subscriber<? super T> downstream;
@@ -192,7 +191,6 @@ public final class FlowableFromIterable<T> extends Flowable<T> {
                     a.onError(ex);
                     return;
                 }
-
 
                 if (!b) {
                     if (!cancelled) {
@@ -276,7 +274,6 @@ public final class FlowableFromIterable<T> extends Flowable<T> {
     }
 
     static final class IteratorConditionalSubscription<T> extends BaseRangeSubscription<T> {
-
 
         private static final long serialVersionUID = -6022804456014692607L;
 

@@ -98,8 +98,5 @@ public final class MaybeMap<T, R> extends AbstractMaybeWithUpstream<T, R> {
         public void onComplete() {
             downstream.onComplete();
         }
-
-
     }
-
 }

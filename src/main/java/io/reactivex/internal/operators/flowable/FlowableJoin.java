@@ -73,7 +73,6 @@ public final class FlowableJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> extends A
     static final class JoinSubscription<TLeft, TRight, TLeftEnd, TRightEnd, R>
     extends AtomicInteger implements Subscription, JoinSupport {
 
-
         private static final long serialVersionUID = -6071216598687999801L;
 
         final Subscriber<? super R> downstream;

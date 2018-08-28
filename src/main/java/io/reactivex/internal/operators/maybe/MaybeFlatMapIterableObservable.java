@@ -128,7 +128,6 @@ public final class MaybeFlatMapIterableObservable<T, R> extends Observable<R> {
                     return;
                 }
 
-
                 boolean b;
 
                 try {
