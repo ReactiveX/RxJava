@@ -44,6 +44,18 @@
 * [RxJS](https://xgrommx.github.io/rx-book/), an on-line book by @xgrommx
 * [Journey from procedural to reactive Javascript with stops](https://glebbahmutov.com/blog/journey-from-procedural-to-reactive-javascript-with-stops/) by Gleb Bahmutov
 
+# RxAndroid
+
+* [RxAndroid Github page](https://github.com/ReactiveX/RxAndroid)
+* [RxAndroid basics](https://medium.com/@kurtisnusbaum/rxandroid-basics-part-1-c0d5edcf6850)
+* [RxJava and RxAndroid on AndroidHive](https://www.androidhive.info/RxJava/)
+* [Reactive Programming with RxAndroid in Kotlin: An Introduction](https://www.raywenderlich.com/384-reactive-programming-with-rxandroid-in-kotlin-an-introduction)
+* [Difference between RxJava and RxAndroid](https://stackoverflow.com/questions/49651249/difference-between-rxjava-and-rxandroid)
+* [Reactive programming with RxAndroid](https://www.androidauthority.com/reactive-programming-with-rxandroid-711104/)
+* [RxJava - Vogella.com](http://www.vogella.com/tutorials/RxJava/article.html)
+* [Funcitional reactive Android](https://www.toptal.com/android/functional-reactive-android-rxjava)
+* [Reactive Programming with RxAndroid and Kotlin](https://www.pluralsight.com/courses/rxandroid-kotlin-reactive-programming)
+
 # Miscellany
 * [RxJava Observables and Akka Actors](http://onoffswitch.net/rxjava-observables-akka-actors/) by Anton Kropp
 * [Vert.x and RxJava](http://slid.es/petermd/eclipsecon2014) by @petermd
