@@ -76,7 +76,6 @@ public class ObservableWindowWithObservableTest {
         }
         source.onComplete();
 
-
         verify(o, never()).onError(any(Throwable.class));
 
         assertEquals(n / 3, values.size());
@@ -348,7 +347,6 @@ public class ObservableWindowWithObservableTest {
         assertTrue(boundary.hasObservers());
 
         boundary.onComplete();
-
 
         assertFalse(source.hasObservers());
         assertFalse(boundary.hasObservers());

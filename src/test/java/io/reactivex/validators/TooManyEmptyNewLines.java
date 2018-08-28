@@ -19,29 +19,9 @@ import java.util.*;
 import org.junit.Test;
 
 /**
- * These tests verify the code style that a typical closing curly brace
- * and the next annotation &#64; indicator
- * are not separated by less than or more than one empty line.
- * <p>Thus this is detected:
- * <pre><code>
- * }
- * &#64;Override
- * </code></pre>
- * <p>
- * as well as
- * <pre><code>
- * }
- * 
- * 
- * &#64;Override
- * </code></pre>
+ * Test verifying there are no 2..5 empty newlines in the code.
  */
-public class NewLinesBeforeAnnotation {
-
-    @Test
-    public void missingEmptyNewLine() throws Exception {
-        findPattern(0);
-    }
+public class TooManyEmptyNewLines {
 
     @Test
     public void tooManyEmptyNewLines2() throws Exception  {
@@ -66,7 +46,7 @@ public class NewLinesBeforeAnnotation {
     static void findPattern(int newLines) throws Exception {
         File f = MaybeNo2Dot0Since.findSource("Flowable");
         if (f == null) {
-            System.out.println("Unable to find sources of RxJava");
+            System.out.println("Unable to find sources of TestHelper.findSourceDir()");
             return;
         }
 
@@ -74,11 +54,11 @@ public class NewLinesBeforeAnnotation {
 
         StringBuilder fail = new StringBuilder();
         fail.append("The following code pattern was found: ");
-        fail.append("\\}\\R");
+        fail.append("\\R");
         for (int i = 0; i < newLines; i++) {
             fail.append("\\R");
         }
-        fail.append("[    ]+@\n");
+        fail.append("\n");
 
         File parent = f.getParentFile();
 
@@ -114,35 +94,25 @@ public class NewLinesBeforeAnnotation {
                                 in.close();
                             }
 
-                            for (int i = 0; i < lines.size() - 1; i++) {
-                                String line = lines.get(i);
-                                if (line.endsWith("}") && !line.trim().startsWith("*") && !line.trim().startsWith("//")) {
-                                    int emptyLines = 0;
-                                    boolean found = false;
+                            for (int i = 0; i < lines.size() - newLines; i++) {
+                                String line1 = lines.get(i);
+                                if (line1.isEmpty()) {
+                                    int c = 1;
                                     for (int j = i + 1; j < lines.size(); j++) {
-                                        String line2 = lines.get(j);
-                                        if (line2.trim().startsWith("@")) {
-                                            found = true;
+                                        if (lines.get(j).isEmpty()) {
+                                            c++;
+                                        } else {
                                             break;
                                         }
-                                        if (!line2.trim().isEmpty()) {
-                                            break;
-                                        }
-                                        emptyLines++;
                                     }
 
-                                    if (emptyLines == newLines && found) {
+                                    if (c == newLines) {
                                         fail
                                         .append(fname)
                                         .append("#L").append(i + 1)
-                                        .append("    ");
-                                        for (int k = 0; k < emptyLines + 2; k++) {
-                                            fail
-                                            .append(lines.get(k + i))
-                                            .append("\\R");
-                                        }
-                                        fail.append("\n");
+                                        .append("\n");
                                         total++;
+                                        i += c;
                                     }
                                 }
                             }

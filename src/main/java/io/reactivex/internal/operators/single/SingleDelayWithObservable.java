@@ -41,7 +41,6 @@ public final class SingleDelayWithObservable<T, U> extends Single<T> {
     extends AtomicReference<Disposable>
     implements Observer<U>, Disposable {
 
-
         private static final long serialVersionUID = -8565274649390031272L;
 
         final SingleObserver<? super T> downstream;

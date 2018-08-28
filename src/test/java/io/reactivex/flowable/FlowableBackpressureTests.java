@@ -181,7 +181,6 @@ public class FlowableBackpressureTests {
             .take(num)
             .subscribe(ts);
 
-
             ts.awaitTerminalEvent(5, TimeUnit.SECONDS);
             ts.assertComplete();
             ts.assertNoErrors();

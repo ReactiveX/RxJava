@@ -92,7 +92,6 @@ public class SchedulerLifecycleTest {
             cd.add(w4);
             w4.schedule(countAction);
 
-
             if (!cdl.await(3, TimeUnit.SECONDS)) {
                 fail("countAction was not run by every worker");
             }

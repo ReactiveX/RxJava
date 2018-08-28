@@ -264,7 +264,6 @@ public final class ObservableWindowTimed<T> extends AbstractObservableWithUpstre
 
         UnicastSubject<T> window;
 
-
         volatile boolean terminated;
 
         final AtomicReference<Disposable> timer = new AtomicReference<Disposable>();

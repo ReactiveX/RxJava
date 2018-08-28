@@ -1072,7 +1072,6 @@ public abstract class Single<T> implements SingleSource<T> {
         return merge(Flowable.fromArray(source1, source2, source3, source4));
     }
 
-
     /**
      * Merges an Iterable sequence of SingleSource instances into a single Flowable sequence,
      * running all SingleSources at once and delaying any error(s) until all sources succeed or fail.
@@ -1120,7 +1119,6 @@ public abstract class Single<T> implements SingleSource<T> {
         ObjectHelper.requireNonNull(sources, "sources is null");
         return RxJavaPlugins.onAssembly(new FlowableFlatMapPublisher(sources, SingleInternalHelper.toFlowable(), true, Integer.MAX_VALUE, Flowable.bufferSize()));
     }
-
 
     /**
      * Flattens two Singles into a single Flowable, without any transformation, delaying

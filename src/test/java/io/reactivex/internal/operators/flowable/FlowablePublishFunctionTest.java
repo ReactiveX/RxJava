@@ -33,7 +33,6 @@ import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.TestSubscriber;
 
-
 public class FlowablePublishFunctionTest {
     @Test
     public void concatTakeFirstLastCompletes() {

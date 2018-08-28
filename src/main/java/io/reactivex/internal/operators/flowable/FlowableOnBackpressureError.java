@@ -25,7 +25,6 @@ import io.reactivex.plugins.RxJavaPlugins;
 
 public final class FlowableOnBackpressureError<T> extends AbstractFlowableWithUpstream<T, T> {
 
-
     public FlowableOnBackpressureError(Flowable<T> source) {
         super(source);
     }

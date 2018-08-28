@@ -39,7 +39,6 @@ public final class SingleZipArray<T, R> extends Single<R> {
         SingleSource<? extends T>[] sources = this.sources;
         int n = sources.length;
 
-
         if (n == 1) {
             sources[0].subscribe(new SingleMap.MapSingleObserver<T, R>(observer, new SingletonArrayFunc()));
             return;
@@ -66,7 +65,6 @@ public final class SingleZipArray<T, R> extends Single<R> {
     }
 
     static final class ZipCoordinator<T, R> extends AtomicInteger implements Disposable {
-
 
         private static final long serialVersionUID = -5556924161382950569L;
 

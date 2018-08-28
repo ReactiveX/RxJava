@@ -28,7 +28,6 @@ import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.internal.util.*;
 import io.reactivex.plugins.RxJavaPlugins;
 
-
 public final class FlowableCreate<T> extends Flowable<T> {
 
     final FlowableOnSubscribe<T> source;
@@ -352,7 +351,6 @@ public final class FlowableCreate<T> extends Flowable<T> {
 
     static final class MissingEmitter<T> extends BaseEmitter<T> {
 
-
         private static final long serialVersionUID = 3776720187248809713L;
 
         MissingEmitter(Subscriber<? super T> downstream) {
@@ -414,7 +412,6 @@ public final class FlowableCreate<T> extends Flowable<T> {
 
     static final class DropAsyncEmitter<T> extends NoOverflowBaseAsyncEmitter<T> {
 
-
         private static final long serialVersionUID = 8360058422307496563L;
 
         DropAsyncEmitter(Subscriber<? super T> downstream) {
@@ -430,7 +427,6 @@ public final class FlowableCreate<T> extends Flowable<T> {
 
     static final class ErrorAsyncEmitter<T> extends NoOverflowBaseAsyncEmitter<T> {
 
-
         private static final long serialVersionUID = 338953216916120960L;
 
         ErrorAsyncEmitter(Subscriber<? super T> downstream) {
@@ -445,7 +441,6 @@ public final class FlowableCreate<T> extends Flowable<T> {
     }
 
     static final class BufferAsyncEmitter<T> extends BaseEmitter<T> {
-
 
         private static final long serialVersionUID = 2427151001689639875L;
 
@@ -588,7 +583,6 @@ public final class FlowableCreate<T> extends Flowable<T> {
     }
 
     static final class LatestAsyncEmitter<T> extends BaseEmitter<T> {
-
 
         private static final long serialVersionUID = 4023437720691792495L;
 

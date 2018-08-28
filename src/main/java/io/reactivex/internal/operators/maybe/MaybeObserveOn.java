@@ -42,7 +42,6 @@ public final class MaybeObserveOn<T> extends AbstractMaybeWithUpstream<T, T> {
     extends AtomicReference<Disposable>
     implements MaybeObserver<T>, Disposable, Runnable {
 
-
         private static final long serialVersionUID = 8571289934935992137L;
 
         final MaybeObserver<? super T> downstream;

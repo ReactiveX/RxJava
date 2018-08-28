@@ -1285,7 +1285,6 @@ public class RxJavaPluginsTest {
                 }
             };
 
-
             RxJavaPlugins.setInitComputationSchedulerHandler(callable2scheduler);
             RxJavaPlugins.setComputationSchedulerHandler(scheduler2scheduler);
             RxJavaPlugins.setIoSchedulerHandler(scheduler2scheduler);
@@ -1377,7 +1376,6 @@ public class RxJavaPluginsTest {
             };
 
             assertSame(myb, RxJavaPlugins.onAssembly(myb));
-
 
             Runnable action = Functions.EMPTY_RUNNABLE;
             assertSame(action, RxJavaPlugins.onSchedule(action));

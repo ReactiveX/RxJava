@@ -79,7 +79,6 @@ public class TestSubscriberTest {
         // FIXME different message pattern
         // thrown.expectMessage("Value at index: 1 expected to be [3] (Integer) but was: [2] (Integer)");
 
-
         ts.assertValues(1, 3);
         ts.assertValueCount(2);
         ts.assertTerminated();
@@ -928,8 +927,6 @@ public class TestSubscriberTest {
         ts.assertValueCount(0);
 
         ts.assertNoValues();
-
-
     }
 
     @Test
@@ -1339,7 +1336,6 @@ public class TestSubscriberTest {
         } catch (AssertionError ex) {
             // expected
         }
-
 
         ts = TestSubscriber.create();
 

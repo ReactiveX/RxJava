@@ -295,7 +295,6 @@ public class AsyncSubjectTest extends SubjectTest<Integer> {
 //        assertEquals(1, to.getOnErrorEvents().size());
 //    }
 
-
     // FIXME subscriber methods are not allowed to throw
 //    /**
 //     * This one has multiple failures so should get a CompositeException

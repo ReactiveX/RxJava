@@ -203,7 +203,6 @@ public class FlowableFlatMapTest {
                 Flowable.<Integer> error(new RuntimeException("Forced failure!"))
                 );
 
-
         Subscriber<Object> subscriber = TestHelper.mockSubscriber();
 
         source.flatMap(just(onNext), just(onError), just0(onComplete)).subscribe(subscriber);

@@ -88,7 +88,6 @@ public final class ObservableGroupJoin<TLeft, TRight, TLeftEnd, TRightEnd, R> ex
     static final class GroupJoinDisposable<TLeft, TRight, TLeftEnd, TRightEnd, R>
     extends AtomicInteger implements Disposable, JoinSupport {
 
-
         private static final long serialVersionUID = -6071216598687999801L;
 
         final Observer<? super R> downstream;

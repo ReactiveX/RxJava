@@ -126,7 +126,6 @@ public final class SingleFlatMapIterableObservable<T, R> extends Observable<R> {
                         return;
                     }
 
-
                     boolean b;
 
                     try {

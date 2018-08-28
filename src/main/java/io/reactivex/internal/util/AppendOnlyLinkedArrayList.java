@@ -125,7 +125,6 @@ public class AppendOnlyLinkedArrayList<T> {
         return false;
     }
 
-
     /**
      * Interprets the contents as NotificationLite objects and calls
      * the appropriate Observer method.

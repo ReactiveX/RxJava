@@ -31,7 +31,6 @@ public final class InnerQueuedObserver<T>
 extends AtomicReference<Disposable>
 implements Observer<T>, Disposable {
 
-
     private static final long serialVersionUID = -5417183359794346637L;
 
     final InnerQueuedObserverSupport<T> parent;

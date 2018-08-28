@@ -158,7 +158,6 @@ public final class MaybeFlatMapIterableFlowable<T, R> extends Flowable<R> {
                     return;
                 }
 
-
                 boolean b;
 
                 try {

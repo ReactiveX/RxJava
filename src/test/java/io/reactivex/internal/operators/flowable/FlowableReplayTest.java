@@ -506,7 +506,6 @@ public class FlowableReplayTest {
         }
     }
 
-
     /*
      * test the basic expectation of OperatorMulticast via replay
      */
@@ -695,7 +694,6 @@ public class FlowableReplayTest {
     public static Worker workerSpy(final Disposable mockDisposable) {
         return spy(new InprocessWorker(mockDisposable));
     }
-
 
     private static class InprocessWorker extends Worker {
         private final Disposable mockDisposable;
@@ -1063,7 +1061,6 @@ public class FlowableReplayTest {
                 .concatWith(Flowable.<Integer>error(new TestException()))
                 .replay().autoConnect();
 
-
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         source.subscribe(ts);
 
@@ -1169,7 +1166,6 @@ public class FlowableReplayTest {
         ts22.assertNoErrors();
         ts22.dispose();
 
-
         TestSubscriber<Integer> ts3 = new TestSubscriber<Integer>();
 
         source.subscribe(ts3);
@@ -1224,7 +1220,6 @@ public class FlowableReplayTest {
         ts22.assertValues(2);
         ts22.assertNoErrors();
         ts22.dispose();
-
 
         TestSubscriber<Integer> ts3 = new TestSubscriber<Integer>();
 

@@ -27,7 +27,6 @@ public final class CallbackCompletableObserver
 extends AtomicReference<Disposable>
         implements CompletableObserver, Disposable, Consumer<Throwable>, LambdaConsumerIntrospection {
 
-
     private static final long serialVersionUID = -4361286194466301354L;
 
     final Consumer<? super Throwable> onError;

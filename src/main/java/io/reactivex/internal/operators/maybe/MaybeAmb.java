@@ -91,7 +91,6 @@ public final class MaybeAmb<T> extends Maybe<T> {
     extends AtomicBoolean
     implements MaybeObserver<T>, Disposable {
 
-
         private static final long serialVersionUID = -7044685185359438206L;
 
         final MaybeObserver<? super T> downstream;

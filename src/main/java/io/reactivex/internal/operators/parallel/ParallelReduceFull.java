@@ -52,7 +52,6 @@ public final class ParallelReduceFull<T> extends Flowable<T> {
 
     static final class ParallelReduceFullMainSubscriber<T> extends DeferredScalarSubscription<T> {
 
-
         private static final long serialVersionUID = -5370107872170712765L;
 
         final ParallelReduceFullInnerSubscriber<T>[] subscribers;

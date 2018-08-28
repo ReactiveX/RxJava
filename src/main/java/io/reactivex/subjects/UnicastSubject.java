@@ -251,7 +251,6 @@ public final class UnicastSubject<T> extends Subject<T> {
         return new UnicastSubject<T>(bufferSize(), delayError);
     }
 
-
     /**
      * Creates an UnicastSubject with the given capacity hint and delay error flag.
      * <p>History: 2.0.8 - experimental
@@ -521,7 +520,6 @@ public final class UnicastSubject<T> extends Subject<T> {
     }
 
     final class UnicastQueueDisposable extends BasicIntQueueDisposable<T> {
-
 
         private static final long serialVersionUID = 7926949470189395511L;
 

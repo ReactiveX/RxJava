@@ -48,7 +48,6 @@ public final class ObservableCreate<T> extends Observable<T> {
     extends AtomicReference<Disposable>
     implements ObservableEmitter<T>, Disposable {
 
-
         private static final long serialVersionUID = -3434801548987643227L;
 
         final Observer<? super T> observer;

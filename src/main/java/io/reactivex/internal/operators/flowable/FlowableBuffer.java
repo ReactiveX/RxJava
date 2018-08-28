@@ -159,7 +159,6 @@ public final class FlowableBuffer<T, C extends Collection<? super T>> extends Ab
     extends AtomicInteger
     implements FlowableSubscriber<T>, Subscription {
 
-
         private static final long serialVersionUID = -5616169793639412593L;
 
         final Subscriber<? super C> downstream;
@@ -285,7 +284,6 @@ public final class FlowableBuffer<T, C extends Collection<? super T>> extends Ab
             downstream.onComplete();
         }
     }
-
 
     static final class PublisherBufferOverlappingSubscriber<T, C extends Collection<? super T>>
     extends AtomicLong

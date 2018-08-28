@@ -127,7 +127,6 @@ public final class MaybeEqualSingle<T> extends Single<Boolean> {
     extends AtomicReference<Disposable>
     implements MaybeObserver<T> {
 
-
         private static final long serialVersionUID = -3031974433025990931L;
 
         final EqualCoordinator<T> parent;

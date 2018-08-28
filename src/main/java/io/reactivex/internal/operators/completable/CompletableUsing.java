@@ -88,7 +88,6 @@ public final class CompletableUsing<R> extends Completable {
     extends AtomicReference<Object>
     implements CompletableObserver, Disposable {
 
-
         private static final long serialVersionUID = -674404550052917487L;
 
         final CompletableObserver downstream;

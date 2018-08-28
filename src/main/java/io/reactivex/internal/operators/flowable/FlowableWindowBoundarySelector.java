@@ -240,7 +240,6 @@ public final class FlowableWindowBoundarySelector<T, B, V> extends AbstractFlowa
                             continue;
                         }
 
-
                         w = UnicastProcessor.<T>create(bufferSize);
 
                         long r = requested();

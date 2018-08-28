@@ -246,7 +246,6 @@ public class FlowableCacheTest {
                 .concatWith(Flowable.<Integer>error(new TestException()))
                 .cache();
 
-
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         source.subscribe(ts);
 

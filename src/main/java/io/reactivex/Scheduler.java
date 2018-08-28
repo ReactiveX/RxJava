@@ -110,7 +110,6 @@ public abstract class Scheduler {
         return CLOCK_DRIFT_TOLERANCE_NANOSECONDS;
     }
 
-
     /**
      * Retrieves or creates a new {@link Scheduler.Worker} that represents sequential execution of actions.
      * <p>

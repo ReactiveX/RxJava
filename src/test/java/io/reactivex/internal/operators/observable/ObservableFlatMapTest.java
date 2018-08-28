@@ -205,7 +205,6 @@ public class ObservableFlatMapTest {
                 Observable.<Integer> error(new RuntimeException("Forced failure!"))
                 );
 
-
         Observer<Object> o = TestHelper.mockObserver();
 
         source.flatMap(just(onNext), just(onError), just0(onComplete)).subscribe(o);

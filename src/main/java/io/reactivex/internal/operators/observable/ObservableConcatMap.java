@@ -273,7 +273,6 @@ public final class ObservableConcatMap<T, U> extends AbstractObservableWithUpstr
     extends AtomicInteger
     implements Observer<T>, Disposable {
 
-
         private static final long serialVersionUID = -6951100001833242599L;
 
         final Observer<? super R> downstream;

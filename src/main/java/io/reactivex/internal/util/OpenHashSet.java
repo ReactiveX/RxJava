@@ -140,7 +140,6 @@ public final class OpenHashSet<T> {
 
         T[] b = (T[])new Object[newCap];
 
-
         for (int j = size; j-- != 0; ) {
             while (a[--i] == null) { } // NOPMD
             int pos = mix(a[i].hashCode()) & m;

@@ -46,7 +46,6 @@ public final class FlowableDistinctUntilChanged<T, K> extends AbstractFlowableWi
     static final class DistinctUntilChangedSubscriber<T, K> extends BasicFuseableSubscriber<T, T>
     implements ConditionalSubscriber<T> {
 
-
         final Function<? super T, K> keySelector;
 
         final BiPredicate<? super K, ? super K> comparer;

@@ -54,7 +54,6 @@ public final class MaybeTimeoutMaybe<T, U> extends AbstractMaybeWithUpstream<T, 
     extends AtomicReference<Disposable>
     implements MaybeObserver<T>, Disposable {
 
-
         private static final long serialVersionUID = -5955289211445418871L;
 
         final MaybeObserver<? super T> downstream;
@@ -141,7 +140,6 @@ public final class MaybeTimeoutMaybe<T, U> extends AbstractMaybeWithUpstream<T, 
     extends AtomicReference<Disposable>
     implements MaybeObserver<Object> {
 
-
         private static final long serialVersionUID = 8663801314800248617L;
 
         final TimeoutMainMaybeObserver<T, U> parent;
@@ -173,7 +171,6 @@ public final class MaybeTimeoutMaybe<T, U> extends AbstractMaybeWithUpstream<T, 
     static final class TimeoutFallbackMaybeObserver<T>
     extends AtomicReference<Disposable>
     implements MaybeObserver<T> {
-
 
         private static final long serialVersionUID = 8663801314800248617L;
 

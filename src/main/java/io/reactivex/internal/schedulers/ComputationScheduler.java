@@ -187,7 +187,6 @@ public final class ComputationScheduler extends Scheduler implements SchedulerMu
         }
     }
 
-
     static final class EventLoopWorker extends Scheduler.Worker {
         private final ListCompositeDisposable serial;
         private final CompositeDisposable timed;

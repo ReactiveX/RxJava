@@ -98,14 +98,12 @@ public final class FlowableFromArray<T> extends Flowable<T> {
             cancelled = true;
         }
 
-
         abstract void fastPath();
 
         abstract void slowPath(long r);
     }
 
     static final class ArraySubscription<T> extends BaseArraySubscription<T> {
-
 
         private static final long serialVersionUID = 2587302975077663557L;
 
@@ -189,7 +187,6 @@ public final class FlowableFromArray<T> extends Flowable<T> {
     }
 
     static final class ArrayConditionalSubscription<T> extends BaseArraySubscription<T> {
-
 
         private static final long serialVersionUID = 2587302975077663557L;
 

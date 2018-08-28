@@ -859,7 +859,6 @@ public class ReplayProcessorTest extends FlowableProcessorTest<Object> {
         ts.assertNotComplete();
         ts.assertNoErrors();
 
-
         ts.request(1);
         ts.assertValues(1, 2);
         ts.assertNotComplete();
@@ -888,7 +887,6 @@ public class ReplayProcessorTest extends FlowableProcessorTest<Object> {
         ts.assertNotComplete();
         ts.assertNoErrors();
 
-
         ts.request(1);
         ts.assertValues(1, 2);
         ts.assertNotComplete();
@@ -916,7 +914,6 @@ public class ReplayProcessorTest extends FlowableProcessorTest<Object> {
         ts.assertValue(1);
         ts.assertNotComplete();
         ts.assertNoErrors();
-
 
         ts.request(1);
         ts.assertValues(1, 2);

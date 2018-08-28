@@ -116,7 +116,6 @@ public class FlowableOnBackpressureBufferStrategyTest {
         }
     });
 
-
     @Test(expected = IllegalArgumentException.class)
     public void backpressureBufferNegativeCapacity() throws InterruptedException {
         Flowable.empty().onBackpressureBuffer(-1, EMPTY_ACTION , DROP_OLDEST);

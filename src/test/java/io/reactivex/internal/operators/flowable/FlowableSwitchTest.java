@@ -449,7 +449,6 @@ public class FlowableSwitchTest {
         publishCompleted(o2, 50);
         publishCompleted(o3, 55);
 
-
         final TestSubscriber<String> testSubscriber = new TestSubscriber<String>();
         Flowable.switchOnNext(o).subscribe(new DefaultSubscriber<String>() {
 

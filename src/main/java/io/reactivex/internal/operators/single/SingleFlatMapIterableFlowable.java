@@ -235,7 +235,6 @@ public final class SingleFlatMapIterableFlowable<T, R> extends Flowable<R> {
                     return;
                 }
 
-
                 boolean b;
 
                 try {

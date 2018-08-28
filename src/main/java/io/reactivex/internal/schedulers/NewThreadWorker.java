@@ -116,7 +116,6 @@ public class NewThreadWorker extends Scheduler.Worker implements Disposable {
         }
     }
 
-
     /**
      * Wraps the given runnable into a ScheduledRunnable and schedules it
      * on the underlying ScheduledExecutorService.

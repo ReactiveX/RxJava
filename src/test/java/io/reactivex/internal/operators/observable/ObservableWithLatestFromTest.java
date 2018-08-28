@@ -260,7 +260,6 @@ public class ObservableWithLatestFromTest {
 //        assertTrue("Not cancelled!", ts.isCancelled());
     }
 
-
     static final Function<Object[], String> toArray = new Function<Object[], String>() {
         @Override
         public String apply(Object[] args) {

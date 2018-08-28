@@ -318,7 +318,6 @@ public final class MaybeMergeArray<T> extends Flowable<T> {
     extends AtomicReferenceArray<T>
     implements SimpleQueueWithConsumerIndex<T> {
 
-
         private static final long serialVersionUID = -7969063454040569579L;
         final AtomicInteger producerIndex;
 

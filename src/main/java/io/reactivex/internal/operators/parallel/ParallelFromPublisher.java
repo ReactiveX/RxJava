@@ -62,7 +62,6 @@ public final class ParallelFromPublisher<T> extends ParallelFlowable<T> {
     extends AtomicInteger
     implements FlowableSubscriber<T> {
 
-
         private static final long serialVersionUID = -4470634016609963609L;
 
         final Subscriber<? super T>[] subscribers;

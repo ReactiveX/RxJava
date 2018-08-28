@@ -338,7 +338,6 @@ public class PublishSubjectTest extends SubjectTest<Integer> {
         }
     }
 
-
     // FIXME RS subscribers are not allowed to throw
 //    @Test
 //    public void testOnErrorThrowsDoesntPreventDelivery() {

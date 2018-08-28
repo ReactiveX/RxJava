@@ -700,7 +700,6 @@ public final class ReplaySubject<T> extends Subject<T> {
                 }
             }
 
-
             if (array.length < s) {
                 array = (T[])Array.newInstance(array.getClass().getComponentType(), s);
             }
@@ -1050,7 +1049,6 @@ public final class ReplaySubject<T> extends Subject<T> {
         TimedNode<Object> tail;
 
         volatile boolean done;
-
 
         SizeAndTimeBoundReplayBuffer(int maxSize, long maxAge, TimeUnit unit, Scheduler scheduler) {
             this.maxSize = ObjectHelper.verifyPositive(maxSize, "maxSize");

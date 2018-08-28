@@ -230,7 +230,6 @@ public class DeferredScalarSubscriberTest {
         ds.onComplete();
         ds.onComplete();
 
-
         ts.assertValue(1);
         ts.assertNoErrors();
         ts.assertComplete();

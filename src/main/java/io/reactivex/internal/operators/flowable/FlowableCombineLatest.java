@@ -136,7 +136,6 @@ extends Flowable<R> {
             return;
         }
 
-
         CombineLatestCoordinator<T, R> coordinator =
                 new CombineLatestCoordinator<T, R>(s, combiner, n, bufferSize, delayErrors);
 
@@ -147,7 +146,6 @@ extends Flowable<R> {
 
     static final class CombineLatestCoordinator<T, R>
     extends BasicIntQueueSubscription<R> {
-
 
         private static final long serialVersionUID = -5082275438355852221L;
 
@@ -493,7 +491,6 @@ extends Flowable<R> {
     static final class CombineLatestInnerSubscriber<T>
     extends AtomicReference<Subscription>
             implements FlowableSubscriber<T> {
-
 
         private static final long serialVersionUID = -8730235182291002949L;
 

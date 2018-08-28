@@ -266,7 +266,6 @@ public final class ParallelSortedJoin<T> extends Flowable<T> {
     extends AtomicReference<Subscription>
     implements FlowableSubscriber<List<T>> {
 
-
         private static final long serialVersionUID = 6751017204873808094L;
 
         final SortedJoinSubscription<T> parent;

@@ -32,7 +32,6 @@ public final class FlowableCount<T> extends AbstractFlowableWithUpstream<T, Long
     static final class CountSubscriber extends DeferredScalarSubscription<Long>
     implements FlowableSubscriber<Object> {
 
-
         private static final long serialVersionUID = 4973004223787171406L;
 
         Subscription upstream;

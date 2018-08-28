@@ -223,7 +223,6 @@ extends AbstractObservableWithUpstream<T, U> {
         final Worker w;
         final List<U> buffers;
 
-
         Disposable upstream;
 
         BufferSkipBoundedObserver(Observer<? super U> actual,

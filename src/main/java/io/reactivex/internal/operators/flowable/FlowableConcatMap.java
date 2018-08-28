@@ -173,10 +173,8 @@ public final class FlowableConcatMap<T, R> extends AbstractFlowableWithUpstream<
 
     }
 
-
     static final class ConcatMapImmediate<T, R>
     extends BaseConcatMapSubscriber<T, R> {
-
 
         private static final long serialVersionUID = 7898995095634264146L;
 
@@ -303,7 +301,6 @@ public final class FlowableConcatMap<T, R> extends AbstractFlowableWithUpstream<
                                 }
                             }
 
-
                             if (p instanceof Callable) {
                                 @SuppressWarnings("unchecked")
                                 Callable<R> callable = (Callable<R>) p;
@@ -319,7 +316,6 @@ public final class FlowableConcatMap<T, R> extends AbstractFlowableWithUpstream<
                                     downstream.onError(errors.terminate());
                                     return;
                                 }
-
 
                                 if (vr == null) {
                                     continue;
@@ -381,7 +377,6 @@ public final class FlowableConcatMap<T, R> extends AbstractFlowableWithUpstream<
 
     static final class ConcatMapDelayed<T, R>
     extends BaseConcatMapSubscriber<T, R> {
-
 
         private static final long serialVersionUID = -2945777694260521066L;
 
@@ -568,7 +563,6 @@ public final class FlowableConcatMap<T, R> extends AbstractFlowableWithUpstream<
     static final class ConcatMapInner<R>
     extends SubscriptionArbiter
     implements FlowableSubscriber<R> {
-
 
         private static final long serialVersionUID = 897683679971470653L;
 

@@ -5429,7 +5429,6 @@ public abstract class Observable<T> implements ObservableSource<T> {
         ObservableBlockingSubscribe.subscribe(this, onNext, onError, Functions.EMPTY_ACTION);
     }
 
-
     /**
      * Subscribes to the source and calls the given callbacks <strong>on the current thread</strong>.
      * <p>

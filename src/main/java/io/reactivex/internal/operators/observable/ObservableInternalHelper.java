@@ -83,7 +83,6 @@ public final class ObservableInternalHelper {
         return new ItemDelayFunction<T, U>(itemDelay);
     }
 
-
     static final class ObserverOnNext<T> implements Consumer<T> {
         final Observer<T> observer;
 

@@ -24,7 +24,6 @@ import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.Function;
 import io.reactivex.observers.TestObserver;
 
-
 public class ObservableDetachTest {
 
     Object o;
