@@ -13,22 +13,28 @@
 
 package io.reactivex.single;
 
-import static org.junit.Assert.*;
-
-import java.util.*;
-import java.util.concurrent.*;
-import java.util.concurrent.atomic.*;
-
-import org.junit.*;
-
 import io.reactivex.*;
-import io.reactivex.Observable;
 import io.reactivex.disposables.*;
 import io.reactivex.exceptions.TestException;
 import io.reactivex.functions.*;
 import io.reactivex.internal.operators.single.SingleInternalHelper;
+import io.reactivex.observers.TestObserver;
+import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.TestSubscriber;
+import org.junit.Assert;
+import org.junit.Test;
+
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
+
+import static org.junit.Assert.*;
 
 public class SingleTest {
 
@@ -598,6 +604,55 @@ public class SingleTest {
                 throw new NullPointerException();
             }
         }.test();
+    }
+
+    @Test
+    public void fromCallableUsesCustomExceptionHandlerIfDisposed() throws InterruptedException {
+
+        // The global ErrorHandler should not be called
+        RxJavaPlugins.setErrorHandler(new Consumer<Throwable>() {
+            @Override
+            public void accept(Throwable throwable) throws Exception {
+                fail("The RxJavaPlugins errorHandler shouldn't have been called!");
+            }
+        });
+
+        // A Callable that just waits to be interrupted
+        Callable<Object> callable = new Callable<Object>() {
+            @Override
+            public Object call() throws Exception {
+                while(true) {
+                    Thread.sleep(500);
+                }
+            }
+        };
+
+        // The local ErrorHandler to be injected
+        final boolean[] hasHandled = {false};
+        Consumer<Throwable> throwableConsumer = new Consumer<Throwable>() {
+            @Override
+            public void accept(Throwable throwable) throws Exception {
+                hasHandled[0] = true;
+            }
+        };
+
+        // We need a second thread to be able to interrupt the Callable
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        TestObserver<Object> testObserver = Single.fromCallable(callable, throwableConsumer)
+                                                  .subscribeOn(Schedulers.from(executor))
+                                                  .test();
+
+        // Wait a short moment, so that the Callable is running -- otherwise SingleFromCallable just returns because of "d.isDisposed()".
+        testObserver.await(50, TimeUnit.MILLISECONDS);
+        // Dispose to trigger Thread.sleep(.) which throws an InterruptedException inside the Callable, after (and because of) it is disposed.
+        testObserver.dispose();
+        // Just to be sure, there were no values or errors...
+        testObserver.assertNoValues().assertNoErrors();
+
+        // Shot down the second thread and wait for the error-handling to be done (almost instantaneously), then check if it was done as expected.
+        executor.shutdown();
+        executor.awaitTermination(500, TimeUnit.MILLISECONDS); //
+        assertTrue("Custom Handler should have handled Exception!", hasHandled[0]);
     }
 }
 

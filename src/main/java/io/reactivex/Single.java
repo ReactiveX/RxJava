@@ -583,6 +583,11 @@ public abstract class Single<T> implements SingleSource<T> {
      * <dl>
      *   <dt><b>Scheduler:</b></dt>
      *   <dd>{@code fromCallable} does not operate by default on a particular {@link Scheduler}.</dd>
+     *   <dt><b>Error handling:</b></dt>
+     *   <dd>If the {@code Single} was already disposed, Exceptions thrown by the {@link Callable} are forwarded as
+     *   {@link io.reactivex.exceptions.UndeliverableException} to {@link RxJavaPlugins}. This could occur for example, if the callable reacts on
+     *   {@link Thread#interrupted()} by throwing an {@link InterruptedException} to cancel it's computation, triggered by the disposing.
+     *   (Think of {@link Observable#switchMapSingle(Function)} for example, which disposes previous Singles if new items appear.)</dd>
      * </dl>
      *
      * @param callable
@@ -596,6 +601,41 @@ public abstract class Single<T> implements SingleSource<T> {
     public static <T> Single<T> fromCallable(final Callable<? extends T> callable) {
         ObjectHelper.requireNonNull(callable, "callable is null");
         return RxJavaPlugins.onAssembly(new SingleFromCallable<T>(callable));
+    }
+
+    /**
+     * Returns a {@link Single} that invokes passed function and emits its result for each new SingleObserver that subscribes.
+     * <p>
+     * Allows you to defer execution of passed function until SingleObserver subscribes to the {@link Single}.
+     * It makes passed function "lazy".
+     * Result of the function invocation will be emitted by the {@link Single}.
+     * <p>
+     * <img width="640" height="467" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.fromCallable.png" alt="">
+     * <dl>
+     *   <dt><b>Scheduler:</b></dt>
+     *   <dd>{@code fromCallable} does not operate by default on a particular {@link Scheduler}.</dd>
+     *   <dt><b>Error handling:</b></dt>
+     *   <dd>If the {@code Single} was already disposed, Exceptions thrown by the {@link Callable} are handled by the provided ExceptionHandler.
+     *   This could occur for example, if the callable reacts on
+     *   {@link Thread#interrupted()} by throwing an {@link InterruptedException} to cancel it's computation, triggered by the disposing.
+     *   (Think of {@link Observable#switchMapSingle(Function)} for example, which disposes previous Singles if new items appear.)
+     *   Exceptions thrown by the provided handler are forwarded as {@link io.reactivex.exceptions.UndeliverableException} to {@link RxJavaPlugins}. </dd>
+     * </dl>
+     *
+     * @param callable
+     *         function which execution should be deferred, it will be invoked when SingleObserver will subscribe to the {@link Single}.
+     * @param undeliverableExceptionHandler
+     *         handler for Exceptions that can't be delivered the usual way, for example if the downstream is disposed already.
+     * @param <T>
+     *         the type of the item emitted by the {@link Single}.
+     * @return a {@link Single} whose {@link SingleObserver}s' subscriptions trigger an invocation of the given function.
+     */
+    @CheckReturnValue
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public static <T> Single<T> fromCallable(final Callable<? extends T> callable, Consumer<Throwable> undeliverableExceptionHandler) {
+        ObjectHelper.requireNonNull(callable, "callable is null");
+        ObjectHelper.requireNonNull(undeliverableExceptionHandler, "handler is null");
+        return RxJavaPlugins.onAssembly(new SingleFromCallable<T>(callable, undeliverableExceptionHandler));
     }
 
     /**

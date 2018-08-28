@@ -19,15 +19,22 @@ import io.reactivex.*;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.disposables.Disposables;
 import io.reactivex.exceptions.Exceptions;
+import io.reactivex.functions.Consumer;
 import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.plugins.RxJavaPlugins;
 
 public final class SingleFromCallable<T> extends Single<T> {
 
     final Callable<? extends T> callable;
+    final Consumer<Throwable> undeliverableExceptionHandler;
 
     public SingleFromCallable(Callable<? extends T> callable) {
+        this(callable,null);
+    }
+
+    public SingleFromCallable(Callable<? extends T> callable, Consumer<Throwable> undeliverableExceptionHandler) {
         this.callable = callable;
+        this.undeliverableExceptionHandler = undeliverableExceptionHandler;
     }
 
     @Override
@@ -46,6 +53,12 @@ public final class SingleFromCallable<T> extends Single<T> {
             Exceptions.throwIfFatal(ex);
             if (!d.isDisposed()) {
                 observer.onError(ex);
+            } else if (undeliverableExceptionHandler != null) {
+                try {
+                    undeliverableExceptionHandler.accept(ex);
+                } catch (Exception ex2) {
+                    RxJavaPlugins.onError(ex2);
+                }
             } else {
                 RxJavaPlugins.onError(ex);
             }
