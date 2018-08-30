@@ -788,15 +788,17 @@ public class FlowableRefCountTest {
         ConnectableFlowable<Integer> cf = Flowable.just(1)
         .replay();
 
-        assertTrue(((Disposable)cf).isDisposed());
+        if (cf instanceof Disposable) {
+            assertTrue(((Disposable)cf).isDisposed());
 
-        Disposable connection = cf.connect();
+            Disposable connection = cf.connect();
 
-        assertFalse(((Disposable)cf).isDisposed());
+            assertFalse(((Disposable)cf).isDisposed());
 
-        connection.dispose();
+            connection.dispose();
 
-        assertTrue(((Disposable)cf).isDisposed());
+            assertTrue(((Disposable)cf).isDisposed());
+        }
     }
 
     static final class BadFlowableSubscribe extends ConnectableFlowable<Object> {
@@ -1325,5 +1327,30 @@ public class FlowableRefCountTest {
         rc.connected = true;
         o.connection = rc;
         o.cancel(rc);
+    }
+
+    @Test
+    public void replayRefCountShallBeThreadSafe() {
+        for (int i = 0; i < TestHelper.RACE_LONG_LOOPS; i++) {
+            Flowable<Integer> flowable = Flowable.just(1).replay(1).refCount();
+
+            TestSubscriber<Integer> ts1 = flowable
+                    .subscribeOn(Schedulers.io())
+                    .test();
+
+            TestSubscriber<Integer> ts2 = flowable
+                    .subscribeOn(Schedulers.io())
+                    .test();
+
+            ts1
+            .withTag("" + i)
+            .awaitDone(5, TimeUnit.SECONDS)
+            .assertResult(1);
+
+            ts2
+            .withTag("" + i)
+            .awaitDone(5, TimeUnit.SECONDS)
+            .assertResult(1);
+        }
     }
 }
