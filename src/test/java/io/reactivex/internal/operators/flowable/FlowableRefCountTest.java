@@ -1327,6 +1327,9 @@ public class FlowableRefCountTest {
         rc.connected = true;
         o.connection = rc;
         o.cancel(rc);
+
+        o.connection = rc;
+        o.cancel(new RefConnection(o));
     }
 
     @Test
@@ -1352,5 +1355,43 @@ public class FlowableRefCountTest {
             .awaitDone(5, TimeUnit.SECONDS)
             .assertResult(1);
         }
+    }
+
+    static final class TestConnectableFlowable<T> extends ConnectableFlowable<T>
+    implements Disposable {
+
+        volatile boolean disposed;
+
+        @Override
+        public void dispose() {
+            disposed = true;
+        }
+
+        @Override
+        public boolean isDisposed() {
+            return disposed;
+        }
+
+        @Override
+        public void connect(Consumer<? super Disposable> connection) {
+            // not relevant
+        }
+
+        @Override
+        protected void subscribeActual(Subscriber<? super T> subscriber) {
+            // not relevant
+        }
+    }
+
+    @Test
+    public void timeoutDisposesSource() {
+        FlowableRefCount<Object> o = (FlowableRefCount<Object>)new TestConnectableFlowable<Object>().refCount();
+
+        RefConnection rc = new RefConnection(o);
+        o.connection = rc;
+
+        o.timeout(rc);
+
+        assertTrue(((Disposable)o.source).isDisposed());
     }
 }

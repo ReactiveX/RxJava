@@ -1241,6 +1241,8 @@ public class ObservableRefCountTest {
 
         o.cancel(null);
 
+        o.cancel(new RefConnection(o));
+
         RefConnection rc = new RefConnection(o);
         o.connection = null;
         rc.subscriberCount = 0;
@@ -1276,6 +1278,9 @@ public class ObservableRefCountTest {
         rc.connected = true;
         o.connection = rc;
         o.cancel(rc);
+
+        o.connection = rc;
+        o.cancel(new RefConnection(o));
     }
 
     @Test
@@ -1301,5 +1306,43 @@ public class ObservableRefCountTest {
             .awaitDone(5, TimeUnit.SECONDS)
             .assertResult(1);
         }
+    }
+
+    static final class TestConnectableObservable<T> extends ConnectableObservable<T>
+    implements Disposable {
+
+        volatile boolean disposed;
+
+        @Override
+        public void dispose() {
+            disposed = true;
+        }
+
+        @Override
+        public boolean isDisposed() {
+            return disposed;
+        }
+
+        @Override
+        public void connect(Consumer<? super Disposable> connection) {
+            // not relevant
+        }
+
+        @Override
+        protected void subscribeActual(Observer<? super T> observer) {
+            // not relevant
+        }
+    }
+
+    @Test
+    public void timeoutDisposesSource() {
+        ObservableRefCount<Object> o = (ObservableRefCount<Object>)new TestConnectableObservable<Object>().refCount();
+
+        RefConnection rc = new RefConnection(o);
+        o.connection = rc;
+
+        o.timeout(rc);
+
+        assertTrue(((Disposable)o.source).isDisposed());
     }
 }
