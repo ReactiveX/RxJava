@@ -765,15 +765,17 @@ public class ObservableRefCountTest {
         ConnectableObservable<Integer> co = Observable.just(1).concatWith(Observable.<Integer>never())
         .replay();
 
-        assertTrue(((Disposable)co).isDisposed());
+        if (co instanceof Disposable) {
+            assertTrue(((Disposable)co).isDisposed());
 
-        Disposable connection = co.connect();
+            Disposable connection = co.connect();
 
-        assertFalse(((Disposable)co).isDisposed());
+            assertFalse(((Disposable)co).isDisposed());
 
-        connection.dispose();
+            connection.dispose();
 
-        assertTrue(((Disposable)co).isDisposed());
+            assertTrue(((Disposable)co).isDisposed());
+        }
     }
 
     static final class BadObservableSubscribe extends ConnectableObservable<Object> {
@@ -1239,6 +1241,8 @@ public class ObservableRefCountTest {
 
         o.cancel(null);
 
+        o.cancel(new RefConnection(o));
+
         RefConnection rc = new RefConnection(o);
         o.connection = null;
         rc.subscriberCount = 0;
@@ -1274,5 +1278,71 @@ public class ObservableRefCountTest {
         rc.connected = true;
         o.connection = rc;
         o.cancel(rc);
+
+        o.connection = rc;
+        o.cancel(new RefConnection(o));
+    }
+
+    @Test
+    public void replayRefCountShallBeThreadSafe() {
+        for (int i = 0; i < TestHelper.RACE_LONG_LOOPS; i++) {
+            Observable<Integer> observable = Observable.just(1).replay(1).refCount();
+
+            TestObserver<Integer> observer1 = observable
+                    .subscribeOn(Schedulers.io())
+                    .test();
+
+            TestObserver<Integer> observer2 = observable
+                    .subscribeOn(Schedulers.io())
+                    .test();
+
+            observer1
+            .withTag("" + i)
+            .awaitDone(5, TimeUnit.SECONDS)
+            .assertResult(1);
+
+            observer2
+            .withTag("" + i)
+            .awaitDone(5, TimeUnit.SECONDS)
+            .assertResult(1);
+        }
+    }
+
+    static final class TestConnectableObservable<T> extends ConnectableObservable<T>
+    implements Disposable {
+
+        volatile boolean disposed;
+
+        @Override
+        public void dispose() {
+            disposed = true;
+        }
+
+        @Override
+        public boolean isDisposed() {
+            return disposed;
+        }
+
+        @Override
+        public void connect(Consumer<? super Disposable> connection) {
+            // not relevant
+        }
+
+        @Override
+        protected void subscribeActual(Observer<? super T> observer) {
+            // not relevant
+        }
+    }
+
+    @Test
+    public void timeoutDisposesSource() {
+        ObservableRefCount<Object> o = (ObservableRefCount<Object>)new TestConnectableObservable<Object>().refCount();
+
+        RefConnection rc = new RefConnection(o);
+        o.connection = rc;
+
+        o.timeout(rc);
+
+        assertTrue(((Disposable)o.source).isDisposed());
     }
 }

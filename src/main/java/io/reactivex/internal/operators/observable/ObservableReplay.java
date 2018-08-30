@@ -31,7 +31,7 @@ import io.reactivex.observables.ConnectableObservable;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.schedulers.Timed;
 
-public final class ObservableReplay<T> extends ConnectableObservable<T> implements HasUpstreamObservableSource<T>, Disposable {
+public final class ObservableReplay<T> extends ConnectableObservable<T> implements HasUpstreamObservableSource<T>, ResettableConnectable {
     /** The source observable. */
     final ObservableSource<T> source;
     /** Holds the current subscriber that is, will be or just was subscribed to the source observable. */
@@ -159,15 +159,10 @@ public final class ObservableReplay<T> extends ConnectableObservable<T> implemen
         return source;
     }
 
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
-    public void dispose() {
-        current.lazySet(null);
-    }
-
-    @Override
-    public boolean isDisposed() {
-        Disposable d = current.get();
-        return d == null || d.isDisposed();
+    public void resetIf(Disposable connectionObject) {
+        current.compareAndSet((ReplayObserver)connectionObject, null);
     }
 
     @Override

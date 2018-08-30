@@ -24,6 +24,7 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.Exceptions;
 import io.reactivex.flowables.ConnectableFlowable;
 import io.reactivex.functions.*;
+import io.reactivex.internal.disposables.ResettableConnectable;
 import io.reactivex.internal.functions.ObjectHelper;
 import io.reactivex.internal.fuseable.HasUpstreamPublisher;
 import io.reactivex.internal.subscribers.SubscriberResourceWrapper;
@@ -32,7 +33,7 @@ import io.reactivex.internal.util.*;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.schedulers.Timed;
 
-public final class FlowableReplay<T> extends ConnectableFlowable<T> implements HasUpstreamPublisher<T>, Disposable {
+public final class FlowableReplay<T> extends ConnectableFlowable<T> implements HasUpstreamPublisher<T>, ResettableConnectable {
     /** The source observable. */
     final Flowable<T> source;
     /** Holds the current subscriber that is, will be or just was subscribed to the source observable. */
@@ -161,15 +162,10 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
         onSubscribe.subscribe(s);
     }
 
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
-    public void dispose() {
-        current.lazySet(null);
-    }
-
-    @Override
-    public boolean isDisposed() {
-        Disposable d = current.get();
-        return d == null || d.isDisposed();
+    public void resetIf(Disposable connectionObject) {
+        current.compareAndSet((ReplaySubscriber)connectionObject, null);
     }
 
     @Override
