@@ -133,7 +133,7 @@ public final class ObservableRefCount<T> extends Observable<T> {
         synchronized (this) {
             if (rc.subscriberCount == 0 && rc == connection) {
                 connection = null;
-                Object connectionObject = rc.get();
+                Disposable connectionObject = rc.get();
                 DisposableHelper.dispose(rc);
                 if (source instanceof Disposable) {
                     ((Disposable)source).dispose();

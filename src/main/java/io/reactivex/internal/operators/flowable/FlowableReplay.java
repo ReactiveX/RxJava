@@ -164,7 +164,7 @@ public final class FlowableReplay<T> extends ConnectableFlowable<T> implements H
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
-    public void resetIf(Object connectionObject) {
+    public void resetIf(Disposable connectionObject) {
         current.compareAndSet((ReplaySubscriber)connectionObject, null);
     }
 

@@ -136,7 +136,7 @@ public final class FlowableRefCount<T> extends Flowable<T> {
         synchronized (this) {
             if (rc.subscriberCount == 0 && rc == connection) {
                 connection = null;
-                Object connectionObject = rc.get();
+                Disposable connectionObject = rc.get();
                 DisposableHelper.dispose(rc);
                 if (source instanceof Disposable) {
                     ((Disposable)source).dispose();

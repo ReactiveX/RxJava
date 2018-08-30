@@ -161,7 +161,7 @@ public final class ObservableReplay<T> extends ConnectableObservable<T> implemen
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
-    public void resetIf(Object connectionObject) {
+    public void resetIf(Disposable connectionObject) {
         current.compareAndSet((ReplayObserver)connectionObject, null);
     }
 
