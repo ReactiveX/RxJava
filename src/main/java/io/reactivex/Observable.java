@@ -1757,8 +1757,14 @@ public abstract class Observable<T> implements ObservableSource<T> {
      * <dl>
      *   <dt><b>Scheduler:</b></dt>
      *   <dd>{@code fromCallable} does not operate by default on a particular {@link Scheduler}.</dd>
+     *   <dt><b>Error handling:</b></dt>
+     *   <dd> If the {@link Callable} throws an exception, the respective {@link Throwable} is
+     *   delivered to the downstream via {@link Observer#onError(Throwable)},
+     *   except when the downstream has canceled or disposed this {@code Observable} source.
+     *   In this latter case, the {@code Throwable} is delivered to the global error handler via
+     *   {@link RxJavaPlugins#onError(Throwable)} as an {@link io.reactivex.exceptions.UndeliverableException UndeliverableException}.
+     *   </dd>
      * </dl>
-     *
      * @param supplier
      *         a function, the execution of which should be deferred; {@code fromCallable} will invoke this
      *         function only when an observer subscribes to the ObservableSource that {@code fromCallable} returns
