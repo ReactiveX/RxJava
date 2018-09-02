@@ -399,7 +399,7 @@ public abstract class Completable implements CompletableSource {
      *  <dt><b>Error handling:</b></dt>
      *  <dd> If the {@link Action} throws an exception, the respective {@link Throwable} is
      *  delivered to the downstream via {@link CompletableObserver#onError(Throwable)},
-     *  except when the downstream has canceled or disposed this {@code Completable} source.
+     *  except when the downstream has disposed this {@code Completable} source.
      *  In this latter case, the {@code Throwable} is delivered to the global error handler via
      *  {@link RxJavaPlugins#onError(Throwable)} as an {@link io.reactivex.exceptions.UndeliverableException UndeliverableException}.
      *  </dd>
@@ -426,7 +426,7 @@ public abstract class Completable implements CompletableSource {
      *  <dt><b>Error handling:</b></dt>
      *  <dd> If the {@link Callable} throws an exception, the respective {@link Throwable} is
      *  delivered to the downstream via {@link CompletableObserver#onError(Throwable)},
-     *  except when the downstream has canceled or disposed this {@code Completable} source.
+     *  except when the downstream has disposed this {@code Completable} source.
      *  In this latter case, the {@code Throwable} is delivered to the global error handler via
      *  {@link RxJavaPlugins#onError(Throwable)} as an {@link io.reactivex.exceptions.UndeliverableException UndeliverableException}.
      *  </dd>

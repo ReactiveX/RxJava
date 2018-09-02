@@ -660,7 +660,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      *  <dt><b>Error handling:</b></dt>
      *  <dd> If the {@link Action} throws an exception, the respective {@link Throwable} is
      *  delivered to the downstream via {@link MaybeObserver#onError(Throwable)},
-     *  except when the downstream has canceled or disposed this {@code Maybe} source.
+     *  except when the downstream has disposed this {@code Maybe} source.
      *  In this latter case, the {@code Throwable} is delivered to the global error handler via
      *  {@link RxJavaPlugins#onError(Throwable)} as an {@link io.reactivex.exceptions.UndeliverableException UndeliverableException}.
      *  </dd>
