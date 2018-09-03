@@ -97,7 +97,7 @@ import io.reactivex.schedulers.Schedulers;
  * d.dispose();
  * </code></pre>
  * <p>
- * Note that by design, subscriptions via {@link #subscribe(SingleObserver)} can't be cancelled/disposed
+ * Note that by design, subscriptions via {@link #subscribe(SingleObserver)} can't be disposed
  * from the outside (hence the
  * {@code void} return of the {@link #subscribe(SingleObserver)} method) and it is the
  * responsibility of the implementor of the {@code SingleObserver} to allow this to happen.
@@ -114,7 +114,7 @@ import io.reactivex.schedulers.Schedulers;
 public abstract class Single<T> implements SingleSource<T> {
 
     /**
-     * Runs multiple SingleSources and signals the events of the first one that signals (cancelling
+     * Runs multiple SingleSources and signals the events of the first one that signals (disposing
      * the rest).
      * <p>
      * <img width="640" height="515" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.amb.png" alt="">
@@ -136,7 +136,7 @@ public abstract class Single<T> implements SingleSource<T> {
     }
 
     /**
-     * Runs multiple SingleSources and signals the events of the first one that signals (cancelling
+     * Runs multiple SingleSources and signals the events of the first one that signals (disposing
      * the rest).
      * <p>
      * <img width="640" height="515" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.ambArray.png" alt="">
@@ -823,7 +823,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * <dd>{@code merge} does not operate by default on a particular {@link Scheduler}.</dd>
      *  <dt><b>Error handling:</b></dt>
      *  <dd>If any of the source {@code SingleSource}s signal a {@code Throwable} via {@code onError}, the resulting
-     *  {@code Flowable} terminates with that {@code Throwable} and all other source {@code SingleSource}s are cancelled.
+     *  {@code Flowable} terminates with that {@code Throwable} and all other source {@code SingleSource}s are disposed.
      *  If more than one {@code SingleSource} signals an error, the resulting {@code Flowable} may terminate with the
      *  first one's error or, depending on the concurrency of the sources, may terminate with a
      *  {@code CompositeException} containing two or more of the various error signals.
@@ -860,7 +860,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * <dd>{@code merge} does not operate by default on a particular {@link Scheduler}.</dd>
      *  <dt><b>Error handling:</b></dt>
      *  <dd>If any of the source {@code SingleSource}s signal a {@code Throwable} via {@code onError}, the resulting
-     *  {@code Flowable} terminates with that {@code Throwable} and all other source {@code SingleSource}s are cancelled.
+     *  {@code Flowable} terminates with that {@code Throwable} and all other source {@code SingleSource}s are disposed.
      *  If more than one {@code SingleSource} signals an error, the resulting {@code Flowable} may terminate with the
      *  first one's error or, depending on the concurrency of the sources, may terminate with a
      *  {@code CompositeException} containing two or more of the various error signals.
@@ -931,7 +931,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * <dd>{@code merge} does not operate by default on a particular {@link Scheduler}.</dd>
      *  <dt><b>Error handling:</b></dt>
      *  <dd>If any of the source {@code SingleSource}s signal a {@code Throwable} via {@code onError}, the resulting
-     *  {@code Flowable} terminates with that {@code Throwable} and all other source {@code SingleSource}s are cancelled.
+     *  {@code Flowable} terminates with that {@code Throwable} and all other source {@code SingleSource}s are disposed.
      *  If more than one {@code SingleSource} signals an error, the resulting {@code Flowable} may terminate with the
      *  first one's error or, depending on the concurrency of the sources, may terminate with a
      *  {@code CompositeException} containing two or more of the various error signals.
@@ -979,7 +979,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * <dd>{@code merge} does not operate by default on a particular {@link Scheduler}.</dd>
      *  <dt><b>Error handling:</b></dt>
      *  <dd>If any of the source {@code SingleSource}s signal a {@code Throwable} via {@code onError}, the resulting
-     *  {@code Flowable} terminates with that {@code Throwable} and all other source {@code SingleSource}s are cancelled.
+     *  {@code Flowable} terminates with that {@code Throwable} and all other source {@code SingleSource}s are disposed.
      *  If more than one {@code SingleSource} signals an error, the resulting {@code Flowable} may terminate with the
      *  first one's error or, depending on the concurrency of the sources, may terminate with a
      *  {@code CompositeException} containing two or more of the various error signals.
@@ -1031,7 +1031,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * <dd>{@code merge} does not operate by default on a particular {@link Scheduler}.</dd>
      *  <dt><b>Error handling:</b></dt>
      *  <dd>If any of the source {@code SingleSource}s signal a {@code Throwable} via {@code onError}, the resulting
-     *  {@code Flowable} terminates with that {@code Throwable} and all other source {@code SingleSource}s are cancelled.
+     *  {@code Flowable} terminates with that {@code Throwable} and all other source {@code SingleSource}s are disposed.
      *  If more than one {@code SingleSource} signals an error, the resulting {@code Flowable} may terminate with the
      *  first one's error or, depending on the concurrency of the sources, may terminate with a
      *  {@code CompositeException} containing two or more of the various error signals.
@@ -1367,7 +1367,7 @@ public abstract class Single<T> implements SingleSource<T> {
      *                  to be run by the operator
      * @param disposer the consumer of the generated resource that is called exactly once for
      *                  that particular resource when the generated SingleSource terminates
-     *                  (successfully or with an error) or gets cancelled.
+     *                  (successfully or with an error) or gets disposed.
      * @return the new Single instance
      * @since 2.0
      */
@@ -1394,7 +1394,7 @@ public abstract class Single<T> implements SingleSource<T> {
      *                  to be run by the operator
      * @param disposer the consumer of the generated resource that is called exactly once for
      *                  that particular resource when the generated SingleSource terminates
-     *                  (successfully or with an error) or gets cancelled.
+     *                  (successfully or with an error) or gets disposed.
      * @param eager
      *                 if true, the disposer is called before the terminal event is signalled
      *                 if false, the disposer is called after the terminal event is delivered to downstream
@@ -1450,7 +1450,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * <p>
      * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/zip.png" alt="">
      * <p>
-     * If any of the SingleSources signal an error, all other SingleSources get cancelled and the
+     * If any of the SingleSources signal an error, all other SingleSources get disposed and the
      * error emitted to downstream immediately.
      * <dl>
      * <dt><b>Scheduler:</b></dt>
@@ -1895,7 +1895,7 @@ public abstract class Single<T> implements SingleSource<T> {
      * <p>
      * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/zip.png" alt="">
      * <p>
-     * If any of the SingleSources signal an error, all other SingleSources get cancelled and the
+     * If any of the SingleSources signal an error, all other SingleSources get disposed and the
      * error emitted to downstream immediately.
      * <dl>
      * <dt><b>Scheduler:</b></dt>
@@ -2361,7 +2361,7 @@ public abstract class Single<T> implements SingleSource<T> {
      *  <dd>{@code doFinally} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * <p>History: 2.0.1 - experimental
-     * @param onFinally the action called when this Single terminates or gets cancelled
+     * @param onFinally the action called when this Single terminates or gets disposed
      * @return the new Single instance
      * @since 2.1
      */
@@ -3622,7 +3622,7 @@ public abstract class Single<T> implements SingleSource<T> {
 
     /**
      * Runs the current Single and if it doesn't signal within the specified timeout window, it is
-     * cancelled and the other SingleSource subscribed to.
+     * disposed and the other SingleSource subscribed to.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code timeout} subscribes to the other SingleSource on the {@link Scheduler} you specify.</dd>
@@ -3643,7 +3643,7 @@ public abstract class Single<T> implements SingleSource<T> {
 
     /**
      * Runs the current Single and if it doesn't signal within the specified timeout window, it is
-     * cancelled and the other SingleSource subscribed to.
+     * disposed and the other SingleSource subscribed to.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code timeout} subscribes to the other SingleSource on
@@ -3832,7 +3832,7 @@ public abstract class Single<T> implements SingleSource<T> {
      *  <dd>{@code unsubscribeOn} calls dispose() of the upstream on the {@link Scheduler} you specify.</dd>
      * </dl>
      * <p>History: 2.0.9 - experimental
-     * @param scheduler the target scheduler where to execute the cancellation
+     * @param scheduler the target scheduler where to execute the disposal
      * @return the new Single instance
      * @throws NullPointerException if scheduler is null
      * @since 2.2
