@@ -12130,8 +12130,6 @@ public abstract class Flowable<T> implements Publisher<T> {
      * Publisher into the same function, and so on until all items have been emitted by the finite source Publisher,
      * and emits the final result from the final call to your function as its sole item.
      * <p>
-     * If the source is empty, a {@code NoSuchElementException} is signaled.
-     * <p>
      * <img width="640" height="320" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/reduce.png" alt="">
      * <p>
      * This technique, which is called "reduce" here, is sometimes called "aggregate," "fold," "accumulate,"
