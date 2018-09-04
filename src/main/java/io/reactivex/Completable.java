@@ -432,7 +432,7 @@ public abstract class Completable implements CompletableSource {
      * <p>
      * <img width="640" height="628" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Completable.fromFuture.png" alt="">
      * <p>
-     * Note that if any of the subscribers to this Completable call dispose, this Completable will cancel the future.
+     * Note that if any of the observers to this Completable call dispose, this Completable will cancel the future.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code fromFuture} does not operate by default on a particular {@link Scheduler}.</dd>
