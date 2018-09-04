@@ -93,7 +93,7 @@ import io.reactivex.schedulers.Schedulers;
  * d.dispose();
  * </code></pre>
  * <p>
- * Note that by design, subscriptions via {@link #subscribe(MaybeObserver)} can't be cancelled/disposed
+ * Note that by design, subscriptions via {@link #subscribe(MaybeObserver)} can't be disposed
  * from the outside (hence the
  * {@code void} return of the {@link #subscribe(MaybeObserver)} method) and it is the
  * responsibility of the implementor of the {@code MaybeObserver} to allow this to happen.
@@ -110,7 +110,7 @@ import io.reactivex.schedulers.Schedulers;
 public abstract class Maybe<T> implements MaybeSource<T> {
 
     /**
-     * Runs multiple MaybeSources and signals the events of the first one that signals (cancelling
+     * Runs multiple MaybeSources and signals the events of the first one that signals (disposing
      * the rest).
      * <p>
      * <img width="640" height="519" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.amb.png" alt="">
@@ -131,7 +131,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     }
 
     /**
-     * Runs multiple MaybeSources and signals the events of the first one that signals (cancelling
+     * Runs multiple MaybeSources and signals the events of the first one that signals (disposing
      * the rest).
      * <p>
      * <img width="640" height="519" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Maybe.ambArray.png" alt="">
@@ -767,7 +767,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * <p>
      * <em>Important note:</em> This Maybe is blocking; you cannot dispose it.
      * <p>
-     * Unlike 1.x, cancelling the Maybe won't cancel the future. If necessary, one can use composition to achieve the
+     * Unlike 1.x, disposing the Maybe won't cancel the future. If necessary, one can use composition to achieve the
      * cancellation effect: {@code futureMaybe.doOnDispose(() -> future.cancel(true));}.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
@@ -798,7 +798,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * return value of the {@link Future#get} method of that object, by passing the object into the {@code fromFuture}
      * method.
      * <p>
-     * Unlike 1.x, cancelling the Maybe won't cancel the future. If necessary, one can use composition to achieve the
+     * Unlike 1.x, disposing the Maybe won't cancel the future. If necessary, one can use composition to achieve the
      * cancellation effect: {@code futureMaybe.doOnCancel(() -> future.cancel(true));}.
      * <p>
      * <em>Important note:</em> This Maybe is blocking on the thread it gets subscribed on; you cannot dispose it.
@@ -882,7 +882,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * <dd>{@code merge} does not operate by default on a particular {@link Scheduler}.</dd>
      *  <dt><b>Error handling:</b></dt>
      *  <dd>If any of the source {@code MaybeSource}s signal a {@code Throwable} via {@code onError}, the resulting
-     *  {@code Flowable} terminates with that {@code Throwable} and all other source {@code MaybeSource}s are cancelled.
+     *  {@code Flowable} terminates with that {@code Throwable} and all other source {@code MaybeSource}s are disposed.
      *  If more than one {@code MaybeSource} signals an error, the resulting {@code Flowable} may terminate with the
      *  first one's error or, depending on the concurrency of the sources, may terminate with a
      *  {@code CompositeException} containing two or more of the various error signals.
@@ -916,7 +916,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * <dd>{@code merge} does not operate by default on a particular {@link Scheduler}.</dd>
      *  <dt><b>Error handling:</b></dt>
      *  <dd>If any of the source {@code MaybeSource}s signal a {@code Throwable} via {@code onError}, the resulting
-     *  {@code Flowable} terminates with that {@code Throwable} and all other source {@code MaybeSource}s are cancelled.
+     *  {@code Flowable} terminates with that {@code Throwable} and all other source {@code MaybeSource}s are disposed.
      *  If more than one {@code MaybeSource} signals an error, the resulting {@code Flowable} may terminate with the
      *  first one's error or, depending on the concurrency of the sources, may terminate with a
      *  {@code CompositeException} containing two or more of the various error signals.
@@ -950,7 +950,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * <dd>{@code merge} does not operate by default on a particular {@link Scheduler}.</dd>
      *  <dt><b>Error handling:</b></dt>
      *  <dd>If any of the source {@code MaybeSource}s signal a {@code Throwable} via {@code onError}, the resulting
-     *  {@code Flowable} terminates with that {@code Throwable} and all other source {@code MaybeSource}s are cancelled.
+     *  {@code Flowable} terminates with that {@code Throwable} and all other source {@code MaybeSource}s are disposed.
      *  If more than one {@code MaybeSource} signals an error, the resulting {@code Flowable} may terminate with the
      *  first one's error or, depending on the concurrency of the sources, may terminate with a
      *  {@code CompositeException} containing two or more of the various error signals.
@@ -1023,7 +1023,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * <dd>{@code merge} does not operate by default on a particular {@link Scheduler}.</dd>
      *  <dt><b>Error handling:</b></dt>
      *  <dd>If any of the source {@code MaybeSource}s signal a {@code Throwable} via {@code onError}, the resulting
-     *  {@code Flowable} terminates with that {@code Throwable} and all other source {@code MaybeSource}s are cancelled.
+     *  {@code Flowable} terminates with that {@code Throwable} and all other source {@code MaybeSource}s are disposed.
      *  If more than one {@code MaybeSource} signals an error, the resulting {@code Flowable} may terminate with the
      *  first one's error or, depending on the concurrency of the sources, may terminate with a
      *  {@code CompositeException} containing two or more of the various error signals.
@@ -1071,7 +1071,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * <dd>{@code merge} does not operate by default on a particular {@link Scheduler}.</dd>
      *  <dt><b>Error handling:</b></dt>
      *  <dd>If any of the source {@code MaybeSource}s signal a {@code Throwable} via {@code onError}, the resulting
-     *  {@code Flowable} terminates with that {@code Throwable} and all other source {@code MaybeSource}s are cancelled.
+     *  {@code Flowable} terminates with that {@code Throwable} and all other source {@code MaybeSource}s are disposed.
      *  If more than one {@code MaybeSource} signals an error, the resulting {@code Flowable} may terminate with the
      *  first one's error or, depending on the concurrency of the sources, may terminate with a
      *  {@code CompositeException} containing two or more of the various error signals.
@@ -1123,7 +1123,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * <dd>{@code merge} does not operate by default on a particular {@link Scheduler}.</dd>
      *  <dt><b>Error handling:</b></dt>
      *  <dd>If any of the source {@code MaybeSource}s signal a {@code Throwable} via {@code onError}, the resulting
-     *  {@code Flowable} terminates with that {@code Throwable} and all other source {@code MaybeSource}s are cancelled.
+     *  {@code Flowable} terminates with that {@code Throwable} and all other source {@code MaybeSource}s are disposed.
      *  If more than one {@code MaybeSource} signals an error, the resulting {@code Flowable} may terminate with the
      *  first one's error or, depending on the concurrency of the sources, may terminate with a
      *  {@code CompositeException} containing two or more of the various error signals.
@@ -1174,7 +1174,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * <dd>{@code mergeArray} does not operate by default on a particular {@link Scheduler}.</dd>
      *  <dt><b>Error handling:</b></dt>
      *  <dd>If any of the source {@code MaybeSource}s signal a {@code Throwable} via {@code onError}, the resulting
-     *  {@code Flowable} terminates with that {@code Throwable} and all other source {@code MaybeSource}s are cancelled.
+     *  {@code Flowable} terminates with that {@code Throwable} and all other source {@code MaybeSource}s are disposed.
      *  If more than one {@code MaybeSource} signals an error, the resulting {@code Flowable} may terminate with the
      *  first one's error or, depending on the concurrency of the sources, may terminate with a
      *  {@code CompositeException} containing two or more of the various error signals.
@@ -2700,7 +2700,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      *  <dd>{@code doFinally} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * <p>History: 2.0.1 - experimental
-     * @param onFinally the action called when this Maybe terminates or gets cancelled
+     * @param onFinally the action called when this Maybe terminates or gets disposed
      * @return the new Maybe instance
      * @since 2.1
      */
@@ -2718,7 +2718,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code doOnDispose} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
-     * @param onDispose the action called when the subscription is cancelled (disposed)
+     * @param onDispose the action called when the subscription is disposed
      * @throws NullPointerException if onDispose is null
      * @return the new Maybe instance
      */
@@ -3499,7 +3499,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     }
 
     /**
-     * Converts this Maybe into an Observable instance composing cancellation
+     * Converts this Maybe into an Observable instance composing disposal
      * through.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
@@ -3518,7 +3518,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     }
 
     /**
-     * Converts this Maybe into a Single instance composing cancellation
+     * Converts this Maybe into a Single instance composing disposal
      * through and turning an empty Maybe into a Single that emits the given
      * value through onSuccess.
      * <dl>
@@ -3536,7 +3536,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
     }
 
     /**
-     * Converts this Maybe into a Single instance composing cancellation
+     * Converts this Maybe into a Single instance composing disposal
      * through and turning an empty Maybe into a signal of NoSuchElementException.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
@@ -4451,7 +4451,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
 
     /**
      * If the current {@code Maybe} didn't signal an event before the {@code timeoutIndicator} {@link MaybeSource} signals,
-     * the current {@code Maybe} is cancelled and the {@code fallback} {@code MaybeSource} subscribed to
+     * the current {@code Maybe} is disposed and the {@code fallback} {@code MaybeSource} subscribed to
      * as a continuation.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
@@ -4496,7 +4496,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
 
     /**
      * If the current {@code Maybe} didn't signal an event before the {@code timeoutIndicator} {@link Publisher} signals,
-     * the current {@code Maybe} is cancelled and the {@code fallback} {@code MaybeSource} subscribed to
+     * the current {@code Maybe} is disposed and the {@code fallback} {@code MaybeSource} subscribed to
      * as a continuation.
      * <dl>
      *  <dt><b>Backpressure:</b></dt>
@@ -4527,7 +4527,7 @@ public abstract class Maybe<T> implements MaybeSource<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code unsubscribeOn} calls dispose() of the upstream on the {@link Scheduler} you specify.</dd>
      * </dl>
-     * @param scheduler the target scheduler where to execute the cancellation
+     * @param scheduler the target scheduler where to execute the disposal
      * @return the new Maybe instance
      * @throws NullPointerException if scheduler is null
      */
