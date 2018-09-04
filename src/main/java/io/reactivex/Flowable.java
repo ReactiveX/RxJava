@@ -5848,7 +5848,7 @@ public abstract class Flowable<T> implements Publisher<T> {
      * <p>
      * If the {@link Flowable} emits more than one item, {@link java.util.concurrent.Future} will receive an
      * {@link java.lang.IndexOutOfBoundsException}. If the {@link Flowable} is empty, {@link java.util.concurrent.Future}
-     * will receive a {@link java.util.NoSuchElementException}. The {@code Observable} source has to terminate in order
+     * will receive a {@link java.util.NoSuchElementException}. The {@code Flowable} source has to terminate in order
      * for the returned {@code Future} to terminate as well.
      * <p>
      * If the {@code Flowable} may emit more than one item, use {@code Flowable.toList().toFuture()}.
