@@ -2,6 +2,23 @@
 
 The changelog of version 1.x can be found at https://github.com/ReactiveX/RxJava/blob/1.x/CHANGES.md
 
+### Version 2.2.2 - September 6, 2018 ([Maven](http://search.maven.org/#artifactdetails%7Cio.reactivex.rxjava2%7Crxjava%7C2.2.2%7C))
+
+#### Bugfixes
+
+  - [Pull 6187](https://github.com/ReactiveX/RxJava/pull/6187): Fix `refCount` termination-reconnect race.
+
+#### Documentation changes
+
+  - [Pull 6171](https://github.com/ReactiveX/RxJava/pull/6171): Add explanation text to `Undeliverable` & `OnErrorNotImplemented` exceptions.
+  - [Pull 6174](https://github.com/ReactiveX/RxJava/pull/6174): Auto-clean up RxJavaPlugins JavaDocs HTML.
+  - [Pull 6175](https://github.com/ReactiveX/RxJava/pull/6175): Explain `null` observer/subscriber return errors from `RxJavaPlugins` in detail.
+  - [Pull 6180](https://github.com/ReactiveX/RxJava/pull/6180): Update `Additional-Reading.md`.
+  - [Pull 6180](https://github.com/ReactiveX/RxJava/pull/6180): Fix `Flowable.reduce(BiFunction)` JavaDoc; the operator does not signal `NoSuchElementException`.
+  - [Pull 6193](https://github.com/ReactiveX/RxJava/pull/6193): Add "error handling" java docs section to `fromCallable` & co.
+  - [Pull 6199](https://github.com/ReactiveX/RxJava/pull/6199): Fix terminology of cancel/dispose in the JavaDocs.
+  - [Pull 6200](https://github.com/ReactiveX/RxJava/pull/6200): Fix `toFuture` marbles and descriptions.
+
 ### Version 2.2.1 - August 23, 2018 ([Maven](http://search.maven.org/#artifactdetails%7Cio.reactivex.rxjava2%7Crxjava%7C2.2.1%7C))
 
 #### API changes
