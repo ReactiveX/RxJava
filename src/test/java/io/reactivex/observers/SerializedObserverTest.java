@@ -156,6 +156,7 @@ public class SerializedObserverTest {
     @Test
     public void runOutOfOrderConcurrencyTest() {
         ExecutorService tp = Executors.newFixedThreadPool(20);
+        List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
             TestConcurrencySubscriber tw = new TestConcurrencySubscriber();
             // we need Synchronized + SafeObserver to handle synchronization plus life-cycle
@@ -190,6 +191,10 @@ public class SerializedObserverTest {
             @SuppressWarnings("unused")
             int numNextEvents = tw.assertEvents(null); // no check of type since we don't want to test barging results here, just interleaving behavior
             //            System.out.println("Number of events executed: " + numNextEvents);
+
+            for (int i = 0; i < errors.size(); i++) {
+                TestHelper.assertUndeliverable(errors, i, RuntimeException.class);
+            }
         } catch (Throwable e) {
             fail("Concurrency test failed: " + e.getMessage());
             e.printStackTrace();
@@ -200,6 +205,8 @@ public class SerializedObserverTest {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
+
+            RxJavaPlugins.reset();
         }
     }
 
@@ -955,24 +962,31 @@ public class SerializedObserverTest {
 
     @Test
     public void testErrorReentry() {
-        final AtomicReference<Observer<Integer>> serial = new AtomicReference<Observer<Integer>>();
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            final AtomicReference<Observer<Integer>> serial = new AtomicReference<Observer<Integer>>();
 
-        TestObserver<Integer> to = new TestObserver<Integer>() {
-            @Override
-            public void onNext(Integer v) {
-                serial.get().onError(new TestException());
-                serial.get().onError(new TestException());
-                super.onNext(v);
-            }
-        };
-        SerializedObserver<Integer> sobs = new SerializedObserver<Integer>(to);
-        sobs.onSubscribe(Disposables.empty());
-        serial.set(sobs);
+            TestObserver<Integer> to = new TestObserver<Integer>() {
+                @Override
+                public void onNext(Integer v) {
+                    serial.get().onError(new TestException());
+                    serial.get().onError(new TestException());
+                    super.onNext(v);
+                }
+            };
+            SerializedObserver<Integer> sobs = new SerializedObserver<Integer>(to);
+            sobs.onSubscribe(Disposables.empty());
+            serial.set(sobs);
 
-        sobs.onNext(1);
+            sobs.onNext(1);
 
-        to.assertValue(1);
-        to.assertError(TestException.class);
+            to.assertValue(1);
+            to.assertError(TestException.class);
+
+            TestHelper.assertUndeliverable(errors, 0, TestException.class);
+        } finally {
+            RxJavaPlugins.reset();
+        }
     }
 
     @Test

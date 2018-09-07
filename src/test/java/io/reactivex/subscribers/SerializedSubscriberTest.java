@@ -158,6 +158,7 @@ public class SerializedSubscriberTest {
     @Test
     public void runOutOfOrderConcurrencyTest() {
         ExecutorService tp = Executors.newFixedThreadPool(20);
+        List<Throwable> errors = TestHelper.trackPluginErrors();
         try {
             TestConcurrencySubscriber tw = new TestConcurrencySubscriber();
             // we need Synchronized + SafeSubscriber to handle synchronization plus life-cycle
@@ -192,6 +193,10 @@ public class SerializedSubscriberTest {
             @SuppressWarnings("unused")
             int numNextEvents = tw.assertEvents(null); // no check of type since we don't want to test barging results here, just interleaving behavior
             //            System.out.println("Number of events executed: " + numNextEvents);
+
+            for (int i = 0; i < errors.size(); i++) {
+                TestHelper.assertUndeliverable(errors, i, RuntimeException.class);
+            }
         } catch (Throwable e) {
             fail("Concurrency test failed: " + e.getMessage());
             e.printStackTrace();
@@ -202,6 +207,8 @@ public class SerializedSubscriberTest {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
+
+            RxJavaPlugins.reset();
         }
     }
 
@@ -957,24 +964,31 @@ public class SerializedSubscriberTest {
 
     @Test
     public void testErrorReentry() {
-        final AtomicReference<Subscriber<Integer>> serial = new AtomicReference<Subscriber<Integer>>();
+        List<Throwable> errors = TestHelper.trackPluginErrors();
+        try {
+            final AtomicReference<Subscriber<Integer>> serial = new AtomicReference<Subscriber<Integer>>();
 
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>() {
-            @Override
-            public void onNext(Integer v) {
-                serial.get().onError(new TestException());
-                serial.get().onError(new TestException());
-                super.onNext(v);
-            }
-        };
-        SerializedSubscriber<Integer> sobs = new SerializedSubscriber<Integer>(ts);
-        sobs.onSubscribe(new BooleanSubscription());
-        serial.set(sobs);
+            TestSubscriber<Integer> ts = new TestSubscriber<Integer>() {
+                @Override
+                public void onNext(Integer v) {
+                    serial.get().onError(new TestException());
+                    serial.get().onError(new TestException());
+                    super.onNext(v);
+                }
+            };
+            SerializedSubscriber<Integer> sobs = new SerializedSubscriber<Integer>(ts);
+            sobs.onSubscribe(new BooleanSubscription());
+            serial.set(sobs);
 
-        sobs.onNext(1);
+            sobs.onNext(1);
 
-        ts.assertValue(1);
-        ts.assertError(TestException.class);
+            ts.assertValue(1);
+            ts.assertError(TestException.class);
+
+            TestHelper.assertUndeliverable(errors, 0, TestException.class);
+        } finally {
+            RxJavaPlugins.reset();
+        }
     }
 
     @Test
@@ -1180,38 +1194,45 @@ public class SerializedSubscriberTest {
     @Test
     public void onCompleteOnErrorRace() {
         for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
-            TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+            List<Throwable> errors = TestHelper.trackPluginErrors();
+            try {
+                TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
 
-            final SerializedSubscriber<Integer> so = new SerializedSubscriber<Integer>(ts);
+                final SerializedSubscriber<Integer> so = new SerializedSubscriber<Integer>(ts);
 
-            BooleanSubscription bs = new BooleanSubscription();
+                BooleanSubscription bs = new BooleanSubscription();
 
-            so.onSubscribe(bs);
+                so.onSubscribe(bs);
 
-            final Throwable ex = new TestException();
+                final Throwable ex = new TestException();
 
-            Runnable r1 = new Runnable() {
-                @Override
-                public void run() {
-                    so.onError(ex);
+                Runnable r1 = new Runnable() {
+                    @Override
+                    public void run() {
+                        so.onError(ex);
+                    }
+                };
+
+                Runnable r2 = new Runnable() {
+                    @Override
+                    public void run() {
+                        so.onComplete();
+                    }
+                };
+
+                TestHelper.race(r1, r2);
+
+                ts.awaitDone(5, TimeUnit.SECONDS);
+
+                if (ts.completions() != 0) {
+                    ts.assertResult();
+                    TestHelper.assertUndeliverable(errors, 0, TestException.class);
+                } else {
+                    ts.assertFailure(TestException.class).assertError(ex);
+                    assertTrue("" + errors, errors.isEmpty());
                 }
-            };
-
-            Runnable r2 = new Runnable() {
-                @Override
-                public void run() {
-                    so.onComplete();
-                }
-            };
-
-            TestHelper.race(r1, r2);
-
-            ts.awaitDone(5, TimeUnit.SECONDS);
-
-            if (ts.completions() != 0) {
-                ts.assertResult();
-            } else {
-                ts.assertFailure(TestException.class).assertError(ex);
+            } finally {
+                RxJavaPlugins.reset();
             }
         }
 
