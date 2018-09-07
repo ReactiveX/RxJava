@@ -192,7 +192,7 @@ public class SerializedObserverTest {
             int numNextEvents = tw.assertEvents(null); // no check of type since we don't want to test barging results here, just interleaving behavior
             //            System.out.println("Number of events executed: " + numNextEvents);
 
-            for (int i = 0; i < 4; i++) {
+            for (int i = 0; i < errors.size(); i++) {
                 TestHelper.assertUndeliverable(errors, i, RuntimeException.class);
             }
         } catch (Throwable e) {
