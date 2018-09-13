@@ -1143,6 +1143,258 @@ public abstract class Completable implements CompletableSource {
     }
 
     /**
+     * Returns a Completable that first runs this Completable
+     * and then the other completable.
+     *
+     * This is a shortcut for {@code andThen(Completable.fromAction(run))}.
+     *
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code andThen} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param run action to perform next.
+     * @return the new Completable instance
+     */
+    @CheckReturnValue
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final Completable andThen(Action run) {
+        return andThen(Completable.fromAction(run));
+    }
+
+    /**
+     * Returns a Single which will subscribe to this Completable and once that is completed then
+     * will subscribe to the SingleSource created from {@code callable}. An error event from this
+     * Completable will be propagated to the downstream subscriber and will result in skipping
+     * the subscription of the Single.
+     *
+     * This is a shortcut for {@code andThen(Single.fromCallable(callable))}
+     *
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code andThen} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param callable action from which the next Single is created
+     * @param <T> the value type of the next Single
+     * @return Single that composes this Completable and new Single created from {@code callable}
+     */
+    @CheckReturnValue
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final <T> Single<T> andThenSingle(Callable<T> callable) {
+        return andThen(Single.fromCallable(callable));
+    }
+
+    /**
+     * Returns an Observable which will subscribe to this Completable and once that is completed then
+     * will subscribe to the ObservableSource created from {@code iterable}. An error event from this
+     * Completable will be propagated to the downstream subscriber and will result in skipping the
+     * subscription of the Observable.
+     *
+     * This is a shortcut for {@code andThen(Observable.fromIterable(iterable))}
+     *
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code andThen} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param iterable list of items that next Observable will emit
+     * @param <T> the value type of the next Observable
+     * @return Observable that composes this Completable and new Observable created from {@code iterable}
+     */
+    @CheckReturnValue
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final <T> Observable<T> andThenObservable(Iterable<T> iterable) {
+        return andThen(Observable.fromIterable(iterable));
+    }
+
+    /**
+     * Returns an Observable which will subscribe to this Completable and once that is completed then
+     * will subscribe to the ObservableSource created from {@code source}. An error event from this
+     * Completable will be propagated to the downstream subscriber and will result in skipping the
+     * subscription of the Observable.
+     *
+     * This is a shortcut for {@code andThen(Observable.create(source))}
+     *
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code andThen} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param source ObservableOnSubscribe from which next Observable is created
+     * @param <T> the value type of the next Observable
+     * @return Observable that composes this Completable and new Observable created from {@code source}
+     */
+    @CheckReturnValue
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final <T> Observable<T> andThenObservable(ObservableOnSubscribe<T> source) {
+        return andThen(Observable.create(source));
+    }
+
+    /**
+     * Returns an Observable which will subscribe to this Completable and once that is completed then
+     * will subscribe to the ObservableSource created from {@code callable}. An error event from this
+     * Completable will be propagated to the downstream subscriber and will result in skipping the
+     * subscription of the Observable.
+     *
+     * This is a shortcut for {@code andThen(Observable.fromCallable(callable))}
+     *
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code andThen} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param callable action from which the next Observable is created
+     * @param <T> the value type of the next Observable
+     * @return Observable that composes this Completable and new Observable created from {@code callable}
+     */
+    @CheckReturnValue
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final <T> Observable<T> andThenObservable(Callable<T> callable) {
+        return andThen(Observable.fromCallable(callable));
+    }
+
+    /**
+     * Returns a Flowable which will subscribe to this Completable and once that is completed then
+     * will subscribe to the Flowable created from {@code iterable}. An error event from this
+     * Completable will be propagated to the downstream subscriber and will result in skipping
+     * the subscription of the Publisher.
+     *
+     * This is a shortcut for {@code andThen(Flowable.fromIterable(iterable))}
+     *
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code andThen} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param iterable list of items that next Flowable will emit
+     * @param <T> the value type of the next Flowable
+     * @return Flowable that composes this Completable and new Flowable created from {@code iterable}
+     */
+    @CheckReturnValue
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final <T> Flowable<T> andThenFlowable(Iterable<T> iterable) {
+        return andThen(Flowable.fromIterable(iterable));
+    }
+
+    /**
+     * Returns an Flowable which will subscribe to this Completable and once that is completed then
+     * will subscribe to the Flowable created from {@code source} and {@code mode}. An error event from this
+     * Completable will be propagated to the downstream subscriber and will result in skipping the
+     * subscription of the Flowable.
+     *
+     * This is a shortcut for {@code andThen(Flowable.create(source, mode))}
+     *
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code andThen} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param mode the backpressure mode to apply if the downstream Subscriber doesn't request (fast) enough
+     * @param source FlowableOnSubscribe from which next Flowable is created
+     * @param <T> the value type of the next Observable
+     * @return Flowable that composes this Completable and new Flowable created from {@code source} and {@code mode}
+     */
+    @CheckReturnValue
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final <T> Flowable<T> andThenFlowable(BackpressureStrategy mode, FlowableOnSubscribe<T> source) {
+        return andThen(Flowable.create(source, mode));
+    }
+
+    /**
+     * Returns an Flowable which will subscribe to this Completable and once that is completed then
+     * will subscribe to the Flowable created from {@code callable}. An error event from this
+     * Completable will be propagated to the downstream subscriber and will result in skipping the
+     * subscription of the Observable.
+     *
+     * This is a shortcut for {@code andThen(Flowable.fromCallable(callable))}
+     *
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code andThen} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param callable action from which the next Flowable is created
+     * @param <T> the value type of the next Flowable
+     * @return Flowable that composes this Completable and new Flowable created from {@code callable}
+     */
+    @CheckReturnValue
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final <T> Flowable<T> andThenFlowable(Callable<T> callable) {
+        return andThen(Flowable.fromCallable(callable));
+    }
+
+    /**
+     * Returns an Maybe which will subscribe to this Completable and once that is completed then
+     * will subscribe to the Maybe created from {@code callable}. An error event from this
+     * Completable will be propagated to the downstream subscriber and will result in skipping the
+     * subscription of the Observable.
+     *
+     * This is a shortcut for {@code andThen(Maybe.fromCallable(callable))}
+     *
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code andThen} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param callable action from which the next Maybe is created
+     * @param <T> the value type of the next Maybe
+     * @return Maybe that composes this Completable and new Maybe created from {@code callable}
+     */
+    @CheckReturnValue
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final <T> Maybe<T> andThenMaybe(Callable<T> callable) {
+        return andThen(Maybe.fromCallable(callable));
+    }
+
+    /**
+     * Returns an Maybe which will subscribe to this Completable and once that is completed then
+     * will subscribe to the Maybe created from {@code Runnable}. An error event from this
+     * Completable will be propagated to the downstream subscriber and will result in skipping the
+     * subscription of the Observable.
+     *
+     * This is a shortcut for {@code andThen(Maybe.fromRunnable(run))}
+     *
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code andThen} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param run Runnable action from which the next Maybe is created
+     * @param <T> the value type of the next Maybe
+     * @return Maybe that composes this Completable and new Maybe created from {@code Runnable}
+     */
+    @CheckReturnValue
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final <T> Maybe<T> andThenMaybe(Runnable run) {
+        return andThen(Maybe.fromRunnable(run));
+    }
+
+    /**
+     * Returns an Maybe which will subscribe to this Completable and once that is completed then
+     * will subscribe to the Maybe created from {@code Action}. An error event from this
+     * Completable will be propagated to the downstream subscriber and will result in skipping the
+     * subscription of the Observable.
+     *
+     * This is a shortcut for {@code andThen(Maybe.fromAction(run))}
+     *
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code andThen} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param run Action from which the next Maybe is created
+     * @param <T> the value type of the next Maybe
+     * @return Maybe that composes this Completable and new Maybe created from {@code Action}
+     */
+    @CheckReturnValue
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final <T> Maybe<T> andThenMaybe(Action run) {
+        return andThen(Maybe.fromAction(run));
+    }
+
+
+    /**
      * Calls the specified converter function during assembly time and returns its resulting value.
      * <p>
      * <img width="640" height="751" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Completable.as.png" alt="">
