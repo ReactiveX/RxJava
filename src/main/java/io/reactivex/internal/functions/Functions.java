@@ -251,6 +251,36 @@ public final class Functions {
         return new ArrayListCapacityCallable<T>(capacity);
     }
 
+    static final class FixedQueueCallable<T>
+            implements Callable<Queue<T>> {
+        final int capacity;
+
+        FixedQueueCallable(int capacity) {
+            this.capacity = capacity;
+        }
+
+        @Override
+        public Queue<T> call() throws Exception {
+            return new LinkedList<T>() {
+                @Override
+                public boolean add(T t) {
+                    boolean retVal = contains(t);
+
+                    if (size() >= capacity) {
+                        removeFirst();
+                    }
+                    addLast(t);
+
+                    return !retVal;
+                }
+            };
+        }
+    }
+
+    public static <T> Callable<Queue<T>> createFixedQueue(int capacity) {
+        return new FixedQueueCallable<T>(capacity);
+    }
+
     static final class EqualsPredicate<T> implements Predicate<T> {
         final T value;
 

@@ -7820,6 +7820,74 @@ public abstract class Observable<T> implements ObservableSource<T> {
     }
 
     /**
+     * Returns an Observable that emits all items emitted by the source ObservableSource that are distinct from their
+     * immediate predecessors groups based on {@link Object#equals(Object)} comparison.
+     * <p>
+     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/distinct.png" alt="">
+     * <p>
+     * It is recommended the elements' class {@code T} in the flow overrides the default {@code Object.equals()}
+     * and {@link Object#hashCode()} to provide meaningful comparison between items as the default Java
+     * implementation only considers reference equivalence.
+     * <p>
+     * By default, {@code distinctOfGroup()} uses an internal {@link java.util.LinkedList} per Observer to remember
+     * previously seen items and uses {@link java.util.Queue#add(Object)} returning {@code false} as the
+     * indicator for duplicates.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code distinctUntilChanged} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param count the buffer collection size
+     * @return an Observable that emits those items from the source ObservableSource that are distinct from their
+     *         immediate predecessors
+     * @see <a href="http://reactivex.io/documentation/operators/distinct.html">ReactiveX operators documentation: Distinct</a>
+     * @see #distinct()
+     * @see #distinctUntilChanged()
+     */
+    @CheckReturnValue
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final Observable<T> distinctOfGroup(int count) {
+        ObjectHelper.verifyPositive(count, "count");
+        return distinct(Functions.identity(), Functions.createFixedQueue(count));
+    }
+
+    /**
+     * Returns an Observable that emits all items emitted by the source ObservableSource that are distinct from their
+     * immediate predecessors groups based on {@link Object#equals(Object)} comparison.
+     * <p>
+     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/distinct.png" alt="">
+     * <p>
+     * It is recommended the elements' class {@code T} in the flow overrides the default {@code Object.equals()}
+     * and {@link Object#hashCode()} to provide meaningful comparison between items as the default Java
+     * implementation only considers reference equivalence.
+     * <p>
+     * By default, {@code distinctOfGroup()} uses an internal {@link java.util.LinkedList} per Observer to remember
+     * previously seen items and uses {@link java.util.Queue#add(Object)} returning {@code false} as the
+     * indicator for duplicates.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code distinctUntilChanged} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param <K> the key type
+     * @param count the buffer collection size
+     * @param keySelector
+     *            a function that projects an emitted item to a key value that is used to decide whether an item
+     *            is distinct from another one or not
+     * @return an Observable that emits those items from the source ObservableSource that are distinct from their
+     *         immediate predecessors
+     * @see <a href="http://reactivex.io/documentation/operators/distinct.html">ReactiveX operators documentation: Distinct</a>
+     * @see #distinct()
+     * @see #distinctUntilChanged()
+     */
+    @CheckReturnValue
+    @SchedulerSupport(SchedulerSupport.NONE)
+    public final <K> Observable<T> distinctOfGroup(int count, Function<? super T, K> keySelector) {
+        ObjectHelper.verifyPositive(count, "count");
+        return distinct(keySelector, Functions.createFixedQueue(count));
+    }
+
+    /**
      * Calls the specified consumer with the current item after this item has been emitted to the downstream.
      * <p>Note that the {@code onAfterNext} action is shared between subscriptions and as such
      * should be thread-safe.
